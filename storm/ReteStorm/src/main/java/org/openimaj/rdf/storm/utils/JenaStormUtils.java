@@ -30,6 +30,8 @@
 package org.openimaj.rdf.storm.utils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.openimaj.kestrel.KestrelServerSpec;
 
@@ -41,17 +43,20 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;
+import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Node_Literal;
 import com.hp.hpl.jena.graph.Node_URI;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
+import com.hp.hpl.jena.mem.GraphMem;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
+import com.hp.hpl.jena.shared.AddDeniedException;
 
 /**
  * A collections to tools for letting Jena play nicely with Storm
  *
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Monks <dm11g08@ecs.soton.ac.uk>
  *
  */
 public class JenaStormUtils {
@@ -127,6 +132,48 @@ public class JenaStormUtils {
 			return new Triple(s, p, o);
 		}
 
+	}
+	
+	/**
+	 * 
+	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
+	 */
+	public static class GraphSerialiser extends Serializer<Graph> {
+
+		@Override
+		public void write(Kryo kryo, Output output, Graph object) {
+			output.writeInt(object.size());
+			Iterator<Triple> it = object.find(null,null,null);
+			while (it.hasNext()){
+				kryo.writeClassAndObject(output, it.next());
+			}
+		}
+
+		@Override
+		public Graph read(Kryo kryo, Input input, Class<Graph> type) {
+			int size = input.readInt();
+			Graph graph = null;
+			graph = new GraphMem();
+			List<Triple> overflow = new ArrayList<Triple>();
+			for (int i = 0; i < size; i++){
+				Object obj = kryo.readClassAndObject(input);
+				try {
+					graph.add((Triple) obj);
+				} catch (AddDeniedException ex) {
+					overflow.add((Triple) obj);
+				}
+			}
+			Iterator<Triple> it = overflow.iterator();
+			while (!overflow.isEmpty()){
+				if (!it.hasNext()) it = overflow.iterator();
+				try {
+					graph.add(it.next());
+					it.remove();
+				} catch (AddDeniedException ex) {}
+			}
+			return graph;
+		}
+		
 	}
 
 	/**
@@ -206,6 +253,7 @@ public class JenaStormUtils {
 		conf.registerSerialization(ArrayList.class);
 		conf.registerSerialization(KestrelServerSpec.class, KestrelServerSpec_Serializer.class);
 		conf.registerSerialization(Rule.class, RuleSerializer.class);
+		conf.registerSerialization(Graph.class, GraphSerialiser.class);
 		// conf.registerSerialization(Node_NULL.class);
 		// conf.registerSerialization(Node_Blank.class);
 	}
