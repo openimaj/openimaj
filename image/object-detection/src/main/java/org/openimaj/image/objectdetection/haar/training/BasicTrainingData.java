@@ -66,7 +66,7 @@ public class BasicTrainingData implements HaarTrainingData {
 		final float[] response = new float[sats.length];
 
 		for (int i = 0; i < sats.length; i++) {
-			response[i] = features[i].computeResponse(sats[i], 0, 0);
+			response[i] = features[dimension].computeResponse(sats[i], 0, 0);
 		}
 
 		return response;
@@ -85,5 +85,17 @@ public class BasicTrainingData implements HaarTrainingData {
 	@Override
 	public int numFeatures() {
 		return features.length;
+	}
+
+	@Override
+	public float[] getInstanceFeature(int idx) {
+		final float[] feature = new float[features.length];
+		final SummedSqTiltAreaTable sat = sats[idx];
+
+		for (int i = 0; i < features.length; i++) {
+			feature[i] = features[i].computeResponse(sat, 0, 0);
+		}
+
+		return feature;
 	}
 }

@@ -113,4 +113,8 @@ public class StumpClassifier {
 	int dimension;
 	float threshold;
 	int sign;
+
+	public boolean classify(float[] instanceFeature) {
+		return (instanceFeature[dimension] > threshold ? sign : -sign) == 1 ? true : false;
+	}
 }

@@ -33,6 +33,8 @@ public interface HaarTrainingData {
 
 	float[] getResponses(int dimension);
 
+	float[] getInstanceFeature(int idx);
+
 	boolean[] getClasses();
 
 	int numInstances();

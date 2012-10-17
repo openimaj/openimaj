@@ -83,4 +83,15 @@ public class CachedTrainingData implements HaarTrainingData {
 	public int numFeatures() {
 		return responses.length;
 	}
+
+	@Override
+	public float[] getInstanceFeature(int idx) {
+		final float[] feature = new float[responses.length];
+
+		for (int i = 0; i < feature.length; i++) {
+			feature[i] = responses[i][idx];
+		}
+
+		return feature;
+	}
 }
