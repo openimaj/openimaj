@@ -37,15 +37,17 @@ import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 
 /**
- * Perform DFIDF and output such that each timeslot is a instance and each word a feature
+ * Perform DFIDF and output such that each timeslot is a instance and each word
+ * a feature
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class DFIDFTokenMode implements TwitterTokenMode {
-	
-	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to 1 hour (60))", metaVar="STRING")
+
+	@Option(name = "--time-delta", aliases = "-t", required = false, usage = "The length of a time window in minutes (defaults to 1 hour (60))", metaVar = "STRING")
 	private long timeDelta = 60;
-	
+
 	private boolean combiningReducers = false;
 	private MultiStagedJob stages;
 	private String[] fstage;
@@ -53,64 +55,20 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 	@Override
 	public void perform(final HadoopTwitterTokenToolOptions opts) throws Exception {
 		Path outpath = HadoopToolsUtil.getOutputPath(opts);
-		this.stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts),outpath,opts.getArgs());
-		/*
-		*			Multi stage DF-IDF process:
-		*				Calculate DF for a word in a time period (t) = number of tweets with word in time period (t) / number of tweets in time period (t)
-		*				Calculate IDF = number of tweets up to final time period (T) / number of tweets with word up to time period (T)
-		*
-		*				function(timePeriodLength)
-		*				So a word in a tweet can happen in the time period between t - 1 and t.
-		*				First task:
-		*					map input:
-		*						tweetstatus # json twitter status with JSONPath to words
-		*					map output:
-		*						<timePeriod: <word:#freq,tweets:#freq>, -1:<word:#freq,tweets:#freq> > 
-		*					reduce input:
-		*						<timePeriod: [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> 
-		*					reduce output:
-		*						<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
-		*/
-		
-		stages.queueStage(new CountTweetsInTimeperiod(outpath,opts.getNonHadoopArgs(),combiningReducers,timeDelta).stage());
-		
-		
-		/*
-		*
-		*				Second task:
-		*					map input:
-		*						<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...> 
-		*					map output:
-		*						[
-		*							word: <timeperiod, tweet:#freq, word:#freq>,
-		*							word: <timeperiod, tweet:#freq, word:#freq>,
-		*							...
-		*						]
-		*					reduce input:
-		*						<word: [
-		* 								<timeperiod, tweet:#freq, word:#freq>,
-		*								<timeperiod, tweet:#freq, word:#freq>,...
-		*						]
-		*					reduce output:
-		*						# read total tweet frequency from timeperiod -1 Ttf
-		*						# read total word tweet frequency from timeperiod -1 Twf
-		*						# read time period tweet frequency from entry tf
-		*						# read time period word frequency from entry wf
-		*						# for entry in input:
-		*						#	(skip for time period -1)
-		*						# 	DF =  wf/tf
-		*						# 	IDF = Ttf/Twf
-		*						# 	<word: <timePeriod, DFIDF>,...>
-		*/
-		stages.queueStage(new CountWordsAcrossTimeperiod(opts.getNonHadoopArgs(),combiningReducers).stage());
-		
+		this.stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts), outpath, opts.getArgs());
+
+		// Associate words with time periods and construct the time index
+		stages.queueStage(new CountTweetsInTimeperiod(opts.getNonHadoopArgs(), combiningReducers, timeDelta).stage());
+		// produce the DFIDF per word per time period
+		stages.queueStage(new CountWordsAcrossTimeperiod(opts.getNonHadoopArgs(), combiningReducers).stage());
+
 		stages.runAll();
-		this.fstage = new String[]{outpath.toString()};
+		this.fstage = new String[] { outpath.toString() };
 	}
 
 	@Override
 	public String[] finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception {
 		return this.fstage;
 	}
-	
+
 }
