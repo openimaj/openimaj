@@ -30,17 +30,21 @@
 package org.openimaj.image.objectdetection.haar.training;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.objectdetection.haar.HaarFeature;
-import org.openimaj.image.objectdetection.haar.training.StumpClassifier.WeightedLearner;
-import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.objectdetection.haar.HaarFeatureClassifier;
+import org.openimaj.image.objectdetection.haar.Stage;
+import org.openimaj.image.objectdetection.haar.StageTreeClassifier;
+import org.openimaj.image.objectdetection.haar.ValueClassifier;
+import org.openimaj.io.IOUtils;
 import org.openimaj.util.pair.ObjectFloatPair;
 
 public class Testing {
@@ -48,101 +52,123 @@ public class Testing {
 	List<SummedSqTiltAreaTable> positive = new ArrayList<SummedSqTiltAreaTable>();
 	List<SummedSqTiltAreaTable> negative = new ArrayList<SummedSqTiltAreaTable>();
 
-	void createFeatures() {
-		features = HaarFeatureType.generateFeatures(20, 20, HaarFeatureType.BASIC);
+	void createFeatures(int width, int height) {
+		features = HaarFeatureType.generateFeatures(width, height, HaarFeatureType.CORE);
 
-		final float invArea = 1f / (18 * 18);
+		final float invArea = 1f / ((width - 2) * (height - 2));
 		for (final HaarFeature f : features) {
 			f.setScale(1, invArea);
 		}
 	}
 
-	void loadPositive() throws IOException {
-		final String base = "/Users/jsh2/Data/att_faces/s%d/%d.pgm";
+	// void loadPositive(boolean tilted) throws IOException {
+	// final String base = "/Users/jsh2/Data/att_faces/s%d/%d.pgm";
+	//
+	// for (int j = 1; j <= 40; j++) {
+	// for (int i = 1; i <= 10; i++) {
+	// final File file = new File(String.format(base, j, i));
+	//
+	// FImage img = ImageUtilities.readF(file);
+	// img = img.extractCenter(50, 50);
+	// img = ResizeProcessor.resample(img, 19, 19);
+	// positive.add(new SummedSqTiltAreaTable(img, tilted));
+	// }
+	// }
+	// }
+	//
+	// void loadNegative(boolean tilted) throws IOException {
+	// final File dir = new File(
+	// "/Volumes/Raid/face_databases/haartraining/tutorial-haartraining.googlecode.com/svn/trunk/data/negatives/");
+	//
+	// for (final File f : dir.listFiles()) {
+	// if (f.getName().endsWith(".jpg")) {
+	// FImage img = ImageUtilities.readF(f);
+	//
+	// final int minwh = Math.min(img.width, img.height);
+	//
+	// img = img.extractCenter(minwh, minwh);
+	// img = ResizeProcessor.resample(img, 19, 19);
+	//
+	// negative.add(new SummedSqTiltAreaTable(img, tilted));
+	// }
+	// }
+	// }
 
-		for (int j = 1; j <= 40; j++) {
-			for (int i = 1; i <= 10; i++) {
-				final File file = new File(String.format(base, j, i));
+	void loadImage(File image, List<SummedSqTiltAreaTable> sats, boolean
+			tilted) throws IOException
+	{
+		final FImage img = ImageUtilities.readF(image);
 
-				FImage img = ImageUtilities.readF(file);
-				img = img.extractCenter(70, 70);
-				img = ResizeProcessor.resample(img, 20, 20);
-				DisplayUtilities.displayName(img, "face");
-				positive.add(new SummedSqTiltAreaTable(img, true));
+		sats.add(new SummedSqTiltAreaTable(img, false));
+	}
+
+	void loadPositive(boolean tilted) throws IOException {
+		for (final File file : new File("/Volumes/Raid/face_databases/cbcl-faces/train/face").listFiles()) {
+			if (file.getName().endsWith(".pgm")) {
+				loadImage(file, positive, tilted);
 			}
 		}
 	}
 
-	void loadNegative() throws IOException {
-		final File dir = new File(
-				"/Volumes/Raid/face_databases/haartraining/tutorial-haartraining.googlecode.com/svn/trunk/data/negatives/");
-
-		for (final File f : dir.listFiles()) {
-			if (f.getName().endsWith(".jpg")) {
-				FImage img = ImageUtilities.readF(f);
-
-				final int minwh = Math.min(img.width, img.height);
-
-				img = img.extractCenter(minwh, minwh);
-				img = ResizeProcessor.resample(img, 20, 20);
-
-				negative.add(new SummedSqTiltAreaTable(img, true));
+	void loadNegative(boolean tilted) throws IOException {
+		for (final File file : new File("/Volumes/Raid/face_databases/cbcl-faces/train/non-face").listFiles()) {
+			if (file.getName().endsWith(".pgm")) {
+				loadImage(file, negative, tilted);
 			}
 		}
 	}
 
 	void perform() throws IOException {
-		createFeatures();
-		loadPositive();
-		loadNegative();
+		System.out.println("Creating feature set");
+		createFeatures(19, 19);
+
+		System.out.println("Loading positive images and computing SATs");
+		loadPositive(false);
+
+		System.out.println("Loading negative images and computing SATs");
+		loadNegative(false);
 
 		System.out.println("+ve: " + positive.size());
 		System.out.println("-ve: " + negative.size());
 		System.out.println("features: " + features.size());
 
-		final CachedTrainingData data = new CachedTrainingData(positive,
-				negative, features);
-		final WeightedLearner wl = new StumpClassifier.WeightedLearner();
-		final float[] weights = new float[data.numInstances()];
-		for (int i = 0; i < weights.length; i++) {
-			weights[i] = 1f / weights.length;
+		System.out.println("Computing cached feature sets");
+		final CachedTrainingData data = new CachedTrainingData(positive, negative, features);
+
+		System.out.println("Starting Training");
+		final AdaBoost boost = new AdaBoost();
+		final List<ObjectFloatPair<StumpClassifier>> ensemble = boost.learn(data, 100);
+
+		System.out.println("Training complete. Ensemble has " + ensemble.size() + " classifiers.");
+
+		for (float threshold = 3; threshold >= -3; threshold -= 0.1f) {
+			System.out.println("Threshold = " + threshold);
+			boost.printClassificationQuality(data, ensemble, threshold);
 		}
 
-		final ObjectFloatPair<StumpClassifier> c = wl.learn(data, weights);
+		final HaarFeatureClassifier[] trees = new HaarFeatureClassifier[ensemble.size()];
 
-		System.out.println(c.second);
-		System.out.println(c.first.dimension);
-		System.out.println(c.first.sign);
-		System.out.println(c.first.threshold);
+		for (int i = 0; i < trees.length; i++) {
+			final ObjectFloatPair<StumpClassifier> wc = ensemble.get(i);
+			final StumpClassifier c = wc.first;
+			final float alpha = wc.second;
+			final float threshold = c.threshold;
+			final float leftValue = c.sign > 0 ? -alpha : alpha; // right way
+																	// around???
+			final HaarFeature feature = features.get(c.dimension);
 
-		final HaarFeature feature = features.get(c.first.dimension);
+			final ValueClassifier left = new ValueClassifier(leftValue);
+			final ValueClassifier right = new ValueClassifier(-leftValue);
 
-		int posCorrect = 0;
-		int posIncorrect = 0;
-		for (final SummedSqTiltAreaTable sat : positive) {
-			final float response = feature.computeResponse(sat, 0, 0);
-
-			if (response > c.first.threshold)
-				posCorrect++;
-			else
-				posIncorrect++;
+			trees[i] = new HaarFeatureClassifier(feature, threshold, left, right);
 		}
 
-		int negCorrect = 0;
-		int negIncorrect = 0;
-		for (final SummedSqTiltAreaTable sat : negative) {
-			final float response = feature.computeResponse(sat, 0, 0);
+		final Stage root = new Stage(0, trees, null, null);
+		final StageTreeClassifier classifier = new StageTreeClassifier(19, 19, "test cascade", false, root);
 
-			if (response < c.first.threshold)
-				negCorrect++;
-			else
-				negIncorrect++;
-		}
-
-		System.out.println(posCorrect);
-		System.out.println(posIncorrect);
-		System.out.println(negCorrect);
-		System.out.println(negIncorrect);
+		final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("test-classifier.bin")));
+		IOUtils.write(classifier, oos);
+		oos.close();
 	}
 
 	public static void main(String[] args) throws IOException {

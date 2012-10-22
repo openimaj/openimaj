@@ -51,7 +51,7 @@ public class DrawingTest {
 				final File file = new File(String.format(base, j, i));
 
 				FImage img = ImageUtilities.readF(file);
-				img = img.extractCenter(70, 70);
+				img = img.extractCenter(50, 50);
 				img = ResizeProcessor.resample(img, 400, 400);
 				image.addInplace(img);
 			}
@@ -60,20 +60,27 @@ public class DrawingTest {
 		return image.normalise();
 	}
 
-	public static void main(String[] args) throws IOException {
-		final List<HaarFeature> features = HaarFeatureType.generateFeatures(20, 20, HaarFeatureType.ALL);
+	public static FImage drawRects(WeightedRectangle[] rects) {
+		final FImage image = new FImage(400, 400);
+		return drawRects(rects, image);
+	}
 
-		final HaarFeature f = features.get(76646);
-
-		final FImage image = loadPositive();
+	public static FImage drawRects(WeightedRectangle[] rects, FImage image) {
 		final int scale = 20;
-		for (final WeightedRectangle r : f.rects) {
+		for (final WeightedRectangle r : rects) {
 
 			final Rectangle rect = new Rectangle(scale * r.x, scale * r.y, scale * r.width, scale * r.height);
 
-			image.drawShape(rect, 0F);
+			image.drawShape(rect, 1F);
 		}
+		return image;
+	}
 
-		DisplayUtilities.display(image);
+	public static void main(String[] args) throws IOException {
+		final List<HaarFeature> features = HaarFeatureType.generateFeatures(20, 20, HaarFeatureType.BASIC);
+
+		final HaarFeature f = features.get(77661);
+
+		DisplayUtilities.display(drawRects(f.rects, loadPositive()));
 	}
 }

@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.objectdetection.haar.training;
 
+import org.openimaj.image.objectdetection.haar.HaarFeature;
+
 public interface HaarTrainingData {
 
 	float[] getResponses(int dimension);
@@ -40,4 +42,8 @@ public interface HaarTrainingData {
 	int numInstances();
 
 	int numFeatures();
+
+	int[] getSortedIndices(int d);
+
+	HaarFeature getFeature(int dimension);
 }

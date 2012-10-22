@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.objectdetection.haar.HaarFeature;
+import org.openimaj.util.array.ArrayUtils;
 
 public class BasicTrainingData implements HaarTrainingData {
 	SummedSqTiltAreaTable[] sats;
@@ -66,7 +67,9 @@ public class BasicTrainingData implements HaarTrainingData {
 		final float[] response = new float[sats.length];
 
 		for (int i = 0; i < sats.length; i++) {
-			response[i] = features[dimension].computeResponse(sats[i], 0, 0);
+			final float wvNorm = computeWindowVarianceNorm(sats[i]);
+
+			response[i] = features[dimension].computeResponse(sats[i], 0, 0) / wvNorm;
 		}
 
 		return response;
@@ -87,15 +90,47 @@ public class BasicTrainingData implements HaarTrainingData {
 		return features.length;
 	}
 
+	float computeWindowVarianceNorm(SummedSqTiltAreaTable sat) {
+		final int w = sat.sum.width - 1 - 2;
+		final int h = sat.sum.height - 1 - 2;
+
+		final int x = 1; // shift by 1 scaled px to centre box
+		final int y = 1;
+
+		final float sum = sat.sum.pixels[y + h][x + w] + sat.sum.pixels[y][x] -
+				sat.sum.pixels[y + h][x] - sat.sum.pixels[y][x + w];
+		final float sqSum = sat.sqSum.pixels[y + w][x + w] + sat.sqSum.pixels[y][x] -
+				sat.sqSum.pixels[y + w][x] - sat.sqSum.pixels[y][x + w];
+
+		final float cachedInvArea = 1.0f / (w * h);
+		final float mean = sum * cachedInvArea;
+		float wvNorm = sqSum * cachedInvArea - mean * mean;
+		wvNorm = (float) ((wvNorm >= 0) ? Math.sqrt(wvNorm) : 1);
+
+		return wvNorm;
+	}
+
 	@Override
 	public float[] getInstanceFeature(int idx) {
 		final float[] feature = new float[features.length];
 		final SummedSqTiltAreaTable sat = sats[idx];
 
+		final float wvNorm = computeWindowVarianceNorm(sat);
+
 		for (int i = 0; i < features.length; i++) {
-			feature[i] = features[i].computeResponse(sat, 0, 0);
+			feature[i] = features[i].computeResponse(sat, 0, 0) / wvNorm;
 		}
 
 		return feature;
+	}
+
+	@Override
+	public int[] getSortedIndices(int d) {
+		return ArrayUtils.indexSort(getResponses(d));
+	}
+
+	@Override
+	public HaarFeature getFeature(int dimension) {
+		return features[dimension];
 	}
 }

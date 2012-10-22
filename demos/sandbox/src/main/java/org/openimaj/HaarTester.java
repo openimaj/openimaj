@@ -32,11 +32,13 @@ package org.openimaj;
 import java.io.IOException;
 import java.util.List;
 
+import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.objectdetection.RotationSimulationObjectDetector;
+import org.openimaj.image.objectdetection.RotationSimulationObjectDetector.TransformedDetection;
 import org.openimaj.image.objectdetection.filtering.OpenCVGrouping;
 import org.openimaj.image.objectdetection.haar.Detector;
-import org.openimaj.image.objectdetection.haar.MultiThreadedDetector;
 import org.openimaj.image.objectdetection.haar.OCVHaarLoader;
 import org.openimaj.image.objectdetection.haar.StageTreeClassifier;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -46,45 +48,16 @@ import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 
 public class HaarTester {
-	// public static void main(String[] args) throws VideoCaptureException {
-	// final VideoCapture vc = new VideoCapture(640, 480);
-	//
-	// final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(vc);
-	// vd.addVideoListener(new VideoDisplayListener<MBFImage>() {
-	// HaarCascadeDetector det =
-	// HaarCascadeDetector.BuiltInCascade.frontalface_alt2.load();
-	//
-	// @Override
-	// public void beforeUpdate(MBFImage frame) {
-	// final Timer t = Timer.timer();
-	//
-	// det.setMinSize(30);
-	//
-	// final List<DetectedFace> faces = det.detectFaces(frame.flatten());
-	//
-	// for (final DetectedFace f : faces) {
-	// frame.drawShape(f.getBounds(), RGBColour.RED);
-	// }
-	//
-	// System.out.println(t.duration());
-	// }
-	//
-	// @Override
-	// public void afterUpdate(VideoDisplay<MBFImage> display) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	// });
-	// }
-
 	public static void main(String[] args) throws IOException {
 
 		final StageTreeClassifier cascade =
 				OCVHaarLoader.read(StageTreeClassifier.class
 						.getResourceAsStream("haarcascade_frontalface_alt2.xml"));
 
-		final Detector det = new MultiThreadedDetector(cascade);
-		det.setMinimumDetectionSize(80);
+		final RotationSimulationObjectDetector<FImage, Float, Rectangle> det = new RotationSimulationObjectDetector<FImage, Float, Rectangle>(
+				new Detector(cascade));
+
+		((Detector) det.getInnerDetector()).setMinimumDetectionSize(80);
 
 		final OpenCVGrouping grp = new OpenCVGrouping();
 
@@ -94,12 +67,12 @@ public class HaarTester {
 							@Override
 							public void beforeUpdate(MBFImage frame) {
 								final Timer t = Timer.timer();
-								List<Rectangle> rects = det.detect(frame.flatten());
-								rects = grp.apply(rects);
+								final List<TransformedDetection<Rectangle>> rects = det.detect(frame.flatten());
+								// rects = grp.apply(rects);
 								System.out.println(t.duration());
 
-								for (final Rectangle r : rects) {
-									frame.drawShape(r, RGBColour.RED);
+								for (final TransformedDetection<Rectangle> r : rects) {
+									frame.drawShape(r.detection.transform(r.transform), RGBColour.RED);
 								}
 							}
 

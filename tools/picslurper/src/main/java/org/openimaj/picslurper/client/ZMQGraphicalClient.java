@@ -11,7 +11,6 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.resize.Lanczos3Filter;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.io.IOUtils;
 import org.openimaj.picslurper.output.WriteableImageOutput;
@@ -19,7 +18,7 @@ import org.zeromq.ZMQ;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ZMQGraphicalClient {
 	private static final int GRID_W = 160;
@@ -43,8 +42,8 @@ public class ZMQGraphicalClient {
 
 			this.thumbXOffset = (GRID_NX * GRID_W);
 
-			this.mainResizer = new ResizeProcessor((GRID_NX * GRID_W), (GRID_NY * GRID_H), ResizeProcessor.Mode.FIT_ASPECT_RATIO, new Lanczos3Filter());
-			this.thumbResizer = new ResizeProcessor(GRID_W, GRID_H, ResizeProcessor.Mode.FIT_ASPECT_RATIO, new Lanczos3Filter());
+			this.mainResizer = new ResizeProcessor((GRID_NX * GRID_W), (GRID_NY * GRID_H), true);
+			this.thumbResizer = new ResizeProcessor(GRID_W, GRID_H, true);
 
 			this.display = new MBFImage(displayWidth, displayHeight, ColourSpace.RGB);
 
@@ -58,16 +57,15 @@ public class ZMQGraphicalClient {
 			boolean first = true;
 			// Start at the end (i.e. most recent)
 			int ind = 0;
-			for (MBFImage img : this.displayList) {
+			for (final MBFImage img : this.displayList) {
 
 				if (first) {
 					first = false;
 					// main image!
 					this.display.drawImage(img.process(this.mainResizer), 0, 0);
-				}
-				else {
-					int y = ind / GRID_NX;
-					int x = (ind - (y * GRID_NX));
+				} else {
+					final int y = ind / GRID_NX;
+					final int x = (ind - (y * GRID_NX));
 					this.display.drawImage(img.process(this.thumbResizer), this.thumbXOffset + (x * GRID_W), y * GRID_H);
 					ind++;
 				}
@@ -77,7 +75,8 @@ public class ZMQGraphicalClient {
 		}
 
 		public void add(MBFImage img) {
-			if(img.getWidth() < 10 || img.getHeight() < 10) return;
+			if (img.getWidth() < 10 || img.getHeight() < 10)
+				return;
 			if (this.displayList.size() == (GRID_NX * GRID_NY + 1)) {
 				this.displayList.removeLast();
 			}
@@ -86,38 +85,40 @@ public class ZMQGraphicalClient {
 		}
 
 	}
-	
-//	private final static String SERVER = "152.78.64.99:5563";
+
+	// private final static String SERVER = "152.78.64.99:5563";
 	private final static String SERVER = "127.0.0.1:5563";
-	
+
 	/**
 	 * @param args
 	 * @throws UnsupportedEncodingException
 	 */
 	public static void main(String args[]) throws UnsupportedEncodingException {
-		System.out.println("Should be in: " + "/NATIVE/" + System.getProperty("os.arch") + "/" + System.getProperty("os.name"));
+		System.out.println("Should be in: " + "/NATIVE/" + System.getProperty("os.arch") + "/"
+				+ System.getProperty("os.name"));
 		// Prepare our context and subscriber
-		ZMQ.Context context = ZMQ.context(1);
-		ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
+		final ZMQ.Context context = ZMQ.context(1);
+		final ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
 
 		subscriber.connect("tcp://" + SERVER);
 		subscriber.subscribe("IMAGE".getBytes("UTF-8"));
 
-		GridDisplay display = new GridDisplay();
+		final GridDisplay display = new GridDisplay();
 		while (true) {
 			// Consume the header
 			subscriber.recv(0);
-			ByteArrayInputStream stream = new ByteArrayInputStream(subscriber.recv(0));
+			final ByteArrayInputStream stream = new ByteArrayInputStream(subscriber.recv(0));
 			WriteableImageOutput instance;
 			try {
 				instance = IOUtils.read(stream, WriteableImageOutput.class, "UTF-8");
-				System.out.println("Got URL: " + instance.file + " ( " + instance.stats.imageURLs + " ) (about to draw) ");
+				System.out
+						.println("Got URL: " + instance.file + " ( " + instance.stats.imageURLs + " ) (about to draw) ");
 				System.out.println("From tweet:\n" + instance.status.getText());
-				for (File imageFile : instance.listImageFiles("/Volumes/LetoDisk")) {
+				for (final File imageFile : instance.listImageFiles("/Volumes/LetoDisk")) {
 					display.add(ImageUtilities.readMBF(imageFile));
 				}
 				System.out.println("SUCCESS!");
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				System.out.println("FAILED!");
 				e.printStackTrace();
 			}

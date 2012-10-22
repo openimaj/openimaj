@@ -33,35 +33,75 @@ import java.util.List;
 
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.objectdetection.haar.HaarFeature;
+import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.parallel.Operation;
+import org.openimaj.util.parallel.Parallel;
 
 public class CachedTrainingData implements HaarTrainingData {
 	float[][] responses;
 	boolean[] classes;
+	int[][] sortedIndices;
+	List<HaarFeature> features;
+	int width, height;
 
-	public CachedTrainingData(List<SummedSqTiltAreaTable> positive, List<SummedSqTiltAreaTable> negative,
-			List<HaarFeature> features)
+	float computeWindowVarianceNorm(SummedSqTiltAreaTable sat) {
+		final int w = width - 2;
+		final int h = height - 2;
+
+		final int x = 1; // shift by 1 scaled px to centre box
+		final int y = 1;
+
+		final float sum = sat.sum.pixels[y + h][x + w] + sat.sum.pixels[y][x] -
+				sat.sum.pixels[y + h][x] - sat.sum.pixels[y][x + w];
+		final float sqSum = sat.sqSum.pixels[y + w][x + w] + sat.sqSum.pixels[y][x] -
+				sat.sqSum.pixels[y + w][x] - sat.sqSum.pixels[y][x + w];
+
+		final float cachedInvArea = 1.0f / (w * h);
+		final float mean = sum * cachedInvArea;
+		float wvNorm = sqSum * cachedInvArea - mean * mean;
+		wvNorm = (float) ((wvNorm >= 0) ? Math.sqrt(wvNorm) : 1);
+
+		return wvNorm;
+	}
+
+	public CachedTrainingData(final List<SummedSqTiltAreaTable> positive, final List<SummedSqTiltAreaTable> negative,
+			final List<HaarFeature> features)
 	{
+		this.width = positive.get(0).sum.width - 1;
+		this.height = positive.get(0).sum.height - 1;
+
+		this.features = features;
 		final int nfeatures = features.size();
 
 		classes = new boolean[positive.size() + negative.size()];
 		responses = new float[nfeatures][classes.length];
+		sortedIndices = new int[nfeatures][];
+		// for (int f = 0; f < nfeatures; f++) {
 
-		for (int f = 0; f < nfeatures; f++) {
-			final HaarFeature feature = features.get(f);
-			int count = 0;
+		Parallel.forIndex(0, nfeatures, 1, new Operation<Integer>() {
 
-			for (final SummedSqTiltAreaTable t : positive) {
-				responses[f][count] = feature.computeResponse(t, 0, 0);
-				classes[count] = true;
-				++count;
+			@Override
+			public void perform(Integer f) {
+				final HaarFeature feature = features.get(f);
+				int count = 0;
+
+				for (final SummedSqTiltAreaTable t : positive) {
+					final float wvNorm = computeWindowVarianceNorm(t);
+					responses[f][count] = feature.computeResponse(t, 0, 0) / wvNorm;
+					classes[count] = true;
+					++count;
+				}
+
+				for (final SummedSqTiltAreaTable t : negative) {
+					final float wvNorm = computeWindowVarianceNorm(t);
+					responses[f][count] = feature.computeResponse(t, 0, 0) / wvNorm;
+					classes[count] = false;
+					++count;
+				}
+
+				sortedIndices[f] = ArrayUtils.indexSort(responses[f]);
 			}
-
-			for (final SummedSqTiltAreaTable t : negative) {
-				responses[f][count] = feature.computeResponse(t, 0, 0);
-				classes[count] = false;
-				++count;
-			}
-		}
+		});
 	}
 
 	@Override
@@ -93,5 +133,15 @@ public class CachedTrainingData implements HaarTrainingData {
 		}
 
 		return feature;
+	}
+
+	@Override
+	public int[] getSortedIndices(int d) {
+		return sortedIndices[d];
+	}
+
+	@Override
+	public HaarFeature getFeature(int dimension) {
+		return features.get(dimension);
 	}
 }
