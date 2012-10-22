@@ -49,116 +49,123 @@ import org.openimaj.video.timecode.VideoTimecode;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
- * 	Demonstration of the OpenIMAJ VideoShotDetector and visualisation thereof.
+ * Demonstration of the OpenIMAJ VideoShotDetector and visualisation thereof.
  * 
- *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	@created 1 Jun 2011
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 1 Jun 2011
  */
 @Demo(
-	author = "David Dupplaw", 
-	description = "Gives a demo of the video shot detector by displaying an " +
-			"animated visualisation of the process of shot detection using " +
-			"differential histograms.", 
-	keywords = { "video", "shots", "shot detector" }, 
-	title = "Video Shot Detector"
-)
-public class VideoShotDetectorVisualisation
-{
+		author = "David Dupplaw",
+		description = "Gives a demo of the video shot detector by displaying an " +
+				"animated visualisation of the process of shot detection using " +
+				"differential histograms.",
+		keywords = { "video", "shots", "shot detector" },
+		title = "Video Shot Detector")
+public class VideoShotDetectorVisualisation {
 	/**
-	 * 	Testing code.
-	 *  @param args
+	 * Testing code.
+	 * 
+	 * @param args
 	 */
-	public static void main( final String[] args )
-	{
-		DisplayUtilities.displayName( new MBFImage(100,100,3), "vsd", true );
-	
-		final List<VideoKeyframe<MBFImage>> keyframes = 
-			new ArrayList<VideoKeyframe<MBFImage>>();
+	public static void main(final String[] args) {
+		DisplayUtilities.displayName(new MBFImage(100, 100, 3), "vsd", true);
+		DisplayUtilities.createNamedWindow("video").setLocation(0, 250);
+
+		final List<VideoKeyframe<MBFImage>> keyframes =
+				new ArrayList<VideoKeyframe<MBFImage>>();
 		final int th = 64;
 		final int tw = 64;
 		final int h = 200;
 		final int w = Toolkit.getDefaultToolkit().getScreenSize().width - tw;
-		final MBFImage m = new MBFImage( w+tw, h, 3 );
+		final MBFImage m = new MBFImage(w + tw, h, 3);
 		final MBFImageRenderer renderer = m.createRenderer();
-		final ResizeProcessor rp = new ResizeProcessor( tw, th, true );
-		
+		final ResizeProcessor rp = new ResizeProcessor(tw, th, true);
+
 		final int threshold = 8000;
 		final VideoShotDetector vsd = new VideoShotDetector(
 				new XuggleVideo(
 						VideoShotDetectorVisualisation.class.
-						getResource("/org/openimaj/demos/video/guy_goma.mp4") ), 
-						false );
-		vsd.setStoreAllDifferentials( true );
-		vsd.setFindKeyframes( true );
-		vsd.setThreshold( threshold );
-		vsd.addShotDetectedListener( new ShotDetectedListener<MBFImage>()
+								getResource("/org/openimaj/demos/video/guy_goma.mp4")),
+						false);
+		vsd.setStoreAllDifferentials(true);
+		vsd.setFindKeyframes(true);
+		vsd.setThreshold(threshold);
+		vsd.addShotDetectedListener(new ShotDetectedListener<MBFImage>()
 		{
 			private double lastMax = 10000;
-			
+
 			@Override
-			public void shotDetected( final ShotBoundary<MBFImage> sb, final VideoKeyframe<MBFImage> vk )
+			public void shotDetected(final ShotBoundary<MBFImage> sb, final VideoKeyframe<MBFImage> vk)
 			{
 				// Store the keyframe
-				if( vk != null )
-					keyframes.add( vk.clone() );
-				
+				if (vk != null)
+					keyframes.add(vk.clone());
+
 				// Reset the image
 				m.zero();
-				
-				// Calculate the various variables required to draw the visualisation.
+
+				// Calculate the various variables required to draw the
+				// visualisation.
 				final DoubleFV dfv = vsd.getDifferentials();
 				double max = Double.MIN_VALUE;
-				for( int x = 0; x < dfv.length(); x++ )
-					max = Math.max( max, dfv.get(x) );
-				if( max > 50 ) this.lastMax = max;
-				
+				for (int x = 0; x < dfv.length(); x++)
+					max = Math.max(max, dfv.get(x));
+				if (max > 50)
+					this.lastMax = max;
+
 				// Draw all the keyframes found onto the image
-				for( final VideoKeyframe<MBFImage> kf : keyframes )
+				for (final VideoKeyframe<MBFImage> kf : keyframes)
 				{
 					final long fn = kf.getTimecode().getFrameNumber();
 					final int x = (int) (fn * w / dfv.length());
-					
+
 					// We draw the keyframes along the top of the visualisation.
-					// So we draw a line to the frame to match it up to the differential
-					renderer.drawLine( x, h, x, 0, new Float[]{0.3f,0.3f,0.3f} );			
-					renderer.drawImage( kf.getImage().process( rp ), x+1, 0);
+					// So we draw a line to the frame to match it up to the
+					// differential
+					renderer.drawLine(x, h, x, 0, new Float[] { 0.3f, 0.3f, 0.3f });
+					renderer.drawImage(kf.getImage().process(rp), x + 1, 0);
 				}
 
 				// This is the threshold line drawn onto the image.
-				renderer.drawLine( 0, (int)(h - h/max*threshold), w, 
-						(int)(h - h/max*threshold), RGBColour.RED );
-				
+				renderer.drawLine(0, (int) (h - h / max * threshold), w,
+						(int) (h - h / max * threshold), RGBColour.RED);
+
 				// Now draw all the differentials
 				int x = 0;
-				for( int z = 0; z < dfv.length(); z++ )
+				for (int z = 0; z < dfv.length(); z++)
 				{
-					x = z * w/dfv.length();
-					renderer.drawLine( x, h, x, (int)(h - h/max*dfv.get(z)), 
-							RGBColour.WHITE );
+					x = z * w / dfv.length();
+					renderer.drawLine(x, h, x, (int) (h - h / max * dfv.get(z)),
+							RGBColour.WHITE);
 				}
 
 				// Display the visualisation
-//				 DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector" );
+				// DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector"
+				// );
 
 				// System.out.println( "Keyframes: "+keyframes );
-				// DisplayUtilities.display( "Keyframes: ", keyframes.toArray( new Image<?,?>[0] ) );				
+				// DisplayUtilities.display( "Keyframes: ", keyframes.toArray(
+				// new Image<?,?>[0] ) );
 			}
 
 			@Override
-            public void differentialCalculated( final VideoTimecode vt, final double d, final MBFImage frame )
-			{	
+			public void differentialCalculated(final VideoTimecode vt, final double d, final MBFImage frame)
+			{
 
 				// Display the visualisation
-				// DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector" );
+				// DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector"
+				// );
 				this.shotDetected(null, null);
 
-				renderer.drawShapeFilled( new Rectangle(w+tw/2-5,th,10,h-th), RGBColour.BLACK );
-				renderer.drawLine( w+tw/2, h, w+tw/2, (int)(h - h/this.lastMax*d), 10,
-						RGBColour.RED );
-				renderer.drawImage( frame.process( rp ), w, 0 );
+				renderer.drawShapeFilled(new Rectangle(w + tw / 2 - 5, th, 10, h - th), RGBColour.BLACK);
+				renderer.drawLine(w + tw / 2, h, w + tw / 2, (int) (h - h / this.lastMax * d), 10,
+						RGBColour.RED);
+				renderer.drawImage(frame.process(rp), w, 0);
 
 				// Display the visualisation
-				DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector" );
+				DisplayUtilities.updateNamed("vsd", m, "Video Shot Detector");
+
+				DisplayUtilities.displayName(frame, "video");
 			}
 		});
 
