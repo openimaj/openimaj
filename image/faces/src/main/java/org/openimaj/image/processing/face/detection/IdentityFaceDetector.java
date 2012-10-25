@@ -75,9 +75,9 @@ public class IdentityFaceDetector<IMAGE extends Image<?, IMAGE>> implements Face
 		final Object oimage = image;
 
 		if (oimage instanceof FImage)
-			face = new DetectedFace(image.getBounds(), ((FImage) (image)), 1);
+			face = new DetectedFace(image.getBounds(), ((FImage) (oimage)), 1);
 		else if (oimage instanceof MBFImage)
-			face = new DetectedFace(image.getBounds(), ((MBFImage) (image)).flatten(), 1);
+			face = new DetectedFace(image.getBounds(), ((MBFImage) (oimage)).flatten(), 1);
 		else
 			throw new RuntimeException("unsupported image type");
 
