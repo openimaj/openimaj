@@ -34,46 +34,68 @@ public class StormReteJoinBolt extends StormReteBolt{
 	private static final long serialVersionUID = -2927726523603853768L;
 	private String leftBolt;
 	private String rightBolt;
+	private int[] matchLeft;
+	private int[] matchRight;
+	private int[] templateLeft;
+	private int[] templateRight;
 	private RETEStormQueue leftQ;
 	private RETEStormQueue rightQ;
 
 	/**
+	 * 
 	 * @param leftBolt
+	 * @param matchLeft 
+	 * @param templateLeft 
 	 * @param rightBolt
+	 * @param matchRight 
+	 * @param templateRight 
 	 * @param rule 
 	 */
-	public StormReteJoinBolt(String leftBolt, String rightBolt, Rule rule) {
+	public StormReteJoinBolt(String leftBolt,
+							 int[] matchLeft,
+							 int[] templateLeft,
+							 String rightBolt,
+							 int[] matchRight,
+							 int[] templateRight,
+							 Rule rule) {
 		super(rule);
 		this.leftBolt = leftBolt;
+		this.matchLeft = matchLeft;
+		this.templateLeft = templateLeft;
 		this.rightBolt = rightBolt;
+		this.matchRight = matchRight;
+		this.templateRight = templateRight;
 	}
 	
 	/**
 	 * @return the Fields this bolt joins on.
 	 */
+	@SuppressWarnings("unchecked")
 	public Fields getJoinFields(){
-		return new Fields(Arrays.asList(StormReteBolt.extractJoinFields(Arrays.asList(this.getRule().getBody()))));
+		return new Fields( Arrays.asList(
+								StormReteBolt.extractJoinFields(
+										Arrays.asList( this.getRule().getBody() )
+								)
+						));
 	}
 
 	@Override
 	public void execute(Tuple input) {
+		boolean isAdd = (Boolean) input.getValueByField(StormReteBolt.BASE_FIELDS[StormReteBolt.IS_ADD]);
 		if(input.getSourceComponent().equals(leftBolt)){
-			this.leftQ.fire(input, true);
+			this.leftQ.fire(input, isAdd);
 		}
 		else{
-			this.rightQ.fire(input, true);
+			this.rightQ.fire(input, isAdd);
 		}
 		emit(input);
 		acknowledge(input);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void prepare() {
-		Fields joinFields = new Fields( Arrays.asList( extractJoinFields( Arrays.asList( this.getRule().getBody() ) ) ) );
-		Fields outFields = new Fields( Arrays.asList( this.getVars() ) );
-		this.leftQ = new RETEStormQueue(joinFields,outFields,5000,15,TimeUnit.MINUTES);
-		this.rightQ = new RETEStormQueue(joinFields,outFields,5000,15,TimeUnit.MINUTES,this.leftQ,this);
+		this.leftQ = new RETEStormQueue(this.matchLeft,this.templateLeft,5000,15,TimeUnit.MINUTES);
+		this.rightQ = new RETEStormQueue(this.matchRight,this.templateRight,5000,15,TimeUnit.MINUTES,this.leftQ,this);
 	}
 
 	/**

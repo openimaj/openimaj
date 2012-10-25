@@ -271,8 +271,8 @@ public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 							String otherBoltName = names.next();
 							StormReteBolt otherBolt = rule.get(otherBoltName);
 							String[] otherVars = otherBolt.getVars();
-							for (String var : currentVars){
-								if (Arrays.asList(otherVars).contains(var)) {
+							for (String v : currentVars){
+								if (Arrays.asList(otherVars).contains(v)) {
 									names.remove();
 									List<ClauseEntry> template = new ArrayList<ClauseEntry>();
 									template.addAll(Arrays.asList(currentBolt.getRule().getHead()));
@@ -419,7 +419,23 @@ public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 	 *         instances, or a combination of the two
 	 */
 	public StormReteJoinBolt constructReteJoinBolt(String left, String right, List<ClauseEntry> template) {
-		return new StormReteJoinBolt(left, right, new Rule(template, template));
+		String[] currentVars = rule.get(left).getVars();
+		String[] otherVars = rule.get(right).getVars();
+		String[] newVars = StormReteBolt.extractFields(template);
+		int[] templateLeft = new int[newVars.length];
+		int[] templateRight = new int[newVars.length];
+		int[] matchLeft = new int[currentVars.length];
+		int[] matchRight = new int[otherVars.length];
+		
+		for (int l = 0; l < currentVars.length; l++)
+			matchLeft[l] = Arrays.asList(otherVars).indexOf(currentVars[l]);
+		for (int r = 0; r < otherVars.length; r++)
+			matchRight[r] = Arrays.asList(currentVars).indexOf(otherVars[r]);
+		for (int n = 0; n < newVars.length; n++){
+			templateLeft[n] = Arrays.asList(currentVars).indexOf(newVars[n]);
+			templateRight[n] = Arrays.asList(otherVars).indexOf(newVars[n]);
+		}
+		return new StormReteJoinBolt(left, matchLeft, templateLeft, right, matchRight, templateRight, new Rule(template, template));
 	}
 
 }

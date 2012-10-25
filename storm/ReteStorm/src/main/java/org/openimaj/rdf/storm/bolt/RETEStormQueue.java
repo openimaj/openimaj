@@ -27,10 +27,10 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
     private final CircularPriorityWindow<Tuple> window;
     
     /** A set of {@link Fields} which should match between the two inputs */
-    protected final Fields matchFields;
+    protected final int[] matchIndices;
     
     /** A set of {@link Fields} which should be produced by joins between the two inputs */
-    protected final Fields outputFields;
+    protected final int[] outputIndices;
     
     /** The sibling queue which forms the other half of the join node */
     protected RETEStormQueue sibling;
@@ -41,19 +41,21 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
     /** 
      * Constructor. The window is not usable until it has been bound
      * to a sibling and a continuation node.
-     * @param matchFields 
-     * @param outputFields 
+     * @param matchFields
+     * 			Maps each field of the input tuple to the index of the equivalent field in tuples from the other side of the join.
+     * @param outputFields
+     * 			Maps each field of the output tuple to the index of the equivalent field of the input tuple.
      * @param size 
      * @param delay 
      * @param unit 
      */
-    public RETEStormQueue(Fields matchFields,
-    					  Fields outputFields,
+    public RETEStormQueue(int[] matchFields,
+    					  int[] outputFields,
     					  int size,
     					  long delay,
     					  TimeUnit unit) {
-        this.matchFields = matchFields;
-        this.outputFields = outputFields;
+        this.matchIndices = matchFields;
+        this.outputIndices = outputFields;
         this.window = new CircularPriorityWindow<Tuple>(size,delay,unit);
     }
     
@@ -61,14 +63,16 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
      * Constructor including sibling to bind to. The window is not usable until it has 
      * also been bound to a continuation node.
      * @param matchFields
-     * @param outputFields 
+     * 			Maps each field of the input tuple to the index of the equivalent field in tuples from the other side of the join.
+     * @param outputFields
+     * 			Maps each field of the output tuple to the index of the equivalent field of the input tuple. 
      * @param size 
      * @param delay 
      * @param unit 
      * @param sib
      */
-    public RETEStormQueue(Fields matchFields,
-    					  Fields outputFields,
+    public RETEStormQueue(int[] matchFields,
+    					  int[] outputFields,
     					  int size,
     					  long delay,
     					  TimeUnit unit,
@@ -82,15 +86,17 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
      * Constructor including sibling to bind to. The window is not usable until it has 
      * also been bound to a continuation node.
      * @param matchFields
-     * @param outputFields 
+     * 			Maps each field of the input tuple to the index of the equivalent field in tuples from the other side of the join.
+     * @param outputFields
+     * 			Maps each field of the output tuple to the index of the equivalent field of the input tuple. 
      * @param size 
      * @param delay 
      * @param unit 
      * @param sib
      * @param sink 
      */
-    public RETEStormQueue(Fields matchFields,
-    					  Fields outputFields,
+    public RETEStormQueue(int[] matchFields,
+    					  int[] outputFields,
     					  int size,
     					  long delay,
     					  TimeUnit unit,
@@ -123,12 +129,13 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
      * @param isAdd distinguishes between add and remove operations.
      */
     public void fire(Tuple env, boolean isAdd) {
-        // Cross match new token against the entries in the sibling queue
+    	// Cross match new token against the entries in the sibling queue
         for (Iterator<Tuple> i = sibling.window.iterator(); i.hasNext(); ) {
             Tuple candidate = i.next();
             boolean matchOK = true;
-            for (String field : matchFields) {
-                if ( ! ((Node)candidate.getValueByField(field)).sameValueAs((Node)env.getValueByField(field))) {
+            for (int j = 0; j < matchIndices.length; j++) {
+                if (matchIndices[j] >= 0
+                		&& !((Node)env.getValue(j)).sameValueAs((Node)candidate.getValue(matchIndices[j]))) {
                     matchOK = false;
                     break;
                 }
@@ -136,19 +143,21 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
             if (matchOK) {
                 // Instantiate a new extended environment
                 Values newVals = new Values();
-                for (String field : outputFields) {
-                	if (Arrays.asList(StormReteBolt.BASE_FIELDS).contains(field)){
-                		if (field.equals(StormReteBolt.BASE_FIELDS[0])){
-                			Polyadic newG = new MultiUnion();
-                			newG.addGraph((Graph)env.getValueByField(StormReteBolt.BASE_FIELDS[0]));
-                			newG.addGraph((Graph)candidate.getValueByField(StormReteBolt.BASE_FIELDS[0]));
-                			newVals.add((Graph)newG);
-                		}
-                	} else {
-	                	Object o = candidate.getValueByField(field);
-	                    newVals.add(o != null ? o : env.getValueByField(field));
-                	}
+                newVals.ensureCapacity(outputIndices.length + StormReteBolt.BASE_FIELDS.length);
+                for (int  j = 0; j < outputIndices.length; j++) {
+                	Object o;
+                	if (outputIndices[j] >= 0)
+                		o = env.getValue(outputIndices[j]);
+                	else
+                		o = candidate.getValue(sibling.outputIndices[j]);
+                    newVals.set(j,o);
                 }
+                Polyadic newG = new MultiUnion();
+    			newG.addGraph((Graph)env.getValueByField(StormReteBolt.BASE_FIELDS[StormReteBolt.GRAPH]));
+    			newG.addGraph((Graph)candidate.getValueByField(StormReteBolt.BASE_FIELDS[StormReteBolt.GRAPH]));
+                newVals.set(StormReteBolt.GRAPH + outputIndices.length, (Graph) newG);
+                
+                newVals.set(StormReteBolt.IS_ADD + outputIndices.length, isAdd);
                 // Fire the successor processing
                 continuation.fire(newVals, isAdd);
             }
@@ -160,6 +169,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
         else
         	// Remove any existing instances of the token from this store
         	window.remove(env);
+                			
     }
     
     /**
@@ -171,7 +181,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
     public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy, RETERuleContext context) {
         RETEStormQueue clone = (RETEStormQueue)netCopy.get(this);
         if (clone == null) {
-            clone = new RETEStormQueue(matchFields,outputFields,window.getCapacity(),window.getDelay(),TimeUnit.MILLISECONDS);
+            clone = new RETEStormQueue(matchIndices,outputIndices,window.getCapacity(),window.getDelay(),TimeUnit.MILLISECONDS);
             netCopy.put(this, clone);
             clone.setSibling((RETEStormQueue)sibling.clone(netCopy, context));
             clone.setContinuation((RETEStormSinkNode)continuation.clone(netCopy, context));
@@ -183,7 +193,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	@Override
 	public void fire(Values output, boolean isAdd) {
 		if (this == this.continuation){
-			
+			System.out.println(output.toString());
 			return;
 		}
 		this.continuation.fire(output, isAdd);

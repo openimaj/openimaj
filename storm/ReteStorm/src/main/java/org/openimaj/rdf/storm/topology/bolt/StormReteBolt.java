@@ -289,7 +289,6 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 * @param fieldsTemplate
 	 * @return String[]
 	 */
-	@SuppressWarnings("unchecked")
 	public static String[] extractFields (List<ClauseEntry> fieldsTemplate) {
 		ArrayList<String> fields = new ArrayList<String>(fieldsTemplate.size()*3);
 		String var;
