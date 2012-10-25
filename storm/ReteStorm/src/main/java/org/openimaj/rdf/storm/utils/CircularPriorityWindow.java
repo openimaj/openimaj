@@ -354,41 +354,4 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		
 	}
 	
-	/**
-     * Inner class used to represent an updatable count.
-     */
-    public static class Count {
-        /** the count */
-        int count;
-        
-        /** Constructor 
-         * @param count */
-        public Count(int count) {
-            this.count = count;
-        }
-        
-        /** Access count value 
-         * @return int */
-        public int getCount() {
-            return count;
-        }
-        
-        /** Increment the count value */
-        public void inc() {
-            count++;
-        }
-        
-        /** Decrement the count value */
-        public void dec() {
-            count--;
-        }
-        
-        /** Set the count value 
-         * @param count */
-        public void setCount(int count) {
-            this.count = count;
-        }
-        
-    }
-	
 }
