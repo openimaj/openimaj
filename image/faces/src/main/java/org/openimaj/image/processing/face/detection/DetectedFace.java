@@ -37,47 +37,58 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.shape.Shape;
 
 /**
- * A DetectedFace models a face detected by a face detector,
- * together with the locations of certain facial features
- * localised on the face.
+ * A DetectedFace models a face detected by a face detector, together with the
+ * locations of certain facial features localised on the face.
  * 
  * @author Jonathon Hare
- *
+ * 
  */
 public class DetectedFace implements ReadWriteableBinary {
 	/**
-	 * The bounds of the face in the image in which it was detected
+	 * The upright bounds of the face in the image in which it was detected
 	 */
 	protected Rectangle bounds;
 
 	/**
-	 * The extracted sub-image representing the face. This is extracted
-	 * directly from the bounds rectangle in the original image. 
+	 * The extracted sub-image representing the face. This is normally extracted
+	 * directly from the bounds rectangle in the original image, but in some
+	 * cases might be extracted from a sub-region of the bounds rectangle.
 	 */
 	protected FImage facePatch;
-	
+
+	/**
+	 * The confidence of the detection; higher numbers mean higher confidence.
+	 */
+	protected float confidence = 1;
+
 	/**
 	 * Default constructor with an empty rectangle as bounds
 	 */
 	public DetectedFace() {
 		bounds = new Rectangle();
 	}
-	
+
 	/**
-	 * Construct with a bounds rectangle (the bounding box of the face in the 
+	 * Construct with a bounds rectangle (the bounding box of the face in the
 	 * detection image) and an image patch that describes the contents of the
 	 * bounds rectangle from the original image.
 	 * 
-	 * @param bounds The bounding box of the face in the detection image
-	 * @param patch The subimage describing the contents of the bounding box.
+	 * @param bounds
+	 *            The bounding box of the face in the detection image.
+	 * @param patch
+	 *            The subimage describing the contents of the bounding box.
+	 * @param confidence
+	 *            The confidence of the detection.
 	 */
-	public DetectedFace(Rectangle bounds, FImage patch) {
+	public DetectedFace(Rectangle bounds, FImage patch, float confidence) {
 		this.bounds = bounds;
 		this.facePatch = patch;
+		this.confidence = confidence;
 	}
-	
+
 	/**
 	 * @return Get the sub-image representing the detected face
 	 */
@@ -86,6 +97,10 @@ public class DetectedFace implements ReadWriteableBinary {
 	}
 
 	/**
+	 * Get the bounding box of the face in the detection image. This might be
+	 * the same as the shape returned by {@link #getShape()}, or it might
+	 * encompass that shape.
+	 * 
 	 * @return The bounding box of the face in the detection image
 	 */
 	public Rectangle getBounds() {
@@ -107,5 +122,26 @@ public class DetectedFace implements ReadWriteableBinary {
 	public void readBinary(DataInput in) throws IOException {
 		bounds.readBinary(in);
 		facePatch = ImageUtilities.readF(in);
+	}
+
+	/**
+	 * Get the confidence of the detection. Higher numbers mean higher
+	 * confidence.
+	 * 
+	 * @return the confidence.
+	 */
+	public float getConfidence() {
+		return confidence;
+	}
+
+	/**
+	 * Get the shape of the detection. In most cases, this will just return the
+	 * bounds rectangle, however, subclasses can override to return a better
+	 * geometric description of the detection area.
+	 * 
+	 * @return the shape describing the detection in the original image.
+	 */
+	public Shape getShape() {
+		return bounds;
 	}
 }

@@ -53,6 +53,7 @@ import org.openimaj.image.processing.algorithm.EqualisationProcessor;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.hash.HashCodeUtil;
+import org.openimaj.util.pair.ObjectIntPair;
 
 /**
  * A face detector based on a Haar cascade. The cascades provided by
@@ -186,7 +187,7 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage> {
 	}
 
 	protected Detector detector;
-	protected DetectionFilter<Rectangle, Rectangle> groupingFilter;
+	protected DetectionFilter<Rectangle, ObjectIntPair<Rectangle>> groupingFilter;
 	protected boolean histogramEqualize = false;
 
 	/**
@@ -279,7 +280,7 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage> {
 	/**
 	 * @return The grouping filter
 	 */
-	public DetectionFilter<Rectangle, Rectangle> getGroupingFilter() {
+	public DetectionFilter<Rectangle, ObjectIntPair<Rectangle>> getGroupingFilter() {
 		return groupingFilter;
 	}
 
@@ -288,7 +289,7 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage> {
 	 * 
 	 * @param grouping
 	 */
-	public void setGroupingFilter(DetectionFilter<Rectangle, Rectangle> grouping) {
+	public void setGroupingFilter(DetectionFilter<Rectangle, ObjectIntPair<Rectangle>> grouping) {
 		this.groupingFilter = grouping;
 	}
 
@@ -297,12 +298,12 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage> {
 		if (histogramEqualize)
 			image.processInplace(new EqualisationProcessor());
 
-		List<Rectangle> rects = detector.detect(image);
-		rects = groupingFilter.apply(rects);
+		final List<Rectangle> rects = detector.detect(image);
+		final List<ObjectIntPair<Rectangle>> filteredRects = groupingFilter.apply(rects);
 
 		final List<DetectedFace> results = new ArrayList<DetectedFace>();
-		for (final Rectangle r : rects) {
-			results.add(new DetectedFace(r, image.extractROI(r)));
+		for (final ObjectIntPair<Rectangle> r : filteredRects) {
+			results.add(new DetectedFace(r.first, image.extractROI(r.first), r.second));
 		}
 
 		return results;

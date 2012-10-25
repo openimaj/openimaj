@@ -40,22 +40,23 @@ import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 
 /**
- * A face detector that does nothing other than wrap the
- * input image in a single {@link DetectedFace} object.
+ * A face detector that does nothing other than wrap the input image in a single
+ * {@link DetectedFace} object.
  * <p>
- * This class is only likely to be useful for performing
- * evaluations of techniques that use datasets where a
- * face has already been extracted/cropped into an image.
+ * This class is only likely to be useful for performing evaluations of
+ * techniques that use datasets where a face has already been extracted/cropped
+ * into an image.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
- * @param <IMAGE> The type of image
+ * @param <IMAGE>
+ *            The type of image
  */
 public class IdentityFaceDetector<IMAGE extends Image<?, IMAGE>> implements FaceDetector<DetectedFace, IMAGE> {
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		//Do nothing
+		// Do nothing
 	}
 
 	@Override
@@ -65,25 +66,25 @@ public class IdentityFaceDetector<IMAGE extends Image<?, IMAGE>> implements Face
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		//Do nothing
+		// Do nothing
 	}
 
 	@Override
 	public List<DetectedFace> detectFaces(IMAGE image) {
 		DetectedFace face = null;
-		if (((Object)image) instanceof FImage)
-			face = new DetectedFace(image.getBounds(), ((FImage)((Object)image)));
-		else if (((Object)image) instanceof MBFImage)
-			face = new DetectedFace(image.getBounds(), ((MBFImage)((Object)image)).flatten());
+		if ((image) instanceof FImage)
+			face = new DetectedFace(image.getBounds(), ((FImage) (image)), 1);
+		else if ((image) instanceof MBFImage)
+			face = new DetectedFace(image.getBounds(), ((MBFImage) (image)).flatten(), 1);
 		else
 			throw new RuntimeException("unsupported image type");
-		
-		List<DetectedFace> faces = new ArrayList<DetectedFace>(1);
+
+		final List<DetectedFace> faces = new ArrayList<DetectedFace>(1);
 		faces.add(face);
-		
+
 		return faces;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Identity Face Detector";

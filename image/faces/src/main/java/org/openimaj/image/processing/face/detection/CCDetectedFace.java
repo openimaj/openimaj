@@ -36,35 +36,42 @@ import java.io.IOException;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.shape.Shape;
 
 /**
- * A {@link DetectedFace} that is represented/detected by a {@link ConnectedComponent}.
+ * A {@link DetectedFace} that is represented/detected by a
+ * {@link ConnectedComponent}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class CCDetectedFace extends DetectedFace {
 	ConnectedComponent connectedComponent;
-	
+
 	/**
 	 * Default constructor.
 	 */
 	public CCDetectedFace() {
 		super();
 	}
-	
+
 	/**
-	 * Construct with a bounds rectangle (the bounding box of the face in the 
-	 * detection image),an image patch that describes the contents of the
-	 * bounds rectangle from the original image, and a {@link ConnectedComponent} 
+	 * Construct with a bounds rectangle (the bounding box of the face in the
+	 * detection image),an image patch that describes the contents of the bounds
+	 * rectangle from the original image, and a {@link ConnectedComponent}
 	 * describing the shape of the detected face.
 	 * 
-	 * @param bounds The bounding box of the face in the detection image
-	 * @param patch The subimage describing the contents of the bounding box.
-	 * @param cc The connected component representing the face.
+	 * @param bounds
+	 *            The bounding box of the face in the detection image
+	 * @param patch
+	 *            The subimage describing the contents of the bounding box.
+	 * @param cc
+	 *            The connected component representing the face.
+	 * @param confidence
+	 *            The confidence of the detection
 	 */
-	public CCDetectedFace(Rectangle bounds, FImage patch, ConnectedComponent cc) {
-		super(bounds, patch);
+	public CCDetectedFace(Rectangle bounds, FImage patch, ConnectedComponent cc, float confidence) {
+		super(bounds, patch, confidence);
 		this.connectedComponent = cc;
 	}
 
@@ -75,8 +82,12 @@ public class CCDetectedFace extends DetectedFace {
 		return connectedComponent;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processing.face.detection.DetectedFace#writeBinary(java.io.DataOutput)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processing.face.detection.DetectedFace#writeBinary
+	 * (java.io.DataOutput)
 	 */
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
@@ -84,22 +95,32 @@ public class CCDetectedFace extends DetectedFace {
 		connectedComponent.writeBinary(out);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processing.face.detection.DetectedFace#binaryHeader()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processing.face.detection.DetectedFace#binaryHeader()
 	 */
 	@Override
 	public byte[] binaryHeader() {
 		return "CCDF".getBytes();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processing.face.detection.DetectedFace#readBinary(java.io.DataInput)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processing.face.detection.DetectedFace#readBinary(
+	 * java.io.DataInput)
 	 */
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		super.readBinary(in);
 		connectedComponent.readBinary(in);
 	}
-	
-	
+
+	@Override
+	public Shape getShape() {
+		return connectedComponent.toPolygon();
+	}
 }

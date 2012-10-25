@@ -62,6 +62,7 @@ import org.openimaj.image.objectdetection.haar.StageTreeClassifier;
 import org.openimaj.image.processing.algorithm.EqualisationProcessor;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.util.pair.ObjectIntPair;
 
 /**
  * Face detector.
@@ -130,7 +131,7 @@ public class FDet {
 				new EqualisationProcessor());
 
 		List<Rectangle> rects = detector.detect(small_img_);
-		rects = grouping.apply(rects);
+		rects = ObjectIntPair.getFirst(grouping.apply(rects));
 		for (final Rectangle r : rects)
 			r.scale(_img_scale);
 

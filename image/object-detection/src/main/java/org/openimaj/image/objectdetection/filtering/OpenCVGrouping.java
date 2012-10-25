@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.util.pair.ObjectIntPair;
 
 /**
  * Filter to perform the grouping of detection rectangles in the way OpenCV
@@ -43,7 +44,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public final class OpenCVGrouping implements DetectionFilter<Rectangle, Rectangle> {
+public final class OpenCVGrouping implements DetectionFilter<Rectangle, ObjectIntPair<Rectangle>> {
 	/**
 	 * The default eps value for determining whether two rectangles overlap
 	 * enough to be considered as being of the same group.
@@ -98,7 +99,7 @@ public final class OpenCVGrouping implements DetectionFilter<Rectangle, Rectangl
 	}
 
 	@Override
-	public List<Rectangle> apply(List<Rectangle> input) {
+	public List<ObjectIntPair<Rectangle>> apply(List<Rectangle> input) {
 		final int[] classes = new int[input.size()];
 		final int nClasses = partition(input, classes);
 
@@ -131,7 +132,7 @@ public final class OpenCVGrouping implements DetectionFilter<Rectangle, Rectangl
 
 		// now filter out any classes that have too few rectangles, or is a
 		// small rectangles inclosed by another class.
-		final List<Rectangle> rectList = new ArrayList<Rectangle>();
+		final List<ObjectIntPair<Rectangle>> rectList = new ArrayList<ObjectIntPair<Rectangle>>();
 		for (int i = 0; i < nClasses; i++) {
 			final Rectangle r1 = meanRects[i];
 			final int n1 = rectCounts[i];
@@ -161,7 +162,7 @@ public final class OpenCVGrouping implements DetectionFilter<Rectangle, Rectangl
 			}
 
 			if (j == nClasses) {
-				rectList.add(r1);
+				rectList.add(new ObjectIntPair<Rectangle>(r1, n1));
 			}
 		}
 

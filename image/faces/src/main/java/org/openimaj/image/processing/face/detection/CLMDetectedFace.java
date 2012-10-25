@@ -105,7 +105,8 @@ public class CLMDetectedFace extends DetectedFace {
 	public CLMDetectedFace(Rectangle bounds, Matrix shape, Matrix poseParameters, Matrix shapeParameters,
 			Matrix visibility, FImage fullImage)
 	{
-		super(bounds, fullImage.extractROI(bounds));
+		super(bounds, fullImage.extractROI(bounds), 1);
+
 		this.poseParameters = poseParameters;
 		this.shapeParameters = shapeParameters;
 		this.visibility = visibility;
@@ -275,7 +276,7 @@ public class CLMDetectedFace extends DetectedFace {
 	 * 
 	 * @return the shape matrix
 	 */
-	public Matrix getShape() {
+	public Matrix getShapeMatrix() {
 		return shape;
 	}
 

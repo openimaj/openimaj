@@ -39,52 +39,59 @@ import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint.Fac
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- * A K(eypoint)E(nriched)DetectedFace models a face detected 
- * by a face detector, together with the locations of 
- * certain facial features localised on the face.
+ * A K(eypoint)E(nriched)DetectedFace models a face detected by a face detector,
+ * together with the locations of certain facial features localised on the face.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class KEDetectedFace extends DetectedFace {
 	/**
-	 * A list of detected facial keypoints. The coordinates are given in
-	 * terms of the facePatch image. To project them into the original
-	 * image you need to translate by bounds.x and bounds.y.
+	 * A list of detected facial keypoints. The coordinates are given in terms
+	 * of the facePatch image. To project them into the original image you need
+	 * to translate by bounds.x and bounds.y.
 	 */
-	protected FacialKeypoint [] keypoints;
-	
+	protected FacialKeypoint[] keypoints;
+
 	/**
 	 * Default constructor
 	 */
 	public KEDetectedFace() {
 		super();
 	}
-	
+
 	/**
 	 * Construct with parameters.
-	 * @param bounds the bounds rectangle in the detection image
-	 * @param patch the patch
-	 * @param keypoints the detected facial keypoints.
+	 * 
+	 * @param bounds
+	 *            the bounds rectangle in the detection image
+	 * @param patch
+	 *            the patch
+	 * @param keypoints
+	 *            the detected facial keypoints.
+	 * @param confidence
+	 *            the confidence of detection
 	 */
-	public KEDetectedFace(Rectangle bounds, FImage patch, FacialKeypoint[] keypoints) {
-		super(bounds, patch);
-		
+	public KEDetectedFace(Rectangle bounds, FImage patch, FacialKeypoint[] keypoints, float confidence) {
+		super(bounds, patch, confidence);
+
 		this.keypoints = keypoints;
 	}
-	
+
 	/**
 	 * Get a keypoint of the specified type.
-	 * @param type the type of keypoint
+	 * 
+	 * @param type
+	 *            the type of keypoint
 	 * @return the keypoint, or null if it wasn't found
 	 */
 	public FacialKeypoint getKeypoint(FacialKeypointType type) {
 		if (keypoints[type.ordinal()].type == type)
 			return keypoints[type.ordinal()];
-		
-		for (FacialKeypoint part : keypoints) 
-			if (part.type == type) 
+
+		for (final FacialKeypoint part : keypoints)
+			if (part.type == type)
 				return part;
-		
+
 		return null;
 	}
 
@@ -94,13 +101,13 @@ public class KEDetectedFace extends DetectedFace {
 	public FacialKeypoint[] getKeypoints() {
 		return keypoints;
 	}
-	
+
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		super.writeBinary(out);
 
 		out.writeInt(keypoints.length);
-		for (FacialKeypoint k : keypoints)
+		for (final FacialKeypoint k : keypoints)
 			k.writeBinary(out);
 	}
 
@@ -112,10 +119,10 @@ public class KEDetectedFace extends DetectedFace {
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		super.readBinary(in);
-		
-		int sz = in.readInt();
+
+		final int sz = in.readInt();
 		keypoints = new FacialKeypoint[sz];
-		for (int i=0; i<sz; i++) {
+		for (int i = 0; i < sz; i++) {
 			keypoints[i] = new FacialKeypoint();
 			keypoints[i].readBinary(in);
 		}
