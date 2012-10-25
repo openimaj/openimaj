@@ -30,7 +30,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * 
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  */
-public abstract class FlexibleReteBolt extends BaseRichBolt implements RETEStormSinkNode {
+public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSinkNode {
 
 	/**
 	 * These are the non-rule-bound fields that all Rete bolts output alongside the rule specific variable bindings.
@@ -79,7 +79,7 @@ public abstract class FlexibleReteBolt extends BaseRichBolt implements RETEStorm
 	 * @param rule
 	 */
 	@SuppressWarnings("unchecked")
-	public FlexibleReteBolt(final Rule rule){
+	public StormReteBolt(final Rule rule){
 		this.ruleString = rule.toString();
 		this.outputTemplate = Arrays.asList(Rule.parseRule(this.ruleString).getHead());
 		this.outputFields = extractFields(this.outputTemplate);

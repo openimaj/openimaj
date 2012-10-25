@@ -29,7 +29,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * @author David Monks <dm11g08@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class FlexibleReteFilterBolt extends FlexibleReteBolt {
+public class StormReteFilterBolt extends StormReteBolt {
 
 	/**
 	 * 
@@ -45,7 +45,7 @@ public class FlexibleReteFilterBolt extends FlexibleReteBolt {
 	 * This filter holds a {@link Rule}.
 	 * @param rule
 	 */
-	public FlexibleReteFilterBolt(Rule rule) {
+	public StormReteFilterBolt(Rule rule) {
 		super(rule);
 	}
 

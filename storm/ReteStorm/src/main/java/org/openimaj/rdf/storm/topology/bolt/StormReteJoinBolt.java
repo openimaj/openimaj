@@ -24,10 +24,10 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  *
  */
-public class FlexibleReteJoinBolt extends FlexibleReteBolt{
+public class StormReteJoinBolt extends StormReteBolt{
 
 
-	protected final static Logger logger = Logger.getLogger(FlexibleReteJoinBolt.class);
+	protected final static Logger logger = Logger.getLogger(StormReteJoinBolt.class);
 	/**
 	 *
 	 */
@@ -42,7 +42,7 @@ public class FlexibleReteJoinBolt extends FlexibleReteBolt{
 	 * @param rightBolt
 	 * @param rule 
 	 */
-	public FlexibleReteJoinBolt(String leftBolt, String rightBolt, Rule rule) {
+	public StormReteJoinBolt(String leftBolt, String rightBolt, Rule rule) {
 		super(rule);
 		this.leftBolt = leftBolt;
 		this.rightBolt = rightBolt;
@@ -52,7 +52,7 @@ public class FlexibleReteJoinBolt extends FlexibleReteBolt{
 	 * @return the Fields this bolt joins on.
 	 */
 	public Fields getJoinFields(){
-		return new Fields(Arrays.asList(FlexibleReteBolt.extractJoinFields(Arrays.asList(this.getRule().getBody()))));
+		return new Fields(Arrays.asList(StormReteBolt.extractJoinFields(Arrays.asList(this.getRule().getBody()))));
 	}
 
 	@Override

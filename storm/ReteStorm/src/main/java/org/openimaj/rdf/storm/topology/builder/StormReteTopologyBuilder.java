@@ -12,9 +12,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openimaj.rdf.storm.topology.bolt.FlexibleReteBolt;
-import org.openimaj.rdf.storm.topology.bolt.FlexibleReteFilterBolt;
-import org.openimaj.rdf.storm.topology.bolt.FlexibleReteJoinBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteFilterBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
@@ -41,9 +41,9 @@ import backtype.storm.topology.IRichBolt;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Monks (dm11g08@ecs.soton.ac.uk)
  *
  */
-public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
+public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 	private static Logger logger = Logger
-			.getLogger(FlexibleReteTopologyBuilder.class);
+			.getLogger(StormReteTopologyBuilder.class);
 	/**
 	 * the name of the final bolt
 	 */
@@ -51,17 +51,17 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 
 	private BoltDeclarer finalTerminalBuilder;
 	private ReteTerminalBolt term;
-	private Map<String, Map<String,FlexibleReteBolt>> rules;
-	private Map<String,FlexibleReteBolt> rule;
-	private Map<String, FlexibleReteBolt> bolts;
+	private Map<String, Map<String,StormReteBolt>> rules;
+	private Map<String,StormReteBolt> rule;
+	private Map<String, StormReteBolt> bolts;
 	private Map<String, List<String>> priorBolts;
 	private String ruleName;
 	private String prior;
 	
 	@Override
 	public void initTopology(ReteTopologyBuilderContext context) {
-		this.rules = new HashMap<String, Map<String, FlexibleReteBolt>>();
-		this.bolts = new HashMap<String, FlexibleReteBolt>();
+		this.rules = new HashMap<String, Map<String, StormReteBolt>>();
+		this.bolts = new HashMap<String, StormReteBolt>();
 		this.priorBolts = new HashMap<String, List<String>>();
 		ReteConflictSetBolt finalTerm = constructConflictSetBolt(context);
 		if (finalTerm != null)
@@ -147,7 +147,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 		} else if (ce instanceof Rule) {
 			Rule r = (Rule) ce;
 			
-			List<String> v = Arrays.asList(FlexibleReteBolt.extractFields(Arrays.asList(r.getBody())));
+			List<String> v = Arrays.asList(StormReteBolt.extractFields(Arrays.asList(r.getBody())));
 			int[] m = new int[v.size()];
 			for (int i = 0; i < m.length; i++ )
 				m[i] = -1;
@@ -179,7 +179,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 	
 	protected static String clauseToString(List<ClauseEntry> template){
 		@SuppressWarnings("unchecked")
-		List<String> varNames = Arrays.asList(FlexibleReteBolt.extractJoinFields(template));
+		List<String> varNames = Arrays.asList(StormReteBolt.extractJoinFields(template));
 		int[] matchIndices = new int[varNames.size()];
 		for (int i = 0; i < matchIndices.length; i++ )
 			matchIndices[i] = -1;
@@ -200,7 +200,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 	
 	protected static String clauseToStringAllVars(List<ClauseEntry> template){
 		@SuppressWarnings("unchecked")
-		List<String> varNames = Arrays.asList(FlexibleReteBolt.extractFields(template));
+		List<String> varNames = Arrays.asList(StormReteBolt.extractFields(template));
 		int[] matchIndices = new int[varNames.size()];
 		for (int i = 0; i < matchIndices.length; i++ )
 			matchIndices[i] = -1;
@@ -218,7 +218,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 		// Sort rule clauses and standardise names
 		context.rule = Rule.parseRule(clauseEntryToString(context.rule));
 		// prepare the map of bolt names to bolts for the rule being started.
-		rule = new HashMap<String, FlexibleReteBolt>();
+		rule = new HashMap<String, StormReteBolt>();
 		rules.put(ruleName, rule);
 		// This is the terminal bolt (where the head is fired)
 		this.term = null;
@@ -230,7 +230,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 	public void addFilter(ReteTopologyBuilderContext context) {
 		String boltName = clauseEntryToString(context.filterClause);
 		
-		FlexibleReteBolt filterBolt;
+		StormReteBolt filterBolt;
 		if (bolts.containsKey(boltName)){
 			logger.debug(String.format("Filter bolt %s used from existing rule", boltName));
 			filterBolt = bolts.get(boltName);
@@ -258,7 +258,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 			join:
 				while (names.hasNext()){
 					String currentBoltName = names.next();
-					FlexibleReteBolt currentBolt = rule.get(currentBoltName);
+					StormReteBolt currentBolt = rule.get(currentBoltName);
 					String[] currentVars = currentBolt.getVars();
 					currentBolt.getRule();
 					// Remove the bolt from the rule, so that it does not attempt to match against itself.
@@ -269,7 +269,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 						names = boltNames.iterator();
 						while (names.hasNext()){
 							String otherBoltName = names.next();
-							FlexibleReteBolt otherBolt = rule.get(otherBoltName);
+							StormReteBolt otherBolt = rule.get(otherBoltName);
 							String[] otherVars = otherBolt.getVars();
 							for (String var : currentVars){
 								if (Arrays.asList(otherVars).contains(var)) {
@@ -284,7 +284,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 									// names, which means the fields will be output in the same order irrespective
 									// of their names, thanks to being ordered by location in the template.
 									String newJoinName = clauseToString(template);
-									FlexibleReteBolt newJoin;
+									StormReteBolt newJoin;
 									if (bolts.containsKey(newJoinName)){
 										newJoin = bolts.get(newJoinName);
 									}else{
@@ -333,13 +333,13 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 
 		logger.debug("Connecting the filter and join instances to the source/final terminal instances");
 		// Now add the nodes to the actual topology
-		for (Entry<String, FlexibleReteBolt> nameFilter : rule.entrySet()) {
+		for (Entry<String, StormReteBolt> nameFilter : rule.entrySet()) {
 			String name = nameFilter.getKey();
 			IRichBolt bolt = nameFilter.getValue();
-			if (bolt instanceof FlexibleReteFilterBolt)
+			if (bolt instanceof StormReteFilterBolt)
 				connectFilterBolt(context, name, bolt);
-			else if (bolt instanceof FlexibleReteJoinBolt)
-				connectJoinBolt(context, name, (FlexibleReteJoinBolt) bolt);
+			else if (bolt instanceof StormReteJoinBolt)
+				connectJoinBolt(context, name, (StormReteJoinBolt) bolt);
 		}
 	}
 
@@ -353,7 +353,7 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 	 * @param name
 	 * @param bolt
 	 */
-	public void connectJoinBolt(ReteTopologyBuilderContext context, String name, FlexibleReteJoinBolt bolt) {
+	public void connectJoinBolt(ReteTopologyBuilderContext context, String name, StormReteJoinBolt bolt) {
 		BoltDeclarer midBuild = context.builder.setBolt(name, bolt, 1);
 		midBuild.fieldsGrouping(bolt.getLeftBolt(), bolt.getJoinFields());
 		midBuild.fieldsGrouping(bolt.getRightBolt(), bolt.getJoinFields());
@@ -399,13 +399,13 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 
 	/**
 	 * @param filter 
-	 * @return the {@link FlexibleReteFilterBolt} usually the filter between the source
+	 * @return the {@link StormReteFilterBolt} usually the filter between the source
 	 *         and a join or a terminal. If null the filter isn't added
 	 */
-	public FlexibleReteFilterBolt constructReteFilterBolt(TriplePattern filter) {
+	public StormReteFilterBolt constructReteFilterBolt(TriplePattern filter) {
 		List<ClauseEntry> template = new ArrayList<ClauseEntry>();
 		template.add(filter);
-		return new FlexibleReteFilterBolt(new Rule(template,template));
+		return new StormReteFilterBolt(new Rule(template,template));
 	}
 
 	/**
@@ -414,12 +414,12 @@ public abstract class FlexibleReteTopologyBuilder extends ReteTopologyBuilder {
 	 * @param right
 	 *            the right source of the join
 	 * @param template 
-	 * @return the {@link FlexibleReteJoinBolt} usually combining two
-	 *         {@link FlexibleReteFilterBolt} instances, {@link FlexibleReteJoinBolt}
+	 * @return the {@link StormReteJoinBolt} usually combining two
+	 *         {@link StormReteFilterBolt} instances, {@link StormReteJoinBolt}
 	 *         instances, or a combination of the two
 	 */
-	public FlexibleReteJoinBolt constructReteJoinBolt(String left, String right, List<ClauseEntry> template) {
-		return new FlexibleReteJoinBolt(left, right, new Rule(template, template));
+	public StormReteJoinBolt constructReteJoinBolt(String left, String right, List<ClauseEntry> template) {
+		return new StormReteJoinBolt(left, right, new Rule(template, template));
 	}
 
 }

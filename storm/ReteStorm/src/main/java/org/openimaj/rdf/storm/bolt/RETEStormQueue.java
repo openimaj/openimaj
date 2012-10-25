@@ -11,7 +11,7 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.openimaj.rdf.storm.topology.bolt.FlexibleReteBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.utils.CircularPriorityWindow;
 
 /**
@@ -137,11 +137,11 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
                 // Instantiate a new extended environment
                 Values newVals = new Values();
                 for (String field : outputFields) {
-                	if (Arrays.asList(FlexibleReteBolt.BASE_FIELDS).contains(field)){
-                		if (field.equals(FlexibleReteBolt.BASE_FIELDS[0])){
+                	if (Arrays.asList(StormReteBolt.BASE_FIELDS).contains(field)){
+                		if (field.equals(StormReteBolt.BASE_FIELDS[0])){
                 			Polyadic newG = new MultiUnion();
-                			newG.addGraph((Graph)env.getValueByField(FlexibleReteBolt.BASE_FIELDS[0]));
-                			newG.addGraph((Graph)candidate.getValueByField(FlexibleReteBolt.BASE_FIELDS[0]));
+                			newG.addGraph((Graph)env.getValueByField(StormReteBolt.BASE_FIELDS[0]));
+                			newG.addGraph((Graph)candidate.getValueByField(StormReteBolt.BASE_FIELDS[0]));
                 			newVals.add((Graph)newG);
                 		}
                 	} else {

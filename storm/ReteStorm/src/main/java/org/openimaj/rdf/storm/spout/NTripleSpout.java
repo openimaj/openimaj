@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.openimaj.rdf.storm.topology.bolt.FlexibleReteBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.storm.spout.SimpleSpout;
 import org.openjena.atlas.lib.Sink;
 import org.openjena.riot.RiotReader;
@@ -67,7 +67,7 @@ public class NTripleSpout extends SimpleSpout implements Sink<Triple> {
 			Graph graph = new GraphMem();
 			graph.add(parser.next());
 			try {
-				this.collector.emit(FlexibleReteBolt.asValues(graph,template,new ArrayList<Node>()));
+				this.collector.emit(StormReteBolt.asValues(graph,template,new ArrayList<Node>()));
 			} catch (Exception e) {
 				
 			}
