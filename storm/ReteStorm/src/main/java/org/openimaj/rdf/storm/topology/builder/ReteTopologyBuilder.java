@@ -39,6 +39,7 @@ import org.openimaj.rdf.storm.topology.spout.ReteAxiomSpout;
 import backtype.storm.topology.TopologyBuilder;
 
 import com.hp.hpl.jena.reasoner.TriplePattern;
+import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
 /**
@@ -105,7 +106,7 @@ public abstract class ReteTopologyBuilder {
 		 * the {@link ReteTopologyBuilder#addFilter(ReteTopologyBuilderContext)}
 		 * call
 		 */
-		public Object filterClause;
+		public ClauseEntry filterClause;
 		/**
 		 * The name of the axiom spout
 		 */
@@ -140,7 +141,7 @@ public abstract class ReteTopologyBuilder {
 
 				// Extract all the filter clauses
 				for (int i = 0; i < rule.bodyLength(); i++) {
-					Object clause = rule.getBodyElement(i);
+					ClauseEntry clause = rule.getBodyElement(i);
 					if (clause instanceof TriplePattern) {
 						context.filterClause = clause;
 						addFilter(context);
