@@ -47,6 +47,13 @@ public class FlexibleReteJoinBolt extends FlexibleReteBolt{
 		this.leftBolt = leftBolt;
 		this.rightBolt = rightBolt;
 	}
+	
+	/**
+	 * @return the Fields this bolt joins on.
+	 */
+	public Fields getJoinFields(){
+		return new Fields(Arrays.asList(FlexibleReteBolt.extractJoinFields(Arrays.asList(this.getRule().getBody()))));
+	}
 
 	@Override
 	public void execute(Tuple input) {

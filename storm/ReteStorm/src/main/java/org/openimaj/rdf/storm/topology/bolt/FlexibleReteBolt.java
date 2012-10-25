@@ -22,6 +22,7 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
+import com.hp.hpl.jena.reasoner.rulesys.Node_RuleVariable;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
@@ -191,7 +192,10 @@ public abstract class FlexibleReteBolt extends BaseRichBolt implements RETEStorm
 	@SuppressWarnings("unchecked")
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields(Arrays.asList(outputFields)));
+		List<String> fields = new ArrayList<String>();
+		fields.addAll(Arrays.asList(BASE_FIELDS));
+		fields.addAll(Arrays.asList(outputFields));
+		declarer.declare(new Fields(fields));
 	}
 	
 	// ******** Value <-> Graph Conversion ********
@@ -285,26 +289,27 @@ public abstract class FlexibleReteBolt extends BaseRichBolt implements RETEStorm
 	 * @param fieldsTemplate
 	 * @return String[]
 	 */
+	@SuppressWarnings("unchecked")
 	public static String[] extractFields (List<ClauseEntry> fieldsTemplate) {
-		ArrayList<String> fields = new ArrayList<String>();
+		ArrayList<String> fields = new ArrayList<String>(fieldsTemplate.size()*3);
 		String var;
 		for (ClauseEntry ce : fieldsTemplate)
 			if (ce instanceof TriplePattern){
 				TriplePattern tp = (TriplePattern) ce;
 				if (tp.getSubject().isVariable() && !fields.contains(var = tp.getSubject().getName()))
-					fields.add(var);
+					fields.set(((Node_RuleVariable)tp.getSubject()).getIndex(), var);
 				if (tp.getPredicate().isVariable() && !fields.contains(var = tp.getPredicate().getName()))
-					fields.add(var);
+					fields.set(((Node_RuleVariable)tp.getPredicate()).getIndex(), var);
 				if (tp.getObject().isVariable() && !fields.contains(var = tp.getObject().getName()))
-					fields.add(var);
+					fields.set(((Node_RuleVariable)tp.getObject()).getIndex(), var);
 				else if (tp.getObject().isLiteral() && tp.getObject().getLiteralValue() instanceof Functor)
 					for (Node n : ((Functor) tp.getObject().getLiteralValue()).getArgs())
 						if (n.isVariable() && !fields.contains(var = n.getName()))
-							fields.add(var);
+							fields.set(((Node_RuleVariable)n).getIndex(), var);
 			}
 		
 		fields.trimToSize();
-		return fields.toArray(new String[BASE_FIELDS.length]);
+		return fields.toArray(new String[0]);
 	}
 	
 	/**
