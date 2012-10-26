@@ -9,23 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.objectdetection.filtering.OpenCVGrouping;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.detection.EllipticalDetectedFace;
+import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.detection.benchmarking.Matcher.Match;
-import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.math.geometry.shape.Ellipse;
-import org.openimaj.math.geometry.shape.EllipseUtilities;
 
 public class FDDBEvaluation {
-	public interface Detector {
+	public interface EvaluationDetector {
 		List<? extends DetectedFace> getDetections(FDDBRecord record);
 	}
 
-	public List<Results> performEvaluation(ListDataset<FDDBRecord> dataset, Detector detector) {
+	public List<Results> performEvaluation(ListDataset<FDDBRecord> dataset, EvaluationDetector detector) {
 		// cumRes stores the cumulative results for all the images
 		List<Results> cumRes = new ArrayList<Results>();
 		final Matcher matcher = new Matcher();
@@ -102,32 +96,30 @@ public class FDDBEvaluation {
 		return ret;
 	}
 
-	public static void main(String[] args) throws IOException {
-		final double[][] alldata = {
-				{ 67.363819, 44.511485, -1.476417, 105.249970, 87.209036 },
-				{ 41.936870, 27.064477, 1.471906, 184.070915, 129.345601 },
-				{ 70.993052, 43.355200, 1.370217, 340.894300, 117.498951 }
+	public static void main(String[] args) throws IOException, InterruptedException {
+		final File fddbGroundTruth = new File("/Users/jsh2/Downloads/FDDB-folds/FDDB-fold-01-ellipseList.txt");
+		final File imageBase = new File("/Users/jsh2/Downloads/originalPics/");
+		final FDDBDataset dataset = new FDDBDataset(fddbGroundTruth, imageBase, true);
+
+		final HaarCascadeDetector det = HaarCascadeDetector.BuiltInCascade.frontalface_alt2.load();
+		det.setGroupingFilter(new OpenCVGrouping(0));
+		det.setMinSize(80);
+		final EvaluationDetector evDet = new EvaluationDetector() {
+
+			@Override
+			public synchronized List<? extends DetectedFace> getDetections(FDDBRecord record) {
+				final List<DetectedFace> faces = det.detectFaces(record.getFImage());
+
+				// for (final DetectedFace f : faces)
+				// f.setConfidence(1);
+
+				return faces;
+			}
 		};
 
-		final MBFImage img = ImageUtilities.readMBF(new File(
-				"/Users/jsh2/Downloads/originalPics/2002/08/26/big/img_265.jpg"));
+		final FDDBEvaluation eval = new FDDBEvaluation();
+		final List<Results> result = eval.performEvaluation(dataset, evDet);
 
-		for (final double[] data : alldata) {
-			final double w = data[0];
-			final double h = data[1];
-			final double t = data[2];
-			final double x = data[3];
-			final double y = data[4];
-
-			final Ellipse ell = EllipseUtilities.ellipseFromEquation(x, y, w, h, t);
-			final EllipticalDetectedFace face = new EllipticalDetectedFace(ell, img.flatten(), 1);
-
-			DisplayUtilities.displaySimple(ResizeProcessor.doubleSize(face.getFacePatch()));
-
-			img.drawShape(ell, RGBColour.RED);
-			img.drawLine((int) x, (int) y, t, (int) h, RGBColour.RED);
-		}
-
-		DisplayUtilities.display(img);
+		System.out.println(Results.getROCData(result));
 	}
 }

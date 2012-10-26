@@ -96,6 +96,8 @@ public class FDDBDataset extends ListBackedDataset<FDDBRecord> {
 
 					r.groundTruth.add(detection);
 				}
+
+				this.data.add(r);
 			}
 
 		} finally {

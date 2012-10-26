@@ -40,6 +40,7 @@ public class Results {
 
 	Results(Results r, int N2) {
 		if (r != null) {
+			imName = r.imName;
 			N = r.N + N2;
 			TPCont = r.TPCont;
 			TPDisc = r.TPDisc;
@@ -56,6 +57,7 @@ public class Results {
 		scoreThreshold = Double.MAX_VALUE;
 
 		if (r1 != null) {
+			imName = r1.imName;
 			N += r1.N;
 			TPCont += r1.TPCont;
 			TPDisc += r1.TPDisc;
@@ -65,6 +67,7 @@ public class Results {
 		}
 
 		if (r2 != null) {
+			imName = r2.imName;
 			N += r2.N;
 			TPCont += r2.TPCont;
 			TPDisc += r2.TPDisc;
@@ -168,33 +171,29 @@ public class Results {
 	@Override
 	public String toString() {
 		return imName + " Threshold = " + scoreThreshold + " N = " + N + " TP cont = " + TPCont + " TP disc = " + TPDisc
-				+ " FP = " + FP + "\n";
+				+ " FP = " + FP;
 	}
 
-	// void saveROC(string outFile, vector<Results *> *rv){
-	// string s = outFile + "ContROC.txt";
-	// ofstream osc(s.c_str());
-	//
-	// s = outFile + "DiscROC.txt";
-	// ofstream osd(s.c_str());
-	//
-	// for(unsigned int i=0; i< rv.size(); i++)
-	// {
-	// Results *r = rv.get(i);
-	// if(r.N)
-	// {
-	// osc << (r.TPCont / r.N) << " " << r.FP << endl;
-	// osd << (r.TPDisc / r.N) << " " << r.FP << " " << r.scoreThreshold<< endl;
-	// }
-	// else
-	// {
-	// osc << "0 0" << endl;
-	// osd << "0 0 " << r.scoreThreshold<< endl;
-	// }
-	// }
-	// osc.close();
-	// osd.close();
-	// }
+	public static String getROCData(List<Results> rv) {
+		String osc = "";
+		String osd = "";
+
+		for (int i = 0; i < rv.size(); i++)
+		{
+			final Results r = rv.get(i);
+			if (r.N > 0)
+			{
+				osc += (r.TPCont / r.N) + " " + r.FP + "\n";
+				osd += (r.TPDisc / r.N) + " " + r.FP + " " + r.scoreThreshold + "\n";
+			}
+			else
+			{
+				osc += "0 0" + "\n";
+				osd += "0 0 " + r.scoreThreshold + "\n";
+			}
+		}
+		return "DISCRETE:\n" + osd + "\nCONTINOUS:\n" + osc;
+	}
 
 	public int getN() {
 		return N;

@@ -67,7 +67,7 @@ import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 		description = "Face recognition cross validation experiment")
 public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace>
 		implements
-			RunnableExperiment
+		RunnableExperiment
 {
 	@IndependentVariable
 	protected CrossValidator<GroupedDataset<KEY, ListDataset<FACE>, FACE>> crossValidator;
@@ -89,7 +89,7 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 	 * dependent variables.
 	 * 
 	 * @param dataset
-	 *            thye dataset
+	 *            the dataset
 	 * @param crossValidator
 	 *            the cross-validator
 	 * @param faceDetector
@@ -121,23 +121,23 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 				faceDataset,
 				crossValidator,
 				new ValidationOperation<GroupedDataset<KEY, ListDataset<FACE>, FACE>, CMResult<KEY>>()
-		{
-			@Time(identifier = "Train and Evaluate recogniser")
-			@Override
-			public CMResult<KEY> evaluate(
-					GroupedDataset<KEY, ListDataset<FACE>, FACE> training,
-					GroupedDataset<KEY, ListDataset<FACE>, FACE> validation)
-			{
-				final FaceRecogniser<FACE, ?, KEY> rec = engine.create(training);
+				{
+					@Time(identifier = "Train and Evaluate recogniser")
+					@Override
+					public CMResult<KEY> evaluate(
+							GroupedDataset<KEY, ListDataset<FACE>, FACE> training,
+							GroupedDataset<KEY, ListDataset<FACE>, FACE> validation)
+					{
+						final FaceRecogniser<FACE, ?, KEY> rec = engine.create(training);
 
-				final ClassificationEvaluator<CMResult<KEY>, KEY, FACE> eval =
-						new ClassificationEvaluator<CMResult<KEY>, KEY, FACE>(
-								rec, validation, new CMAnalyser<FACE, KEY>(CMAnalyser.Strategy.SINGLE)
-						);
+						final ClassificationEvaluator<CMResult<KEY>, KEY, FACE> eval =
+								new ClassificationEvaluator<CMResult<KEY>, KEY, FACE>(
+										rec, validation, new CMAnalyser<FACE, KEY>(CMAnalyser.Strategy.SINGLE)
+								);
 
-				return eval.analyse(eval.evaluate());
-			}
-		});
+						return eval.analyse(eval.evaluate());
+					}
+				});
 	}
 
 	@Override

@@ -144,4 +144,15 @@ public class DetectedFace implements ReadWriteableBinary {
 	public Shape getShape() {
 		return bounds;
 	}
+
+	/**
+	 * Set the confidence of the detection. Higher numbers mean higher
+	 * confidence.
+	 * 
+	 * @param confidence
+	 *            the confidence.
+	 */
+	public void setConfidence(int confidence) {
+		this.confidence = confidence;
+	}
 }
