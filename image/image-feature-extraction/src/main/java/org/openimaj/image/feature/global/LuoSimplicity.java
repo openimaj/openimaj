@@ -85,8 +85,8 @@ public class LuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProv
 	
 	/**
 	 * Construct with the given parameters.
-	 * @param binsPerBand 
-	 * @param gamma 
+	 * @param binsPerBand the number of histogram bins per colour band
+	 * @param gamma the gamma value for determining the threshold
 	 * @param alpha the alpha value.
 	 * @param maxKernelSize Maximum kernel size for the {@link DepthOfFieldEstimator}.
 	 * @param kernelSizeStep Kernel step size for the {@link DepthOfFieldEstimator}.
@@ -102,15 +102,15 @@ public class LuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProv
 	@Override
 	public void analyseImage(MBFImage image) {
 		Transforms.calculateIntensityNTSC(image).analyseWith(extractor);
-		FImage mask = extractor.getROIMap().inverse();
+		final FImage mask = extractor.getROIMap().inverse();
 		
-		MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);
+		final MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);
 		hm.estimateModel(image);
 		
-		MultidimensionalHistogram fv = hm.getFeatureVector();
-		double thresh = gamma* fv.max();
+		final MultidimensionalHistogram fv = hm.getFeatureVector();
+		final double thresh = gamma* fv.max();
 		int count = 0;
-		for (double f : fv.values) {
+		for (final double f : fv.values) {
 			if (f >= thresh) 
 				count++;
 		}

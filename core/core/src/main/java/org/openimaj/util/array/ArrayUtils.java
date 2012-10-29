@@ -1441,13 +1441,21 @@ public class ArrayUtils {
 		index[j] = b;
 	}
 
-	public static int[] indexSort(float[] main) {
-		final int[] index = new int[main.length];
+	/**
+	 * Determine the indices of the given array if it were to be sorted into
+	 * ascending order.
+	 * 
+	 * @param arr
+	 *            the array
+	 * @return the sorted indices
+	 */
+	public static int[] indexSort(float[] arr) {
+		final int[] index = new int[arr.length];
 
 		for (int i = 0; i < index.length; i++)
 			index[i] = i;
 
-		quicksort(main, index, 0, index.length - 1);
+		quicksort(arr, index, 0, index.length - 1);
 
 		return index;
 	}
@@ -1481,11 +1489,6 @@ public class ArrayUtils {
 		}
 		exch(index, i, right); // swap with partition element
 		return i;
-	}
-
-	// is x < y ?
-	private static boolean less(float x, float y) {
-		return (x < y);
 	}
 
 	// exchange a[i] and a[j]

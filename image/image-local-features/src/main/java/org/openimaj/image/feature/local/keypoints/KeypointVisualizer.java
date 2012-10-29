@@ -29,21 +29,13 @@
  */
 package org.openimaj.image.feature.local.keypoints;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
@@ -53,142 +45,179 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Polygon;
 
-
 /**
  * Helpers for visualising (SIFT) interest points.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  * @param <T>
  * @param <Q>
  */
-public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> {
+public class KeypointVisualizer<T, Q extends Image<T, Q> & SinglebandImageProcessor.Processable<Float, FImage, Q>> {
 	Q image;
 	List<? extends Keypoint> keypoints;
-	
+
+	/**
+	 * Construct the visualiser with the given image and keypoints.
+	 * 
+	 * @param image
+	 *            the image
+	 * @param keys
+	 *            the keypoints
+	 */
 	public KeypointVisualizer(Q image, List<? extends Keypoint> keys) {
 		this.image = image;
 		this.keypoints = keys;
 	}
-	
+
+	/**
+	 * Extract the oriented sampling patches used in the construction of the
+	 * keypoints. The patches are normalised to the given fixed size.
+	 * 
+	 * @param dim
+	 *            the patch size.
+	 * @return images depicting the sampling patches of each feature
+	 */
 	public Map<Keypoint, Q> getPatches(int dim) {
-		Map<Keypoint, Q> patches = new HashMap<Keypoint, Q>();
-		Map<Float, Q> blurred = new HashMap<Float, Q>();
-		
-		for (Keypoint k : keypoints) {
-			//blur image
+		final Map<Keypoint, Q> patches = new HashMap<Keypoint, Q>();
+		final Map<Float, Q> blurred = new HashMap<Float, Q>();
+
+		for (final Keypoint k : keypoints) {
+			// blur image
 			if (!blurred.containsKey(k.scale)) {
 				blurred.put(k.scale, image.process(new FGaussianConvolve(k.scale)));
 			}
-			Q blur = blurred.get(k.scale);
-			
-			//make empty patch
-			int sz = (int) (2 * 2 * 3 * k.scale);
-			Q patch = image.newInstance(sz, sz);
-			
-			//extract pixels
-			for (int y=0; y<sz; y++) {
-				for (int x=0; x<sz; x++) {
-					double xbar = x - sz / 2.0;
-					double ybar = y - sz / 2.0;
-										
-					double xx = (xbar * Math.cos(-k.ori) + ybar * Math.sin(-k.ori)) + k.x;
-					double yy = (-xbar * Math.sin(-k.ori) + ybar * Math.cos(-k.ori)) + k.y;
-					
+			final Q blur = blurred.get(k.scale);
+
+			// make empty patch
+			final int sz = (int) (2 * 2 * 3 * k.scale);
+			final Q patch = image.newInstance(sz, sz);
+
+			// extract pixels
+			for (int y = 0; y < sz; y++) {
+				for (int x = 0; x < sz; x++) {
+					final double xbar = x - sz / 2.0;
+					final double ybar = y - sz / 2.0;
+
+					final double xx = (xbar * Math.cos(-k.ori) + ybar * Math.sin(-k.ori)) + k.x;
+					final double yy = (-xbar * Math.sin(-k.ori) + ybar * Math.cos(-k.ori)) + k.y;
+
 					patch.setPixel(x, y, blur.getPixelInterp(xx, yy));
 				}
 			}
-			
+
 			patches.put(k, patch.processInplace(new ResizeProcessor(dim, dim)));
 		}
-		
+
 		return patches;
 	}
-	
+
+	/**
+	 * Draw the sampling boxes on an image.
+	 * 
+	 * @param boxColour
+	 *            the sampling box colour
+	 * @param circleColour
+	 *            the scale-circle colour
+	 * @return an image showing the features.
+	 */
 	public Q drawPatches(T boxColour, T circleColour) {
 		return drawPatchesInplace(image.clone(), keypoints, boxColour, circleColour);
 	}
-	
+
 	/**
-	 * Draw the SIFT features onto an image. The features are
-	 * visualised as circles with orientation lines showing the scale
-	 * and orientation, and with oriented squares showing the sampling
-	 * region.
+	 * Draw the SIFT features onto an image. The features are visualised as
+	 * circles with orientation lines showing the scale and orientation, and
+	 * with oriented squares showing the sampling region.
 	 * 
 	 * The colours of the squares and circles is controlled individually.
 	 * Setting the colour to null will cause the shape not to be displayed.
 	 * 
-	 * The sizes of the drawn shapes assume the default SIFT settings
-	 * described by Lowe. If the parameters used to find the keypoints
-	 * have been changed, then the features might not be drawn at the
-	 * correct size.
+	 * The sizes of the drawn shapes assume the default SIFT settings described
+	 * by Lowe. If the parameters used to find the keypoints have been changed,
+	 * then the features might not be drawn at the correct size.
 	 * 
-	 * @param <T> the pixel type
-	 * @param <Q> the image type
-	 * @param image the image to draw on
-	 * @param keypoints the features to draw
-	 * @param boxColour the colour of the sampling boxes
-	 * @param circleColour the colour of the scale circle
+	 * @param <T>
+	 *            the pixel type
+	 * @param <Q>
+	 *            the image type
+	 * @param image
+	 *            the image to draw on
+	 * @param keypoints
+	 *            the features to draw
+	 * @param boxColour
+	 *            the colour of the sampling boxes
+	 * @param circleColour
+	 *            the colour of the scale circle
 	 * @return the input image
 	 */
-	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> Q drawPatchesInplace(Q image, List<? extends Keypoint> keypoints, T boxColour, T circleColour) {
-		ImageRenderer<T, Q> renderer = image.createRenderer();
-		
-		for (Keypoint k : keypoints) {
+	public static <T, Q extends Image<T, Q> & SinglebandImageProcessor.Processable<Float, FImage, Q>>
+			Q
+			drawPatchesInplace(Q image, List<? extends Keypoint> keypoints, T boxColour, T circleColour)
+	{
+		final ImageRenderer<T, Q> renderer = image.createRenderer();
+
+		for (final Keypoint k : keypoints) {
 			if (boxColour != null) {
 				renderer.drawPolygon(getSamplingBox(k), boxColour);
 			}
-			
+
 			if (circleColour != null) {
-				renderer.drawLine((int)k.x, (int)k.y, -k.ori, (int)k.scale*5, circleColour);
+				renderer.drawLine((int) k.x, (int) k.y, -k.ori, (int) k.scale * 5, circleColour);
 				renderer.drawShape(new Circle(k.x, k.y, k.scale), circleColour);
 			}
 		}
-		
+
 		return image;
 	}
-	
+
+	/**
+	 * Draw the centre point of the keypoints on an image
+	 * 
+	 * @param col
+	 *            the colour to draw with
+	 * @return the image
+	 */
 	public Q drawCenter(T col) {
-		Q output = image.clone();
-		ImageRenderer<T, Q> renderer = output.createRenderer();
-		
-		renderer.drawPoints(keypoints, col,2);
+		final Q output = image.clone();
+		final ImageRenderer<T, Q> renderer = output.createRenderer();
+
+		renderer.drawPoints(keypoints, col, 2);
 		return output;
 	}
 
+	/**
+	 * Get the sampling area of an single feature as a polygon.
+	 * 
+	 * @param k
+	 *            the feature
+	 * @return the polygon representing the sampling area.
+	 */
 	public static Polygon getSamplingBox(Keypoint k) {
 		return getSamplingBox(k, 0);
 	}
-	
-	public static Polygon getSamplingBox(Keypoint k, float scincr) {
-		List<Point2d> vertices = new ArrayList<Point2d>();
-		
-		vertices.add(new Point2dImpl(k.x - (scincr + 2*3*k.scale), k.y - (scincr + 2*3*k.scale)));
-		vertices.add(new Point2dImpl(k.x + (scincr + 2*3*k.scale), k.y - (scincr + 2*3*k.scale)));
-		vertices.add(new Point2dImpl(k.x + (scincr + 2*3*k.scale), k.y + (scincr + 2*3*k.scale)));
-		vertices.add(new Point2dImpl(k.x - (scincr + 2*3*k.scale), k.y + (scincr + 2*3*k.scale)));
 
-		Polygon poly = new Polygon(vertices);
-		
+	/**
+	 * Get the sampling area of an single feature as a polygon.
+	 * 
+	 * @param k
+	 *            the feature
+	 * @param scincr
+	 *            the scaling factor to apply to the sampling area
+	 * @return the polygon representing the sampling area.
+	 */
+	public static Polygon getSamplingBox(Keypoint k, float scincr) {
+		final List<Point2d> vertices = new ArrayList<Point2d>();
+
+		vertices.add(new Point2dImpl(k.x - (scincr + 2 * 3 * k.scale), k.y - (scincr + 2 * 3 * k.scale)));
+		vertices.add(new Point2dImpl(k.x + (scincr + 2 * 3 * k.scale), k.y - (scincr + 2 * 3 * k.scale)));
+		vertices.add(new Point2dImpl(k.x + (scincr + 2 * 3 * k.scale), k.y + (scincr + 2 * 3 * k.scale)));
+		vertices.add(new Point2dImpl(k.x - (scincr + 2 * 3 * k.scale), k.y + (scincr + 2 * 3 * k.scale)));
+
+		final Polygon poly = new Polygon(vertices);
+
 		poly.rotate(new Point2dImpl(k.x, k.y), -k.ori);
-		
+
 		return poly;
-	}
-	
-	public static void main(String [] args) throws IOException {
-		FImage image = ImageUtilities.readF(KeypointVisualizer.class.getResource("/org/openimaj/image/data/cat.jpg"));
-		
-		DoGSIFTEngine engine = new DoGSIFTEngine();
-		List<Keypoint> keys = engine.findFeatures(image);
-		Collections.shuffle(keys);
-		keys = keys.subList(0, 50);
-		
-		System.out.println(keys);
-		
-		MBFImage rgbimage = new MBFImage(image.clone(), image.clone(), image.clone());
-		KeypointVisualizer<Float[], MBFImage> viz = new KeypointVisualizer<Float[], MBFImage>(rgbimage, keys);
-		DisplayUtilities.display(viz.drawPatches(RGBColour.RED, RGBColour.GREEN));
-		
-		ImageUtilities.write(viz.drawPatches(RGBColour.RED, RGBColour.GREEN), new File("/Users/jsh2/Desktop/cat-sift.png"));
 	}
 }

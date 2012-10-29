@@ -252,12 +252,12 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			case SINGLE_COLOUR:
 			case INTENSITY:
 				final BasicASIFT basic = new BasicASIFT(!noDoubleImageSize);
-				basic.process((FImage) itOp.transform(cmOp.process(image)), ntilts);
-				keys = basic.getKeypoints();
+				basic.detectFeatures((FImage) itOp.transform(cmOp.process(image)), ntilts);
+				keys = basic.getFeatures();
 				break;
 			case INTENSITY_COLOUR:
 				final ColourASIFT colour = new ColourASIFT(!noDoubleImageSize);
-				colour.process((MBFImage) itOp.transform(cmOp.process(image)), ntilts);
+				colour.detectFeatures((MBFImage) itOp.transform(cmOp.process(image)), ntilts);
 			}
 			return keys;
 		}
@@ -289,13 +289,13 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			case INTENSITY:
 				FImage img = (FImage) cmOp.process(image);
 				img = (FImage) itOp.transform(img);
-				keys = engine.findSimulationKeypoints(img);
+				keys = engine.findFeatures(img);
 				break;
 			case INTENSITY_COLOUR:
 				final ColourASIFTEngine colourengine = new ColourASIFTEngine(!noDoubleImageSize, ntilts);
 				MBFImage colourimg = (MBFImage) cmOp.process(image);
 				colourimg = (MBFImage) itOp.transform(colourimg);
-				keys = colourengine.findSimulationKeypoints(colourimg);
+				keys = colourengine.findFeatures(colourimg);
 			}
 			return keys;
 		}

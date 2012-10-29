@@ -29,6 +29,12 @@
  */
 package org.openimaj.io;
 
-public interface CachableASCII extends ReadWriteableASCII, Cachable{
+/**
+ * A {@link Cachable} that is capable of being read/written as ASCII.
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
+public interface CachableASCII extends ReadWriteableASCII, Cachable {
 
 }

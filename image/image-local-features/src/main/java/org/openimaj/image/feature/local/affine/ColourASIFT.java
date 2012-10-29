@@ -31,17 +31,45 @@ package org.openimaj.image.feature.local.affine;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.engine.DoGColourSIFTEngine;
+import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
 import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
-
-public class ColourASIFT extends ASIFT<MBFImage, Float[]>{
-
+/**
+ * Colour Affine-simulated SIFT (CASIFT). A {@link DoGColourSIFTEngine} is used
+ * internally to find the features. Specifically, the
+ * {@link DoGColourSIFTEngine} creates a luminance image from which to apply the
+ * difference-of-Gaussian interest point detection algorithm, but extracts the
+ * actual SIFT features from the bands of the input image directly. This means
+ * that the type of Colour-SIFT feature is controlled directly by the
+ * colour-space of the input image; for example if an RGB image is given as
+ * input, then the feature will be standard RGB-SIFT.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class ColourASIFT extends ASIFT<MBFImage, Float[]> {
+	/**
+	 * Construct with the given options for the internal {@link DoGSIFTEngine}.
+	 * 
+	 * @param opts
+	 */
 	public ColourASIFT(DoGSIFTEngineOptions<MBFImage> opts) {
 		super(opts);
 	}
-	
+
+	/**
+	 * Construct the ASIFT extractor using the default parameters for the
+	 * {@link DoGSIFTEngine}, with the exception of the option to double the
+	 * size of the initial image which can be overridden.
+	 * 
+	 * @see DoGSIFTEngineOptions#setDoubleInitialImage(boolean)
+	 * 
+	 * @param hires
+	 *            if true, then the input image is doubled in size before the
+	 *            SIFT features are extracted.
+	 */
 	public ColourASIFT(boolean hires) {
 		super(hires);
 	}
@@ -50,5 +78,4 @@ public class ColourASIFT extends ASIFT<MBFImage, Float[]>{
 	public Engine<Keypoint, MBFImage> constructEngine(DoGSIFTEngineOptions<MBFImage> opts) {
 		return new DoGColourSIFTEngine(opts);
 	}
-	
 }

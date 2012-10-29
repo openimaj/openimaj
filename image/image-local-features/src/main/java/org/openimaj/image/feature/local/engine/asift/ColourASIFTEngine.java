@@ -34,57 +34,125 @@ import java.util.Map;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.feature.local.affine.AffineParams;
-import org.openimaj.image.feature.local.affine.AffineSimulation;
+import org.openimaj.image.feature.local.affine.AffineSimulationExtractor;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.affine.ColourASIFT;
+import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
 import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.processing.transform.AffineParams;
 
-public class ColourASIFTEngine implements Engine<Keypoint, MBFImage> {
-	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint, MBFImage, Float[]> asift;
+/**
+ * An {@link Engine} for Colour ASIFT.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFImage> {
+	protected AffineSimulationExtractor<LocalFeatureList<Keypoint>, Keypoint, MBFImage, Float[]> asift;
 	protected int nTilts = 5;
 
+	/**
+	 * Construct using 5 tilt levels and no initial double-sizing. The default
+	 * parameters for the internal {@link DoGSIFTEngine} are used.
+	 */
 	public ColourASIFTEngine() {
 		this(false);
 	}
 
+	/**
+	 * Construct using 5 tilt levels with optional initial double-sizing. The
+	 * default parameters for the internal {@link DoGSIFTEngine} are used.
+	 * 
+	 * @param hires
+	 *            should the image should be double sized as a first step
+	 */
 	public ColourASIFTEngine(boolean hires) {
 		asift = new ColourASIFT(hires);
 	}
 
+	/**
+	 * Construct using given number of tilt levels with optional initial
+	 * double-sizing. The default parameters for the internal
+	 * {@link DoGSIFTEngine} are used.
+	 * 
+	 * @param hires
+	 *            should the image should be double sized as a first step
+	 * @param nTilts
+	 *            number of tilt levels
+	 */
 	public ColourASIFTEngine(boolean hires, int nTilts) {
 		asift = new ColourASIFT(hires);
 		this.nTilts = nTilts;
 	}
 
+	/**
+	 * Construct using 5 tilt levels and the given parameters for the internal
+	 * {@link DoGSIFTEngine}.
+	 * 
+	 * @param opts
+	 *            parameters for the internal {@link DoGSIFTEngine}.
+	 */
 	public ColourASIFTEngine(DoGSIFTEngineOptions<MBFImage> opts) {
 		asift = new ColourASIFT(opts);
 	}
 
+	/**
+	 * Construct using the given numbe of tilt levels and parameters for the
+	 * internal {@link DoGSIFTEngine}.
+	 * 
+	 * @param opts
+	 *            parameters for the internal {@link DoGSIFTEngine}.
+	 * @param nTilts
+	 *            number of tilt levels
+	 */
 	public ColourASIFTEngine(DoGSIFTEngineOptions<MBFImage> opts, int nTilts) {
 		asift = new ColourASIFT(opts);
 		this.nTilts = nTilts;
 	}
 
-	@Override
-	public LocalFeatureList<Keypoint> findFeatures(MBFImage image) {
-		asift.process(image, nTilts);
-		return asift.getKeypoints();
+	/**
+	 * Find the features as a list of {@link Keypoint} objects
+	 * 
+	 * @param image
+	 *            the image
+	 * @return the detected features
+	 */
+	public LocalFeatureList<Keypoint> findKeypoints(MBFImage image) {
+		asift.detectFeatures(image, nTilts);
+		return asift.getFeatures();
 	}
 
+	/**
+	 * Find the features of a single simulation as a list of {@link Keypoint}
+	 * objects
+	 * 
+	 * @param image
+	 *            the image
+	 * @param params
+	 *            the simulation parameters
+	 * @return the detected features
+	 */
 	public LocalFeatureList<Keypoint> findKeypoints(MBFImage image, AffineParams params) {
-		return asift.process(image, params);
+		return asift.detectFeatures(image, params);
 	}
 
+	/**
+	 * Find the features and return the resultant features in a per-simulation
+	 * format.
+	 * 
+	 * @param image
+	 *            the image
+	 * @return the features
+	 */
 	public Map<AffineParams, LocalFeatureList<Keypoint>> findKeypointsMapped(MBFImage image) {
-		asift.process(image, nTilts);
+		asift.detectFeatures(image, nTilts);
 		return asift.getKeypointsMap();
 	}
 
-	public LocalFeatureList<AffineSimulationKeypoint> findSimulationKeypoints(MBFImage image) {
-		asift.process(image, nTilts);
+	@Override
+	public LocalFeatureList<AffineSimulationKeypoint> findFeatures(MBFImage image) {
+		asift.detectFeatures(image, nTilts);
 		final Map<AffineParams, LocalFeatureList<Keypoint>> keypointMap = asift.getKeypointsMap();
 		final LocalFeatureList<AffineSimulationKeypoint> affineSimulationList = new MemoryLocalFeatureList<AffineSimulationKeypoint>();
 		for (final AffineParams params : asift.simulationOrder) {
@@ -94,5 +162,4 @@ public class ColourASIFTEngine implements Engine<Keypoint, MBFImage> {
 		}
 		return affineSimulationList;
 	}
-
 }

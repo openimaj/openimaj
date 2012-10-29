@@ -42,9 +42,11 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * An extension of the {@link AffineSimulation} which can provide a
- * {@link DoGSIFTEngine} which can be used to extract SIFT features from each
- * affine simulation.
+ * Abstract base implementation of Affine-simulated SIFT (ASIFT).
+ * <p>
+ * This is implemented as an extension of the {@link AffineSimulationExtractor}
+ * which uses a {@link DoGSIFTEngine} to extract SIFT features from each affine
+ * simulation.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -63,7 +65,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 		publisher = "Society for Industrial and Applied Mathematics")
 public abstract class ASIFT<I extends Image<P, I> & SinglebandImageProcessor.Processable<Float, FImage, I>, P>
 		extends
-			AffineSimulation<LocalFeatureList<Keypoint>, Keypoint, I, P>
+		AffineSimulationExtractor<LocalFeatureList<Keypoint>, Keypoint, I, P>
 {
 	Engine<Keypoint, I> keypointEngine;
 
@@ -105,7 +107,7 @@ public abstract class ASIFT<I extends Image<P, I> & SinglebandImageProcessor.Pro
 	}
 
 	@Override
-	protected LocalFeatureList<Keypoint> findKeypoints(I image) {
+	protected LocalFeatureList<Keypoint> detectFeatures(I image) {
 		final LocalFeatureList<Keypoint> keys = keypointEngine.findFeatures(image);
 
 		return keys;

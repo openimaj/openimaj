@@ -29,78 +29,96 @@
  */
 package org.openimaj.image.feature.local.engine;
 
-import java.io.IOException;
-
 import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.dog.collector.Collector;
 import org.openimaj.image.feature.local.detector.dog.collector.OctaveKeypointCollector;
+import org.openimaj.image.feature.local.detector.dog.extractor.AbstractDominantOrientationExtractor;
+import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.detector.dog.extractor.GradientFeatureExtractor;
 import org.openimaj.image.feature.local.detector.dog.extractor.NullOrientationExtractor;
+import org.openimaj.image.feature.local.detector.dog.extractor.OrientationHistogramExtractor;
 import org.openimaj.image.feature.local.detector.pyramid.BasicOctaveGridFinder;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 
+/**
+ * Really basic SIFT extraction on a regular grid of interest points. This is
+ * basically a naive implementation of dense sift. Features can either be
+ * oriented or upright.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
 public class BasicGridSIFTEngine implements Engine<Keypoint, FImage> {
+	boolean orientate;
 	DoGSIFTEngineOptions<FImage> options;
-	
-	public BasicGridSIFTEngine() {
-		options = new DoGSIFTEngineOptions<FImage>();
+
+	/**
+	 * Default constructor.
+	 * 
+	 * @param orientate
+	 *            if true oriented features will be produced; false means
+	 *            upright features.
+	 */
+	public BasicGridSIFTEngine(boolean orientate) {
+		this.options = new DoGSIFTEngineOptions<FImage>();
+		this.orientate = orientate;
 	}
-	
+
+	/**
+	 * Construct with the given parameters.
+	 * 
+	 * @param orientate
+	 *            if true oriented features will be produced; false means
+	 *            upright features.
+	 * @param options
+	 *            options for the SIFT extraction
+	 */
+	public BasicGridSIFTEngine(boolean orientate, DoGSIFTEngineOptions<FImage> options) {
+		this.orientate = orientate;
+		this.options = options;
+	}
+
 	@Override
 	public LocalFeatureList<Keypoint> findFeatures(FImage image) {
-		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = new BasicOctaveGridFinder<GaussianOctave<FImage>, FImage>();
-		
-		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector<FImage>(
-				new GradientFeatureExtractor(
-//					new DominantOrientationExtractor(
-//							options.peakThreshold, 
-//							new OrientationHistogramExtractor(
-//									options.numOriHistBins, 
-//									options.scaling, 
-//									options.smoothingIterations, 
-//									options.samplingSize
-//							)
-//					),
-					new NullOrientationExtractor(),
-					new SIFTFeatureProvider(
-							options.numOriBins, 
-							options.numSpatialBins, 
-							options.valueThreshold, 
-							options.gaussianSigma
-					), 
-					options.magnificationFactor * options.numSpatialBins
+		final OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = new BasicOctaveGridFinder<GaussianOctave<FImage>, FImage>();
+
+		final AbstractDominantOrientationExtractor ori = orientate ?
+				new DominantOrientationExtractor(
+						options.peakThreshold,
+						new OrientationHistogramExtractor(
+								options.numOriHistBins,
+								options.scaling,
+								options.smoothingIterations,
+								options.samplingSize
+						)
 				)
-		);
-		
+				: new NullOrientationExtractor();
+
+		final Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector<FImage>(
+				new GradientFeatureExtractor(
+						ori,
+						new SIFTFeatureProvider(
+								options.numOriBins,
+								options.numSpatialBins,
+								options.valueThreshold,
+								options.gaussianSigma
+						),
+						options.magnificationFactor * options.numSpatialBins
+				)
+				);
+
 		finder.setOctaveInterestPointListener(collector);
-		
+
 		options.setOctaveProcessor(finder);
-		
-		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
+
+		final GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
 		pyr.process(image);
-		
+
 		return collector.getFeatures();
-	}
-	
-	public static void main(String[] args) throws IOException {
-		FImage image = ImageUtilities.readF(BasicOctaveGridFinder.class.getResourceAsStream("/org/openimaj/OpenIMAJ.png"));
-		MBFImage cimg = new MBFImage(image.clone(), image.clone(), image.clone());
-		
-		BasicGridSIFTEngine engine = new BasicGridSIFTEngine();
-		
-		LocalFeatureList<Keypoint> features = engine.findFeatures(image);
-		
-		KeypointVisualizer.drawPatchesInplace(cimg, features, RGBColour.RED, null);
-		DisplayUtilities.display(cimg);
 	}
 }

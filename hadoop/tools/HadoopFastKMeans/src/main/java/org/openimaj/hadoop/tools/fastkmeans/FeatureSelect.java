@@ -36,66 +36,89 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-
 import org.openimaj.tools.clusterquantiser.FileType;
 
+/**
+ * Map-Reduce (random) feature selection
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class FeatureSelect {
-	public static final String FILETYPE_KEY = "uk.ac.soton.ecs.jsh2.clusterquantiser.FileType";
-	public static final String NFEATURE_KEY = "uk.ac.soton.ecs.ss.hadoop.fastkmeans.nfeatures";
-	public static class Map extends Mapper<Text, BytesWritable, IntWritable, BytesWritable> 
+	static final String FILETYPE_KEY = "clusterquantiser.FileType";
+	static final String NFEATURE_KEY = "fastkmeans.nfeatures";
+
+	/**
+	 * Mapper
+	 * 
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static class Map extends Mapper<Text, BytesWritable, IntWritable, BytesWritable>
 	{
 		private int nfeatures = -1;
 		private static FileType fileType = null;
-		private IndexedByteArrayPriorityQueue queue; 
-		
+		private IndexedByteArrayPriorityQueue queue;
+
 		@Override
-		protected void setup(Mapper<Text, BytesWritable, IntWritable, BytesWritable>.Context context)throws IOException, InterruptedException{
+		protected void setup(Mapper<Text, BytesWritable, IntWritable, BytesWritable>.Context context) throws IOException,
+				InterruptedException
+		{
 			if (fileType == null) {
-				fileType = FileType.valueOf(context.getConfiguration().getStrings(FILETYPE_KEY)[0]);
+				fileType = FileType.valueOf(context.getConfiguration().get(FILETYPE_KEY));
 			}
-			if(nfeatures == -1){
-				nfeatures  = Integer.parseInt(context.getConfiguration().getStrings(NFEATURE_KEY)[0]);
+			if (nfeatures == -1) {
+				nfeatures = Integer.parseInt(context.getConfiguration().get(NFEATURE_KEY));
 			}
-			
+
 			queue = new IndexedByteArrayPriorityQueue(nfeatures);
 		}
-		
+
 		@Override
 		public void map(Text key, BytesWritable value, Context context) throws IOException, InterruptedException {
-			byte[] validBytes = new byte[value.getLength()];
+			final byte[] validBytes = new byte[value.getLength()];
 			System.arraycopy(value.getBytes(), 0, validBytes, 0, validBytes.length);
-			IndexedByteArray indexedItem = new IndexedByteArray(validBytes);
+			final IndexedByteArray indexedItem = new IndexedByteArray(validBytes);
 			queue.insert(indexedItem);
 		}
-		
+
 		@Override
 		protected void cleanup(Context context) throws IOException, InterruptedException {
-			while(this.queue.size() > 0){
-				IndexedByteArray item = this.queue.pop();
+			while (this.queue.size() > 0) {
+				final IndexedByteArray item = this.queue.pop();
 				context.write(new IntWritable(item.index), new BytesWritable(item.array));
 			}
 		}
-		
-	} 
+	}
+
+	/**
+	 * Reducer
+	 * 
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * 
+	 */
 	public static class Reduce extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {
 		private int nfeatures = -1;
 		private int seen = 0;
+
 		@Override
-		protected void setup(Context context)throws IOException, InterruptedException{
-			if(nfeatures == -1){
-				nfeatures  = Integer.parseInt(context.getConfiguration().getStrings(NFEATURE_KEY)[0]);
+		protected void setup(Context context) throws IOException, InterruptedException {
+			if (nfeatures == -1) {
+				nfeatures = Integer.parseInt(context.getConfiguration().getStrings(NFEATURE_KEY)[0]);
 			}
 		}
-		
+
 		@Override
-		public void reduce(IntWritable key, Iterable<BytesWritable> values, Context context) throws IOException, InterruptedException {
-			if(seen >= nfeatures){
+		public void reduce(IntWritable key, Iterable<BytesWritable> values, Context context) throws IOException,
+				InterruptedException
+		{
+			if (seen >= nfeatures) {
 				return;
 			}
-			for (BytesWritable val : values) {
+			for (final BytesWritable val : values) {
 				context.write(new IntWritable(seen), val);
 				seen++;
-				if(seen >= nfeatures){
+				if (seen >= nfeatures) {
 					return;
 				}
 			}

@@ -48,20 +48,17 @@ import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFind
 import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
 
 /**
- * <p>
  * A modified implementation of Lowe's difference-of-Gaussian detector and SIFT
  * feature extraction technique that also records whether features are detected
  * at local minima or maxima by looking at the sign of the difference of
- * Gaussian.
- * </p>
+ * Gaussian. This information can then be used for enhancing matching or
+ * clustering.
  * <p>
  * Internally, this class is identical to {@link DoGSIFTEngine}, but uses a
  * {@link OctaveMinMaxKeypointCollector} instead of an
  * {@link OctaveKeypointCollector}.
- * </p>
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
@@ -75,14 +72,14 @@ public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 	DoGSIFTEngineOptions<FImage> options;
 
 	/**
-	 * Construct a DoGSIFTEngine with the default options.
+	 * Construct a {@link MinMaxDoGSIFTEngine} with the default options.
 	 */
 	public MinMaxDoGSIFTEngine() {
 		this(new DoGSIFTEngineOptions<FImage>());
 	}
 
 	/**
-	 * Construct a DoGSIFTEngine with the given options.
+	 * Construct a {@link MinMaxDoGSIFTEngine} with the given options.
 	 * 
 	 * @param options
 	 *            the options
@@ -105,7 +102,7 @@ public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 						new SIFTFeatureProvider(options.numOriBins, options.numSpatialBins, options.valueThreshold,
 								options.gaussianSigma),
 						options.magnificationFactor * options.numSpatialBins
-					));
+				));
 
 		finder.setOctaveInterestPointListener(collector);
 
@@ -117,6 +114,11 @@ public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 		return collector.getFeatures();
 	}
 
+	/**
+	 * Get the options for this engine.
+	 * 
+	 * @return the options for this engine
+	 */
 	public DoGSIFTEngineOptions<FImage> getOptions() {
 		return options;
 	}

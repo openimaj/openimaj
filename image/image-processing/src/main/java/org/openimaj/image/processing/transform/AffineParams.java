@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.local.affine;
+package org.openimaj.image.processing.transform;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -35,37 +35,67 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.io.ReadWriteable;
 
-
+/**
+ * Parameters defining an affine simulation, in terms of a tilt and rotation.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Morel, Jean-Michel", "Yu, Guoshen" },
+		title = "{ASIFT: A New Framework for Fully Affine Invariant Image Comparison}",
+		year = "2009",
+		journal = "SIAM J. Img. Sci.",
+		publisher = "Society for Industrial and Applied Mathematics")
 public class AffineParams implements ReadWriteable {
+	/**
+	 * The angle of rotation
+	 */
 	public float theta;
+
+	/**
+	 * The amount of tilt
+	 */
 	public float tilt;
-	
+
+	/**
+	 * Construct with the given rotation and tilt.
+	 * 
+	 * @param theta
+	 *            the angle of rotation
+	 * @param tilt
+	 *            the amount of tilt
+	 */
 	public AffineParams(float theta, float tilt) {
 		this.theta = theta;
 		this.tilt = tilt;
 	}
-	
+
+	/**
+	 * Construct with zero tilt and rotation
+	 */
 	public AffineParams() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public boolean equals(Object po) {
 		if (po instanceof AffineParams) {
-			AffineParams p = (AffineParams)po;
+			final AffineParams p = (AffineParams) po;
 			return (Math.abs(theta - p.theta) < 0.00001 && Math.abs(tilt - p.tilt) < 0.00001);
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
-		int hash = new Float(theta).hashCode() ^ new Float(tilt).hashCode();
+		final int hash = new Float(theta).hashCode() ^ new Float(tilt).hashCode();
 		return hash;
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.format("theta:%f tilt:%f", theta, tilt);

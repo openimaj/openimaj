@@ -33,8 +33,31 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-public class LocalImageExtractorProperties<I extends Image<?,I> & SinglebandImageProcessor.Processable<Float,FImage,I>> implements ExtractorProperties {
+/**
+ * An extended {@link ExtractorProperties} that holds the image being processed
+ * and interest point location
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <I>
+ *            Type of {@link Image} being processed by the extractor
+ */
+public class LocalImageExtractorProperties<I extends Image<?, I> & SinglebandImageProcessor.Processable<Float, FImage, I>>
+		implements
+		ExtractorProperties
+{
+	/**
+	 * The image being processed
+	 */
 	public I image;
+
+	/**
+	 * The x-ordinate of the interest point
+	 */
 	public float x;
+
+	/**
+	 * The y-ordinate of the interest point
+	 */
 	public float y;
 }

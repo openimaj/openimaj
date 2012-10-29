@@ -29,8 +29,12 @@ public class TestArgsUtil {
 			@Override
 			public Object getOptions() {
 				return new ProxyOptionDetails() {
-					@SuppressWarnings("unused")
-					@Option(name = "--first-proxy-option", aliases = "-fpo", required = false, usage = "a string", multiValued = true)
+					@Option(
+							name = "--first-proxy-option",
+							aliases = "-fpo",
+							required = false,
+							usage = "a string",
+							multiValued = true)
 					String firstOption = "first";
 				};
 			}
@@ -39,8 +43,12 @@ public class TestArgsUtil {
 			@Override
 			public Object getOptions() {
 				return new ProxyOptionDetails() {
-					@SuppressWarnings("unused")
-					@Option(name = "--second-proxy-option", aliases = "-spo", required = false, usage = "a string", multiValued = true)
+					@Option(
+							name = "--second-proxy-option",
+							aliases = "-spo",
+							required = false,
+							usage = "a string",
+							multiValued = true)
 					String secondOption = "second";
 				};
 			}
@@ -60,25 +68,31 @@ public class TestArgsUtil {
 		@Option(name = "--a-enum", aliases = "-e", required = false, usage = "Enum entry")
 		Opt statusType = Opt.FIRST;
 
-		@Option(name = "--proxy-option", aliases = "-p", required = false, usage = "Something with proxy options!", handler = ProxyOptionHandler.class)
+		@Option(
+				name = "--proxy-option",
+				aliases = "-p",
+				required = false,
+				usage = "Something with proxy options!",
+				handler = ProxyOptionHandler.class)
 		ProxyOption outputModeOption = ProxyOption.FIRST;
 		ProxyOptionDetails outputModeOptionOp = (ProxyOptionDetails) ProxyOption.FIRST
 				.getOptions();
 	}
 
 	/**
-	 * The test 
+	 * The test
+	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void testArgs() throws Exception {
-		Arguments args = new Arguments();
+		final Arguments args = new Arguments();
 		args.list.add("wang");
 		args.list.add("bang");
 		args.statusType = Opt.SECOND;
 		String[] asArgArray = ArgsUtil.extractArguments(args);
 		System.out.println(Arrays.toString(asArgArray));
-		
+
 		CmdLineParser parser = new CmdLineParser(args);
 		parser.parseArgument(asArgArray);
 
@@ -87,7 +101,7 @@ public class TestArgsUtil {
 		args.string = 2;
 		args.bool = true;
 		asArgArray = ArgsUtil.extractArguments(args);
-		
+
 		parser = new CmdLineParser(args);
 		parser.parseArgument(asArgArray);
 		System.out.println(Arrays.toString(asArgArray));

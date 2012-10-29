@@ -35,30 +35,86 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-
+/**
+ * A {@link Keypoint} extended to hold information on whether was detected at a
+ * maxima or minima.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class MinMaxKeypoint extends Keypoint {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Was the keypoint detected at a maxima?
+	 */
 	public boolean isMaxima;
-	
+
+	/**
+	 * Construct with the default feature vector length for SIFT (128).
+	 */
 	public MinMaxKeypoint() {
 		super();
 	}
 
+	/**
+	 * Construct with the given parameters
+	 * 
+	 * @param x
+	 *            x-ordinate of feature
+	 * @param y
+	 *            y-ordinate of feature
+	 * @param scale
+	 *            scale of feature
+	 * @param ori
+	 *            orientation of feature
+	 * @param ivec
+	 *            the feature vector
+	 * @param isMaxima
+	 *            was the detection at a maxima?
+	 */
 	public MinMaxKeypoint(float x, float y, float ori, float scale, byte[] ivec, boolean isMaxima) {
 		super(x, y, ori, scale, ivec);
 		this.isMaxima = isMaxima;
 	}
 
-	public MinMaxKeypoint(int len) {
-		super(len);
+	/**
+	 * Construct with the given feature vector length.
+	 * 
+	 * @param length
+	 *            the length of the feature vector
+	 */
+	public MinMaxKeypoint(int length) {
+		super(length);
 	}
 
+	/**
+	 * The location of a {@link MinMaxKeypoint}.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
 	public static class MinMaxKeypointLocation extends KeypointLocation {
 		private static final long serialVersionUID = 1L;
-		
+
+		/**
+		 * Was the keypoint detected at a maxima?
+		 */
 		public boolean isMaxima;
 
+		/**
+		 * Construct with the given parameters
+		 * 
+		 * @param x
+		 *            x-ordinate of feature
+		 * @param y
+		 *            y-ordinate of feature
+		 * @param scale
+		 *            scale of feature
+		 * @param ori
+		 *            orientation of feature
+		 * @param isMaxima
+		 *            was the detection at a maxima?
+		 */
 		public MinMaxKeypointLocation(float x, float y, float ori, float scale, boolean isMaxima) {
 			super(x, y, ori, scale);
 			this.isMaxima = isMaxima;
@@ -72,35 +128,36 @@ public class MinMaxKeypoint extends Keypoint {
 			out.writeFloat(this.orientation);
 			out.writeBoolean(isMaxima);
 		}
-		
+
 		@Override
 		public void writeASCII(PrintWriter out) throws IOException {
 			/* Output data for the keypoint. */
-			out.format("%4.2f %4.2f %4.2f %4.3f %d", y, x, scale, orientation, isMaxima?1:0);
+			out.format("%4.2f %4.2f %4.2f %4.3f %d", y, x, scale, orientation, isMaxima ? 1 : 0);
 			out.println();
 		}
-		
+
 		@Override
 		public void readBinary(DataInput in) throws IOException {
 			super.readBinary(in);
 			isMaxima = in.readBoolean();
 		}
-		
+
 		@Override
 		public void readASCII(Scanner in) throws IOException {
 			super.readASCII(in);
 			isMaxima = in.nextInt() == 1;
 		}
 	}
-	
+
 	@Override
 	public MinMaxKeypointLocation getLocation() {
 		return new MinMaxKeypointLocation(x, y, ori, scale, isMaxima);
 	}
-	
+
 	@Override
 	public void setLocation(KeypointLocation location) {
 		super.setLocation(location);
-		if (location instanceof MinMaxKeypointLocation) this.isMaxima = ((MinMaxKeypointLocation)location).isMaxima;
+		if (location instanceof MinMaxKeypointLocation)
+			this.isMaxima = ((MinMaxKeypointLocation) location).isMaxima;
 	}
 }

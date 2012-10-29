@@ -29,6 +29,12 @@
  */
 package org.openimaj.io;
 
+/**
+ * A {@link Cachable} that is capable of being read/written as Binary.
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public interface CachableBinary extends ReadWriteableBinary, Cachable {
 
 }

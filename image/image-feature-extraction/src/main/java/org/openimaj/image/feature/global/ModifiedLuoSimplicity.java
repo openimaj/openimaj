@@ -43,7 +43,9 @@ import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
 import org.openimaj.image.processor.connectedcomponent.render.BoundingBoxRenderer;
+import org.openimaj.image.saliency.AchantaSaliency;
 import org.openimaj.image.saliency.YehSaliency;
+import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 import org.openimaj.util.array.ArrayUtils;
 
@@ -94,6 +96,29 @@ public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVe
 		extractor = new YehSaliency();
 	}
 
+	/**
+	 * Construct with the given values
+	 * 
+	 * @param binsPerBand
+	 *            the number of histogram bins per colour band
+	 * @param gamma
+	 *            the gamma value for determining the threshold
+	 * @param boxMode
+	 *            whether to extract rectangular boxes for the foreground
+	 *            regions (true) or to just use the pixels (false)
+	 * @param alpha
+	 *            the alpha value for determining the foreground/background
+	 *            threshold
+	 * @param saliencySigma
+	 *            smoothing for the {@link AchantaSaliency} class
+	 * @param segmenterSigma
+	 *            smoothing for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param k
+	 *            k value for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param minSize
+	 *            minimum region size for
+	 *            {@link FelzenszwalbHuttenlocherSegmenter}.
+	 */
 	public ModifiedLuoSimplicity(int binsPerBand, float gamma, boolean boxMode, float alpha, float saliencySigma,
 			float segmenterSigma, float k, int minSize)
 	{

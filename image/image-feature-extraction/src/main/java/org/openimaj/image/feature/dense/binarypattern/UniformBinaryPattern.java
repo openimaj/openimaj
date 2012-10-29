@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 
@@ -51,6 +53,20 @@ import org.openimaj.image.pixel.Pixel;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Ojala, T.", "Pietikainen, M.", "Maenpaa, T." },
+		title = "Multiresolution gray-scale and rotation invariant texture classification with local binary patterns",
+		year = "2002",
+		journal = "Pattern Analysis and Machine Intelligence, IEEE Transactions on",
+		pages = { "971 ", "987" },
+		month = "jul",
+		number = "7",
+		volume = "24",
+		customData = {
+				"doi", "10.1109/TPAMI.2002.1017623",
+				"ISSN", "0162-8828"
+		})
 public class UniformBinaryPattern {
 	protected static TIntObjectHashMap<TIntArrayList> lut = new TIntObjectHashMap<TIntArrayList>();
 
@@ -135,6 +151,15 @@ public class UniformBinaryPattern {
 		return getUniformPatterns(nbits).contains(pattern);
 	}
 
+	/**
+	 * Compute a binary map showing the locations of the specified pattern code.
+	 * 
+	 * @param patternImage
+	 *            the pattern data
+	 * @param code
+	 *            the code to extract
+	 * @return a binary {@link FImage} depicting the locations of the given code
+	 */
 	public static FImage extractPatternImage(int[][] patternImage, int code) {
 		final FImage image = new FImage(patternImage[0].length, patternImage.length);
 
@@ -149,6 +174,16 @@ public class UniformBinaryPattern {
 		return image;
 	}
 
+	/**
+	 * Compute all binary maps for each possible pattern code given the number
+	 * of bits used to encode patterns.
+	 * 
+	 * @param patternImage
+	 *            the pattern data
+	 * @param nbits
+	 *            the number of bits for the patterns
+	 * @return an array of binary maps corresponding to each pattern
+	 */
 	public static FImage[] extractPatternImages(int[][] patternImage, int nbits) {
 		final TIntArrayList uniformPatterns = getUniformPatterns(nbits);
 
@@ -171,6 +206,16 @@ public class UniformBinaryPattern {
 		return images;
 	}
 
+	/**
+	 * Compute all binary maps for each possible pattern code given the number
+	 * of bits used to encode patterns.
+	 * 
+	 * @param patternImage
+	 *            the pattern data
+	 * @param nbits
+	 *            the number of bits for the patterns
+	 * @return an array of binary maps corresponding to each pattern
+	 */
 	public static boolean[][][] extractPatternMaps(int[][] patternImage, int nbits) {
 		final TIntArrayList uniformPatterns = getUniformPatterns(nbits);
 
@@ -189,6 +234,16 @@ public class UniformBinaryPattern {
 		return maps;
 	}
 
+	/**
+	 * Compute all pixels matching each possible pattern code given the number
+	 * of bits used to encode patterns.
+	 * 
+	 * @param patternImage
+	 *            the pattern data
+	 * @param nbits
+	 *            the number of bits for the patterns
+	 * @return an array of binary maps corresponding to each pattern
+	 */
 	public static List<List<Pixel>> extractPatternPixels(int[][] patternImage, int nbits) {
 		final TIntArrayList uniformPatterns = getUniformPatterns(nbits);
 

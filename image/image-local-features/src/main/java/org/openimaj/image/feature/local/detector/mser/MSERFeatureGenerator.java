@@ -45,10 +45,9 @@ import org.openimaj.image.analysis.watershed.feature.ComponentFeature;
 import org.openimaj.util.tree.TreeNode;
 
 /**
- * 
+ * Detector for MSER features.
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- * 
  */
 @Reference(
 		type = ReferenceType.Article,
@@ -73,8 +72,17 @@ public class MSERFeatureGenerator {
 	 * 
 	 */
 	public enum MSERDirection {
+		/**
+		 * Upwards detection
+		 */
 		Up,
+		/**
+		 * Downwards detection
+		 */
 		Down,
+		/**
+		 * Upwards and Downwards detection
+		 */
 		UpAndDown
 	}
 

@@ -41,7 +41,9 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.render.BoundingBoxRenderer;
+import org.openimaj.image.saliency.AchantaSaliency;
 import org.openimaj.image.saliency.YehSaliency;
+import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
@@ -68,15 +70,40 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 
 	protected double roiProportion;
 
+	/**
+	 * Construct with the default values
+	 */
 	public ROIProportion() {
 		saliencyGenerator = new YehSaliency();
 	}
 
+	/**
+	 * Construct with the given alpha value, but use the defaults for the
+	 * {@link YehSaliency} estimator.
+	 * 
+	 * @param alpha
+	 *            the alpha value for determining the threshold
+	 */
 	public ROIProportion(float alpha) {
 		this();
 		this.alpha = alpha;
 	}
 
+	/**
+	 * Construct with the given parameters.
+	 * 
+	 * @param saliencySigma
+	 *            smoothing for the {@link AchantaSaliency} class
+	 * @param segmenterSigma
+	 *            smoothing for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param k
+	 *            k value for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param minSize
+	 *            minimum region size for
+	 *            {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param alpha
+	 *            the alpha value for determining the threshold
+	 */
 	public ROIProportion(float saliencySigma, float segmenterSigma, float k, int minSize, float alpha) {
 		saliencyGenerator = new YehSaliency(saliencySigma, segmenterSigma, k, minSize);
 		this.alpha = alpha;

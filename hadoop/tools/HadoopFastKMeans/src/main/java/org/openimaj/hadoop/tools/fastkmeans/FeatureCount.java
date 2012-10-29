@@ -37,36 +37,60 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-
 import org.openimaj.tools.clusterquantiser.FileType;
 import org.openimaj.tools.clusterquantiser.Header;
 
+/**
+ * Map Reduce job to count features
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class FeatureCount {
-	public static final String FILETYPE_KEY = "uk.ac.soton.ecs.jsh2.clusterquantiser.FileType";
-	public static class Map extends Mapper<Text, BytesWritable, Text, IntWritable> 
+	private static final String FILETYPE_KEY = "clusterquantiser.FileType";
+
+	/**
+	 * Map class. Emits number of features per record.
+	 * 
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static class Map extends Mapper<Text, BytesWritable, Text, IntWritable>
 	{
 		private final static IntWritable nfeatures = new IntWritable(1);
 		private Text word = new Text("total");
 		private static FileType fileType = null;
+
 		@Override
-		protected void setup(Mapper<Text, BytesWritable, Text, IntWritable>.Context context)throws IOException, InterruptedException{
+		protected void setup(Mapper<Text, BytesWritable, Text, IntWritable>.Context context) throws IOException,
+				InterruptedException
+		{
 			if (fileType == null) {
-				fileType = FileType.valueOf(context.getConfiguration().getStrings(FILETYPE_KEY)[0]);
+				fileType = FileType.valueOf(context.getConfiguration().get(FILETYPE_KEY));
 			}
 		}
-		
+
 		@Override
 		public void map(Text key, BytesWritable value, Context context) throws IOException, InterruptedException {
-			Header input = fileType.readHeader(new ByteArrayInputStream(value.getBytes()));
+			final Header input = fileType.readHeader(new ByteArrayInputStream(value.getBytes()));
 			nfeatures.set(input.nfeatures);
 			context.write(word, nfeatures);
 		}
-	} 
+	}
+
+	/**
+	 * Reduce class. Combines counts per map record into overall sum.
+	 * 
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * 
+	 */
 	public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
 		@Override
-		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException,
+				InterruptedException
+		{
 			int sum = 0;
-			for (IntWritable val : values) { 
+			for (final IntWritable val : values) {
 				sum += val.get();
 			}
 			context.write(key, new IntWritable(sum));

@@ -35,13 +35,34 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
 import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
+/**
+ * Standard implementation of Affine-simulated SIFT (ASIFT) for {@link FImage}s.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class BasicASIFT extends ASIFT<FImage, Float> {
 
-public class BasicASIFT extends ASIFT<FImage,Float>{
-
+	/**
+	 * Construct the ASIFT extractor using the default parameters for the
+	 * {@link DoGSIFTEngine}, with the exception of the option to double the
+	 * size of the initial image which can be overridden.
+	 * 
+	 * @see DoGSIFTEngineOptions#setDoubleInitialImage(boolean)
+	 * 
+	 * @param hires
+	 *            if true, then the input image is doubled in size before the
+	 *            SIFT features are extracted.
+	 */
 	public BasicASIFT(boolean hires) {
 		super(hires);
 	}
-	
+
+	/**
+	 * Construct with the given options for the internal {@link DoGSIFTEngine}.
+	 * 
+	 * @param opts
+	 */
 	public BasicASIFT(DoGSIFTEngineOptions<FImage> opts) {
 		super(opts);
 	}
@@ -50,5 +71,4 @@ public class BasicASIFT extends ASIFT<FImage,Float>{
 	public Engine<Keypoint, FImage> constructEngine(DoGSIFTEngineOptions<FImage> opts) {
 		return new DoGSIFTEngine(opts);
 	}
-	
 }

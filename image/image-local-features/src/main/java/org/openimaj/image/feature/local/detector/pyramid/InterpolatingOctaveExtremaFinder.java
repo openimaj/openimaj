@@ -57,7 +57,7 @@ import Jama.Matrix;
 				booktitle = "BMVC 2002: 13th British Machine Vision Conference",
 				pages = { "253", "", "262" },
 				month = "September"
-			),
+		),
 		@Reference(
 				type = ReferenceType.Article,
 				author = { "David Lowe" },
@@ -70,6 +70,9 @@ import Jama.Matrix;
 				volume = "60")
 })
 public class InterpolatingOctaveExtremaFinder extends BasicOctaveExtremaFinder {
+	/**
+	 * Default number of interpolation iterations
+	 */
 	public static final int DEFAULT_INTERPOLATION_ITERATIONS = 5;
 
 	protected int numInterpolationIterations;
@@ -77,14 +80,39 @@ public class InterpolatingOctaveExtremaFinder extends BasicOctaveExtremaFinder {
 	private boolean[][] map;
 	private int currentIteration;
 
+	/**
+	 * Default constructor using {@link #DEFAULT_MAGNITUDE_THRESHOLD} for the
+	 * magnitude threshold, {@link #DEFAULT_EIGENVALUE_RATIO} for the Eigenvalue
+	 * ratio threshold and {@link #DEFAULT_INTERPOLATION_ITERATIONS} for the
+	 * number of iterations.
+	 */
 	public InterpolatingOctaveExtremaFinder() {
 		this(DEFAULT_MAGNITUDE_THRESHOLD, DEFAULT_EIGENVALUE_RATIO, DEFAULT_INTERPOLATION_ITERATIONS);
 	}
 
+	/**
+	 * Construct with the given magnitude threshold,
+	 * {@link #DEFAULT_EIGENVALUE_RATIO} for the Eigenvalue ratio threshold and
+	 * {@link #DEFAULT_INTERPOLATION_ITERATIONS} for the number of iterations.
+	 * 
+	 * @param magnitudeThreshold
+	 *            the magnitude threshold
+	 */
 	public InterpolatingOctaveExtremaFinder(float magnitudeThreshold) {
 		this(magnitudeThreshold, DEFAULT_EIGENVALUE_RATIO, DEFAULT_INTERPOLATION_ITERATIONS);
 	}
 
+	/**
+	 * Construct with the given magnitude and Eigenvalue thresholds andnumber of
+	 * iterations.
+	 * 
+	 * @param magnitudeThreshold
+	 *            the magnitude threshold
+	 * @param eigenvalueRatio
+	 *            the Eigenvalue threshold
+	 * @param numInterpolationIterations
+	 *            the number of interpolation iterations
+	 */
 	public InterpolatingOctaveExtremaFinder(float magnitudeThreshold, float eigenvalueRatio,
 			int numInterpolationIterations)
 	{
@@ -176,7 +204,7 @@ public class InterpolatingOctaveExtremaFinder extends BasicOctaveExtremaFinder {
 		final Matrix gM = new Matrix(
 				new double[][] {
 						{ (dog2[y][x] - dog0[y][x]) / 2.0f }, { (dog1[y + 1][x] - dog1[y - 1][x]) / 2.0f }, { (dog1[y][x + 1] - dog1[y][x - 1]) / 2.0f }
-		});
+				});
 
 		final Matrix offsetM = H.solve(gM.times(-1));
 

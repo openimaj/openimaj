@@ -33,8 +33,26 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-
-public class GradientScaleSpaceImageExtractorProperties<I extends Image<?,I> & SinglebandImageProcessor.Processable<Float,FImage,I>> extends ScaleSpaceImageExtractorProperties<I> {
+/**
+ * An extended {@link ScaleSpaceImageExtractorProperties} that holds edge
+ * responses in the form of gradient orientations and magnitudes.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <I>
+ *            Type of {@link Image} being processed by the extractor
+ */
+public class GradientScaleSpaceImageExtractorProperties<I extends Image<?, I> & SinglebandImageProcessor.Processable<Float, FImage, I>>
+		extends
+		ScaleSpaceImageExtractorProperties<I>
+{
+	/**
+	 * The gradient magnitude map
+	 */
 	public FImage magnitude;
+
+	/**
+	 * The gradient orientation map
+	 */
 	public FImage orientation;
 }

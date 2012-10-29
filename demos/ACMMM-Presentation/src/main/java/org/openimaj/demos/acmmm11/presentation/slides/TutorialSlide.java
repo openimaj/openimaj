@@ -55,53 +55,51 @@ import org.openimaj.video.capture.VideoCapture;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samagooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class TutorialSlide implements Slide {
-	private static final long serialVersionUID = 1L;
-	
 	private VideoCapture capture;
 	private List<VideoDisplay<MBFImage>> displays;
-	
+
 	@Override
 	public Component getComponent(int slideWidth, int slideHeight) throws IOException {
-		JPanel panel = new JPanel();
+		final JPanel panel = new JPanel();
 		panel.setOpaque(false);
-		panel.setLayout(new GridLayout(2,3));
-		
-		int videoWidth = 320;
-		int videoHeight = 240;
-		
+		panel.setLayout(new GridLayout(2, 3));
+
+		final int videoWidth = 320;
+		final int videoHeight = 240;
+
 		capture = CameraSelector.getPreferredVideoCapture(videoWidth, videoHeight);
 		displays = new ArrayList<VideoDisplay<MBFImage>>();
-		
-		TutorialPanel[] tutorials = new TutorialPanel[] {
-			new FaceTrackingTutorial(capture, videoWidth, videoHeight),
-			new SIFTFeatureTutorial(capture, videoWidth, videoHeight),
-			new SegmentationTutorial(capture, videoWidth, videoHeight),
-			new CannyVideoTutorial(capture, videoWidth, videoHeight),
-			new ShapeRenderingTutorial(capture, videoWidth, videoHeight),
-			new ColourHistogramGrid(capture, videoWidth, videoHeight)
+
+		final TutorialPanel[] tutorials = new TutorialPanel[] {
+				new FaceTrackingTutorial(capture, videoWidth, videoHeight),
+				new SIFTFeatureTutorial(capture, videoWidth, videoHeight),
+				new SegmentationTutorial(capture, videoWidth, videoHeight),
+				new CannyVideoTutorial(capture, videoWidth, videoHeight),
+				new ShapeRenderingTutorial(capture, videoWidth, videoHeight),
+				new ColourHistogramGrid(capture, videoWidth, videoHeight)
 		};
-		
-		for (TutorialPanel innerPanel : tutorials) {
+
+		for (final TutorialPanel innerPanel : tutorials) {
 			panel.add(innerPanel);
-			
-			VideoDisplay<MBFImage> vd = VideoDisplay.createOffscreenVideoDisplay( capture );
-			vd.addVideoListener( innerPanel );
-			displays.add( vd );
+
+			final VideoDisplay<MBFImage> vd = VideoDisplay.createOffscreenVideoDisplay(capture);
+			vd.addVideoListener(innerPanel);
+			displays.add(vd);
 		}
-		
+
 		panel.validate();
-		
+
 		return panel;
 	}
 
 	@Override
 	public void close() {
-		for (VideoDisplay<MBFImage> vd : displays)
+		for (final VideoDisplay<MBFImage> vd : displays)
 			vd.close();
-		displays.clear();		
+		displays.clear();
 		capture.stopCapture();
 	}
 }

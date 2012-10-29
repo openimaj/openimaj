@@ -47,6 +47,12 @@ import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.ByteCentroidsResult;
 
+/**
+ * Approximate/Exact K-Means over Hadoop
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class HadoopFastKMeans extends Configured implements Tool {
 	public static final String EXTRA_USAGE_INFO = "";
 	private HadoopFastKMeansOptions options = null;
@@ -86,6 +92,7 @@ public class HadoopFastKMeans extends Configured implements Tool {
 			SampleEqualityChecker.checkSampleEquality(selected + "/part-r-00000", options);
 			return 0;
 		}
+
 		// Select the intital centroids
 		final SequenceFileByteFeatureSelector sfbs = new SequenceFileByteFeatureSelector(selected, options.output
 				+ "/init", options);
@@ -140,10 +147,20 @@ public class HadoopFastKMeans extends Configured implements Tool {
 		IOUtils.writeBinary(fs.create(p), cluster); // Write the cluster
 	}
 
+	/**
+	 * Main method
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		ToolRunner.run(new HadoopFastKMeans(args), args);
 	}
 
+	/**
+	 * 
+	 * @param hfkmo
+	 */
 	public void setOptions(HadoopFastKMeansOptions hfkmo) {
 		this.options = hfkmo;
 	}

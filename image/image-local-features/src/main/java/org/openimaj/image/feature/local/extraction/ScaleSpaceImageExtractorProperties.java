@@ -33,7 +33,21 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-
-public class ScaleSpaceImageExtractorProperties<I extends Image<?,I> & SinglebandImageProcessor.Processable<Float,FImage,I>> extends LocalImageExtractorProperties<I> {
+/**
+ * An extended {@link LocalImageExtractorProperties} that additionally holds the
+ * interest point location scale.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <I>
+ *            Type of {@link Image} being processed by the extractor
+ */
+public class ScaleSpaceImageExtractorProperties<I extends Image<?, I> & SinglebandImageProcessor.Processable<Float, FImage, I>>
+		extends
+		LocalImageExtractorProperties<I>
+{
+	/**
+	 * The scale of the interest point
+	 */
 	public float scale;
 }

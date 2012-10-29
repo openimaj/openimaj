@@ -36,13 +36,21 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.affine.AffineParams;
-import org.openimaj.image.feature.local.affine.AffineSimulation;
+import org.openimaj.image.feature.local.affine.AffineSimulationExtractor;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.affine.BasicASIFT;
+import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
+import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.processing.transform.AffineParams;
 
+/**
+ * An {@link Engine} for ASIFT.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
 @Reference(
 		type = ReferenceType.Article,
 		author = { "Morel, Jean-Michel", "Yu, Guoshen" },
@@ -50,48 +58,114 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 		year = "2009",
 		journal = "SIAM J. Img. Sci.",
 		publisher = "Society for Industrial and Applied Mathematics")
-public class ASIFTEngine {
-	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint, FImage, Float> asift;
+public class ASIFTEngine implements Engine<AffineSimulationKeypoint, FImage> {
+	protected AffineSimulationExtractor<LocalFeatureList<Keypoint>, Keypoint, FImage, Float> asift;
 	protected int nTilts = 5;
 
+	/**
+	 * Construct using 5 tilt levels and no initial double-sizing. The default
+	 * parameters for the internal {@link DoGSIFTEngine} are used.
+	 */
 	public ASIFTEngine() {
 		this(false);
 	}
 
+	/**
+	 * Construct using 5 tilt levels with optional initial double-sizing. The
+	 * default parameters for the internal {@link DoGSIFTEngine} are used.
+	 * 
+	 * @param hires
+	 *            should the image should be double sized as a first step
+	 */
 	public ASIFTEngine(boolean hires) {
 		asift = new BasicASIFT(hires);
 	}
 
+	/**
+	 * Construct using given number of tilt levels with optional initial
+	 * double-sizing. The default parameters for the internal
+	 * {@link DoGSIFTEngine} are used.
+	 * 
+	 * @param hires
+	 *            should the image should be double sized as a first step
+	 * @param nTilts
+	 *            number of tilt levels
+	 */
 	public ASIFTEngine(boolean hires, int nTilts) {
 		asift = new BasicASIFT(hires);
 		this.nTilts = nTilts;
 	}
 
+	/**
+	 * Construct using 5 tilt levels and the given parameters for the internal
+	 * {@link DoGSIFTEngine}.
+	 * 
+	 * @param opts
+	 *            parameters for the internal {@link DoGSIFTEngine}.
+	 */
 	public ASIFTEngine(DoGSIFTEngineOptions<FImage> opts) {
 		asift = new BasicASIFT(opts);
 	}
 
+	/**
+	 * Construct using the given numbe of tilt levels and parameters for the
+	 * internal {@link DoGSIFTEngine}.
+	 * 
+	 * @param opts
+	 *            parameters for the internal {@link DoGSIFTEngine}.
+	 * @param nTilts
+	 *            number of tilt levels
+	 */
 	public ASIFTEngine(DoGSIFTEngineOptions<FImage> opts, int nTilts) {
 		asift = new BasicASIFT(opts);
 		this.nTilts = nTilts;
 	}
 
+	/**
+	 * Find the features as a list of {@link Keypoint} objects
+	 * 
+	 * @param image
+	 *            the image
+	 * @return the detected features
+	 */
 	public LocalFeatureList<Keypoint> findKeypoints(FImage image) {
-		asift.process(image, nTilts);
-		return asift.getKeypoints();
+		asift.detectFeatures(image, nTilts);
+		return asift.getFeatures();
 	}
 
-	public LocalFeatureList<Keypoint> findKeypoints(FImage image, AffineParams params) {
-		return asift.process(image, params);
+	/**
+	 * Find the features of a single simulation as a list of {@link Keypoint}
+	 * objects
+	 * 
+	 * @param image
+	 *            the image
+	 * @param params
+	 *            the simulation parameters
+	 * @return the detected features
+	 */
+	public LocalFeatureList<Keypoint> findKeypoints(FImage image,
+			AffineParams params)
+	{
+		return asift.detectFeatures(image, params);
 	}
 
-	public Map<AffineParams, LocalFeatureList<Keypoint>> findKeypointsMapped(FImage image) {
-		asift.process(image, nTilts);
+	/**
+	 * Find the features and return the resultant features in a per-simulation
+	 * format.
+	 * 
+	 * @param image
+	 *            the image
+	 * @return the features
+	 */
+	public Map<AffineParams, LocalFeatureList<Keypoint>> findKeypointsMapped(FImage image)
+	{
+		asift.detectFeatures(image, nTilts);
 		return asift.getKeypointsMap();
 	}
 
-	public LocalFeatureList<AffineSimulationKeypoint> findSimulationKeypoints(FImage image) {
-		asift.process(image, nTilts);
+	@Override
+	public LocalFeatureList<AffineSimulationKeypoint> findFeatures(FImage image) {
+		asift.detectFeatures(image, nTilts);
 		final Map<AffineParams, LocalFeatureList<Keypoint>> keypointMap = asift.getKeypointsMap();
 		final LocalFeatureList<AffineSimulationKeypoint> affineSimulationList = new MemoryLocalFeatureList<AffineSimulationKeypoint>();
 		for (final AffineParams params : asift.simulationOrder) {

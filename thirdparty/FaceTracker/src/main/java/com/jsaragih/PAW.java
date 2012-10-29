@@ -61,8 +61,10 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class PAW {
-	static { Tracker.init(); }
-	
+	static {
+		Tracker.init();
+	}
+
 	/** Number of pixels */
 	int _nPix;
 
@@ -103,9 +105,10 @@ public class PAW {
 	FImage _mapy;
 
 	boolean sameSide(double x0, double y0, double x1, double y1, double x2,
-			double y2, double x3, double y3) {
-		double x = (x3 - x2) * (y0 - y2) - (x0 - x2) * (y3 - y2);
-		double y = (x3 - x2) * (y1 - y2) - (x1 - x2) * (y3 - y2);
+			double y2, double x3, double y3)
+	{
+		final double x = (x3 - x2) * (y0 - y2) - (x0 - x2) * (y3 - y2);
+		final double y = (x3 - x2) * (y1 - y2) - (x1 - x2) * (y3 - y2);
 
 		if (x * y >= 0)
 			return true;
@@ -113,20 +116,20 @@ public class PAW {
 	}
 
 	int isWithinTri(double x, double y, int[][] tri, Matrix shape) {
-		int n = tri.length;
-		int p = shape.getRowDimension() / 2;
+		final int n = tri.length;
+		final int p = shape.getRowDimension() / 2;
 
 		for (int t = 0; t < n; t++) {
-			int i = tri[t][0];
-			int j = tri[t][1];
-			int k = tri[t][2];
+			final int i = tri[t][0];
+			final int j = tri[t][1];
+			final int k = tri[t][2];
 
-			double s11 = shape.get(i, 0);
-			double s21 = shape.get(j, 0);
-			double s31 = shape.get(k, 0);
-			double s12 = shape.get(i + p, 0);
-			double s22 = shape.get(j + p, 0);
-			double s32 = shape.get(k + p, 0);
+			final double s11 = shape.get(i, 0);
+			final double s21 = shape.get(j, 0);
+			final double s31 = shape.get(k, 0);
+			final double s12 = shape.get(i + p, 0);
+			final double s22 = shape.get(j + p, 0);
+			final double s32 = shape.get(k + p, 0);
 
 			if (sameSide(x, y, s11, s12, s21, s22, s31, s32)
 					&& sameSide(x, y, s21, s22, s11, s12, s31, s32)
@@ -140,12 +143,12 @@ public class PAW {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(fname));
-			Scanner sc = new Scanner(br);
+			final Scanner sc = new Scanner(br);
 			return read(sc, true);
 		} finally {
 			try {
 				br.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 	}
@@ -160,7 +163,7 @@ public class PAW {
 			try {
 				if (bw != null)
 					bw.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 	}
@@ -179,11 +182,11 @@ public class PAW {
 
 	static PAW read(Scanner s, boolean readType) {
 		if (readType) {
-			int type = s.nextInt();
+			final int type = s.nextInt();
 			assert (type == IO.Types.PAW.ordinal());
 		}
 
-		PAW paw = new PAW();
+		final PAW paw = new PAW();
 		paw._nPix = s.nextInt();
 		paw._xmin = s.nextDouble();
 		paw._ymin = s.nextDouble();
@@ -227,21 +230,21 @@ public class PAW {
 		_src = src.copy();
 		_tri = tri.clone();
 
-		int n = nPoints();
+		final int n = nPoints();
 
 		_alpha = new Matrix(nTri(), 3);
 		_beta = new Matrix(nTri(), 3);
 
 		for (int i = 0; i < nTri(); i++) {
-			int j = _tri[i][0];
-			int k = _tri[i][1];
-			int l = _tri[i][2];
+			final int j = _tri[i][0];
+			final int k = _tri[i][1];
+			final int l = _tri[i][2];
 
-			double c1 = _src.get(l + n, 0) - _src.get(j + n, 0);
-			double c2 = _src.get(l, 0) - _src.get(j, 0);
-			double c4 = _src.get(k + n, 0) - _src.get(j + n, 0);
-			double c3 = _src.get(k, 0) - _src.get(j, 0);
-			double c5 = c3 * c1 - c2 * c4;
+			final double c1 = _src.get(l + n, 0) - _src.get(j + n, 0);
+			final double c2 = _src.get(l, 0) - _src.get(j, 0);
+			final double c4 = _src.get(k + n, 0) - _src.get(j + n, 0);
+			final double c3 = _src.get(k, 0) - _src.get(j, 0);
+			final double c5 = c3 * c1 - c2 * c4;
 
 			_alpha.set(i, 0, (_src.get(j + n, 0) * c2 - _src.get(j, 0) * c1)
 					/ c5);
@@ -259,8 +262,8 @@ public class PAW {
 		ymax = ymin = _src.get(n, 0);
 
 		for (int i = 0; i < n; i++) {
-			double vx = _src.get(i, 0);
-			double vy = _src.get(i + n, 0);
+			final double vx = _src.get(i, 0);
+			final double vy = _src.get(i + n, 0);
 
 			xmax = Math.max(xmax, vx);
 			ymax = Math.max(ymax, vy);
@@ -268,18 +271,17 @@ public class PAW {
 			ymin = Math.min(ymin, vy);
 		}
 
-		int w = (int) (xmax - xmin + 1.0);
-		int h = (int) (ymax - ymin + 1.0);
+		final int w = (int) (xmax - xmin + 1.0);
+		final int h = (int) (ymax - ymin + 1.0);
 		_mask = new FImage(w, h);
 		_tridx = new int[h][w];
 
-		for (int i = 0, _nPix = 0; i < h; i++) {
+		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if ((_tridx[i][j] = isWithinTri(j + xmin, i + ymin, tri, _src)) == -1) {
 					_mask.pixels[i][j] = 0;
 				} else {
 					_mask.pixels[i][j] = 0;
-					_nPix++;
 				}
 			}
 		}
@@ -324,23 +326,23 @@ public class PAW {
 	}
 
 	void calcCoeff() {
-		int p = nPoints();
+		final int p = nPoints();
 
 		for (int l = 0; l < nTri(); l++) {
-			int i = _tri[l][0];
-			int j = _tri[l][1];
-			int k = _tri[l][2];
+			final int i = _tri[l][0];
+			final int j = _tri[l][1];
+			final int k = _tri[l][2];
 
-			double c1 = _dst.get(i, 0);
-			double c2 = _dst.get(j, 0) - c1;
-			double c3 = _dst.get(k, 0) - c1;
-			double c4 = _dst.get(i + p, 0);
-			double c5 = _dst.get(j + p, 0) - c4;
-			double c6 = _dst.get(k + p, 0) - c4;
+			final double c1 = _dst.get(i, 0);
+			final double c2 = _dst.get(j, 0) - c1;
+			final double c3 = _dst.get(k, 0) - c1;
+			final double c4 = _dst.get(i + p, 0);
+			final double c5 = _dst.get(j + p, 0) - c4;
+			final double c6 = _dst.get(k + p, 0) - c4;
 
-			double[] coeff = _coeff.getArray()[l];
-			double[] alpha = _alpha.getArray()[l];
-			double[] beta = _beta.getArray()[l];
+			final double[] coeff = _coeff.getArray()[l];
+			final double[] alpha = _alpha.getArray()[l];
+			final double[] beta = _beta.getArray()[l];
 
 			coeff[0] = c1 + c2 * alpha[0] + c3 * beta[0];
 			coeff[1] = c2 * alpha[1] + c3 * beta[1];
@@ -366,16 +368,16 @@ public class PAW {
 		final float[][] mp = _mask.pixels;
 
 		for (int y = 0; y < _mask.height; y++) {
-			double yi = y + _ymin;
+			final double yi = y + _ymin;
 
 			for (int x = 0; x < _mask.width; x++) {
-				double xi = x + _xmin;
+				final double xi = x + _xmin;
 
 				if (mp[y][x] == 0) {
 					xp[y][x] = -1;
 					yp[y][x] = -1;
 				} else {
-					int j = _tridx[y][x];
+					final int j = _tridx[y][x];
 
 					if (j != k) {
 						a = _coeff.getArray()[j];

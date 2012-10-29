@@ -39,10 +39,13 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 
 /**
- * An orientated feature with at a location defined by an {@link InterestPointData}.
+ * An orientated feature with at a location defined by an
+ * {@link InterestPointData}.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <T> The type of {@link InterestPointData}
- *
+ * 
+ * @param <T>
+ *            The type of {@link InterestPointData}
  */
 public abstract class InterestPointKeypoint<T extends InterestPointData> extends Keypoint {
 	/**
@@ -53,29 +56,31 @@ public abstract class InterestPointKeypoint<T extends InterestPointData> extends
 	 * The feature location
 	 */
 	public T location;
-	
-	
-	public InterestPointKeypoint(){}
-	
-	public InterestPointKeypoint(int length){
+
+	public InterestPointKeypoint() {
+	}
+
+	public InterestPointKeypoint(int length) {
 		super(length);
 	}
-	
+
 	/**
-	 * @param featureVector the feature vector containing orientation and the byte[]
-	 * @param point the location and shape of the interest point
+	 * @param featureVector
+	 *            the feature vector containing orientation and the byte[]
+	 * @param point
+	 *            the location and shape of the interest point
 	 */
 	public InterestPointKeypoint(OrientedFeatureVector featureVector, T point) {
 		this.ivec = featureVector.values.clone();
 		this.location = point;
 		this.x = this.location.x;
 		this.y = this.location.y;
-		this.scale = (float) this.location.scale;
+		this.scale = this.location.scale;
 		this.ori = featureVector.orientation;
 	}
 
 	public abstract T createEmptyLocation();
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		super.readBinary(in);
@@ -104,7 +109,7 @@ public abstract class InterestPointKeypoint<T extends InterestPointData> extends
 	public void writeBinary(DataOutput out) throws IOException {
 		super.writeBinary(out);
 		this.location.writeBinary(out);
-		
+
 	}
 
 	@Override

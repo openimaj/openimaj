@@ -29,6 +29,10 @@
  */
 package org.openimaj.feature.keypoints;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,15 +55,12 @@ import org.openimaj.image.feature.local.engine.asift.ASIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.io.IOUtils;
 
-import static org.junit.Assert.*;
-
-
 /**
  * Test a list of keypoints
- *  
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class KeypointListTest {
 	/**
@@ -67,49 +68,51 @@ public class KeypointListTest {
 	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
+
 	DoGSIFTEngine engine;
 	FImage im;
 	LocalFeatureList<Keypoint> keys;
-	
+
 	/**
 	 * Load a single image and find its keypoints
 	 * 
 	 * @throws IOException
 	 */
-	@Before public void setup() throws IOException {
+	@Before
+	public void setup() throws IOException {
 		engine = new DoGSIFTEngine();
 		im = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
 		keys = engine.findFeatures(im);
 	}
-	
-	
+
 	/**
-	 * Test the ASIFT keypoint engine, write the keypoints and load them, are they identical
+	 * Test the ASIFT keypoint engine, write the keypoints and load them, are
+	 * they identical
 	 * 
 	 * @throws IOException
 	 */
 	@Test
-	public void testAffineSimulationKeypointList() throws IOException{
-		ASIFTEngine engine = new ASIFTEngine();
-		File binary = folder.newFile("kpt-testAffineSimulationKeypointList.tmp");
-		
-		LocalFeatureList<AffineSimulationKeypoint> allKeys = engine.findSimulationKeypoints(im);
+	public void testAffineSimulationKeypointList() throws IOException {
+		final ASIFTEngine engine = new ASIFTEngine();
+		final File binary = folder.newFile("kpt-testAffineSimulationKeypointList.tmp");
+
+		final LocalFeatureList<AffineSimulationKeypoint> allKeys = engine.findFeatures(im);
 		IOUtils.writeBinary(binary, allKeys);
-		
-		LocalFeatureList<AffineSimulationKeypoint> fklA = FileLocalFeatureList.read(binary, AffineSimulationKeypoint.class);
-		
-		for(int i = 0; i < fklA.size(); i ++){
-			assertTrue(Arrays.equals(fklA.get(i).ivec,allKeys.get(i).ivec));
-			AffineSimulationKeypoint first = fklA.get(i);
-			AffineSimulationKeypoint second = allKeys.get(i);
-			assertTrue(Math.abs(first.x-second.x) < 0.01);
-			assertTrue(Math.abs(first.y-second.y) < 0.01);
-			assertTrue(Math.abs(first.affineParams.theta-second.affineParams.theta) < 0.01);
-			assertTrue(Math.abs(first.affineParams.tilt-second.affineParams.tilt) < 0.01);
+
+		final LocalFeatureList<AffineSimulationKeypoint> fklA = FileLocalFeatureList.read(binary,
+				AffineSimulationKeypoint.class);
+
+		for (int i = 0; i < fklA.size(); i++) {
+			assertTrue(Arrays.equals(fklA.get(i).ivec, allKeys.get(i).ivec));
+			final AffineSimulationKeypoint first = fklA.get(i);
+			final AffineSimulationKeypoint second = allKeys.get(i);
+			assertTrue(Math.abs(first.x - second.x) < 0.01);
+			assertTrue(Math.abs(first.y - second.y) < 0.01);
+			assertTrue(Math.abs(first.affineParams.theta - second.affineParams.theta) < 0.01);
+			assertTrue(Math.abs(first.affineParams.tilt - second.affineParams.tilt) < 0.01);
 		}
 	}
-	
+
 	/**
 	 * ead and write the keypoints from an image into binary and ascii
 	 * 
@@ -117,55 +120,56 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void io_test() throws IOException {
-		File ascii = folder.newFile("kpt.ascii");
+		final File ascii = folder.newFile("kpt.ascii");
 		IOUtils.writeASCII(ascii, keys);
-		
-		File binary = folder.newFile("kpt.bin");
+
+		final File binary = folder.newFile("kpt.bin");
 		IOUtils.writeBinary(binary, keys);
-		
-		LocalFeatureList<Keypoint> fklA = FileLocalFeatureList.read(ascii, Keypoint.class);
-		
-		LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
-		File ascii2 = folder.newFile("kpt.tmp");
+
+		final LocalFeatureList<Keypoint> fklA = FileLocalFeatureList.read(ascii, Keypoint.class);
+
+		final LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
+		final File ascii2 = folder.newFile("kpt.tmp");
 		IOUtils.writeASCII(ascii2, fklB);
-		
-		LocalFeatureList<Keypoint> fklBA = FileLocalFeatureList.read(ascii, Keypoint.class);
-		
+
+		final LocalFeatureList<Keypoint> fklBA = FileLocalFeatureList.read(ascii, Keypoint.class);
+
 		assertEquals(fklA, fklBA);
-		
+
 		ascii.delete();
 		ascii2.delete();
 		binary.delete();
 	}
-	
+
 	/**
 	 * See if sublists work (as well as saving sublists)
+	 * 
 	 * @throws IOException
 	 */
 	@Test
 	public void subListTest() throws IOException {
-		File binary = folder.newFile("kpt-subListTest.tmp");
+		final File binary = folder.newFile("kpt-subListTest.tmp");
 		IOUtils.writeBinary(binary, keys);
-		
-		LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
 
-		List<Keypoint> sl1 = keys.subList(2, 4);
-		List<Keypoint> sl2 = fklB.subList(2, 4);
-		
+		final LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
+
+		final List<Keypoint> sl1 = keys.subList(2, 4);
+		final List<Keypoint> sl2 = fklB.subList(2, 4);
+
 		assertArrayEquals(sl1.toArray(), sl2.toArray());
-		
+
 		assertEquals(sl1, sl2);
 		assertArrayEquals(sl1.toArray(), sl2.toArray());
-		
-		List<Keypoint> sl3 = sl1.subList(0, 1);
-		List<Keypoint> sl4 = sl2.subList(0, 1);
-		
+
+		final List<Keypoint> sl3 = sl1.subList(0, 1);
+		final List<Keypoint> sl4 = sl2.subList(0, 1);
+
 		assertEquals(sl3, sl4);
 		assertArrayEquals(sl1.subList(1, 2).toArray(), sl2.subList(1, 2).toArray());
-		
+
 		binary.delete();
 	}
-	
+
 	/**
 	 * Another ublist test
 	 * 
@@ -173,28 +177,28 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void subListTest2() throws IOException {
-		File ascii = folder.newFile("kpt-subListTest2.tmp");
+		final File ascii = folder.newFile("kpt-subListTest2.tmp");
 		IOUtils.writeASCII(ascii, keys);
-		
-		LocalFeatureList<Keypoint> kl = MemoryLocalFeatureList.read(ascii, Keypoint.class);
-		
-		LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(ascii, Keypoint.class);
 
-		List<Keypoint> sl1 = kl.subList(2, 4);
-		List<Keypoint> sl2 = fklB.subList(2, 4);
-		
+		final LocalFeatureList<Keypoint> kl = MemoryLocalFeatureList.read(ascii, Keypoint.class);
+
+		final LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(ascii, Keypoint.class);
+
+		final List<Keypoint> sl1 = kl.subList(2, 4);
+		final List<Keypoint> sl2 = fklB.subList(2, 4);
+
 		assertEquals(sl1, sl2);
 		assertArrayEquals(sl1.toArray(), sl2.toArray());
-		
-		List<Keypoint> sl3 = sl1.subList(0, 1);
-		List<Keypoint> sl4 = sl2.subList(0, 1);
-		
+
+		final List<Keypoint> sl3 = sl1.subList(0, 1);
+		final List<Keypoint> sl4 = sl2.subList(0, 1);
+
 		assertEquals(sl3, sl4);
 		assertArrayEquals(sl1.subList(1, 2).toArray(), sl2.subList(1, 2).toArray());
-		
+
 		ascii.delete();
 	}
-	
+
 	/**
 	 * Selecting random keypoints and random sublists
 	 * 
@@ -202,38 +206,38 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void randomSubListTest() throws IOException {
-		File binary = folder.newFile("kpt-randomSubListTest.bin");
+		final File binary = folder.newFile("kpt-randomSubListTest.bin");
 		IOUtils.writeBinary(binary, keys);
-		
-		File ascii = folder.newFile("kpt-randomSubListTest2.ascii");
-		IOUtils.writeASCII(ascii, keys);
-		
-		LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
-		LocalFeatureList<Keypoint> fklA = FileLocalFeatureList.read(ascii, Keypoint.class);
 
-		List<Keypoint> sl1 = keys.randomSubList(3);
-		List<Keypoint> sl2 = fklB.randomSubList(3);
-		List<Keypoint> sl3 = fklA.randomSubList(3);
-		
+		final File ascii = folder.newFile("kpt-randomSubListTest2.ascii");
+		IOUtils.writeASCII(ascii, keys);
+
+		final LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
+		final LocalFeatureList<Keypoint> fklA = FileLocalFeatureList.read(ascii, Keypoint.class);
+
+		final List<Keypoint> sl1 = keys.randomSubList(3);
+		final List<Keypoint> sl2 = fklB.randomSubList(3);
+		final List<Keypoint> sl3 = fklA.randomSubList(3);
+
 		assertEquals(sl1.size(), 3);
 		assertEquals(sl2.size(), 3);
 		assertEquals(sl3.size(), 3);
-		
+
 		assertEquals(sl1.toArray().length, 3);
 		assertEquals(sl2.toArray().length, 3);
 		assertEquals(sl3.toArray().length, 3);
-		
+
 		assertEquals(sl1.subList(0, 1).size(), 1);
 		assertEquals(sl2.subList(0, 1).size(), 1);
 		assertEquals(sl3.subList(0, 1).size(), 1);
-		
-//		List<Keypoint> allRandom = fklB.randomSubList(fklB.size());
-//		assertEquals(allRandom.size(),fklB.size());
-		
+
+		// List<Keypoint> allRandom = fklB.randomSubList(fklB.size());
+		// assertEquals(allRandom.size(),fklB.size());
+
 		binary.delete();
 		ascii.delete();
 	}
-	
+
 	/**
 	 * Allow the streaming of keypoints from a file
 	 * 
@@ -241,26 +245,27 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void streamTest() throws IOException {
-		File binary = folder.newFile("kpt.tmp");
+		final File binary = folder.newFile("kpt.tmp");
 		IOUtils.writeBinary(binary, keys);
-		
+
 		FileInputStream fis = new FileInputStream(binary);
 		LocalFeatureList<Keypoint> kl = StreamLocalFeatureList.read(fis, Keypoint.class);
-		
+
 		assertEquals(keys.size(), kl.size());
 		assertEquals(keys, kl);
-		
+
 		binary.delete();
-		
-		File ascii = folder.newFile("kpt2.tmp");
+
+		final File ascii = folder.newFile("kpt2.tmp");
 		fis = new FileInputStream(ascii);
 		IOUtils.writeASCII(ascii, keys);
 		kl = StreamLocalFeatureList.read(fis, Keypoint.class);
-//		MemoryLocalFeatureList<Keypoint> memKL = new MemoryLocalFeatureList<Keypoint>(kl);
-		MemoryLocalFeatureList<Keypoint> memKL2 = MemoryLocalFeatureList.read(ascii, Keypoint.class);
+		// MemoryLocalFeatureList<Keypoint> memKL = new
+		// MemoryLocalFeatureList<Keypoint>(kl);
+		final MemoryLocalFeatureList<Keypoint> memKL2 = MemoryLocalFeatureList.read(ascii, Keypoint.class);
 		assertEquals(memKL2.size(), kl.size());
 		assertEquals(memKL2, kl);
-		
+
 		ascii.delete();
 	}
 }

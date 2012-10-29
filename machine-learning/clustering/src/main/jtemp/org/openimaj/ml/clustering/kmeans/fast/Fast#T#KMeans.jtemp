@@ -99,7 +99,6 @@ public class Fast#T#KMeans implements SpatialClusterer<#T#CentroidsResult, #t#[]
 		private final #T#NearestNeighbours nno;
 		private final #r# [][] centroids_accum;
 		private final int [] counts;
-		private static int totalComplete = 0;
 
 		public AssignCentroidsJob(DataSource<#t#[]> ds, int startRow, int stopRow, #T#NearestNeighbours nno, #r# [][] centroids_accum, int [] counts) {
 			this.ds = ds; 
@@ -131,7 +130,6 @@ public class Fast#T#KMeans implements SpatialClusterer<#T#CentroidsResult, #t#[]
 						}
 						counts[k] += 1;
 					}
-					totalComplete += 1;
 				}
 			} catch(Exception e) {
 				e.printStackTrace();

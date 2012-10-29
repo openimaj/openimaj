@@ -50,13 +50,17 @@ import Jama.Matrix;
 import cern.jet.random.Normal;
 
 /**
+ * A local interest point with a location, scale, orientation and associated
+ * feature.
  * 
  * @author Jonathon Hare
- * 
  */
 public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<ByteFV>, VariableLength, Cloneable {
 	static final long serialVersionUID = 1234554345;
 
+	/**
+	 * Default length of standard SIFT features.
+	 */
 	private final static int DEFAULT_LENGTH = 128;
 
 	/**
@@ -84,16 +88,39 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 	 */
 	public float y;
 
+	/**
+	 * Construct with the default feature vector length for SIFT (128).
+	 */
 	public Keypoint() {
 		this.ivec = new byte[DEFAULT_LENGTH];
 	}
 
-	public Keypoint(int len) {
-		if (len < 0)
-			len = DEFAULT_LENGTH;
-		this.ivec = new byte[len];
+	/**
+	 * Construct with the given feature vector length.
+	 * 
+	 * @param length
+	 *            the length of the feature vector
+	 */
+	public Keypoint(int length) {
+		if (length < 0)
+			length = DEFAULT_LENGTH;
+		this.ivec = new byte[length];
 	}
 
+	/**
+	 * Construct with the given parameters.
+	 * 
+	 * @param x
+	 *            the x-ordinate of the keypoint
+	 * @param y
+	 *            the y-ordinate of the keypoint
+	 * @param ori
+	 *            the orientation of the keypoint
+	 * @param scale
+	 *            the scale of the keypoint
+	 * @param ivec
+	 *            the feature vector of the keypoint
+	 */
 	public Keypoint(float x, float y, float ori, float scale, byte[] ivec) {
 		this.x = x;
 		this.y = y;
@@ -102,6 +129,12 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 		this.ivec = ivec;
 	}
 
+	/**
+	 * Construct by copying from another {@link Keypoint}
+	 * 
+	 * @param k
+	 *            the {@link Keypoint} to copy from
+	 */
 	public Keypoint(Keypoint k) {
 		this(k.x, k.y, k.ori, k.scale, Arrays.copyOf(k.ivec, k.ivec.length));
 	}
@@ -157,6 +190,14 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 		return ("Keypoint(" + this.x + ", " + this.y + ", " + this.scale + ", " + this.ori + ")");
 	}
 
+	/**
+	 * Test whether the location of this {@link Keypoint} and another
+	 * {@link Keypoint} is the same.
+	 * 
+	 * @param obj
+	 *            the other keypoint
+	 * @return true if the locations match; false otherwise.
+	 */
 	public boolean locationEquals(Object obj) {
 		if (obj instanceof Keypoint) {
 			final Keypoint kobj = (Keypoint) obj;
@@ -275,6 +316,12 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 		return new KeypointLocation(x, y, ori, scale);
 	}
 
+	/**
+	 * Set the location of this {@link Keypoint}
+	 * 
+	 * @param location
+	 *            the location
+	 */
 	public void setLocation(KeypointLocation location) {
 		x = location.x;
 		y = location.y;
@@ -282,6 +329,18 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 		ori = location.orientation;
 	}
 
+	/**
+	 * Create a list of {@link Keypoint}s from the input list, but with the
+	 * positions offset by the given amount.
+	 * 
+	 * @param keypoints
+	 *            the input list
+	 * @param x
+	 *            the x offset
+	 * @param y
+	 *            the y offset
+	 * @return the new keypoints
+	 */
 	public static List<Keypoint> getRelativeKeypoints(List<Keypoint> keypoints, float x, float y) {
 		final List<Keypoint> shifted = new ArrayList<Keypoint>();
 		for (final Keypoint old : keypoints) {
@@ -296,6 +355,18 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 		return shifted;
 	}
 
+	/**
+	 * Add Gaussian noise the feature vectors of some features. The original
+	 * features are untouched; the returned list contains a copy.
+	 * 
+	 * @param siftFeatures
+	 *            the input features
+	 * @param mean
+	 *            the mean of the noise
+	 * @param sigma
+	 *            the standard deviation of the noise
+	 * @return the noisy keypoints
+	 */
 	public static List<Keypoint> addGaussianNoise(List<Keypoint> siftFeatures, double mean, double sigma) {
 		final List<Keypoint> toRet = new ArrayList<Keypoint>();
 		for (final Keypoint keypoint : siftFeatures) {
@@ -316,6 +387,17 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 		return toRet;
 	}
 
+	/**
+	 * Scale a list of keypoints by the given amount. This scales the location
+	 * and scale of each keypoint. The original features are untouched; the
+	 * returned list contains a copy.
+	 * 
+	 * @param keypoints
+	 *            the input features.
+	 * @param toScale
+	 *            the scale factor
+	 * @return the scaled features.
+	 */
 	public static List<Keypoint> getScaledKeypoints(List<Keypoint> keypoints, int toScale) {
 		final List<Keypoint> shifted = new ArrayList<Keypoint>();
 		for (final Keypoint old : keypoints) {

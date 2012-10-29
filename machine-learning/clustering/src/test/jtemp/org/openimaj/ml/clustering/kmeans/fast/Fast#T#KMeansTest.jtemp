@@ -51,8 +51,6 @@ import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 public class Fast#T#KMeansTest {
 
 	class KnownClusterDataSource {
-		
-		private static final long serialVersionUID = 1L;
 		private #t#[][] allData;
 		private int dims;
 

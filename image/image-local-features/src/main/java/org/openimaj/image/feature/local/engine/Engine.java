@@ -33,6 +33,25 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.Image;
 
+/**
+ * Interface describing classes capable of finding and extracting local features
+ * from an image.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ * @param <FEATURE>
+ *            Type of feature being extracted
+ * @param <IMAGE>
+ *            Type of image
+ */
 public interface Engine<FEATURE extends LocalFeature<?>, IMAGE extends Image<?, IMAGE>> {
+	/**
+	 * Find local features in the given image and return them.
+	 * 
+	 * @param image
+	 *            the image
+	 * @return the features.
+	 */
 	public abstract LocalFeatureList<FEATURE> findFeatures(IMAGE image);
 }

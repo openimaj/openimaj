@@ -39,71 +39,74 @@ import org.openimaj.image.analysis.watershed.event.ComponentStackMergeListener;
 import org.openimaj.image.analysis.watershed.feature.ComponentFeature;
 import org.openimaj.image.pixel.IntValuePixel;
 
-
 /**
- * 	Maximally Stable Extremal Region watershed algorithm, implemented
- * 	as described in the Microsoft paper of Nister and Stewenius.
+ * Maximally Stable Extremal Region watershed algorithm, implemented as
+ * described in the Microsoft paper of Nister and Stewenius.
  * 
- *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *	
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
  */
 public class WatershedProcessorAlgorithm
 {
 	/**
-	 *	A sorted heap of pixels. When {@link #pop()} is called
-	 *	the lowest value pixel is returned first.
-	 *
-	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *	@author Jonathon Hare (dpd@ecs.soton.ac.uk)
-	 *	
+	 * A sorted heap of pixels. When {@link #pop()} is called the lowest value
+	 * pixel is returned first.
+	 * 
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (dpd@ecs.soton.ac.uk)
+	 * 
 	 */
 	private class BoundaryHeap
 	{
-		private static final long serialVersionUID = 1L;
 		private BitSet availablePixels;
 		private ArrayDeque<IntValuePixel>[] stacks;
 
 		/**
-		 * Construct a boundary heap object with a given number
-		 * of levels (i.e. max value of a pixel).
-		 * @param sz number of levels.
+		 * Construct a boundary heap object with a given number of levels (i.e.
+		 * max value of a pixel).
+		 * 
+		 * @param sz
+		 *            number of levels.
 		 */
 		@SuppressWarnings("unchecked")
 		public BoundaryHeap(int sz) {
 			availablePixels = new BitSet(sz);
 			stacks = new ArrayDeque[sz];
 
-			for (int i=0; i<sz; i++) 
+			for (int i = 0; i < sz; i++)
 				stacks[i] = new ArrayDeque<IntValuePixel>();
 		}
 
 		/**
-		 * 	Pushes the pixel onto the heap.
-		 *  @param p The {@link IntValuePixel} to push onto the heap.
+		 * Pushes the pixel onto the heap.
+		 * 
+		 * @param p
+		 *            The {@link IntValuePixel} to push onto the heap.
 		 */
-		public void push( IntValuePixel p )
+		public void push(IntValuePixel p)
 		{
-			ArrayDeque<IntValuePixel> l = stacks[ p.value ];
-			l.push( p );
-			availablePixels.set( p.value );
+			final ArrayDeque<IntValuePixel> l = stacks[p.value];
+			l.push(p);
+			availablePixels.set(p.value);
 		}
 
 		/**
-		 * 	Returns the lowest available pixel off the heap
-		 * 	(removing it from the heap). Pixels are returned in
-		 * 	sorted order (lowest value first). The method will
-		 * 	return null if the heap is empty.
-		 *  @return The lowest value available pixel or NULL
-		 *  	if no pixels are available.
+		 * Returns the lowest available pixel off the heap (removing it from the
+		 * heap). Pixels are returned in sorted order (lowest value first). The
+		 * method will return null if the heap is empty.
+		 * 
+		 * @return The lowest value available pixel or NULL if no pixels are
+		 *         available.
 		 */
 		public IntValuePixel pop()
-		{			
-			int l = availablePixels.nextSetBit(0);
-			if (l == -1) return null; // Null means no available pixels (empty heap)
+		{
+			final int l = availablePixels.nextSetBit(0);
+			if (l == -1)
+				return null; // Null means no available pixels (empty heap)
 
-			IntValuePixel xx = this.stacks[l].pop();
-			if( this.stacks[l].size() == 0 )
+			final IntValuePixel xx = this.stacks[l].pop();
+			if (this.stacks[l].size() == 0)
 				availablePixels.set(l, false);
 			return xx; // lowest and newest pixel
 		}
@@ -127,46 +130,61 @@ public class WatershedProcessorAlgorithm
 	/** The image being processed */
 	private int[][] greyscaleImage = null;
 
-	/** The listeners for this watershed process. They will be called as regions are detected */
+	/**
+	 * The listeners for this watershed process. They will be called as regions
+	 * are detected
+	 */
 	private List<ComponentStackMergeListener> csmListeners = null;
 
 	private Class<? extends ComponentFeature>[] featureClasses;
 
 	/**
 	 * Default constructor
-	 * @param greyscaleImage the image as a 2d array of integer values 
-	 * @param startPixel The pixel to start the process at
-	 * @param featureClasses the features that should be created for each detected component
+	 * 
+	 * @param greyscaleImage
+	 *            the image as a 2d array of integer values
+	 * @param startPixel
+	 *            The pixel to start the process at
+	 * @param featureClasses
+	 *            the features that should be created for each detected
+	 *            component
 	 */
-	public WatershedProcessorAlgorithm( int [][] greyscaleImage, IntValuePixel startPixel, Class<? extends ComponentFeature>... featureClasses )
+	public WatershedProcessorAlgorithm(int[][] greyscaleImage, IntValuePixel startPixel,
+			Class<? extends ComponentFeature>... featureClasses)
 	{
-		this.greyscaleImage = greyscaleImage;		
+		this.greyscaleImage = greyscaleImage;
 		this.startPixel = startPixel;
 		this.csmListeners = new ArrayList<ComponentStackMergeListener>();
-		
+
 		this.featureClasses = featureClasses;
 	}
 
 	/**
 	 * Default constructor
-	 * @param bGreyscaleImage the image to apply the watershed transform too 
-	 * @param startPixel The pixel to start the process at
-	 * @param featureClasses the features that should be created for each detected component
+	 * 
+	 * @param bGreyscaleImage
+	 *            the image to apply the watershed transform too
+	 * @param startPixel
+	 *            The pixel to start the process at
+	 * @param featureClasses
+	 *            the features that should be created for each detected
+	 *            component
 	 */
-	public WatershedProcessorAlgorithm( FImage bGreyscaleImage, IntValuePixel startPixel, Class<? extends ComponentFeature>... featureClasses )
+	public WatershedProcessorAlgorithm(FImage bGreyscaleImage, IntValuePixel startPixel,
+			Class<? extends ComponentFeature>... featureClasses)
 	{
 		this(new int[bGreyscaleImage.getHeight()][bGreyscaleImage.getWidth()], startPixel, featureClasses);
 
-		for (int j=0; j<bGreyscaleImage.getHeight(); j++) {
-			for (int i=0; i<bGreyscaleImage.getWidth(); i++) {
+		for (int j = 0; j < bGreyscaleImage.getHeight(); j++) {
+			for (int i = 0; i < bGreyscaleImage.getWidth(); i++) {
 				greyscaleImage[j][i] = (int) (bGreyscaleImage.pixels[j][i] * 255);
 			}
 		}
 	}
 
 	/**
-	 * 	Start the detection process by pouring on water at the
-	 * 	pour point.  (part 1 and 2)
+	 * Start the detection process by pouring on water at the pour point. (part
+	 * 1 and 2)
 	 * 
 	 */
 	public void startPour()
@@ -179,7 +197,7 @@ public class WatershedProcessorAlgorithm
 		this.currentPixel.value = greyscaleImage[this.startPixel.y][this.startPixel.x];
 
 		// Create the mask the shows where the water has access to
-		this.accessibleMask = new BitSet( this.greyscaleImage.length * this.greyscaleImage[0].length );
+		this.accessibleMask = new BitSet(this.greyscaleImage.length * this.greyscaleImage[0].length);
 
 		// Create the stack of components
 		this.componentStack = new ArrayDeque<Component>();
@@ -189,8 +207,8 @@ public class WatershedProcessorAlgorithm
 
 		// Create a dummy component with a greylevel higher than
 		// any allowed and push it onto the stack
-		Component dummyComponent = new Component( new IntValuePixel(-1,-1,Integer.MAX_VALUE), featureClasses );
-		this.componentStack.push( dummyComponent );
+		final Component dummyComponent = new Component(new IntValuePixel(-1, -1, Integer.MAX_VALUE), featureClasses);
+		this.componentStack.push(dummyComponent);
 
 		// Continue the processing at the first pixel
 		this.processNeighbours();
@@ -199,48 +217,50 @@ public class WatershedProcessorAlgorithm
 	}
 
 	/**
-	 *	Process the current pixel's neighbours (part 4, 5, 6 and 7).
+	 * Process the current pixel's neighbours (part 4, 5, 6 and 7).
 	 */
 	private void processNeighbours()
-	{	
+	{
 		// Push an empty component with the current level
 		// onto the component stack
-		Component currentComponent = new Component( this.currentPixel, featureClasses);
-		componentStack.push( currentComponent );
+		Component currentComponent = new Component(this.currentPixel, featureClasses);
+		componentStack.push(currentComponent);
 
 		// System.err.println( "Processing neighbours of "+currentPixel );
 
-		boolean processNeighbours = true;
-		while( processNeighbours )
+		final boolean processNeighbours = true;
+		while (processNeighbours)
 		{
 			boolean toContinue = false;
 
-			// Get all the neighbours of the current pixel 
-			IntValuePixel[] neighbours = getNeighbourPixels_4( this.currentPixel );
+			// Get all the neighbours of the current pixel
+			final IntValuePixel[] neighbours = getNeighbourPixels_4(this.currentPixel);
 			// System.err.println("Neighbours: "+outputArray( neighbours ) );
 
 			// For each of the neighbours, check if the the neighbour
 			// is already accessible.
-			for( IntValuePixel neighbour : neighbours )
+			for (final IntValuePixel neighbour : neighbours)
 			{
 				if (neighbour == null)
-					break; //neighbours array is packed, so nulls only occur at the end
-				
-				int idx = neighbour.x + neighbour.y * this.greyscaleImage[0].length;
-				
+					break; // neighbours array is packed, so nulls only occur at
+							// the end
+
+				final int idx = neighbour.x + neighbour.y * this.greyscaleImage[0].length;
+
 				// If the neighbour is not accessible...
-				if( !this.accessibleMask.get( idx ) )
+				if (!this.accessibleMask.get(idx))
 				{
 					// Mark it as accessible...
-					this.accessibleMask.set( idx );
+					this.accessibleMask.set(idx);
 					// System.err.println("Making "+neighbour+" accessible" );
 
 					// If its greylevel is not lower than the current one...
-					if ( neighbour.value >= currentPixel.value )
+					if (neighbour.value >= currentPixel.value)
 					{
 						// Push it onto the heap of boundary pixels
-						this.boundaryHeap.push( neighbour );
-						// System.err.println("1. Push "+neighbour+", = "+boundaryHeap );
+						this.boundaryHeap.push(neighbour);
+						// System.err.println("1. Push "+neighbour+", = "+boundaryHeap
+						// );
 					}
 					// If, on the other hand, the greylevel is lower
 					// than the current one, enter the current pixel
@@ -250,38 +270,42 @@ public class WatershedProcessorAlgorithm
 					// (this is the water pouring into the local minimum)
 					else
 					{
-						this.boundaryHeap.push( currentPixel );
-						// System.err.println("2. Push "+currentPixel+", = "+boundaryHeap );
+						this.boundaryHeap.push(currentPixel);
+						// System.err.println("2. Push "+currentPixel+", = "+boundaryHeap
+						// );
 						this.currentPixel = neighbour;
-						currentComponent = new Component( this.currentPixel, featureClasses );
-						componentStack.push( currentComponent );
+						currentComponent = new Component(this.currentPixel, featureClasses);
+						componentStack.push(currentComponent);
 						toContinue = true;
 						break;
 					}
 				}
 			}
 
-			if( toContinue ) 
+			if (toContinue)
 				continue;
 
-			// Accumulate the current pixel to the component at the top of the stack. (part 5)
-			this.componentStack.peek().accumulate( this.currentPixel );
-			// System.err.println("Added "+currentPixel+" to top component "+componentStack.peek() );
+			// Accumulate the current pixel to the component at the top of the
+			// stack. (part 5)
+			this.componentStack.peek().accumulate(this.currentPixel);
+			// System.err.println("Added "+currentPixel+" to top component "+componentStack.peek()
+			// );
 
 			// Pop the heap of boundary pixels. (part 6)
-			IntValuePixel p = this.boundaryHeap.pop();
+			final IntValuePixel p = this.boundaryHeap.pop();
 			// System.err.println("Popped "+p+", = "+boundaryHeap );
 
 			// If the heap is empty, then we're done
-			if( p == null ) 
+			if (p == null)
 				return;
 
 			// If it's at the same grey-level we process its neighbours (part 6)
-			if( p.value == currentPixel.value )
+			if (p.value == currentPixel.value)
 			{
 				this.currentPixel = p;
 			}
-			// If it's at a higher grey-level we must process the components in the stack (part 7)
+			// If it's at a higher grey-level we must process the components in
+			// the stack (part 7)
 			else
 			{
 				this.currentPixel = p;
@@ -292,135 +316,151 @@ public class WatershedProcessorAlgorithm
 
 	private void processComponentStack()
 	{
-		while( this.currentPixel.value > this.componentStack.peek().pivot.value )
+		while (this.currentPixel.value > this.componentStack.peek().pivot.value)
 		{
 			// System.err.println( "Processing stack: "+componentStack );
 
 			// If the second component on the stack has a greater
 			// grey-level than the pixel, we set the component's grey-level
 			// to that of the pixel and quit...
-			Component topOfStack = this.componentStack.pop();
+			final Component topOfStack = this.componentStack.pop();
 
 			// System.err.println( "Top of stack gl: "+topOfStack.greyLevel );
-			// System.err.println( "Second stack gl: "+componentStack.peek().greyLevel );
+			// System.err.println(
+			// "Second stack gl: "+componentStack.peek().greyLevel );
 			// System.err.println( "Pixel greylevel: "+currentPixel.value );
 
-			if( this.currentPixel.value < this.componentStack.peek().pivot.value )
+			if (this.currentPixel.value < this.componentStack.peek().pivot.value)
 			{
 				topOfStack.pivot = this.currentPixel;
-				this.componentStack.push( topOfStack );
+				this.componentStack.push(topOfStack);
 
-				fireComponentStackMergeListener( componentStack.peek() );
+				fireComponentStackMergeListener(componentStack.peek());
 
 				return;
 			}
 
-			fireComponentStackMergeListener( componentStack.peek(), topOfStack );
+			fireComponentStackMergeListener(componentStack.peek(), topOfStack);
 
 			// Otherwise...
 			// Join the pixel lists
-			this.componentStack.peek().merge( topOfStack );
+			this.componentStack.peek().merge(topOfStack);
 
-			// TODO: histories of components			
+			// TODO: histories of components
 		}
 	}
 
 	/**
-	 *	Returns the neighbouring pixels for a given pixel with 4-connectedness. 
-	 *  If the pixel lies outside of the image the result will be null. 
+	 * Returns the neighbouring pixels for a given pixel with 4-connectedness.
+	 * If the pixel lies outside of the image the result will be null.
 	 * 
-	 *	@param pixel The pixel to find the neighbours of
-	 *	@return An array of pixels some of which may be null if they lie outside
-	 *		of the image boundary.
+	 * @param pixel
+	 *            The pixel to find the neighbours of
+	 * @return An array of pixels some of which may be null if they lie outside
+	 *         of the image boundary.
 	 */
-	private IntValuePixel[] getNeighbourPixels_4( IntValuePixel pixel )
+	private IntValuePixel[] getNeighbourPixels_4(IntValuePixel pixel)
 	{
-		IntValuePixel[] p = new IntValuePixel[4];
-		int x = pixel.x;
-		int y = pixel.y;
+		final IntValuePixel[] p = new IntValuePixel[4];
+		final int x = pixel.x;
+		final int y = pixel.y;
 
-		int height = this.greyscaleImage.length;
-		int width = this.greyscaleImage[0].length;
+		final int height = this.greyscaleImage.length;
+		final int width = this.greyscaleImage[0].length;
 
 		// Find the pixels
 		int c = 0;
 
-		if( x < width-1 )
-			p[c++] = new IntValuePixel( x+1, y, greyscaleImage[y][x+1] );
+		if (x < width - 1)
+			p[c++] = new IntValuePixel(x + 1, y, greyscaleImage[y][x + 1]);
 
-		if( x > 0 )
-			p[c++] = new IntValuePixel( x-1, y, greyscaleImage[y][x-1] );
+		if (x > 0)
+			p[c++] = new IntValuePixel(x - 1, y, greyscaleImage[y][x - 1]);
 
-		if( y < height-1 )
-			p[c++] = new IntValuePixel( x, y+1, greyscaleImage[y+1][x] );
+		if (y < height - 1)
+			p[c++] = new IntValuePixel(x, y + 1, greyscaleImage[y + 1][x]);
 
-		if( y > 0 )
-			p[c++] = new IntValuePixel( x, y-1, greyscaleImage[y-1][x] );
+		if (y > 0)
+			p[c++] = new IntValuePixel(x, y - 1, greyscaleImage[y - 1][x]);
 
 		return p;
 	}
 
 	/**
-	 * 	Add a component stack merge listener
-	 *	@param csml The {@link ComponentStackMergeListener} to add
+	 * Add a component stack merge listener
+	 * 
+	 * @param csml
+	 *            The {@link ComponentStackMergeListener} to add
 	 */
-	public void addComponentStackMergeListener( ComponentStackMergeListener csml )
+	public void addComponentStackMergeListener(ComponentStackMergeListener csml)
 	{
-		csmListeners.add( csml );
+		csmListeners.add(csml);
 	}
 
 	/**
-	 * 	Removes the given {@link ComponentStackMergeListener} from the listeners list.
-	 *  @param csml The {@link ComponentStackMergeListener} to remove
+	 * Removes the given {@link ComponentStackMergeListener} from the listeners
+	 * list.
+	 * 
+	 * @param csml
+	 *            The {@link ComponentStackMergeListener} to remove
 	 */
-	public void removeComponentStackMergeListener( ComponentStackMergeListener csml )
+	public void removeComponentStackMergeListener(ComponentStackMergeListener csml)
 	{
-		csmListeners.remove( csml );
+		csmListeners.remove(csml);
 	}
 
 	/**
-	 * 	Fire the component stack merge listener event for the merging
-	 * 	of two components.
-	 *	@param c1 The first component
-	 *	@param c2 The second component
+	 * Fire the component stack merge listener event for the merging of two
+	 * components.
+	 * 
+	 * @param c1
+	 *            The first component
+	 * @param c2
+	 *            The second component
 	 */
-	private void fireComponentStackMergeListener( Component c1, Component c2 )
+	private void fireComponentStackMergeListener(Component c1, Component c2)
 	{
-		for( ComponentStackMergeListener csm : csmListeners )
-			csm.componentsMerged( c1, c2 );
+		for (final ComponentStackMergeListener csm : csmListeners)
+			csm.componentsMerged(c1, c2);
 	}
 
 	/**
-	 * 	Fire the component stack merge listener event for the upward
-	 * 	merge of a component.
-	 *	@param c1 The component that has been promoted to a higher intensity level
+	 * Fire the component stack merge listener event for the upward merge of a
+	 * component.
+	 * 
+	 * @param c1
+	 *            The component that has been promoted to a higher intensity
+	 *            level
 	 */
-	private void fireComponentStackMergeListener( Component c1 )
+	private void fireComponentStackMergeListener(Component c1)
 	{
-		for( ComponentStackMergeListener csm: csmListeners )
-			csm.componentPromoted( c1 );
+		for (final ComponentStackMergeListener csm : csmListeners)
+			csm.componentPromoted(c1);
 	}
 
 	/**
-	 * 	Helper function for debugging arrays 
-	 *	@param o
-	 *	@return
+	 * Helper function for debugging arrays
+	 * 
+	 * @param o
+	 * @return
 	 */
 	@SuppressWarnings("unused")
-	private String outputArray( Object[] o )
+	private String outputArray(Object[] o)
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append( "[" );
+		final StringBuilder sb = new StringBuilder();
+		sb.append("[");
 		boolean first = true;
-		for( Object obj : o )
+		for (final Object obj : o)
 		{
-			if( !first ) sb.append( "," );
-			if( obj == null ) 
-				sb.append( "null" );
-			else	sb.append( obj.toString() );
+			if (!first)
+				sb.append(",");
+			if (obj == null)
+				sb.append("null");
+			else
+				sb.append(obj.toString());
 			first = false;
 		}
-		sb.append( "]" );
+		sb.append("]");
 		return sb.toString();
 	}
 }

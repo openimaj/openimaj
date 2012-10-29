@@ -87,13 +87,33 @@ public class BasicOctaveExtremaFinder extends AbstractOctaveExtremaFinder<Gaussi
 	protected float scales;
 	protected float normMagnitudeScales;
 
+	/**
+	 * Default constructor using {@link #DEFAULT_MAGNITUDE_THRESHOLD} for the
+	 * magnitude threshold and {@link #DEFAULT_EIGENVALUE_RATIO} for the
+	 * Eigenvalue ratio threshold.
+	 */
 	public BasicOctaveExtremaFinder() {
 	}
 
+	/**
+	 * Construct with the given magnitude threshold and
+	 * {@link #DEFAULT_EIGENVALUE_RATIO} for the Eigenvalue ratio threshold.
+	 * 
+	 * @param magnitudeThreshold
+	 *            the magnitude threshold
+	 */
 	public BasicOctaveExtremaFinder(float magnitudeThreshold) {
 		this(magnitudeThreshold, DEFAULT_EIGENVALUE_RATIO);
 	}
 
+	/**
+	 * Construct with the given magnitude and Eigenvalue thresholds
+	 * 
+	 * @param magnitudeThreshold
+	 *            the magnitude threshold
+	 * @param eigenvalueRatio
+	 *            the Eigenvalue threshold
+	 */
 	public BasicOctaveExtremaFinder(float magnitudeThreshold, float eigenvalueRatio) {
 		super(eigenvalueRatio);
 		this.magnitudeThreshold = magnitudeThreshold;

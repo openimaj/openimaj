@@ -36,12 +36,15 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.objectdetection.RotationSimulationObjectDetector;
-import org.openimaj.image.objectdetection.RotationSimulationObjectDetector.TransformedDetection;
+import org.openimaj.image.objectdetection.TransformedDetection;
 import org.openimaj.image.objectdetection.filtering.OpenCVGrouping;
 import org.openimaj.image.objectdetection.haar.Detector;
 import org.openimaj.image.objectdetection.haar.OCVHaarLoader;
 import org.openimaj.image.objectdetection.haar.StageTreeClassifier;
+import org.openimaj.image.processing.algorithm.EqualisationProcessor;
+import org.openimaj.image.processing.convolution.Gaussian2D;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.time.Timer;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
@@ -52,36 +55,44 @@ public class HaarTester {
 
 		final StageTreeClassifier cascade =
 				OCVHaarLoader.read(StageTreeClassifier.class
-						.getResourceAsStream("haarcascade_frontalface_alt2.xml"));
+						.getResourceAsStream("haarcascade_frontalface_alt.xml"));
 
 		final RotationSimulationObjectDetector<FImage, Float, Rectangle> det = new RotationSimulationObjectDetector<FImage, Float, Rectangle>(
-				new Detector(cascade));
+				new Detector(cascade), 10);
 
-		((Detector) det.getInnerDetector()).setMinimumDetectionSize(80);
+		((Detector) det.getInnerDetector()).setMinimumDetectionSize(20);
 
 		final OpenCVGrouping grp = new OpenCVGrouping();
 
-		final VideoCapture vc = new VideoCapture(640, 480);
+		final VideoCapture vc = new VideoCapture(160, 120);
 		VideoDisplay.createVideoDisplay(vc).addVideoListener(new VideoDisplayListener<MBFImage>()
-						{
-							@Override
-							public void beforeUpdate(MBFImage frame) {
-								final Timer t = Timer.timer();
-								final List<TransformedDetection<Rectangle>> rects = det.detect(frame.flatten());
-								// rects = grp.apply(rects);
-								System.out.println(t.duration());
+		{
+			@Override
+			public void beforeUpdate(MBFImage frame) {
+				final Timer t = Timer.timer();
 
-								for (final TransformedDetection<Rectangle> r : rects) {
-									frame.drawShape(r.detection.transform(r.transform), RGBColour.RED);
-								}
-							}
+				final FImage detectionImage = frame.flatten().processInplace(new EqualisationProcessor())
+						.processInplace(new Gaussian2D(7, 3));
 
-							@Override
-							public void afterUpdate(VideoDisplay<MBFImage> display) {
-								// TODO Auto-generated method stub
+				final List<TransformedDetection<Rectangle>> rects = det.detect(detectionImage);
+				// rects = grp.apply(rects);
+				System.out.println(t.duration());
 
-							}
-						});
+				for (final TransformedDetection<Rectangle> r : rects) {
+					final Shape td = r.detection.transform(r.transform);
+
+					System.out.println(td.calculateRegularBoundingBox());
+
+					frame.drawShape(td, RGBColour.RED);
+				}
+			}
+
+			@Override
+			public void afterUpdate(VideoDisplay<MBFImage> display) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 }

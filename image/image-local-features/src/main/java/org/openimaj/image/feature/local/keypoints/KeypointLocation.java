@@ -37,16 +37,38 @@ import java.util.Scanner;
 
 import org.openimaj.feature.local.ScaleSpaceLocation;
 
+/**
+ * The location of a {@link Keypoint}.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
 public class KeypointLocation extends ScaleSpaceLocation {
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
-	 * The dominant orientation of the {@link Keypoint} 
+	 * The dominant orientation of the {@link Keypoint}
 	 */
 	public float orientation;
-	
-	public KeypointLocation() {}
-	
+
+	/**
+	 * Construct with zero location, orientation and scale.
+	 */
+	public KeypointLocation() {
+	}
+
+	/**
+	 * Construct with the given parameters
+	 * 
+	 * @param x
+	 *            x-ordinate of feature
+	 * @param y
+	 *            y-ordinate of feature
+	 * @param scale
+	 *            scale of feature
+	 * @param orientation
+	 *            orientation of feature
+	 */
 	public KeypointLocation(float x, float y, float orientation, float scale) {
 		super(x, y, scale);
 		this.orientation = orientation;
@@ -59,31 +81,31 @@ public class KeypointLocation extends ScaleSpaceLocation {
 		out.writeFloat(this.scale);
 		out.writeFloat(this.orientation);
 	}
-	
+
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		//for legacy reasons ascii format writes y, x, scale, ori
+		// for legacy reasons ascii format writes y, x, scale, ori
 		out.format("%4.2f %4.2f %4.2f %4.3f", y, x, scale, orientation);
 		out.println();
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		super.readBinary(in);
 		orientation = in.readFloat();
 	}
-	
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		super.readASCII(in);
 		orientation = Float.parseFloat(in.next());
 	}
-	
+
 	@Override
 	public byte[] binaryHeader() {
 		return "".getBytes();
 	}
-	
+
 	@Override
 	public String asciiHeader() {
 		return "";
@@ -91,10 +113,10 @@ public class KeypointLocation extends ScaleSpaceLocation {
 
 	@Override
 	public Float getOrdinate(int dimension) {
-		float [] pos = {x, y, scale, orientation};
+		final float[] pos = { x, y, scale, orientation };
 		return pos[dimension];
 	}
-	
+
 	@Override
 	public int getDimensions() {
 		return 3;

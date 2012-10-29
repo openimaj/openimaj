@@ -45,10 +45,8 @@ import org.openimaj.image.pixel.Pixel;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class Component implements Cloneable 
+public class Component implements Cloneable
 {
-	private static final long serialVersionUID = 1L;
-
 	/** Whether this component represents an MSER */
 	public boolean isMSER = false;
 
@@ -56,26 +54,28 @@ public class Component implements Cloneable
 	public ComponentFeature[] features;
 
 	/**
-	 * The pivot pixel 
+	 * The pivot pixel
 	 */
 	public IntValuePixel pivot;
 	private int size = 0;
-	
+
 	/**
 	 * Default constructor.
 	 * 
-	 * @param p The grey level of the component
-	 * @param featureClasses the list of features to create for the component  
+	 * @param p
+	 *            The grey level of the component
+	 * @param featureClasses
+	 *            the list of features to create for the component
 	 */
-	public Component( IntValuePixel p, Class<? extends ComponentFeature>... featureClasses )
+	public Component(IntValuePixel p, Class<? extends ComponentFeature>... featureClasses)
 	{
 		this.pivot = p;
-		
+
 		features = new ComponentFeature[featureClasses.length];
-		for ( int i=0; i<featureClasses.length; i++ ) {
+		for (int i = 0; i < featureClasses.length; i++) {
 			try {
-				features[i] = (ComponentFeature)featureClasses[i].newInstance();
-			} catch (Exception e) {
+				features[i] = featureClasses[i].newInstance();
+			} catch (final Exception e) {
 				throw new AssertionError(e);
 			}
 		}
@@ -83,6 +83,7 @@ public class Component implements Cloneable
 
 	/**
 	 * {@inheritDoc}
+	 * 
 	 * @see java.util.AbstractCollection#toString()
 	 */
 	@Override
@@ -93,95 +94,106 @@ public class Component implements Cloneable
 
 	/**
 	 * Add a pixel to the component
-	 * @param p the pixel to add
+	 * 
+	 * @param p
+	 *            the pixel to add
 	 */
 	public void accumulate(IntValuePixel p) {
 		size++;
-		
-		for (ComponentFeature f : features) {
+
+		for (final ComponentFeature f : features) {
 			f.addSample(p);
 		}
 	}
-	
+
 	/**
 	 * Merge another component with this one
-	 * @param p the component to merge into this
+	 * 
+	 * @param p
+	 *            the component to merge into this
 	 */
 	public void merge(Component p) {
 		size += p.size();
-		
-		for (int i=0; i<features.length; i++) {
+
+		for (int i = 0; i < features.length; i++) {
 			features[i].merge(p.features[i]);
 		}
 	}
-	
+
 	/**
 	 * The size of the component (i.e. the number of pixels)
+	 * 
 	 * @return the size of the component
 	 */
 	public int size() {
 		return size;
 	}
-	
+
 	/**
-	 * Get the pixels in the component. If the component contains
-	 * a {@link PixelsFeature} then the pixels will be returned from
-	 * that; otherwise a set containing just the pivot pixel will be
-	 * returned.
+	 * Get the pixels in the component. If the component contains a
+	 * {@link PixelsFeature} then the pixels will be returned from that;
+	 * otherwise a set containing just the pivot pixel will be returned.
+	 * 
 	 * @return the pixels in the component if possible, or just the pivot pixel
 	 */
 	public Set<Pixel> getPixels() {
-		for (ComponentFeature f : features) {
+		for (final ComponentFeature f : features) {
 			if (f instanceof PixelsFeature)
-				return ((PixelsFeature)f).pixels;
+				return ((PixelsFeature) f).pixels;
 		}
-		
-		Set<Pixel> pix = new HashSet<Pixel>(1);
+
+		final Set<Pixel> pix = new HashSet<Pixel>(1);
 		pix.add(pivot);
 		return pix;
 	}
-	
+
 	@Override
 	public Component clone() {
 		Component result;
 		try {
 			result = (Component) super.clone();
 			result.features = new ComponentFeature[features.length];
-			for (int i=0; i<features.length; i++)
+			for (int i = 0; i < features.length; i++)
 				result.features[i] = features[i].clone();
-			
-//			result.pixels = pixels.clone();
-			
+
+			// result.pixels = pixels.clone();
+
 			return result;
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			throw new AssertionError(e);
 		}
 	}
-	
+
 	/**
 	 * Get the feature at the given index
-	 * @param index the index
+	 * 
+	 * @param index
+	 *            the index
 	 * @return the feature at the given index or null if it doesn't exist
 	 */
 	public ComponentFeature getFeature(int index) {
 		if (index >= features.length)
 			return null;
-		
+
 		return features[index];
 	}
-	
+
 	/**
-	 * Get the feature matching the given class if it exists. If more than
-	 * one feature of the given class exists, then the first will be returned.
-	 * @param <T> the class of the feature
-	 * @param featureClass the class of the feature
+	 * Get the feature matching the given class if it exists. If more than one
+	 * feature of the given class exists, then the first will be returned.
+	 * 
+	 * @param <T>
+	 *            the class of the feature
+	 * @param featureClass
+	 *            the class of the feature
 	 * @return the feature with the given class; or null if no feature is found
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends ComponentFeature> T getFeature(Class<T> featureClass) {
-		for (ComponentFeature f : features)
-			if (f.getClass().isAssignableFrom(featureClass)) return (T)f;
-		
+		for (final ComponentFeature f : features)
+			if (f.getClass().isAssignableFrom(featureClass))
+				return (T) f;
+
 		return null;
 	}
 }

@@ -36,31 +36,44 @@ import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientati
 import org.openimaj.image.feature.local.detector.pyramid.BasicOctaveExtremaFinder;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-public class DoGSIFTEngineOptions<
-		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>>
-extends GaussianPyramidOptions<IMAGE> {
-	/** The threshold on the ratio of the Eigenvalues of the Hessian matrix (Lowe IJCV, p.12) */
+/**
+ * Options for controlling SIFT feature localisation and extraction. Default
+ * values are based on Lowe's papers.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <IMAGE>
+ *            Type of image processed by the {@link Engine} associated with
+ *            these options.
+ */
+public class DoGSIFTEngineOptions<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
+		extends GaussianPyramidOptions<IMAGE>
+{
+	/**
+	 * The threshold on the ratio of the Eigenvalues of the Hessian matrix (Lowe
+	 * IJCV, p.12)
+	 */
 	protected float eigenvalueRatio = BasicOctaveExtremaFinder.DEFAULT_EIGENVALUE_RATIO;
-	
+
 	/** Threshold on the magnitude of detected points (Lowe IJCV, p.11) */
 	protected float magnitudeThreshold = BasicOctaveExtremaFinder.DEFAULT_MAGNITUDE_THRESHOLD;
-	
+
 	/**
-	 * The magnification factor determining the size of a spatial SIFT
-	 * bin relative to the scale. The overall sampling size is related
-	 * to the number of spatial bins.
+	 * The magnification factor determining the size of a spatial SIFT bin
+	 * relative to the scale. The overall sampling size is related to the number
+	 * of spatial bins.
 	 */
 	protected float magnificationFactor = 3;
-	
+
 	/**
-	 * Threshold for peak detection in the orientation histogram. A value of 1.0 would
-	 * result in only a single peak being detected.
+	 * Threshold for peak detection in the orientation histogram. A value of 1.0
+	 * would result in only a single peak being detected.
 	 */
 	protected float peakThreshold = DominantOrientationExtractor.DEFAULT_PEAK_THRESHOLD;
-	
+
 	/**
-	 * The number of orientation histogram bins for finding the dominant orientations;
-	 * Lowe's IJCV paper (p.13) suggests 36 bins.
+	 * The number of orientation histogram bins for finding the dominant
+	 * orientations; Lowe's IJCV paper (p.13) suggests 36 bins.
 	 */
 	protected int numOriHistBins = 36;
 
@@ -71,31 +84,36 @@ extends GaussianPyramidOptions<IMAGE> {
 	protected float scaling = 1.5f;
 
 	/**
-	 * The number of iterations of the smoothing filter. 
-	 * The vlfeat SIFT implementation uses 6. 
+	 * The number of iterations of the smoothing filter. The vlfeat SIFT
+	 * implementation uses 6.
 	 */
 	protected int smoothingIterations = 6;
 
 	/**
-	 * The size of the sampling window relative
-	 * to the sampling scale. Lowe's ICCV paper suggests 3;
+	 * The size of the sampling window relative to the sampling scale. Lowe's
+	 * ICCV paper suggests 3;
 	 */
 	protected float samplingSize = 3.0f;
-	
+
 	/** The number of orientation bins (default 8) */
 	protected int numOriBins = 8;
-	
+
 	/** The number of spatial bins in each direction (default 4) */
 	protected int numSpatialBins = 4;
-	
+
 	/** Threshold for the maximum value allowed in the histogram (default 0.2) */
 	protected float valueThreshold = 0.2f;
-	
-	/** The width of the Gaussian used for weighting samples, relative to the half-width of the sampling window (default 1.0). */
-	protected float gaussianSigma = 1.0f; 
-	
+
 	/**
-	 * Get the threshold on the ratio of the Eigenvalues of the Hessian matrix (Lowe IJCV, p.12)
+	 * The width of the Gaussian used for weighting samples, relative to the
+	 * half-width of the sampling window (default 1.0).
+	 */
+	protected float gaussianSigma = 1.0f;
+
+	/**
+	 * Get the threshold on the ratio of the Eigenvalues of the Hessian matrix
+	 * (Lowe IJCV, p.12)
+	 * 
 	 * @return the eigenvalue ratio threshold
 	 */
 	public float getEigenvalueRatio() {
@@ -103,8 +121,11 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the threshold on the ratio of the Eigenvalues of the Hessian matrix (Lowe IJCV, p.12)
-	 * @param eigenvalueRatio the eigenvalueRatio to set
+	 * Set the threshold on the ratio of the Eigenvalues of the Hessian matrix
+	 * (Lowe IJCV, p.12)
+	 * 
+	 * @param eigenvalueRatio
+	 *            the eigenvalueRatio to set
 	 */
 	public void setEigenvalueRatio(float eigenvalueRatio) {
 		this.eigenvalueRatio = eigenvalueRatio;
@@ -112,6 +133,7 @@ extends GaussianPyramidOptions<IMAGE> {
 
 	/**
 	 * Get the threshold on the magnitude of detected points (Lowe IJCV, p.11)
+	 * 
 	 * @return the magnitude threshold
 	 */
 	public float getMagnitudeThreshold() {
@@ -120,16 +142,18 @@ extends GaussianPyramidOptions<IMAGE> {
 
 	/**
 	 * Set the threshold on the magnitude of detected points (Lowe IJCV, p.11)
-	 * @param magnitudeThreshold the magnitude threshold to set
+	 * 
+	 * @param magnitudeThreshold
+	 *            the magnitude threshold to set
 	 */
 	public void setMagnitudeThreshold(float magnitudeThreshold) {
 		this.magnitudeThreshold = magnitudeThreshold;
 	}
 
 	/**
-	 * Get the magnification factor determining the size of a spatial SIFT
-	 * bin relative to the scale. The overall sampling size is related
-	 * to the number of spatial bins.
+	 * Get the magnification factor determining the size of a spatial SIFT bin
+	 * relative to the scale. The overall sampling size is related to the number
+	 * of spatial bins.
 	 * 
 	 * @return the magnification factor
 	 */
@@ -138,19 +162,21 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the magnification factor determining the size of a spatial SIFT
-	 * bin relative to the scale. The overall sampling size is related
-	 * to the number of spatial bins.
+	 * Set the magnification factor determining the size of a spatial SIFT bin
+	 * relative to the scale. The overall sampling size is related to the number
+	 * of spatial bins.
 	 * 
-	 * @param magnificationFactor the magnification factor to set
+	 * @param magnificationFactor
+	 *            the magnification factor to set
 	 */
 	public void setMagnificationFactor(float magnificationFactor) {
 		this.magnificationFactor = magnificationFactor;
 	}
 
 	/**
-	 * Get the threshold for peak detection in the orientation histogram. 
-	 * A value of 1.0 would result in only a single peak being detected.
+	 * Get the threshold for peak detection in the orientation histogram. A
+	 * value of 1.0 would result in only a single peak being detected.
+	 * 
 	 * @return the peak detection threshold
 	 */
 	public float getPeakThreshold() {
@@ -158,17 +184,20 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the threshold for peak detection in the orientation histogram. 
-	 * A value of 1.0 would result in only a single peak being detected.
-	 * @param peakThreshold the peak detection threshold to set
+	 * Set the threshold for peak detection in the orientation histogram. A
+	 * value of 1.0 would result in only a single peak being detected.
+	 * 
+	 * @param peakThreshold
+	 *            the peak detection threshold to set
 	 */
 	public void setPeakThreshold(float peakThreshold) {
 		this.peakThreshold = peakThreshold;
 	}
 
 	/**
-	 * Get the number of orientation histogram bins for finding the dominant 
+	 * Get the number of orientation histogram bins for finding the dominant
 	 * orientations; Lowe's IJCV paper (p.13) suggests 36 bins.
+	 * 
 	 * @return the number of orientation histogram bins
 	 */
 	public int getNumOriHistBins() {
@@ -176,17 +205,20 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the number of orientation histogram bins for finding the dominant 
+	 * Set the number of orientation histogram bins for finding the dominant
 	 * orientations; Lowe's IJCV paper (p.13) suggests 36 bins.
-	 * @param numOriHistBins the number of orientation histogram bins to set
+	 * 
+	 * @param numOriHistBins
+	 *            the number of orientation histogram bins to set
 	 */
 	public void setNumOriHistBins(int numOriHistBins) {
 		this.numOriHistBins = numOriHistBins;
 	}
 
 	/**
-	 * Get the value for weighting the scaling Gaussian of the orientation histogram
-	 * relative to the keypoint scale. Lowe's IJCV paper (p.13) suggests 1.5.
+	 * Get the value for weighting the scaling Gaussian of the orientation
+	 * histogram relative to the keypoint scale. Lowe's IJCV paper (p.13)
+	 * suggests 1.5.
 	 * 
 	 * @return the scaling amount
 	 */
@@ -195,17 +227,21 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the value for weighting the scaling Gaussian of the orientation histogram
-	 * relative to the keypoint scale. Lowe's IJCV paper (p.13) suggests 1.5.
-	 * @param scaling the scaling amount to set
+	 * Set the value for weighting the scaling Gaussian of the orientation
+	 * histogram relative to the keypoint scale. Lowe's IJCV paper (p.13)
+	 * suggests 1.5.
+	 * 
+	 * @param scaling
+	 *            the scaling amount to set
 	 */
 	public void setScaling(float scaling) {
 		this.scaling = scaling;
 	}
 
 	/**
-	 * Get the number of iterations of the smoothing filter. 
-	 * The vlfeat SIFT implementation uses 6.
+	 * Get the number of iterations of the smoothing filter. The vlfeat SIFT
+	 * implementation uses 6.
+	 * 
 	 * @return the number of smoothing iterations
 	 */
 	public int getSmoothingIterations() {
@@ -213,17 +249,20 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the number of iterations of the smoothing filter. 
-	 * The vlfeat SIFT implementation uses 6.
-	 * @param smoothingIterations the number of smoothing iterations to set
+	 * Set the number of iterations of the smoothing filter. The vlfeat SIFT
+	 * implementation uses 6.
+	 * 
+	 * @param smoothingIterations
+	 *            the number of smoothing iterations to set
 	 */
 	public void setSmoothingIterations(int smoothingIterations) {
 		this.smoothingIterations = smoothingIterations;
 	}
 
 	/**
-	 * Get the size of the sampling window relative
-	 * to the sampling scale. Lowe's ICCV paper suggests 3;
+	 * Get the size of the sampling window relative to the sampling scale.
+	 * Lowe's ICCV paper suggests 3;
+	 * 
 	 * @return the sampling size
 	 */
 	public float getSamplingSize() {
@@ -231,9 +270,11 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the size of the sampling window relative
-	 * to the sampling scale. Lowe's ICCV paper suggests 3;
-	 * @param samplingSize the sampling size to set
+	 * Set the size of the sampling window relative to the sampling scale.
+	 * Lowe's ICCV paper suggests 3;
+	 * 
+	 * @param samplingSize
+	 *            the sampling size to set
 	 */
 	public void setSamplingSize(float samplingSize) {
 		this.samplingSize = samplingSize;
@@ -241,6 +282,7 @@ extends GaussianPyramidOptions<IMAGE> {
 
 	/**
 	 * Get the number of orientation bins (default 8) in the SIFT feature
+	 * 
 	 * @return the number of orientation bins
 	 */
 	public int getNumOriBins() {
@@ -249,14 +291,18 @@ extends GaussianPyramidOptions<IMAGE> {
 
 	/**
 	 * Set the number of orientation bins (default 8) in the SIFT feature
-	 * @param numOriBins the number of orientation bins to set
+	 * 
+	 * @param numOriBins
+	 *            the number of orientation bins to set
 	 */
 	public void setNumOriBins(int numOriBins) {
 		this.numOriBins = numOriBins;
 	}
 
 	/**
-	 * Get the number of spatial bins in each direction (default 4) in the SIFT feature
+	 * Get the number of spatial bins in each direction (default 4) in the SIFT
+	 * feature
+	 * 
 	 * @return the number of spatial bins
 	 */
 	public int getNumSpatialBins() {
@@ -264,15 +310,20 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the number of spatial bins in each direction (default 4) in the SIFT feature
-	 * @param numSpatialBins the number of spatial bins to set
+	 * Set the number of spatial bins in each direction (default 4) in the SIFT
+	 * feature
+	 * 
+	 * @param numSpatialBins
+	 *            the number of spatial bins to set
 	 */
 	public void setNumSpatialBins(int numSpatialBins) {
 		this.numSpatialBins = numSpatialBins;
 	}
 
 	/**
-	 * Get the threshold for the maximum value allowed in the histogram (default 0.2)
+	 * Get the threshold for the maximum value allowed in the histogram (default
+	 * 0.2)
+	 * 
 	 * @return the threshold
 	 */
 	public float getValueThreshold() {
@@ -280,16 +331,20 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Set the threshold for the maximum value allowed in the histogram (default 0.2)
-	 * @param valueThreshold the threshold to set
+	 * Set the threshold for the maximum value allowed in the histogram (default
+	 * 0.2)
+	 * 
+	 * @param valueThreshold
+	 *            the threshold to set
 	 */
 	public void setValueThreshold(float valueThreshold) {
 		this.valueThreshold = valueThreshold;
 	}
 
 	/**
-	 * Get the width of the Gaussian used for weighting samples, relative to the 
+	 * Get the width of the Gaussian used for weighting samples, relative to the
 	 * half-width of the sampling window (default 1.0).
+	 * 
 	 * @return the Gaussian width
 	 */
 	public float getGaussianSigma() {
@@ -297,9 +352,11 @@ extends GaussianPyramidOptions<IMAGE> {
 	}
 
 	/**
-	 * Get the width of the Gaussian used for weighting samples, relative to the 
+	 * Get the width of the Gaussian used for weighting samples, relative to the
 	 * half-width of the sampling window (default 1.0).
-	 * @param gaussianSigma the Gaussian width to set
+	 * 
+	 * @param gaussianSigma
+	 *            the Gaussian width to set
 	 */
 	public void setGaussianSigma(float gaussianSigma) {
 		this.gaussianSigma = gaussianSigma;

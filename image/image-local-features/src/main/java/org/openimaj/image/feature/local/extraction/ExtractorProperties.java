@@ -30,11 +30,11 @@
 package org.openimaj.image.feature.local.extraction;
 
 /**
- * ExtractorProperties define the information a feature extractor
- * needs to extract a feature from something.
+ * {@link ExtractorProperties} define the information a feature extractor needs
+ * to extract a feature from something.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public interface ExtractorProperties {
 
