@@ -61,7 +61,7 @@ public abstract class ReteTopologyBuilder {
 	 * various stages of a {@link ReteTopologyBuilder}
 	 *
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
-	 *         (ss@ecs.soton.ac.uk)
+	 *         (ss@ecs.soton.ac.uk), David Monks <dm11g08@ecs.soton.ac.uk>
 	 *
 	 */
 	public static class ReteTopologyBuilderContext {
@@ -155,6 +155,8 @@ public abstract class ReteTopologyBuilder {
 				finishRule(context);
 			}
 		}
+		
+		finaliseTopology(context);
 	}
 
 	/**
@@ -214,11 +216,20 @@ public abstract class ReteTopologyBuilder {
 	 * This particular rule is completed. Finish the rule off, possible with a
 	 * {@link ReteTerminalBolt} instance. The various bolts may have already
 	 * added themselves to the topology, if not this is their last chance to do
-	 * so
+	 * so in Rule-centric systems.
 	 *
 	 * @param context
 	 */
 	public abstract void finishRule(ReteTopologyBuilderContext context);
+	
+	/**
+	 * This topology is ready to be constructed.  Make any final decisions and,
+	 * if bolts have not been constructed, construct the final set of active bolts.
+	 * This is the final chance for bolts to be added to the topology.
+	 * 
+	 * @param context
+	 */
+	public abstract void finaliseTopology(ReteTopologyBuilderContext context);
 
 	protected String nextRuleName() {
 		unnamedRules += 1;

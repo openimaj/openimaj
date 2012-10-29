@@ -1,8 +1,6 @@
 package org.openimaj.rdf.storm.topology.builder;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,12 +17,11 @@ import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
-import org.openimaj.rdf.storm.utils.Count;
+import org.openimaj.rdf.storm.topology.bolt.StormReteTerminalBolt;
+import org.openimaj.rdf.storm.utils.VariableIndependentReteRuleToStringUtils;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
-import com.hp.hpl.jena.reasoner.rulesys.Functor;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
 import scala.actors.threadpool.Arrays;
@@ -41,16 +38,16 @@ import backtype.storm.topology.IRichBolt;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Monks (dm11g08@ecs.soton.ac.uk)
  *
  */
-public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
+public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	private static Logger logger = Logger
-			.getLogger(StormReteTopologyBuilder.class);
+			.getLogger(BaseStormReteTopologyBuilder.class);
 	/**
 	 * the name of the final bolt
 	 */
 	public static final String FINAL_TERMINAL = "final_term";
 
 	private BoltDeclarer finalTerminalBuilder;
-	private ReteTerminalBolt term;
+	private StormReteTerminalBolt term;
 	private Map<String, Map<String,StormReteBolt>> rules;
 	private Map<String,StormReteBolt> rule;
 	private Map<String, StormReteBolt> bolts;
@@ -70,145 +67,9 @@ public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 			this.finalTerminalBuilder.allGrouping(context.axiomSpout);
 		}
 	}
-	
-	private static List<ClauseEntry> sortClause(List<ClauseEntry> template) {
-		Collections.sort(template,new Comparator<ClauseEntry>(){
-			@Override
-			public int compare(ClauseEntry o1,
-					ClauseEntry o2) {
-				clauseEntryToString(o1).compareTo(clauseEntryToString(o2));
-				return 0;
-			}
-		});
-		return template;
-	}
 
-	@SuppressWarnings("unchecked")
-	protected static String clauseEntryToString(ClauseEntry ce, List<String> varNames, int[] matchIndices, Count count){
-		if (ce instanceof TriplePattern) {
-			TriplePattern filter = (TriplePattern) ce;
-			String subject = filter.getSubject().isVariable()
-					? varNames.contains(filter.getSubject().getName())
-						? matchIndices[varNames.indexOf(filter.getSubject().getName())] == -1
-							? "?"+(matchIndices[varNames.indexOf(filter.getSubject().getName())] = count.inc())
-							: "?"+matchIndices[varNames.indexOf(filter.getSubject().getName())]
-						: "'VAR'"
-					: filter.getSubject().isURI()
-						? filter.getSubject().getURI()
-						: filter.getSubject().isLiteral()
-							? filter.getSubject().getLiteralValue().toString()
-							: filter.getSubject().getBlankNodeLabel();
-			String predicate = filter.getPredicate().isVariable()
-					? varNames.contains(filter.getPredicate().getName())
-						? matchIndices[varNames.indexOf(filter.getPredicate().getName())] == -1
-							? "?"+(matchIndices[varNames.indexOf(filter.getPredicate().getName())] = count.inc())
-							: "?"+matchIndices[varNames.indexOf(filter.getPredicate().getName())]
-						: "'VAR'"
-					: filter.getPredicate().isURI()
-						? filter.getPredicate().getURI()
-						: filter.getPredicate().isLiteral()
-							? filter.getPredicate().getLiteralValue().toString()
-							: filter.getPredicate().getBlankNodeLabel();
-			String object;
-			if (filter.getObject().isLiteral() && filter.getObject().getLiteralValue() instanceof Functor) {
-				object = clauseEntryToString((Functor)filter.getObject().getLiteralValue(),
-											 varNames, matchIndices, count);
-			} else {
-				object = filter.getObject().isVariable()
-						? varNames.contains(filter.getObject().getName())
-							? matchIndices[varNames.indexOf(filter.getObject().getName())] == -1
-								? "?"+(matchIndices[varNames.indexOf(filter.getObject().getName())] = count.inc())
-								: "?"+matchIndices[varNames.indexOf(filter.getObject().getName())]
-							: "'VAR'"
-						: filter.getObject().isURI()
-							? filter.getObject().getURI()
-							: filter.getObject().isLiteral()
-								? filter.getObject().getLiteralValue().toString()
-								: filter.getObject().getBlankNodeLabel();
-			}
-			return String.format("(%s %s %s)", subject, predicate, object);
-		} else if (ce instanceof Functor) {
-			Functor f = (Functor) ce;
-			String functor = f.getName()+"(";
-			for (Node n : f.getArgs())
-				functor += (n.isVariable()
-						? varNames.contains(n.getName())
-							? matchIndices[varNames.indexOf(n.getName())] == -1
-								? "?"+(matchIndices[varNames.indexOf(n.getName())] = count.inc())
-								: "?"+matchIndices[varNames.indexOf(n.getName())]
-							: "'VAR'"
-						: n.isURI()
-							? n.getURI()
-							: n.isLiteral()
-								? n.getLiteralValue().toString()
-								: n.getBlankNodeLabel())
-						+ " ";
-			return functor.substring(0, functor.length() - 1) + ")";
-		} else if (ce instanceof Rule) {
-			Rule r = (Rule) ce;
-			
-			List<String> v = Arrays.asList(StormReteBolt.extractFields(Arrays.asList(r.getBody())));
-			int[] m = new int[v.size()];
-			for (int i = 0; i < m.length; i++ )
-				m[i] = -1;
-			Count c = new Count(0);
-			
-			String rule = "[ ";
-			if (r.getName() != null)
-				rule += r.getName() + " : ";
-			return rule
-					+ clauseToStringAllVars(Arrays.asList(r.getBody()),v,m,c) + "-> "
-					+ clauseToStringAllVars(Arrays.asList(r.getHead()),v,m,c) + "]";
-		}
-		throw new ClassCastException("The proffered ClauseEntry is not one of the standard implementations supplied by Jena (TriplePattern, Functor or Rule)");
-	}
+// Topology Compilation
 	
-	protected static String clauseEntryToString(ClauseEntry ce){
-		return clauseEntryToString(ce, new ArrayList<String>(), new int[0], new Count(0));
-	}
-	
-	protected static String clauseToString(List<ClauseEntry> template, List<String> varNames, int[] matchIndices, Count count) {
-		template = sortClause(template);
-		
-		StringBuilder clause = new StringBuilder();
-		for (ClauseEntry ce : template)
-			clause.append(clauseEntryToString(ce,varNames,matchIndices,count)+" ");
-		
-		return clause.toString();
-	}
-	
-	protected static String clauseToString(List<ClauseEntry> template){
-		@SuppressWarnings("unchecked")
-		List<String> varNames = Arrays.asList(StormReteBolt.extractJoinFields(template));
-		int[] matchIndices = new int[varNames.size()];
-		for (int i = 0; i < matchIndices.length; i++ )
-			matchIndices[i] = -1;
-		Count count = new Count(0);
-		
-		return clauseToString(template, varNames, matchIndices, count);
-	}
-	
-	protected static String clauseToStringAllVars(List<ClauseEntry> template, List<String> varNames, int[] matchIndices, Count count) {
-		template = sortClause(template);
-		
-		StringBuilder clause = new StringBuilder();
-		for (ClauseEntry ce : template)
-			clause.append(clauseEntryToString(ce,varNames,matchIndices,count)+" ");
-		
-		return clause.toString();
-	}
-	
-	protected static String clauseToStringAllVars(List<ClauseEntry> template){
-		@SuppressWarnings("unchecked")
-		List<String> varNames = Arrays.asList(StormReteBolt.extractFields(template));
-		int[] matchIndices = new int[varNames.size()];
-		for (int i = 0; i < matchIndices.length; i++ )
-			matchIndices[i] = -1;
-		Count count = new Count(0);
-		
-		return clauseToStringAllVars(template, varNames, matchIndices, count);
-	}	
-
 	@Override
 	public void startRule(ReteTopologyBuilderContext context) {
 		// The rule name, bolts take the form of ruleName_(BODY|HEAD)_count
@@ -216,7 +77,7 @@ public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 		if (this.ruleName == null)
 			this.ruleName = nextRuleName();
 		// Sort rule clauses and standardise names
-		context.rule = Rule.parseRule(clauseEntryToString(context.rule));
+		context.rule = Rule.parseRule(VariableIndependentReteRuleToStringUtils.clauseEntryToString(context.rule));
 		// prepare the map of bolt names to bolts for the rule being started.
 		rule = new HashMap<String, StormReteBolt>();
 		rules.put(ruleName, rule);
@@ -228,7 +89,7 @@ public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 
 	@Override
 	public void addFilter(ReteTopologyBuilderContext context) {
-		String boltName = clauseEntryToString(context.filterClause);
+		String boltName = VariableIndependentReteRuleToStringUtils.clauseEntryToString(context.filterClause);
 		
 		StormReteBolt filterBolt;
 		if (bolts.containsKey(boltName)){
@@ -283,7 +144,7 @@ public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 									// This involves sorting the template, again independently of variable
 									// names, which means the fields will be output in the same order irrespective
 									// of their names, thanks to being ordered by location in the template.
-									String newJoinName = clauseToString(template);
+									String newJoinName = VariableIndependentReteRuleToStringUtils.clauseToString(template);
 									StormReteBolt newJoin;
 									if (bolts.containsKey(newJoinName)){
 										newJoin = bolts.get(newJoinName);
@@ -379,6 +240,14 @@ public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 			midBuild.shuffleGrouping(FINAL_TERMINAL);
 	}
 
+	@Override
+	public void finaliseTopology(ReteTopologyBuilderContext context) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+// Bolt Construction
+	
 	/**
 	 * @param context
 	 * @return the conflict set bolt usually describing what is done with
@@ -393,8 +262,8 @@ public abstract class StormReteTopologyBuilder extends ReteTopologyBuilder {
 	 * @return the {@link ReteTerminalBolt} usually the buffer between the
 	 *         network proper and the {@link ReteConflictSetBolt}
 	 */
-	public ReteTerminalBolt constructTerminalBolt(ReteTopologyBuilderContext context) {
-		return new ReteTerminalBolt(context.rule);
+	public StormReteTerminalBolt constructTerminalBolt(ReteTopologyBuilderContext context) {
+		return new StormReteTerminalBolt(context.rule);
 	}
 
 	/**

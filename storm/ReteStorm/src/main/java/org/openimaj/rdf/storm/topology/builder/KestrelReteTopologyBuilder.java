@@ -85,4 +85,10 @@ public class KestrelReteTopologyBuilder extends BaseReteTopologyBuilder {
 		builder.setSpout(NTriplesReteTopologyBuilder.TRIPLE_SPOUT, tripleSpout, 1);
 		return NTriplesReteTopologyBuilder.TRIPLE_SPOUT;
 	}
+
+	@Override
+	public void finaliseTopology(ReteTopologyBuilderContext context) {
+		// TODO Auto-generated method stub
+		
+	}
 }

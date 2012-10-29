@@ -77,4 +77,10 @@ public class ConfigurableRuleReteTopologyBuilder extends BaseReteTopologyBuilder
 		builder.setSpout(NTriplesReteTopologyBuilder.TRIPLE_SPOUT, tripleSpout);
 		return NTriplesReteTopologyBuilder.TRIPLE_SPOUT;
 	}
+
+	@Override
+	public void finaliseTopology(ReteTopologyBuilderContext context) {
+		// TODO Auto-generated method stub
+		
+	}
 }

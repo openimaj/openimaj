@@ -61,4 +61,10 @@ public class NTriplesReteTopologyBuilder extends BaseReteTopologyBuilder {
 		return TRIPLE_SPOUT;
 	}
 
+	@Override
+	public void finaliseTopology(ReteTopologyBuilderContext context) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
