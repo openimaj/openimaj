@@ -268,7 +268,6 @@ public class TestPicSlurper {
 		try{
 			final FacebookConsumer consumer = new FacebookConsumer();
 			final String[] facebookImages = new String[] {
-					"https://www.facebook.com/fsdeventos/posts/251363008318613",
 					"http://www.facebook.com/dreddyclinic/posts/434840279891662",
 					"https://www.facebook.com/photo.php?pid=1005525&l=8649b56ff5&id=100001915865131",
 					"http://www.facebook.com/photo.php?pid=4097023&l=14a33b4930&id=1159082025",
@@ -277,6 +276,7 @@ public class TestPicSlurper {
 
 			};
 			for (final String string : facebookImages) {
+				System.out.println("trying: " + string);
 				final List<URL> images = consumer.consume(new URL(string));
 				assertTrue(images != null && images.size() > 0);
 			}
