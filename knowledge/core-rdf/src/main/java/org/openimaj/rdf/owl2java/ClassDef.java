@@ -19,6 +19,7 @@ import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.sail.memory.model.MemLiteral;
 
 public class ClassDef {
 	String comment;
@@ -35,31 +36,36 @@ public class ClassDef {
 	public static List<ClassDef> loadClasses(RepositoryConnection conn) throws RepositoryException,
 			MalformedQueryException, QueryEvaluationException
 	{
-		final String query = "SELECT Class, Comment "
-				+ "FROM {Class} rdf:type {owl:Class}; "
-				+ " [ rdfs:comment {Comment} ]" + " USING NAMESPACE "
-				+ "   owl = <http://www.w3.org/2002/07/owl#>";
-
-		final TupleQuery preparedQuery = conn.prepareTupleQuery(QueryLanguage.SERQL, query);
-		final TupleQueryResult res = preparedQuery.evaluate();
-
 		final List<ClassDef> classes = new ArrayList<ClassDef>();
-		while (res.hasNext()) {
-			final BindingSet bindingSet = res.next();
+		final String[] clzTypes = { "owl", "rdfs" };
 
-			if (bindingSet.getValue("Class") instanceof URI) {
-				final ClassDef clz = new ClassDef();
+		for (final String clzType : clzTypes) {
+			final String query = "SELECT Class, Comment "
+					+ "FROM {Class} rdf:type {" + clzType + ":Class}; "
+					+ " [ rdfs:comment {Comment} ]" + " USING NAMESPACE "
+					+ "   owl = <http://www.w3.org/2002/07/owl#>";
 
-				if (bindingSet.getValue("Comment") != null) {
-					clz.comment = bindingSet.getValue("Comment").toString();
+			final TupleQuery preparedQuery = conn.prepareTupleQuery(QueryLanguage.SERQL, query);
+			final TupleQueryResult res = preparedQuery.evaluate();
+
+			while (res.hasNext()) {
+				final BindingSet bindingSet = res.next();
+
+				if (bindingSet.getValue("Class") instanceof URI) {
+					final ClassDef clz = new ClassDef();
+
+					if (bindingSet.getValue("Comment") != null) {
+						final MemLiteral lit = (MemLiteral) bindingSet.getValue("Comment");
+						clz.comment = lit.stringValue();
+					}
+
+					clz.uri = (URI) bindingSet.getValue("Class");
+
+					clz.superclasses = getSuperclasses(clz.uri, conn);
+					clz.properties = PropertyDef.loadProperties(clz.uri, conn);
+
+					classes.add(clz);
 				}
-
-				clz.uri = (URI) bindingSet.getValue("Class");
-
-				clz.superclasses = getSuperclasses(clz.uri, conn);
-				clz.properties = PropertyDef.loadProperties(clz.uri, conn);
-
-				classes.add(clz);
 			}
 		}
 		return classes;

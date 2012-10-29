@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.openrdf.model.URI;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.memory.MemoryStore;
+import org.openrdf.sail.memory.model.MemBNode;
 
 public class Generator {
 	protected Map<URI, String> generatePackageMappings(List<ClassDef> classes) {
@@ -69,18 +73,32 @@ public class Generator {
 			conn = repository.getConnection();
 			conn.add(rdfFile, "", RDFFormat.RDFXML);
 
-			final List<ClassDef> classes = ClassDef.loadClasses(conn);
+			final String q = "PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n" +
+					"SELECT ?p ?c ?x WHERE { ?p rdfs:domain ?x. OPTIONAL { ?x rdfs:comment ?c. }}";
+			final TupleQueryResult r = conn.prepareTupleQuery(QueryLanguage.SPARQL, q).evaluate();
 
-			final Generator g = new Generator();
-			final Map<URI, String> pkgs = g.generatePackageMappings(classes);
+			while (r.hasNext()) {
+				final BindingSet bs = r.next();
 
-			for (final ClassDef cd : classes) {
-				cd.generateClass(targetDir, pkgs);
+				// System.out.println(bs.getValue("p"));
+				// System.out.println(bs.getValue("c"));
+				// System.out.println(bs.getValue("x").getClass());
+
+				if (bs.getValue("x") instanceof MemBNode)
+					System.out.println(((MemBNode) bs.getValue("x")).getSubjectStatementList().get(1));
 			}
+
+			// final List<ClassDef> classes = ClassDef.loadClasses(conn);
+			//
+			// final Generator g = new Generator();
+			// final Map<URI, String> pkgs = g.generatePackageMappings(classes);
+			//
+			// for (final ClassDef cd : classes) {
+			// cd.generateClass(targetDir, pkgs);
+			// }
 
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 }
