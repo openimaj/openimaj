@@ -1,103 +1,163 @@
 package org.openimaj.rdf.owl2java;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openrdf.model.URI;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.memory.MemoryStore;
-import org.openrdf.sail.memory.model.MemBNode;
 
-public class Generator {
-	protected Map<URI, String> generatePackageMappings(List<ClassDef> classes) {
+/**
+ *
+ *
+ *
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @created 29 Oct 2012
+ * @version $Author$, $Revision$, $Date$
+ */
+public class Generator
+{
+	/**
+	 * Creates a cache of mappings that map URIs to package names.
+	 *
+	 * @param classes
+	 *            The list of classes to generate the package names for
+	 * @return A map of class URI to package name
+	 */
+	protected static Map<URI, String> generatePackageMappings(
+	        final Collection<ClassDef> classes )
+	{
 		final Map<URI, String> packageMapping = new HashMap<URI, String>();
 
-		for (final ClassDef cd : classes) {
-			if (!packageMapping.containsKey(cd.uri)) {
-				packageMapping.put(cd.uri, getPackageName(cd.uri));
+		for( final ClassDef cd : classes )
+		{
+			if( !packageMapping.containsKey( cd.uri ) )
+			{
+				packageMapping.put( cd.uri, Generator.getPackageName( cd.uri ) );
 			}
 		}
 		return packageMapping;
 	}
 
-	protected String getPackageName(URI uri) {
+	/**
+	 * From the given URI will attempt to create a java package name by
+	 * reversing all the elements and separating with dots.
+	 *
+	 * @param uri
+	 *            The URI to get a package name for.
+	 * @return The Java package name
+	 */
+	protected static String getPackageName( final URI uri )
+	{
 		String ns = uri.getNamespace();
 
-		if (ns.contains("//"))
-			ns = ns.substring(ns.indexOf("//") + 2);
+		if( ns.contains( "//" ) ) ns = ns.substring( ns.indexOf( "//" ) + 2 );
 
-		if (!ns.contains("/"))
-			return ns;
+		if( !ns.contains( "/" ) ) return ns;
 
-		String last = ns.substring(ns.indexOf("/"));
-		if (last.contains("#"))
-			last = last.substring(0, last.indexOf("#"));
-		if (last.contains("."))
-			last = last.substring(0, last.indexOf("."));
+		String last = ns.substring( ns.indexOf( "/" )+1 );
 
-		last = last.replace("/", ".");
+		if( last.contains( "#" ) )
+			last = last.substring( 0, last.indexOf( "#" ) );
 
-		String first = ns.substring(0, ns.indexOf("/"));
+		if( last.contains( "." ) )
+			last = last.substring( 0, last.indexOf( "." ) );
 
-		final String[] parts = first.split("\\.");
+		last = last.replace( "/", "." );
+		last = last.replace( "-", "_" );
+
+		String first = ns.substring( 0, ns.indexOf( "/" ) );
+
+		final String[] parts = first.split( "\\." );
 		first = "";
-		for (int i = parts.length - 1; i >= 0; i--) {
+		for( int i = parts.length - 1; i >= 0; i-- )
+		{
+			if( parts[i].charAt(0) < 65 || parts[i].charAt(0) > 122 )
+				first += "_";
+
 			first += parts[i];
-			if (i != 0)
-				first += ".";
+			if( i != 0 ) first += ".";
 		}
 
-		return first + last;
+		String lastBit = "";
+		if( last.indexOf( "." ) == -1 )
+			lastBit = last;
+		else
+		{
+			for( final String s : last.split( "\\." ) )
+			{
+				lastBit += ".";
+				if( s.charAt(0) < 65 || s.charAt(0) > 122 )
+						lastBit += "_"+s;
+				else	lastBit += s;
+			}
+		}
+
+		return first + lastBit;
 	}
 
-	public static void main(String[] args) throws RepositoryException {
-		final File rdfFile = new File("/Users/jsh2/Downloads/arcomem-data-model.owl");
-		final File targetDir = new File("/Users/jsh2/Desktop/test");
+	/**
+	 *
+	 * @param args
+	 * @throws RepositoryException
+	 */
+	public static void main( final String[] args ) throws RepositoryException
+	{
+		if( args.length < 2 )
+		{
+			System.out.println( "Usage: Generator <RDF-File> <Target-Directory>");
+			System.exit(1);
+		}
 
-		targetDir.mkdirs();
+		final File rdfFile = new File( args[0] );
+		final File targetDir = new File( args[1] );
 
-		final Repository repository = new SailRepository(new MemoryStore());
+		if( !rdfFile.exists() )
+		{
+			System.out.println( "The RDF file does not exist: " + rdfFile );
+			System.exit( 1 );
+		}
+
+		if( !targetDir.exists() )
+		{
+			System.out.println( "The target directory does not exist: "
+			        + targetDir );
+			System.exit( 1 );
+		}
+
+		// Create a new memory store into which we'll plonk all the RDF
+		final Repository repository = new SailRepository( new MemoryStore() );
 		repository.initialize();
 
-		RepositoryConnection conn = null;
-		try {
-			conn = repository.getConnection();
-			conn.add(rdfFile, "", RDFFormat.RDFXML);
+		try
+		{
+			// Plonk all the RDF into the store
+			final RepositoryConnection conn = repository.getConnection();
+			conn.add( rdfFile, "", RDFFormat.RDFXML );
 
-			final String q = "PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n" +
-					"SELECT ?p ?c ?x WHERE { ?p rdfs:domain ?x. OPTIONAL { ?x rdfs:comment ?c. }}";
-			final TupleQueryResult r = conn.prepareTupleQuery(QueryLanguage.SPARQL, q).evaluate();
+			// Now we'll get all the classes from the ontology
+			final Map<URI, ClassDef> classes = ClassDef.loadClasses( conn );
 
-			while (r.hasNext()) {
-				final BindingSet bs = r.next();
+			// Try to generate the package mappings for the classes
+			final Map<URI, String> pkgs = Generator.generatePackageMappings(
+					classes.values() );
 
-				// System.out.println(bs.getValue("p"));
-				// System.out.println(bs.getValue("c"));
-				// System.out.println(bs.getValue("x").getClass());
-
-				if (bs.getValue("x") instanceof MemBNode)
-					System.out.println(((MemBNode) bs.getValue("x")).getSubjectStatementList().get(1));
+			// Now we'll go through each of the class definitions and generate
+			// interfaces and classes
+			for( final ClassDef cd : classes.values() )
+			{
+				cd.generateInterface( targetDir, pkgs, classes );
+				cd.generateClass( targetDir, pkgs, classes, true, true, true );
 			}
-
-			// final List<ClassDef> classes = ClassDef.loadClasses(conn);
-			//
-			// final Generator g = new Generator();
-			// final Map<URI, String> pkgs = g.generatePackageMappings(classes);
-			//
-			// for (final ClassDef cd : classes) {
-			// cd.generateClass(targetDir, pkgs);
-			// }
-
-		} catch (final Exception e) {
+		}
+		catch( final Exception e )
+		{
 			e.printStackTrace();
 		}
 	}
