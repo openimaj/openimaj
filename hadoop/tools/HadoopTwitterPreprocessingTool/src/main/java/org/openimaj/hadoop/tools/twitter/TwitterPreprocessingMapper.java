@@ -45,15 +45,15 @@ import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 
 /**
- * This mapper loads arguments for the {@link AbstractTwitterPreprocessingToolOptions} from the {@link HadoopTwitterPreprocessingTool#ARGS_KEY} 
- * variable (once per in memory mapper) and uses these to preprocess tweets. 
+ * This mapper loads arguments for the {@link AbstractTwitterPreprocessingToolOptions} from the {@link HadoopTwitterPreprocessingTool#ARGS_KEY}
+ * variable (once per in memory mapper) and uses these to preprocess tweets.
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
 	private static HadoopTwitterPreprocessingToolOptions options = null;
 	private static List<TwitterPreprocessingMode<?>> modes = null;
-	
+
 	protected static synchronized void loadOptions(Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws IOException {
 		if (options == null) {
 			try {
@@ -67,14 +67,14 @@ public class TwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullW
 			}
 		}
 	}
-	
+
 	@Override
 	protected void setup(Mapper<LongWritable, Text, NullWritable, Text>.Context context)throws IOException, InterruptedException{
 		loadOptions(context);
 	}
 
 	@Override
-	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
+	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException
 	{
 		USMFStatus status = new USMFStatus(GeneralJSONTwitter.class);
 		status.fillFromString(value.toString());
@@ -85,7 +85,7 @@ public class TwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullW
 		StringWriter outTweetString = new StringWriter();
 		PrintWriter outTweetWriter = new PrintWriter(outTweetString);
 		try {
-			options.ouputMode().output(status, outTweetWriter );
+			options.ouputMode().output(options.convertToOutputFormat(status), outTweetWriter );
 			context.write(NullWritable.get(), new Text(outTweetString.getBuffer().toString()));
 		} catch (Exception e) {
 			System.err.println("Failed to write tweet: " + status.text);

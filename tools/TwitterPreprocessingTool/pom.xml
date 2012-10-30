@@ -108,7 +108,6 @@
 							<execution>
 								<configuration>
 									<finalName>TrendminerTool-mini</finalName>
-									<minimizeJar>true</minimizeJar>
 									<filters>
 										<filter>
 											<artifact>*:*</artifact>

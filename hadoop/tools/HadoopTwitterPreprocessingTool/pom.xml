@@ -14,10 +14,8 @@
   <name>HadoopTwitterPreprocessingTool</name>
   <url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopTwitterPreprocessingTool</url>
   <inceptionYear>2011</inceptionYear>
-  <description>
-		Tool for clustering and quantising features using Map-Reduce 
-		jobs on a Hadoop cluster.
-    </description>
+  <description>Tool for clustering and quantising features using Map-Reduce 
+    jobs on a Hadoop cluster.</description>
   <licenses>
     <license>
       <name>New BSD</name>
@@ -78,7 +76,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.openimaj.tools</groupId>
@@ -124,7 +121,6 @@
               <execution>
                 <configuration>
                   <finalName>HadoopTrendminerTool-mini</finalName>
-                  <minimizeJar>true</minimizeJar>
                   <filters>
                     <filter>
                       <artifact>*:*</artifact>
@@ -138,7 +134,7 @@
                   <transformers>
                     <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                       <manifestEntries>
-                        <Main-Class>org.openimaj.tools.twitter.HadoopTwitterPreprocessingTool</Main-Class>
+                        <Main-Class>org.openimaj.hadoop.tools.twitter.HadoopTwitterPreprocessingTool</Main-Class>
                       </manifestEntries>
                     </transformer>
                     <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">

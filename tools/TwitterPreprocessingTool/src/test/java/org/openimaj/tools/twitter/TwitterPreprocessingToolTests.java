@@ -82,6 +82,8 @@ public class TwitterPreprocessingToolTests {
 	private static final String RAW_FEWER_TWITTER = "/org/openimaj/twitter/tweets_fewer.txt";
 	private static final String BROKEN_RAW_TWITTER = "/org/openimaj/twitter/broken_raw_tweets.txt";
 	private static final String MONTH_LONG_TWITTER = "/org/openimaj/twitter/sample-2010-10.json";
+	private static final String RETWEETED_STATUS = "/org/openimaj/twitter/deletedRetweetedTweets.json";
+	private static final String ACCIDENTLY_BROKEN = "/org/openimaj/twitter/accidentlyBrokenTweet.json";
 
 	private File jsonTwitterInputFile;
 	private File jsonTwitterUTFInputFile;
@@ -93,6 +95,9 @@ public class TwitterPreprocessingToolTests {
 	private File jsonGeoTwitterInputFile;
 
 	private File monthLongTwitterInputFile;
+	private File retweetedStatusFile;
+
+	private File accidentlyBrokenFile;
 
 	/**
 	 * @throws IOException
@@ -106,6 +111,8 @@ public class TwitterPreprocessingToolTests {
 		rawFewerTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_FEWER_TWITTER));
 		brokenRawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(BROKEN_RAW_TWITTER));
 		monthLongTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(MONTH_LONG_TWITTER));
+		retweetedStatusFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RETWEETED_STATUS));
+		accidentlyBrokenFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(ACCIDENTLY_BROKEN));
 
 		commandFormat = "-i %s -o %s -m %s -om %s -rm -q";
 	}
@@ -219,6 +226,40 @@ public class TwitterPreprocessingToolTests {
 		TwitterPreprocessingTool.main(commandArgsArr);
 		LanguageDetectionMode m = new LanguageDetectionMode();
 		assertTrue(checkSameAnalysis(jsonTwitterInputFile,languageOutJSON,m));
+		languageOutJSON.delete();
+	}
+
+	/**
+	 * detect language using json
+	 *
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetRetweetedStatus() throws IOException{
+		String mode = "LANG_ID";
+		File languageOutJSON = folder.newFile("retweetedStatus.json");
+		String commandArgs = String.format(commandFormat,retweetedStatusFile,languageOutJSON,mode,"APPEND");
+		String[] commandArgsArr = commandArgs.split(" ");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		LanguageDetectionMode m = new LanguageDetectionMode();
+		assertTrue(checkSameAnalysis(retweetedStatusFile,languageOutJSON,m));
+		languageOutJSON.delete();
+	}
+
+	/**
+	 * detect language using json
+	 *
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetAccidentlyBrokenStatus() throws IOException{
+		String mode = "LANG_ID";
+		File languageOutJSON = folder.newFile("accidentlyBroken.json");
+		String commandArgs = String.format(commandFormat,accidentlyBrokenFile,languageOutJSON,mode,"APPEND");
+		String[] commandArgsArr = commandArgs.split(" ");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		LanguageDetectionMode m = new LanguageDetectionMode();
+		assertTrue(checkSameAnalysis(accidentlyBrokenFile,languageOutJSON,m));
 		languageOutJSON.delete();
 	}
 
@@ -395,7 +436,7 @@ public class TwitterPreprocessingToolTests {
 		String stemMode = "TOKENISE";
 		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
 		String commandArgs = String.format(commandFormat,monthLongTwitterInputFile,stemOutRAW,stemMode,"APPEND");
-		commandArgs += " -prf GREP -r [mM][uU][sS][iI][cC]";
+		commandArgs += " -prf GREP -r .*a.*";
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Date Filtering");
 		TwitterPreprocessingTool.main(commandArgsArr);
@@ -405,6 +446,7 @@ public class TwitterPreprocessingToolTests {
 		FileTwitterStatusList<USMFStatus> fldate = FileTwitterStatusList.readUSMF(stemOutRAW,"UTF-8");
 		System.out.println(fldate.size());
 	}
+
 
 	/**
 	 * see if the output can be shurnk down

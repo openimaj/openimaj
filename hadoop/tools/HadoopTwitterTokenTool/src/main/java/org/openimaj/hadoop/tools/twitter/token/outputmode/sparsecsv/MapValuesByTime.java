@@ -51,15 +51,15 @@ import org.openimaj.util.pair.IndependentPair;
  *
  */
 public class MapValuesByTime extends Mapper<Text,BytesWritable,LongWritable,BytesWritable>{
-	
-	
+
+
 	/**
 	 * construct the map instance (do nothing)
 	 */
 	public MapValuesByTime() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	@Override
 	public void setup(Mapper<Text,BytesWritable,LongWritable,BytesWritable>.Context context) throws IOException, InterruptedException {
 		loadOptions(context);
@@ -78,17 +78,19 @@ public class MapValuesByTime extends Mapper<Text,BytesWritable,LongWritable,Byte
 			}
 		}
 	}
-	
+
 	@Override
 	public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,LongWritable,BytesWritable>.Context context) throws IOException, InterruptedException{
 		try {
 			if(!wordIndex.containsKey(key.toString())) return;
+			System.out.println("Mapping values for word: " + key);
 			final int wordI = (int)((long)(wordIndex.get(key.toString()).secondObject()));
 			IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
 				@Override
 				protected Object readValue(DataInput in) throws IOException {
 					WordDFIDF idf = new WordDFIDF();
 					idf.readBinary(in);
+					System.out.println("... Found (" + key + ") at time: " + idf.timeperiod);
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					DataOutputStream dos = new DataOutputStream(baos);
 					idf.writeBinary(dos);
@@ -107,6 +109,6 @@ public class MapValuesByTime extends Mapper<Text,BytesWritable,LongWritable,Byte
 			e.printStackTrace();
 			System.err.println("Couldnt read word or timeperiod from word: " + key);
 		}
-		
+
 	}
 }

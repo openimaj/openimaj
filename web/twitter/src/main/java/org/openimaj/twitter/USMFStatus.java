@@ -228,11 +228,23 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 			jsonInstance = gson.fromJson(line, generalJSONclass);
 		} catch (Throwable e) {
 			// Could not parse the line, invalid json.
+			e.printStackTrace();
 		}
+
 		if (jsonInstance == null) {
 			this.text = line;
 		} else {
 			jsonInstance.fillUSMF(this);
+			if(this.id == 0){
+				// a very good sign that this tweet was accidently broken, try using it's text to fill.
+				this.fillFromString(text);
+				if(id != 0){
+					System.out.println("successfully corrected broken tweet");
+				}else{
+					System.out.println("failed to correct broken tweet\n The line of the failed tweet was:\n" + line + "\nThe failed tweet.text was:\n" + text);
+				}
+				return;
+			}
 		}
 
 		if (this.text == null && this.analysis.size() == 0) {

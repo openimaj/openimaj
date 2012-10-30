@@ -43,9 +43,9 @@ public enum ReducerModeOption implements CmdLineOptionsProvider {
 	NULL {
 	},
 	/**
-	 * one output per day 
+	 * one output per day
 	 */
-	DAY_SPLIT {
+	IDENTITY {
 	}
 	;
 

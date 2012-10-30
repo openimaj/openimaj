@@ -56,9 +56,9 @@ import com.jmatio.types.MLSparse;
 
 /**
  * Writes each word,count
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReduceValuesByTime extends Reducer<LongWritable, BytesWritable, NullWritable, Text> {
 	/**
@@ -95,11 +95,11 @@ public class ReduceValuesByTime extends Reducer<LongWritable, BytesWritable, Nul
 			}
 		}
 	}
-
 	@Override
-	public void reduce(LongWritable timeslot, Iterable<BytesWritable> manylines, Reducer<LongWritable, BytesWritable, NullWritable, Text>.Context context) {
+	public void reduce(LongWritable timeslot, Iterable<BytesWritable> manylines, Reducer<LongWritable, BytesWritable, NullWritable, Text>.Context context) throws IOException, InterruptedException {
 		try {
 			if (matlabOut) {
+				System.out.println("Creating matlab file for timeslot: " + timeslot);
 				createWriteToMatlab(timeslot, manylines);
 			}
 			else {
@@ -122,11 +122,12 @@ public class ReduceValuesByTime extends Reducer<LongWritable, BytesWritable, Nul
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Couldn't reduce to final file");
+			throw new IOException(e);
 		}
 	}
 
 	private void createWriteToMatlab(LongWritable timeslot, Iterable<BytesWritable> manylines) throws IOException {
-
+		System.out.println("Creating matlab file for timeslot: " + timeslot);
 		MLSparse matarr = new MLSparse(String.format("values_%d", timeslot.get()), new int[] { wordIndex.size(), 2 }, 0, wordIndex.size() * 2);
 		long Ttf = 0;
 		long tf = 0;

@@ -41,10 +41,10 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode
 
 /**
  * Create a sparse CSV token output. The directory created contains 3 files:
- * 	words/ : contains a list of words ordered by count across all time. 
+ * 	words/ : contains a list of words ordered by count across all time.
  * 	times/ : contains a list of times ordered by count of all tweets
  * 	values/ : a list of (wordIndex,timeIndex,wordTimeCount,tweetTimeCount,tweetCount,wordCount)
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
@@ -53,28 +53,28 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 	private MultiStagedJob stages;
 	@Option(name="--value-reduce-split", aliases="-vrs", required=false, usage="The number of reducers to use when spitting out the DFIDF values")
 	int valueSplitReduce = 1;
-	
+
 	@Option(name="--word-occurence-threshold", aliases="-wot", required=false, usage="The number of times a given word must appear total throughout the time period before it is involved in the count and index")
 	int wordCountThreshold = 0;
-	
+
 	@Option(name="--word-time-occurence-threshold", aliases="-wtot", required=false, usage="The number of times a given word must appear in one or more time period before the word is chosen for indexing")
 	int wordTimeCountThreshold = 0;
-	
+
 	@Option(name="--top-n-words", aliases="-tnw", required=false, usage="Select only the top n words (as ordered by total occurence in the time period)")
 	int topNWords = -1;
-	
+
 	@Option(name="--sort-value-by-time", aliases="-svbt", required=false, usage="This flag sorts value by time instead of word")
 	boolean sortValueByTime = false;
-	
+
 	@Option(name="--matlab-output", aliases="-matlab", required=false, usage="This flag sorts value by time instead of word")
 	boolean matlabOutput = false;
 	@Override
 	public void write(
-			HadoopTwitterTokenToolOptions opts, 
+			HadoopTwitterTokenToolOptions opts,
 			TwitterTokenMode completedMode) throws Exception{
-		
+
 		HadoopToolsUtil.validateOutput(outputPath,replace);
-		
+
 		this.stages = new MultiStagedJob(
 				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
@@ -95,7 +95,7 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 		stages.queueStage(new TimeIndex().stage());
 		final Path timeIndex = stages.runAll();
 		// 3. Write all the values (loading in the words and times)
-		
+
 		this.stages = new MultiStagedJob(
 				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),

@@ -54,7 +54,7 @@ public abstract class WritableEnumCounter<T extends Enum<?>> implements ReadWrit
 	public WritableEnumCounter() {
 		this.values = new HashMap<T, Long>();
 	}
-	
+
 	/**
 	 * intitalise the global stats from some counters
 	 * @param counters the counters to look for the enum types in
@@ -84,6 +84,10 @@ public abstract class WritableEnumCounter<T extends Enum<?>> implements ReadWrit
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
+		if(!(in.hasNextLine())){
+			System.out.println("WritableEnumCounter has no next line? weird?");
+			return;// not sure why this would happen?
+		}
 		int count = Integer.parseInt(in.nextLine());
 		for (int i = 0; i < count; i++) {
 			T type = valueOf(in.next());
@@ -116,8 +120,9 @@ public abstract class WritableEnumCounter<T extends Enum<?>> implements ReadWrit
 	 * @return the value for the given type
 	 */
 	public long getValue(T type) {
+		if(values == null)return 0;
 		return this.values.get(type);
 	}
-	
-	
+
+
 }

@@ -62,7 +62,7 @@ public class TldMain {
 		video.getNextFrame();
 		VideoDisplay<MBFImage> disp = VideoDisplay.createVideoDisplay(video);
 		disp.addVideoListener(new VideoDisplayListener<MBFImage>() {
-			
+
 			@Override
 			public void beforeUpdate(MBFImage frame) {
 				tracker.processFrame(frame.flatten());
@@ -70,14 +70,14 @@ public class TldMain {
 				frame.drawShape(tracker.currentBoundingBox, 3, RGBColour.RED);
 				frame.drawPoints(tracker.getTrackerPoints(), RGBColour.BLUE, 2);
 			}
-			
+
 			@Override
 			public void afterUpdate(VideoDisplay<MBFImage> display) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
+
 	}
 	private static Rectangle readBoundingBox() throws IOException {
 		File bbFile = new File(inputPath,"init.txt");
@@ -106,9 +106,9 @@ public class TldMain {
 				Integer o2Number = Integer.parseInt(o2.getName().split("[.]")[0]);
 				return o1Number.compareTo(o2Number);
 			}
-			
+
 		});
-		
+
 		return new MBFImageFileBackedVideo(Arrays.asList(fileList));
 	}
 }

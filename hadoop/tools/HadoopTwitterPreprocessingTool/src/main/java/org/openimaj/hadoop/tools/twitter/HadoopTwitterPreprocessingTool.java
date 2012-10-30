@@ -47,7 +47,7 @@ import org.openimaj.hadoop.tools.HadoopToolsUtil;
 
 /**
  * A hadoop implementation of twitter preprocessing
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
@@ -58,34 +58,35 @@ public class HadoopTwitterPreprocessingTool extends StageRunner {
 	 * where arguments are held
 	 */
 	public static final String ARGS_KEY = "twitter.preprocessing.args";
-	
-	
+
+
 	@Override
 	public Stage<?, ?, ?, ?, ?, ?, ?, ?> stage() {
-		if(options.reducerMode == ReducerModeOption.NULL){
-			return new TextStage(){
-				@Override
-				public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
-					return SimpleTwitterPreprocessingMapper.class;
-				}
-				
-				@Override
-				public void setup(Job job) {
+
+		return new TextStage(){
+			@Override
+			public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
+				return SimpleTwitterPreprocessingMapper.class;
+			}
+
+			@Override
+			public void setup(Job job) {
+				if(options.reducerMode == ReducerModeOption.NULL){
 					job.setNumReduceTasks(0);
-					job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, HadoopToolsUtil.encodeArgs(args));
 				}
-				
-				@Override
-				public boolean lzoCompress() {
-					return options.lzoCompress;
+				else if(options.reducerMode == ReducerModeOption.IDENTITY){
+					job.setNumReduceTasks(1);
 				}
-			};
-		}
-		else{
-			return null;
-		}
+				job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, HadoopToolsUtil.encodeArgs(args));
+			}
+
+			@Override
+			public boolean lzoCompress() {
+				return options.lzoCompress;
+			}
+		};
 	}
-	
+
 	@Override
 	public Path output() {
 		return options.getOutputPath();
@@ -102,12 +103,12 @@ public class HadoopTwitterPreprocessingTool extends StageRunner {
 		options.prepare();
 		this.args = args;
 	}
-	
+
 	@Override
 	public boolean shouldWait() {
 		return !options.returnImmediately;
 	}
-	
+
 	/**
 	 * run the tool
 	 * @param args

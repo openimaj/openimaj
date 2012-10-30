@@ -41,48 +41,50 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import no.uib.cipr.matrix.DenseMatrix;
+
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.io.wrappers.Readable2DArrayBinary;
 import org.openimaj.io.wrappers.ReadableArrayBinary;
 import org.openimaj.io.wrappers.Writeable2DArrayBinary;
 import org.openimaj.io.wrappers.WriteableArrayBinary;
+import org.openimaj.math.matrix.MatrixUtils;
 
-import Jama.Matrix;
 
 /**
  * The data used by {@link LanguageDetector}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  *
  */
 
 public class LanguageModel implements ReadWriteableBinary{
-	Matrix naiveBayesPC; // N x 1 
-	Matrix naiveBayesPTC; // N x M
+	DenseMatrix naiveBayesPC; // N x 1
+	DenseMatrix naiveBayesPTC; // N x M
 	String[] naiveBayesClasses; // the language classes
-	TIntObjectHashMap<int[]> tk_output; 
+	TIntObjectHashMap<int[]> tk_output;
 	int[] tk_nextmove;
 	int naiveBayesNFeats;
-	
+
 	/**
 	 * do nothing
 	 */
 	public LanguageModel(){}
-	
+
 	/**
 	 * @param languageModel
 	 */
 	@SuppressWarnings("unchecked")
-	public LanguageModel(Map<String,Object> languageModel){	
+	public LanguageModel(Map<String,Object> languageModel){
 		List<Double> nb_pc_list = (List<Double>) languageModel.get("nb_pc");
 		double[][] nb_pc_darr = new double[1][nb_pc_list.size()];
 		int i = 0;
 		for (double value : nb_pc_list) {
 			nb_pc_darr[0][i++] = value;
 		}
-		naiveBayesPC = Matrix.constructWithCopy(nb_pc_darr);
-		
+		naiveBayesPC = new DenseMatrix(nb_pc_darr);
+
 		List<List<Double>> nb_ptc_list = (List<List<Double>>) languageModel.get("nb_ptc");
 		double[][] nb_ptc_darr = new double[nb_ptc_list.size()][nb_ptc_list.get(0).size()];
 		i = 0;
@@ -93,13 +95,13 @@ public class LanguageModel implements ReadWriteableBinary{
 			}
 			i++;
 		}
-		naiveBayesPTC = Matrix.constructWithCopy(nb_ptc_darr);
-		
-		this.naiveBayesNFeats = (naiveBayesPTC.getColumnDimension() * naiveBayesPTC.getRowDimension()) / naiveBayesPC.getColumnDimension();
-		
+		naiveBayesPTC = new DenseMatrix(nb_ptc_darr);
+
+		this.naiveBayesNFeats = (naiveBayesPTC.numColumns() * naiveBayesPTC.numRows()) / naiveBayesPC.numColumns();
+
 		List<String> nb_classes_list = (List<String>)languageModel.get("nb_classes");
 		naiveBayesClasses = nb_classes_list.toArray(new String[nb_classes_list.size()]);
-		
+
 		tk_output = new TIntObjectHashMap<int[]>();
 		Map<String,List<Double>> tk_output_map = (Map<String, List<Double>>) languageModel.get("tk_outp");
 		for (Entry<String,List<Double>> entry : tk_output_map .entrySet()) {
@@ -120,8 +122,8 @@ public class LanguageModel implements ReadWriteableBinary{
 
 	@Override
 	public void writeBinary(final DataOutput out) throws IOException {
-		new Writeable2DArrayBinary(naiveBayesPC.getArray()).writeBinary(out);
-		new Writeable2DArrayBinary(naiveBayesPTC.getArray()).writeBinary(out); 
+		new Writeable2DArrayBinary(MatrixUtils.mtjToDoubleArray(naiveBayesPC)).writeBinary(out);
+		new Writeable2DArrayBinary(MatrixUtils.mtjToDoubleArray(naiveBayesPTC)).writeBinary(out);
 		WriteableArrayBinary<String> stringWriter = new WriteableArrayBinary<String>(naiveBayesClasses) {
 			@Override
 			protected void writeValue(String v, DataOutput out) throws IOException {
@@ -161,13 +163,13 @@ public class LanguageModel implements ReadWriteableBinary{
 	public void readBinary(DataInput in) throws IOException {
 		Readable2DArrayBinary matrixReader = new Readable2DArrayBinary(null);
 		matrixReader.readBinary(in);
-		naiveBayesPC = Matrix.constructWithCopy(matrixReader.value);
-		
+		naiveBayesPC = new DenseMatrix(matrixReader.value);
+
 		matrixReader.readBinary(in);
-		naiveBayesPTC = Matrix.constructWithCopy(matrixReader.value);
-		
-		this.naiveBayesNFeats = (naiveBayesPTC.getColumnDimension() * naiveBayesPTC.getRowDimension()) / naiveBayesPC.getColumnDimension();
-		
+		naiveBayesPTC = new DenseMatrix(matrixReader.value);
+
+		this.naiveBayesNFeats = (naiveBayesPTC.numColumns() * naiveBayesPTC.numRows()) / naiveBayesPC.numColumns();
+
 		ReadableArrayBinary<String> readableClasses = new ReadableArrayBinary<String>(null){
 
 			@Override
@@ -182,7 +184,7 @@ public class LanguageModel implements ReadWriteableBinary{
 		};
 		readableClasses.readBinary(in);
 		this.naiveBayesClasses = readableClasses.value;
-		
+
 		int nTKOut = in.readInt();
 		this.tk_output = new TIntObjectHashMap<int[]>(nTKOut);
 		for (int i = 0; i < nTKOut; i++) {
@@ -198,19 +200,19 @@ public class LanguageModel implements ReadWriteableBinary{
 		this.tk_nextmove = new int[nextMoveLength];
 		for (int i = 0; i < nextMoveLength; i++) {
 			this.tk_nextmove[i] = in.readInt();
-		}	
+		}
 	}
-	
+
 	@Override
 	public boolean equals(Object other){
 		if(!(other instanceof LanguageModel)) return false;
 		final LanguageModel that = (LanguageModel) other;
-		
+
 		boolean equal = true;
 		equal = Arrays.deepEquals(this.naiveBayesClasses, that.naiveBayesClasses); if(!equal) return false;
 		equal = this.naiveBayesNFeats == that.naiveBayesNFeats; if(!equal) return false;
-		equal = Arrays.deepEquals(this.naiveBayesPC.getArray(),that.naiveBayesPC.getArray()); if(!equal) return false;
-		equal = Arrays.deepEquals(this.naiveBayesPTC.getArray(),that.naiveBayesPTC.getArray()); if(!equal) return false;
+		equal = Arrays.deepEquals(MatrixUtils.mtjToDoubleArray(this.naiveBayesPC),MatrixUtils.mtjToDoubleArray(that.naiveBayesPC)); if(!equal) return false;
+		equal = Arrays.deepEquals(MatrixUtils.mtjToDoubleArray(this.naiveBayesPTC),MatrixUtils.mtjToDoubleArray(that.naiveBayesPTC)); if(!equal) return false;
 		equal = Arrays.equals(this.tk_nextmove,that.tk_nextmove); if(!equal) return false;
 		equal = this.tk_output.forEachEntry(new TIntObjectProcedure<int[]>() {
 

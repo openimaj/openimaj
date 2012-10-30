@@ -67,9 +67,9 @@ import com.hp.hpl.jena.sparql.engine.binding.Binding;
 /**
  * Test a set of Jena production rules constructed in a distributable
  * {@link StormTopology}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteTopologyTest {
 
@@ -84,7 +84,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * prepare the output
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Before
@@ -95,7 +95,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * Load the nTriples file from /test.rdfs and the rules from /test.rules
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -120,6 +120,8 @@ public class ReteTopologyTest {
 		cluster.submitTopology("reteTopology", conf, topology);
 
 		Utils.sleep(5000);
+		cluster.killTopology("reteTopology");
+		cluster.shutdown();
 		SysRIOT.wireIntoJena();
 		final Model model = ModelFactory.createDefaultModel();
 		model.read(outURL.toString(), null, "N-TRIPLES");
@@ -138,8 +140,7 @@ public class ReteTopologyTest {
 		results = executeQuery(PREFIX + "SELECT ?person WHERE {?person rdfs:type example:EligibleDriver.}", model);
 		assertTrue(checkBinding(results, Var.alloc("person"), "http://example.com/John"));
 
-		cluster.killTopology("reteTopology");
-		cluster.shutdown();
+
 	}
 
 	private boolean checkBinding(ResultSet results, Var var, String... strings) {

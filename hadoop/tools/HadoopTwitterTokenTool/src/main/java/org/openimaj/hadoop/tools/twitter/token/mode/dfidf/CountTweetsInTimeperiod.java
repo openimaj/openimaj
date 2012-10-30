@@ -30,6 +30,7 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.dfidf;
 
 import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TLongObjectProcedure;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +43,7 @@ import java.util.Map.Entry;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
@@ -76,9 +78,9 @@ import com.jayway.jsonpath.JsonPath;
  * -1:<word:#freq,tweets:#freq> > reduce input: <timePeriod:
  * [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> reduce output:
  * <timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class CountTweetsInTimeperiod extends StageProvider {
 
@@ -141,14 +143,14 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	}
 
 	/**
-	 * 
+	 *
 	 * map input: tweetstatus # json twitter status with JSONPath to words map
 	 * output: <timePeriod: <word:#freq,tweets:#freq>,
 	 * -1:<word:#freq,tweets:#freq> >
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         <ss@ecs.soton.ac.uk>
-	 * 
+	 *
 	 */
 	public static class Map extends Mapper<LongWritable, Text, LongWritable, BytesWritable> {
 
@@ -264,9 +266,11 @@ public class CountTweetsInTimeperiod extends StageProvider {
 
 		@Override
 		protected void cleanup(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException, InterruptedException {
+			System.out.println("Cleaing up mapper, seen " + this.tweetWordMap.entrySet().size() + " time slots");
 			for (Entry<Long, TweetCountWordMap> tpMapEntry : this.tweetWordMap.entrySet()) {
 				Long time = tpMapEntry.getKey();
 				TweetCountWordMap map = tpMapEntry.getValue();
+				System.out.println("... time( " + time + ") seen " + map.getTweetWordMap().size() + " words");
 				ByteArrayOutputStream outarr = new ByteArrayOutputStream();
 				IOUtils.writeBinary(outarr, map);
 				byte[] arr = outarr.toByteArray();
@@ -281,49 +285,50 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	/**
 	 * Indetical to the {@link IdentityReducer} but constructs a time index
 	 * found in {@link #TIMEINDEX_FILE}
-	 * 
+	 *
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TimeIndexReducer extends
 			Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable> {
 		private TimeFrequencyHolder timeMap;
-		private TimeFrequency tf;
 
 		/**
-		 * 
+		 *
 		 */
 		public TimeIndexReducer() {
 			timeMap = new TimeFrequencyHolder();
-			tf = null;
 		}
 
 		@Override
 		protected void reduce(LongWritable time, Iterable<BytesWritable> values, Context context) throws IOException, InterruptedException {
-			TweetCountWordMap accum = new TweetCountWordMap();
-			for (BytesWritable tweetwordmapbytes : values) {
-				TweetCountWordMap tweetwordmap = null;
-				tweetwordmap = IOUtils.read(new ByteArrayInputStream(tweetwordmapbytes.getBytes()), TweetCountWordMap.class);
-				if (time.get() != Map.END_TIME.get()) {
-					accum.combine(tweetwordmap);
+			if (time.get() == Map.END_TIME.get()) {
+				// End time can be ignored entirley in terms of the time index, but still pass them on!
+				for (BytesWritable tweetwordmapbytes : values) {
+					context.write(time, tweetwordmapbytes);
 				}
-				context.write(time, tweetwordmapbytes);
 			}
-			if (time.get() != Map.END_TIME.get()) {
-				if (tf == null) {
-					tf = new TimeFrequency(time.get(), accum.getNTweets());
-				} else {
-					tf = tf.combine(time.get(), accum.getNTweets());
+			else{
+				TweetCountWordMap accum = new TweetCountWordMap();
+				for (BytesWritable tweetwordmapbytes : values) {
+					TweetCountWordMap tweetwordmap = null;
+					tweetwordmap = IOUtils.read(new ByteArrayInputStream(tweetwordmapbytes.getBytes()), TweetCountWordMap.class);
+					accum.combine(tweetwordmap);
+					context.write(time, tweetwordmapbytes);
 				}
+				TimeFrequency tf = new TimeFrequency(time.get(), accum.getNTweets());
 				timeMap.put(tf.time, tf);
 			}
+
 		}
 
 		@Override
 		protected void cleanup(Context context) throws IOException, InterruptedException {
 			String output = context.getConfiguration().getStrings(TIMEINDEX_LOCATION_PROP)[0];
-			Path indexOut = new Path(output);
+			Path indexOut = new Path(output + "/" + context.getTaskAttemptID());
+			System.out.println("Writing time index to: " + indexOut);
+			System.out.println("Timemap contains: " + this.timeMap.size());
 			CountTweetsInTimeperiod.writeTimeIndex(this.timeMap, indexOut);
 		}
 	}
@@ -332,9 +337,9 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	 * reduce input: <timePeriod:
 	 * [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> reduce output:
 	 * <timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class InMemoryCombiningReducer extends
 			Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable> {
@@ -375,7 +380,7 @@ public class CountTweetsInTimeperiod extends StageProvider {
 						job.setNumReduceTasks(0);
 					}
 					else {
-						job.setNumReduceTasks(1);
+						job.setNumReduceTasks(10);
 					}
 				}
 			}
@@ -439,7 +444,7 @@ public class CountTweetsInTimeperiod extends StageProvider {
 
 	/**
 	 * Write a timeindex to a {@link Path}
-	 * 
+	 *
 	 * @param timeMap
 	 * @param indexOut
 	 * @throws IOException
@@ -458,8 +463,9 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	}
 
 	/**
-	 * Read a {@link TimeFrequencyHolder} from a {@link Path}
-	 * 
+	 * Read a {@link TimeFrequencyHolder} from a {@link Path}. Path is assumed to be a directory containing
+	 * many {@link TimeFrequencyHolder} instances.
+	 *
 	 * @param indexOut
 	 * @return a new {@link TimeFrequencyHolder}
 	 * @throws IOException
@@ -468,15 +474,29 @@ public class CountTweetsInTimeperiod extends StageProvider {
 		if (!HadoopToolsUtil.fileExists(indexOut.toString())) {
 			return null;
 		}
-		TimeFrequencyHolder tfh = null;
-		FSDataInputStream in = null;
-		try {
+		System.out.println("Reading time index from: " + indexOut);
+		final TimeFrequencyHolder tfh = new TimeFrequencyHolder();
+
 			FileSystem fs = HadoopToolsUtil.getFileSystem(indexOut);
-			in = fs.open(indexOut);
-			tfh = IOUtils.read(in, TimeFrequencyHolder.class);
-		} finally {
-			in.close();
-		}
+			FileStatus[] indexParts = fs.listStatus(indexOut);
+			for (FileStatus fileStatus : indexParts) {
+				System.out.println("Reading index part: " + fileStatus.getPath());
+				FSDataInputStream in = null;
+				try {
+					in = fs.open(fileStatus.getPath());
+					TimeFrequencyHolder tempTfh = IOUtils.read(in, TimeFrequencyHolder.class);
+					tempTfh.forEachEntry(new TLongObjectProcedure<TimeFrequency>() {
+						@Override
+						public boolean execute(long a, TimeFrequency b) {
+							tfh.put(a, b); // This is safe because each time frequency should contain completely unique times!
+							return true;
+						}
+					});
+				} finally {
+					in.close();
+				}
+			}
+		tfh.recalculateCumulativeFrequencies();
 		return tfh;
 
 	}

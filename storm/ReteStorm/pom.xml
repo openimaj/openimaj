@@ -91,6 +91,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>eu.larkc.csparql</groupId>
+      <artifactId>CSPARQL</artifactId>
+      <version>0.7.4</version>
+    </dependency>
+    <dependency>
       <groupId>com.hp.hpl.jena</groupId>
       <artifactId>jena</artifactId>
       <version>2.6.4</version>

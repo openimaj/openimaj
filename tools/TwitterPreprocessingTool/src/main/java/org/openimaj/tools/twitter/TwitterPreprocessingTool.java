@@ -97,7 +97,11 @@ public class TwitterPreprocessingTool
 					@Override
 					public void doTask() {
 						for (TwitterPreprocessingMode<?> mode : modes) {
-							mode.process(twitterStatus);
+							try {
+								TwitterPreprocessingMode.results(twitterStatus, mode);
+							} catch (Exception e) {
+								System.err.println("Mode failed: " + mode);
+							}
 						}
 					}
 				};

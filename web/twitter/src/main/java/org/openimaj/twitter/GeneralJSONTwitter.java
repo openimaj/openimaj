@@ -50,6 +50,8 @@ import org.openimaj.twitter.USMFStatus.User;
  */
 public class GeneralJSONTwitter extends GeneralJSON {
 
+
+
 	/*
 	 * Twitter has no service field, therefore created.
 	 */
@@ -58,13 +60,18 @@ public class GeneralJSONTwitter extends GeneralJSON {
 	 */
 	public String s = "twitter";
 
+	/**
+	 * New style retweets
+	 */
+	public GeneralJSONTwitter retweeted_status;
+
 	/*
 	 * Named fields used by Gson to build object from JSON text
 	 */
 	/**
-	 *
+	 * This is a string because sometimes retweet_count can look like: "100+"
 	 */
-	public int retweet_count;
+	public String retweet_count;
 	/**
 	 *
 	 */
@@ -93,7 +100,7 @@ public class GeneralJSONTwitter extends GeneralJSON {
 	/**
 	 *
 	 */
-	public Map<String, ArrayList<Double>> coordinates = null;
+	public Object coordinates = null;
 	/**
 	 *
 	 */
@@ -130,6 +137,7 @@ public class GeneralJSONTwitter extends GeneralJSON {
 	 */
 	public String id_str;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void fillUSMF(USMFStatus status) {
 		// Populate message fields
@@ -137,8 +145,12 @@ public class GeneralJSONTwitter extends GeneralJSON {
 		status.date = this.created_at;
 		if (this.coordinates != null) {
 			double[] coords = new double[2];
-			coords[0] = this.coordinates.get("coordinates").get(0);
-			coords[1] = this.coordinates.get("coordinates").get(1);
+			ArrayList<Double> coordList = null;
+			if(coordinates instanceof Map){
+				coordList = (ArrayList<Double>)((Map<?,?>)coordinates).get("coordinates");
+			}
+			coords[0] = coordList.get(0);
+			coords[1] = coordList.get(1);
 			status.geo = coords;
 		}
 		status.id = this.id;
@@ -146,40 +158,42 @@ public class GeneralJSONTwitter extends GeneralJSON {
 		status.service = "Twitter";
 
 		// Check if user is null, and make invalid if it is
-		if (this.user == null)
-			return;
+		if (this.user != null)
+		{
+			// Populate the User
+			String key = "profile_image_url";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.avatar = (String) this.user.get(key);
+			key = "description";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.description = (String) this.user.get(key);
+			key = "id";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.id = (Double) this.user.get("id");
+			key = "lang";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.language = (String) this.user.get("lang");
+			key = "statuses_count";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.postings = (Double) this.user.get("statuses_count");
+			key = "name";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.real_name = (String) this.user.get("name");
+			key = "screen_name";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.name = (String) this.user.get("screen_name");
+			key = "followers_count";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.subscribers = (Double) this.user.get("followers_count");
+			key = "utc_offset";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.utc = (Double) this.user.get("utc_offset");
+			key = "url";
+			if (this.user.containsKey(key) && this.user.get(key) != null)
+				status.user.website = (String) this.user.get("url");
+		}
 
-		// Populate the User
-		String key = "profile_image_url";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.avatar = (String) this.user.get(key);
-		key = "description";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.description = (String) this.user.get(key);
-		key = "id";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.id = (Double) this.user.get("id");
-		key = "lang";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.language = (String) this.user.get("lang");
-		key = "statuses_count";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.postings = (Double) this.user.get("statuses_count");
-		key = "name";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.real_name = (String) this.user.get("name");
-		key = "screen_name";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.name = (String) this.user.get("screen_name");
-		key = "followers_count";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.subscribers = (Double) this.user.get("followers_count");
-		key = "utc_offset";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.utc = (Double) this.user.get("utc_offset");
-		key = "url";
-		if (this.user.containsKey(key) && this.user.get(key) != null)
-			status.user.website = (String) this.user.get("url");
+
 
 		// Populate the links
 		if (entities != null) {
@@ -224,11 +238,7 @@ public class GeneralJSONTwitter extends GeneralJSON {
 		this.source = status.application;
 		this.created_at = status.date;
 		this.geo = fillCoord(status.geo);
-		if (this.coordinates != null) {
-			double[] coords = new double[2];
-			coords[0] = this.coordinates.get("coordinates").get(0);
-			coords[1] = this.coordinates.get("coordinates").get(1);
-		}
+
 		this.id = status.id;
 		this.text = status.text;
 		if(status.reply_to!=null){

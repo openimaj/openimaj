@@ -6,47 +6,28 @@ import gnu.trove.procedure.TLongObjectProcedure;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.TimeFrequencyHolder.TimeFrequency;
 import org.openimaj.io.ReadWriteableBinary;
 
 /**
  * A {@link ReadWriteableBinary} {@link TLongObjectHashMap}
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class TimeFrequencyHolder extends TLongObjectHashMap<TimeFrequency> implements
 		ReadWriteableBinary {
 
 	/**
-	 * default
-	 */
-	public TimeFrequencyHolder() {
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		this.forEachEntry(new TLongObjectProcedure<TimeFrequency>() {
-
-			@Override
-			public boolean execute(long a, TimeFrequency b) {
-				builder.append(String.format("%d - %s\n", a, b));
-				return true;
-			}
-
-		});
-		return builder.toString();
-	}
-
-	/**
 	 * Holds the number of a thing at a moment in time and the total number of
 	 * that thing seen across all time
-	 * 
+	 *
+	 *
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TimeFrequency implements ReadWriteableBinary {
 		long time;
@@ -68,7 +49,7 @@ public class TimeFrequencyHolder extends TLongObjectHashMap<TimeFrequency> imple
 		/**
 		 * initialise, presumed to be at the beginning of some time period so
 		 * the cumulative == the period frequency
-		 * 
+		 *
 		 * @param time
 		 * @param frequency
 		 */
@@ -83,7 +64,7 @@ public class TimeFrequencyHolder extends TLongObjectHashMap<TimeFrequency> imple
 		public void readBinary(DataInput in) throws IOException {
 			time = in.readLong();
 			periodFrequency = in.readLong();
-			cumulativeFrequency = in.readLong();
+			this.cumulativeFrequency = periodFrequency;
 		}
 
 		@Override
@@ -95,31 +76,30 @@ public class TimeFrequencyHolder extends TLongObjectHashMap<TimeFrequency> imple
 		public void writeBinary(DataOutput out) throws IOException {
 			out.writeLong(time);
 			out.writeLong(periodFrequency);
-			out.writeLong(cumulativeFrequency);
 		}
 
 		/**
 		 * Given a {@link TimeFrequency} instance, keep count of cumulative
 		 * frequency and set the periodFrequency to the one furthest along in
 		 * time
-		 * 
+		 *
 		 * @param other
 		 * @return a new {@link TimeFrequency} instance
 		 */
 		public TimeFrequency combine(TimeFrequency other) {
 			TimeFrequency nHolder = new TimeFrequency();
 			TimeFrequency future, past;
-			if (this.time > other.time) {
+			if (this.time > other.time) { // this is the future time instance (so should be the time we remember)
 				future = this;
 				past = other;
 			}
-			else if (other.time > this.time) {
+			else if (other.time > this.time) { // other is the future time instance
 				future = other;
 				past = this;
 			}
-			else {
+			else { // equal time instances, choose other as the "true" value
 				nHolder.time = other.time;
-				nHolder.periodFrequency = other.periodFrequency;
+				nHolder.periodFrequency = other.periodFrequency ;
 				nHolder.cumulativeFrequency = other.cumulativeFrequency;
 				return nHolder;
 			}
@@ -139,6 +119,48 @@ public class TimeFrequencyHolder extends TLongObjectHashMap<TimeFrequency> imple
 			TimeFrequency ntf = new TimeFrequency(l, nTweets);
 			return combine(ntf);
 		}
+	}
+
+	/**
+	 * default
+	 */
+	public TimeFrequencyHolder() {
+	}
+
+	/**
+	 * For every held {@link TimeFrequency} reset {@link TimeFrequency} cumulativeFrequency = {@link TimeFrequency} periodFrequency
+	 * and then go through each in key-value order and use {@link TimeFrequency#combine(TimeFrequency)} to
+	 * calculate a cumulative count
+	 */
+	public void recalculateCumulativeFrequencies(){
+		long[] sortedKeys = this.keys();
+		Arrays.sort(sortedKeys);
+		TimeFrequency current = null;
+		for (int i = 0; i < sortedKeys.length; i++) {
+			long k = sortedKeys[i];
+			TimeFrequency held = this.get(k);
+			held.cumulativeFrequency = held.periodFrequency;
+			if(current == null)
+			{
+				current = held;
+			}
+			else{
+				current = current.combine(this.get(k));
+			}
+			this.put(k, current);
+		}
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		long[] sortedKeys = this.keys();
+		Arrays.sort(sortedKeys);
+		for (int i = 0; i < sortedKeys.length; i++) {
+			long k = sortedKeys[i];
+			builder.append(String.format("%d - %s\n", k, this.get(k)));
+		}
+		return builder.toString();
 	}
 
 	@Override

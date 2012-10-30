@@ -29,15 +29,22 @@
  */
 package org.openimaj.rdf.storm.topology.builder;
 
+import java.util.Set;
+
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
-import org.openimaj.rdf.storm.topology.spout.ReteAxiomSpout;
+import org.openimaj.rdf.storm.utils.CsparqlUtils.CSparqlComponentHolder;
 
 import backtype.storm.topology.TopologyBuilder;
 
-import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.reasoner.TriplePattern;
+import com.hp.hpl.jena.sparql.syntax.Element;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
+
+import eu.larkc.csparql.parser.StreamInfo;
 
 /**
  * {@link SPARQLReteTopologyBuilder} instances can accept the filter parts,
@@ -67,7 +74,7 @@ public abstract class SPARQLReteTopologyBuilder {
 		/**
 		 * The query being compiled
 		 */
-		public Query query;
+		public CSparqlComponentHolder query;
 
 		/**
 		 * the builder
@@ -79,16 +86,10 @@ public abstract class SPARQLReteTopologyBuilder {
 		public String source;
 
 		/**
-		 * The specific clause in the body of the rule, not null specifically in
-		 * the
-		 * {@link SPARQLReteTopologyBuilder#addFilter(SPARQLReteTopologyBuilderContext )}
-		 * call
+		 * the current element
 		 */
-		public Object filterClause;
-		/**
-		 * The name of the axiom spout
-		 */
-		public String axiomSpout;
+		public ElementPathBlock filterClause;
+
 
 		SPARQLReteTopologyBuilderContext() {
 		}
@@ -101,11 +102,10 @@ public abstract class SPARQLReteTopologyBuilder {
 		 * @param query
 		 *            the entire query being worked on
 		 */
-		public SPARQLReteTopologyBuilderContext(TopologyBuilder builder, String source, Query query) {
+		public SPARQLReteTopologyBuilderContext(TopologyBuilder builder, String source, CSparqlComponentHolder query) {
 			this.query = query;
 			this.builder = builder;
 			this.source = source;
-			this.axiomSpout = AXIOM_SPOUT;
 		}
 
 
@@ -123,48 +123,57 @@ public abstract class SPARQLReteTopologyBuilder {
 	 * @param query
 	 *            the query to compile
 	 */
-	public void compile(TopologyBuilder builder, Query query) {
-		String source = prepareSourceSpout(builder);
+	public void compile(TopologyBuilder builder, CSparqlComponentHolder query) {
+		String source = prepareSourceSpout(builder,query.streams);
 		SPARQLReteTopologyBuilderContext context = new SPARQLReteTopologyBuilderContext(builder, source, query);
-		ReteAxiomSpout axiomSpout = new ReteAxiomSpout();
-		context.builder.setSpout(context.axiomSpout, axiomSpout, 1);
 		initTopology(context);
 
-		// for (Rule rule : rules) {
-		// if (rule.isAxiom()) {
-		// axiomSpout.addAxiom(rule);
-		// }
-		// else
-		// {
-		// context.rule = rule;
-		// startRule(context);
-		//
-		// // Extract all the filter clauses
-		// for (int i = 0; i < rule.bodyLength(); i++) {
-		// Object clause = rule.getBodyElement(i);
-		// if (clause instanceof TriplePattern) {
-		// context.filterClause = clause;
-		// addFilter(context);
-		// }
-		// }
-		//
-		// // All the filters have been provided, create the joins!
-		// context.filterClause = null;
-		// createJoins(context);
-		//
-		// finishRule(context);
-		// }
-		// }
+		// Start the first, implied, outer group of the where clause
+		startGroup(context);
+		QueryExecutionFactory.create(context.query.simpleQuery);
+		System.out.println("Query binding variables: " + query.simpleQuery.getProjectVars());
+		// now handle the query pattern
+		handleElement(query.simpleQuery.getQueryPattern(),context);
+		// now close (finish, pop, whatever...) the implied outer group.
+		endGroup(context);
+
+		context.filterClause = null;
+		createJoins(context);
+		finishQuery(context);
+	}
+
+	private void handleElement(Element element, SPARQLReteTopologyBuilderContext context) {
+		if(element instanceof ElementPathBlock){
+			handleElement((ElementPathBlock)element, context);
+		}else if (element instanceof ElementGroup){
+			handleElement((ElementGroup)element, context);
+		}
+
+	}
+
+	private void handleElement(ElementPathBlock path, SPARQLReteTopologyBuilderContext context) {
+		context.filterClause = path;
+		addFilter(context);
+	}
+
+	private void handleElement(ElementGroup group, SPARQLReteTopologyBuilderContext context) {
+		startGroup(context); // start a new group.
+		for (Element elm : group.getElements()) {
+			handleElement(elm, context);
+		}
+		endGroup(context);
+
 	}
 
 	/**
-	 * Given a builder, add the source spout to the builder and return the name
+	 * Given a builder and a set of streams, add the source spout to the builder and return the name
 	 * of the source spout
 	 *
 	 * @param builder
+	 * @param streams
 	 * @return the name of the source spout
 	 */
-	public abstract String prepareSourceSpout(TopologyBuilder builder);
+	public abstract String prepareSourceSpout(TopologyBuilder builder,Set<StreamInfo> streams);
 
 	/**
 	 * Initialise the topology. Might be used to create and hold on to nodes
@@ -180,12 +189,18 @@ public abstract class SPARQLReteTopologyBuilder {
 	public abstract void initTopology(SPARQLReteTopologyBuilderContext context);
 
 	/**
-	 * Start a new rule. The {@link SPARQLReteTopologyBuilderContext#query} becomes
-	 * not null
+	 * Start a new group.
 	 *
 	 * @param context
 	 */
-	public abstract void startRule(SPARQLReteTopologyBuilderContext context);
+	public abstract void startGroup(SPARQLReteTopologyBuilderContext context);
+
+	/**
+	 * End the current group.
+	 *
+	 * @param context
+	 */
+	public abstract void endGroup(SPARQLReteTopologyBuilderContext context);
 
 	/**
 	 * Add a new filter clause. The
@@ -218,7 +233,7 @@ public abstract class SPARQLReteTopologyBuilder {
 	 *
 	 * @param context
 	 */
-	public abstract void finishRule(SPARQLReteTopologyBuilderContext context);
+	public abstract void finishQuery(SPARQLReteTopologyBuilderContext context);
 
 	protected String nextRuleName() {
 		unnamedRules += 1;

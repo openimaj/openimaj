@@ -61,7 +61,7 @@ import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class HadoopTwitterTokenToolTest {
 	@Rule
@@ -78,7 +78,7 @@ public class HadoopTwitterTokenToolTest {
 
 	/**
 	 * load files prepare outputs
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Before
@@ -109,7 +109,7 @@ public class HadoopTwitterTokenToolTest {
 
 	/**
 	 * A DFIDF test for tweets spread across a month
-	 * 
+	 *
 	 * @throws Exception§
 	 */
 	@Test
@@ -132,10 +132,10 @@ public class HadoopTwitterTokenToolTest {
 				WordDFIDFTimeSeriesCollection.class);
 		System.out.println(c);
 	}
-	
+
 	/**
 	 * A DFIDF test for tweets spread across a month
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -154,10 +154,10 @@ public class HadoopTwitterTokenToolTest {
 		Path p = new Path(resultsOutputLocation.getAbsolutePath());
 		System.out.println(p);
 	}
-	
+
 	/**
 	 * A DFIDF test for tweets spread across a month
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -176,10 +176,10 @@ public class HadoopTwitterTokenToolTest {
 		Path p = new Path(resultsOutputLocation.getAbsolutePath());
 		System.out.println(p);
 	}
-	
+
 	/**
 	 * A DFIDF test for tweets spread across a month
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -201,7 +201,7 @@ public class HadoopTwitterTokenToolTest {
 
 	/**
 	 * See whether jobs with some stages complete can be run
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -243,7 +243,7 @@ public class HadoopTwitterTokenToolTest {
 	/**
 	 * An incomplete job with a partially complete subjob that was in multiple
 	 * parts
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -262,7 +262,7 @@ public class HadoopTwitterTokenToolTest {
 
 	/**
 	 * test DFIDF mode on a file with stemmed tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -289,7 +289,7 @@ public class HadoopTwitterTokenToolTest {
 
 	/**
 	 * Test Stemming followed by DFIDF on a file which is plain json tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -310,7 +310,7 @@ public class HadoopTwitterTokenToolTest {
 	/**
 	 * test DFIDF mode on a file with stemmed tweets and output some word
 	 * statistics
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -332,7 +332,7 @@ public class HadoopTwitterTokenToolTest {
 	/**
 	 * test DFIDF mode on a file with stemmed tweets and output some word
 	 * statistics
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -363,7 +363,7 @@ public class HadoopTwitterTokenToolTest {
 	/**
 	 * test DFIDF mode on a file with stemmed tweets and output some word
 	 * statistics
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -390,7 +390,7 @@ public class HadoopTwitterTokenToolTest {
 
 	/**
 	 * Check the "grep" equivilant
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -413,7 +413,7 @@ public class HadoopTwitterTokenToolTest {
 
 	/**
 	 * Check the grep equivilant with the filtering mode
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -472,7 +472,7 @@ public class HadoopTwitterTokenToolTest {
 	/**
 	 * test DFIDF mode on a file with stemmed tweets and output some word
 	 * statistics
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test

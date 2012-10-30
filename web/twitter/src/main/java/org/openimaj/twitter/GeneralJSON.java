@@ -42,6 +42,7 @@ import java.util.Map;
 import org.openimaj.io.ReadWriteable;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 
 
@@ -52,34 +53,34 @@ import com.google.gson.Gson;
  * string structure. It is up to the extending programmer to implement their
  * object so that it is accurately filled by GSon. See more here
  * http://code.google.com/p/google-gson/
- * 
+ *
  * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
- * 
+ *
  */
 public abstract class GeneralJSON implements ReadWriteable{
-	
-	protected transient Gson gson = new Gson();
+
+	protected transient static Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
 	/**
 	 * This is the method that will be called by USMFStatus to fill itself with
 	 * the matching values from the extending class.
 	 * It is up to the extending programmer to carry this out as they see fit.
 	 * See GeneralJSONTwitter for a Twitter example.
-	 * 
+	 *
 	 * @param status = USMFStatus to be filled
 	 */
 	public abstract void fillUSMF(USMFStatus status);
-	
+
 	/**
 	 * This is the method that will be called to allow this object
 	 * to fill itself from a USMF object. Implementations must guarantee
 	 * that they hold on and copy internal ANALYSIS. we recommend the
 	 * helper function
-	 * 
+	 *
 	 * @param status = USMFStatus to be filled
 	 */
 	public abstract void fromUSMF(USMFStatus status);
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		throw new UnsupportedOperationException();
@@ -95,7 +96,7 @@ public abstract class GeneralJSON implements ReadWriteable{
 		throw new UnsupportedOperationException();
 
 	}
-	
+
 	@Override
 	public String asciiHeader() {
 		return "";
@@ -105,15 +106,15 @@ public abstract class GeneralJSON implements ReadWriteable{
 	public void writeASCII(PrintWriter out) throws IOException {
 		gson.toJson(this, out);
 	}
-	
+
 	/**
 	 * analysos held in the object
 	 */
 	public Map<String, Object> analysis = new HashMap<String, Object>();
-	
+
 	/**
 	 * Convenience to allow writing of just the analysis to a writer
-	 * 
+	 *
 	 * @param outputWriter
 	 * @param selectiveAnalysis
 	 */
@@ -125,7 +126,7 @@ public abstract class GeneralJSON implements ReadWriteable{
 	/**
 	 * Convenience to allow writing of just the analysis and some status
 	 * information to a writer
-	 * 
+	 *
 	 * @param outputWriter
 	 * @param selectiveAnalysis
 	 * @param selectiveStatus
@@ -154,11 +155,11 @@ public abstract class GeneralJSON implements ReadWriteable{
 		}
 		gson.toJson(toOutput, outputWriter);
 	}
-	
+
 	/**
 	 * Add analysis to the analysis object. This is where all non twitter stuff
 	 * should go
-	 * 
+	 *
 	 * @param <T>
 	 *            The type of data being saved
 	 * @param annKey
@@ -182,7 +183,7 @@ public abstract class GeneralJSON implements ReadWriteable{
 	public <T> T getAnalysis(String name) {
 		return (T) this.analysis.get(name);
 	}
-	
+
 	/**
 	 * Get all the Analysis in JSON format.
 	 * @return String of JSON.
@@ -190,13 +191,13 @@ public abstract class GeneralJSON implements ReadWriteable{
 	public String analysisToJSON(){
 		return gson.toJson(analysis, Map.class);
 	}
-	
+
 	/**
 	 * @param other
 	 */
 	public void fillAnalysis(GeneralJSON other){
 		other.analysis = this.analysis;
 	}
-	
+
 
 }

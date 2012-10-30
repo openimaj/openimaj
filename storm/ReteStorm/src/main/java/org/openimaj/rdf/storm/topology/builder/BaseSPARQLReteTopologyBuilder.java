@@ -29,9 +29,16 @@
  */
 package org.openimaj.rdf.storm.topology.builder;
 
+import java.util.Set;
+
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 
+import backtype.storm.topology.BoltDeclarer;
 import backtype.storm.topology.TopologyBuilder;
+
+import com.hp.hpl.jena.sparql.core.TriplePath;
+
+import eu.larkc.csparql.parser.StreamInfo;
 
 
 /**
@@ -45,28 +52,50 @@ import backtype.storm.topology.TopologyBuilder;
  */
 public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBuilder {
 
+	/**
+	 * the name of the final bolt
+	 */
+	public static final String FINAL_TERMINAL = "final_term";
+	private BoltDeclarer finalTerminalBuilder;
+
 	@Override
-	public String prepareSourceSpout(TopologyBuilder builder) {
-		// TODO Auto-generated method stub
+	public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
 		return null;
 	}
 
 	@Override
 	public void initTopology(SPARQLReteTopologyBuilderContext context) {
-		// TODO Auto-generated method stub
+		ReteConflictSetBolt finalTerm = constructConflictSetBolt(context);
+		if (finalTerm != null)
+		{
+			this.finalTerminalBuilder = context.builder.setBolt(FINAL_TERMINAL, finalTerm,1); // There is explicity 1 and only 1 Conflict set
+		}
+	}
 
+	private ReteConflictSetBolt constructConflictSetBolt(SPARQLReteTopologyBuilderContext context) {
+		return new ReteConflictSetBolt();
 	}
 
 	@Override
-	public void startRule(SPARQLReteTopologyBuilderContext context) {
+	public void startGroup(SPARQLReteTopologyBuilderContext context) {
+		// Groups represent a join. One doesn't exist, construct the root group.
+		// if the root group exists, add a new group as a component to merge
+	}
+
+	@Override
+	public void endGroup(SPARQLReteTopologyBuilderContext context) {
 		// TODO Auto-generated method stub
 
 	}
+
 
 	@Override
 	public void addFilter(SPARQLReteTopologyBuilderContext context) {
-		// TODO Auto-generated method stub
-
+		for (TriplePath tp : context.filterClause.getPattern().getList()) {
+			if(tp.isTriple()){
+				// it is a simple triple, construct a normal filter
+			}
+		}
 	}
 
 	@Override
@@ -76,7 +105,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	}
 
 	@Override
-	public void finishRule(SPARQLReteTopologyBuilderContext context) {
+	public void finishQuery(SPARQLReteTopologyBuilderContext context) {
 		// TODO Auto-generated method stub
 
 	}

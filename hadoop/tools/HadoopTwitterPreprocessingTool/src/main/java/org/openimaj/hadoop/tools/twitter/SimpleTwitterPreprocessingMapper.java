@@ -29,9 +29,10 @@
  */
 package org.openimaj.hadoop.tools.twitter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.hadoop.io.LongWritable;
@@ -45,15 +46,16 @@ import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOption
 import org.openimaj.twitter.USMFStatus;
 
 /**
- * This mapper loads arguments for the {@link AbstractTwitterPreprocessingToolOptions} from the {@link HadoopTwitterPreprocessingTool#ARGS_KEY} 
- * variable (once per in memory mapper) and uses these to preprocess tweets. 
+ * This mapper loads arguments for the {@link AbstractTwitterPreprocessingToolOptions} from the {@link HadoopTwitterPreprocessingTool#ARGS_KEY}
+ * variable (once per in memory mapper) and uses these to preprocess tweets.
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
 	private HadoopTwitterPreprocessingToolOptions options = null;
 	private List<TwitterPreprocessingMode<?>> modes = null;
-	
+	private int complete;
+
 	@Override
 	protected void setup(Mapper<LongWritable, Text, NullWritable, Text>.Context context)throws IOException, InterruptedException{
 		try {
@@ -66,26 +68,32 @@ public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text,
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
+		complete = 0;
 	}
 
 	@Override
-	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
+	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException
 	{
 		USMFStatus status = new USMFStatus(options.statusType.type());
 		status.fillFromString(value.toString());
 		if(status.isInvalid()) return;
-		
+
 		if(options.preProcessesSkip(status)) return ;
 		for (TwitterPreprocessingMode<?> mode : modes) {
-			mode.process(status);
+			try {
+				TwitterPreprocessingMode.results(status, mode);
+			} catch (Exception e) {
+				System.err.println("Failed mode: " + mode);
+			}
 		}
 		if(options.postProcessesSkip(status)) return;
-		StringWriter outTweetString = new StringWriter();
-		PrintWriter outTweetWriter = new PrintWriter(outTweetString);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		OutputStreamWriter ow = new OutputStreamWriter(baos, "UTF-8");
+		PrintWriter outTweetWriter = new PrintWriter(ow);
 		try {
 			options.ouputMode().output(options.convertToOutputFormat(status), outTweetWriter );
-			
-			context.write(NullWritable.get(), new Text(outTweetString.getBuffer().toString()));
+			outTweetWriter.flush();
+			context.write(NullWritable.get(), new Text(baos.toByteArray()));
 		} catch (Exception e) {
 			System.err.println("Failed to write tweet: " + status.text);
 			System.err.println("With error: ");

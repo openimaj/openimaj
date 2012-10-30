@@ -12,7 +12,7 @@
   <version>1.0.6-SNAPSHOT</version>
   <name>sandbox</name>
   <description>A project for various tests that don't quite constitute
-		demos but might be useful to look at.</description>
+    demos but might be useful to look at.</description>
   <url>http://www.openimaj.org/openimaj-demos/sandbox</url>
   <inceptionYear>2011</inceptionYear>
   <licenses>
@@ -77,6 +77,11 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>com.googlecode.streamflyer-regex-fast</groupId>
+      <artifactId>streamflyer-regex-fast</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
       <artifactId>core-storm</artifactId>
       <groupId>org.openimaj.storm</groupId>
       <version>1.0.6-SNAPSHOT</version>
@@ -92,16 +97,15 @@
       <artifactId>jena</artifactId>
       <version>2.6.4</version>
       <exclusions>
-      <exclusion> 
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-      </exclusion>
-      <exclusion> 
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-      </exclusion>
-    </exclusions> 
-
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
@@ -171,12 +175,11 @@
       <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
       <exclusions>
-      <exclusion> 
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-      </exclusion>
-    </exclusions> 
-
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
@@ -280,7 +283,7 @@
       <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
-   	<dependency>
+    <dependency>
       <groupId>be.ac.ulg.montefiore.run.jahmm</groupId>
       <artifactId>jahmm</artifactId>
       <version>0.6.2</version>
@@ -335,8 +338,8 @@
   </build>
   <repositories>
     <repository>
-		<id>imageterrier-snapshots</id>
-		<url>http://snapshots.imageterrier.org</url>
-	</repository>	
+      <id>imageterrier-snapshots</id>
+      <url>http://snapshots.imageterrier.org</url>
+    </repository>
   </repositories>
 </project>
