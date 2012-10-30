@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.rdf.storm.topology.builder;
+package org.openimaj.rdf.storm.sparql.topology.builder;
 
 import java.util.Set;
 
@@ -60,57 +60,6 @@ public abstract class SPARQLReteTopologyBuilder {
 	 * The default name for the axiom spout
 	 */
 	public static final String AXIOM_SPOUT = "axiom_spout";
-
-	/**
-	 * A {@link SPARQLReteTopologyBuilderContext} holds variables needed by the
-	 * various stages of a {@link SPARQLReteTopologyBuilder}
-	 *
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
-	 *         (ss@ecs.soton.ac.uk)
-	 *
-	 */
-	public static class SPARQLReteTopologyBuilderContext {
-
-		/**
-		 * The query being compiled
-		 */
-		public CSparqlComponentHolder query;
-
-		/**
-		 * the builder
-		 */
-		public TopologyBuilder builder;
-		/**
-		 * the initial source of tuples
-		 */
-		public String source;
-
-		/**
-		 * the current element
-		 */
-		public ElementPathBlock filterClause;
-
-
-		SPARQLReteTopologyBuilderContext() {
-		}
-
-		/**
-		 * @param builder
-		 *            the Storm {@link TopologyBuilder}
-		 * @param source
-		 *            the Storm tuples
-		 * @param query
-		 *            the entire query being worked on
-		 */
-		public SPARQLReteTopologyBuilderContext(TopologyBuilder builder, String source, CSparqlComponentHolder query) {
-			this.query = query;
-			this.builder = builder;
-			this.source = source;
-		}
-
-
-
-	}
 
 	private int unnamedRules = 0;
 
