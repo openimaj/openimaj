@@ -150,7 +150,6 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 					String currentBoltName = names.next();
 					StormReteBolt currentBolt = rule.get(currentBoltName);
 					String[] currentVars = currentBolt.getVars();
-					currentBolt.getRule();
 					// Remove the bolt from the rule, so that it does not attempt to match against itself.
 					// If no joins are made then it will be added to the nextLevel map.
 					names.remove();
@@ -176,7 +175,11 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 									String newJoinName = VariableIndependentReteRuleToStringUtils.clauseToString(template);
 									StormReteBolt newJoin;
 									if (bolts.containsKey(newJoinName)){
+										// If an equivalent bolt exists, use that bolt, setting the bolt's output
+										// variables to match those of the current rule.  This is done purely for
+										// compilation purposes.
 										newJoin = bolts.get(newJoinName);
+										newJoin.setVars(StormReteBolt.extractFields(template));
 									}else{
 										newJoin = constructReteJoinBolt(currentBoltName, otherBoltName, template);
 										bolts.put(newJoinName, newJoin);
@@ -245,8 +248,8 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	 */
 	public void connectJoinBolt(ReteTopologyBuilderContext context, String name, StormReteJoinBolt bolt) {
 		BoltDeclarer midBuild = context.builder.setBolt(name, bolt, 1);
-		midBuild.fieldsGrouping(bolt.getLeftBolt(), bolt.getJoinFields());
-		midBuild.fieldsGrouping(bolt.getRightBolt(), bolt.getJoinFields());
+		midBuild.fieldsGrouping(bolt.getLeftBolt(), bolt.getLeftJoinFields());
+		midBuild.fieldsGrouping(bolt.getRightBolt(), bolt.getRightJoinFields());
 	}
 
 	/**
@@ -319,6 +322,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	public StormReteJoinBolt constructReteJoinBolt(String left, String right, List<ClauseEntry> template) {
 		String[] currentVars = rule.get(left).getVars();
 		String[] otherVars = rule.get(right).getVars();
+		VariableIndependentReteRuleToStringUtils.sortClause(template);
 		String[] newVars = StormReteBolt.extractFields(template);
 		int[] templateLeft = new int[newVars.length];
 		int[] templateRight = new int[newVars.length];

@@ -29,14 +29,14 @@
  */
 package org.openimaj.rdf.storm.topology.bolt;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.bolt.RETEStormNode;
 import org.openimaj.rdf.storm.bolt.RETEStormQueue;
-import scala.actors.threadpool.Arrays;
-
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
@@ -97,15 +97,29 @@ public class StormReteJoinBolt extends StormReteBolt{
 	}
 	
 	/**
-	 * @return the Fields this bolt joins on.
+	 * @return the Fields output from the left bolt that this bolt joins on.
 	 */
-	@SuppressWarnings("unchecked")
-	public Fields getJoinFields(){
-		return new Fields( Arrays.asList(
-								StormReteBolt.extractJoinFields(
-										Arrays.asList( this.getRule().getBody() )
-								)
-						));
+	public Fields getLeftJoinFields(){
+		// extract the fields from the left bolt that this bolt joins on from the
+		// left match indices (the indices of the array, rather than the values).
+		List<String> fields = new ArrayList<String>();
+		for (int i = 0; i < matchLeft.length; i++)
+			if (matchLeft[i] >= 0)
+				fields.add("?"+i);
+		return new Fields(fields);
+	}
+	
+	/**
+	 * @return the Fields output from the right bolt that this bolt joins on.
+	 */
+	public Fields getRightJoinFields(){
+		// extract the fields from the right bolt that this bolt joins to from the
+		// left match indices (the values of the array, rather than the indices).
+		List<String> fields = new ArrayList<String>();
+		for (int i = 0; i < matchLeft.length; i++)
+			if (matchLeft[i] >= 0)
+				fields.add("?"+matchLeft[i]);
+		return new Fields(fields);
 	}
 
 	@Override

@@ -86,9 +86,9 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	protected Map stormConf;
 	
 	private final String ruleString;
-	private final String[] outputFields;
 	
 	private List<ClauseEntry> outputTemplate;
+	private String[] outputFields;
 	private Values toFire;
 	private boolean active;
 	
@@ -110,8 +110,8 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@SuppressWarnings("unchecked")
 	public StormReteBolt(final Rule rule){
 		this.ruleString = rule.toString();
-		this.outputTemplate = Arrays.asList(Rule.parseRule(this.ruleString).getHead());
-		this.outputFields = extractFields(this.outputTemplate);
+		this.outputTemplate = Arrays.asList(rule.getHead());
+		this.setVars(extractFields(this.outputTemplate));
 		this.outputTemplate = null;
 	}
 	
@@ -157,6 +157,14 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 */
 	public String[] getVars(){
 		return this.outputFields;
+	}
+	
+	/**
+	 * Set the names of the variable fields output from this Bolt.
+	 * @param newVars
+	 */
+	public void setVars(String[] newVars){
+		this.outputFields = newVars;
 	}
 	
 	/**
@@ -222,8 +230,9 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		List<String> fields = new ArrayList<String>();
+		for (int i = 0; i < outputFields.length; i++)
+			fields.add("?"+i);
 		fields.addAll(Arrays.asList(BASE_FIELDS));
-		fields.addAll(Arrays.asList(outputFields));
 		declarer.declare(new Fields(fields));
 	}
 	

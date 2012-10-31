@@ -29,13 +29,11 @@
  */
 package org.openimaj.rdf.storm.topology.bolt;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.bolt.RETEStormNode;
-import scala.actors.threadpool.Arrays;
-
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
@@ -81,8 +79,6 @@ public class StormReteFilterBolt extends StormReteBolt {
 	@Override
 	public void execute(Tuple input) {
 		boolean isAdd = input.getBooleanByField(BASE_FIELDS[IS_ADD]);
-		@SuppressWarnings("unchecked")
-		List<String> outFields = Arrays.asList(this.getVars());
 		if(logger.isDebugEnabled()){
 			logger.debug(String.format("Executing: %s",filter));
 		}
@@ -95,51 +91,74 @@ public class StormReteFilterBolt extends StormReteBolt {
 			Triple t = it.next();
 			logger.debug(String.format("Filter passed triple: %s",t));
 			
-			// Create an array of Objects of equal size to the number of expected variables,
+			// Create an ArrayList of Nodes of equal size to the number of expected variables,
 			// plus all base ReteStorm fields (graph, isAdd, timestamp, etc, as defined in
 			// FlexibleReteBolt)
-			Object[] vals = new Object[this.getVars().length];
+			Values vals = new Values();
+			vals.ensureCapacity(this.getVars().length + BASE_FIELDS.length);
+			int varCount = 0;
+			Map<String,Integer> vars = new HashMap<String,Integer>();
 			
 			// For each part of the triple, check if the Pattern declares it to be variable
 			// (or a functor, in the case of Objects)
-			if (filter.getSubject().isVariable())
-				// if it is a variable, insert its value into the array of to-be-Values
-				vals[outFields.indexOf(filter.getSubject().getName())] = t.getSubject();
+			if (filter.getSubject().isVariable()){
+				// if it is a variable, insert its value into the array of Values
+				vals.set(varCount, t.getSubject());
+				vars.put(filter.getSubject().getName(),varCount++);
+			}
 			
 			if (filter.getPredicate().isVariable())
-				vals[outFields.indexOf(filter.getPredicate().getName())] = t.getPredicate();
+				// For each subsequent variable, check that the variable has not already been
+				// seen within this triple. 
+				if (vars.containsKey(filter.getPredicate().getName())){
+					// If it has and the values are different, then the Triple is not a match, so
+					// do not fire, and move onto the next Triple.
+					if ( ! t.getPredicate().sameValueAs( vals.get( vars.get( filter.getPredicate().getName() ) ) ) )
+						continue;
+				} else {
+					// If the variable has not been seen before, process the node as with the Subject.
+					vals.set(varCount, t.getPredicate());
+					vars.put(filter.getPredicate().getName(),varCount++);
+				}
 			
 			if (filter.getObject().isVariable())
-				vals[outFields.indexOf(filter.getObject().getName())] = t.getObject();
+				if (vars.containsKey(filter.getObject().getName())){
+					if ( ! t.getObject().sameValueAs( vals.get( vars.get( filter.getObject().getName() ) ) ) )
+						continue;
+				} else {
+					vals.set(varCount, t.getObject());
+					vars.put(filter.getObject().getName(),varCount++);
+				}
 			else if (filter.getObject().isLiteral() && filter.getObject().getLiteralValue() instanceof Functor){
-				// if the object is a functor, check each node in the functor to see if it is a variable
+				// if the object is a functor, check each node in the functor to see if it is a variable,
+				// and treat each as if it were a more traditional part of the Triple.
 				Functor f = (Functor)filter.getObject().getLiteralValue();
+				Functor functor = (Functor)t.getObject().getLiteralValue();
 				for (int i = 0; i < f.getArgs().length; i++){
 					Node n = f.getArgs()[i];
 					if (n.isVariable())
-						// if it is, insert its value into the array of to-be-Values
-						vals[outFields.indexOf(n.getName())] = ((Functor)t.getObject().getLiteralValue()).getArgs()[i];
+						if (vars.containsKey(n.getName())){
+							if ( ! functor.getArgs()[i].sameValueAs( vals.get( vars.get( n.getName() ) ) ) )
+								continue;
+						} else {
+							vals.set(varCount, functor.getArgs()[i]);
+							vars.put(n.getName(), varCount++);
+						}
 				}
 			}
 			
 			// insert this Tuple's value of isAdd to be passed onto subscribing Bolts.
-			vals[outFields.indexOf(BASE_FIELDS[IS_ADD])] = isAdd;
+			vals.set(this.getVars().length + IS_ADD, isAdd);
 			
 			// in case this Triple has been extracted from a larger graph, create a new Graph
 			// containing just this Triple.
 			Graph g = new GraphMem();
 			g.add(t);
-			// insert the new graph into the array of to-be-Values
-			vals[outFields.indexOf(BASE_FIELDS[GRAPH])] = g;
-			
-			// create a new Values instance and populate it from the array of to-be-Values,
-			// thereby ensuring that the correct values end up mapped to the correct fields.
-			Values values = new Values();
-			for (Object o : vals)
-				values.add(o);
+			// insert the new graph into the array of Values
+			vals.set(this.getVars().length + GRAPH, g);
 			
 			// fire the new values
-			fire(values,isAdd);
+			fire(vals,isAdd);
 			// emit using the input Tuple as an anchor
 			emit(input);
 		}
