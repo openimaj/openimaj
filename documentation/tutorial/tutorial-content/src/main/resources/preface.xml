@@ -3,142 +3,140 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <preface id="preface">
 	<title>Preface</title>
-	<sect1 id="preface-intro">
-	  <para>
-	    <emphasis role="strong">OpenIMAJ</emphasis> is a set of libraries
-	    and tools for multimedia analysis. OpenIMAJ is very broad and
-	    contains everything from state-of-the-art computer vision (e.g. SIFT
-	    descriptors, salient region detection, face detection, etc.) and
-	    advanced data clustering, through to software that performs analysis
-	    on the content, layout and structure of webpages.
-	  </para>
-	  <para>
-	    OpenIMAJ is primarily written in pure Java and, as such, is
-	    completely platform independent. The video capture and hardware
-	    libraries contain some native code but Linux (x86 and x86_64 are
-	    supported currently; ARM support is coming soon), OSX and Windows
-	    are supported out of the box (under both 32 and 64 bit JVMs). It is
-	    possible to write programs that use the libraries in any JVM
-	    language that supports Java interoperability, such as Groovy,
-	    Jython, JRuby or Scala. OpenIMAJ can even be run on Android phones
-	    and tablets.
-	  </para>
-	  <para>
-	    The OpenIMAJ software is structured into a number of modules. The
-	    modules can be used independently, so if, for instance, you were
-	    developing data clustering software using OpenIMAJ you wouldn’t need
-	    to acquire the modules related to images or text. The list on the
-	    following page illustrates the modules and summarises the
-	    functionality in each component.
-	  </para>
-	  <para>
-	    This tutorial aims to instruct the reader on how to get up and
-	    running writing code using OpenIMAJ. Currently the tutorial covers
-	    the following areas:
-	  </para>
-	  <orderedlist>
-	    <listitem>
-	      <para>
-	        Getting started with OpenIMAJ using Maven
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Processing your first image
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Introduction to clustering, segmentation and connected
-	        components
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Processing video
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Finding faces
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Global image features
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        SIFT and feature matching
-	      </para>
-	    </listitem>
-	  </orderedlist>
-	  <para>
-	    In the future we hope to add more content to the tutorial covering
-	    the following:
-	  </para>
-	  <itemizedlist>
-	    <listitem>
-	      <para>
-	        Basic text analysis
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Image and video indexing using ImageTerrier
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Compiling OpenIMAJ from source
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Tracking features in video
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Audio processing
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Speech recognition
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Hardware interfaces
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Advanced local features
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Scalable processing with OpenIMAJ/Hadoop
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Machine learning
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-	        Building a bibliography of the techniques used in your code.
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-	  <sect2 id="the-openimaj-modules">
-	    <title>The OpenIMAJ Modules</title>
-	    <para>
-	    </para>
-	  </sect2>
-	</sect1>
+  <para>
+    <emphasis role="strong">OpenIMAJ</emphasis> is a set of libraries
+    and tools for multimedia analysis. OpenIMAJ is very broad and
+    contains everything from state-of-the-art computer vision (e.g. SIFT
+    descriptors, salient region detection, face detection, etc.) and
+    advanced data clustering, through to software that performs analysis
+    on the content, layout and structure of webpages.
+  </para>
+  <para>
+    OpenIMAJ is primarily written in pure Java and, as such, is
+    completely platform independent. The video capture and hardware
+    libraries contain some native code but Linux (x86 and x86_64 are
+    supported currently; ARM support is coming soon), OSX and Windows
+    are supported out of the box (under both 32 and 64 bit JVMs). It is
+    possible to write programs that use the libraries in any JVM
+    language that supports Java interoperability, such as Groovy,
+    Jython, JRuby or Scala. OpenIMAJ can even be run on Android phones
+    and tablets.
+  </para>
+  <para>
+    The OpenIMAJ software is structured into a number of modules. The
+    modules can be used independently, so if, for instance, you were
+    developing data clustering software using OpenIMAJ you wouldn’t need
+    to acquire the modules related to images or text. The list on the
+    following page illustrates the modules and summarises the
+    functionality in each component.
+  </para>
+  <para>
+    This tutorial aims to instruct the reader on how to get up and
+    running writing code using OpenIMAJ. Currently the tutorial covers
+    the following areas:
+  </para>
+  <orderedlist>
+    <listitem>
+      <para>
+        Getting started with OpenIMAJ using Maven
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Processing your first image
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Introduction to clustering, segmentation and connected
+        components
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Processing video
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Finding faces
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Global image features
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        SIFT and feature matching
+      </para>
+    </listitem>
+  </orderedlist>
+  <para>
+    In the future we hope to add more content to the tutorial covering
+    the following:
+  </para>
+  <itemizedlist>
+    <listitem>
+      <para>
+        Basic text analysis
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Image and video indexing using ImageTerrier
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Compiling OpenIMAJ from source
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Tracking features in video
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Audio processing
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Speech recognition
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Hardware interfaces
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Advanced local features
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Scalable processing with OpenIMAJ/Hadoop
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Machine learning
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Building a bibliography of the techniques used in your code.
+      </para>
+    </listitem>
+  </itemizedlist>
+  <sect1 id="the-openimaj-modules">
+    <title>The OpenIMAJ Modules</title>
+    <para>
+    </para>
+  </sect1>
 </preface>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="finding-faces">
+  <title>Finding faces</title>
+  <para>
+    OpenIMAJ contains a set of classes that contain implementations of
+    some of the state-of-the-art face detection and recognition
+    algorithms. These classes are provided as a sub-project of the
+    OpenIMAJ code-base called <literal>faces</literal>. The OpenIMAJ
+    maven archetype adds the face library as a dependency and so we can
+    start building face detection applications straight away.
+  </para>
+  <para>
+    Create a new application using the quick-start archetype (see
+    tutorial 1) and import it into your IDE. If you look at the
+    <literal>pom.xml</literal> file you will see that the
+    <literal>faces</literal> dependency from OpenIMAJ is already
+    included. As you’ve already done the video-processing tutorial,
+    we’ll try to find faces within the video that your webcam produces.
+    If you don’t have a webcam, follow the video tutorial on how to use
+    video from a file instead.
+  </para>
+  <para>
+    Start by removing the code from the main method of the
+    <literal>App.java</literal> class file. Then create a video capture
+    object and a display to show the video. Create a listener on the
+    video display to which we can hook our face finder. The code is
+    below, but check out the previous tutorial on video processing if
+    you’re not sure what it means.
+  </para>
+  <programlisting>
+VideoCapture vc = new VideoCapture( 320, 240 );
+VideoDisplay&lt;MBFImage&gt; vd = VideoDisplay.createVideoDisplay( vc );
+vd.addVideoListener( 
+  new VideoDisplayListener&lt;MBFImage&gt;() {
+    @Override
+    public void beforeUpdate( MBFImage frame ) {
+    }
+
+    @Override
+    public void afterUpdate( VideoDisplay&lt;MBFImage&gt; display ) {
+    }
+  });
+</programlisting>
+  <para>
+    For finding faces in images (or in this case video frames) we use a
+    face detector. The <literal>FaceDetector</literal> interface
+    provides the API for face detectors and there are currently two
+    implementations within OpenIMAJ - the
+    <literal>HaarCascadeDetector</literal> and the
+    <literal>SandeepFaceDetector</literal>. The
+    <literal>HaarCascadeDetector</literal> is considerably more robust
+    than the <literal>SandeepFaceDetector</literal>, so we’ll use that.
+  </para>
+  <para>
+    In the <literal>beforeUpdate()</literal> method, instantiate a new
+    <literal>HaarCascadeDetector</literal>. The constructor takes the
+    minimum size in pixels that a face can be detected at. For now, set
+    this to <literal>40</literal> pixels:
+  </para>
+  <programlisting>
+FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
+</programlisting>
+  <para>
+    Like all <literal>FaceDetector</literal> implementations, the
+    <literal>HaarCascadeDetector</literal> has a method
+    <literal>detectFaces()</literal> which takes an image. Because the
+    <literal>HaarCascadeDetector</literal> uses single band images, we
+    must convert our multi-band colour image into a single band image.
+    To do this we can use the <literal>Transforms</literal> utility
+    class that contains some static methods for converting images. The
+    <literal>calculateIntensity()</literal> method will do just fine.
+    Note that functionally the <literal>calculateIntensity()</literal>
+    method does the same thing as the <literal>flatten()</literal>
+    method we used earlier when used on RGB images.
+  </para>
+  <programlisting>
+List&lt;DetectedFace&gt; faces = fd.detectFaces(Transforms.calculateIntensity(frame));
+</programlisting>
+  <para>
+    The <literal>detectFaces()</literal> method returns a list of
+    <literal>DetectedFace</literal> objects which contain information
+    about the faces in the image. From these objects we can get the
+    rectangular bounding boxes of each face and draw them back into our
+    video frame. As we’re doing all this in our
+    <literal>beforeUpdate()</literal> method, the video display will end
+    up showing the bounding boxes on the displayed video. If you run the
+    code and you have a webcam attached, you should see yourself with a
+    box drawn around your face. The complete code is shown below:
+  </para>
+  <programlisting>
+FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
+List&lt;DetectedFace&gt; faces =
+            fd.detectFaces( Transforms.calculateIntensity(frame));
+
+for( DetectedFace face : faces ) {
+    frame.drawShape(face.getBounds(), RGBColour.RED);
+}
+</programlisting>
+  <para>
+    OpenIMAJ has other face detectors which go a bit further than just
+    finding the face. The <literal>FKEFaceDetector</literal> finds
+    facial keypoints (the corners of the eyes, nose and mouth) and we
+    can use this detector instead simply by instantiating that object
+    instead of the <literal>HaarCascadeDetector</literal>. The
+    <literal>FKEFaceDetector</literal> returns a slightly different
+    object for each detected face, called a
+    <literal>KEDetectedFace</literal>. The
+    <literal>KEDetectedFace</literal> object contains the extra
+    information about where the keypoints in the face are located. The
+    lines of our code to instantiate the detector and detect faces can
+    now be changed to the following:
+  </para>
+  <programlisting>
+FaceDetector&lt;KEDetectedFace,FImage&gt; fd = new FKEFaceDetector();
+List&lt;KEDetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity( frame ) );
+</programlisting>
+  <para>
+    If you run the demo now, you will see exactly the sameas before, as
+    the <literal>FKEFaceDetector</literal> still detects bounding boxes.
+    It may be running a bit slower though, as there is much more
+    processing going on - we’re just not seeing the output of it! So,
+    let’s plot the facial keypoints.
+  </para>
+  <para>
+    To get the keypoints use <literal>getKeypoints()</literal> on the
+    detected face. Each keypoint has a position (public field) which is
+    relative to the face, so we’ll need to translate the point to the
+    position of the face within the video frame before we plot the
+    points. To do that we can use the <literal>translate()</literal>
+    method of the <literal>Point2d</literal> class and the
+    <literal>minX()</literal> and <literal>minY()</literal> methods of
+    the <literal>Rectangle</literal> class.
+  </para>
+  <sect1 id="exercises-4">
+    <title>Exercises</title>
+    <sect2 id="exercise-1-drawing-facial-keypoints">
+      <title>Exercise 1: Drawing facial keypoints</title>
+      <para>
+        Use the information above to plot the facial keypoints on the
+        video.
+      </para>
+    </sect2>
+    <sect2 id="exercise-2-speech-bubbles">
+      <title>Exercise 2: Speech bubbles</title>
+      <para>
+        Try and take the speech bubble from the previous image tutorial
+        and make it come from the mouth in the video.
+        <emphasis role="strong">Hints:</emphasis> use
+        <literal>getKeypoint(FacialKeypointType)</literal> to get the
+        keypoint of the left corner of the mouth and plot the ellipses
+        depending on that point. You may need to use smaller ellipses
+        and text if your video is running at 320x240.
+      </para>
+    </sect2>
+  </sect1>
+</chapter>

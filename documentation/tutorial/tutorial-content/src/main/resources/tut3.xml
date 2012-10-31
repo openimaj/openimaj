@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="introduction-to-clustering-segmentation-and-connected-components">
+  <title>Introduction to clustering, segmentation and connected
+  components</title>
+  <para>
+    In this tutorial we’ll create an application that demonstrates how
+    an image can be broken into a number of regions. The process of
+    separating an image into regions, or segments, is called
+    <emphasis role="strong">segmentation</emphasis>. Segmentation is a
+    widely studied area in computer vision. Researchers often try to
+    optimise their segmentation algorithms to try and separate the
+    <emphasis role="strong">objects</emphasis> in the image from the
+    <emphasis role="strong">background</emphasis>.
+  </para>
+  <para>
+    To get started, create a new OpenIMAJ project using the Maven
+    archetype, import it into your IDE, and delete the sample code from
+    within the generated <literal>main()</literal> method of the
+    <literal>App</literal> class. In the <literal>main()</literal>
+    method, start by adding code to load an image (choose your own
+    image):
+  </para>
+  <programlisting>
+MBFImage input = ImageUtilities.readMBF(
+   new URL(&quot;http://...&quot;));
+</programlisting>
+  <para>
+    To segment our image we are going to use a machine learning
+    technique called <emphasis role="strong">clustering</emphasis>.
+    Clustering algorithms automatically group similar things together.
+    In our case, we’ll use a popular clustering algorithm called
+    <emphasis role="strong">K-Means</emphasis> clustering to group
+    together all the similar colours in our image. Each group of similar
+    colours is known as a <emphasis role="strong">class</emphasis>. The
+    K-means clustering algorithm requires you set the number of classes
+    you wish to find <emphasis role="strong">a priori</emphasis> (i.e.
+    beforehand).
+  </para>
+  <para>
+    Colours in our input image are represented in
+    <emphasis role="strong">RGB colour space</emphasis>; that is each
+    pixel is represented as three numbers corresponding to a red, green
+    and blue value. In order to measure the similarity of a pair of
+    colours the <quote>distance</quote> between the colours in the
+    colour space can be measured. Typically, the distance measured is
+    the <emphasis role="strong">Euclidean</emphasis> distance.
+    Unfortunately, distances in RGB colour space do not reflect what
+    humans perceive as similar/dissimilar colours. In order to
+    work-around this problem it is common to transform an image into an
+    alternative colour space. The <emphasis role="strong">Lab colour
+    space</emphasis> (pronounced as separate letters, L A B) is
+    specifically designed so that the Euclidean distance between colours
+    closely matches the perceived similarity of a colour pair by a human
+    observer.
+  </para>
+  <para>
+    To start our implementation, we’ll first apply a colour-space
+    transform to the image:
+  </para>
+  <programlisting>
+input = ColourSpace.convert(input,ColourSpace.CIE_Lab);
+</programlisting>
+  <para>
+    We can then construct the K-Means algorithm:
+  </para>
+  <programlisting>
+FastFloatKMeans cluster = new FastFloatKMeans(3,2,true);
+</programlisting>
+  <para>
+    The first parameter is the dimensionality of the space (3 in this
+    case corresponding to the <emphasis role="strong">L</emphasis>,
+    <emphasis role="strong">a</emphasis>, and
+    <emphasis role="strong">b</emphasis> dimensions of the colour
+    vectors). The second argument is the number of clusters or classes
+    we wish the algorithm to generate. The final boolean flag indicates
+    whether the underlying algorithm should be the <quote>exact</quote>
+    K-means algorithm (true) or an
+    <emphasis role="strong">approximate</emphasis> algorithm (false).
+    The approximate algorithm is much faster than the exact algorithm
+    when there is very high-dimensional data; in this case, with only
+    three dimensions, the approximate algorithm is not required. The
+    OpenIMAJ K-Means implementation is multithreaded and automatically
+    takes advantage of all the processing power it can obtain.
+  </para>
+  <para>
+    The FastFloatKMeans algorithm takes its input as an array of
+    floating point vectors (<literal>float[][]</literal>). We can
+    flatten the pixels of an image into the required form using the
+    <literal>getPixelVectorNative()</literal> method:
+  </para>
+  <programlisting>
+float[][] imageData = input.getPixelVectorNative(new float[input.getWidth() * input.getHeight()][3]);
+</programlisting>
+  <para>
+    The K-Means algorithm can then be run to group all the pixels into
+    the requested number of classes:
+  </para>
+  <programlisting>
+cluster.cluster(imageData);
+</programlisting>
+  <para>
+    Each class or cluster produced by the K-Means algorithm has an
+    index, starting from 0. Each class is represented by its centroid
+    (the average location of all the points belonging to the class). We
+    can print the coordinates of each centroid:
+  </para>
+  <programlisting>
+float[][] centroids = cluster.getCentroids();
+for (float[] fs : centroids) {
+    System.out.println(Arrays.toString(fs));
+}
+</programlisting>
+  <para>
+    Now is a good time to test the code. Running it should print the
+    (<literal>L, a, b</literal>) coordinates of each of the classes.
+  </para>
+  <para>
+    We can now use a <literal>HardAssigner</literal> to assign each
+    pixel in our image to its respective class using the centroids
+    learned during the <literal>FastFloatKMeans</literal>. This is a
+    process known as <emphasis role="strong">classification</emphasis>.
+    There are a number of different <literal>HardAssigner</literal>s,
+    however, <literal>FastFloatKMeans</literal> has a method called
+    <literal>defaultHardAssigner()</literal> which will return an
+    assigner fit for our purposes. <literal>HardAssigner</literal>s have
+    a method called <literal>assign()</literal> which takes a vector
+    (the <literal>L, a, b</literal> value of a single pixel) and returns
+    the index of the class that it belongs to. We’ll start by creating
+    an image that visualises the pixels and their respective classes by
+    replacing each pixel in the input image with the centroid of its
+    respective class:
+  </para>
+  <programlisting>
+HardAssigner&lt;float[],?,?&gt; assigner = cluster.defaultHardAssigner();
+for (int y=0; y&lt;input.getHeight(); y++) {
+    for (int x=0; x&lt;input.getWidth(); x++) {
+        float[] pixel = input.getPixelNative(x, y);
+        int centroid = assigner.assign(pixel);
+        input.setPixelNative(x, y, centroids[centroid]);
+    }
+}
+</programlisting>
+  <para>
+    We can then display the resultant image. Note that we need to
+    convert the image back to RGB colour space for it to display
+    properly:
+  </para>
+  <programlisting>
+input = ColourSpace.convert(input, ColourSpace.RGB);
+DisplayUtilities.display(input);
+</programlisting>
+  <para>
+    Running the code will display an image that looks a little like the
+    original image but with as many colours as there are classes.
+  </para>
+  <para>
+    To actually produce a segmentation of the image we need to group
+    together all pixels with the same class that are touching each
+    other. Each set of pixels representing a segment is often referred
+    to as a <emphasis role="strong">connected component</emphasis>.
+    Connected components in OpenIMAJ are modelled by the
+    <literal>ConnectedComponent</literal> class.
+  </para>
+  <para>
+    The <literal>GreyscaleConnectedComponentLabeler</literal> class can
+    be used to find the connected components:
+  </para>
+  <programlisting>
+GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
+List&lt;ConnectedComponent&gt; components = labeler.findComponents(input.flatten());
+</programlisting>
+  <para>
+    Note that the <literal>GreyscaleConnectedComponentLabeler</literal>
+    only processes greyscale images (the <literal>FImage</literal>
+    class) and not the colour image (<literal>MBFImage</literal> class)
+    that we created. The <literal>flatten()</literal> method on
+    <literal>MBFImage</literal> merges the colours into grey values by
+    averaging their RGB values.
+  </para>
+  <para>
+    The <literal>ConnectedComponent</literal> class has many useful
+    methods for extracting information about the shape of the region.
+    Lets draw an image with the components numbered on it. We’ll use the
+    centre of mass of each region to position the number and only render
+    numbers for regions that are over a certain size (50 pixels in this
+    case):
+  </para>
+  <programlisting>
+int i = 0;
+for (ConnectedComponent comp : components) {
+    if (comp.calculateArea() &lt; 50) 
+        continue;
+    input.drawText(&quot;Point:&quot; + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM,20);
+}
+</programlisting>
+  <para>
+    Finally, we can display the image with the labels:
+  </para>
+  <programlisting>
+DisplayUtilities.display(input);
+</programlisting>
+  <sect1 id="exercises-2">
+    <title>Exercises</title>
+    <sect2 id="exercise-1-the-pixelprocessor">
+      <title>Exercise 1: The PixelProcessor</title>
+      <para>
+        Rather than looping over the image pixels using two for loops,
+        it is possible to use a <literal>PixelProcessor</literal> to
+        accomplish the same task:
+      </para>
+      <programlisting>
+image.processInplace(new PixelProcessor&lt;Float[]&gt;() {
+    Float[] processPixel(Float[] pixel, Number[]...otherpixels) {
+        ...
+    }
+});
+</programlisting>
+      <para>
+        Can you re-implement the loop that replaces each pixel with its
+        class centroid using a <literal>PixelProcessor</literal>?
+      </para>
+      <para>
+        What are the advantages and disadvantages of using a
+        <literal>PixelProcessor</literal>?
+      </para>
+    </sect2>
+    <sect2 id="exercise-2-a-real-segmentation-algorithm">
+      <title>Exercise 2: A real segmentation algorithm</title>
+      <para>
+        The segmentation algorithm we just implemented can work
+        reasonably well, but is rather naïve. OpenIMAJ contains an
+        implementation of a popular segmentation algorithm called the
+        <literal>FelzenszwalbHuttenlocherSegmenter</literal>.
+      </para>
+      <para>
+        Try using the
+        <literal>FelzenszwalbHuttenlocherSegmenter</literal> for
+        yourself and see how it compares to the basic segmentation
+        algorithm we implemented. You can use the
+        <literal>SegmentationUtilities.renderSegments()</literal> static
+        method to draw the connected components produced by the
+        segmenter.
+      </para>
+    </sect2>
+  </sect1>
+</chapter>

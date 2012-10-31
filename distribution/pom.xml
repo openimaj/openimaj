@@ -123,8 +123,8 @@
 			    </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2.1</version>
-					<!-- <executions>
+        <version>2.4-SNAPSHOT</version>
+					<executions>
 		        <execution>
 		          <id>distro-assembly</id>
 		          <phase>package</phase>
@@ -133,17 +133,23 @@
 		          </goals>
 		        <configuration>
 		       	  <descriptors>
-		            <descriptor>src/main/assemblies/libsToolsAndDependencies.xml</descriptor>
+		            <descriptor>src/assemblies/libsToolsAndDependencies.xml</descriptor>
 		          </descriptors>
 		        </configuration>
 		       </execution>
-		     </executions> -->
-        <configuration>
+		     </executions>
+        <!-- <configuration>
        	  <descriptors>
             <descriptor>src/assemblies/libsToolsAndDependencies.xml</descriptor>
           </descriptors>
-        </configuration>
+        </configuration> -->
       </plugin>
     </plugins>
   </build>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>plugin-snapshots</id>
+			<url>https://repository.apache.org/content/groups/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
 </project>

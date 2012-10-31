@@ -84,12 +84,13 @@
   </bookinfo>
 
   <xi:include href="copyright.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-
   <xi:include href="foreword.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-
   <xi:include href="preface.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-
   <xi:include href="tut1.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-
-  <index></index>
+  <xi:include href="tut2.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="tut3.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="tut4.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="tut5.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="tut6.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="tut7.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

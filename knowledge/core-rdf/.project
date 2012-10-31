@@ -6,6 +6,9 @@
     <project>core</project>
     <project>core-citation</project>
     <project>core-aop-support</project>
+    <project>ImprovedArgs4J</project>
+    <project>core-image</project>
+    <project>core-math</project>
   </projects>
   <buildSpec>
     <buildCommand>

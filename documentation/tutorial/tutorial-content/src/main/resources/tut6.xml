@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="global-image-features">
+  <title>Global image features</title>
+  <para>
+    The task in this tutorial is to understand how we can extract
+    numerical representations from images and how these numerical
+    representations can be used to provide similarity measures between
+    images, so that we can, for example, find the most similar images
+    from a set.
+  </para>
+  <para>
+    As you know, images are made up of pixels which are basically
+    numbers that represent a colour. This is the most basic form of
+    numerical representation of an image. However, we can do
+    calculations on the pixel values to get other numerical
+    representations that mean different things. In general, these
+    numerical representations are known as
+    <emphasis role="strong">feature vectors</emphasis> and they
+    represent particular <emphasis role="strong">features</emphasis>.
+  </para>
+  <para>
+    Let’s take a very common and easily understood type of feature. It’s
+    called a colour histogram and it basically tells you the proportion
+    of different colours within an image (e.g. 90% red, 5% green, 3%
+    orange, and 2% blue). As pixels are represented by different amounts
+    of red, green and blue we can take these values and accumulate them
+    in our histogram (e.g. when we see a red pixel we add 1 to our
+    <quote>red pixel count</quote> in the histogram).
+  </para>
+  <para>
+    A histogram can accrue counts for any number of colours in any
+    number of dimensions but the usual is to split the red, green and
+    blue values of a pixel into a smallish number of <quote>bins</quote>
+    into which the colours are thrown. This gives us a three-dimensional
+    cube, where each small cubic bin is accruing counts for that colour.
+  </para>
+  <para>
+    OpenIMAJ contains a multidimensional <literal>Histogram</literal>
+    implementation that is constructed using the number of bins required
+    in each dimension. For example:
+  </para>
+  <programlisting>
+Histogram histogram = new Histogram( 4, 4, 4 );
+</programlisting>
+  <para>
+    This code creates a histogram that has 64 (4 × 4 × 4) bins. However,
+    this data structure does not do anything on its own. The
+    <literal>HistogramModel</literal> class provides a means for
+    creating a <literal>Histogram</literal> from an image. The
+    <literal>HistogramModel</literal> class assumes the image has been
+    normalised and returns a normalised histogram:
+  </para>
+  <programlisting>
+HistogramModel model = new HistogramModel( 4, 4, 4 );
+model.estimateModel( image );
+Histogram histogram = model.histogram;
+</programlisting>
+  <para>
+    You can print out the histogram to see what sort of numbers you get
+    for different images. Let’s load in 3 images then generate and store
+    the histograms for them:
+  </para>
+  <programlisting>
+URL[] imageURLs = new URL[] {
+   new URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg&quot; ),
+   new URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist2.jpg&quot; ), 
+   new  URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist3.jpg&quot; ) 
+};
+List&lt;Histogram&gt; histograms = new ArrayList&lt;Histogram&gt;();
+for( URL u : imageURLs ) {
+    HistogramModel model = new HistogramModel(4, 4, 4);
+    model.estimateModel(ImageUtilities.readMBF(u));
+    histograms.add( model.histogram );
+}
+</programlisting>
+  <para>
+    We now have a list of histograms from our images. The
+    <literal>Histogram</literal> class extends a class called the
+    <literal>MultidimensionalDoubleFV</literal> which is a feature
+    vector represented by multidimensional set of double precision
+    numbers. This class provides us with a <literal>compare()</literal>
+    method which allows comparison between two multidimensional sets of
+    doubles. This method takes the other feature vector to compare
+    against and a comparison method which is implemented in the
+    <literal>DoubleFVComparison</literal> class.
+  </para>
+  <para>
+    So, we can compare two histograms using the Euclidean distance
+    measure like so:
+  </para>
+  <programlisting>
+double distanceScore = histogram1.compare( histogram2, DoubleFVComparison.EUCLIDEAN );
+</programlisting>
+  <para>
+    This will give us a score of how similar (or dissimilar) the
+    histograms are. It’s useful to think of the output score as a
+    <emphasis role="strong">distance</emphasis> apart in space. Two very
+    similar histograms will be very close together so have a small
+    distance score, whereas two dissimilar histograms will be far apart
+    and so have a large distance score.
+  </para>
+  <para>
+    The Euclidean distance measure is symmetric (that is, if you compare
+    <literal>histogram1</literal> to <literal>histogram2</literal> you
+    will get the same score if you compare <literal>histogram2</literal>
+    to <literal>histogram1</literal>) so we can compare all the
+    histograms with each other in a simple, efficient, nested loop:
+  </para>
+  <programlisting>
+for( int i = 0; i &lt; histograms.size(); i++ ) {
+    for( int j = i; j &lt; histograms.size(); j++ ) {
+        double distance = histograms.get(i).compare( histograms.get(j), DoubleFVComparison.EUCLIDEAN );
+    }
+}
+</programlisting>
+  <sect1 id="exercises-5">
+    <title>Exercises</title>
+    <sect2 id="exercise-1-finding-and-displaying-similar-images">
+      <title>Exercise 1: Finding and displaying similar images</title>
+      <para>
+        Which images are most similar? Does that match with what you
+        expect if you look at the images? Can you make the application
+        display the two most similar images that aren’t the same?
+      </para>
+    </sect2>
+    <sect2 id="exercise-2-exploring-comparison-measures">
+      <title>Exercise 2: Exploring comparison measures</title>
+      <para>
+        What happens when you use a different comparison measure (such
+        as <literal>DoubleFVComparison.INTERSECTION</literal>)?
+      </para>
+    </sect2>
+  </sect1>
+</chapter>

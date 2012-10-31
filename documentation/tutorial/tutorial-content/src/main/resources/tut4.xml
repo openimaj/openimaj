@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="processing-video">
+  <title>Processing video</title>
+  <para>
+    In this section we’ll show you how to deal with videos using
+    OpenIMAJ. We provide a set of tools for loading, displaying and
+    processing various kinds of video.
+  </para>
+  <para>
+    All videos in OpenIMAJ are subtypes of the <literal>Video</literal>
+    class. This class is typed on the type of underlying frame. In this
+    case, let’s create a video which holds coloured frames:
+  </para>
+  <programlisting>
+Video&lt;MBFImage&gt; video;
+</programlisting>
+  <para>
+    Exactly what kind of video is loaded depends on what you want to do.
+    To load a video from a file we use the
+    <emphasis role="strong">Xuggle</emphasis> library which internally
+    uses <literal>ffmpeg</literal>. Let’s load a video from a file
+    (which you can download from here:
+    <ulink url="http://dl.dropbox.com/u/8705593/keyboardcat.flv"><literal>http://dl.dropbox.com/u/8705593/keyboardcat.flv</literal></ulink>).
+  </para>
+  <para>
+    First you’ll need to install Xuggle. Go to
+    http://www.xuggle.com/xuggler/downloads/ and pick your platform then
+    follow the instructions.
+  </para>
+  <para>
+    While this is downloading, let’s write the code. If we want to load
+    a video from a file we use a <literal>XuggleVideo</literal> object:
+  </para>
+  <programlisting>
+video = new XuggleVideo(new File(&quot;/path/to/keyboardcat.flv&quot;));
+</programlisting>
+  <para>
+    If your computer has a webcam, OpenIMAJ also supports live video
+    input. These are called capture devices and you can use one through
+    the <literal>VideoCapture</literal> class:
+  </para>
+  <programlisting>
+video = new VideoCapture(320,240);
+</programlisting>
+  <para>
+    This will find the first video capture device attached to your
+    system and render it as closely to 320 × 240 pixels as it can. To
+    select a specific device you can use the alternative constructors
+    and use the <literal>VideoCapture.getVideoDevices()</literal> static
+    method to obtain the available devices.
+  </para>
+  <para>
+    Note that webcam capture does not require a Xuggle install and is
+    completely built into OpenIMAJ.
+  </para>
+  <para>
+    To see if either of these kinds of video work, we can use
+    <literal>VideoDisplay</literal> to display videos. This is achieved
+    using the static function calls in <literal>VideoDisplay</literal>
+    (which mirror those found in <literal>DisplayUtilities</literal> for
+    images) like so:
+  </para>
+  <programlisting>
+VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
+</programlisting>
+  <para>
+    Simply by creating a display, the video starts and plays. You can
+    test this by running your app after Xuggle is installed.
+  </para>
+  <para>
+    <emphasis role="strong">Note:</emphasis> If you’re using Linux or
+    MacOSX, you might encounter an error trying to run this from
+    Eclipse. This is due to library dependencies on Xuggle. To fix this,
+    in Eclipse go to the run configuration
+    (<literal>Run&gt;Run Configurations</literal>). Once here click the
+    <literal>Environments</literal> tab. Add a new environment variable
+    called <literal>DYLD_LIBRARY_PATH</literal> on MacOSX or
+    <literal>LD_LIBRARY_PATH</literal> on Linux and set this to the
+    location of the <literal>xuggler/lib</literal> directory (this is
+    likely to be <literal>/usr/local/xuggler/lib</literal> if you went
+    with the default Xuggle install options).
+  </para>
+  <para>
+    As with images, displaying them is nice but what we really want to
+    do is process the frames of the video in some way. This can be
+    achieved in various ways; firstly videos are
+    <literal>Iterable</literal>, so you can do something like this to
+    iterate through every frame and process it:
+  </para>
+  <programlisting>
+for (MBFImage mbfImage : video) {
+    DisplayUtilities.displayName(mbfImage.process(new CannyEdgeDetector2()), &quot;videoFrames&quot;);
+}
+</programlisting>
+  <para>
+    Here we’re applying a Canny edge detector to each frame and
+    displaying the frame in a named window. Another approach, which ties
+    processing to image display automatically, is to use an event driven
+    technique:
+  </para>
+  <programlisting>
+VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
+display.addVideoListener(
+  new VideoDisplayListener&lt;MBFImage&gt;() {
+    @Override
+    public void beforeUpdate(MBFImage frame) {
+        frame.processInplace(new CannyEdgeDetector2());
+    }
+
+    @Override
+    public void afterUpdate(VideoDisplay&lt;MBFImage&gt; display) {
+    }
+  });
+</programlisting>
+  <para>
+    These <literal>VideoDisplayListener</literal>s are given video
+    frames before they are rendered and they are handed the video
+    display after the render has occurred. The benefit of this approach
+    is that functionality such as looping, pausing and stopping the
+    video is given to you for free by the
+    <literal>VideoDisplay</literal> class.
+  </para>
+  <sect1 id="exercises-3">
+    <title>Exercises</title>
+    <sect2 id="exercise-1-applying-different-types-of-image-processing-to-the-video">
+      <title>Exercise 1: Applying different types of image processing to
+      the video</title>
+      <para>
+        Try a different processing operation and see how it affects the
+        frames of your video.
+      </para>
+    </sect2>
+  </sect1>
+</chapter>

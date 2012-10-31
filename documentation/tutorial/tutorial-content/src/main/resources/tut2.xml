@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="processing-your-first-image">
+  <title>Processing your first image</title>
+  <para>
+    In this section we’ll start with the <quote>hello world</quote> app
+    and show you how you can load an image, perform some basic
+    processing on the image, draw some stuff on your image and then
+    display your results.
+  </para>
+  <para>
+    Loading images into Java is usually a horrible experience. Using
+    Java <literal>ImageIO</literal>, one can use the
+    <literal>read()</literal> method to create a
+    <literal>BufferedImage</literal> object. Unfortunately the
+    <literal>BufferedImage</literal> object hides the fact that it is
+    (and in fact all digital raster images are) simply arrays of pixel
+    values. A defining philosophy of OpenIMAJ is to <emphasis>keep
+    things simple</emphasis> which in turn means in OpenIMAJ images are
+    as close as one can get to being <emphasis role="strong">just arrays
+    of pixel values</emphasis>.
+  </para>
+  <para>
+    To read and write images in OpenIMAJ we use the
+    <literal>ImageUtilities</literal> class. In the
+    <literal>App.java</literal> class file remove the sample code within
+    the main method and add the following line:
+  </para>
+  <programlisting>
+MBFImage image = ImageUtilities.readMBF(
+       new File(&quot;file.jpg&quot;));
+</programlisting>
+  <para>
+    For this tutorial, read the image from the following URL:
+  </para>
+  <programlisting>
+MBFImage image = ImageUtilities.readMBF(
+    new URL(&quot;http://dl.dropbox.com/u/8705593/sinaface.jpg&quot;));
+</programlisting>
+  <para>
+    The <literal>ImageUtilities</literal> class provides the ability to
+    read <literal>MBFImage</literal>s and <literal>FImage</literal>s. An
+    <literal>FImage</literal> is a greyscale image which represents each
+    pixel as a value between <literal>0</literal> and
+    <literal>1</literal>. An <literal>MBFImage</literal> is a multi-band
+    version of the <literal>FImage</literal>; under the hood it actually
+    contains a number <literal>FImage</literal> objects held in a list
+    each representing a band of the image. What these bands represent is
+    given by the image’s public <literal>colourSpace</literal> field,
+    which we can print as follows:
+  </para>
+  <programlisting>
+System.out.println(image.colourSpace);
+</programlisting>
+  <para>
+    If we run the code, we’ll see that the image is an RGB image with
+    three <literal>FImage</literal>s representing the red, blue and
+    green components of the image in that order.
+  </para>
+  <para>
+    You can display any OpenIMAJ image object using the
+    <literal>DisplayUtilities</literal> class. In this example we
+    display the image we have loaded then we display the red channel of
+    the image alone:
+  </para>
+  <programlisting>
+DisplayUtilities.display(image);
+DisplayUtilities.display(
+   image.getBand(0), &quot;RedChannel&quot;);
+</programlisting>
+  <para>
+    In an image-processing library, images are no good unless you can do
+    something to them. The most basic thing you can do to an image is
+    fiddle with its pixels. In OpenIMAJ, as an image is just an array of
+    floats, we make this is quite easy. Let’s go through our colour
+    image and set all its blue and green pixels to black:
+  </para>
+  <programlisting>
+MBFImage clone = image.clone();
+for (int y=0; y&lt;image.getHeight(); y++) {
+    for(int x=0; x&lt;image.getWidth(); x++) {
+        clone.getBand(1).pixels[y][x] = 0;
+        clone.getBand(2).pixels[y][x] = 0;
+    }
+}
+DisplayUtilities.display(clone);
+</programlisting>
+  <para>
+    Note that the first thing we do here is to <literal>clone</literal>
+    the image to preserve the original image for the remainder of the
+    tutorial. The pixels in an <literal>FImage</literal> are held in a
+    2D float array. The rows of the image are held in the first array
+    that, in turn, holds each of the column values for that row:
+    <literal>[y][x]</literal>. By displaying this image we should see an
+    image where two channels are black and one channel is not. This
+    results in an image that looks rather red.
+  </para>
+  <para>
+    Though it is helpful to sometimes get access to individual image
+    pixels, OpenIMAJ provides a lot of methods to make things easier.
+    For example, we could have done the above like this instead:
+  </para>
+  <programlisting>
+clone.getBand(1).fill(0f);
+clone.getBand(2).fill(0f);
+</programlisting>
+  <para>
+    More complex image operations are wrapped up by OpenIMAJ processor
+    interfaces: <literal>ImageProcessor</literal>s,
+    <literal>KernelProcessor</literal>s,
+    <literal>PixelProcessor</literal>s and
+    <literal>GridProcessor</literal>s. The distinction between these is
+    how their algorithm works internally. The overarching similarity is
+    that an image goes in and a processed image (or data) comes out. For
+    example, a basic operation in image processing is
+    <emphasis role="strong">edge detection</emphasis>. A popular edge
+    detection algorithm is the <emphasis>Canny edge detector</emphasis>.
+    We can call the Canny edge detector like so:
+  </para>
+  <programlisting>
+image.processInplace(new CannyEdgeDetector2());
+</programlisting>
+  <para>
+    When applied to a colour image, each pixel of each band is replaced
+    with the edge response at that point (for simplicity you can think
+    of this as the difference between that pixel and its neighbouring
+    pixels). If a particular edge is only strong in one band or another
+    then that colour will be strong, resulting in the psychedelic
+    colours you should see if you display the image:
+  </para>
+  <programlisting>
+DisplayUtilities.display(image);
+</programlisting>
+  <para>
+    Finally, we can also draw on our image in OpenIMAJ. On every
+    <literal>Image</literal> object there is a set of drawing functions
+    that can be called to draw points, lines, shapes and text on images.
+    Let’s draw some speech bubbles on our image:
+  </para>
+  <programlisting>
+image.drawShapeFilled(new Ellipse(700f, 450f, 20f, 10f, 0f), RGBColour.WHITE);
+image.drawShapeFilled(new Ellipse(650f, 425f, 25f, 12f, 0f), RGBColour.WHITE);
+image.drawShapeFilled(new Ellipse(600f, 380f, 30f, 15f, 0f), RGBColour.WHITE);
+image.drawShapeFilled(new Ellipse(500f, 300f, 100f, 70f, 0f), RGBColour.WHITE);
+image.drawText(&quot;OpenIMAJ is&quot;, 425, 300, HersheyFont.ASTROLOGY, 20, RGBColour.BLACK);
+image.drawText(&quot;Awesome&quot;, 425, 330, HersheyFont.ASTROLOGY, 20, RGBColour.BLACK);
+DisplayUtilities.display(image);
+</programlisting>
+  <para>
+    Here we construct a series of ellipses (defined by their centre [x,
+    y], axes [major, minor] and rotation) and draw them as white filled
+    shapes. Finally, we draw some text on the image and display it.
+  </para>
+  <sect1 id="exercises-1">
+    <title>Exercises</title>
+    <sect2 id="exercise-1-displayutilities">
+      <title>Exercise 1: DisplayUtilities</title>
+      <para>
+        Opening lots of windows can waste time and space (for example if
+        you wanted to view images on every iteration of a process within
+        a loop). In OpenIMAJ we provide a facility to open a
+        <emphasis>named display</emphasis> so that was can reuse the
+        display referring to it by name. Try to do this with all the
+        images we display in this tutorial. Only 1 window should open
+        for the whole tutorial.
+      </para>
+    </sect2>
+    <sect2 id="exercise-2-drawing">
+      <title>Exercise 2: Drawing</title>
+      <para>
+        Those speech bubbles look rather plain; why not give them a nice
+        border?
+      </para>
+    </sect2>
+  </sect1>
+</chapter>

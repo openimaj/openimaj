@@ -2,115 +2,161 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="getting-started-with-openimaj-using-maven">
-  <title>Getting started with OpenIMAJ using Maven</title>
-  <para>
-     Apache Maven is a project management tool. Maven performs tasks
-    such as automatic dependency management, project packaging and more.
-    We <emphasis role="strong">strongly</emphasis> encourage anyone
-    using OpenIMAJ to use Maven to get their own project started. We’ve
-    even provided a Maven <emphasis role="strong">archetype</emphasis>
-    for OpenIMAJ (basically a project template) that lets you get
-    started programming with OpenIMAJ quickly.
-  </para>
-  <para>
-    OpenIMAJ requires Maven 3. You can check if you have Maven installed
-    already by opening a terminal (or DOS command prompt) and
-    typing:
-		<screen><command>mvn -version</command></screen>
-		If Maven is found the, version will be printed. If the version is less than 3.0, or Maven
-    was not found, go to
-    <ulink url="http://maven.apache.org"><literal>http://maven.apache.org</literal></ulink>
-    to download and install it. Once you’ve installed Maven try the
-    above command to test that it is working.
-  </para>
-  <para>
-    To create a new OpenIMAJ project, run the following command (note
-    that the command is all on one line and there is no space between
-    <literal>maven.openimaj.org/</literal> and
-    <literal>archetype-catalog.xml</literal>):
-		<screen><command>mvn -DarchetypeCatalog=http://maven.openimaj.org/archetype-catalog.xml archetype:generate</command></screen>
-  </para>
-  <para>
-    Maven will then prompt you for some input. Firstly, when prompted,
-    choose the <literal>openimaj-quickstart-archetype</literal> and
-    choose the latest version. For the <literal>groupId</literal>, enter
-    something that identifies you or a group that you belong to (for
-    example, I might choose <literal>uk.ac.soton.ecs.jsh2</literal> for
-    personal projects, or <literal>org.openimaj</literal> for OpenIMAJ
-    sub-projects). For the <literal>artifactId</literal> enter a name
-    for your project (for example,
-    <literal>OpenIMAJ-Tutorial01</literal>). The version can be left as
-    <literal>1.0-SNAPSHOT</literal>, and the default package is also OK.
-    Finally enter <literal>Y</literal> and press return to confirm the
-    settings. Maven will then generate a new project in a directory with
-    the same name as the <literal>artifactId</literal> you provided.
-  </para>
-  <para>
-    The project directory contains a file called
-    <literal>pom.xml</literal> and a directory called
-    <literal>src</literal>. The <literal>pom.xml</literal> file
-    describes all of the dependencies of the project and also contains
-    instructions for packaging the project into a fat jar that contains
-    all your project code and resources together with the dependencies.
-    If you find that you need to add another library to your project,
-    you should do so by editing the <literal>pom.xml</literal> file and
-    adding a new dependency. The <literal>src</literal> directory
-    contains the code for your project. In particular,
-    <literal>src/main/java</literal> contains your java application code
-    and <literal>src/test/java</literal> contains unit tests.
-  </para>
-  <para>
-    The default project created by the archetype contains a small
-    <quote>hello world</quote> application. To compile and assemble the
-    <quote>hello world</quote> application you <literal>cd</literal>
-    into the project directory from the command line (replacing
-    <literal>OpenIMAJ-Tutorial01</literal> with the name of your
-    project):
-		<screen><command>cd OpenIMAJ-Tutorial01</command></screen>
-		and run the
-    command:
-		<screen><command>mvn assembly:assembly</command></screen>
-		This will create a
-    new directory called target that contains the assembled application
-    jar (the assembled jar is the one whose name ends with
-    -jar-with-dependencies.jar). To run the application,
-    enter:
-		<screen><command>java -jar target/OpenIMAJ-Tutorial01-1.0-SNAPSHOT-jar-with-dependencies.jar</command></screen>
-		The application will then run, and a window should open displaying a
-    picture with the text <quote>hello world</quote>. Closing the
-    window, or ctrl-c on the command line, will quit the application.
-  </para>
-  <sect1 id="integration-with-your-favourite-ide">
-    <title>Integration with your favourite IDE</title>
-    <para>
-      We could now go ahead and start playing with the code in a text
-      editor, however this really isn’t recommended! Using a good
-      Integrated Development Environment (IDE) with auto-completion will
-      make your experience much better.
-    </para>
-    <para>
-      Maven integrates with all the popular IDEs. The OpenIMAJ
-      developers all use Eclipse
-      (<ulink url="http://www.eclipse.org"><literal>http://www.eclipse.org</literal></ulink>)
-      so that is what we’re most familiar with, however we should be
-      able to help getting it set up in a different IDE if you wish.
-    </para>
-    <para>
-      Integration with Eclipse is quite simple. From the command line,
-      inside the project directory, issue the command:
-    </para>
-    <para>
-      <screen><command>mvn eclipse:eclipse</command></screen>
-    </para>
-    <para>
-      This will generate Eclipse project files in the same directory. In
-      Eclipse you can then import the project into the Eclipse workspace
-      (File&gt;import..., choose <quote>Existing projects into
-      workspace</quote>, select the project direct
-    </para>
-    <para>
-      TRUNCATED! Please download pandoc if you want to convert large
-      files.
-    </para>
-  </sect1>
+	  <title>Getting started with OpenIMAJ using Maven</title>
+	  <para>
+	    Apache Maven is a project management tool. Maven performs tasks such
+	    as automatic dependency management, project packaging and more. We
+	    <emphasis role="strong">strongly</emphasis> encourage anyone using
+	    OpenIMAJ to use Maven to get their own project started. We’ve even
+	    provided a Maven <emphasis role="strong">archetype</emphasis> for
+	    OpenIMAJ (basically a project template) that lets you get started
+	    programming with OpenIMAJ quickly.
+	  </para>
+	  <para>
+	    OpenIMAJ requires Maven 3. You can check if you have Maven installed
+	    already by opening a terminal (or DOS command prompt) and typing:
+	  </para>
+	  <programlisting>
+	mvn -version
+	</programlisting>
+	  <para>
+	    If Maven is found the, version will be printed. If the version is
+	    less than 3.0, or Maven was not found, go to
+	    <ulink url="http://maven.apache.org"><literal>http://maven.apache.org</literal></ulink>
+	    to download and install it. Once you’ve installed Maven try the
+	    above command to test that it is working.
+	  </para>
+	  <para>
+	    To create a new OpenIMAJ project, run the following command (note
+	    that the command is all on one line and there is no space between
+	    <literal>maven.openimaj.org/</literal> and
+	    <literal>archetype-catalog.xml</literal>):
+	  </para>
+	  <programlisting>
+	mvn -DarchetypeCatalog=http://maven.openimaj.org/archetype-catalog.xml archetype:generate
+	</programlisting>
+	  <para>
+	    Maven will then prompt you for some input. Firstly, when prompted,
+	    choose the <literal>openimaj-quickstart-archetype</literal> and
+	    choose the latest version. For the <literal>groupId</literal>, enter
+	    something that identifies you or a group that you belong to (for
+	    example, I might choose <literal>uk.ac.soton.ecs.jsh2</literal> for
+	    personal projects, or <literal>org.openimaj</literal> for OpenIMAJ
+	    sub-projects). For the <literal>artifactId</literal> enter a name
+	    for your project (for example,
+	    <literal>OpenIMAJ-Tutorial01</literal>). The version can be left as
+	    <literal>1.0-SNAPSHOT</literal>, and the default package is also OK.
+	    Finally enter <literal>Y</literal> and press return to confirm the
+	    settings. Maven will then generate a new project in a directory with
+	    the same name as the <literal>artifactId</literal> you provided.
+	  </para>
+	  <para>
+	    The project directory contains a file called
+	    <literal>pom.xml</literal> and a directory called
+	    <literal>src</literal>. The <literal>pom.xml</literal> file
+	    describes all of the dependencies of the project and also contains
+	    instructions for packaging the project into a fat jar that contains
+	    all your project code and resources together with the dependencies.
+	    If you find that you need to add another library to your project,
+	    you should do so by editing the <literal>pom.xml</literal> file and
+	    adding a new dependency. The <literal>src</literal> directory
+	    contains the code for your project. In particular,
+	    <literal>src/main/java</literal> contains your java application code
+	    and <literal>src/test/java</literal> contains unit tests.
+	  </para>
+	  <para>
+	    The default project created by the archetype contains a small
+	    <quote>hello world</quote> application. To compile and assemble the
+	    <quote>hello world</quote> application you <literal>cd</literal>
+	    into the project directory from the command line (replacing
+	    <literal>OpenIMAJ-Tutorial01</literal> with the name of your
+	    project):
+	  </para>
+	  <programlisting>
+	cd OpenIMAJ-Tutorial01
+	</programlisting>
+	  <para>
+	    and run the command:
+	  </para>
+	  <programlisting>
+	mvn assembly:assembly
+	</programlisting>
+	  <para>
+	    This will create a new directory called target that contains the
+	    assembled application jar (the assembled jar is the one whose name
+	    ends with -jar-with-dependencies.jar). To run the application,
+	    enter:
+	  </para>
+	  <programlisting>
+	java -jar target/OpenIMAJ-Tutorial01-1.0-SNAPSHOT-jar-with-dependencies.jar
+	</programlisting>
+	  <para>
+	    The application will then run, and a window should open displaying a
+	    picture with the text <quote>hello world</quote>. Closing the
+	    window, or ctrl-c on the command line, will quit the application.
+	  </para>
+	  <sect1 id="integration-with-your-favourite-ide">
+	    <title>Integration with your favourite IDE</title>
+	    <para>
+	      We could now go ahead and start playing with the code in a text
+	      editor, however this really isn’t recommended! Using a good
+	      Integrated Development Environment (IDE) with auto-completion will
+	      make your experience much better.
+	    </para>
+	    <para>
+	      Maven integrates with all the popular IDEs. The OpenIMAJ
+	      developers all use Eclipse
+	      (<ulink url="http://www.eclipse.org"><literal>http://www.eclipse.org</literal></ulink>)
+	      so that is what we’re most familiar with, however we should be
+	      able to help getting it set up in a different IDE if you wish.
+	    </para>
+	    <para>
+	      Integration with Eclipse is quite simple. From the command line,
+	      inside the project directory, issue the command:
+	    </para>
+	    <programlisting>
+	mvn eclipse:eclipse
+	</programlisting>
+	    <para>
+	      This will generate Eclipse project files in the same directory. In
+	      Eclipse you can then import the project into the Eclipse workspace
+	      (File&gt;import..., choose <quote>Existing projects into
+	      workspace</quote>, select the project directory, make sure
+	      <quote>Copy projects into workspace</quote> is
+	      <emphasis role="strong">unchecked</emphasis>, then click
+	      <quote>Finish</quote>). The project should then appear in the
+	      workspace and you’ll be able to look at the App.java file that was
+	      generated by the archetype.
+	    </para>
+	    <para>
+	      <emphasis role="strong">IMPORTANT</emphasis> By default Eclipse
+	      doesn’t know about Maven and its repositories of jars. When you
+	      first import an OpenIMAJ project into Eclipse it will have errors.
+	      You can fix this by adding a new Java classpath variable
+	      (<literal>Eclipse&gt;Preferences&gt;Java&gt;</literal>
+	      <literal>Build Path&gt;Classpath Variables</literal>) called
+	      <literal>M2_REPO</literal>. The value of this variable is the
+	      location of your <literal>.m2/repository</literal> directory. For
+	      Unix systems this is usually found in your home directory, for
+	      Windows systems it is found in <literal>C:\Documents and</literal>
+	      <literal>Settings\&lt;user&gt;\</literal>.
+	    </para>
+	    <para>
+	      Once you’ve opened the <literal>App.java</literal> file in
+	      Eclipse, you can right-click on it and select
+	      <literal>Run as&gt;Java Application</literal> to run it from
+	      within Eclipse.
+	    </para>
+	  </sect1>
+	  <sect1 id="exercises">
+	    <title>Exercises</title>
+	    <sect2 id="exercise-1-playing-with-the-sample-application">
+	      <title>Exercise 1: Playing with the sample application</title>
+	      <para>
+	        Take a look at the App.java from within your IDE. Can you modify
+	        the code to render something other than <quote>hello
+	        world</quote> in a different font and colour?
+	      </para>
+	    </sect2>
+	  </sect1>
 </chapter>
