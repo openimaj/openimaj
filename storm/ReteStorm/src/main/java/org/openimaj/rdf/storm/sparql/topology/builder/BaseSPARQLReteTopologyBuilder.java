@@ -75,9 +75,9 @@ import eu.larkc.csparql.parser.StreamInfo;
  * interface takes care of recording filters, joins etc. and leaves the job of
  * actually adding the bolts to the topology as well as the construction of the
  * {@link ReteConflictSetBolt} instance down to its children.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBuilder {
 
@@ -276,10 +276,10 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 		for (Entry<String, StormSPARQLReteBolt> nameFilter : rule.entrySet()) {
 			String name = nameFilter.getKey();
 			IRichBolt bolt = nameFilter.getValue();
-			if (bolt instanceof StormReteFilterBolt)
+			if (bolt instanceof StormSPARQLReteFilterBolt)
 				connectFilterBolt(context, name, bolt);
-			else if (bolt instanceof StormReteJoinBolt)
-				connectJoinBolt(context, name, (StormReteJoinBolt) bolt);
+			else if (bolt instanceof StormSPARQLReteJoinBolt)
+				connectJoinBolt(context, name, (StormSPARQLReteJoinBolt) bolt);
 		}
 	}
 
@@ -288,12 +288,12 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * behaviour is to add the bolt as
 	 * {@link BoltDeclarer#globalGrouping(String)} with both sources (this might
 	 * be optimisabled)
-	 * 
+	 *
 	 * @param context
 	 * @param name
 	 * @param bolt
 	 */
-	public void connectJoinBolt(SPARQLReteTopologyBuilderContext context, String name, StormReteJoinBolt bolt) {
+	public void connectJoinBolt(SPARQLReteTopologyBuilderContext context, String name, StormSPARQLReteJoinBolt bolt) {
 		BoltDeclarer midBuild = context.builder.setBolt(name, bolt, 1);
 		midBuild.fieldsGrouping(bolt.getLeftBolt(), bolt.getJoinFields());
 		midBuild.fieldsGrouping(bolt.getRightBolt(), bolt.getJoinFields());
@@ -305,7 +305,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * {@link BoltDeclarer#shuffleGrouping(String)} to the
 	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source}
 	 * and the {@link ReteConflictSetBolt} instance
-	 * 
+	 *
 	 * @param context
 	 * @param name
 	 * @param bolt

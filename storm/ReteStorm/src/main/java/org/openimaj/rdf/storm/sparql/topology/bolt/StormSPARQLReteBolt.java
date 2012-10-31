@@ -1,21 +1,21 @@
 /**
  * Copyright (c) ${year}, The University of Southampton and the individual contributors.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- *   * 	Redistributions of source code must retain the above copyright notice, 
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
  * 	this list of conditions and the following disclaimer.
- * 
+ *
  *   *	Redistributions in binary form must reproduce the above copyright notice,
  * 	this list of conditions and the following disclaimer in the documentation
  * 	and/or other materials provided with the distribution.
- * 
+ *
  *   *	Neither the name of the University of Southampton nor the names of its
  * 	contributors may be used to endorse or promote products derived from this
  * 	software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,8 +30,10 @@
 package org.openimaj.rdf.storm.sparql.topology.bolt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openimaj.rdf.storm.bolt.RETEStormSinkNode;
 
@@ -52,12 +54,11 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
-import com.hp.hpl.jena.reasoner.rulesys.Node_RuleVariable;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
- * 
+ *
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  */
 public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETEStormSinkNode {
@@ -106,13 +107,13 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 	public static final int ACTUAL = 1;
 
 	/**
-	 * 
+	 *
 	 * @param simpleQuery
 	 */
 	@SuppressWarnings("unchecked")
 	public StormSPARQLReteBolt(final Rule simpleQuery) {
 		this.ruleString = simpleQuery.toString();
-		this.outputTemplate = Arrays.asList(Rule.parseRule(this.ruleString).getHead());
+		this.outputTemplate = Arrays.asList(simpleQuery.getHead());
 		this.outputFields = extractFields(this.outputTemplate);
 		this.outputTemplate = null;
 	}
@@ -155,7 +156,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 
 	/**
 	 * Get the names of the variable fields output from this Bolt.
-	 * 
+	 *
 	 * @return String[]
 	 */
 	public String[] getVars() {
@@ -164,7 +165,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 
 	/**
 	 * Get the rule on which this FlexibleReteBolt is built.
-	 * 
+	 *
 	 * @return Rule
 	 */
 	public Rule getRule() {
@@ -194,6 +195,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 
 	// ******** Node/Bolt Operation ********
 
+	@Override
 	public void fire(Values output, boolean isAdd) {
 		this.toFire = output;
 	}
@@ -201,7 +203,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 	/**
 	 * Emit the {@link Values} instance that has been prepared for firing,
 	 * using the provided {@link Tuple} as the anchor.
-	 * 
+	 *
 	 * @param anchor
 	 */
 	protected void emit(Tuple anchor) {
@@ -213,7 +215,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 	/**
 	 * Acknowledge the input {@link Tuple} as per Storm requirements,
 	 * then set the toFire variable to null as per Jena.
-	 * 
+	 *
 	 * @param input
 	 */
 	protected void acknowledge(Tuple input) {
@@ -221,6 +223,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 		this.toFire = null;
 	}
 
+	@Override
 	public boolean isActive() {
 		return active;
 	}
@@ -244,7 +247,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 	 * Given a tuple generated from an Storm {@link ISpout} or {@link IBolt}
 	 * using the same class of RETEStormTranslator, create a Jena {@link Graph}
 	 * instance.
-	 * 
+	 *
 	 * @param input
 	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
 	 * @throws ClassCastException
@@ -257,7 +260,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 	 * Given a Jena {@link Graph} construct a {@link Values} instance which is
 	 * the subject, predicate and object of the triple calling
 	 * {@link Node#toString()}
-	 * 
+	 *
 	 * @param graph
 	 * @param fieldsTemplate
 	 * @param seen
@@ -299,7 +302,7 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 	 * Given a Jena {@link Graph} construct a {@link Values} instance which is
 	 * the subject, predicate and object of the triple calling
 	 * {@link Node#toString()}
-	 * 
+	 *
 	 * @param graph
 	 * @param fieldsTemplate
 	 * @return a {@link Values} instance
@@ -327,26 +330,41 @@ public abstract class StormSPARQLReteBolt extends BaseRichBolt implements RETESt
 	 * @param fieldsTemplate
 	 * @return String[]
 	 */
-	public static String[] extractFields(List<ClauseEntry> fieldsTemplate) {
-		ArrayList<String> fields = new ArrayList<String>(fieldsTemplate.size() * 3);
-		String var;
+	public static String[] extractFields (List<ClauseEntry> fieldsTemplate) {
+		Map<String,Integer> fields = new HashMap<String,Integer>();
+		int current = 0;
 		for (ClauseEntry ce : fieldsTemplate)
-			if (ce instanceof TriplePattern) {
-				TriplePattern tp = (TriplePattern) ce;
-				if (tp.getSubject().isVariable() && !fields.contains(var = tp.getSubject().getName()))
-					fields.set(((Node_RuleVariable) tp.getSubject()).getIndex(), var);
-				if (tp.getPredicate().isVariable() && !fields.contains(var = tp.getPredicate().getName()))
-					fields.set(((Node_RuleVariable) tp.getPredicate()).getIndex(), var);
-				if (tp.getObject().isVariable() && !fields.contains(var = tp.getObject().getName()))
-					fields.set(((Node_RuleVariable) tp.getObject()).getIndex(), var);
-				else if (tp.getObject().isLiteral() && tp.getObject().getLiteralValue() instanceof Functor)
-					for (Node n : ((Functor) tp.getObject().getLiteralValue()).getArgs())
-						if (n.isVariable() && !fields.contains(var = n.getName()))
-							fields.set(((Node_RuleVariable) n).getIndex(), var);
-			}
+		{
+			if (ce instanceof TriplePattern){
+				Node s = ((TriplePattern)ce).getSubject();
+				Node p = ((TriplePattern)ce).getPredicate();
+				Node o = ((TriplePattern)ce).getObject();
 
-		fields.trimToSize();
-		return fields.toArray(new String[0]);
+				current = checkAddNode(s,fields,current);
+				current = checkAddNode(p,fields,current);
+				current = checkAddNode(o,fields,current);
+				if(o.isLiteral() && o.getLiteralValue() instanceof Functor){
+					Functor functor = (Functor) o.getLiteralValue();
+					for (Node n : functor.getArgs())
+					{
+						current = checkAddNode(n,fields,current);
+					}
+				}
+			}
+		}
+
+		String[] orderedNames = new String[current];
+		for (Entry<String, Integer> name : fields.entrySet()) {
+			orderedNames[name.getValue()] = name.getKey();
+		}
+		return orderedNames;
+	}
+
+	private static int checkAddNode(Node s, Map<String, Integer> fields, int current) {
+		if(s.isVariable() && !fields.containsKey(s.getName())){
+			fields.put(s.getName(), current++);
+		}
+		return current;
 	}
 
 	/**

@@ -1,21 +1,21 @@
 /**
  * Copyright (c) ${year}, The University of Southampton and the individual contributors.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- *   * 	Redistributions of source code must retain the above copyright notice, 
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
  * 	this list of conditions and the following disclaimer.
- * 
+ *
  *   *	Redistributions in binary form must reproduce the above copyright notice,
  * 	this list of conditions and the following disclaimer in the documentation
  * 	and/or other materials provided with the distribution.
- * 
+ *
  *   *	Neither the name of the University of Southampton nor the names of its
  * 	contributors may be used to endorse or promote products derived from this
  * 	software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -39,24 +39,23 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
-import org.openimaj.rdf.storm.topology.bolt.StormReteFilterBolt;
-import org.openimaj.rdf.storm.topology.bolt.StormReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteFilterBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteTerminalBolt;
 import org.openimaj.rdf.storm.utils.VariableIndependentReteRuleToStringUtils;
+
+import scala.actors.threadpool.Arrays;
+import backtype.storm.topology.BoltDeclarer;
+import backtype.storm.topology.IRichBolt;
 
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
-
-import scala.actors.threadpool.Arrays;
-
-import backtype.storm.topology.BoltDeclarer;
-import backtype.storm.topology.IRichBolt;
 
 /**
  * The simple topology builders make no attempt to optimise the joins. This base
@@ -83,7 +82,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	private Map<String, List<String>> priorBolts;
 	private String ruleName;
 	private String prior;
-	
+
 	@Override
 	public void initTopology(ReteTopologyBuilderContext context) {
 		this.rules = new HashMap<String, Map<String, StormReteBolt>>();
@@ -98,7 +97,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	}
 
 // Topology Compilation
-	
+
 	@Override
 	public void startRule(ReteTopologyBuilderContext context) {
 		// The rule name, bolts take the form of ruleName_(BODY|HEAD)_count
@@ -119,7 +118,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	@Override
 	public void addFilter(ReteTopologyBuilderContext context) {
 		String boltName = VariableIndependentReteRuleToStringUtils.clauseEntryToString(context.filterClause);
-		
+
 		StormReteBolt filterBolt;
 		if (bolts.containsKey(boltName)){
 			logger.debug(String.format("Filter bolt %s used from existing rule", boltName));
@@ -153,7 +152,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 					// Remove the bolt from the rule, so that it does not attempt to match against itself.
 					// If no joins are made then it will be added to the nextLevel map.
 					names.remove();
-					
+
 					while (boltNames.size() > 0){
 						names = boltNames.iterator();
 						while (names.hasNext()){
@@ -166,7 +165,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 									List<ClauseEntry> template = new ArrayList<ClauseEntry>();
 									template.addAll(Arrays.asList(currentBolt.getRule().getHead()));
 									template.addAll(Arrays.asList(otherBolt.getRule().getHead()));
-									
+
 									// Create the string representing the variable-name-independently ordered
 									// output graph (this makes it repeatable irrespective of component bolts).
 									// This involves sorting the template, again independently of variable
@@ -178,16 +177,17 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 										// If an equivalent bolt exists, use that bolt, setting the bolt's output
 										// variables to match those of the current rule.  This is done purely for
 										// compilation purposes.
+										// FIXME: Potentially  this is very very bad and should be .clone()
 										newJoin = bolts.get(newJoinName);
 										newJoin.setVars(StormReteBolt.extractFields(template));
 									}else{
 										newJoin = constructReteJoinBolt(currentBoltName, otherBoltName, template);
 										bolts.put(newJoinName, newJoin);
 									}
-									
+
 									rule.put(newJoinName, newJoin);
 									boltNames.add(newJoinName);
-									
+
 									continue join;
 								}
 							}
@@ -275,11 +275,11 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	@Override
 	public void finaliseTopology(ReteTopologyBuilderContext context) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 // Bolt Construction
-	
+
 	/**
 	 * @param context
 	 * @return the conflict set bolt usually describing what is done with
@@ -299,7 +299,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	}
 
 	/**
-	 * @param filter 
+	 * @param filter
 	 * @return the {@link StormReteFilterBolt} usually the filter between the source
 	 *         and a join or a terminal. If null the filter isn't added
 	 */
@@ -314,7 +314,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	 *            the left source of the join
 	 * @param right
 	 *            the right source of the join
-	 * @param template 
+	 * @param template
 	 * @return the {@link StormReteJoinBolt} usually combining two
 	 *         {@link StormReteFilterBolt} instances, {@link StormReteJoinBolt}
 	 *         instances, or a combination of the two
@@ -328,7 +328,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 		int[] templateRight = new int[newVars.length];
 		int[] matchLeft = new int[currentVars.length];
 		int[] matchRight = new int[otherVars.length];
-		
+
 		for (int l = 0; l < currentVars.length; l++)
 			matchLeft[l] = Arrays.asList(otherVars).indexOf(currentVars[l]);
 		for (int r = 0; r < otherVars.length; r++)

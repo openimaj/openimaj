@@ -1,21 +1,21 @@
 /**
  * Copyright (c) ${year}, The University of Southampton and the individual contributors.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- *   * 	Redistributions of source code must retain the above copyright notice, 
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
  * 	this list of conditions and the following disclaimer.
- * 
+ *
  *   *	Redistributions in binary form must reproduce the above copyright notice,
  * 	this list of conditions and the following disclaimer in the documentation
  * 	and/or other materials provided with the distribution.
- * 
+ *
  *   *	Neither the name of the University of Southampton nor the names of its
  * 	contributors may be used to endorse or promote products derived from this
  * 	software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -63,8 +63,7 @@ public class VariableIndependentReteRuleToStringUtils {
 			@Override
 			public int compare(ClauseEntry o1,
 					ClauseEntry o2) {
-				clauseEntryToString(o1).compareTo(clauseEntryToString(o2));
-				return 0;
+				return clauseEntryToString(o1).compareTo(clauseEntryToString(o2));
 			}
 		});
 		return template;
@@ -133,13 +132,13 @@ public class VariableIndependentReteRuleToStringUtils {
 			return functor.substring(0, functor.length() - 1) + ")";
 		} else if (ce instanceof Rule) {
 			Rule r = (Rule) ce;
-			
+
 			List<String> v = Arrays.asList(StormReteBolt.extractFields(Arrays.asList(r.getBody())));
 			int[] m = new int[v.size()];
 			for (int i = 0; i < m.length; i++ )
 				m[i] = -1;
 			Count c = new Count(0);
-			
+
 			String rule = "[ ";
 			if (r.getName() != null)
 				rule += r.getName() + " : ";
@@ -149,7 +148,7 @@ public class VariableIndependentReteRuleToStringUtils {
 		}
 		throw new ClassCastException("The proffered ClauseEntry is not one of the standard implementations supplied by Jena (TriplePattern, Functor or Rule)");
 	}
-	
+
 	/**
 	 * @param ce
 	 * @return Variable Independent Clause Entry String
@@ -157,17 +156,17 @@ public class VariableIndependentReteRuleToStringUtils {
 	public static String clauseEntryToString(ClauseEntry ce){
 		return clauseEntryToString(ce, new ArrayList<String>(), new int[0], new Count(0));
 	}
-	
+
 	private static String clauseToString(List<ClauseEntry> template, List<String> varNames, int[] matchIndices, Count count) {
 		template = sortClause(template);
-		
+
 		StringBuilder clause = new StringBuilder();
 		for (ClauseEntry ce : template)
 			clause.append(clauseEntryToString(ce,varNames,matchIndices,count)+" ");
-		
+
 		return clause.toString();
 	}
-	
+
 	/**
 	 * @param template
 	 * @return Variable Independent Clause String
@@ -179,20 +178,20 @@ public class VariableIndependentReteRuleToStringUtils {
 		for (int i = 0; i < matchIndices.length; i++ )
 			matchIndices[i] = -1;
 		Count count = new Count(0);
-		
+
 		return clauseToString(template, varNames, matchIndices, count);
 	}
-	
+
 	private static String clauseToStringAllVars(List<ClauseEntry> template, List<String> varNames, int[] matchIndices, Count count) {
 		template = sortClause(template);
-		
+
 		StringBuilder clause = new StringBuilder();
 		for (ClauseEntry ce : template)
 			clause.append(clauseEntryToString(ce,varNames,matchIndices,count)+" ");
-		
+
 		return clause.toString();
 	}
-	
+
 	/**
 	 * @param template
 	 * @return Variable Independent Clause String
@@ -204,7 +203,7 @@ public class VariableIndependentReteRuleToStringUtils {
 		for (int i = 0; i < matchIndices.length; i++ )
 			matchIndices[i] = -1;
 		Count count = new Count(0);
-		
+
 		return clauseToStringAllVars(template, varNames, matchIndices, count);
 	}
 
