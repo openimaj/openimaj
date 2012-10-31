@@ -3,8 +3,11 @@ package org.openimaj.image.objectdetection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -14,8 +17,11 @@ import Jama.Matrix;
 /**
  * An {@link ObjectDetector} that wraps another {@link ObjectDetector} and
  * performs rotation simulations on the images it passes to the internal
- * detector. This allows a non rotation invariant detector to become detect
+ * detector. This allows a non rotation invariant detector to be able to detect
  * rotated objects.
+ * <p>
+ * This implementation allows the input image to be scaled in order to reduce
+ * computational complexity, and control over the simulated angles.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
@@ -24,15 +30,16 @@ import Jama.Matrix;
  * @param <PIXEL>
  *            Type of pixel of the image in which the detection happens
  * @param <DETECTED_OBJECT>
- *            The type of extracted detected object
+ *            The type of object emitted by the inner detector
  */
-public class RotationSimulationObjectDetector<IMAGE extends Image<PIXEL, IMAGE>, PIXEL, DETECTED_OBJECT>
+public class RotationSimulationObjectDetector<IMAGE extends Image<PIXEL, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>, PIXEL, DETECTED_OBJECT>
 		implements
 		ObjectDetector<IMAGE, TransformedDetection<DETECTED_OBJECT>>
 {
 	private ObjectDetector<IMAGE, DETECTED_OBJECT> detector;
-	private int numRotations = 1;
 	private Rectangle roi;
+	private float scalefactor = 1f;
+	private float[] simulationAngles;
 
 	/**
 	 * Construct with the given inner detector and number of rotations.
@@ -45,41 +52,91 @@ public class RotationSimulationObjectDetector<IMAGE extends Image<PIXEL, IMAGE>,
 	 */
 	public RotationSimulationObjectDetector(ObjectDetector<IMAGE, DETECTED_OBJECT> detector, int numRotations) {
 		this.detector = detector;
-		this.numRotations = numRotations;
+		this.simulationAngles = computeAngles(numRotations);
+	}
+
+	/**
+	 * Construct with the given inner detector, number of rotations and scale
+	 * factor. Simulations will occur every 360/numRotations degrees.
+	 * 
+	 * @param detector
+	 *            the internal detector
+	 * @param numRotations
+	 *            the number of rotations
+	 * @param scalefactor
+	 *            the amount by which to scale the input image prior to passing
+	 *            to the inner detector
+	 */
+	public RotationSimulationObjectDetector(ObjectDetector<IMAGE, DETECTED_OBJECT> detector, int numRotations,
+			float scalefactor)
+	{
+		this(detector, numRotations);
+		this.scalefactor = scalefactor;
+	}
+
+	/**
+	 * Construct with the given inner detector, simulation angles and scale
+	 * factor. Simulations will occur every 360/numRotations degrees.
+	 * 
+	 * @param detector
+	 *            the internal detector
+	 * @param simulationAngles
+	 *            the rotation angles to simulate
+	 * @param scalefactor
+	 *            the amount by which to scale the input image prior to passing
+	 *            to the inner detector
+	 */
+	public RotationSimulationObjectDetector(ObjectDetector<IMAGE, DETECTED_OBJECT> detector, float[] simulationAngles,
+			float scalefactor)
+	{
+		this.detector = detector;
+		this.simulationAngles = simulationAngles;
+		this.scalefactor = scalefactor;
+	}
+
+	private float[] computeAngles(int numRotations) {
+		final float[] angles = new float[numRotations];
+
+		for (int i = 1; i < numRotations; i++) {
+			angles[i] = (float) (2 * i * Math.PI / numRotations);
+		}
+
+		return angles;
 	}
 
 	@Override
 	public List<TransformedDetection<DETECTED_OBJECT>> detect(IMAGE image) {
 		final List<TransformedDetection<DETECTED_OBJECT>> results = new ArrayList<TransformedDetection<DETECTED_OBJECT>>();
 
-		detectObjects(image, Matrix.identity(3, 3), results);
+		Matrix scale;
 
-		for (int i = 1; i < numRotations; i++) {
-			final double angle = i * 2 * Math.PI / numRotations;
+		if (scalefactor != 1) {
+			image = image.process(new ResizeProcessor(scalefactor));
+			scale = TransformUtilities.scaleMatrix(scalefactor, scalefactor);
+		} else {
+			scale = Matrix.identity(3, 3);
+		}
 
-			final Matrix matrix = TransformUtilities.rotationMatrix(angle);
-			final IMAGE rimg = ProjectionProcessor.project(image, matrix);
+		for (final float angle : simulationAngles) {
+			if (angle == 0) {
+				detectObjects(image, scale, results);
+			} else {
+				final Matrix matrix = TransformUtilities.rotationMatrix(angle);
+				final IMAGE rimg = ProjectionProcessor.project(image, matrix);
 
-			final Rectangle actualBounds = image.getBounds();
-			final Shape transformedActualBounds = actualBounds.transform(matrix);
-			final double tminX = transformedActualBounds.minX();
-			final double tminY = transformedActualBounds.minY();
+				final Rectangle actualBounds = image.getBounds();
+				final Shape transformedActualBounds = actualBounds.transform(matrix);
+				final double tminX = transformedActualBounds.minX();
+				final double tminY = transformedActualBounds.minY();
 
-			final int minc = (int) Math.floor(tminX);
-			final int minr = (int) Math.floor(tminY);
+				final int minc = (int) Math.floor(tminX);
+				final int minr = (int) Math.floor(tminY);
 
-			matrix.set(0, 2, -minc);
-			matrix.set(1, 2, -minr);
+				matrix.set(0, 2, -minc);
+				matrix.set(1, 2, -minr);
 
-			// final Matrix matrix =
-			// TransformUtilities.rotationMatrixAboutPoint(angle,
-			// image.getWidth() / 2,
-			// image.getHeight() / 2);
-			// final IMAGE rimg = image.transform(matrix);
-
-			// DisplayUtilities.displayName(rimg, "" + i);
-
-			detectObjects(rimg, matrix, results);
+				detectObjects(rimg, matrix.times(scale), results);
+			}
 		}
 
 		return results;
@@ -106,6 +163,11 @@ public class RotationSimulationObjectDetector<IMAGE extends Image<PIXEL, IMAGE>,
 		this.roi = roi;
 	}
 
+	/**
+	 * Get the internal detector
+	 * 
+	 * @return the internal detector
+	 */
 	public ObjectDetector<IMAGE, DETECTED_OBJECT> getInnerDetector() {
 		return detector;
 	}

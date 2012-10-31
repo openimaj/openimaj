@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.openimaj</groupId>
+    <artifactId>openimaj-tutorial-parent</artifactId>
+    <version>1.0.6-SNAPSHOT</version>
+  </parent>
+  <artifactId>tutorial-content</artifactId>
+  <packaging>jar</packaging>
+  <name>Tutorial DocBook XML and Figures</name>
+  <description>The content of the OpenIMAJ tutorial</description>
+  <build>
+    <sourceDirectory>src/main/resources</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>*.xml</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>*.xml</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.cjcook</groupId>
+        <artifactId>docbook-plugin</artifactId>
+        <version>1.0</version>
+        <extensions>true</extensions>
+        <executions>
+	  <!--        	<execution>
+        		<id>validate-chapters</id>
+        		<phase>test</phase>
+        		<goals>
+        		  <goal>validate-chapter-ids</goal>
+        		</goals>
+            </execution> -->
+<!--          <execution>
+            <id>inject-examples</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>inject-examples</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>wrappify</id>
+            <goals>
+              <goal>wrappify</goal>
+            </goals>
+          </execution> -->
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <escapeString>\</escapeString>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

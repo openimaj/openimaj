@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE preface PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<preface id="copyright" role="copyrightpg">
+  <title>Copyright</title>
+
+  <para>Copyright © ${copyright.year} ${project.organization.name} and the individual authors.</para>
+
+  <para>Online version published by ${project.organization.name},
+  ${organization.address}.</para>
+
+  <para>The OpenIMAJ Tutorial is licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license visit: <ulink
+  url="http://creativecommons.org/licenses/by-sa/3.0/legalcode">http://creativecommons.org/licenses/by-sa/3.0/legalcode</ulink>.</para>
+
+  <para>Java™ and all Java-based trademarks and logos are trademarks or
+  registered trademarks of Oracle, Inc., in the United States and
+  other countries.</para>
+
+  <para>Eclipse™ is a trademark of the Eclipse Foundation, Inc., in the United
+  States and other countries.</para>
+
+  <para>While every precaution has been taken in the preparation of this book,
+  the publisher and authors assume no responsibility for errors or omissions,
+  or for damages resulting from the use of the information contained
+  herein.</para>
+
+</preface>

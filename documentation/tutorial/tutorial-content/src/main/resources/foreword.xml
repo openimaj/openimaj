@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE preface PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<preface id="foreword">
+  <title>Foreword: ${project.version}</title>
+
+  <para>The latest version of this book is always available on the OpenIMAJ website: <ulink
+  url="http://www.openimaj.org">http://www.openimaj.org</ulink></para>
+
+  <para>We welcome your feedback. Please do not hesitate to contact the
+  OpenIMAJ team with any questions or ideas you may have about the
+  OpenIMAJ.</para>
+
+  <para>If you have any feedback or questions, you are encouraged to email us at : <ulink
+  url="mailto:openimaj@gmail.com">openimaj@gmail.com</ulink> or to file an issue on the OpenIMAJ issue tracker at <ulink url="http://jira.openimaj.org">http://jira.openimaj.org</ulink>.</para>
+
+  <para>
+	Current development of the OpenIMAJ and ImageTerrier software is funded 
+	by the European Union Seventh Framework Programme (FP7/2007-2013) under 
+	grant agreement n$^{\circ}$ 270239 (ARCOMEM). Earlier releases were funded
+	by the European Union Seventh Framework Programme (FP7/2007-2013) under grant
+	agreement 231126 (LivingKnowledge) together with the LiveMemories project, 
+	graciously funded by the Autonomous Province of Trento (Italy).
+	We are also grateful to the Arts and Humanities Research Council 
+	(`Bridging the Semantic Gap' - MRG-AN6770/APN17429) and Ordnance Survey, 
+	for earlier funding under which a number of the older OpenIMAJ classes were created.
+  </para>
+
+  <para>Edition: ${project.version}</para>
+
+</preface>

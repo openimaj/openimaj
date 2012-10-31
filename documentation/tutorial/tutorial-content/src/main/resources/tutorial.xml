@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book id="book-m2eclipse">
+  <?dbhtml filename="index.html"?>
+
+  <title>${book.title}</title>
+
+  <bookinfo>
+
+    <edition>${project.version}</edition>
+
+    <!-- <author>
+      <surname>Sonatype, Inc.</surname>
+    </author> -->
+
+    <authorgroup>
+      <author>
+				<honorific>Dr</honorific>
+        <surname>Hare</surname>
+        <firstname>Jonathon</firstname>
+	      <affiliation>
+					<orgdiv>Electronics and Computer Science</orgdiv>
+          <orgname>${project.organization.name}</orgname>
+					<authorblurb><para><ulink url="http://users.ecs.soton.ac.uk/jsh2">http://users.ecs.soton.ac.uk/jsh2</ulink></para></authorblurb>
+        </affiliation>
+      </author>
+      <author>
+				<honorific>Dr</honorific>
+        <surname>Samangooei</surname>
+        <firstname>Sina</firstname>
+        <affiliation>
+					<orgdiv>Electronics and Computer Science</orgdiv>
+          <orgname>${project.organization.name}</orgname>
+					<authorblurb><para><ulink url="http://users.ecs.soton.ac.uk/ss">http://users.ecs.soton.ac.uk/ss</ulink></para></authorblurb>
+        </affiliation>
+      </author>
+      <author>
+				<honorific>Dr</honorific>
+        <surname>Dupplaw</surname>
+        <firstname>David</firstname>
+        <affiliation>
+					<orgdiv>Electronics and Computer Science</orgdiv>
+          <orgname>${project.organization.name}</orgname>
+					<authorblurb><para><ulink url="http://users.ecs.soton.ac.uk/dpd">http://users.ecs.soton.ac.uk/dpd</ulink></para></authorblurb>
+        </affiliation>
+      </author>
+    </authorgroup>
+
+    <copyright>
+      <year>2011</year>
+      <holder>The University of Southampton and the individual authors.</holder>
+    </copyright>
+
+    <date>2012-10-30</date>
+
+    <publisher>
+      <publishername>The University of Southampton</publishername>
+
+      <address><street>Highfield</street><city>Southampton</city><state>Hampshire</state><postcode>SO17 1BJ</postcode></address>
+    </publisher>
+
+    <abstract>
+      <para>The OpenIMAJ Tutorial provides a hands-on introduction to programming with OpenIMAJ.</para>
+    </abstract>
+
+    <mediaobject role="cover">
+      <imageobject remap="lrg" role="front-large">
+        <imagedata fileref="covers/cvr_lrg.jpg" format="JPEG" width="600px" />
+      </imageobject>
+
+      <imageobject remap="s" role="front">
+        <imagedata fileref="covers/cvr_s.gif" format="GIF" />
+      </imageobject>
+
+      <imageobject remap="xs" role="front-small">
+        <imagedata fileref="covers/cvr_xs.gif" format="GIF" />
+      </imageobject>
+
+      <imageobject remap="cs" role="thumbnail">
+        <imagedata fileref="covers/cvr_cs.gif" format="GIF" />
+      </imageobject>
+    </mediaobject>
+  </bookinfo>
+
+  <xi:include href="copyright.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="foreword.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="preface.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <xi:include href="tut1.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <index></index>
+</book>
