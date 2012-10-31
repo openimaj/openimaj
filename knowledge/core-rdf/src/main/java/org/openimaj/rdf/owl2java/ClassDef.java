@@ -24,7 +24,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.sail.memory.model.MemLiteral;
 
 /**
- *
+ *	Represents the definition of an ontology class.
  *
  *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
@@ -44,7 +44,7 @@ public class ClassDef
 
 	/** List of the properties in this class */
 	protected List<PropertyDef> properties;
-
+	
 	/**
 	 * 	Outputs the Java class definition for this class def
 	 *
@@ -62,7 +62,7 @@ public class ClassDef
 	 *	Loads all the class definitions from the given repository
 	 *
 	 *	@param conn The repository connection from where to get the classes
-	 *	@return
+	 *	@return a Map that maps class URIs to ClassDef objects
 	 *	@throws RepositoryException
 	 *	@throws MalformedQueryException
 	 *	@throws QueryEvaluationException
@@ -199,7 +199,7 @@ public class ClassDef
 			ps.println( "import "+pkgs.get(this.uri)+".*;" );
 		if( generateAnnotations )
 			ps.println( "import org.openimaj.rdf.serialize.Predicate;\n");
-		this.printImports( ps, pkgs );
+		this.printImports( ps, pkgs, true, classes );
 		ps.println();
 
 		// Output the comment at the top of the class
@@ -233,8 +233,7 @@ public class ClassDef
 	 *
 	 *	@param targetDir The target directory
 	 *	@param pkgs A list of package mappings to class URIs
-	 * 	@param classes
-	 * 	@param separateImplementations
+	 * 	@param classes The URI to class definition map.
 	 * 	@throws FileNotFoundException
 	 */
 	public void generateInterface( final File targetDir, final Map<URI, String> pkgs,
@@ -247,6 +246,8 @@ public class ClassDef
 				+ File.separator + this.uri.getLocalName() + ".java") );
 
 		ps.println("package " + pkgs.get(this.uri) + ";");
+		ps.println();
+		this.printImports( ps, pkgs, false, classes );
 		ps.println();
 
 		this.printClassComment(ps);
@@ -279,13 +280,27 @@ public class ClassDef
 	 *
 	 *	@param ps The stream to print the imports to
 	 *	@param pkgs The list of package mappings for all the known classes
+	 *	@param superclasses Whether to print imports for superclasses
 	 */
-	private void printImports( final PrintStream ps, final Map<URI, String> pkgs )
+	private void printImports( final PrintStream ps, final Map<URI, String> pkgs, 
+			final boolean superclasses, final Map<URI,ClassDef> classes )
 	{
 		final Set<String> imports = new HashSet<String>();
 
-		for( final URI sc : this.superclasses )
-			imports.add( pkgs.get(sc) );
+		if( superclasses )
+		{
+			for( final URI sc : this.superclasses )
+			{
+				for( final PropertyDef p : classes.get(sc).properties )
+					if( p.needsImport() != null )
+						imports.add( p.needsImport() );
+				imports.add( pkgs.get(sc) );
+			}
+		}
+		
+		for( final PropertyDef p : this.properties )
+			if( p.needsImport() != null )
+				imports.add( p.needsImport() );
 
 		imports.remove( pkgs.get(this.uri) );
 
@@ -304,7 +319,7 @@ public class ClassDef
 	 */
 	private void printInterfacePropertyDefinitions( final PrintStream ps )
 	{
-		for( final PropertyDef p : this.properties)
+		for( final PropertyDef p : this.properties )
 			ps.println( p.toSettersAndGetters( "\t", false, null ) );
 	}
 
@@ -351,24 +366,34 @@ public class ClassDef
 			final HashMap<String,List<PropertyDef>> pd = new HashMap<String, List<PropertyDef>>();
 			for( final URI superclass : this.superclasses )
 			{
+				// We don't need the instance variable if we're not inheriting
+				// any properties from the superclass.
+				if( classes.get(superclass).properties.size() == 0 )
+					continue;
+				
 				final String instanceName =
 						superclass.getLocalName().substring(0,1).toLowerCase()+
 						superclass.getLocalName().substring(1);
 
+				pd.put( instanceName, classes.get(superclass).properties );
+
 				ps.println( "\t/** "+superclass.getLocalName()+" instance */" );
 				ps.println( "\tprivate "+superclass.getLocalName()+" "+instanceName+";\n" );
-
-				pd.put( instanceName, classes.get(superclass).properties );
 			}
 
+			ps.println( "\n\t// From class "+this.uri.getLocalName()+"\n\n" );
+			
 			// Output the property getters and setters for this class
 			for( final PropertyDef p : this.properties )
 				ps.println( p.toSettersAndGetters( "\t", true, null ) );
 
 			// Now output the delegated getters and setters for this class
 			for( final String instanceName : pd.keySet() )
+			{
+				ps.println( "\n\t// From class "+instanceName+"\n\n" );
 				for( final PropertyDef p : pd.get(instanceName) )
 					ps.println( p.toSettersAndGetters( "\t", true, instanceName ) );
+			}
 		}
 	}
 }

@@ -1,11 +1,23 @@
 package org.openimaj.rdf.owl2java;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 import org.openrdf.model.URI;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -13,16 +25,108 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.memory.MemoryStore;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+
 /**
+ *	The main class of the OWL 2 Java tool. This class provides a main method
+ *	that will convert an OWL/RDFS file to a set of Java code files that compile
+ *	to provide an object representation of the ontology. 
  *
- *
- *
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @created 29 Oct 2012
- * @version $Author$, $Revision$, $Date$
+ * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	@created 29 Oct 2012
+ * 	@version $Author$, $Revision$, $Date$
  */
 public class Generator
 {
+	/**
+	 * 	Options for the generation of the Java classes.
+	 *
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *  @created 30 Oct 2012
+	 *	@version $Author$, $Revision$, $Date$
+	 */
+	public static class GeneratorOptions
+	{
+		/** The RDF file to convert */
+		@Argument(metaVar="RDF-FILE",index=0,usage="The RDF file to convert",required=true)
+		public String rdfFile;
+
+		/** The target directory for the output */
+		@Argument(metaVar="TARGET-DIR",index=1,usage="The output directory for the generated class files",required=true)
+		public String targetDirectory;
+		
+		/** Whether to generate @@Predicate annotations. */
+		@Option(name="-annotate",aliases="-a",usage="Generate @Predicate annotations")
+		public boolean generateAnnotations = true;
+		
+		/** Whether to flatten the properties in the class structure */
+		@Option(name="-flatten",aliases="-f",usage="Flatten the properties in the generated classes")
+		public boolean flattenClassStructure = false;
+		
+		/** Whether to put the implementation files in a separate package */
+		@Option(name="-separate",aliases="-s",usage="Put implementations in a separate package")
+		public boolean separateImplementations = true;
+		
+		/** Whether to create a pom.xml file for the output files */
+		@Option(name="-maven",aliases="-m",usage="Create a Maven project with this groupId",metaVar="GROUP-ID")
+		public String mavenProject = null;
+	}
+	
+	/**
+	 * 	Useful little debug method that will print out all the triples for
+	 * 	a given URI from the given repository.
+	 * 
+	 *	@param uri The URI
+	 *	@param conn The connection
+	 */
+	protected static void debugAllTriples( final URI uri, final RepositoryConnection conn )
+	{
+		try
+		{
+			// SPARQL query to get the properties and property comments
+			final String query = "SELECT ?uri ?pred ?obj WHERE { ?uri ?pred ?obj. } ";
+
+			// Prepare the query
+			final TupleQuery preparedQuery = conn.prepareTupleQuery( QueryLanguage.SPARQL, query );
+
+			// Execute the query
+			final TupleQueryResult res = preparedQuery.evaluate();
+
+			System.out.println( "----------------------------------------------" );
+			System.out.println( "Triples for "+uri );
+			System.out.println( "----------------------------------------------" );
+			
+			// Loop through the results
+			while( res.hasNext() )
+			{
+				final BindingSet bindingSet = res.next();
+				System.out.println( "( "+
+						bindingSet.getBinding("uri").getValue()+" "+
+						bindingSet.getBinding("pred").getValue()+" "+
+						bindingSet.getBinding("obj").getValue()+" )"
+				);
+			}
+			
+			res.close();
+
+			System.out.println( "----------------------------------------------\n" );
+		}
+		catch( final RepositoryException e )
+		{
+			e.printStackTrace();
+		}
+		catch( final MalformedQueryException e )
+		{
+			e.printStackTrace();
+		}
+		catch( final QueryEvaluationException e )
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Creates a cache of mappings that map URIs to package names.
 	 *
@@ -57,34 +161,48 @@ public class Generator
 	{
 		String ns = uri.getNamespace();
 
+		// Remove the protocol
 		if( ns.contains( "//" ) ) ns = ns.substring( ns.indexOf( "//" ) + 2 );
 
+		// If there's no path component, return it as it is
 		if( !ns.contains( "/" ) ) return ns;
 
+		// Get the path component
 		String last = ns.substring( ns.indexOf( "/" )+1 );
 
+		// Remove any anchors
 		if( last.contains( "#" ) )
 			last = last.substring( 0, last.indexOf( "#" ) );
 
+		// Remove any file extensions
 		if( last.contains( "." ) )
 			last = last.substring( 0, last.indexOf( "." ) );
 
+		// Replace all the path separators by dots
 		last = last.replace( "/", "." );
+		
+		// Remove invalid characters
+		// Replace dashes with underscores
 		last = last.replace( "-", "_" );
 
-		String first = ns.substring( 0, ns.indexOf( "/" ) );
+		// Get the server part (the bit we're going to reverse)
+		String serverName = ns.substring( 0, ns.indexOf( "/" ) );
 
-		final String[] parts = first.split( "\\." );
-		first = "";
+		// Split the server name and reverse it.
+		final String[] parts = serverName.split( "\\." );
+		serverName = "";
 		for( int i = parts.length - 1; i >= 0; i-- )
 		{
+			// Replace any invalid characters with underscores
 			if( parts[i].charAt(0) < 65 || parts[i].charAt(0) > 122 )
-				first += "_";
+				serverName += "_";
 
-			first += parts[i];
-			if( i != 0 ) first += ".";
+			serverName += parts[i];
+			if( i != 0 ) serverName += ".";
 		}
 
+		// We'll also need to replace any invalid characters (or names) with
+		// new names
 		String lastBit = "";
 		if( last.indexOf( "." ) == -1 )
 			lastBit = last;
@@ -99,7 +217,29 @@ public class Generator
 			}
 		}
 
-		return first + lastBit;
+		return serverName + lastBit;
+	}
+
+	/**
+	 * 	Creates a pom.xml file in the given directory that contains the
+	 * 	necessary dependencies to make the source files compile. It uses a
+	 * 	template pom.xml that is in the resource directory.
+	 * 
+	 *	@param targetDir The target directory
+	 *	@param groupId The groupId of the maven artifact
+	 */
+	private static void createPOM( final File targetDir, final String groupId )
+	{
+		try
+		{
+			String s = Resources.toString( Resources.getResource( "pom.xml" ), Charsets.UTF_8 );
+			s = s.replaceAll( "\\{!!!\\}", groupId );
+			FileUtils.writeStringToFile( new File( targetDir, "pom.xml" ), s, "UTF-8" );
+		}
+		catch( final IOException e )
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -109,14 +249,23 @@ public class Generator
 	 */
 	public static void main( final String[] args ) throws RepositoryException
 	{
-		if( args.length < 2 )
-		{
-			System.out.println( "Usage: Generator <RDF-File> <Target-Directory>");
-			System.exit(1);
-		}
+		final GeneratorOptions go = new GeneratorOptions();
+        final CmdLineParser parser = new CmdLineParser( go );
 
-		final File rdfFile = new File( args[0] );
-		final File targetDir = new File( args[1] );
+        try
+        {
+	        parser.parseArgument( args );
+        }
+        catch( final CmdLineException e )
+        {
+	        System.err.println( e.getMessage() );
+	        System.err.println( "java Generator RDF-FILE TARGET-DIR [options]");
+	        parser.printUsage( System.err );
+	        System.exit(1);
+        }
+
+		final File rdfFile = new File( go.rdfFile );
+		File targetDir = new File( go.targetDirectory );
 
 		if( !rdfFile.exists() )
 		{
@@ -131,6 +280,19 @@ public class Generator
 			System.exit( 1 );
 		}
 
+		// If we're going to create a Maven project, we'll put all the source
+		// files into a src directory, so we need to alter the target directory.
+		if( go.mavenProject != null )
+		{
+			// Create the pom.xml file
+			Generator.createPOM( targetDir, go.mavenProject );
+			
+			targetDir = new File( targetDir.getAbsolutePath()+
+					File.separator+"src"+File.separator+"main"+
+					File.separator+"java" );
+			targetDir.mkdirs();
+		}
+		
 		// Create a new memory store into which we'll plonk all the RDF
 		final Repository repository = new SailRepository( new MemoryStore() );
 		repository.initialize();
@@ -153,7 +315,9 @@ public class Generator
 			for( final ClassDef cd : classes.values() )
 			{
 				cd.generateInterface( targetDir, pkgs, classes );
-				cd.generateClass( targetDir, pkgs, classes, true, true, true );
+				cd.generateClass( targetDir, pkgs, classes, 
+					go.flattenClassStructure, go.generateAnnotations, 
+					go.separateImplementations );
 			}
 		}
 		catch( final Exception e )
