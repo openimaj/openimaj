@@ -30,10 +30,8 @@
 package org.openimaj.rdf.storm.topology.bolt;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.openimaj.rdf.storm.bolt.RETEStormSinkNode;
 
@@ -80,11 +78,13 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		 *
 		 */
 		isAdd
-		, /**
+		,
+		/**
 		 *
 		 */
 		graph
-		, /**
+		,
+		/**
 		 *
 		 */
 		timestamp;
@@ -114,12 +114,14 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	private final String ruleString;
 
 	private List<ClauseEntry> outputTemplate;
-	private String[] outputFields;
+
 	private Values toFire;
 	private boolean active;
 
 	private int[] usageStatistics = { 0, 0 };
 	private double[] costStatistics = { 0, 0 };
+
+	private int variableCount;
 	/**
 	 * The constant value for accessing potential statistics.
 	 */
@@ -136,10 +138,14 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@SuppressWarnings("unchecked")
 	public StormReteBolt(final Rule rule) {
 		this.ruleString = rule.toString();
-		this.outputTemplate = Arrays.asList(rule.getHead());
-		this.setVars(extractFields(this.outputTemplate));
-		this.outputTemplate = null;
+		this.variableCount = countVariables(Arrays.asList(rule.getHead()));
 	}
+
+	private int countVariables(List<ClauseEntry> fieldEntry) {
+		return CompilationStormReteBoltHolder.extractFields(fieldEntry).length;
+	}
+
+
 
 	// ******** getting/setting ********
 
@@ -177,23 +183,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		return this.costStatistics[statIndex];
 	}
 
-	/**
-	 * Get the names of the variable fields output from this Bolt.
-	 *
-	 * @return String[]
-	 */
-	public String[] getVars() {
-		return this.outputFields;
-	}
 
-	/**
-	 * Set the names of the variable fields output from this Bolt.
-	 *
-	 * @param newVars
-	 */
-	public void setVars(String[] newVars) {
-		this.outputFields = newVars;
-	}
 
 	/**
 	 * Get the rule on which this FlexibleReteBolt is built.
@@ -264,7 +254,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		List<String> fields = new ArrayList<String>();
-		for (int i = 0; i < outputFields.length; i++)
+		for (int i = 0; i < this.variableCount; i++)
 			fields.add("?" + i);
 		fields.addAll(Arrays.asList(Component.strings()));
 		declarer.declare(new Fields(fields));
@@ -351,54 +341,9 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		return values;
 	}
 
-	// ******** Field Extraction ********
-	// Do not need to extract fields in bare functors or embedded rules,
-	// as these lead to system calls rather than graph emission.
 
-	protected String[] extractFields() {
-		return extractFields(this.outputTemplate);
-	}
 
-	/**
-	 * @param fieldsTemplate
-	 * @return String[]
-	 */
-	public static String[] extractFields(List<ClauseEntry> fieldsTemplate) {
-		Map<String, Integer> fields = new HashMap<String, Integer>();
-		int current = 0;
-		for (ClauseEntry ce : fieldsTemplate)
-		{
-			if (ce instanceof TriplePattern) {
-				Node s = ((TriplePattern) ce).getSubject();
-				Node p = ((TriplePattern) ce).getPredicate();
-				Node o = ((TriplePattern) ce).getObject();
 
-				current = checkAddNode(s, fields, current);
-				current = checkAddNode(p, fields, current);
-				current = checkAddNode(o, fields, current);
-				if (o.isLiteral() && o.getLiteralValue() instanceof Functor) {
-					Functor functor = (Functor) o.getLiteralValue();
-					for (Node n : functor.getArgs())
-					{
-						current = checkAddNode(n, fields, current);
-					}
-				}
-			}
-		}
-
-		String[] orderedNames = new String[current];
-		for (Entry<String, Integer> name : fields.entrySet()) {
-			orderedNames[name.getValue()] = name.getKey();
-		}
-		return orderedNames;
-	}
-
-	private static int checkAddNode(Node s, Map<String, Integer> fields, int current) {
-		if (s.isVariable() && !fields.containsKey(s.getName())) {
-			fields.put(s.getName(), current++);
-		}
-		return current;
-	}
 
 	/**
 	 * @param fieldsTemplate

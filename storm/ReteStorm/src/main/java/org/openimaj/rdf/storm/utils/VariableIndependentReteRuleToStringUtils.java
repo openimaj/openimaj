@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.openimaj.rdf.storm.topology.bolt.CompilationStormReteBoltHolder;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 
 import scala.actors.threadpool.Arrays;
@@ -133,7 +134,7 @@ public class VariableIndependentReteRuleToStringUtils {
 		} else if (ce instanceof Rule) {
 			Rule r = (Rule) ce;
 
-			List<String> v = Arrays.asList(StormReteBolt.extractFields(Arrays.asList(r.getBody())));
+			List<String> v = Arrays.asList(CompilationStormReteBoltHolder.extractFields(Arrays.asList(r.getBody())));
 			int[] m = new int[v.size()];
 			for (int i = 0; i < m.length; i++ )
 				m[i] = -1;
@@ -198,7 +199,7 @@ public class VariableIndependentReteRuleToStringUtils {
 	 */
 	public static String clauseToStringAllVars(List<ClauseEntry> template){
 		@SuppressWarnings("unchecked")
-		List<String> varNames = Arrays.asList(StormReteBolt.extractFields(template));
+		List<String> varNames = Arrays.asList(CompilationStormReteBoltHolder.extractFields(template));
 		int[] matchIndices = new int[varNames.size()];
 		for (int i = 0; i < matchIndices.length; i++ )
 			matchIndices[i] = -1;
