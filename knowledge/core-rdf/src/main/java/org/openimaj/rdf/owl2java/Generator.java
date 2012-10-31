@@ -241,6 +241,16 @@ public class Generator
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * 	Returns the Java type name for a given URI
+	 *	@param s The URI
+	 *	@return The Java type name
+	 */
+	protected static String getTypeName( final URI s )
+	{
+		return s.getLocalName().substring(0,1).toUpperCase() + s.getLocalName().substring( 1 );
+	}
 
 	/**
 	 *

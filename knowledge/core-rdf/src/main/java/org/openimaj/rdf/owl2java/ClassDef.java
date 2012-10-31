@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.WordUtils;
 import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -21,7 +22,10 @@ import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.sail.memory.model.MemBNode;
 import org.openrdf.sail.memory.model.MemLiteral;
+import org.openrdf.sail.memory.model.MemStatement;
+import org.openrdf.sail.memory.model.MemStatementList;
 
 /**
  *	Represents the definition of an ontology class.
@@ -117,11 +121,81 @@ public class ClassDef
 					clz.superclasses = ClassDef.getSuperclasses( clz.uri, conn );
 					clz.properties   = PropertyDef.loadProperties( clz.uri, conn );
 
+					// Check whether there are any other classes
+					ClassDef.getEquivalentClasses( clz, conn );
+					
 					classes.put( clz.uri, clz );
 				}
 			}
 		}
 		return classes;
+	}
+
+	/**
+	 * 	Checks for owl:equivalentClass and updates the class definition based
+	 * 	on whats found.
+	 *	@param clz the class definition
+	 *	@param conn The connection to the repository
+	 */
+	private static void getEquivalentClasses( final ClassDef clz, final RepositoryConnection conn )
+	{
+		try
+		{
+			final String sparql = "prefix owl: <http://www.w3.org/2002/07/owl#> "+
+					"SELECT ?clazz WHERE " +
+					"{ <"+clz.uri+"> owl:equivalentClass ?clazz . }";
+
+			System.out.println( sparql );
+			
+			// Prepare the query...
+			final TupleQuery preparedQuery = conn.prepareTupleQuery(
+					QueryLanguage.SPARQL, sparql );
+
+			// Run the query...
+			final TupleQueryResult res = preparedQuery.evaluate();
+			
+			// Loop through the results (if any)
+			while( res.hasNext() )
+			{
+				final BindingSet bs = res.next();
+				
+				final Value clazz = bs.getBinding("clazz").getValue();
+				
+				// If it's an equivalent then we'll simply make this class
+				// a subclass of the equivalent class. 
+				// TODO: There is a possibility that we could end up with a cycle here
+				// and the resulting code would not compile.
+				if( clazz instanceof URI )
+					clz.superclasses.add( (URI)clazz );
+				else
+				// If it's a BNode, then the BNode defines the equivalence.
+				if( clazz instanceof MemBNode )
+				{
+					final MemBNode b = (MemBNode)clazz;
+					final MemStatementList sl = b.getSubjectStatementList();
+					
+					for( int i = 0; i < sl.size(); i++ )
+					{
+						final MemStatement x = sl.get(i);
+						System.out.println( "    -> "+x );
+					}
+				}
+			}
+			
+			res.close();
+		}
+		catch( final RepositoryException e )
+		{
+			e.printStackTrace();
+		}
+		catch( final MalformedQueryException e )
+		{
+			e.printStackTrace();
+		}
+		catch( final QueryEvaluationException e )
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -187,7 +261,7 @@ public class ClassDef
 				(separateImplementations?File.separator+"impl":"") );
 		path.mkdirs();
 		final PrintStream ps = new PrintStream( new File( path.getAbsolutePath()
-				+ File.separator + this.uri.getLocalName() + "Impl.java") );
+				+ File.separator + Generator.getTypeName( this.uri ) + "Impl.java") );
 
 		// Output the package definition
 		ps.println("package " + pkgs.get(this.uri) +
@@ -206,17 +280,18 @@ public class ClassDef
 		this.printClassComment(ps);
 
 		// Output the class
-		ps.print("public class " + this.uri.getLocalName() + "Impl ");
+		ps.print("public class " + Generator.getTypeName( this.uri ) + "Impl ");
+
+		// It will implement the interface that defines it
+		ps.print( "implements "+Generator.getTypeName( this.uri ) );
+
 		if (this.superclasses.size() > 0)
 		{
-			// It will implement the interface that defines it
-			ps.print( "implements "+this.uri.getLocalName() );
-
 			// ...and any of the super class interfaces
 			for( final URI superclass : this.superclasses )
 			{
 				ps.print(", ");
-				ps.print( superclass.getLocalName() );
+				ps.print( Generator.getTypeName( superclass ) );
 			}
 		}
 		ps.println("\n{");
@@ -243,7 +318,7 @@ public class ClassDef
 				pkgs.get(this.uri).replace( ".", File.separator ) );
 		path.mkdirs();
 		final PrintStream ps = new PrintStream( new File( path.getAbsolutePath()
-				+ File.separator + this.uri.getLocalName() + ".java") );
+				+ File.separator + Generator.getTypeName( this.uri ) + ".java") );
 
 		ps.println("package " + pkgs.get(this.uri) + ";");
 		ps.println();
@@ -252,7 +327,7 @@ public class ClassDef
 
 		this.printClassComment(ps);
 
-		ps.print("public interface " + this.uri.getLocalName() + " ");
+		ps.print("public interface " + Generator.getTypeName( this.uri ) + " ");
 		ps.println("\n{");
 		this.printInterfacePropertyDefinitions( ps );
 		ps.println("}\n");
@@ -378,7 +453,8 @@ public class ClassDef
 				pd.put( instanceName, classes.get(superclass).properties );
 
 				ps.println( "\t/** "+superclass.getLocalName()+" instance */" );
-				ps.println( "\tprivate "+superclass.getLocalName()+" "+instanceName+";\n" );
+				ps.println( "\tprivate "+Generator.getTypeName( superclass )
+						+" "+instanceName+";\n" );
 			}
 
 			ps.println( "\n\t// From class "+this.uri.getLocalName()+"\n\n" );

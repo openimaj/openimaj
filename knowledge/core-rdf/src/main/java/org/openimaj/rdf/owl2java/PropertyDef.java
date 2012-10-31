@@ -145,8 +145,7 @@ public class PropertyDef
 				if( PropertyDef.typeMap.get( rangeURI ) != null )
 						valueType = PropertyDef.typeMap.get( rangeURI );
 				// Otherwise, capitalise the name of the type and use that
-				else	valueType = rangeURI.getLocalName().substring(0,1).toUpperCase() +
-								rangeURI.getLocalName().substring( 1 );
+				else	valueType = Generator.getTypeName( rangeURI );
 			}
 			// If there's multiple ranges, we'll just use Object
 			else	valueType = "Object";
@@ -210,8 +209,7 @@ public class PropertyDef
 			final String delegationObject )
 	{
 		final String valueType = this.getDeclarationType();
-		final String pName = this.uri.getLocalName().substring( 0, 1 ).toUpperCase()+
-					this.uri.getLocalName().substring( 1 );
+		final String pName = Generator.getTypeName( this.uri );
 
 		String s = "";
 
