@@ -51,7 +51,14 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
  */
 public class VariableIndependentReteRuleToStringUtils {
 
-	private static List<ClauseEntry> sortClause(List<ClauseEntry> template) {
+	/**
+	 * Sort clause entries within the clause by string value, where the string used
+	 * has had the variable names replaced with the literal 'VAR'.  This means the
+	 * clause is sorted repeatably and independently of variable names.
+	 * @param template
+	 * @return List<ClauseEntry>
+	 */
+	public static List<ClauseEntry> sortClause(List<ClauseEntry> template) {
 		Collections.sort(template,new Comparator<ClauseEntry>(){
 			@Override
 			public int compare(ClauseEntry o1,
