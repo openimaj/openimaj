@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.kestrel.KestrelServerSpec;
+import org.openimaj.util.pair.IndependentPair;
 
 import backtype.storm.Config;
 
@@ -48,6 +49,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Node_Literal;
 import com.hp.hpl.jena.graph.Node_URI;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 import com.hp.hpl.jena.mem.GraphMem;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
@@ -133,9 +135,9 @@ public class JenaStormUtils {
 		}
 
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
 	 */
 	public static class GraphSerialiser extends Serializer<Graph> {
@@ -173,7 +175,7 @@ public class JenaStormUtils {
 			}
 			return graph;
 		}
-		
+
 	}
 
 	/**
@@ -229,6 +231,7 @@ public class JenaStormUtils {
 	 */
 	public static class RuleSerializer extends Serializer<Rule> {
 
+
 		@Override
 		public void write(Kryo kryo, Output output, Rule object) {
 			output.writeString(object.toString());
@@ -240,7 +243,6 @@ public class JenaStormUtils {
 		}
 
 	}
-
 	/**
 	 * @param conf
 	 *            register some Jena serialisers to this configuration
@@ -254,8 +256,13 @@ public class JenaStormUtils {
 		conf.registerSerialization(KestrelServerSpec.class, KestrelServerSpec_Serializer.class);
 		conf.registerSerialization(Rule.class, RuleSerializer.class);
 		conf.registerSerialization(Graph.class, GraphSerialiser.class);
+		conf.registerSerialization(GraphMem.class, GraphSerialiser.class);
+		conf.registerSerialization(MultiUnion.class, GraphSerialiser.class);
 		// conf.registerSerialization(Node_NULL.class);
 		// conf.registerSerialization(Node_Blank.class);
 	}
 
+	private static List<IndependentPair<Class<?>,Class<? extends Serializer<?>>>> initSerializers() {
+		return new ArrayList<IndependentPair<Class<?>,Class<? extends Serializer<?>>>>();
+	}
 }

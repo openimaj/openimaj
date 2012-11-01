@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt.Component;
 import org.openimaj.rdf.storm.utils.CircularPriorityWindow;
@@ -55,6 +56,8 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * @author David Monks <dm11g08@ecs.soton.ac.uk>, based largely on the RETEQueue implementation by <a href="mailto:der@hplb.hpl.hp.com">Dave Reynolds</a>
  */
 public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
+
+	protected final static Logger logger = Logger.getLogger(RETEStormQueue.class);
 
     /** A time-prioritised and size limited sliding window of Tuples */
     private final CircularPriorityWindow<Tuple> window;
@@ -162,10 +165,13 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
      * @param env a set of variable bindings for the rule being processed.
      * @param isAdd distinguishes between add and remove operations.
      */
-    public void fire(Tuple env, boolean isAdd) {
+    public void fire(Tuple env, boolean isAdd, long timestamp) {
     	// Cross match new token against the entries in the sibling queue
+    	logger.debug("Checking new tuple: " + env);
+    	logger.debug("Comparing new tuple to " + sibling.window.size() + " other tuples");
         for (Iterator<Tuple> i = sibling.window.iterator(); i.hasNext(); ) {
             Tuple candidate = i.next();
+            logger.debug("Comparing to: " + candidate);
             boolean matchOK = true;
             for (int j = 0; j < matchIndices.length; j++) {
                 if (matchIndices[j] >= 0
@@ -200,6 +206,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
     					newVals.add(newG);
     					break;
     				case timestamp:
+    					newVals.add(timestamp);
     					break;
     				default:
     					break;

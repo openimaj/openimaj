@@ -52,7 +52,6 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  *
@@ -215,14 +214,25 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		return active;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		declarer.declare(declaredFields(this.getVariableCount()));
+	}
+
+	/**
+	 * For a given number of variables declare the fields present in the values.
+	 * The default fields (the elements of {@link Component}) are always present and
+	 * appended to the end.
+	 * @param variableCount
+	 * @return fields
+	 */
+	@SuppressWarnings({"unchecked" })
+	public static Fields declaredFields(int variableCount) {
 		List<String> fields = new ArrayList<String>();
-		for (int i = 0; i < this.getVariableCount(); i++)
+		for (int i = 0; i < variableCount; i++)
 			fields.add("?" + i);
 		fields.addAll(Arrays.asList(Component.strings()));
-		declarer.declare(new Fields(fields));
+		return new Fields(fields);
 	}
 
 	/**
@@ -242,8 +252,30 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
 	 * @throws ClassCastException
 	 */
-	public static Graph asGraph(Tuple input) throws ClassCastException {
+	public static Graph extractGraph(Tuple input) throws ClassCastException {
 		return (Graph) input.getValueByField(Component.graph.toString());
+	}
+
+	/**
+	 * Extract the {@link Component#isAdd} from the {@link Tuple}
+	 *
+	 * @param input
+	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
+	 * @throws ClassCastException
+	 */
+	public static boolean extractIsAdd(Tuple input) throws ClassCastException {
+		return (Boolean) input.getValueByField(Component.isAdd.toString());
+	}
+
+	/**
+	 * Extract the {@link Component#isAdd} from the {@link Tuple}
+	 *
+	 * @param input
+	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
+	 * @throws ClassCastException
+	 */
+	public static long extractTimestamp(Tuple input) throws ClassCastException {
+		return (Long) input.getValueByField(Component.timestamp.toString());
 	}
 
 	/**
@@ -251,41 +283,44 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 * the subject, predicate and object of the triple calling
 	 * {@link Node#toString()}
 	 *
-	 * @param graph
-	 * @param fieldsTemplate
-	 * @param seen
+	 * @param isAdd add or remove
+	 * @param graph the data
+	 * @param timestamp the time
 	 * @return a {@link Values} instance
 	 */
-	public static Values asValues(Graph graph, TriplePattern fieldsTemplate, List<Node> seen) {
+	public static Values asValues(boolean isAdd, Graph graph, long timestamp) {
 		Values values = new Values();
-
-		boolean varSub = false, varPred = false, varObj = false;
-		if (fieldsTemplate.getSubject().isVariable() && !seen.contains(fieldsTemplate.getSubject())) {
-			varSub = true;
-			seen.add(fieldsTemplate.getSubject());
-		}
-		if (fieldsTemplate.getPredicate().isVariable() && !seen.contains(fieldsTemplate.getPredicate())) {
-			varPred = true;
-			seen.add(fieldsTemplate.getPredicate());
-		}
-		if (fieldsTemplate.getObject().isVariable() && !seen.contains(fieldsTemplate.getObject())) {
-			varObj = true;
-			seen.add(fieldsTemplate.getObject());
-		}
-
-		ExtendedIterator<Triple> iter = graph.find(fieldsTemplate.asTripleMatch());
-		while (iter.hasNext()) {
-			Triple t = iter.next();
-
-			if (varSub)
-				values.add(t.getSubject());
-			if (varPred)
-				values.add(t.getPredicate());
-			if (varObj)
-				values.add(t.getObject());
+		for (Component cmp: Component.values()) {
+			switch(cmp){
+			case isAdd:
+				values.add(isAdd);
+				break;
+			case graph:
+				values.add(graph);
+				break;
+			case timestamp:
+				values.add(timestamp);
+			default:
+				break;
+			}
 		}
 
 		return values;
+	}
+
+	/**
+	 * Add the metadata components by extracting them from the provided input
+	 * @param values
+	 * @param input
+	 */
+	public static void appendMetaData(Values values, Tuple input) {
+		values.addAll(
+			asValues(
+					extractIsAdd(input),
+					extractGraph(input),
+					extractTimestamp(input)
+			)
+		);
 	}
 
 	/**

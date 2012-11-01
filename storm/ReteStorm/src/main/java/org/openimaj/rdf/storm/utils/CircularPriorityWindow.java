@@ -1,21 +1,21 @@
 /**
  * Copyright (c) ${year}, The University of Southampton and the individual contributors.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- *   * 	Redistributions of source code must retain the above copyright notice, 
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
  * 	this list of conditions and the following disclaimer.
- * 
+ *
  *   *	Redistributions in binary form must reproduce the above copyright notice,
  * 	this list of conditions and the following disclaimer in the documentation
  * 	and/or other materials provided with the distribution.
- * 
+ *
  *   *	Neither the name of the University of Southampton nor the names of its
  * 	contributors may be used to endorse or promote products derived from this
  * 	software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -43,7 +43,7 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 
+ *
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  * @param <T>
  */
@@ -53,25 +53,25 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 	protected Map<T, Count> queue;
 	protected final int capacity;
 	protected final long delay;
-	
+
 	/**
 	 * @param size
 	 * @param delay
-	 * @param unit 
+	 * @param unit
 	 */
 	public CircularPriorityWindow(int size, long delay, TimeUnit unit) {
 		this.capacity = size;
 		this.delay = TimeUnit.MILLISECONDS.convert(delay, unit);
 		this.clear();
 	}
-	
+
 	/**
 	 * @return int
 	 */
 	public int getCapacity() {
 		return capacity;
 	}
-	
+
 	/**
 	 * @return long
 	 */
@@ -84,13 +84,15 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		this.data = new PriorityQueue<TimeWrapped>(this.capacity + 1);
 		this.queue = new HashMap<T,Count>();
 	}
-	
+
 	private void prune() {
 		Iterator<TimeWrapped> pruner = new Iterator<TimeWrapped>(){
 			TimeWrapped last;
 			@Override
 			public boolean hasNext() {
-				return (last = data.peek()).getDelay(TimeUnit.MILLISECONDS) < 0;
+				last = data.peek();
+				if(last == null) return false;
+				return last.getDelay(TimeUnit.MILLISECONDS) < 0;
 			}
 			@Override
 			public TimeWrapped next() {
@@ -103,7 +105,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 				last = null;
 			}
 		};
-		
+
 		while (pruner.hasNext())
 			pruner.remove();
 	}
@@ -125,12 +127,12 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 	public boolean isEmpty() {
 		return queue.isEmpty();
 	}
-	
+
 	@Override
 	public int size() {
 		return data.size();
 	}
-	
+
 	@Override
 	public T[] toArray() {
 		// TODO Auto-generated method stub
@@ -143,7 +145,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	private boolean decrement(T arg0) {
 		Count count = queue.get(arg0);
         if (count == null) {
@@ -156,7 +158,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
         }
         return true;
 	}
-	
+
 	private boolean increment(T arg0) {
 		Count count = queue.get(arg0);
         if (count == null) {
@@ -178,7 +180,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		} catch (ClassCastException e) {
 			return false;
 		}
-		
+
 	}
 
 	@Override
@@ -204,7 +206,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 			removed &= remove(item);
 		return removed;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean addAll(@SuppressWarnings("rawtypes") Collection arg0) {
@@ -235,13 +237,13 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		increment(arg0.getWrapped());
 		return data.add(arg0);
 	}
-	
+
 	@Override
 	public boolean add(T arg0) {
 		if (arg0 == null) return false;
 		return add(new TimeWrapped(arg0,(new Date()).getTime(),this.delay,TimeUnit.MILLISECONDS));
 	}
-	
+
 	/**
 	 * @param arg0
 	 * @return boolean
@@ -253,7 +255,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public boolean offer(T arg0) {
 		try {
@@ -293,11 +295,11 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		decrement(item);
 		return item;
 	}
-	
+
 	@Override
 	public Iterator <T> iterator() {
 		prune();
-		final PriorityQueue<TimeWrapped> dataclone = new PriorityQueue<TimeWrapped>(data.size());
+		final PriorityQueue<TimeWrapped> dataclone = new PriorityQueue<TimeWrapped>();
 		dataclone.addAll(data);
 		return new Iterator<T>(){
 			TimeWrapped last;
@@ -316,30 +318,32 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 			}
 		};
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Inner class used to represent a generic wrapper for the generic type T contained by the queue.
 	 */
 	private class Wrapped {
-		
+
 		private T wrapped;
-		
+
 		public Wrapped (T toWrap) {
 			this.wrapped = toWrap;
 		}
-		
+
 		public T getWrapped() {
 			return this.wrapped;
 		}
-		
+
+		@Override
 		public int hashCode(){
 			return this.wrapped.hashCode();
 		}
-		
+
+		@Override
 		public boolean equals(Object obj){
 			if (obj.getClass().equals(Wrapped.class))
 				return this.wrapped.equals(Wrapped.class.cast(obj).getWrapped());
@@ -348,26 +352,27 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 			else
 				return false;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Inner class used to represent a timestamp wrapper for the generic type T contained by the queue.
 	 */
 	private class TimeWrapped extends Wrapped implements Delayed {
-		
+
 		private long droptime;
-		
+
 		public TimeWrapped (T toWrap, long ts, long delay, TimeUnit delayUnit) {
 			super(toWrap);
 			droptime = ts + TimeUnit.MILLISECONDS.convert(delay, delayUnit);
 		}
-		
+
+		@Override
 		public boolean equals(Object obj){
 			if (obj.getClass().equals(TimeWrapped.class))
 				return getDelay(TimeUnit.MILLISECONDS) == this.getClass().cast(obj).getDelay(TimeUnit.MILLISECONDS)
 						&& getWrapped().equals(TimeWrapped.class.cast(obj).getWrapped());
-			else 
+			else
 				return super.equals(obj);
 		}
 
@@ -380,7 +385,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		public long getDelay(TimeUnit arg0) {
 			return arg0.convert(droptime - (new Date()).getTime(),TimeUnit.MILLISECONDS);
 		}
-		
+
 	}
-	
+
 }

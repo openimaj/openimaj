@@ -1,7 +1,14 @@
 package org.openimaj.rdf.storm.topology.bolt;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import org.openimaj.io.IOUtils;
 
 import scala.actors.threadpool.Arrays;
 import backtype.storm.task.OutputCollector;
@@ -21,9 +28,8 @@ public abstract class StormRuleReteBolt extends StormReteBolt{
 	 *
 	 */
 	private static final long serialVersionUID = 3977605874827044044L;
-	private String ruleString;
 	private int variableCount;
-	private List<ClauseEntry> outputTemplate;
+	private byte[] ruleSerialized;
 
 	/**
 	 * The rule backing this bolt
@@ -31,7 +37,13 @@ public abstract class StormRuleReteBolt extends StormReteBolt{
 	 */
 	@SuppressWarnings("unchecked")
 	public StormRuleReteBolt(Rule rule) {
-		this.ruleString = rule.toString();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		try {
+			IOUtils.write(rule, dos);
+		} catch (IOException e) {
+		}
+		this.ruleSerialized = baos.toByteArray();
 		this.variableCount = countVariables(Arrays.asList(rule.getHead()));
 	}
 
@@ -45,10 +57,8 @@ public abstract class StormRuleReteBolt extends StormReteBolt{
 		return this.variableCount;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void prepare(@SuppressWarnings("rawtypes") Map stormConf, TopologyContext context, OutputCollector collector) {
-		this.outputTemplate = Arrays.asList(Rule.parseRule(this.ruleString).getHead());
 		super.prepare(stormConf, context, collector);
 	}
 
@@ -58,7 +68,12 @@ public abstract class StormRuleReteBolt extends StormReteBolt{
 	 * @return Rule
 	 */
 	public Rule getRule() {
-		return Rule.parseRule(this.ruleString);
+		try {
+			return IOUtils.read(new DataInputStream(new ByteArrayInputStream(this.ruleSerialized)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

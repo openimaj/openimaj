@@ -126,12 +126,14 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 
 	@Override
 	public void execute(Tuple input) {
+		logger.debug(String.format("Executing join over: {left = %s, right = %s } ",this.leftBolt,this.rightBolt));
 		boolean isAdd = (Boolean) input.getValueByField(Component.isAdd.toString());
+		long timestamp = (Long) input.getValueByField(Component.timestamp.toString());
 		if(input.getSourceComponent().equals(leftBolt)){
-			this.leftQ.fire(input, isAdd);
+			this.leftQ.fire(input, isAdd,timestamp);
 		}
 		else{
-			this.rightQ.fire(input, isAdd);
+			this.rightQ.fire(input, isAdd,timestamp);
 		}
 		emit(input);
 		acknowledge(input);

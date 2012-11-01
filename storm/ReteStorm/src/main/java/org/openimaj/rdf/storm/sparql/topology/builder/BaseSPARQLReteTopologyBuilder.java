@@ -37,15 +37,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.CompilationStormRuleReteBoltHolder;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
-import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteJoinBolt;
-import org.openimaj.rdf.storm.topology.bolt.StormReteTerminalBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormRuleReteBolt;
 import org.openimaj.rdf.storm.topology.builder.BaseStormReteTopologyBuilder;
 import org.openimaj.rdf.storm.utils.VariableIndependentReteRuleToStringUtils;
@@ -79,6 +78,21 @@ import eu.larkc.csparql.parser.StreamInfo;
  */
 public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBuilder {
 
+	private class Group{
+		public List<Group> children;
+		public Map<String, StormReteBolt> bolts;
+		public Group parent;
+		public Group() {
+			children = new ArrayList<Group>();
+			bolts = new HashMap<String, StormReteBolt>();
+		}
+	}
+	/**
+	 * These two variables hold the groups which in turn hold bolts or other groups
+	 */
+	private Group rootGroup = null;
+	private Group currentGroup = null;
+
 	private static Logger logger = Logger.getLogger(BaseStormReteTopologyBuilder.class);
 	/**
 	 * the name of the final bolt
@@ -86,10 +100,8 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	public static final String FINAL_TERMINAL = "final_term";
 
 	private BoltDeclarer finalTerminalBuilder;
-	private StormReteTerminalBolt term;
 	private Map<String, StormReteBolt> bolts;
 	private List<IndependentPair<String, CompilationStormRuleReteBoltHolder>> boltNames;
-	private Map<String, List<String>> priorBolts;
 	private String prior;
 
 	@Override
@@ -101,8 +113,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	public void initTopology(SPARQLReteTopologyBuilderContext context) {
 		boltNames = new ArrayList<IndependentPair<String, CompilationStormRuleReteBoltHolder>>();
 		this.bolts = new HashMap<String, StormReteBolt>();
-		this.priorBolts = new HashMap<String, List<String>>();
-		ReteConflictSetBolt finalTerm = constructConflictSetBolt(context);
+		StormSPARQLReteConflictSetBolt finalTerm = constructConflictSetBolt(context);
 		if (finalTerm != null)
 		{
 			this.finalTerminalBuilder = context.builder.setBolt(FINAL_TERMINAL, finalTerm, 1); // There is explicity 1 and only 1 Conflict set
@@ -113,12 +124,20 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	public void startGroup(SPARQLReteTopologyBuilderContext context) {
 		// Groups represent a join. One doesn't exist, construct the root group.
 		// if the root group exists, add a new group as a component to merge
+		if(rootGroup == null){
+			rootGroup = new Group();
+			currentGroup = rootGroup;
+		}
+		else{
+			Group newGroup = new Group();
+			currentGroup.children.add(newGroup);
+			currentGroup = newGroup;
+		}
 	}
 
 	@Override
 	public void endGroup(SPARQLReteTopologyBuilderContext context) {
-		// TODO Auto-generated method stub
-
+		currentGroup = currentGroup.parent; // we don't care if the parent is null.
 	}
 
 	@Override
@@ -142,7 +161,6 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 					}
 					logger.debug(String.format("Filter bolt %s created from clause %s", boltName, context.filterClause.toString()));
 					bolts.put(boltName, filterBolt);
-					priorBolts.put(boltName, new ArrayList<String>());
 				}
 				boltNames.add(IndependentPair.pair(boltName,new CompilationStormRuleReteBoltHolder((StormRuleReteBolt) filterBolt,rule)));
 			}
@@ -249,29 +267,15 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 
 	@Override
 	public void finishQuery(SPARQLReteTopologyBuilderContext context) {
-		logger.debug("Compiling the terminal node instance");
+		logger.debug("Connecting last node to the conflict set");
 		// Now construct the terminal
-		if (prior != null) {
-			term = constructTerminalBolt(context);
-		} else {
-			return; // This should never really happen, it implies an empty
-					// rule
+		if (prior == null) {
+			throw new RuntimeException("Couldn't compile without prior!");
 		}
+		// We have a prior, we have a terminal bolt, we can go ahead and
 
-		if (term == null) {
-			logger.debug("Terminal was null, not connecting the terminal");
-		}
-		else {
-			logger.debug("Connecting the terminal instance to " + prior);
-			// We have a prior, we have a terminal bolt, we can go ahead and
-			// make addition to the topology
-			// FIXME: This is wrong, the name of the terminal bolt should reflect what it does more accurately
-			String terminalName = String.format("%s", context.query.simpleQuery.isSelectType());
-			context.builder.setBolt(terminalName, term).shuffleGrouping(prior);
-
-			logger.debug("Connecting the final terminal to " + terminalName);
-			finalTerminalBuilder.shuffleGrouping(terminalName);
-		}
+		logger.debug("Connecting the final terminal to " + prior);
+		finalTerminalBuilder.shuffleGrouping(prior);
 
 		logger.debug("Connecting the filter and join instances to the source/final terminal instances");
 		// Now add the nodes to the actual topology
@@ -328,17 +332,8 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * @return the conflict set bolt usually describing what is done with
 	 *         triples in the stream
 	 */
-	public ReteConflictSetBolt constructConflictSetBolt(SPARQLReteTopologyBuilderContext context) {
-		return new ReteConflictSetBolt();
-	}
-
-	/**
-	 * @param context
-	 * @return the {@link ReteTerminalBolt} usually the buffer between the
-	 *         network proper and the {@link ReteConflictSetBolt}
-	 */
-	public StormReteTerminalBolt constructTerminalBolt(SPARQLReteTopologyBuilderContext context) {
-		return new StormReteTerminalBolt(context.query.simpleQuery);
+	public StormSPARQLReteConflictSetBolt constructConflictSetBolt(SPARQLReteTopologyBuilderContext context) {
+		return StormSPARQLReteConflictSetBolt.construct(context.query.simpleQuery);
 	}
 
 	/**

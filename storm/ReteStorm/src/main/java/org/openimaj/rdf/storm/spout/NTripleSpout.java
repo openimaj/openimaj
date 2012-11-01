@@ -1,21 +1,21 @@
 /**
  * Copyright (c) ${year}, The University of Southampton and the individual contributors.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- *   * 	Redistributions of source code must retain the above copyright notice, 
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
  * 	this list of conditions and the following disclaimer.
- * 
+ *
  *   *	Redistributions in binary form must reproduce the above copyright notice,
  * 	this list of conditions and the following disclaimer in the documentation
  * 	and/or other materials provided with the distribution.
- * 
+ *
  *   *	Neither the name of the University of Southampton nor the names of its
  * 	contributors may be used to endorse or promote products derived from this
  * 	software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,7 +30,6 @@
 package org.openimaj.rdf.storm.spout;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
@@ -43,6 +42,7 @@ import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
+
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -52,7 +52,7 @@ import com.hp.hpl.jena.reasoner.TriplePattern;
 /**
  * Given a URL, This spout creates a stream of triples formatted to Storm fields according to a Jena RETE <-> Storm translator.
  * Based on the {@link NTriplesSpout} by Sina Samangooei <ss@ecs.soton.ac.uk>
- * 
+ *
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  *
  */
@@ -73,7 +73,7 @@ public class NTripleSpout extends SimpleSpout implements Sink<Triple> {
 	/**
 	 * @param nTriplesURL
 	 *            source of the ntriples
-	 * 
+	 *
 	 */
 	public NTripleSpout(String nTriplesURL) {
 		this.nTriplesURL = nTriplesURL;
@@ -96,16 +96,16 @@ public class NTripleSpout extends SimpleSpout implements Sink<Triple> {
 			Graph graph = new GraphMem();
 			graph.add(parser.next());
 			try {
-				this.collector.emit(StormReteBolt.asValues(graph,template,new ArrayList<Node>()));
+				this.collector.emit(StormReteBolt.asValues(true,graph,0l));
 			} catch (Exception e) {
-				
+
 			}
 		}
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(PART_FIELDS);
+		declarer.declare(StormReteBolt.declaredFields(0));
 	}
 
 	@Override
@@ -113,12 +113,6 @@ public class NTripleSpout extends SimpleSpout implements Sink<Triple> {
 		super.close();
 	}
 
-	/**
-	 * @return the fields representing the triples outputted
-	 */
-	public Fields getFields() {
-		return PART_FIELDS;
-	}
 
 	@Override
 	public void send(Triple item) {

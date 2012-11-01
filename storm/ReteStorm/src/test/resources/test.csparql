@@ -14,5 +14,4 @@ WHERE {
 	?d rdf:type ex:Driver .
 	?d ex:certificateType ex:DriverSchoolCertificate .
 	?d ex:accidentsNumber "0"^^xs:integer .
-	?c ?b ?g
 }

@@ -63,7 +63,7 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 	 *
 	 */
 	private static final long serialVersionUID = -2941229666460288498L;
-	protected final static Logger logger = Logger.getLogger(ReteFilterBolt.class);
+	protected final static Logger logger = Logger.getLogger(StormReteFilterBolt.class);
 	/**
 	 *
 	 */
@@ -80,11 +80,10 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 	@Override
 	public void execute(Tuple input) {
 		boolean isAdd = input.getBooleanByField(Component.isAdd.toString());
-		if(logger.isDebugEnabled()){
-			logger.debug(String.format("Executing: %s",filter));
-		}
+		long timestamp = input.getLongByField(Component.timestamp.toString());
+		logger.debug(String.format("Executing: %s",filter));
 		// Extract Jena Graph from Storm Tuple
-		Graph graph = asGraph(input);
+		Graph graph = extractGraph(input);
 		// Extract Triples that match this Filter's pattern
 		// FIXME: Functors May (May?) not be matched correctly in graph.find
 		ExtendedIterator<Triple> it = graph.find(filter.asTripleMatch());
@@ -162,6 +161,7 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 					vals.add(g);
 					break;
 				case timestamp:
+					vals.add(timestamp);
 					break;
 				default:
 					break;

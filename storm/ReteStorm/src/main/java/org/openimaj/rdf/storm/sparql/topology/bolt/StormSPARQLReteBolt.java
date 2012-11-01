@@ -1,6 +1,8 @@
-package org.openimaj.rdf.storm.topology.bolt;
+package org.openimaj.rdf.storm.sparql.topology.bolt;
 
 import java.util.Set;
+
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;

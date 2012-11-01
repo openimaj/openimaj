@@ -31,6 +31,7 @@ package org.openimaj.rdf.storm.sparql.topology.builder;
 
 import java.util.Set;
 
+import org.openimaj.rdf.storm.spout.NTripleSpout;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
 
 import backtype.storm.topology.TopologyBuilder;
@@ -39,27 +40,25 @@ import eu.larkc.csparql.parser.StreamInfo;
 /**
  * The {@link NTriplesSPARQLReteTopologyBuilder} provides triples from URI
  * streams via the {@link NTriplesSpout}.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBuilder {
 	/**
 	 * The name of the spout outputting triples
 	 */
 	public static final String TRIPLE_SPOUT = "tripleSpout";
-	private String nTriples;
 
 	/**
-	 * @param nTriplesURI
-	 *            the source of the nTriples
 	 */
 	public NTriplesSPARQLReteTopologyBuilder() {
 	}
 
 	@Override
 	public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
-		NTriplesSpout tripleSpout = new NTriplesSpout(nTriples);
+		StreamInfo stream = streams.iterator().next();
+		NTripleSpout tripleSpout = new NTripleSpout(stream.getIri());
 		builder.setSpout(TRIPLE_SPOUT, tripleSpout, 1);
 		return TRIPLE_SPOUT;
 	}
