@@ -30,87 +30,142 @@
 package org.openimaj.image.processing.edges;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.algorithm.HistogramAnalyser;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FSobelX;
 import org.openimaj.image.processing.convolution.FSobelY;
 import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
- * Performs a canny edge detector which all the standard canny perameters.
+ * Canny edge detector. Performs the following steps:
+ * <ol>
+ * <li>Gaussian blur with std.dev. sigma</li>
+ * <li>Horizontal and vertical edge detection with Sobel operators</li>
+ * <li>Non-maximum suppression</li>
+ * <li>Hysteresis thresholding</li>
+ * </ol>
+ * 
+ * The upper and lower thresholds for the hysteresis thresholding can be
+ * specified manually or automatically chosen based on the histogram of the edge
+ * magnitudes.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
  */
-public class CannyEdgeDetector implements SinglebandImageProcessor<Float,FImage> {
-	float threshold = 128f / 255f;
-	float hyst_threshold_1 = 50f / 255f;
-//	float hyst_threshold_1 = 10f / 255f;
-	float hyst_threshold_2 = 230f / 255f;
-//	float hyst_threshold_2 = 50f / 255f;
+public class CannyEdgeDetector implements SinglebandImageProcessor<Float, FImage> {
+	static final float threshRatio = 0.4f;
+
+	float lowThresh = -1;
+	float highThresh = -1;
 	float sigma = 1;
-	
+
+	/**
+	 * Default constructor. Sigma is set to 1.0, and the thresholds are chosen
+	 * automatically.
+	 */
+	public CannyEdgeDetector() {
+	}
+
+	/**
+	 * Construct with the give sigma. The thresholds are chosen automatically.
+	 * 
+	 * @param sigma
+	 *            the amount of initial blurring
+	 */
+	public CannyEdgeDetector(float sigma) {
+		this.sigma = sigma;
+	}
+
+	/**
+	 * Construct with all parameters set manually.
+	 * 
+	 * @param lowThresh
+	 *            lower hysteresis threshold.
+	 * @param highThresh
+	 *            upper hysteresis threshold.
+	 * @param sigma
+	 *            the amount of initial blurring.
+	 */
+	public CannyEdgeDetector(float lowThresh, float highThresh, float sigma) {
+		if (lowThresh < 0 || lowThresh > 1)
+			throw new IllegalArgumentException("Low threshold must be between 0 and 1");
+		if (highThresh < 0 || highThresh > 1)
+			throw new IllegalArgumentException("High threshold must be between 0 and 1");
+		if (highThresh < lowThresh)
+			throw new IllegalArgumentException("High threshold must be bigger than the lower threshold");
+		if (sigma < 0)
+			throw new IllegalArgumentException("Sigma must be > 0");
+
+		this.lowThresh = lowThresh;
+		this.highThresh = highThresh;
+		this.sigma = sigma;
+	}
+
+	float computeHighThreshold(FImage magnitudes) {
+		final Histogram hist = HistogramAnalyser.getHistogram(magnitudes, 64);
+
+		float cumSum = 0;
+		for (int i = 0; i < 64; i++) {
+			if (cumSum > 0.7 * magnitudes.width * magnitudes.height) {
+				System.out.println(i);
+				return i / 64f;
+			}
+			cumSum += hist.values[i];
+		}
+
+		return 1f;
+	}
+
 	@Override
 	public void processImage(FImage image) {
-		FImage tmp = image.process(new FGaussianConvolve(sigma));		
-		
-		FImage dx = tmp.process(new FSobelX());
-		FImage dy = tmp.process(new FSobelY());
-		
-		FImage magnitudes = NonMaximumSuppressionTangent.computeSuppressed(dx, dy);
-		thresholding_tracker(hyst_threshold_1, hyst_threshold_2, magnitudes, image);
-		image.threshold(threshold);
+		final FImage tmp = image.process(new FGaussianConvolve(sigma));
+		final FImage dx = tmp.process(new FSobelX());
+		final FImage dy = tmp.process(new FSobelY());
+
+		// tmpMags will hold the magnitudes BEFORE suppression
+		final FImage tmpMags = new FImage(dx.width, dx.height);
+		// magnitudes holds the suppressed magnitude image
+		final FImage magnitudes = NonMaximumSuppressionTangent.computeSuppressed(dx, dy, tmpMags);
+		magnitudes.normalise();
+
+		float low = this.lowThresh;
+		float high = this.highThresh;
+		if (high < 0) {
+			// if high has not been set we use a similar approach to matlab to
+			// estimate the thresholds
+			high = computeHighThreshold(tmpMags);
+			low = threshRatio * high;
+		}
+
+		thresholdingTracker(magnitudes, image, low, high);
 	}
- 
-	private void thresholding_tracker(float threshMin, float threshMax, FImage magnitude, FImage output) {
+
+	private void thresholdingTracker(FImage magnitude, FImage output, float low, float high) {
 		output.zero();
- 
-		for (int i1 = 0; i1 < magnitude.height; i1++) {
-			for (int l = 0; l < magnitude.width; l++) {
-				if (magnitude.pixels[i1][l] >= threshMin) {
-					follow(l, i1, threshMax, magnitude, output);
+
+		for (int y = 0; y < magnitude.height; y++) {
+			for (int x = 0; x < magnitude.width; x++) {
+				if (magnitude.pixels[y][x] >= high) {
+					follow(x, y, magnitude, output, low);
 				}
 			}
 		}
 	}
- 
-	private boolean follow(int i, int j, float threshMax, FImage magnitude, FImage output) {
-		int j1 = i + 1;
-		int k1 = i - 1;
-		int l1 = j + 1;
-		int i2 = j - 1;
-		
-		if (l1 >= magnitude.height) l1 = magnitude.height - 1;
-		if (i2 < 0) i2 = 0;
-		if (j1 >= magnitude.width) j1 = magnitude.width - 1;
-		if (k1 < 0) k1 = 0;
-		
-		if (output.pixels[j][i] == 0) {
-			output.pixels[j][i] = magnitude.pixels[j][i];
-			boolean flag = false;
-			int l = k1;
-			do {
-				if (l > j1) break;
-				int i1 = i2;
-				do {
-					if (i1 > l1) break;
-					
-					if ((i1 != j || l != i)
-						&& magnitude.pixels[i1][l] >= threshMax
-						&& follow(l, i1, threshMax, magnitude, output)) {
-						flag = true;
-						break;
-					}
-					i1++;
-				} while (true);
-				if (!flag)
-					break;
-				l++;
+
+	private void follow(int x, int y, FImage magnitude, FImage output, float thresh) {
+		final int xstart = Math.max(0, x - 1);
+		final int xstop = Math.min(x + 2, magnitude.width);
+		final int ystart = Math.max(0, y - 1);
+		final int ystop = Math.min(y + 2, magnitude.height);
+
+		for (int yy = ystart; yy < ystop; yy++) {
+			for (int xx = xstart; xx < xstop; xx++) {
+				if (magnitude.pixels[yy][xx] >= thresh && output.pixels[yy][xx] != 1) {
+					output.pixels[yy][xx] = 1;
+					follow(xx, yy, magnitude, output, thresh);
+				}
 			}
-			while (true);
-			return true;
-		} else {
-			return false;
 		}
 	}
 }

@@ -35,11 +35,10 @@ import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
- * 	An {@link ImageAnalyser} that processes an image and generates a
- * 	{@link Histogram}.
- * 	<p>
- * 	You can get the histogram for an image like so:
- * 	<code><pre>
+ * An {@link ImageAnalyser} that processes an image and generates a
+ * {@link Histogram}.
+ * <p>
+ * You can get the histogram for an image like so: <code><pre>
  * 	{@code
  * 		FImage img = new FImage( ... );
  * 		HistogramProcessor hp = new HistogramProcessor( 64 );
@@ -48,66 +47,73 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 	}
  * 	</pre></code>
  * 
- * 	@see FImage#process(ImageProcessor)
- *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @see FImage#process(ImageProcessor)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HistogramAnalyser implements ImageAnalyser<FImage>
-{	
+{
 	/** The number of bins in the histogram */
 	private int nbins;
-	
+
 	/** The histogram being built */
 	private Histogram histogram;
-	
+
 	/**
-	 * 	Default constructor that builds a histogram processor that will
-	 * 	create histograms with the given number of bins.
+	 * Default constructor that builds a histogram processor that will create
+	 * histograms with the given number of bins.
 	 * 
-	 *  @param nbins The number of bins.
+	 * @param nbins
+	 *            The number of bins.
 	 */
-	public HistogramAnalyser(int nbins){
+	public HistogramAnalyser(int nbins) {
 		this.nbins = nbins;
 	}
+
 	/**
-	 * 	Returns the Histogram for this image. The assumption is that
-	 * 	the image has been normalised to the range 0..1. Values greater
-	 * 	than 1 will be placed in the top bin.
-	 *	@param image The image from which to extract histogram
+	 * Computes the Histogram for this image. The assumption is that the image
+	 * has been normalised to the range 0..1. Values greater than 1 will be
+	 * placed in the top bin.
+	 * 
+	 * @param image
+	 *            The image from which to extract histogram
 	 */
-	@Override	
+	@Override
 	public void analyseImage(FImage image) {
-		this.histogram = new Histogram( nbins );
-		for( int r = 0; r < image.height; r++ )
+		this.histogram = new Histogram(nbins);
+		for (int r = 0; r < image.height; r++)
 		{
-			for( int c = 0; c < image.width; c++ )
+			for (int c = 0; c < image.width; c++)
 			{
-				int bin = (int)(image.pixels[r][c] * (nbins-1));
-				if( bin > (nbins-1) ) bin = nbins-1;
+				int bin = (int) (image.pixels[r][c] * (nbins - 1));
+				if (bin > (nbins - 1))
+					bin = nbins - 1;
 				histogram.values[bin]++;
 			}
-		}		
+		}
 	}
-	
+
 	/**
-	 *	Returns the histogram that was built having run the processing
-	 *	function. This will return null if the processing has not yet been
-	 *	run.
-	 * 	
-	 *  @return The {@link Histogram} that was built.
+	 * Returns the histogram that was built having run the processing function.
+	 * This will return null if the processing has not yet been run.
+	 * 
+	 * @return The {@link Histogram} that was built.
 	 */
 	public Histogram getHistogram()
 	{
 		return histogram;
 	}
-	
+
 	/**
 	 * Quickly create a histogram from an image.
-	 * @param image the image
-	 * @param nbins the number of bins per band
+	 * 
+	 * @param image
+	 *            the image
+	 * @param nbins
+	 *            the number of bins per band
 	 * @return a histogram
 	 */
-	public static Histogram getHistogram(FImage image, int nbins){
-		HistogramAnalyser p = new HistogramAnalyser(nbins);
+	public static Histogram getHistogram(FImage image, int nbins) {
+		final HistogramAnalyser p = new HistogramAnalyser(nbins);
 		image.analyseWith(p);
 		return p.getHistogram();
 	}

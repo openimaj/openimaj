@@ -38,50 +38,73 @@ import org.openimaj.image.combiner.ImageCombiner;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class NonMaximumSuppressionTangent implements ImageCombiner<FImage, FImage, FImage> {
-	
+
 	/**
 	 * Perform non-maximum suppression.
 	 * 
-	 * @param dxImage x-gradients
-	 * @param dyImage y-gradients
+	 * @param dxImage
+	 *            x-gradients
+	 * @param dyImage
+	 *            y-gradients
 	 * @return non-maximum suppressed magnitude image.
 	 */
 	public static FImage computeSuppressed(FImage dxImage, FImage dyImage) {
-		float [][] diffx = dxImage.pixels;
-		float [][] diffy = dyImage.pixels;
-		int width = dxImage.width;
-		int height = dxImage.height;
+		return computeSuppressed(dxImage, dyImage, null);
+	}
 
-		float [][] mag = new float[height][width];
+	/**
+	 * Perform non-maximum suppression.
+	 * 
+	 * @param dxImage
+	 *            x-gradients
+	 * @param dyImage
+	 *            y-gradients
+	 * @param magsOut
+	 *            an image with the same dimensions as dxImage and dyImage for
+	 *            holding the magnitudes before non-maximum suppression. May be
+	 *            <code>null</code>.
+	 * @return non-maximum suppressed magnitude image.
+	 */
+	public static FImage computeSuppressed(FImage dxImage, FImage dyImage, FImage magsOut) {
+		final float[][] diffx = dxImage.pixels;
+		final float[][] diffy = dyImage.pixels;
+		final int width = dxImage.width;
+		final int height = dxImage.height;
 
-		for (int y=0; y<height; y++)
-			for (int x=0; x<width; x++)
-				mag[y][x] = (float) Math.sqrt(diffx[y][x]*diffx[y][x] + diffy[y][x]*diffy[y][x]);
+		final float[][] mag = magsOut == null ? new float[height][width] : magsOut.pixels;
 
-		FImage outimg = new FImage(width, height);
-		float [][] output = outimg.pixels;
+		for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
+				mag[y][x] = (float) Math.sqrt(diffx[y][x] * diffx[y][x] + diffy[y][x] * diffy[y][x]);
 
-		for(int y = 1 ; y < height - 1; y++) {
-			for(int x = 1; x < width - 1; x++) {
+		final FImage outimg = new FImage(width, height);
+		final float[][] output = outimg.pixels;
+
+		for (int y = 1; y < height - 1; y++) {
+			for (int x = 1; x < width - 1; x++) {
 				int dx, dy;
 
-				if(diffx[y][x] > 0) dx = 1;
-				else dx = -1;
+				if (diffx[y][x] > 0)
+					dx = 1;
+				else
+					dx = -1;
 
-				if(diffy[y][x] > 0) dy = 1;
-				else dy = -1;					
+				if (diffy[y][x] > 0)
+					dy = -1;
+				else
+					dy = 1;
 
 				float a1, a2, b1, b2, A, B, point, val;
-				if(Math.abs(diffx[y][x]) > Math.abs(diffy[y][x]))
+				if (Math.abs(diffx[y][x]) > Math.abs(diffy[y][x]))
 				{
-					a1 = mag[y][x+dx];
-					a2 = mag[y-dy][x+dx];
-					b1 = mag[y][x-dx];
-					b2 = mag[y+dy][x-dx];
-					A = (Math.abs(diffx[y][x]) - Math.abs(diffy[y][x]))*a1 + Math.abs(diffy[y][x])*a2;
-					B = (Math.abs(diffx[y][x]) - Math.abs(diffy[y][x]))*b1 + Math.abs(diffy[y][x])*b2;
+					a1 = mag[y][x + dx];
+					a2 = mag[y - dy][x + dx];
+					b1 = mag[y][x - dx];
+					b2 = mag[y + dy][x - dx];
+					A = (Math.abs(diffx[y][x]) - Math.abs(diffy[y][x])) * a1 + Math.abs(diffy[y][x]) * a2;
+					B = (Math.abs(diffx[y][x]) - Math.abs(diffy[y][x])) * b1 + Math.abs(diffy[y][x]) * b2;
 					point = mag[y][x] * Math.abs(diffx[y][x]);
-					if(point >= A && point > B) {
+					if (point >= A && point > B) {
 						val = Math.abs(diffx[y][x]);
 						output[y][x] = val;
 					}
@@ -90,23 +113,23 @@ public class NonMaximumSuppressionTangent implements ImageCombiner<FImage, FImag
 						output[y][x] = val;
 					}
 				}
-				else 
+				else
 				{
-					a1 = mag[y-dy][x];
-					a2 = mag[y-dy][x+dx];
-					b1 = mag[y+dy][x];
-					b2 = mag[y+dy][x-dx];						
-					A = (Math.abs(diffy[y][x]) - Math.abs(diffx[y][x]))*a1 + Math.abs(diffx[y][x])*a2;
-					B = (Math.abs(diffy[y][x]) - Math.abs(diffx[y][x]))*b1 + Math.abs(diffx[y][x])*b2;
+					a1 = mag[y - dy][x];
+					a2 = mag[y - dy][x + dx];
+					b1 = mag[y + dy][x];
+					b2 = mag[y + dy][x - dx];
+					A = (Math.abs(diffy[y][x]) - Math.abs(diffx[y][x])) * a1 + Math.abs(diffx[y][x]) * a2;
+					B = (Math.abs(diffy[y][x]) - Math.abs(diffx[y][x])) * b1 + Math.abs(diffx[y][x]) * b2;
 					point = mag[y][x] * Math.abs(diffy[y][x]);
-					if(point >= A && point > B) {
+					if (point >= A && point > B) {
 						val = Math.abs(diffy[y][x]);
 						output[y][x] = val;
 					}
 					else {
 						val = 0;
 						output[y][x] = val;
-					}							
+					}
 				}
 			}
 		}
@@ -117,11 +140,14 @@ public class NonMaximumSuppressionTangent implements ImageCombiner<FImage, FImag
 	/**
 	 * Perform non-maximum suppression.
 	 * 
-	 * @param dxImage x-gradients
-	 * @param dyImage y-gradients
+	 * @param dxImage
+	 *            x-gradients
+	 * @param dyImage
+	 *            y-gradients
 	 * @return non-maximum suppressed magnitude image.
 	 * 
-	 * @see org.openimaj.image.combiner.ImageCombiner#combine(org.openimaj.image.Image, org.openimaj.image.Image)
+	 * @see org.openimaj.image.combiner.ImageCombiner#combine(org.openimaj.image.Image,
+	 *      org.openimaj.image.Image)
 	 */
 	@Override
 	public FImage combine(FImage dxImage, FImage dyImage) {

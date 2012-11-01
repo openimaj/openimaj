@@ -30,51 +30,79 @@
 package org.openimaj.math.statistics.distribution;
 
 import org.openimaj.feature.DoubleFV;
+import org.openimaj.util.array.ArrayUtils;
 
 /**
  * Simple Histogram based on a DoubleFV.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class Histogram extends DoubleFV {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Construct a histogram with the given number of bins.
-	 * @param nbins number of bins
+	 * 
+	 * @param nbins
+	 *            number of bins
 	 */
 	public Histogram(int nbins) {
 		super(nbins);
 	}
 
+	protected Histogram(double[] data) {
+		super(data);
+	}
+
 	/**
-	 * Normalise to unit length 
+	 * Normalise to unit length
 	 */
 	public void normalise() {
 		double sum = 0;
 
-		for (int i=0; i<values.length; i++)
+		for (int i = 0; i < values.length; i++)
 			sum += values[i];
 
-		for (int i=0; i<values.length; i++)
+		for (int i = 0; i < values.length; i++)
 			values[i] /= sum;
 	}
-	
+
 	/**
 	 * Compute the maximum value in the histogram
+	 * 
 	 * @return the maximum value
 	 */
 	public double max()
 	{
 		double max = Double.MIN_VALUE;
-		for( int i = 0; i < values.length; i++ )
-			max = Math.max( values[i], max );
+		for (int i = 0; i < values.length; i++)
+			max = Math.max(values[i], max);
 		return max;
 	}
-	
+
 	@Override
 	public Histogram clone() {
 		return (Histogram) super.clone();
+	}
+
+	/**
+	 * Create a new histogram by concatenating this one with the given ones.
+	 * 
+	 * @param hs
+	 *            histograms to concatenate
+	 * @return new histogram that is the concatenation of the argument
+	 *         histograms
+	 */
+	public Histogram combine(Histogram... hs) {
+		final int hsLength = hs == null ? 0 : hs.length;
+		final double[][] hists = new double[1 + hsLength][];
+		hists[0] = this.values;
+
+		for (int i = 0; i < hsLength; i++) {
+			hists[i + 1] = hs[i].values;
+		}
+
+		return new Histogram(ArrayUtils.concatenate(hists));
 	}
 }
