@@ -15,10 +15,10 @@ import com.hp.hpl.jena.sparql.syntax.PatternVars;
 /**
  * A {@link SPARQLReteTopologyBuilderContext} holds variables needed by the
  * various stages of a {@link SPARQLReteTopologyBuilder}
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
  *         (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SPARQLReteTopologyBuilderContext {
 

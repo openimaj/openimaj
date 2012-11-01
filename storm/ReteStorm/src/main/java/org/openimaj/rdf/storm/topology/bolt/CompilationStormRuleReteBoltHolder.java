@@ -13,11 +13,11 @@ import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
-public class CompilationStormReteBoltHolder {
-	private StormReteBolt bolt;
+public class CompilationStormRuleReteBoltHolder {
+	private StormRuleReteBolt bolt;
 	private String[] outputFields;
 
-	public CompilationStormReteBoltHolder(StormReteBolt bolt, Rule rule) {
+	public CompilationStormRuleReteBoltHolder(StormRuleReteBolt bolt, Rule rule) {
 		this.bolt = bolt;
 		List<ClauseEntry> outputTemplate = Arrays.asList(rule.getHead());
 		this.setVars(extractFields(outputTemplate));

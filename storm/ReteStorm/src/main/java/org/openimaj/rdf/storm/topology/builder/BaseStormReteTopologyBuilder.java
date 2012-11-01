@@ -39,7 +39,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openimaj.rdf.storm.topology.bolt.CompilationStormReteBoltHolder;
+import org.openimaj.rdf.storm.topology.bolt.CompilationStormRuleReteBoltHolder;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
@@ -77,8 +77,8 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 
 	private BoltDeclarer finalTerminalBuilder;
 	private StormReteTerminalBolt term;
-	private Map<String, Map<String,CompilationStormReteBoltHolder>> rules;
-	private Map<String,CompilationStormReteBoltHolder> rule;
+	private Map<String, Map<String,CompilationStormRuleReteBoltHolder>> rules;
+	private Map<String,CompilationStormRuleReteBoltHolder> rule;
 	private Map<String, StormReteBolt> bolts;
 	private Map<String, List<String>> priorBolts;
 	private String ruleName;
@@ -86,7 +86,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 
 	@Override
 	public void initTopology(ReteTopologyBuilderContext context) {
-		this.rules = new HashMap<String, Map<String, CompilationStormReteBoltHolder>>();
+		this.rules = new HashMap<String, Map<String, CompilationStormRuleReteBoltHolder>>();
 		this.bolts = new HashMap<String, StormReteBolt>();
 		this.priorBolts = new HashMap<String, List<String>>();
 		ReteConflictSetBolt finalTerm = constructConflictSetBolt(context);
@@ -108,7 +108,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 		// Sort rule clauses and standardise names
 		context.rule = Rule.parseRule(VariableIndependentReteRuleToStringUtils.clauseEntryToString(context.rule));
 		// prepare the map of bolt names to bolts for the rule being started.
-		rule = new HashMap<String, CompilationStormReteBoltHolder>();
+		rule = new HashMap<String, CompilationStormRuleReteBoltHolder>();
 		rules.put(ruleName, rule);
 		// This is the terminal bolt (where the head is fired)
 		this.term = null;
@@ -164,8 +164,8 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 								if (Arrays.asList(otherVars).contains(v)) {
 									names.remove();
 									List<ClauseEntry> template = new ArrayList<ClauseEntry>();
-									template.addAll(Arrays.asList(currentBolt.getRule().getHead()));
-									template.addAll(Arrays.asList(otherBolt.getRule().getHead()));
+									template.addAll(Arrays.asList(currentBolt.getQuery().getHead()));
+									template.addAll(Arrays.asList(otherBolt.getQuery().getHead()));
 
 									// Create the string representing the variable-name-independently ordered
 									// output graph (this makes it repeatable irrespective of component bolts).

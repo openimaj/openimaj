@@ -52,7 +52,6 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
-import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
@@ -111,17 +110,12 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@SuppressWarnings("rawtypes")
 	protected Map stormConf;
 
-	private final String ruleString;
-
-	private List<ClauseEntry> outputTemplate;
 
 	private Values toFire;
 	private boolean active;
 
 	private int[] usageStatistics = { 0, 0 };
 	private double[] costStatistics = { 0, 0 };
-
-	private int variableCount;
 	/**
 	 * The constant value for accessing potential statistics.
 	 */
@@ -130,20 +124,6 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 * The constant value for accessing implemented statistics.
 	 */
 	public static final int ACTUAL = 1;
-
-	/**
-	 *
-	 * @param rule
-	 */
-	@SuppressWarnings("unchecked")
-	public StormReteBolt(final Rule rule) {
-		this.ruleString = rule.toString();
-		this.variableCount = countVariables(Arrays.asList(rule.getHead()));
-	}
-
-	private int countVariables(List<ClauseEntry> fieldEntry) {
-		return CompilationStormReteBoltHolder.extractFields(fieldEntry).length;
-	}
 
 
 
@@ -183,27 +163,12 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		return this.costStatistics[statIndex];
 	}
 
-
-
-	/**
-	 * Get the rule on which this FlexibleReteBolt is built.
-	 *
-	 * @return Rule
-	 */
-	public Rule getRule() {
-		return Rule.parseRule(this.ruleString);
-	}
-
 	// ******** Preparation ********
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public void prepare(@SuppressWarnings("rawtypes") Map stormConf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
 		this.context = context;
 		this.stormConf = stormConf;
-
-		this.outputTemplate = Arrays.asList(Rule.parseRule(this.ruleString).getHead());
 		prepare();
 
 		this.active = true;
@@ -254,18 +219,20 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		List<String> fields = new ArrayList<String>();
-		for (int i = 0; i < this.variableCount; i++)
+		for (int i = 0; i < this.getVariableCount(); i++)
 			fields.add("?" + i);
 		fields.addAll(Arrays.asList(Component.strings()));
 		declarer.declare(new Fields(fields));
 	}
 
+	/**
+	 * To allow the variable name independant defenition of fields return the number
+	 * of variables
+	 * @return number of variables
+	 */
+	public abstract int getVariableCount();
+
 	// ******** Value <-> Graph Conversion ********
-
-	protected Values asValues(Graph graph) {
-		return asValues(graph, outputTemplate);
-	}
-
 	/**
 	 * Given a tuple generated from an Storm {@link ISpout} or {@link IBolt}
 	 * using the same class of RETEStormTranslator, create a Jena {@link Graph}
@@ -320,30 +287,6 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 
 		return values;
 	}
-
-	/**
-	 * Given a Jena {@link Graph} construct a {@link Values} instance which is
-	 * the subject, predicate and object of the triple calling
-	 * {@link Node#toString()}
-	 *
-	 * @param graph
-	 * @param fieldsTemplate
-	 * @return a {@link Values} instance
-	 */
-	public static Values asValues(Graph graph, List<ClauseEntry> fieldsTemplate) {
-		Values values = new Values();
-		List<Node> seen = new ArrayList<Node>();
-		for (ClauseEntry tp : fieldsTemplate) {
-			if (tp instanceof TriplePattern)
-				values.addAll(asValues(graph, (TriplePattern) tp, seen));
-		}
-		values.add(graph);
-		return values;
-	}
-
-
-
-
 
 	/**
 	 * @param fieldsTemplate

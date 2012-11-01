@@ -37,7 +37,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openimaj.rdf.storm.topology.bolt.CompilationStormReteBoltHolder;
+import org.openimaj.rdf.storm.topology.bolt.CompilationStormRuleReteBoltHolder;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
@@ -46,6 +46,7 @@ import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteTerminalBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormRuleReteBolt;
 import org.openimaj.rdf.storm.topology.builder.BaseStormReteTopologyBuilder;
 import org.openimaj.rdf.storm.utils.VariableIndependentReteRuleToStringUtils;
 import org.openimaj.util.pair.IndependentPair;
@@ -87,7 +88,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	private BoltDeclarer finalTerminalBuilder;
 	private StormReteTerminalBolt term;
 	private Map<String, StormReteBolt> bolts;
-	private List<IndependentPair<String, CompilationStormReteBoltHolder>> boltNames;
+	private List<IndependentPair<String, CompilationStormRuleReteBoltHolder>> boltNames;
 	private Map<String, List<String>> priorBolts;
 	private String prior;
 
@@ -98,7 +99,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 
 	@Override
 	public void initTopology(SPARQLReteTopologyBuilderContext context) {
-		boltNames = new ArrayList<IndependentPair<String, CompilationStormReteBoltHolder>>();
+		boltNames = new ArrayList<IndependentPair<String, CompilationStormRuleReteBoltHolder>>();
 		this.bolts = new HashMap<String, StormReteBolt>();
 		this.priorBolts = new HashMap<String, List<String>>();
 		ReteConflictSetBolt finalTerm = constructConflictSetBolt(context);
@@ -143,7 +144,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 					bolts.put(boltName, filterBolt);
 					priorBolts.put(boltName, new ArrayList<String>());
 				}
-				boltNames.add(IndependentPair.pair(boltName,new CompilationStormReteBoltHolder(filterBolt,rule)));
+				boltNames.add(IndependentPair.pair(boltName,new CompilationStormRuleReteBoltHolder((StormRuleReteBolt) filterBolt,rule)));
 			}
 		}
 	}
@@ -192,17 +193,16 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 		return VariableIndependentReteRuleToStringUtils.clauseEntryToString(tp);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void createJoins(SPARQLReteTopologyBuilderContext context) {
 		join: while(boltNames.size() > 1){
 			int innerSelect= 1;
-			IndependentPair<String, CompilationStormReteBoltHolder> currentNameCompBoltPair = boltNames.get(0);
-			CompilationStormReteBoltHolder currentBolt = currentNameCompBoltPair.getSecondObject();
+			IndependentPair<String, CompilationStormRuleReteBoltHolder> currentNameCompBoltPair = boltNames.get(0);
+			CompilationStormRuleReteBoltHolder currentBolt = currentNameCompBoltPair.getSecondObject();
 			String[] currentVars = currentBolt.getVars();
 			while(innerSelect < boltNames.size()){
-				IndependentPair<String, CompilationStormReteBoltHolder> otherNameCompBoltPair = boltNames.get(innerSelect);
-				CompilationStormReteBoltHolder otherBolt = otherNameCompBoltPair.secondObject();
+				IndependentPair<String, CompilationStormRuleReteBoltHolder> otherNameCompBoltPair = boltNames.get(innerSelect);
+				CompilationStormRuleReteBoltHolder otherBolt = otherNameCompBoltPair.secondObject();
 				String[] otherVars = otherBolt.getVars();
 				for (String v : currentVars) {
 					if (Arrays.asList(otherVars).contains(v)) {
@@ -223,7 +223,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	}
 
 	@SuppressWarnings("unchecked")
-	private void createJoin(int outerSelect, int innerSelect, IndependentPair<String, CompilationStormReteBoltHolder> currentNameCompBoltPair, CompilationStormReteBoltHolder currentBolt, IndependentPair<String, CompilationStormReteBoltHolder> otherNameCompBoltPair, CompilationStormReteBoltHolder otherBolt) {
+	private void createJoin(int outerSelect, int innerSelect, IndependentPair<String, CompilationStormRuleReteBoltHolder> currentNameCompBoltPair, CompilationStormRuleReteBoltHolder currentBolt, IndependentPair<String, CompilationStormRuleReteBoltHolder> otherNameCompBoltPair, CompilationStormRuleReteBoltHolder otherBolt) {
 		boltNames.remove(innerSelect);
 		boltNames.remove(outerSelect);
 		List<ClauseEntry> template = new ArrayList<ClauseEntry>();
@@ -244,34 +244,34 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 		}
 
 		bolts.put(newJoinName, newJoin);
-		boltNames.add(IndependentPair.pair(newJoinName,new CompilationStormReteBoltHolder(newJoin, new Rule(template,template))));
+		boltNames.add(IndependentPair.pair(newJoinName,new CompilationStormRuleReteBoltHolder((StormRuleReteBolt) newJoin, new Rule(template,template))));
 	}
 
 	@Override
 	public void finishQuery(SPARQLReteTopologyBuilderContext context) {
-//		logger.debug("Compiling the terminal node instance");
-//		// Now construct the terminal
-//		if (prior != null) {
-//			term = constructTerminalBolt(context);
-//		} else {
-//			return; // This should never really happen, it implies an empty
-//					// rule
-//		}
-//
-//		if (term == null) {
-//			logger.debug("Terminal was null, not connecting the terminal");
-//		}
-//		else {
-//			logger.debug("Connecting the terminal instance to " + prior);
-//			// We have a prior, we have a terminal bolt, we can go ahead and
-//			// make addition to the topology
-//			// FIXME: This is wrong, the name of the terminal bolt should reflect what it does more accurately
-//			String terminalName = String.format("%s", context.query.simpleQuery.isSelectType());
-//			context.builder.setBolt(terminalName, term).shuffleGrouping(prior);
-//
-//			logger.debug("Connecting the final terminal to " + terminalName);
-//			finalTerminalBuilder.shuffleGrouping(terminalName);
-//		}
+		logger.debug("Compiling the terminal node instance");
+		// Now construct the terminal
+		if (prior != null) {
+			term = constructTerminalBolt(context);
+		} else {
+			return; // This should never really happen, it implies an empty
+					// rule
+		}
+
+		if (term == null) {
+			logger.debug("Terminal was null, not connecting the terminal");
+		}
+		else {
+			logger.debug("Connecting the terminal instance to " + prior);
+			// We have a prior, we have a terminal bolt, we can go ahead and
+			// make addition to the topology
+			// FIXME: This is wrong, the name of the terminal bolt should reflect what it does more accurately
+			String terminalName = String.format("%s", context.query.simpleQuery.isSelectType());
+			context.builder.setBolt(terminalName, term).shuffleGrouping(prior);
+
+			logger.debug("Connecting the final terminal to " + terminalName);
+			finalTerminalBuilder.shuffleGrouping(terminalName);
+		}
 
 		logger.debug("Connecting the filter and join instances to the source/final terminal instances");
 		// Now add the nodes to the actual topology
@@ -338,7 +338,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 *         network proper and the {@link ReteConflictSetBolt}
 	 */
 	public StormReteTerminalBolt constructTerminalBolt(SPARQLReteTopologyBuilderContext context) {
-		return new StormReteTerminalBolt(null);
+		return new StormReteTerminalBolt(context.query.simpleQuery);
 	}
 
 	/**
@@ -351,10 +351,10 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 *         {@link StormReteFilterBolt} instances, {@link StormReteJoinBolt}
 	 *         instances, or a combination of the two
 	 */
-	public StormReteBolt constructReteJoinBolt(IndependentPair<String, CompilationStormReteBoltHolder> currentNameCompBoltPair, IndependentPair<String, CompilationStormReteBoltHolder> otherNameCompBoltPair, List<ClauseEntry> template) {
+	public StormReteBolt constructReteJoinBolt(IndependentPair<String, CompilationStormRuleReteBoltHolder> currentNameCompBoltPair, IndependentPair<String, CompilationStormRuleReteBoltHolder> otherNameCompBoltPair, List<ClauseEntry> template) {
 		String[] currentVars = currentNameCompBoltPair.secondObject().getVars();
 		String[] otherVars = otherNameCompBoltPair.secondObject().getVars();
-		String[] newVars = CompilationStormReteBoltHolder.extractFields(template);
+		String[] newVars = CompilationStormRuleReteBoltHolder.extractFields(template);
 		int[] templateLeft = new int[newVars.length];
 		int[] templateRight = new int[newVars.length];
 		int[] matchLeft = new int[currentVars.length];

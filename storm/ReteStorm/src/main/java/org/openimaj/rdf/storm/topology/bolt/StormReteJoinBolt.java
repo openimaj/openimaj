@@ -55,7 +55,7 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  *
  */
-public class StormReteJoinBolt extends StormReteBolt{
+public class StormReteJoinBolt extends StormRuleReteBolt{
 
 
 	protected final static Logger logger = Logger.getLogger(StormReteJoinBolt.class);

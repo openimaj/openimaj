@@ -57,7 +57,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * @author David Monks <dm11g08@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class StormReteFilterBolt extends StormReteBolt {
+public class StormReteFilterBolt extends StormRuleReteBolt {
 
 	/**
 	 *
