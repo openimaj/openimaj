@@ -35,8 +35,8 @@ import java.io.InputStream;
 import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
 import org.openimaj.io.FileUtils;
-import org.openimaj.rdf.storm.sparql.topology.builder.NTriplesSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilder;
+import org.openimaj.rdf.storm.sparql.topology.builder.simple.NTriplesSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
 import org.openimaj.rdf.storm.utils.CsparqlUtils;
 import org.openimaj.rdf.storm.utils.CsparqlUtils.CSparqlComponentHolder;
@@ -58,11 +58,11 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 /**
  * Given a set of rules, construct a RETE topology such that filter (alpha)
  * nodes and join (beta) nodes are filtering bolts
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class StormSPARQLReteTopologyBuilder {
+public class StormSPARQLReteTopologyOrchestrator {
 	/**
 	 * The name of a debug bolt
 	 */
@@ -77,36 +77,40 @@ public class StormSPARQLReteTopologyBuilder {
 	 */
 	public static final String FINAL_TERMINAL = "final_term";
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(StormSPARQLReteTopologyBuilder.class);
+	private static Logger logger = Logger.getLogger(StormSPARQLReteTopologyOrchestrator.class);
 
 	private CSparqlComponentHolder query;
 
 	private Config conf;
 
+	private SPARQLReteTopologyBuilder builder;
+
 	/**
 	 * Construct a Rete topology using the default RDFS rules
-	 *
+	 * 
 	 * @param conf
 	 *            the {@link Config} to be sent to the {@link Cluster}. Only
 	 *            used to register serialisers
 	 * @throws TranslationException
 	 * @throws IOException
 	 */
-	public StormSPARQLReteTopologyBuilder(Config conf) throws TranslationException, IOException {
+	public StormSPARQLReteTopologyOrchestrator(Config conf) throws TranslationException,
+			IOException {
 		JenaStormUtils.registerSerializers(conf);
 		this.query = CsparqlUtils.parse(SELECT_ALL);
 	}
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
-	 *
+	 * 
 	 * @param conf
 	 * @param query
 	 *            the SPARQL query
 	 * @throws TranslationException
 	 * @throws IOException
 	 */
-	public StormSPARQLReteTopologyBuilder(Config conf, String query) throws TranslationException,
+	public StormSPARQLReteTopologyOrchestrator(Config conf, String query)
+			throws TranslationException,
 			IOException
 	{
 
@@ -117,22 +121,45 @@ public class StormSPARQLReteTopologyBuilder {
 	}
 
 	/**
+	 * Construct a Rete topology using the InputStream as a source of rules
+	 * 
+	 * @param conf
+	 * @param query
+	 *            the SPARQL query
+	 * @param builder
+	 *            the default builder to use
+	 * @throws TranslationException
+	 * @throws IOException
+	 */
+	public StormSPARQLReteTopologyOrchestrator(Config conf, String query,
+			SPARQLReteTopologyBuilder builder) throws TranslationException,
+			IOException
+	{
+
+		JenaStormUtils.registerSerializers(conf);
+		this.conf = conf;
+		this.query = CsparqlUtils.parse(query);
+		this.builder = builder;
+
+	}
+
+	/**
 	 * Using an {@link NTriplesSPARQLReteTopologyBuilder}, load the nTriples
 	 * from the given resource and compile a storm topology for the sparql query
 	 * used to construct this {@link ReteTopologyBuilder}
-	 *
+	 * 
 	 * @return a storm topology
 	 */
 	public StormTopology buildTopology() {
-		final TopologyBuilder builder = new TopologyBuilder();
-		final SPARQLReteTopologyBuilder topologyBuilder = new NTriplesSPARQLReteTopologyBuilder();
-		topologyBuilder.compile(builder, this.query);
-		return builder.createTopology();
+		if (this.builder != null)
+			return buildTopology(builder);
+		else
+			return buildTopology(new NTriplesSPARQLReteTopologyBuilder());
 	}
 
 	/**
 	 * @param topologyBuilder
-	 *
+	 * 
 	 * @return given a {@link ReteTopologyBuilder} and a list of
 	 *         {@link ReteTopologyBuilder} instances construct a
 	 *         {@link StormTopology}
@@ -158,29 +185,72 @@ public class StormSPARQLReteTopologyBuilder {
 	 * @throws TranslationException
 	 * @throws IOException
 	 */
-	public static StormTopology buildTopology(Config config, SPARQLReteTopologyBuilder topologyBuilder, String query)
+	public static StormSPARQLReteTopologyOrchestrator createTopologyBuilder(Config config, SPARQLReteTopologyBuilder topologyBuilder, String query)
 			throws TranslationException, IOException
 	{
-		final StormSPARQLReteTopologyBuilder topology = new StormSPARQLReteTopologyBuilder(config, query);
-		return topology.buildTopology(topologyBuilder);
+		final StormSPARQLReteTopologyOrchestrator topology = new StormSPARQLReteTopologyOrchestrator(config, query, topologyBuilder);
+		return topology;
 	}
 
-	private static StormSPARQLReteTopologyBuilder buildDefaultTopology(InputStream resourceAsStream) throws IOException,
+	/**
+	 * .
+	 * 
+	 * @param topologyBuilder
+	 *            the approach to constructing a {@link StormTopology}
+	 * @param query
+	 *            the query from which to construct the network
+	 * @return given a {@link TopologyBuilder} and a source for {@link Rule}
+	 *         instances build {@link StormTopology}
+	 * @throws TranslationException
+	 * @throws IOException
+	 */
+	public static StormSPARQLReteTopologyOrchestrator createTopologyBuilder(SPARQLReteTopologyBuilder topologyBuilder, String query)
+			throws TranslationException, IOException
+	{
+		final Config config = new Config();
+		config.setDebug(false);
+		config.setNumWorkers(2);
+		config.setMaxSpoutPending(1);
+		config.setFallBackOnJavaSerialization(false);
+		config.setSkipMissingKryoRegistrations(false);
+		final StormSPARQLReteTopologyOrchestrator topology = new StormSPARQLReteTopologyOrchestrator(config, query, topologyBuilder);
+		return topology;
+	}
+
+	/**
+	 * .
+	 * 
+	 * @param topologyBuilder
+	 *            the approach to constructing a {@link StormTopology}
+	 * @param query
+	 *            the query from which to construct the network
+	 * @return given a {@link TopologyBuilder} and a source for {@link Rule}
+	 *         instances build {@link StormTopology}
+	 * @throws TranslationException
+	 * @throws IOException
+	 */
+	public static StormSPARQLReteTopologyOrchestrator createTopologyBuilder(SPARQLReteTopologyBuilder topologyBuilder, InputStream query)
+			throws TranslationException, IOException
+	{
+		return createTopologyBuilder(topologyBuilder, FileUtils.readall(query));
+	}
+
+	private static StormSPARQLReteTopologyOrchestrator createTopologyBuilder(InputStream resourceAsStream) throws IOException,
 			TranslationException
 	{
-		return buildDefaultTopology(FileUtils.readall(resourceAsStream));
+		return createTopologyBuilder(FileUtils.readall(resourceAsStream));
 	}
 
 	/**
 	 * A {@link ReteTopologyBuilder} with a default configuration
-	 *
+	 * 
 	 * @param query
 	 * @return A {@link ReteTopologyBuilder} which can construct storm
 	 *         topologies from queries
 	 * @throws TranslationException
 	 * @throws IOException
 	 */
-	public static StormSPARQLReteTopologyBuilder buildDefaultTopology(String query) throws TranslationException,
+	public static StormSPARQLReteTopologyOrchestrator createTopologyBuilder(String query) throws TranslationException,
 			IOException
 	{
 		final Config conf = new Config();
@@ -189,13 +259,13 @@ public class StormSPARQLReteTopologyBuilder {
 		conf.setMaxSpoutPending(1);
 		conf.setFallBackOnJavaSerialization(false);
 		conf.setSkipMissingKryoRegistrations(false);
-		final StormSPARQLReteTopologyBuilder fact = new StormSPARQLReteTopologyBuilder(conf, query);
+		final StormSPARQLReteTopologyOrchestrator fact = new StormSPARQLReteTopologyOrchestrator(conf, query);
 		return fact;
 	}
 
 	/**
 	 * run the rete topology
-	 *
+	 * 
 	 * @param args
 	 * @throws InvalidTopologyException
 	 * @throws AlreadyAliveException
@@ -207,8 +277,8 @@ public class StormSPARQLReteTopologyBuilder {
 			IOException, TranslationException
 	{
 		String sparqlSource = "/test.csparql";
-		final StormSPARQLReteTopologyBuilder fact = StormSPARQLReteTopologyBuilder
-				.buildDefaultTopology(ReteTopologyBuilder.class.getResourceAsStream(sparqlSource));
+		final StormSPARQLReteTopologyOrchestrator fact = StormSPARQLReteTopologyOrchestrator
+				.createTopologyBuilder(ReteTopologyBuilder.class.getResourceAsStream(sparqlSource));
 
 		final LocalCluster cluster = new LocalCluster();
 		final StormTopology topology = fact.buildTopology();
@@ -218,6 +288,10 @@ public class StormSPARQLReteTopologyBuilder {
 		cluster.killTopology("reteTopology");
 		cluster.shutdown();
 
+	}
+
+	public Config getConfiguration() {
+		return this.conf;
 	}
 
 }

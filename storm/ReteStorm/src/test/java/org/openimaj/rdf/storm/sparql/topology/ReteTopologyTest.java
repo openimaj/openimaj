@@ -27,40 +27,63 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.rdf.storm.sparql.topology.builder;
+package org.openimaj.rdf.storm.sparql.topology;
 
-import java.util.Set;
+import java.io.IOException;
 
-import org.openimaj.rdf.storm.spout.NTripleSpout;
-import org.openimaj.rdf.storm.spout.NTriplesSpout;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.NTriplesSPARQLReteTopologyBuilder;
+import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
 
-import backtype.storm.topology.TopologyBuilder;
-import eu.larkc.csparql.parser.StreamInfo;
+import backtype.storm.LocalCluster;
+import backtype.storm.generated.StormTopology;
+import backtype.storm.utils.Utils;
+import eu.larkc.csparql.streams.formats.TranslationException;
 
 /**
- * The {@link NTriplesSPARQLReteTopologyBuilder} provides triples from URI
- * streams via the {@link NTriplesSpout}.
- *
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * Test the {@link StormTopology} construction from a CSPARQL query
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
  */
-public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBuilder {
-	/**
-	 * The name of the spout outputting triples
-	 */
-	public static final String TRIPLE_SPOUT = "tripleSpout";
+public class ReteTopologyTest {
 
 	/**
+	 *
 	 */
-	public NTriplesSPARQLReteTopologyBuilder() {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+
+	/**
+	 * prepare the output
+	 * 
+	 * @throws IOException
+	 */
+	@Before
+	public void before() throws IOException {
+
 	}
 
-	@Override
-	public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
-		StreamInfo stream = streams.iterator().next();
-		NTripleSpout tripleSpout = new NTripleSpout(stream.getIri());
-		builder.setSpout(TRIPLE_SPOUT, tripleSpout, 1);
-		return TRIPLE_SPOUT;
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopology() throws IOException, TranslationException {
+		String sparqlSource = "/test.group.csparql";
+		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
+				new NTriplesSPARQLReteTopologyBuilder(),
+				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
+				);
+		final LocalCluster cluster = new LocalCluster();
+		System.out.println(orchestrator);
+		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
+		Utils.sleep(10000);
+		cluster.killTopology("reteTopology");
+		cluster.shutdown();
 	}
-
 }
