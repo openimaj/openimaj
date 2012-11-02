@@ -84,7 +84,7 @@ public class HistogramAnalyser implements ImageAnalyser<FImage>
 		{
 			for (int c = 0; c < image.width; c++)
 			{
-				int bin = (int) (image.pixels[r][c] * (nbins - 1));
+				int bin = (int) (image.pixels[r][c] * nbins);
 				if (bin > (nbins - 1))
 					bin = nbins - 1;
 				histogram.values[bin]++;

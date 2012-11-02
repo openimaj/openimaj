@@ -34,128 +34,133 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 import org.openimaj.util.pair.Pair;
 
-
 /**
- * A multidimensional histogram calculated from image pixels
- * (assumes image is in 0-1 range)
+ * A multidimensional histogram calculated from image pixels (assumes image is
+ * in 0-1 range)
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
-public class HistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<MultidimensionalHistogram> {
+public class HistogramModel extends AbstractPixelStatisticsModel
+		implements
+		FeatureVectorProvider<MultidimensionalHistogram>
+{
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * The histogram data
 	 */
 	public MultidimensionalHistogram histogram;
-	
+
 	/**
 	 * Construct with the given number of bins per dimension
-	 * @param nbins the number of bins in each dimension for the histograms
+	 * 
+	 * @param nbins
+	 *            the number of bins in each dimension for the histograms
 	 */
 	public HistogramModel(int... nbins) {
 		super(nbins.length);
-		
-		assert(nbins.length > 0);
-		
+
+		assert (nbins.length > 0);
+
 		histogram = new MultidimensionalHistogram(nbins);
 	}
 
 	@Override
 	public void estimateModel(MBFImage... images) {
 		reset();
-		for (MBFImage im : images) {
+		for (final MBFImage im : images) {
 			accum(im);
 		}
 		histogram.normalise();
 	}
 
 	protected void reset() {
-		for (int i=0; i<histogram.values.length; i++)
+		for (int i = 0; i < histogram.values.length; i++)
 			histogram.values[i] = 0;
 	}
-	
+
 	/**
-	 * For a given index, map to the range of colours which could map 
-	 * to it
+	 * For a given index, map to the range of colours which could map to it
+	 * 
 	 * @param index
 	 * @return start/end colour
 	 */
-	public Pair<float[]> colourRange(int index){
-		int[] coord = this.histogram.getCoordinates(index);
-		float[] start = new float[coord.length];
-		float[] end = new float[coord.length];
-		int[] nbins = histogram.nbins;
+	public Pair<float[]> colourRange(int index) {
+		final int[] coord = this.histogram.getCoordinates(index);
+		final float[] start = new float[coord.length];
+		final float[] end = new float[coord.length];
+		final int[] nbins = histogram.nbins;
 		for (int i = 0; i < coord.length; i++) {
-			start[i] = (float)coord[i] / (float)nbins[i];
-			end[i] = ((float)coord[i]+1) / (float)nbins[i];
+			start[i] = (float) coord[i] / (float) nbins[i];
+			end[i] = ((float) coord[i] + 1) / nbins[i];
 		}
-		return new Pair<float[]>(start,end);
+		return new Pair<float[]>(start, end);
 	}
-	
+
 	/**
-	 * For a given index, get the average colour which would map
-	 * to it
+	 * For a given index, get the average colour which would map to it
+	 * 
 	 * @param index
 	 * @return start/end colour
 	 */
-	public float[] colourAverage(int index){
-		int[] coord = this.histogram.getCoordinates(index);
-		float[] average = new float[coord.length];
-		int[] nbins = histogram.nbins;
+	public float[] colourAverage(int index) {
+		final int[] coord = this.histogram.getCoordinates(index);
+		final float[] average = new float[coord.length];
+		final int[] nbins = histogram.nbins;
 		for (int i = 0; i < coord.length; i++) {
-			float start = (float)coord[i] / (float)nbins[i];
-			float end = ((float)coord[i]+1) / (float)nbins[i];
-			average[i] = (start + end)/2f;
+			final float start = (float) coord[i] / (float) nbins[i];
+			final float end = ((float) coord[i] + 1) / nbins[i];
+			average[i] = (start + end) / 2f;
 		}
-		
+
 		return average;
 	}
-	
+
 	protected void accum(MBFImage im) {
 		final int height = im.getHeight();
 		final int width = im.getWidth();
-		final int [] bins = new int[ndims];
-		
+		final int[] bins = new int[ndims];
+
 		final float[][][] bands = new float[im.numBands()][][];
-		for (int i=0; i<bands.length; i++)
+		for (int i = 0; i < bands.length; i++)
 			bands[i] = im.getBand(i).pixels;
-		
-		final int [] nbins = histogram.nbins; 
-		final double [] values = histogram.values;
-		
-		for (int y=0; y<height; y++) {
-			for (int x=0; x<width; x++) {
-				for (int i=0; i<ndims; i++) {
-					bins[i] = (int)(bands[i][y][x] * (nbins[i]));
-					if (bins[i] >= nbins[i]) bins[i] = nbins[i] - 1;
+
+		final int[] nbins = histogram.nbins;
+		final double[] values = histogram.values;
+
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				for (int i = 0; i < ndims; i++) {
+					bins[i] = (int) (bands[i][y][x] * (nbins[i]));
+					if (bins[i] >= nbins[i])
+						bins[i] = nbins[i] - 1;
 				}
-				
+
 				int bin = 0;
-				for (int i=0; i<ndims; i++) {
+				for (int i = 0; i < ndims; i++) {
 					int f = 1;
-					for (int j=0; j<i; j++)
+					for (int j = 0; j < i; j++)
 						f *= nbins[j];
-					
+
 					bin += f * bins[i];
 				}
-				
+
 				values[bin]++;
 			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return histogram.toString();
 	}
-	
+
 	@Override
 	public HistogramModel clone() {
-		HistogramModel model = new HistogramModel();
+		final HistogramModel model = new HistogramModel();
 		model.histogram = histogram.clone();
-		model.ndims = ndims;	
+		model.ndims = ndims;
 		return model;
 	}
 

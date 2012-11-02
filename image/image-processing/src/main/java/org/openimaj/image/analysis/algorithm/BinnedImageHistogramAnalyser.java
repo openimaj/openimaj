@@ -57,16 +57,28 @@ public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
 		final int height = image.height;
 		final int width = image.width;
 
-		final int[][] binMap = new int[height][width];
+		binMap = new int[height][width];
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int bin = (int) (((image.pixels[y][x] - min) / max) * (nbins - 1));
+				int bin = (int) (((image.pixels[y][x] - min) / max) * nbins);
+
 				if (bin > (nbins - 1))
 					bin = nbins - 1;
+
 				binMap[y][x] = bin;
 			}
 		}
+	}
+
+	/**
+	 * Get the bin-map created in the last call to {@link #analyseImage(FImage)}
+	 * .
+	 * 
+	 * @return the bin map
+	 */
+	public int[][] getBinMap() {
+		return binMap;
 	}
 
 	/**
