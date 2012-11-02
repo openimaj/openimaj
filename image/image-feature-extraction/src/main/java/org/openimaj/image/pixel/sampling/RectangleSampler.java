@@ -133,4 +133,38 @@ public class RectangleSampler implements Iterable<Rectangle> {
 			}
 		};
 	}
+
+	/**
+	 * Create an iterator to extract sub-images from an image based on the
+	 * rectangles defined by this sampler.
+	 * 
+	 * @param image
+	 *            the image to extract from
+	 * @return an iterator over the extracted sub-images.
+	 */
+	public <I extends Image<?, I>> Iterator<I> subImageIterator(final I image) {
+		return new Iterator<I>() {
+			Iterator<Rectangle> inner = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return inner.hasNext();
+			}
+
+			@Override
+			public I next() {
+				final Rectangle r = inner.next();
+
+				if (r == null)
+					return null;
+
+				return image.extractROI(r);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException("Removal is not supported!");
+			}
+		};
+	}
 }
