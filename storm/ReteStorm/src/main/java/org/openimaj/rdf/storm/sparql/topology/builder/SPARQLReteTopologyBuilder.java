@@ -29,8 +29,10 @@
  */
 package org.openimaj.rdf.storm.sparql.topology.builder;
 
+import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
@@ -43,6 +45,7 @@ import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.sparql.syntax.Element;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 
 import eu.larkc.csparql.parser.StreamInfo;
 
@@ -55,6 +58,8 @@ import eu.larkc.csparql.parser.StreamInfo;
  *
  */
 public abstract class SPARQLReteTopologyBuilder {
+
+	Logger logger = Logger.getLogger(SPARQLReteTopologyBuilder.class);
 
 	/**
 	 * The default name for the axiom spout
@@ -96,8 +101,24 @@ public abstract class SPARQLReteTopologyBuilder {
 			handleElement((ElementPathBlock)element, context);
 		}else if (element instanceof ElementGroup){
 			handleElement((ElementGroup)element, context);
+
+		}else if (element instanceof ElementUnion)
+		{
+			handleElement((ElementUnion)element,context);
+		}
+		else{
+			logger.error("Got element of type: " + element + " ignoring");
 		}
 
+	}
+
+	private void handleElement(ElementUnion union, SPARQLReteTopologyBuilderContext context){
+		startUnion(context);
+		List<Element> elems = union.getElements(); // should be only two big
+		for (Element element : elems) {
+			handleElement(element,context);
+		}
+		endUnion(context);
 	}
 
 	private void handleElement(ElementPathBlock path, SPARQLReteTopologyBuilderContext context) {
@@ -150,6 +171,20 @@ public abstract class SPARQLReteTopologyBuilder {
 	 * @param context
 	 */
 	public abstract void endGroup(SPARQLReteTopologyBuilderContext context);
+
+	/**
+	 * Start a new union (the next two direct children)
+	 *
+	 * @param context
+	 */
+	public abstract void startUnion(SPARQLReteTopologyBuilderContext context);
+
+	/**
+	 * End the current union. (the last two direct children)
+	 *
+	 * @param context
+	 */
+	public abstract void endUnion(SPARQLReteTopologyBuilderContext context);
 
 	/**
 	 * Add a new filter clause. The

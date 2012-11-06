@@ -73,17 +73,17 @@ import eu.larkc.csparql.parser.StreamInfo;
  * The simple topology builders make no attempt to optimise the joins. The most
  * basic SPARQL features are supported, namely (SELECT|CONSTRUCT|ASK|DESCRIBE),
  * path matches, global filtera and global joins.
- * 
+ *
  * Groups are completely ignored.
- * 
- * 
+ *
+ *
  * This base
  * interface takes care of recording filters, joins etc. and leaves the job of
  * actually adding the bolts to the topology as well as the construction of the
  * {@link ReteConflictSetBolt} instance down to its subclasses.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBuilder {
 
@@ -121,6 +121,18 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 
 	@Override
 	public void endGroup(SPARQLReteTopologyBuilderContext context) {
+	}
+
+	@Override
+	public void startUnion(SPARQLReteTopologyBuilderContext context) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void endUnion(SPARQLReteTopologyBuilderContext context) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -276,7 +288,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * behaviour is to add the bolt as
 	 * {@link BoltDeclarer#globalGrouping(String)} with both sources (this might
 	 * be optimisabled)
-	 * 
+	 *
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -293,7 +305,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * {@link BoltDeclarer#shuffleGrouping(String)} to the
 	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source}
 	 * and the {@link ReteConflictSetBolt} instance
-	 * 
+	 *
 	 * @param context
 	 * @param name
 	 * @param bolt
