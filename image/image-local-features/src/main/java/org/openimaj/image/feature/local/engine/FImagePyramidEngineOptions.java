@@ -36,37 +36,41 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramidOptions;
 import org.openimaj.image.feature.local.detector.dog.collector.Collector;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 
-public class FImagePyramidEngineOptions<FEATURE extends LocalFeature<?>> extends GaussianPyramidOptions<FImage> {
+public class FImagePyramidEngineOptions<FEATURE extends LocalFeature<?, ?>> extends GaussianPyramidOptions<FImage> {
 	protected OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder;
 	protected Collector<GaussianOctave<FImage>, FEATURE, FImage> collector;
-	
+
 	/**
 	 * @return the finder
 	 */
 	public OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> getFinder() {
 		return finder;
 	}
-	
+
 	/**
-	 * @param finder the finder to set
+	 * @param finder
+	 *            the finder to set
 	 */
 	public void setFinder(
-			OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder) {
+			OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder)
+	{
 		this.finder = finder;
 	}
-	
+
 	/**
 	 * @return the collector
 	 */
 	public Collector<GaussianOctave<FImage>, FEATURE, FImage> getCollector() {
 		return collector;
 	}
-	
+
 	/**
-	 * @param collector the collector to set
+	 * @param collector
+	 *            the collector to set
 	 */
 	public void setCollector(
-			Collector<GaussianOctave<FImage>, FEATURE, FImage> collector) {
+			Collector<GaussianOctave<FImage>, FEATURE, FImage> collector)
+	{
 		this.collector = collector;
 	}
 }

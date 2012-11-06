@@ -30,18 +30,20 @@
 package org.openimaj.feature.local;
 
 /**
- * A LocationProvider marks classes that have an associated
- * Location or are capable of producing a Location from
- * their internal state.
+ * A {@link LocationProvider} marks classes that have an associated Location or
+ * are capable of producing a {@link Location} from their internal state.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
+ * @param <L>
+ *            The type of {@link Location}.
+ * 
  */
-public interface LocationProvider {
+public interface LocationProvider<L extends Location> {
 	/**
 	 * Get the location associated with this object.
 	 * 
 	 * @return the location.
 	 */
-	Location getLocation();
+	L getLocation();
 }

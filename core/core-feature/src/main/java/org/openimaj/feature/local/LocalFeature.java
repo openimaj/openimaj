@@ -33,13 +33,21 @@ import org.openimaj.feature.FeatureVector;
 import org.openimaj.io.ReadWriteable;
 
 /**
- * A LocalFeature models a feature that has a location associated with it.
- * Local features are ReadWriteable, and also implement LocalFeatureVectorProvider
- * so that the Location and FeatureVector can be easily obtained. 
+ * A {@link LocalFeature} models a feature that has a {@link Location}
+ * associated with it. Local features are {@link ReadWriteable}, and also
+ * implement {@link LocalFeatureVectorProvider} so that the {@link Location} and
+ * {@link FeatureVector} can be easily obtained.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <T> The type of {@link FeatureVector}
+ * @param <L>
+ *            The type of {@link Location}
+ * @param <T>
+ *            The type of {@link FeatureVector}
  */
-public interface LocalFeature<T extends FeatureVector> extends ReadWriteable, LocalFeatureVectorProvider<T> {
-	
+public interface LocalFeature<L extends Location, T extends FeatureVector>
+		extends
+		ReadWriteable,
+		LocalFeatureVectorProvider<L, T>
+{
+
 }

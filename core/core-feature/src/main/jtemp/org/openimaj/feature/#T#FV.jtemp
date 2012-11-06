@@ -33,7 +33,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -42,14 +41,9 @@ import java.util.Scanner;
  *
  * @author Jonathon Hare
  */
-public class #T#FV implements Serializable, Cloneable, FeatureVector {
+public class #T#FV extends ArrayFeatureVector<#t#[]> implements Cloneable {
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Array of all the values in the feature vector
-	 */
-	public #t# [] values;
-
 	/**
 	 * Construct an empty feature vector
 	 */
@@ -69,15 +63,6 @@ public class #T#FV implements Serializable, Cloneable, FeatureVector {
 	 */
 	public #T#FV(#t# [] values) {
 		this.values = values;
-	}
-		
-	/**
-	 * Get the underlying representation 
-	 * @return the feature as an array
-	 */
-	@Override
-	public #t# [] getVector() {
-		return values;
 	}
 	
 	/**

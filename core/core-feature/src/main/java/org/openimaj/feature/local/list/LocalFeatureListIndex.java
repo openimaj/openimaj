@@ -44,33 +44,38 @@ import org.openimaj.feature.local.quantised.QuantisedLocalFeature;
 import org.openimaj.io.ReadWriteable;
 import org.openimaj.io.ReadWriteableBinary;
 
-
 /**
- * LocalFeatureListIndex is a @{link ReadWriteable} map of keys to local feature lists.
+ * LocalFeatureListIndex is a @{link ReadWriteable} map of keys to local feature
+ * lists.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <K> the key type
- * @param <V> the value type
- *
+ * @param <K>
+ *            the key type
+ * @param <V>
+ *            the value type
+ * 
  */
-public class LocalFeatureListIndex<K extends ReadWriteable,V extends LocalFeature<?>> extends HashMap<K,LocalFeatureList<V>> implements ReadWriteableBinary {
+public class LocalFeatureListIndex<K extends ReadWriteable, V extends LocalFeature<?, ?>>
+		extends
+			HashMap<K, LocalFeatureList<V>> implements ReadWriteableBinary
+{
 	private static final long serialVersionUID = 1L;
 
 	/** The header used when writing LocalFeatureListIndex to streams and files */
 	public static final byte[] BINARY_HEADER = "LFLI".getBytes();
-	
+
 	protected Class<K> keyClass;
 	protected Class<V> valueClass;
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		try {
-			String kclzstr = in.readUTF();
-			String vclzstr = in.readUTF();
+			final String kclzstr = in.readUTF();
+			final String vclzstr = in.readUTF();
 
-			Class<?> kclz = Class.forName(kclzstr);
-			Class<?> vclz = Class.forName(vclzstr);
+			final Class<?> kclz = Class.forName(kclzstr);
+			final Class<?> vclz = Class.forName(vclzstr);
 
 			if (keyClass != null && !keyClass.equals(kclz)) {
 				throw new IOException("type mismatch");
@@ -82,17 +87,17 @@ public class LocalFeatureListIndex<K extends ReadWriteable,V extends LocalFeatur
 			keyClass = (Class<K>) kclz;
 			valueClass = (Class<V>) vclz;
 
-			int size = in.readInt();
+			final int size = in.readInt();
 
-			for (int i=0; i<size; i++) {
-				K key = keyClass.newInstance();  
+			for (int i = 0; i < size; i++) {
+				final K key = keyClass.newInstance();
 				key.readBinary(in);
 
-				MemoryLocalFeatureList<V> value = MemoryLocalFeatureList.readNoHeader(in, valueClass);
-				
+				final MemoryLocalFeatureList<V> value = MemoryLocalFeatureList.readNoHeader(in, valueClass);
+
 				this.put(key, value);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IOException(e);
 		}
 	}
@@ -111,7 +116,7 @@ public class LocalFeatureListIndex<K extends ReadWriteable,V extends LocalFeatur
 			}
 			keyClass = (Class<K>) this.keySet().iterator().next().getClass();
 		}
-		
+
 		if (valueClass == null) {
 			if (!this.values().iterator().hasNext()) {
 				throw new IOException("unable to guess type");
@@ -121,50 +126,58 @@ public class LocalFeatureListIndex<K extends ReadWriteable,V extends LocalFeatur
 			}
 			valueClass = (Class<V>) this.values().iterator().next().iterator().next().getClass();
 		}
-		
+
 		out.writeUTF(keyClass.getCanonicalName());
 		out.writeUTF(valueClass.getCanonicalName());
 		out.writeInt(this.size());
 
-		for (Entry<K,LocalFeatureList<V>> e : this.entrySet()) {
+		for (final Entry<K, LocalFeatureList<V>> e : this.entrySet()) {
 			e.getKey().writeBinary(out);
 			e.getValue().writeBinary(out);
 		}
 	}
-	
+
 	/**
 	 * <p>
-	 * Invert an index of quantised features. The inversion process swaps keys and 
-	 * feature {@link QuantisedLocalFeature#id}s around so that the inverted index 
-	 * is a hash of ids to {@link QuantisedLocalFeature}s with the 
-	 * {@link Object#hashCode()} of the key stored in the {@link QuantisedLocalFeature#id}
-	 * field.
+	 * Invert an index of quantised features. The inversion process swaps keys
+	 * and feature {@link QuantisedLocalFeature#id}s around so that the inverted
+	 * index is a hash of ids to {@link QuantisedLocalFeature}s with the
+	 * {@link Object#hashCode()} of the key stored in the
+	 * {@link QuantisedLocalFeature#id} field.
 	 * </p>
 	 * <p>
 	 * The original index is not affected by the inversion operation.
 	 * </p>
-	 *  
-	 * @param <T> the type of local feature.
-	 * @param <K> the type of key.
-	 * @param index the index to invert.
+	 * 
+	 * @param <T>
+	 *            the type of local feature.
+	 * @param <K>
+	 *            the type of key.
+	 * @param index
+	 *            the index to invert.
 	 * @return an inverted-index data structure.
 	 */
-	public static <K extends ReadWriteable,T extends QuantisedLocalFeature<?>> TIntObjectHashMap<TIntObjectHashMap<List<T>>> invert(LocalFeatureListIndex<K, T> index) {
-		TIntObjectHashMap<TIntObjectHashMap<List<T>>> invertedIndex = new TIntObjectHashMap<TIntObjectHashMap<List<T>>>();
-		
-		for (Entry<K, LocalFeatureList<T>> e : index.entrySet()) {
-			K docid = e.getKey();
-			
-			for (T t : e.getValue()) {
-				int termid = t.id;
-				
-				if (!invertedIndex.containsKey(termid)) invertedIndex.put(termid, new TIntObjectHashMap<List<T>>());
-				TIntObjectHashMap<List<T>> postings = invertedIndex.get(termid);
-				if (!postings.containsKey(docid.hashCode())) postings.put(docid.hashCode(), new ArrayList<T>());
+	public static <K extends ReadWriteable, T extends QuantisedLocalFeature<?>>
+			TIntObjectHashMap<TIntObjectHashMap<List<T>>>
+			invert(LocalFeatureListIndex<K, T> index)
+	{
+		final TIntObjectHashMap<TIntObjectHashMap<List<T>>> invertedIndex = new TIntObjectHashMap<TIntObjectHashMap<List<T>>>();
+
+		for (final Entry<K, LocalFeatureList<T>> e : index.entrySet()) {
+			final K docid = e.getKey();
+
+			for (final T t : e.getValue()) {
+				final int termid = t.id;
+
+				if (!invertedIndex.containsKey(termid))
+					invertedIndex.put(termid, new TIntObjectHashMap<List<T>>());
+				final TIntObjectHashMap<List<T>> postings = invertedIndex.get(termid);
+				if (!postings.containsKey(docid.hashCode()))
+					postings.put(docid.hashCode(), new ArrayList<T>());
 				postings.get(docid.hashCode()).add(t);
 			}
 		}
-		
+
 		return invertedIndex;
 	}
 }

@@ -36,7 +36,6 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.io.IOUtils;
-
 import org.openimaj.time.Timer;
 
 /**
@@ -45,34 +44,34 @@ import org.openimaj.time.Timer;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Extractor {
-	
+
 	/**
 	 * Run the tool
 	 * 
 	 * @param args
 	 * @throws IOException
 	 */
-	public static void main(String [] args) throws IOException {
-		LocalFeaturesToolOptions options = new LocalFeaturesToolOptions();
-		CmdLineParser parser = new CmdLineParser(options);
-		
-	    try {
-		    parser.parseArgument(args);
-		} catch(CmdLineException e) {
-		    System.err.println(e.getMessage());
-		    System.err.println("Usage: java -jar LocalFeaturesTool.jar Extractor [options] -i imageFile -o keypointFile");
-		    parser.printUsage(System.err);
-		    return;
+	public static void main(String[] args) throws IOException {
+		final LocalFeaturesToolOptions options = new LocalFeaturesToolOptions();
+		final CmdLineParser parser = new CmdLineParser(options);
+
+		try {
+			parser.parseArgument(args);
+		} catch (final CmdLineException e) {
+			System.err.println(e.getMessage());
+			System.err.println("Usage: java -jar LocalFeaturesTool.jar Extractor [options] -i imageFile -o keypointFile");
+			parser.printUsage(System.err);
+			return;
 		}
-		
-		byte[] img = options.getInputImage();
-		Timer timing = Timer.timer();
-		LocalFeatureList<? extends LocalFeature<?>> kpl = options.getMode().extract(img);
+
+		final byte[] img = options.getInputImage();
+		final Timer timing = Timer.timer();
+		final LocalFeatureList<? extends LocalFeature<?, ?>> kpl = options.getMode().extract(img);
 		timing.stop();
-		if(options.printTiming()){
+		if (options.printTiming()) {
 			System.out.println("Took: " + timing.duration());
 		}
-		
+
 		if (options.isAsciiMode()) {
 			IOUtils.writeASCII(options.getOutput(), kpl);
 		} else {

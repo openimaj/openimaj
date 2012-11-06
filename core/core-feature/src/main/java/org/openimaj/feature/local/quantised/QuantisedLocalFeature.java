@@ -40,81 +40,86 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.Location;
 
 /**
- * A QuantisedLocalFeature is a local feature with a single
- * integer feature-vector.
+ * A QuantisedLocalFeature is a local feature with a single integer
+ * feature-vector.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <L> the type of Location
+ * 
+ * @param <L>
+ *            the type of Location
  */
-public class QuantisedLocalFeature<L extends Location> implements LocalFeature<IntFV> {
+public class QuantisedLocalFeature<L extends Location> implements LocalFeature<L, IntFV> {
 	/**
 	 * The location of the local feature
 	 */
 	public L location;
-	
+
 	/**
-	 * The identifier. 
+	 * The identifier.
 	 */
 	public int id;
 
 	/**
 	 * Default constructor.
 	 */
-	public QuantisedLocalFeature() {}
-	
+	public QuantisedLocalFeature() {
+	}
+
 	/**
-	 * Construct the QuantisedLocalFeature with the given location
-	 * and identifier.
-	 * @param location the location.
-	 * @param id the identifier.
+	 * Construct the QuantisedLocalFeature with the given location and
+	 * identifier.
+	 * 
+	 * @param location
+	 *            the location.
+	 * @param id
+	 *            the identifier.
 	 */
 	public QuantisedLocalFeature(L location, int id) {
 		this.location = location;
 		this.id = id;
 	}
-	
+
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		location.writeBinary(out);
 		out.writeInt(id);
 	}
-	
+
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		location.writeASCII(out);
 		out.println(id);
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		location.readBinary(in);
 		id = in.readInt();
 	}
-	
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		location.readASCII(in);
 		id = Integer.parseInt(in.next());
 	}
-	
+
 	@Override
 	public byte[] binaryHeader() {
 		return ("QLFI" + "." + new String(location.binaryHeader())).getBytes();
 	}
-	
+
 	@Override
 	public String asciiHeader() {
 		return this.getClass().getName() + "." + location.asciiHeader();
 	}
-	
+
 	@Override
 	public IntFV getFeatureVector() {
-		return new IntFV(new int[]{id});
+		return new IntFV(new int[] { id });
 	}
-	
+
 	@Override
-	public Location getLocation() {
+	public L getLocation() {
 		return location;
 	}
 }

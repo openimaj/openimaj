@@ -32,15 +32,21 @@ package org.openimaj.feature.local;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 
-
 /**
- * A LocalFeatureVectorProvider models an object with
- * both a location and a feature vector associated with it.
+ * A {@link LocalFeatureVectorProvider} models an object with both a
+ * {@link Location} and a feature vector associated with it.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <T> The type of {@link FeatureVector}
+ * @param <L>
+ *            The type of {@link Location}
+ * @param <T>
+ *            The type of {@link FeatureVector}
  * 
  */
-public interface LocalFeatureVectorProvider<T extends FeatureVector> extends FeatureVectorProvider<T>, LocationProvider {
-	
+public interface LocalFeatureVectorProvider<L extends Location, T extends FeatureVector>
+		extends
+		FeatureVectorProvider<T>,
+		LocationProvider<L>
+{
+
 }

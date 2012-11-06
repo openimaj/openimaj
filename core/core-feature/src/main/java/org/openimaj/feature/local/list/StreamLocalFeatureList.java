@@ -40,19 +40,25 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.io.IOUtils;
 import org.openimaj.util.list.AbstractStreamBackedList;
 
-
 /**
- * A list of {@link LocalFeature}s backed by an input stream. The list is read-only, and
- * can only be read in order (i.e. random access is not possible).
+ * A list of {@link LocalFeature}s backed by an input stream. The list is
+ * read-only, and can only be read in order (i.e. random access is not
+ * possible).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> the type of local feature
+ * 
+ * @param <T>
+ *            the type of local feature
  */
-public class StreamLocalFeatureList<T extends LocalFeature<?>> extends AbstractStreamBackedList<T> implements LocalFeatureList<T> {
-	int veclen; 
+public class StreamLocalFeatureList<T extends LocalFeature<?, ?>> extends AbstractStreamBackedList<T>
+		implements
+			LocalFeatureList<T>
+{
+	int veclen;
 
-	protected StreamLocalFeatureList(InputStream stream, int size, boolean isBinary, int headerLength, int recordLength, int veclen, Class<T> clz) {
+	protected StreamLocalFeatureList(InputStream stream, int size, boolean isBinary, int headerLength, int recordLength,
+			int veclen, Class<T> clz)
+	{
 		super(stream, size, isBinary, headerLength, recordLength, clz);
 		this.veclen = veclen;
 	}
@@ -60,36 +66,48 @@ public class StreamLocalFeatureList<T extends LocalFeature<?>> extends AbstractS
 	/**
 	 * Construct a new StreamLocalFeatureList from the given input stream.
 	 * 
-	 * @param <T> the type of local feature
-	 * @param stream the input stream
-	 * @param clz the class of local feature to read
+	 * @param <T>
+	 *            the type of local feature
+	 * @param stream
+	 *            the input stream
+	 * @param clz
+	 *            the class of local feature to read
 	 * @return a new list
-	 * @throws IOException if an error occurs reading from the stream
+	 * @throws IOException
+	 *             if an error occurs reading from the stream
 	 */
-	public static <T extends LocalFeature<?>> StreamLocalFeatureList<T> read(InputStream stream, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?, ?>> StreamLocalFeatureList<T> read(InputStream stream, Class<T> clz)
+			throws IOException
+	{
 		return read(new BufferedInputStream(stream), clz);
 	}
-	
+
 	/**
 	 * Construct a new StreamLocalFeatureList from the given input stream.
 	 * 
-	 * @param <T> the type of local feature
-	 * @param stream the input stream
-	 * @param clz the class of local feature to read
+	 * @param <T>
+	 *            the type of local feature
+	 * @param stream
+	 *            the input stream
+	 * @param clz
+	 *            the class of local feature to read
 	 * @return a new list
-	 * @throws IOException if an error occurs reading from the stream
+	 * @throws IOException
+	 *             if an error occurs reading from the stream
 	 */
-	public static <T extends LocalFeature<?>> StreamLocalFeatureList<T> read(BufferedInputStream stream, Class<T> clz) throws IOException {
-		boolean isBinary = IOUtils.isBinary(stream, LocalFeatureList.BINARY_HEADER);
-				
-		//read header
-		int [] header = LocalFeatureListUtils.readHeader(stream, isBinary, false);
-		int size = header[0];
-		int veclen = header[1];
-		int headerLength = header[2];
-		
-		int recordLength = veclen + 4*4;
-		
+	public static <T extends LocalFeature<?, ?>> StreamLocalFeatureList<T> read(BufferedInputStream stream, Class<T> clz)
+			throws IOException
+	{
+		final boolean isBinary = IOUtils.isBinary(stream, LocalFeatureList.BINARY_HEADER);
+
+		// read header
+		final int[] header = LocalFeatureListUtils.readHeader(stream, isBinary, false);
+		final int size = header[0];
+		final int veclen = header[1];
+		final int headerLength = header[2];
+
+		final int recordLength = veclen + 4 * 4;
+
 		return new StreamLocalFeatureList<T>(stream, size, isBinary, headerLength, recordLength, veclen, clz);
 	}
 
@@ -99,12 +117,12 @@ public class StreamLocalFeatureList<T extends LocalFeature<?>> extends AbstractS
 		if (a.length < size()) {
 			a = (Q[]) Array.newInstance(a.getClass().getComponentType(), size());
 		}
-		
-		int i=0;
-		for (T t : this) {
+
+		int i = 0;
+		for (final T t : this) {
 			a[i++] = (Q) t.getFeatureVector().getVector();
 		}
-		
+
 		return a;
 	}
 
@@ -112,7 +130,7 @@ public class StreamLocalFeatureList<T extends LocalFeature<?>> extends AbstractS
 	public int vecLength() {
 		return veclen;
 	}
-	
+
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		LocalFeatureListUtils.writeBinary(out, this);
@@ -132,9 +150,9 @@ public class StreamLocalFeatureList<T extends LocalFeature<?>> extends AbstractS
 	public String asciiHeader() {
 		return "";
 	}
-	
+
 	@Override
 	protected T newElementInstance() {
-		return LocalFeatureListUtils.newInstance(clz,this.veclen);
+		return LocalFeatureListUtils.newInstance(clz, this.veclen);
 	}
 }

@@ -45,7 +45,6 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 	@Option(name = "--output", aliases = "-o", required = true, usage = "Output keypoint FILE.", metaVar = "STRING")
 	private String output;
 
-	@SuppressWarnings("unused")
 	@Option(
 			name = "--mode",
 			aliases = "-m",
@@ -86,10 +85,10 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 		final File file = new File(this.getInput());
 		if (file.isDirectory())
 			throw new RuntimeException("Unsupported operation, file "
-								+ file.getAbsolutePath() + " is a directory");
+					+ file.getAbsolutePath() + " is a directory");
 		if (file.length() > Integer.MAX_VALUE)
 			throw new RuntimeException("Unsupported operation, file "
-								+ file.getAbsolutePath() + " is too big");
+					+ file.getAbsolutePath() + " is too big");
 
 		Throwable pending = null;
 		FileInputStream in = null;
@@ -99,7 +98,7 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 			in.read(buffer);
 		} catch (final Exception e) {
 			pending = new RuntimeException("Exception occured on reading file "
-								+ file.getAbsolutePath(), e);
+					+ file.getAbsolutePath(), e);
 		} finally {
 			if (in != null) {
 				try {
@@ -107,8 +106,8 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 				} catch (final Exception e) {
 					if (pending == null) {
 						pending = new RuntimeException(
-												"Exception occured on closing file"
-														+ file.getAbsolutePath(), e);
+								"Exception occured on closing file"
+										+ file.getAbsolutePath(), e);
 					}
 				}
 			}

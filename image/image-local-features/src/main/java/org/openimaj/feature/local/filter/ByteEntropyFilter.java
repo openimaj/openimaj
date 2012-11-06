@@ -55,7 +55,7 @@ import org.openimaj.util.filter.Filter;
 		year = "2012",
 		booktitle = "ACM International Conference on Multimedia Retrieval",
 		customData = { "location", "Hong Kong, China" })
-public class ByteEntropyFilter implements Filter<LocalFeature<ByteFV>> {
+public class ByteEntropyFilter implements Filter<LocalFeature<?, ByteFV>> {
 	double threshold = 4.4;
 
 	/**
@@ -76,7 +76,7 @@ public class ByteEntropyFilter implements Filter<LocalFeature<ByteFV>> {
 	}
 
 	@Override
-	public boolean accept(LocalFeature<ByteFV> object) {
+	public boolean accept(LocalFeature<?, ByteFV> object) {
 		return entropy(object.getFeatureVector().values) >= threshold;
 	}
 

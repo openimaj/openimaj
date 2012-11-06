@@ -37,36 +37,42 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.model.Model;
 import org.openimaj.math.model.fit.RobustModelFitting;
 
-
 /**
- * Interface for classes able to match local features within the
- * constraints of a mathematical model between pairs of 2d points
- * (i.e. affine transform, homography, etc).
+ * Interface for classes able to match local features within the constraints of
+ * a mathematical model between pairs of 2d points (i.e. affine transform,
+ * homography, etc).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <T> 
+ * @param <T>
  */
-public interface ModelFittingLocalFeatureMatcher<T extends LocalFeature<?> /*& Point2d*/> extends LocalFeatureMatcher<T> {
+public interface ModelFittingLocalFeatureMatcher<T extends LocalFeature<?, ?> /*
+																			 * &
+																			 * Point2d
+																			 */> extends LocalFeatureMatcher<T> {
 	/**
-	 * Set the object which robustly attempts to fit matches to the model 
-	 * @param mf fitting model
+	 * Set the object which robustly attempts to fit matches to the model
+	 * 
+	 * @param mf
+	 *            fitting model
 	 */
 	public void setFittingModel(RobustModelFitting<Point2d, Point2d> mf);
-	
+
 	/**
-	 * Attempt to find matches between the model features from the
-	 * database, and given query features and learn the 
-	 * parameters of the underlying model that links the two sets of 
-	 * features.
-	 * @param queryfeatures features from the query
+	 * Attempt to find matches between the model features from the database, and
+	 * given query features and learn the parameters of the underlying model
+	 * that links the two sets of features.
+	 * 
+	 * @param queryfeatures
+	 *            features from the query
 	 */
 	@Override
 	public boolean findMatches(List<T> queryfeatures);
-	
+
 	/**
-	 * Get the model that has been learned. Do this after finding matches! 
-	 * @return the model found between the model features
-	 * 			and object features after a findMatches operation.
+	 * Get the model that has been learned. Do this after finding matches!
+	 * 
+	 * @return the model found between the model features and object features
+	 *         after a findMatches operation.
 	 */
 	public Model<Point2d, Point2d> getModel();
 }

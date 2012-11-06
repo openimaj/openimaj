@@ -46,129 +46,155 @@ import java.util.Scanner;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.io.VariableLength;
 
-
 class LocalFeatureListUtils {
 
-	protected static <T extends LocalFeature<?>> void writeBinary(DataOutput out, LocalFeatureList<T> list) throws IOException {
+	protected static <T extends LocalFeature<?, ?>> void writeBinary(DataOutput out, LocalFeatureList<T> list)
+			throws IOException
+	{
 		out.writeInt(list.size());
 		out.writeInt(list.vecLength());
-		for (T k : list) k.writeBinary(out);
+		for (final T k : list)
+			k.writeBinary(out);
 	}
 
-	protected static <T extends LocalFeature<?>> void writeASCII(PrintWriter out, LocalFeatureList<T> list) throws IOException {
-		Locale def = Locale.getDefault();
+	protected static <T extends LocalFeature<?, ?>> void writeASCII(PrintWriter out, LocalFeatureList<T> list)
+			throws IOException
+	{
+		final Locale def = Locale.getDefault();
 		Locale.setDefault(Locale.ENGLISH);
 
 		out.println(list.size() + " " + list.vecLength());
-		for (T k : list) k.writeASCII(out);
+		for (final T k : list)
+			k.writeASCII(out);
 
 		Locale.setDefault(def);
 	}
 
-	protected static <T extends LocalFeature<?>> void readBinary(File file, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
+	protected static <T extends LocalFeature<?, ?>> void readBinary(File file,
+			MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException
+	{
 		BufferedInputStream bis = null;
 
 		try {
 			bis = new BufferedInputStream(new FileInputStream(file));
 			readBinary(bis, memoryKeypointList, clz);
 		} finally {
-			if (bis != null) try { bis.close(); } catch (IOException e) {}
+			if (bis != null)
+				try {
+					bis.close();
+				} catch (final IOException e) {
+				}
 		}
 	}
 
-	protected static <T extends LocalFeature<?>> void readBinary(BufferedInputStream bis, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
+	protected static <T extends LocalFeature<?, ?>> void readBinary(BufferedInputStream bis,
+			MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException
+	{
 		DataInputStream dis = null;
 
 		dis = new DataInputStream(bis);
-		//read the header line
+		// read the header line
 		dis.read(new byte[memoryKeypointList.binaryHeader().length]);
-		int nItems = dis.readInt();
-		int veclen = dis.readInt();
+		final int nItems = dis.readInt();
+		final int veclen = dis.readInt();
 
 		memoryKeypointList.clear();
 		memoryKeypointList.cached_veclen = veclen;
 
-		for (int i=0; i<nItems; i++) {
-			T t = newInstance(clz,veclen);
+		for (int i = 0; i < nItems; i++) {
+			final T t = newInstance(clz, veclen);
 			t.readBinary(dis);
 
 			memoryKeypointList.add(t);
 		}
 	}
 
-	protected static <T extends LocalFeature<?>> void readBinary(DataInput in, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
-		int nItems = in.readInt();
-		int veclen = in.readInt();
+	protected static <T extends LocalFeature<?, ?>> void readBinary(DataInput in,
+			MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException
+	{
+		final int nItems = in.readInt();
+		final int veclen = in.readInt();
 
 		memoryKeypointList.clear();
 		memoryKeypointList.cached_veclen = veclen;
 
-		for (int i=0; i<nItems; i++) {
-			T t = newInstance(clz,veclen);
+		for (int i = 0; i < nItems; i++) {
+			final T t = newInstance(clz, veclen);
 			t.readBinary(in);
 
 			memoryKeypointList.add(t);
 		}
 	}
 
-
-	protected static <T extends LocalFeature<?>> void readASCII(File file, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {        
+	protected static <T extends LocalFeature<?, ?>> void readASCII(File file,
+			MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException
+	{
 		BufferedInputStream bis = null;
 
 		try {
 			bis = new BufferedInputStream(new FileInputStream(file));
 			readASCII(bis, memoryKeypointList, clz);
 		} finally {
-			if (bis != null) try { bis.close(); } catch (IOException e) {}
+			if (bis != null)
+				try {
+					bis.close();
+				} catch (final IOException e) {
+				}
 		}
 	}
 
-	protected static <T extends LocalFeature<?>> void readASCII(BufferedInputStream bis, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {        
-		Scanner in = new Scanner(bis);
+	protected static <T extends LocalFeature<?, ?>> void readASCII(BufferedInputStream bis,
+			MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException
+	{
+		final Scanner in = new Scanner(bis);
 
-		//read the header line
-		String head = in.nextLine().trim();
-		String [] h = head.split(" ");
+		// read the header line
+		final String head = in.nextLine().trim();
+		final String[] h = head.split(" ");
 
-		int nItems = Integer.decode(h[0]);
+		final int nItems = Integer.decode(h[0]);
 		int veclen = 0;
-		if(h.length > 1)
+		if (h.length > 1)
 		{
 			veclen = Integer.decode(h[1]);
 		}
-		else{
+		else {
 			veclen = Integer.decode(in.nextLine().trim());
 		}
 
 		memoryKeypointList.clear();
 		memoryKeypointList.cached_veclen = veclen;
 
-		for (int i=0; i<nItems; i++) {
-			T t = newInstance(clz,veclen);
+		for (int i = 0; i < nItems; i++) {
+			final T t = newInstance(clz, veclen);
 			t.readASCII(in);
 			memoryKeypointList.add(t);
 		}
 	}
 
-	public static<T> T newInstance(Class<T> cls,int length) {
+	public static <T> T newInstance(Class<T> cls, int length) {
 		try {
-			if(VariableLength.class.isAssignableFrom(cls)) {
+			if (VariableLength.class.isAssignableFrom(cls)) {
 				return cls.getConstructor(Integer.TYPE).newInstance(length);
 			}
 
 			return cls.newInstance();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
-		} 
+		}
 	}
-	
+
 	protected static int[] readHeader(File keypointFile, boolean isBinary) throws IOException {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(keypointFile);
 			return readHeader(fis, isBinary, true);
 		} finally {
-			if (fis!=null) try { fis.close(); } catch (IOException e) {}
+			if (fis != null)
+				try {
+					fis.close();
+				} catch (final IOException e) {
+				}
 		}
 	}
 
@@ -178,47 +204,62 @@ class LocalFeatureListUtils {
 			try {
 				dis = new DataInputStream(stream);
 
-				for (int i=0; i<LocalFeatureList.BINARY_HEADER.length; i++) dis.readByte();
+				for (int i = 0; i < LocalFeatureList.BINARY_HEADER.length; i++)
+					dis.readByte();
 
-				//read the header
-				int nItems = dis.readInt();
-				int veclen = dis.readInt();
+				// read the header
+				final int nItems = dis.readInt();
+				final int veclen = dis.readInt();
 
-				return new int [] {nItems, veclen, 8 + LocalFeatureList.BINARY_HEADER.length};
+				return new int[] { nItems, veclen, 8 + LocalFeatureList.BINARY_HEADER.length };
 			} finally {
-				if (close && dis != null) try { dis.close(); } catch (IOException e) {}
+				if (close && dis != null)
+					try {
+						dis.close();
+					} catch (final IOException e) {
+					}
 			}
 		} else {
 			InputStreamReader fr = null;
 			BufferedReader br = null;
 			int nlines = 1;
-			boolean isBuffered = stream.markSupported();
+			final boolean isBuffered = stream.markSupported();
 			try {
-				if(isBuffered)stream.mark(1024);
+				if (isBuffered)
+					stream.mark(1024);
 				fr = new InputStreamReader(stream);
 				br = new BufferedReader(fr);
 
-				//read the header line
-				String head = br.readLine().trim();
-				if(isBuffered)stream.reset();
-				String [] h = head.split(" ");
+				// read the header line
+				final String head = br.readLine().trim();
+				if (isBuffered)
+					stream.reset();
+				final String[] h = head.split(" ");
 
-				int nItems = Integer.decode(h[0]);
+				final int nItems = Integer.decode(h[0]);
 				int veclen = 0;
-				if(h.length > 1)
+				if (h.length > 1)
 				{
 					veclen = Integer.decode(h[1]);
 				}
-				else{
+				else {
 					veclen = Integer.decode(br.readLine().trim());
 					nlines++;
 				}
 
-				return new int [] {nItems, veclen, nlines};
+				return new int[] { nItems, veclen, nlines };
 			} finally {
-				if (close && br != null) try { br.close(); } catch (IOException e) {}
-				if (close && fr != null) try { fr.close(); } catch (IOException e) {}
-			}	
+				if (close && br != null)
+					try {
+						br.close();
+					} catch (final IOException e) {
+					}
+				if (close && fr != null)
+					try {
+						fr.close();
+					} catch (final IOException e) {
+					}
+			}
 		}
 	}
 }

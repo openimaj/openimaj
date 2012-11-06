@@ -55,7 +55,14 @@ import cern.jet.random.Normal;
  * 
  * @author Jonathon Hare
  */
-public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<ByteFV>, VariableLength, Cloneable {
+public class Keypoint
+		implements
+			Serializable,
+			ScaleSpacePoint,
+			LocalFeature<KeypointLocation, ByteFV>,
+			VariableLength,
+			Cloneable
+{
 	static final long serialVersionUID = 1234554345;
 
 	/**

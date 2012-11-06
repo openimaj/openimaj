@@ -46,15 +46,15 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.LocationFilter;
 import org.openimaj.io.IOUtils;
 
-
 /**
  * An in-memory list of local features.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> the type of local feature
+ * 
+ * @param <T>
+ *            the type of local feature
  */
-public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList<T> implements LocalFeatureList<T> {
+public class MemoryLocalFeatureList<T extends LocalFeature<?, ?>> extends ArrayList<T> implements LocalFeatureList<T> {
 	private static final long serialVersionUID = 1L;
 
 	protected int cached_veclen = -1;
@@ -62,11 +62,15 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList
 	/**
 	 * Construct an empty feature list
 	 */
-	public MemoryLocalFeatureList() {}
+	public MemoryLocalFeatureList() {
+	}
 
 	/**
 	 * Construct an empty list with the given feature-vector length.
-	 * @param veclen the expected length of the feature vectors of each local feature.
+	 * 
+	 * @param veclen
+	 *            the expected length of the feature vectors of each local
+	 *            feature.
 	 */
 	public MemoryLocalFeatureList(int veclen) {
 		super();
@@ -74,22 +78,29 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList
 	}
 
 	/**
-	 * Construct a local feature list from the given collection
-	 * of local features.
-	 * @param c Collection of local feature to add to the list instance.
+	 * Construct a local feature list from the given collection of local
+	 * features.
+	 * 
+	 * @param c
+	 *            Collection of local feature to add to the list instance.
 	 */
 	public MemoryLocalFeatureList(Collection<? extends T> c) {
 		super(c);
-		if (size()>0)
+		if (size() > 0)
 			cached_veclen = this.get(0).getFeatureVector().length();
 	}
 
 	/**
-	 * Construct an empty list with the given feature-vector length and pre-allocate
-	 * the underlying array with space for initialCapacity local features. The list
-	 * will automatically grow once initialCapacity is reached.
-	 * @param veclen the expected length of the feature vectors of each local feature.
-	 * @param initialCapacity the initial capacity of the list.
+	 * Construct an empty list with the given feature-vector length and
+	 * pre-allocate the underlying array with space for initialCapacity local
+	 * features. The list will automatically grow once initialCapacity is
+	 * reached.
+	 * 
+	 * @param veclen
+	 *            the expected length of the feature vectors of each local
+	 *            feature.
+	 * @param initialCapacity
+	 *            the initial capacity of the list.
 	 */
 	public MemoryLocalFeatureList(int veclen, int initialCapacity) {
 		super(initialCapacity);
@@ -97,84 +108,112 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList
 	}
 
 	/**
-	 * Create a MemoryLocalFeatureList by reading all the local features
-	 * from the specified file.
+	 * Create a MemoryLocalFeatureList by reading all the local features from
+	 * the specified file.
 	 * 
-	 * @param <T> the type of local feature
-	 * @param keypointFile the file from which to read the features
-	 * @param clz the class of local feature
-	 * @return a new MemoryLocalFeatureList populated with features from the file
-	 * @throws IOException if an error occurs reading the file
+	 * @param <T>
+	 *            the type of local feature
+	 * @param keypointFile
+	 *            the file from which to read the features
+	 * @param clz
+	 *            the class of local feature
+	 * @return a new MemoryLocalFeatureList populated with features from the
+	 *         file
+	 * @throws IOException
+	 *             if an error occurs reading the file
 	 */
-	public static <T extends LocalFeature<?>> MemoryLocalFeatureList<T> read(File keypointFile, Class<T> clz) throws IOException {
-		boolean isBinary = IOUtils.isBinary(keypointFile, LocalFeatureList.BINARY_HEADER);
-		MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
-		
+	public static <T extends LocalFeature<?, ?>> MemoryLocalFeatureList<T> read(File keypointFile, Class<T> clz)
+			throws IOException
+	{
+		final boolean isBinary = IOUtils.isBinary(keypointFile, LocalFeatureList.BINARY_HEADER);
+		final MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
+
 		if (isBinary) {
 			LocalFeatureListUtils.readBinary(keypointFile, list, clz);
 		} else {
 			LocalFeatureListUtils.readASCII(keypointFile, list, clz);
 		}
-		
+
 		return list;
 	}
-	
+
 	/**
-	 * Create a MemoryLocalFeatureList by reading all the local features
-	 * from the specified stream.
+	 * Create a MemoryLocalFeatureList by reading all the local features from
+	 * the specified stream.
 	 * 
-	 * @param <T> the type of local feature
-	 * @param stream the input stream from which to read the features
-	 * @param clz the class of local feature
-	 * @return a new MemoryLocalFeatureList populated with features from the file
-	 * @throws IOException if an error occurs reading the file
+	 * @param <T>
+	 *            the type of local feature
+	 * @param stream
+	 *            the input stream from which to read the features
+	 * @param clz
+	 *            the class of local feature
+	 * @return a new MemoryLocalFeatureList populated with features from the
+	 *         file
+	 * @throws IOException
+	 *             if an error occurs reading the file
 	 */
-	public static <T extends LocalFeature<?>> MemoryLocalFeatureList<T> read(InputStream stream, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?, ?>> MemoryLocalFeatureList<T> read(InputStream stream, Class<T> clz)
+			throws IOException
+	{
 		return read(new BufferedInputStream(stream), clz);
 	}
-	
+
 	/**
-	 * Create a MemoryLocalFeatureList by reading all the local features
-	 * from the specified stream.
+	 * Create a MemoryLocalFeatureList by reading all the local features from
+	 * the specified stream.
 	 * 
-	 * @param <T> the type of local feature
-	 * @param stream the input stream from which to read the features
-	 * @param clz the class of local feature
-	 * @return a new MemoryLocalFeatureList populated with features from the file
-	 * @throws IOException if an error occurs reading the file
+	 * @param <T>
+	 *            the type of local feature
+	 * @param stream
+	 *            the input stream from which to read the features
+	 * @param clz
+	 *            the class of local feature
+	 * @return a new MemoryLocalFeatureList populated with features from the
+	 *         file
+	 * @throws IOException
+	 *             if an error occurs reading the file
 	 */
-	public static <T extends LocalFeature<?>> MemoryLocalFeatureList<T> read(BufferedInputStream stream, Class<T> clz) throws IOException {
-		boolean isBinary = IOUtils.isBinary(stream, LocalFeatureList.BINARY_HEADER);
-		MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
-		
+	public static <T extends LocalFeature<?, ?>> MemoryLocalFeatureList<T> read(BufferedInputStream stream, Class<T> clz)
+			throws IOException
+	{
+		final boolean isBinary = IOUtils.isBinary(stream, LocalFeatureList.BINARY_HEADER);
+		final MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
+
 		if (isBinary) {
 			LocalFeatureListUtils.readBinary(stream, list, clz);
 		} else {
 			LocalFeatureListUtils.readASCII(stream, list, clz);
 		}
-		
+
 		return list;
 	}
-	
+
 	/**
-	 * Create a MemoryLocalFeatureList by reading all the local features
-	 * from the specified {@link DataInput}. Reading of the header is skipped,
-	 * and it is assumed that the data is in binary format.
+	 * Create a MemoryLocalFeatureList by reading all the local features from
+	 * the specified {@link DataInput}. Reading of the header is skipped, and it
+	 * is assumed that the data is in binary format.
 	 * 
-	 * @param <T> the type of local feature
-	 * @param in the data input from which to read the features
-	 * @param clz the class of local feature
-	 * @return a new MemoryLocalFeatureList populated with features from the file
-	 * @throws IOException if an error occurs reading the file
+	 * @param <T>
+	 *            the type of local feature
+	 * @param in
+	 *            the data input from which to read the features
+	 * @param clz
+	 *            the class of local feature
+	 * @return a new MemoryLocalFeatureList populated with features from the
+	 *         file
+	 * @throws IOException
+	 *             if an error occurs reading the file
 	 */
-	public static <T extends LocalFeature<?>> MemoryLocalFeatureList<T> readNoHeader(DataInput in, Class<T> clz) throws IOException {
-		MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
-		
+	public static <T extends LocalFeature<?, ?>> MemoryLocalFeatureList<T> readNoHeader(DataInput in, Class<T> clz)
+			throws IOException
+	{
+		final MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
+
 		LocalFeatureListUtils.readBinary(in, list, clz);
-		
+
 		return list;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <Q> Q[] asDataArray(Q[] a) {
@@ -182,12 +221,12 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList
 			System.out.println(a.getClass());
 			a = (Q[]) Array.newInstance(a.getClass().getComponentType(), size());
 		}
-		
-		int i=0;
-		for (T t : this) {
+
+		int i = 0;
+		for (final T t : this) {
 			a[i++] = (Q) t.getFeatureVector().getVector();
 		}
-		
+
 		return a;
 	}
 
@@ -199,10 +238,10 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList
 			kl = new MemoryLocalFeatureList<T>(this);
 			Collections.shuffle(kl);
 		} else {
-			int [] rnds = RandomData.getUniqueRandomInts(nelem, 0, this.size());
+			final int[] rnds = RandomData.getUniqueRandomInts(nelem, 0, this.size());
 			kl = new MemoryLocalFeatureList<T>(cached_veclen);
 
-			for (int idx : rnds)
+			for (final int idx : rnds)
 				kl.add(this.get(idx));
 		}
 
@@ -232,7 +271,7 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList
 	@Override
 	public int vecLength() {
 		if (cached_veclen == -1) {
-			if (size()>0) {
+			if (size() > 0) {
 				cached_veclen = get(0).getFeatureVector().length();
 			}
 		}
@@ -240,16 +279,19 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList
 	}
 
 	/**
-	 * Create a new list by applying a {@link LocationFilter} to all
-	 * the elements of this list. Only items which are accepted by the 
-	 * filter will be added to the new list.
-	 * @param locationFilter the location filter
+	 * Create a new list by applying a {@link LocationFilter} to all the
+	 * elements of this list. Only items which are accepted by the filter will
+	 * be added to the new list.
+	 * 
+	 * @param locationFilter
+	 *            the location filter
 	 * @return a filtered list
 	 */
 	public MemoryLocalFeatureList<T> filter(LocationFilter locationFilter) {
-		MemoryLocalFeatureList<T> newlist = new MemoryLocalFeatureList<T>();
-		for(T t : this){
-			if(locationFilter.accept(t.getLocation())) newlist.add(t);
+		final MemoryLocalFeatureList<T> newlist = new MemoryLocalFeatureList<T>();
+		for (final T t : this) {
+			if (locationFilter.accept(t.getLocation()))
+				newlist.add(t);
 		}
 		return newlist;
 	}

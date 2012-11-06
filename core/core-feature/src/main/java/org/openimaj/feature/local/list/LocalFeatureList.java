@@ -33,38 +33,37 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.io.Writeable;
 import org.openimaj.util.list.RandomisableList;
 
-
 /**
  * An interface defining list of {@link LocalFeature}s.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  * @param <T>
  */
-public interface LocalFeatureList<T extends LocalFeature<?>> extends RandomisableList<T>, Writeable {
+public interface LocalFeatureList<T extends LocalFeature<?, ?>> extends RandomisableList<T>, Writeable {
 	/** The header used when writing LocalFeatureLists to streams and files */
 	public static final byte[] BINARY_HEADER = "KPT".getBytes();
-	
+
 	/**
-	 * Get the feature-vector data of the list as a 
-	 * two-dimensional array of data. The number of rows
-	 * will equal the number of features in the list, and the
-	 * type <Q> must be compatible with the data type of the
-	 * features themselves.
+	 * Get the feature-vector data of the list as a two-dimensional array of
+	 * data. The number of rows will equal the number of features in the list,
+	 * and the type <Q>must be compatible with the data type of the features
+	 * themselves.
 	 * 
-	 * @param <Q> the data type
-	 * @param a the array to fill
+	 * @param <Q>
+	 *            the data type
+	 * @param a
+	 *            the array to fill
 	 * @return the array, filled with the feature-vector data.
 	 */
 	public <Q> Q[] asDataArray(Q[] a);
 
 	/**
-	 * Get the length of the feature-vectors of each local feature 
-	 * if they are constant.
+	 * Get the length of the feature-vectors of each local feature if they are
+	 * constant.
 	 * 
-	 * This value is used as instantiate new local features in the
-	 * case that the local feature has a constructor that takes a 
-	 * single integer.
+	 * This value is used as instantiate new local features in the case that the
+	 * local feature has a constructor that takes a single integer.
 	 * 
 	 * @return the feature-vector length
 	 */

@@ -39,47 +39,48 @@ import org.openimaj.image.feature.local.extraction.FeatureVectorExtractor;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-
 /**
- * Abstract base class for objects that collate {@link LocalFeature}s
- * as they are extracted from {@link Octave}s. This base class holds
- * a generic list for storing the features and a reference to the
- * feature extractor instance that is responsible for extracting the
- * feature vectors.
+ * Abstract base class for objects that collate {@link LocalFeature}s as they
+ * are extracted from {@link Octave}s. This base class holds a generic list for
+ * storing the features and a reference to the feature extractor instance that
+ * is responsible for extracting the feature vectors.
  * 
- * Typically the same AbstractOctaveLocalFeatureCollector will be used
- * across all Octaves, and will thus contain all the features from
- * the image.
+ * Typically the same AbstractOctaveLocalFeatureCollector will be used across
+ * all Octaves, and will thus contain all the features from the image.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OCTAVE> the type of {@link Octave} from which features are extracted
- * @param <EXTRACTOR> the type of {@link FeatureVectorExtractor} which extracts the feature vectors
- * @param <FEATURE> the type of {@link LocalFeature} which are extracted
- * @param <IMAGE> the type of {@link Image} from which features are extracted
+ * 
+ * @param <OCTAVE>
+ *            the type of {@link Octave} from which features are extracted
+ * @param <EXTRACTOR>
+ *            the type of {@link FeatureVectorExtractor} which extracts the
+ *            feature vectors
+ * @param <FEATURE>
+ *            the type of {@link LocalFeature} which are extracted
+ * @param <IMAGE>
+ *            the type of {@link Image} from which features are extracted
  */
-public abstract class AbstractOctaveLocalFeatureCollector<
-		OCTAVE extends Octave<?,?,IMAGE>, 
-		EXTRACTOR extends FeatureVectorExtractor<?, ScaleSpaceImageExtractorProperties<IMAGE>>, 
-		FEATURE extends LocalFeature<?>, 
-		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>> 
-	implements 
-		Collector<OCTAVE, FEATURE, IMAGE> 
+public abstract class AbstractOctaveLocalFeatureCollector<OCTAVE extends Octave<?, ?, IMAGE>, EXTRACTOR extends FeatureVectorExtractor<?, ScaleSpaceImageExtractorProperties<IMAGE>>, FEATURE extends LocalFeature<?, ?>, IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
+		implements
+		Collector<OCTAVE, FEATURE, IMAGE>
 {
 	protected EXTRACTOR featureExtractor;
 	protected LocalFeatureList<FEATURE> features = new MemoryLocalFeatureList<FEATURE>();
-	
+
 	/**
-	 * Construct the AbstractOctaveLocalFeatureCollector with the
-	 * given feature extractor.
-	 * @param featureExtractor the feature extractor 
+	 * Construct the AbstractOctaveLocalFeatureCollector with the given feature
+	 * extractor.
+	 * 
+	 * @param featureExtractor
+	 *            the feature extractor
 	 */
 	public AbstractOctaveLocalFeatureCollector(EXTRACTOR featureExtractor) {
 		this.featureExtractor = featureExtractor;
 	}
-	
+
 	/**
 	 * Get the list of features collected.
+	 * 
 	 * @return the features
 	 */
 	@Override

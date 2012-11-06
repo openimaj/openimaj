@@ -41,55 +41,59 @@ import org.openimaj.feature.local.list.StreamLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 /**
- * A {@link FeatureFile} backed by a stream or file. Doesn't require
- * the list be held in memory.
+ * A {@link FeatureFile} backed by a stream or file. Doesn't require the list be
+ * held in memory.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class StreamedFeatureFile extends FeatureFile {
-	
-	private LocalFeatureList<? extends LocalFeature<?>> kpl;
+
+	private LocalFeatureList<? extends LocalFeature<?, ?>> kpl;
 	private Class<? extends Iterator<FeatureFileFeature>> iteratorType;
-	
+
 	/**
 	 * Default constructor
 	 */
-	public StreamedFeatureFile(){
+	public StreamedFeatureFile() {
 		this.iteratorType = KeypointListArrayIterator.class;
 	}
-	
+
 	/**
 	 * Construct with list
+	 * 
 	 * @param kpl
 	 */
-	public StreamedFeatureFile(LocalFeatureList<? extends LocalFeature<?>> kpl ){
+	public StreamedFeatureFile(LocalFeatureList<? extends LocalFeature<?, ?>> kpl) {
 		this();
 		this.kpl = kpl;
 	}
-	
+
 	/**
 	 * Construct with file
+	 * 
 	 * @param keypointFile
 	 * @param clz
 	 * @throws IOException
 	 */
-	public StreamedFeatureFile(File keypointFile, Class<? extends Keypoint> clz) throws IOException{
+	public StreamedFeatureFile(File keypointFile, Class<? extends Keypoint> clz) throws IOException {
 		this();
 		this.kpl = FileLocalFeatureList.read(keypointFile, clz);
 	}
-	
+
 	/**
 	 * Construct with file
+	 * 
 	 * @param keypointFile
 	 * @throws IOException
 	 */
-	public StreamedFeatureFile(File keypointFile) throws IOException{
-		
+	public StreamedFeatureFile(File keypointFile) throws IOException {
+
 		this(keypointFile, Keypoint.class);
 	}
-	
+
 	/**
 	 * Construct with stream
+	 * 
 	 * @param stream
 	 * @throws IOException
 	 */
@@ -97,9 +101,10 @@ public class StreamedFeatureFile extends FeatureFile {
 		this();
 		this.kpl = StreamLocalFeatureList.read(stream, Keypoint.class);
 	}
-	
+
 	/**
 	 * Construct with stream
+	 * 
 	 * @param stream
 	 * @param clz
 	 * @throws IOException
@@ -108,39 +113,42 @@ public class StreamedFeatureFile extends FeatureFile {
 		this();
 		this.kpl = StreamLocalFeatureList.read(stream, clz);
 	}
-	
+
 	/**
 	 * Set the iterator type
+	 * 
 	 * @param cls
 	 */
-	public void setIteratorType(Class<? extends Iterator<FeatureFileFeature>> cls){
+	public void setIteratorType(Class<? extends Iterator<FeatureFileFeature>> cls) {
 		this.iteratorType = cls;
 	}
-	
+
 	@Override
-	public Iterator<FeatureFileFeature> iterator(){
+	public Iterator<FeatureFileFeature> iterator() {
 		try {
 			return this.iteratorType.getConstructor(LocalFeatureList.class).newInstance(kpl);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	@Override
-	public int size() {
-		return kpl.size();
-	}
-	
-	@Override
-	public FeatureFileFeature get(int index) {
-		int done = 0;
-		for(FeatureFileFeature fff : this){
-			if(done++ == index) return fff;
 		}
 		return null;
 	}
 
 	@Override
-	public void close() {}
+	public int size() {
+		return kpl.size();
+	}
+
+	@Override
+	public FeatureFileFeature get(int index) {
+		int done = 0;
+		for (final FeatureFileFeature fff : this) {
+			if (done++ == index)
+				return fff;
+		}
+		return null;
+	}
+
+	@Override
+	public void close() {
+	}
 }

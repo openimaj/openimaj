@@ -38,72 +38,78 @@ import java.util.Scanner;
 import org.openimaj.feature.FeatureVector;
 
 /**
- * A basic implementation of a {@link LocalFeature} that internally
- * holds references to a {@link FeatureVector} and {@link Location}. 
+ * A basic implementation of a {@link LocalFeature} that internally holds
+ * references to a {@link FeatureVector} and {@link Location}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <L> The type of {@link Location}
- * @param <F> The type of {@link FeatureVector}
+ * 
+ * @param <L>
+ *            The type of {@link Location}
+ * @param <F>
+ *            The type of {@link FeatureVector}
  */
-public class LocalFeatureImpl<L extends Location, F extends FeatureVector> implements LocalFeature<F> {
+public class LocalFeatureImpl<L extends Location, F extends FeatureVector> implements LocalFeature<L, F> {
 	/** The {@link Location} of the local feature */
 	public L location;
-	
+
 	/** The {@link FeatureVector} of the local feature */
 	public F feature;
 
 	/**
 	 * Construct the LocalFeatureImpl with the given {@link Location} and
 	 * {@link FeatureVector}.
-	 * @param location the location
-	 * @param feature the feature vector
+	 * 
+	 * @param location
+	 *            the location
+	 * @param feature
+	 *            the feature vector
 	 */
 	public LocalFeatureImpl(L location, F feature) {
 		this.location = location;
 		this.feature = feature;
 	}
-	
+
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		location.writeBinary(out);
 		feature.writeBinary(out);
 	}
-	
+
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		location.writeASCII(out);
 		feature.writeASCII(out);
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		location.readBinary(in);
 		feature.readBinary(in);
 	}
-	
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		location.readASCII(in);
 		feature.readASCII(in);
 	}
-	
+
 	@Override
 	public byte[] binaryHeader() {
 		return ("LFVI" + "." + new String(location.binaryHeader()) + "." + new String(feature.asciiHeader())).getBytes();
 	}
-	
+
 	@Override
 	public String asciiHeader() {
 		return this.getClass().getName() + "." + location.asciiHeader() + "." + feature.asciiHeader();
 	}
-	
+
 	@Override
 	public F getFeatureVector() {
 		return feature;
 	}
+
 	@Override
-	public Location getLocation() {
+	public L getLocation() {
 		return location;
 	}
 }

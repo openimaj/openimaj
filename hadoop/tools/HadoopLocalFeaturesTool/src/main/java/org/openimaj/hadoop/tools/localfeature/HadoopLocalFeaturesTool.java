@@ -54,55 +54,58 @@ import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.io.IOUtils;
 
-
 public class HadoopLocalFeaturesTool extends Configured implements Tool {
 	private static final String ARGS_KEY = "clusterquantiser.args";
-	
+
 	static class JKeypointMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
 		public DoGSIFTEngine egn = null;
 		private HadoopLocalFeaturesToolOptions options;
 
-		public JKeypointMapper() {}
-		
+		public JKeypointMapper() {
+		}
+
 		@Override
-		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)throws IOException, InterruptedException{
+		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException,
+				InterruptedException
+		{
 			try {
-				Field f = TaskInputOutputContext.class.getDeclaredField("output");
+				final Field f = TaskInputOutputContext.class.getDeclaredField("output");
 				f.setAccessible(true);
 				System.out.println("output" + f.get(context));
 				System.out.println("outputClass" + f.get(context).getClass());
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
-			
-			InputStream ios = null;
-			try{
+
+			final InputStream ios = null;
+			try {
 				options = new HadoopLocalFeaturesToolOptions(context.getConfiguration().getStrings(ARGS_KEY));
 				options.prepare();
 				egn = new DoGSIFTEngine();
+			} finally {
+				if (ios != null)
+					ios.close();
 			}
-			finally{
-				if(ios!=null) ios.close();
-			}
-			
+
 		}
-		
+
 		@Override
-		protected void map(Text key, BytesWritable value, Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws java.io.IOException, InterruptedException 
+		protected void
+				map(Text key, BytesWritable value, Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)
+						throws java.io.IOException, InterruptedException
 		{
-			try{
+			try {
 				System.err.println("Generating Keypoint for image: " + key);
 				System.err.println("... Keypoint mode: " + options.getMode());
 				ByteArrayOutputStream baos = null;
-				LocalFeatureList<? extends LocalFeature<?>> kpl = options.getMode().extract(value.getBytes());
+				final LocalFeatureList<? extends LocalFeature<?, ?>> kpl = options.getMode().extract(value.getBytes());
 
-				
 				System.err.println("... Keypoints generated! Found: " + kpl.size());
-				if(options.dontwrite){
+				if (options.dontwrite) {
 					System.out.println("... Not Writing");
 					return;
 				}
-				
+
 				System.err.println("... Writing ");
 				baos = new ByteArrayOutputStream();
 				if (options.isAsciiMode()) {
@@ -112,34 +115,35 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 				}
 				context.write(key, new BytesWritable(baos.toByteArray()));
 				System.err.println("... Done!");
-			}
-			catch(Throwable e){
+			} catch (final Throwable e) {
 				System.err.println("... Problem with this image! Keeping Calm. Carrying on.");
 				e.printStackTrace(System.err);
 			}
 		}
 	}
-	
+
 	@Override
 	public int run(String[] args) throws Exception {
-		HadoopLocalFeaturesToolOptions options = new HadoopLocalFeaturesToolOptions(args,true);
+		final HadoopLocalFeaturesToolOptions options = new HadoopLocalFeaturesToolOptions(args, true);
 		options.prepare();
-//		String clusterFileString = options.getInputString();
-		Path[] paths = options.getInputPaths();
-		TextBytesSequenceFileUtility util = new TextBytesSequenceFileUtility(paths[0].toUri() , true);
-		Map<String,String> metadata = new HashMap<String,String>();
-		if (util.getUUID() != null) metadata.put(MetadataConfiguration.UUID_KEY, util.getUUID());
-		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/siftkeypoints-" + (options.isAsciiMode() ? "ascii" : "bin" ));
-		metadata.put("clusterquantiser.filetype", (options.isAsciiMode() ? "ascii" : "bin" ));
-		
-		Job job = TextBytesJobUtil.createJob(paths, options.getOutputPath(), metadata,this.getConf());
+		// String clusterFileString = options.getInputString();
+		final Path[] paths = options.getInputPaths();
+		final TextBytesSequenceFileUtility util = new TextBytesSequenceFileUtility(paths[0].toUri(), true);
+		final Map<String, String> metadata = new HashMap<String, String>();
+		if (util.getUUID() != null)
+			metadata.put(MetadataConfiguration.UUID_KEY, util.getUUID());
+		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/siftkeypoints-"
+				+ (options.isAsciiMode() ? "ascii" : "bin"));
+		metadata.put("clusterquantiser.filetype", (options.isAsciiMode() ? "ascii" : "bin"));
+
+		final Job job = TextBytesJobUtil.createJob(paths, options.getOutputPath(), metadata, this.getConf());
 		job.setJarByClass(this.getClass());
-		options.mapperModeOp.prepareJobMapper(job,JKeypointMapper.class);
+		options.mapperModeOp.prepareJobMapper(job, JKeypointMapper.class);
 		job.getConfiguration().setStrings(ARGS_KEY, args);
 		job.setNumReduceTasks(0);
-		
+
 		SequenceFileOutputFormat.setCompressOutput(job, false);
-		long start,end;
+		long start, end;
 		start = System.currentTimeMillis();
 		job.waitForCompletion(true);
 		end = System.currentTimeMillis();

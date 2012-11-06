@@ -34,26 +34,30 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 
-public class FImagePyramidEngine<FEATURE extends LocalFeature<?>, OPTIONS extends FImagePyramidEngineOptions<FEATURE>> implements Engine<FEATURE, FImage>{
+public class FImagePyramidEngine<FEATURE extends LocalFeature<?, ?>, OPTIONS extends FImagePyramidEngineOptions<FEATURE>>
+		implements
+			Engine<FEATURE, FImage>
+{
 	protected OPTIONS options;
-	
-	public FImagePyramidEngine() {}
-	
+
+	public FImagePyramidEngine() {
+	}
+
 	public FImagePyramidEngine(OPTIONS options) {
 		this.options = options;
 	}
-	
+
 	@Override
 	public LocalFeatureList<FEATURE> findFeatures(FImage image) {
 		options.finder.setOctaveInterestPointListener(options.collector);
 		options.setOctaveProcessor(options.finder);
-		
-		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
+
+		final GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
 		pyr.process(image);
-		
+
 		return options.collector.getFeatures();
 	}
-	
+
 	public FImagePyramidEngineOptions<FEATURE> getOptions() {
 		return options;
 	}

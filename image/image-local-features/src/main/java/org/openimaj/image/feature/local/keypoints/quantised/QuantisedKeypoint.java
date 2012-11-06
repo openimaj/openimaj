@@ -35,46 +35,50 @@ import org.openimaj.math.geometry.point.Point2d;
 
 import Jama.Matrix;
 
-
-public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> implements Point2d{
+public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> implements Point2d {
 	public QuantisedKeypoint() {
 		super(new KeypointLocation(0, 0, 0, 0), 0);
 	}
-	
+
 	public QuantisedKeypoint(KeypointLocation loc) {
 		super(loc, 0);
 	}
-	
+
 	public QuantisedKeypoint(KeypointLocation loc, int id) {
 		super(loc, id);
 	}
 
 	@Override
 	public Float getOrdinate(int dimension) {
-		if (dimension == 0) return location.x;
-		if (dimension == 1) return location.y;
-		if (dimension == 2) return location.scale;
+		if (dimension == 0)
+			return location.x;
+		if (dimension == 1)
+			return location.y;
+		if (dimension == 2)
+			return location.scale;
 		return null;
 	}
 
 	@Override
-	public int getDimensions() { return 3; }
-		
+	public int getDimensions() {
+		return 3;
+	}
+
 	@Override
 	public float getX() {
 		return location.x;
 	}
-	
+
 	@Override
 	public float getY() {
 		return location.y;
 	}
-	
+
 	@Override
 	public void setX(float x) {
 		this.location.x = x;
 	}
-	
+
 	@Override
 	public void setY(float y) {
 		this.location.y = y;
@@ -109,5 +113,5 @@ public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> i
 	public void translate(Point2d v) {
 		location.translate(v);
 	}
-	
+
 }

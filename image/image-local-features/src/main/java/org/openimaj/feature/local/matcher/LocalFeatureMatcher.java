@@ -35,32 +35,35 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.util.pair.Pair;
 
 /**
- * Interface for objects able to match sets of local features against
- * each other.
+ * Interface for objects able to match sets of local features against each
+ * other.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <T> 
- *
+ * @param <T>
+ * 
  */
-public interface LocalFeatureMatcher<T extends LocalFeature<?>> {
+public interface LocalFeatureMatcher<T extends LocalFeature<?, ?>> {
 	/**
-	 * Set the features that represent the database to match
-	 * queries against 
-	 * @param modelkeys database of features
+	 * Set the features that represent the database to match queries against
+	 * 
+	 * @param modelkeys
+	 *            database of features
 	 */
 	public void setModelFeatures(List<T> modelkeys);
-	
+
 	/**
-	 * Attempt to find matches between the model features from the
-	 * database, and given query features.
+	 * Attempt to find matches between the model features from the database, and
+	 * given query features.
 	 * 
-	 * @param queryfeatures features from the query
+	 * @param queryfeatures
+	 *            features from the query
 	 * @return whether matches were found
 	 */
 	public boolean findMatches(List<T> queryfeatures);
-		
+
 	/**
 	 * Get the matches detected by the underlying algorithm
+	 * 
 	 * @return the matches
 	 */
 	public List<Pair<T>> getMatches();

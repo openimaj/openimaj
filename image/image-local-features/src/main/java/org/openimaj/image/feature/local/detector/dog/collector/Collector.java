@@ -38,24 +38,25 @@ import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointList
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * A {@link Collector} gathers all the local features from
- * the interest points detected in a single {@link Octave}.
+ * A {@link Collector} gathers all the local features from the interest points
+ * detected in a single {@link Octave}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OCTAVE> Type of underlying octave
- * @param <FEATURE> Type of underlying local feature
- * @param <IMAGE> Type of underlying image
+ * 
+ * @param <OCTAVE>
+ *            Type of underlying octave
+ * @param <FEATURE>
+ *            Type of underlying local feature
+ * @param <IMAGE>
+ *            Type of underlying image
  */
-public interface Collector<
-		OCTAVE extends Octave<?,?,IMAGE>,  
-		FEATURE extends LocalFeature<?>, 
-		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>>
-	extends 
-		OctaveInterestPointListener<OCTAVE, IMAGE> 
-{	
+public interface Collector<OCTAVE extends Octave<?, ?, IMAGE>, FEATURE extends LocalFeature<?, ?>, IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
+		extends
+		OctaveInterestPointListener<OCTAVE, IMAGE>
+{
 	/**
 	 * Get the list of features collected.
+	 * 
 	 * @return the features
 	 */
 	public LocalFeatureList<FEATURE> getFeatures();

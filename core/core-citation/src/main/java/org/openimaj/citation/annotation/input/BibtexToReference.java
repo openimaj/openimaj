@@ -45,29 +45,30 @@ import org.openimaj.citation.annotation.output.StandardFormatters;
  * Helper tool to convert bibtex to {@link Reference} annotations.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class BibtexToReference {
 	/**
-	 * Helper tool to convert bibtex to {@link Reference} annotations.
-	 * Reads from stdin, writes to stdout.
+	 * Helper tool to convert bibtex to {@link Reference} annotations. Reads
+	 * from stdin, writes to stdout.
 	 * 
-	 * @param args not used
-	 * @throws IOException 
+	 * @param args
+	 *            not used
+	 * @throws IOException
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws IOException, ParseException {
 		System.out.println("Enter bibtex record(s), followed by ctrl-d: ");
-		
-		Reader reader = new InputStreamReader(System.in);
-		
-		BibTeXParser parser = new BibTeXParser();
-		BibTeXDatabase database = parser.parse(reader);
-		
+
+		final Reader reader = new InputStreamReader(System.in);
+
+		final BibTeXParser parser = new BibTeXParser();
+		final BibTeXDatabase database = parser.parse(reader);
+
 		System.out.println();
-		
-		for (BibTeXEntry entry : database.getEntries().values()) {
-			Reference r = MockReference.makeReference(entry);
+
+		for (final BibTeXEntry entry : database.getEntries().values()) {
+			final Reference r = MockReference.makeReference(entry);
 			System.out.println(StandardFormatters.REFERENCE_ANNOTATION.format(r));
 		}
 	}

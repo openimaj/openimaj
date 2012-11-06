@@ -29,7 +29,6 @@
  */
 package org.openimaj.feature.local.matcher;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,21 +37,22 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.util.pair.Pair;
 
 /**
- * Basic local feature matcher. Matches interest points by finding closest
- * two interest points to target and checking whether the distance
- * between the two matches is sufficiently large.
+ * Basic local feature matcher. Matches interest points by finding closest two
+ * interest points to target and checking whether the distance between the two
+ * matches is sufficiently large.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <T> 
+ * @param <T>
  */
-public class BasicMatcher<T extends LocalFeature<?>> implements LocalFeatureMatcher<T> {
+public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureMatcher<T> {
 	protected List<T> modelKeypoints;
-	protected List <Pair<T>> matches;
+	protected List<Pair<T>> matches;
 	protected int thresh = 8;
-	
+
 	/**
-	 * Initialise the matcher setting the threshold which the difference between the scores of
-	 * the top two best matches must differ in order to count the first as a good match.
+	 * Initialise the matcher setting the threshold which the difference between
+	 * the scores of the top two best matches must differ in order to count the
+	 * first as a good match.
 	 * 
 	 * @param threshold
 	 */
@@ -61,7 +61,7 @@ public class BasicMatcher<T extends LocalFeature<?>> implements LocalFeatureMatc
 		matches = new ArrayList<Pair<T>>();
 		thresh = threshold;
 	}
-	
+
 	/**
 	 * @return List of pairs of matching keypoints
 	 */
@@ -69,60 +69,61 @@ public class BasicMatcher<T extends LocalFeature<?>> implements LocalFeatureMatc
 	public List<Pair<T>> getMatches() {
 		return matches;
 	}
-	
+
 	/**
-	 * Given a pair of images and their keypoints, pick the first keypoint
-	 * from one image and find its closest match in the second set of
-	 * keypoints.  Then write the result to a file.
+	 * Given a pair of images and their keypoints, pick the first keypoint from
+	 * one image and find its closest match in the second set of keypoints. Then
+	 * write the result to a file.
 	 */
 	@Override
 	public boolean findMatches(List<T> keys1)
 	{
 		matches = new ArrayList<Pair<T>>();
-		
-	    /* Match the keys in list keys1 to their best matches in keys2.
-	     */
-	    for (T k : keys1) {
-	        T match = checkForMatch(k, modelKeypoints);  
-	        
-	        if (match != null) {
-	        		matches.add(new Pair<T>(k, match));
-	        }
-	    }
-	    	    
-	    return true;
+
+		/*
+		 * Match the keys in list keys1 to their best matches in keys2.
+		 */
+		for (final T k : keys1) {
+			final T match = checkForMatch(k, modelKeypoints);
+
+			if (match != null) {
+				matches.add(new Pair<T>(k, match));
+			}
+		}
+
+		return true;
 	}
 
-
 	/**
-	 * This searches through the keypoints in klist for the two closest
-	 * matches to key.  If the closest is less than 0.6 times distance to
-	 * second closest, then return the closest match.  Otherwise, return
-	 * NULL.
+	 * This searches through the keypoints in klist for the two closest matches
+	 * to key. If the closest is less than 0.6 times distance to second closest,
+	 * then return the closest match. Otherwise, return NULL.
 	 */
 	protected T checkForMatch(T query, List<T> features)
 	{
-	    double distsq1 = Double.MAX_VALUE, distsq2 = Double.MAX_VALUE;
-	    T minkey = null;
-	    
-	    //find two closest matches
-	    for (T target : features) {
-	    	double dsq = target.getFeatureVector().asDoubleFV().compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.EUCLIDEAN);
-	        
-	        if (dsq < distsq1) {
-	            distsq2 = distsq1;
-	            distsq1 = dsq;
-	            minkey = target;
-	        } else if (dsq < distsq2) {
-	            distsq2 = dsq;
-	        }
-	    }
-	    
-	    // check the distance against the threshold
-	    if (10 * 10 * distsq1 < thresh * thresh * distsq2) {
-	        return minkey;
-	    }
-	    else return null;
+		double distsq1 = Double.MAX_VALUE, distsq2 = Double.MAX_VALUE;
+		T minkey = null;
+
+		// find two closest matches
+		for (final T target : features) {
+			final double dsq = target.getFeatureVector().asDoubleFV()
+					.compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.EUCLIDEAN);
+
+			if (dsq < distsq1) {
+				distsq2 = distsq1;
+				distsq1 = dsq;
+				minkey = target;
+			} else if (dsq < distsq2) {
+				distsq2 = dsq;
+			}
+		}
+
+		// check the distance against the threshold
+		if (10 * 10 * distsq1 < thresh * thresh * distsq2) {
+			return minkey;
+		}
+		else
+			return null;
 	}
 
 	@Override

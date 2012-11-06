@@ -41,53 +41,66 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.io.IOUtils;
 import org.openimaj.util.list.AbstractFileBackedList;
 
-
 /**
  * A {@link LocalFeatureList} backed by a file. Data is only read as necessary.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> the type of local feature
+ * 
+ * @param <T>
+ *            the type of local feature
  */
-public class FileLocalFeatureList<T extends LocalFeature<?>> extends AbstractFileBackedList<T> implements LocalFeatureList<T>, Cloneable {
+public class FileLocalFeatureList<T extends LocalFeature<?, ?>> extends AbstractFileBackedList<T>
+		implements
+		LocalFeatureList<T>,
+		Cloneable
+{
 	protected final int veclen;
-	
-	protected FileLocalFeatureList(int size, int veclen, boolean isBinary, int headerLength, int recordLength, File file, Class<T> clz) {
+
+	protected FileLocalFeatureList(int size, int veclen, boolean isBinary, int headerLength, int recordLength, File file,
+			Class<T> clz)
+	{
 		super(size, isBinary, headerLength, recordLength, file, clz);
 		this.veclen = veclen;
 	}
-	
+
 	/***
 	 * 
-	 * Read a file containing a set of local features of a type clz. It is assumed that clz can instantiate itself either given a vec length
-	 * or no parameters and furthermore, that this instantiated instance can write itself, even when filled with no other data. 
+	 * Read a file containing a set of local features of a type clz. It is
+	 * assumed that clz can instantiate itself either given a vec length or no
+	 * parameters and furthermore, that this instantiated instance can write
+	 * itself, even when filled with no other data.
 	 * 
-	 * @param <T> the local feature class
-	 * @param keypointFile the file
-	 * @param clz the local feature class
+	 * @param <T>
+	 *            the local feature class
+	 * @param keypointFile
+	 *            the file
+	 * @param clz
+	 *            the local feature class
 	 * @return a list of local feature backed by the file
-	 * @throws IOException if a problem occurs reading the file
+	 * @throws IOException
+	 *             if a problem occurs reading the file
 	 */
-	public static <T extends LocalFeature<?>> FileLocalFeatureList<T> read(File keypointFile, Class<T> clz) throws IOException {
-		boolean isBinary = IOUtils.isBinary(keypointFile, LocalFeatureList.BINARY_HEADER);
-				
-		//read header
-		int [] header = LocalFeatureListUtils.readHeader(keypointFile, isBinary);
-		int size = header[0];
-		int veclen = header[1];
-		int headerLength = header[2];
-		
-		T instance = LocalFeatureListUtils.newInstance(clz,veclen);
-		
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	public static <T extends LocalFeature<?, ?>> FileLocalFeatureList<T> read(File keypointFile, Class<T> clz)
+			throws IOException
+	{
+		final boolean isBinary = IOUtils.isBinary(keypointFile, LocalFeatureList.BINARY_HEADER);
+
+		// read header
+		final int[] header = LocalFeatureListUtils.readHeader(keypointFile, isBinary);
+		final int size = header[0];
+		final int veclen = header[1];
+		final int headerLength = header[2];
+
+		final T instance = LocalFeatureListUtils.newInstance(clz, veclen);
+
+		final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		instance.writeBinary(new DataOutputStream(buffer));
-		
-		
-		int recordLength = buffer.toByteArray().length ;
-		
+
+		final int recordLength = buffer.toByteArray().length;
+
 		return new FileLocalFeatureList<T>(size, veclen, isBinary, headerLength, recordLength, keypointFile, clz);
 	}
-		
+
 	@Override
 	public int vecLength() {
 		return veclen;
@@ -119,20 +132,22 @@ public class FileLocalFeatureList<T extends LocalFeature<?>> extends AbstractFil
 		if (a.length < size()) {
 			a = (Q[]) Array.newInstance(a.getClass().getComponentType(), size());
 		}
-		
-		int i=0;
-		for (T t : this) {
+
+		int i = 0;
+		for (final T t : this) {
 			a[i++] = (Q) t.getFeatureVector().getVector();
 		}
-		
+
 		return a;
 	}
 
 	@Override
-	protected AbstractFileBackedList<T> newInstance(int newSize, boolean isBinary, int newHeaderLength, int recordLength, File file) {
+	protected AbstractFileBackedList<T> newInstance(int newSize, boolean isBinary, int newHeaderLength, int recordLength,
+			File file)
+	{
 		return new FileLocalFeatureList<T>(newSize, veclen, isBinary, newHeaderLength, recordLength, file, clz);
 	}
-	
+
 	@Override
 	protected T newElementInstance() {
 		return LocalFeatureListUtils.newInstance(clz, this.veclen);

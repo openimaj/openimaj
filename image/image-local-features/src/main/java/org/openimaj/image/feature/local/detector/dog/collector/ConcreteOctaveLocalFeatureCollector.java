@@ -50,47 +50,49 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * scale coordinates.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OCTAVE> the underlying {@link Octave} type
- * @param <FE> the underlying {@link FeatureVectorExtractor} type
- * @param <IMAGE> the image type
+ * 
+ * @param <OCTAVE>
+ *            the underlying {@link Octave} type
+ * @param <FE>
+ *            the underlying {@link FeatureVectorExtractor} type
+ * @param <IMAGE>
+ *            the image type
  */
-public class ConcreteOctaveLocalFeatureCollector<
-		OCTAVE extends Octave<?,?,IMAGE>, 
-		FE extends FeatureVectorExtractor<?, ScaleSpaceImageExtractorProperties<IMAGE>>, 
-		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>> 
-	extends 
-		AbstractOctaveLocalFeatureCollector<OCTAVE, FE, LocalFeature<?>, IMAGE> 
+public class ConcreteOctaveLocalFeatureCollector<OCTAVE extends Octave<?, ?, IMAGE>, FE extends FeatureVectorExtractor<?, ScaleSpaceImageExtractorProperties<IMAGE>>, IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
+		extends
+		AbstractOctaveLocalFeatureCollector<OCTAVE, FE, LocalFeature<?, ?>, IMAGE>
 {
 	protected ScaleSpaceImageExtractorProperties<IMAGE> extractionProperties = new ScaleSpaceImageExtractorProperties<IMAGE>();
-	
+
 	/**
 	 * Construct with the given feature extractor.
-	 * @param featureExtractor the feature extractor.
+	 * 
+	 * @param featureExtractor
+	 *            the feature extractor.
 	 */
 	public ConcreteOctaveLocalFeatureCollector(FE featureExtractor) {
 		super(featureExtractor);
 	}
-		
+
 	@Override
 	public void foundInterestPoint(OctaveInterestPointFinder<OCTAVE, IMAGE> finder, float x, float y, float octaveScale) {
-		int currentScaleIndex = finder.getCurrentScaleIndex();
+		final int currentScaleIndex = finder.getCurrentScaleIndex();
 		extractionProperties.image = finder.getOctave().images[currentScaleIndex];
 		extractionProperties.scale = octaveScale;
 		extractionProperties.x = x;
 		extractionProperties.y = y;
-		
-		float octSize = finder.getOctave().octaveSize;
-		
+
+		final float octSize = finder.getOctave().octaveSize;
+
 		addFeature(octSize * x, octSize * y, octSize * octaveScale);
 	}
-	
+
 	protected void addFeature(float imx, float imy, float imscale) {
-		FeatureVector[] fvs = featureExtractor.extractFeature(extractionProperties);
-		
-		Location loc = new ScaleSpaceLocation(imx, imy, imscale);
-		
-		for (FeatureVector fv : fvs) {
+		final FeatureVector[] fvs = featureExtractor.extractFeature(extractionProperties);
+
+		final Location loc = new ScaleSpaceLocation(imx, imy, imscale);
+
+		for (final FeatureVector fv : fvs) {
 			features.add(new LocalFeatureImpl<Location, FeatureVector>(loc, fv));
 		}
 	}

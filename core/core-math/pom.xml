@@ -117,7 +117,18 @@
       <groupId>gov.sandia.foundry</groupId>
       <artifactId>gov-sandia-cognition-common-core</artifactId>
       <version>3.3.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.thoughtworks.xstream</groupId>
+					<artifactId>xstream</artifactId>
+				</exclusion>
+			</exclusions>
     </dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.3</version>
+		</dependency>
     <dependency>
       <groupId>gov.sandia.foundry</groupId>
       <artifactId>gov-sandia-cognition-common-data</artifactId>

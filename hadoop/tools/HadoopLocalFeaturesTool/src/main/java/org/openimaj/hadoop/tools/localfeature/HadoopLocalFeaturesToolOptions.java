@@ -43,7 +43,6 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool.JKeypointMapper;
 import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesToolOptions.MapperMode.MapperModeOp;
@@ -51,7 +50,7 @@ import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.localfeature.LocalFeaturesToolOptions;
 
 public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
-	enum MapperMode  implements CmdLineOptionsProvider {
+	static enum MapperMode implements CmdLineOptionsProvider {
 		STANDARD {
 			@Override
 			public MapperModeOp getOptions() {
@@ -59,20 +58,26 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 					@Override
 					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
 						job.setMapperClass(mapperClass);
-					}		
+					}
 				};
 			}
 		},
-		MULTITHREAD{
+		MULTITHREAD {
 			@Override
 			public MapperModeOp getOptions() {
 				return new MapperModeOp() {
-					@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
+					@Option(
+							name = "--threads",
+							aliases = "-j",
+							required = false,
+							usage = "Use NUMBER threads per mapper. defaults n processors.",
+							metaVar = "NUMBER")
 					private int concurrency = Runtime.getRuntime().availableProcessors();
 
 					@Override
 					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
-						if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+						if (concurrency <= 0)
+							concurrency = Runtime.getRuntime().availableProcessors();
 
 						job.setMapperClass(MultithreadedMapper.class);
 						MultithreadedMapper.setNumberOfThreads(job, concurrency);
@@ -81,8 +86,7 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 					}
 				};
 			}
-		}
-		;
+		};
 
 		@Override
 		public abstract MapperModeOp getOptions();
@@ -94,19 +98,35 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 
 	private String[] args;
 
-	@Option(name="--remove", aliases="-rm", required=false, usage="Remove the existing output location if it exists.", metaVar="BOOLEAN")
+	@Option(
+			name = "--remove",
+			aliases = "-rm",
+			required = false,
+			usage = "Remove the existing output location if it exists.",
+			metaVar = "BOOLEAN")
 	private boolean replace = false;
 
-	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
+	@Option(
+			name = "--mapper-mode",
+			aliases = "-mm",
+			required = false,
+			usage = "Choose a mapper mode.",
+			handler = ProxyOptionHandler.class)
 	MapperMode mapperMode = MapperMode.STANDARD;
 	MapperModeOp mapperModeOp;
 
-	@Option(name="--dont-write", aliases="-dr", required=false, usage="Don't actually emmit. Only useful for testing.", metaVar="BOOLEAN") boolean dontwrite = false;
+	@Option(
+			name = "--dont-write",
+			aliases = "-dr",
+			required = false,
+			usage = "Don't actually emmit. Only useful for testing.",
+			metaVar = "BOOLEAN")
+	boolean dontwrite = false;
 
 	private boolean beforeMap;
 
 	public HadoopLocalFeaturesToolOptions(String[] args) {
-		this(args,false);
+		this(args, false);
 	}
 
 	public HadoopLocalFeaturesToolOptions(String[] args, boolean beforeMap) {
@@ -114,12 +134,12 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 		this.beforeMap = beforeMap;
 	}
 
-	public void prepare(){
-		CmdLineParser parser = new CmdLineParser(this);
+	public void prepare() {
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
 			this.validate();
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
 			parser.printUsage(System.err);
@@ -130,26 +150,27 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 	}
 
 	private void validate() {
-		if(replace && beforeMap){
+		if (replace && beforeMap) {
 			try {
-				URI outuri = SequenceFileUtility.convertToURI(this.getOutputString());
-				FileSystem fs = getFileSystem(outuri);
+				final URI outuri = SequenceFileUtility.convertToURI(this.getOutputString());
+				final FileSystem fs = getFileSystem(outuri);
 				fs.delete(new Path(outuri.toString()), true);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 
 			}
 		}
 	}
 
 	public static FileSystem getFileSystem(URI uri) throws IOException {
-		Configuration config = new Configuration();
+		final Configuration config = new Configuration();
 		FileSystem fs = FileSystem.get(uri, config);
-		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
+		if (fs instanceof LocalFileSystem)
+			fs = ((LocalFileSystem) fs).getRaw();
 		return fs;
 	}
 
 	public Path[] getInputPaths() throws IOException {
-		Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getInputString(), "part");
+		final Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getInputString(), "part");
 		return sequenceFiles;
 	}
 

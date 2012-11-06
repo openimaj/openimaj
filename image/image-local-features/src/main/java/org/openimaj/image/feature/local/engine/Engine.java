@@ -45,7 +45,7 @@ import org.openimaj.image.Image;
  * @param <IMAGE>
  *            Type of image
  */
-public interface Engine<FEATURE extends LocalFeature<?>, IMAGE extends Image<?, IMAGE>> {
+public interface Engine<FEATURE extends LocalFeature<?, ?>, IMAGE extends Image<?, IMAGE>> {
 	/**
 	 * Find local features in the given image and return them.
 	 * 

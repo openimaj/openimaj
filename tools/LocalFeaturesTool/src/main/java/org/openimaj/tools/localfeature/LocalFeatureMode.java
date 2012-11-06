@@ -141,12 +141,12 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		 * @return the features
 		 * @throws IOException
 		 */
-		public abstract LocalFeatureList<? extends LocalFeature<?>> extract(byte[] image) throws IOException;
+		public abstract LocalFeatureList<? extends LocalFeature<?, ?>> extract(byte[] image) throws IOException;
 
 		/**
 		 * @return the actual type of LocalFeature produced.
 		 */
-		public abstract Class<? extends LocalFeature<?>> getFeatureClass();
+		public abstract Class<? extends LocalFeature<?, ?>> getFeatureClass();
 
 		private LocalFeatureModeOp(LocalFeatureMode mode) {
 			this.mode = mode;
@@ -200,7 +200,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 
 		@Override
-		public Class<? extends LocalFeature<?>> getFeatureClass() {
+		public Class<? extends LocalFeature<?, ?>> getFeatureClass() {
 			return Keypoint.class;
 		}
 	}
@@ -226,7 +226,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 
 		@Override
-		public Class<? extends LocalFeature<?>> getFeatureClass() {
+		public Class<? extends LocalFeature<?, ?>> getFeatureClass() {
 			return MinMaxKeypoint.class;
 		}
 	}
@@ -263,7 +263,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 
 		@Override
-		public Class<? extends LocalFeature<?>> getFeatureClass() {
+		public Class<? extends LocalFeature<?, ?>> getFeatureClass() {
 			return Keypoint.class;
 		}
 	}
@@ -301,7 +301,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 
 		@Override
-		public Class<? extends LocalFeature<?>> getFeatureClass() {
+		public Class<? extends LocalFeature<?, ?>> getFeatureClass() {
 			return AffineSimulationKeypoint.class;
 		}
 	}
