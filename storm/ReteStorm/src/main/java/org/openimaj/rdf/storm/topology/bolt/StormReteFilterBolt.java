@@ -42,6 +42,7 @@ import backtype.storm.tuple.Values;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.graph.TripleMatch;
 import com.hp.hpl.jena.mem.GraphMem;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
@@ -76,6 +77,13 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 	public StormReteFilterBolt(Rule rule) {
 		super(rule);
 	}
+	
+	private TripleMatch asExtendedTripleMatch(TriplePattern tp){
+		return new Triple(tp.getSubject().isVariable() ? null : tp.getSubject(),
+							   tp.getPredicate().isVariable() ? null : tp.getPredicate(),
+							   tp.getObject().isVariable() ? null
+									: tp.getObject().isLiteral() && tp.getObject().getLiteralValue() instanceof Functor ? null : tp.getObject());
+	}
 
 	@Override
 	public void execute(Tuple input) {
@@ -86,9 +94,10 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 		Graph graph = extractGraph(input);
 		// Extract Triples that match this Filter's pattern
 		// FIXME: Functors May (May?) not be matched correctly in graph.find
-		ExtendedIterator<Triple> it = graph.find(filter.asTripleMatch());
+		// Fixed, but needs testing.
+		ExtendedIterator<Triple> it = graph.find(asExtendedTripleMatch(filter));
 		// With each valid triple...
-		while (it.hasNext()){
+		filter: while (it.hasNext()){
 			Triple t = it.next();
 			logger.debug(String.format("Filter passed triple: %s",t));
 
@@ -114,7 +123,7 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 					// If it has and the values are different, then the Triple is not a match, so
 					// do not fire, and move onto the next Triple.
 					if ( ! t.getPredicate().sameValueAs( vals.get( vars.get( filter.getPredicate().getName() ) ) ) )
-						continue;
+						continue filter;
 				} else {
 					// If the variable has not been seen before, process the node as with the Subject.
 					vals.add(t.getPredicate());
@@ -124,7 +133,7 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 			if (filter.getObject().isVariable())
 				if (vars.containsKey(filter.getObject().getName())){
 					if ( ! t.getObject().sameValueAs( vals.get( vars.get( filter.getObject().getName() ) ) ) )
-						continue;
+						continue filter;
 				} else {
 					vals.add(t.getObject());
 					vars.put(filter.getObject().getName(),varCount++);
@@ -133,18 +142,26 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 				// if the object is a functor, check each node in the functor to see if it is a variable,
 				// and treat each as if it were a more traditional part of the Triple.
 				Functor f = (Functor)filter.getObject().getLiteralValue();
-				Functor functor = (Functor)t.getObject().getLiteralValue();
-				for (int i = 0; i < f.getArgs().length; i++){
-					Node n = f.getArgs()[i];
-					if (n.isVariable())
-						if (vars.containsKey(n.getName())){
-							if ( ! functor.getArgs()[i].sameValueAs( vals.get( vars.get( n.getName() ) ) ) )
-								continue;
-						} else {
-							vals.add(functor.getArgs()[i]);
-							vars.put(n.getName(), varCount++);
-						}
-				}
+				Functor functor;
+				if (t.getObject().isLiteral()
+						&& t.getObject().getLiteralValue() instanceof Functor
+						&& (functor = (Functor)t.getObject().getLiteralValue()).getArgLength() == f.getArgLength()) {
+					for (int i = 0; i < f.getArgs().length; i++){
+						Node n = f.getArgs()[i];
+						if (n.isVariable())
+							if (vars.containsKey(n.getName())){
+								if ( ! functor.getArgs()[i].sameValueAs( vals.get( vars.get( n.getName() ) ) ) )
+									continue filter;
+							} else {
+								vals.add(functor.getArgs()[i]);
+								vars.put(n.getName(), varCount++);
+							}
+						else
+							if ( ! n.sameValueAs(functor.getArgs()[i]))
+								continue filter;
+					}
+				} else
+					continue filter;
 			}
 			for (Component c : Component.values()) {
 				switch(c){
