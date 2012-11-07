@@ -19,6 +19,7 @@ public class CompilationStormRuleReteBoltHolder {
 
 	public CompilationStormRuleReteBoltHolder(StormRuleReteBolt bolt, Rule rule) {
 		this.bolt = bolt;
+		@SuppressWarnings("unchecked")
 		List<ClauseEntry> outputTemplate = Arrays.asList(rule.getHead());
 		this.setVars(extractFields(outputTemplate));
 	}
