@@ -40,10 +40,11 @@ import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilderContext;
-import org.openimaj.rdf.storm.sparql.topology.builder.group.GroupTree.GroupNode;
-import org.openimaj.rdf.storm.sparql.topology.builder.group.GroupTree.GroupNodeCreator;
-import org.openimaj.rdf.storm.sparql.topology.builder.group.GroupTree.GroupWalker;
-import org.openimaj.rdf.storm.sparql.topology.builder.group.GroupTree.Walkable;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.QueryPlanTree.Group;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.QueryPlanTree.QueryPlanNode;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.QueryPlanTree.QueryPlanNodeCreator;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.QueryPlanTree.QueryPlanWalker;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.QueryPlanTree.Union;
 import org.openimaj.rdf.storm.topology.bolt.CompilationStormRuleReteBoltHolder;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
@@ -75,15 +76,15 @@ import eu.larkc.csparql.parser.StreamInfo;
 /**
  * This topology builder attempts to support groups of paths and
  * subqueries in SPARQL queries
- *
- *
+ * 
+ * 
  * This base
  * interface takes care of recording filters, joins etc. and leaves the job of
  * actually adding the bolts to the topology as well as the construction of the
  * {@link ReteConflictSetBolt} instance down to its subclasses.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBuilder {
 	private static Logger logger = Logger.getLogger(BaseSPARQLReteTopologyBuilder.class);
@@ -96,9 +97,13 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	private Map<String, StormReteBolt> bolts;
 	private String secondToLast;
 
-	private static class NamedCompilationGroupNode
+	private static class NamedCompilationGroup
 			extends
-			GroupNode<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroupNode> {
+			Group<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6396285671759900846L;
 		private IndependentPair<String, CompilationStormRuleReteBoltHolder> compilationInformation;
 
 		@Override
@@ -107,7 +112,22 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 		}
 	}
 
-	private GroupTree<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroupNode> groupTree = null;
+	private static class NamedCompilationUnion
+			extends
+			Union<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup> {
+		public NamedCompilationUnion(NamedCompilationGroup groupNode) {
+			super(groupNode);
+		}
+
+		private IndependentPair<String, CompilationStormRuleReteBoltHolder> compilationInformation;
+
+		@Override
+		public IndependentPair<String, CompilationStormRuleReteBoltHolder> payload() {
+			return compilationInformation;
+		}
+	}
+
+	private QueryPlanTree<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup> groupTree = null;
 
 	@Override
 	public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
@@ -116,10 +136,15 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 
 	@Override
 	public void initTopology(SPARQLReteTopologyBuilderContext context) {
-		groupTree = new GroupTree<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroupNode>(new GroupNodeCreator<NamedCompilationGroupNode>() {
+		groupTree = new QueryPlanTree<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup>(new QueryPlanNodeCreator<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup>() {
 			@Override
-			public NamedCompilationGroupNode createGroupNode() {
-				return new NamedCompilationGroupNode();
+			public NamedCompilationGroup createGroupNode() {
+				return new NamedCompilationGroup();
+			}
+
+			@Override
+			public Union<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup> createUnion() {
+				return new NamedCompilationUnion(createGroupNode());
 			}
 		});
 
@@ -182,16 +207,16 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 
 	@Override
 	public void createJoins(SPARQLReteTopologyBuilderContext context) {
-		this.groupTree.depthFirstGroups(new GroupWalker<NamedCompilationGroupNode>() {
+		this.groupTree.depthFirstGroups(new QueryPlanWalker<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup>() {
 
 			@Override
-			public void visit(NamedCompilationGroupNode group) {
+			public void visitGroup(NamedCompilationGroup group) {
 				// Join all this group's children + groups, give this group its name + CompilationStormRuleReteBoltHolder
 
 				// Gather together the things that need to be joined in this group
 				ArrayList<IndependentPair<String, CompilationStormRuleReteBoltHolder>> boltNames =
 						new ArrayList<IndependentPair<String, CompilationStormRuleReteBoltHolder>>();
-				for (Walkable<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroupNode> groupNode : group) {
+				for (QueryPlanNode<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup> groupNode : group) {
 					boltNames.add(groupNode.payload());
 				}
 
@@ -199,7 +224,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 				join: while (boltNames.size() > 1) {
 					int innerSelect = 1;
 					IndependentPair<String, CompilationStormRuleReteBoltHolder> currentNameCompBoltPair = boltNames.get(0);
-					if(currentNameCompBoltPair == null){
+					if (currentNameCompBoltPair == null) {
 						logger.error("Uninitiated child group found, can't compile tree!");
 						return;
 					}
@@ -225,15 +250,21 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 
 				// Whatever remains in boltNames must be the "result" of this group (think about it as the culmination of all its children)
 				// Therefore:
-				if(boltNames.size() == 0){
+				if (boltNames.size() == 0) {
 					logger.error("Empty leaf node found!");
-				}else{
+				} else {
 					group.compilationInformation = boltNames.get(0);
 				}
 			}
 
+			@Override
+			public void visitUnion(Union<IndependentPair<String, CompilationStormRuleReteBoltHolder>, NamedCompilationGroup> union) {
+				// TODO Auto-generated method stub
+
+			}
+
 		});
-		if(this.groupTree.getRootGroupNode().compilationInformation == null){
+		if (this.groupTree.getRootGroupNode().compilationInformation == null) {
 			logger.error("Couldn't find second-to-last bolt. This means there was an error compiling the rete network.");
 			return;
 		}
@@ -345,7 +376,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * behaviour is to add the bolt as
 	 * {@link BoltDeclarer#globalGrouping(String)} with both sources (this might
 	 * be optimisabled)
-	 *
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -362,7 +393,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * {@link BoltDeclarer#shuffleGrouping(String)} to the
 	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source}
 	 * and the {@link ReteConflictSetBolt} instance
-	 *
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
