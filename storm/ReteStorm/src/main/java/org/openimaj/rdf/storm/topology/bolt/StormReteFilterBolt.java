@@ -77,12 +77,13 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 	public StormReteFilterBolt(Rule rule) {
 		super(rule);
 	}
-	
+
 	private TripleMatch asExtendedTripleMatch(TriplePattern tp){
-		return new Triple(tp.getSubject().isVariable() ? null : tp.getSubject(),
-							   tp.getPredicate().isVariable() ? null : tp.getPredicate(),
-							   tp.getObject().isVariable() ? null
-									: tp.getObject().isLiteral() && tp.getObject().getLiteralValue() instanceof Functor ? null : tp.getObject());
+		Triple created = new Triple(tp.getSubject().isVariable() ? Node.ANY : tp.getSubject(),
+				   tp.getPredicate().isVariable() ? Node.ANY : tp.getPredicate(),
+				   tp.getObject().isVariable() ? Node.ANY
+						: tp.getObject().isLiteral() && tp.getObject().getLiteralValue() instanceof Functor ? Node.ANY : tp.getObject());
+		return created;
 	}
 
 	@Override

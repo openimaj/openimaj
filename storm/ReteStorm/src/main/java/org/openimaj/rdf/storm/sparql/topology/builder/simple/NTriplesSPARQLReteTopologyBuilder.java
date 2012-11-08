@@ -63,4 +63,6 @@ public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBui
 		return TRIPLE_SPOUT;
 	}
 
+
+
 }

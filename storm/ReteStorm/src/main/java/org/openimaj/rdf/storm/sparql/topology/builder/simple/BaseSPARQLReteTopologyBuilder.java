@@ -115,27 +115,6 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	}
 
 	@Override
-	public void startGroup(SPARQLReteTopologyBuilderContext context) {
-
-	}
-
-	@Override
-	public void endGroup(SPARQLReteTopologyBuilderContext context) {
-	}
-
-	@Override
-	public void startUnion(SPARQLReteTopologyBuilderContext context) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void endUnion(SPARQLReteTopologyBuilderContext context) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void addFilter(SPARQLReteTopologyBuilderContext context) {
 
 		for (TriplePath triple : context.filterClause.getPattern().getList()) {

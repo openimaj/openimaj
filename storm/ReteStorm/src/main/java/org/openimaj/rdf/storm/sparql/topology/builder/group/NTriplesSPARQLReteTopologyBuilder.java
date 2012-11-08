@@ -40,11 +40,11 @@ import eu.larkc.csparql.parser.StreamInfo;
 /**
  * The {@link NTriplesSPARQLReteTopologyBuilder} provides triples from URI
  * streams via the {@link NTriplesSpout}.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
-public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBuilder {
+public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBuilder{
 	/**
 	 * The name of the spout outputting triples
 	 */
@@ -62,5 +62,7 @@ public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBui
 		builder.setSpout(TRIPLE_SPOUT, tripleSpout, 1);
 		return TRIPLE_SPOUT;
 	}
+
+
 
 }

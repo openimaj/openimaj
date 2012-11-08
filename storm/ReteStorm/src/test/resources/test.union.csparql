@@ -1,0 +1,26 @@
+#------------------------------------------------------------------
+# Sina's Test Production Rules (this time in SPARQL form!)
+# A really simple set of production rules 
+#------------------------------------------------------------------
+REGISTER QUERY Test AS
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ex: <http://example.com/>
+PREFIX xs: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {?d rdf:type ex:EligibleDriver}
+FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.union.rdfs> [RANGE 30m STEP 5m]
+WHERE {
+	?d rdf:type ex:Driver .
+	{
+		{
+			?d rdf:type ex:Cabbie . 
+			?d ex:certificateType ex:DriverSchoolCertificate 
+		}
+		UNION
+		{ 
+			?d rdf:type ex:Womble .
+			?d ex:accidentsNumber "0"^^xs:integer
+		} 
+	}
+}

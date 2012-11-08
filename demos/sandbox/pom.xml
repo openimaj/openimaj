@@ -88,6 +88,17 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.tinyjee.jgraphx</groupId>
+      <artifactId>jgraphx</artifactId>
+      <version>1.10.1.3</version>
+    </dependency>
+    <dependency>
+      <artifactId>ReteStorm</artifactId>
+      <groupId>org.openimaj.rdf.storm</groupId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>mx.bigdata.jcalais</groupId>
       <artifactId>j-calais</artifactId>
       <version>1.0</version>
@@ -288,7 +299,7 @@
       <artifactId>jahmm</artifactId>
       <version>0.6.2</version>
       <scope>compile</scope>
-		</dependency>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

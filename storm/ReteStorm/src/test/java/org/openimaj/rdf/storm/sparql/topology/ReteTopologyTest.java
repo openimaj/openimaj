@@ -45,9 +45,9 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 
 /**
  * Test the {@link StormTopology} construction from a CSPARQL query
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteTopologyTest {
 
@@ -59,7 +59,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * prepare the output
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Before
@@ -68,7 +68,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -88,13 +88,33 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
 	@Test
 	public void testReteTopologyUNION() throws IOException, TranslationException {
 		String sparqlSource = "/test.union.csparql";
+		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
+				new NTriplesSPARQLReteTopologyBuilder(),
+				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
+				);
+		final LocalCluster cluster = new LocalCluster();
+		System.out.println(orchestrator);
+		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
+		Utils.sleep(10000);
+		cluster.killTopology("reteTopology");
+		cluster.shutdown();
+	}
+
+	/**
+	 *
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopologyMultiple() throws IOException, TranslationException {
+		String sparqlSource = "/test.multiple.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
 				new NTriplesSPARQLReteTopologyBuilder(),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)

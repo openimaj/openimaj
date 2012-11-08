@@ -29,23 +29,17 @@
  */
 package org.openimaj.rdf.storm.sparql.topology.builder;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
-import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
 import org.openimaj.rdf.storm.utils.CsparqlUtils.CSparqlComponentHolder;
 
 import backtype.storm.topology.TopologyBuilder;
 
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 
 import eu.larkc.csparql.parser.StreamInfo;
 
@@ -68,72 +62,6 @@ public abstract class SPARQLReteTopologyBuilder {
 
 	private int unnamedRules = 0;
 
-	/**
-	 * Given a builder and a set of rules, drive the construction of the Rete
-	 * topology
-	 *
-	 * @param builder
-	 *            the builder to add bolts/spouts to
-	 * @param query
-	 *            the query to compile
-	 */
-	public void compile(TopologyBuilder builder, CSparqlComponentHolder query) {
-		String source = prepareSourceSpout(builder,query.streams);
-		SPARQLReteTopologyBuilderContext context = new SPARQLReteTopologyBuilderContext(builder, source, query);
-		initTopology(context);
-
-		// Start the first, implied, outer group of the where clause
-		startGroup(context);
-		QueryExecutionFactory.create(context.query.simpleQuery);
-		System.out.println("Query binding variables: " + query.simpleQuery.getProjectVars());
-		// now handle the query pattern
-		handleElement(query.simpleQuery.getQueryPattern(),context);
-		// now close (finish, pop, whatever...) the implied outer group.
-		endGroup(context);
-
-		context.filterClause = null;
-		createJoins(context);
-		finishQuery(context);
-	}
-
-	private void handleElement(Element element, SPARQLReteTopologyBuilderContext context) {
-		if(element instanceof ElementPathBlock){
-			handleElement((ElementPathBlock)element, context);
-		}else if (element instanceof ElementGroup){
-			handleElement((ElementGroup)element, context);
-
-		}else if (element instanceof ElementUnion)
-		{
-			handleElement((ElementUnion)element,context);
-		}
-		else{
-			logger.error("Got element of type: " + element + " ignoring");
-		}
-
-	}
-
-	private void handleElement(ElementUnion union, SPARQLReteTopologyBuilderContext context){
-		startUnion(context);
-		List<Element> elems = union.getElements(); // should be only two big
-		for (Element element : elems) {
-			handleElement(element,context);
-		}
-		endUnion(context);
-	}
-
-	private void handleElement(ElementPathBlock path, SPARQLReteTopologyBuilderContext context) {
-		context.filterClause = path;
-		addFilter(context);
-	}
-
-	private void handleElement(ElementGroup group, SPARQLReteTopologyBuilderContext context) {
-		startGroup(context); // start a new group.
-		for (Element elm : group.getElements()) {
-			handleElement(elm, context);
-		}
-		endGroup(context);
-
-	}
 
 	/**
 	 * Given a builder and a set of streams, add the source spout to the builder and return the name
@@ -157,57 +85,33 @@ public abstract class SPARQLReteTopologyBuilder {
 	 * @param context
 	 */
 	public abstract void initTopology(SPARQLReteTopologyBuilderContext context);
+	/**
+	 * Given a builder and a set of rules, drive the construction of the Rete
+	 * topology
+	 *
+	 * @param builder
+	 *            the builder to add bolts/spouts to
+	 * @param query
+	 *            the query to compile
+	 */
+	public void compile(TopologyBuilder builder, CSparqlComponentHolder query) {
+		String source = prepareSourceSpout(builder,query.streams);
+		SPARQLReteTopologyBuilderContext context = new SPARQLReteTopologyBuilderContext(builder, source, query);
+		initTopology(context);
+
+		QueryExecutionFactory.create(context.query.simpleQuery);
+		System.out.println("Query binding variables: " + query.simpleQuery.getProjectVars());
+
+		// now handle the query pattern
+		compile(query.simpleQuery.getQueryPattern());
+		finishQuery(context);
+	}
+
 
 	/**
-	 * Start a new group.
-	 *
-	 * @param context
+	 * @param queryPattern the root node of a SPARQL query from {@link Query#getQueryPattern()}
 	 */
-	public abstract void startGroup(SPARQLReteTopologyBuilderContext context);
-
-	/**
-	 * End the current group.
-	 *
-	 * @param context
-	 */
-	public abstract void endGroup(SPARQLReteTopologyBuilderContext context);
-
-	/**
-	 * Start a new union (the next two direct children)
-	 *
-	 * @param context
-	 */
-	public abstract void startUnion(SPARQLReteTopologyBuilderContext context);
-
-	/**
-	 * End the current union. (the last two direct children)
-	 *
-	 * @param context
-	 */
-	public abstract void endUnion(SPARQLReteTopologyBuilderContext context);
-
-	/**
-	 * Add a new filter clause. The
-	 * {@link SPARQLReteTopologyBuilderContext#filterClause} becomes not null. This
-	 * stage may result in the construction and addition of
-	 * {@link ReteFilterBolt} instances
-	 *
-	 * So far the {@link SPARQLReteTopologyBuilderContext#filterClause} can only be
-	 * {@link TriplePattern} instance
-	 *
-	 * @param context
-	 */
-	public abstract void addFilter(SPARQLReteTopologyBuilderContext context);
-
-	/**
-	 * All the filters have been provided. Organise the various filters into
-	 * joins. The {@link SPARQLReteTopologyBuilderContext#filterClause} becomes null
-	 * This stage may result in the construction and addition of
-	 * {@link ReteJoinBolt} instances
-	 *
-	 * @param context
-	 */
-	public abstract void createJoins(SPARQLReteTopologyBuilderContext context);
+	public abstract void compile(Element queryPattern) ;
 
 	/**
 	 * This particular rule is completed. Finish the rule off, possible with a
