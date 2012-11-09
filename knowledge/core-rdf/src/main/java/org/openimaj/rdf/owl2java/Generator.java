@@ -1,7 +1,9 @@
 package org.openimaj.rdf.owl2java;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +25,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParseException;
 import org.openrdf.sail.memory.MemoryStore;
 
 import com.google.common.base.Charsets;
@@ -72,6 +75,14 @@ public class Generator
 		/** Whether to create a pom.xml file for the output files */
 		@Option(name="-maven",aliases="-m",usage="Create a Maven project with this groupId",metaVar="GROUP-ID")
 		public String mavenProject = null;
+		
+		/** The artifact identifier for the maven project, if -maven is used */
+		@Option(name="-artifactId",usage="Specify the artifact identifier for the maven project",metaVar="ARTIFACT-ID")
+		public String mavenArtifactId = "generated-rdf";
+		
+		/** The version number for the maven project, if -maven is used */
+		@Option(name="-version",usage="Specify the version for the maven project",metaVar="VERSION-NUMBER")
+		public String mavenVersionNumber = "1.0";
 	}
 	
 	/**
@@ -227,13 +238,18 @@ public class Generator
 	 * 
 	 *	@param targetDir The target directory
 	 *	@param groupId The groupId of the maven artifact
+	 *	@param artifactId The artifactId of the maven project
+	 *	@param versionNumber The version number of the maven project
 	 */
-	private static void createPOM( final File targetDir, final String groupId )
+	private static void createPOM( final File targetDir, final String groupId,
+			final String artifactId, final String versionNumber )
 	{
 		try
 		{
 			String s = Resources.toString( Resources.getResource( "pom.xml" ), Charsets.UTF_8 );
-			s = s.replaceAll( "\\{!!!\\}", groupId );
+			s = s.replaceAll( "\\{!g!\\}", groupId );
+			s = s.replaceAll( "\\{!a!\\}", artifactId );
+			s = s.replaceAll( "\\{!v!\\}", versionNumber );
 			FileUtils.writeStringToFile( new File( targetDir, "pom.xml" ), s, "UTF-8" );
 		}
 		catch( final IOException e )
@@ -252,6 +268,62 @@ public class Generator
 		return s.getLocalName().substring(0,1).toUpperCase() + s.getLocalName().substring( 1 );
 	}
 
+	/**
+	 * 	Generate the classes for the RDF information that's read from the
+	 * 	given input stream.
+	 * 
+	 *	@param is The input stream to find the RDF description
+	 *	@param go The options for the generator
+	 * 	@throws RepositoryException If the repository cannot be created
+	 * 	@throws IOException If the InputStream cannot be read 
+	 * 	@throws RDFParseException If the RDF is malformed
+	 * 	@throws QueryEvaluationException If the query for classes fails
+	 * 	@throws MalformedQueryException If the query for classes fails
+	 */
+	public static void generate( final InputStream is, final GeneratorOptions go ) 
+			throws RepositoryException, RDFParseException, IOException, 
+			MalformedQueryException, QueryEvaluationException
+	{
+		// If we're going to create a Maven project, we'll put all the source
+		// files into a src directory, so we need to alter the target directory.
+		if( go.mavenProject != null )
+		{
+			// Create the pom.xml file
+			Generator.createPOM( new File(go.targetDirectory), go.mavenProject,
+					go.mavenArtifactId, go.mavenVersionNumber );
+			
+			go.targetDirectory = go.targetDirectory +
+					File.separator+"src"+File.separator+"main"+
+					File.separator+"java";
+			new File( go.targetDirectory ).mkdirs();
+		}
+				
+		// Create a new memory store into which we'll plonk all the RDF
+		final Repository repository = new SailRepository( new MemoryStore() );
+		repository.initialize();
+
+		// Plonk all the RDF into the store
+		final RepositoryConnection conn = repository.getConnection();
+		conn.add( is, "", RDFFormat.RDFXML );
+
+		// Now we'll get all the classes from the ontology
+		final Map<URI, ClassDef> classes = ClassDef.loadClasses( conn );
+
+		// Try to generate the package mappings for the classes
+		final Map<URI, String> pkgs = Generator.generatePackageMappings(
+				classes.values() );
+
+		// Now we'll go through each of the class definitions and generate
+		// interfaces and classes
+		for( final ClassDef cd : classes.values() )
+		{
+			cd.generateInterface( new File(go.targetDirectory), pkgs, classes );
+			cd.generateClass( new File(go.targetDirectory), pkgs, classes, 
+				go.flattenClassStructure, go.generateAnnotations, 
+				go.separateImplementations );
+		}
+	}
+	
 	/**
 	 *
 	 * @param args
@@ -275,7 +347,7 @@ public class Generator
         }
 
 		final File rdfFile = new File( go.rdfFile );
-		File targetDir = new File( go.targetDirectory );
+		final File targetDir = new File( go.targetDirectory );
 
 		if( !rdfFile.exists() )
 		{
@@ -290,45 +362,9 @@ public class Generator
 			System.exit( 1 );
 		}
 
-		// If we're going to create a Maven project, we'll put all the source
-		// files into a src directory, so we need to alter the target directory.
-		if( go.mavenProject != null )
-		{
-			// Create the pom.xml file
-			Generator.createPOM( targetDir, go.mavenProject );
-			
-			targetDir = new File( targetDir.getAbsolutePath()+
-					File.separator+"src"+File.separator+"main"+
-					File.separator+"java" );
-			targetDir.mkdirs();
-		}
-		
-		// Create a new memory store into which we'll plonk all the RDF
-		final Repository repository = new SailRepository( new MemoryStore() );
-		repository.initialize();
-
 		try
 		{
-			// Plonk all the RDF into the store
-			final RepositoryConnection conn = repository.getConnection();
-			conn.add( rdfFile, "", RDFFormat.RDFXML );
-
-			// Now we'll get all the classes from the ontology
-			final Map<URI, ClassDef> classes = ClassDef.loadClasses( conn );
-
-			// Try to generate the package mappings for the classes
-			final Map<URI, String> pkgs = Generator.generatePackageMappings(
-					classes.values() );
-
-			// Now we'll go through each of the class definitions and generate
-			// interfaces and classes
-			for( final ClassDef cd : classes.values() )
-			{
-				cd.generateInterface( targetDir, pkgs, classes );
-				cd.generateClass( targetDir, pkgs, classes, 
-					go.flattenClassStructure, go.generateAnnotations, 
-					go.separateImplementations );
-			}
+			Generator.generate( new FileInputStream( rdfFile ), go );
 		}
 		catch( final Exception e )
 		{
