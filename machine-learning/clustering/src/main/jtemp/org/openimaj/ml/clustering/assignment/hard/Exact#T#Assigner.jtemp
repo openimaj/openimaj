@@ -117,4 +117,9 @@ public class Exact#T#Assigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> 
 		
 		return new Int#R#Pair(index[0], distance[0]);
 	}
+	
+	@Override
+	public int size() {
+	    return nn.size();
+	}
 }

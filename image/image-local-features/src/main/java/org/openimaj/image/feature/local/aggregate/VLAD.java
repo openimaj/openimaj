@@ -9,6 +9,7 @@ import org.openimaj.feature.ArrayFeatureVector;
 import org.openimaj.feature.MultidimensionalFloatFV;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.image.FImage;
+import org.openimaj.ml.clustering.CentroidsProvider;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 
 /**
@@ -48,6 +49,7 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
 public class VLAD<T> implements VectorAggregator<ArrayFeatureVector<T>> {
 	private HardAssigner<T, ?, ?> assigner;
 	private T[] centroids;
+	private boolean normalise;
 
 	/**
 	 * Construct with the given assigner and the centroids associated with the
@@ -57,14 +59,35 @@ public class VLAD<T> implements VectorAggregator<ArrayFeatureVector<T>> {
 	 *            the assigner
 	 * @param centroids
 	 *            the centroids associated with the assigner
+	 * @param normalise
+	 *            if true then output feature is l2 normalised
 	 */
-	public VLAD(HardAssigner<T, ?, ?> assigner, T[] centroids) {
+	public VLAD(HardAssigner<T, ?, ?> assigner, T[] centroids, boolean normalise) {
 		this.assigner = assigner;
 		this.centroids = centroids;
+		this.normalise = normalise;
+	}
+
+	/**
+	 * Construct with the given assigner and the centroids associated with the
+	 * assigner.
+	 * 
+	 * @param assigner
+	 *            the assigner
+	 * @param centroids
+	 *            the centroids associated with the assigner
+	 * @param normalise
+	 *            if true then output feature is l2 normalised
+	 */
+	public VLAD(HardAssigner<T, ?, ?> assigner, CentroidsProvider<T> centroids, boolean normalise) {
+		this(assigner, centroids.getCentroids(), normalise);
 	}
 
 	@Override
 	public MultidimensionalFloatFV aggregate(List<? extends LocalFeature<?, ? extends ArrayFeatureVector<T>>> features) {
+		if (features == null || features.size() <= 0)
+			return null;
+
 		final int K = this.centroids.length;
 		final int D = features.get(0).getFeatureVector().length();
 
@@ -81,14 +104,16 @@ public class VLAD<T> implements VectorAggregator<ArrayFeatureVector<T>> {
 
 		final MultidimensionalFloatFV out = new MultidimensionalFloatFV(vector);
 
-		// l2 norm
-		double sumsq = 0;
-		for (int i = 0; i < out.values.length; i++) {
-			sumsq += (out.values[i] * out.values[i]);
-		}
-		final float norm = (float) (1.0 / Math.sqrt(sumsq));
-		for (int i = 0; i < out.values.length; i++) {
-			out.values[i] *= norm;
+		if (normalise) {
+			// l2 norm
+			double sumsq = 0;
+			for (int i = 0; i < out.values.length; i++) {
+				sumsq += (out.values[i] * out.values[i]);
+			}
+			final float norm = (float) (1.0 / Math.sqrt(sumsq));
+			for (int i = 0; i < out.values.length; i++) {
+				out.values[i] *= norm;
+			}
 		}
 
 		return out;
@@ -101,7 +126,7 @@ public class VLAD<T> implements VectorAggregator<ArrayFeatureVector<T>> {
 	 * @param descr
 	 *            the feature
 	 * @param nterms
-	 *            the number of centoids used to create the feature
+	 *            the number of centroids used to create the feature
 	 * @param nSpatialBins
 	 *            the number of spatial bins used in the feature
 	 * @param nOriBins
@@ -109,7 +134,7 @@ public class VLAD<T> implements VectorAggregator<ArrayFeatureVector<T>> {
 	 * @return an image depicting the feature
 	 */
 	public static FImage drawDescriptor(float[] descr, int nterms, int nSpatialBins, int nOriBins) {
-		final FImage image = new FImage(40 * 16, 40);
+		final FImage image = new FImage(40 * nterms, 40);
 
 		for (int z = 0; z < nterms; z++) {
 			for (int y = 0; y < nSpatialBins; y++) {

@@ -37,7 +37,7 @@ import org.openimaj.io.ReadWriteable;
  * Interface for objects that represent feature vectors.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public interface FeatureVector extends Cloneable, Serializable, ReadWriteable {
 	/**
@@ -46,50 +46,58 @@ public interface FeatureVector extends Cloneable, Serializable, ReadWriteable {
 	 * @return underlying data
 	 */
 	public Object getVector();
-	
+
 	/**
 	 * Get the length of this vector
+	 * 
 	 * @return the length of this vector
 	 */
 	public int length();
 
 	/**
-	 * Element-wise normalisation to 0..1 using separated expected
-	 * minimum and maximum values for each element of the underlying
-	 * feature vector.
-	 *
-	 * @param min an array containing the minimum expected values
-	 * @param max an array containing the maximum expected values
-	 * @return copy of the feature vector with each value normalised to 0..1 
+	 * Element-wise normalisation to 0..1 using separated expected minimum and
+	 * maximum values for each element of the underlying feature vector.
+	 * 
+	 * @param min
+	 *            an array containing the minimum expected values
+	 * @param max
+	 *            an array containing the maximum expected values
+	 * @return copy of the feature vector with each value normalised to 0..1
 	 */
-	public DoubleFV normaliseFV(double [] min, double [] max);
-	
+	public DoubleFV normaliseFV(double[] min, double[] max);
+
 	/**
-	 * Min-Max normalisation of the FV. Each element of the underlying
-	 * feature vector is normalised to 0..1 based on the provided
-	 * minimum and maximum expected values.
-	 *
-	 * @param min the minimum expected value
-	 * @param max the maximum expected value
+	 * Min-Max normalisation of the FV. Each element of the underlying feature
+	 * vector is normalised to 0..1 based on the provided minimum and maximum
+	 * expected values.
+	 * 
+	 * @param min
+	 *            the minimum expected value
+	 * @param max
+	 *            the maximum expected value
 	 * @return copy of the feature vector with each value normalised to 0..1
 	 */
 	public DoubleFV normaliseFV(double min, double max);
-	
+
 	/**
-	 * Normalise the FV to unit length 
-	 * @return a copy of the feature vector as a DoubleFV, normalised to unit length
+	 * Normalise the FV to unit length
+	 * 
+	 * @return a copy of the feature vector as a DoubleFV, normalised to unit
+	 *         length
 	 */
 	public DoubleFV normaliseFV();
-	
+
 	/**
 	 * Convert the FV to a DoubleFV representation
+	 * 
 	 * @return a copy of the feature vector as a DoubleFV
 	 */
 	public DoubleFV asDoubleFV();
-	
+
 	/**
 	 * Convert the FV to a 1-dimensional double array representation
+	 * 
 	 * @return a copy of the feature vector as a double array
 	 */
-	public double [] asDoubleVector();
+	public double[] asDoubleVector();
 }

@@ -85,7 +85,7 @@ public class BagOfVisualWords<T> implements VectorAggregator<ArrayFeatureVector<
 
 	@Override
 	public SparseIntFV aggregate(List<? extends LocalFeature<?, ? extends ArrayFeatureVector<T>>> features) {
-		final SparseIntFV fv = new SparseIntFV();
+		final SparseIntFV fv = new SparseIntFV(this.assigner.size());
 
 		for (final LocalFeature<?, ? extends ArrayFeatureVector<T>> f : features) {
 			final int idx = assigner.assign(f.getFeatureVector().values);

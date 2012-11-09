@@ -85,10 +85,10 @@ import org.openimaj.util.pair.IntFloatPair;
 		url = "http://eprints.ecs.soton.ac.uk/21401/")
 public class IntRAC
 		implements
-			SpatialClusters<int[]>,
-			SpatialClusterer<IntRAC, int[]>,
-			CentroidsProvider<int[]>,
-			HardAssigner<int[], float[], IntFloatPair>
+		SpatialClusters<int[]>,
+		SpatialClusterer<IntRAC, int[]>,
+		CentroidsProvider<int[]>,
+		HardAssigner<int[], float[], IntFloatPair>
 {
 	private static class ClusterMinimisationFunction implements UnivariateRealFunction {
 		private int[][] distances;
@@ -406,5 +406,15 @@ public class IntRAC
 	@Override
 	public HardAssigner<int[], ?, ?> defaultHardAssigner() {
 		return this;
+	}
+
+	/**
+	 * The number of centroids; this potentially grows as assignments are made.
+	 * 
+	 * @see org.openimaj.ml.clustering.assignment.HardAssigner#size()
+	 */
+	@Override
+	public int size() {
+		return this.nDims;
 	}
 }

@@ -221,4 +221,9 @@ public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], I
 		
 		return new Int#R#Pair(index, score);
 	}
+	
+	@Override
+	public int size() {
+	    return result.countLeafs();
+	}
 }

@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.image;
+package org.openimaj.demos.sandbox.image.vlad;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class VLADDemo {
 
 		final ExactByteAssigner assigner = new ExactByteAssigner(centroids);
 
-		final VLAD<byte[]> vlad = new VLAD<byte[]>(assigner, centroids.centroids);
+		final VLAD<byte[]> vlad = new VLAD<byte[]>(assigner, centroids.centroids, true);
 		final MultidimensionalFloatFV agg = vlad.aggregate(features);
 
 		System.out.println(agg);

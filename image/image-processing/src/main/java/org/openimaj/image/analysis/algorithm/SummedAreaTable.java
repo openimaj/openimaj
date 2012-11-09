@@ -68,14 +68,14 @@ public class SummedAreaTable implements ImageAnalyser<FImage> {
 	}
 
 	protected void computeTable(FImage image) {
-		data = new FImage(image.getWidth() + 1, image.getHeight() + 1);
+		data = new FImage(image.width + 1, image.height + 1);
 
 		for (int y = 0; y < image.height; y++) {
 			for (int x = 0; x < image.width; x++) {
 				data.pixels[y + 1][x + 1] = image.pixels[y][x] +
-											data.pixels[y + 1][x] +
-											data.pixels[y][x + 1] -
-											data.pixels[y][x];
+						data.pixels[y + 1][x] +
+						data.pixels[y][x + 1] -
+						data.pixels[y][x];
 			}
 		}
 	}

@@ -72,9 +72,9 @@ import org.openimaj.util.pair.IntFloatPair;
 		url = "http://dx.doi.org/10.1109/TPAMI.2007.70822")
 public class IntRandomForest
 		implements
-			SpatialClusters<int[]>,
-			SpatialClusterer<IntRandomForest, int[]>,
-			HardAssigner<int[], float[], IntFloatPair>
+		SpatialClusters<int[]>,
+		SpatialClusterer<IntRandomForest, int[]>,
+		HardAssigner<int[], float[], IntFloatPair>
 {
 	private static final String HEADER = SpatialClusters.CLUSTER_HEADER + "RFIC";
 	int nDecisions;
@@ -642,5 +642,10 @@ public class IntRandomForest
 	@Override
 	public HardAssigner<int[], ?, ?> defaultHardAssigner() {
 		return this;
+	}
+
+	@Override
+	public int size() {
+		return this.currentInt;
 	}
 }

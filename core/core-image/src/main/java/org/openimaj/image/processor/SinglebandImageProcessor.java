@@ -33,41 +33,52 @@ import org.openimaj.image.Image;
 import org.openimaj.image.SingleBandImage;
 
 /**
- * 	An interface for objects that are able to process only {@link SingleBandImage}s.	
+ * An interface for objects that are able to process only
+ * {@link SingleBandImage}s.
  * 
- *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *  @param <T> The type of pixel in the image that this processor can process.
- *  @param <S> The concrete subclass of the single band image that this processor can process.
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @param <T>
+ *            The type of pixel in the image that this processor can process.
+ * @param <S>
+ *            The concrete subclass of the single band image that this processor
+ *            can process.
  */
-public interface SinglebandImageProcessor<T, S extends Image<T,S>> 
-	extends ImageProcessor<S> 
+public interface SinglebandImageProcessor<T, S extends Image<T, S>>
+		extends ImageProcessor<S>
 {
 	/**
-	 * 	An interface for {@link Image}s that are processable by
-	 * 	{@link SinglebandImageProcessor}s.	
+	 * An interface for {@link Image}s that are processable by
+	 * {@link SinglebandImageProcessor}s.
 	 * 
-	 *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *  @param <T> The type of pixel in the image
-	 *  @param <S> The concrete subclass of the single band image
-	 *  @param <I> The type of image that is returned after processing
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * @param <T>
+	 *            The type of pixel in the image
+	 * @param <S>
+	 *            The concrete subclass of the single band image
+	 * @param <I>
+	 *            The type of image that is returned after processing
 	 */
-	public interface Processable<T, S extends Image<T,S>, I extends Image<?,I>> 
+	public interface Processable<T, S extends Image<T, S>, I extends Image<?, I>>
 	{
 		/**
-		 * 	Process with the given {@link SinglebandImageProcessor} returning
-		 * 	a new image.
-		 *  @param p The processor to process the image with
-		 *  @return A new image containing the result.
+		 * Process with the given {@link SinglebandImageProcessor} returning a
+		 * new image.
+		 * 
+		 * @param p
+		 *            The processor to process the image with
+		 * @return A new image containing the result.
 		 */
-		public I process( SinglebandImageProcessor<T,S> p );
+		public I process(SinglebandImageProcessor<T, S> p);
 
 		/**
-		 * 	Process with the given {@link SinglebandImageProcessor} storing the
-		 * 	result in this processable image. Side-affects this processable image.
+		 * Process with the given {@link SinglebandImageProcessor} storing the
+		 * result in this processable image. Side-affects this processable
+		 * image.
 		 * 
-		 *  @param p The processor to process the image with
-		 *  @return A new image containing the result.
+		 * @param p
+		 *            The processor to process the image with
+		 * @return A new image containing the result.
 		 */
-		public I processInplace( SinglebandImageProcessor<T,S> p );
+		public I processInplace(SinglebandImageProcessor<T, S> p);
 	}
 }

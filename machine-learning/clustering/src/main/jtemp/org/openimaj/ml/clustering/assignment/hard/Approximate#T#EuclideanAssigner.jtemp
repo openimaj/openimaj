@@ -114,4 +114,9 @@ public class Approximate#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[
 		
 		return new Int#R#Pair(index[0], distance[0]);
 	}
+	
+	@Override
+	public int size() {
+	    return nn.size();
+	}
 }
