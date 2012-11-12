@@ -1,13 +1,20 @@
 package org.openimaj.rdf.storm.sparql.topology.bolt;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.mortbay.io.RuntimeIOException;
 import org.openimaj.rdf.storm.bolt.RETEStormNode;
+import org.openjena.riot.RiotWriter;
 
 import backtype.storm.tuple.Tuple;
 
@@ -27,16 +34,101 @@ import com.hp.hpl.jena.sparql.engine.iterator.QueryIterPlainWrapper;
 import com.hp.hpl.jena.sparql.expr.Expr;
 import com.hp.hpl.jena.sparql.expr.ExprAggregator;
 import com.hp.hpl.jena.sparql.function.FunctionEnvBase;
+import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
 
 /**
  * This bolt deals with the consequences of a valid binding for a SPARQL query.
  * The subclasses of this bolt deal with the specifics of SELECT, CONSTRUCT, ASK
  * and DESCRIBE
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt {
+
+	/**
+	 * Deal with triples or bindings
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 *
+	 */
+	public static interface StormSPARQLReteConflictSetBoltSink{
+		/**
+		 * Start things off
+		 * @param conflictSet
+		 */
+		void instantiate(StormSPARQLReteConflictSetBolt conflictSet);
+		/**
+		 * Usually as part of a CONSTRUCT query
+		 * @param triple
+		 */
+		void consumeTriple(Triple triple);
+		/**
+		 * Usually as part of a SELECT query
+		 * @param binding
+		 */
+		void consumeSolution(QuerySolution binding);
+
+
+		/**
+		 * A Sink used mainly for debugging and tests
+		 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+		 *
+		 */
+		public static class FileSink implements StormSPARQLReteConflictSetBoltSink{
+			private FileOutputStream fos;
+			private File file;
+			private PrintWriter writer;
+
+			/**
+			 * @param file
+			 * @throws FileNotFoundException
+			 */
+			public FileSink(File file) throws FileNotFoundException {
+				this.file = file;
+			}
+
+			@Override
+			public void consumeTriple(Triple triple) {
+				Graph g = GraphFactory.createGraphMem();
+				g.add(triple);
+				RiotWriter.writeTriples(fos, g);
+			}
+
+			@Override
+			public void consumeSolution(QuerySolution binding) {
+				List<String >
+			}
+
+			@Override
+			public void instantiate(StormSPARQLReteConflictSetBolt conflictSet)  {
+				try {
+					if(file.exists() ){
+						if(!file.isDirectory()){
+							throw new RuntimeIOException("File exists: " + file);
+						}
+					}
+					else file.mkdirs();
+					String name = String.format("%s_%d",conflictSet.context.getThisComponentId(),conflictSet.context.getThisTaskId());
+
+					fos = new FileOutputStream(new File(file,name));
+					this.writer = new PrintWriter(fos);
+				} catch (FileNotFoundException e) {
+					throw new RuntimeException("Couldn't open output file: " + file + " becuase " + e.getMessage());
+				}
+				Query query = conflictSet.getQuery();
+				if(query.isSelectType()){
+					writeSelectHeader(query);
+				}
+			}
+
+			private void writeSelectHeader(Query query) {
+				String header = StringUtils.join(query.getResultVars(), ",");
+				this.writer.println(header);
+			}
+
+
+		}
+	}
 	private static Logger logger = Logger.getLogger(StormSPARQLReteConflictSetBolt.class);
 	/**
 	 *
@@ -47,6 +139,7 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 	private VarExprList groupBy;
 	private Collection<Binding> bindingsQueue;
 	private FunctionEnvBase execCxt;
+	private StormSPARQLReteConflictSetBoltSink sink;
 
 	/**
 	 * @param query
@@ -61,13 +154,15 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 		return null;
 	}
 
+	@Override
 	public void execute(Tuple input) {
-
+		logger.debug("Conflict set Tuple: " + input);
 		Graph g = extractGraph(input);
 		DatasetGraph dsg = new DatasetGraphMap(extractGraph(input));
 		this.execCxt = new FunctionEnvBase(ARQ.getContext(), g, dsg);
 
 		Binding binding = tupleToBinding(input);
+		logger.debug("Conflict set extracted binding: " + binding);
 		QueryIterator bindingsIter = null;
 		// If there are no aggregators we keep no queue! simple!
 		if (!this.aggregators.isEmpty()) {
@@ -134,23 +229,31 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 	 * @return constructs the correct {@link StormSPARQLReteConflictSetBolt}
 	 *         given the query's type
 	 */
-	public static StormSPARQLReteConflictSetBolt construct(Query simpleQuery) {
+	public static StormSPARQLReteConflictSetBolt construct(Query simpleQuery, StormSPARQLReteConflictSetBoltSink sink) {
+
+		StormSPARQLReteConflictSetBolt toRet = null;
 		if (simpleQuery.isSelectType()) {
-			return new StormSPARQLReteSelectConflictSetBolt(simpleQuery);
+			toRet = new StormSPARQLReteSelectConflictSetBolt(simpleQuery);
 		}
 		else if (simpleQuery.isConstructType()) {
-			return new StormSPARQLReteConstructConflictSetBolt(simpleQuery);
+			toRet = new StormSPARQLReteConstructConflictSetBolt(simpleQuery);
 		}
-		return null;
+		toRet.setSink(sink);
+		return toRet;
+	}
+
+	private void setSink(StormSPARQLReteConflictSetBoltSink sink) {
+		this.sink = sink;
 	}
 
 	/**
 	 * Emit the triple (For CONSTRUCT)
-	 * 
+	 *
 	 * @param triple
 	 */
 	public void emitTriple(Triple triple) {
 		logger.debug("Emitting triple: " + triple);
+		sink.consumeTriple(triple);
 	}
 
 	/**
@@ -158,6 +261,7 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 	 */
 	public void emitSolution(QuerySolution binding) {
 		logger.debug("Emitting solution: " + binding);
+		sink.consumeSolution(binding);
 	}
 
 }

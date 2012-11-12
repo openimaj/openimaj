@@ -30,6 +30,7 @@
 package org.openimaj.rdf.storm.bolt;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +53,7 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * Represents one input left of a join node. The queue points to
  * a sibling queue representing the other leg which should be joined
  * against.
- * 
+ *
  * @author David Monks <dm11g08@ecs.soton.ac.uk>, based largely on the RETEQueue
  *         implementation by <a href="mailto:der@hplb.hpl.hp.com">Dave
  *         Reynolds</a>
@@ -82,7 +83,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	/**
 	 * Constructor. The window is not usable until it has been bound
 	 * to a sibling and a continuation node.
-	 * 
+	 *
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -107,7 +108,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	 * Constructor including sibling to bind to. The window is not usable until
 	 * it has
 	 * also been bound to a continuation node.
-	 * 
+	 *
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -134,7 +135,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	 * Constructor including sibling to bind to. The window is not usable until
 	 * it has
 	 * also been bound to a continuation node.
-	 * 
+	 *
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -160,7 +161,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 
 	/**
 	 * Set the sibling for this node.
-	 * 
+	 *
 	 * @param sibling
 	 */
 	public void setSibling(RETEStormQueue sibling) {
@@ -179,7 +180,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 
 	/**
 	 * Propagate a token to this node.
-	 * 
+	 *
 	 * @param env
 	 *            a set of variable bindings for the rule being processed.
 	 * @param isAdd
@@ -187,18 +188,19 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	 */
 	public void fire(Tuple env, boolean isAdd, long timestamp) {
 		// Cross match new token against the entries in the sibling queue
-		logger.debug("Checking new tuple: " + env);
-		logger.debug("Comparing new tuple to " + sibling.window.size() + " other tuples");
+		List<Object> values = env.getValues();
+		logger.debug("Checking new tuple values: " + values);
+//		logger.debug("Comparing new tuple to " + sibling.window.size() + " other tuples");
 		for (Iterator<Tuple> i = sibling.window.iterator(); i.hasNext();) {
 			Tuple candidate = i.next();
-			logger.debug("Comparing to: " + candidate);
+			logger.debug("Comparing to tuple values: " + candidate.getValues());
 			boolean matchOK = true;
 			for (int j = 0; j < matchIndices.length; j++) {
-				if (matchIndices[j] >= 0 && !((Node) env.getValue(j)).sameValueAs(candidate.getValue(matchIndices[j]))) {
-					logger.debug(String.format(
-							"this.matchIndices[j] == %d and value at this.value[%d] != that.value[%d]",
-							matchIndices[j], j, matchIndices[j]
-							));
+				if (matchIndices[j] >= 0 && !((Node) values.get(j)).sameValueAs(candidate.getValue(matchIndices[j]))) {
+//					logger.debug(String.format(
+//							"this.matchIndices[j] == %d and value at this.value[%d] != that.value[%d]",
+//							matchIndices[j], j, matchIndices[j]
+//							));
 					matchOK = false;
 					break;
 				}
@@ -254,7 +256,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 
 	/**
 	 * Clone this node in the network.
-	 * 
+	 *
 	 * @param netCopy
 	 * @param context
 	 *            the new context to which the network is being ported

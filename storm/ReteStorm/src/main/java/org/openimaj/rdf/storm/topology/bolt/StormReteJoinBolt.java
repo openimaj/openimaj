@@ -40,6 +40,7 @@ import org.openimaj.rdf.storm.bolt.RETEStormQueue;
 
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEQueue;
@@ -71,6 +72,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	private int[] templateRight;
 	private RETEStormQueue leftQ;
 	private RETEStormQueue rightQ;
+	private Tuple currentInput;
 
 	/**
 	 *
@@ -102,12 +104,43 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	 * @return the Fields output from the left bolt that this bolt joins on.
 	 */
 	public Fields getLeftJoinFields(){
+		return getJoinFieldsByIndex(matchLeft);
+
+	}
+
+	/**
+	 * Given a set of match fields, return fields of the non-zero indexes
+	 * of the match fields. Has the effect of saying which values in this
+	 * bolt are to be used
+	 *
+	 * @param matchFields
+	 * @return the fields in the form of "?index"
+	 */
+	public static Fields getJoinFieldsByIndex(int[] matchFields) {
 		// extract the fields from the left bolt that this bolt joins on from the
 		// left match indices (the indices of the array, rather than the values).
 		List<String> fields = new ArrayList<String>();
-		for (int i = 0; i < matchLeft.length; i++)
-			if (matchLeft[i] >= 0)
+		for (int i = 0; i < matchFields.length; i++)
+			if (matchFields[i] >= 0)
 				fields.add("?"+i);
+		return new Fields(fields);
+	}
+
+	/**
+	 * Given a set of match fields, return fields of the non-zero values
+	 * of the match fields. Has the effect of saying which values in the sibling
+	 * join are to be joined against
+	 *
+	 * @param matchFields
+	 * @return the fields in the form of "?matchFields[index]"
+	 */
+	public static Fields getJoinFieldsByValue(int[] matchFields) {
+		// extract the fields from the left bolt that this bolt joins on from the
+		// left match indices (the indices of the array, rather than the values).
+		List<String> fields = new ArrayList<String>();
+		for (int i = 0; i < matchFields.length; i++)
+			if (matchFields[i] >= 0)
+				fields.add("?"+matchFields[i]);
 		return new Fields(fields);
 	}
 
@@ -115,13 +148,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	 * @return the Fields output from the right bolt that this bolt joins on.
 	 */
 	public Fields getRightJoinFields(){
-		// extract the fields from the right bolt that this bolt joins to from the
-		// left match indices (the values of the array, rather than the indices).
-		List<String> fields = new ArrayList<String>();
-		for (int i = 0; i < matchLeft.length; i++)
-			if (matchLeft[i] >= 0)
-				fields.add("?"+matchLeft[i]);
-		return new Fields(fields);
+		return getJoinFieldsByValue(matchLeft);
 	}
 
 	@Override
@@ -129,13 +156,14 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 		logger.debug(String.format("Executing join over: {left = %s, right = %s } ",this.leftBolt,this.rightBolt));
 		boolean isAdd = (Boolean) input.getValueByField(Component.isAdd.toString());
 		long timestamp = (Long) input.getValueByField(Component.timestamp.toString());
+		this.currentInput = input;
 		if(input.getSourceComponent().equals(leftBolt)){
 			this.leftQ.fire(input, isAdd,timestamp);
 		}
 		else{
 			this.rightQ.fire(input, isAdd,timestamp);
 		}
-		emit(input);
+
 		acknowledge(input);
 	}
 
@@ -160,10 +188,14 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	}
 
 	@Override
-	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy,
-			RETERuleContext context) {
-		// TODO Auto-generated method stub
+	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy,RETERuleContext context) {
 		return null;
+	}
+
+	@Override
+	public void fire(Values output, boolean isAdd) {
+		super.fire(output, isAdd);
+		emit(currentInput);
 	}
 
 }

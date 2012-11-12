@@ -31,6 +31,7 @@ package org.openimaj.rdf.storm.sparql.topology.builder.group;
 
 import java.util.Set;
 
+import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink;
 import org.openimaj.rdf.storm.spout.NTripleSpout;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
 
@@ -63,6 +64,9 @@ public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBui
 		return TRIPLE_SPOUT;
 	}
 
-
+	@Override
+	public StormSPARQLReteConflictSetBoltSink conflictSetSink() {
+		return null;
+	}
 
 }

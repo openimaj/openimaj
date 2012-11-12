@@ -1,0 +1,7 @@
+<http://example.org/book/book1>  <http://purl.org/dc/elements/1.1/title>     "SPARQL Tutorial" .
+<http://example.org/book/book1>  <http://example.org/ns#price>     "42"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/book/book1>  <http://example.org/ns#discount>  "0.2"^^<http://www.w3.org/2001/XMLSchema#float> .
+
+<http://example.org/book/book2>  <http://purl.org/dc/elements/1.1/title>     "The Semantic Web" .
+<http://example.org/book/book2>  <http://example.org/ns#price>     "23"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/book/book2>  <http://example.org/ns#discount>  "0.25"^^<http://www.w3.org/2001/XMLSchema#float> .
