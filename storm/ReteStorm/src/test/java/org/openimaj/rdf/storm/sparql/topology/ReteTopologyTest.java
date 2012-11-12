@@ -35,7 +35,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.rdf.storm.sparql.topology.builder.group.NTriplesSPARQLReteTopologyBuilder;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.FileNTriplesSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
 
 import backtype.storm.LocalCluster;
@@ -45,9 +45,9 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 
 /**
  * Test the {@link StormTopology} construction from a CSPARQL query
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteTopologyTest {
 	private static long TOPOLOGY_SLEEP_TIME = 2000;
@@ -59,7 +59,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * prepare the output
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	@Before
@@ -68,7 +68,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -76,7 +76,7 @@ public class ReteTopologyTest {
 	public void testReteTopology() throws IOException, TranslationException {
 		String sparqlSource = "/test.group.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new NTriplesSPARQLReteTopologyBuilder(),
+				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
 				);
 		final LocalCluster cluster = new LocalCluster();
@@ -88,7 +88,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -96,7 +96,7 @@ public class ReteTopologyTest {
 	public void testReteTopologyUNION() throws IOException, TranslationException {
 		String sparqlSource = "/test.union.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new NTriplesSPARQLReteTopologyBuilder(),
+				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
 				);
 		final LocalCluster cluster = new LocalCluster();
@@ -108,7 +108,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -116,7 +116,7 @@ public class ReteTopologyTest {
 	public void testReteTopologyMultiple() throws IOException, TranslationException {
 		String sparqlSource = "/test.multiple.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new NTriplesSPARQLReteTopologyBuilder(),
+				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
 				);
 		final LocalCluster cluster = new LocalCluster();
@@ -128,7 +128,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -136,7 +136,7 @@ public class ReteTopologyTest {
 	public void testReteTopologyOptional() throws IOException, TranslationException {
 		String sparqlSource = "/test.optional.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new NTriplesSPARQLReteTopologyBuilder(),
+				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
 				);
 		final LocalCluster cluster = new LocalCluster();
@@ -148,7 +148,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -156,7 +156,7 @@ public class ReteTopologyTest {
 	public void testReteTopologyFilters() throws IOException, TranslationException {
 		String sparqlSource = "/test.filter.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new NTriplesSPARQLReteTopologyBuilder(),
+				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
 				);
 		final LocalCluster cluster = new LocalCluster();
@@ -168,7 +168,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -176,7 +176,7 @@ public class ReteTopologyTest {
 	public void testReteTopologyAggregate() throws IOException, TranslationException {
 		String sparqlSource = "/test.aggregate.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new NTriplesSPARQLReteTopologyBuilder(),
+				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
 				);
 		final LocalCluster cluster = new LocalCluster();
@@ -188,7 +188,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -196,7 +196,7 @@ public class ReteTopologyTest {
 	public void testReteTopologyBindGroupBy() throws IOException, TranslationException {
 		String sparqlSource = "/test.groupby.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new NTriplesSPARQLReteTopologyBuilder(),
+				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
 				);
 		final LocalCluster cluster = new LocalCluster();

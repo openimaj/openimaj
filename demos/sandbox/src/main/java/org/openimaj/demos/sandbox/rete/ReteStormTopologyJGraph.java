@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 import org.openimaj.rdf.storm.sparql.topology.StormSPARQLReteTopologyOrchestrator;
-import org.openimaj.rdf.storm.sparql.topology.builder.group.NTriplesSPARQLReteTopologyBuilder;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.FileNTriplesSPARQLReteTopologyBuilder;
 import org.openimaj.storm.util.graph.StormGraphCreator;
 import org.openimaj.storm.util.graph.StormGraphCreator.NamedNode;
 import org.openimaj.storm.util.graph.StormGraphCreator.NamingStrategy.AlphabeticNamingStrategy;
@@ -41,9 +41,9 @@ public class ReteStormTopologyJGraph extends JFrame {
 	}
 
 	public static void main(String[] args) throws TranslationException, IOException {
-		String sparqlSource = "/test.multiple.csparql";
+		String sparqlSource = "/test.groupby.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new NTriplesSPARQLReteTopologyBuilder(),
+				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteStormTopologyJGraph.class.getResourceAsStream(sparqlSource)
 				);
 		System.out.println(orchestrator);
@@ -52,7 +52,7 @@ public class ReteStormTopologyJGraph extends JFrame {
 		final AlphabeticNamingStrategy strat = new AlphabeticNamingStrategy();
 		ListenableDirectedGraph<NamedNode, DefaultEdge> graph = StormGraphCreator.asGraph(rtop, strat);
 		ReteStormTopologyJGraph frame = new ReteStormTopologyJGraph();
-//		JGraphModelAdapter<NamedNode, DefaultEdge> adp = new JGraphModelAdapter<NamedNode, DefaultEdge>( graph ) ;
+		//		JGraphModelAdapter<NamedNode, DefaultEdge> adp = new JGraphModelAdapter<NamedNode, DefaultEdge>( graph ) ;
 		mxGraph mxg = mxGraphUtils.fromJGraphT(graph);
 		mxHierarchicalLayout layout = new mxHierarchicalLayout(mxg);
 		layout.execute(mxg.getDefaultParent());
@@ -62,21 +62,21 @@ public class ReteStormTopologyJGraph extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Object cell = cmp.getCellAt(e.getX(), e.getY());
-                if(cell != null && cell instanceof mxCell){
-                	System.out.println("Cell selected");
-                	mxCell mxc = ((mxCell)cell);
-                	if(mxc.isVertex()){
+				if (cell != null && cell instanceof mxCell) {
+					System.out.println("Cell selected");
+					mxCell mxc = ((mxCell) cell);
+					if (mxc.isVertex()) {
 
-                		String n = ((NamedNode)mxc.getValue()).name;
-                		String compName = strat.lookup.get(n);
-                		outputArea.setText(n + ": " + compName);
-                	}
-                }
+						String n = ((NamedNode) mxc.getValue()).name;
+						String compName = strat.lookup.get(n);
+						outputArea.setText(n + ": " + compName);
+					}
+				}
 			}
 		});
 		frame.getContentPane().setLayout(new BorderLayout());
-		frame.getContentPane().add(cmp,BorderLayout.CENTER);
-		frame.getContentPane().add(outputArea,BorderLayout.SOUTH);
+		frame.getContentPane().add(cmp, BorderLayout.CENTER);
+		frame.getContentPane().add(outputArea, BorderLayout.SOUTH);
 		frame.pack();
 		frame.setVisible(true);
 	}

@@ -29,9 +29,14 @@
  */
 package org.openimaj.rdf.storm.sparql.topology.builder.group;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.mortbay.io.RuntimeIOException;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink;
+import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink.FileSink;
 import org.openimaj.rdf.storm.spout.NTripleSpout;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
 
@@ -39,21 +44,37 @@ import backtype.storm.topology.TopologyBuilder;
 import eu.larkc.csparql.parser.StreamInfo;
 
 /**
- * The {@link NTriplesSPARQLReteTopologyBuilder} provides triples from URI
+ * The {@link FileNTriplesSPARQLReteTopologyBuilder} provides triples from URI
  * streams via the {@link NTriplesSpout}.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBuilder{
+public class FileNTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBuilder {
 	/**
 	 * The name of the spout outputting triples
 	 */
 	public static final String TRIPLE_SPOUT = "tripleSpout";
+	private static final Logger logger = Logger.getLogger(FileNTriplesSPARQLReteTopologyBuilder.class);
+	File wang;
 
 	/**
 	 */
-	public NTriplesSPARQLReteTopologyBuilder() {
+	public FileNTriplesSPARQLReteTopologyBuilder() {
+		try {
+			wang = File.createTempFile("STORM", "SPARQL");
+			wang.delete();
+			logger.debug("Temporary output location created: " + wang);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
+
+	}
+
+	/**
+	 */
+	public FileNTriplesSPARQLReteTopologyBuilder(File output) {
+		this.wang = output;
 	}
 
 	@Override
@@ -66,7 +87,14 @@ public class NTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopologyBui
 
 	@Override
 	public StormSPARQLReteConflictSetBoltSink conflictSetSink() {
-		return null;
+
+		try {
+			wang = File.createTempFile("STORM", "SPARQL");
+			wang.delete();
+			return new FileSink(wang);
+		} catch (IOException e) {
+			throw new RuntimeIOException(e);
+		}
 	}
 
 }
