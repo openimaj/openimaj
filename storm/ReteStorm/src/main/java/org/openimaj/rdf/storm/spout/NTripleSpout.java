@@ -41,13 +41,9 @@ import org.openjena.riot.lang.LangNTriples;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
-import backtype.storm.tuple.Fields;
-
 import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.mem.GraphMem;
-import com.hp.hpl.jena.reasoner.TriplePattern;
 
 /**
  * Given a URL, This spout creates a stream of triples formatted to Storm fields according to a Jena RETE <-> Storm translator.
@@ -61,14 +57,6 @@ public class NTripleSpout extends SimpleSpout implements Sink<Triple> {
 
 	private String nTriplesURL;
 	private LangNTriples parser;
-
-	/**
-	 * the fields outputted when triples are contained
-	 */
-	private static final Fields PART_FIELDS = new Fields("?s","?p","?o");
-	private static final TriplePattern template = new TriplePattern(Node.createVariable("?s"),
-																	Node.createVariable("?p"),
-																	Node.createVariable("?o"));
 
 	/**
 	 * @param nTriplesURL
