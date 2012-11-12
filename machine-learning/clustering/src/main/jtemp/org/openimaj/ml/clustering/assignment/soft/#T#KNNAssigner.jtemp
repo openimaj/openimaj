@@ -174,4 +174,9 @@ public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {
 		
 		return new IndependentPair<int[], #r#[]>(indices[0], distances[0]);
 	}
+	
+	@Override
+	public int numDimensions() {
+	    return nn.numDimensions();
+	}
 }

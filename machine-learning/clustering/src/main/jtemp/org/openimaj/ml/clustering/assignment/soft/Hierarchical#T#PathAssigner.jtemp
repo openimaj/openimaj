@@ -155,4 +155,9 @@ public class Hierarchical#T#PathAssigner implements SoftAssigner<#t#[], #r#[]> {
 		
 		return new IndependentPair<int[], #r#[]>(assignments[0], weights[0]);
 	}
+	
+	@Override
+	public int numDimensions() {
+	    return result.numDimensions();
+	}
 }

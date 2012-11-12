@@ -119,4 +119,9 @@ public class Approximate#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[
 	public int size() {
 	    return nn.size();
 	}
+	
+	@Override
+	public int numDimensions() {
+	    return nn.numDimensions();
+	}
 }

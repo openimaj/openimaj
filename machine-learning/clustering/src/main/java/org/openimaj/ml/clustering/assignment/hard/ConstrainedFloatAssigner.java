@@ -147,4 +147,9 @@ public class ConstrainedFloatAssigner<DATATYPE> implements HardAssigner<DATATYPE
 	public int size() {
 		return this.internalAssigner.size();
 	}
+
+	@Override
+	public int numDimensions() {
+		return this.internalAssigner.numDimensions();
+	}
 }

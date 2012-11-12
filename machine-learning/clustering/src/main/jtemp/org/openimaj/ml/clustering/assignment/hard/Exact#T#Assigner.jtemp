@@ -122,4 +122,9 @@ public class Exact#T#Assigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> 
 	public int size() {
 	    return nn.size();
 	}
+	
+	@Override
+	public int numDimensions() {
+	    return nn.numDimensions();
+	}
 }

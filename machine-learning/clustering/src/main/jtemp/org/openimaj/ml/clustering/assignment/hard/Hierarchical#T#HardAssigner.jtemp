@@ -226,4 +226,9 @@ public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], I
 	public int size() {
 	    return result.countLeafs();
 	}
+	
+	@Override
+	public int numDimensions() {
+	    return result.numDimensions();
+	}
 }

@@ -3,9 +3,13 @@ package org.openimaj.image.pixel.sampling;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.util.iterator.IterableIterator;
 
 /**
  * A {@link RectangleSampler} provides an easy way to generate a sliding window
@@ -81,7 +85,7 @@ public class RectangleSampler implements Iterable<Rectangle> {
 	 * 
 	 * @return all the rectangles
 	 */
-	public List<Rectangle> getAllRectangles() {
+	public List<Rectangle> allRectangles() {
 		final List<Rectangle> list = new ArrayList<Rectangle>();
 
 		for (final Rectangle r : this)
@@ -98,12 +102,7 @@ public class RectangleSampler implements Iterable<Rectangle> {
 
 			@Override
 			public boolean hasNext() {
-				final float nextX = x + stepx;
-				if (nextX + width < maxx)
-					return true;
-
-				final float nextY = y + stepy;
-				if (nextY + height < maxy)
+				if (x + width <= maxx && y + height <= maxy)
 					return true;
 
 				return false;
@@ -111,20 +110,22 @@ public class RectangleSampler implements Iterable<Rectangle> {
 
 			@Override
 			public Rectangle next() {
+				if (y + height > maxy)
+					throw new NoSuchElementException();
+
 				float nextX = x + stepx;
 				float nextY = y;
-				if (nextX + width >= maxx) {
+				if (nextX + width > maxx) {
 					nextX = minx;
 					nextY += stepy;
 				}
 
-				if (nextY + height >= maxy)
-					return null;
+				final Rectangle r = new Rectangle(x, y, width, height);
 
 				x = nextX;
 				y = nextY;
 
-				return new Rectangle(x, y, width, height);
+				return r;
 			}
 
 			@Override
@@ -155,9 +156,6 @@ public class RectangleSampler implements Iterable<Rectangle> {
 			public I next() {
 				final Rectangle r = inner.next();
 
-				if (r == null)
-					return null;
-
 				return image.extractROI(r);
 			}
 
@@ -166,5 +164,20 @@ public class RectangleSampler implements Iterable<Rectangle> {
 				throw new UnsupportedOperationException("Removal is not supported!");
 			}
 		};
+	}
+
+	public static void main(String[] args) {
+		final FImage img = new FImage(300, 300);
+
+		final RectangleSampler s = new RectangleSampler(img, 100, 100, 100, 100);
+		for (final Rectangle r : s) {
+			System.out.println(r);
+			img.drawShape(r, 1f);
+		}
+
+		for (final FImage i : IterableIterator.in(s.subImageIterator(img)))
+			System.out.println(i.width);
+
+		DisplayUtilities.display(img);
 	}
 }

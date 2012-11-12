@@ -30,13 +30,20 @@
 package org.openimaj.ml.clustering.assignment;
 
 /**
- * Super interface for all assigners. Assigners take a point
- * and assign it to cluster(s). 
+ * Super interface for all assigners. Assigners take a point and assign it to
+ * cluster(s).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster.
+ * 
+ * @param <DATATYPE>
+ *            the primitive array datatype which represents a centroid of this
+ *            cluster.
  */
 public interface Assigner<DATATYPE> {
-
+	/**
+	 * Get the number of dimensions of the vectors.
+	 * 
+	 * @return the number of dimensions
+	 */
+	public abstract int numDimensions();
 }
