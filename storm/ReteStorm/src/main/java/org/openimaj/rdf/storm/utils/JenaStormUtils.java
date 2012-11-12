@@ -46,27 +46,33 @@ import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.Node_Blank;
 import com.hp.hpl.jena.graph.Node_Literal;
 import com.hp.hpl.jena.graph.Node_URI;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 import com.hp.hpl.jena.mem.GraphMem;
+import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.shared.AddDeniedException;
+import com.hp.hpl.jena.sparql.core.BasicPattern;
+import com.hp.hpl.jena.sparql.syntax.ElementFilter;
+import com.hp.hpl.jena.sparql.syntax.Template;
 
 /**
  * A collections to tools for letting Jena play nicely with Storm
- *
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Monks <dm11g08@ecs.soton.ac.uk>
- *
+ * 
+ * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+ *         (ss@ecs.soton.ac.uk), David Monks <dm11g08@ecs.soton.ac.uk>
+ * 
  */
 public class JenaStormUtils {
 
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class NodeSerialiser_URI extends Serializer<Node_URI> {
 
@@ -85,7 +91,35 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 *
+	 * 
+	 */
+	public static class TemplateSerialiser extends Serializer<Template> {
+
+		@Override
+		public void write(Kryo kryo, Output output, Template object) {
+			BasicPattern bgp = object.getBGP();
+			output.writeInt(bgp.size());
+			for (Triple triple : bgp) {
+				kryo.writeClassAndObject(output, triple);
+			}
+		}
+
+		@Override
+		public Template read(Kryo kryo, Input input, Class<Template> type) {
+			BasicPattern bgp = new BasicPattern();
+			int count = input.readInt();
+			for (int i = 0; i < count; i++) {
+				bgp.add((Triple) kryo.readClassAndObject(input));
+			}
+			return new Template(bgp);
+		}
+
+	}
+
+	/**
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
 	 */
 	public static class NodeSerialiser_Literal extends Serializer<Node_Literal> {
 
@@ -112,7 +146,27 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 *
+	 * 
+	 */
+	public static class NodeSerialiser_Blank extends Serializer<Node_Blank> {
+
+		@Override
+		public void write(Kryo kryo, Output output, Node_Blank object) {
+			output.writeString(object.toString());
+		}
+
+		@Override
+		public Node_Blank read(Kryo kryo, Input input, Class<Node_Blank> type) {
+			String label = input.readString();
+			return (Node_Blank) Node.createAnon(AnonId.create(label));
+		}
+
+	}
+
+	/**
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
 	 */
 	public static class TripleSerialiser extends Serializer<Triple> {
 
@@ -137,7 +191,7 @@ public class JenaStormUtils {
 	}
 
 	/**
-	 *
+	 * 
 	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
 	 */
 	public static class GraphSerialiser extends Serializer<Graph> {
@@ -145,8 +199,8 @@ public class JenaStormUtils {
 		@Override
 		public void write(Kryo kryo, Output output, Graph object) {
 			output.writeInt(object.size());
-			Iterator<Triple> it = object.find(null,null,null);
-			while (it.hasNext()){
+			Iterator<Triple> it = object.find(null, null, null);
+			while (it.hasNext()) {
 				kryo.writeClassAndObject(output, it.next());
 			}
 		}
@@ -157,7 +211,7 @@ public class JenaStormUtils {
 			Graph graph = null;
 			graph = new GraphMem();
 			List<Triple> overflow = new ArrayList<Triple>();
-			for (int i = 0; i < size; i++){
+			for (int i = 0; i < size; i++) {
 				Object obj = kryo.readClassAndObject(input);
 				try {
 					graph.add((Triple) obj);
@@ -166,12 +220,14 @@ public class JenaStormUtils {
 				}
 			}
 			Iterator<Triple> it = overflow.iterator();
-			while (!overflow.isEmpty()){
-				if (!it.hasNext()) it = overflow.iterator();
+			while (!overflow.isEmpty()) {
+				if (!it.hasNext())
+					it = overflow.iterator();
 				try {
 					graph.add(it.next());
 					it.remove();
-				} catch (AddDeniedException ex) {}
+				} catch (AddDeniedException ex) {
+				}
 			}
 			return graph;
 		}
@@ -181,7 +237,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class NodeSerialiser_ARRAY extends Serializer<Node[]> {
 
@@ -207,7 +263,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class KestrelServerSpec_Serializer extends Serializer<KestrelServerSpec> {
 
@@ -227,10 +283,9 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class RuleSerializer extends Serializer<Rule> {
-
 
 		@Override
 		public void write(Kryo kryo, Output output, Rule object) {
@@ -243,6 +298,7 @@ public class JenaStormUtils {
 		}
 
 	}
+
 	/**
 	 * @param conf
 	 *            register some Jena serialisers to this configuration
@@ -258,11 +314,14 @@ public class JenaStormUtils {
 		conf.registerSerialization(Graph.class, GraphSerialiser.class);
 		conf.registerSerialization(GraphMem.class, GraphSerialiser.class);
 		conf.registerSerialization(MultiUnion.class, GraphSerialiser.class);
+		conf.registerSerialization(Template.class, TemplateSerialiser.class);
+		conf.registerSerialization(Node_Blank.class, NodeSerialiser_Blank.class);
+		conf.registerSerialization(ElementFilter.class);
 		// conf.registerSerialization(Node_NULL.class);
 		// conf.registerSerialization(Node_Blank.class);
 	}
 
-	private static List<IndependentPair<Class<?>,Class<? extends Serializer<?>>>> initSerializers() {
-		return new ArrayList<IndependentPair<Class<?>,Class<? extends Serializer<?>>>>();
+	private static List<IndependentPair<Class<?>, Class<? extends Serializer<?>>>> initSerializers() {
+		return new ArrayList<IndependentPair<Class<?>, Class<? extends Serializer<?>>>>();
 	}
 }

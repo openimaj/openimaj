@@ -1,0 +1,16 @@
+#------------------------------------------------------------------
+# Sina's Test Production Rules (this time in SPARQL form!)
+# A really simple set of production rules 
+#------------------------------------------------------------------
+REGISTER QUERY Test AS
+
+PREFIX : <http://books.example/>
+SELECT ?org (SUM(?lprice) AS ?totalPrice) (AVG(?lprice)*2 AS ?avgPrice)
+FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.aggregate.rdfs> [RANGE 30m STEP 5m]
+WHERE {
+  ?org :affiliates ?auth .
+  ?auth :writesBook ?book .
+  ?book :price ?lprice .
+}
+GROUP BY ?org
+HAVING (SUM(?lprice) > 10)

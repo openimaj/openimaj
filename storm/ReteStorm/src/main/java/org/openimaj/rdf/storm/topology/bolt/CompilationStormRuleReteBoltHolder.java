@@ -13,15 +13,42 @@ import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
+/**
+ * Holds the variables, rule and bolt for a given compilation. This wrapper is
+ * necessary as
+ * bolts may be shared (i.e. have the same pattern) but may have different
+ * bindings and variables.
+ * 
+ * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class CompilationStormRuleReteBoltHolder {
-	private StormRuleReteBolt bolt;
+	private StormReteBolt bolt;
 	private String[] outputFields;
+	private Rule rule;
 
-	public CompilationStormRuleReteBoltHolder(StormRuleReteBolt bolt, Rule rule) {
+	/**
+	 * @param bolt
+	 *            the bolt instance
+	 * @param rule
+	 *            the rule using this bolt (bindings extracted from this rule
+	 *            rather than the bolt's rule)
+	 */
+	public CompilationStormRuleReteBoltHolder(StormReteBolt bolt, Rule rule) {
 		this.bolt = bolt;
+		this.rule = rule;
 		@SuppressWarnings("unchecked")
 		List<ClauseEntry> outputTemplate = Arrays.asList(rule.getHead());
 		this.setVars(extractFields(outputTemplate));
+	}
+
+	/**
+	 * The variables of this compilation are null
+	 * 
+	 * @param bolt
+	 */
+	public CompilationStormRuleReteBoltHolder(StormReteBolt bolt) {
+		this.bolt = bolt;
 	}
 
 	/**
@@ -67,7 +94,7 @@ public class CompilationStormRuleReteBoltHolder {
 
 	/**
 	 * Get the names of the variable fields output from this Bolt.
-	 *
+	 * 
 	 * @return String[]
 	 */
 	public String[] getVars() {
@@ -76,15 +103,31 @@ public class CompilationStormRuleReteBoltHolder {
 
 	/**
 	 * Set the names of the variable fields output from this Bolt.
-	 *
+	 * 
 	 * @param newVars
 	 */
 	public void setVars(String[] newVars) {
 		this.outputFields = newVars;
 	}
 
+	/**
+	 * 
+	 * @return get the rule of this {@link CompilationStormRuleReteBoltHolder}
+	 *         rather than the underlying bolt
+	 */
 	public Rule getRule() {
-		return this.bolt.getRule();
+		return this.rule;
 	}
 
+	@Override
+	public String toString() {
+		if (rule != null)
+			return this.rule.toShortString();
+		else
+			return bolt.toString();
+	}
+
+	public StormReteBolt getBolt() {
+		return bolt;
+	}
 }

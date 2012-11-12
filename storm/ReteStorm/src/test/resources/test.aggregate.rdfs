@@ -1,0 +1,11 @@
+<http://books.example/org1> <http://books.example/affiliates> <http://books.example/auth1>.
+<http://books.example/org1> <http://books.example/affiliates> <http://books.example/auth2> .
+<http://books.example/auth1> <http://books.example/writesBook> <http://books.example/book1>.
+<http://books.example/auth1> <http://books.example/writesBook> <http://books.example/book2> .
+<http://books.example/book1> <http://books.example/price> "9"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://books.example/book2> <http://books.example/price> "5"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://books.example/auth2> <http://books.example/writesBook> <http://books.example/book3> .
+<http://books.example/book3> <http://books.example/price> "7"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://books.example/org2> <http://books.example/affiliates> <http://books.example/auth3> .
+<http://books.example/auth3> <http://books.example/writesBook> <http://books.example/book4> .
+<http://books.example/book4> <http://books.example/price> "7"^^<http://www.w3.org/2001/XMLSchema#integer> .

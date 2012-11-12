@@ -8,12 +8,11 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX ex: <http://example.com/>
 PREFIX xs: <http://www.w3.org/2001/XMLSchema#>
 
-CONSTRUCT {?d rdf:type ?e. ?f rdf:type ?e}
-FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.multiple.rdfs> [RANGE 30m STEP 5m]
+CONSTRUCT {?d rdf:type ex:GoodDriver}
+FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.rdfs> [RANGE 30m STEP 5m]
 WHERE {
 	?d rdf:type ex:Driver .
-	?e rdf:type ex:Driver .
-	?d rdf:type ex:Womble .
-	?e rdf:type ex:Person .
-	?f rdf:type ex:NotInvolved 
+	?d ex:accidentsNumber ?a .
+	FILTER (?a < 5).
+	FILTER (?a > -1).
 }

@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLFilterBolt;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilderContext;
@@ -59,6 +60,7 @@ import backtype.storm.topology.TopologyBuilder;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Node_Variable;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
@@ -66,8 +68,11 @@ import com.hp.hpl.jena.reasoner.rulesys.Node_RuleVariable;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.syntax.Element;
+import com.hp.hpl.jena.sparql.syntax.ElementFilter;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementOptional;
 import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementSubQuery;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 
 import eu.larkc.csparql.parser.StreamInfo;
@@ -75,15 +80,15 @@ import eu.larkc.csparql.parser.StreamInfo;
 /**
  * This topology builder attempts to support groups of paths and subqueries in
  * SPARQL queries
- *
- *
+ * 
+ * 
  * This base interface takes care of recording filters, joins etc. and leaves
  * the job of actually adding the bolts to the topology as well as the
  * construction of the {@link ReteConflictSetBolt} instance down to its
  * subclasses.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBuilder {
 	private static Logger logger = Logger.getLogger(BaseSPARQLReteTopologyBuilder.class);
@@ -96,8 +101,10 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	private Map<String, StormReteBolt> bolts;
 	private List<List<NamedCompilation>> secondToLast;
 	private SPARQLReteTopologyBuilderContext context;
+	private StormSPARQLReteConflictSetBolt finalTerm;
 
-	private static class NamedCompilation extends IndependentPair<String, CompilationStormRuleReteBoltHolder>{
+	private static class NamedCompilation extends
+			IndependentPair<String, CompilationStormRuleReteBoltHolder> {
 
 		public NamedCompilation(String name, CompilationStormRuleReteBoltHolder compilation) {
 			super(name, compilation);
@@ -106,13 +113,13 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	}
 
 	@Override
-	public abstract String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) ;
+	public abstract String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams);
 
 	@Override
 	public void initTopology(SPARQLReteTopologyBuilderContext context) {
 		this.context = context;
 		this.bolts = new HashMap<String, StormReteBolt>();
-		StormSPARQLReteConflictSetBolt finalTerm = constructConflictSetBolt();
+		this.finalTerm = constructConflictSetBolt();
 		if (finalTerm != null)
 		{
 			// There is explicity 1 and only 1 Conflict set
@@ -126,31 +133,70 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	}
 
 	private List<List<NamedCompilation>> visit(Element el) {
-		if(el instanceof ElementGroup){
-			return visit((ElementGroup)el);
+		if (el instanceof ElementGroup) {
+			return visit((ElementGroup) el);
 		}
-		else if(el instanceof ElementPathBlock){
-			return visit((ElementPathBlock)el);
+		else if (el instanceof ElementPathBlock) {
+			return visit((ElementPathBlock) el);
 		}
-		else if(el instanceof ElementUnion){
-			return visit((ElementUnion)el);
+		else if (el instanceof ElementUnion) {
+			return visit((ElementUnion) el);
+		}
+		else if (el instanceof ElementOptional) {
+			return visit((ElementOptional) el);
+		}
+		else if (el instanceof ElementSubQuery) {
+			return visit((ElementSubQuery) el);
+		}
+		else if (el instanceof ElementFilter) {
+			return visit((ElementFilter) el);
 		}
 		throw new RuntimeException("Unable to handle query statement element: " + el.getClass());
+	}
+
+	private List<List<NamedCompilation>> visit(ElementFilter el) {
+		List<List<NamedCompilation>> retList = new ArrayList<List<NamedCompilation>>();
+		List<NamedCompilation> filterList = new ArrayList<NamedCompilation>();
+		retList.add(filterList);
+		filterList.add(new NamedCompilation(constructFilterName(el), new CompilationStormRuleReteBoltHolder(constructFilterCompilation(el))));
+		return retList;
+	}
+
+	private StormSPARQLFilterBolt constructFilterCompilation(ElementFilter el) {
+		StormSPARQLFilterBolt bolt = new StormSPARQLFilterBolt(el);
+		return bolt;
+	}
+
+	int countFilters = 0;
+
+	private String constructFilterName(ElementFilter el) {
+		final String filterName = String.format("SPARQLfilter_%d", countFilters++);
+		return filterName;
+	}
+
+	private List<List<NamedCompilation>> visit(ElementSubQuery el) {
+		Query q = el.getQuery(); // Deal with this shit!
+		return null;
 	}
 
 	private List<List<NamedCompilation>> visit(ElementGroup el) {
 
 		List<List<NamedCompilation>> boltNamesLists = new ArrayList<List<NamedCompilation>>();
+		List<ElementFilter> filters = new ArrayList<ElementFilter>();
 		for (Element sel : el.getElements()) {
+			if (sel instanceof ElementFilter) {
+				filters.add((ElementFilter) sel);
+				continue; // Note filters are NOT added to the main boltNamesLists so they can be dealt with together, last
+			}
 			List<List<NamedCompilation>> newBoltNamesLists = visit(sel);
 
-			if(boltNamesLists.size() == 0){
+			if (boltNamesLists.size() == 0) {
 				boltNamesLists = newBoltNamesLists;
 			}
-			else{
+			else {
 				List<List<NamedCompilation>> combinedBoltNamesLists = new ArrayList<List<NamedCompilation>>();
 				for (List<NamedCompilation> other : newBoltNamesLists) {
-					for (List<NamedCompilation> current: boltNamesLists) {
+					for (List<NamedCompilation> current : boltNamesLists) {
 						// Merge the two lists and add to the combined
 						List<NamedCompilation> merged = new ArrayList<NamedCompilation>();
 						merged.addAll(current);
@@ -163,7 +209,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 			// now merge the bolt name lists with the ones we currently have and add them again
 		}
 		// for each set of bolts
-		for (List<NamedCompilation> boltNames: boltNamesLists) {
+		for (List<NamedCompilation> boltNames : boltNamesLists) {
 			// Now do the join!
 			join: while (boltNames.size() > 1) {
 				int innerSelect = 1;
@@ -175,13 +221,12 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 				CompilationStormRuleReteBoltHolder currentBolt = currentNameCompBoltPair.getSecondObject();
 				String[] currentVars = currentBolt.getVars();
 				while (innerSelect < boltNames.size()) {
-					NamedCompilation otherNameCompBoltPair = boltNames
-							.get(innerSelect);
+					NamedCompilation otherNameCompBoltPair = boltNames.get(innerSelect);
 					CompilationStormRuleReteBoltHolder otherBolt = otherNameCompBoltPair.secondObject();
 					String[] otherVars = otherBolt.getVars();
 					for (String v : currentVars) {
 						if (Arrays.asList(otherVars).contains(v)) {
-							createJoin(0, innerSelect, currentNameCompBoltPair, otherNameCompBoltPair,boltNames);
+							createJoin(0, innerSelect, boltNames);
 							continue join;
 						}
 					}
@@ -189,13 +234,31 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 					// if we ever get here, inner select failed to
 					// find a joining bolt, just pick the 1st one.
 					if (innerSelect == boltNames.size()) {
-						createJoin(0, 1, currentNameCompBoltPair, otherNameCompBoltPair, boltNames);
+						createJoin(0, 1, boltNames);
 					}
 				}
 			}
 		}
 
+		compileFilters(boltNamesLists, filters);
+
 		return boltNamesLists;
+	}
+
+	private void compileFilters(List<List<NamedCompilation>> boltNamesLists, List<ElementFilter> filters) {
+		// for each grouping, add a new filter compilation to the end
+		for (List<NamedCompilation> list : boltNamesLists) {
+			NamedCompilation last = list.remove(0);// There must only be 1 in each list
+			for (ElementFilter f : filters) {
+				NamedCompilation filter = visit(f).get(0).get(0); // There must only be 1 filter bolt
+				StormSPARQLFilterBolt fbolt = (StormSPARQLFilterBolt) filter.getSecondObject().getBolt();
+				fbolt.registerSourceVariables(last.firstObject(), last.secondObject().getVars());
+				filter.secondObject().setVars(last.secondObject().getVars()); // If the filter passes it throws along ALL variables of the previous (possibly more?)
+				bolts.put(filter.firstObject(), fbolt); // so it is actually added
+				last = filter; // connect all filters in a chain
+			}
+			list.add(last); // re-attach the last node, which might now be a filter
+		}
 	}
 
 	private List<List<NamedCompilation>> visit(ElementUnion el) {
@@ -203,6 +266,13 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 		for (Element elm : el.getElements()) {
 			unionList.addAll(visit(elm));
 		}
+		return unionList;
+	}
+
+	private List<List<NamedCompilation>> visit(ElementOptional el) {
+		List<List<NamedCompilation>> unionList = new ArrayList<List<NamedCompilation>>();
+		unionList.add(new ArrayList<NamedCompilation>()); // Add an EMPTY list to the proceedings. i.e. allow option to not happen
+		unionList.addAll(visit(el.getOptionalElement()));
 		return unionList;
 	}
 
@@ -225,7 +295,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 						logger.debug(error);
 						throw new RuntimeException(error);
 					}
-					logger.debug(String.format("Filter bolt %s created from clause %s", boltName,el.toString()));
+					logger.debug(String.format("Filter bolt %s created from clause %s", boltName, el.toString()));
 					bolts.put(boltName, filterBolt);
 				}
 				NamedCompilation toCompile = new NamedCompilation(boltName, new CompilationStormRuleReteBoltHolder((StormRuleReteBolt) filterBolt, rule));
@@ -237,17 +307,14 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 		return retArr;
 	}
 
-
 	@SuppressWarnings("unchecked")
 	private void createJoin(
-			int outerSelect, int innerSelect,
-			NamedCompilation currentNameCompBoltPair,
-			NamedCompilation otherNameCompBoltPair,
+			int currentIndex, int otherIndex,
 			List<NamedCompilation> boltNames
 			)
 	{
-		boltNames.remove(innerSelect);
-		boltNames.remove(outerSelect);
+		NamedCompilation otherNameCompBoltPair = boltNames.remove(otherIndex);
+		NamedCompilation currentNameCompBoltPair = boltNames.remove(currentIndex);
 		List<ClauseEntry> template = new ArrayList<ClauseEntry>();
 		CompilationStormRuleReteBoltHolder currentBolt = currentNameCompBoltPair.secondObject();
 		CompilationStormRuleReteBoltHolder otherBolt = otherNameCompBoltPair.secondObject();
@@ -329,9 +396,11 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 
 		logger.debug("Connecting the final terminal to " + secondToLast);
 
-		for ( List<NamedCompilation> nodes : this.secondToLast) {
+		for (List<NamedCompilation> nodes : this.secondToLast) {
 			for (NamedCompilation namedCompilation : nodes) {
+				logger.debug("Connecting final terminal to: " + namedCompilation.secondObject());
 				finalTerminalBuilder.shuffleGrouping(namedCompilation.firstObject());
+				this.finalTerm.registerSourceVariables(namedCompilation.firstObject(), namedCompilation.secondObject().getVars());
 			}
 		}
 
@@ -344,7 +413,14 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 				connectFilterBolt(context, name, (StormReteFilterBolt) bolt);
 			else if (bolt instanceof StormReteJoinBolt)
 				connectJoinBolt(context, name, (StormReteJoinBolt) bolt);
+			else if (bolt instanceof StormSPARQLFilterBolt) {
+				connectFilterBolt(context, name, (StormSPARQLFilterBolt) bolt);
+			}
 		}
+	}
+
+	private void connectFilterBolt(SPARQLReteTopologyBuilderContext context, String name, StormSPARQLFilterBolt bolt) {
+		context.builder.setBolt(name, bolt).shuffleGrouping(bolt.getPrevious());
 	}
 
 	/**
@@ -352,7 +428,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * behaviour is to add the bolt as
 	 * {@link BoltDeclarer#globalGrouping(String)} with both sources (this might
 	 * be optimisabled)
-	 *
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -369,7 +445,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 	 * {@link BoltDeclarer#shuffleGrouping(String)} to the
 	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source}
 	 * and the {@link ReteConflictSetBolt} instance
-	 *
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -379,8 +455,8 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 		// All the filter bolts are given triples from the source spout
 		// and the final terminal
 		midBuild.shuffleGrouping(context.source);
-//		if (this.finalTerminalBuilder != null)
-//			midBuild.shuffleGrouping(FINAL_TERMINAL);
+		//		if (this.finalTerminalBuilder != null)
+		//			midBuild.shuffleGrouping(FINAL_TERMINAL);
 	}
 
 	// Bolt Construction
@@ -424,8 +500,7 @@ public abstract class BaseSPARQLReteTopologyBuilder extends SPARQLReteTopologyBu
 			templateLeft[n] = Arrays.asList(currentVars).indexOf(newVars[n]);
 			templateRight[n] = Arrays.asList(otherVars).indexOf(newVars[n]);
 		}
-		return new StormReteJoinBolt(currentNameCompBoltPair.firstObject(), matchLeft, templateLeft,
-				otherNameCompBoltPair.firstObject(), matchRight, templateRight, new Rule(template, template));
+		return new StormReteJoinBolt(currentNameCompBoltPair.firstObject(), matchLeft, templateLeft, otherNameCompBoltPair.firstObject(), matchRight, templateRight, new Rule(template, template));
 	}
 
 }

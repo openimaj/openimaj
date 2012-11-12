@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.bolt.RETEStormSinkNode;
 
 import scala.actors.threadpool.Arrays;
@@ -54,21 +55,19 @@ import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
 
 /**
- *
+ * 
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  */
 public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSinkNode {
-//
-//	/**
-//	 * These are the non-rule-bound fields that all Rete bolts output alongside
-//	 * the rule specific variable bindings.
-//	 */
-//	public static final String[] BASE_FIELDS = { "isAdd", "graph", "timestamp" };
+
+	private static Logger logger = Logger.getLogger(StormReteBolt.class);
 
 	/**
 	 * Meta-Data components of the storm values/fields list
-	 * @author David Monks <dm11g08@ecs.soton.ac.uk>, Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * 
+	 * @author David Monks <dm11g08@ecs.soton.ac.uk>, Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
 	 */
 	public static enum Component {
 
@@ -87,13 +86,14 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		 */
 		timestamp;
 		private static String[] strings;
-		static{
+		static {
 			Component[] vals = Component.values();
 			strings = new String[vals.length];
 			for (int i = 0; i < vals.length; i++) {
 				strings[i] = vals[i].toString();
 			}
 		}
+
 		/**
 		 * @return like {@link #values()} but {@link String} instances
 		 */
@@ -109,7 +109,6 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@SuppressWarnings("rawtypes")
 	protected Map stormConf;
 
-
 	private Values toFire;
 	private boolean active;
 
@@ -123,8 +122,6 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 * The constant value for accessing implemented statistics.
 	 */
 	public static final int ACTUAL = 1;
-
-
 
 	// ******** getting/setting ********
 
@@ -189,11 +186,12 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	/**
 	 * Emit the {@link Values} instance that has been prepared for firing, using
 	 * the provided {@link Tuple} as the anchor.
-	 *
+	 * 
 	 * @param anchor
 	 */
 	protected void emit(Tuple anchor) {
 		if (this.toFire != null) {
+			logger.debug("Firing!");
 			this.collector.emit(anchor, toFire);
 		}
 	}
@@ -201,7 +199,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	/**
 	 * Acknowledge the input {@link Tuple} as per Storm requirements, then set
 	 * the toFire variable to null as per Jena.
-	 *
+	 * 
 	 * @param input
 	 */
 	protected void acknowledge(Tuple input) {
@@ -221,12 +219,14 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 
 	/**
 	 * For a given number of variables declare the fields present in the values.
-	 * The default fields (the elements of {@link Component}) are always present and
+	 * The default fields (the elements of {@link Component}) are always present
+	 * and
 	 * appended to the end.
+	 * 
 	 * @param variableCount
 	 * @return fields
 	 */
-	@SuppressWarnings({"unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public static Fields declaredFields(int variableCount) {
 		List<String> fields = new ArrayList<String>();
 		for (int i = 0; i < variableCount; i++)
@@ -236,8 +236,10 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	}
 
 	/**
-	 * To allow the variable name independant defenition of fields return the number
+	 * To allow the variable name independant defenition of fields return the
+	 * number
 	 * of variables
+	 * 
 	 * @return number of variables
 	 */
 	public abstract int getVariableCount();
@@ -247,7 +249,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 * Given a tuple generated from an Storm {@link ISpout} or {@link IBolt}
 	 * using the same class of RETEStormTranslator, create a Jena {@link Graph}
 	 * instance.
-	 *
+	 * 
 	 * @param input
 	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
 	 * @throws ClassCastException
@@ -258,7 +260,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 
 	/**
 	 * Extract the {@link Component#isAdd} from the {@link Tuple}
-	 *
+	 * 
 	 * @param input
 	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
 	 * @throws ClassCastException
@@ -269,7 +271,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 
 	/**
 	 * Extract the {@link Component#isAdd} from the {@link Tuple}
-	 *
+	 * 
 	 * @param input
 	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
 	 * @throws ClassCastException
@@ -282,16 +284,19 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 * Given a Jena {@link Graph} construct a {@link Values} instance which is
 	 * the subject, predicate and object of the triple calling
 	 * {@link Node#toString()}
-	 *
-	 * @param isAdd add or remove
-	 * @param graph the data
-	 * @param timestamp the time
+	 * 
+	 * @param isAdd
+	 *            add or remove
+	 * @param graph
+	 *            the data
+	 * @param timestamp
+	 *            the time
 	 * @return a {@link Values} instance
 	 */
 	public static Values asValues(boolean isAdd, Graph graph, long timestamp) {
 		Values values = new Values();
-		for (Component cmp: Component.values()) {
-			switch(cmp){
+		for (Component cmp : Component.values()) {
+			switch (cmp) {
 			case isAdd:
 				values.add(isAdd);
 				break;
@@ -310,17 +315,18 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 
 	/**
 	 * Add the metadata components by extracting them from the provided input
+	 * 
 	 * @param values
 	 * @param input
 	 */
 	public static void appendMetaData(Values values, Tuple input) {
 		values.addAll(
-			asValues(
-					extractIsAdd(input),
-					extractGraph(input),
-					extractTimestamp(input)
-			)
-		);
+				asValues(
+						extractIsAdd(input),
+						extractGraph(input),
+						extractTimestamp(input)
+				)
+				);
 	}
 
 	/**

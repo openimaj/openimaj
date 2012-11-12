@@ -19,10 +19,11 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
 /**
  * A {@link StormReteBolt} which has some specific support for rules
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public abstract class StormRuleReteBolt extends StormReteBolt{
+public abstract class StormRuleReteBolt extends StormReteBolt {
 
 	/**
 	 *
@@ -33,6 +34,7 @@ public abstract class StormRuleReteBolt extends StormReteBolt{
 
 	/**
 	 * The rule backing this bolt
+	 * 
 	 * @param rule
 	 */
 	@SuppressWarnings("unchecked")
@@ -64,7 +66,7 @@ public abstract class StormRuleReteBolt extends StormReteBolt{
 
 	/**
 	 * Get the rule on which this FlexibleReteBolt is built.
-	 *
+	 * 
 	 * @return Rule
 	 */
 	public Rule getRule() {

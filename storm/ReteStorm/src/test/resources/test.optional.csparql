@@ -1,0 +1,18 @@
+#------------------------------------------------------------------
+# Sina's Test Production Rules (this time in SPARQL form!)
+# A really simple set of production rules 
+#------------------------------------------------------------------
+REGISTER QUERY Test AS
+
+PREFIX a:      <http://www.w3.org/2000/10/annotation-ns#>
+PREFIX dc:     <http://purl.org/dc/elements/1.1/>
+PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+
+SELECT ?given ?family
+FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.optional.rdfs> [RANGE 30m STEP 5m]
+WHERE { 
+	?annot  a:annotates  <http://www.w3.org/TR/rdf-sparql-query/> .
+	?annot  dc:creator   ?c .
+	OPTIONAL { ?c  foaf:given   ?given ; foaf:family  ?family } .
+	FILTER isBlank(?c)
+}

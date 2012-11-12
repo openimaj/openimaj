@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, The University of Southampton and the individual contributors.
+\ * Copyright (c) 2012, The University of Southampton and the individual contributors.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -45,12 +45,12 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 
 /**
  * Test the {@link StormTopology} construction from a CSPARQL query
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteTopologyTest {
-
+	private static long TOPOLOGY_SLEEP_TIME = 2000;
 	/**
 	 *
 	 */
@@ -59,7 +59,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * prepare the output
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	@Before
@@ -68,7 +68,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -82,13 +82,13 @@ public class ReteTopologyTest {
 		final LocalCluster cluster = new LocalCluster();
 		System.out.println(orchestrator);
 		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
-		Utils.sleep(10000);
+		Utils.sleep(TOPOLOGY_SLEEP_TIME);
 		cluster.killTopology("reteTopology");
 		cluster.shutdown();
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -102,13 +102,13 @@ public class ReteTopologyTest {
 		final LocalCluster cluster = new LocalCluster();
 		System.out.println(orchestrator);
 		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
-		Utils.sleep(10000);
+		Utils.sleep(TOPOLOGY_SLEEP_TIME);
 		cluster.killTopology("reteTopology");
 		cluster.shutdown();
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -122,7 +122,67 @@ public class ReteTopologyTest {
 		final LocalCluster cluster = new LocalCluster();
 		System.out.println(orchestrator);
 		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
-		Utils.sleep(10000);
+		Utils.sleep(TOPOLOGY_SLEEP_TIME);
+		cluster.killTopology("reteTopology");
+		cluster.shutdown();
+	}
+
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopologyOptional() throws IOException, TranslationException {
+		String sparqlSource = "/test.optional.csparql";
+		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
+				new NTriplesSPARQLReteTopologyBuilder(),
+				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
+				);
+		final LocalCluster cluster = new LocalCluster();
+		System.out.println(orchestrator);
+		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
+		Utils.sleep(TOPOLOGY_SLEEP_TIME);
+		cluster.killTopology("reteTopology");
+		cluster.shutdown();
+	}
+
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopologyFilters() throws IOException, TranslationException {
+		String sparqlSource = "/test.filter.csparql";
+		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
+				new NTriplesSPARQLReteTopologyBuilder(),
+				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
+				);
+		final LocalCluster cluster = new LocalCluster();
+		System.out.println(orchestrator);
+		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
+		Utils.sleep(TOPOLOGY_SLEEP_TIME);
+		cluster.killTopology("reteTopology");
+		cluster.shutdown();
+	}
+
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopologyAggregate() throws IOException, TranslationException {
+		String sparqlSource = "/test.aggregate.csparql";
+		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
+				new NTriplesSPARQLReteTopologyBuilder(),
+				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
+				);
+		final LocalCluster cluster = new LocalCluster();
+		System.out.println(orchestrator);
+		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
+		Utils.sleep(TOPOLOGY_SLEEP_TIME);
 		cluster.killTopology("reteTopology");
 		cluster.shutdown();
 	}

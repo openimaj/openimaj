@@ -290,6 +290,9 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	}
 
+	/**
+	 * @return the configuration with all serializers
+	 */
 	public Config getConfiguration() {
 		return this.conf;
 	}

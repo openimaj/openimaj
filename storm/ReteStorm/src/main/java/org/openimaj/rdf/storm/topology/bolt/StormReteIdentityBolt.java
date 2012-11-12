@@ -8,8 +8,18 @@ import backtype.storm.tuple.Tuple;
 
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
 
-public class StormReteIdentityBolt extends StormReteBolt{
+/**
+ * Does nothing? nothing at all!
+ * 
+ * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
+public class StormReteIdentityBolt extends StormReteBolt {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5721733139794446501L;
 
 	@Override
 	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy, RETERuleContext context) {
