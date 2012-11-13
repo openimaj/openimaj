@@ -188,4 +188,29 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 	public int size() {
 		return pnts.length;
 	}
+	
+	/**
+	 * Get the underlying data points.
+	 * 
+	 * @return the data points
+	 */
+	public #t#[][] getPoints() {
+		return this.pnts;
+	}
+
+	/**
+	 * Compute the distance between two vectors using the underlying distance
+	 * comparison used by this class.
+	 * 
+	 * @param a
+	 *            the first vector
+	 * @param b
+	 *            the second vector
+	 * @return the distance between the two vectors
+	 */
+	public #r# computeDistance(#t#[] a, #t#[] b) {
+		if (distance == null)
+			return (#r#) #T#FVComparison.SUM_SQUARE.compare(a, b);
+		return (#r#) distance.compare(a, b);
+	}
 }

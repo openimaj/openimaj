@@ -60,6 +60,26 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 		}
 	}, 
 	/**
+	 * Sum-square distance
+	 * d(H1,H2) = sumI( (H1(I)-H2(I))^2 )
+	 */
+	SUM_SQUARE(true) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			if (h1.length != h2.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double d = 0;
+
+			for (int i=0; i<h1.length; i++) {
+				double diff = (h1[i] - h2[i]);
+				d += (diff * diff);
+			}
+
+			return d;
+		}
+	},
+	/**
 	 * Correlation
 	 *
 	 * d(H1,H2) = sumI( H'1(I) * H'2(I) ) / sqrt( sumI[H'1(I)2]^2 * sumI[H'2(I)^2] )

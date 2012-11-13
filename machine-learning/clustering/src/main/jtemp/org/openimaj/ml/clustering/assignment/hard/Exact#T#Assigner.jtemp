@@ -127,4 +127,13 @@ public class Exact#T#Assigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> 
 	public int numDimensions() {
 	    return nn.numDimensions();
 	}
+	
+	/**
+	 * Get the underlying nearest-neighbour implementation.
+	 * 
+	 * @return the underlying nearest-neighbour implementation.
+	 */
+	public #T#NearestNeighboursExact getNN() {
+		return this.nn;
+	}
 }
