@@ -170,6 +170,19 @@ public class Generator
 	 */
 	protected static String getPackageName( final URI uri )
 	{
+		return Generator.getPackageName( uri, true );
+	}
+	
+	/**
+	 * From the given URI will attempt to create a java package name by
+	 * reversing all the elements and separating with dots.
+	 *
+	 * @param uri The URI to get a package name for.
+	 * @param removeWWW Whether to remove www. parts of URIs
+	 * @return The Java package name
+	 */
+	protected static String getPackageName( final URI uri, final boolean removeWWW )
+	{
 		String ns = uri.getNamespace();
 
 		// Remove the protocol
@@ -202,14 +215,19 @@ public class Generator
 		// Split the server name and reverse it.
 		final String[] parts = serverName.split( "\\." );
 		serverName = "";
+		int count = 0;
 		for( int i = parts.length - 1; i >= 0; i-- )
 		{
 			// Replace any invalid characters with underscores
 			if( parts[i].charAt(0) < 65 || parts[i].charAt(0) > 122 )
 				serverName += "_";
 
-			serverName += parts[i];
-			if( i != 0 ) serverName += ".";
+			if( !removeWWW || !parts[i].equals( "www" ) )
+			{
+				if( count != 0 && i != 0 ) serverName += ".";
+				serverName += parts[i];
+				count++;
+			}
 		}
 
 		// We'll also need to replace any invalid characters (or names) with
