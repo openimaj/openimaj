@@ -33,7 +33,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.ml.clustering.FloatCentroidsResult;
 import org.openimaj.ml.clustering.assignment.hard.ExactFloatAssigner;
-import org.openimaj.ml.clustering.kmeans.fast.FastFloatKMeans;
+import org.openimaj.ml.clustering.kmeans.FloatKMeans;
 import org.openimaj.video.Video;
 
 /**
@@ -96,7 +96,7 @@ public class SegmentationTutorial extends TutorialPanel {
 		if (sum == 0)
 			return null;
 
-		final FastFloatKMeans k = new FastFloatKMeans(3, 2, true);
+		final FloatKMeans k = FloatKMeans.createExact(3, 2);
 		final float[][] imageData = toDraw.getPixelVectorNative(new float[toDraw.getWidth() * toDraw.getHeight() * 3][3]);
 
 		return k.cluster(imageData);

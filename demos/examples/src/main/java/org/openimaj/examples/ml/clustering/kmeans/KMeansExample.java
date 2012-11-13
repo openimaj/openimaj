@@ -34,7 +34,7 @@ import java.util.Arrays;
 import org.openimaj.data.RandomData;
 import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
+import org.openimaj.ml.clustering.kmeans.ByteKMeans;
 
 /**
  * Example showing how to use the Exact or Approximate KMeans clustering
@@ -60,12 +60,18 @@ public class KMeansExample {
 		final int K = 4;
 
 		// Create the clusterer; there are specific types for all kinds of data
-		// (we're using byte data here). There are other constructors that allow
-		// the internal parameters of the algorithm to be changed (i.e. number
-		// of iterations). The third (boolean) parameter switches between exact
-		// (true) and approximate (false) modes. Approximate mode uses a number
-		// of KD-Trees to perform assignment.
-		final FastByteKMeans kmeans = new FastByteKMeans(dimensionality, K, true);
+		// (we're using byte data here). The clusters provide a couple of
+		// static methods to quickly create an exact or approximate (using a
+		// KD-Tree ensemble) K-Means algorithm. Alternatively, the K-Means
+		// clusterer can be constructed with a KMeansConfiguration object which
+		// offers fine control over the k-means algorithm, including control
+		// over the nearest-neighbour implementation (i.e. approximate or not;
+		// different distance functions, etc).
+		final ByteKMeans kmeans = ByteKMeans.createExact(dimensionality, K);
+
+		// Settings for things like the number of iterations can be set through
+		// the KMeansConfiguration either at construction time, or afterwards:
+		kmeans.getConfiguration().setMaxIterations(100);
 
 		// Generate some random data to cluster
 		final byte[][] data = RandomData.getRandomByteArray(numItems, dimensionality, Byte.MIN_VALUE, Byte.MAX_VALUE);

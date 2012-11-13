@@ -55,8 +55,8 @@ import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.IntCentroidsResult;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
-import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
-import org.openimaj.ml.clustering.assignment.hard.ApproximateIntEuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.KDTreeByteEuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.KDTreeIntEuclideanAssigner;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiser;
 import org.openimaj.tools.clusterquantiser.FeatureFile;
 import org.openimaj.tools.clusterquantiser.FeatureFileFeature;
@@ -90,9 +90,9 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 					tree = IOUtils.read(ios, options.getClusterClass());
 
 					if (tree instanceof ByteCentroidsResult)
-						assigner = new ApproximateByteEuclideanAssigner((ByteCentroidsResult) tree);
+						assigner = new KDTreeByteEuclideanAssigner((ByteCentroidsResult) tree);
 					else if (tree instanceof IntCentroidsResult)
-						assigner = new ApproximateIntEuclideanAssigner((IntCentroidsResult) tree);
+						assigner = new KDTreeIntEuclideanAssigner((IntCentroidsResult) tree);
 					else
 						assigner = tree.defaultHardAssigner();
 

@@ -37,17 +37,17 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.data.DataSource;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.ByteCentroidsResult;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansInit;
+import org.openimaj.ml.clustering.kmeans.ByteKMeans;
+import org.openimaj.ml.clustering.kmeans.ByteKMeansInit;
 
 /**
- * Initialisation options for fast k-means.
+ * Initialisation options for k-means.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
+public enum ByteKMeansInitialisers implements CmdLineOptionsProvider {
 	/**
 	 * Randomly sampled points to start
 	 */
@@ -83,13 +83,13 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 		 * @param fkmb
 		 * @throws Exception
 		 */
-		public abstract void setClusterInit(FastByteKMeans fkmb) throws Exception;
+		public abstract void setClusterInit(ByteKMeans fkmb) throws Exception;
 	}
 
 	class RandomOptions extends Options {
 		@Override
-		public void setClusterInit(FastByteKMeans fkmb) {
-			fkmb.setInit(new FastByteKMeansInit.RANDOM());
+		public void setClusterInit(ByteKMeans fkmb) {
+			fkmb.setInit(new ByteKMeansInit.RANDOM());
 		}
 	}
 
@@ -98,8 +98,8 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 		private File randomSetSource = null;
 
 		@Override
-		public void setClusterInit(FastByteKMeans fkmb) throws IOException {
-			class RANDOMSETINIT extends FastByteKMeansInit {
+		public void setClusterInit(ByteKMeans fkmb) throws IOException {
+			class RANDOMSETINIT extends ByteKMeansInit {
 				private File f;
 
 				public RANDOMSETINIT(File f) {
@@ -107,7 +107,7 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 				}
 
 				@Override
-				public void initFastKMeans(DataSource<byte[]> bds, byte[][] clusters) throws IOException {
+				public void initKMeans(DataSource<byte[]> bds, byte[][] clusters) throws IOException {
 					System.out.println("...Loading RANDOMSET cluster for FASTKMEANS init");
 					final ByteCentroidsResult rsbc = IOUtils.read(f, ByteCentroidsResult.class);
 					final byte[][] toBeCopied = rsbc.getCentroids();

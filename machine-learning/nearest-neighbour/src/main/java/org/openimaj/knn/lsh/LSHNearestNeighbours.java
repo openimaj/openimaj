@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.lsh;
+package org.openimaj.knn.lsh;
 
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -66,7 +66,7 @@ import org.openimaj.util.pair.FloatIntPair;
  */
 public class LSHNearestNeighbours<OBJECT>
 		implements
-			NearestNeighbours<OBJECT, float[]>
+		NearestNeighbours<OBJECT, float[]>
 {
 	/**
 	 * Encapsulates a hash table with an associated hash function and pointers

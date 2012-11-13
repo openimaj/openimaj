@@ -41,16 +41,13 @@ import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
 import org.openimaj.util.array.ByteArrayConverter;
 
-
 /**
  * A batched datasource
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class SampleBatchIntDataSource implements DataSource<int[]> {
-	private static final long serialVersionUID = 1L;
-	
 	private int total;
 	private List<SampleBatch> batches;
 	private int dims;
@@ -59,22 +56,24 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 
 	/**
 	 * Construct with batches
+	 * 
 	 * @param batches
 	 * @throws IOException
 	 */
 	public SampleBatchIntDataSource(List<SampleBatch> batches) throws IOException {
 		this.batches = batches;
-		this.total = batches.get(batches.size()-1).getEndIndex();
-		this.dims = this.batches.get(0).getStoredSamples(0,1)[0].length;
+		this.total = batches.get(batches.size() - 1).getEndIndex();
+		this.dims = this.batches.get(0).getStoredSamples(0, 1)[0].length;
 		this.seed = new Random();
 	}
-	
+
 	/**
 	 * Set the random seed
+	 * 
 	 * @param seed
 	 */
-	public void setSeed(long seed){
-		if(seed < 0)
+	public void setSeed(long seed) {
+		if (seed < 0)
 			this.seed = new Random();
 		else
 			this.seed = new Random(seed);
@@ -83,25 +82,29 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 	@Override
 	public void getData(int startRow, int stopRow, int[][] output) {
 		int added = 0;
-		for(SampleBatch sb : batches){
+		for (final SampleBatch sb : batches) {
 			try {
-				if(sb.getEndIndex() < startRow) continue; // Before this range
-				if(sb.getStartIndex() > stopRow) continue; // After this range
-			
+				if (sb.getEndIndex() < startRow)
+					continue; // Before this range
+				if (sb.getStartIndex() > stopRow)
+					continue; // After this range
+
 				// So it must be within this range in some sense, find out where
-				int startDelta = startRow - sb.getStartIndex();
-				int stopDelta = stopRow - sb.getStartIndex();
-			
-				int interestedStart = startDelta < 0 ? 0 : startDelta;
-				int interestedEnd = stopDelta + sb.getStartIndex() > sb.getEndIndex() ? sb.getEndIndex() - sb.getStartIndex() : stopDelta;
-				int[][] subSamples = ByteArrayConverter.byteToInt(sb.getStoredSamples(interestedStart,interestedEnd));
-				
-				for (int i=0; i<subSamples.length; i++) {
-					System.arraycopy(subSamples[i], 0, output[added+i], 0, subSamples[i].length);
+				final int startDelta = startRow - sb.getStartIndex();
+				final int stopDelta = stopRow - sb.getStartIndex();
+
+				final int interestedStart = startDelta < 0 ? 0 : startDelta;
+				final int interestedEnd = stopDelta + sb.getStartIndex() > sb.getEndIndex() ? sb.getEndIndex()
+						- sb.getStartIndex() : stopDelta;
+				final int[][] subSamples = ByteArrayConverter.byteToInt(sb.getStoredSamples(interestedStart,
+						interestedEnd));
+
+				for (int i = 0; i < subSamples.length; i++) {
+					System.arraycopy(subSamples[i], 0, output[added + i], 0, subSamples[i].length);
 				}
-				
-				added+=subSamples.length;
-			} catch (Exception e) {
+
+				added += subSamples.length;
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -109,39 +112,42 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 
 	@Override
 	public void getRandomRows(int[][] output) {
-		int k = output.length;
+		final int k = output.length;
 		System.err.println("Requested random samples: " + k);
-		int[] indices = RandomData.getUniqueRandomInts(k, 0, this.total,seed);
+		final int[] indices = RandomData.getUniqueRandomInts(k, 0, this.total, seed);
 		System.err.println("Array constructed");
 		int l = 0;
-		TIntArrayList samplesToLoad = new TIntArrayList();
-		
-		int[] original = indices.clone();
+		final TIntArrayList samplesToLoad = new TIntArrayList();
+
+		final int[] original = indices.clone();
 		Arrays.sort(indices);
 		int indicesMarker = 0;
-		for(int sbIndex = 0 ; sbIndex < this.batches.size(); sbIndex++){
-			samplesToLoad .clear();
-			
-			SampleBatch sb = this.batches.get(sbIndex);
-			for(; indicesMarker < indices.length; indicesMarker++ ){
-				int index = indices[indicesMarker]; 
-				if(sb.getStartIndex() <= index && sb.getEndIndex() > index){
+		for (int sbIndex = 0; sbIndex < this.batches.size(); sbIndex++) {
+			samplesToLoad.clear();
+
+			final SampleBatch sb = this.batches.get(sbIndex);
+			for (; indicesMarker < indices.length; indicesMarker++) {
+				final int index = indices[indicesMarker];
+				if (sb.getStartIndex() <= index && sb.getEndIndex() > index) {
 					samplesToLoad.add(index - sb.getStartIndex());
 				}
-				if(sb.getEndIndex() <= index)
+				if (sb.getEndIndex() <= index)
 					break;
 			}
-			
+
 			try {
-				if(samplesToLoad.size() == 0) continue;
-				int[][] features = ByteArrayConverter.byteToInt(sb.getStoredSamples(samplesToLoad.toArray()));
-				for (int i=0; i<samplesToLoad.size(); i++) {
+				if (samplesToLoad.size() == 0)
+					continue;
+				final int[][] features = ByteArrayConverter.byteToInt(sb.getStoredSamples(samplesToLoad.toArray()));
+				for (int i = 0; i < samplesToLoad.size(); i++) {
 					int j = 0;
-					for(;j < original.length;j++) if(original[j] == samplesToLoad.get(i)+sb.getStartIndex()) break;
+					for (; j < original.length; j++)
+						if (original[j] == samplesToLoad.get(i) + sb.getStartIndex())
+							break;
 					System.arraycopy(features[i], 0, output[j], 0, features[i].length);
-					System.err.printf("\rCreating sample index hashmap %8d/%8d",l++,k);
+					System.err.printf("\rCreating sample index hashmap %8d/%8d", l++, k);
 				}
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -159,10 +165,10 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 
 	@Override
 	public int[] getData(int row) {
-		int[] data = new int[dims];
-		
-		getData(row, row+1, new int[][] { data });
-		
+		final int[] data = new int[dims];
+
+		getData(row, row + 1, new int[][] { data });
+
 		return data;
 	}
 

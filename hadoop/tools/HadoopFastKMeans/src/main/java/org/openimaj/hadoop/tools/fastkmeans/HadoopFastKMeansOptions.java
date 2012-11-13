@@ -40,108 +40,132 @@ import org.apache.hadoop.fs.Path;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-
-import org.openimaj.tools.clusterquantiser.FileType;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansInit;
+import org.openimaj.ml.clustering.kmeans.ByteKMeansInit;
+import org.openimaj.tools.clusterquantiser.FileType;
 
 public class HadoopFastKMeansOptions {
-	@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads for quantization.", metaVar = "NUMBER")
+	@Option(
+			name = "--threads",
+			aliases = "-j",
+			required = false,
+			usage = "Use NUMBER threads for quantization.",
+			metaVar = "NUMBER")
 	public int concurrency = Runtime.getRuntime().availableProcessors();
-	
-	public FastByteKMeansInit init = new FastByteKMeansInit.RANDOM();
-	
-	@Option(name = "--input", aliases="-i", required=true, usage="set the input sequencefile", multiValued=true) 
+
+	public ByteKMeansInit init = new ByteKMeansInit.RANDOM();
+
+	@Option(name = "--input", aliases = "-i", required = true, usage = "set the input sequencefile", multiValued = true)
 	public List<String> inputs;
-	
-	@Option(name = "--output", aliases="-o", required=true, usage="set the cluster output directory. The final cluster will go into output/final") 
+
+	@Option(
+			name = "--output",
+			aliases = "-o",
+			required = true,
+			usage = "set the cluster output directory. The final cluster will go into output/final")
 	public String output;
-	
+
 	@Option(name = "--number-of-clusters", aliases = "-k", required = false, usage = "Number of clusters.")
 	public int k = 100;
-	
+
 	@Option(name = "--file-type", aliases = "-t", required = false, usage = "Specify the type of file to be read.")
 	public String fileType = FileType.BINARY_KEYPOINT.toString();
-	
-	@Option(name = "--nsamples", aliases="-s", required=false, usage="How many samples should be selected")
+
+	@Option(name = "--nsamples", aliases = "-s", required = false, usage = "How many samples should be selected")
 	public int nsamples = -1;
-	
-	@Option(name = "--exact-mode", aliases="-e", required=false, usage="Compare the features in exact mode")
+
+	@Option(name = "--exact-mode", aliases = "-e", required = false, usage = "Compare the features in exact mode")
 	public boolean exact = false;
 
-	@Option(name = "--force-delete", aliases="-rm", required=false, usage="If it exists, remove the output directory before starting") 
+	@Option(
+			name = "--force-delete",
+			aliases = "-rm",
+			required = false,
+			usage = "If it exists, remove the output directory before starting")
 	public boolean forceRM = false;
-	
-	@Option(name = "--number-of-iterations", aliases="-iters", required=false, usage="How many times should the Kmeans iterate") 
+
+	@Option(
+			name = "--number-of-iterations",
+			aliases = "-iters",
+			required = false,
+			usage = "How many times should the Kmeans iterate")
 	public int iter = 3;
-	
-	@Option(name = "--samples-only", aliases="-so", required=false, usage="Extract samples only.")
+
+	@Option(name = "--samples-only", aliases = "-so", required = false, usage = "Extract samples only.")
 	public boolean samplesOnly = false;
-	
-	@Option(name = "--check-sample-equality", aliases="-cse", required=false, usage="Extract samples but only check which features are identical (euclidian sense).")
+
+	@Option(
+			name = "--check-sample-equality",
+			aliases = "-cse",
+			required = false,
+			usage = "Extract samples but only check which features are identical (euclidian sense).")
 	public boolean checkSampleEquality = false;
-	
-	@Option(name = "--check-sample-equality-threshold", aliases="-cset", required=false, usage="The threshold for sample equality.")
+
+	@Option(
+			name = "--check-sample-equality-threshold",
+			aliases = "-cset",
+			required = false,
+			usage = "The threshold for sample equality.")
 	public int checkSampleEqualityThreshold = 0;
 
 	private boolean beforeMaps;
 
 	public String[] args;
 	public String[] original_args;
-	
+
 	public HadoopFastKMeansOptions(String[] args) {
-		this(args,false);
+		this(args, false);
 	}
-	
+
 	public HadoopFastKMeansOptions(String[] args, boolean beforeMaps) {
 		this.beforeMaps = beforeMaps;
 		this.args = args;
 	}
-	
-	public HadoopFastKMeansOptions(String[] args, String[] original_args,boolean b) {
+
+	public HadoopFastKMeansOptions(String[] args, String[] original_args, boolean b) {
 		this.args = args;
 		this.original_args = original_args;
 		this.beforeMaps = b;
 	}
 
 	public static FileSystem getFileSystem(URI uri) throws IOException {
-		Configuration config = new Configuration();
+		final Configuration config = new Configuration();
 		FileSystem fs = FileSystem.get(uri, config);
-		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
+		if (fs instanceof LocalFileSystem)
+			fs = ((LocalFileSystem) fs).getRaw();
 		return fs;
 	}
+
 	public void prepare() {
-		CmdLineParser parser = new CmdLineParser(this);
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
 			this.validate();
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar HadoopFastKMeans.jar [options...] [files...]");
 			parser.printUsage(System.err);
 			System.err.print(HadoopFastKMeans.EXTRA_USAGE_INFO);
-			
+
 			System.exit(1);
 		}
-		
+
 	}
 
 	private void validate() {
 		System.out.println("forcerm " + this.forceRM + " beforemaps " + this.beforeMaps);
-		if(this.forceRM && this.beforeMaps){
-			System.out.println("Attempting to delete: "+ this.output);
+		if (this.forceRM && this.beforeMaps) {
+			System.out.println("Attempting to delete: " + this.output);
 			try {
-				URI outuri = SequenceFileUtility.convertToURI(this.output);
-				FileSystem fs = getFileSystem(outuri);
+				final URI outuri = SequenceFileUtility.convertToURI(this.output);
+				final FileSystem fs = getFileSystem(outuri);
 				fs.delete(new Path(outuri.toString()), true);
-				
-			} catch (IOException e) {
+
+			} catch (final IOException e) {
 				System.out.println("Error deleting!!");
 				e.printStackTrace();
 			}
 		}
 	}
-
-	
 
 }

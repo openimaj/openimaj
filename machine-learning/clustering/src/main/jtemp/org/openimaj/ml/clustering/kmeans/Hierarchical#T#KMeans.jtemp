@@ -47,19 +47,16 @@ import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.IndexedViewDataSource;
+import org.openimaj.knn.#T#NearestNeighbours;
 import org.openimaj.ml.clustering.SpatialClusterer;
-import org.openimaj.ml.clustering.assignment.hard.Approximate#T#EuclideanAssigner;
-import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.Hierarchical#T#KMeansResult.Node;
-import org.openimaj.ml.clustering.kmeans.fast.Fast#T#KMeans;
-import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
 import org.openimaj.util.pair.Int#R#Pair;
 
 /** 
  * Hierarchical #TT# K-Means clustering ({@link Hierarchical#T#KMeans}) is a simple
- * hierarchical version of Fast#T#KMeans. The algorithm recursively applies 
- * @{link Fast#T#KMeans} to create more refined partitions of the data.
+ * hierarchical version of #T#KMeans. The algorithm recursively applies 
+ * @{link #T#KMeans} to create more refined partitions of the data.
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -84,7 +81,7 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 	int K;
 
 	/** KMeans configuration */
-	KMeansConfiguration conf;
+	KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf;
 
 	/** Depth of the tree */
 	int depth;
@@ -97,7 +94,7 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 	 * @param K Number of clusters per node.
 	 * @param depth Tree depth.
 	 */
-	public Hierarchical#T#KMeans(KMeansConfiguration config, int M, int K, int depth) {	
+	public Hierarchical#T#KMeans(KMeansConfiguration<#T#NearestNeighbours, #t#[]> config, int M, int K, int depth) {	
 		this.conf = config;
 		this.M = M;
 		this.K = K;
@@ -113,7 +110,7 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 	 * @param depth Tree depth.
 	 */
 	public Hierarchical#T#KMeans(int M, int K, int depth) {	
-		this(new KMeansConfiguration(), M, K, depth);
+		this(new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(), M, K, depth);
 	}
 
 	/**
@@ -160,14 +157,10 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 		Node node = new Node();
 		node.children = (height == 1) ? null : new Node[K];
 		
-		Fast#T#KMeans kmeans = new#T#KMeans(K);
+		#T#KMeans kmeans = new#T#KMeans(K);
 		node.result = kmeans.cluster(data);
 		
-		HardAssigner<#t#[], #r#[], Int#R#Pair> assigner;
-		if (conf.isExact())
-			assigner = new Exact#T#Assigner(node.result);
-		else
-			assigner = new Approximate#T#EuclideanAssigner(node.result);
+		HardAssigner<#t#[], #r#[], Int#R#Pair> assigner = node.result.defaultHardAssigner();
 		
 		if (height > 1) {
 			int[] ids = assigner.assign(data);
@@ -197,14 +190,10 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 		Node node = new Node();
 		node.children = (height == 1) ? null : new Node[K];
 
-		Fast#T#KMeans kmeans = new#T#KMeans(K);
+		#T#KMeans kmeans = new#T#KMeans(K);
 		node.result = kmeans.cluster(data);
 		
-		HardAssigner<#t#[], #r#[], Int#R#Pair> assigner;
-		if (conf.isExact())
-			assigner = new Exact#T#Assigner(node.result);
-		else
-			assigner = new Approximate#T#EuclideanAssigner(node.result);
+		HardAssigner<#t#[], #r#[], Int#R#Pair> assigner = node.result.defaultHardAssigner();
 		
 		if (height > 1) {
 			final TIntObjectHashMap<TIntArrayList> assignments = new TIntObjectHashMap<TIntArrayList>();
@@ -257,9 +246,9 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 		return result;
 	}
 
-	private Fast#T#KMeans new#T#KMeans(int K) {
-		KMeansConfiguration newConf = conf.clone();
+	private #T#KMeans new#T#KMeans(int K) {
+		KMeansConfiguration<#T#NearestNeighbours, #t#[]> newConf = conf.clone();
 		newConf.setK(K);
-		return new Fast#T#KMeans(newConf);
+		return new #T#KMeans(newConf);
 	}
 }

@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.clustering.kmeans.fast;
+package org.openimaj.ml.clustering.kmeans;
 
 import java.io.IOException;
 
@@ -43,7 +43,7 @@ import org.openimaj.data.DataSource;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public abstract class Fast#T#KMeansInit {
+public abstract class #T#KMeansInit {
 	/**
 	 * Initialise the centroids based on the given data.
 	 * 
@@ -51,7 +51,7 @@ public abstract class Fast#T#KMeansInit {
 	 * @param clusters the clusters to init
 	 * @throws IOException problem reading samples
 	 */
-	public abstract void initFastKMeans(DataSource<#t#[]> bds, #t#[][] clusters) throws IOException;
+	public abstract void initKMeans(DataSource<#t#[]> bds, #t#[][] clusters) throws IOException;
 
 	/**
 	 * Simple kmeans initialized on randomly selected samples.
@@ -59,9 +59,9 @@ public abstract class Fast#T#KMeansInit {
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
-	public static class RANDOM extends Fast#T#KMeansInit {
+	public static class RANDOM extends #T#KMeansInit {
 		@Override
-		public void initFastKMeans(DataSource<#t#[]> bds, #t#[][] clusters) throws IOException {
+		public void initKMeans(DataSource<#t#[]> bds, #t#[][] clusters) throws IOException {
 			bds.getRandomRows(clusters);
 		}
 	}

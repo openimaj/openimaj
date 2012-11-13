@@ -34,28 +34,37 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.IOUtils;
+import org.openimaj.knn.ByteNearestNeighbours;
+import org.openimaj.knn.ByteNearestNeighboursExact;
+import org.openimaj.knn.IntNearestNeighbours;
+import org.openimaj.knn.IntNearestNeighboursExact;
+import org.openimaj.knn.NearestNeighboursFactory;
+import org.openimaj.knn.approximate.ByteNearestNeighboursKDTree;
+import org.openimaj.knn.approximate.IntNearestNeighboursKDTree;
 import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.IntCentroidsResult;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.SpatialClusters;
+import org.openimaj.ml.clustering.kmeans.ByteKMeans;
 import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeans;
 import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeansResult;
 import org.openimaj.ml.clustering.kmeans.HierarchicalIntKMeans;
 import org.openimaj.ml.clustering.kmeans.HierarchicalIntKMeansResult;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
-import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
-import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
+import org.openimaj.ml.clustering.kmeans.IntKMeans;
+import org.openimaj.ml.clustering.kmeans.KMeansConfiguration;
 import org.openimaj.ml.clustering.random.RandomByteClusterer;
 import org.openimaj.ml.clustering.random.RandomIntClusterer;
 import org.openimaj.ml.clustering.random.RandomSetByteClusterer;
 import org.openimaj.ml.clustering.random.RandomSetIntClusterer;
 import org.openimaj.ml.clustering.rforest.IntRandomForest;
-import org.openimaj.tools.clusterquantiser.fastkmeans.FastByteKMeansInitialisers;
+import org.openimaj.tools.clusterquantiser.fastkmeans.ByteKMeansInitialisers;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatchByteDataSource;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatchIntDataSource;
@@ -239,15 +248,28 @@ public enum ClusterType implements CmdLineOptionsProvider {
 
 		@Override
 		public SpatialClusters<?> create(byte[][] data) {
-			final KMeansConfiguration kmc = new KMeansConfiguration();
-			kmc.setExact(exactMode);
-
 			if (this.precision == Precision.BYTE) {
+				final KMeansConfiguration<ByteNearestNeighbours, byte[]> kmc = new KMeansConfiguration<ByteNearestNeighbours, byte[]>();
+
+				if (exactMode) {
+					kmc.setNearestNeighbourFactory(new ByteNearestNeighboursExact.Factory());
+				} else {
+					kmc.setNearestNeighbourFactory(new ByteNearestNeighboursKDTree.Factory());
+				}
+
 				final HierarchicalByteKMeans tree = new HierarchicalByteKMeans(kmc, data[0].length, K, depth);
 
 				System.err.printf("Building vocabulary tree\n");
 				return tree.cluster(data);
 			} else {
+				final KMeansConfiguration<IntNearestNeighbours, int[]> kmc = new KMeansConfiguration<IntNearestNeighbours, int[]>();
+
+				if (exactMode) {
+					kmc.setNearestNeighbourFactory(new IntNearestNeighboursExact.Factory());
+				} else {
+					kmc.setNearestNeighbourFactory(new IntNearestNeighboursKDTree.Factory());
+				}
+
 				final HierarchicalIntKMeans tree = new HierarchicalIntKMeans(kmc, data[0].length, K, depth);
 
 				System.err.printf("Building vocabulary tree\n");
@@ -336,31 +358,64 @@ public enum ClusterType implements CmdLineOptionsProvider {
 				required = false,
 				usage = "Specify the type of file to be read.",
 				handler = ProxyOptionHandler.class)
-		public FastByteKMeansInitialisers clusterInit = FastByteKMeansInitialisers.RANDOM;
-		public FastByteKMeansInitialisers.Options clusterInitOp;
+		public ByteKMeansInitialisers clusterInit = ByteKMeansInitialisers.RANDOM;
+		public ByteKMeansInitialisers.Options clusterInitOp;
+
+		private KMeansConfiguration<ByteNearestNeighbours, byte[]> confByte(int ndims) {
+			NearestNeighboursFactory<? extends ByteNearestNeighbours, byte[]> assigner;
+			final ExecutorService pool = Executors.newFixedThreadPool(jj);
+
+			if (E) {
+				assigner = new ByteNearestNeighboursExact.Factory();
+			} else {
+				assigner = new ByteNearestNeighboursKDTree.Factory(NT, NC);
+			}
+
+			final KMeansConfiguration<ByteNearestNeighbours, byte[]> conf = new KMeansConfiguration<ByteNearestNeighbours, byte[]>(
+					ndims, K, assigner, I, B, pool);
+
+			return conf;
+		}
+
+		private KMeansConfiguration<IntNearestNeighbours, int[]> confInt(int ndims) {
+			NearestNeighboursFactory<? extends IntNearestNeighbours, int[]> assigner;
+			final ExecutorService pool = Executors.newFixedThreadPool(jj);
+
+			if (E) {
+				assigner = new IntNearestNeighboursExact.Factory();
+			} else {
+				assigner = new IntNearestNeighboursKDTree.Factory(NT, NC);
+			}
+
+			final KMeansConfiguration<IntNearestNeighbours, int[]> conf = new KMeansConfiguration<IntNearestNeighbours, int[]>(
+					ndims, K, assigner, I, B, pool);
+
+			return conf;
+		}
 
 		@Override
 		public SpatialClusters<?> create(List<SampleBatch> batches) throws Exception {
 			System.err.println("Constructing a FASTKMEANS cluster");
 			SpatialClusterer<?, ?> c = null;
+
 			System.err.println("Constructing a fastkmeans worker: ");
 			if (this.precision == Precision.BYTE) {
 				final SampleBatchByteDataSource ds = new SampleBatchByteDataSource(batches);
 				ds.setSeed(seed);
 
-				c = new FastByteKMeans(ds.numDimensions(), K, E, NT, NC, B, I, jj);
-				((FastByteKMeans) c).seed(seed);
-				clusterInitOp.setClusterInit((FastByteKMeans) c);
+				c = new ByteKMeans(confByte(ds.numDimensions()));
+				((ByteKMeans) c).seed(seed);
+				clusterInitOp.setClusterInit((ByteKMeans) c);
 
-				return ((FastByteKMeans) c).cluster(ds);
+				return ((ByteKMeans) c).cluster(ds);
 			} else {
 				final SampleBatchIntDataSource ds = new SampleBatchIntDataSource(batches);
 				ds.setSeed(seed);
 
-				c = new FastIntKMeans(ds.numDimensions(), K, E, NT, NC, B, I, jj);
-				((FastIntKMeans) c).seed(seed);
+				c = new IntKMeans(confInt(ds.numDimensions()));
+				((IntKMeans) c).seed(seed);
 
-				return ((FastIntKMeans) c).cluster(ds);
+				return ((IntKMeans) c).cluster(ds);
 			}
 		}
 
@@ -368,18 +423,18 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		public SpatialClusters<?> create(byte[][] data) throws Exception {
 			SpatialClusterer<?, ?> c = null;
 			if (this.precision == Precision.BYTE) {
-				c = new FastByteKMeans(data[0].length, K, E, NT, NC, B, I, jj);
-				((FastByteKMeans) c).seed(seed);
+				c = new ByteKMeans(confByte(data[0].length));
+				((ByteKMeans) c).seed(seed);
 
 				if (clusterInitOp == null)
 					clusterInitOp = clusterInit.getOptions();
 
-				clusterInitOp.setClusterInit((FastByteKMeans) c);
-				return ((FastByteKMeans) c).cluster(data);
+				clusterInitOp.setClusterInit((ByteKMeans) c);
+				return ((ByteKMeans) c).cluster(data);
 			} else {
-				c = new FastIntKMeans(data[0].length, K, E, NT, NC, B, I, jj);
-				((FastIntKMeans) c).seed(seed);
-				return ((FastIntKMeans) c).cluster(ByteArrayConverter.byteToInt(data));
+				c = new IntKMeans(confInt(data[0].length));
+				((IntKMeans) c).seed(seed);
+				return ((IntKMeans) c).cluster(ByteArrayConverter.byteToInt(data));
 			}
 		}
 
@@ -409,7 +464,6 @@ public enum ClusterType implements CmdLineOptionsProvider {
 				metaVar = "NUMBER")
 		private int I = 30;
 
-		@SuppressWarnings("unused")
 		@Option(
 				name = "--mini-batch-size",
 				aliases = "-mb",
@@ -458,10 +512,26 @@ public enum ClusterType implements CmdLineOptionsProvider {
 				metaVar = "NUMBER")
 		private int jj = Runtime.getRuntime().availableProcessors();
 
+		private KMeansConfiguration<IntNearestNeighbours, int[]> confInt(int ndims) {
+			NearestNeighboursFactory<? extends IntNearestNeighbours, int[]> assigner;
+			final ExecutorService pool = Executors.newFixedThreadPool(jj);
+
+			if (E) {
+				assigner = new IntNearestNeighboursExact.Factory();
+			} else {
+				assigner = new IntNearestNeighboursKDTree.Factory(NT, NC);
+			}
+
+			final KMeansConfiguration<IntNearestNeighbours, int[]> conf = new KMeansConfiguration<IntNearestNeighbours, int[]>(
+					ndims, K, assigner, I, B, pool);
+
+			return conf;
+		}
+
 		@Override
 		public SpatialClusters<int[]> create(byte[][] data) {
-			FastIntKMeans c = null;
-			c = new FastIntKMeans(data[0].length, K, E, NT, NC, B, I, jj);
+			IntKMeans c = null;
+			c = new IntKMeans(confInt(data[0].length));
 			return c.cluster(ByteArrayConverter.byteToInt(data));
 		}
 

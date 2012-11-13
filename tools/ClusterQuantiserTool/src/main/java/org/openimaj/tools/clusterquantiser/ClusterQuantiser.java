@@ -51,8 +51,8 @@ import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.IntCentroidsResult;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
-import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
-import org.openimaj.ml.clustering.assignment.hard.ApproximateIntEuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.KDTreeByteEuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.KDTreeIntEuclideanAssigner;
 import org.openimaj.time.Timer;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
@@ -294,6 +294,7 @@ public class ClusterQuantiser {
 						options.getSamplesFile());
 				final ObjectOutputStream dos = new ObjectOutputStream(fos);
 				dos.writeObject(data);
+				dos.close();
 			}
 		}
 		return data;
@@ -387,9 +388,9 @@ public class ClusterQuantiser {
 				assigner = clusters.defaultHardAssigner();
 			} else {
 				if (clusters instanceof ByteCentroidsResult)
-					assigner = new ApproximateByteEuclideanAssigner((ByteCentroidsResult) clusters);
+					assigner = new KDTreeByteEuclideanAssigner((ByteCentroidsResult) clusters);
 				else
-					assigner = new ApproximateIntEuclideanAssigner((IntCentroidsResult) clusters);
+					assigner = new KDTreeIntEuclideanAssigner((IntCentroidsResult) clusters);
 			}
 
 			QuantizerJob.count = 0;

@@ -45,15 +45,11 @@ import java.util.List;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.NearestNeighboursFactory;
 import org.openimaj.util.pair.*;
 
 /**
- * Fast Nearest-Neighbours for #t# data using an ensemble of BBF KDTrees. 
- * <p>
- * Based on this paper: 
- * Muja, M. and Lowe, D.
- * Fast approximate nearest neighbours with automatic algorithm configuration
- * Proceedings of the International Conference on Computer Vision Theory and Applications (2009)
+ * Fast Nearest-Neighbours for #t# data using an ensemble of Best-Bin-First KDTrees. 
  * <p>
  * Implementation inspired by http://www.robots.ox.ac.uk/~vgg/software/fastann/
  * 
@@ -70,6 +66,53 @@ import org.openimaj.util.pair.*;
 	publisher = "INSTICC Press"
 )
 public class #T#NearestNeighboursKDTree extends #T#NearestNeighbours {
+    /**
+	 * {@link NearestNeighboursFactory} for producing
+	 * {@link #T#NearestNeighboursKDTree}s.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+    public static final class Factory implements NearestNeighboursFactory<#T#NearestNeighboursKDTree, #t#[]> {
+        int ntrees;
+        int nchecks;
+        
+        /**
+         * Construct the factory the default number of trees and checks.
+         */
+        public Factory() {
+            this.ntrees = #T#NearestNeighboursKDTree.DEFAULT_NTREES;
+            this.nchecks = #T#NearestNeighboursKDTree.DEFAULT_NCHECKS;
+        }
+        
+        /**
+         * Construct the factory the given number of trees and checks.
+         * 
+		 * @param ntrees 
+		 *          the number of trees 
+     	 * @param nchecks 
+     	 *          the number of checks during search
+         */
+        public Factory(int ntrees, int nchecks) {
+            this.ntrees = ntrees;
+            this.nchecks = nchecks;
+        }
+        
+        @Override
+        public #T#NearestNeighboursKDTree create(#t#[][] data) {
+            return new #T#NearestNeighboursKDTree(data, ntrees, nchecks);
+        }
+    }
+    
+    /**
+	 * The default number of checks performed during search when in exact mode.
+	 */
+	public static final int DEFAULT_NCHECKS = 768;
+
+	/**
+	 * The default number of kdtrees when not in exact mode.
+	 */
+	public static final int DEFAULT_NTREES = 8;
+    
 	/** The ensemble of KDTrees */
 	public final #T#KDTreeEnsemble kdt;
 	
@@ -78,6 +121,7 @@ public class #T#NearestNeighboursKDTree extends #T#NearestNeighbours {
 	
 	/** 
 	 * Construct the #T#NearestNeighboursKDTree with the given options.
+	 * 
 	 * @param pnts the data
 	 * @param ntrees the number of trees 
 	 * @param nchecks the number of checks during search

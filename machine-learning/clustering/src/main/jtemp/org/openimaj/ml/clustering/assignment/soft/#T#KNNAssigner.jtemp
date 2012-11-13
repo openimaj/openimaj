@@ -48,7 +48,6 @@ import org.openimaj.knn.#T#NearestNeighboursProvider;
 import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
 import org.openimaj.ml.clustering.assignment.SoftAssigner;
 import org.openimaj.ml.clustering.CentroidsProvider;
-import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -89,7 +88,7 @@ public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {
 				}
 			}
 
-			nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
+			nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), #T#NearestNeighboursKDTree.DEFAULT_NTREES, #T#NearestNeighboursKDTree.DEFAULT_NCHECKS);
 		}
 	}
 	
@@ -111,7 +110,7 @@ public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {
 		if (exact) {
 			nn = new #T#NearestNeighboursExact(data);
 		} else {
-			nn = new #T#NearestNeighboursKDTree(data, KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
+			nn = new #T#NearestNeighboursKDTree(data, #T#NearestNeighboursKDTree.DEFAULT_NTREES, #T#NearestNeighboursKDTree.DEFAULT_NCHECKS);
 		}
 	}
 	

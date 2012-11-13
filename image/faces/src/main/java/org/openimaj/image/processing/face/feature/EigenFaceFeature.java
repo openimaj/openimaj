@@ -68,8 +68,6 @@ import org.openimaj.ml.training.BatchTrainer;
 				"doi", "10.1109/CVPR.1991.139758"
 		})
 public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * A {@link FacialFeatureExtractor} for producing EigenFaces. Unlike most
 	 * {@link FacialFeatureExtractor}s, this one either needs to be trained or
@@ -85,8 +83,8 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 	 */
 	public static class Extractor<T extends DetectedFace>
 			implements
-				FacialFeatureExtractor<EigenFaceFeature, T>,
-				BatchTrainer<T>
+			FacialFeatureExtractor<EigenFaceFeature, T>,
+			BatchTrainer<T>
 	{
 		EigenImages eigen = null;
 		FaceAligner<T> aligner = null;

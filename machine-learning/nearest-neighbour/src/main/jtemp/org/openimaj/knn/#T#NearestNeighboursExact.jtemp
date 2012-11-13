@@ -56,6 +56,40 @@ import org.openimaj.util.pair.*;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
+    /**
+	 * {@link NearestNeighboursFactory} for producing
+	 * {@link #T#NearestNeighboursExact}s.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+    public static final class Factory implements NearestNeighboursFactory<#T#NearestNeighboursExact, #t#[]> {
+        private final #T#FVComparison distance;
+        
+        /**
+         * Construct the factory using Euclidean distance for the 
+         * produced #T#NearestNeighbours instances.
+         */
+        public Factory() {
+            this.distance = null;
+        }
+        
+        /**
+         * Construct the factory with the given distance function
+         * for the produced #T#NearestNeighbours instances.
+         * 
+		 * @param distance
+		 *            the distance function
+         */
+        public Factory(#T#FVComparison distance) {
+            this.distance = distance;
+        }
+        
+        @Override
+        public #T#NearestNeighboursExact create(#t#[][] data) {
+            return new #T#NearestNeighboursExact(data, distance);
+        }
+    }
+    
 	protected final #t#[][] pnts;
 	protected final #T#FVComparison distance;
 

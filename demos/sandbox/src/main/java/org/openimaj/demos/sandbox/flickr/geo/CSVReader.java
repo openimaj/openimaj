@@ -1,16 +1,16 @@
 package org.openimaj.demos.sandbox.flickr.geo;
 
-import gnu.trove.map.hash.TObjectIntHashMap;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.ByteBuffer;
+
+import krati.core.StoreConfig;
+import krati.core.segment.MappedSegmentFactory;
+import krati.store.DynamicDataStore;
 
 public class CSVReader {
-	final static String CVS_REGEX = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+	final static String CSV_REGEX = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
 
 	static class Record {
 		long photoID;
@@ -18,9 +18,10 @@ public class CSVReader {
 		int serverID;
 		float lat;
 		float lon;
+		String[] terms;
 
-		public static Record parseLine(String line, TObjectIntHashMap<String> vocabulary) {
-			final String[] parts = line.split(CVS_REGEX);
+		public static Record parseLine(String line) {
+			final String[] parts = line.split(CSV_REGEX);
 
 			try {
 				final Record r = new Record();
@@ -37,11 +38,7 @@ public class CSVReader {
 					tags = tags.substring(1, parts[17].length() - 2);
 				}
 				if (tags.length() > 2) {
-					final String[] tagParts = tags.split(CVS_REGEX);
-
-					for (final String s : tagParts) {
-						vocabulary.adjustOrPutValue(s, 1, 1);
-					}
+					r.terms = tags.split(CSV_REGEX);
 				}
 
 				return r;
@@ -51,31 +48,104 @@ public class CSVReader {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
-		final File f = new File("/Volumes/Raid/FlickrCrawls/AllGeo16/images.csv");
-		final List<Record> recs = new ArrayList<Record>();
+	DynamicDataStore keywordStore;
+	DynamicDataStore recordStore;
+	int count = 0;
 
+	public static void buildIndex(File indexLocation, File CSVFile) throws Exception {
+		final CSVReader reader = new CSVReader();
+		reader.initStores(indexLocation);
+		reader.index(CSVFile);
+		reader.closeStores();
+	}
+
+	private void index(File csvFile) throws Exception {
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(new FileReader(f));
+			br = new BufferedReader(new FileReader(csvFile));
 
 			String line;
 			int i = 0;
-			final TObjectIntHashMap<String> vocab = new TObjectIntHashMap<String>(1000000);
 			while ((line = br.readLine()) != null) {
-				final Record r = Record.parseLine(line, vocab);
+				final Record r = Record.parseLine(line);
 				if (r != null) {
-					// recs.add(r);
+
+					writeRecord(r);
+
 					i++;
 				}
 
 				if (i % 1000 == 0) {
-					System.out.println("Read " + i + " records. Vocab size: " + vocab.size());
+					System.out.println("Read " + i + " records.");
 				}
 			}
 		} finally {
 			if (br != null)
 				br.close();
 		}
+	}
+
+	private void writeRecord(Record r) throws Exception {
+		final int nTerms = r.terms == null ? 0 : r.terms.length;
+		final int[] hashes = new int[nTerms];
+
+		final ByteBuffer keyBuffer = ByteBuffer.allocate(4);
+		for (int i = 0; i < nTerms; i++) {
+			final String term = r.terms[i];
+			hashes[i] = term.hashCode();
+
+			// write keywords:
+			keyBuffer.rewind();
+			keyBuffer.putInt(hashes[i]);
+			keywordStore.put(keyBuffer.array(), term.getBytes("UTF-8"));
+		}
+
+		final int recSize = (nTerms * 4) + 28;
+		final ByteBuffer valueBuffer = ByteBuffer.allocate(recSize);
+		valueBuffer.putLong(r.photoID);
+		valueBuffer.putInt(r.farmID);
+		valueBuffer.putInt(r.serverID);
+		valueBuffer.putFloat(r.lat);
+		valueBuffer.putFloat(r.lon);
+
+		valueBuffer.putInt(nTerms);
+		for (int i = 0; i < nTerms; i++) {
+			valueBuffer.putInt(hashes[i]);
+		}
+
+		keyBuffer.rewind();
+		keyBuffer.putInt(count);
+		recordStore.put(keyBuffer.array(), valueBuffer.array());
+		count++;
+	}
+
+	private void initStores(File indexLocation) throws Exception {
+		final File keywordStoreLocation = new File(indexLocation, "keywords");
+		final File recordStoreLocation = new File(indexLocation, "records");
+
+		keywordStoreLocation.mkdirs();
+		final StoreConfig keywordStoreConf = new StoreConfig(keywordStoreLocation, 10000000);
+		keywordStoreConf.setSegmentFactory(new MappedSegmentFactory());
+		keywordStore = new DynamicDataStore(keywordStoreConf);
+
+		recordStoreLocation.mkdirs();
+		final StoreConfig recordStoreConf = new StoreConfig(recordStoreLocation, 10000000);
+		recordStoreConf.setSegmentFactory(new MappedSegmentFactory());
+		recordStore = new DynamicDataStore(recordStoreConf);
+	}
+
+	private void closeStores() throws Exception {
+		keywordStore.rehash();
+		keywordStore.close();
+
+		recordStore.rehash();
+		recordStore.close();
+	}
+
+	public static void main(String[] args) throws Exception {
+		final File index = new File("/Users/jsh2/Desktop/flickrData.idx");
+		final File csv = new File("/Volumes/Raid/FlickrCrawls/AllGeo16/images.csv");
+
+		buildIndex(index, csv);
 	}
 }

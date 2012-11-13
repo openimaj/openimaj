@@ -52,9 +52,9 @@ import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
-import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
 import org.openimaj.ml.clustering.assignment.hard.ExactByteAssigner;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
+import org.openimaj.ml.clustering.assignment.hard.KDTreeByteEuclideanAssigner;
+import org.openimaj.ml.clustering.kmeans.ByteKMeans;
 import org.openimaj.util.pair.IntFloatPair;
 
 /**
@@ -82,7 +82,7 @@ public class AKMeans {
 	private static final String CENTROIDS_FALLBACK_CHANCE = "uk.ac.soton.ecs.jsh2.clusterquantiser.FallbackChance";
 
 	/**
-	 * the map for approximate kmeans. Uses the {@link FastByteKMeans} under the
+	 * the map for approximate kmeans. Uses the {@link ByteKMeans} under the
 	 * hood. For each feature assign the feature to a centroid and emit with
 	 * centroid as key.
 	 * 
@@ -128,7 +128,7 @@ public class AKMeans {
 				if (exact)
 					assigner = new ExactByteAssigner(centroids);
 				else
-					assigner = new ApproximateByteEuclideanAssigner(centroids);
+					assigner = new KDTreeByteEuclideanAssigner(centroids);
 			} else {
 				// System.out.println("No need to reload tree");
 			}
@@ -303,12 +303,12 @@ public class AKMeans {
 
 	/**
 	 * Given the location of a binary dump of centroids on the HDFS, load the
-	 * binary dump and construct a proper {@link FastByteKMeans} instance
+	 * binary dump and construct a proper {@link ByteKMeans} instance
 	 * 
 	 * @param centroids
 	 * @param selected
 	 * @param options
-	 * @return {@link FastByteKMeans} for the centoirds on the HDFS
+	 * @return {@link ByteKMeans} for the centoirds on the HDFS
 	 * @throws Exception
 	 */
 	public static ByteCentroidsResult
@@ -349,11 +349,11 @@ public class AKMeans {
 
 	/**
 	 * load some initially selected centroids from {@link FeatureSelect} as a
-	 * {@link FastByteKMeans} instance
+	 * {@link ByteKMeans} instance
 	 * 
 	 * @param initialCentroids
 	 * @param k
-	 * @return a {@link FastByteKMeans}
+	 * @return a {@link ByteKMeans}
 	 * @throws IOException
 	 */
 	public static ByteCentroidsResult sequenceFileToCluster(String initialCentroids, int k) throws IOException {

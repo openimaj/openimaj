@@ -94,7 +94,6 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 			metaVar = "BOOLEAN")
 	private boolean batchedSampleMode = false;
 
-	@SuppressWarnings("unused")
 	@Option(
 			name = "--cluster-type",
 			aliases = "-ct",

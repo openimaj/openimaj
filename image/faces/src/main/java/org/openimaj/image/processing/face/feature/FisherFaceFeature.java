@@ -78,8 +78,6 @@ import org.openimaj.util.pair.IndependentPair;
 				"keywords", "Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
 		})
 public class FisherFaceFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * A {@link FacialFeatureExtractor} for producing FisherFaces. Unlike most
 	 * {@link FacialFeatureExtractor}s, this one either needs to be trained or
@@ -95,8 +93,8 @@ public class FisherFaceFeature implements FacialFeature, FeatureVectorProvider<D
 	 */
 	public static class Extractor<T extends DetectedFace>
 			implements
-				FacialFeatureExtractor<FisherFaceFeature, T>,
-				BatchTrainer<IndependentPair<?, T>>
+			FacialFeatureExtractor<FisherFaceFeature, T>,
+			BatchTrainer<IndependentPair<?, T>>
 	{
 		FisherImages fisher = null;
 		FaceAligner<T> aligner = null;

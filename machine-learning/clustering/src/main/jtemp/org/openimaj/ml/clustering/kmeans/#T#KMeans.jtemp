@@ -1,0 +1,399 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ 
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == DOUBLE);
+		}
+		return (m['R'] == FLOAT);
+	}
+***/
+
+package org.openimaj.ml.clustering.kmeans;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+
+import org.openimaj.data.DataSource;
+import org.openimaj.data.#T#ArrayBackedDataSource;
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.assignment.hard.KDTree#T#EuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
+import org.openimaj.ml.clustering.#T#CentroidsResult;
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.#T#NearestNeighboursExact;
+import org.openimaj.knn.#T#NearestNeighboursProvider;
+import org.openimaj.knn.NearestNeighboursFactory;
+import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
+import org.openimaj.util.pair.Int#R#Pair;
+
+/**
+ * Fast, parallel implementation of the K-Means algorithm with support for
+ * bigger-than-memory data. Various flavors of K-Means are supported through the
+ * selection of different subclasses of {@link #T#NearestNeighbours}; for
+ * example, approximate K-Means can be achieved using a
+ * {@link #T#NearestNeighboursKDTree} whilst exact K-Means can be achieved
+ * using an {@link #T#NearestNeighboursExact}. The specific choice of
+ * nearest-neighbour object is controlled through the
+ * {@link NearestNeighboursFactory} provided to the {@link KMeansConfiguration}
+ * used to construct instances of this class. The choice of
+ * {@link #T#NearestNeighbours} affects the speed of clustering; using
+ * approximate nearest-neighbours algorithms for the K-Means can produces
+ * comparable results to the exact KMeans algorithm in much shorter time.
+ * The choice and configuration of {@link #T#NearestNeighbours} can also
+ * control the type of distance function being used in the clustering.
+ * <p>
+ * The algorithm is implemented as follows: Clustering is initiated using a
+ * {@link #T#KMeansInit} and is iterative. In each round, batches of
+ * samples are assigned to centroids in parallel. The centroid assignment is
+ * performed using the pre-configured {@link #T#NearestNeighbours} instances
+ * created from the {@link KMeansConfiguration}. Once all samples are assigned
+ * new centroids are calculated and the next round started. Data point pushing
+ * is performed using the same techniques as center point assignment.
+ * <p>
+ * This implementation is able to deal with larger-than-memory datasets by
+ * streaming the samples from disk using an appropriate {@link DataSource}. The
+ * only requirement is that there is enough memory to hold all the centroids
+ * plus working memory for the batches of samples being assigned.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ */
+ public class #T#KMeans implements SpatialClusterer<#T#CentroidsResult, #t#[]> {
+	private static class CentroidAssignmentJob implements Callable<Boolean> {
+		private final DataSource<#t#[]> ds;
+		private final int startRow;
+		private final int stopRow;
+		private final #T#NearestNeighbours nno;
+		private final #r# [][] centroids_accum;
+		private final int [] counts;
+
+		public CentroidAssignmentJob(DataSource<#t#[]> ds, int startRow, int stopRow, #T#NearestNeighbours nno, #r# [][] centroids_accum, int [] counts) {
+			this.ds = ds; 
+			this.startRow = startRow;
+			this.stopRow = stopRow;
+			this.nno = nno;
+			this.centroids_accum = centroids_accum;
+			this.counts = counts;
+		}
+		
+		@Override
+		public Boolean call() {
+			try {
+				int D = nno.numDimensions();
+
+				#t# [][] points = new #t#[stopRow-startRow][D]; 
+				ds.getData(startRow, stopRow, points);
+
+				int [] argmins = new int[points.length];
+				#r# [] mins = new #r#[points.length];
+
+				nno.searchNN(points, argmins, mins);
+
+				synchronized(centroids_accum){
+					for (int i=0; i < points.length; ++i) {
+						int k = argmins[i];
+						for (int d=0; d < D; ++d) {
+							centroids_accum[k][d] += points[i][d];
+						}
+						counts[k] += 1;
+					}
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			return true;
+		}
+	}
+	
+	private static class Result extends #T#CentroidsResult implements #T#NearestNeighboursProvider {
+		protected #T#NearestNeighbours nn;
+		
+		@Override
+		public HardAssigner<#t#[], #r#[], Int#R#Pair> defaultHardAssigner() {
+			if (nn instanceof #T#NearestNeighboursExact)
+				return new Exact#T#Assigner(this);
+		
+			return new KDTree#T#EuclideanAssigner(this);
+		}
+		
+		@Override
+		public #T#NearestNeighbours getNearestNeighbours() {
+			return nn;
+		}
+	}
+	
+	private #T#KMeansInit init = new #T#KMeansInit.RANDOM(); 
+	private KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf;
+	private Random rng = new Random();
+	
+	/**
+	 * Construct the clusterer with the the given configuration.
+	 * 
+	 * @param conf The configuration.
+	 */
+	public #T#KMeans(KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf) {
+		this.conf = conf;
+	}
+	
+	/**
+	 * A completely default {@link #T#KMeans} used primarily as a convenience function for reading.
+	 */
+	protected #T#KMeans() {
+		this(new KMeansConfiguration<#T#NearestNeighbours, #t#[]>());
+	}
+	
+	/**
+	 * Get the current initialisation algorithm
+	 *
+	 * @return the init algorithm being used
+	 */
+	public #T#KMeansInit getInit() {
+		return init;
+	}
+
+	/**
+	 * Set the current initialisation algorithm
+	 *
+	 * @param init the init algorithm to be used
+	 */
+	public void setInit(#T#KMeansInit init) {
+		this.init = init;
+	}
+	
+	/**
+	 * Set the seed for the internal random number generator.
+	 *
+	 * @param seed the random seed for init random sample selection, no seed if seed < -1
+	 */
+	public void seed(long seed) {
+		if(seed < 0)
+			this.rng = new Random();
+		else
+			this.rng = new Random(seed);
+	}
+		
+	@Override
+	public #T#CentroidsResult cluster(#t#[][] data) {
+		DataSource<#t#[]> ds = new #T#ArrayBackedDataSource(data, rng);
+		
+		try {
+			Result result = cluster(ds, conf.K);
+			result.nn = conf.factory.create(result.centroids);
+						
+			return result;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * Initiate clustering with the given data and number of clusters.
+	 * Internally this method constructs the array to hold the centroids 
+	 * and calls {@link #cluster(DataSource, #t# [][])}.
+	 *
+	 * @param data data source to cluster with
+	 * @param K number of clusters to find
+	 * @return cluster centroids
+	 */
+	protected Result cluster(DataSource<#t#[]> data, int K) throws Exception {
+		int D = data.numDimensions();
+		
+		Result result = new Result();
+		result.centroids = new #t#[K][D];
+	
+		init.initKMeans(data, result.centroids);
+	
+		cluster(data, result);
+
+		return result;
+	}
+	
+	/**
+	 * Main clustering algorithm. A number of threads as specified are 
+	 * started each containing an assignment job and a reference to
+	 * the same set of #T#NearestNeighbours object (i.e. Exact or KDTree). 
+	 * Each thread is added to a job pool and started in parallel. 
+	 * A single accumulator is shared between all threads and locked on update.
+	 *
+	 * @param data the data to be clustered
+	 * @param centroids the centroids to be found
+	 */
+	protected void cluster(DataSource<#t#[]> data, Result result) throws Exception {
+		final #t#[][] centroids = result.centroids;
+		final int K = centroids.length;
+		final int D = centroids[0].length;
+		final int N = data.numRows();
+		#r# [][] centroids_accum = new #r#[K][D];
+		int [] new_counts = new int[K];
+
+		ExecutorService service = conf.threadpool;
+
+		for (int i=0; i<conf.niters; i++) {
+			for (int j=0; j<K; j++) Arrays.fill(centroids_accum[j], 0);
+			Arrays.fill(new_counts, 0);
+
+			#T#NearestNeighbours nno = conf.factory.create(centroids);
+			
+			List<CentroidAssignmentJob> jobs = new ArrayList<CentroidAssignmentJob>();
+			for (int bl = 0; bl < N; bl += conf.blockSize) {
+				int br = Math.min(bl + conf.blockSize, N);
+				jobs.add(new CentroidAssignmentJob(data, bl, br, nno, centroids_accum, new_counts));
+			}
+
+			service.invokeAll(jobs);
+
+			for (int k=0; k < K; ++k) {
+				if (new_counts[k] == 0) {
+					// If there's an empty cluster we replace it with a random point.
+					new_counts[k] = 1;
+
+					#t# [][] rnd = new #t#[][] {centroids[k]};
+					data.getRandomRows(rnd);
+				} else {
+					for (int d=0; d < D; ++d) {
+						centroids[k][d] = (#t#)((#r#)round#R#((double)centroids_accum[k][d] / (double)new_counts[k]));
+					}
+				}
+			} 
+		}
+	}
+	
+	protected float roundFloat(double value) { return (float) value; }
+	protected double roundDouble(double value) { return value; }
+	protected long roundLong(double value) { return (long)Math.round(value); }
+	protected int roundInt(double value) { return (int)Math.round(value); }
+	
+	@Override
+	public #T#CentroidsResult cluster(DataSource<#t#[]> ds) {
+		try {
+			Result result = cluster(ds, conf.K);
+			result.nn = conf.factory.create(result.centroids);
+			
+			return result;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+    /**
+	 * Get the configuration
+	 * 
+	 * @return the configuration
+	 */
+    public KMeansConfiguration<#T#NearestNeighbours, #t#[]> getConfiguration() {
+        return conf;
+    }
+    
+    /**
+	 * Set the configuration
+	 * 
+	 * @param conf
+	 *            the configuration to set
+	 */
+    public void setConfiguration(KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf) {
+        this.conf = conf;
+    }
+ 	
+	/**
+	 * Convenience method to quickly create an exact {@link #T#KMeans}. All
+	 * parameters other than the dimensionality and number of clusters are set
+	 * at their defaults, but can be manipulated through the configuration
+	 * returned by {@link #getConfiguration()}.
+	 * <p>
+	 * Euclidean distance is used to measure the distance between points.
+	 * 
+	 * @param M
+	 *            the dimensionality of the data being clustered
+	 * @param K
+	 *            the number of clusters
+	 * @return a {@link #T#KMeans} instance configured for exact k-means
+	 */
+	public static #T#KMeans createExact(int M, int K) {
+		final KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf =
+				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(M, K, new #T#NearestNeighboursExact.Factory());
+
+		return new #T#KMeans(conf);
+	}
+
+	/**
+	 * Convenience method to quickly create an exact {@link #T#KMeans}. All
+	 * parameters other than the dimensionality, number of clusters and number
+	 * of iterations are set at their defaults, but can be manipulated through
+	 * the configuration returned by {@link #getConfiguration()}.
+	 * <p>
+	 * Euclidean distance is used to measure the distance between points.
+	 * 
+	 * @param M
+	 *            the dimensionality of the data being clustered
+	 * @param K
+	 *            the number of clusters
+	 * @param niters
+	 *            maximum number of iterations
+	 * @return a {@link #T#KMeans} instance configured for exact k-means
+	 */
+	public static #T#KMeans createExact(int M, int K, int niters) {
+		final KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf =
+				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(M, K, new #T#NearestNeighboursExact.Factory(), niters);
+
+		return new #T#KMeans(conf);
+	}
+	
+	/**
+	 * Convenience method to quickly create an approximate {@link #T#KMeans}
+	 * using an ensemble of KD-Trees to perform nearest-neighbour lookup. All
+	 * parameters other than the dimensionality and number of clusters are set
+	 * at their defaults, but can be manipulated through the configuration
+	 * returned by {@link #getConfiguration()}. 
+	 * <p>
+	 * Euclidean distance is used to measure the distance between points.
+	 * 
+	 * @param M
+	 *            the dimensionality of the data being clustered
+	 * @param K
+	 *            the number of clusters
+	 * @return a {@link #T#KMeans} instance configured for exact k-means
+	 */
+	public static #T#KMeans createKDTreeEnsemble(int M, int K) {
+		final KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf =
+				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(M, K, new #T#NearestNeighboursKDTree.Factory());
+
+		return new #T#KMeans(conf);
+	}
+}

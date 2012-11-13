@@ -1,9 +1,9 @@
 package org.openimaj.knn.pq;
 
 import org.openimaj.feature.FloatFVComparison;
-import org.openimaj.knn.FloatNearestNeighboursExact;
+import org.openimaj.knn.FloatNearestNeighbours;
 
-public class SDC extends ADC {
+public class SDC extends FloatADCNearestNeighbours {
 	float[][][] distances;
 
 	public SDC(FloatProductQuantiser pq, float[][] dataPoints) {
@@ -12,7 +12,7 @@ public class SDC extends ADC {
 		this.distances = new float[pq.assigners.length][][];
 
 		for (int i = 0; i < pq.assigners.length; i++) {
-			final FloatNearestNeighboursExact nn = pq.assigners[i].getNN();
+			final FloatNearestNeighbours nn = pq.assigners[i];
 			final float[][] centroids = nn.getPoints();
 
 			distances[i] = new float[centroids.length][centroids.length];

@@ -39,8 +39,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.IOUtils;
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.#T#NearestNeighboursExact;
+import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
 import org.openimaj.ml.clustering.assignment.hard.Hierarchical#T#HardAssigner;
-import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
 
 
 /**
@@ -61,13 +63,13 @@ public class Hierarchical#T#KMeansTest {
 	 * @throws IOException
 	 */
 	@Test public void testHierarchical#T#KMeans() throws IOException {
-		KMeansConfiguration conf = new KMeansConfiguration();
+		KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf = new KMeansConfiguration<#T#NearestNeighbours, #t#[]>();
 		conf.setMaxIterations(1);
 		
-		conf.setExact(true);
+		conf.setNearestNeighbourFactory(new #T#NearestNeighboursExact.Factory());
 		testHierarchical#T#KMeans(conf);
 		
-		conf.setExact(false);
+		conf.setNearestNeighbourFactory(new #T#NearestNeighboursKDTree.Factory());
 		testHierarchical#T#KMeans(conf);
 	}
 	
@@ -77,7 +79,7 @@ public class Hierarchical#T#KMeansTest {
 	 * @param conf the KMeans configuration
 	 * @throws IOException
 	 */
-	public void testHierarchical#T#KMeans(KMeansConfiguration conf) throws IOException {
+	public void testHierarchical#T#KMeans(KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf) throws IOException {
 		int dim = 128;
 		#t# [][] data = RandomData.getRandom#T#Array(1000, dim, (#t#)0, (#t#)128, 1);
 		Hierarchical#T#KMeans hikm = new Hierarchical#T#KMeans(conf, dim, 5, 6);

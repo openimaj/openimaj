@@ -6,18 +6,50 @@ import jal.objects.Sorting;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openimaj.feature.FloatFVComparison;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.knn.FloatNearestNeighbours;
-import org.openimaj.knn.FloatNearestNeighboursExact;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.FloatIntPair;
 
-public class ADC extends FloatNearestNeighbours {
+/**
+ * Nearest-neighbours using Asymmetric Distance Computation (ADC) on Product
+ * Quantised vectors. In ADC, only the database points are quantised. The
+ * queries themselves are not quantised. The overall distance is computed as the
+ * summed distance of each subvector of the query to each corresponding
+ * centroids of each database vector. For efficiency, the distance of each
+ * sub-vector of a query is computed to every centroid (for the sub-vector under
+ * consideration) only once, and is then cached for the lookup during the
+ * computation of the distance to each database vector.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Jegou, Herve", "Douze, Matthijs", "Schmid, Cordelia" },
+		title = "Product Quantization for Nearest Neighbor Search",
+		year = "2011",
+		journal = "IEEE Trans. Pattern Anal. Mach. Intell.",
+		pages = { "117", "", "128" },
+		url = "http://dx.doi.org/10.1109/TPAMI.2010.57",
+		month = "January",
+		number = "1",
+		publisher = "IEEE Computer Society",
+		volume = "33",
+		customData = {
+				"issn", "0162-8828",
+				"numpages", "12",
+				"doi", "10.1109/TPAMI.2010.57",
+				"acmid", "1916695",
+				"address", "Washington, DC, USA",
+				"keywords", "High-dimensional indexing, High-dimensional indexing, image indexing, very large databases, approximate search., approximate search., image indexing, very large databases"
+		})
+public class FloatADCNearestNeighbours extends FloatNearestNeighbours {
 	protected final FloatProductQuantiser pq;
 	protected final int ndims;
 	protected final byte[][] data;
 
-	public ADC(FloatProductQuantiser pq, float[][] dataPoints) {
+	public FloatADCNearestNeighbours(FloatProductQuantiser pq, float[][] dataPoints) {
 		this.pq = pq;
 		this.ndims = dataPoints[0].length;
 
@@ -42,19 +74,45 @@ public class ADC extends FloatNearestNeighbours {
 	}
 
 	protected void computeDistances(float[] fullQuery, float[] dsqout) {
+		// for (int i = 0; i < data.length; i++) {
+		// dsqout[i] = 0;
+		//
+		// for (int j = 0, from = 0; j < this.pq.assigners.length; j++) {
+		// final FloatNearestNeighboursExact nn = this.pq.assigners[j].getNN();
+		// final int to = pq.assigners[j].numDimensions();
+		//
+		// final float[] centroid = nn.getPoints()[this.data[i][j] + 128];
+		// final float[] query = Arrays.copyOfRange(fullQuery, from, from + to);
+		//
+		// dsqout[i] += FloatFVComparison.SUM_SQUARE.compare(query, centroid);
+		//
+		// from += to;
+		// }
+		// }
+
+		final float[][] distances = new float[pq.assigners.length][];
+		for (int j = 0, from = 0; j < this.pq.assigners.length; j++) {
+			final FloatNearestNeighbours nn = this.pq.assigners[j];
+			final int to = nn.numDimensions();
+			final int K = nn.size();
+
+			final float[][] qus = { Arrays.copyOfRange(fullQuery, from, from + to) };
+			final int[][] idx = new int[1][K];
+			final float[][] dst = new float[1][K];
+			nn.searchKNN(qus, K, idx, dst);
+
+			distances[j] = new float[K];
+			for (int k = 0; k < K; k++) {
+				distances[j][idx[0][k]] = dst[0][k];
+			}
+		}
+
 		for (int i = 0; i < data.length; i++) {
 			dsqout[i] = 0;
 
-			for (int j = 0, from = 0; j < this.pq.assigners.length; j++) {
-				final FloatNearestNeighboursExact nn = this.pq.assigners[j].getNN();
-				final int to = pq.assigners[j].numDimensions();
-
-				final float[] centroid = nn.getPoints()[this.data[i][j] + 128];
-				final float[] query = Arrays.copyOfRange(fullQuery, to, from);
-
-				dsqout[i] += FloatFVComparison.SUM_SQUARE.compare(query, centroid);
-
-				from += to;
+			for (int j = 0; j < this.pq.assigners.length; j++) {
+				final int centroid = this.data[i][j] + 128;
+				dsqout[i] += distances[i][centroid];
 			}
 		}
 	}

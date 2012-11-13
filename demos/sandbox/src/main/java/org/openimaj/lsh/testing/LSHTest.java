@@ -33,7 +33,7 @@ import org.openimaj.data.DoubleArrayBackedDataSource;
 import org.openimaj.data.RandomData;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
-import org.openimaj.lsh.LSHNearestNeighbours;
+import org.openimaj.knn.lsh.LSHNearestNeighbours;
 import org.openimaj.lsh.functions.DoubleGaussianFactory;
 import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
@@ -104,10 +104,10 @@ public class LSHTest {
 						new SimpleComposition<double[]>(
 								gauss,
 								nFunctions
-							),
+						),
 						range
-					);
-				}
+				);
+			}
 		};
 
 		final DoubleArrayBackedDataSource ds = new DoubleArrayBackedDataSource(data);

@@ -46,7 +46,6 @@ import org.openimaj.knn.#T#NearestNeighboursProvider;
 import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.CentroidsProvider;
-import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
 import org.openimaj.util.pair.Int#R#Pair;
 
 /**
@@ -56,7 +55,7 @@ import org.openimaj.util.pair.Int#R#Pair;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class Approximate#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> {
+public class KDTree#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> {
 	protected #T#NearestNeighboursKDTree nn;
 	
 	/**
@@ -64,7 +63,7 @@ public class Approximate#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[
 	 * 
 	 * @param provider the cluster data provider
 	 */
-	public Approximate#T#EuclideanAssigner(CentroidsProvider<#t#[]> provider) {
+	public KDTree#T#EuclideanAssigner(CentroidsProvider<#t#[]> provider) {
 		if (provider instanceof #T#NearestNeighboursProvider) {
 			#T#NearestNeighbours internal = ((#T#NearestNeighboursProvider)provider).getNearestNeighbours();
 			
@@ -75,7 +74,7 @@ public class Approximate#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[
 		}
 		
 		nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), 
-				KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
+				#T#NearestNeighboursKDTree.DEFAULT_NTREES, #T#NearestNeighboursKDTree.DEFAULT_NCHECKS);
 	}
 	
 	/**
@@ -83,8 +82,8 @@ public class Approximate#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[
 	 * 
 	 * @param data the cluster data
 	 */
-	public Approximate#T#EuclideanAssigner(#t#[][] data) {
-		nn = new #T#NearestNeighboursKDTree(data, KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
+	public KDTree#T#EuclideanAssigner(#t#[][] data) {
+		nn = new #T#NearestNeighboursKDTree(data, #T#NearestNeighboursKDTree.DEFAULT_NTREES, #T#NearestNeighboursKDTree.DEFAULT_NCHECKS);
 	}
 	
 	@Override

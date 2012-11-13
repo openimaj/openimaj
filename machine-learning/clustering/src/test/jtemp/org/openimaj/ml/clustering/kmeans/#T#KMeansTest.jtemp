@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.clustering.kmeans.fast;
+package org.openimaj.ml.clustering.kmeans;
 
 import static org.junit.Assert.*;
 
@@ -43,12 +43,12 @@ import org.openimaj.ml.clustering.#T#CentroidsResult;
 import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 
 /**
- * Test {@link Fast#T#KMeans} read, write, clustering and pushing.
+ * Test {@link #T#KMeans} read, write, clustering and pushing.
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class Fast#T#KMeansTest {
+public class #T#KMeansTest {
 
 	class KnownClusterDataSource {
 		private #t#[][] allData;
@@ -132,8 +132,8 @@ public class Fast#T#KMeansTest {
 	 * Test the ability to cluster
 	 */
 	@Test
-	public void testFast#T#KMeans(){
-		Fast#T#KMeans fkm = new Fast#T#KMeans(ds.numDimensions(),this.dataSets.size(),false);
+	public void test#T#KMeans(){
+		#T#KMeans fkm = #T#KMeans.createKDTreeEnsemble(ds.numDimensions(), this.dataSets.size());
 		fkm.seed(seed);
 		#T#CentroidsResult cluster = fkm.cluster(this.allData);
 		
@@ -161,13 +161,10 @@ public class Fast#T#KMeansTest {
 		int K = 10;
 		int N = 100;
 		int D = 10;
-		int iter = 30;
-		int batch_size = 50000;
-		int nthreads = 8;
 		
 		RandomInMemory#T#DataSource data = new RandomInMemory#T#DataSource(N, D);
 		
-		Fast#T#KMeans kmeans = new Fast#T#KMeans(N,K,false, 8, 768, batch_size, iter, nthreads);
+		#T#KMeans kmeans = #T#KMeans.createKDTreeEnsemble(N, K);
 
 		kmeans.cluster(data);
 	}
