@@ -12,8 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.WordUtils;
+import org.openimaj.rdf.owl2java.PropertyDef.PropertyType;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -471,5 +473,16 @@ public class ClassDef
 					ps.println( p.toSettersAndGetters( "\t", true, instanceName ) );
 			}
 		}
+
+		// We always inject a "instanceURI" field for storing the actual URI
+		// of an instance of the given class.
+		final PropertyDef iupd = new PropertyDef();
+		iupd.type = PropertyType.DATATYPE;
+		iupd.uri = new URIImpl("http://onto.arcomem.eu/#URI");
+		ps.println( "\n\t// Added to all classes\n\n" );
+		ps.println( iupd.toJavaDefinition( "\t", generateAnnotations ) );
+		ps.println();
+		ps.println( iupd.toSettersAndGetters( "\t", true, null ) );
+		ps.println();	
 	}
 }
