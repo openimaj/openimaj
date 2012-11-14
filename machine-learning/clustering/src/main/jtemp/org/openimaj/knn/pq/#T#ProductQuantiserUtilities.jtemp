@@ -1,0 +1,109 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.knn.pq;
+
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.#T#NearestNeighboursProvider;
+import org.openimaj.ml.clustering.kmeans.#T#KMeans;
+
+/**
+ * Utility methods for easily creating a {@link ByteProductQuantiser} using
+ * (Exact) K-Means.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public final class #T#ProductQuantiserUtilities {
+    private #T#ProductQuantiserUtilities() {
+    }
+
+	/**
+	 * Learn a {@link #T#ProductQuantiser} by applying exact K-Means to
+	 * sub-vectors extracted from the given data. The length of the subvectors
+	 * is determined by dividing the vector length by the requested number of
+	 * assigners. The number of clusters per vector subset is constant, and must
+	 * be less than 256.
+	 * 
+	 * @param data
+	 *            the data to train the {@link #T#ProductQuantiser} on.
+	 * @param numAssigners
+	 *            the number of sub-quantisers to learn
+	 * @param K
+	 *            the number of centroids per sub-quantiser
+	 * @param nIter
+	 *            the maximum number of iterations for each k-means clustering	 
+	 * 
+	 * @return a trained {@link #T#ProductQuantiser}.
+	 */
+	public static #T#ProductQuantiser train(#t#[][] data, int numAssigners, int K, int nIter) {
+		if (K > 256 || K <= 0)
+			throw new IllegalArgumentException("0 <= K < 256");
+
+		final int subDim = data[0].length / numAssigners;
+		final #t#[][] tmp = new #t#[data.length][subDim];
+
+		final #T#NearestNeighbours[] assigners = new #T#NearestNeighbours[numAssigners];
+		final #T#KMeans kmeans = #T#KMeans.createExact(subDim, K, 100);
+
+		for (int i = 0; i < numAssigners; i++) {
+			// copy data
+			for (int j = 0; j < data.length; j++) {
+				System.arraycopy(data[j], i * subDim, tmp[j], 0, subDim);
+			}
+
+			// kmeans
+			final #T#NearestNeighboursProvider centroids = (#T#NearestNeighboursProvider) kmeans.cluster(tmp);
+
+			assigners[i] = centroids.getNearestNeighbours();
+		}
+
+		return new #T#ProductQuantiser(assigners);
+	}
+
+	/**
+	 * Learn a {@link #T#ProductQuantiser} by applying exact K-Means to
+	 * sub-vectors extracted from the given data. The length of the subvectors
+	 * is determined by dividing the vector length by the requested number of
+	 * assigners. The number of clusters per vector subset is constant, and set
+	 * at 256.
+	 * 
+	 * @param data
+	 *            the data to train the {@link #T#ProductQuantiser} on.
+	 * @param numAssigners
+	 *            the number of sub-quantisers to learn
+	 * @param nIter
+	 *            the maximum number of iterations for each k-means clustering
+	 *
+	 * @return a trained {@link #T#ProductQuantiser}.
+	 */
+	public static #T#ProductQuantiser train(#t#[][] data, int numAssigners, int nIter) {
+		return train(data, numAssigners, 256, nIter);
+	}
+}

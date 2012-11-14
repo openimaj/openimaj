@@ -1,0 +1,155 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ 
+ /*** 
+ 	{ m -> 
+ 		if (m['T'] == DOUBLE) {
+ 			return (m['R'] == DOUBLE); 		
+ 		}
+ 		if (m['T'] == LONG) {
+ 			return (m['R'] == DOUBLE);
+ 		}
+ 		return (m['R'] == FLOAT);
+ 	}
+ ***/
+ 
+package org.openimaj.knn.pq;
+
+import java.util.Arrays;
+
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.NearestNeighbours;
+
+/**
+ * Implementation of a Product Quantiser for vectors/arrays of #t#s. Product
+ * Quantisers quantise data into a very large number of clusters (large enough
+ * that the centroids could not possibly fit into memory - i.e. 2^64 centroids).
+ * The Product Quantiser can be used to create compressed representations of
+ * high-dimensional vectors, and also as a means to perform efficient
+ * nearest-neighbour search over large collections of vectors (which have been
+ * effectively compressed using the product quantiser).
+ * <p>
+ * This is achieved by breaking down the input vectors into non-overlapping
+ * sub-vectors, and applying quantisation to these sub-vectors individually. The
+ * number of bins (cluster centroids) for the sub-vectors is small (up to 256 in
+ * this implementation), but when combined over all sub-vectors, the number of
+ * bins is much larger as it accounts for all combinations of bins across
+ * sub-vectors. As only a small set of centroids needs to be held for the
+ * sub-vectors, the memory requirements are quite modest. The output of the
+ * quantisation action in this implementation is an array of bytes corresponding
+ * to the index of the matching centroid for each sub-vector (index numbers are
+ * offset by -128 so that 256 centroids indexes can fit in a single byte). The
+ * bit-pattern of this byte array could be interpreted as a numeric value of
+ * global cluster index, however in practice this is not useful.
+ * <p>
+ * Typically the product quantiser is "trained" so that it adapts to the data
+ * that is is being applied too. The standard approach to this is to use
+ * K-Means, however, this is not required. Insofar as this implementation is
+ * concerned, any set of compatible {@link NearestNeighbours} implementations
+ * can be provided to the constructor. Each of the {@link NearestNeighbours}
+ * could even potentially have a different number of dimensions (corresponding
+ * to the sub-vector lengths).
+ * <p>
+ * In the standard case, where you just want to use K-Means to train the Product
+ * Quantiser, a set of utility methods can be found in the
+ * org.openimaj.knn.pq.#T#ProductQuantiserUtilities class which can be found in
+ * the clustering sub-project (due to the dependence on the K-Means algorithm).
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+ @Reference(
+ 		type = ReferenceType.Article,
+ 		author = { "Jegou, Herve", "Douze, Matthijs", "Schmid, Cordelia" },
+ 		title = "Product Quantization for Nearest Neighbor Search",
+ 		year = "2011",
+ 		journal = "IEEE Trans. Pattern Anal. Mach. Intell.",
+ 		pages = { "117", "", "128" },
+ 		url = "http://dx.doi.org/10.1109/TPAMI.2010.57",
+ 		month = "January",
+ 		number = "1",
+ 		publisher = "IEEE Computer Society",
+ 		volume = "33",
+ 		customData = {
+ 				"issn", "0162-8828",
+ 				"numpages", "12",
+ 				"doi", "10.1109/TPAMI.2010.57",
+ 				"acmid", "1916695",
+ 				"address", "Washington, DC, USA",
+ 				"keywords", "High-dimensional indexing, High-dimensional indexing, image indexing, very large databases, approximate search., approximate search., image indexing, very large databases"
+ 		})
+public class #T#ProductQuantiser {
+	protected #T#NearestNeighbours[] assigners;
+
+	/**
+	 * Construct a {@link #T#ProductQuantiser} with the given
+	 * nearest-neighbour assigners. The number of dimensions of the assigners
+	 * determines how long each sub-vector is. There is a one-to-one mapping
+	 * between in the order of assigners and sub-vectors.
+	 * 
+	 * @param assigners
+	 *            the nearest-neighbour assigners.
+	 */
+	public #T#ProductQuantiser(#T#NearestNeighbours[] assigners) {
+		this.assigners = assigners;
+	}
+
+	/**
+	 * Quantise the given data using this Product Quantiser. The output is an
+	 * array of bytes corresponding to the index of the matching centroid for
+	 * each sub-vector (index numbers are offset by -128 so that 256 centroids
+	 * indexes can fit in a single byte).
+	 * 
+	 * @param data
+	 *            the data to quantise
+	 * @return the quantised data.
+	 */
+	public byte[] quantise(#t#[] data) {
+		final byte[] quantised = new byte[assigners.length];
+
+		final int[] idx = { 0 };
+		final #r#[] dst = { 0 };
+		final #t#[][] qus = new #t#[1][0];
+
+		for (int i = 0, from = 0; i < assigners.length; i++) {
+			final int to = assigners[i].numDimensions();
+
+			qus[0] = Arrays.copyOfRange(data, from, from + to);
+			assigners[i].searchNN(qus, idx, dst);
+			quantised[i] = (byte) (idx[0] - 128);
+
+			from += to;
+		}
+
+		return quantised;
+	}
+}
