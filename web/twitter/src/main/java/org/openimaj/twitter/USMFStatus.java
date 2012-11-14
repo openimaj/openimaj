@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -54,6 +55,7 @@ import com.google.gson.Gson;
  *
  */
 public class USMFStatus extends GeneralJSON implements Cloneable{
+	private static final Logger logger = Logger.getLogger(USMFStatus.class);
 	private transient Class<? extends GeneralJSON> generalJSONclass; // class of
 																		// the
 																		// source.
@@ -227,8 +229,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 		try {
 			jsonInstance = gson.fromJson(line, generalJSONclass);
 		} catch (Throwable e) {
-			// Could not parse the line, invalid json.
-			e.printStackTrace();
+			logger.debug("Error parsing USMF: " + e.getMessage());
 		}
 
 		if (jsonInstance == null) {
