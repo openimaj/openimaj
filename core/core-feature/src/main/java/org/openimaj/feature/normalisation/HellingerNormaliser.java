@@ -27,15 +27,19 @@ public class HellingerNormaliser implements Normaliser<FloatFV> {
 
 	@Override
 	public void normalise(FloatFV feature) {
+		normalise(feature.values, offset);
+	}
+
+	public static void normalise(float[] values, int offset) {
 		double sum = 0;
 
-		for (int i = 0; i < feature.values.length; i++) {
-			feature.values[i] += offset;
-			sum += feature.values[i];
+		for (int i = 0; i < values.length; i++) {
+			values[i] += offset;
+			sum += values[i];
 		}
 
-		for (int i = 0; i < feature.values.length; i++) {
-			feature.values[i] = (float) Math.sqrt(feature.values[i] / sum);
+		for (int i = 0; i < values.length; i++) {
+			values[i] = (float) Math.sqrt(values[i] / sum);
 		}
 	}
 }

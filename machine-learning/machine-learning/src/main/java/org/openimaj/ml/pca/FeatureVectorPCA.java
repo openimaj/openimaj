@@ -44,57 +44,64 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FeatureVectorPCA extends PrincipalComponentAnalysis {
-	PrincipalComponentAnalysis inner; 
-	
+	PrincipalComponentAnalysis inner;
+
 	/**
 	 * Default constructor, using an {@link SvdPrincipalComponentAnalysis}.
 	 */
 	public FeatureVectorPCA() {
 		this.inner = new SvdPrincipalComponentAnalysis();
 	}
-	
+
 	/**
 	 * Construct with the given {@link PrincipalComponentAnalysis} object.
-	 * @param inner PCA algorithm.
+	 * 
+	 * @param inner
+	 *            PCA algorithm.
 	 */
 	public FeatureVectorPCA(PrincipalComponentAnalysis inner) {
 		this.inner = inner;
 	}
-	
+
 	/**
 	 * Learn the PCA basis of the given feature vectors.
-	 * @param data the feature vectors to apply PCA to.
+	 * 
+	 * @param data
+	 *            the feature vectors to apply PCA to.
 	 */
 	public void learnBasis(FeatureVector[] data) {
-		double [][] d = new double[data.length][];
-		
-		for (int i=0; i<data.length; i++) {
+		final double[][] d = new double[data.length][];
+
+		for (int i = 0; i < data.length; i++) {
 			d[i] = data[i].asDoubleVector();
 		}
-		
+
 		learnBasis(d);
 	}
-	
+
 	/**
 	 * Learn the PCA basis of the given feature vectors.
-	 * @param data the feature vectors to apply PCA to.
+	 * 
+	 * @param data
+	 *            the feature vectors to apply PCA to.
 	 */
-	public void learnBasis(Collection<FeatureVector> data) {
-		double [][] d = new double[data.size()][];
-		
-		int i=0;
-		for (FeatureVector fv : data) {
+	public void learnBasis(Collection<? extends FeatureVector> data) {
+		final double[][] d = new double[data.size()][];
+
+		int i = 0;
+		for (final FeatureVector fv : data) {
 			d[i++] = fv.asDoubleVector();
 		}
-		
+
 		learnBasis(d);
 	}
-	
+
 	/**
-	 * Project a vector by the basis. The vector
-	 * is normalised by subtracting the mean and
-	 * then multiplied by the basis.
-	 * @param vector the vector to project
+	 * Project a vector by the basis. The vector is normalised by subtracting
+	 * the mean and then multiplied by the basis.
+	 * 
+	 * @param vector
+	 *            the vector to project
 	 * @return projected vector
 	 */
 	public DoubleFV project(FeatureVector vector) {
@@ -113,16 +120,16 @@ public class FeatureVectorPCA extends PrincipalComponentAnalysis {
 	protected void learnBasisNorm(Matrix norm) {
 		inner.learnBasis(norm);
 	}
-	
+
 	/**
-	 * Generate a new "observation" as a linear combination of
-	 * the principal components (PC): mean + PC * scaling.
+	 * Generate a new "observation" as a linear combination of the principal
+	 * components (PC): mean + PC * scaling.
 	 * 
-	 * If the scaling vector is shorter than the number of
-	 * components, it will be zero-padded. If it is longer,
-	 * it will be truncated.
+	 * If the scaling vector is shorter than the number of components, it will
+	 * be zero-padded. If it is longer, it will be truncated.
 	 * 
-	 * @param scalings the weighting for each PC
+	 * @param scalings
+	 *            the weighting for each PC
 	 * @return generated observation
 	 */
 	public DoubleFV generate(DoubleFV scalings) {

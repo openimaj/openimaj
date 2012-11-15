@@ -34,32 +34,31 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import org.openimaj.feature.ByteFV;
+import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.local.LocalFeature;
+import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.io.VariableLength;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
 
 import Jama.Matrix;
-import cern.jet.random.Normal;
 
 /**
  * A local interest point with a location, scale, orientation and associated
- * feature. The feature is stored as an array of bytes.
+ * feature. The feature is stored as an array of floats.
  * 
  * @author Jonathon Hare
  */
-public class Keypoint
+public class FloatKeypoint
 		implements
 		Serializable,
 		ScaleSpacePoint,
-		LocalFeature<KeypointLocation, ByteFV>,
+		LocalFeature<KeypointLocation, FloatFV>,
 		VariableLength,
 		Cloneable
 {
@@ -73,7 +72,7 @@ public class Keypoint
 	/**
 	 * keypoint feature descriptor (i.e. SIFT)
 	 */
-	public byte[] ivec;
+	public float[] vector;
 
 	/**
 	 * dominant orientation of keypoint
@@ -98,8 +97,8 @@ public class Keypoint
 	/**
 	 * Construct with the default feature vector length for SIFT (128).
 	 */
-	public Keypoint() {
-		this.ivec = new byte[DEFAULT_LENGTH];
+	public FloatKeypoint() {
+		this.vector = new float[DEFAULT_LENGTH];
 	}
 
 	/**
@@ -108,10 +107,10 @@ public class Keypoint
 	 * @param length
 	 *            the length of the feature vector
 	 */
-	public Keypoint(int length) {
+	public FloatKeypoint(int length) {
 		if (length < 0)
 			length = DEFAULT_LENGTH;
-		this.ivec = new byte[length];
+		this.vector = new float[length];
 	}
 
 	/**
@@ -128,22 +127,36 @@ public class Keypoint
 	 * @param ivec
 	 *            the feature vector of the keypoint
 	 */
-	public Keypoint(float x, float y, float ori, float scale, byte[] ivec) {
+	public FloatKeypoint(float x, float y, float ori, float scale, float[] ivec) {
 		this.x = x;
 		this.y = y;
 		this.ori = ori;
 		this.scale = scale;
-		this.ivec = ivec;
+		this.vector = ivec;
 	}
 
 	/**
-	 * Construct by copying from another {@link Keypoint}
+	 * Construct by copying from another {@link FloatKeypoint}
 	 * 
 	 * @param k
-	 *            the {@link Keypoint} to copy from
+	 *            the {@link FloatKeypoint} to copy from
 	 */
-	public Keypoint(Keypoint k) {
-		this(k.x, k.y, k.ori, k.scale, Arrays.copyOf(k.ivec, k.ivec.length));
+	public FloatKeypoint(FloatKeypoint k) {
+		this(k.x, k.y, k.ori, k.scale, Arrays.copyOf(k.vector, k.vector.length));
+	}
+
+	/**
+	 * Construct from a {@link Keypoint}.
+	 * 
+	 * @param k
+	 */
+	public FloatKeypoint(Keypoint k) {
+		this.setLocation(k.getLocation());
+		this.vector = new float[k.ivec.length];
+
+		for (int i = 0; i < vector.length; i++) {
+			vector[i] = k.ivec[i] + 128;
+		}
 	}
 
 	@Override
@@ -198,16 +211,16 @@ public class Keypoint
 	}
 
 	/**
-	 * Test whether the location of this {@link Keypoint} and another
-	 * {@link Keypoint} is the same.
+	 * Test whether the location of this {@link FloatKeypoint} and another
+	 * {@link FloatKeypoint} is the same.
 	 * 
 	 * @param obj
 	 *            the other keypoint
 	 * @return true if the locations match; false otherwise.
 	 */
 	public boolean locationEquals(Object obj) {
-		if (obj instanceof Keypoint) {
-			final Keypoint kobj = (Keypoint) obj;
+		if (obj instanceof FloatKeypoint) {
+			final FloatKeypoint kobj = (FloatKeypoint) obj;
 
 			if (kobj.x == x && kobj.y == y && kobj.scale == scale)
 				return true;
@@ -218,10 +231,10 @@ public class Keypoint
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Keypoint) {
-			final Keypoint kobj = (Keypoint) obj;
+		if (obj instanceof FloatKeypoint) {
+			final FloatKeypoint kobj = (FloatKeypoint) obj;
 
-			if (kobj.x == x && kobj.y == y && kobj.scale == scale && Arrays.equals(ivec, kobj.ivec))
+			if (kobj.x == x && kobj.y == y && kobj.scale == scale && Arrays.equals(vector, kobj.vector))
 				return true;
 		}
 
@@ -238,16 +251,16 @@ public class Keypoint
 	}
 
 	@Override
-	public Keypoint clone() {
-		final Keypoint clone = new Keypoint();
+	public FloatKeypoint clone() {
+		final FloatKeypoint clone = new FloatKeypoint();
 
 		clone.x = x;
 		clone.ori = ori;
 		clone.y = y;
 		clone.scale = scale;
 
-		clone.ivec = new byte[ivec.length];
-		System.arraycopy(ivec, 0, clone.ivec, 0, ivec.length);
+		clone.vector = new float[vector.length];
+		System.arraycopy(vector, 0, clone.vector, 0, vector.length);
 
 		return clone;
 	}
@@ -261,17 +274,19 @@ public class Keypoint
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		getLocation().writeBinary(out);
-		out.write(this.ivec);
+		out.writeInt(vector.length);
+		for (int i = 0; i < vector.length; i++)
+			out.writeFloat(this.vector[i]);
 	}
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		/* Output data for the keypoint. */
 		getLocation().writeASCII(out);
-		for (int i = 0; i < ivec.length; i++) {
+		for (int i = 0; i < vector.length; i++) {
 			if (i > 0 && i % 20 == 0)
 				out.println();
-			out.print(" " + (ivec[i] + 128));
+			out.print(" " + vector[i]);
 		}
 		out.println();
 	}
@@ -282,7 +297,9 @@ public class Keypoint
 		l.readBinary(in);
 		setLocation(l);
 
-		in.readFully(ivec);
+		vector = new float[in.readInt()];
+		for (int i = 0; i < vector.length; i++)
+			vector[i] = in.readFloat();
 	}
 
 	@Override
@@ -292,12 +309,12 @@ public class Keypoint
 		setLocation(l);
 
 		int i = 0;
-		while (i < ivec.length) {
+		while (i < vector.length) {
 			final String line = in.nextLine();
 			final StringTokenizer st = new StringTokenizer(line);
 
 			while (st.hasMoreTokens()) {
-				ivec[i] = (byte) (Integer.parseInt(st.nextToken()) - 128);
+				vector[i] = Float.parseFloat(st.nextToken());
 				i++;
 			}
 		}
@@ -314,8 +331,8 @@ public class Keypoint
 	}
 
 	@Override
-	public ByteFV getFeatureVector() {
-		return new ByteFV(ivec);
+	public FloatFV getFeatureVector() {
+		return new FloatFV(vector);
 	}
 
 	@Override
@@ -324,7 +341,7 @@ public class Keypoint
 	}
 
 	/**
-	 * Set the location of this {@link Keypoint}
+	 * Set the location of this {@link FloatKeypoint}
 	 * 
 	 * @param location
 	 *            the location
@@ -336,89 +353,6 @@ public class Keypoint
 		ori = location.orientation;
 	}
 
-	/**
-	 * Create a list of {@link Keypoint}s from the input list, but with the
-	 * positions offset by the given amount.
-	 * 
-	 * @param keypoints
-	 *            the input list
-	 * @param x
-	 *            the x offset
-	 * @param y
-	 *            the y offset
-	 * @return the new keypoints
-	 */
-	public static List<Keypoint> getRelativeKeypoints(List<Keypoint> keypoints, float x, float y) {
-		final List<Keypoint> shifted = new ArrayList<Keypoint>();
-		for (final Keypoint old : keypoints) {
-			final Keypoint n = new Keypoint();
-			n.x = old.x - x;
-			n.y = old.y - y;
-			n.ivec = old.ivec;
-			n.scale = old.scale;
-			n.ori = old.ori;
-			shifted.add(n);
-		}
-		return shifted;
-	}
-
-	/**
-	 * Add Gaussian noise the feature vectors of some features. The original
-	 * features are untouched; the returned list contains a copy.
-	 * 
-	 * @param siftFeatures
-	 *            the input features
-	 * @param mean
-	 *            the mean of the noise
-	 * @param sigma
-	 *            the standard deviation of the noise
-	 * @return the noisy keypoints
-	 */
-	public static List<Keypoint> addGaussianNoise(List<Keypoint> siftFeatures, double mean, double sigma) {
-		final List<Keypoint> toRet = new ArrayList<Keypoint>();
-		for (final Keypoint keypoint : siftFeatures) {
-			final Keypoint kpClone = keypoint.clone();
-			for (int i = 0; i < keypoint.ivec.length; i++) {
-				final double deviation = Normal.staticNextDouble(mean, sigma);
-				int value = 0xff & keypoint.ivec[i];
-				value += deviation;
-				if (value < 0)
-					value = 0;
-				else if (value > 255)
-					value = 255;
-
-				kpClone.ivec[i] = (byte) value;
-			}
-			toRet.add(kpClone);
-		}
-		return toRet;
-	}
-
-	/**
-	 * Scale a list of keypoints by the given amount. This scales the location
-	 * and scale of each keypoint. The original features are untouched; the
-	 * returned list contains a copy.
-	 * 
-	 * @param keypoints
-	 *            the input features.
-	 * @param toScale
-	 *            the scale factor
-	 * @return the scaled features.
-	 */
-	public static List<Keypoint> getScaledKeypoints(List<Keypoint> keypoints, int toScale) {
-		final List<Keypoint> shifted = new ArrayList<Keypoint>();
-		for (final Keypoint old : keypoints) {
-			final Keypoint n = new Keypoint();
-			n.x = old.x * toScale;
-			n.y = old.y * toScale;
-			n.ivec = old.ivec;
-			n.scale = old.scale * toScale;
-			n.ori = old.ori;
-			shifted.add(n);
-		}
-		return shifted;
-	}
-
 	@Override
 	public void translate(float x, float y) {
 		this.x += x;
@@ -426,7 +360,7 @@ public class Keypoint
 	}
 
 	@Override
-	public Keypoint transform(Matrix transform) {
+	public FloatKeypoint transform(Matrix transform) {
 		float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY()
 				+ (float) transform.get(0, 2);
 		float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY()
@@ -437,12 +371,12 @@ public class Keypoint
 		xt /= zt;
 		yt /= zt;
 
-		return new Keypoint(xt, yt, this.ori, this.scale, this.ivec.clone());
+		return new FloatKeypoint(xt, yt, this.ori, this.scale, this.vector.clone());
 	}
 
 	@Override
 	public Point2d minus(Point2d a) {
-		final Keypoint kp = this.clone();
+		final FloatKeypoint kp = this.clone();
 		kp.x = this.x - (int) a.getX();
 		kp.y = this.y - (int) a.getY();
 		return null;
@@ -456,5 +390,21 @@ public class Keypoint
 	@Override
 	public Point2d copy() {
 		return clone();
+	}
+
+	/**
+	 * Convert a list of {@link Keypoint}s to {@link FloatKeypoint}s.
+	 * 
+	 * @param keys
+	 *            the {@link Keypoint}s to convert.
+	 * @return the converted {@link FloatKeypoint}s.
+	 */
+	public static MemoryLocalFeatureList<FloatKeypoint> convert(List<? extends Keypoint> keys) {
+		final MemoryLocalFeatureList<FloatKeypoint> out = new MemoryLocalFeatureList<FloatKeypoint>();
+
+		for (final Keypoint k : keys)
+			out.add(new FloatKeypoint(k));
+
+		return out;
 	}
 }

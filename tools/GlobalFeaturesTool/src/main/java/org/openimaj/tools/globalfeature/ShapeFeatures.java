@@ -37,21 +37,19 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.connectedcomponent.proc.AffineInvariantMoments;
 import org.openimaj.image.connectedcomponent.proc.BasicShapeDescriptor;
+import org.openimaj.image.connectedcomponent.proc.BasicShapeDescriptor.BasicShapeDescriptorType;
 import org.openimaj.image.connectedcomponent.proc.BoundaryDistanceDescriptor;
 import org.openimaj.image.connectedcomponent.proc.ColourDescriptor;
-import org.openimaj.image.connectedcomponent.proc.HuMoments;
-import org.openimaj.image.connectedcomponent.proc.BasicShapeDescriptor.BasicShapeDescriptorType;
 import org.openimaj.image.connectedcomponent.proc.ColourDescriptor.ColourDescriptorType;
+import org.openimaj.image.connectedcomponent.proc.HuMoments;
 import org.openimaj.image.pixel.ConnectedComponent;
 
-
 /**
- * Features describing the shape of the foreground
- * object in an image. A mask is used to separate
- * foreground/background pixels.
+ * Features describing the shape of the foreground object in an image. A mask is
+ * used to separate foreground/background pixels.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public enum ShapeFeatures implements CmdLineOptionsProvider {
 	/**
@@ -62,20 +60,25 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 		@Override
 		public ShapeFeaturesOp getOptions() {
 			return new ShapeFeaturesOp() {
-				@SuppressWarnings("unused")
-				@Option(name="--global-feature-type", aliases="-g", handler=ProxyOptionHandler.class, usage="Global feature type", required=true)
+				@Option(
+						name = "--global-feature-type",
+						aliases = "-g",
+						handler = ProxyOptionHandler.class,
+						usage = "Global feature type",
+						required = true)
 				private GlobalFeatureType feature;
 				private GlobalFeatureExtractor featureOp;
 
 				@Override
 				public FeatureVector execute(MBFImage image, FImage mask) {
 					return featureOp.extract(image);
-				}				
+				}
 			};
 		}
 	},
 	/**
 	 * Affine invariant moments
+	 * 
 	 * @see AffineInvariantMoments
 	 */
 	AFFINE_INVARIANT_MOMENTS {
@@ -84,7 +87,7 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 			return new ShapeFeaturesOp() {
 				@Override
 				public FeatureVector execute(MBFImage image, FImage mask) {
-					AffineInvariantMoments f = new AffineInvariantMoments();
+					final AffineInvariantMoments f = new AffineInvariantMoments();
 					f.process(c(mask));
 					return f.getFeatureVector();
 				}
@@ -93,18 +96,19 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Basic shape features
+	 * 
 	 * @see BasicShapeDescriptor
 	 */
 	BASIC_SHAPE_FEATURES {
 		@Override
 		public ShapeFeaturesOp getOptions() {
 			return new ShapeFeaturesOp() {
-				@Option(name="--type", aliases="-t", usage="Shape feature type", required=true)
+				@Option(name = "--type", aliases = "-t", usage = "Shape feature type", required = true)
 				BasicShapeDescriptorType type;
 
 				@Override
 				public FeatureVector execute(MBFImage image, FImage mask) {
-					BasicShapeDescriptor f = new BasicShapeDescriptor();
+					final BasicShapeDescriptor f = new BasicShapeDescriptor();
 					f.process(c(mask));
 					return type.getFeatureVector(f);
 				}
@@ -113,21 +117,23 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Distance from boundary descriptor
+	 * 
 	 * @see BoundaryDistanceDescriptor
 	 */
 	BOUNDARY_DISTANCE_FEATURE {
 		@Override
 		public ShapeFeaturesOp getOptions() {
 			return new ShapeFeaturesOp() {
-				@Option(name="--no-scale-normalisation", usage="Disable scale normalisation", required=false)
+				@Option(name = "--no-scale-normalisation", usage = "Disable scale normalisation", required = false)
 				boolean noNormaliseScale = false;
 
-				@Option(name="--no-rotation-normalisation", usage="Disable rotation normalisation", required=false)
+				@Option(name = "--no-rotation-normalisation", usage = "Disable rotation normalisation", required = false)
 				boolean noNormaliseRotation = false;
 
 				@Override
 				public FeatureVector execute(MBFImage image, FImage mask) {
-					BoundaryDistanceDescriptor f = new BoundaryDistanceDescriptor(!noNormaliseScale, !noNormaliseRotation);
+					final BoundaryDistanceDescriptor f = new BoundaryDistanceDescriptor(!noNormaliseScale,
+							!noNormaliseRotation);
 					f.process(c(mask));
 					return f.getFeatureVector();
 				}
@@ -136,6 +142,7 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Hu moments
+	 * 
 	 * @see HuMoments
 	 */
 	HU_MOMENTS {
@@ -144,7 +151,7 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 			return new ShapeFeaturesOp() {
 				@Override
 				public FeatureVector execute(MBFImage image, FImage mask) {
-					HuMoments f = new HuMoments();
+					final HuMoments f = new HuMoments();
 					f.process(c(mask));
 					return f.getFeatureVector();
 				}
@@ -153,25 +160,25 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Colour statistics
+	 * 
 	 * @see ColourDescriptor
 	 */
 	COLOR_STATISTICS {
 		@Override
 		public ShapeFeaturesOp getOptions() {
 			return new ShapeFeaturesOp() {
-				@Option(name="--type", aliases="-t", usage="Colour statistics type", required=true)
+				@Option(name = "--type", aliases = "-t", usage = "Colour statistics type", required = true)
 				ColourDescriptorType type;
 
 				@Override
 				public FeatureVector execute(MBFImage image, FImage mask) {
-					ColourDescriptor f = new ColourDescriptor(image);
+					final ColourDescriptor f = new ColourDescriptor(image);
 					f.process(c(mask));
 					return type.getFeatureVector(f);
 				}
 			};
 		}
-	}
-	;
+	};
 
 	protected ConnectedComponent c(FImage mask) {
 		return new ConnectedComponent(mask, 0.5f);
@@ -181,20 +188,22 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 	public abstract ShapeFeaturesOp getOptions();
 
 	/**
-	 * An object able to perform the execution associated with
-	 * a ShapeFeatures type; possibly contains extra options
-	 * for the operation.
+	 * An object able to perform the execution associated with a ShapeFeatures
+	 * type; possibly contains extra options for the operation.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public interface ShapeFeaturesOp {
 		/**
-		 * Calculate a feature using the shape defined by the
-		 * mask and possibly the pixel values from the image.
-		 * @param image the image.
-		 * @param mask the mask.
+		 * Calculate a feature using the shape defined by the mask and possibly
+		 * the pixel values from the image.
+		 * 
+		 * @param image
+		 *            the image.
+		 * @param mask
+		 *            the mask.
 		 * @return the feature.
 		 */
-		public abstract FeatureVector execute(MBFImage image, FImage mask);		
+		public abstract FeatureVector execute(MBFImage image, FImage mask);
 	}
 }
