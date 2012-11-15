@@ -3,19 +3,16 @@ package org.openimaj.rdf.owl2java;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.WordUtils;
-import org.openimaj.rdf.owl2java.PropertyDef.PropertyType;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -45,11 +42,14 @@ public class ClassDef
 	/** The URI of the class */
 	protected URI uri;
 
-	/** List of the superclasses to this class */
-	protected List<URI> superclasses;
+	/** List of the all the ancestral superclasses to each of the direct superclasses */
+	protected Map<URI,Set<URI>> allSuperclasses;
+	
+	/** A list of the direct superclasses of this class */
+	protected Set<URI> directSuperclasses;
 
 	/** List of the properties in this class */
-	protected List<PropertyDef> properties;
+	protected Set<PropertyDef> properties;
 	
 	/**
 	 * 	Outputs the Java class definition for this class def
@@ -61,7 +61,7 @@ public class ClassDef
 	public String toString()
 	{
 		return "class " + this.uri.getLocalName() + " extends " +
-				this.superclasses + " {\n" + "\t" + this.properties + "\n}\n";
+				this.allSuperclasses + " {\n" + "\t" + this.properties + "\n}\n";
 	}
 
 	/**
@@ -120,12 +120,15 @@ public class ClassDef
 					}
 
 					clz.uri = (URI) bindingSet.getValue("Class");
-					clz.superclasses = ClassDef.getSuperclasses( clz.uri, conn );
+					clz.directSuperclasses = ClassDef.getSuperclasses( clz.uri, conn );
 					clz.properties   = PropertyDef.loadProperties( clz.uri, conn );
 
 					// Check whether there are any other classes
 					ClassDef.getEquivalentClasses( clz, conn );
 					
+					// Get all the superclasses in the tree
+					clz.allSuperclasses = clz.getAllSuperclasses( conn );
+
 					classes.put( clz.uri, clz );
 				}
 			}
@@ -147,7 +150,7 @@ public class ClassDef
 					"SELECT ?clazz WHERE " +
 					"{ <"+clz.uri+"> owl:equivalentClass ?clazz . }";
 
-			System.out.println( sparql );
+//			System.out.println( sparql );
 			
 			// Prepare the query...
 			final TupleQuery preparedQuery = conn.prepareTupleQuery(
@@ -168,7 +171,7 @@ public class ClassDef
 				// TODO: There is a possibility that we could end up with a cycle here
 				// and the resulting code would not compile.
 				if( clazz instanceof URI )
-					clz.superclasses.add( (URI)clazz );
+					clz.directSuperclasses.add( (URI)clazz );
 				else
 				// If it's a BNode, then the BNode defines the equivalence.
 				if( clazz instanceof MemBNode )
@@ -204,18 +207,18 @@ public class ClassDef
 	 *	Retrieves the superclass list for the given class URI using the given
 	 *	repository
 	 *
-	 *	@param uri The URI of the class to find the superclasses of
+	 *	@param uri The URI of the class to find the allSuperclasses of
 	 *	@param conn The respository
-	 *	@return A list of URIs of superclasses
+	 *	@return A list of URIs of allSuperclasses
 	 *
 	 *	@throws RepositoryException
 	 *	@throws MalformedQueryException
 	 *	@throws QueryEvaluationException
 	 */
-	private static List<URI> getSuperclasses( final URI uri, final RepositoryConnection conn )
+	private static Set<URI> getSuperclasses( final URI uri, final RepositoryConnection conn )
 				throws RepositoryException, MalformedQueryException, QueryEvaluationException
 	{
-		// SPARQL query to get the superclasses
+		// SPARQL query to get the allSuperclasses
 		final String query = "SELECT ?superclass WHERE { "+
 				"<" + uri.stringValue() + "> "+
 				"<http://www.w3.org/2000/01/rdf-schema#subClassOf> "+
@@ -224,7 +227,7 @@ public class ClassDef
 		final TupleQuery preparedQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, query);
 		final TupleQueryResult res = preparedQuery.evaluate();
 
-		final List<URI> superclasses = new ArrayList<URI>();
+		final Set<URI> superclasses = new HashSet<URI>();
 		while (res.hasNext()) {
 			final BindingSet bindingSet = res.next();
 
@@ -271,31 +274,37 @@ public class ClassDef
 		ps.println();
 
 		// Output the imports
+		ps.println( "import org.openimaj.rdf.owl2java.Something;");
 		if( separateImplementations )
 			ps.println( "import "+pkgs.get(this.uri)+".*;" );
 		if( generateAnnotations )
+		{
 			ps.println( "import org.openimaj.rdf.serialize.Predicate;\n");
-		this.printImports( ps, pkgs, true, classes );
+			ps.println( "import org.openimaj.rdf.serialize.RDFType;\n");
+		}
+		this.printImports( ps, pkgs, false, classes, true );
 		ps.println();
 
 		// Output the comment at the top of the class
 		this.printClassComment(ps);
 
 		// Output the class
+		ps.print("@RDFType(\""+this.uri+"\")\n" );
 		ps.print("public class " + Generator.getTypeName( this.uri ) + "Impl ");
+		ps.print("extends Something ");
 
 		// It will implement the interface that defines it
 		ps.print( "implements "+Generator.getTypeName( this.uri ) );
 
-		if (this.superclasses.size() > 0)
-		{
-			// ...and any of the super class interfaces
-			for( final URI superclass : this.superclasses )
-			{
-				ps.print(", ");
-				ps.print( Generator.getTypeName( superclass ) );
-			}
-		}
+//		if (this.superclasses.size() > 0)
+//		{
+//			// ...and any of the super class interfaces
+//			for( final URI superclass : this.superclasses )
+//			{
+//				ps.print(", ");
+//				ps.print( Generator.getTypeName( superclass ) );
+//			}
+//		}
 		ps.println("\n{");
 
 		// Output the definition of the class
@@ -324,14 +333,27 @@ public class ClassDef
 
 		ps.println("package " + pkgs.get(this.uri) + ";");
 		ps.println();
-		this.printImports( ps, pkgs, false, classes );
+		this.printImports( ps, pkgs, true, classes, false );
 		ps.println();
 
 		this.printClassComment(ps);
 
 		ps.print("public interface " + Generator.getTypeName( this.uri ) + " ");
+		if( this.allSuperclasses.size() > 0 )
+		{
+			ps.print( "\n\textends " );
+			boolean first = true;
+			for( final URI superClassURI : this.directSuperclasses )
+			{
+				if( !first ) ps.print( ", ");
+				ps.print( Generator.getTypeName( superClassURI ) );
+				first = false;
+			}
+		}
+		
 		ps.println("\n{");
 		this.printInterfacePropertyDefinitions( ps );
+		ps.println("\tpublic String getURI();\n");
 		ps.println("}\n");
 	}
 
@@ -357,35 +379,38 @@ public class ClassDef
 	 *
 	 *	@param ps The stream to print the imports to
 	 *	@param pkgs The list of package mappings for all the known classes
-	 *	@param superclasses Whether to print imports for superclasses
+	 *	@param allSuperclasses Whether to print imports for allSuperclasses
 	 */
 	private void printImports( final PrintStream ps, final Map<URI, String> pkgs, 
-			final boolean superclasses, final Map<URI,ClassDef> classes )
+			final boolean superclasses, final Map<URI,ClassDef> classes,
+			final boolean implementations )
 	{
 		final Set<String> imports = new HashSet<String>();
 
+		final Map<PropertyDef, String> pd = new HashMap<PropertyDef, String>();
+		final Map<String, String> instanceNameMap = new HashMap<String, String>();
+		this.getFullPropertyList( pd, instanceNameMap, classes );
+		
+		for( final PropertyDef p : pd.keySet() )
+			if( implementations || pd.get(p).equals("this") )
+				if( p.needsImport() != null )
+					imports.addAll( p.needsImport() );
+		
 		if( superclasses )
 		{
-			for( final URI sc : this.superclasses )
-			{
-				for( final PropertyDef p : classes.get(sc).properties )
-					if( p.needsImport() != null )
-						imports.add( p.needsImport() );
-				imports.add( pkgs.get(sc) );
-			}
+			for( final URI u : this.directSuperclasses )
+				imports.add( pkgs.get( u )+"." );
 		}
 		
-		for( final PropertyDef p : this.properties )
-			if( p.needsImport() != null )
-				imports.add( p.needsImport() );
-
-		imports.remove( pkgs.get(this.uri) );
+		imports.remove( pkgs.get(this.uri)+"." );
 
 		final String[] sortedImports = imports.toArray(new String[imports.size()]);
 		Arrays.sort(sortedImports);
 
 		for (final String imp : sortedImports) {
-			ps.println("import " + imp + ".*;");
+			if( imp.endsWith( "." ) )
+					ps.println("import " + imp + "*;");
+			else 	ps.println("import " + imp +";");
 		}
 	}
 
@@ -397,7 +422,7 @@ public class ClassDef
 	private void printInterfacePropertyDefinitions( final PrintStream ps )
 	{
 		for( final PropertyDef p : this.properties )
-			ps.println( p.toSettersAndGetters( "\t", false, null ) );
+			ps.println( p.toSettersAndGetters( "\t", false, null, false ) );
 	}
 
 	/**
@@ -406,7 +431,7 @@ public class ClassDef
 	 *	@param ps The stream to print to.
 	 * 	@param classes A map of class URIs to ClassDefs
 	 * 	@param flattenClassStructure Whether to combine all the properties from
-	 * 		all the superclasses into this class (TRUE), or whether to use instance
+	 * 		all the allSuperclasses into this class (TRUE), or whether to use instance
 	 * 		pointers to classes of that type (FALSE)
 	 * @param generateAnnotations
 	 */
@@ -414,13 +439,26 @@ public class ClassDef
 			final Map<URI, ClassDef> classes, final boolean flattenClassStructure,
 			final boolean generateAnnotations )
 	{
+		// Remember which ones we've output already
+		final HashSet<URI> alreadyDone = new HashSet<URI>();
+		
 		if( flattenClassStructure )
 		{
+			// TODO: Check this still works after the change in properties list
 			// Work out all the properties to output
-			final List<PropertyDef> pd = new ArrayList<PropertyDef>();
+			final Set<PropertyDef> pd = new HashSet<PropertyDef>();
 			pd.addAll( this.properties );
-			for( final URI superclass : this.superclasses )
-				pd.addAll( classes.get( superclass ).properties );
+			for( final Set<URI> superclassList : this.allSuperclasses.values() )
+			{
+				for( final URI superclass : superclassList )
+				{
+					if( !alreadyDone.contains( superclass ) )
+					{
+						pd.addAll( classes.get( superclass ).properties );
+						alreadyDone.add( superclass );
+					}
+				}
+			}
 
 			// Output all the property definitions for this class.
 			for( final PropertyDef p : pd )
@@ -428,10 +466,15 @@ public class ClassDef
 			ps.println();
 			// Output all the getters and setters for this class.
 			for( final PropertyDef p : pd )
-				ps.println( p.toSettersAndGetters( "\t", true, null ) );
+				ps.println( p.toSettersAndGetters( "\t", true, null, false ) );
 		}
 		else
 		{
+			System.out.println( "=======================================" );
+			System.out.println( this.uri );
+			System.out.println( "=======================================" );
+			System.out.println( "Direct superclasses: "+this.directSuperclasses); 
+
 			// Output all the property definitions for this class.
 			for( final PropertyDef p : this.properties )
 				ps.println( p.toJavaDefinition("\t",generateAnnotations) );
@@ -440,49 +483,117 @@ public class ClassDef
 			// Now we need to output the links to other objects from which
 			// this class inherits. While we do that, we'll also remember which
 			// properties we need to delegate to the other objects.
-			final HashMap<String,List<PropertyDef>> pd = new HashMap<String, List<PropertyDef>>();
-			for( final URI superclass : this.superclasses )
-			{
-				// We don't need the instance variable if we're not inheriting
-				// any properties from the superclass.
-				if( classes.get(superclass).properties.size() == 0 )
-					continue;
-				
-				final String instanceName =
-						superclass.getLocalName().substring(0,1).toLowerCase()+
-						superclass.getLocalName().substring(1);
-
-				pd.put( instanceName, classes.get(superclass).properties );
-
-				ps.println( "\t/** "+superclass.getLocalName()+" instance */" );
-				ps.println( "\tprivate "+Generator.getTypeName( superclass )
-						+" "+instanceName+";\n" );
-			}
-
-			ps.println( "\n\t// From class "+this.uri.getLocalName()+"\n\n" );
+			final HashMap<PropertyDef,String> pd = new HashMap<PropertyDef,String>();
+			final HashMap<String,String> entityNameMap = new HashMap<String, String>();
+			this.getFullPropertyList( pd, entityNameMap, classes );
 			
-			// Output the property getters and setters for this class
-			for( final PropertyDef p : this.properties )
-				ps.println( p.toSettersAndGetters( "\t", true, null ) );
+			// Check whether there are any delegation members to output
+			// We do this by removing "this" from the map and seeing what's left.
+			final Map<PropertyDef,String> xx = new HashMap<PropertyDef, String>();
+			xx.putAll( pd );
+			final Iterator<PropertyDef> i = xx.keySet().iterator();
+			while( i.hasNext() ) if( xx.get(i.next()).equals("this") ) i.remove();
+			if( xx.keySet().size() > 0 )
+			{			
+				for( final String instanceName : entityNameMap.keySet() )
+				{
+					final String typeName = entityNameMap.get(instanceName);
+					ps.println( "\t/** "+typeName+" superclass instance */" );
+					ps.println( "\tprivate "+typeName+" "+instanceName+";\n" );
+				}
+			}
 
 			// Now output the delegated getters and setters for this class
-			for( final String instanceName : pd.keySet() )
+			for( final PropertyDef pp : pd.keySet() )
 			{
+				final String instanceName = pd.get(pp);
 				ps.println( "\n\t// From class "+instanceName+"\n\n" );
-				for( final PropertyDef p : pd.get(instanceName) )
-					ps.println( p.toSettersAndGetters( "\t", true, instanceName ) );
+				ps.println( pp.toSettersAndGetters( "\t", true, instanceName, false ) );
 			}
 		}
+	}
+	
+	/**
+	 * 	Traverses up the tree from this class to find all ancestor
+	 * 	allSuperclasses.
+	 * 	@param conn A connection to a triple-store repository 
+	 *	@return A list of URIs representing the superclass ancestors of this class
+	 */
+	public Map<URI,Set<URI>> getAllSuperclasses( final RepositoryConnection conn )
+	{
+		final HashMap<URI,Set<URI>> map = new HashMap<URI, Set<URI>>();
+		for( final URI uri : this.directSuperclasses )
+		{
+			final HashSet<URI> uris = new HashSet<URI>();
+			ClassDef.getAllSuperclasses( uri, conn, uris );
+			map.put( uri, uris );
+		}
+		
+		return map;
+	}
+	
+	/**
+	 * 	For the given URI, will query the repository and fill the list of URIs
+	 * 	with the URIs of all the ancestor allSuperclasses to the given URI.
+	 * 	@param uri The URI of the class to find the ancestors of
+	 *	@param conn A connection to a triple-store repository.
+	 *	@param uris The list where classes are to be added
+	 */
+	private static void getAllSuperclasses( final URI uri, 
+			final RepositoryConnection conn, final Set<URI> uris )
+	{
+		try
+		{
+			final Set<URI> superclassesOf = ClassDef.getSuperclasses( uri, conn );
+			uris.addAll( superclassesOf );
+			for( final URI u : superclassesOf )
+				ClassDef.getAllSuperclasses( u, conn, uris );
+		}
+		catch( final RepositoryException e )
+		{
+			e.printStackTrace();
+		}
+		catch( final MalformedQueryException e )
+		{
+			e.printStackTrace();
+		}
+		catch( final QueryEvaluationException e )
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private void getFullPropertyList( final Map<PropertyDef,String> pd,
+			final Map<String,String> instanceNameMap, final Map<URI,ClassDef> classes )
+	{
+		for( final PropertyDef pp : this.properties )
+			pd.put( pp, "this" );
+		
+		for( final URI superclass : this.directSuperclasses )
+		{
+			final String instanceName =
+					superclass.getLocalName().substring(0,1).toLowerCase()+
+					superclass.getLocalName().substring(1);
 
-		// We always inject a "instanceURI" field for storing the actual URI
-		// of an instance of the given class.
-		final PropertyDef iupd = new PropertyDef();
-		iupd.type = PropertyType.DATATYPE;
-		iupd.uri = new URIImpl("http://onto.arcomem.eu/#URI");
-		ps.println( "\n\t// Added to all classes\n\n" );
-		ps.println( iupd.toJavaDefinition( "\t", generateAnnotations ) );
-		ps.println();
-		ps.println( iupd.toSettersAndGetters( "\t", true, null ) );
-		ps.println();	
+			for( final PropertyDef pp : classes.get(superclass).properties )
+				pd.put( pp, instanceName );
+
+			// map all the properties of the ancestors of this direct subclass
+			// to the instance name of the direct superclass. This will make all
+			// the getters and setters use the superclass instance to access the
+			// ancestor properties.
+			for( final URI ancestorURI : this.allSuperclasses.get( superclass ) )
+			{
+				for( final PropertyDef pp : classes.get(ancestorURI).properties )
+					pd.put( pp, instanceName );
+			}
+
+			// We don't need the instance variable if we're not inheriting
+			// any properties from the superclasses.
+			if( pd.keySet().size() == 0 )
+				continue;
+
+			instanceNameMap.put( instanceName, Generator.getTypeName( superclass ) );
+		}
 	}
 }

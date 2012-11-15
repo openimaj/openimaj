@@ -2,7 +2,9 @@ package org.openimaj.rdf.owl2java;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.PropertyException;
 
@@ -51,11 +53,11 @@ public class PropertyDef
 		// will add ".*" to the end of the import strings.
 		PropertyDef.importMap.put( 
 			new URIImpl("http://www.w3.org/2001/XMLSchema#date"), 
-			"java.util" );
+			"java.util.Date" );
 		
 		PropertyDef.importMap.put(
 			new URIImpl("http://www.w3.org/2001/XMLSchema#dateTime"), 
-			"org.joda.time" );
+			"org.joda.time.DateTime" );
 		
 		// ----------- Type Maps ---------- //
 		// XMLSchema types will be converted into Java types by capitalising the
@@ -100,7 +102,17 @@ public class PropertyDef
 	
 	/** The domain of the property */
 	protected List<URI> domain = new ArrayList<URI>();
+	
+	// TODO: Need to retrieve the cardinality restrictions from the ontology
+	/** The maximum number of occurrences of this property allowed */
+	protected int maxCardinality = Integer.MAX_VALUE;
 
+	/** The minimum number of occurrences of this property allowed */
+	protected int minCardinality = Integer.MIN_VALUE;
+	
+	/** The absolute number of occurrences of this property that must occur */
+	protected int absoluteCardinality = -1;
+	
 	/**
 	 *	{@inheritDoc}
 	 * 	@see java.lang.Object#toString()
@@ -115,12 +127,22 @@ public class PropertyDef
 	 * 	property. If no import is required, then null will be returned.
 	 *	@return The import type as a string.
 	 */
-	public String needsImport()
+	public List<String> needsImport()
 	{
-		if( this.range.size() == 0 || this.range.size() > 1 )
-			return null;
-		System.out.println( this.range.get(0)+" needs import "+PropertyDef.importMap.get( this.range.get(0) ) );
-		return PropertyDef.importMap.get( this.range.get(0) );
+		final List<String> imports = new ArrayList<String>();
+		
+		// TODO: How do we deal with multiple ranges?
+		if( this.range.size() == 1 )
+		{
+			final String importReq = PropertyDef.importMap.get( this.range.get(0) );
+			if( importReq != null )
+				imports.add( importReq );
+		}
+		
+		if( this.absoluteCardinality != 1 )
+			imports.add( "java.util.List" );
+		
+		return imports;
 	}
 
 	/**
@@ -190,7 +212,9 @@ public class PropertyDef
 			s += prefix+"@Predicate(\""+this.uri+"\")\n";
 
 		// This is the declaration of the variable
-		s += prefix+"public "+valueType+" "+this.uri.getLocalName() + ";";
+		if( this.absoluteCardinality == 1 )
+				s += prefix+"public "+valueType+" "+this.uri.getLocalName() + ";";
+		else	s += prefix+"public List<"+valueType+"> "+this.uri.getLocalName() + ";";
 
 		if( this.comment != null || generateAnnotations ) s += "\n";
 
@@ -203,41 +227,76 @@ public class PropertyDef
 	 * 	@param prefix
 	 * 	@param implementations
 	 * 	@param delegationObject
+	 * 	@param indexedRatherThanCollections
 	 *	@return A string containing setters and getters
 	 */
 	public String toSettersAndGetters( final String prefix, final boolean implementations,
-			final String delegationObject )
+			final String delegationObject, final boolean indexedRatherThanCollections )
 	{
 		final String valueType = this.getDeclarationType();
 		final String pName = Generator.getTypeName( this.uri );
 
 		String s = "";
 
-		s += prefix+"public "+valueType+" get"+pName+"()";
+		// =================================================================
+		// Output the getter
+		// =================================================================
+		if( this.absoluteCardinality == 1 )
+				s += prefix+"public "+valueType+" get"+pName+"()";
+		else	
+		{
+			if( indexedRatherThanCollections )
+					s += prefix+"public "+valueType+" get"+pName+"( int index )";
+			else	s += prefix+"public List<"+valueType+"> get"+pName+"()";
+		}
 
+		// If we're also generating the implementations (not just the prototypes)..
 		if( implementations )
 		{
 			s += "\n";
 			s += prefix+"{\n";
-			if( delegationObject != null )
-					s += prefix+"\treturn "+delegationObject+".get"+pName+"();\n";
-			else	s += prefix+"\treturn this."+this.uri.getLocalName()+";\n";
+			if( delegationObject != null && !delegationObject.equals("this") )
+			{
+				// TODO: We ought to check the superclass and this class are consistent
+				if( !indexedRatherThanCollections || this.absoluteCardinality == 1 )
+						s += prefix+"\treturn "+delegationObject+".get"+pName+"();\n";
+				else	s += prefix+"\treturn "+delegationObject+".get"+pName+"( index );\n";
+			}
+			else	
+			{
+				if( !indexedRatherThanCollections || this.absoluteCardinality == 1 )
+						s += prefix+"\treturn this."+this.uri.getLocalName()+";\n";
+				else	s += prefix+"\treturn this."+this.uri.getLocalName()+".get(index);\n";
+			}
+			
 			s += prefix+"}\n";
 		}
 		else
 			s += ";\n";
+		
 		s += prefix+"\n";
 
-		s += prefix+"public void set"+pName+"( "+valueType+" "+this.uri.getLocalName()+" )";
+		// =================================================================
+		// Output the setter
+		// =================================================================
+		if( !indexedRatherThanCollections || this.absoluteCardinality == 1 )
+				s += prefix+"public void set"+pName+"( final "+valueType+" "+this.uri.getLocalName()+" )";
+		else	s += prefix+"public void set"+pName+"( final List<"+valueType+"> "+this.uri.getLocalName()+" )";
 
+		// If we're generating more than just the prototype...
 		if( implementations )
 		{
 			s += "\n";
 			s += prefix+"{\n";
 			if( delegationObject != null )
-					s += prefix+"\t"+delegationObject+".set"+pName+"( "+
-						this.uri.getLocalName()+" );\n";
-			else	s += prefix+"\tthis."+this.uri.getLocalName()+" = "+this.uri.getLocalName()+";\n";
+			{
+				s += prefix+"\t"+delegationObject+".set"+pName+"( "+
+					this.uri.getLocalName()+" );\n";
+			}
+			else	
+			{
+				s += prefix+"\tthis."+this.uri.getLocalName()+" = "+this.uri.getLocalName()+";\n";
+			}
 			s += prefix+"}\n";
 		}
 		else
@@ -256,7 +315,7 @@ public class PropertyDef
 	 *	@throws MalformedQueryException
 	 *	@throws QueryEvaluationException
 	 */
-	static List<PropertyDef> loadProperties( final URI uri, final RepositoryConnection conn )
+	static Set<PropertyDef> loadProperties( final URI uri, final RepositoryConnection conn )
 			throws RepositoryException,	MalformedQueryException, QueryEvaluationException
 	{
 		// SPARQL query to get the properties and property comments
@@ -280,7 +339,7 @@ public class PropertyDef
 		final TupleQueryResult res = preparedQuery.evaluate();
 
 		// Loop through the results
-		final List<PropertyDef> properties = new ArrayList<PropertyDef>();
+		final Set<PropertyDef> properties = new HashSet<PropertyDef>();
 		while( res.hasNext() )
 		{
 			final BindingSet bindingSet = res.next();
@@ -430,5 +489,19 @@ public class PropertyDef
 		// Recurse down the list
 		if( nextNode != null )
 			PropertyDef.getURIListBNode( nextNode, list );
+	}
+	
+	@Override
+	public boolean equals( final Object obj )
+	{
+		if( !(obj instanceof PropertyDef) )
+			return false;
+		return this.uri.equals( ((PropertyDef)obj).uri );
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return this.uri.hashCode();
 	}
 }
