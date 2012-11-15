@@ -50,7 +50,7 @@ import eu.larkc.csparql.streams.formats.TranslationException;
  * 
  */
 public class ReteTopologyTest {
-	private static long TOPOLOGY_SLEEP_TIME = 2000;
+	private static long TOPOLOGY_SLEEP_TIME = 200000;
 	/**
 	 *
 	 */

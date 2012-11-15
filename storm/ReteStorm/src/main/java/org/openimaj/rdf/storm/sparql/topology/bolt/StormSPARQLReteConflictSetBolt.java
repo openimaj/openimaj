@@ -220,15 +220,17 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 	@Override
 	public void prepare() {
 		this.bindingsQueue = new ArrayList<Binding>();
-		this.aggregators = this.getQuery().getAggregators();
-		this.having = this.getQuery().getHavingExprs();
-		this.groupBy = this.getQuery().getGroupBy();
+		Query query = this.getQuery();
+		this.aggregators = query.getAggregators();
+		this.having = query.getHavingExprs();
+		this.groupBy = query.getGroupBy();
 		ByteArrayInputStream bais = new ByteArrayInputStream(this.sinkBytes);
 		try {
 			this.sink = IOUtils.read(new DataInputStream(bais));
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
+		this.sink.instantiate(this);
 	}
 
 	protected QueryIterGroup updateAggregators() {
@@ -245,6 +247,7 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 
 	/**
 	 * @param simpleQuery
+	 * @param sink
 	 * @return constructs the correct {@link StormSPARQLReteConflictSetBolt}
 	 *         given the query's type
 	 */

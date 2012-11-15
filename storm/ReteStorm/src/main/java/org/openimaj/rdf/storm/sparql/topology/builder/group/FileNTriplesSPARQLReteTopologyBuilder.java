@@ -72,6 +72,7 @@ public class FileNTriplesSPARQLReteTopologyBuilder extends BaseSPARQLReteTopolog
 	}
 
 	/**
+	 * @param output
 	 */
 	public FileNTriplesSPARQLReteTopologyBuilder(File output) {
 		this.wang = output;

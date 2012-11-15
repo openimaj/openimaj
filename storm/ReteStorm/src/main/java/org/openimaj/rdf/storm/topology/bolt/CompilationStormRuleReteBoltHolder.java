@@ -127,6 +127,9 @@ public class CompilationStormRuleReteBoltHolder {
 			return bolt.toString();
 	}
 
+	/**
+	 * @return the bolt being compiled
+	 */
 	public StormReteBolt getBolt() {
 		return bolt;
 	}

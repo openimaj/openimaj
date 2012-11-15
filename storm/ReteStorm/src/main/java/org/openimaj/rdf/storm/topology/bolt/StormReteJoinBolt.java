@@ -50,32 +50,31 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * Given the two parent bolt names, this bolt constructs two {@link RETEQueue}
  * instances. These instances are fed the output from the bolts as they arrive
  * and if a join satisfied their output is passed on.
- *
+ * 
  * The internally held queues are where windows should be implemented
- *
+ * 
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
- *
+ * 
  */
-public class StormReteJoinBolt extends StormRuleReteBolt{
-
+public class StormReteJoinBolt extends StormRuleReteBolt {
 
 	protected final static Logger logger = Logger.getLogger(StormReteJoinBolt.class);
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = -2927726523603853768L;
-	private String leftBolt;
-	private String rightBolt;
-	private int[] matchLeft;
-	private int[] matchRight;
-	private int[] templateLeft;
-	private int[] templateRight;
-	private RETEStormQueue leftQ;
-	private RETEStormQueue rightQ;
+	protected String leftBolt;
+	protected String rightBolt;
+	protected int[] matchLeft;
+	protected int[] matchRight;
+	protected int[] templateLeft;
+	protected int[] templateRight;
+	protected RETEStormQueue leftQ;
+	protected RETEStormQueue rightQ;
 	private Tuple currentInput;
 
 	/**
-	 *
+	 * 
 	 * @param leftBolt
 	 * @param matchLeft
 	 * @param templateLeft
@@ -85,12 +84,12 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	 * @param rule
 	 */
 	public StormReteJoinBolt(String leftBolt,
-							 int[] matchLeft,
-							 int[] templateLeft,
-							 String rightBolt,
-							 int[] matchRight,
-							 int[] templateRight,
-							 Rule rule) {
+			int[] matchLeft,
+			int[] templateLeft,
+			String rightBolt,
+			int[] matchRight,
+			int[] templateRight,
+			Rule rule) {
 		super(rule);
 		this.leftBolt = leftBolt;
 		this.matchLeft = matchLeft;
@@ -103,7 +102,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	/**
 	 * @return the Fields output from the left bolt that this bolt joins on.
 	 */
-	public Fields getLeftJoinFields(){
+	public Fields getLeftJoinFields() {
 		return getJoinFieldsByIndex(matchLeft);
 
 	}
@@ -112,7 +111,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	 * Given a set of match fields, return fields of the non-zero indexes
 	 * of the match fields. Has the effect of saying which values in this
 	 * bolt are to be used
-	 *
+	 * 
 	 * @param matchFields
 	 * @return the fields in the form of "?index"
 	 */
@@ -122,7 +121,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 		List<String> fields = new ArrayList<String>();
 		for (int i = 0; i < matchFields.length; i++)
 			if (matchFields[i] >= 0)
-				fields.add("?"+i);
+				fields.add("?" + i);
 		return new Fields(fields);
 	}
 
@@ -130,7 +129,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	 * Given a set of match fields, return fields of the non-zero values
 	 * of the match fields. Has the effect of saying which values in the sibling
 	 * join are to be joined against
-	 *
+	 * 
 	 * @param matchFields
 	 * @return the fields in the form of "?matchFields[index]"
 	 */
@@ -140,28 +139,28 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 		List<String> fields = new ArrayList<String>();
 		for (int i = 0; i < matchFields.length; i++)
 			if (matchFields[i] >= 0)
-				fields.add("?"+matchFields[i]);
+				fields.add("?" + matchFields[i]);
 		return new Fields(fields);
 	}
 
 	/**
 	 * @return the Fields output from the right bolt that this bolt joins on.
 	 */
-	public Fields getRightJoinFields(){
+	public Fields getRightJoinFields() {
 		return getJoinFieldsByValue(matchLeft);
 	}
 
 	@Override
 	public void execute(Tuple input) {
-		logger.debug(String.format("Executing join over: {left = %s, right = %s } ",this.leftBolt,this.rightBolt));
+		logger.debug(String.format("Executing join over: {left = %s, right = %s } ", this.leftBolt, this.rightBolt));
 		boolean isAdd = (Boolean) input.getValueByField(Component.isAdd.toString());
 		long timestamp = (Long) input.getValueByField(Component.timestamp.toString());
 		this.currentInput = input;
-		if(input.getSourceComponent().equals(leftBolt)){
-			this.leftQ.fire(input, isAdd,timestamp);
+		if (input.getSourceComponent().equals(leftBolt)) {
+			this.leftQ.fire(input, isAdd, timestamp);
 		}
-		else{
-			this.rightQ.fire(input, isAdd,timestamp);
+		else {
+			this.rightQ.fire(input, isAdd, timestamp);
 		}
 
 		acknowledge(input);
@@ -169,8 +168,8 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 
 	@Override
 	public void prepare() {
-		this.leftQ = new RETEStormQueue(this.matchLeft,this.templateLeft,5000,15,TimeUnit.MINUTES);
-		this.rightQ = new RETEStormQueue(this.matchRight,this.templateRight,5000,15,TimeUnit.MINUTES,this.leftQ,this);
+		this.leftQ = new RETEStormQueue(this.matchLeft, this.templateLeft, 5000, 15, TimeUnit.MINUTES);
+		this.rightQ = new RETEStormQueue(this.matchRight, this.templateRight, 5000, 15, TimeUnit.MINUTES, this.leftQ, this);
 	}
 
 	/**
@@ -188,7 +187,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt{
 	}
 
 	@Override
-	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy,RETERuleContext context) {
+	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy, RETERuleContext context) {
 		return null;
 	}
 

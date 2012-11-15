@@ -42,6 +42,8 @@ public class StormSPARQLReteSelectConflictSetBolt extends StormSPARQLReteConflic
 	public void handleBinding(QueryIterator bindingsIter) {
 		Query query = this.getQuery();
 		if (!query.isSelectType()) {
+			logger.error("Query was not select, select terminal bolt failing!");
+			return;
 		}
 		VarExprList project = query.getProject();
 		if (bindingsIter != null) { // aggregation?

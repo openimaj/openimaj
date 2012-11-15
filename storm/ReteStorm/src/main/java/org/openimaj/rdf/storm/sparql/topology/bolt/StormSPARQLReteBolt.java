@@ -25,7 +25,7 @@ import com.hp.hpl.jena.sparql.syntax.PatternVars;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public abstract class StormSPARQLReteBolt extends StormReteBolt {
+public abstract class StormSPARQLReteBolt extends StormReteBolt implements QueryHolder {
 
 	/**
 	 *
@@ -35,6 +35,7 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt {
 	private String queryString;
 	private int variableCount;
 	protected Map<String, Map<String, Integer>> sourceVariableMap;
+	private Query query;
 
 	/**
 	 * @param query
@@ -114,7 +115,21 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt {
 	 * @return Query
 	 */
 	public Query getQuery() {
-		return QueryFactory.create(queryString);
+		if (this.query == null) {
+			this.query = QueryFactory.create(queryString);
+		}
+		return this.query;
+	}
+
+	/**
+	 * sets the query string an sets query to null (getQuery() constructs a new
+	 * Query)
+	 * 
+	 * @param queryString
+	 */
+	public void setQueryString(String queryString) {
+		this.queryString = queryString;
+		this.query = null;
 	}
 
 }
