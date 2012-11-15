@@ -41,7 +41,7 @@ public class ReteStormTopologyJGraph extends JFrame {
 	}
 
 	public static void main(String[] args) throws TranslationException, IOException {
-		String sparqlSource = "/test.multiple.csparql";
+		String sparqlSource = "/test.userpost.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
 				new FileNTriplesSPARQLReteTopologyBuilder(),
 				ReteStormTopologyJGraph.class.getResourceAsStream(sparqlSource)

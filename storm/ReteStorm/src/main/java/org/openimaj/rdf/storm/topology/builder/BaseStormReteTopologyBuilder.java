@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.topology.bolt.CompilationStormRuleReteBoltHolder;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
@@ -117,7 +118,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	public void addFilter(ReteTopologyBuilderContext context) {
 		String boltName = VariableIndependentReteRuleToStringUtils.clauseEntryToString(context.filterClause);
 		Rule r = constructRule((TriplePattern)context.filterClause);
-		
+
 		StormRuleReteBolt filterBolt;
 		if (bolts.containsKey(boltName)){
 			logger.debug(String.format("Filter bolt %s used from existing rule", boltName));
@@ -134,7 +135,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 		rule.add(new IndependentPair<String, CompilationStormRuleReteBoltHolder>(boltName, new CompilationStormRuleReteBoltHolder(filterBolt, r)));
 		ruleBolts.put(boltName, filterBolt);
 	}
-	
+
 	private Rule constructRule(TriplePattern tp) {
 		List<ClauseEntry> template = new ArrayList<ClauseEntry>();
 		template.add(tp);
@@ -192,7 +193,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 		}
 
 		bolts.put(newJoinName, newJoin);
-		rule.add(IndependentPair.pair(newJoinName, new CompilationStormRuleReteBoltHolder((StormRuleReteBolt) newJoin, new Rule(template, template))));
+		rule.add(IndependentPair.pair(newJoinName, new CompilationStormRuleReteBoltHolder(newJoin, new Rule(template, template))));
 		ruleBolts.put(newJoinName, newJoin);
 	}
 
@@ -297,7 +298,7 @@ public abstract class BaseStormReteTopologyBuilder extends ReteTopologyBuilder {
 	}
 
 	/**
-	 * @param filter
+	 * @param rule
 	 * @return the {@link StormReteFilterBolt} usually the filter between the source
 	 *         and a join or a terminal. If null the filter isn't added
 	 */

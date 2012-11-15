@@ -1,0 +1,86 @@
+<http://www.ins.cwi.nl/sib/person/p941> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.ins.cwi.nl/sib/person/p941> <http://xmlns.com/foaf/0.1/firstName> "Andrew" .
+<http://www.ins.cwi.nl/sib/person/p941> <http://xmlns.com/foaf/0.1/lastName> "Bledsoe" .
+<http://www.ins.cwi.nl/sib/person/p941> <http://xmlns.com/foaf/0.1/based_near> <http://dbpedia.org/resource/United_States> .
+<http://www.ins.cwi.nl/sib/person/p941> <http://xmlns.com/foaf/0.1/based_near> "United_States" .
+<http://www.ins.cwi.nl/sib/person/p941> <http://dbpedia.org/property/latd> "40.059137592080845"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.ins.cwi.nl/sib/person/p941> <http://dbpedia.org/property/longd> "-75.94086240791916"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.ins.cwi.nl/sib/person/p941> <http://xmlns.com/foaf/0.1/organization> "Pacific Oaks College" .
+<http://www.ins.cwi.nl/sib/person/p941> <http://www.ins.cwi.nl/sib/vocabulary/class_year> "1973"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.ins.cwi.nl/sib/person/p941> <http://xmlns.com/foaf/0.1/gender> "male" .
+<http://www.ins.cwi.nl/sib/person/p941> <http://xmlns.com/foaf/0.1/birthday> "1948-03-17"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.ins.cwi.nl/sib/person/p941> <http://rdfs.org/sioc/ns#email> "Andrew941@gmx.com" .
+<http://www.ins.cwi.nl/sib/person/p941> <http://www.ins.cwi.nl/sib/vocabulary/browser> "Firefox" .
+<http://www.ins.cwi.nl/sib/person/p941> <http://rdfs.org/sioc/ns#ip_address> "15.0.0.6" .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.ins.cwi.nl/sib/vocabulary/User> .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#user> .
+<http://www.ins.cwi.nl/sib/user/u941> <http://rdfs.org/sioc/ns#account_of> <http://www.ins.cwi.nl/sib/person/p941> .
+<http://www.ins.cwi.nl/sib/user/u941> <http://rdfs.org/sioc/ns#moderator_of> <http://www.ins.cwi.nl/sib/forum/fo1882> .
+<http://www.ins.cwi.nl/sib/user/u941> <http://rdfs.org/sioc/ns#moderator_of> <http://www.ins.cwi.nl/sib/forum/fo1883> .
+<http://www.ins.cwi.nl/sib/user/u941> <http://rdfs.org/sioc/ns#subscriber_of> <http://www.ins.cwi.nl/sib/forum/fo1882> .
+<http://www.ins.cwi.nl/sib/user/u941> <http://rdfs.org/sioc/ns#subscriber_of> <http://www.ins.cwi.nl/sib/forum/fo1883> .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.ins.cwi.nl/sib/vocabulary/status> "Single" .
+<http://www.ins.cwi.nl/sib/user/u941> <http://purl.org/dc/elements/1.1/date> "2010-02-01T08:41:43Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Aaron Carter" .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Adam Noah Levine" .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Boy George" .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Brian Littrell" .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Barry Hay" .
+<http://www.ins.cwi.nl/sib/user/u941> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Cris Bonacci" .
+<http://www.ins.cwi.nl/sib/user/u941> <http://xmlns.com/foaf/0.1/knows> <http://www.ins.cwi.nl/sib/user/u59> .
+<http://www.ins.cwi.nl/sib/person/p59> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.ins.cwi.nl/sib/person/p59> <http://xmlns.com/foaf/0.1/firstName> "William Augusto Alves" .
+<http://www.ins.cwi.nl/sib/person/p59> <http://xmlns.com/foaf/0.1/lastName> "Dom Pedro II" .
+<http://www.ins.cwi.nl/sib/person/p59> <http://xmlns.com/foaf/0.1/based_near> <http://dbpedia.org/resource/Brazil> .
+<http://www.ins.cwi.nl/sib/person/p59> <http://xmlns.com/foaf/0.1/based_near> "Brazil" .
+<http://www.ins.cwi.nl/sib/person/p59> <http://dbpedia.org/property/latd> "-15.660031864052543"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.ins.cwi.nl/sib/person/p59> <http://dbpedia.org/property/longd> "-47.66003186405254"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.ins.cwi.nl/sib/person/p59> <http://xmlns.com/foaf/0.1/organization> "Universidade Cat" .
+<http://www.ins.cwi.nl/sib/person/p59> <http://www.ins.cwi.nl/sib/vocabulary/workAt> "Air Minas Linhas A\u0329reas" .
+<http://www.ins.cwi.nl/sib/person/p59> <http://www.ins.cwi.nl/sib/vocabulary/workFrom> "1971"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.ins.cwi.nl/sib/person/p59> <http://xmlns.com/foaf/0.1/gender> "male" .
+<http://www.ins.cwi.nl/sib/person/p59> <http://xmlns.com/foaf/0.1/birthday> "1947-02-26"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.ins.cwi.nl/sib/person/p59> <http://rdfs.org/sioc/ns#email> "WilliamAugustoAlves59@yahoo.com" .
+<http://www.ins.cwi.nl/sib/person/p59> <http://www.ins.cwi.nl/sib/vocabulary/browser> "Firefox" .
+<http://www.ins.cwi.nl/sib/person/p59> <http://rdfs.org/sioc/ns#ip_address> "192.190.30.15" .
+<http://www.ins.cwi.nl/sib/user/u59> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.ins.cwi.nl/sib/vocabulary/User> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#user> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://rdfs.org/sioc/ns#account_of> <http://www.ins.cwi.nl/sib/person/p59> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://rdfs.org/sioc/ns#moderator_of> <http://www.ins.cwi.nl/sib/forum/fo118> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://rdfs.org/sioc/ns#moderator_of> <http://www.ins.cwi.nl/sib/forum/fo119> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://rdfs.org/sioc/ns#subscriber_of> <http://www.ins.cwi.nl/sib/forum/fo118> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://rdfs.org/sioc/ns#subscriber_of> <http://www.ins.cwi.nl/sib/forum/fo119> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://www.ins.cwi.nl/sib/vocabulary/status> "Single" .
+<http://www.ins.cwi.nl/sib/user/u59> <http://purl.org/dc/elements/1.1/date> "2010-02-01T05:06:51Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Boy George" .
+<http://www.ins.cwi.nl/sib/user/u59> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Cris Bonacci" .
+<http://www.ins.cwi.nl/sib/user/u59> <http://xmlns.com/foaf/0.1/knows> <http://www.ins.cwi.nl/sib/user/u941> .
+<http://www.ins.cwi.nl/sib/person/p627> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/firstName> "Xinhai" .
+<http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/lastName> "Li" .
+<http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/based_near> <http://dbpedia.org/resource/Peoples_Republic_of_China> .
+<http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/based_near> "Peoples_Republic_of_China" .
+<http://www.ins.cwi.nl/sib/person/p627> <http://dbpedia.org/property/latd> "36.9526678230868"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.ins.cwi.nl/sib/person/p627> <http://dbpedia.org/property/longd> "106.9526678230868"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/organization> "Wannan Medical College" .
+<http://www.ins.cwi.nl/sib/person/p627> <http://www.ins.cwi.nl/sib/vocabulary/class_year> "1991"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.ins.cwi.nl/sib/person/p627> <http://www.ins.cwi.nl/sib/vocabulary/workAt> "Great Wall Airlines" .
+<http://www.ins.cwi.nl/sib/person/p627> <http://www.ins.cwi.nl/sib/vocabulary/workFrom> "1994"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/gender> "female" .
+<http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/birthday> "1962-09-25"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://www.ins.cwi.nl/sib/person/p627> <http://www.ins.cwi.nl/sib/vocabulary/browser> "Chrome" .
+<http://www.ins.cwi.nl/sib/person/p627> <http://rdfs.org/sioc/ns#ip_address> "14.204.0.6" .
+<http://www.ins.cwi.nl/sib/user/u627> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.ins.cwi.nl/sib/vocabulary/User> .
+<http://www.ins.cwi.nl/sib/user/u627> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#user> .
+<http://www.ins.cwi.nl/sib/user/u627> <http://rdfs.org/sioc/ns#account_of> <http://www.ins.cwi.nl/sib/person/p627> .
+<http://www.ins.cwi.nl/sib/user/u627> <http://rdfs.org/sioc/ns#moderator_of> <http://www.ins.cwi.nl/sib/forum/fo1254> .
+<http://www.ins.cwi.nl/sib/user/u627> <http://rdfs.org/sioc/ns#moderator_of> <http://www.ins.cwi.nl/sib/forum/fo1255> .
+<http://www.ins.cwi.nl/sib/user/u627> <http://rdfs.org/sioc/ns#subscriber_of> <http://www.ins.cwi.nl/sib/forum/fo1254> .
+<http://www.ins.cwi.nl/sib/user/u627> <http://rdfs.org/sioc/ns#subscriber_of> <http://www.ins.cwi.nl/sib/forum/fo1255> .
+<http://www.ins.cwi.nl/sib/user/u627> <http://purl.org/dc/elements/1.1/date> "2010-02-01T11:49:44Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.ins.cwi.nl/sib/user/u627> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Madonna" .
+<http://www.ins.cwi.nl/sib/user/u627> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Adam Noah Levine" .
+<http://www.ins.cwi.nl/sib/user/u627> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Adam Levine" .
+<http://www.ins.cwi.nl/sib/user/u627> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Billie Myers" .
+<http://www.ins.cwi.nl/sib/user/u627> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Andrea Bocelli" .
+<http://www.ins.cwi.nl/sib/user/u627> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Aya Ueto" .

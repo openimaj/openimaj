@@ -4,19 +4,19 @@ import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.topology.bolt.CompilationStormRuleReteBoltHolder;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QueryParseException;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
+import com.hp.hpl.jena.sparql.core.VarExprList;
 import com.hp.hpl.jena.sparql.syntax.Element;
 
 /**
  * Holds {@link StormReteBolt} and {@link Rule} instances as well as the SPARQL
  * statement which matches the query until this point
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class CompilationStormSPARQLBoltHolder extends CompilationStormRuleReteBoltHolder {
 	private static Logger logger = Logger.getLogger(CompilationStormRuleReteBoltHolder.class);
@@ -41,7 +41,7 @@ public class CompilationStormSPARQLBoltHolder extends CompilationStormRuleReteBo
 	/**
 	 * The element representing this bolt and the original query (mainly for
 	 * prefix information)
-	 * 
+	 *
 	 * @param elementPathBlock
 	 * @param originalQuery
 	 */
@@ -61,7 +61,9 @@ public class CompilationStormSPARQLBoltHolder extends CompilationStormRuleReteBo
 		Query query = QueryFactory.create(originalQuery);
 		query.setQueryPattern(element);
 		query.setQuerySelectType();
-		query.addResultVar(Node.createVariable("*"));
+		VarExprList project = query.getProject();
+		project.getVars().clear();
+		query.setQueryResultStar(true);
 		queryString = query.toString();
 		try {
 			QueryFactory.create(queryString);

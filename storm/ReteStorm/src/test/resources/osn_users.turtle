@@ -1,0 +1,109 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix sioct: <http://rdfs.org/sioc/type#> .
+@prefix dbp: <http://dbpedia.org/resource/> .
+@prefix dbpo: <http://dbpedia.org/ontology/> .
+@prefix dbpprop: <http://dbpedia.org/property/> .
+@prefix sib: <http://www.ins.cwi.nl/sib/vocabulary/> .
+@prefix sibp: <http://www.ins.cwi.nl/sib/person/> .
+@prefix sibu: <http://www.ins.cwi.nl/sib/user/> .
+@prefix sibfo: <http://www.ins.cwi.nl/sib/forum/> .
+@prefix sibfr: <http://www.ins.cwi.nl/sib/friendship/> .
+@prefix sibg: <http://www.ins.cwi.nl/sib/group/> .
+@prefix sibgm: <http://www.ins.cwi.nl/sib/group/membership/> .
+@prefix sibpo: <http://www.ins.cwi.nl/sib/post/> .
+@prefix sibc: <http://www.ins.cwi.nl/sib/post/comment/> .
+@prefix sibpho: <http://www.ins.cwi.nl/sib/photoalbum/photo/> .
+@prefix sibpha: <http://www.ins.cwi.nl/sib/photoalbum/> .
+@prefix sibgps: <http://www.ins.cwi.nl/sib/gps/> .
+sibp:p941 a foaf:Person .
+sibp:p941 foaf:firstName "Andrew" .
+sibp:p941 foaf:lastName "Bledsoe" .
+sibp:p941 foaf:based_near dbp:United_States .
+sibp:p941 foaf:based_near "United_States" .
+sibp:p941 dbpprop:latd "40.059137592080845"^^xsd:double .
+sibp:p941 dbpprop:longd "-75.94086240791916"^^xsd:double .
+sibp:p941 foaf:organization "Pacific Oaks College" .
+sibp:p941 sib:class_year "1973"^^xsd:date .
+sibp:p941 foaf:gender "male" .
+sibp:p941 foaf:birthday "1948-03-17"^^xsd:date .
+sibp:p941 sioc:email "Andrew941@gmx.com" .
+sibp:p941 sib:browser "Firefox" .
+sibp:p941 sioc:ip_address "15.0.0.6" .
+sibu:u941 a sib:User .
+sibu:u941 a sioc:user .
+sibu:u941 sioc:account_of sibp:p941 .
+sibu:u941 sioc:moderator_of sibfo:fo1882 .
+sibu:u941 sioc:moderator_of sibfo:fo1883 .
+sibu:u941 sioc:subscriber_of sibfo:fo1882 .
+sibu:u941 sioc:subscriber_of sibfo:fo1883 .
+sibu:u941 sib:status "Single" .
+sibu:u941 dc:date "2010-02-01T08:41:43Z"^^xsd:dateTime .
+sibu:u941 sib:interest "Aaron Carter" .
+sibu:u941 sib:interest "Adam Noah Levine" .
+sibu:u941 sib:interest "Boy George" .
+sibu:u941 sib:interest "Brian Littrell" .
+sibu:u941 sib:interest "Barry Hay" .
+sibu:u941 sib:interest "Cris Bonacci" .
+sibu:u941 foaf:knows sibu:u59 .
+sibp:p59 a foaf:Person .
+sibp:p59 foaf:firstName "William Augusto Alves" .
+sibp:p59 foaf:lastName "Dom Pedro II" .
+sibp:p59 foaf:based_near dbp:Brazil .
+sibp:p59 foaf:based_near "Brazil" .
+sibp:p59 dbpprop:latd "-15.660031864052543"^^xsd:double .
+sibp:p59 dbpprop:longd "-47.66003186405254"^^xsd:double .
+sibp:p59 foaf:organization "Universidade Cat—lica de Santos" .
+sibp:p59 sib:workAt "Air Minas Linhas AÌ©reas" .
+sibp:p59 sib:workFrom "1971"^^xsd:date .
+sibp:p59 foaf:gender "male" .
+sibp:p59 foaf:birthday "1947-02-26"^^xsd:date .
+sibp:p59 sioc:email "WilliamAugustoAlves59@yahoo.com" .
+sibp:p59 sib:browser "Firefox" .
+sibp:p59 sioc:ip_address "192.190.30.15" .
+sibu:u59 a sib:User .
+sibu:u59 a sioc:user .
+sibu:u59 sioc:account_of sibp:p59 .
+sibu:u59 sioc:moderator_of sibfo:fo118 .
+sibu:u59 sioc:moderator_of sibfo:fo119 .
+sibu:u59 sioc:subscriber_of sibfo:fo118 .
+sibu:u59 sioc:subscriber_of sibfo:fo119 .
+sibu:u59 sib:status "Single" .
+sibu:u59 dc:date "2010-02-01T05:06:51Z"^^xsd:dateTime .
+sibu:u59 sib:interest "Boy George" .
+sibu:u59 sib:interest "Cris Bonacci" .
+sibu:u59 foaf:knows sibu:u941 .
+sibp:p627 a foaf:Person .
+sibp:p627 foaf:firstName "Xinhai" .
+sibp:p627 foaf:lastName "Li" .
+sibp:p627 foaf:based_near dbp:Peoples_Republic_of_China .
+sibp:p627 foaf:based_near "Peoples_Republic_of_China" .
+sibp:p627 dbpprop:latd "36.9526678230868"^^xsd:double .
+sibp:p627 dbpprop:longd "106.9526678230868"^^xsd:double .
+sibp:p627 foaf:organization "Wannan Medical College" .
+sibp:p627 sib:class_year "1991"^^xsd:date .
+sibp:p627 sib:workAt "Great Wall Airlines" .
+sibp:p627 sib:workFrom "1994"^^xsd:date .
+sibp:p627 foaf:gender "female" .
+sibp:p627 foaf:birthday "1962-09-25"^^xsd:date .
+sibp:p627 sib:browser "Chrome" .
+sibp:p627 sioc:ip_address "14.204.0.6" .
+sibu:u627 a sib:User .
+sibu:u627 a sioc:user .
+sibu:u627 sioc:account_of sibp:p627 .
+sibu:u627 sioc:moderator_of sibfo:fo1254 .
+sibu:u627 sioc:moderator_of sibfo:fo1255 .
+sibu:u627 sioc:subscriber_of sibfo:fo1254 .
+sibu:u627 sioc:subscriber_of sibfo:fo1255 .
+sibu:u627 dc:date "2010-02-01T11:49:44Z"^^xsd:dateTime .
+sibu:u627 sib:interest "Madonna" .
+sibu:u627 sib:interest "Adam Noah Levine" .
+sibu:u627 sib:interest "Adam Levine" .
+sibu:u627 sib:interest "Billie Myers" .
+sibu:u627 sib:interest "Andrea Bocelli" .
+sibu:u627 sib:interest "Aya Ueto" .

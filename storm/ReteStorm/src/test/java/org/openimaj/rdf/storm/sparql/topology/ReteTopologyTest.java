@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.rdf.storm.sparql.topology.builder.group.FileNTriplesSPARQLReteTopologyBuilder;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.StaticDataFileNTriplesSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
 
 import backtype.storm.LocalCluster;
@@ -45,12 +46,12 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 
 /**
  * Test the {@link StormTopology} construction from a CSPARQL query
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteTopologyTest {
-	private static long TOPOLOGY_SLEEP_TIME = 200000;
+	private static long TOPOLOGY_SLEEP_TIME = 2000000;
 	/**
 	 *
 	 */
@@ -59,7 +60,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * prepare the output
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Before
@@ -68,7 +69,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -88,7 +89,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -108,7 +109,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -128,7 +129,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -148,7 +149,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -168,7 +169,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -188,7 +189,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -197,6 +198,26 @@ public class ReteTopologyTest {
 		String sparqlSource = "/test.groupby.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
 				new FileNTriplesSPARQLReteTopologyBuilder(),
+				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
+				);
+		final LocalCluster cluster = new LocalCluster();
+		System.out.println(orchestrator);
+		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
+		Utils.sleep(TOPOLOGY_SLEEP_TIME);
+		cluster.killTopology("reteTopology");
+		cluster.shutdown();
+	}
+
+	/**
+	 *
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopologyStaticData() throws IOException, TranslationException {
+		String sparqlSource = "/test.userpost.csparql";
+		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
+				new StaticDataFileNTriplesSPARQLReteTopologyBuilder("file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt"),
 				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
 				);
 		final LocalCluster cluster = new LocalCluster();

@@ -21,9 +21,9 @@ import com.hp.hpl.jena.sparql.syntax.PatternVars;
 
 /**
  * A {@link StormReteBolt} which has some specific support for rules
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class StormSPARQLReteBolt extends StormReteBolt implements QueryHolder {
 
@@ -70,7 +70,7 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	/**
 	 * For a given source, register its name and the associated order of
 	 * variables to expect from the source
-	 * 
+	 *
 	 * @param source
 	 *            the name of the source
 	 * @param variables
@@ -89,8 +89,8 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	 * with the variables from the binding. If the tuple's source has no
 	 * set variable order, the DEFAULT_SOURCE is attempted. If the default
 	 * variable order is unset, this function will throw a RuntimeException
-	 * 
-	 * 
+	 *
+	 *
 	 * @param t
 	 * @return a new {@link Binding}
 	 */
@@ -111,9 +111,10 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 
 	/**
 	 * Get the rule on which this {@link StormReteBolt} is built.
-	 * 
+	 *
 	 * @return Query
 	 */
+	@Override
 	public Query getQuery() {
 		if (this.query == null) {
 			this.query = QueryFactory.create(queryString);
@@ -124,12 +125,17 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	/**
 	 * sets the query string an sets query to null (getQuery() constructs a new
 	 * Query)
-	 * 
+	 *
 	 * @param queryString
 	 */
 	public void setQueryString(String queryString) {
 		this.queryString = queryString;
 		this.query = null;
+	}
+
+	public static Object extractBindings(Tuple env) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
