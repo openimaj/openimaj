@@ -125,9 +125,10 @@ public class PropertyDef
 	/**
 	 * 	Returns the import required for the Java declaration of this
 	 * 	property. If no import is required, then null will be returned.
+	 * 	@param implementation Whether we're generating implementations or interfaces
 	 *	@return The import type as a string.
 	 */
-	public List<String> needsImport()
+	public List<String> needsImport( final boolean implementation )
 	{
 		final List<String> imports = new ArrayList<String>();
 		
@@ -140,7 +141,11 @@ public class PropertyDef
 		}
 		
 		if( this.absoluteCardinality != 1 )
+		{
 			imports.add( "java.util.List" );
+			if( implementation )
+				imports.add( "java.util.ArrayList" );
+		}
 		
 		return imports;
 	}
@@ -214,7 +219,7 @@ public class PropertyDef
 		// This is the declaration of the variable
 		if( this.absoluteCardinality == 1 )
 				s += prefix+"public "+valueType+" "+this.uri.getLocalName() + ";";
-		else	s += prefix+"public List<"+valueType+"> "+this.uri.getLocalName() + ";";
+		else	s += prefix+"public List<"+valueType+"> "+this.uri.getLocalName() + " = new ArrayList<"+valueType+">();";
 
 		if( this.comment != null || generateAnnotations ) s += "\n";
 
@@ -279,16 +284,21 @@ public class PropertyDef
 		// =================================================================
 		// Output the setter
 		// =================================================================
-		if( !indexedRatherThanCollections || this.absoluteCardinality == 1 )
+		if( this.absoluteCardinality == 1 )
 				s += prefix+"public void set"+pName+"( final "+valueType+" "+this.uri.getLocalName()+" )";
-		else	s += prefix+"public void set"+pName+"( final List<"+valueType+"> "+this.uri.getLocalName()+" )";
+		else	
+		{
+			if( !indexedRatherThanCollections ) 
+					s += prefix+"public void set"+pName+"( final List<"+valueType+"> "+this.uri.getLocalName()+" )";
+			else	s += prefix+"public void add"+pName+"( final "+valueType+" "+this.uri.getLocalName()+" )";
+		}
 
 		// If we're generating more than just the prototype...
 		if( implementations )
 		{
 			s += "\n";
 			s += prefix+"{\n";
-			if( delegationObject != null )
+			if( delegationObject != null && !delegationObject.equals("this") )
 			{
 				s += prefix+"\t"+delegationObject+".set"+pName+"( "+
 					this.uri.getLocalName()+" );\n";

@@ -393,8 +393,8 @@ public class ClassDef
 		
 		for( final PropertyDef p : pd.keySet() )
 			if( implementations || pd.get(p).equals("this") )
-				if( p.needsImport() != null )
-					imports.addAll( p.needsImport() );
+				if( p.needsImport( implementations ) != null )
+					imports.addAll( p.needsImport( implementations ) );
 		
 		if( superclasses )
 		{
