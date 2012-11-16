@@ -15,7 +15,7 @@ WHERE {
 	{
 		{
 			?d rdf:type ex:Cabbie . 
-			?d ex:certificateType ex:DriverSchoolCertificate 
+			?d ex:accidentsNumber "11"^^xs:integer 
 		}
 		UNION
 		{ 

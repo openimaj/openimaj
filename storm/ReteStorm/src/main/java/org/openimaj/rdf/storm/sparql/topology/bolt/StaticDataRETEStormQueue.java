@@ -8,9 +8,12 @@ import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.bolt.RETEStormQueue;
 import org.openimaj.rdf.storm.bolt.RETEStormSinkNode;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 
+import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -128,7 +131,8 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 	public void fire(Tuple env, boolean isAdd, long timestamp) {
 		super.fire(env, isAdd, timestamp);
 		// Now check the static data source
-		Query siblingQuery = ((StaticDataRETEStormQueue) this.sibling).query;
+		StaticDataRETEStormQueue staticDataSiblling = (StaticDataRETEStormQueue) this.sibling;
+		Query siblingQuery = staticDataSiblling.query;
 		logger.debug("\n This query: \n" + this.query + " \n " + "Sibling query: \n" + siblingQuery);
 		QuerySolutionMap solution = new QuerySolutionMap();
 		List<Object> vals = env.getValues();
@@ -144,6 +148,21 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 			ResultSet rs = ds.performQuery(siblingQuery,solution);
 			while (rs.hasNext()) {
 				QuerySolution binding = rs.next();
+				Values newVals = new Values();
+				for (int i = 0; i < this.outputIndices.length; i++) {
+					int ind = this.outputIndices[i];
+					if(ind < 0){
+						int sibInd = staticDataSiblling.outputIndices[i];
+						newVals.add(binding.get("?" + sibInd).asNode());
+					}else{
+						newVals.add(env.getValue(ind));
+					}
+				}
+				// We only take the graph from the matching component
+				// The static graph might be huge after all right?
+				Graph newG = (Graph) env.getValueByField(StormReteBolt.Component.graph.toString());
+				addMetaValues(newVals, isAdd, newG, timestamp);
+				continuation.fire(newVals, isAdd);
 				System.out.println(binding);
 			}
 			logger.debug("Done with dataset!");

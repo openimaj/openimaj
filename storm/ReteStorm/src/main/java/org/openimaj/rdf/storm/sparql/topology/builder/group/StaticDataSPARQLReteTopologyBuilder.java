@@ -268,7 +268,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 			NamedCompilation last = list.remove(0);// There must only be 1 in each list
 			ElementGroup group = (ElementGroup) last.secondObject().getElement(); // Must be a group
 			for (ElementFilter f : filters) {
-				NamedCompilation filter = visit(f).get(0).get(0); // There must only be 1 filter bolt
+				NamedCompilation filter = visit(f).get(0).get(0); // There must only be 1 filter bolt, filters can't branch and are self contained
 				// Filters are a chain from some group. Here we update the element of this chain with the group + chain + thisfilter
 				CompilationStormSPARQLBoltHolder filterCompilation = filter.secondObject();
 				Element filterElement = filterCompilation.getElement();
@@ -284,6 +284,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 
 				fbolt.registerSourceVariables(last.firstObject(), last.secondObject().getVars());
 				filterCompilation.setVars(last.secondObject().getVars()); // If the filter passes it throws along ALL variables of the previous (possibly more?)
+				filterCompilation.setRule(last.secondObject().getRule());
 				bolts.put(filter.firstObject(), fbolt); // so it is actually added
 				last = filter; // connect all filters in a chain
 			}
@@ -452,10 +453,12 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 
 		logger.debug("Connecting the final terminal to " + secondToLast);
 
-		for (List<NamedCompilation> nodes : this.secondToLast) {
+		for (int i = 0; i < this.secondToLast.size(); i++) {
+			List<NamedCompilation> nodes = this.secondToLast.get(i);
+
 			for (NamedCompilation namedCompilation : nodes) {
 				logger.debug("Connecting final terminal to: " + namedCompilation.secondObject());
-				connectToFinalTerminal(context, namedCompilation);
+				connectToFinalTerminal(context, namedCompilation,i);
 			}
 		}
 
@@ -474,9 +477,9 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		}
 	}
 
-	private void connectToFinalTerminal(SPARQLReteTopologyBuilderContext context, NamedCompilation namedCompilation) {
+	private void connectToFinalTerminal(SPARQLReteTopologyBuilderContext context, NamedCompilation namedCompilation, int pathIndex) {
 		String[] vars = namedCompilation.secondObject().getVars();
-		String varListName = "FINAL " + createVarListName(vars);
+		String varListName = "FINAL " + createVarListName(vars) + "_" + pathIndex;
 		VarExprList groupBys = context.query.simpleQuery.getGroupBy();
 		int[] joinIndecies = new int[groupBys.size()];
 
@@ -594,8 +597,8 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 				otherNameCompBoltPair.firstObject(), matchRight, templateRight,
 				new Rule(template, template)
 		);
-		VariableIndexRenamingProcessor currentRenamer = new VariableIndexRenamingProcessor(currentBolt.getElement(),currentVars);
-		VariableIndexRenamingProcessor otherRenamer = new VariableIndexRenamingProcessor(otherBolt.getElement(),otherVars);
+		VariableIndexRenamingProcessor currentRenamer = new VariableIndexRenamingProcessor(currentVars);
+		VariableIndexRenamingProcessor otherRenamer = new VariableIndexRenamingProcessor(otherVars);
 
 		queryHoldingReteJoinBolt.setStaticDataSources(staticDataSources(context));
 		queryHoldingReteJoinBolt.setQueryString(

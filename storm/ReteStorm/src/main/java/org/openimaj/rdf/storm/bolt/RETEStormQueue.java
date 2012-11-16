@@ -53,7 +53,7 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * Represents one input left of a join node. The queue points to
  * a sibling queue representing the other leg which should be joined
  * against.
- * 
+ *
  * @author David Monks <dm11g08@ecs.soton.ac.uk>, based largely on the RETEQueue
  *         implementation by <a href="mailto:der@hplb.hpl.hp.com">Dave
  *         Reynolds</a>
@@ -83,7 +83,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	/**
 	 * Constructor. The window is not usable until it has been bound
 	 * to a sibling and a continuation node.
-	 * 
+	 *
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -108,7 +108,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	 * Constructor including sibling to bind to. The window is not usable until
 	 * it has
 	 * also been bound to a continuation node.
-	 * 
+	 *
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -135,7 +135,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	 * Constructor including sibling to bind to. The window is not usable until
 	 * it has
 	 * also been bound to a continuation node.
-	 * 
+	 *
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -161,7 +161,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 
 	/**
 	 * Set the sibling for this node.
-	 * 
+	 *
 	 * @param sibling
 	 */
 	public void setSibling(RETEStormQueue sibling) {
@@ -180,7 +180,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 
 	/**
 	 * Propagate a token to this node.
-	 * 
+	 *
 	 * @param env
 	 *            a set of variable bindings for the rule being processed.
 	 * @param isAdd
@@ -220,27 +220,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 					newVals.add(o);
 				}
 
-				for (Component c : Component.values()) {
-					switch (c) {
-					case isAdd:
-						// insert this Tuple's value of isAdd to be passed onto subscribing Bolts.
-						newVals.add(isAdd);
-						break;
-					case graph:
-						Polyadic newG = new MultiUnion();
-						newG.addGraph((Graph) env.getValueByField(StormReteBolt.Component.graph.toString()));
-						newG.addGraph((Graph) candidate.getValueByField(StormReteBolt.Component.graph.toString()));
-						// insert the new graph into the array of Values
-						newVals.add(newG);
-						break;
-					case timestamp:
-						newVals.add(timestamp);
-						break;
-					default:
-						break;
-
-					}
-				}
+				addMetaValues(newVals,env,candidate,isAdd,timestamp);
 
 				// Fire the successor processing
 				continuation.fire(newVals, isAdd);
@@ -256,9 +236,37 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 
 	}
 
+	protected void addMetaValues(Values newVals, Tuple thistuple, Tuple siblingtuple, boolean isAdd, long timestamp) {
+		Polyadic newG = new MultiUnion();
+		newG.addGraph((Graph) thistuple.getValueByField(StormReteBolt.Component.graph.toString()));
+		newG.addGraph((Graph) siblingtuple.getValueByField(StormReteBolt.Component.graph.toString()));
+		addMetaValues(newVals,isAdd,newG,timestamp);
+	}
+
+	protected void addMetaValues(Values newVals, boolean isAdd, Graph newG, long timestamp) {
+		for (Component c : Component.values()) {
+			switch (c) {
+			case isAdd:
+				// insert this Tuple's value of isAdd to be passed onto subscribing Bolts.
+				newVals.add(isAdd);
+				break;
+			case graph:
+				// insert the new graph into the array of Values
+				newVals.add(newG);
+				break;
+			case timestamp:
+				newVals.add(timestamp);
+				break;
+			default:
+				break;
+
+			}
+		}
+	}
+
 	/**
 	 * Clone this node in the network.
-	 * 
+	 *
 	 * @param netCopy
 	 * @param context
 	 *            the new context to which the network is being ported

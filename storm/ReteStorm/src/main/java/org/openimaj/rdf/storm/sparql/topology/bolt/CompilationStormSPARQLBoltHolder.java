@@ -59,6 +59,13 @@ public class CompilationStormSPARQLBoltHolder extends CompilationStormRuleReteBo
 
 	private void constructQuery(Query originalQuery) {
 		Query query = QueryFactory.create(originalQuery);
+		if(query.getOrderBy()!=null)
+			query.getOrderBy().clear();
+		query.setLimit(Query.NOLIMIT);
+		VarExprList gb = query.getGroupBy();
+		gb.getVars().clear();
+		gb.getExprs().clear();
+		query.getHavingExprs().clear();
 		query.setQueryPattern(element);
 		query.setQuerySelectType();
 		VarExprList project = query.getProject();

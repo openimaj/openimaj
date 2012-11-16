@@ -55,6 +55,7 @@
 <http://www.ins.cwi.nl/sib/user/u59> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Boy George" .
 <http://www.ins.cwi.nl/sib/user/u59> <http://www.ins.cwi.nl/sib/vocabulary/interest> "Cris Bonacci" .
 <http://www.ins.cwi.nl/sib/user/u59> <http://xmlns.com/foaf/0.1/knows> <http://www.ins.cwi.nl/sib/user/u941> .
+<http://www.ins.cwi.nl/sib/user/u59> <http://xmlns.com/foaf/0.1/knows> <http://www.ins.cwi.nl/sib/user/u627> .
 <http://www.ins.cwi.nl/sib/person/p627> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
 <http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/firstName> "Xinhai" .
 <http://www.ins.cwi.nl/sib/person/p627> <http://xmlns.com/foaf/0.1/lastName> "Li" .

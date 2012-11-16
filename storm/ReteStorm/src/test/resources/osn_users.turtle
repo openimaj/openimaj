@@ -78,6 +78,7 @@ sibu:u59 dc:date "2010-02-01T05:06:51Z"^^xsd:dateTime .
 sibu:u59 sib:interest "Boy George" .
 sibu:u59 sib:interest "Cris Bonacci" .
 sibu:u59 foaf:knows sibu:u941 .
+sibu:u59 foaf:knows sibu:u627 .
 sibp:p627 a foaf:Person .
 sibp:p627 foaf:firstName "Xinhai" .
 sibp:p627 foaf:lastName "Li" .

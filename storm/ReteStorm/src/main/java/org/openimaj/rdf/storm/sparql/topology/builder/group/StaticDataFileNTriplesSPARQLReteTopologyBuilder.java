@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.mortbay.io.RuntimeIOException;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink.FileSink;
+import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink.FileSink.QuerySolutionSerializer;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilderContext;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.InMemoryDataset;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
@@ -63,6 +64,7 @@ public class StaticDataFileNTriplesSPARQLReteTopologyBuilder extends StaticDataS
 	private static final Logger logger = Logger.getLogger(StaticDataFileNTriplesSPARQLReteTopologyBuilder.class);
 	File wang;
 	private String[] staticDataSources;
+	private QuerySolutionSerializer qss;
 
 	/**
 	 * @param staticDataSources the static datasources to involve in this query
@@ -71,6 +73,7 @@ public class StaticDataFileNTriplesSPARQLReteTopologyBuilder extends StaticDataS
 		try {
 			wang = File.createTempFile("STORM", "SPARQL");
 			wang.delete();
+			wang.mkdirs();
 			logger.debug("Temporary output location created: " + wang);
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
@@ -100,9 +103,8 @@ public class StaticDataFileNTriplesSPARQLReteTopologyBuilder extends StaticDataS
 	public StormSPARQLReteConflictSetBoltSink conflictSetSink() {
 
 		try {
-			wang = File.createTempFile("STORM", "SPARQL");
-			wang.delete();
-			return new FileSink(wang);
+			FileSink fileSink = new FileSink(wang,qss);
+			return fileSink;
 		} catch (IOException e) {
 			throw new RuntimeIOException(e);
 		}
@@ -116,6 +118,14 @@ public class StaticDataFileNTriplesSPARQLReteTopologyBuilder extends StaticDataS
 			ret.add(new InMemoryDataset(staticRDFURI));
 		}
 		return ret;
+	}
+
+	public File getOutputFile() {
+		return wang;
+	}
+
+	public void setQuerySolutionSerializerMode(QuerySolutionSerializer qss) {
+		this.qss = qss;
 	}
 
 }
