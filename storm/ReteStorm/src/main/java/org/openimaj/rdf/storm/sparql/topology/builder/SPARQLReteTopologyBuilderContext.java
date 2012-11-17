@@ -7,20 +7,21 @@ import org.openimaj.rdf.storm.utils.CsparqlUtils.CSparqlComponentHolder;
 
 import backtype.storm.topology.TopologyBuilder;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.PatternVars;
 
 /**
  * A {@link SPARQLReteTopologyBuilderContext} holds variables needed by the
  * various stages of a {@link SPARQLReteTopologyBuilder}
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
  *         (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class SPARQLReteTopologyBuilderContext {
+public class SPARQLReteTopologyBuilderContext implements Cloneable {
 
 	/**
 	 * The query being compiled
@@ -35,11 +36,6 @@ public class SPARQLReteTopologyBuilderContext {
 	 * the initial source of tuples
 	 */
 	public String source;
-
-	/**
-	 * the current element
-	 */
-	public ElementPathBlock filterClause;
 
 	/**
 	 * The binding vars and their positions
@@ -76,5 +72,17 @@ public class SPARQLReteTopologyBuilderContext {
 		for (Var var : vars) {
 			bindingVector.put(var.getName(), this.currentCount++);
 		}
+	}
+
+	public SPARQLReteTopologyBuilderContext switchQuery(Query query) {
+		PrefixMapping originalPrefixMap = query.getPrefixMapping();
+		CSparqlComponentHolder newQuery = new CSparqlComponentHolder(this.query.simpleQuery.cloneQuery(), this.query.streams);
+		newQuery.streams = null;
+		newQuery.simpleQuery = query;
+		newQuery.simpleQuery.setPrefixMapping(this.query.simpleQuery.getPrefixMapping());
+		newQuery.simpleQuery = newQuery.simpleQuery.cloneQuery();
+		query.setPrefixMapping(originalPrefixMap);
+		return new SPARQLReteTopologyBuilderContext(builder, source, newQuery);
+
 	}
 }

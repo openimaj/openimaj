@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 import org.openimaj.rdf.storm.sparql.topology.StormSPARQLReteTopologyOrchestrator;
-import org.openimaj.rdf.storm.sparql.topology.builder.group.FileNTriplesSPARQLReteTopologyBuilder;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.StaticDataFileNTriplesSPARQLReteTopologyBuilder;
 import org.openimaj.storm.util.graph.StormGraphCreator;
 import org.openimaj.storm.util.graph.StormGraphCreator.NamedNode;
 import org.openimaj.storm.util.graph.StormGraphCreator.NamingStrategy.AlphabeticNamingStrategy;
@@ -41,9 +41,9 @@ public class ReteStormTopologyJGraph extends JFrame {
 	}
 
 	public static void main(String[] args) throws TranslationException, IOException {
-		String sparqlSource = "/test.userpost.csparql";
+		String sparqlSource = "/test.userpost.subquery.complex.csparql";
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
-				new FileNTriplesSPARQLReteTopologyBuilder(),
+				new StaticDataFileNTriplesSPARQLReteTopologyBuilder(),
 				ReteStormTopologyJGraph.class.getResourceAsStream(sparqlSource)
 				);
 		System.out.println(orchestrator);

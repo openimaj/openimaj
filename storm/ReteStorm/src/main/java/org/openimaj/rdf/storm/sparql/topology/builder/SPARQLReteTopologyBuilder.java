@@ -32,24 +32,18 @@ package org.openimaj.rdf.storm.sparql.topology.builder;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
 import org.openimaj.rdf.storm.utils.CsparqlUtils.CSparqlComponentHolder;
 
 import backtype.storm.topology.TopologyBuilder;
-
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.sparql.syntax.Element;
-
 import eu.larkc.csparql.parser.StreamInfo;
 
 /**
  * {@link SPARQLReteTopologyBuilder} instances can accept the filter parts,
  * construct the joins and add the terminal nodes of a Rete topology using a
  * SPARQL query
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class SPARQLReteTopologyBuilder {
 
@@ -62,66 +56,62 @@ public abstract class SPARQLReteTopologyBuilder {
 
 	private int unnamedRules = 0;
 
-
 	/**
-	 * Given a builder and a set of streams, add the source spout to the builder and return the name
+	 * Given a builder and a set of streams, add the source spout to the builder
+	 * and return the name
 	 * of the source spout
-	 *
+	 * 
 	 * @param builder
 	 * @param streams
 	 * @return the name of the source spout
 	 */
-	public abstract String prepareSourceSpout(TopologyBuilder builder,Set<StreamInfo> streams);
+	public abstract String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams);
 
 	/**
 	 * Initialise the topology. Might be used to create and hold on to nodes
 	 * that are required by all other parts of the topology (e.g. the final node
 	 * that actually outputs triples)
-	 *
-	 * Context not-null values: {@link SPARQLReteTopologyBuilderContext #builder},
-	 * {@link SPARQLReteTopologyBuilderContext#source} and
+	 * 
+	 * Context not-null values: {@link SPARQLReteTopologyBuilderContext #builder}
+	 * , {@link SPARQLReteTopologyBuilderContext#source} and
 	 * {@link SPARQLReteTopologyBuilderContext#query}
-	 *
+	 * 
 	 * @param context
 	 */
 	public abstract void initTopology(SPARQLReteTopologyBuilderContext context);
+
 	/**
 	 * Given a builder and a set of rules, drive the construction of the Rete
 	 * topology
-	 *
+	 * 
 	 * @param builder
 	 *            the builder to add bolts/spouts to
 	 * @param query
 	 *            the query to compile
 	 */
 	public void compile(TopologyBuilder builder, CSparqlComponentHolder query) {
-		String source = prepareSourceSpout(builder,query.streams);
+		String source = prepareSourceSpout(builder, query.streams);
 		SPARQLReteTopologyBuilderContext context = new SPARQLReteTopologyBuilderContext(builder, source, query);
 		initTopology(context);
 
-		QueryExecutionFactory.create(context.query.simpleQuery);
 		System.out.println("Query binding variables: " + query.simpleQuery.getProjectVars());
 
 		// now handle the query pattern
-		compile(query.simpleQuery.getQueryPattern());
-		finishQuery(context);
+		compile();
+		finishQuery();
 	}
 
-
 	/**
-	 * @param queryPattern the root node of a SPARQL query from {@link Query#getQueryPattern()}
+	 * Expected to compile the query held in the context
 	 */
-	public abstract void compile(Element queryPattern) ;
+	public abstract void compile();
 
 	/**
-	 * This particular rule is completed. Finish the rule off, possible with a
-	 * {@link ReteTerminalBolt} instance. The various bolts may have already
-	 * added themselves to the topology, if not this is their last chance to do
+	 * This particular query is completed. Finish the query off.
 	 * so
-	 *
-	 * @param context
+	 * 
 	 */
-	public abstract void finishQuery(SPARQLReteTopologyBuilderContext context);
+	public abstract void finishQuery();
 
 	protected String nextRuleName() {
 		unnamedRules += 1;

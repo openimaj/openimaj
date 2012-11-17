@@ -21,13 +21,13 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.rdf.storm.bolt.RETEStormNode;
 import org.openjena.riot.RiotWriter;
 
+import backtype.storm.task.OutputCollector;
 import backtype.storm.tuple.Tuple;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -48,51 +48,45 @@ import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
  * This bolt deals with the consequences of a valid binding for a SPARQL query.
  * The subclasses of this bolt deal with the specifics of SELECT, CONSTRUCT, ASK
  * and DESCRIBE
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt {
 
 	/**
 	 * Deal with triples or bindings
-	 *
+	 * 
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static interface StormSPARQLReteConflictSetBoltSink {
 		/**
 		 * Start things off
-		 *
+		 * 
 		 * @param conflictSet
 		 */
 		void instantiate(StormSPARQLReteConflictSetBolt conflictSet);
 
 		/**
 		 * Usually as part of a CONSTRUCT query
-		 *
+		 * 
 		 * @param triple
 		 */
 		void consumeTriple(Triple triple);
 
 		/**
-		 * Usually as part of a SELECT query
-		 *
-		 * @param binding
-		 */
-		void consumeSolution(QuerySolution binding);
-
-		/**
 		 * Usually calls a formatter from {@link ResultSetFormatter}
+		 * 
 		 * @param bindingsIter
 		 */
 		void consumeBindings(QueryIterator bindingsIter);
 
 		/**
 		 * A Sink used mainly for debugging and tests
-		 *
+		 * 
 		 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-		 *
+		 * 
 		 */
 		public static class FileSink implements StormSPARQLReteConflictSetBoltSink {
 			private FileOutputStream fos;
@@ -103,15 +97,15 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 
 			/**
 			 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-			 *
+			 * 
 			 */
-			public static enum QuerySolutionSerializer{
+			public static enum QuerySolutionSerializer {
 				/**
 				 * Output as CSV
 				 */
 				CSV {
 					@Override
-					public void output(OutputStream stream,ResultSet rs) {
+					public void output(OutputStream stream, ResultSet rs) {
 						ResultSetFormatter.outputAsCSV(stream, rs);
 					}
 
@@ -121,7 +115,7 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 				 */
 				JSON {
 					@Override
-					public void output(OutputStream stream,ResultSet rs) {
+					public void output(OutputStream stream, ResultSet rs) {
 						ResultSetFormatter.outputAsJSON(stream, rs);
 					}
 
@@ -129,9 +123,9 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 				/**
 				 * Output as RDF Turtle
 				 */
-				RDF_NTRIPLES{
+				RDF_NTRIPLES {
 					@Override
-					public void output(OutputStream stream,ResultSet rs) {
+					public void output(OutputStream stream, ResultSet rs) {
 						ResultSetFormatter.outputAsRDF(stream, "N-TRIPLES", rs);
 					}
 
@@ -141,12 +135,12 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 				 * @param vars
 				 * @param stream
 				 */
-				public void serialize(QueryIterator iter, List<String> vars,OutputStream stream){
+				public void serialize(QueryIterator iter, List<String> vars, OutputStream stream) {
 					ResultSet rs = ResultSetFactory.create(iter, vars);
-					output(stream,rs);
+					output(stream, rs);
 				}
 
-				protected abstract void output(OutputStream stream,ResultSet rs) ;
+				protected abstract void output(OutputStream stream, ResultSet rs);
 			}
 
 			/**
@@ -163,7 +157,8 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 			 * @param serializerMode
 			 * @throws FileNotFoundException
 			 */
-			public FileSink(File file, QuerySolutionSerializer serializerMode) throws FileNotFoundException {
+			public FileSink(File file, QuerySolutionSerializer serializerMode)
+					throws FileNotFoundException {
 				this.outDir = file;
 				this.serializerMode = serializerMode;
 			}
@@ -182,12 +177,6 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 			}
 
 			@Override
-			public void consumeSolution(QuerySolution binding) {
-
-			}
-
-
-			@Override
 			public void instantiate(StormSPARQLReteConflictSetBolt conflictSet) {
 				try {
 					if (outDir.exists()) {
@@ -200,7 +189,7 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 					String name = String.format("%s_%d", conflictSet.context.getThisComponentId(), conflictSet.context.getThisTaskId());
 
 					this.outFile = new File(outDir, name);
-					if(outFile.exists()){
+					if (outFile.exists()) {
 						throw new RuntimeIOException("The same output was attempting to be written twice!");
 					}
 					fos = new FileOutputStream(outFile);
@@ -223,7 +212,6 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 			}
 
 		}
-
 
 	}
 
@@ -363,7 +351,7 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 
 	/**
 	 * Emit the triple (For CONSTRUCT)
-	 *
+	 * 
 	 * @param triple
 	 */
 	public void emitTriple(Triple triple) {
@@ -372,19 +360,15 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 	}
 
 	/**
-	 * @param binding
-	 */
-	public void emitSolution(QuerySolution binding) {
-		logger.debug("Emitting solution: " + binding);
-		sink.consumeSolution(binding);
-	}
-
-	/**
 	 * @param bindingsIter
 	 */
 	public void emitSolutions(QueryIterator bindingsIter) {
 		logger.debug("Emitting iterator solutions!");
 		sink.consumeBindings(bindingsIter);
+	}
+
+	public OutputCollector getCollector() {
+		return this.collector;
 	}
 
 }

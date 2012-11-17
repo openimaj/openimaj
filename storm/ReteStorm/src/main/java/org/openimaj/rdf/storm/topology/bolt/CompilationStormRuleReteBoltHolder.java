@@ -18,9 +18,9 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
  * necessary as
  * bolts may be shared (i.e. have the same pattern) but may have different
  * bindings and variables.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class CompilationStormRuleReteBoltHolder {
 	private StormReteBolt bolt;
@@ -41,7 +41,7 @@ public class CompilationStormRuleReteBoltHolder {
 
 	/**
 	 * The variables of this compilation are null
-	 *
+	 * 
 	 * @param bolt
 	 */
 	public CompilationStormRuleReteBoltHolder(StormReteBolt bolt) {
@@ -91,7 +91,7 @@ public class CompilationStormRuleReteBoltHolder {
 
 	/**
 	 * Get the names of the variable fields output from this Bolt.
-	 *
+	 * 
 	 * @return String[]
 	 */
 	public String[] getVars() {
@@ -100,7 +100,7 @@ public class CompilationStormRuleReteBoltHolder {
 
 	/**
 	 * Set the names of the variable fields output from this Bolt.
-	 *
+	 * 
 	 * @param newVars
 	 */
 	public void setVars(String[] newVars) {
@@ -108,7 +108,7 @@ public class CompilationStormRuleReteBoltHolder {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return get the rule of this {@link CompilationStormRuleReteBoltHolder}
 	 *         rather than the underlying bolt
 	 */
@@ -132,7 +132,8 @@ public class CompilationStormRuleReteBoltHolder {
 	}
 
 	/**
-	 * @param rule set the rule and therefore the vars of this compilation
+	 * @param rule
+	 *            set the rule and therefore the vars of this compilation
 	 */
 	public void setRule(Rule rule) {
 		this.rule = rule;

@@ -31,6 +31,7 @@ package org.openimaj.rdf.storm.sparql.topology.builder.group;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,6 +44,7 @@ import org.openimaj.rdf.storm.sparql.topology.bolt.QueryHoldingReteJoinBolt;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLFilterBolt;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink;
+import org.openimaj.rdf.storm.sparql.topology.bolt.sink.SubqueryConflictSetSink;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilderContext;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
@@ -62,6 +64,8 @@ import backtype.storm.tuple.Fields;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Node_Variable;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Functor;
@@ -83,26 +87,42 @@ import eu.larkc.csparql.parser.StreamInfo;
 /**
  * This topology builder attempts to support groups of paths and subqueries in
  * SPARQL queries
- *
- *
+ * 
+ * 
  * This base interface takes care of recording filters, joins etc. and leaves
  * the job of actually adding the bolts to the topology as well as the
  * construction of the {@link ReteConflictSetBolt} instance down to its
  * subclasses.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopologyBuilder {
-	private static Logger logger = Logger.getLogger(StaticDataSPARQLReteTopologyBuilder.class);
-	/**
-	 * the name of the final bolt
-	 */
-	public static final String FINAL_TERMINAL = "final_term";
 
-	private Map<String, StormReteBolt> bolts;
-	private List<List<NamedCompilation>> secondToLast;
-	private SPARQLReteTopologyBuilderContext context;
+	private class SubQueryTopologyBuilder extends StaticDataSPARQLReteTopologyBuilder {
+
+		@Override
+		public void initTopology(SPARQLReteTopologyBuilderContext context) {
+			super.initTopology(context);
+			this.updateInternalVariablesUsing(StaticDataSPARQLReteTopologyBuilder.this);
+		}
+
+		@Override
+		public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
+			throw new UnsupportedOperationException("Subquerys do not need to initialise streams!");
+		}
+
+		@Override
+		public List<StaticRDFDataset> staticDataSources(SPARQLReteTopologyBuilderContext context) {
+			return StaticDataSPARQLReteTopologyBuilder.this.staticDataSources(context);
+		}
+
+		@Override
+		public StormSPARQLReteConflictSetBoltSink conflictSetSink() {
+			return new SubqueryConflictSetSink();
+		}
+
+	}
 
 	private static class NamedCompilation extends
 			IndependentPair<String, CompilationStormSPARQLBoltHolder> {
@@ -113,12 +133,33 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 
 	}
 
+	private static Logger logger = Logger.getLogger(StaticDataSPARQLReteTopologyBuilder.class);
+	/**
+	 * the name of the final bolt
+	 */
+	public static final String FINAL_TERMINAL = "final_term";
+	private static final Node HAS_VARIABLE = Node.createURI("http://www.w3.org/2001/sw/DataAccess/tests/result-set#resultVariable");
+	// The protected variables 
+	protected int countFilters = 0;
+	protected Set<String> alreadyConnected = new HashSet<String>();
+	protected Map<String, StormReteBolt> bolts;
+	private List<List<NamedCompilation>> finalTerminalList = new ArrayList<List<NamedCompilation>>();
+	private List<List<NamedCompilation>> secondToLast;
+	private SPARQLReteTopologyBuilderContext context;
+
 	@Override
 	public abstract String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams);
 
+	protected void updateInternalVariablesUsing(StaticDataSPARQLReteTopologyBuilder builder) {
+		this.alreadyConnected.addAll(builder.alreadyConnected);
+		this.bolts.putAll(builder.bolts);
+		this.countFilters = builder.countFilters;
+	}
+
 	/**
 	 * @param context
-	 * @return a list of {@link StaticRDFDataset} to involve in the resolution of this query
+	 * @return a list of {@link StaticRDFDataset} to involve in the resolution
+	 *         of this query
 	 */
 	public abstract List<StaticRDFDataset> staticDataSources(SPARQLReteTopologyBuilderContext context);
 
@@ -129,8 +170,8 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	}
 
 	@Override
-	public void compile(Element el) {
-		this.secondToLast = visit(el);
+	public void compile() {
+		this.secondToLast = visit(this.context.query.simpleQuery.getQueryPattern());
 	}
 
 	private List<List<NamedCompilation>> visit(Element el) {
@@ -172,15 +213,19 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		return bolt;
 	}
 
-	int countFilters = 0;
-
 	private String constructFilterName(ElementFilter el) {
 		final String filterName = String.format("SPARQLfilter_%d", countFilters++);
 		return filterName;
 	}
 
 	private List<List<NamedCompilation>> visit(ElementSubQuery el) {
-		return null;
+		SPARQLReteTopologyBuilderContext cloneContext = this.context.switchQuery(el.getQuery());
+		SubQueryTopologyBuilder subq = new SubQueryTopologyBuilder();
+		subq.initTopology(cloneContext);
+		subq.compile();
+		subq.finishQuery();
+		this.updateInternalVariablesUsing(subq); // any bolts constructed in the subquery can be reused!
+		return subq.getFinalTerminalList();
 	}
 
 	private List<List<NamedCompilation>> visit(ElementGroup el) {
@@ -246,7 +291,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 			for (NamedCompilation boltNameComp : boltNames) {
 				CompilationStormSPARQLBoltHolder boltComp = boltNameComp.secondObject();
 				Element element = boltComp.getElement();
-				if(!(element instanceof ElementGroup)){
+				if (!(element instanceof ElementGroup)) {
 					// It has transpired that the element of the last item in the boltNames list was not a group!
 					// It was probably a single thing inside a group.
 					// add it as a group!
@@ -388,7 +433,6 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		CompilationStormSPARQLBoltHolder compilation = new CompilationStormSPARQLBoltHolder(newJoin, new Rule(template, template));
 		compilation.setElement(el, context.query.simpleQuery);
 
-
 		boltNames.add(new NamedCompilation(newJoinName, compilation));
 	}
 
@@ -443,7 +487,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	}
 
 	@Override
-	public void finishQuery(SPARQLReteTopologyBuilderContext context) {
+	public void finishQuery() {
 		logger.debug("Connecting last node to the conflict set");
 		// Now construct the terminal
 		if (secondToLast == null) {
@@ -458,7 +502,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 
 			for (NamedCompilation namedCompilation : nodes) {
 				logger.debug("Connecting final terminal to: " + namedCompilation.secondObject());
-				connectToFinalTerminal(context, namedCompilation,i);
+				connectToFinalTerminal(context, namedCompilation, i);
 			}
 		}
 
@@ -466,20 +510,25 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		// Now add the nodes to the actual topology
 		for (Entry<String, StormReteBolt> nameFilter : bolts.entrySet()) {
 			String name = nameFilter.getKey();
-			IRichBolt bolt = nameFilter.getValue();
-			if (bolt instanceof QueryHoldingReteFilterBolt)
-				connectFilterBolt(context, name, (QueryHoldingReteFilterBolt) bolt);
-			else if (bolt instanceof QueryHoldingReteJoinBolt)
-				connectJoinBolt(context, name, (QueryHoldingReteJoinBolt) bolt);
-			else if (bolt instanceof StormSPARQLFilterBolt) {
-				connectFilterBolt(context, name, (StormSPARQLFilterBolt) bolt);
+			if (!alreadyConnected.contains(name)) { // The bolt may have been added already in a subquery. Don't add it again!
+				alreadyConnected.add(name);
+				IRichBolt bolt = nameFilter.getValue();
+				if (bolt instanceof QueryHoldingReteFilterBolt)
+					connectFilterBolt(context, name, (QueryHoldingReteFilterBolt) bolt);
+				else if (bolt instanceof QueryHoldingReteJoinBolt)
+					connectJoinBolt(context, name, (QueryHoldingReteJoinBolt) bolt);
+				else if (bolt instanceof StormSPARQLFilterBolt) {
+					connectFilterBolt(context, name, (StormSPARQLFilterBolt) bolt);
+				}
 			}
 		}
 	}
 
 	private void connectToFinalTerminal(SPARQLReteTopologyBuilderContext context, NamedCompilation namedCompilation, int pathIndex) {
-		String[] vars = namedCompilation.secondObject().getVars();
-		String varListName = "FINAL " + createVarListName(vars) + "_" + pathIndex;
+		CompilationStormSPARQLBoltHolder secondToLastCompilation = namedCompilation.secondObject();
+		String secondToLastBolt = namedCompilation.firstObject();
+		String[] vars = secondToLastCompilation.getVars();
+		String finalTerminalName = "FINAL " + createVarListName(vars) + "_" + pathIndex;
 		VarExprList groupBys = context.query.simpleQuery.getGroupBy();
 		int[] joinIndecies = new int[groupBys.size()];
 
@@ -489,9 +538,40 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		}
 		StormSPARQLReteConflictSetBolt finalTerm = constructConflictSetBolt();
 		Fields fields = QueryHoldingReteJoinBolt.getJoinFieldsByIndex(joinIndecies);
-		this.context.builder.setBolt(varListName, finalTerm, 2).fieldsGrouping(namedCompilation.firstObject(), fields);
-		finalTerm.registerSourceVariables(namedCompilation.firstObject(), namedCompilation.secondObject().getVars());
-		//
+
+		this.context.builder.setBolt(finalTerminalName, finalTerm, 2).fieldsGrouping(secondToLastBolt, fields);
+		finalTerm.registerSourceVariables(secondToLastBolt, secondToLastCompilation.getVars());
+
+		// keep track of the final terminals
+		registerFinalTerminal(finalTerminalName, finalTerm, secondToLastCompilation);
+	}
+
+	private void registerFinalTerminal(String finalTerminalName, StormSPARQLReteConflictSetBolt finalTerm, CompilationStormSPARQLBoltHolder secondToLast) {
+		CompilationStormSPARQLBoltHolder compHolder = new CompilationStormSPARQLBoltHolder(finalTerm);
+		Query create = QueryFactory.create();
+		create.setQueryPattern(secondToLast.getElement());
+		create.setQuerySelectType();
+
+		List<ClauseEntry> finalVarsClause = new ArrayList<ClauseEntry>();
+		List<String> rvars = this.context.query.simpleQuery.getResultVars();
+		Node someAnon = Node.createAnon();
+		for (String string : rvars) {
+			Node createVariable = Node.createVariable(string);
+			Triple t = new Triple(someAnon, HAS_VARIABLE, createVariable);
+
+			finalVarsClause.add(new TriplePattern(t)); // for the rule construction
+			create.addResultVar(createVariable);
+		}
+		ElementSubQuery esq = new ElementSubQuery(create);
+		compHolder.setElement(esq, context.query.simpleQuery);
+
+		compHolder.setRule(new Rule(finalVarsClause, finalVarsClause));
+
+		NamedCompilation namedCompilation = new NamedCompilation(finalTerminalName, compHolder);
+
+		ArrayList<NamedCompilation> e = new ArrayList<NamedCompilation>();
+		e.add(namedCompilation);
+		this.finalTerminalList.add(e);
 	}
 
 	private String createVarListName(String[] vars) {
@@ -507,7 +587,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	 * behaviour is to add the bolt as
 	 * {@link BoltDeclarer#globalGrouping(String)} with both sources (this might
 	 * be optimisabled)
-	 *
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -524,7 +604,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	 * {@link BoltDeclarer#shuffleGrouping(String)} to the
 	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source}
 	 * and the {@link ReteConflictSetBolt} instance
-	 *
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -539,8 +619,6 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	}
 
 	// Bolt Construction
-
-	Map<String, StormSPARQLReteConflictSetBolt> conflictSetBolts = new HashMap<String, StormSPARQLReteConflictSetBolt>();
 
 	/**
 	 * @return the conflict set bolt usually describing what is done with
@@ -575,7 +653,6 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		CompilationStormSPARQLBoltHolder currentBolt = currentNameCompBoltPair.secondObject();
 		CompilationStormSPARQLBoltHolder otherBolt = otherNameCompBoltPair.secondObject();
 
-
 		String[] currentVars = currentNameCompBoltPair.secondObject().getVars();
 		String[] otherVars = otherNameCompBoltPair.secondObject().getVars();
 		String[] newVars = CompilationStormSPARQLBoltHolder.extractFields(template);
@@ -596,7 +673,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 				currentNameCompBoltPair.firstObject(), matchLeft, templateLeft,
 				otherNameCompBoltPair.firstObject(), matchRight, templateRight,
 				new Rule(template, template)
-		);
+				);
 		VariableIndexRenamingProcessor currentRenamer = new VariableIndexRenamingProcessor(currentVars);
 		VariableIndexRenamingProcessor otherRenamer = new VariableIndexRenamingProcessor(otherVars);
 
@@ -604,8 +681,15 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		queryHoldingReteJoinBolt.setQueryString(
 				currentRenamer.constructQueryString(currentBolt.getQueryString()),
 				otherRenamer.constructQueryString(otherBolt.getQueryString())
-		);
+				);
 		return queryHoldingReteJoinBolt;
+	}
+
+	/**
+	 * @return the final bolts of this builder
+	 */
+	public List<List<NamedCompilation>> getFinalTerminalList() {
+		return finalTerminalList;
 	}
 
 }

@@ -73,13 +73,13 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 
 /**
  * Test the {@link StormTopology} construction from a CSPARQL query
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteTopologyTest {
 	private static final String PREFIX = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX ex: <http://example.com/> PREFIX xs: <http://www.w3.org/2001/XMLSchema#>";
-	private static long TOPOLOGY_SLEEP_TIME = 2000;
+	private static long TOPOLOGY_SLEEP_TIME = 3000;
 	/**
 	 *
 	 */
@@ -88,7 +88,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * prepare the output
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	@Before
@@ -97,7 +97,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -116,7 +116,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -135,7 +135,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -148,19 +148,19 @@ public class ReteTopologyTest {
 				query,
 				"d",
 				"http://example.com/Steve"
-		));
+				));
 		query = PREFIX + "SELECT ?d WHERE{?d rdf:type ex:Steve}";
 		expectedValues.add(new CheckableQuery(
 				query,
 				"d",
 				"http://example.com/Alan",
 				"http://example.com/John"
-		));
+				));
 		performQuery(sparqlSource, expectedValues);
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -172,12 +172,15 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("given"), NodeFactory.createLiteralNode("Bob", "", ""));
 		e.add(Var.alloc("family"), NodeFactory.createLiteralNode("Smith", "", ""));
 		expectedValues.add(e);
-		expectedValues.add(new BindingMap()); // and an empty binding!
+		e = new BindingMap();
+		e.add(Var.alloc("given"), NodeFactory.createLiteralNode("", "", ""));
+		e.add(Var.alloc("family"), NodeFactory.createLiteralNode("", "", ""));
+		expectedValues.add(e);
 		performQuery(sparqlSource, expectedValues);
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -195,7 +198,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -204,15 +207,20 @@ public class ReteTopologyTest {
 		String sparqlSource = "/test.aggregate.csparql";
 		List<Binding> expectedValues = new ArrayList<Binding>();
 		BindingMap e = new BindingMap();
-		e.add(Var.alloc("given"), NodeFactory.createLiteralNode("Bob", "", ""));
-		e.add(Var.alloc("family"), NodeFactory.createLiteralNode("Smith", "", ""));
+		e.add(Var.alloc("org"), NodeFactory.parseNode("<http://books.example/org1>"));
+		e.add(Var.alloc("totalPrice"), NodeFactory.intToNode(18));
+		e.add(Var.alloc("avgPrice"), NodeFactory.createLiteralNode("12", "", "http://www.w3.org/2001/XMLSchema#decimal"));
 		expectedValues.add(e);
-		expectedValues.add(new BindingMap()); // and an empty binding!
+		e = new BindingMap();
+		e.add(Var.alloc("org"), NodeFactory.parseNode("<http://books.example/org1>"));
+		e.add(Var.alloc("totalPrice"), NodeFactory.intToNode(12));
+		e.add(Var.alloc("avgPrice"), NodeFactory.createLiteralNode("12", "", "http://www.w3.org/2001/XMLSchema#decimal"));
+		expectedValues.add(e);
 		performQuery(sparqlSource, expectedValues);
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -226,25 +234,75 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
 	@Test
 	public void testReteTopologyStaticData() throws IOException, TranslationException {
 		String sparqlSource = "/test.userpost.csparql";
-		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator
-				.createTopologyBuilder(
-						new StaticDataFileNTriplesSPARQLReteTopologyBuilder(
-								"file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt"),
-						ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
-				);
-		final LocalCluster cluster = new LocalCluster();
-		System.out.println(orchestrator);
-		cluster.submitTopology("reteTopology", orchestrator.getConfiguration(), orchestrator.buildTopology());
-		Utils.sleep(TOPOLOGY_SLEEP_TIME);
-		cluster.killTopology("reteTopology");
-		cluster.shutdown();
+		List<Binding> expectedValues = new ArrayList<Binding>();
+		BindingMap e = new BindingMap();
+		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("out on January 5 2007 by the Chinese police against a suspected East Turkestan Islamic Movement training", "", ""));
+		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
+		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T11:49:51Z\"^^xsd:dateTime"));
+		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u627>"));
+		expectedValues.add(e);
+		e = new BindingMap();
+		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("Christine Cris Bonacci is an Australian-born producer songwriter and musician", "", ""));
+		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
+		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
+		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
+		expectedValues.add(e);
+		performQuery(sparqlSource, expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
+	}
+
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopologySubquery() throws IOException, TranslationException {
+		String sparqlSource = "/test.userpost.subquery.csparql";
+		List<Binding> expectedValues = new ArrayList<Binding>();
+		BindingMap e = new BindingMap();
+		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("out on January 5 2007 by the Chinese police against a suspected East Turkestan Islamic Movement training", "", ""));
+		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
+		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T11:49:51Z\"^^xsd:dateTime"));
+		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u627>"));
+		expectedValues.add(e);
+		e = new BindingMap();
+		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("Christine Cris Bonacci is an Australian-born producer songwriter and musician", "", ""));
+		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
+		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
+		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
+		expectedValues.add(e);
+		performQuery(sparqlSource, expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
+	}
+
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopologySubquery_complex() throws IOException, TranslationException {
+		String sparqlSource = "/test.userpost.subquery.complex.csparql";
+		List<Binding> expectedValues = new ArrayList<Binding>();
+		BindingMap e = new BindingMap();
+		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("out on January 5 2007 by the Chinese police against a suspected East Turkestan Islamic Movement training", "", ""));
+		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
+		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T11:49:51Z\"^^xsd:dateTime"));
+		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u627>"));
+		expectedValues.add(e);
+		e = new BindingMap();
+		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("Christine Cris Bonacci is an Australian-born producer songwriter and musician", "", ""));
+		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
+		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
+		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
+		expectedValues.add(e);
+		performQuery(sparqlSource, expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
 	}
 
 	class CheckableQuery {
@@ -294,11 +352,11 @@ public class ReteTopologyTest {
 		return select;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void performQuery(String sparqlSource, List<?> expectedValues) throws TranslationException, IOException,
-			FileNotFoundException
-	{
-		StaticDataFileNTriplesSPARQLReteTopologyBuilder topologyBuilder = new StaticDataFileNTriplesSPARQLReteTopologyBuilder();
+	private void performQuery(String sparqlSource, List<?> expectedValues, String... staticSources) throws TranslationException, IOException {
+		File f = folder.newFile("STORM");
+		f.delete();
+		f.mkdirs();
+		StaticDataFileNTriplesSPARQLReteTopologyBuilder topologyBuilder = new StaticDataFileNTriplesSPARQLReteTopologyBuilder(f, staticSources);
 		topologyBuilder.setQuerySolutionSerializerMode(QuerySolutionSerializer.RDF_NTRIPLES);
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
 				topologyBuilder,
@@ -317,6 +375,7 @@ public class ReteTopologyTest {
 			assertTrue(expectedValues.containsAll(sols));
 		} else if (simpleQuery.isConstructType()) {
 			Model sols = readAllTriples(topologyBuilder);
+			@SuppressWarnings("unchecked")
 			List<CheckableQuery> checkQ = (List<CheckableQuery>) expectedValues;
 			for (CheckableQuery checkableQuery : checkQ) {
 
@@ -325,7 +384,6 @@ public class ReteTopologyTest {
 			}
 
 		}
-
 	}
 
 	private Model readAllTriples(StaticDataFileNTriplesSPARQLReteTopologyBuilder topologyBuilder) {

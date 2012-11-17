@@ -14,9 +14,9 @@ import com.hp.hpl.jena.sparql.syntax.Element;
 /**
  * Holds {@link StormReteBolt} and {@link Rule} instances as well as the SPARQL
  * statement which matches the query until this point
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class CompilationStormSPARQLBoltHolder extends CompilationStormRuleReteBoltHolder {
 	private static Logger logger = Logger.getLogger(CompilationStormRuleReteBoltHolder.class);
@@ -41,7 +41,7 @@ public class CompilationStormSPARQLBoltHolder extends CompilationStormRuleReteBo
 	/**
 	 * The element representing this bolt and the original query (mainly for
 	 * prefix information)
-	 *
+	 * 
 	 * @param elementPathBlock
 	 * @param originalQuery
 	 */
@@ -59,7 +59,7 @@ public class CompilationStormSPARQLBoltHolder extends CompilationStormRuleReteBo
 
 	private void constructQuery(Query originalQuery) {
 		Query query = QueryFactory.create(originalQuery);
-		if(query.getOrderBy()!=null)
+		if (query.getOrderBy() != null)
 			query.getOrderBy().clear();
 		query.setLimit(Query.NOLIMIT);
 		VarExprList gb = query.getGroupBy();
