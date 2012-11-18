@@ -38,12 +38,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
-import org.openimaj.kestrel.writing.NTripleWritingScheme;
+import org.openimaj.kestrel.writing.GraphWritingScheme;
 import org.openimaj.kestrel.writing.WritingScheme;
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 
 import backtype.storm.tuple.Tuple;
 
+import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
 
 /**
  * This writer queues a set of RDF triples in a kestrel queue as storm
@@ -54,20 +57,20 @@ import com.hp.hpl.jena.graph.Triple;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class NTripleKestrelTupleWriter extends KestrelTupleWriter {
+public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 
 	protected final static Logger logger = Logger
-			.getLogger(NTripleKestrelTupleWriter.class);
-	private NTripleWritingScheme scheme;
+			.getLogger(GraphKestrelTupleWriter.class);
+	private WritingScheme scheme;
 
 	/**
 	 * @param url
 	 *            the source of triples
 	 * @throws IOException
 	 */
-	public NTripleKestrelTupleWriter(URL url) throws IOException {
+	public GraphKestrelTupleWriter(URL url) throws IOException {
 		super(url);
-		this.scheme = new NTripleWritingScheme();
+		this.scheme = new GraphWritingScheme();
 	}
 
 	/**
@@ -75,14 +78,17 @@ public class NTripleKestrelTupleWriter extends KestrelTupleWriter {
 	 *            the source of triples
 	 * @throws IOException
 	 */
-	public NTripleKestrelTupleWriter(InputStream stream) throws IOException {
+	public GraphKestrelTupleWriter(InputStream stream) throws IOException {
 		super(stream);
-		this.scheme = new NTripleWritingScheme();
+		this.scheme = new GraphWritingScheme();
 	}
 
 	@Override
 	public void send(Triple item) {
-		List<Object> tripleList = Arrays.asList((Object) item);
+		Graph graph = GraphFactory.createGraphMem();
+		graph.add(item);
+
+		List<Object> tripleList = StormReteBolt.asValues(true, graph, 0l);
 		byte[] serialised = this.scheme.serialize(tripleList);
 		logger.debug("Writing triple: " + item);
 		try {

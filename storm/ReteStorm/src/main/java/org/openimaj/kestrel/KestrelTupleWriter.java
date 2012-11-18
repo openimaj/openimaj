@@ -32,15 +32,15 @@ package org.openimaj.kestrel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
-import org.openimaj.kestrel.writing.NTripleWritingScheme;
 import org.openimaj.kestrel.writing.WritingScheme;
+import org.openjena.atlas.lib.Sink;
+import org.openjena.riot.RiotReader;
+import org.openjena.riot.lang.LangNTriples;
 
+import backtype.storm.spout.KestrelThriftClient;
 import backtype.storm.tuple.Tuple;
 
 import com.hp.hpl.jena.graph.Triple;
@@ -54,20 +54,23 @@ import com.hp.hpl.jena.graph.Triple;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class NTripleKestrelTupleWriter extends KestrelTupleWriter {
+public abstract class KestrelTupleWriter implements Sink<Triple> {
 
 	protected final static Logger logger = Logger
-			.getLogger(NTripleKestrelTupleWriter.class);
-	private NTripleWritingScheme scheme;
+			.getLogger(KestrelTupleWriter.class);
+
+	private InputStream tripleSource;
+	private KestrelThriftClient client;
+
+	private String[] queues;
 
 	/**
 	 * @param url
 	 *            the source of triples
 	 * @throws IOException
 	 */
-	public NTripleKestrelTupleWriter(URL url) throws IOException {
-		super(url);
-		this.scheme = new NTripleWritingScheme();
+	public KestrelTupleWriter(URL url) throws IOException {
+		tripleSource = url.openStream();
 	}
 
 	/**
@@ -75,23 +78,63 @@ public class NTripleKestrelTupleWriter extends KestrelTupleWriter {
 	 *            the source of triples
 	 * @throws IOException
 	 */
-	public NTripleKestrelTupleWriter(InputStream stream) throws IOException {
-		super(stream);
-		this.scheme = new NTripleWritingScheme();
+	public KestrelTupleWriter(InputStream stream) throws IOException {
+		tripleSource = stream;
+	}
+
+	/**
+	 * Write the triples from the URL to the {@link KestrelServerSpec} to the
+	 * queue
+	 * 
+	 * @param spec
+	 * @param queues
+	 * @throws TException
+	 * @throws IOException
+	 */
+	public void write(KestrelServerSpec spec, String... queues) throws TException,
+			IOException {
+		logger.debug("Opening kestrel client");
+		this.client = new KestrelThriftClient(spec.host, spec.port);
+		this.queues = queues;
+		logger.debug("Deleting the old queue");
+		for (String queue : queues) {
+			client.delete_queue(queue);
+		}
+		LangNTriples parser = RiotReader.createParserNTriples(tripleSource, this);
+		parser.parse();
+		logger.debug("Finished parsing");
+		// RiotReader.p
+		// client.put(queue, this.scheme.serialize(NTriplesSpout.asValue(t)),
+		// 0);
+
 	}
 
 	@Override
-	public void send(Triple item) {
-		List<Object> tripleList = Arrays.asList((Object) item);
-		byte[] serialised = this.scheme.serialize(tripleList);
-		logger.debug("Writing triple: " + item);
-		try {
-			for (String queue : this.getQueues()) {
-				this.getNextClient().put(queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
-			}
-		} catch (TException e) {
-			logger.error("Failed to add");
-		}
+	public void close() {
+	}
+
+	@Override
+	public abstract void send(Triple item);
+
+	@Override
+	public void flush() {
+		client.close();
+		logger.debug("Queue flushed");
+	}
+
+	/**
+	 * @return the next {@link KestrelThriftClient} instance ready to be written
+	 *         to
+	 */
+	public KestrelThriftClient getNextClient() {
+		return this.client;
+	}
+
+	/**
+	 * @return the list of queues to write to
+	 */
+	public String[] getQueues() {
+		return this.queues;
 	}
 
 }

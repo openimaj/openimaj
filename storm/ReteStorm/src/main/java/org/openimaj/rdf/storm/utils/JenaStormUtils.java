@@ -53,6 +53,7 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 import com.hp.hpl.jena.mem.GraphMem;
+import com.hp.hpl.jena.mem.faster.GraphMemFaster;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.shared.AddDeniedException;
@@ -313,6 +314,7 @@ public class JenaStormUtils {
 		conf.registerSerialization(Rule.class, RuleSerializer.class);
 		conf.registerSerialization(Graph.class, GraphSerialiser.class);
 		conf.registerSerialization(GraphMem.class, GraphSerialiser.class);
+		conf.registerSerialization(GraphMemFaster.class, GraphSerialiser.class);
 		conf.registerSerialization(MultiUnion.class, GraphSerialiser.class);
 		conf.registerSerialization(Template.class, TemplateSerialiser.class);
 		conf.registerSerialization(Node_Blank.class, NodeSerialiser_Blank.class);

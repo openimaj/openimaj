@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink.FileSink.QuerySolutionSerializer;
+import org.openimaj.rdf.storm.sparql.topology.bolt.sink.QuerySolutionSerializer;
 import org.openimaj.rdf.storm.sparql.topology.builder.group.StaticDataFileNTriplesSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
 

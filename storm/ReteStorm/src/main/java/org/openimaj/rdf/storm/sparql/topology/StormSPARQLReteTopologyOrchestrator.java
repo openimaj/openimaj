@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
 import org.openimaj.io.FileUtils;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilder;
-import org.openimaj.rdf.storm.sparql.topology.builder.simple.NTriplesSPARQLReteTopologyBuilder;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.StaticDataFileNTriplesSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
 import org.openimaj.rdf.storm.utils.CsparqlUtils;
 import org.openimaj.rdf.storm.utils.CsparqlUtils.CSparqlComponentHolder;
@@ -58,9 +58,9 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 /**
  * Given a set of rules, construct a RETE topology such that filter (alpha)
  * nodes and join (beta) nodes are filtering bolts
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class StormSPARQLReteTopologyOrchestrator {
 	/**
@@ -87,7 +87,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * Construct a Rete topology using the default RDFS rules
-	 *
+	 * 
 	 * @param conf
 	 *            the {@link Config} to be sent to the {@link Cluster}. Only
 	 *            used to register serialisers
@@ -102,7 +102,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
-	 *
+	 * 
 	 * @param conf
 	 * @param query
 	 *            the SPARQL query
@@ -122,7 +122,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
-	 *
+	 * 
 	 * @param conf
 	 * @param query
 	 *            the SPARQL query
@@ -147,19 +147,19 @@ public class StormSPARQLReteTopologyOrchestrator {
 	 * Using an {@link NTriplesSPARQLReteTopologyBuilder}, load the nTriples
 	 * from the given resource and compile a storm topology for the sparql query
 	 * used to construct this {@link ReteTopologyBuilder}
-	 *
+	 * 
 	 * @return a storm topology
 	 */
 	public StormTopology buildTopology() {
 		if (this.builder != null)
 			return buildTopology(builder);
 		else
-			return buildTopology(new NTriplesSPARQLReteTopologyBuilder());
+			return buildTopology(new StaticDataFileNTriplesSPARQLReteTopologyBuilder());
 	}
 
 	/**
 	 * @param topologyBuilder
-	 *
+	 * 
 	 * @return given a {@link ReteTopologyBuilder} and a list of
 	 *         {@link ReteTopologyBuilder} instances construct a
 	 *         {@link StormTopology}
@@ -194,7 +194,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * .
-	 *
+	 * 
 	 * @param topologyBuilder
 	 *            the approach to constructing a {@link StormTopology}
 	 * @param query
@@ -219,7 +219,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * .
-	 *
+	 * 
 	 * @param topologyBuilder
 	 *            the approach to constructing a {@link StormTopology}
 	 * @param query
@@ -243,7 +243,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * A {@link ReteTopologyBuilder} with a default configuration
-	 *
+	 * 
 	 * @param query
 	 * @return A {@link ReteTopologyBuilder} which can construct storm
 	 *         topologies from queries
@@ -270,10 +270,9 @@ public class StormSPARQLReteTopologyOrchestrator {
 		return query;
 	}
 
-
 	/**
 	 * run the rete topology
-	 *
+	 * 
 	 * @param args
 	 * @throws InvalidTopologyException
 	 * @throws AlreadyAliveException

@@ -4,13 +4,13 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public enum TriplesInputModeOption implements CmdLineOptionsProvider{
+public enum TriplesInputModeOption implements CmdLineOptionsProvider {
 	/**
 	 * Consume triples from a URI
 	 */
-	URI{
+	URI {
 		@Override
 		public TriplesInputMode getOptions() {
 			return new URITriplesInputMode();
@@ -19,5 +19,5 @@ public enum TriplesInputModeOption implements CmdLineOptionsProvider{
 	};
 
 	@Override
-	public abstract TriplesInputMode getOptions() ;
+	public abstract TriplesInputMode getOptions();
 }

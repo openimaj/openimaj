@@ -2,20 +2,26 @@ package org.openimaj.rdf.storm.tool;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.thrift7.TException;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.FileUtils;
 import org.openimaj.kestrel.KestrelServerSpec;
-import org.openimaj.kestrel.NTripleKestrelTupleWriter;
+import org.openimaj.kestrel.KestrelTupleWriter;
 import org.openimaj.rdf.storm.tool.lang.RuleLanguageHandler;
 import org.openimaj.rdf.storm.tool.lang.RuleLanguageMode;
 import org.openimaj.rdf.storm.tool.source.TriplesInputMode;
 import org.openimaj.rdf.storm.tool.source.TriplesInputModeOption;
 import org.openimaj.rdf.storm.tool.topology.TopologyMode;
 import org.openimaj.rdf.storm.tool.topology.TopologyModeOption;
+import org.openimaj.rdf.storm.topology.utils.KestrelUtils;
 import org.openimaj.tools.InOutToolOptions;
 
 import backtype.storm.Config;
@@ -23,9 +29,9 @@ import backtype.storm.generated.StormTopology;
 
 /**
  * The options for preparing, configuring and running a {@link ReteStorm}
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteStormOptions extends InOutToolOptions {
 
@@ -48,8 +54,7 @@ public class ReteStormOptions extends InOutToolOptions {
 			aliases = "-rl",
 			required = false,
 			usage = "The language to decipher rules and construct a Rete network as a Storm Topology",
-			handler = ProxyOptionHandler.class,
-			metaVar = "STRING")
+			handler = ProxyOptionHandler.class)
 	public RuleLanguageMode ruleLanguageMode = RuleLanguageMode.JENA;
 	/**
 	 * The actual {@link RuleLanguageHandler}
@@ -112,6 +117,24 @@ public class ReteStormOptions extends InOutToolOptions {
 	public int kestrelPort = KestrelServerSpec.DEFAULT_KESTREL_THRIFT_PORT;
 
 	/**
+	 *
+	 */
+	@Option(
+			name = "--static-data",
+			aliases = "-sd",
+			required = false,
+			usage = "The source of any static data. The format this must take is name=uri at the moment.",
+			metaVar = "STRING",
+			multiValued = true)
+	public List<String> staticDataSource = new ArrayList<String>();
+
+	private List<KestrelServerSpec> kestrelSpecList = new ArrayList<KestrelServerSpec>();
+
+	public String inputQueue = "inputQueue";
+
+	public String outputQueue = "outputQueue";
+
+	/**
 	 * @param args
 	 */
 	public ReteStormOptions(String[] args) {
@@ -120,7 +143,7 @@ public class ReteStormOptions extends InOutToolOptions {
 
 	/**
 	 * Parse arguments and validate
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	public void prepare() throws IOException {
@@ -146,7 +169,7 @@ public class ReteStormOptions extends InOutToolOptions {
 		if (this.topologyName == null) {
 			this.topologyName = ruleLanguageMode.toString() + "_topology_" + System.currentTimeMillis();
 		}
-		if(this.getInput() == null){
+		if (this.getInput() == null) {
 			throw new CmdLineException(parser, "No input rules provided.");
 		}
 		File rulesFile = new File(this.getInput());
@@ -154,12 +177,15 @@ public class ReteStormOptions extends InOutToolOptions {
 			throw new CmdLineException(parser, "Input rules file does not exist!");
 		}
 		this.rules = FileUtils.readall(rulesFile);
+		this.triplesInputModeOp.init(this);
+		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
+		this.kestrelSpecList.add(spec);
 	}
 
 	/**
 	 * Given a storm configuration construct a Storm topology using the
 	 * specified ruleLanguageMode
-	 *
+	 * 
 	 * @param conf
 	 * @return the constructed storm topology
 	 */
@@ -178,8 +204,31 @@ public class ReteStormOptions extends InOutToolOptions {
 	 * @return the triples as an input stream
 	 * @throws IOException
 	 */
-	public NTripleKestrelTupleWriter triplesKestrelWriter() throws IOException {
+	public KestrelTupleWriter triplesKestrelWriter() throws IOException {
 		return this.triplesInputModeOp.asKestrelWriter();
+	}
+
+	/**
+	 * @return sources of static data
+	 */
+	public Map<String, String> staticDataSources() {
+		Map<String, String> ret = new HashMap<String, String>();
+		for (String sdatanamevalue : this.staticDataSource) {
+			String[] vals = sdatanamevalue.split("=");
+			ret.put(vals[0], vals[1]);
+		}
+		return ret;
+	}
+
+	public List<KestrelServerSpec> getKestrelSpecList() {
+		return this.kestrelSpecList;
+	}
+
+	public void populateInputs() throws TException, IOException {
+		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
+		KestrelUtils.deleteQueues(spec, inputQueue, outputQueue);
+		KestrelTupleWriter rdfWriter = triplesKestrelWriter();
+		rdfWriter.write(spec, inputQueue, outputQueue);
 	}
 
 }

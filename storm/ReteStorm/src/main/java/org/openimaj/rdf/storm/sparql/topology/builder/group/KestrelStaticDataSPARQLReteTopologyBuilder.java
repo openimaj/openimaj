@@ -30,97 +30,94 @@
 package org.openimaj.rdf.storm.sparql.topology.builder.group;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.mortbay.io.RuntimeIOException;
+import org.openimaj.kestrel.KestrelServerSpec;
+import org.openimaj.kestrel.writing.GraphWritingScheme;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink;
-import org.openimaj.rdf.storm.sparql.topology.bolt.sink.FileSink;
+import org.openimaj.rdf.storm.sparql.topology.bolt.sink.KestrelConflictSetSink;
 import org.openimaj.rdf.storm.sparql.topology.bolt.sink.QuerySolutionSerializer;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilderContext;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.InMemoryDataset;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
-import org.openimaj.rdf.storm.spout.NTripleSpout;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
 
+import backtype.storm.spout.KestrelThriftSpout;
 import backtype.storm.topology.TopologyBuilder;
 import eu.larkc.csparql.parser.StreamInfo;
 
 /**
- * The {@link StaticDataFileNTriplesSPARQLReteTopologyBuilder} provides triples
+ * The {@link KestrelStaticDataSPARQLReteTopologyBuilder} provides triples
  * from URI
  * streams via the {@link NTriplesSpout}.
  * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class StaticDataFileNTriplesSPARQLReteTopologyBuilder extends
-		StaticDataSPARQLReteTopologyBuilder {
-	/**
-	 * The name of the spout outputting triples
-	 */
-	public static final String TRIPLE_SPOUT = "tripleSpout";
-	private static final Logger logger = Logger.getLogger(StaticDataFileNTriplesSPARQLReteTopologyBuilder.class);
+public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQLReteTopologyBuilder {
+	private static final Logger logger = Logger.getLogger(KestrelStaticDataSPARQLReteTopologyBuilder.class);
+	private static final String TRIPLE_SPOUT = "tripleSource";
 	File wang;
-	private String[] staticDataSources;
+	private Map<String, String> staticDataSources;
+	private List<KestrelServerSpec> streamDataSources;
+	private String inputQueue;
+	private String outputQueue;
 	private QuerySolutionSerializer qss;
 
 	/**
+	 * @param streamDataSources
+	 *            locations of the kestrel queues
+	 * @param inputQueue
+	 *            the input queue (reads in ntriples)
+	 * @param outputQueue
+	 *            the output queue (where to spit out bindings or triples)
 	 * @param staticDataSources
 	 *            the static datasources to involve in this query
 	 */
-	public StaticDataFileNTriplesSPARQLReteTopologyBuilder(String... staticDataSources) {
-		try {
-			wang = File.createTempFile("STORM", "SPARQL");
-			wang.delete();
-			wang.mkdirs();
-			logger.debug("Temporary output location created: " + wang);
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+	public KestrelStaticDataSPARQLReteTopologyBuilder(
+			List<KestrelServerSpec> streamDataSources,
+			String inputQueue, String outputQueue,
+			Map<String, String> staticDataSources) {
+		this.streamDataSources = streamDataSources;
+		this.inputQueue = inputQueue;
+		this.outputQueue = outputQueue;
 		this.staticDataSources = staticDataSources;
 
-	}
-
-	/**
-	 * @param output
-	 *            query result output
-	 * @param staticDataSources
-	 *            the static datasources to involve in this query
-	 */
-	public StaticDataFileNTriplesSPARQLReteTopologyBuilder(File output, String... staticDataSources) {
-		this.wang = output;
-		this.staticDataSources = staticDataSources;
 	}
 
 	@Override
 	public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
-		StreamInfo stream = streams.iterator().next();
-		NTripleSpout tripleSpout = new NTripleSpout(stream.getIri());
-		builder.setSpout(TRIPLE_SPOUT, tripleSpout, 1);
+		//		StreamInfo stream = streams.iterator().next();
+		List<String> hosts = new ArrayList<String>();
+		int port = -1;
+		for (KestrelServerSpec serverSpec : this.streamDataSources) {
+			hosts.add(serverSpec.host);
+			port = serverSpec.port;
+		}
+
+		KestrelThriftSpout spout = new KestrelThriftSpout(hosts, port, this.inputQueue, new GraphWritingScheme());
+		builder.setSpout(TRIPLE_SPOUT, spout, 1);
+
 		return TRIPLE_SPOUT;
 	}
 
 	@Override
 	public StormSPARQLReteConflictSetBoltSink conflictSetSink() {
-
-		try {
-			FileSink fileSink = new FileSink(wang, qss);
-			return fileSink;
-		} catch (IOException e) {
-			throw new RuntimeIOException(e);
-		}
+		KestrelConflictSetSink sink = new KestrelConflictSetSink(streamDataSources, outputQueue, qss);
+		return sink;
 	}
 
 	@Override
 	public List<StaticRDFDataset> staticDataSources(SPARQLReteTopologyBuilderContext context) {
 		List<StaticRDFDataset> ret = new ArrayList<StaticRDFDataset>();
 
-		for (String staticRDFURI : this.staticDataSources) {
-			ret.add(new InMemoryDataset(staticRDFURI));
+		for (Entry<String, String> staticRDFURI : this.staticDataSources.entrySet()) {
+			ret.add(new InMemoryDataset(staticRDFURI.getValue()));
 		}
 		return ret;
 	}

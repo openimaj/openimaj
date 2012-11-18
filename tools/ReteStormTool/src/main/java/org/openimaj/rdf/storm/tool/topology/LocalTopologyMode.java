@@ -3,6 +3,7 @@ package org.openimaj.rdf.storm.tool.topology;
 import org.apache.log4j.Logger;
 import org.kohsuke.args4j.Option;
 import org.openimaj.rdf.storm.tool.ReteStormOptions;
+import org.openimaj.rdf.storm.utils.JenaStormUtils;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -11,10 +12,12 @@ import backtype.storm.utils.Utils;
 
 /**
  * The local topology for testing. Allows the specification of sleep time etc.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class LocalTopologyMode implements TopologyMode {
+	private static final int DEFAULT_SLEEP_TIME = 10000;
 	private final static Logger logger = Logger.getLogger(LocalTopologyMode.class);
 	/**
 	 * Time to wait in local mode
@@ -25,7 +28,8 @@ public class LocalTopologyMode implements TopologyMode {
 			required = false,
 			usage = "How long the local topology should wait while processing happens, -1 waits forever",
 			metaVar = "STRING")
-	public long sleepTime = 10000;
+	public long sleepTime = DEFAULT_SLEEP_TIME;
+	private LocalCluster cluster;
 
 	@Override
 	public void submitTopology(ReteStormOptions options) throws Exception {
@@ -36,23 +40,29 @@ public class LocalTopologyMode implements TopologyMode {
 		conf.setMaxSpoutPending(1);
 		conf.setFallBackOnJavaSerialization(false);
 		conf.setSkipMissingKryoRegistrations(false);
+		JenaStormUtils.registerSerializers(conf);
 		logger.debug("Instantiating cluster");
-		final LocalCluster cluster = new LocalCluster();
+		this.cluster = new LocalCluster();
 		logger.debug("Constructing topology");
 		StormTopology topology = options.constructTopology(conf);
 		logger.debug("Submitting topology");
 		cluster.submitTopology(options.topologyName, conf, topology);
+	}
 
-		try{
-			if(sleepTime<0){
+	@Override
+	public void finish(ReteStormOptions options) throws Exception {
+		try {
+			if (sleepTime < 0) {
 				logger.debug("Waiting forever");
-				this.wait();
-			}else{
+				while (true) {
+					Utils.sleep(DEFAULT_SLEEP_TIME);
+				}
+			} else {
 				logger.debug("Waiting " + sleepTime + " milliseconds");
 				Utils.sleep(sleepTime);
+
 			}
-		}
-		finally{
+		} finally {
 			logger.debug("Killing topology");
 			cluster.killTopology(options.topologyName);
 			logger.debug("Shutting down cluster");

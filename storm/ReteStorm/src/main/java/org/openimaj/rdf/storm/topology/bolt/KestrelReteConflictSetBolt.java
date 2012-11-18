@@ -80,7 +80,8 @@ public class KestrelReteConflictSetBolt extends ReteConflictSetBolt {
 			client = new KestrelThriftClient(spec_host, spec_port);
 			scheme = new NTripleWritingScheme();
 		} catch (TException e) {
-
+			logger.error("Failed to create Kestrel client for host: " + spec_host);
+			throw new RuntimeException(e);
 		}
 
 	}
