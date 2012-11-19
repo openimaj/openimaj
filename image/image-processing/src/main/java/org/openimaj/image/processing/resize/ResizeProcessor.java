@@ -67,6 +67,11 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		 * Images smaller than the max size are unchanged.
 		 */
 		MAX,
+		/**
+		 * Resize to so that the area is at most the given maximum. Images with
+		 * an area smaller than the max area are unchanged.
+		 */
+		MAX_AREA,
 		/** Lazyness operator to allow the quick switching off of resize filters **/
 		NONE,
 	}
@@ -174,6 +179,25 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	}
 
 	/**
+	 * Construct a resize processor that will rescale images that are either
+	 * bigger than a maximum area or are taller or wider than the given size
+	 * such that their biggest side is equal to the given size. Images that have
+	 * a smaller area or both sides smaller than the given size will be
+	 * unchanged.
+	 * 
+	 * @param maxSizeArea
+	 *            The maximum allowable area, or height or width
+	 * @param area
+	 *            If true, then the limit is the area; false means limit is
+	 *            longest side.
+	 */
+	public ResizeProcessor(int maxSizeArea, boolean area) {
+		this.mode = area ? Mode.MAX_AREA : Mode.MAX;
+		this.newX = maxSizeArea;
+		this.newY = maxSizeArea;
+	}
+
+	/**
 	 * Construct a resize processor that will rescale the image to the given
 	 * width and height (optionally maintaining aspect ratio) with the default
 	 * filter function. If <code>aspectRatio</code> is false the image will be
@@ -190,6 +214,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 */
 	public ResizeProcessor(int newX, int newY, boolean aspectRatio) {
 		this(newX, newY, (ResizeFilterFunction) null);
+
 		if (aspectRatio)
 			this.mode = Mode.ASPECT_RATIO;
 		else
@@ -222,11 +247,14 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		case MAX:
 			resizeMax(image, (int) newX);
 			break;
+		case MAX_AREA:
+			resizeMaxArea(image, (int) newX);
+			break;
 		case NONE:
 			return;
 		default:
 			zoom(image, (int) newX, (int) newY, this.filterFunction,
-						this.filterFunction.getDefaultSupport());
+					this.filterFunction.getDefaultSupport());
 		}
 	}
 
@@ -260,6 +288,34 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		zoom(image, newWidth, newHeight);
 
 		return image;
+	}
+
+	/**
+	 * Resize an image such that its area size is at most as big as the given
+	 * area. Images whose ares are smaller than the given area are untouched.
+	 * 
+	 * @param image
+	 *            the image to resize
+	 * @param maxArea
+	 *            the maximum allowable area.
+	 * @return the resized image.
+	 */
+	public static FImage resizeMaxArea(FImage image, int maxArea) {
+		final int width = image.width;
+		final int height = image.height;
+		final int area = width * height;
+
+		if (area < maxArea) {
+			return image;
+		} else {
+			final float whRatio = width / height;
+			final int newWidth = (int) Math.sqrt(maxArea * whRatio);
+			final int newHeight = maxArea / newWidth;
+
+			zoom(image, newWidth, newHeight);
+
+			return image;
+		}
 	}
 
 	/**
