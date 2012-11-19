@@ -199,15 +199,12 @@ public class RDFSerializer {
 	 */
 	public URI serializeAux(final Object objectToSerialize, final String uri) 
 	{
-		System.out.println( "Serializing object "+objectToSerialize );
-		
 		// The subject (the object to serialize) won't change, so
 		// we'll just create the URI node once.
 		URIImpl subject = new URIImpl(uri);
 
 		// Find the object URI
 		subject = this.getObjectURI( objectToSerialize, subject );
-		System.out.println( "Object URI will be: "+subject );
 
 		// Check whether we've already serialized this object. If we have
 		// we just return, otherwise we add it to our memory of serialized
@@ -236,7 +233,7 @@ public class RDFSerializer {
 
 		// Loop through the fields and output them
 		for (final Field field : fields) {
-			 System.out.println( "====== Field "+field+" ============");
+//			 System.out.println( "====== Field "+field+" ============");
 
 			try {
 				// Get the value of the field
@@ -315,10 +312,6 @@ public class RDFSerializer {
 
 						// We don't need to add this triple if the triples are
 						// are collection that's been output separately
-						System.out.println( "Subject: "+subject );
-						System.out.println( "Predicate: "+predicate );
-						System.out.println( "isCollective: "+isCollective );
-						System.out.println( "asCollection: "+asCollection );
 						if( !isCollective || (isCollective && asCollection ) )
 						{
 							// Create a triple and send it to the serializer
@@ -599,16 +592,12 @@ public class RDFSerializer {
 						final TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 						final TupleQueryResult result = tupleQuery.evaluate();
 						
-						System.out.println( queryString );
-
 						// We only want the first result
 						if (result.hasNext()) {
 							try {
 								final BindingSet bindingSet = result.next();
 								final Value objectValue = bindingSet.getValue("o");
 								
-								System.out.println( "   - "+bindingSet );
-
 								// We have a value for the field. Now what we do
 								// with it depends on the field itself.
 								field.set(objectToUnserialize, this.getFieldValue(
@@ -652,9 +641,6 @@ public class RDFSerializer {
 	 */
 	private Object getFieldValue(final Type fieldType, final Value value, 
 			final Repository repo, final Field field, final String subjectURI ) {
-		System.out.println( "For field " + fieldType + ", field value: " +
-		value );
-
 		try {
 			if (fieldType.equals(String.class)) {
 				return value.stringValue();
@@ -693,7 +679,6 @@ public class RDFSerializer {
 					// Attempt to instantiate the new object.
 					// This may fail if the object does not have a
 					// default or accessible constructor.
-					System.out.println( "Instantiating "+type );
 					final Object newInstance = ((Class<?>) type).newInstance();
 					
 					final URIImpl predicateName = this.getPredicateName( field, listURI );
@@ -763,19 +748,14 @@ public class RDFSerializer {
 		// collection of unordered triples), then we'll treat it differently.
 		try
 		{
-			System.out.println( "URI: "+sequenceURI );
-			System.out.println( "TESTING FOR SEQ");
 			final RepositoryConnection c = repo.getConnection();
 			final String queryString = "ASK {<"+sequenceURI+"> <"+RDF.TYPE+"> <"+RDF.SEQ+">}";
 			final BooleanQuery query = c.prepareBooleanQuery( QueryLanguage.SPARQL, queryString );
-			System.out.println( queryString); 
 			if( !query.evaluate() )
 			{
-				System.out.println( "NO SEQ" );
 				return this.getUnorderedObjects( sequenceURI, repo, 
 						fieldType, field, subject, predicate );
 			}
-			System.out.println( "SEQ" );
 		}
 		catch( final RepositoryException e1 )
 		{
@@ -811,7 +791,6 @@ public class RDFSerializer {
 			while (result.hasNext()) {
 				try {
 					final BindingSet bs = result.next();
-					System.out.println( bs );
 
 					// If the predicate is a sequence number, then we parse the
 					// integer into the index variable. If it's not a
@@ -877,8 +856,6 @@ public class RDFSerializer {
 			final TupleQuery tupleQuery = c.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 			final TupleQueryResult result = tupleQuery.evaluate();
 
-			System.out.println( queryString );
-			
 			final ArrayList<Object> objs = new ArrayList<Object>();
 			while( result.hasNext() ) 
 			{
@@ -936,7 +913,6 @@ public class RDFSerializer {
 			boolean found = false;
 			while (!found && result.hasNext()) {
 				final Value value = result.next().getValue("o");
-				System.out.println( value );
 
 				try {
 					// Try to find the class with the given name
@@ -1037,7 +1013,6 @@ public class RDFSerializer {
 		// bang them into the triple store.
 		if( field.getAnnotation( TripleList.class ) != null )
 		{
-			System.out.println( "Found @TripleList for field "+field+" : "+fieldValue );
 			if( fieldValue instanceof Collection )
 			{
 				for( final Object o : (Collection<?>)fieldValue )
@@ -1052,7 +1027,6 @@ public class RDFSerializer {
 		// If the field is a relation list, process each in turn
 		if( field.getAnnotation( RelationList.class ) != null )
 		{
-			System.out.println( "Found @RelationList for field "+field+" : "+fieldValue );
 			if( fieldValue instanceof Collection )
 			{
 				int count = 0;
