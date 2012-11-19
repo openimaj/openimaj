@@ -29,23 +29,26 @@
  */
 package backtype.storm.spout;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+
+import net.lag.kestrel.thrift.Item;
+
+import org.apache.log4j.Logger;
+import org.apache.thrift7.TException;
+
 import backtype.storm.Config;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.LinkedList;
 import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
-import java.util.ArrayList;
-import java.util.Arrays;
-import org.apache.log4j.Logger;
-import net.lag.kestrel.thrift.Item;
-import org.apache.thrift7.TException;
 
 
 /**
@@ -150,7 +153,8 @@ public class KestrelThriftSpout extends BaseRichSpout {
 
     int _messageTimeoutMillis;
 
-    public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+    @Override
+	public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
         //TODO: should switch this to maxTopologyMessageTimeout
         Number timeout = (Number) conf.get(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS);
         _messageTimeoutMillis = 1000 * timeout.intValue();
@@ -170,7 +174,8 @@ public class KestrelThriftSpout extends BaseRichSpout {
         }
     }
 
-    public void close() {
+    @Override
+	public void close() {
         for(KestrelClientInfo info: _kestrels) info.closeClient();
 
         // Closing the client connection causes all the open reliable reads to be aborted.
@@ -240,9 +245,16 @@ public class KestrelThriftSpout extends BaseRichSpout {
         _emitIndex = (_emitIndex + 1) % _kestrels.size();
     }
 
-    public void nextTuple() {
+    int countTriples = 1;
+    int lastEmit = countTriples;
+    @Override
+	public void nextTuple() {
         if(_emitBuffer.isEmpty()) tryEachKestrelUntilBufferFilled();
-
+        if(countTriples != lastEmit){
+        	LOG.debug("Emitting: " + countTriples);
+        	lastEmit = countTriples;
+        }
+        countTriples+=_emitBuffer.size();
         EmitItem item = _emitBuffer.poll();
         if(item != null) {
             _collector.emit(item.tuple, item.sourceId);
@@ -266,7 +278,8 @@ public class KestrelThriftSpout extends BaseRichSpout {
         }
     }
 
-    public void ack(Object msgId) {
+    @Override
+	public void ack(Object msgId) {
         KestrelSourceId sourceId = (KestrelSourceId) msgId;
         KestrelClientInfo info = _kestrels.get(sourceId.index);
 
@@ -284,7 +297,8 @@ public class KestrelThriftSpout extends BaseRichSpout {
         }
     }
 
-    public void fail(Object msgId) {
+    @Override
+	public void fail(Object msgId) {
         KestrelSourceId sourceId = (KestrelSourceId) msgId;
         KestrelClientInfo info = _kestrels.get(sourceId.index);
 
@@ -300,7 +314,8 @@ public class KestrelThriftSpout extends BaseRichSpout {
         }
     }
 
-    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+    @Override
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(getOutputFields());
     }
 }

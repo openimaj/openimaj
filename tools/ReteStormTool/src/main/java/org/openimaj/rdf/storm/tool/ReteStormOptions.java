@@ -29,9 +29,9 @@ import backtype.storm.generated.StormTopology;
 
 /**
  * The options for preparing, configuring and running a {@link ReteStorm}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteStormOptions extends InOutToolOptions {
 
@@ -128,11 +128,28 @@ public class ReteStormOptions extends InOutToolOptions {
 			multiValued = true)
 	public List<String> staticDataSource = new ArrayList<String>();
 
+	@Option(
+			name = "--force-feed-back",
+			aliases = "-ffb",
+			required = false,
+			usage = "When set forces any outputs to be streamed through again. Usually required for rule systems",
+			multiValued = true)
+	private boolean feedBack = false;
+
 	private List<KestrelServerSpec> kestrelSpecList = new ArrayList<KestrelServerSpec>();
 
+	/**
+	 * the input queue from which triples are read by the pipeline
+	 */
 	public String inputQueue = "inputQueue";
 
+	/**
+	 *
+	 */
 	public String outputQueue = "outputQueue";
+
+
+
 
 	/**
 	 * @param args
@@ -143,7 +160,7 @@ public class ReteStormOptions extends InOutToolOptions {
 
 	/**
 	 * Parse arguments and validate
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void prepare() throws IOException {
@@ -185,7 +202,7 @@ public class ReteStormOptions extends InOutToolOptions {
 	/**
 	 * Given a storm configuration construct a Storm topology using the
 	 * specified ruleLanguageMode
-	 * 
+	 *
 	 * @param conf
 	 * @return the constructed storm topology
 	 */
@@ -226,9 +243,18 @@ public class ReteStormOptions extends InOutToolOptions {
 
 	public void populateInputs() throws TException, IOException {
 		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
-		KestrelUtils.deleteQueues(spec, inputQueue, outputQueue);
 		KestrelTupleWriter rdfWriter = triplesKestrelWriter();
-		rdfWriter.write(spec, inputQueue, outputQueue);
+		if(this.feedBack){
+			rdfWriter.write(spec, this.inputQueue,this.outputQueue);
+		}else{
+			rdfWriter.write(spec, this.inputQueue);
+		}
+
+	}
+
+	public void prepareQueues() throws TException {
+		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
+		KestrelUtils.deleteQueues(spec, inputQueue,outputQueue);
 	}
 
 }

@@ -14,7 +14,7 @@ WHERE {
 	?d rdf:type ex:Driver .
 	{
 		{
-			?d rdf:type ex:Cabbie . 
+			?d rdf:type ex:Driver . 
 			?d ex:certificateType ex:DriverSchoolCertificate 
 		}
 		{ 

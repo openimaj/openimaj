@@ -260,6 +260,19 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	}
 
 	/**
+	 * Given a tuple generated from an Storm {@link ISpout} or {@link IBolt}
+	 * using the same class of RETEStormTranslator, create a Jena {@link Graph}
+	 * instance.
+	 *
+	 * @param input
+	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
+	 * @throws ClassCastException
+	 */
+	public static Graph extractGraph(List<Object> input) throws ClassCastException {
+		return (Graph) input.get(Component.graph.ordinal());
+	}
+
+	/**
 	 * Extract the {@link Component#isAdd} from the {@link Tuple}
 	 *
 	 * @param input
@@ -271,6 +284,14 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	}
 
 	/**
+	 * @param input
+	 * @return the isAdd component
+	 */
+	public static boolean extractIsAdd(List<Object> input) {
+		return (Boolean) input.get(Component.isAdd.ordinal());
+	}
+
+	/**
 	 * Extract the {@link Component#isAdd} from the {@link Tuple}
 	 *
 	 * @param input
@@ -279,6 +300,17 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 */
 	public static long extractTimestamp(Tuple input) throws ClassCastException {
 		return (Long) input.getValueByField(Component.timestamp.toString());
+	}
+
+	/**
+	 * Extract the {@link Component#isAdd} from the {@link Tuple}
+	 *
+	 * @param input
+	 * @return List of one Jena {@link Triple} instance from the Tuple's fields
+	 * @throws ClassCastException
+	 */
+	public static long extractTimestamp(List<Object> input) throws ClassCastException {
+		return (Long) input.get(Component.timestamp.ordinal());
 	}
 
 	/**
@@ -371,5 +403,22 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		fields.trimToSize();
 		return fields.toArray(new String[0]);
 	}
+
+	/**
+	 * Utility function for printing a clean string of values from tuples
+	 * @param values
+	 * @return cleans tuples
+	 */
+	public static String cleanString(List<Object> values) {
+		String out = "{\n";
+		for (int i = 0; i < values.size(); i++) {
+			Object val = values.get(i);
+			out += String.format("\t%d: %s\n",i,val);
+		}
+		out+="}";
+		return out;
+	}
+
+
 
 }

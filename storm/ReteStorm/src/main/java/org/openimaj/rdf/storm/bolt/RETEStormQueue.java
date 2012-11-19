@@ -191,11 +191,11 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	public void fire(Tuple env, boolean isAdd, long timestamp) {
 		// Cross match new token against the entries in the sibling queue
 		List<Object> values = env.getValues();
-		logger.debug("Checking new tuple values: " + values);
-		//		logger.debug("Comparing new tuple to " + sibling.window.size() + " other tuples");
+		logger.debug("\nChecking new tuple values: " + StormReteBolt.cleanString(values));
+		logger.debug("Comparing new tuple to " + sibling.window.size() + " other tuples");
 		for (Iterator<Tuple> i = sibling.window.iterator(); i.hasNext();) {
 			Tuple candidate = i.next();
-			logger.debug("Comparing to tuple values: " + candidate.getValues());
+//			logger.debug("Comparing to tuple values: " + candidate.getValues());
 			boolean matchOK = true;
 			for (int j = 0; j < matchIndices.length; j++) {
 				if (matchIndices[j] >= 0 && !((Node) values.get(j)).sameValueAs(candidate.getValue(matchIndices[j]))) {

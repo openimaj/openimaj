@@ -2,6 +2,8 @@ package org.openimaj.rdf.storm.tool.source;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.kohsuke.args4j.Option;
 import org.openimaj.kestrel.GraphKestrelTupleWriter;
@@ -12,9 +14,9 @@ import org.openimaj.rdf.storm.tool.lang.RuleLanguageMode;
 
 /**
  * Load triples from this URI.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class URITriplesInputMode implements TriplesInputMode {
 
@@ -26,16 +28,21 @@ public class URITriplesInputMode implements TriplesInputMode {
 			aliases = "-us",
 			required = true,
 			usage = "The URI containing NTriples",
-			metaVar = "STRING")
-	String url;
+			metaVar = "STRING",
+			multiValued=true)
+	List<String> urlStrings = new ArrayList<String>();
 	private boolean tripleMode;
 
 	@Override
 	public KestrelTupleWriter asKestrelWriter() throws IOException {
+		ArrayList<URL> urlList = new ArrayList<URL>();
+		for (String urls : urlStrings) {
+			urlList.add(new URL(urls));
+		}
 		if (tripleMode)
-			return new NTripleKestrelTupleWriter(new URL(url));
+			return new NTripleKestrelTupleWriter(urlList);
 		else
-			return new GraphKestrelTupleWriter(new URL(url));
+			return new GraphKestrelTupleWriter(urlList);
 	}
 
 	@Override

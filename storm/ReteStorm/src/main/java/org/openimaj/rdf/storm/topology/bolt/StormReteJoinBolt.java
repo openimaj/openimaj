@@ -50,11 +50,11 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * Given the two parent bolt names, this bolt constructs two {@link RETEQueue}
  * instances. These instances are fed the output from the bolts as they arrive
  * and if a join satisfied their output is passed on.
- * 
+ *
  * The internally held queues are where windows should be implemented
- * 
+ *
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
- * 
+ *
  */
 public class StormReteJoinBolt extends StormRuleReteBolt {
 
@@ -74,7 +74,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 	private Tuple currentInput;
 
 	/**
-	 * 
+	 *
 	 * @param leftBolt
 	 * @param matchLeft
 	 * @param templateLeft
@@ -111,7 +111,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 	 * Given a set of match fields, return fields of the non-zero indexes
 	 * of the match fields. Has the effect of saying which values in this
 	 * bolt are to be used
-	 * 
+	 *
 	 * @param matchFields
 	 * @return the fields in the form of "?index"
 	 */
@@ -129,7 +129,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 	 * Given a set of match fields, return fields of the non-zero values
 	 * of the match fields. Has the effect of saying which values in the sibling
 	 * join are to be joined against
-	 * 
+	 *
 	 * @param matchFields
 	 * @return the fields in the form of "?matchFields[index]"
 	 */
@@ -152,14 +152,16 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 
 	@Override
 	public void execute(Tuple input) {
-		logger.debug(String.format("Executing join over: {left = %s, right = %s } ", this.leftBolt, this.rightBolt));
+		logger.debug(String.format("\nExecuting join over: {\n\tleft = %s, \n\tright = %s \n} ", this.leftBolt, this.rightBolt));
 		boolean isAdd = (Boolean) input.getValueByField(Component.isAdd.toString());
 		long timestamp = (Long) input.getValueByField(Component.timestamp.toString());
 		this.currentInput = input;
 		if (input.getSourceComponent().equals(leftBolt)) {
+			logger.debug(String.format("Source: LEFT QUEUE fired"));
 			this.leftQ.fire(input, isAdd, timestamp);
 		}
 		else {
+			logger.debug(String.format("Source: RIGHT QUEUE fired"));
 			this.rightQ.fire(input, isAdd, timestamp);
 		}
 

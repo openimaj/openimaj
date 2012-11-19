@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,9 +51,9 @@ import com.hp.hpl.jena.graph.Triple;
  * {@link Tuple} instances defined by the {@link WritingScheme} used. The
  * triples are written as NTriple strings by default, but other serialisations
  * can be specified
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class NTripleKestrelTupleWriter extends KestrelTupleWriter {
 
@@ -80,8 +81,18 @@ public class NTripleKestrelTupleWriter extends KestrelTupleWriter {
 		this.scheme = new NTripleWritingScheme();
 	}
 
+	/**
+	 * Instantiate from a list of URLs read simultaniously
+	 * @param urlList
+	 * @throws IOException
+	 */
+	public NTripleKestrelTupleWriter(ArrayList<URL> urlList) throws IOException {
+		super(urlList);
+		this.scheme = new NTripleWritingScheme();
+	}
+
 	@Override
-	public void send(Triple item) {
+	public synchronized void send(Triple item) {
 		List<Object> tripleList = Arrays.asList((Object) item);
 		byte[] serialised = this.scheme.serialize(tripleList);
 		logger.debug("Writing triple: " + item);

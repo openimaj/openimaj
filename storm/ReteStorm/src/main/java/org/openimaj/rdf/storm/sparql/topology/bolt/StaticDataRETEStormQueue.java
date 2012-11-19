@@ -9,6 +9,7 @@ import org.openimaj.rdf.storm.bolt.RETEStormQueue;
 import org.openimaj.rdf.storm.bolt.RETEStormSinkNode;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
+import org.openimaj.time.Timer;
 
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
@@ -133,7 +134,7 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 		// Now check the static data source
 		StaticDataRETEStormQueue staticDataSiblling = (StaticDataRETEStormQueue) this.sibling;
 		Query siblingQuery = staticDataSiblling.query;
-		logger.debug("\n This query: \n" + this.query + " \n " + "Sibling query: \n" + siblingQuery);
+
 		QuerySolutionMap solution = new QuerySolutionMap();
 		List<Object> vals = env.getValues();
 		Model model = ModelFactory.createDefaultModel();
@@ -144,7 +145,11 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 				solution.add("?" + matchIndex, node);
 			}
 		}
+		logger.debug("\n" + "Testing query: \n" + siblingQuery);
+		logger.debug("\n" + "With bindings: \n" + solution);
 		for (StaticRDFDataset ds : this.staticDatasets) {
+			Timer t = Timer.timer();
+			logger.debug("Querying static dataset: " + ds);
 			ResultSet rs = ds.performQuery(siblingQuery,solution);
 			while (rs.hasNext()) {
 				QuerySolution binding = rs.next();
@@ -163,9 +168,9 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 				Graph newG = (Graph) env.getValueByField(StormReteBolt.Component.graph.toString());
 				addMetaValues(newVals, isAdd, newG, timestamp);
 				continuation.fire(newVals, isAdd);
-				System.out.println(binding);
+				logger.debug("Found static binding: " + binding);
 			}
-			logger.debug("Done with dataset!");
+			logger.debug("Dataset query took: " + t.duration()/1000f + "s");
 		}
 
 	}

@@ -12,9 +12,9 @@ import backtype.storm.utils.Utils;
 
 /**
  * The local topology for testing. Allows the specification of sleep time etc.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class LocalTopologyMode implements TopologyMode {
 	private static final int DEFAULT_SLEEP_TIME = 10000;
@@ -37,7 +37,7 @@ public class LocalTopologyMode implements TopologyMode {
 		final Config conf = new Config();
 		conf.setDebug(false);
 		conf.setNumWorkers(2);
-		conf.setMaxSpoutPending(1);
+		conf.setMaxSpoutPending(1000);
 		conf.setFallBackOnJavaSerialization(false);
 		conf.setSkipMissingKryoRegistrations(false);
 		JenaStormUtils.registerSerializers(conf);

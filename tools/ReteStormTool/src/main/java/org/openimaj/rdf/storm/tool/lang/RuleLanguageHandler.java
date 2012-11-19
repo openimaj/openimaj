@@ -23,4 +23,5 @@ public interface RuleLanguageHandler {
 	 * @return the topology for the rules
 	 */
 	public StormTopology constructTopology(ReteStormOptions options, Config config);
+
 }

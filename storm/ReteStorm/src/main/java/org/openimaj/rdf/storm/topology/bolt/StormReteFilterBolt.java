@@ -90,7 +90,7 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 	public void execute(Tuple input) {
 		boolean isAdd = input.getBooleanByField(Component.isAdd.toString());
 		long timestamp = input.getLongByField(Component.timestamp.toString());
-		logger.debug(String.format("Executing: %s",filter));
+//		logger.(String.format("Executing: %s",filter));
 		// Extract Jena Graph from Storm Tuple
 		Graph graph = extractGraph(input);
 		// Extract Triples that match this Filter's pattern
@@ -100,7 +100,7 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 		// With each valid triple...
 		filter: while (it.hasNext()){
 			Triple t = it.next();
-			logger.debug(String.format("Filter passed triple: %s",t));
+			logger.debug(String.format("\nMatch for Filter %s\nFilter passed triple: %s",filter,t));
 
 			// Create an ArrayList of Nodes of equal size to the number of expected variables,
 			// plus all base ReteStorm fields (graph, isAdd, timestamp, etc, as defined in

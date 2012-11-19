@@ -34,26 +34,33 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.openimaj.io.IOUtils;
+import org.mortbay.io.RuntimeIOException;
 import org.openimaj.io.WriteableBinary;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt.Component;
+import org.openjena.atlas.lib.Sink;
+import org.openjena.riot.RiotReader;
+import org.openjena.riot.RiotWriter;
+import org.openjena.riot.lang.LangNTriples;
 
 import backtype.storm.tuple.Fields;
+
+import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
 
 /**
  * Writes and reads the tuples described by the
  * {@link StormReteBolt#declaredFields(int)} function
  * with 0 as the parameter
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class GraphWritingScheme implements WritingScheme {
 
@@ -62,7 +69,7 @@ public class GraphWritingScheme implements WritingScheme {
 	private static final Logger logger = Logger.getLogger(GraphWritingScheme.class);
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -2734506908903229738L;
 
@@ -70,12 +77,12 @@ public class GraphWritingScheme implements WritingScheme {
 	public byte[] serialize(List<Object> objects) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
-		for (Object object : objects) {
-			try {
-				IOUtils.write(object, dos);
-			} catch (IOException e) {
-				logger.error("Couldn't write object: " + e.getMessage());
-			}
+		try {
+			dos.writeBoolean(StormReteBolt.extractIsAdd(objects));
+			dos.writeLong(StormReteBolt.extractTimestamp(objects));
+			RiotWriter.writeTriples(dos, StormReteBolt.extractGraph(objects));
+		} catch (IOException e) {
+			logger.error("Couldn't write isAdd" + e.getMessage());
 		}
 		try {
 			baos.flush();
@@ -87,17 +94,36 @@ public class GraphWritingScheme implements WritingScheme {
 
 	@Override
 	public List<Object> deserialize(byte[] ser) {
-		List<Object> out = new ArrayList<Object>();
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(ser));
-		Component[] values = Component.values();
-		for (int i = 0; i < values.length; i++) {
-			try {
-				out.add(IOUtils.read(dis));
-			} catch (IOException e) {
-				logger.error("Couldn't read object: " + e.getMessage());
-			}
+		try {
+			boolean isAdd = dis.readBoolean();
+			long timeStamp = dis.readLong();
+			final Graph g = GraphFactory.createGraphMem();
+			LangNTriples parser = RiotReader.createParserNTriples(dis, new Sink<Triple>() {
+
+				@Override
+				public void close() {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void send(Triple item) {
+					g.add(item);
+				}
+
+				@Override
+				public void flush() {
+					// TODO Auto-generated method stub
+
+				}
+			});
+			parser.parse();
+			return StormReteBolt.asValues(isAdd, g, timeStamp);
+		} catch (IOException e) {
+			logger.error("Couldn't read graph!" + e.getMessage());
+			throw new RuntimeIOException(e);
 		}
-		return out;
 	}
 
 	@Override

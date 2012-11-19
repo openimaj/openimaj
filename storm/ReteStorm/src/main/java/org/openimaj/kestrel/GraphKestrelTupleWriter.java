@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,9 +54,9 @@ import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
  * {@link Tuple} instances defined by the {@link WritingScheme} used. The
  * triples are written as NTriple strings by default, but other serialisations
  * can be specified
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 
@@ -83,14 +84,29 @@ public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 		this.scheme = new GraphWritingScheme();
 	}
 
+	/**
+	 * see {@link KestrelTupleWriter#KestrelTupleWriter(ArrayList)}
+	 * @param urlList
+	 * @throws IOException
+	 */
+	public GraphKestrelTupleWriter(ArrayList<URL> urlList) throws IOException {
+		super(urlList);
+		this.scheme = new GraphWritingScheme();
+	}
+
+	long triplesCount = 1;
+
 	@Override
-	public void send(Triple item) {
+	public synchronized void send(Triple item) {
 		Graph graph = GraphFactory.createGraphMem();
 		graph.add(item);
-
+		if(triplesCount % 1000 == 0){
+			logger.debug("Triples written: " + triplesCount);
+		}
+		triplesCount++;
 		List<Object> tripleList = StormReteBolt.asValues(true, graph, 0l);
 		byte[] serialised = this.scheme.serialize(tripleList);
-		logger.debug("Writing triple: " + item);
+
 		try {
 			for (String queue : this.getQueues()) {
 				this.getNextClient().put(queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
