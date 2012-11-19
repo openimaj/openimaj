@@ -1062,11 +1062,17 @@ public class RDFSerializer {
 					{
 						final IndependentPair<?,?> ip = (IndependentPair<?,?>)o;
 						
-						final URI subjU = this.serializeAux( ip.getSecondObject(), 
+						Value ooo;
+						if( (ooo = this.checkPrimitive( ip.getSecondObject() )) != null )
+							this.addTriple( new StatementImpl( subjectURI,
+									new URIImpl( ip.getFirstObject().toString() ), ooo ) );
+						else
+						{
+							final URI subjU = this.serializeAux( ip.getSecondObject(), 
 								subjectURI + "_" + field.getName() + "_" + count++ );
-
-						this.addTriple( new StatementImpl( subjectURI,
-								new URIImpl( ip.getFirstObject().toString() ), subjU ) );
+							this.addTriple( new StatementImpl( subjectURI,
+									new URIImpl( ip.getFirstObject().toString() ), subjU ) );
+						}
 					}
 					else
 						this.serializeAux( o, subjectURI + "_" + field.getName() 
