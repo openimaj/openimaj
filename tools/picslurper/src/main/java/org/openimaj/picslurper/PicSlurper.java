@@ -1,13 +1,10 @@
 package org.openimaj.picslurper;
 
-import java.io.BufferedReader;
-import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -295,34 +292,34 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 		// "debug");
 		// System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
 		// "debug");
-		checkTwitterCredentials();
+//		checkTwitterCredentials();
 	}
-
-	private static void checkTwitterCredentials() throws IOException {
-		final String user = System.getProperty("twitter.user");
-		final String password = System.getProperty("twitter.password");
-		final String consoleLogin = System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN);
-		if (user != null && password != null || (consoleLogin != null && !Boolean.parseBoolean(consoleLogin)))
-			return;
-		final Console console = System.console();
-		final String credentialsMessage = "Could not find twitter credentials. Taking from input. You can add these to a config.properties file to save time.\n";
-		final String usernameMessage = "Twitter username: ";
-		final String passwordMessage = "Twitter password: ";
-		if (console != null) {
-			console.printf(credentialsMessage);
-			console.printf(usernameMessage);
-			System.setProperty("twitter.user", console.readLine());
-			console.printf(passwordMessage);
-			System.setProperty("twitter.password", String.copyValueOf(console.readPassword()));
-		} else {
-			logger.debug(credentialsMessage);
-			logger.debug(usernameMessage);
-			final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			System.setProperty("twitter.user", reader.readLine());
-			logger.debug(passwordMessage);
-			System.setProperty("twitter.password", reader.readLine());
-		}
-
-	}
+//
+//	private static void checkTwitterCredentials() throws IOException {
+//		final String user = System.getProperty("twitter.user");
+//		final String password = System.getProperty("twitter.password");
+//		final String consoleLogin = System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN);
+//		if (user != null && password != null || (consoleLogin != null && !Boolean.parseBoolean(consoleLogin)))
+//			return;
+//		final Console console = System.console();
+//		final String credentialsMessage = "Could not find twitter credentials. Taking from input. You can add these to a config.properties file to save time.\n";
+//		final String usernameMessage = "Twitter username: ";
+//		final String passwordMessage = "Twitter password: ";
+//		if (console != null) {
+//			console.printf(credentialsMessage);
+//			console.printf(usernameMessage);
+//			System.setProperty("twitter.user", console.readLine());
+//			console.printf(passwordMessage);
+//			System.setProperty("twitter.password", String.copyValueOf(console.readPassword()));
+//		} else {
+//			logger.debug(credentialsMessage);
+//			logger.debug(usernameMessage);
+//			final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+//			System.setProperty("twitter.user", reader.readLine());
+//			logger.debug(passwordMessage);
+//			System.setProperty("twitter.password", reader.readLine());
+//		}
+//
+//	}
 
 }
