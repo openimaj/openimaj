@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.kohsuke.args4j.Option;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.SDBStaticDataset;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
 import org.openjena.riot.RiotLoader;
@@ -29,22 +30,47 @@ import com.hp.hpl.jena.sdb.store.LayoutType;
  * Loads the RDF from the provided files into the requested database using the
  * appropriate driver
  * and other required configuration information.
- * 
+ *
  * The database name is constructed from the rdf file name.
- * 
+ *
  * If the database exists it is not overwritten and assumed intact unless the
  * overwrite command is set
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SDBStaticDataMode implements StaticDataMode {
 
+	@Option(
+			name = "--sdb-url",
+			aliases = "-sdburl",
+			required = false,
+			usage = "The URL used to access the database. Defaults to a mysql localhost",
+			metaVar = "STRING")
 	private String url = "jdbc:mysql://localhost:3306";
+	@Option(
+			name = "--sdb-username",
+			aliases = "-sdbu",
+			required = false,
+			usage = "The username used to access the database",
+			metaVar = "STRING")
 	private String username = "root";
+
+	@Option(
+			name = "--sdb-pass",
+			aliases = "-sdbp",
+			required = false,
+			usage = "The password used ",
+			metaVar = "STRING")
 	private String password = "";
 	private String driver = "com.mysql.jdbc.Driver";
-	private boolean refresh = true;
+
+	@Option(
+			name = "--sdb-refresh",
+			aliases = "-sdbr",
+			required = false,
+			usage = "Force a refresh of the database if it exists already, otherwise use it as is.")
+	private boolean refresh = false;
 
 	@Override
 	public Map<String, StaticRDFDataset> datasets(Map<String, String> datasetNameLocations) {
