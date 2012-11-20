@@ -13,6 +13,7 @@ import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.core.VarExprList;
 import com.hp.hpl.jena.sparql.engine.QueryIterator;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import com.hp.hpl.jena.sparql.engine.binding.BindingHashMap;
 import com.hp.hpl.jena.sparql.engine.binding.BindingMap;
 import com.hp.hpl.jena.sparql.engine.iterator.QueryIterPlainWrapper;
 import com.hp.hpl.jena.sparql.expr.Expr;
@@ -53,7 +54,7 @@ public class StormSPARQLReteSelectConflictSetBolt extends StormSPARQLReteConflic
 			Model model = ModelFactory.createDefaultModel();
 			for (; bindingsIter.hasNext();) {
 				// Create a solution for each binding
-				BindingMap sol = new BindingMap();
+				BindingMap sol = new BindingHashMap();
 				Binding bind = bindingsIter.next();
 				for (String var : query.getResultVars()) {
 					Var alloc = Var.alloc(var);

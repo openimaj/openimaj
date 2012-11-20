@@ -40,14 +40,14 @@ import backtype.storm.tuple.Tuple;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
+import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
 /**
  * Output emitted triples back through the network and write them (in NTriples
  * format) to a specified file
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class FileConflictSetBolt extends ReteConflictSetBolt {
 
@@ -60,7 +60,8 @@ public class FileConflictSetBolt extends ReteConflictSetBolt {
 	private FileOutputStream outStream;
 
 	/**
-	 * @param output the output file location
+	 * @param output
+	 *            the output file location
 	 */
 	public FileConflictSetBolt(String output) {
 		this.output = output;

@@ -15,10 +15,13 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.FileUtils;
 import org.openimaj.kestrel.KestrelServerSpec;
 import org.openimaj.kestrel.KestrelTupleWriter;
+import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
 import org.openimaj.rdf.storm.tool.lang.RuleLanguageHandler;
 import org.openimaj.rdf.storm.tool.lang.RuleLanguageMode;
 import org.openimaj.rdf.storm.tool.source.TriplesInputMode;
 import org.openimaj.rdf.storm.tool.source.TriplesInputModeOption;
+import org.openimaj.rdf.storm.tool.staticdata.StaticDataMode;
+import org.openimaj.rdf.storm.tool.staticdata.StaticDataModeOption;
 import org.openimaj.rdf.storm.tool.topology.TopologyMode;
 import org.openimaj.rdf.storm.tool.topology.TopologyModeOption;
 import org.openimaj.rdf.storm.topology.utils.KestrelUtils;
@@ -29,9 +32,9 @@ import backtype.storm.generated.StormTopology;
 
 /**
  * The options for preparing, configuring and running a {@link ReteStorm}
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteStormOptions extends InOutToolOptions {
 
@@ -128,6 +131,21 @@ public class ReteStormOptions extends InOutToolOptions {
 			multiValued = true)
 	public List<String> staticDataSource = new ArrayList<String>();
 
+	/**
+	 * how static data is loaded in
+	 */
+	@Option(
+			name = "--static-data-mode",
+			aliases = "-sdm",
+			required = false,
+			usage = "How static data is handed to the streaming system",
+			handler = ProxyOptionHandler.class)
+	public StaticDataModeOption sdm = StaticDataModeOption.IN_MEMORY;
+	/**
+	 * 
+	 */
+	public StaticDataMode sdmOp = StaticDataModeOption.IN_MEMORY.getOptions();
+
 	@Option(
 			name = "--force-feed-back",
 			aliases = "-ffb",
@@ -148,9 +166,6 @@ public class ReteStormOptions extends InOutToolOptions {
 	 */
 	public String outputQueue = "outputQueue";
 
-
-
-
 	/**
 	 * @param args
 	 */
@@ -160,7 +175,7 @@ public class ReteStormOptions extends InOutToolOptions {
 
 	/**
 	 * Parse arguments and validate
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	public void prepare() throws IOException {
@@ -202,7 +217,7 @@ public class ReteStormOptions extends InOutToolOptions {
 	/**
 	 * Given a storm configuration construct a Storm topology using the
 	 * specified ruleLanguageMode
-	 *
+	 * 
 	 * @param conf
 	 * @return the constructed storm topology
 	 */
@@ -228,13 +243,14 @@ public class ReteStormOptions extends InOutToolOptions {
 	/**
 	 * @return sources of static data
 	 */
-	public Map<String, String> staticDataSources() {
+	public Map<String, StaticRDFDataset> staticDataSources() {
 		Map<String, String> ret = new HashMap<String, String>();
 		for (String sdatanamevalue : this.staticDataSource) {
 			String[] vals = sdatanamevalue.split("=");
 			ret.put(vals[0], vals[1]);
 		}
-		return ret;
+
+		return this.sdmOp.datasets(ret);
 	}
 
 	public List<KestrelServerSpec> getKestrelSpecList() {
@@ -244,9 +260,9 @@ public class ReteStormOptions extends InOutToolOptions {
 	public void populateInputs() throws TException, IOException {
 		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
 		KestrelTupleWriter rdfWriter = triplesKestrelWriter();
-		if(this.feedBack){
-			rdfWriter.write(spec, this.inputQueue,this.outputQueue);
-		}else{
+		if (this.feedBack) {
+			rdfWriter.write(spec, this.inputQueue, this.outputQueue);
+		} else {
 			rdfWriter.write(spec, this.inputQueue);
 		}
 
@@ -254,7 +270,7 @@ public class ReteStormOptions extends InOutToolOptions {
 
 	public void prepareQueues() throws TException {
 		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
-		KestrelUtils.deleteQueues(spec, inputQueue,outputQueue);
+		KestrelUtils.deleteQueues(spec, inputQueue, outputQueue);
 	}
 
 }

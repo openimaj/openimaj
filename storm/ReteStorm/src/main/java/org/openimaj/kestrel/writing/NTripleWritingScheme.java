@@ -44,26 +44,27 @@ import backtype.storm.tuple.Fields;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
+import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
 /**
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class NTripleWritingScheme implements WritingScheme{
+public class NTripleWritingScheme implements WritingScheme {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2734506908903229738L;
-//	private KryoValuesSerializer serializer;
-//	private KryoValuesDeserializer deserializer;
-	
+
+	//	private KryoValuesSerializer serializer;
+	//	private KryoValuesDeserializer deserializer;
+
 	@Override
 	public byte[] serialize(List<Object> objects) {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		Graph graph = GraphFactory.createGraphMem();
 		for (Object object : objects) {
-			Triple triple = (Triple)object;
+			Triple triple = (Triple) object;
 			graph.add(triple);
 		}
 		RiotWriter.writeTriples(os, graph);
@@ -74,31 +75,33 @@ public class NTripleWritingScheme implements WritingScheme{
 			throw new RuntimeException(e);
 		}
 		byte[] ret = os.toByteArray();
-		
+
 		return ret;
 	}
+
 	@Override
 	public List<Object> deserialize(byte[] ser) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(ser);
 		final Object triples = new ArrayList<Object>();
 		RiotReader.createParserNTriples(bais, new Sink<Triple>() {
-			
+
 			@Override
 			public void close() {
 			}
-			
+
 			@SuppressWarnings("unchecked")
 			@Override
 			public void send(Triple item) {
-				((List<Object>)triples).add(item);
+				((List<Object>) triples).add(item);
 			}
-			
+
 			@Override
 			public void flush() {
 			}
 		}).parse();
 		return Arrays.asList(triples);
 	}
+
 	@Override
 	public Fields getOutputFields() {
 		return new Fields("triples");

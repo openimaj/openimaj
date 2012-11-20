@@ -1,7 +1,7 @@
 package org.openimaj.rdf.storm.sparql.topology.builder;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 
 import org.openimaj.rdf.storm.utils.CsparqlUtils.CSparqlComponentHolder;
 
@@ -68,7 +68,7 @@ public class SPARQLReteTopologyBuilderContext implements Cloneable {
 		this.bindingVector = new HashMap<String, Integer>();
 		this.currentCount = 0;
 		Element elm = this.query.simpleQuery.getQueryPattern();
-		Set<Var> vars = PatternVars.vars(elm);
+		Collection<Var> vars = PatternVars.vars(elm);
 		for (Var var : vars) {
 			bindingVector.put(var.getName(), this.currentCount++);
 		}

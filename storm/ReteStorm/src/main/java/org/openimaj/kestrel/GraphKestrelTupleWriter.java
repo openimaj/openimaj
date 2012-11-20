@@ -47,16 +47,16 @@ import backtype.storm.tuple.Tuple;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
+import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
 /**
  * This writer queues a set of RDF triples in a kestrel queue as storm
  * {@link Tuple} instances defined by the {@link WritingScheme} used. The
  * triples are written as NTriple strings by default, but other serialisations
  * can be specified
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 
@@ -86,6 +86,7 @@ public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 
 	/**
 	 * see {@link KestrelTupleWriter#KestrelTupleWriter(ArrayList)}
+	 * 
 	 * @param urlList
 	 * @throws IOException
 	 */
@@ -100,7 +101,7 @@ public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 	public synchronized void send(Triple item) {
 		Graph graph = GraphFactory.createGraphMem();
 		graph.add(item);
-		if(triplesCount % 1000 == 0){
+		if (triplesCount % 1000 == 0) {
 			logger.debug("Triples written: " + triplesCount);
 		}
 		triplesCount++;

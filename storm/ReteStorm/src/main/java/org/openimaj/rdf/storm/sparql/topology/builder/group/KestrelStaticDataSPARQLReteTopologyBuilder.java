@@ -43,7 +43,6 @@ import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBol
 import org.openimaj.rdf.storm.sparql.topology.bolt.sink.KestrelConflictSetSink;
 import org.openimaj.rdf.storm.sparql.topology.bolt.sink.QuerySolutionSerializer;
 import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilderContext;
-import org.openimaj.rdf.storm.sparql.topology.builder.datasets.InMemoryDataset;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
 
@@ -63,7 +62,7 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	private static final Logger logger = Logger.getLogger(KestrelStaticDataSPARQLReteTopologyBuilder.class);
 	private static final String TRIPLE_SPOUT = "tripleSource";
 	File wang;
-	private Map<String, String> staticDataSources;
+	private Map<String, StaticRDFDataset> staticDataSources;
 	private List<KestrelServerSpec> streamDataSources;
 	private String inputQueue;
 	private String outputQueue;
@@ -82,7 +81,7 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	public KestrelStaticDataSPARQLReteTopologyBuilder(
 			List<KestrelServerSpec> streamDataSources,
 			String inputQueue, String outputQueue,
-			Map<String, String> staticDataSources) {
+			Map<String, StaticRDFDataset> staticDataSources) {
 		this.streamDataSources = streamDataSources;
 		this.inputQueue = inputQueue;
 		this.outputQueue = outputQueue;
@@ -116,8 +115,8 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	public List<StaticRDFDataset> staticDataSources(SPARQLReteTopologyBuilderContext context) {
 		List<StaticRDFDataset> ret = new ArrayList<StaticRDFDataset>();
 
-		for (Entry<String, String> staticRDFURI : this.staticDataSources.entrySet()) {
-			ret.add(new InMemoryDataset(staticRDFURI.getValue()));
+		for (Entry<String, StaticRDFDataset> staticRDFURI : this.staticDataSources.entrySet()) {
+			ret.add(staticRDFURI.getValue());
 		}
 		return ret;
 	}

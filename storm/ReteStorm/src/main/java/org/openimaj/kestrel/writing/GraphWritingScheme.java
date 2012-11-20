@@ -52,15 +52,15 @@ import backtype.storm.tuple.Fields;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
+import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
 /**
  * Writes and reads the tuples described by the
  * {@link StormReteBolt#declaredFields(int)} function
  * with 0 as the parameter
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class GraphWritingScheme implements WritingScheme {
 

@@ -66,6 +66,7 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 import com.hp.hpl.jena.sparql.engine.binding.BindingFactory;
+import com.hp.hpl.jena.sparql.engine.binding.BindingHashMap;
 import com.hp.hpl.jena.sparql.engine.binding.BindingMap;
 import com.hp.hpl.jena.sparql.util.NodeFactory;
 
@@ -168,11 +169,11 @@ public class ReteTopologyTest {
 	public void testReteTopologyOptional() throws IOException, TranslationException {
 		String sparqlSource = "/test.optional.csparql";
 		List<Binding> expectedValues = new ArrayList<Binding>();
-		BindingMap e = new BindingMap();
+		BindingMap e = new BindingHashMap();
 		e.add(Var.alloc("given"), NodeFactory.createLiteralNode("Bob", "", ""));
 		e.add(Var.alloc("family"), NodeFactory.createLiteralNode("Smith", "", ""));
 		expectedValues.add(e);
-		e = new BindingMap();
+		e = new BindingHashMap();
 		e.add(Var.alloc("given"), NodeFactory.createLiteralNode("", "", ""));
 		e.add(Var.alloc("family"), NodeFactory.createLiteralNode("", "", ""));
 		expectedValues.add(e);
@@ -206,12 +207,12 @@ public class ReteTopologyTest {
 	public void testReteTopologyAggregate() throws IOException, TranslationException {
 		String sparqlSource = "/test.aggregate.csparql";
 		List<Binding> expectedValues = new ArrayList<Binding>();
-		BindingMap e = new BindingMap();
+		BindingMap e = new BindingHashMap();
 		e.add(Var.alloc("org"), NodeFactory.parseNode("<http://books.example/org1>"));
 		e.add(Var.alloc("totalPrice"), NodeFactory.intToNode(18));
 		e.add(Var.alloc("avgPrice"), NodeFactory.createLiteralNode("12", "", "http://www.w3.org/2001/XMLSchema#decimal"));
 		expectedValues.add(e);
-		e = new BindingMap();
+		e = new BindingHashMap();
 		e.add(Var.alloc("org"), NodeFactory.parseNode("<http://books.example/org1>"));
 		e.add(Var.alloc("totalPrice"), NodeFactory.intToNode(12));
 		e.add(Var.alloc("avgPrice"), NodeFactory.createLiteralNode("12", "", "http://www.w3.org/2001/XMLSchema#decimal"));
@@ -242,13 +243,13 @@ public class ReteTopologyTest {
 	public void testReteTopologyStaticData() throws IOException, TranslationException {
 		String sparqlSource = "/test.userpost.csparql";
 		List<Binding> expectedValues = new ArrayList<Binding>();
-		BindingMap e = new BindingMap();
+		BindingMap e = new BindingHashMap();
 		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("out on January 5 2007 by the Chinese police against a suspected East Turkestan Islamic Movement training", "", ""));
 		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T11:49:51Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u627>"));
 		expectedValues.add(e);
-		e = new BindingMap();
+		e = new BindingHashMap();
 		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("Christine Cris Bonacci is an Australian-born producer songwriter and musician", "", ""));
 		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
@@ -266,13 +267,13 @@ public class ReteTopologyTest {
 	public void testReteTopologySubquery() throws IOException, TranslationException {
 		String sparqlSource = "/test.userpost.subquery.csparql";
 		List<Binding> expectedValues = new ArrayList<Binding>();
-		BindingMap e = new BindingMap();
+		BindingMap e = new BindingHashMap();
 		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("out on January 5 2007 by the Chinese police against a suspected East Turkestan Islamic Movement training", "", ""));
 		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T11:49:51Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u627>"));
 		expectedValues.add(e);
-		e = new BindingMap();
+		e = new BindingHashMap();
 		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("Christine Cris Bonacci is an Australian-born producer songwriter and musician", "", ""));
 		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
@@ -290,13 +291,13 @@ public class ReteTopologyTest {
 	public void testReteTopologySubquery_complex() throws IOException, TranslationException {
 		String sparqlSource = "/test.userpost.subquery.complex.csparql";
 		List<Binding> expectedValues = new ArrayList<Binding>();
-		BindingMap e = new BindingMap();
+		BindingMap e = new BindingHashMap();
 		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("out on January 5 2007 by the Chinese police against a suspected East Turkestan Islamic Movement training", "", ""));
 		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T11:49:51Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u627>"));
 		expectedValues.add(e);
-		e = new BindingMap();
+		e = new BindingHashMap();
 		e.add(Var.alloc("postcontent"), NodeFactory.createLiteralNode("Christine Cris Bonacci is an Australian-born producer songwriter and musician", "", ""));
 		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));

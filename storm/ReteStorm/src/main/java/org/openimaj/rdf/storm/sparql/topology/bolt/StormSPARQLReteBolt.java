@@ -1,9 +1,9 @@
 package org.openimaj.rdf.storm.sparql.topology.bolt;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
@@ -15,15 +15,16 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import com.hp.hpl.jena.sparql.engine.binding.BindingHashMap;
 import com.hp.hpl.jena.sparql.engine.binding.BindingMap;
 import com.hp.hpl.jena.sparql.syntax.Element;
 import com.hp.hpl.jena.sparql.syntax.PatternVars;
 
 /**
  * A {@link StormReteBolt} which has some specific support for rules
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class StormSPARQLReteBolt extends StormReteBolt implements QueryHolder {
 
@@ -58,7 +59,7 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 
 	private int countVariables(Query query) {
 		Element elm = query.getQueryPattern();
-		Set<Var> vars = PatternVars.vars(elm);
+		Collection<Var> vars = PatternVars.vars(elm);
 		return vars.size();
 	}
 
@@ -70,7 +71,7 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	/**
 	 * For a given source, register its name and the associated order of
 	 * variables to expect from the source
-	 *
+	 * 
 	 * @param source
 	 *            the name of the source
 	 * @param variables
@@ -89,13 +90,13 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	 * with the variables from the binding. If the tuple's source has no
 	 * set variable order, the DEFAULT_SOURCE is attempted. If the default
 	 * variable order is unset, this function will throw a RuntimeException
-	 *
-	 *
+	 * 
+	 * 
 	 * @param t
 	 * @return a new {@link Binding}
 	 */
 	public Binding tupleToBinding(Tuple t) {
-		BindingMap binding = new BindingMap();
+		BindingMap binding = new BindingHashMap();
 		Map<String, Integer> vars = null;
 		vars = sourceVariableMap.get(t.getSourceComponent());
 		if (vars == null) {
@@ -111,7 +112,7 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 
 	/**
 	 * Get the rule on which this {@link StormReteBolt} is built.
-	 *
+	 * 
 	 * @return Query
 	 */
 	@Override
@@ -125,7 +126,7 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	/**
 	 * sets the query string an sets query to null (getQuery() constructs a new
 	 * Query)
-	 *
+	 * 
 	 * @param queryString
 	 */
 	public void setQueryString(String queryString) {
