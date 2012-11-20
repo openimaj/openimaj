@@ -2,7 +2,8 @@ package org.openimaj.tools.twitter.modes.filter;
 
 import java.util.ArrayList;
 
-import com.ibm.icu.text.UnicodeSet;
+import sun.text.normalizer.UnicodeSet;
+
 
 /**
  * The ICU Unicode engine using {@link UnicodeSet}
@@ -20,10 +21,6 @@ public class ICURegexEngine implements RegexEngine {
 	}
 	@Override
 	public boolean matches(String str) {
-		for (UnicodeSet set : sets) {
-			if(set.containsAll(str))
-				return true;
-		}
 		return false;
 	}
 
