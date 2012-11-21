@@ -1,0 +1,6 @@
+
+  <parent>
+    <groupId>{!g!}</groupId>
+    <artifactId>{!a!}</artifactId>
+    <version>{!v!}</version>
+  </parent>

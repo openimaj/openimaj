@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>{!g!}</groupId>
   <artifactId>{!a!}</artifactId>
-  <version>{!v!}</version>
+  <version>{!v!}</version>{!p!}
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -19,7 +19,6 @@
       <artifactId>joda-time</artifactId>
       <version>1.6.2</version>
       <scope>compile</scope>
-    </dependency>
 	<dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -27,4 +26,16 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>openimaj-releases</id>
+      <name>openimaj-releases</name>
+      <url>http://maven.openimaj.org</url>
+    </repository>
+    <repository>
+      <id>openimaj-snapshots</id>
+      <name>openimaj-snapshots</name>
+      <url>http://snapshots.openimaj.org</url>
+    </repository>
+  </repositories>
 </project>

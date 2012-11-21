@@ -83,6 +83,10 @@ public class Generator
 		/** The version number for the maven project, if -maven is used */
 		@Option(name="-version",usage="Specify the version for the maven project",metaVar="VERSION-NUMBER")
 		public String mavenVersionNumber = "1.0";
+		
+		/** If a mavenParent is to be added to the pom.xml, the GAV is put here */
+		@Option(name="-mavenParent",aliases="-p",usage="The mavenParent artifact GAV to add to the pom.xml (g:a:v)")
+		public String mavenParent = null;
 	}
 	
 	/**
@@ -258,22 +262,50 @@ public class Generator
 	 *	@param groupId The groupId of the maven artifact
 	 *	@param artifactId The artifactId of the maven project
 	 *	@param versionNumber The version number of the maven project
+	 *	@param parentGAV The GAV of the mavenParent project
 	 */
 	private static void createPOM( final File targetDir, final String groupId,
-			final String artifactId, final String versionNumber )
+			final String artifactId, final String versionNumber, final String parentGAV )
 	{
 		try
 		{
 			String s = Resources.toString( Resources.getResource( "pom.xml" ), Charsets.UTF_8 );
-			s = s.replaceAll( "\\{!g!\\}", groupId );
-			s = s.replaceAll( "\\{!a!\\}", artifactId );
-			s = s.replaceAll( "\\{!v!\\}", versionNumber );
+			s = Generator.replaceCodes( groupId, artifactId, versionNumber, s );
+
+			// Determine if we need to add the parent element into the pom
+			if( parentGAV != null )
+			{
+				String ps = Resources.toString( 
+						Resources.getResource( "pom.xml.parent.xml "), Charsets.UTF_8 );
+				final String[] splits = parentGAV.split( ":" );
+				ps = Generator.replaceCodes( splits[0], splits[1], splits[2], ps );
+				s = s.replaceAll( "\\{!p!\\}", ps );
+			}
+			
 			FileUtils.writeStringToFile( new File( targetDir, "pom.xml" ), s, "UTF-8" );
 		}
 		catch( final IOException e )
 		{
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * 	Replaces GAV codes in the given string.
+	 * 
+	 *	@param groupId The group identifier
+	 *	@param artifactId The artifact identifier
+	 *	@param versionNumber The version number
+	 *	@param s The string to replace them in
+	 *	@return The string with the codes replaced
+	 */
+	public static String replaceCodes( final String groupId,
+			final String artifactId, final String versionNumber, String s )
+	{
+		s = s.replaceAll( "\\{!g!\\}", groupId );
+		s = s.replaceAll( "\\{!a!\\}", artifactId );
+		s = s.replaceAll( "\\{!v!\\}", versionNumber );
+		return s;
 	}
 	
 	/**
@@ -308,7 +340,7 @@ public class Generator
 		{
 			// Create the pom.xml file
 			Generator.createPOM( new File(go.targetDirectory), go.mavenProject,
-					go.mavenArtifactId, go.mavenVersionNumber );
+					go.mavenArtifactId, go.mavenVersionNumber, go.mavenParent );
 			
 			go.targetDirectory = go.targetDirectory +
 					File.separator+"src"+File.separator+"main"+

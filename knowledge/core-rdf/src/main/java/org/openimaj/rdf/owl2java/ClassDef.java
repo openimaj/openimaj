@@ -3,6 +3,7 @@ package org.openimaj.rdf.owl2java;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -265,8 +266,18 @@ public class ClassDef
 				pkgs.get(this.uri).replace( ".", File.separator ) +
 				(separateImplementations?File.separator+"impl":"") );
 		path.mkdirs();
-		final PrintStream ps = new PrintStream( new File( path.getAbsolutePath()
-				+ File.separator + Generator.getTypeName( this.uri ) + "Impl.java") );
+		PrintStream ps;
+		try
+		{
+			ps = new PrintStream( new File( path.getAbsolutePath()
+					+ File.separator + Generator.getTypeName( this.uri ) + "Impl.java"), 
+					"UTF-8" );
+		}
+		catch( final UnsupportedEncodingException e )
+		{
+			e.printStackTrace();
+			return;
+		}
 
 		// Output the package definition
 		ps.println("package " + pkgs.get(this.uri) +
@@ -328,8 +339,18 @@ public class ClassDef
 		final File path = new File( targetDir.getAbsolutePath() + File.separator +
 				pkgs.get(this.uri).replace( ".", File.separator ) );
 		path.mkdirs();
-		final PrintStream ps = new PrintStream( new File( path.getAbsolutePath()
-				+ File.separator + Generator.getTypeName( this.uri ) + ".java") );
+		PrintStream ps;
+		try
+		{
+			ps = new PrintStream( new File( path.getAbsolutePath()
+					+ File.separator + Generator.getTypeName( this.uri ) + ".java"), 
+					"UTF-8" );
+		}
+		catch( final UnsupportedEncodingException e )
+		{
+			e.printStackTrace();
+			return;
+		}
 
 		ps.println("package " + pkgs.get(this.uri) + ";");
 		ps.println();
