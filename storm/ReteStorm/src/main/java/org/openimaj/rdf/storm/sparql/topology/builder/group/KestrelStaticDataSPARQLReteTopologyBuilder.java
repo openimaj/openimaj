@@ -114,9 +114,9 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	public List<StaticRDFDataset> staticDataSources(SPARQLReteTopologyBuilderContext context) {
 		List<StaticRDFDataset> ret = new ArrayList<StaticRDFDataset>();
 
-//		for (Entry<String, StaticRDFDataset> staticRDFURI : this.staticDataSources.entrySet()) {
-//			ret.add(staticRDFURI.getValue());
-//		}
+		for (Entry<String, StaticRDFDataset> staticRDFURI : this.staticDataSources.entrySet()) {
+			ret.add(staticRDFURI.getValue());
+		}
 		return ret;
 	}
 
