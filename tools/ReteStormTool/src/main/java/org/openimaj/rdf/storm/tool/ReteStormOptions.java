@@ -18,6 +18,8 @@ import org.openimaj.kestrel.KestrelTupleWriter;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
 import org.openimaj.rdf.storm.tool.lang.RuleLanguageHandler;
 import org.openimaj.rdf.storm.tool.lang.RuleLanguageMode;
+import org.openimaj.rdf.storm.tool.monitor.MonitorMode;
+import org.openimaj.rdf.storm.tool.monitor.MonitorModeOption;
 import org.openimaj.rdf.storm.tool.source.TriplesInputMode;
 import org.openimaj.rdf.storm.tool.source.TriplesInputModeOption;
 import org.openimaj.rdf.storm.tool.staticdata.StaticDataMode;
@@ -32,9 +34,9 @@ import backtype.storm.generated.StormTopology;
 
 /**
  * The options for preparing, configuring and running a {@link ReteStorm}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteStormOptions extends InOutToolOptions {
 
@@ -78,6 +80,21 @@ public class ReteStormOptions extends InOutToolOptions {
 	 * The topology mode options
 	 */
 	public TopologyMode tmOp = tm.getOptions();
+
+	/**
+	 * The Monitor
+	 */
+	@Option(
+			name = "--monitor-mode",
+			aliases = "-mm",
+			required = false,
+			usage = "A monitor is started and runs in a thread after the topology is instantiated",
+			handler = ProxyOptionHandler.class)
+	public MonitorModeOption mm = MonitorModeOption.KESTREL;
+	/**
+	 * The monitor instance
+	 */
+	public MonitorMode mmOp = mm.getOptions();
 
 	/**
 	 * The triples input mode
@@ -142,7 +159,7 @@ public class ReteStormOptions extends InOutToolOptions {
 			handler = ProxyOptionHandler.class)
 	public StaticDataModeOption sdm = StaticDataModeOption.IN_MEMORY;
 	/**
-	 * 
+	 *
 	 */
 	public StaticDataMode sdmOp = StaticDataModeOption.IN_MEMORY.getOptions();
 
@@ -166,6 +183,13 @@ public class ReteStormOptions extends InOutToolOptions {
 	 */
 	public String outputQueue = "outputQueue";
 
+	@Option(
+			name = "--prepopulate-input",
+			aliases = "-prepi",
+			required = false,
+			usage = "Force all input values to be queued before the first value is fed to the topology")
+	public boolean prepopulate = false;
+
 	/**
 	 * @param args
 	 */
@@ -175,7 +199,7 @@ public class ReteStormOptions extends InOutToolOptions {
 
 	/**
 	 * Parse arguments and validate
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void prepare() throws IOException {
@@ -217,7 +241,7 @@ public class ReteStormOptions extends InOutToolOptions {
 	/**
 	 * Given a storm configuration construct a Storm topology using the
 	 * specified ruleLanguageMode
-	 * 
+	 *
 	 * @param conf
 	 * @return the constructed storm topology
 	 */

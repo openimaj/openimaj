@@ -34,8 +34,14 @@ public class ReteStorm {
 	}
 
 	private void submitTopology() throws Exception {
+		logger.debug("Initialising monitor");
+		this.options.mmOp.init(this.options);
 		logger.debug("Submitting topology");
 		this.options.tmOp.submitTopology(this.options);
+		logger.debug("Starting monitor");
+		Thread thread = new Thread(this.options.mmOp);
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	/**
@@ -44,12 +50,24 @@ public class ReteStorm {
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Throwable {
 		ReteStorm storm = new ReteStorm(args);
-		storm.prepareInputs();
-		storm.submitTopology();
-		storm.populateInputs();
-		storm.toolComplete();
+
+		storm.perform();
+	}
+
+	private void perform() throws Throwable {
+		if(this.options.prepopulate){
+			prepareInputs();
+			populateInputs();
+			submitTopology();
+			toolComplete();
+		}else{
+			prepareInputs();
+			submitTopology();
+			populateInputs();
+			toolComplete();
+		}
 	}
 
 	private void prepareInputs() throws TException {

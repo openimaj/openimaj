@@ -34,6 +34,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.utils.CsparqlUtils.CSparqlComponentHolder;
 
+import backtype.storm.Config;
 import backtype.storm.topology.TopologyBuilder;
 import eu.larkc.csparql.parser.StreamInfo;
 
@@ -41,9 +42,9 @@ import eu.larkc.csparql.parser.StreamInfo;
  * {@link SPARQLReteTopologyBuilder} instances can accept the filter parts,
  * construct the joins and add the terminal nodes of a Rete topology using a
  * SPARQL query
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class SPARQLReteTopologyBuilder {
 
@@ -54,13 +55,36 @@ public abstract class SPARQLReteTopologyBuilder {
 	 */
 	public static final String AXIOM_SPOUT = "axiom_spout";
 
+	/**
+	 * The executor/task parallelism of all bolts in the rete topology. This boils down to how
+	 * many simultanious instances of the same bolt are running at the same time. It is possible to
+	 * have fewer executors and more tasks, but this is not configurable in ReteStorm yet.
+	 *
+	 * If unset the default value is 1, which means that each bolt has 1 executor and 1 task running
+	 * on that executor.
+	 */
+	public static final String RETE_TOPOLOGY_PARALLELISM = "topology.rete.parallelism";
+	/**
+	 * Overrides the parallelism of a generic topology bolt for join bolts
+	 */
+	public static final String RETE_TOPOLOGY_JOIN_PARALLELISM = "topology.rete.join.parallelism";
+
+	/**
+	 * Overwrides the parallelism of a generic topology bolt for filter bolts
+	 */
+	public static final String RETE_TOPOLOGY_FILTER_PARALLELISM = "topology.rete.filter.parallelism";
+
+	private static final int RETE_TOPOLOGY_PARALLELISM_DEFAULT = 1;
+
 	private int unnamedRules = 0;
+
+	private Config stormConfig;
 
 	/**
 	 * Given a builder and a set of streams, add the source spout to the builder
 	 * and return the name
 	 * of the source spout
-	 * 
+	 *
 	 * @param builder
 	 * @param streams
 	 * @return the name of the source spout
@@ -71,11 +95,11 @@ public abstract class SPARQLReteTopologyBuilder {
 	 * Initialise the topology. Might be used to create and hold on to nodes
 	 * that are required by all other parts of the topology (e.g. the final node
 	 * that actually outputs triples)
-	 * 
+	 *
 	 * Context not-null values: {@link SPARQLReteTopologyBuilderContext #builder}
 	 * , {@link SPARQLReteTopologyBuilderContext#source} and
 	 * {@link SPARQLReteTopologyBuilderContext#query}
-	 * 
+	 *
 	 * @param context
 	 */
 	public abstract void initTopology(SPARQLReteTopologyBuilderContext context);
@@ -83,7 +107,7 @@ public abstract class SPARQLReteTopologyBuilder {
 	/**
 	 * Given a builder and a set of rules, drive the construction of the Rete
 	 * topology
-	 * 
+	 *
 	 * @param builder
 	 *            the builder to add bolts/spouts to
 	 * @param query
@@ -102,6 +126,36 @@ public abstract class SPARQLReteTopologyBuilder {
 	}
 
 	/**
+	 * @return the join parallelism
+	 */
+	public int getJoinBoltParallelism(){
+		if(this.stormConfig == null) return RETE_TOPOLOGY_PARALLELISM_DEFAULT;
+		String ret = (String) this.stormConfig.get(RETE_TOPOLOGY_JOIN_PARALLELISM);
+		if(ret == null) return getGenericBoltParallelism();
+		return Integer.parseInt(ret);
+	}
+
+	/**
+	 * @return the generic bolt parallelism
+	 */
+	public int getGenericBoltParallelism() {
+		if(this.stormConfig == null) return RETE_TOPOLOGY_PARALLELISM_DEFAULT;
+		String ret = (String) this.stormConfig.get(RETE_TOPOLOGY_PARALLELISM);
+		if(ret == null) return RETE_TOPOLOGY_PARALLELISM_DEFAULT;
+		return Integer.parseInt(ret);
+	}
+
+	/**
+	 * @return the filter bolt parallelism
+	 */
+	public int getFilterBoltParallelism(){
+		if(this.stormConfig == null) return RETE_TOPOLOGY_PARALLELISM_DEFAULT;
+		String ret = (String) this.stormConfig.get(RETE_TOPOLOGY_FILTER_PARALLELISM);
+		if(ret == null) return getGenericBoltParallelism();
+		return Integer.parseInt(ret);
+	}
+
+	/**
 	 * Expected to compile the query held in the context
 	 */
 	public abstract void compile();
@@ -109,13 +163,20 @@ public abstract class SPARQLReteTopologyBuilder {
 	/**
 	 * This particular query is completed. Finish the query off.
 	 * so
-	 * 
+	 *
 	 */
 	public abstract void finishQuery();
 
 	protected String nextRuleName() {
 		unnamedRules += 1;
 		return String.format("unnamed_rule_%d", unnamedRules);
+	}
+
+	/**
+	 * @param conf
+	 */
+	public void setConfig(Config conf) {
+		this.stormConfig = conf;
 	}
 
 }

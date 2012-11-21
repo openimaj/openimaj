@@ -74,9 +74,9 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 
 /**
  * Test the {@link StormTopology} construction from a CSPARQL query
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteTopologyTest {
 	private static final String PREFIX = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX ex: <http://example.com/> PREFIX xs: <http://www.w3.org/2001/XMLSchema#>";
@@ -89,7 +89,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * prepare the output
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Before
@@ -98,7 +98,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -117,7 +117,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -136,7 +136,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -161,7 +161,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -181,7 +181,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -199,7 +199,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -221,7 +221,35 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
+	 * @throws IOException
+	 * @throws TranslationException
+	 */
+	@Test
+	public void testReteTopologyAggregateCountStar() throws IOException, TranslationException {
+		String sparqlSource = "/test.aggregate.countstar.csparql";
+		List<Binding> expectedValues = new ArrayList<Binding>();
+		BindingMap e = new BindingHashMap();
+		e.add(Var.alloc("sumprice"), NodeFactory.intToNode(25));
+		e.add(Var.alloc("count"), NodeFactory.intToNode(4));
+		expectedValues.add(e);
+		e = new BindingHashMap();
+		e.add(Var.alloc("sumprice"), NodeFactory.intToNode(18));
+		e.add(Var.alloc("count"), NodeFactory.intToNode(3));
+		expectedValues.add(e);
+		e = new BindingHashMap();
+		e.add(Var.alloc("sumprice"), NodeFactory.intToNode(12));
+		e.add(Var.alloc("count"), NodeFactory.intToNode(2));
+		expectedValues.add(e);
+		e = new BindingHashMap();
+		e.add(Var.alloc("sumprice"), NodeFactory.intToNode(6));
+		e.add(Var.alloc("count"), NodeFactory.intToNode(1));
+		expectedValues.add(e);
+		performQuery(sparqlSource, expectedValues);
+	}
+
+	/**
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -235,7 +263,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -259,7 +287,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */
@@ -283,7 +311,7 @@ public class ReteTopologyTest {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws TranslationException
 	 */

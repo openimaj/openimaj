@@ -195,8 +195,9 @@ public class KestrelThriftSpout extends BaseRichSpout {
             List<Item> items = null;
             try {
                 items = info.getValidClient().get(_queueName, BATCH_SIZE, 0, _messageTimeoutMillis);
-                if(items.size()!=0)LOG.debug("Got this many items: " + items.size());
+//                if(items.size()!=0)LOG.debug("Got this many items: " + items.size());
             } catch(TException e) {
+            	LOG.error("Error reading from client: " +  e.getMessage());
                 blacklist(info, e);
                 return false;
             }
@@ -247,18 +248,22 @@ public class KestrelThriftSpout extends BaseRichSpout {
 
     int countTriples = 1;
     int lastEmit = countTriples;
+    int emptyIterations = 0;
     @Override
 	public void nextTuple() {
         if(_emitBuffer.isEmpty()) tryEachKestrelUntilBufferFilled();
-        if(countTriples != lastEmit){
-        	LOG.debug("Emitting: " + countTriples);
+        if(countTriples % 1000 == 0 && countTriples != lastEmit){
+        	LOG.debug("Number of triples emitted: " + countTriples);
+        	LOG.debug("Number of empty iterations: " + emptyIterations);
+        	emptyIterations = 0;
         	lastEmit = countTriples;
         }
-        countTriples+=_emitBuffer.size();
         EmitItem item = _emitBuffer.poll();
         if(item != null) {
+        	countTriples+=1;
             _collector.emit(item.tuple, item.sourceId);
         } else {  // If buffer is still empty here, then every kestrel Q is also empty.
+        	emptyIterations ++;
             Utils.sleep(10);
         }
     }

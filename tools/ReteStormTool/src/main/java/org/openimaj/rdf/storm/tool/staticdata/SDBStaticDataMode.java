@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.kohsuke.args4j.Option;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.SDBStaticDataset;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
+import org.openjena.riot.Lang;
 import org.openjena.riot.RiotLoader;
 import org.openjena.riot.SysRIOT;
 
@@ -72,6 +73,9 @@ public class SDBStaticDataMode implements StaticDataMode {
 			usage = "Force a refresh of the database if it exists already, otherwise use it as is.")
 	private boolean refresh = false;
 
+
+	private final static Logger logger = Logger.getLogger(SDBStaticDataMode.class);
+
 	@Override
 	public Map<String, StaticRDFDataset> datasets(Map<String, String> datasetNameLocations) {
 		initSDB();
@@ -87,16 +91,18 @@ public class SDBStaticDataMode implements StaticDataMode {
 		// load database driver
 		try {
 			Class.forName(driver);
-			System.out.println("JDBC driver load successfully!");
+			logger.debug("JDBC driver load successfully!");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	private StaticRDFDataset prepareDataset(String name, String location) {
+		logger.debug("Preparing static data using Jena SDB");
 		SysRIOT.wireIntoJena();
 		String dbName = String.format("jeandb_%s", name);
 		String dbURL = String.format("%s/%s", url, dbName);
+		logger.debug("Attempting to connect to: " + dbURL);
 		Connection connection;
 		try {
 			connection = DriverManager.getConnection(url, username, password);
@@ -111,26 +117,43 @@ public class SDBStaticDataMode implements StaticDataMode {
 			}
 			boolean createDB = true;
 			if (list.contains(dbName)) {
+				logger.debug("Database exists...");
 				if (refresh) {
+					logger.debug("Forcing database removal...");
 					String hrappSQL = String.format("DROP DATABASE %s", dbName);
 					statement.executeUpdate(hrappSQL);
 				} else {
+					logger.debug("No remvoing existing database...");
 					createDB = false;
 				}
 			}
 			if (createDB) {
-				StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesHash, DatabaseType.MySQL);
-				String hrappSQL = String.format("CREATE DATABASE %s", dbName);
-				statement.executeUpdate(hrappSQL);
-				SDBConnection sdbConnection = new SDBConnection(dbURL, username, password);
-				Store store = SDBFactory.connectStore(sdbConnection, storeDesc);
-				store.getTableFormatter().create();
-				Dataset dataset = SDBFactory.connectDataset(store);
-				RiotLoader.read(location, dataset.asDatasetGraph());
-				store.close();
+				try{
+					logger.debug("Creating database...");
+					StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesHash, DatabaseType.MySQL);
+					String hrappSQL = String.format("CREATE DATABASE %s", dbName);
+					statement.executeUpdate(hrappSQL);
+					logger.debug("Database created!...creating layout...");
+					SDBConnection sdbConnection = new SDBConnection(dbURL, username, password);
+					Store store = SDBFactory.connectStore(sdbConnection, storeDesc);
+					store.getTableFormatter().create();
+					logger.debug("Done!...populating...");
+					Dataset dataset = SDBFactory.connectDataset(store);
+//					RiotLoader.read(location, dataset.asDatasetGraph());
+					RiotLoader.read(location, dataset.asDatasetGraph(), Lang.NTRIPLES);
+					logger.debug("Done!");
+					store.close();
+				}
+				catch(Throwable e){
+					logger.error("Something went wrong while creating the database, trying to cleanup");
+					String hrappSQL = String.format("DROP DATABASE %s", dbName);
+					statement.executeUpdate(hrappSQL);
+					throw e;
+				}
+
 			}
 			return new SDBStaticDataset(dbURL, username, password);
-		} catch (SQLException e) {
+		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}

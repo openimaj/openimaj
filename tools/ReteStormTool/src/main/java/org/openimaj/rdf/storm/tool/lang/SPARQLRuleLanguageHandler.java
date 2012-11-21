@@ -15,9 +15,9 @@ import backtype.storm.generated.StormTopology;
  * Instantiates a {@link StaticDataSPARQLReteTopologyBuilder}, preparing the
  * static data sources,
  * the streaming data sources.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
 
@@ -40,6 +40,7 @@ public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
 				options.getKestrelSpecList(),
 				options.inputQueue, options.outputQueue,
 				options.staticDataSources());
+		topologyBuilder.setConfig(config);
 		topologyBuilder.setQuerySolutionSerializerMode(qss);
 		StormSPARQLReteTopologyOrchestrator orchestrator = null;
 		try {

@@ -58,9 +58,9 @@ import eu.larkc.csparql.streams.formats.TranslationException;
 /**
  * Given a set of rules, construct a RETE topology such that filter (alpha)
  * nodes and join (beta) nodes are filtering bolts
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class StormSPARQLReteTopologyOrchestrator {
 	/**
@@ -87,7 +87,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * Construct a Rete topology using the default RDFS rules
-	 * 
+	 *
 	 * @param conf
 	 *            the {@link Config} to be sent to the {@link Cluster}. Only
 	 *            used to register serialisers
@@ -102,7 +102,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
-	 * 
+	 *
 	 * @param conf
 	 * @param query
 	 *            the SPARQL query
@@ -122,7 +122,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
-	 * 
+	 *
 	 * @param conf
 	 * @param query
 	 *            the SPARQL query
@@ -147,10 +147,11 @@ public class StormSPARQLReteTopologyOrchestrator {
 	 * Using an {@link NTriplesSPARQLReteTopologyBuilder}, load the nTriples
 	 * from the given resource and compile a storm topology for the sparql query
 	 * used to construct this {@link ReteTopologyBuilder}
-	 * 
+	 *
 	 * @return a storm topology
 	 */
 	public StormTopology buildTopology() {
+		builder.setConfig(this.conf);
 		if (this.builder != null)
 			return buildTopology(builder);
 		else
@@ -159,7 +160,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * @param topologyBuilder
-	 * 
+	 *
 	 * @return given a {@link ReteTopologyBuilder} and a list of
 	 *         {@link ReteTopologyBuilder} instances construct a
 	 *         {@link StormTopology}
@@ -194,7 +195,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * .
-	 * 
+	 *
 	 * @param topologyBuilder
 	 *            the approach to constructing a {@link StormTopology}
 	 * @param query
@@ -210,7 +211,9 @@ public class StormSPARQLReteTopologyOrchestrator {
 		final Config config = new Config();
 		config.setDebug(false);
 		config.setNumWorkers(2);
-		config.setMaxSpoutPending(1);
+		config.setMaxSpoutPending(1000);
+		config.setMaxTaskParallelism(16);
+		config.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_PARALLELISM,"2");
 		config.setFallBackOnJavaSerialization(false);
 		config.setSkipMissingKryoRegistrations(false);
 		final StormSPARQLReteTopologyOrchestrator topology = new StormSPARQLReteTopologyOrchestrator(config, query, topologyBuilder);
@@ -219,7 +222,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * .
-	 * 
+	 *
 	 * @param topologyBuilder
 	 *            the approach to constructing a {@link StormTopology}
 	 * @param query
@@ -243,7 +246,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * A {@link ReteTopologyBuilder} with a default configuration
-	 * 
+	 *
 	 * @param query
 	 * @return A {@link ReteTopologyBuilder} which can construct storm
 	 *         topologies from queries
@@ -272,7 +275,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 
 	/**
 	 * run the rete topology
-	 * 
+	 *
 	 * @param args
 	 * @throws InvalidTopologyException
 	 * @throws AlreadyAliveException

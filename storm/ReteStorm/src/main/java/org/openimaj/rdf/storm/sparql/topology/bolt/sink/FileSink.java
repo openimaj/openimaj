@@ -23,9 +23,9 @@ import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
 /**
  * A Sink used mainly for debugging and tests
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FileSink implements StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink {
 	private FileOutputStream fos;

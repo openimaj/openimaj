@@ -33,7 +33,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -54,9 +53,9 @@ import eu.larkc.csparql.parser.StreamInfo;
  * The {@link KestrelStaticDataSPARQLReteTopologyBuilder} provides triples
  * from URI
  * streams via the {@link NTriplesSpout}.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQLReteTopologyBuilder {
 	private static final Logger logger = Logger.getLogger(KestrelStaticDataSPARQLReteTopologyBuilder.class);
@@ -115,9 +114,9 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	public List<StaticRDFDataset> staticDataSources(SPARQLReteTopologyBuilderContext context) {
 		List<StaticRDFDataset> ret = new ArrayList<StaticRDFDataset>();
 
-		for (Entry<String, StaticRDFDataset> staticRDFURI : this.staticDataSources.entrySet()) {
-			ret.add(staticRDFURI.getValue());
-		}
+//		for (Entry<String, StaticRDFDataset> staticRDFURI : this.staticDataSources.entrySet()) {
+//			ret.add(staticRDFURI.getValue());
+//		}
 		return ret;
 	}
 
