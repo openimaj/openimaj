@@ -124,7 +124,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 
 	}
 
-	private static class NamedCompilation extends
+	protected static class NamedCompilation extends
 			IndependentPair<String, CompilationStormSPARQLBoltHolder> {
 
 		public NamedCompilation(String name, CompilationStormSPARQLBoltHolder compilation) {
@@ -145,7 +145,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	protected Map<String, StormReteBolt> bolts;
 	private List<List<NamedCompilation>> finalTerminalList = new ArrayList<List<NamedCompilation>>();
 	private List<List<NamedCompilation>> secondToLast;
-	private SPARQLReteTopologyBuilderContext context;
+	protected SPARQLReteTopologyBuilderContext context;
 	protected int countFinalTerminals = 0;
 
 	@Override
@@ -210,7 +210,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		return retList;
 	}
 
-	private StormSPARQLFilterBolt constructFilterCompilation(ElementFilter el) {
+	protected StormSPARQLFilterBolt constructFilterCompilation(ElementFilter el) {
 		StormSPARQLFilterBolt bolt = new StormSPARQLFilterBolt(el);
 		return bolt;
 	}
@@ -480,7 +480,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		return new Node_RuleVariable(o.getName(), bindingVector.get(o.getName()));
 	}
 
-	private QueryHoldingReteFilterBolt constructReteFilterBolt(Rule rule) {
+	protected QueryHoldingReteFilterBolt constructReteFilterBolt(Rule rule) {
 		return new QueryHoldingReteFilterBolt(rule);
 	}
 

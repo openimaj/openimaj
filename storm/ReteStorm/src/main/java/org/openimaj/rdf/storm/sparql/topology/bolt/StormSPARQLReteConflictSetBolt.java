@@ -200,7 +200,7 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 		return toRet;
 	}
 
-	private void setSink(StormSPARQLReteConflictSetBoltSink sink) {
+	protected void setSink(StormSPARQLReteConflictSetBoltSink sink) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			IOUtils.write(sink, new DataOutputStream(baos));
