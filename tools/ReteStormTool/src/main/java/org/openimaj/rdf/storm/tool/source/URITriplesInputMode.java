@@ -6,11 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.args4j.Option;
-import org.openimaj.kestrel.GraphKestrelTupleWriter;
 import org.openimaj.kestrel.KestrelTupleWriter;
-import org.openimaj.kestrel.NTripleKestrelTupleWriter;
 import org.openimaj.rdf.storm.tool.ReteStormOptions;
-import org.openimaj.rdf.storm.tool.lang.RuleLanguageMode;
+import org.openimaj.rdf.storm.tool.lang.RuleLanguageHandler;
 
 /**
  * Load triples from this URI.
@@ -32,6 +30,7 @@ public class URITriplesInputMode implements TriplesInputMode {
 			multiValued=true)
 	List<String> urlStrings = new ArrayList<String>();
 	private boolean tripleMode;
+	private RuleLanguageHandler ruleLanguageModeOp;
 
 	@Override
 	public KestrelTupleWriter asKestrelWriter() throws IOException {
@@ -40,17 +39,14 @@ public class URITriplesInputMode implements TriplesInputMode {
 			urlList.add(new URL(urls));
 		}
 		if (tripleMode)
-			return new NTripleKestrelTupleWriter(urlList);
+			return ruleLanguageModeOp.tupleWriter(urlList);
 		else
-			return new GraphKestrelTupleWriter(urlList);
+			return ruleLanguageModeOp.tupleWriter(urlList);
 	}
 
 	@Override
 	public void init(ReteStormOptions options) {
-		this.tripleMode = true;
-		if (options.ruleLanguageMode == RuleLanguageMode.SPARQL) {
-			this.tripleMode = false;
-		}
+		ruleLanguageModeOp = options.ruleLanguageModeOp;
 	}
 
 }

@@ -4,9 +4,9 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 
 /**
  * The various supported rule sets
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public enum RuleLanguageMode implements CmdLineOptionsProvider {
 	/**
@@ -26,6 +26,17 @@ public enum RuleLanguageMode implements CmdLineOptionsProvider {
 		@Override
 		public RuleLanguageHandler getOptions() {
 			return new SPARQLRuleLanguageHandler();
+		}
+
+	},
+	/**
+	 * CSPARQL parser which performs no work
+	 */
+	IDENTITY_SPARQL {
+
+		@Override
+		public RuleLanguageHandler getOptions() {
+			return new IdentitySPARQLRuleLanguageHandler();
 		}
 
 	};

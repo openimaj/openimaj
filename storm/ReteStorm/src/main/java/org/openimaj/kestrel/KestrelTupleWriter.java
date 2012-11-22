@@ -64,9 +64,10 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 			.getLogger(KestrelTupleWriter.class);
 
 	private List<InputStream> tripleSources;
-	private KestrelThriftClient client;
 
 	private String[] queues;
+
+	private List<KestrelThriftClient> clients;
 
 	/**
 	 * @param url
@@ -108,15 +109,15 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 	 * @throws TException
 	 * @throws IOException
 	 */
-	public void write(KestrelServerSpec spec, String... queues) throws TException,
+	public void write(List<KestrelServerSpec> specs, String... queues) throws TException,
 			IOException {
 		logger.debug("Opening kestrel client");
-		this.client = new KestrelThriftClient(spec.host, spec.port);
-		this.queues = queues;
-		logger.debug("Deleting the old queue");
-		for (String queue : queues) {
-			client.delete_queue(queue);
+		this.clients = new ArrayList<KestrelThriftClient>();
+		for (KestrelServerSpec spec : specs) {
+
+			this.clients.add(new KestrelThriftClient(spec.host, spec.port));
 		}
+		this.queues = queues;
 		Parallel.forEach(this.tripleSources, new Operation<InputStream>(){
 			@Override
 			public void perform(InputStream tripleSource) {
@@ -140,12 +141,16 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 		logger.debug("Queue flushed");
 	}
 
+	int currentIndex = 0;
 	/**
 	 * @return the next {@link KestrelThriftClient} instance ready to be written
 	 *         to
 	 */
 	public KestrelThriftClient getNextClient() {
-		return this.client;
+		KestrelThriftClient toRet = this.clients.get(currentIndex);;
+		currentIndex++;
+		if(currentIndex==this.clients.size())currentIndex=0;
+		return toRet;
 	}
 
 	/**

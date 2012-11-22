@@ -71,7 +71,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 	protected int[] templateRight;
 	protected RETEStormQueue leftQ;
 	protected RETEStormQueue rightQ;
-	private Tuple currentInput;
+	protected Tuple currentInput;
 
 	/**
 	 *

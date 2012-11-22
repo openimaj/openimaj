@@ -169,17 +169,17 @@ public class FileUtils {
 		r.close();
 		return output;
 	}
-	
+
 	/**
 	 * 	Helper function for writing a binary stream to a file. The stream and
 	 * 	the file are both closed on completion.
-	 * 
+	 *
 	 *	@param stream The stream to be consumed.
 	 *	@param output The file to output to
 	 *	@return The output file
 	 *	@throws IOException
 	 */
-	public static File copyStreamToFileBinary( final InputStream stream, 
+	public static File copyStreamToFileBinary( final InputStream stream,
 			final File output ) throws IOException
 	{
 		final FileOutputStream out = new FileOutputStream( output );
@@ -189,7 +189,7 @@ public class FileUtils {
 			out.write( buf, 0, len );
 		out.close();
 		stream.close();
-		
+
 		return output;
 	}
 
@@ -387,6 +387,24 @@ public class FileUtils {
 	 */
 	public static String[] readlines(final File file) throws IOException {
 		final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+		String line = null;
+		final List<String> allLines = new ArrayList<String>();
+		while((line = br.readLine()) != null){
+			allLines.add(line);
+		}
+		br.close();
+
+		return allLines.toArray(new String[allLines.size()]);
+	}
+
+	/**
+	 * @param file the file to read from
+	 * @param encoding
+	 * @return the lines in the file
+	 * @throws IOException
+	 */
+	public static String[] readlines(final File file, String encoding) throws IOException {
+		final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file),encoding));
 		String line = null;
 		final List<String> allLines = new ArrayList<String>();
 		while((line = br.readLine()) != null){

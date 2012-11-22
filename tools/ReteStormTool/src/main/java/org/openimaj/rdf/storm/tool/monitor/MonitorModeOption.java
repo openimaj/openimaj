@@ -1,6 +1,9 @@
 package org.openimaj.rdf.storm.tool.monitor;
 
+import java.io.IOException;
+
 import org.kohsuke.args4j.CmdLineOptionsProvider;
+import org.openimaj.rdf.storm.tool.ReteStormOptions;
 
 public enum MonitorModeOption implements CmdLineOptionsProvider{
 	KESTREL{
@@ -8,6 +11,26 @@ public enum MonitorModeOption implements CmdLineOptionsProvider{
 		@Override
 		public MonitorMode getOptions() {
 			return new KestrelQueueStatsMonitorMode();
+		}
+
+	},NONE{
+
+		@Override
+		public MonitorMode getOptions() {
+			return new MonitorMode() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void init(ReteStormOptions opts) throws IOException {
+					// TODO Auto-generated method stub
+
+				}
+			};
 		}
 
 	};

@@ -2,9 +2,7 @@ package org.openimaj.rdf.storm.tool.topology;
 
 import org.apache.log4j.Logger;
 import org.kohsuke.args4j.Option;
-import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.tool.ReteStormOptions;
-import org.openimaj.rdf.storm.utils.JenaStormUtils;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -35,16 +33,7 @@ public class LocalTopologyMode implements TopologyMode {
 	@Override
 	public void submitTopology(ReteStormOptions options) throws Exception {
 		logger.debug("Configuring topology");
-		final Config conf = new Config();
-		conf.setDebug(false);
-		conf.setNumWorkers(1);
-		conf.setMaxSpoutPending(1000);
-		conf.setMessageTimeoutSecs(2);
-		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_PARALLELISM, 2);
-		conf.setMaxTaskParallelism(4);
-		conf.setFallBackOnJavaSerialization(false);
-		conf.setSkipMissingKryoRegistrations(false);
-		JenaStormUtils.registerSerializers(conf);
+		Config conf = options.prepareConfig();
 		logger.debug("Instantiating cluster");
 		this.cluster = new LocalCluster();
 		logger.debug("Constructing topology");

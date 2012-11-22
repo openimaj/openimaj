@@ -16,14 +16,14 @@ import com.hp.hpl.jena.sdb.store.LayoutType;
  * Given Database login instructions and a URL to a database create a
  * {@link QueryExecution} which
  * directly accesses a static database
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SDBStaticDataset extends StaticRDFDatasetBase {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -1666002950525540630L;
 	private String url;
@@ -53,7 +53,7 @@ public class SDBStaticDataset extends StaticRDFDatasetBase {
 
 	@Override
 	public void prepare() {
-		StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesHash, DatabaseType.MySQL);
+		StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex, DatabaseType.MySQL);
 		SDBConnection sdbConnection = new SDBConnection(url, username, password);
 		Store store = SDBFactory.connectStore(sdbConnection, storeDesc);
 		this.dataset = SDBFactory.connectDataset(store);

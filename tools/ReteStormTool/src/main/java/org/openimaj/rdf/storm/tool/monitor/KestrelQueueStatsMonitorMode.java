@@ -1,6 +1,8 @@
 package org.openimaj.rdf.storm.tool.monitor;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,15 +12,19 @@ import net.spy.memcached.AddrUtil;
 import net.spy.memcached.MemcachedClient;
 
 import org.apache.log4j.Logger;
+import org.openimaj.kestrel.KestrelServerSpec;
 import org.openimaj.rdf.storm.tool.ReteStormOptions;
 import org.openimaj.time.Timer;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Monitor the input and output queue statistics
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class KestrelQueueStatsMonitorMode implements MonitorMode {
+public class KestrelQueueStatsMonitorMode extends MonitorMode {
 
 	private static final Logger logger = Logger.getLogger(KestrelQueueStatsMonitorMode.class);
 	private String inputQueue;
@@ -44,6 +50,7 @@ public class KestrelQueueStatsMonitorMode implements MonitorMode {
 
 	String queueFormatString = "queue_%s_%s";
 	private Timer timer;
+	private PrintWriter monitorWriter;
 
 	@Override
 	public void run() {
@@ -64,26 +71,43 @@ public class KestrelQueueStatsMonitorMode implements MonitorMode {
 
 			float inputProcessed = inputTotal - inputRemaining;
 			float progress = inputProcessed / inputTotal;
-			float currentThroughput = inputProcessed / (timer.duration() / 1000);
-			reportTime(inputTotal, outputProcessed, progress, currentThroughput);
-			if(progress == 1.0){
-				break;
+			if(progress > 0 && timer == null){
+				timer = Timer.timer();
+			}
+			else if (progress > 0){
+				float currentThroughput = inputProcessed / (timer.duration() / 1000);
+				reportTime(inputTotal, outputProcessed, progress, currentThroughput);
+				if(progress == 1.0){
+					break;
+				}
 			}
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {}
-
 		}
+		logger.info("Closing kestrel queue monitor");
+		this.monitorWriter.flush();
+		this.monitorWriter.close();
+		this.client.shutdown();
 	}
-
+	private final static Gson gson = new GsonBuilder().create();
 	private void reportTime(float inputTotal, float outputProcessed, float progress, float currentThroughput) {
-		String status = String.format(
-				"\n{" +
-					"\n\tinputTotal: %s," +
-					"\n\toutputGenerated: %s," +
-					"\n\tprogress: %s," +
-					"\n\tthroughput: %s" +
-				"\n}",inputTotal,outputProcessed,progress,currentThroughput);
+//		String status = String.format(
+//				"\n{" +
+//					"\n\tinputTotal: %s," +
+//					"\n\toutputGenerated: %s," +
+//					"\n\tprogress: %s," +
+//					"\n\tthroughput: %s" +
+//				"\n}",inputTotal,outputProcessed,progress,currentThroughput);
+		HashMap<String, String> statusMap = new HashMap<String,String>();
+		statusMap.put("inputTotal", "" + inputTotal);
+		statusMap.put("outputGenerated", "" + outputProcessed);
+		statusMap.put("progress", "" + progress);
+		statusMap.put("throughput", "" + currentThroughput);
+		String status = gson.toJson(statusMap);
+
+		this.monitorWriter.println(status);
+		this.monitorWriter.flush();
 		logger.debug(status);
 	}
 
@@ -110,9 +134,10 @@ public class KestrelQueueStatsMonitorMode implements MonitorMode {
 	public void init(ReteStormOptions opts) throws IOException {
 		this.inputQueue = opts.inputQueue;
 		this.outputQueue = opts.outputQueue;
-		this.timer = Timer.timer();
 
-		this.client = new MemcachedClient(AddrUtil.getAddresses(String.format("%s:%s",opts.kestrelHost,22133)));
+		String addresses = KestrelServerSpec.kestrelAddressListAsString(opts.kestrelSpecList,KestrelServerSpec.DEFAULT_KESTREL_MEMCACHED_PORT);
+		this.client = new MemcachedClient(AddrUtil.getAddresses(addresses));
+		this.monitorWriter = new PrintWriter(new FileOutputStream(monitorOutput));
 	}
 
 }

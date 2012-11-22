@@ -34,14 +34,13 @@ public class ReteStorm {
 	}
 
 	private void submitTopology() throws Exception {
-		logger.debug("Initialising monitor");
-		this.options.mmOp.init(this.options);
-		logger.debug("Submitting topology");
+		logger.info("Initialising monitors");
+		this.options.initMonitor();
+		logger.info("Submitting topology");
 		this.options.tmOp.submitTopology(this.options);
-		logger.debug("Starting monitor");
-		Thread thread = new Thread(this.options.mmOp);
-		thread.setDaemon(true);
-		thread.start();
+		logger.info("Starting monitors");
+		this.options.startMonitor();
+
 	}
 
 	/**
@@ -75,7 +74,9 @@ public class ReteStorm {
 	}
 
 	private void toolComplete() throws Exception {
+		logger.info("Finishing the tool");
 		this.options.tmOp.finish(options);
+		logger.info("Tool finished!");
 	}
 
 	private void populateInputs() throws TException, IOException {

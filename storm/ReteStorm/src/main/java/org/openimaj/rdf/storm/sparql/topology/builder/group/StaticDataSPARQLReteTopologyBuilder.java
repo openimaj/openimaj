@@ -571,7 +571,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	 * @param finalTerm
 	 * @param namedCompilation
 	 */
-	private void connectToFinalTerminal(
+	protected void connectToFinalTerminal(
 			SPARQLReteTopologyBuilderContext context,
 			BoltDeclarer finalTerminalDeclarer ,
 			String finalTerminalName,
@@ -668,8 +668,8 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		return vars.toString();
 	}
 
-	private void connectFilterBolt(SPARQLReteTopologyBuilderContext context, String name, StormSPARQLFilterBolt bolt) {
-		context.builder.setBolt(name, bolt).shuffleGrouping(bolt.getPrevious());
+	protected void connectFilterBolt(SPARQLReteTopologyBuilderContext context, String name, StormSPARQLFilterBolt bolt) {
+		context.builder.setBolt(name, bolt,this.getFilterBoltParallelism()).shuffleGrouping(bolt.getPrevious());
 	}
 
 	/**
@@ -683,7 +683,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	 * @param bolt
 	 */
 	public void connectJoinBolt(SPARQLReteTopologyBuilderContext context, String name, QueryHoldingReteJoinBolt bolt) {
-		BoltDeclarer midBuild = context.builder.setBolt(name, bolt, 1);
+		BoltDeclarer midBuild = context.builder.setBolt(name, bolt, this.getJoinBoltParallelism());
 		midBuild.fieldsGrouping(bolt.getLeftBolt(), bolt.getLeftJoinFields());
 		midBuild.fieldsGrouping(bolt.getRightBolt(), bolt.getRightJoinFields());
 	}
@@ -700,7 +700,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	 * @param bolt
 	 */
 	public void connectFilterBolt(SPARQLReteTopologyBuilderContext context, String name, QueryHoldingReteFilterBolt bolt) {
-		BoltDeclarer midBuild = context.builder.setBolt(name, bolt);
+		BoltDeclarer midBuild = context.builder.setBolt(name, bolt,this.getFilterBoltParallelism());
 		// All the filter bolts are given triples from the source spout
 		// and the final terminal
 		midBuild.shuffleGrouping(context.source);

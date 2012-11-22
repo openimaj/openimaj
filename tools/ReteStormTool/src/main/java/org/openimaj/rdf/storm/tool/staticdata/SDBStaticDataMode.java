@@ -20,6 +20,8 @@ import org.openjena.riot.RiotLoader;
 import org.openjena.riot.SysRIOT;
 
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
@@ -73,7 +75,7 @@ public class SDBStaticDataMode implements StaticDataMode {
 			usage = "Force a refresh of the database if it exists already, otherwise use it as is.")
 	private boolean refresh = false;
 
-
+	private static final String jdbcUnicode = "useUnicode=true&characterEncoding=UTF-8";
 	private final static Logger logger = Logger.getLogger(SDBStaticDataMode.class);
 
 	@Override
@@ -101,12 +103,12 @@ public class SDBStaticDataMode implements StaticDataMode {
 		logger.debug("Preparing static data using Jena SDB");
 		SysRIOT.wireIntoJena();
 		String dbName = String.format("jeandb_%s", name);
-		String dbURL = String.format("%s/%s", url, dbName);
+		String dbURL = String.format("%s/%s?%s", url, dbName,jdbcUnicode);
 		logger.debug("Attempting to connect to: " + dbURL);
 		Connection connection;
 		try {
 			connection = DriverManager.getConnection(url, username, password);
-			Statement statement = connection.createStatement();
+
 
 			DatabaseMetaData meta = connection.getMetaData();
 			ResultSet rs = meta.getCatalogs();
@@ -121,6 +123,7 @@ public class SDBStaticDataMode implements StaticDataMode {
 				if (refresh) {
 					logger.debug("Forcing database removal...");
 					String hrappSQL = String.format("DROP DATABASE %s", dbName);
+					Statement statement = connection.createStatement();
 					statement.executeUpdate(hrappSQL);
 				} else {
 					logger.debug("No remvoing existing database...");
@@ -130,24 +133,41 @@ public class SDBStaticDataMode implements StaticDataMode {
 			if (createDB) {
 				try{
 					logger.debug("Creating database...");
-					StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesHash, DatabaseType.MySQL);
+					StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex, DatabaseType.MySQL);
 					String hrappSQL = String.format("CREATE DATABASE %s", dbName);
+					Statement statement = connection.createStatement();
 					statement.executeUpdate(hrappSQL);
 					logger.debug("Database created!...creating layout...");
 					SDBConnection sdbConnection = new SDBConnection(dbURL, username, password);
 					Store store = SDBFactory.connectStore(sdbConnection, storeDesc);
 					store.getTableFormatter().create();
-					logger.debug("Done!...populating...");
+					logger.debug("Done!...populating temporary model...");
 					Dataset dataset = SDBFactory.connectDataset(store);
-//					RiotLoader.read(location, dataset.asDatasetGraph());
-					RiotLoader.read(location, dataset.asDatasetGraph(), Lang.NTRIPLES);
+//					String[] lines = FileUtils.readlines(new File(location),"UTF-8");
+//					for (String string : lines) {
+//						try{
+//							RiotLoader.read(new ByteArrayInputStream(string.getBytes()),dataset.asDatasetGraph(),Lang.TURTLE,"");
+//						}
+//						catch(Throwable e){
+//							logger.error("Failed to add triple:\n" + string);
+//						}
+//					}
+					String fileURL = location;
+					logger.debug("...Loading triples from: " + fileURL);
+					Model tmpModel = ModelFactory.createDefaultModel();
+					// RiotLoader.read(fileURL, dataset.asDatasetGraph(),Lang.TURTLE);
+					RiotLoader.read(location, tmpModel.getGraph(), Lang.NTRIPLES);
+					logger.debug("Done!...populating SQL model...");
+					dataset.getDefaultModel().add(tmpModel);
 					logger.debug("Done!");
 					store.close();
 				}
 				catch(Throwable e){
 					logger.error("Something went wrong while creating the database, trying to cleanup");
-					String hrappSQL = String.format("DROP DATABASE %s", dbName);
-					statement.executeUpdate(hrappSQL);
+//					String hrappSQL = String.format("DROP DATABASE %s", dbName);
+//					Statement statement = connection.createStatement();
+//					statement.executeUpdate(hrappSQL);
+					logger.error("Done!");
 					throw e;
 				}
 

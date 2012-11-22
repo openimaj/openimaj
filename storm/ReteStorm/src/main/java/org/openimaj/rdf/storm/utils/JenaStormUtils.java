@@ -62,17 +62,17 @@ import com.hp.hpl.jena.sparql.syntax.Template;
 
 /**
  * A collections to tools for letting Jena play nicely with Storm
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
  *         (ss@ecs.soton.ac.uk), David Monks <dm11g08@ecs.soton.ac.uk>
- * 
+ *
  */
 public class JenaStormUtils {
 
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_URI extends Serializer<Node_URI> {
 
@@ -91,7 +91,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TemplateSerialiser extends Serializer<Template> {
 
@@ -119,7 +119,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_Literal extends Serializer<Node_Literal> {
 
@@ -146,7 +146,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_Blank extends Serializer<Node_Blank> {
 
@@ -166,7 +166,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TripleSerialiser extends Serializer<Triple> {
 
@@ -191,7 +191,7 @@ public class JenaStormUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
 	 */
 	public static class GraphSerialiser extends Serializer<Graph> {
@@ -237,7 +237,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_ARRAY extends Serializer<Node[]> {
 
@@ -263,7 +263,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class KestrelServerSpec_Serializer extends Serializer<KestrelServerSpec> {
 
@@ -283,7 +283,7 @@ public class JenaStormUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class RuleSerializer extends Serializer<Rule> {
 

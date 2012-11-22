@@ -10,7 +10,7 @@ import org.openimaj.kestrel.GraphKestrelTupleWriter;
 import org.openimaj.kestrel.KestrelTupleWriter;
 import org.openimaj.rdf.storm.sparql.topology.StormSPARQLReteTopologyOrchestrator;
 import org.openimaj.rdf.storm.sparql.topology.bolt.sink.QuerySolutionSerializer;
-import org.openimaj.rdf.storm.sparql.topology.builder.group.KestrelStaticDataSPARQLReteTopologyBuilder;
+import org.openimaj.rdf.storm.sparql.topology.builder.group.IdentityKestrelStaticDataSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.sparql.topology.builder.group.StaticDataSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.tool.ReteStormOptions;
 
@@ -25,9 +25,9 @@ import backtype.storm.generated.StormTopology;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
+public class IdentitySPARQLRuleLanguageHandler implements RuleLanguageHandler {
 
-	private Logger logger = Logger.getLogger(SPARQLRuleLanguageHandler.class);
+	private Logger logger = Logger.getLogger(IdentitySPARQLRuleLanguageHandler.class);
 
 	/**
 	 *
@@ -42,7 +42,7 @@ public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
 	@Override
 	public StormTopology constructTopology(ReteStormOptions options, Config config) {
 
-		KestrelStaticDataSPARQLReteTopologyBuilder topologyBuilder = new KestrelStaticDataSPARQLReteTopologyBuilder(
+		IdentityKestrelStaticDataSPARQLReteTopologyBuilder topologyBuilder = new IdentityKestrelStaticDataSPARQLReteTopologyBuilder(
 				options.getKestrelSpecList(),
 				options.inputQueue, options.outputQueue,
 				options.staticDataSources());

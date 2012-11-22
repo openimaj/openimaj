@@ -58,9 +58,9 @@ import com.hp.hpl.jena.sparql.graph.GraphFactory;
  * Writes and reads the tuples described by the
  * {@link StormReteBolt#declaredFields(int)} function
  * with 0 as the parameter
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class GraphWritingScheme implements WritingScheme {
 
@@ -94,6 +94,7 @@ public class GraphWritingScheme implements WritingScheme {
 
 	@Override
 	public List<Object> deserialize(byte[] ser) {
+		String toParse = new String(ser);
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(ser));
 		try {
 			boolean isAdd = dis.readBoolean();

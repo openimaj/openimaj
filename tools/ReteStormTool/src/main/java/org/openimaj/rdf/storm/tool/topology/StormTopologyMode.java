@@ -11,17 +11,15 @@ import backtype.storm.generated.StormTopology;
  * {@link StormTopology} constructed
  * using {@link ReteStormOptions#constructTopology}. The topology is submitted
  * as {@link ReteStormOptions#topologyName}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class StormTopologyMode implements TopologyMode {
 
 	@Override
 	public void submitTopology(ReteStormOptions options) throws Exception {
-		Config conf = new Config();
-		conf.setNumWorkers(20);
-		conf.setMaxSpoutPending(5000);
+		Config conf = options.prepareConfig();
 		StormSubmitter.submitTopology(options.topologyName, conf, options.constructTopology(conf));
 	}
 

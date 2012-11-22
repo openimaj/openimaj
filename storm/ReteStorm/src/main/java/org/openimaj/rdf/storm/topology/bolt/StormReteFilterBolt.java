@@ -174,7 +174,7 @@ public class StormReteFilterBolt extends StormRuleReteBolt {
 					// in case this Triple has been extracted from a larger graph, create a new Graph
 					// containing just this Triple.
 					Graph g = new GraphMem();
-					g.add(t);
+//					g.add(t);
 					// insert the new graph into the array of Values
 					vals.add(g);
 					break;

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -15,6 +16,7 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.FileUtils;
 import org.openimaj.kestrel.KestrelServerSpec;
 import org.openimaj.kestrel.KestrelTupleWriter;
+import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
 import org.openimaj.rdf.storm.tool.lang.RuleLanguageHandler;
 import org.openimaj.rdf.storm.tool.lang.RuleLanguageMode;
@@ -27,6 +29,7 @@ import org.openimaj.rdf.storm.tool.staticdata.StaticDataModeOption;
 import org.openimaj.rdf.storm.tool.topology.TopologyMode;
 import org.openimaj.rdf.storm.tool.topology.TopologyModeOption;
 import org.openimaj.rdf.storm.topology.utils.KestrelUtils;
+import org.openimaj.rdf.storm.utils.JenaStormUtils;
 import org.openimaj.tools.InOutToolOptions;
 
 import backtype.storm.Config;
@@ -39,7 +42,8 @@ import backtype.storm.generated.StormTopology;
  *
  */
 public class ReteStormOptions extends InOutToolOptions {
-
+	private static final Logger logger = Logger.getLogger(ReteStormOptions.class);
+	private static final String KESTREL_FORMAT = "%s:%s";
 	/**
 	 * The name of the topology to submit
 	 */
@@ -90,7 +94,7 @@ public class ReteStormOptions extends InOutToolOptions {
 			required = false,
 			usage = "A monitor is started and runs in a thread after the topology is instantiated",
 			handler = ProxyOptionHandler.class)
-	public MonitorModeOption mm = MonitorModeOption.KESTREL;
+	public MonitorModeOption mm = MonitorModeOption.NONE;
 	/**
 	 * The monitor instance
 	 */
@@ -123,18 +127,9 @@ public class ReteStormOptions extends InOutToolOptions {
 			aliases = "-kh",
 			required = false,
 			usage = "The message queue host from which and to which triples will be written",
-			metaVar = "STRING")
-	public String kestrelHost = KestrelServerSpec.LOCALHOST;
-	/**
-	 *
-	 */
-	@Option(
-			name = "--kestrel-port",
-			aliases = "-kp",
-			required = false,
-			usage = "The message queue port from which and to which triples will be written",
-			metaVar = "STRING")
-	public int kestrelPort = KestrelServerSpec.DEFAULT_KESTREL_THRIFT_PORT;
+			metaVar = "STRING",
+			multiValued=true)
+	public List<String> kestrelHosts = new ArrayList<String>();
 
 	/**
 	 *
@@ -171,7 +166,10 @@ public class ReteStormOptions extends InOutToolOptions {
 			multiValued = true)
 	private boolean feedBack = false;
 
-	private List<KestrelServerSpec> kestrelSpecList = new ArrayList<KestrelServerSpec>();
+	/**
+	 * parsed kestrel server specs
+	 */
+	public List<KestrelServerSpec> kestrelSpecList = new ArrayList<KestrelServerSpec>();
 
 	/**
 	 * the input queue from which triples are read by the pipeline
@@ -189,6 +187,53 @@ public class ReteStormOptions extends InOutToolOptions {
 			required = false,
 			usage = "Force all input values to be queued before the first value is fed to the topology")
 	public boolean prepopulate = false;
+
+
+	/**
+	 *
+	 */
+	@Option(
+			name = "--topology-parallelism",
+			aliases = "-tpar",
+			required = false,
+			usage = "The number of tasks ran by each bolt in the topology. This offers the default value for join/filter parallelism")
+	public String topologyParallelism = "2";
+
+	/**
+	 *
+	 */
+	@Option(
+			name = "--topology-join-parallelism",
+			aliases = "-jpar",
+			required = false,
+			usage = "The number of tasks ran by each join bolt in the topology")
+	public String topologyJoinParallelism = null;
+
+	/**
+	 *
+	 */
+	@Option(
+			name = "--topology-filter-parallelism",
+			aliases = "-fpar",
+			required = false,
+			usage = "The number of tasks ran by each filter bolt in the topology")
+	public String topologyFilterParallelism = null;
+
+	@Option(
+			name = "--topology-workers",
+			aliases = "-twork",
+			required = false,
+			usage = "The number of workers running the executors of this topology")
+	private int numberOfWorkers = 2;
+
+	@Option(
+			name = "--topology-max-parallelism",
+			aliases = "-maxpar",
+			required = false,
+			usage = "Max parallelism")
+	private int maxParallelism = 4;
+
+
 
 	/**
 	 * @param args
@@ -234,8 +279,10 @@ public class ReteStormOptions extends InOutToolOptions {
 		}
 		this.rules = FileUtils.readall(rulesFile);
 		this.triplesInputModeOp.init(this);
-		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
-		this.kestrelSpecList.add(spec);
+		if(this.kestrelHosts.size() == 0){
+			this.kestrelHosts.add(String.format(KESTREL_FORMAT,KestrelServerSpec.LOCALHOST,KestrelServerSpec.DEFAULT_KESTREL_THRIFT_PORT));
+		}
+		this.kestrelSpecList = KestrelServerSpec.parseKestrelAddressList(this.kestrelHosts);
 	}
 
 	/**
@@ -282,19 +329,56 @@ public class ReteStormOptions extends InOutToolOptions {
 	}
 
 	public void populateInputs() throws TException, IOException {
-		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
+		logger.info("Populating kestrel Queues");
 		KestrelTupleWriter rdfWriter = triplesKestrelWriter();
 		if (this.feedBack) {
-			rdfWriter.write(spec, this.inputQueue, this.outputQueue);
+			rdfWriter.write(this.kestrelSpecList, this.inputQueue, this.outputQueue);
 		} else {
-			rdfWriter.write(spec, this.inputQueue);
+			rdfWriter.write(this.kestrelSpecList, this.inputQueue);
 		}
 
 	}
 
 	public void prepareQueues() throws TException {
-		KestrelServerSpec spec = new KestrelServerSpec(kestrelHost, kestrelPort);
-		KestrelUtils.deleteQueues(spec, inputQueue, outputQueue);
+		logger.info("Preparing Kestrel Queues");
+		for (KestrelServerSpec ks : this.kestrelSpecList) {
+			KestrelUtils.deleteQueues(ks, inputQueue, outputQueue);
+		}
+	}
+
+	public Config prepareConfig() {
+		Config conf = new Config();
+		conf.setMaxSpoutPending(5000);
+		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_PARALLELISM, topologyParallelism);
+		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_JOIN_PARALLELISM, topologyJoinParallelism);
+		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_FILTER_PARALLELISM, topologyFilterParallelism);
+		conf.setNumWorkers(numberOfWorkers );
+		conf.setMaxTaskParallelism(maxParallelism);
+		conf.setFallBackOnJavaSerialization(false);
+		conf.setSkipMissingKryoRegistrations(false);
+		JenaStormUtils.registerSerializers(conf);
+		return conf;
+	}
+
+	/**
+	 * @throws IOException
+	 *
+	 */
+	public void initMonitor() throws IOException {
+		if(this.mmOp!=null){
+			logger.debug("Initialising monitor");
+			this.mmOp.init(this);
+		}
+
+	}
+
+	public void startMonitor() {
+		if(this.mmOp!=null){
+			logger.debug("Starting monitor");
+			Thread thread = new Thread(this.mmOp);
+			thread.setDaemon(true);
+			thread.start();
+		}
 	}
 
 }

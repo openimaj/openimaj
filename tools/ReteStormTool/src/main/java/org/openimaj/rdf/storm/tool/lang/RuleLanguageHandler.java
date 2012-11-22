@@ -1,5 +1,10 @@
 package org.openimaj.rdf.storm.tool.lang;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+
+import org.openimaj.kestrel.KestrelTupleWriter;
 import org.openimaj.rdf.storm.tool.ReteStormOptions;
 
 import backtype.storm.Config;
@@ -23,5 +28,13 @@ public interface RuleLanguageHandler {
 	 * @return the topology for the rules
 	 */
 	public StormTopology constructTopology(ReteStormOptions options, Config config);
+
+	/**
+	 * How tuples are written to the kestrel queue
+	 * @param urlList
+	 * @return
+	 * @throws IOException
+	 */
+	public KestrelTupleWriter tupleWriter(ArrayList<URL> urlList) throws IOException;
 
 }

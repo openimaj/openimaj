@@ -13,13 +13,13 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
 
 public class QueryHoldingReteJoinIdentityBolt extends QueryHoldingReteJoinBolt {
-	
+
 	public QueryHoldingReteJoinIdentityBolt(String string, int[] matchLeft, int[] templateLeft, String string2, int[] matchRight, int[] templateRight, Rule rule) {
 		super(string, matchLeft, templateLeft, string2, matchRight, templateRight, rule);
 	}
 
 /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -3035786591470164889L;
 
@@ -32,6 +32,7 @@ public class QueryHoldingReteJoinIdentityBolt extends QueryHoldingReteJoinBolt {
 
 	@Override
 	public void execute(Tuple input) {
+		this.currentInput = input;
 		this.fire(new Values(), true);
 		emit(input);
 		acknowledge(input);
@@ -40,7 +41,7 @@ public class QueryHoldingReteJoinIdentityBolt extends QueryHoldingReteJoinBolt {
 	@Override
 	public void prepare() {
 	}
-	
+
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(new Fields());
