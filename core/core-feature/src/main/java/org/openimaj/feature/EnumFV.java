@@ -39,8 +39,9 @@ import java.util.Scanner;
  * A feature-vector representation of an enumeration
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> type of underlying enumeration 
+ * 
+ * @param <T>
+ *            type of underlying enumeration
  */
 public class EnumFV<T extends Enum<T>> implements FeatureVector {
 	private static final long serialVersionUID = 1L;
@@ -48,7 +49,9 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 
 	/**
 	 * Construct the feature with the given value
-	 * @param value the value
+	 * 
+	 * @param value
+	 *            the value
 	 */
 	public EnumFV(T value) {
 		this.enumValue = value;
@@ -58,10 +61,10 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 	public void readBinary(DataInput in) throws IOException {
 		try {
 			@SuppressWarnings("unchecked")
-			Class<T> clz = (Class<T>) Class.forName(in.readUTF());
-			String name = in.readUTF();
+			final Class<T> clz = (Class<T>) Class.forName(in.readUTF());
+			final String name = in.readUTF();
 			this.enumValue = Enum.valueOf(clz, name);
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -70,10 +73,10 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 	public void readASCII(Scanner in) throws IOException {
 		try {
 			@SuppressWarnings("unchecked")
-			Class<T> clz = (Class<T>) Class.forName(in.nextLine());
-			String name = in.nextLine();
+			final Class<T> clz = (Class<T>) Class.forName(in.nextLine());
+			final String name = in.nextLine();
 			this.enumValue = Enum.valueOf(clz, name);
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -97,7 +100,7 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		out.println(enumValue.getDeclaringClass().getName());
-		out.println(enumValue.toString());		
+		out.println(enumValue.toString());
 	}
 
 	@Override
@@ -111,18 +114,23 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 	}
 
 	@Override
-	public DoubleFV normaliseFV(double [] min, double [] max) {
-		return new DoubleFV(asDoubleVector()).normaliseFV(min, max);
+	public DoubleFV normaliseFV(double[] min, double[] max) {
+		return asDoubleFV().normaliseFV(min, max);
 	}
-	
+
 	@Override
 	public DoubleFV normaliseFV(double min, double max) {
-		return new DoubleFV(asDoubleVector()).normaliseFV(min, max);
+		return asDoubleFV().normaliseFV(min, max);
 	}
 
 	@Override
 	public DoubleFV normaliseFV() {
-		return new DoubleFV(asDoubleVector());
+		return asDoubleFV().normaliseFV();
+	}
+
+	@Override
+	public DoubleFV normaliseFV(double p) {
+		return asDoubleFV().normaliseFV(p);
 	}
 
 	@Override
@@ -132,7 +140,7 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 
 	@Override
 	public double[] asDoubleVector() {
-		double [] vec = new double[length()];
+		final double[] vec = new double[length()];
 		vec[enumValue.ordinal()] = 1;
 		return vec;
 	}

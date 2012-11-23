@@ -202,6 +202,14 @@ public class Sparse#T#FV implements FeatureVector {
 		
 		return new DoubleFV(dvals);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.openimaj.feature.FeatureVector#normaliseFV(double)
+	 */
+	@Override
+	public DoubleFV normaliseFV(double p) {
+	    return asDoubleFV().normaliseFV(p);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.openimaj.feature.FeatureVector#asDoubleFV()

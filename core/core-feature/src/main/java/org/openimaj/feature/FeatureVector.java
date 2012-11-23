@@ -100,4 +100,14 @@ public interface FeatureVector extends Cloneable, Serializable, ReadWriteable {
 	 * @return a copy of the feature vector as a double array
 	 */
 	public double[] asDoubleVector();
+
+	/**
+	 * Lp Norm of the FV.
+	 * 
+	 * @param p
+	 *            the norm to compute
+	 * 
+	 * @return feature vector normalised using the Lp norm
+	 */
+	public DoubleFV normaliseFV(double p);
 }

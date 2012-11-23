@@ -132,7 +132,7 @@ public class #T#FV extends ArrayFeatureVector<#t#[]> implements Cloneable {
 	}
 	
 	/**
-	 * Normalise the FV to unit length.
+	 * Normalise the FV to unit area.
 	 *
 	 * @return feature vector with all elements summing to 1.
 	 */
@@ -146,6 +146,30 @@ public class #T#FV extends ArrayFeatureVector<#t#[]> implements Cloneable {
 
 		for (int i=0; i<dvals.length; i++)
 			dvals[i] /= sum;
+		
+		return new DoubleFV(dvals);
+	}
+	
+	/**
+	 * Lp Norm of the FV.
+	 *
+	 * @param
+	 *      p the norm to compute
+	 * 
+	 * @return feature vector normalised using the Lp norm
+	 */
+	@Override
+	public DoubleFV normaliseFV(double p) {
+		double [] dvals = asDoubleVector();
+		double pnorm = 0;
+
+		for (int i=0; i<dvals.length; i++)
+			pnorm += Math.pow(dvals[i], p);
+			
+		pnorm = Math.pow(pnorm, 1.0 / p);
+
+		for (int i=0; i<dvals.length; i++)
+			dvals[i] /= pnorm;
 		
 		return new DoubleFV(dvals);
 	}
