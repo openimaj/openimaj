@@ -86,7 +86,7 @@ import eu.larkc.csparql.streams.formats.TranslationException;
  */
 public class ReteTopologyTest {
 	private static final String PREFIX = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX ex: <http://example.com/> PREFIX xs: <http://www.w3.org/2001/XMLSchema#>";
-	private static long TOPOLOGY_SLEEP_TIME = 3000;
+	private static long TOPOLOGY_SLEEP_TIME = 6000;
 	/**
 	 *
 	 */
@@ -352,6 +352,7 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
+		expectedValues.add(e);
 		File staticData = fileFromStream(ReteTopologyBuilder.class.getResourceAsStream("/osn_users.nt"));
 		performQuery(sparqlSource, "/osn_posts.nt", expectedValues, "file://" + staticData.getAbsolutePath());
 	}
@@ -426,6 +427,7 @@ public class ReteTopologyTest {
 		Query simpleQuery = orchestrator.getQuery().simpleQuery;
 		if (simpleQuery.isSelectType()) {
 			List<Binding> sols = readAllResults(topologyBuilder);
+			System.out.println(sols);
 			assertTrue(sols.containsAll(expectedValues));
 			assertTrue(expectedValues.containsAll(sols));
 		} else if (simpleQuery.isConstructType()) {

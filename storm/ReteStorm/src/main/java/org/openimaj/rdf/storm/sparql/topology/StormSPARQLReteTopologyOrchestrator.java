@@ -212,7 +212,7 @@ public class StormSPARQLReteTopologyOrchestrator {
 	{
 		final Config config = new Config();
 		config.setDebug(false);
-		config.setNumWorkers(2);
+		config.setNumWorkers(1);
 		config.setMaxSpoutPending(1000);
 		config.setMaxTaskParallelism(16);
 		config.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_PARALLELISM,"2");

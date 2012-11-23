@@ -171,6 +171,7 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 				Graph newG = (Graph) env.getValueByField(StormReteBolt.Component.graph.toString());
 				addMetaValues(newVals, isAdd, newG, timestamp);
 				continuation.fire(newVals, isAdd);
+				continuation.emit(env);
 				logger.debug("Found static binding: " + binding);
 			}
 			logger.debug("Dataset query took: " + t.duration()/1000f + "s");
