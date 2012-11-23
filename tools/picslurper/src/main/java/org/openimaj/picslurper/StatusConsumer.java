@@ -136,7 +136,7 @@ public class StatusConsumer {
 		if (status.getURLEntities() != null) {
 
 			for (final URLEntity map : status.getURLEntities()) {
-				URL u = map.getExpandedURL();
+				String u = map.getExpandedURL();
 				if (u == null) {
 					u = map.getURL();
 				}

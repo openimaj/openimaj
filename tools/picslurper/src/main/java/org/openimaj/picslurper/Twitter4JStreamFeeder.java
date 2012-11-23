@@ -11,6 +11,7 @@ import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.parallel.partition.FixedSizeBlockingChunkPartitioner;
 import org.openimaj.util.queue.BoundedPriorityQueue;
 
+import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
@@ -115,6 +116,12 @@ public class Twitter4JStreamFeeder implements StatusFeeder {
 
 		@Override
 		public void onScrubGeo(long userId, long upToStatusId) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onStallWarning(StallWarning warning) {
 			// TODO Auto-generated method stub
 
 		}
