@@ -8,7 +8,7 @@ import org.openimaj.feature.FloatFV;
  * the Hellinger kernel on the un-normalised vectors.
  * <p>
  * The normalisation works by optionally adding an offset to the vectors (to
- * deal with input vectors that have negative values), L1, normalising the
+ * deal with input vectors that have negative values), L1 normalising the
  * vectors and finally performing an element-wise sqrt.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
