@@ -41,6 +41,7 @@ import org.openimaj.rdf.storm.bolt.RETEStormQueue;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEQueue;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
@@ -104,7 +105,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 			 5000,15,TimeUnit.MINUTES,
 			 rule);
 	}
-	
+
 	/**
 	 *
 	 * @param leftBolt
@@ -132,7 +133,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 			 capacityRight,DEFAULT_RANGE,DEFAULT_UNIT,
 			 rule);
 	}
-	
+
 	/**
 	 *
 	 * @param leftBolt
@@ -164,7 +165,7 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 			 DEFAULT_CAPACITY,rangeRight,unitRight,
 			 rule);
 	}
-	
+
 	/**
 	 *
 	 * @param leftBolt
@@ -368,12 +369,13 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy, RETERuleContext context) {
 		return null;
 	}
-	
+
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		super.declareOutputFields(declarer);
 		declarer.declareStream(leftBolt, declaredFields(matchLeft.length));
-		declarer.declareStream(rightBolt, declaredFields(matchRight.length));
+		 if (!leftBolt.equals(rightBolt))
+			 declarer.declareStream(rightBolt, declaredFields(matchRight.length));
 	}
-	
+
 }

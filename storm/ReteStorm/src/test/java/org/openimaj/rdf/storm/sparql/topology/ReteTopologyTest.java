@@ -303,7 +303,8 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
 		expectedValues.add(e);
-		performQuery(sparqlSource, "/osn_posts.nt", expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
+		File staticData = fileFromStream(ReteTopologyBuilder.class.getResourceAsStream("/osn_users.nt"));
+		performQuery(sparqlSource, "/osn_posts.nt", expectedValues, "file://" + staticData.getAbsolutePath());
 	}
 
 	/**
@@ -327,7 +328,8 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
 		expectedValues.add(e);
-		performQuery(sparqlSource,"/osn_posts.nt", expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
+		File staticData = fileFromStream(ReteTopologyBuilder.class.getResourceAsStream("/osn_users.nt"));
+		performQuery(sparqlSource,"/osn_posts.nt", expectedValues, "file://" + staticData.getAbsolutePath());
 	}
 
 	/**
@@ -350,8 +352,8 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("user1"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u941>"));
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
-		expectedValues.add(e);
-		performQuery(sparqlSource, "/osn_posts.nt",expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
+		File staticData = fileFromStream(ReteTopologyBuilder.class.getResourceAsStream("/osn_users.nt"));
+		performQuery(sparqlSource, "/osn_posts.nt", expectedValues, "file://" + staticData.getAbsolutePath());
 	}
 
 	class CheckableQuery {
