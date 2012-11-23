@@ -29,6 +29,7 @@
  */
 package org.openimaj.rdf.storm.bolt;
 
+import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
 /**
@@ -43,6 +44,27 @@ public interface RETEStormSinkNode extends RETEStormNode {
 	 * @param isAdd 
 	 */
 	public void fire (Values output, boolean isAdd);
+	
+	/**
+	 * 
+	 * @param streamID
+	 * @param output
+	 * @param isAdd 
+	 */
+	public void fire (String streamID, Values output, boolean isAdd);
+	
+	/**
+	 * 
+	 * @param anchor
+	 */
+	public void emit (Tuple anchor);
+	
+	/**
+	 * 
+	 * @param streamID
+	 * @param anchor
+	 */
+	public void emit (String streamID, Tuple anchor);
 	
 	/**
 	 * 

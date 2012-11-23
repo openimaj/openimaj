@@ -58,12 +58,15 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  *         implementation by <a href="mailto:der@hplb.hpl.hp.com">Dave
  *         Reynolds</a>
  */
-public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
+public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tuple>, RETEStormSourceNode {
 
 	protected final static Logger logger = Logger.getLogger(RETEStormQueue.class);
 
 	/** A time-prioritised and size limited sliding window of Tuples */
 	private final CircularPriorityWindow<Tuple> window;
+	
+	/** The name of the stream over which this bolt acts */
+	private final String windowName;
 
 	/** A set of {@link Fields} which should match between the two inputs */
 	protected final int[] matchIndices;
@@ -94,14 +97,16 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	 * @param delay
 	 * @param unit
 	 */
-	public RETEStormQueue(int[] matchFields,
+	public RETEStormQueue(String name,
+			int[] matchFields,
 			int[] outputFields,
 			int size,
 			long delay,
 			TimeUnit unit) {
+		this.windowName = name;
 		this.matchIndices = matchFields;
 		this.outputIndices = outputFields;
-		this.window = new CircularPriorityWindow<Tuple>(size, delay, unit);
+		this.window = new CircularPriorityWindow<Tuple>(this, size, delay, unit);
 	}
 
 	/**
@@ -120,13 +125,14 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	 * @param unit
 	 * @param sib
 	 */
-	public RETEStormQueue(int[] matchFields,
+	public RETEStormQueue(String name,
+			int[] matchFields,
 			int[] outputFields,
 			int size,
 			long delay,
 			TimeUnit unit,
 			RETEStormQueue sib) {
-		this(matchFields, outputFields, size, delay, unit);
+		this(name, matchFields, outputFields, size, delay, unit);
 		this.setSibling(sib);
 		sib.setSibling(this);
 	}
@@ -148,14 +154,15 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	 * @param sib
 	 * @param sink
 	 */
-	public RETEStormQueue(int[] matchFields,
+	public RETEStormQueue(String name,
+			int[] matchFields,
 			int[] outputFields,
 			int size,
 			long delay,
 			TimeUnit unit,
 			RETEStormQueue sib,
 			RETEStormSinkNode sink) {
-		this(matchFields, outputFields, size, delay, unit, sib);
+		this(name, matchFields, outputFields, size, delay, unit, sib);
 		this.setContinuation(sink);
 	}
 
@@ -224,6 +231,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 
 				// Fire the successor processing
 				continuation.fire(newVals, isAdd);
+				continuation.emit(env);
 			}
 		}
 
@@ -276,7 +284,7 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy, RETERuleContext context) {
 		RETEStormQueue clone = (RETEStormQueue) netCopy.get(this);
 		if (clone == null) {
-			clone = new RETEStormQueue(matchIndices, outputIndices, window.getCapacity(), window.getDelay(), TimeUnit.MILLISECONDS);
+			clone = new RETEStormQueue(windowName, matchIndices, outputIndices, window.getCapacity(), window.getDelay(), TimeUnit.MILLISECONDS);
 			netCopy.put(this, clone);
 			clone.setSibling((RETEStormQueue) sibling.clone(netCopy, context));
 			clone.setContinuation((RETEStormSinkNode) continuation.clone(netCopy, context));
@@ -286,20 +294,11 @@ public class RETEStormQueue implements RETEStormSinkNode, RETEStormSourceNode {
 	}
 
 	@Override
-	public void fire(Values output, boolean isAdd) {
-		if (this == this.continuation) {
-			System.out.println(output.toString());
-			return;
-		}
-		this.continuation.fire(output, isAdd);
-	}
-
-	@Override
-	public boolean isActive() {
-		if (this == this.continuation) {
-			return this.isActive();
-		}
-		return this.continuation.isActive();
+	public void handleOverflow(Tuple overflow) {
+		Values vals = new Values();
+		vals.addAll(overflow.getValues());
+		this.continuation.fire(windowName, vals, true);
+		this.continuation.emit(windowName, overflow);
 	}
 
 }

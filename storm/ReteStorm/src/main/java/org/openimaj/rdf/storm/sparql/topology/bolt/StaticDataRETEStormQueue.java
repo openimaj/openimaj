@@ -56,12 +56,13 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 	 * @param unit
 	 * @param q
 	 */
-	public StaticDataRETEStormQueue(int[] matchFields,
+	public StaticDataRETEStormQueue(String name,
+			int[] matchFields,
 			int[] outputFields,
 			int size,
 			long delay,
 			TimeUnit unit, Query q) {
-		super(matchFields, outputFields, size, delay, unit);
+		super(name, matchFields, outputFields, size, delay, unit);
 		this.query = q;
 	}
 
@@ -82,13 +83,14 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 	 * @param sib
 	 * @param q
 	 */
-	public StaticDataRETEStormQueue(int[] matchFields,
+	public StaticDataRETEStormQueue(String name,
+			int[] matchFields,
 			int[] outputFields,
 			int size,
 			long delay,
 			TimeUnit unit,
 			StaticDataRETEStormQueue sib, Query q) {
-		super(matchFields, outputFields, size, delay, unit, sib);
+		super(name, matchFields, outputFields, size, delay, unit, sib);
 		this.query = q;
 	}
 
@@ -110,14 +112,15 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 	 * @param sink
 	 * @param q
 	 */
-	public StaticDataRETEStormQueue(int[] matchFields,
+	public StaticDataRETEStormQueue(String name,
+			int[] matchFields,
 			int[] outputFields,
 			int size,
 			long delay,
 			TimeUnit unit,
 			StaticDataRETEStormQueue sib,
 			RETEStormSinkNode sink, Query q) {
-		super(matchFields, outputFields, size, delay, unit, sib, sink);
+		super(name, matchFields, outputFields, size, delay, unit, sib, sink);
 		this.query = q;
 	}
 

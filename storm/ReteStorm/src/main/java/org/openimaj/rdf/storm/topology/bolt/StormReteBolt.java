@@ -30,6 +30,7 @@
 package org.openimaj.rdf.storm.topology.bolt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,7 +110,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@SuppressWarnings("rawtypes")
 	protected Map stormConf;
 
-	private Values toFire;
+	private Map<String,Values> toFire;
 	private boolean active;
 
 	private int[] usageStatistics = { 0, 0 };
@@ -165,6 +166,8 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		this.collector = collector;
 		this.context = context;
 		this.stormConf = stormConf;
+		this.toFire = new HashMap<String, Values>();
+		
 		prepare();
 
 		this.active = true;
@@ -180,8 +183,13 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 
 	@Override
 	public void fire(Values output, boolean isAdd) {
+		this.fire("DEFAULT", output, isAdd);
+	}
+	
+	@Override
+	public void fire(String streamID, Values output, boolean isAdd) {
 		logger.debug("Preparing to fire: " + output);
-		this.toFire = output;
+		this.toFire.put(streamID, output);
 	}
 
 	/**
@@ -190,10 +198,26 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 *
 	 * @param anchor
 	 */
-	protected void emit(Tuple anchor) {
-		if (this.toFire != null) {
-			logger.debug("Firing!");
-			this.collector.emit(anchor, toFire);
+	public void emit(Tuple anchor) {
+		if (this.toFire.containsKey("DEFAULT")) {
+			logger.debug("Firing on default stream!");
+			this.collector.emit(anchor, toFire.get("DEFAULT"));
+			this.toFire.remove("DEFAULT");
+		}
+	}
+	
+	/**
+	 * Emit the {@link Values} instance that has been prepared for firing, using
+	 * the provided {@link Tuple} as the anchor.
+	 *
+	 * @param streamID
+	 * @param anchor
+	 */
+	public void emit(String streamID, Tuple anchor) {
+		if (this.toFire.containsKey(streamID)) {
+			logger.debug("Firing on stream " + streamID + "!");
+			this.collector.emit(streamID, anchor, toFire.get(streamID));
+			this.toFire.remove(streamID);
 		}
 	}
 

@@ -38,10 +38,9 @@ import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.bolt.RETEStormNode;
 import org.openimaj.rdf.storm.bolt.RETEStormQueue;
 
+import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.tuple.Values;
-
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEQueue;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
@@ -63,12 +62,21 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 	 *
 	 */
 	private static final long serialVersionUID = -2927726523603853768L;
+	private static final int DEFAULT_CAPACITY = 5000;
+	private static final long DEFAULT_RANGE = 15;
+	private static final TimeUnit DEFAULT_UNIT = TimeUnit.MINUTES;
 	protected String leftBolt;
 	protected String rightBolt;
 	protected int[] matchLeft;
 	protected int[] matchRight;
 	protected int[] templateLeft;
 	protected int[] templateRight;
+	protected int capacityLeft;
+	protected int capacityRight;
+	protected long rangeLeft;
+	protected long rangeRight;
+	protected TimeUnit unitLeft;
+	protected TimeUnit unitRight;
 	protected RETEStormQueue leftQ;
 	protected RETEStormQueue rightQ;
 	protected Tuple currentInput;
@@ -90,13 +98,182 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 			int[] matchRight,
 			int[] templateRight,
 			Rule rule) {
+		this(leftBolt,matchLeft,templateLeft,
+			 5000,15,TimeUnit.MINUTES,
+			 rightBolt,matchRight,templateRight,
+			 5000,15,TimeUnit.MINUTES,
+			 rule);
+	}
+	
+	/**
+	 *
+	 * @param leftBolt
+	 * @param matchLeft
+	 * @param templateLeft
+	 * @param capacityLeft
+	 * @param rightBolt
+	 * @param matchRight
+	 * @param templateRight
+	 * @param capacityRight
+	 * @param rule
+	 */
+	public StormReteJoinBolt(String leftBolt,
+			int[] matchLeft,
+			int[] templateLeft,
+			int capacityLeft,
+			String rightBolt,
+			int[] matchRight,
+			int[] templateRight,
+			int capacityRight,
+			Rule rule) {
+		this(leftBolt,matchLeft,templateLeft,
+			 capacityLeft,DEFAULT_RANGE,DEFAULT_UNIT,
+			 rightBolt,matchRight,templateRight,
+			 capacityRight,DEFAULT_RANGE,DEFAULT_UNIT,
+			 rule);
+	}
+	
+	/**
+	 *
+	 * @param leftBolt
+	 * @param matchLeft
+	 * @param templateLeft
+	 * @param rangeLeft
+	 * @param unitLeft
+	 * @param rightBolt
+	 * @param matchRight
+	 * @param templateRight
+	 * @param rangeRight
+	 * @param unitRight
+	 * @param rule
+	 */
+	public StormReteJoinBolt(String leftBolt,
+			int[] matchLeft,
+			int[] templateLeft,
+			long rangeLeft,
+			TimeUnit unitLeft,
+			String rightBolt,
+			int[] matchRight,
+			int[] templateRight,
+			long rangeRight,
+			TimeUnit unitRight,
+			Rule rule) {
+		this(leftBolt,matchLeft,templateLeft,
+			 DEFAULT_CAPACITY,rangeLeft,unitLeft,
+			 rightBolt,matchRight,templateRight,
+			 DEFAULT_CAPACITY,rangeRight,unitRight,
+			 rule);
+	}
+	
+	/**
+	 *
+	 * @param leftBolt
+	 * @param matchLeft
+	 * @param templateLeft
+	 * @param capacityLeft
+	 * @param rangeLeft
+	 * @param unitLeft
+	 * @param rightBolt
+	 * @param matchRight
+	 * @param templateRight
+	 * @param capacityRight
+	 * @param rangeRight
+	 * @param unitRight
+	 * @param rule
+	 */
+	public StormReteJoinBolt(String leftBolt,
+							 int[] matchLeft,
+							 int[] templateLeft,
+							 int capacityLeft,
+							 long rangeLeft,
+							 TimeUnit unitLeft,
+							 String rightBolt,
+							 int[] matchRight,
+							 int[] templateRight,
+							 int capacityRight,
+							 long rangeRight,
+							 TimeUnit unitRight,
+							 Rule rule){
 		super(rule);
 		this.leftBolt = leftBolt;
 		this.matchLeft = matchLeft;
 		this.templateLeft = templateLeft;
+		this.capacityLeft = capacityLeft;
+		this.rangeLeft = rangeLeft;
+		this.unitLeft = unitLeft;
 		this.rightBolt = rightBolt;
 		this.matchRight = matchRight;
 		this.templateRight = templateRight;
+		this.capacityRight = capacityRight;
+		this.rangeRight = rangeRight;
+		this.unitRight = unitRight;
+	}
+
+	public StormReteJoinBolt(String leftBolt2, int[] matchLeft2,
+			int[] templateLeft2, String rightBolt2, int[] matchRight2,
+			int[] templateRight2, int capacityRight2, long rangeRight2,
+			TimeUnit unitRight2, Rule rule) {
+		this(leftBolt2, matchLeft2, templateLeft2,
+			 DEFAULT_CAPACITY, DEFAULT_RANGE, DEFAULT_UNIT,
+			 rightBolt2, matchRight2, templateRight2,
+			 capacityRight2, rangeRight2, unitRight2,
+			 rule);
+	}
+
+	public StormReteJoinBolt(String leftBolt2, int[] matchLeft2,
+			int[] templateLeft2, long rangeLeft2, TimeUnit unitLeft2,
+			String rightBolt2, int[] matchRight2, int[] templateRight2,
+			int capacityRight2, long rangeRight2, TimeUnit unitRight2, Rule rule) {
+		this(leftBolt2, matchLeft2, templateLeft2,
+			 DEFAULT_CAPACITY, rangeLeft2, unitLeft2,
+			 rightBolt2, matchRight2, templateRight2,
+			 capacityRight2, rangeRight2, unitRight2,
+			 rule);
+	}
+
+	public StormReteJoinBolt(String leftBolt2, int[] matchLeft2,
+			int[] templateLeft2, int capacityLeft2, String rightBolt2,
+			int[] matchRight2, int[] templateRight2, int capacityRight2,
+			long rangeRight2, TimeUnit unitRight2, Rule rule) {
+		this(leftBolt2, matchLeft2, templateLeft2,
+			 capacityLeft2, DEFAULT_RANGE, DEFAULT_UNIT,
+			 rightBolt2, matchRight2, templateRight2,
+			 capacityRight2, rangeRight2, unitRight2,
+			 rule);
+	}
+
+	public StormReteJoinBolt(String leftBolt2, int[] matchLeft2,
+			int[] templateLeft2, int capacityLeft2, long rangeLeft2,
+			TimeUnit unitLeft2, String rightBolt2, int[] matchRight2,
+			int[] templateRight2, Rule rule) {
+		this(leftBolt2, matchLeft2, templateLeft2,
+			 capacityLeft2, rangeLeft2, unitLeft2,
+			 rightBolt2, matchRight2, templateRight2,
+			 DEFAULT_CAPACITY, DEFAULT_RANGE, DEFAULT_UNIT,
+			 rule);
+	}
+
+	public StormReteJoinBolt(String leftBolt2, int[] matchLeft2,
+			int[] templateLeft2, int capacityLeft2, long rangeLeft2,
+			TimeUnit unitLeft2, String rightBolt2, int[] matchRight2,
+			int[] templateRight2, long rangeRight2, TimeUnit unitRight2,
+			Rule rule) {
+		this(leftBolt2, matchLeft2, templateLeft2,
+			 capacityLeft2, rangeLeft2, unitLeft2,
+			 rightBolt2, matchRight2, templateRight2,
+			 DEFAULT_CAPACITY, rangeRight2, unitRight2,
+			 rule);
+	}
+
+	public StormReteJoinBolt(String leftBolt2, int[] matchLeft2,
+			int[] templateLeft2, int capacityLeft2, long rangeLeft2,
+			TimeUnit unitLeft2, String rightBolt2, int[] matchRight2,
+			int[] templateRight2, int capacityRight2, Rule rule) {
+		this(leftBolt2, matchLeft2, templateLeft2,
+			 capacityLeft2, rangeLeft2, unitLeft2,
+			 rightBolt2, matchRight2, templateRight2,
+			 capacityRight2, DEFAULT_RANGE, DEFAULT_UNIT,
+			 rule);
 	}
 
 	/**
@@ -104,7 +281,6 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 	 */
 	public Fields getLeftJoinFields() {
 		return getJoinFieldsByIndex(matchLeft);
-
 	}
 
 	/**
@@ -170,8 +346,8 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 
 	@Override
 	public void prepare() {
-		this.leftQ = new RETEStormQueue(this.matchLeft, this.templateLeft, 5000, 15, TimeUnit.MINUTES);
-		this.rightQ = new RETEStormQueue(this.matchRight, this.templateRight, 5000, 15, TimeUnit.MINUTES, this.leftQ, this);
+		this.leftQ = new RETEStormQueue(this.leftBolt, this.matchLeft, this.templateLeft, this.capacityLeft, this.rangeLeft, this.unitLeft);
+		this.rightQ = new RETEStormQueue(this.rightBolt, this.matchRight, this.templateRight, this.capacityRight, this.rangeRight, this.unitRight, this.leftQ, this);
 	}
 
 	/**
@@ -192,11 +368,12 @@ public class StormReteJoinBolt extends StormRuleReteBolt {
 	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy, RETERuleContext context) {
 		return null;
 	}
-
+	
 	@Override
-	public void fire(Values output, boolean isAdd) {
-		super.fire(output, isAdd);
-		emit(currentInput);
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		super.declareOutputFields(declarer);
+		declarer.declareStream(leftBolt, declaredFields(matchLeft.length));
+		declarer.declareStream(rightBolt, declaredFields(matchRight.length));
 	}
-
+	
 }

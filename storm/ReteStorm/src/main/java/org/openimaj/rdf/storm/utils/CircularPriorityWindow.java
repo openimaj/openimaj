@@ -53,18 +53,20 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 	protected Map<T, Count> queue;
 	protected final int capacity;
 	protected final long delay;
+	protected final OverflowHandler<T> continuation;
 
 	/**
 	 * @param size
 	 * @param delay
 	 * @param unit
 	 */
-	public CircularPriorityWindow(int size, long delay, TimeUnit unit) {
+	public CircularPriorityWindow(OverflowHandler<T> handler, int size, long delay, TimeUnit unit) {
 		this.capacity = size;
 		this.delay = TimeUnit.MILLISECONDS.convert(delay, unit);
 		this.clear();
+		this.continuation = handler;
 	}
-
+	
 	/**
 	 * @return int
 	 */
@@ -101,7 +103,9 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 			@Override
 			public void remove() {
 				data.remove(last);
-				decrement(last.getWrapped());
+				T lastUnwrapped = last.getWrapped();
+				decrement(lastUnwrapped);
+				CircularPriorityWindow.this.continuation.handleOverflow(lastUnwrapped);
 				last = null;
 			}
 		};
@@ -232,7 +236,9 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		prune();
 		if (arg0 == null) return false;
 		if (data.size() == capacity){
-			data.remove();
+			CircularPriorityWindow.this.continuation.handleOverflow(
+					data.remove().getWrapped()
+			);
 		}
 		increment(arg0.getWrapped());
 		return data.add(arg0);
@@ -322,6 +328,12 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 
 
 
+	
+	public interface OverflowHandler<E> {
+		
+		public void handleOverflow(E overflow);
+		
+	}
 
 	/**
 	 * Inner class used to represent a generic wrapper for the generic type T contained by the queue.
