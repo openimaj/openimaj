@@ -980,6 +980,31 @@ public class IOUtils {
 	}
 
 	/**
+	 * Writes an object to a file using the Kryo serialisation library. The
+	 * object doesn't need to have any special serialisation attributes.
+	 * 
+	 * @param obj
+	 *            the object to write
+	 * @param out
+	 *            the output sink
+	 * @throws IOException
+	 */
+	public static void writeToFile(Object obj, File out) throws IOException {
+		DataOutputStream dos = null;
+		try {
+			dos = new DataOutputStream(new FileOutputStream(out));
+
+			write(obj, dos);
+		} finally {
+			if (dos != null)
+				try {
+					dos.close();
+				} catch (final IOException e) {
+				}
+		}
+	}
+
+	/**
 	 * Writes an object using the Kryo serialisation library. The object doesn't
 	 * need to have any special serialisation attributes.
 	 * 
@@ -1030,5 +1055,30 @@ public class IOUtils {
 			obj = kryo.readClassAndObject(new Input(bytes));
 		}
 		return (T) obj;
+	}
+
+	/**
+	 * Utility method to read any object written with
+	 * {@link #writeToFile(Object, File)}.
+	 * 
+	 * @param <T>
+	 *            type of object
+	 * @param in
+	 *            input file
+	 * @return the object
+	 * @throws IOException
+	 */
+	public static <T> T readFromFile(File in) throws IOException {
+		DataInputStream din = null;
+		try {
+			din = new DataInputStream(new FileInputStream(in));
+			return read(din);
+		} finally {
+			if (din != null)
+				try {
+					din.close();
+				} catch (final IOException e) {
+				}
+		}
 	}
 }
