@@ -31,11 +31,17 @@ package org.openimaj.rdf.storm.sparql.topology;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -97,6 +103,19 @@ public class ReteTopologyTest {
 
 	}
 
+
+	private File fileFromStream(InputStream stream) throws IOException {
+		File f = folder.newFile("tweet" + stream.hashCode() + ".txt");
+		PrintWriter writer = new PrintWriter(f,"UTF-8");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+		String line = null;
+		while((line = reader.readLine()) != null){
+			writer.println(line);
+		}
+		writer.flush(); writer.close();
+		return f;
+	}
+
 	/**
 	 *
 	 * @throws IOException
@@ -105,6 +124,7 @@ public class ReteTopologyTest {
 	@Test
 	public void testReteTopology() throws IOException, TranslationException {
 		String sparqlSource = "/test.group.csparql";
+
 		List<CheckableQuery> expectedValues = new ArrayList<CheckableQuery>();
 		String query = PREFIX + "SELECT ?d WHERE{?d rdf:type ex:EligibleDriver}";
 		expectedValues.add(new CheckableQuery(
@@ -112,7 +132,7 @@ public class ReteTopologyTest {
 				"d",
 				"http://example.com/John"
 				));
-		performQuery(sparqlSource, expectedValues);
+		performQuery(sparqlSource,"/test.rdfs", expectedValues);
 
 	}
 
@@ -132,7 +152,7 @@ public class ReteTopologyTest {
 				"http://example.com/John",
 				"http://example.com/Steve"
 				));
-		performQuery(sparqlSource, expectedValues);
+		performQuery(sparqlSource, "/test.union.rdfs",expectedValues);
 	}
 
 	/**
@@ -157,7 +177,7 @@ public class ReteTopologyTest {
 				"http://example.com/Alan",
 				"http://example.com/John"
 				));
-		performQuery(sparqlSource, expectedValues);
+		performQuery(sparqlSource, "/test.multiple.rdfs",expectedValues);
 	}
 
 	/**
@@ -177,7 +197,7 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("given"), NodeFactory.createLiteralNode("", "", ""));
 		e.add(Var.alloc("family"), NodeFactory.createLiteralNode("", "", ""));
 		expectedValues.add(e);
-		performQuery(sparqlSource, expectedValues);
+		performQuery(sparqlSource, "/test.optional.rdfs", expectedValues);
 	}
 
 	/**
@@ -195,7 +215,7 @@ public class ReteTopologyTest {
 				"d",
 				"http://example.com/John"
 				));
-		performQuery(sparqlSource, expectedValues);
+		performQuery(sparqlSource, "/test.rdfs",expectedValues);
 	}
 
 	/**
@@ -217,7 +237,7 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("totalPrice"), NodeFactory.intToNode(12));
 		e.add(Var.alloc("avgPrice"), NodeFactory.createLiteralNode("12", "", "http://www.w3.org/2001/XMLSchema#decimal"));
 		expectedValues.add(e);
-		performQuery(sparqlSource, expectedValues);
+		performQuery(sparqlSource, "/test.aggregate.rdfs",expectedValues);
 	}
 
 	/**
@@ -245,7 +265,7 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("sumprice"), NodeFactory.intToNode(6));
 		e.add(Var.alloc("count"), NodeFactory.intToNode(1));
 		expectedValues.add(e);
-		performQuery(sparqlSource, expectedValues);
+		performQuery(sparqlSource, "/test.aggregate.rdfs",expectedValues);
 	}
 
 	/**
@@ -259,7 +279,7 @@ public class ReteTopologyTest {
 		List<Binding> expectedValues = new ArrayList<Binding>();
 		expectedValues.add(BindingFactory.binding(Var.alloc("p"), NodeFactory.intToNode(42)));
 		expectedValues.add(BindingFactory.binding(Var.alloc("p"), NodeFactory.intToNode(23)));
-		performQuery(sparqlSource, expectedValues);
+		performQuery(sparqlSource, "/test.groupby.rdfs",expectedValues);
 	}
 
 	/**
@@ -283,7 +303,7 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
 		expectedValues.add(e);
-		performQuery(sparqlSource, expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
+		performQuery(sparqlSource, "/osn_posts.nt", expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
 	}
 
 	/**
@@ -307,7 +327,7 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
 		expectedValues.add(e);
-		performQuery(sparqlSource, expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
+		performQuery(sparqlSource,"/osn_posts.nt", expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
 	}
 
 	/**
@@ -331,7 +351,7 @@ public class ReteTopologyTest {
 		e.add(Var.alloc("createDate"), NodeFactory.parseNode("\"2010-02-01T10:25:05Z\"^^xsd:dateTime"));
 		e.add(Var.alloc("friend"), NodeFactory.parseNode("<http://www.ins.cwi.nl/sib/user/u59>"));
 		expectedValues.add(e);
-		performQuery(sparqlSource, expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
+		performQuery(sparqlSource, "/osn_posts.nt",expectedValues, "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_users.nt");
 	}
 
 	class CheckableQuery {
@@ -381,15 +401,19 @@ public class ReteTopologyTest {
 		return select;
 	}
 
-	private void performQuery(String sparqlSource, List<?> expectedValues, String... staticSources) throws TranslationException, IOException {
+	private void performQuery(String sparqlSource, String testFile, List<?> expectedValues, String... staticSources) throws TranslationException, IOException {
 		File f = folder.newFile("STORM");
 		f.delete();
 		f.mkdirs();
+		Map<String, String> replaceStringMap = new HashMap<String,String>();
+		File file = fileFromStream(ReteTopologyTest.class.getResourceAsStream(testFile));
+		replaceStringMap.put("TEST_FILE", "file://" + file.getAbsolutePath());
 		StaticDataFileNTriplesSPARQLReteTopologyBuilder topologyBuilder = new StaticDataFileNTriplesSPARQLReteTopologyBuilder(f, staticSources);
 		topologyBuilder.setQuerySolutionSerializerMode(QuerySolutionSerializer.RDF_NTRIPLES);
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
 				topologyBuilder,
-				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource)
+				ReteTopologyBuilder.class.getResourceAsStream(sparqlSource),
+				replaceStringMap
 				);
 		final LocalCluster cluster = new LocalCluster();
 		System.out.println(orchestrator);

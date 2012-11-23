@@ -9,7 +9,7 @@ PREFIX dc:     <http://purl.org/dc/elements/1.1/>
 PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
 
 SELECT ?given ?family
-FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.optional.rdfs> [RANGE 30m STEP 5m]
+FROM STREAM <{TEST_FILE}> [RANGE 30m STEP 5m]
 WHERE { 
 	?annot  a:annotates  <http://www.w3.org/TR/rdf-sparql-query/> .
 	?annot  dc:creator   ?c .

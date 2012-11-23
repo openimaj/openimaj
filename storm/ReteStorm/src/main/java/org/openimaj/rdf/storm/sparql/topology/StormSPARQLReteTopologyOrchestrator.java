@@ -31,6 +31,8 @@ package org.openimaj.rdf.storm.sparql.topology;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
@@ -236,6 +238,48 @@ public class StormSPARQLReteTopologyOrchestrator {
 			throws TranslationException, IOException
 	{
 		return createTopologyBuilder(topologyBuilder, FileUtils.readall(query));
+	}
+
+	/**
+	 * .
+	 *
+	 * @param topologyBuilder
+	 *            the approach to constructing a {@link StormTopology}
+	 * @param query
+	 *            the query from which to construct the network
+	 * @param templateReplace find instances of the {key} replace with the value
+	 * @return given a {@link TopologyBuilder} and a source for {@link Rule}
+	 *         instances build {@link StormTopology}
+	 * @throws TranslationException
+	 * @throws IOException
+	 */
+	public static StormSPARQLReteTopologyOrchestrator createTopologyBuilder(SPARQLReteTopologyBuilder topologyBuilder, InputStream query, Map<String,String> templateReplace)
+			throws TranslationException, IOException
+	{
+		return createTopologyBuilder(topologyBuilder, FileUtils.readall(query),templateReplace);
+	}
+
+	/**
+	 * .
+	 *
+	 * @param topologyBuilder
+	 *            the approach to constructing a {@link StormTopology}
+	 * @param query
+	 *            the query from which to construct the network
+	 * @param templateReplace find instances of the {key} replace with the value in the query
+	 * @return given a {@link TopologyBuilder} and a source for {@link Rule}
+	 *         instances build {@link StormTopology}
+	 * @throws TranslationException
+	 * @throws IOException
+	 */
+	public static StormSPARQLReteTopologyOrchestrator createTopologyBuilder(SPARQLReteTopologyBuilder topologyBuilder, String query, Map<String,String> templateReplace)
+			throws TranslationException, IOException
+	{
+		String fixedString = query;
+		for (Entry<String, String> replace : templateReplace.entrySet()) {
+			fixedString = fixedString.replace(String.format("{%s}",replace.getKey()), replace.getValue());
+		}
+		return createTopologyBuilder(topologyBuilder, fixedString);
 	}
 
 	private static StormSPARQLReteTopologyOrchestrator createTopologyBuilder(InputStream resourceAsStream) throws IOException,

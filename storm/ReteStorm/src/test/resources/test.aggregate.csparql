@@ -6,7 +6,7 @@ REGISTER QUERY Test AS
 
 PREFIX : <http://books.example/>
 SELECT ?org (SUM(?lprice) AS ?totalPrice) (AVG(?lprice)*2 AS ?avgPrice)
-FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.aggregate.rdfs> [RANGE 30m STEP 5m]
+FROM STREAM <{TEST_FILE}> [RANGE 30m STEP 5m]
 WHERE {
   ?org :affiliates ?auth .
   ?auth :writesBook ?book .

@@ -6,7 +6,7 @@ REGISTER QUERY Test AS
 
 PREFIX : <http://books.example/>
 SELECT (count(*) as ?count) (SUM(?lprice) AS ?sumprice)
-FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.aggregate.rdfs> [RANGE 30m STEP 5m]
+FROM STREAM <{TEST_FILE}> [RANGE 30m STEP 5m]
 WHERE {
   ?book :price ?lprice .
 }

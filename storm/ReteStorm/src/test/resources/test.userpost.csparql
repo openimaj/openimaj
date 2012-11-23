@@ -10,7 +10,7 @@ prefix sioc: <http://rdfs.org/sioc/ns#>
 prefix sibp: <http://www.ins.cwi.nl/sib/person/>
 
 SELECT DISTINCT ?user1 ?friend ?postcontent ?createDate
-FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/osn_posts.nt> [RANGE 30m STEP 5m]
+FROM STREAM <{TEST_FILE}> [RANGE 30m STEP 5m]
 WHERE {
         {?user1 foaf:knows ?friend}
         UNION

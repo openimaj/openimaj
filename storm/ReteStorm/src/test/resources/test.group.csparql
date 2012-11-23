@@ -9,7 +9,7 @@ PREFIX ex: <http://example.com/>
 PREFIX xs: <http://www.w3.org/2001/XMLSchema#>
 
 CONSTRUCT {?d rdf:type ex:EligibleDriver}
-FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.rdfs> [RANGE 30m STEP 5m]
+FROM STREAM <{TEST_FILE}> [RANGE 30m STEP 5m]
 WHERE {
 	?d rdf:type ex:Driver .
 	{

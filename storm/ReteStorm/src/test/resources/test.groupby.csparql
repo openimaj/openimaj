@@ -7,7 +7,7 @@ PREFIX  dc:  <http://purl.org/dc/elements/1.1/>
 PREFIX  ns:  <http://example.org/ns#>
 
 SELECT  ?p
-FROM STREAM <file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.groupby.rdfs> [RANGE 30m STEP 5m]
+FROM STREAM <{TEST_FILE}> [RANGE 30m STEP 5m]
 {  ?x ns:price ?p .
    ?x ns:discount ?discount .
    FILTER(?p * ?discount < 20) .
