@@ -99,7 +99,8 @@ public class TextBytesJobUtil {
 		SequenceFileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
 		SequenceFileOutputFormat.setOutputCompressionType(job, CompressionType.BLOCK);
 
-		MetadataConfiguration.setMetadata(metadata, job.getConfiguration());
+		if (metadata != null)
+			MetadataConfiguration.setMetadata(metadata, job.getConfiguration());
 
 		return job;
 	}

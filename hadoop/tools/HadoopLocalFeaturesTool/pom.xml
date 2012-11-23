@@ -97,6 +97,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>sandbox</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
@@ -119,12 +125,13 @@
         <configuration>
           <finalName>HadoopLocalFeaturesTool</finalName>
           <appendAssemblyId>false</appendAssemblyId>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
+					<descriptors>
+            <descriptor>src/main/assembly/fatjar.xml</descriptor>
+          </descriptors>
           <archive>
             <manifest>
-              <mainClass>org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool</mainClass>
+              <!-- <mainClass>org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool</mainClass> -->
+							<mainClass>org.openimaj.hadoop.tools.localfeature.VLADExtractor</mainClass>
             </manifest>
           </archive>
         </configuration>
