@@ -203,6 +203,16 @@ public class ReteStormOptions extends InOutToolOptions {
 	 *
 	 */
 	@Option(
+			name = "--topology-spout-parallelism",
+			aliases = "-spar",
+			required = false,
+			usage = "The number of tasks ran by each spout in the topology")
+	public String topologySpoutParallelism = "1";
+
+	/**
+	 *
+	 */
+	@Option(
 			name = "--topology-join-parallelism",
 			aliases = "-jpar",
 			required = false,
@@ -324,10 +334,17 @@ public class ReteStormOptions extends InOutToolOptions {
 		return this.sdmOp.datasets(ret);
 	}
 
+	/**
+	 * @return all the kestrel servers to connect to
+	 */
 	public List<KestrelServerSpec> getKestrelSpecList() {
 		return this.kestrelSpecList;
 	}
 
+	/**
+	 * @throws TException
+	 * @throws IOException
+	 */
 	public void populateInputs() throws TException, IOException {
 		logger.info("Populating kestrel Queues");
 		KestrelTupleWriter rdfWriter = triplesKestrelWriter();
@@ -339,6 +356,9 @@ public class ReteStormOptions extends InOutToolOptions {
 
 	}
 
+	/**
+	 * @throws TException
+	 */
 	public void prepareQueues() throws TException {
 		logger.info("Preparing Kestrel Queues");
 		for (KestrelServerSpec ks : this.kestrelSpecList) {
@@ -346,13 +366,17 @@ public class ReteStormOptions extends InOutToolOptions {
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	public Config prepareConfig() {
 		Config conf = new Config();
 		conf.setMaxSpoutPending(5000);
 		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_PARALLELISM, topologyParallelism);
 		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_JOIN_PARALLELISM, topologyJoinParallelism);
 		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_FILTER_PARALLELISM, topologyFilterParallelism);
-		conf.setNumWorkers(numberOfWorkers );
+		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_SPOUT_PARALLELISM, topologySpoutParallelism);
+		conf.setNumWorkers(numberOfWorkers);
 		conf.setMaxTaskParallelism(maxParallelism);
 		conf.setFallBackOnJavaSerialization(false);
 		conf.setSkipMissingKryoRegistrations(false);

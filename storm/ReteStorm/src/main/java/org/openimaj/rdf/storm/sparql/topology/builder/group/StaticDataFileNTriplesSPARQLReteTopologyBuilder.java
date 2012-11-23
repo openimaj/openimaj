@@ -53,9 +53,9 @@ import eu.larkc.csparql.parser.StreamInfo;
  * The {@link StaticDataFileNTriplesSPARQLReteTopologyBuilder} provides triples
  * from URI
  * streams via the {@link NTriplesSpout}.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class StaticDataFileNTriplesSPARQLReteTopologyBuilder extends
 		StaticDataSPARQLReteTopologyBuilder {
@@ -100,7 +100,7 @@ public class StaticDataFileNTriplesSPARQLReteTopologyBuilder extends
 	public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
 		StreamInfo stream = streams.iterator().next();
 		NTripleSpout tripleSpout = new NTripleSpout(stream.getIri());
-		builder.setSpout(TRIPLE_SPOUT, tripleSpout, 1);
+		builder.setSpout(TRIPLE_SPOUT, tripleSpout, this.getSpoutBoltParallelism());
 		return TRIPLE_SPOUT;
 	}
 

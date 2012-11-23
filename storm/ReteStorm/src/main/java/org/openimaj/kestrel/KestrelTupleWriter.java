@@ -69,6 +69,10 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 
 	private List<KestrelThriftClient> clients;
 
+	private ArrayList<Triple> tripleCache;
+
+	private int tripleCacheSizeLimit;
+
 	/**
 	 * @param url
 	 *            the source of triples
@@ -118,6 +122,8 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 			this.clients.add(new KestrelThriftClient(spec.host, spec.port));
 		}
 		this.queues = queues;
+		this.tripleCache = new ArrayList<Triple>();
+		this.tripleCacheSizeLimit = 1000;
 		Parallel.forEach(this.tripleSources, new Operation<InputStream>(){
 			@Override
 			public void perform(InputStream tripleSource) {
@@ -126,15 +132,31 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 				logger.debug("Finished parsing");
 			}
 		});
-
+		flushTripleCache();
 	}
 
 	@Override
 	public void close() {
+		flushTripleCache();
 	}
 
 	@Override
-	public abstract void send(Triple item);
+	public void send(Triple item){
+		this.tripleCache.add(item);
+		if(this.tripleCache.size() >= this.tripleCacheSizeLimit){
+			flushTripleCache();
+		}
+	}
+
+	private void flushTripleCache() {
+		send(this.tripleCache);
+		this.tripleCache.clear();
+	}
+
+	/**
+	 * @param cache send the entire cache to kestrel
+	 */
+	public abstract void send(List<Triple> cache);
 
 	@Override
 	public void flush() {

@@ -167,7 +167,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		this.context = context;
 		this.stormConf = stormConf;
 		this.toFire = new HashMap<String, Values>();
-		
+
 		prepare();
 
 		this.active = true;
@@ -185,7 +185,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	public void fire(Values output, boolean isAdd) {
 		this.fire("DEFAULT", output, isAdd);
 	}
-	
+
 	@Override
 	public void fire(String streamID, Values output, boolean isAdd) {
 		logger.debug("Preparing to fire: " + output);
@@ -198,6 +198,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 *
 	 * @param anchor
 	 */
+	@Override
 	public void emit(Tuple anchor) {
 		if (this.toFire.containsKey("DEFAULT")) {
 			logger.debug("Firing on default stream!");
@@ -205,7 +206,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 			this.toFire.remove("DEFAULT");
 		}
 	}
-	
+
 	/**
 	 * Emit the {@link Values} instance that has been prepared for firing, using
 	 * the provided {@link Tuple} as the anchor.
@@ -213,6 +214,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 * @param streamID
 	 * @param anchor
 	 */
+	@Override
 	public void emit(String streamID, Tuple anchor) {
 		if (this.toFire.containsKey(streamID)) {
 			logger.debug("Firing on stream " + streamID + "!");
@@ -229,7 +231,6 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	 */
 	protected void acknowledge(Tuple input) {
 		this.collector.ack(input);
-		this.toFire = null;
 	}
 
 	@Override

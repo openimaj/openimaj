@@ -100,7 +100,7 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 		}
 
 		KestrelThriftSpout spout = new KestrelThriftSpout(hosts, port, this.inputQueue, new GraphWritingScheme());
-		builder.setSpout(TRIPLE_SPOUT, spout, 1);
+		builder.setSpout(TRIPLE_SPOUT, spout, this.getSpoutBoltParallelism());
 
 		return TRIPLE_SPOUT;
 	}

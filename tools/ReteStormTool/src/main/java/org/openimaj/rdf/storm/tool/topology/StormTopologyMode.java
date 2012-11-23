@@ -1,5 +1,6 @@
 package org.openimaj.rdf.storm.tool.topology;
 
+import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.tool.ReteStormOptions;
 
 import backtype.storm.Config;
@@ -16,10 +17,11 @@ import backtype.storm.generated.StormTopology;
  *
  */
 public class StormTopologyMode implements TopologyMode {
-
+	public final static Logger logger = Logger.getLogger(StormTopologyMode.class);
 	@Override
 	public void submitTopology(ReteStormOptions options) throws Exception {
 		Config conf = options.prepareConfig();
+		logger.info("\nStarting topology: \n" + conf);
 		StormSubmitter.submitTopology(options.topologyName, conf, options.constructTopology(conf));
 	}
 

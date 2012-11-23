@@ -74,7 +74,15 @@ public abstract class SPARQLReteTopologyBuilder {
 	 */
 	public static final String RETE_TOPOLOGY_FILTER_PARALLELISM = "topology.rete.filter.parallelism";
 
+	/**
+	 * The number of tasks running on the spout
+	 */
+	public static final String RETE_TOPOLOGY_SPOUT_PARALLELISM = "topology.rete.spout.parallelism";
+
 	private static final int RETE_TOPOLOGY_PARALLELISM_DEFAULT = 1;
+
+	private static final int RETE_TOPOLOGY_SPOUT_PARALLELISM_DEFAULT = 1;
+
 
 	private int unnamedRules = 0;
 
@@ -152,6 +160,16 @@ public abstract class SPARQLReteTopologyBuilder {
 		if(this.stormConfig == null) return RETE_TOPOLOGY_PARALLELISM_DEFAULT;
 		String ret = (String) this.stormConfig.get(RETE_TOPOLOGY_FILTER_PARALLELISM);
 		if(ret == null) return getGenericBoltParallelism();
+		return Integer.parseInt(ret);
+	}
+
+	/**
+	 * @return the filter bolt parallelism
+	 */
+	public int getSpoutBoltParallelism(){
+		if(this.stormConfig == null) return RETE_TOPOLOGY_SPOUT_PARALLELISM_DEFAULT;
+		String ret = (String) this.stormConfig.get(RETE_TOPOLOGY_SPOUT_PARALLELISM);
+		if(ret == null) return RETE_TOPOLOGY_SPOUT_PARALLELISM_DEFAULT;
 		return Integer.parseInt(ret);
 	}
 

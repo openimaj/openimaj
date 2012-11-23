@@ -92,7 +92,7 @@ public class NTripleKestrelTupleWriter extends KestrelTupleWriter {
 	}
 
 	@Override
-	public synchronized void send(Triple item) {
+	public synchronized void send(List<Triple> item) {
 		List<Object> tripleList = Arrays.asList((Object) item);
 		byte[] serialised = this.scheme.serialize(tripleList);
 		logger.debug("Writing triple: " + item);

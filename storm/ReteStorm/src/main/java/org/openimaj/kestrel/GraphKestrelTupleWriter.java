@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -54,9 +53,9 @@ import com.hp.hpl.jena.sparql.graph.GraphFactory;
  * {@link Tuple} instances defined by the {@link WritingScheme} used. The
  * triples are written as NTriple strings by default, but other serialisations
  * can be specified
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 
@@ -86,7 +85,7 @@ public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 
 	/**
 	 * see {@link KestrelTupleWriter#KestrelTupleWriter(ArrayList)}
-	 * 
+	 *
 	 * @param urlList
 	 * @throws IOException
 	 */
@@ -98,19 +97,25 @@ public class GraphKestrelTupleWriter extends KestrelTupleWriter {
 	long triplesCount = 1;
 
 	@Override
-	public synchronized void send(Triple item) {
-		Graph graph = GraphFactory.createGraphMem();
-		graph.add(item);
-		if (triplesCount % 1000 == 0) {
-			logger.debug("Triples written: " + triplesCount);
+	public synchronized void send(List<Triple> item) {
+		List<ByteBuffer> bbList = new ArrayList<ByteBuffer>();
+		for (Triple triple : item) {
+			Graph graph = GraphFactory.createGraphMem();
+			graph.add(triple);
+			if (triplesCount % 1000 == 0) {
+				logger.debug("Triples written: " + triplesCount);
+			}
+			triplesCount++;
+			List<Object> tripleList = StormReteBolt.asValues(true, graph, 0l);
+			byte[] serialised = this.scheme.serialize(tripleList);
+			ByteBuffer bb = ByteBuffer.wrap(serialised);
+			bbList.add(bb);
 		}
-		triplesCount++;
-		List<Object> tripleList = StormReteBolt.asValues(true, graph, 0l);
-		byte[] serialised = this.scheme.serialize(tripleList);
+
 
 		try {
 			for (String queue : this.getQueues()) {
-				this.getNextClient().put(queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
+				this.getNextClient().put(queue, bbList, 0);
 			}
 		} catch (TException e) {
 			logger.error("Failed to add");

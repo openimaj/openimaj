@@ -51,6 +51,7 @@ public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
 		StormSPARQLReteTopologyOrchestrator orchestrator = null;
 		try {
 			orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
+					config,
 					topologyBuilder,
 					options.getRules());
 		} catch (Exception e) {
