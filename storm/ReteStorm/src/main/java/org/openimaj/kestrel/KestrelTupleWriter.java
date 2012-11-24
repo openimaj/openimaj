@@ -54,9 +54,9 @@ import com.hp.hpl.jena.graph.Triple;
  * {@link Tuple} instances defined by the {@link WritingScheme} used. The
  * triples are written as NTriple strings by default, but other serialisations
  * can be specified
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class KestrelTupleWriter implements Sink<Triple> {
 
@@ -94,6 +94,7 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 
 	/**
 	 * Read tuples into a kestrel queue from a list of URLs simultaniously
+	 * 
 	 * @param urlList
 	 * @throws IOException
 	 */
@@ -107,7 +108,7 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 	/**
 	 * Write the triples from the URL to the {@link KestrelServerSpec} to the
 	 * queue
-	 *
+	 * 
 	 * @param spec
 	 * @param queues
 	 * @throws TException
@@ -124,7 +125,7 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 		this.queues = queues;
 		this.tripleCache = new ArrayList<Triple>();
 		this.tripleCacheSizeLimit = 1000;
-		Parallel.forEach(this.tripleSources, new Operation<InputStream>(){
+		Parallel.forEach(this.tripleSources, new Operation<InputStream>() {
 			@Override
 			public void perform(InputStream tripleSource) {
 				LangNTriples parser = RiotReader.createParserNTriples(tripleSource, KestrelTupleWriter.this);
@@ -132,18 +133,22 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 				logger.debug("Finished parsing");
 			}
 		});
-		flushTripleCache();
+		close();
 	}
 
 	@Override
 	public void close() {
 		flushTripleCache();
+		for (KestrelThriftClient client : this.clients) {
+			client.close();
+
+		}
 	}
 
 	@Override
-	public void send(Triple item){
+	public void send(Triple item) {
 		this.tripleCache.add(item);
-		if(this.tripleCache.size() >= this.tripleCacheSizeLimit){
+		if (this.tripleCache.size() >= this.tripleCacheSizeLimit) {
 			flushTripleCache();
 		}
 	}
@@ -154,7 +159,8 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 	}
 
 	/**
-	 * @param cache send the entire cache to kestrel
+	 * @param cache
+	 *            send the entire cache to kestrel
 	 */
 	public abstract void send(List<Triple> cache);
 
@@ -164,14 +170,17 @@ public abstract class KestrelTupleWriter implements Sink<Triple> {
 	}
 
 	int currentIndex = 0;
+
 	/**
 	 * @return the next {@link KestrelThriftClient} instance ready to be written
 	 *         to
 	 */
 	public KestrelThriftClient getNextClient() {
-		KestrelThriftClient toRet = this.clients.get(currentIndex);;
+		KestrelThriftClient toRet = this.clients.get(currentIndex);
+		;
 		currentIndex++;
-		if(currentIndex==this.clients.size())currentIndex=0;
+		if (currentIndex == this.clients.size())
+			currentIndex = 0;
 		return toRet;
 	}
 

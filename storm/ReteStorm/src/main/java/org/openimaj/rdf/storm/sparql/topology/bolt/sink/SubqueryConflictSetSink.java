@@ -46,4 +46,9 @@ public class SubqueryConflictSetSink implements StormSPARQLReteConflictSetBoltSi
 		}
 	}
 
+	@Override
+	public void close() {
+		// nothing!
+	}
+
 }

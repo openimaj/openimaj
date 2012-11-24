@@ -11,9 +11,9 @@ import backtype.storm.utils.Utils;
 
 /**
  * The local topology for testing. Allows the specification of sleep time etc.
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class LocalTopologyMode implements TopologyMode {
 	private static final int DEFAULT_SLEEP_TIME = 10000;
@@ -37,7 +37,7 @@ public class LocalTopologyMode implements TopologyMode {
 		logger.debug("Instantiating cluster");
 		this.cluster = new LocalCluster();
 		logger.debug("Constructing topology");
-		StormTopology topology = options.constructTopology(conf);
+		StormTopology topology = options.constructTopology();
 		logger.debug("Submitting topology");
 		cluster.submitTopology(options.topologyName, conf, topology);
 	}
@@ -60,6 +60,7 @@ public class LocalTopologyMode implements TopologyMode {
 			cluster.killTopology(options.topologyName);
 			logger.debug("Shutting down cluster");
 			cluster.shutdown();
+			options.mmOp.close();
 		}
 	}
 

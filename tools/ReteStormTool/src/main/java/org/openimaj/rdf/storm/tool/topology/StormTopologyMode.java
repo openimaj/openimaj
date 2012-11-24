@@ -12,17 +12,18 @@ import backtype.storm.generated.StormTopology;
  * {@link StormTopology} constructed
  * using {@link ReteStormOptions#constructTopology}. The topology is submitted
  * as {@link ReteStormOptions#topologyName}
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class StormTopologyMode implements TopologyMode {
-	public final static Logger logger = Logger.getLogger(StormTopologyMode.class);
+	private final static Logger logger = Logger.getLogger(StormTopologyMode.class);
+
 	@Override
 	public void submitTopology(ReteStormOptions options) throws Exception {
 		Config conf = options.prepareConfig();
 		logger.info("\nStarting topology: \n" + conf);
-		StormSubmitter.submitTopology(options.topologyName, conf, options.constructTopology(conf));
+		StormSubmitter.submitTopology(options.topologyName, conf, options.constructTopology());
 	}
 
 	@Override

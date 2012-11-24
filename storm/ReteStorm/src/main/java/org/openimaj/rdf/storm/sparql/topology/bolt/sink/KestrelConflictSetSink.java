@@ -127,4 +127,11 @@ public class KestrelConflictSetSink implements StormSPARQLReteConflictSetBoltSin
 			logger.error("Failed to write bindings to kestrel client, " + e.getMessage(), e);
 		}
 	}
+
+	@Override
+	public void close() {
+		for (KestrelThriftClient client : this.clients)
+			client.close();
+	}
+
 }

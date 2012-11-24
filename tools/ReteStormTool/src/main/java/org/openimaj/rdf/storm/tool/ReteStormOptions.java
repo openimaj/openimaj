@@ -37,9 +37,9 @@ import backtype.storm.generated.StormTopology;
 
 /**
  * The options for preparing, configuring and running a {@link ReteStorm}
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteStormOptions extends InOutToolOptions {
 	private static final Logger logger = Logger.getLogger(ReteStormOptions.class);
@@ -128,7 +128,7 @@ public class ReteStormOptions extends InOutToolOptions {
 			required = false,
 			usage = "The message queue host from which and to which triples will be written",
 			metaVar = "STRING",
-			multiValued=true)
+			multiValued = true)
 	public List<String> kestrelHosts = new ArrayList<String>();
 
 	/**
@@ -188,7 +188,6 @@ public class ReteStormOptions extends InOutToolOptions {
 			usage = "Force all input values to be queued before the first value is fed to the topology")
 	public boolean prepopulate = false;
 
-
 	/**
 	 *
 	 */
@@ -242,8 +241,7 @@ public class ReteStormOptions extends InOutToolOptions {
 			required = false,
 			usage = "Max parallelism")
 	private int maxParallelism = 4;
-
-
+	private Config preparedConfig;
 
 	/**
 	 * @param args
@@ -254,7 +252,7 @@ public class ReteStormOptions extends InOutToolOptions {
 
 	/**
 	 * Parse arguments and validate
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	public void prepare() throws IOException {
@@ -289,21 +287,22 @@ public class ReteStormOptions extends InOutToolOptions {
 		}
 		this.rules = FileUtils.readall(rulesFile);
 		this.triplesInputModeOp.init(this);
-		if(this.kestrelHosts.size() == 0){
-			this.kestrelHosts.add(String.format(KESTREL_FORMAT,KestrelServerSpec.LOCALHOST,KestrelServerSpec.DEFAULT_KESTREL_THRIFT_PORT));
+		if (this.kestrelHosts.size() == 0) {
+			this.kestrelHosts.add(String.format(KESTREL_FORMAT, KestrelServerSpec.LOCALHOST, KestrelServerSpec.DEFAULT_KESTREL_THRIFT_PORT));
 		}
 		this.kestrelSpecList = KestrelServerSpec.parseKestrelAddressList(this.kestrelHosts);
+		this.prepareConfig();
 	}
 
 	/**
 	 * Given a storm configuration construct a Storm topology using the
 	 * specified ruleLanguageMode
-	 *
+	 * 
 	 * @param conf
 	 * @return the constructed storm topology
 	 */
-	public StormTopology constructTopology(Config conf) {
-		return this.ruleLanguageModeOp.constructTopology(this, conf);
+	public StormTopology constructTopology() {
+		return this.ruleLanguageModeOp.constructTopology(this);
 	}
 
 	/**
@@ -370,34 +369,41 @@ public class ReteStormOptions extends InOutToolOptions {
 	 * @return
 	 */
 	public Config prepareConfig() {
-		Config conf = new Config();
-		conf.setMaxSpoutPending(5000);
-		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_PARALLELISM, topologyParallelism);
-		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_JOIN_PARALLELISM, topologyJoinParallelism);
-		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_FILTER_PARALLELISM, topologyFilterParallelism);
-		conf.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_SPOUT_PARALLELISM, topologySpoutParallelism);
-		conf.setNumWorkers(numberOfWorkers);
-		conf.setMaxTaskParallelism(maxParallelism);
-		conf.setFallBackOnJavaSerialization(false);
-		conf.setSkipMissingKryoRegistrations(false);
-		JenaStormUtils.registerSerializers(conf);
-		return conf;
+		if (this.preparedConfig == null) {
+			preparedConfig = new Config();
+			preparedConfig.setMaxSpoutPending(5000);
+			preparedConfig.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_PARALLELISM, topologyParallelism);
+			preparedConfig.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_JOIN_PARALLELISM, topologyJoinParallelism);
+			preparedConfig.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_FILTER_PARALLELISM, topologyFilterParallelism);
+			preparedConfig.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_SPOUT_PARALLELISM, topologySpoutParallelism);
+			this.ruleLanguageModeOp.initConfig(preparedConfig);
+			preparedConfig.setNumWorkers(numberOfWorkers);
+			preparedConfig.setMaxTaskParallelism(maxParallelism);
+			preparedConfig.setFallBackOnJavaSerialization(false);
+			preparedConfig.setSkipMissingKryoRegistrations(false);
+			JenaStormUtils.registerSerializers(preparedConfig);
+		}
+
+		return preparedConfig;
 	}
 
 	/**
 	 * @throws IOException
-	 *
+	 * 
 	 */
 	public void initMonitor() throws IOException {
-		if(this.mmOp!=null){
+		if (this.mmOp != null) {
 			logger.debug("Initialising monitor");
-			this.mmOp.init(this);
+			this.mmOp.init(this, this.prepareConfig());
 		}
 
 	}
 
+	/**
+	 * 
+	 */
 	public void startMonitor() {
-		if(this.mmOp!=null){
+		if (this.mmOp != null) {
 			logger.debug("Starting monitor");
 			Thread thread = new Thread(this.mmOp);
 			thread.setDaemon(true);

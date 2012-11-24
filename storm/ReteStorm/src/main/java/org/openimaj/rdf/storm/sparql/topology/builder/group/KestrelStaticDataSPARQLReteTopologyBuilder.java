@@ -46,7 +46,9 @@ import org.openimaj.rdf.storm.sparql.topology.builder.SPARQLReteTopologyBuilderC
 import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
 
+import backtype.storm.Config;
 import backtype.storm.spout.KestrelThriftSpout;
+import backtype.storm.spout.UnreliableKestrelThriftSpout;
 import backtype.storm.topology.TopologyBuilder;
 import eu.larkc.csparql.parser.StreamInfo;
 
@@ -54,9 +56,9 @@ import eu.larkc.csparql.parser.StreamInfo;
  * The {@link KestrelStaticDataSPARQLReteTopologyBuilder} provides triples
  * from URI
  * streams via the {@link NTriplesSpout}.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQLReteTopologyBuilder {
 	private static final Logger logger = Logger.getLogger(KestrelStaticDataSPARQLReteTopologyBuilder.class);
@@ -67,6 +69,27 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	private String inputQueue;
 	private String outputQueue;
 	private QuerySolutionSerializer qss;
+	private boolean reliableSpout;
+	private String ackQueue;
+
+	/**
+	 * Whether the spout used should be unreliable
+	 */
+	public static final String RETE_TOPOLOGY_KESTREL_UNRELIABLE = "topology.rete.kestrel.unreliable";
+	/**
+	 * defualts to false and therefore {@link KestrelThriftSpout} is used
+	 */
+	public static final boolean RETE_TOPOLOGY_KESTREL_UNRELIABLE_DEFAULT = false;
+	/**
+	 * The queue which acknowledgment statistics useful for throughput analysis
+	 * are published.
+	 * This might be ignored if the spout doesn't support this
+	 */
+	public static final String RETE_TOPOLOGY_KESTREL_ACK_QUEUE = "topology.rete.kestrel.ack_queue";
+	/**
+	 * The default ackStats queue
+	 */
+	public static final String RETE_TOPOLOGY_KESTREL_ACK_QUEUE_DEFAULT = "ackStatsQueue";
 
 	/**
 	 * @param streamDataSources
@@ -77,30 +100,43 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	 *            the output queue (where to spit out bindings or triples)
 	 * @param staticDataSources
 	 *            the static datasources to involve in this query
+	 * @param config
 	 */
 	public KestrelStaticDataSPARQLReteTopologyBuilder(
 			List<KestrelServerSpec> streamDataSources,
 			String inputQueue, String outputQueue,
-			Map<String, StaticRDFDataset> staticDataSources) {
+			Map<String, StaticRDFDataset> staticDataSources, Config config) {
 		this.streamDataSources = streamDataSources;
 		this.inputQueue = inputQueue;
 		this.outputQueue = outputQueue;
 		this.staticDataSources = staticDataSources;
+		Boolean unreliable = (Boolean) config.get(RETE_TOPOLOGY_KESTREL_UNRELIABLE);
+		if (unreliable == null)
+			unreliable = RETE_TOPOLOGY_KESTREL_UNRELIABLE_DEFAULT;
+		this.ackQueue = (String) config.get(RETE_TOPOLOGY_KESTREL_ACK_QUEUE);
+		this.reliableSpout = !unreliable;
 
 	}
 
 	@Override
 	public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
 		//		StreamInfo stream = streams.iterator().next();
-		List<String> hosts = new ArrayList<String>();
-		int port = -1;
-		for (KestrelServerSpec serverSpec : this.streamDataSources) {
-			hosts.add(serverSpec.host);
-			port = serverSpec.port;
-		}
+		if (this.reliableSpout) {
+			List<String> hosts = new ArrayList<String>();
+			int port = -1;
+			for (KestrelServerSpec serverSpec : this.streamDataSources) {
+				hosts.add(serverSpec.host);
+				port = serverSpec.port;
+			}
 
-		KestrelThriftSpout spout = new KestrelThriftSpout(hosts, port, this.inputQueue, new GraphWritingScheme());
-		builder.setSpout(TRIPLE_SPOUT, spout, this.getSpoutBoltParallelism());
+			KestrelThriftSpout spout = new KestrelThriftSpout(hosts, port, this.inputQueue, new GraphWritingScheme());
+			builder.setSpout(TRIPLE_SPOUT, spout, this.getSpoutBoltParallelism());
+		}
+		else {
+			UnreliableKestrelThriftSpout spout = new UnreliableKestrelThriftSpout(streamDataSources, new GraphWritingScheme(), this.inputQueue);
+			spout.setAckQueue(this.ackQueue);
+			builder.setSpout(TRIPLE_SPOUT, spout, this.getSpoutBoltParallelism());
+		}
 
 		return TRIPLE_SPOUT;
 	}

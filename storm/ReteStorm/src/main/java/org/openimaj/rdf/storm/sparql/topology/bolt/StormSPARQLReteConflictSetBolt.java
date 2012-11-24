@@ -75,6 +75,11 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 		 */
 		void consumeBindings(QueryIterator bindingsIter);
 
+		/**
+		 * Close the sink
+		 */
+		void close();
+
 	}
 
 	private static Logger logger = Logger.getLogger(StormSPARQLReteConflictSetBolt.class);
@@ -236,6 +241,12 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 	public TopologyContext getContext() {
 		// TODO Auto-generated method stub
 		return this.context;
+	}
+
+	@Override
+	public void cleanup() {
+		super.cleanup();
+		this.sink.close();
 	}
 
 }

@@ -21,9 +21,9 @@ import backtype.storm.generated.StormTopology;
  * Instantiates a {@link StaticDataSPARQLReteTopologyBuilder}, preparing the
  * static data sources,
  * the streaming data sources.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
 
@@ -39,13 +39,46 @@ public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
 			usage = "How output bindings should be serialized if the query")
 	public QuerySolutionSerializer qss = QuerySolutionSerializer.JSON;
 
+	/**
+	 *
+	 */
+	@Option(
+			name = "--unreliable-kestrel-spout",
+			aliases = "-unrelk",
+			required = false,
+			usage = "Force an unreliable kestrel spout to be used")
+	public boolean unreliableKestrelSpout = false;
+
+	/**
+	 *
+	 */
+	@Option(
+			name = "--ack-stats-queue",
+			aliases = "-ackqueue",
+			required = false,
+			usage = "Force an unreliable kestrel spout to be used")
+	public String ackQueue = null;
+
 	@Override
-	public StormTopology constructTopology(ReteStormOptions options, Config config) {
+	public void initConfig(Config config) {
+		config.put(KestrelStaticDataSPARQLReteTopologyBuilder.RETE_TOPOLOGY_KESTREL_UNRELIABLE, unreliableKestrelSpout);
+		if (unreliableKestrelSpout && ackQueue == null) {
+			ackQueue = KestrelStaticDataSPARQLReteTopologyBuilder.RETE_TOPOLOGY_KESTREL_ACK_QUEUE_DEFAULT;
+		}
+		config.put(KestrelStaticDataSPARQLReteTopologyBuilder.RETE_TOPOLOGY_KESTREL_ACK_QUEUE, ackQueue);
+	}
+
+	@Override
+	public StormTopology constructTopology(ReteStormOptions options) {
+		Config config = options.prepareConfig();
 
 		KestrelStaticDataSPARQLReteTopologyBuilder topologyBuilder = new KestrelStaticDataSPARQLReteTopologyBuilder(
 				options.getKestrelSpecList(),
 				options.inputQueue, options.outputQueue,
-				options.staticDataSources());
+				options.staticDataSources(),
+				config
+				);
+
 		topologyBuilder.setConfig(config);
 		topologyBuilder.setQuerySolutionSerializerMode(qss);
 		StormSPARQLReteTopologyOrchestrator orchestrator = null;

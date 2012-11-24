@@ -30,16 +30,20 @@
 package org.openimaj.kestrel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.thrift7.TException;
 
+import backtype.storm.spout.KestrelThriftClient;
 
 /**
  * Define a connection to a single or set of Kestrel servers
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class KestrelServerSpec {
 
@@ -53,7 +57,6 @@ public class KestrelServerSpec {
 	 */
 	public static final int DEFAULT_KESTREL_THRIFT_PORT = 2229;
 
-
 	/**
 	 * the default kestrel text protocol port
 	 */
@@ -63,6 +66,8 @@ public class KestrelServerSpec {
 	 * the localhost
 	 */
 	public static final String LOCALHOST = "127.0.0.1";
+
+	private static final Logger logger = Logger.getLogger(KestrelServerSpec.class);
 	/**
 	 * the kestrel host
 	 */
@@ -72,9 +77,11 @@ public class KestrelServerSpec {
 	 */
 	public int port;
 
+	private KestrelThriftClient client;
+
 	/**
 	 * A single kestrel host
-	 *
+	 * 
 	 * @param kestrelHost
 	 * @param port
 	 */
@@ -90,7 +97,7 @@ public class KestrelServerSpec {
 	/**
 	 * @return a local server spec using memcached
 	 */
-	public static KestrelServerSpec localMemcached(){
+	public static KestrelServerSpec localMemcached() {
 		KestrelServerSpec ret = new KestrelServerSpec();
 		ret.port = DEFAULT_KESTREL_MEMCACHED_PORT;
 		return ret;
@@ -99,7 +106,7 @@ public class KestrelServerSpec {
 	/**
 	 * @return a local server spec using thrift
 	 */
-	public static KestrelServerSpec localThrift(){
+	public static KestrelServerSpec localThrift() {
 		KestrelServerSpec ret = new KestrelServerSpec();
 		ret.port = DEFAULT_KESTREL_THRIFT_PORT;
 		return ret;
@@ -108,15 +115,17 @@ public class KestrelServerSpec {
 	/**
 	 * @return a local server spec using text
 	 */
-	public static KestrelServerSpec localText(){
+	public static KestrelServerSpec localText() {
 		KestrelServerSpec ret = new KestrelServerSpec();
 		ret.port = DEFAULT_KESTREL_TEXT_PORT;
 		return ret;
 	}
 
 	/**
-	 * Parse a list of strings in the format: host:port. If either host or port is left blank then
+	 * Parse a list of strings in the format: host:port. If either host or port
+	 * is left blank then
 	 * the default is used
+	 * 
 	 * @param kestrelHosts
 	 * @return all server specs
 	 */
@@ -125,33 +134,94 @@ public class KestrelServerSpec {
 		for (String hostport : kestrelHosts) {
 			String host = "";
 			String port = "";
-			if(hostport.contains(":")){
+			if (hostport.contains(":")) {
 				int split = hostport.lastIndexOf(":");
 				host = hostport.substring(0, split);
-				port = hostport.substring(split+1);
+				port = hostport.substring(split + 1);
 			}
-			else{
+			else {
 				host = hostport;
 			}
-			if(host.length()==0)host = KestrelServerSpec.LOCALHOST;
-			if(port.length()==0)port = "" + KestrelServerSpec.DEFAULT_KESTREL_THRIFT_PORT;
+			if (host.length() == 0)
+				host = KestrelServerSpec.LOCALHOST;
+			if (port.length() == 0)
+				port = "" + KestrelServerSpec.DEFAULT_KESTREL_THRIFT_PORT;
 			ret.add(new KestrelServerSpec(host, Integer.parseInt(port)));
 		}
 		return ret;
 	}
 
 	/**
-	 * Construct a string that looks like this: "host1:port1 host2:port2" from the list of {@link KestrelServerSpec}
+	 * Construct a string that looks like this: "host1:port1 host2:port2" from
+	 * the list of {@link KestrelServerSpec}
+	 * 
 	 * @param kestrelSpecList
 	 * @param port
-	 * @return  a string that looks like this: "host1:port1 host2:port2"
+	 * @return a string that looks like this: "host1:port1 host2:port2"
 	 */
 	public static String kestrelAddressListAsString(List<KestrelServerSpec> kestrelSpecList, int port) {
 		List<String> retList = new ArrayList<String>();
 		for (KestrelServerSpec kestrelServerSpec : kestrelSpecList) {
-			retList.add(String.format("%s:%s", kestrelServerSpec.host,port));
+			retList.add(String.format("%s:%s", kestrelServerSpec.host, port));
 		}
 		return StringUtils.join(retList, " ");
+	}
+
+	/**
+	 * @return
+	 * @throws TException
+	 */
+	public KestrelThriftClient getValidClient() throws TException {
+		if (this.client == null) { // If client was blacklisted, remake it.
+			logger.info("Attempting reconnect to kestrel " + this.host + ":" + this.port);
+			this.client = new KestrelThriftClient(this.host, this.port);
+		}
+		return this.client;
+	}
+
+	/**
+	 * An iterator to access a list of {@link KestrelServerSpec} in a round
+	 * robin fasion. This iterator will always return a next as long as
+	 * there are {@link KestrelServerSpec} in the provided list.
+	 * 
+	 * @param kestrelSpecList
+	 * @return
+	 */
+	public static Iterator<KestrelThriftClient> thriftClientIterator(final List<KestrelServerSpec> kestrelSpecList) {
+		return new Iterator<KestrelThriftClient>() {
+			int index = 0;
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public KestrelThriftClient next() {
+				int startIndex = index;
+				do {
+					KestrelServerSpec toRet = kestrelSpecList.get(index);
+					index++;
+					if (index >= kestrelSpecList.size()) {
+						index = 0;
+					}
+					try {
+						return toRet.getValidClient();
+					} catch (TException e) {
+					}
+				} while (index != startIndex);
+				throw new RuntimeException("Couldn't find valid client");
+			}
+
+			@Override
+			public boolean hasNext() {
+				return kestrelSpecList.size() > 0;
+			}
+		};
+	}
+
+	public void close() {
+		this.client.close();
 	}
 
 }

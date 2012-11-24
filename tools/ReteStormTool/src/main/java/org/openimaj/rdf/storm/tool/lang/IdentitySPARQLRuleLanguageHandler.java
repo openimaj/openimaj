@@ -14,18 +14,17 @@ import org.openimaj.rdf.storm.sparql.topology.builder.group.IdentityKestrelStati
 import org.openimaj.rdf.storm.sparql.topology.builder.group.StaticDataSPARQLReteTopologyBuilder;
 import org.openimaj.rdf.storm.tool.ReteStormOptions;
 
-import backtype.storm.Config;
 import backtype.storm.generated.StormTopology;
 
 /**
  * Instantiates a {@link StaticDataSPARQLReteTopologyBuilder}, preparing the
  * static data sources,
  * the streaming data sources.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class IdentitySPARQLRuleLanguageHandler implements RuleLanguageHandler {
+public class IdentitySPARQLRuleLanguageHandler extends BaseRuleLanguageHandler {
 
 	private Logger logger = Logger.getLogger(IdentitySPARQLRuleLanguageHandler.class);
 
@@ -40,13 +39,13 @@ public class IdentitySPARQLRuleLanguageHandler implements RuleLanguageHandler {
 	public QuerySolutionSerializer qss = QuerySolutionSerializer.JSON;
 
 	@Override
-	public StormTopology constructTopology(ReteStormOptions options, Config config) {
+	public StormTopology constructTopology(ReteStormOptions options) {
 
 		IdentityKestrelStaticDataSPARQLReteTopologyBuilder topologyBuilder = new IdentityKestrelStaticDataSPARQLReteTopologyBuilder(
 				options.getKestrelSpecList(),
 				options.inputQueue, options.outputQueue,
 				options.staticDataSources());
-		topologyBuilder.setConfig(config);
+		topologyBuilder.setConfig(options.prepareConfig());
 		topologyBuilder.setQuerySolutionSerializerMode(qss);
 		StormSPARQLReteTopologyOrchestrator orchestrator = null;
 		try {

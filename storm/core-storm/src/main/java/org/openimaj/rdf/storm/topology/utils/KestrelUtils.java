@@ -52,6 +52,7 @@ public class KestrelUtils {
 		for (String queue : queues) {
 			client.delete_queue(queue);
 		}
+		client.close();
 	}
 
 }
