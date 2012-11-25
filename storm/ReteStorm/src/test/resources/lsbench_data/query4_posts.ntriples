@@ -1,0 +1,32 @@
+<http://www.ins.cwi.nl/sib/post/po2074> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.ins.cwi.nl/sib/vocabulary/Post> .
+<http://www.ins.cwi.nl/sib/post/po2074> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Post> .
+<http://www.ins.cwi.nl/sib/post/po2074> <http://purl.org/dc/terms/title> "null" .
+<http://www.ins.cwi.nl/sib/post/po2074> <http://purl.org/dc/elements/1.1/created> "2010-02-01T11:36:19Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.ins.cwi.nl/sib/post/po2074> <http://www.ins.cwi.nl/sib/vocabulary/browser> "Firefox" .
+<http://www.ins.cwi.nl/sib/post/po2074> <http://rdfs.org/sioc/ns#ip_address> "31.24.40.19" .
+<http://www.ins.cwi.nl/sib/post/po2074> <http://rdfs.org/sioc/ns#content> "Biagio Antonacci born 9 November 1963 is an Italian cantautore or a singer-songwriter from Milan" .
+<http://www.ins.cwi.nl/sib/forum/fo1710> <http://rdfs.org/sioc/ns#container_of> <http://www.ins.cwi.nl/sib/post/po2074> .
+<http://www.ins.cwi.nl/sib/user/u855> <http://rdfs.org/sioc/ns#creator_of> <http://www.ins.cwi.nl/sib/post/po2074> .
+<http://www.ins.cwi.nl/sib/post/po2074> <http://www.ins.cwi.nl/sib/vocabulary/hashtag> "Antonacci" .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.ins.cwi.nl/sib/vocabulary/Post> .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Post> .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://purl.org/dc/terms/title> "null" .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://purl.org/dc/elements/1.1/created> "2010-02-01T09:55:40Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://www.ins.cwi.nl/sib/vocabulary/agent> "iPad" .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://www.ins.cwi.nl/sib/vocabulary/browser> "Chrome" .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://rdfs.org/sioc/ns#ip_address> "31.24.40.19" .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://rdfs.org/sioc/ns#content> "Antonacci born 9 November 1963 is an Italian cantautore or a singer-songwriter" .
+<http://www.ins.cwi.nl/sib/forum/fo1710> <http://rdfs.org/sioc/ns#container_of> <http://www.ins.cwi.nl/sib/post/po2075> .
+<http://www.ins.cwi.nl/sib/user/u855> <http://rdfs.org/sioc/ns#creator_of> <http://www.ins.cwi.nl/sib/post/po2075> .
+<http://www.ins.cwi.nl/sib/post/po2075> <http://www.ins.cwi.nl/sib/vocabulary/hashtag> "Antonacci" .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.ins.cwi.nl/sib/vocabulary/Post> .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Post> .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://purl.org/dc/terms/title> "null" .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://purl.org/dc/elements/1.1/created> "2010-02-01T09:44:02Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://www.ins.cwi.nl/sib/vocabulary/agent> "iPad" .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://www.ins.cwi.nl/sib/vocabulary/browser> "Chrome" .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://rdfs.org/sioc/ns#ip_address> "31.24.40.19" .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://rdfs.org/sioc/ns#content> "Biagio Antonacci born 9 November 1963 is an Italian cantautore or a singer-songwriter from Milan" .
+<http://www.ins.cwi.nl/sib/forum/fo1710> <http://rdfs.org/sioc/ns#container_of> <http://www.ins.cwi.nl/sib/post/po2077> .
+<http://www.ins.cwi.nl/sib/user/u855> <http://rdfs.org/sioc/ns#creator_of> <http://www.ins.cwi.nl/sib/post/po2077> .
+<http://www.ins.cwi.nl/sib/post/po2077> <http://www.ins.cwi.nl/sib/vocabulary/hashtag> "Antonacci" .

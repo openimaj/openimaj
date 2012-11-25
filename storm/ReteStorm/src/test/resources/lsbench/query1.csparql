@@ -1,0 +1,9 @@
+REGISTER QUERY Query1 AS
+PREFIX sib:<http://www.ins.cwi.nl/sib/vocabulary/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+select ?p ?o
+FROM STREAM <http://deri.org/poststream> [RANGE 1s STEP 100ms]
+where{ 
+<http://www.ins.cwi.nl/sib/user/u984> ?p ?o.
+}

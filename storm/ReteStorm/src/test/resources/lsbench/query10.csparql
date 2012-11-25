@@ -1,0 +1,8 @@
+REGISTER QUERY Query10 AS
+PREFIX sib:<http://www.ins.cwi.nl/sib/vocabulary/>
+select ?tag (count(?post) as ?numberofpostpertag) 
+FROM STREAM <http://deri.org/poststream> [RANGE 1m STEP 1ms]
+where{ 
+?post sib:hashtag ?tag.
+}
+GROUP BY ?tag

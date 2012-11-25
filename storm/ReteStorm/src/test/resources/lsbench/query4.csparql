@@ -1,0 +1,13 @@
+REGISTER QUERY Query4 AS
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sib:<http://www.ins.cwi.nl/sib/vocabulary/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+select ?post1 ?post2 ?tag
+FROM STREAM <{TEST_FILE}> [RANGE 15s STEP 1ms]
+where{ 
+?post1 sib:hashtag ?tag. 
+?post2 sib:hashtag ?tag.
+?user sioc:creator_of ?post1.
+?user sioc:creator_of ?post2.
+FILTER(?post1 !=?post2)
+}
