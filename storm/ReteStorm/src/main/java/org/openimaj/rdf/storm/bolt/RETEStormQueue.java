@@ -53,18 +53,19 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * Represents one input left of a join node. The queue points to
  * a sibling queue representing the other leg which should be joined
  * against.
- *
+ * 
  * @author David Monks <dm11g08@ecs.soton.ac.uk>, based largely on the RETEQueue
  *         implementation by <a href="mailto:der@hplb.hpl.hp.com">Dave
  *         Reynolds</a>
  */
-public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tuple>, RETEStormSourceNode {
+public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tuple>,
+		RETEStormSourceNode {
 
 	protected final static Logger logger = Logger.getLogger(RETEStormQueue.class);
 
 	/** A time-prioritised and size limited sliding window of Tuples */
 	private final CircularPriorityWindow<Tuple> window;
-	
+
 	/** The name of the stream over which this bolt acts */
 	private final String windowName;
 
@@ -86,7 +87,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	/**
 	 * Constructor. The window is not usable until it has been bound
 	 * to a sibling and a continuation node.
-	 *
+	 * 
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -113,7 +114,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	 * Constructor including sibling to bind to. The window is not usable until
 	 * it has
 	 * also been bound to a continuation node.
-	 *
+	 * 
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -141,7 +142,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	 * Constructor including sibling to bind to. The window is not usable until
 	 * it has
 	 * also been bound to a continuation node.
-	 *
+	 * 
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
 	 *            equivalent field in tuples from the other side of the join.
@@ -168,7 +169,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 
 	/**
 	 * Set the sibling for this node.
-	 *
+	 * 
 	 * @param sibling
 	 */
 	public void setSibling(RETEStormQueue sibling) {
@@ -187,7 +188,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 
 	/**
 	 * Propagate a token to this node.
-	 *
+	 * 
 	 * @param env
 	 *            a set of variable bindings for the rule being processed.
 	 * @param isAdd
@@ -196,62 +197,72 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	 *            the time at which the triple was added from the stream
 	 */
 	public void fire(Tuple env, boolean isAdd, long timestamp) {
+		fireToWindow(env, isAdd, timestamp, this, sibling);
+	}
+
+	private static void fireToWindow(Tuple env, boolean isAdd, long timestamp, RETEStormQueue queue, RETEStormQueue sibling) {
 		// Cross match new token against the entries in the sibling queue
 		List<Object> values = env.getValues();
 		logger.debug("\nChecking new tuple values: " + StormReteBolt.cleanString(values));
 		logger.debug("Comparing new tuple to " + sibling.window.size() + " other tuples");
 		for (Iterator<Tuple> i = sibling.window.iterator(); i.hasNext();) {
 			Tuple candidate = i.next();
-//			logger.debug("Comparing to tuple values: " + candidate.getValues());
+			//					logger.debug("Comparing to tuple values: " + candidate.getValues());
 			boolean matchOK = true;
-			for (int j = 0; j < matchIndices.length; j++) {
-				if (matchIndices[j] >= 0 && !((Node) values.get(j)).sameValueAs(candidate.getValue(matchIndices[j]))) {
-					//					logger.debug(String.format(
-					//							"this.matchIndices[j] == %d and value at this.value[%d] != that.value[%d]",
-					//							matchIndices[j], j, matchIndices[j]
-					//							));
-					matchOK = false;
-					break;
+			for (int j = 0; j < queue.matchIndices.length; j++) {
+				if (queue.matchIndices[j] >= 0) {
+					// If the queue match indices indicate there should be a match get the
+					// values of j in the queue and matchIndices[j] in the sibling
+					Node thisNode = (Node) values.get(j);
+					Object siblingNode = candidate.getValue(queue.matchIndices[j]);
+					if (!thisNode.sameValueAs(siblingNode)) {
+						//					logger.debug(String.format(
+						//							"this.matchIndices[j] == %d and value at this.value[%d] != that.value[%d]",
+						//							matchIndices[j], j, matchIndices[j]
+						//							));
+						matchOK = false;
+						break;
+					}
 				}
 			}
 			if (matchOK) {
 				logger.debug("Match Found! preparing for emit!");
 				// Instantiate a new extended environment
 				Values newVals = new Values();
-				for (int j = 0; j < outputIndices.length; j++) {
+				for (int j = 0; j < queue.outputIndices.length; j++) {
 					Object o;
-					if (outputIndices[j] >= 0)
-						o = env.getValue(outputIndices[j]);
+					if (queue.outputIndices[j] >= 0)
+						o = env.getValue(queue.outputIndices[j]);
 					else
 						o = candidate.getValue(sibling.outputIndices[j]);
 					newVals.add(o);
 				}
 
-				addMetaValues(newVals,env,candidate,isAdd,timestamp);
+				addMetaValues(newVals, env, candidate, isAdd, timestamp);
 
 				// Fire the successor processing
-				continuation.fire(newVals, isAdd);
-				continuation.emit(env);
+				queue.continuation.fire(newVals, isAdd);
+				queue.continuation.emit(env);
 			}
 		}
 
 		if (isAdd)
 			// Store the new token in this store
-			window.offer(env);
+			queue.window.offer(env);
 		else
 			// Remove any existing instances of the token from this store
-			window.remove(env);
+			queue.window.remove(env);
 
 	}
 
-	protected void addMetaValues(Values newVals, Tuple thistuple, Tuple siblingtuple, boolean isAdd, long timestamp) {
+	protected static void addMetaValues(Values newVals, Tuple thistuple, Tuple siblingtuple, boolean isAdd, long timestamp) {
 		Polyadic newG = new MultiUnion();
 		newG.addGraph((Graph) thistuple.getValueByField(StormReteBolt.Component.graph.toString()));
 		newG.addGraph((Graph) siblingtuple.getValueByField(StormReteBolt.Component.graph.toString()));
-		addMetaValues(newVals,isAdd,newG,timestamp);
+		addMetaValues(newVals, isAdd, newG, timestamp);
 	}
 
-	protected void addMetaValues(Values newVals, boolean isAdd, Graph newG, long timestamp) {
+	protected static void addMetaValues(Values newVals, boolean isAdd, Graph newG, long timestamp) {
 		for (Component c : Component.values()) {
 			switch (c) {
 			case isAdd:
@@ -274,7 +285,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 
 	/**
 	 * Clone this node in the network.
-	 *
+	 * 
 	 * @param netCopy
 	 * @param context
 	 *            the new context to which the network is being ported

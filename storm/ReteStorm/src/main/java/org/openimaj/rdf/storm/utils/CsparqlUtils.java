@@ -1,6 +1,8 @@
 package org.openimaj.rdf.storm.utils;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,19 +25,40 @@ import eu.larkc.csparql.parser.StreamInfo;
 import eu.larkc.csparql.parser.TreeBox;
 import eu.larkc.csparql.streams.formats.CSparqlQuery;
 
+/**
+ * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class CsparqlUtils {
-	public static class CSparqlComponentHolder{
+	/**
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static class CSparqlComponentHolder {
+		/**
+		 * @param jenaQuery
+		 * @param streams
+		 */
 		public CSparqlComponentHolder(Query jenaQuery, Set<StreamInfo> streams) {
 			this.simpleQuery = jenaQuery;
 			this.streams = streams;
 		}
+
+		/**
+		 * the normal SPARQL part of the query
+		 */
 		public Query simpleQuery;
+		/**
+		 * the FROM STREAM parts of the query
+		 */
 		public Set<StreamInfo> streams;
 
 	}
+
 	/**
 	 * Construct a dummy engine + translator. Construct the query.
-	 *
+	 * 
 	 * @param query
 	 * @return a {@link CSparqlQuery} instance
 	 * @throws IOException
@@ -48,7 +71,7 @@ public class CsparqlUtils {
 			Query jenaQuery = QueryFactory.create(sp.produceSparql(tb));
 			System.out.println(jenaQuery);
 			System.out.println(tb);
-			return new CSparqlComponentHolder(jenaQuery,streams);
+			return new CSparqlComponentHolder(jenaQuery, streams);
 		} catch (RecognitionException e) {
 			throw new IOException(e);
 		} catch (PostProcessingException e) {
@@ -69,7 +92,7 @@ public class CsparqlUtils {
 
 		CSparqlParser parser = new CSparqlParser(tokens, builder);
 
-		CSparqlParser.queryWithReg_return result = parser.queryWithReg();
+		parser.queryWithReg();
 
 		ParseTree debug = builder.getTree();
 
@@ -127,4 +150,37 @@ public class CsparqlUtils {
 		return queryOk.toString();
 	}
 
+	/**
+	 * Fill in a template
+	 * 
+	 * @param query
+	 * @param templateReplace
+	 * @return template removed replaced with replace
+	 */
+	public static String templaceQuery(String query, Map<String, String> templateReplace) {
+		String fixedString = query;
+		for (Entry<String, String> replace : templateReplace.entrySet()) {
+			fixedString = fixedString.replace(String.format("{%s}", replace.getKey()), replace.getValue());
+		}
+		return fixedString;
+	}
+
+	/**
+	 * Replace all test variables with a single variable, good for cleaning up
+	 * queries
+	 * 
+	 * @param queryStr
+	 * @param with
+	 *            replace with this
+	 * @param clean
+	 *            find all these
+	 * @return cleaned
+	 */
+	public static String templaceQuery(String query, String with, String... clean) {
+		String fixedString = query;
+		for (String replace : clean) {
+			fixedString = fixedString.replaceAll(String.format("[{]%s[}]", replace), with);
+		}
+		return fixedString;
+	}
 }

@@ -77,7 +77,9 @@ public class KestrelQueueStatsMonitorMode extends MonitorMode {
 			Map<SocketAddress, Map<String, String>> stats = client.getStats();
 			Map<SocketAddress, Map<MemcachedStats, String>> inputStats = extractQueueStats(inputQueue, stats);
 			Map<SocketAddress, Map<MemcachedStats, String>> outputStats = extractQueueStats(outputQueue, stats);
-			AckStats newAckStats = mostRecentAckStats(extractAckStats(this.ackQueue, stats));
+			List<AckStats> extractAckStats = extractAckStats(this.ackQueue, stats);
+			boolean emptyAck = extractAckStats.size() == 0;
+			AckStats newAckStats = mostRecentAckStats(extractAckStats);
 
 			float inputRemaining = 0;
 			float inputTotal = 0;
@@ -98,7 +100,7 @@ public class KestrelQueueStatsMonitorMode extends MonitorMode {
 			else if (progress > 0) {
 				float currentThroughput = inputProcessed / (timer.duration() / 1000);
 				reportTime(inputTotal, outputProcessed, progress, currentThroughput, newAckStats);
-				if (progress == 1.0) {
+				if (progress == 1.0 && emptyAck) {
 					break;
 				}
 			}

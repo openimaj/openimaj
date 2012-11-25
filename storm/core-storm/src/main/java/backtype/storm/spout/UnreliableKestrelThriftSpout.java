@@ -189,16 +189,20 @@ public class UnreliableKestrelThriftSpout extends BaseRichSpout {
 		}
 		acked++;
 		if (acked % 1000 == 0) {
-			logger.debug("Acked: " + acked);
-			float throughput = acked / ((float) ackTimer.duration() / 1000);
-			if (this.ackQueue != null) {
-				AckStats stats = new AckStats(throughput);
-				KestrelThriftClient client = getNextValidClient();
-				try {
-					client.put(this.ackQueue, gson.toJson(stats), 0);
-				} catch (TException e) {
-					logger.error("Failed to write acknowledgement");
-				}
+			emitToAckQueue();
+		}
+	}
+
+	private void emitToAckQueue() {
+		logger.debug("Acked: " + acked);
+		float throughput = acked / ((float) ackTimer.duration() / 1000);
+		if (this.ackQueue != null) {
+			AckStats stats = new AckStats(throughput);
+			KestrelThriftClient client = getNextValidClient();
+			try {
+				client.put(this.ackQueue, gson.toJson(stats), 0);
+			} catch (TException e) {
+				logger.error("Failed to write acknowledgement");
 			}
 		}
 	}
