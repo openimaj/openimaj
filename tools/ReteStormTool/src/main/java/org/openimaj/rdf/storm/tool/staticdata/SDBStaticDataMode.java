@@ -154,11 +154,10 @@ public class SDBStaticDataMode implements StaticDataMode {
 //					}
 					String fileURL = location;
 					logger.debug("...Loading triples from: " + fileURL);
-					Model tmpModel = ModelFactory.createDefaultModel();
 					// RiotLoader.read(fileURL, dataset.asDatasetGraph(),Lang.TURTLE);
-					RiotLoader.read(location, tmpModel.getGraph(), Lang.NTRIPLES);
+					RiotLoader.read(location, dataset.asDatasetGraph(), Lang.NTRIPLES);
 					logger.debug("Done!...populating SQL model...");
-					dataset.getDefaultModel().add(tmpModel);
+//					dataset.getDefaultModel().add(tmpModel);
 					logger.debug("Done!");
 					store.close();
 				}
