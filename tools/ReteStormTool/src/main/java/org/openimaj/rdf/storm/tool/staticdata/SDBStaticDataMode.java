@@ -33,14 +33,14 @@ import com.hp.hpl.jena.sdb.store.LayoutType;
  * Loads the RDF from the provided files into the requested database using the
  * appropriate driver
  * and other required configuration information.
- * 
+ *
  * The database name is constructed from the rdf file name.
- * 
+ *
  * If the database exists it is not overwritten and assumed intact unless the
  * overwrite command is set
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SDBStaticDataMode implements StaticDataMode {
 
@@ -103,11 +103,12 @@ public class SDBStaticDataMode implements StaticDataMode {
 		logger.debug("Preparing static data using Jena SDB");
 		SysRIOT.wireIntoJena();
 		String dbName = String.format("jeandb_%s", name);
-		String dbURL = String.format("%s/%s?%s", url, dbName, jdbcUnicode);
+		String dbURL = String.format("%s/%s?%s", url, dbName,jdbcUnicode);
 		logger.debug("Attempting to connect to: " + dbURL);
 		Connection connection;
 		try {
 			connection = DriverManager.getConnection(url, username, password);
+
 
 			DatabaseMetaData meta = connection.getMetaData();
 			ResultSet rs = meta.getCatalogs();
@@ -130,7 +131,7 @@ public class SDBStaticDataMode implements StaticDataMode {
 				}
 			}
 			if (createDB) {
-				try {
+				try{
 					logger.debug("Creating database...");
 					StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex, DatabaseType.MySQL);
 					String hrappSQL = String.format("CREATE DATABASE %s", dbName);
@@ -142,15 +143,15 @@ public class SDBStaticDataMode implements StaticDataMode {
 					store.getTableFormatter().create();
 					logger.debug("Done!...populating temporary model...");
 					Dataset dataset = SDBFactory.connectDataset(store);
-					//					String[] lines = FileUtils.readlines(new File(location),"UTF-8");
-					//					for (String string : lines) {
-					//						try{
-					//							RiotLoader.read(new ByteArrayInputStream(string.getBytes()),dataset.asDatasetGraph(),Lang.TURTLE,"");
-					//						}
-					//						catch(Throwable e){
-					//							logger.error("Failed to add triple:\n" + string);
-					//						}
-					//					}
+//					String[] lines = FileUtils.readlines(new File(location),"UTF-8");
+//					for (String string : lines) {
+//						try{
+//							RiotLoader.read(new ByteArrayInputStream(string.getBytes()),dataset.asDatasetGraph(),Lang.TURTLE,"");
+//						}
+//						catch(Throwable e){
+//							logger.error("Failed to add triple:\n" + string);
+//						}
+//					}
 					String fileURL = location;
 					logger.debug("...Loading triples from: " + fileURL);
 					Model tmpModel = ModelFactory.createDefaultModel();
@@ -160,11 +161,12 @@ public class SDBStaticDataMode implements StaticDataMode {
 					dataset.getDefaultModel().add(tmpModel);
 					logger.debug("Done!");
 					store.close();
-				} catch (Throwable e) {
+				}
+				catch(Throwable e){
 					logger.error("Something went wrong while creating the database, trying to cleanup");
-					//					String hrappSQL = String.format("DROP DATABASE %s", dbName);
-					//					Statement statement = connection.createStatement();
-					//					statement.executeUpdate(hrappSQL);
+//					String hrappSQL = String.format("DROP DATABASE %s", dbName);
+//					Statement statement = connection.createStatement();
+//					statement.executeUpdate(hrappSQL);
 					logger.error("Done!");
 					throw e;
 				}
