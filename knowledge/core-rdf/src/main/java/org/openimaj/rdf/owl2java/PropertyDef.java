@@ -1,5 +1,7 @@
 package org.openimaj.rdf.owl2java;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +11,7 @@ import java.util.Set;
 import javax.xml.bind.PropertyException;
 
 import org.apache.commons.lang.WordUtils;
+import org.openimaj.rdf.owl2java.Generator.GeneratorOptions;
 import org.openimaj.rdf.serialize.Predicate;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -36,12 +39,29 @@ import org.openrdf.sail.memory.model.MemStatementList;
  */
 public class PropertyDef
 {
+
+	private GeneratorOptions generator;
+
+	/**
+	 * @param go
+	 */
+	public PropertyDef(GeneratorOptions go) {
+		try {
+			this.generator = (GeneratorOptions) go.clone();
+			this.generator.skipPom = true;
+		} catch (CloneNotSupportedException e) {
+		}
+	}
+
 	/** A map of XML Schema types to Java types */
 	protected static HashMap<URI,String> typeMap = new HashMap<URI,String>();
-	
+
 	/** A map of XML Schema types to imports */
 	protected static HashMap<URI,String> importMap = new HashMap<URI,String>();
-	
+
+	/** A map of URIs which must be resolved with the provided generator if it exists*/
+	protected static HashMap<URI,URL> uriResolveMap = new HashMap<URI,URL>();
+
 	/** We'll set up the importMap and typeMap here */
 	static
 	{
@@ -51,23 +71,41 @@ public class PropertyDef
 		// an import (or a mapping). Other types may need to be mapped (below)
 		// and imported (using imports defined here). Note that the generator
 		// will add ".*" to the end of the import strings.
-		PropertyDef.importMap.put( 
-			new URIImpl("http://www.w3.org/2001/XMLSchema#date"), 
-			"java.util.Date" );
-		
 		PropertyDef.importMap.put(
-			new URIImpl("http://www.w3.org/2001/XMLSchema#dateTime"), 
+			new URIImpl("http://www.w3.org/2001/XMLSchema#date"),
+			"java.util.Date" );
+
+		PropertyDef.importMap.put(
+			new URIImpl("http://www.w3.org/2001/XMLSchema#dateTime"),
 			"org.joda.time.DateTime" );
-		
+
 		// ----------- Type Maps ---------- //
 		// XMLSchema types will be converted into Java types by capitalising the
 		// first letter of the XMLSchema type (and removing the namespace).
 		// So simple types will just work -> string=String, float=Float.
 		// Some won't work int=Integer.  It may be necessary to map some
 		// other URIs to specific types here.
-		PropertyDef.typeMap.put( 
-			new URIImpl("http://www.w3.org/2001/XMLSchema#int"), 
-			"Integer" );
+		PropertyDef.typeMap.put(
+			new URIImpl("http://www.w3.org/2001/XMLSchema#int"),
+			"java.lang.Integer" );
+		PropertyDef.typeMap.put(
+				new URIImpl("http://www.w3.org/2001/XMLSchema#int"),
+				"java.lang.Integer" );
+		PropertyDef.typeMap.put(
+			new URIImpl("http://www.w3.org/2000/01/rdf-schema#Literal"),
+			"java.lang.String" );
+		PropertyDef.typeMap.put(
+				new URIImpl("http://www.w3.org/2001/XMLSchema#nonNegativeInteger"),
+				"java.lang.Integer" );
+
+		// ----------- URL Maps ---------- //
+		// Some URIs need further semantics to make sense. These semantic can
+		// be resolved from this map
+		try {
+			PropertyDef.uriResolveMap.put(new URIImpl("http://www.w3.org/2004/03/trix/rdfg-1/Graph"), new URL("http://www.w3.org/2004/03/trix/rdfg-1/Graph"));
+		} catch (MalformedURLException e) {
+		}
+
 	}
 
 	/**
@@ -82,37 +120,37 @@ public class PropertyDef
 		/** The property is an ObjectProperty; that is, the property links
 		 * 	individuals (instances) to other individuals */
 		OBJECT,
-		
+
 		/** The property is a DataTypeProperty; that is, the property links
 		 * 	individuals (instances) to data values */
 		DATATYPE
 	}
-	
+
 	/** The URI of this property */
 	protected URI uri;
 
 	/** The comment on this property */
 	protected String comment;
-	
+
 	/** The type of this property */
 	protected PropertyType type = PropertyType.DATATYPE;
-	
+
 	/** The range of the property (for Object properties) */
 	protected List<URI> range = new ArrayList<URI>();
-	
+
 	/** The domain of the property */
 	protected List<URI> domain = new ArrayList<URI>();
-	
+
 	// TODO: Need to retrieve the cardinality restrictions from the ontology
 	/** The maximum number of occurrences of this property allowed */
 	protected int maxCardinality = Integer.MAX_VALUE;
 
 	/** The minimum number of occurrences of this property allowed */
 	protected int minCardinality = Integer.MIN_VALUE;
-	
+
 	/** The absolute number of occurrences of this property that must occur */
 	protected int absoluteCardinality = -1;
-	
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see java.lang.Object#toString()
@@ -121,7 +159,7 @@ public class PropertyDef
 	public String toString() {
 		return this.uri.getLocalName();
 	}
-	
+
 	/**
 	 * 	Returns the import required for the Java declaration of this
 	 * 	property. If no import is required, then null will be returned.
@@ -131,7 +169,7 @@ public class PropertyDef
 	public List<String> needsImport( final boolean implementation )
 	{
 		final List<String> imports = new ArrayList<String>();
-		
+
 		// TODO: How do we deal with multiple ranges?
 		if( this.range.size() == 1 )
 		{
@@ -139,26 +177,26 @@ public class PropertyDef
 			if( importReq != null )
 				imports.add( importReq );
 		}
-		
+
 		if( this.absoluteCardinality != 1 )
 		{
 			imports.add( "java.util.List" );
 			if( implementation )
 				imports.add( "java.util.ArrayList" );
 		}
-		
+
 		return imports;
 	}
 
 	/**
-	 *	Returns the Java declaration type for this property 
+	 *	Returns the Java declaration type for this property
 	 *	@return A string
 	 */
 	public String getDeclarationType()
 	{
 		// The default type of the property will be a string.
 		String valueType = "String";
-		
+
 		// If this is an object property, we'll have to go away and try to find
 		// out the type of the range of the property.
 		if( this.range.size() > 0 )
@@ -167,12 +205,25 @@ public class PropertyDef
 			if( this.range.size() == 1 )
 			{
 				final URI rangeURI = this.range.get(0);
-				
+
 				// If there's a mapping in typeMap, we'll use the mapped value instead.
 				if( PropertyDef.typeMap.get( rangeURI ) != null )
-						valueType = PropertyDef.typeMap.get( rangeURI );
+				{
+					valueType = PropertyDef.typeMap.get( rangeURI );
+				}
+				else if(PropertyDef.uriResolveMap.get(rangeURI) != null){
+					try {
+						Generator.generate(PropertyDef.uriResolveMap.get(rangeURI).openStream(), generator);
+					} catch (Exception e) {
+						System.out.println("URL not resolveable");
+					}
+					valueType = Generator.getPackageName(rangeURI) + "." +  Generator.getTypeName( rangeURI );
+				}
 				// Otherwise, capitalise the name of the type and use that
-				else	valueType = Generator.getTypeName( rangeURI );
+				else{
+					// try to unmarshal the URI to generate a few more classes!
+					valueType = Generator.getPackageName(rangeURI) + "." +  Generator.getTypeName( rangeURI );
+				}
 			}
 			// If there's multiple ranges, we'll just use Object
 			else	valueType = "Object";
@@ -180,7 +231,7 @@ public class PropertyDef
 
 		return valueType;
 	}
-	
+
 	/**
 	 * 	Outputs a Java definition for the property, including a comment
 	 * 	if there is a comment for the property. The comment will be formatted
@@ -188,7 +239,7 @@ public class PropertyDef
 	 * 	then a {@link Predicate} annotation will be generated for each declaration
 	 * 	containing the URI of the property. DataType properties will be encoded
 	 * 	as Strings and Object properties will be declared as their appropriate
-	 * 	type. 
+	 * 	type.
 	 *
 	 * 	@param prefix The String prefix to add to all lines in the generated code
 	 * 	@param generateAnnotations Whether to generate @@Predicate annotations
@@ -248,7 +299,7 @@ public class PropertyDef
 		// =================================================================
 		if( this.absoluteCardinality == 1 )
 				s += prefix+"public "+valueType+" get"+pName+"()";
-		else	
+		else
 		{
 			if( indexedRatherThanCollections )
 					s += prefix+"public "+valueType+" get"+pName+"( int index )";
@@ -267,18 +318,18 @@ public class PropertyDef
 						s += prefix+"\treturn "+delegationObject+".get"+pName+"();\n";
 				else	s += prefix+"\treturn "+delegationObject+".get"+pName+"( index );\n";
 			}
-			else	
+			else
 			{
 				if( !indexedRatherThanCollections || this.absoluteCardinality == 1 )
 						s += prefix+"\treturn this."+this.uri.getLocalName()+";\n";
 				else	s += prefix+"\treturn this."+this.uri.getLocalName()+".get(index);\n";
 			}
-			
+
 			s += prefix+"}\n";
 		}
 		else
 			s += ";\n";
-		
+
 		s += prefix+"\n";
 
 		// =================================================================
@@ -286,9 +337,9 @@ public class PropertyDef
 		// =================================================================
 		if( this.absoluteCardinality == 1 )
 				s += prefix+"public void set"+pName+"( final "+valueType+" "+this.uri.getLocalName()+" )";
-		else	
+		else
 		{
-			if( !indexedRatherThanCollections ) 
+			if( !indexedRatherThanCollections )
 					s += prefix+"public void set"+pName+"( final List<"+valueType+"> "+this.uri.getLocalName()+" )";
 			else	s += prefix+"public void add"+pName+"( final "+valueType+" "+this.uri.getLocalName()+" )";
 		}
@@ -303,7 +354,7 @@ public class PropertyDef
 				s += prefix+"\t"+delegationObject+".set"+pName+"( "+
 					this.uri.getLocalName()+" );\n";
 			}
-			else	
+			else
 			{
 				s += prefix+"\tthis."+this.uri.getLocalName()+" = "+this.uri.getLocalName()+";\n";
 			}
@@ -325,11 +376,11 @@ public class PropertyDef
 	 *	@throws MalformedQueryException
 	 *	@throws QueryEvaluationException
 	 */
-	static Set<PropertyDef> loadProperties( final URI uri, final RepositoryConnection conn )
+	static Set<PropertyDef> loadProperties( GeneratorOptions go, final URI uri, final RepositoryConnection conn )
 			throws RepositoryException,	MalformedQueryException, QueryEvaluationException
 	{
 		// SPARQL query to get the properties and property comments
-		final String query = 
+		final String query =
 				"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 				"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 				"prefix owl: <http://www.w3.org/2002/07/owl#> " +
@@ -355,21 +406,21 @@ public class PropertyDef
 			final BindingSet bindingSet = res.next();
 
 			// Create a new PropertyDef and store the URI of the property
-			final PropertyDef def = new PropertyDef();
+			final PropertyDef def = new PropertyDef(go);
 			def.uri = (URI)bindingSet.getValue("property");
 
 			// Set the type of the property
 			if( bindingSet.getValue( "type" ).stringValue().equals(
 						"http://www.w3.org/2002/07/owl#ObjectProperty" ) )
 				def.type = PropertyType.OBJECT;
-			else	
+			else
 			if( bindingSet.getValue( "type" ).stringValue().equals(
 					"http://www.w3.org/2002/07/owl#DatatypeProperty" ) )
 				def.type = PropertyType.DATATYPE;
 			else
 				// Other types are currently unsupported (ignored)
 				continue;
-			
+
 			// If there's a comment, store that too.
 			if( bindingSet.getValue("comment") != null )
 				def.comment = bindingSet.getValue("comment").stringValue();
@@ -379,7 +430,7 @@ public class PropertyDef
 			{
 				final Value v = bindingSet.getValue( "domain" );
 				if( v instanceof URI )
-					def.domain.add( (URI)v ); 
+					def.domain.add( (URI)v );
 				else
 				// BNodes are used to store lists of URIs
 				if( v instanceof MemBNode )
@@ -389,7 +440,7 @@ public class PropertyDef
 						def.domain.addAll( PropertyDef.getURIListBNode( m ) );
 				}
 			}
-			
+
 			// Set the domain of the property
 			if( bindingSet.getValue("range") != null )
 			{
@@ -412,16 +463,16 @@ public class PropertyDef
 //			System.out.println( "    -> Range: "+def.range );
 //			System.out.println( "    -> Domain: "+def.domain );
 		}
-			
+
 		res.close();
-		
+
 		return properties;
 	}
-	
+
 	/**
-	 * 	For a given URI that represents a node in an RDF Collection, 
+	 * 	For a given URI that represents a node in an RDF Collection,
 	 * 	will returns all the items in the list.
-	 * 
+	 *
 	 * 	@param listNode The URI of the list node
 	 * 	@param conn The repository connection
 	 * 	@return A list of URIs from the RDF list
@@ -433,7 +484,7 @@ public class PropertyDef
 		{
 			// SPARQL 1.1
 			final String sparql = "SELECT * WHERE { "+listNode+" rdf:rest*/rdf:first ?value. }";
-			
+
 			final TupleQuery tq = conn.prepareTupleQuery( QueryLanguage.SPARQL, sparql );
 			final TupleQueryResult res = tq.evaluate();
 
@@ -444,7 +495,7 @@ public class PropertyDef
 				if( value instanceof URI )
 					uris.add( (URI)value );
 			}
-			
+
 			res.close();
 		}
 		catch( final RepositoryException e )
@@ -459,10 +510,10 @@ public class PropertyDef
 		{
 			e.printStackTrace();
 		}
-		
+
 		return uris;
 	}
-	
+
 	/**
 	 * 	Gets a list of URIs from a bnode that's part of an RDF Collection.
 	 *	@param bNode The Bnode
@@ -474,7 +525,7 @@ public class PropertyDef
 		PropertyDef.getURIListBNode( bNode, list );
 		return list;
 	}
-	
+
 	/**
 	 * 	Gets a list of URIs from a bnode that's part of an RDF Collection.
 	 *	@param bNode The Bnode
@@ -490,17 +541,17 @@ public class PropertyDef
 			if( statement.getPredicate().stringValue().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#first") )
 				if( statement.getObject() instanceof URI )
 					list.add( (URI)statement.getObject() );
-			
+
 			if( statement.getPredicate().stringValue().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest") )
 				if( statement.getObject() instanceof MemBNode )
 					nextNode = (MemBNode)statement.getObject();
 		}
-		
+
 		// Recurse down the list
 		if( nextNode != null )
 			PropertyDef.getURIListBNode( nextNode, list );
 	}
-	
+
 	@Override
 	public boolean equals( final Object obj )
 	{
@@ -508,7 +559,7 @@ public class PropertyDef
 			return false;
 		return this.uri.equals( ((PropertyDef)obj).uri );
 	}
-	
+
 	@Override
 	public int hashCode()
 	{

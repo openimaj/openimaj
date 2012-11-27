@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.WordUtils;
+import org.openimaj.rdf.owl2java.Generator.GeneratorOptions;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
@@ -45,13 +46,13 @@ public class ClassDef
 
 	/** List of the all the ancestral superclasses to each of the direct superclasses */
 	protected Map<URI,Set<URI>> allSuperclasses;
-	
+
 	/** A list of the direct superclasses of this class */
 	protected Set<URI> directSuperclasses;
 
 	/** List of the properties in this class */
 	protected Set<PropertyDef> properties;
-	
+
 	/**
 	 * 	Outputs the Java class definition for this class def
 	 *
@@ -69,12 +70,13 @@ public class ClassDef
 	 *	Loads all the class definitions from the given repository
 	 *
 	 *	@param conn The repository connection from where to get the classes
+	 * @param go
 	 *	@return a Map that maps class URIs to ClassDef objects
 	 *	@throws RepositoryException
 	 *	@throws MalformedQueryException
 	 *	@throws QueryEvaluationException
 	 */
-	public static Map<URI,ClassDef> loadClasses( final RepositoryConnection conn )
+	public static Map<URI,ClassDef> loadClasses( GeneratorOptions go,final RepositoryConnection conn )
 		throws RepositoryException, MalformedQueryException, QueryEvaluationException
 	{
 		final HashMap<URI,ClassDef> classes = new HashMap<URI, ClassDef>();
@@ -122,11 +124,11 @@ public class ClassDef
 
 					clz.uri = (URI) bindingSet.getValue("Class");
 					clz.directSuperclasses = ClassDef.getSuperclasses( clz.uri, conn );
-					clz.properties   = PropertyDef.loadProperties( clz.uri, conn );
+					clz.properties   = PropertyDef.loadProperties(go, clz.uri, conn );
 
 					// Check whether there are any other classes
 					ClassDef.getEquivalentClasses( clz, conn );
-					
+
 					// Get all the superclasses in the tree
 					clz.allSuperclasses = clz.getAllSuperclasses( conn );
 
@@ -152,23 +154,23 @@ public class ClassDef
 					"{ <"+clz.uri+"> owl:equivalentClass ?clazz . }";
 
 //			System.out.println( sparql );
-			
+
 			// Prepare the query...
 			final TupleQuery preparedQuery = conn.prepareTupleQuery(
 					QueryLanguage.SPARQL, sparql );
 
 			// Run the query...
 			final TupleQueryResult res = preparedQuery.evaluate();
-			
+
 			// Loop through the results (if any)
 			while( res.hasNext() )
 			{
 				final BindingSet bs = res.next();
-				
+
 				final Value clazz = bs.getBinding("clazz").getValue();
-				
+
 				// If it's an equivalent then we'll simply make this class
-				// a subclass of the equivalent class. 
+				// a subclass of the equivalent class.
 				// TODO: There is a possibility that we could end up with a cycle here
 				// and the resulting code would not compile.
 				if( clazz instanceof URI )
@@ -179,7 +181,7 @@ public class ClassDef
 				{
 					final MemBNode b = (MemBNode)clazz;
 					final MemStatementList sl = b.getSubjectStatementList();
-					
+
 					for( int i = 0; i < sl.size(); i++ )
 					{
 						final MemStatement x = sl.get(i);
@@ -187,7 +189,7 @@ public class ClassDef
 					}
 				}
 			}
-			
+
 			res.close();
 		}
 		catch( final RepositoryException e )
@@ -270,7 +272,7 @@ public class ClassDef
 		try
 		{
 			ps = new PrintStream( new File( path.getAbsolutePath()
-					+ File.separator + Generator.getTypeName( this.uri ) + "Impl.java"), 
+					+ File.separator + Generator.getTypeName( this.uri ) + "Impl.java"),
 					"UTF-8" );
 		}
 		catch( final UnsupportedEncodingException e )
@@ -343,7 +345,7 @@ public class ClassDef
 		try
 		{
 			ps = new PrintStream( new File( path.getAbsolutePath()
-					+ File.separator + Generator.getTypeName( this.uri ) + ".java"), 
+					+ File.separator + Generator.getTypeName( this.uri ) + ".java"),
 					"UTF-8" );
 		}
 		catch( final UnsupportedEncodingException e )
@@ -371,7 +373,7 @@ public class ClassDef
 				first = false;
 			}
 		}
-		
+
 		ps.println("\n{");
 		this.printInterfacePropertyDefinitions( ps );
 		ps.println("\tpublic String getURI();\n");
@@ -402,7 +404,7 @@ public class ClassDef
 	 *	@param pkgs The list of package mappings for all the known classes
 	 *	@param allSuperclasses Whether to print imports for allSuperclasses
 	 */
-	private void printImports( final PrintStream ps, final Map<URI, String> pkgs, 
+	private void printImports( final PrintStream ps, final Map<URI, String> pkgs,
 			final boolean superclasses, final Map<URI,ClassDef> classes,
 			final boolean implementations )
 	{
@@ -411,18 +413,18 @@ public class ClassDef
 		final Map<PropertyDef, String> pd = new HashMap<PropertyDef, String>();
 		final Map<String, String> instanceNameMap = new HashMap<String, String>();
 		this.getFullPropertyList( pd, instanceNameMap, classes );
-		
+
 		for( final PropertyDef p : pd.keySet() )
 			if( implementations || pd.get(p).equals("this") )
 				if( p.needsImport( implementations ) != null )
 					imports.addAll( p.needsImport( implementations ) );
-		
+
 		if( superclasses )
 		{
 			for( final URI u : this.directSuperclasses )
 				imports.add( pkgs.get( u )+"." );
 		}
-		
+
 		imports.remove( pkgs.get(this.uri)+"." );
 
 		final String[] sortedImports = imports.toArray(new String[imports.size()]);
@@ -462,7 +464,7 @@ public class ClassDef
 	{
 		// Remember which ones we've output already
 		final HashSet<URI> alreadyDone = new HashSet<URI>();
-		
+
 		if( flattenClassStructure )
 		{
 			// TODO: Check this still works after the change in properties list
@@ -494,7 +496,7 @@ public class ClassDef
 			System.out.println( "=======================================" );
 			System.out.println( this.uri );
 			System.out.println( "=======================================" );
-			System.out.println( "Direct superclasses: "+this.directSuperclasses); 
+			System.out.println( "Direct superclasses: "+this.directSuperclasses);
 
 			// Output all the property definitions for this class.
 			for( final PropertyDef p : this.properties )
@@ -507,7 +509,7 @@ public class ClassDef
 			final HashMap<PropertyDef,String> pd = new HashMap<PropertyDef,String>();
 			final HashMap<String,String> entityNameMap = new HashMap<String, String>();
 			this.getFullPropertyList( pd, entityNameMap, classes );
-			
+
 			// Check whether there are any delegation members to output
 			// We do this by removing "this" from the map and seeing what's left.
 			final Map<PropertyDef,String> xx = new HashMap<PropertyDef, String>();
@@ -515,7 +517,7 @@ public class ClassDef
 			final Iterator<PropertyDef> i = xx.keySet().iterator();
 			while( i.hasNext() ) if( xx.get(i.next()).equals("this") ) i.remove();
 			if( xx.keySet().size() > 0 )
-			{			
+			{
 				for( final String instanceName : entityNameMap.keySet() )
 				{
 					final String typeName = entityNameMap.get(instanceName);
@@ -533,11 +535,11 @@ public class ClassDef
 			}
 		}
 	}
-	
+
 	/**
 	 * 	Traverses up the tree from this class to find all ancestor
 	 * 	allSuperclasses.
-	 * 	@param conn A connection to a triple-store repository 
+	 * 	@param conn A connection to a triple-store repository
 	 *	@return A list of URIs representing the superclass ancestors of this class
 	 */
 	public Map<URI,Set<URI>> getAllSuperclasses( final RepositoryConnection conn )
@@ -549,10 +551,10 @@ public class ClassDef
 			ClassDef.getAllSuperclasses( uri, conn, uris );
 			map.put( uri, uris );
 		}
-		
+
 		return map;
 	}
-	
+
 	/**
 	 * 	For the given URI, will query the repository and fill the list of URIs
 	 * 	with the URIs of all the ancestor allSuperclasses to the given URI.
@@ -560,7 +562,7 @@ public class ClassDef
 	 *	@param conn A connection to a triple-store repository.
 	 *	@param uris The list where classes are to be added
 	 */
-	private static void getAllSuperclasses( final URI uri, 
+	private static void getAllSuperclasses( final URI uri,
 			final RepositoryConnection conn, final Set<URI> uris )
 	{
 		try
@@ -583,13 +585,13 @@ public class ClassDef
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void getFullPropertyList( final Map<PropertyDef,String> pd,
 			final Map<String,String> instanceNameMap, final Map<URI,ClassDef> classes )
 	{
 		for( final PropertyDef pp : this.properties )
 			pd.put( pp, "this" );
-		
+
 		for( final URI superclass : this.directSuperclasses )
 		{
 			final String instanceName =
@@ -614,7 +616,7 @@ public class ClassDef
 			if( pd.keySet().size() == 0 )
 				continue;
 
-			instanceNameMap.put( instanceName, Generator.getTypeName( superclass ) );
+			instanceNameMap.put( instanceName, Generator.getPackageName(superclass) + "." + Generator.getTypeName( superclass ) );
 		}
 	}
 }

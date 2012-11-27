@@ -34,7 +34,7 @@ import com.google.common.io.Resources;
 /**
  *	The main class of the OWL 2 Java tool. This class provides a main method
  *	that will convert an OWL/RDFS file to a set of Java code files that compile
- *	to provide an object representation of the ontology. 
+ *	to provide an object representation of the ontology.
  *
  * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
@@ -50,7 +50,7 @@ public class Generator
 	 *  @created 30 Oct 2012
 	 *	@version $Author$, $Revision$, $Date$
 	 */
-	public static class GeneratorOptions
+	public static class GeneratorOptions implements Cloneable
 	{
 		/** The RDF file to convert */
 		@Argument(metaVar="RDF-FILE",index=0,usage="The RDF file to convert",required=true)
@@ -59,40 +59,47 @@ public class Generator
 		/** The target directory for the output */
 		@Argument(metaVar="TARGET-DIR",index=1,usage="The output directory for the generated class files",required=true)
 		public String targetDirectory;
-		
+
 		/** Whether to generate @@Predicate annotations. */
 		@Option(name="-annotate",aliases="-a",usage="Generate @Predicate annotations")
 		public boolean generateAnnotations = true;
-		
+
 		/** Whether to flatten the properties in the class structure */
 		@Option(name="-flatten",aliases="-f",usage="Flatten the properties in the generated classes")
 		public boolean flattenClassStructure = false;
-		
+
 		/** Whether to put the implementation files in a separate package */
 		@Option(name="-separate",aliases="-s",usage="Put implementations in a separate package")
 		public boolean separateImplementations = true;
-		
+
 		/** Whether to create a pom.xml file for the output files */
 		@Option(name="-maven",aliases="-m",usage="Create a Maven project with this groupId",metaVar="GROUP-ID")
 		public String mavenProject = null;
-		
+
 		/** The artifact identifier for the maven project, if -maven is used */
 		@Option(name="-artifactId",usage="Specify the artifact identifier for the maven project",metaVar="ARTIFACT-ID")
 		public String mavenArtifactId = "generated-rdf";
-		
+
 		/** The version number for the maven project, if -maven is used */
 		@Option(name="-version",usage="Specify the version for the maven project",metaVar="VERSION-NUMBER")
 		public String mavenVersionNumber = "1.0";
-		
+
 		/** If a mavenParent is to be added to the pom.xml, the GAV is put here */
 		@Option(name="-mavenParent",aliases="-p",usage="The mavenParent artifact GAV to add to the pom.xml (g:a:v)")
 		public String mavenParent = null;
+
+		public boolean skipPom = false;
+
+		@Override
+		public Object clone() throws CloneNotSupportedException {
+			return super.clone();
+		}
 	}
-	
+
 	/**
 	 * 	Useful little debug method that will print out all the triples for
 	 * 	a given URI from the given repository.
-	 * 
+	 *
 	 *	@param uri The URI
 	 *	@param conn The connection
 	 */
@@ -112,7 +119,7 @@ public class Generator
 			System.out.println( "----------------------------------------------" );
 			System.out.println( "Triples for "+uri );
 			System.out.println( "----------------------------------------------" );
-			
+
 			// Loop through the results
 			while( res.hasNext() )
 			{
@@ -123,7 +130,7 @@ public class Generator
 						bindingSet.getBinding("obj").getValue()+" )"
 				);
 			}
-			
+
 			res.close();
 
 			System.out.println( "----------------------------------------------\n" );
@@ -141,7 +148,7 @@ public class Generator
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Creates a cache of mappings that map URIs to package names.
 	 *
@@ -176,7 +183,7 @@ public class Generator
 	{
 		return Generator.getPackageName( uri, true );
 	}
-	
+
 	/**
 	 * From the given URI will attempt to create a java package name by
 	 * reversing all the elements and separating with dots.
@@ -208,7 +215,7 @@ public class Generator
 
 		// Replace all the path separators by dots
 		last = last.replace( "/", "." );
-		
+
 		// Remove invalid characters
 		// Replace dashes with underscores
 		last = last.replace( "-", "_" );
@@ -257,7 +264,7 @@ public class Generator
 	 * 	Creates a pom.xml file in the given directory that contains the
 	 * 	necessary dependencies to make the source files compile. It uses a
 	 * 	template pom.xml that is in the resource directory.
-	 * 
+	 *
 	 *	@param targetDir The target directory
 	 *	@param groupId The groupId of the maven artifact
 	 *	@param artifactId The artifactId of the maven project
@@ -275,8 +282,7 @@ public class Generator
 			// Determine if we need to add the parent element into the pom
 			if( parentGAV != null )
 			{
-				String ps = Resources.toString( 
-						Resources.getResource( "pom.xml.parent.xml "), Charsets.UTF_8 );
+				String ps = Resources.toString( Resources.getResource( "pom_xml_parent.xml" ), Charsets.UTF_8 );
 				final String[] splits = parentGAV.split( ":" );
 				ps = Generator.replaceCodes( splits[0], splits[1], splits[2], ps );
 				s = s.replaceAll( "\\{!p!\\}", ps );
@@ -284,7 +290,7 @@ public class Generator
 			else{
 				s = s.replaceAll( "\\{!p!\\}", "" );
 			}
-			
+
 			FileUtils.writeStringToFile( new File( targetDir, "pom.xml" ), s, "UTF-8" );
 		}
 		catch( final IOException e )
@@ -295,7 +301,7 @@ public class Generator
 
 	/**
 	 * 	Replaces GAV codes in the given string.
-	 * 
+	 *
 	 *	@param groupId The group identifier
 	 *	@param artifactId The artifact identifier
 	 *	@param versionNumber The version number
@@ -310,7 +316,7 @@ public class Generator
 		s = s.replaceAll( "\\{!v!\\}", versionNumber );
 		return s;
 	}
-	
+
 	/**
 	 * 	Returns the Java type name for a given URI
 	 *	@param s The URI
@@ -324,33 +330,33 @@ public class Generator
 	/**
 	 * 	Generate the classes for the RDF information that's read from the
 	 * 	given input stream.
-	 * 
+	 *
 	 *	@param is The input stream to find the RDF description
 	 *	@param go The options for the generator
 	 * 	@throws RepositoryException If the repository cannot be created
-	 * 	@throws IOException If the InputStream cannot be read 
+	 * 	@throws IOException If the InputStream cannot be read
 	 * 	@throws RDFParseException If the RDF is malformed
 	 * 	@throws QueryEvaluationException If the query for classes fails
 	 * 	@throws MalformedQueryException If the query for classes fails
 	 */
-	public static void generate( final InputStream is, final GeneratorOptions go ) 
-			throws RepositoryException, RDFParseException, IOException, 
+	public static void generate( final InputStream is, final GeneratorOptions go )
+			throws RepositoryException, RDFParseException, IOException,
 			MalformedQueryException, QueryEvaluationException
 	{
 		// If we're going to create a Maven project, we'll put all the source
 		// files into a src directory, so we need to alter the target directory.
-		if( go.mavenProject != null )
+		if( go.mavenProject != null && !go.skipPom )
 		{
 			// Create the pom.xml file
 			Generator.createPOM( new File(go.targetDirectory), go.mavenProject,
 					go.mavenArtifactId, go.mavenVersionNumber, go.mavenParent );
-			
+
 			go.targetDirectory = go.targetDirectory +
 					File.separator+"src"+File.separator+"main"+
 					File.separator+"java";
 			new File( go.targetDirectory ).mkdirs();
 		}
-				
+
 		// Create a new memory store into which we'll plonk all the RDF
 		final Repository repository = new SailRepository( new MemoryStore() );
 		repository.initialize();
@@ -360,7 +366,7 @@ public class Generator
 		conn.add( is, "", RDFFormat.RDFXML );
 
 		// Now we'll get all the classes from the ontology
-		final Map<URI, ClassDef> classes = ClassDef.loadClasses( conn );
+		final Map<URI, ClassDef> classes = ClassDef.loadClasses(go, conn );
 
 		// Try to generate the package mappings for the classes
 		final Map<URI, String> pkgs = Generator.generatePackageMappings(
@@ -371,12 +377,12 @@ public class Generator
 		for( final ClassDef cd : classes.values() )
 		{
 			cd.generateInterface( new File(go.targetDirectory), pkgs, classes );
-			cd.generateClass( new File(go.targetDirectory), pkgs, classes, 
-				go.flattenClassStructure, go.generateAnnotations, 
+			cd.generateClass( new File(go.targetDirectory), pkgs, classes,
+				go.flattenClassStructure, go.generateAnnotations,
 				go.separateImplementations );
 		}
 	}
-	
+
 	/**
 	 *
 	 * @param args

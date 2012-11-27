@@ -83,6 +83,18 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>sioc</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>core-rdf</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj.tools</groupId>
 			<artifactId>core-tool</artifactId>
 			<version>1.0.6-SNAPSHOT</version>

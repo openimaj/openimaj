@@ -2,20 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj</groupId>
-  <artifactId>openimaj-knowledge</artifactId>
+  <artifactId>openimaj-ontologies</artifactId>
   <packaging>pom</packaging>
   <version>1.0.6-SNAPSHOT</version>
-  <name>OpenIMAJ Knowledge Representation and Reasoning Libraries</name>
+  <name>A Set of ontologies</name>
   <parent>
-    <artifactId>openimaj</artifactId>
+    <artifactId>openimaj-knowledge</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <url>http://www.openimaj.org/openimaj-knowledge</url>
+  <url>http://www.openimaj.org/openimaj-ontologies</url>
   <inceptionYear>2011</inceptionYear>
   <description>
-			Submodule for modules related to knowledge representation and reasoning.
+			Submodule for modules which each represent a specific
+      ontology represented in java
  		</description>
   <licenses>
     <license>
@@ -75,7 +76,6 @@
     <url>http://jira.openimaj.org</url>
   </issueManagement>
   <modules>
-    <module>core-rdf</module>
-    <module>ontologies</module>
+    <module>sioc</module>
   </modules>
 </project>
