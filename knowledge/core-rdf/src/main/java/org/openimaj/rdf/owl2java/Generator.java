@@ -281,6 +281,9 @@ public class Generator
 				ps = Generator.replaceCodes( splits[0], splits[1], splits[2], ps );
 				s = s.replaceAll( "\\{!p!\\}", ps );
 			}
+			else{
+				s = s.replaceAll( "\\{!p!\\}", "" );
+			}
 			
 			FileUtils.writeStringToFile( new File( targetDir, "pom.xml" ), s, "UTF-8" );
 		}
