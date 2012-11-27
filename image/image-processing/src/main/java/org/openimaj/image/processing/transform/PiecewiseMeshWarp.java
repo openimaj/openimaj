@@ -185,6 +185,33 @@ public class PiecewiseMeshWarp<T, I extends Image<T, I>> implements ImageProcess
 		image.internalAssign(ret);
 	}
 
+	/**
+	 * Transform the content of the input image into an output image of the
+	 * given dimensions.
+	 * 
+	 * @param image
+	 *            the input image
+	 * @param width
+	 *            the output width
+	 * @param height
+	 *            the output height
+	 * @return the output image
+	 */
+	public I transform(final I image, int width, int height) {
+		final I ret = image.newInstance(width, height);
+
+		final Scan scan = new Scan(width, height, image, ret);
+
+		for (int i = 0; i < matchingRegions.size(); i++) {
+			final Polygon from = matchingRegions.get(i).secondObject().asPolygon();
+			scan.tf = transforms.get(i);
+
+			ScanRasteriser.scanFill(from.points, scan);
+		}
+
+		return ret;
+	}
+
 	private class Scan implements ScanLineListener {
 		private final Pixel p = new Pixel();
 		private final int xmin = (int) Math.max(0, bounds.x);

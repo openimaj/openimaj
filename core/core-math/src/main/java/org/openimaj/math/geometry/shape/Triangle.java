@@ -316,4 +316,13 @@ public class Triangle implements Shape {
 
 		return new Triangle(newVertices);
 	}
+
+	@Override
+	public String toString() {
+		return String.format("((%2.3f %2.3f), (%2.3f %2.3f), (%2.3f %2.3f))",
+				vertices[0].getX(), vertices[0].getY(),
+				vertices[1].getX(), vertices[1].getY(),
+				vertices[2].getX(), vertices[2].getY()
+				);
+	}
 }

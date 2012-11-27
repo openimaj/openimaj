@@ -31,9 +31,9 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * A trend detector indexes new images and is able to tell you the n highest
  * trending sets of near duplicate images
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class TrendDetector {
 	final int ndims = 128;
@@ -42,8 +42,6 @@ public class TrendDetector {
 	final float LOG_BASE = 0.001f;
 
 	TrendDetectorFeatureExtractor extractor = new SIFTTrendFeatureMode();
-
-
 
 	IntLSHSketcher<double[]> sketcher;
 	List<TIntObjectHashMap<Set<WriteableImageOutput>>> database;
@@ -93,21 +91,21 @@ public class TrendDetector {
 	public synchronized List<Set<WriteableImageOutput>> trending(int count) {
 		final SimpleWeightedGraph<WriteableImageOutput, DefaultWeightedEdge> graph = new SimpleWeightedGraph<WriteableImageOutput, DefaultWeightedEdge>(
 				DefaultWeightedEdge.class);
-		for (TIntObjectHashMap<Set<WriteableImageOutput>> set : this.database) {
+		for (final TIntObjectHashMap<Set<WriteableImageOutput>> set : this.database) {
 			set.forEachEntry(new TIntObjectProcedure<Set<WriteableImageOutput>>() {
 				@Override
 				public boolean execute(int hashIndex, Set<WriteableImageOutput> itemSet) {
-					for (WriteableImageOutput item : itemSet) {
+					for (final WriteableImageOutput item : itemSet) {
 						if (!graph.containsVertex(item)) {
 							graph.addVertex(item);
 						}
 					}
-					List<WriteableImageOutput> itemList = new ArrayList<WriteableImageOutput>();
+					final List<WriteableImageOutput> itemList = new ArrayList<WriteableImageOutput>();
 					itemList.addAll(itemSet);
 					for (int i = 0; i < itemList.size(); i++) {
-						WriteableImageOutput itemA = itemList.get(i);
+						final WriteableImageOutput itemA = itemList.get(i);
 						for (int j = i + 1; j < itemList.size(); j++) {
-							WriteableImageOutput itemB = itemList.get(j);
+							final WriteableImageOutput itemB = itemList.get(j);
 							DefaultWeightedEdge edge = graph.getEdge(itemA, itemB);
 							if (edge == null) {
 								edge = graph.addEdge(itemA, itemB);
@@ -124,9 +122,15 @@ public class TrendDetector {
 			});
 		}
 
-		ConnectivityInspector<WriteableImageOutput, DefaultWeightedEdge> conn = new ConnectivityInspector<WriteableImageOutput, DefaultWeightedEdge>(
+		final Set<DefaultWeightedEdge> edges = new HashSet<DefaultWeightedEdge>(graph.edgeSet());
+		for (final DefaultWeightedEdge e : edges) {
+			if (graph.getEdgeWeight(e) < 10)
+				graph.removeEdge(e);
+		}
+
+		final ConnectivityInspector<WriteableImageOutput, DefaultWeightedEdge> conn = new ConnectivityInspector<WriteableImageOutput, DefaultWeightedEdge>(
 				graph);
-		List<Set<WriteableImageOutput>> retList = conn.connectedSets();
+		final List<Set<WriteableImageOutput>> retList = conn.connectedSets();
 		Collections.sort(retList, new Comparator<Set<WriteableImageOutput>>() {
 
 			@Override
@@ -138,29 +142,28 @@ public class TrendDetector {
 		return retList.subList(0, count < retList.size() ? count : retList.size());
 	}
 
-
-
 	/**
 	 * index a new image
-	 *
+	 * 
 	 * @param instance
 	 * @throws IOException
 	 */
 	public synchronized void indexImage(WriteableImageOutput instance) throws IOException {
-		for (File imageFile : instance.listImageFiles("/Volumes/LetoDisk")) {
+		for (final File imageFile : instance.listImageFiles("/")) {
 			WriteableImageOutput iclone = null;
 			try {
 				iclone = instance.clone();
 				iclone.file = imageFile;
-			} catch (CloneNotSupportedException e) {
+			} catch (final CloneNotSupportedException e) {
 
 			}
-			final List<? extends FeatureVectorProvider<? extends FeatureVector>> features = extractor.extractFeatures(imageFile);
-			WriteableImageOutputHashes imageHashes = new WriteableImageOutputHashes(iclone);
+			final List<? extends FeatureVectorProvider<? extends FeatureVector>> features = extractor
+					.extractFeatures(imageFile);
+			final WriteableImageOutputHashes imageHashes = new WriteableImageOutputHashes(iclone);
 
 			for (final FeatureVectorProvider<? extends FeatureVector> k : features) {
 				double[] fv = k.getFeatureVector().asDoubleVector();
-				if(extractor.logScale()){
+				if (extractor.logScale()) {
 					fv = logScale(fv, LOG_BASE);
 				}
 				final int[] sketch = sketcher.createSketch(fv);
@@ -178,7 +181,7 @@ public class TrendDetector {
 					}
 				}
 			}
-			long time = System.currentTimeMillis();
+			final long time = System.currentTimeMillis();
 			synchronized (this.imagesByTime) {
 				this.imagesByTime
 						.add(new LongObjectPair<WriteableImageOutputHashes>(
@@ -191,7 +194,7 @@ public class TrendDetector {
 		this.extractor = fe;
 		final MersenneTwister rng = new MersenneTwister();
 
-		final DoubleGaussianFactory gauss = new DoubleGaussianFactory(fe.nDimensions(),rng, w);
+		final DoubleGaussianFactory gauss = new DoubleGaussianFactory(fe.nDimensions(), rng, w);
 		final HashFunctionFactory<double[]> factory = new HashFunctionFactory<double[]>() {
 			@Override
 			public HashFunction<double[]> create() {
@@ -205,7 +208,6 @@ public class TrendDetector {
 
 		for (int i = 0; i < sketcher.arrayLength(); i++)
 			database.add(new TIntObjectHashMap<Set<WriteableImageOutput>>());
-
 
 	}
 

@@ -211,6 +211,9 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 				}
 			}
 
+			f.scale(f.getCOG(), 1.5f);
+			System.out.println(f);
+
 			faces.add(new CLMDetectedFace(f, config.shape.copy(), config.clm._pglobl.copy(), config.clm._plocal.copy(),
 					config.clm._visi[config.clm.getViewIdx()].copy(), image));
 		}

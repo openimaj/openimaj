@@ -75,7 +75,8 @@ import org.openimaj.util.pair.IndependentPair;
 				"doi", "10.1109/34.598228",
 				"acmid", "261512",
 				"address", "Washington, DC, USA",
-				"keywords", "Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
+				"keywords",
+				"Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
 		})
 public class FisherFaceFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
 	/**
@@ -209,7 +210,8 @@ public class FisherFaceFeature implements FacialFeature, FeatureVectorProvider<D
 
 			for (final KEY e : data.getGroups()) {
 				for (final T i : data.getInstances(e)) {
-					list.add(IndependentPair.pair(e, aligner.align(i)));
+					if (i != null)
+						list.add(IndependentPair.pair(e, aligner.align(i)));
 				}
 			}
 

@@ -81,8 +81,8 @@ public class DatasetFaceDetector {
 				final List<FACE> faces = detector.detectFaces(img);
 
 				if (faces == null || faces.size() == 0) {
-					logger.warn("There was no face detected in " + group + " instance " + i);
-					detected.add(null);
+					System.err.println("There was no face detected in " + group + " instance " + i);
+					// detected.add(null);
 					continue;
 				}
 

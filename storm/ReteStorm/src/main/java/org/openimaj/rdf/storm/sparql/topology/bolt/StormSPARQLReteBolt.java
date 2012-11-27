@@ -58,8 +58,8 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	}
 
 	private int countVariables(Query query) {
-		Element elm = query.getQueryPattern();
-		Collection<Var> vars = PatternVars.vars(elm);
+		final Element elm = query.getQueryPattern();
+		final Collection<Var> vars = PatternVars.vars(elm);
 		return vars.size();
 	}
 
@@ -78,7 +78,7 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	 *            the variables (in order) which the source returns
 	 */
 	public void registerSourceVariables(String source, String[] variables) {
-		Map<String, Integer> varMap = new HashMap<String, Integer>();
+		final Map<String, Integer> varMap = new HashMap<String, Integer>();
 		for (int i = 0; i < variables.length; i++) {
 			varMap.put(variables[i], i);
 		}
@@ -86,25 +86,25 @@ public abstract class StormSPARQLReteBolt extends StormReteBolt implements Query
 	}
 
 	/**
-	 * Given a Tuple and its source, assign a {@link Binding} instance
-	 * with the variables from the binding. If the tuple's source has no
-	 * set variable order, the DEFAULT_SOURCE is attempted. If the default
-	 * variable order is unset, this function will throw a RuntimeException
+	 * Given a Tuple and its source, assign a {@link Binding} instance with the
+	 * variables from the binding. If the tuple's source has no set variable
+	 * order, the DEFAULT_SOURCE is attempted. If the default variable order is
+	 * unset, this function will throw a RuntimeException
 	 *
 	 *
 	 * @param t
 	 * @return a new {@link Binding}
 	 */
 	public Binding tupleToBinding(Tuple t) {
-		BindingMap binding = new BindingHashMap();
+		final BindingMap binding = new BindingHashMap();
 		Map<String, Integer> vars = null;
 		vars = sourceVariableMap.get(t.getSourceComponent());
 		if (vars == null) {
 			logger.error("Can't create binding for tuple, source variables unset!");
 			throw new RuntimeException("Variable order unknown.");
 		}
-		for (Entry<String, Integer> var : vars.entrySet()) {
-			Node n = (Node) t.getValue(var.getValue());
+		for (final Entry<String, Integer> var : vars.entrySet()) {
+			final Node n = (Node) t.getValue(var.getValue());
 			binding.add(Var.alloc(var.getKey()), n);
 		}
 		return binding;

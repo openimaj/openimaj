@@ -112,6 +112,9 @@ public class CLMAligner implements FaceAligner<CLMDetectedFace> {
 
 	@Override
 	public FImage align(CLMDetectedFace face) {
+		if (face == null)
+			return null;
+
 		final List<Triangle> triangles = CLMFaceTracker.getTriangles(
 				face.getShapeMatrix(), face.getVisibility(), this.config.triangles);
 		final List<Pair<Shape>> matches = computeMatches(triangles);
@@ -119,10 +122,7 @@ public class CLMAligner implements FaceAligner<CLMDetectedFace> {
 		final PiecewiseMeshWarp<Float, FImage> pmw = new
 				PiecewiseMeshWarp<Float, FImage>(matches);
 
-		final FImage out = new FImage(size, size);
-		out.drawImage(face.getFacePatch(), 0, 0);
-
-		return out.process(pmw);
+		return pmw.transform(face.getFacePatch(), size, size);
 	}
 
 	@Override

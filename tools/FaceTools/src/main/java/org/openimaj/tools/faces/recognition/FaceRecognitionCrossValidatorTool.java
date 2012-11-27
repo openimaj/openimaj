@@ -72,6 +72,12 @@ public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 	@Option(name = "--num-folds", usage = "number of cross-validation folds", required = false)
 	int numFolds = 10;
 
+	@Option(
+			name = "--save-recogniser",
+			usage = "After cross-validation, create a recogniser using all folds and save it to the given file",
+			required = false)
+	File savedRecogniser;
+
 	protected void performBenchmark() throws IOException {
 		final FaceRecognitionEngine<FACE, ?, String> engine = strategyOp.createRecognitionEngine();
 
@@ -104,7 +110,12 @@ public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 		final ExperimentContext ctx = ExperimentRunner.runExperiment(benchmark);
 
 		System.out.println(ctx);
+	}
 
+	protected void saveRecogniser() throws IOException {
+		final FaceRecognitionEngine<FACE, ?, String> engine = strategyOp.createRecognitionEngine();
+		engine.train(getDataset());
+		engine.save(savedRecogniser);
 	}
 
 	private GroupedDataset<String, ListDataset<FImage>, FImage> getDataset() throws IOException {
@@ -140,5 +151,9 @@ public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 		}
 
 		frcv.performBenchmark();
+
+		if (frcv.savedRecogniser != null) {
+			frcv.saveRecogniser();
+		}
 	}
 }

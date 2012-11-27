@@ -26,9 +26,9 @@ import twitter4j.Status;
 
 /**
  * A tool for slurping images off twitter
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>, Iterator<InputStream> {
 
@@ -146,7 +146,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 				PicSlurperUtils.updateStats(this.globalStatus, new StatusConsumption());
 			}
 
-			for (OutputListener listener: this.outputListenerModeOp	) {
+			for (final OutputListener listener : this.outputListenerModeOp) {
 				listener.prepare();
 			}
 		} catch (final Exception e) {
@@ -158,7 +158,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	/**
 	 * Validate the (local) ouput from an String and return the corresponding
 	 * file.
-	 *
+	 * 
 	 * @param out
 	 *            where the file will go
 	 * @param overwrite
@@ -263,7 +263,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * Load the configuration file which looks for twitter usernames and
 	 * passwords. If this can't be found or the values can't be found then
 	 * System.in is used to get the username and password
-	 *
+	 * 
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
@@ -292,34 +292,39 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 		// "debug");
 		// System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
 		// "debug");
-//		checkTwitterCredentials();
+		// checkTwitterCredentials();
 	}
-//
-//	private static void checkTwitterCredentials() throws IOException {
-//		final String user = System.getProperty("twitter.user");
-//		final String password = System.getProperty("twitter.password");
-//		final String consoleLogin = System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN);
-//		if (user != null && password != null || (consoleLogin != null && !Boolean.parseBoolean(consoleLogin)))
-//			return;
-//		final Console console = System.console();
-//		final String credentialsMessage = "Could not find twitter credentials. Taking from input. You can add these to a config.properties file to save time.\n";
-//		final String usernameMessage = "Twitter username: ";
-//		final String passwordMessage = "Twitter password: ";
-//		if (console != null) {
-//			console.printf(credentialsMessage);
-//			console.printf(usernameMessage);
-//			System.setProperty("twitter.user", console.readLine());
-//			console.printf(passwordMessage);
-//			System.setProperty("twitter.password", String.copyValueOf(console.readPassword()));
-//		} else {
-//			logger.debug(credentialsMessage);
-//			logger.debug(usernameMessage);
-//			final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-//			System.setProperty("twitter.user", reader.readLine());
-//			logger.debug(passwordMessage);
-//			System.setProperty("twitter.password", reader.readLine());
-//		}
-//
-//	}
+	//
+	// private static void checkTwitterCredentials() throws IOException {
+	// final String user = System.getProperty("twitter.user");
+	// final String password = System.getProperty("twitter.password");
+	// final String consoleLogin =
+	// System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN);
+	// if (user != null && password != null || (consoleLogin != null &&
+	// !Boolean.parseBoolean(consoleLogin)))
+	// return;
+	// final Console console = System.console();
+	// final String credentialsMessage =
+	// "Could not find twitter credentials. Taking from input. You can add these to a config.properties file to save time.\n";
+	// final String usernameMessage = "Twitter username: ";
+	// final String passwordMessage = "Twitter password: ";
+	// if (console != null) {
+	// console.printf(credentialsMessage);
+	// console.printf(usernameMessage);
+	// System.setProperty("twitter.user", console.readLine());
+	// console.printf(passwordMessage);
+	// System.setProperty("twitter.password",
+	// String.copyValueOf(console.readPassword()));
+	// } else {
+	// logger.debug(credentialsMessage);
+	// logger.debug(usernameMessage);
+	// final BufferedReader reader = new BufferedReader(new
+	// InputStreamReader(System.in));
+	// System.setProperty("twitter.user", reader.readLine());
+	// logger.debug(passwordMessage);
+	// System.setProperty("twitter.password", reader.readLine());
+	// }
+	//
+	// }
 
 }
