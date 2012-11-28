@@ -1,0 +1,45 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX sioct: <http://rdfs.org/sioc/types#>
+PREFIX dcns: <http://purl.org/dc/elements/1.1/>
+PREFIX dctermsns: <http://purl.org/dc/terzms/>
+PREFIX dctypens: <http://purl.org/dc/dcmitype/>
+PREFIX dcamns: <http://purl.org/dc/dcam/>
+
+SELECT *
+WHERE {
+	?socialEvent a sioc:Item.
+	OPTIONAL ?socialEvent sioc:container ?service.
+	# the user block
+	OPTIONAL ?socialEvent dcns:creator ?user.
+		OPTIONAL ?user sioc:account_of ?person.
+		OPTIONAL ?person foaf:name ?realname.
+		OPTIONAL ?person geo:location ?location .
+		OPTIONAL ?person geo:lat_long ?lat_long .
+		OPTIONAL ?user foaf:name ?username .
+		OPTIONAL ?user dcns:identifier ?osnid .
+		OPTIONAL ?user dcbs:language ?userlanguage .
+		OPTIONAL ?person dcbs:language ?userlanguage .
+		# OPTIONAL ?person time:timeZone ?persontimezone . # this might not be possible as a person is not an interval
+		OPTIONAL ?user sioc:status ?description
+		OPTIONAL ?user sioc:avatar ?useravatar
+		# how do we deal with nSubscribers, nSubscriptions and nPostings ? Should we? Is this not inferred somehow?
+		OPTIONAL ?user foaf:homepage ?website .
+		OPTIONAL ?user foaf:page ?profile .
+	OPTIONAL ?socialEvent sioc:addressed_to ?touser
+		OPTIONAL ?touser sioc:account_of ?touserperson.
+		OPTIONAL ?touserperson foaf:name ?touserrealname.
+		OPTIONAL ?touserperson geo:location ?touserlocation .
+		OPTIONAL ?touserperson geo:lat_long ?touserlat_long .
+		OPTIONAL ?touser foaf:name ?tousername .
+		OPTIONAL ?touser dcns:identifier ?touserosnid .
+		OPTIONAL ?touser dcbs:language ?touserlanguage .
+		OPTIONAL ?touserperson dcbs:language ?touserlanguage .
+		# OPTIONAL ?touserperson time:timeZone ?touserpersontimezone . # this might not be possible as a person is not an interval
+		OPTIONAL ?touser sioc:status ?touserdescription
+		OPTIONAL ?touser sioc:avatar ?touseravatar
+		# how do we deal with nSubscribers, nSubscriptions and nPostings ? Should we? Is this not inferred somehow?
+		OPTIONAL ?touser foaf:homepage ?touserwebsite .
+		OPTIONAL ?touser foaf:page ?touserprofile .
+	OPTIONAL ?socialEvent sioc:addressed_to ?touser
+}
