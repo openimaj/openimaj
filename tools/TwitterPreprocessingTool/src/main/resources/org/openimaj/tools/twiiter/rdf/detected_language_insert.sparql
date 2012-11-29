@@ -1,0 +1,16 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX sioct: <http://rdfs.org/sioc/types#>
+PREFIX dcns: <http://purl.org/dc/elements/1.1/>
+PREFIX dctermsns: <http://purl.org/dc/terzms/>
+PREFIX dctypens: <http://purl.org/dc/dcmitype/>
+PREFIX dcamns: <http://purl.org/dc/dcam/>
+PREFIX tm: <http://www.trendminer-project.eu/ontology/>
+PREFIX tma: <http://www.trendminer-project.eu/ontology/analysis/>
+
+INSERT DATA 
+{
+	?analysis tma:langid ?langid.
+	?langid tma:langid_language ?language.
+	?langid tma:langid_confidence ?confidence
+}

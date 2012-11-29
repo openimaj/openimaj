@@ -76,15 +76,10 @@
 	</issueManagement>
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-arq</artifactId>
-			<version>2.9.3</version>
-			<!-- <exclusions>
-				<exclusion>
-					<groupId>xerces</groupId>
-					<artifactId>xercesImpl</artifactId>
-				</exclusion>
-			</exclusions> -->
+			<artifactId>core-rdf</artifactId>
+			<groupId>org.openimaj</groupId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.opennlp</groupId>

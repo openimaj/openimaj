@@ -114,6 +114,36 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>eu.larkc.csparql</groupId>
+      <artifactId>CSPARQL</artifactId>
+      <version>0.7.4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.hp.hpl.jena</groupId>
+          <artifactId>jena</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.hp.hpl.jena</groupId>
+          <artifactId>arq</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-sdb</artifactId>
+      <version>1.3.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-core</artifactId>
+      <version>2.7.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-arq</artifactId>
+      <version>2.9.3</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

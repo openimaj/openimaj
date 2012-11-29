@@ -1,0 +1,30 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX tm: <http://www.trendminer-project.eu/ontology/>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX sioct: <http://rdfs.org/sioc/types#>
+PREFIX dcns: <http://purl.org/dc/elements/1.1/>
+PREFIX dctermsns: <http://purl.org/dc/terzms/>
+PREFIX dctypens: <http://purl.org/dc/dcmitype/>
+PREFIX dcamns: <http://purl.org/dc/dcam/>
+
+INSERT DATA
+{
+	?socialEvent a sioc:Item .
+	?socialEvent sioc:addressed_to ?user .
+		?user sioc:account_of ?person .
+		?person foaf:name ?realname.
+		?person geo:location ?location .
+		?person geo:lat ?lat .
+		?person geo:long ?long .
+		?user foaf:name ?username .
+		?user dcns:identifier ?osnid .
+		?user dcns:language ?userlanguage .
+		?person dcns:language ?personlanguage .
+		?user sioc:status ?description.
+		?user sioc:avatar ?useravatar.
+		?user foaf:page ?website .
+		?user sioc:link ?profile .
+		?user tm:num_subscribers ?subscribers .
+		?user tm:num_subscriptions ?subscriptions .
+		?user tm:num_postings ?postings 
+}

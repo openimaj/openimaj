@@ -32,39 +32,81 @@ package org.openimaj.tools.twitter.modes.preprocessing;
 import java.io.IOException;
 import java.util.Map;
 
+import org.openimaj.io.FileUtils;
 import org.openimaj.text.nlp.language.LanguageDetector;
+import org.openimaj.twitter.GeneralJSON;
+import org.openimaj.twitter.GeneralJSONRDF;
+import org.openimaj.twitter.RDFAnalysisProvider;
 import org.openimaj.twitter.USMFStatus;
+
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.update.UpdateAction;
 
 /**
  * A gateway class which loads and uses the #LanguageDetector
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String,Object>> {
-	
+public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String, Object>> {
+
 	private LanguageDetector detector;
 	final static String LANGUAGES = "langid";
 
 	/**
 	 * Loads the language detector
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	public LanguageDetectionMode() throws IOException {
 		detector = new LanguageDetector();
 	}
 
 	@Override
-	public Map<String,Object> process(USMFStatus twitterStatus) {
-		Map<String,Object> language = null;
+	public Map<String, Object> process(USMFStatus twitterStatus) {
+		Map<String, Object> language = null;
 		try {
 			language = detector.classify(twitterStatus.text).asMap();
-			
+
 		} catch (Exception e) {
 		}
 		twitterStatus.addAnalysis(LANGUAGES, language);
-		return language;	
-		
+		return language;
+
+	}
+
+	@Override
+	public RDFAnalysisProvider<Map<String, Object>> rdfAnalysisProvider() {
+		return new RDFAnalysisProvider<Map<String, Object>>() {
+			private static final String DETECTED_LANGUAGE_INSERT_SPARQL = "/org/openimaj/tools/twiiter/rdf/detected_language_insert.sparql";
+			private String query;
+
+			@Override
+			public void addAnalysis(Model m, Resource analysisResource, GeneralJSON analysisSource) {
+				Map<String, Object> analysis = analysisSource.getAnalysis(LANGUAGES);
+				if (analysis == null)
+					return;
+				ParameterizedSparqlString pss = new ParameterizedSparqlString(query); // wasteful? makes it threadsafe but is it bad?
+				pss.setParam("analysis", analysisResource);
+				Resource langNode = m.createResource();
+				pss.setParam("langid", langNode);
+				pss.setLiteral("language", analysis.get("language").toString());
+				pss.setLiteral("confidence", (Double) analysis.get("confidence"));
+				UpdateAction.execute(pss.asUpdate(), m);
+			}
+
+			@Override
+			public void init() {
+				try {
+					query = FileUtils.readall(GeneralJSONRDF.class.getResourceAsStream(DETECTED_LANGUAGE_INSERT_SPARQL));
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+
+			}
+		};
 	}
 
 	@Override

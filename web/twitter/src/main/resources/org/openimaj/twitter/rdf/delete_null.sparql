@@ -1,0 +1,6 @@
+DELETE {
+	?a ?b "NULL"
+}
+WHERE{
+	?a ?b "NULL"
+}

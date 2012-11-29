@@ -12,21 +12,22 @@ SELECT * WHERE
 	?socialEvent a sioc:Item.
 	OPTIONAL ?socialEvent sioc:container ?service.
 	OPTIONAL ?socialEvent sioc:addressed_to ?touser
-		OPTIONAL ?touser sioc:account_of ?touserperson.
-		OPTIONAL ?touserperson foaf:name ?touserrealname.
-		OPTIONAL ?touserperson geo:location ?touserlocation .
-		OPTIONAL ?touserperson geo:lat_long ?touserlat_long .
-		OPTIONAL ?touser foaf:name ?tousername .
-		OPTIONAL ?touser dcns:identifier ?touserosnid .
-		OPTIONAL ?touser dcbs:language ?touserlanguage .
-		OPTIONAL ?touserperson dcbs:language ?touserlanguage .
-		# OPTIONAL ?touserperson time:timeZone ?touserpersontimezone . # this might not be possible as a person is not an interval
-		OPTIONAL ?touser sioc:status ?touserdescription
-		OPTIONAL ?touser sioc:avatar ?touseravatar
+		OPTIONAL ?user sioc:account_of ?person.
+		OPTIONAL ?person foaf:name ?realname.
+		OPTIONAL ?person geo:location ?location .
+		OPTIONAL ?person geo:lat ?lat .
+		OPTIONAL ?person geo:long ?long .
+		OPTIONAL ?user foaf:name ?username .
+		OPTIONAL ?user dcns:identifier ?osnid .
+		OPTIONAL ?user dcbs:language ?userlanguage .
+		OPTIONAL ?person dcbs:language ?personlanguage .
+		# OPTIONAL ?person time:timeZone ?persontimezone . # this might not be possible as a person is not an interval
+		OPTIONAL ?user sioc:status ?description
+		OPTIONAL ?user sioc:avatar ?useravatar
 		# how do we deal with nSubscribers, nSubscriptions and nPostings ? Should we? Is this not inferred somehow?
-		OPTIONAL ?touser foaf:homepage ?touserwebsite .
-		OPTIONAL ?touser foaf:page ?touserprofile .
-		OPTIONAL ?touser tm:num_subscribers ?subscribers .
-		OPTIONAL ?touser tm:num_subscriptions ?subscribers .
-		OPTIONAL ?touser tm:num_postings ?postings .
+		OPTIONAL ?user foaf:page ?website .
+		OPTIONAL ?user sioc:link ?profile .
+		OPTIONAL ?user tm:num_subscribers ?subscribers .
+		OPTIONAL ?user tm:num_subscriptions ?subscriptions .
+		OPTIONAL ?user tm:num_postings ?postings .
 }

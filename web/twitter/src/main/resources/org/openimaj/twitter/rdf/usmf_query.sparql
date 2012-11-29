@@ -16,21 +16,25 @@ WHERE {
 		OPTIONAL ?user sioc:account_of ?person.
 		OPTIONAL ?person foaf:name ?realname.
 		OPTIONAL ?person geo:location ?location .
-		OPTIONAL ?person geo:lat_long ?lat_long .
+		OPTIONAL ?person geo:lat ?lat .
+		OPTIONAL ?person geo:long ?long .
 		OPTIONAL ?user foaf:name ?username .
 		OPTIONAL ?user dcns:identifier ?osnid .
 		OPTIONAL ?user dcbs:language ?userlanguage .
-		OPTIONAL ?person dcbs:language ?userlanguage .
+		OPTIONAL ?person dcbs:language ?personlanguage .
 		# OPTIONAL ?person time:timeZone ?persontimezone . # this might not be possible as a person is not an interval
 		OPTIONAL ?user sioc:status ?description
 		OPTIONAL ?user sioc:avatar ?useravatar
 		# how do we deal with nSubscribers, nSubscriptions and nPostings ? Should we? Is this not inferred somehow?
 		OPTIONAL ?user foaf:page ?website .
 		OPTIONAL ?user sioc:link ?profile .
+		OPTIONAL ?user tm:num_subscribers ?subscribers .
+		OPTIONAL ?user tm:num_subscriptions ?subscriptions .
+		OPTIONAL ?user tm:num_postings ?postings .
 	OPTIONAL ?socialEvent sioc:link ?sourceURL
 	OPTIONAL ?socialEvent sioc:content ?text
-	OPTIONAL ?socialEvent sioc:description ?description
-	OPTIONAL ?socialEvent sioc:topic ?category
-	OPTIONAL ?socialEvent tm:favourites ?favourites
+	OPTIONAL ?user tm:num_subscribers ?subscribers .
+	OPTIONAL ?user tm:num_subscriptions ?subscriptions .
+	OPTIONAL ?user tm:num_postings ?postings .
 
 }

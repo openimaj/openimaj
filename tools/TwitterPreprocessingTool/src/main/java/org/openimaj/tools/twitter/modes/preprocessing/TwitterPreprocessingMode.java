@@ -29,45 +29,78 @@
  */
 package org.openimaj.tools.twitter.modes.preprocessing;
 
+import org.openimaj.twitter.GeneralJSON;
+import org.openimaj.twitter.RDFAnalysisProvider;
 import org.openimaj.twitter.USMFStatus;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+
 /**
- * A processing mode that is able to process a tweet and also typed on the data which it 
+ * A processing mode that is able to process a tweet and also typed on the data
+ * which it
  * analyses from the tweet (so it can return this data if required)
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <T> The type of the analysis result
- *
+ * @param <T>
+ *            The type of the analysis result
+ * 
  */
 public abstract class TwitterPreprocessingMode<T> {
 
 	/**
-	 * Alters the twitter status in place with the analysis that is required to be performed
+	 * Alters the twitter status in place with the analysis that is required to
+	 * be performed
+	 * 
 	 * @param twitterStatus
 	 * @return for conveniance also returns the analysis
 	 */
 	public abstract T process(USMFStatus twitterStatus);
 
 	/**
-	 * Given a twitter status, attempts to extract the analysis for this mode. 
-	 * If the analysis does not exist, the provided mode instance is used 
-	 * to create the analysis. If the provided mode is null a new mode is created. This
+	 * @return by default this adds no analysis and does nothing whatsoever
+	 */
+	public RDFAnalysisProvider<T> rdfAnalysisProvider() {
+		return new RDFAnalysisProvider<T>() {
+
+			@Override
+			public void init() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void addAnalysis(Model m, Resource analysis, GeneralJSON analysisSource) {
+				// TODO Auto-generated method stub
+
+			}
+		};
+	}
+
+	/**
+	 * Given a twitter status, attempts to extract the analysis for this mode.
+	 * If the analysis does not exist, the provided mode instance is used
+	 * to create the analysis. If the provided mode is null a new mode is
+	 * created. This
 	 * mode creation might be slow, be careful about using this in this way.
 	 * 
-	 * @param <Q> 
-	 * @param status the twitter status to be analysed
-	 * @param mode the mode to use if the analysis does no exist in the tweet
-	 * @return the analysis results. These results are also injected into the tweet's analysis
-	 * @throws Exception 
+	 * @param <Q>
+	 * @param status
+	 *            the twitter status to be analysed
+	 * @param mode
+	 *            the mode to use if the analysis does no exist in the tweet
+	 * @return the analysis results. These results are also injected into the
+	 *         tweet's analysis
+	 * @throws Exception
 	 */
-	public static <Q> Q results(USMFStatus status,TwitterPreprocessingMode<Q> mode) throws Exception{
+	public static <Q> Q results(USMFStatus status, TwitterPreprocessingMode<Q> mode) throws Exception {
 		Q result = status.getAnalysis(mode.getAnalysisKey());
-		if(result == null){
+		if (result == null) {
 			result = mode.process(status);
 		}
-		return result ;
+		return result;
 	}
-	
+
 	/**
 	 * @return the keys this mode adds to the twitter analysis map
 	 */

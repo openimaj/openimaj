@@ -1,7 +1,8 @@
-<rdf:RDF xmlns="http://www.trendminer-project.eu/ontology#"
+<rdf:RDF xmlns="http://www.trendminer-project.eu/ontology/"
      xml:base="http://www.trendminer-project.eu/ontology"
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:tm="http://www.trendminer-project.eu/ontology/"
+     xmlns:tma="http://www.trendminer-project.eu/ontology/analysis/"
      xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
      xmlns:foaf="http://xmlns.com/foaf/0.1/"
      xmlns:terms="http://purl.org/dc/terms/1.1/"
@@ -13,7 +14,5 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:skos="http://www.w3.org/2004/02/skos/core#">
-	<rdf:Description rdf:about="dc:wangSub">
-		<dc:wangPre>wangObj</dc:wangPre>
-	</rdf:Description>
+	
 </rdf:RDF>
