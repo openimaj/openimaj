@@ -47,6 +47,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Scanner;
 
 import org.openimaj.image.FImage;
@@ -60,8 +61,10 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class IO {
-	static { Tracker.init(); }
-	
+	static {
+		Tracker.init();
+	}
+
 	/**
 	 * Types of object
 	 */
@@ -93,11 +96,11 @@ public class IO {
 	 * @return the matrix
 	 */
 	public static Matrix readMat(Scanner s) {
-		int r = s.nextInt();
-		int c = s.nextInt();
+		final int r = s.nextInt();
+		final int c = s.nextInt();
 		s.nextInt(); // types are ignored
 
-		Matrix M = new Matrix(r, c);
+		final Matrix M = new Matrix(r, c);
 		final double[][] Mv = M.getArray();
 
 		for (int rr = 0; rr < r; rr++)
@@ -134,11 +137,11 @@ public class IO {
 	}
 
 	static FImage readImg(Scanner s) {
-		int r = s.nextInt();
-		int c = s.nextInt();
+		final int r = s.nextInt();
+		final int c = s.nextInt();
 		s.nextInt(); // types are ignored
 
-		FImage M = new FImage(c, r);
+		final FImage M = new FImage(c, r);
 		final float[][] Mv = M.pixels;
 
 		for (int rr = 0; rr < r; rr++)
@@ -161,11 +164,11 @@ public class IO {
 	}
 
 	static int[][] readIntArray(Scanner s) {
-		int r = s.nextInt();
-		int c = s.nextInt();
+		final int r = s.nextInt();
+		final int c = s.nextInt();
 		s.nextInt(); // types are ignored
 
-		int[][] M = new int[r][c];
+		final int[][] M = new int[r][c];
 		for (int rr = 0; rr < r; rr++)
 			for (int cc = 0; cc < c; cc++)
 				M[rr][cc] = s.nextInt();
@@ -184,19 +187,20 @@ public class IO {
 	 * @return the connections
 	 */
 	public static int[][] loadCon(final InputStream in) {
-		Scanner s = new Scanner(in);
+		final Scanner s = new Scanner(in);
+		s.useLocale(Locale.UK);
 
 		while (true) {
-			String str = s.next();
+			final String str = s.next();
 			if ("n_connections:".equals(str))
 				break;
 		}
 
-		int n = s.nextInt();
-		int[][] con = new int[2][n];
+		final int n = s.nextInt();
+		final int[][] con = new int[2][n];
 
 		while (true) {
-			String c = s.next();
+			final String c = s.next();
 			if (c.equals("{"))
 				break;
 		}
@@ -221,19 +225,20 @@ public class IO {
 	 * @return triangles
 	 */
 	public static int[][] loadTri(final InputStream in) {
-		Scanner s = new Scanner(in);
+		final Scanner s = new Scanner(in);
+		s.useLocale(Locale.UK);
 
 		while (true) {
-			String str = s.next();
+			final String str = s.next();
 			if ("n_tri:".equals(str))
 				break;
 		}
 
-		int n = s.nextInt();
-		int[][] tri = new int[n][3];
+		final int n = s.nextInt();
+		final int[][] tri = new int[n][3];
 
 		while (true) {
-			String c = s.next();
+			final String c = s.next();
 			if (c.equals("{"))
 				break;
 		}
@@ -249,11 +254,11 @@ public class IO {
 	}
 
 	static FImage readImgByte(Scanner s) {
-		int r = s.nextInt();
-		int c = s.nextInt();
+		final int r = s.nextInt();
+		final int c = s.nextInt();
 		s.nextInt(); // types are ignored
 
-		FImage M = new FImage(c, r);
+		final FImage M = new FImage(c, r);
 		final float[][] Mv = M.pixels;
 
 		for (int rr = 0; rr < r; rr++)
