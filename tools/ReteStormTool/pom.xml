@@ -71,6 +71,12 @@
 	</properties>
 	<dependencies>
 		<dependency>
+	      <groupId>org.openimaj.storm.tools</groupId>
+	      <artifactId>core-storm-tool</artifactId>
+	      <version>1.0.6-SNAPSHOT</version>
+	      <scope>compile</scope>
+	    </dependency>
+		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>twitter</artifactId>
 			<version>1.0.6-SNAPSHOT</version>

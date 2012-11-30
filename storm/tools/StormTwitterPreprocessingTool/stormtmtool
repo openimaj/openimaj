@@ -1,0 +1,2 @@
+#!/usr/bin/env sh 
+java -cp src/main/resources:`storm classpath`:target/StormTrendminerTool.jar org.openimaj.storm.tools.twitter.StormTwitterPreprocessingTool $*

@@ -29,17 +29,15 @@
  */
 package org.openimaj.kestrel.writing;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.mortbay.io.RuntimeIOException;
 import org.openimaj.io.WriteableBinary;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt.Component;
@@ -58,11 +56,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class GraphWritingScheme implements WritingScheme {
+public class PlainNTriplesGraphWritingScheme implements WritingScheme {
 
 	Map<Component, WriteableBinary> writers = new HashMap<StormReteBolt.Component, WriteableBinary>();
 
-	private static final Logger logger = Logger.getLogger(GraphWritingScheme.class);
+	private static final Logger logger = Logger.getLogger(PlainNTriplesGraphWritingScheme.class);
 
 	/**
 	 *
@@ -71,57 +69,26 @@ public class GraphWritingScheme implements WritingScheme {
 
 	@Override
 	public byte[] serialize(List<Object> objects) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(baos);
 		try {
-			dos.writeBoolean(StormReteBolt.extractIsAdd(objects));
-			dos.writeLong(StormReteBolt.extractTimestamp(objects));
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(baos);
 			RiotWriter.writeTriples(dos, StormReteBolt.extractGraph(objects));
-		} catch (IOException e) {
-			logger.error("Couldn't write isAdd" + e.getMessage());
-		}
-		try {
 			baos.flush();
+			return baos.toByteArray();
 		} catch (IOException e) {
 			logger.error("Couldn't flush to write object");
 		}
-		return baos.toByteArray();
+		return null;
 	}
 
 	@Override
 	public List<Object> deserialize(byte[] ser) {
-		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(ser));
-		try {
-			boolean isAdd = dis.readBoolean();
-			long timeStamp = dis.readLong();
-			//			final Graph g = GraphFactory.createGraphMem();
-			//			LangNTriples parser = RiotReader.createParserNTriples(dis, new Sink<Triple>() {
-			//
-			//				@Override
-			//				public void close() {
-			//					// TODO Auto-generated method stub
-			//
-			//				}
-			//
-			//				@Override
-			//				public void send(Triple item) {
-			//					g.add(item);
-			//				}
-			//
-			//				@Override
-			//				public void flush() {
-			//					// TODO Auto-generated method stub
-			//
-			//				}
-			//			});
-			//			parser.parse();
-			Model m = ModelFactory.createDefaultModel();
-			m.read(dis, "", "N-TRIPLES");
-			return StormReteBolt.asValues(isAdd, m.getGraph(), timeStamp);
-		} catch (IOException e) {
-			logger.error("Couldn't read graph!" + e.getMessage());
-			throw new RuntimeIOException(e);
-		}
+		String toParse = new String(ser);
+		StringReader dis = new StringReader(toParse);
+		Model m = ModelFactory.createDefaultModel();
+		m.read(dis, "", "N-TRIPLES");
+
+		return StormReteBolt.asValues(true, m.getGraph(), System.currentTimeMillis());
 	}
 
 	@Override

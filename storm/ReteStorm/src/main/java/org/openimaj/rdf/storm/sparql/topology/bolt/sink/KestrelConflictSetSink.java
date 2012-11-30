@@ -100,7 +100,7 @@ public class KestrelConflictSetSink implements StormSPARQLReteConflictSetBoltSin
 			RiotWriter.writeTriples(baos, graph);
 			baos.flush();
 			byte[] serialised = baos.toByteArray();
-			client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
+			client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 10);
 		} catch (Exception e) {
 			logger.error("Failed to write triple to kestrel client, " + e.getMessage(), e);
 		}
@@ -122,7 +122,7 @@ public class KestrelConflictSetSink implements StormSPARQLReteConflictSetBoltSin
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			qss.serialize(bindingsIter, varOrder, baos);
 			byte[] serialised = baos.toByteArray();
-			client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
+			client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 10);
 		} catch (Exception e) {
 			logger.error("Failed to write bindings to kestrel client, " + e.getMessage(), e);
 		}

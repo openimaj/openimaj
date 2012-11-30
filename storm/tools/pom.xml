@@ -2,21 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj</groupId>
-  <artifactId>openimaj-storm</artifactId>
+  <artifactId>openimaj-storm-tools</artifactId>
   <packaging>pom</packaging>
   <version>1.0.6-SNAPSHOT</version>
-  <name>OpenIMAJ Storm Subproject</name>
+  <name>OpenIMAJ Storm Tools</name>
   <parent>
-    <artifactId>openimaj</artifactId>
+    <artifactId>openimaj-storm</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <url>http://www.openimaj.org/openimaj-storm</url>
+  <url>http://www.openimaj.org/openimaj-storm/openimaj-storm-tools</url>
   <inceptionYear>2011</inceptionYear>
   <description>
-		Sub-modules for integrating OpenIMAJ with Storm to 
-		allow distrbuted stream processing.
+			Tools that provide multimedia analysis algorithms expressed as 
+			Storm topology that can be run locally or on a Storm cluster.
 	  </description>
   <licenses>
     <license>
@@ -76,8 +76,7 @@
     <url>http://jira.openimaj.org</url>
   </issueManagement>
   <modules>
-    <module>core-storm</module>
-    <module>ReteStorm</module>
-    <module>tools</module>
+    <module>StormTwitterPreprocessingTool</module>
+    <module>core-storm-tool</module>
   </modules>
 </project>

@@ -39,6 +39,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.openimaj.kestrel.KestrelServerSpec;
 import org.openimaj.kestrel.writing.GraphWritingScheme;
+import org.openimaj.kestrel.writing.PlainNTriplesGraphWritingScheme;
+import org.openimaj.kestrel.writing.WritingScheme;
 import org.openimaj.rdf.storm.sparql.topology.bolt.StormSPARQLReteConflictSetBolt.StormSPARQLReteConflictSetBoltSink;
 import org.openimaj.rdf.storm.sparql.topology.bolt.sink.KestrelConflictSetSink;
 import org.openimaj.rdf.storm.sparql.topology.bolt.sink.QuerySolutionSerializer;
@@ -71,6 +73,7 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	private QuerySolutionSerializer qss;
 	private boolean reliableSpout;
 	private String ackQueue;
+	private boolean plainNTriples;
 
 	/**
 	 * Whether the spout used should be unreliable
@@ -90,6 +93,11 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 	 * The default ackStats queue
 	 */
 	public static final String RETE_TOPOLOGY_KESTREL_ACK_QUEUE_DEFAULT = "ackStatsQueue";
+	/**
+	 * Queue contains plain N-Triples or isAdd,timeStamp,nTriples. In the second
+	 * case timestamp is set to system.currenttime
+	 */
+	public static final String RETE_TOPOLOGY_KESTREL_PLAIN_TRIPLES = "topology.rete.kestrel.contains_plain_triples";
 
 	/**
 	 * @param streamDataSources
@@ -115,12 +123,25 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 			unreliable = RETE_TOPOLOGY_KESTREL_UNRELIABLE_DEFAULT;
 		this.ackQueue = (String) config.get(RETE_TOPOLOGY_KESTREL_ACK_QUEUE);
 		this.reliableSpout = !unreliable;
+		Object plainTriplesObj = config.get(RETE_TOPOLOGY_KESTREL_PLAIN_TRIPLES);
+		if (plainTriplesObj == null) {
+			plainTriplesObj = false;
+		}
+		else {
+			plainNTriples = (Boolean) plainTriplesObj;
+		}
 
 	}
 
 	@Override
 	public String prepareSourceSpout(TopologyBuilder builder, Set<StreamInfo> streams) {
 		//		StreamInfo stream = streams.iterator().next();
+
+		WritingScheme scheme = null;
+		if (this.plainNTriples)
+			scheme = new PlainNTriplesGraphWritingScheme();
+		else
+			scheme = new GraphWritingScheme();
 		if (this.reliableSpout) {
 			List<String> hosts = new ArrayList<String>();
 			int port = -1;
@@ -129,11 +150,11 @@ public class KestrelStaticDataSPARQLReteTopologyBuilder extends StaticDataSPARQL
 				port = serverSpec.port;
 			}
 
-			KestrelThriftSpout spout = new KestrelThriftSpout(hosts, port, this.inputQueue, new GraphWritingScheme());
+			KestrelThriftSpout spout = new KestrelThriftSpout(hosts, port, this.inputQueue, scheme);
 			builder.setSpout(TRIPLE_SPOUT, spout, this.getSpoutBoltParallelism());
 		}
 		else {
-			UnreliableKestrelThriftSpout spout = new UnreliableKestrelThriftSpout(streamDataSources, new GraphWritingScheme(), this.inputQueue);
+			UnreliableKestrelThriftSpout spout = new UnreliableKestrelThriftSpout(streamDataSources, scheme, this.inputQueue);
 			spout.setAckQueue(this.ackQueue);
 			builder.setSpout(TRIPLE_SPOUT, spout, this.getSpoutBoltParallelism());
 		}

@@ -10,11 +10,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.mortbay.io.RuntimeIOException;
 import org.openimaj.io.IOUtils;
 import org.openimaj.rdf.storm.bolt.RETEStormNode;
+import org.openimaj.rdf.storm.utils.CircularPriorityWindow;
+import org.openimaj.rdf.storm.utils.CircularPriorityWindow.OverflowHandler;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -160,7 +163,13 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 
 	@Override
 	public void prepare() {
-		this.bindingsQueue = new ArrayList<Binding>();
+		this.bindingsQueue = new CircularPriorityWindow<Binding>(new OverflowHandler<Binding>() {
+
+			@Override
+			public void handleOverflow(Binding overflow) {
+				logger.debug("Binding overflowing! Binding removed");
+			}
+		}, 5000, 36000, TimeUnit.SECONDS);
 		Query query = this.getQuery();
 		this.aggregators = query.getAggregators();
 		this.having = query.getHavingExprs();

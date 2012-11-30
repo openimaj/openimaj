@@ -50,11 +50,12 @@ import com.google.gson.Gson;
  * JSON, or be given a GeneralJSON class for a JSON object it should expect to
  * read from JSON and convert to USMF. Translation from alternative JSON sources
  * relies on the extension of the GeneralJSON class for that format.
- *
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
- *
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+ *         (ss@ecs.soton.ac.uk), Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * 
  */
-public class USMFStatus extends GeneralJSON implements Cloneable{
+public class USMFStatus extends GeneralJSON implements Cloneable {
 	private static final Logger logger = Logger.getLogger(USMFStatus.class);
 	private transient Class<? extends GeneralJSON> generalJSONclass; // class of
 																		// the
@@ -158,12 +159,11 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	 */
 	public ArrayList<Link> links;
 
-
 	private boolean invalid = false;
 
 	/**
 	 * Constructor used if the input JSON is not a USMF json string.
-	 *
+	 * 
 	 * @param generalJSONclass
 	 *            : The class of the GeneralJSON extension.
 	 */
@@ -187,16 +187,20 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	}
 
 	/**
-	 * @return the type of json that backs this instance (used primarily for reading)
+	 * @return the type of json that backs this instance (used primarily for
+	 *         reading)
 	 */
-	public Class<? extends GeneralJSON> getGeneralJSONClass(){
+	public Class<? extends GeneralJSON> getGeneralJSONClass() {
 		return this.generalJSONclass;
 	}
+
 	/**
-	 * set the type of json that backs this instance (used primarily for reading)
+	 * set the type of json that backs this instance (used primarily for
+	 * reading)
+	 * 
 	 * @param g
 	 */
-	public void setGeneralJSONClass(Class<? extends GeneralJSON> g){
+	public void setGeneralJSONClass(Class<? extends GeneralJSON> g) {
 		this.generalJSONclass = g;
 	}
 
@@ -214,11 +218,10 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 		fillFromString(line);
 	}
 
-
 	/**
 	 * Used by readASCII(), and available for external use to fill this
 	 * USMFStatus with the information held in the line
-	 *
+	 * 
 	 * @param line
 	 *            = json string in the format specified by the constructor of
 	 *            this USMFStatus (if empty constructor, expects a USMFSStatus
@@ -236,13 +239,13 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 			this.text = line;
 		} else {
 			jsonInstance.fillUSMF(this);
-			if(this.id == 0){
+			if (this.id == 0) {
 				// a very good sign that this tweet was accidently broken, try using it's text to fill.
 				this.fillFromString(text);
-				if(id != 0){
-					System.out.println("successfully corrected broken tweet");
-				}else{
-					System.out.println("failed to correct broken tweet\n The line of the failed tweet was:\n" + line + "\nThe failed tweet.text was:\n" + text);
+				if (id != 0) {
+					//					System.out.println("successfully corrected broken tweet");
+				} else {
+					//					System.out.println("failed to correct broken tweet\n The line of the failed tweet was:\n" + line + "\nThe failed tweet.text was:\n" + text);
 				}
 				return;
 			}
@@ -281,7 +284,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	/**
 	 * @return convert this {@link USMFStatus} to JSON using {@link Gson}
 	 */
-	public String toJson(){
+	public String toJson() {
 		return gson.toJson(this, this.getClass());
 	}
 
@@ -354,7 +357,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 
 	/**
 	 * Clones the tweet to the given class.
-	 *
+	 * 
 	 * @param <T>
 	 * @param clazz
 	 * @return a clone of the status
@@ -377,8 +380,9 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 
 	/**
 	 * Container object to hold user information
+	 * 
 	 * @author laurence
-	 *
+	 * 
 	 */
 	public static class User {
 		/**
@@ -468,8 +472,9 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 
 	/**
 	 * Container object for holding link information
+	 * 
 	 * @author laurence
-	 *
+	 * 
 	 */
 	public static class Link {
 		/**

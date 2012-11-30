@@ -89,12 +89,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<artifactId>core-rdf</artifactId>
-			<groupId>org.openimaj</groupId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.semanticweb.yars</groupId>
 			<artifactId>nxparser</artifactId>
 			<version>1.2.2</version>

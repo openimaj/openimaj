@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openimaj.ml.clustering.DoubleCentroidsResult;
-import org.openimaj.ml.clustering.assignment.hard.ExactDoubleAssigner;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.DoubleKMeans;
 import org.openimaj.text.nlp.textpipe.annotations.POSAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
@@ -45,6 +45,7 @@ import org.openimaj.text.nlp.textpipe.annotators.MissingRequiredAnnotationExcept
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPPOSAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPSentenceAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPTokenAnnotator;
+import org.openimaj.util.pair.IntDoublePair;
 
 /**
  * An implementation of Hatzivassiloglou and McKeown's approach to a
@@ -114,7 +115,7 @@ public class TotalLexBuilder {
 			i++;
 		}
 		final DoubleCentroidsResult cluster = fkm.cluster(data);
-		final ExactDoubleAssigner assigner = new ExactDoubleAssigner(cluster);
+		final HardAssigner<double[], double[], IntDoublePair> assigner = cluster.defaultHardAssigner();
 		assignments = new HashMap<String, Integer>();
 		for (final String adj : vectors.keySet()) {
 			assignments.put(adj, assigner.assign(vectors.get(adj)));

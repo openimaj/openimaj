@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,6 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.update.UpdateAction;
 import com.hp.hpl.jena.update.UpdateRequest;
 
@@ -79,7 +79,16 @@ public class GeneralJSONRDF extends GeneralJSON {
 	}
 
 	private Model m;
-	private String eventIRI;
+	private Resource eventIRI;
+	private static String baseModelString;
+	static {
+		try {
+			baseModelString = FileUtils.readall(GeneralJSONRDF.class.getResourceAsStream("rdf/base_usmf.rdf"));
+			System.out.println("Read in base model!");
+		} catch (IOException e) {
+
+		}
+	}
 	private static final Map<String, RDFAnalysisProvider<?>> providers = new HashMap<String, RDFAnalysisProvider<?>>();
 
 	/**
@@ -138,8 +147,8 @@ public class GeneralJSONRDF extends GeneralJSON {
 		//			"wangObj"
 		//		);
 		ParameterizedSparqlString pss = PQUtils.constructPQ(queryCache(INSERT_ITEM_QUERY_FILE), m);
-		this.eventIRI = generateSocialEventIRI(status);
-		PQUtils.setPSSIri(pss, Variables.SOCIAL_EVENT.name, eventIRI);
+		this.eventIRI = m.createResource(generateSocialEventIRI(status));
+		PQUtils.setPSSResource(pss, Variables.SOCIAL_EVENT.name, eventIRI);
 		PQUtils.setPSSLiteral(pss, Variables.SERVICE.name, status.service);
 		addUserParameters(pss, status.user, status);
 		PQUtils.setPSSLiteral(pss, Variables.SOURCE_URL.name, status.source);
@@ -153,19 +162,19 @@ public class GeneralJSONRDF extends GeneralJSON {
 
 		// the mentioned users
 		for (User key : status.to_users) {
-			PQUtils.setPSSIri(pss, Variables.SOCIAL_EVENT.name, eventIRI);
+			PQUtils.setPSSResource(pss, Variables.SOCIAL_EVENT.name, eventIRI);
 			addUserParameters(pss, key, status);
 			UpdateAction.execute(pss.asUpdate(), m);
 			pss.clearParams();
 		}
 		pss = PQUtils.constructPQ(readQuery(LINK_INSERT_QUERY_FILE), m);
-		PQUtils.setPSSIri(pss, Variables.SOCIAL_EVENT.name, eventIRI);
+		PQUtils.setPSSResource(pss, Variables.SOCIAL_EVENT.name, eventIRI);
 		for (Link link : status.links) {
 			PQUtils.setPSSLiteral(pss, Variables.LINK.name, link.href);
 			UpdateAction.execute(pss.asUpdate(), m);
 		}
 		pss = PQUtils.constructPQ(readQuery(KEYWORDS_INSERT_QUERY_FILE), m);
-		PQUtils.setPSSIri(pss, Variables.SOCIAL_EVENT.name, eventIRI);
+		PQUtils.setPSSResource(pss, Variables.SOCIAL_EVENT.name, eventIRI);
 		for (String key : status.keywords) {
 			PQUtils.setPSSLiteral(pss, Variables.KEYWORD.name, key);
 			UpdateAction.execute(pss.asUpdate(), m);
@@ -205,16 +214,15 @@ public class GeneralJSONRDF extends GeneralJSON {
 			selectiveAnalysis = new ArrayList<String>();
 			selectiveAnalysis.addAll(this.analysis.keySet());
 		}
-		Resource analysisNode = m.createResource();
 		for (String ana : selectiveAnalysis) {
 			RDFAnalysisProvider<?> prov = providers.get(ana);
 			if (prov == null)
 				continue;
-			prov.addAnalysis(m, analysisNode, this);
+			prov.addAnalysis(m, eventIRI, this);
 		}
-		m.add(ResourceFactory.createResource(eventIRI), ResourceFactory.createProperty("tma:analysis"), analysisNode);
 
-		m.write(System.out, "N-TRIPLES");
+		//		m.write(System.out, "N-TRIPLES");
+		m.write(outputWriter, "N-TRIPLES");
 	}
 
 	private String createUserIRI(USMFStatus status, User user) {
@@ -230,9 +238,10 @@ public class GeneralJSONRDF extends GeneralJSON {
 		return String.format("%s%s/%s", m.getNsPrefixURI("tm"), status.service, status.id);
 	}
 
-	private void prepareModel() {
+	private synchronized void prepareModel() {
 		m = ModelFactory.createDefaultModel();
-		m.read(GeneralJSONRDF.class.getResourceAsStream("rdf/base_usmf.rdf"), "");
+		m.read(new StringReader(baseModelString), "");
+		//		m.read(GeneralJSONRDF.class.getResourceAsStream("rdf/base_usmf.rdf"), "");
 	}
 
 }

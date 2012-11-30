@@ -134,7 +134,7 @@ public abstract class GeneralJSON implements ReadWriteable {
 	public void writeASCIIAnalysis(PrintWriter outputWriter, List<String> selectiveAnalysis, List<String> selectiveStatus) {
 		Map<String, Object> toOutput = new HashMap<String, Object>();
 		if (selectiveAnalysis == null && selectiveStatus == null) {
-			gson.toJson(toOutput, outputWriter);
+			gson.toJson(this, outputWriter);
 			return;
 		}
 		Map<String, Object> analysisBit = new HashMap<String, Object>();

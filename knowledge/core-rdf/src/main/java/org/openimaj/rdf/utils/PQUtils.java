@@ -3,6 +3,7 @@ package org.openimaj.rdf.utils;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * Some toots for playing with {@link ParameterizedSparqlString} instances
@@ -46,6 +47,13 @@ public class PQUtils {
 	public static void setPSSIri(ParameterizedSparqlString pss, String name, String iri) {
 		if (iri != null)
 			pss.setIri(name, iri);
+		else
+			setNull(pss, name);
+	}
+
+	public static void setPSSResource(ParameterizedSparqlString pss, String name, Resource iri) {
+		if (iri != null)
+			pss.setParam(name, iri);
 		else
 			setNull(pss, name);
 	}

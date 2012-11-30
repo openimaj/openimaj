@@ -142,7 +142,6 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 				quiet = false;
 				veryLoud = true;
 			}
-
 			parser.parseArgument(args);
 			InOutToolOptions.prepareMultivaluedArgument(modeOptions);
 			validateFilters();

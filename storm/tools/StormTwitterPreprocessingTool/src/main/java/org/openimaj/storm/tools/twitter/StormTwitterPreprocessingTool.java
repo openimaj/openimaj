@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, The University of Southampton and the individual contributors.
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,32 +27,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.rdf.storm.topology.utils;
-
-import org.apache.thrift7.TException;
-import org.openimaj.kestrel.KestrelServerSpec;
-
-import backtype.storm.spout.KestrelThriftClient;
+package org.openimaj.storm.tools.twitter;
 
 /**
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * A storm implementation of twitter preprocessing
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class KestrelUtils {
+public class StormTwitterPreprocessingTool {
+	private TwitterStormToolOptions opts;
 
-	/**
-	 * @param spec
-	 *            the server to connect to
-	 * @param queues
-	 *            the queues to expunge
-	 * @throws TException
-	 */
-	public static void deleteQueues(KestrelServerSpec spec, String... queues) throws TException {
-		KestrelThriftClient client = new KestrelThriftClient(spec.host, spec.port);
-		for (String queue : queues) {
-			client.delete_queue(queue);
-		}
-		client.close();
+	public StormTwitterPreprocessingTool(String[] args) {
+		this.opts = new TwitterStormToolOptions(args);
 	}
 
+	public void go() throws Exception {
+		this.opts.prepare();
+		this.opts.tmOp.submitTopology(opts);
+		this.opts.tmOp.finish(opts);
+	}
+
+	public static void main(String args[]) throws Exception {
+		StormTwitterPreprocessingTool tool = new StormTwitterPreprocessingTool(args);
+		tool.go();
+	}
 }

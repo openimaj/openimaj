@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>openimaj-storm</artifactId>
+    <artifactId>openimaj-storm-tools</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openimaj.storm</groupId>
-  <artifactId>core-storm</artifactId>
+  <groupId>org.openimaj.storm.tools</groupId>
+  <artifactId>core-storm-tool</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>The OpenIMAJ Core Storm Library</name>
-  <url>http://www.openimaj.org/openimaj-storm/core-storm</url>
-  <inceptionYear>2012</inceptionYear>
+  <name>core-storm-tool</name>
+  <url>http://www.openimaj.org/openimaj-storm/openimaj-storm-tools/core-storm-tool</url>
+  <inceptionYear>2011</inceptionYear>
   <description>
-    The main Storm dependency and some extra utility classes
-    specific to OpenIMAJ
+		Tool for clustering and quantising features using Map-Reduce 
+		jobs on a storm cluster.
     </description>
   <licenses>
     <license>
@@ -79,17 +79,22 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-    
     <dependency>
-      <artifactId>core-rdf</artifactId>
-      <groupId>org.openimaj</groupId>
+      <groupId>org.openimaj.tools</groupId>
+      <artifactId>core-tool</artifactId>
       <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.nativelibs4java</groupId>
-      <artifactId>bridj</artifactId>
-      <version>0.6.2.20120807</version>
+      <groupId>org.openimaj.storm</groupId>
+      <artifactId>core-storm</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -98,34 +103,17 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.twitter</groupId>
-      <artifactId>finagle-kestrel</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openimaj</groupId>
-      <artifactId>core</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>storm</groupId>
-      <artifactId>storm</artifactId>
-      <!-- <version>0.7.2</version> -->
-      <version>0.8.0</version>
-      <!-- keep storm out of the jar-with-dependencies -->
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.1</version>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.8.1</version>
+        <configuration>
+          <argLine>-Xmx3G -Djava.awt.headless=true</argLine>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
@@ -139,29 +127,10 @@
           <excludes>
             <exclude>AUTHORS</exclude>
             <exclude>COPYING</exclude>
-            <exclude>**/*.dylib</exclude>
-            <exclude>**/*.so</exclude>
-            <exclude>**/*.dll</exclude>
-            <exclude>**/*.cbp</exclude>
-            <exclude>**/*.layout</exclude>
-            <exclude>**/*.depend</exclude>
-            <exclude>**/*.pch</exclude>
-            <exclude>**/*.pbxuser</exclude>
-            <exclude>**/*.pbxproj</exclude>
-            <exclude>**/*.xcconfig</exclude>
-            <exclude>**/*.xcworkspacedata</exclude>
-            <exclude>**/*.perspectivev3</exclude>
-            <exclude>**/*.xcuserstate</exclude>
-            <exclude>**/*.xcscheme</exclude>
-            <exclude>**/*.xcbkptlist</exclude>
-            <exclude>**/*.plist</exclude>
-            <exclude>**/*.1</exclude>
-            <exclude>**/*.lib</exclude>
-            <exclude>**/*.vcxproj</exclude>
-            <exclude>**/*.vcxproj.filters</exclude>
-            <exclude>**/*.vcxproj.user</exclude>
-            <exclude>**/*.vcxproj.obj</exclude>
-            <exclude>**/*.obj</exclude>
+            <exclude>**/*.voc</exclude>
+            <exclude>**/*.key</exclude>
+            <exclude>**/*.bkey</exclude>
+            <exclude>**/*.bin</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>

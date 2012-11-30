@@ -1,0 +1,28 @@
+_:AX2dX7319c65dX3aX13b4e5337eeX3aXX2dX8e1 <http://www.trendminer-project.eu/ontology/analysis/langid> _:AX2dX7319c65dX3aX13b4e5337eeX3aXX2dX8e0 .
+<http://www.trendminer-project.eu/ontology/Twitter/274282017993138177> <http://www.trendminer-project.eu/ontology/analysis/analysis> _:AX2dX7319c65dX3aX13b4e5337eeX3aXX2dX8e1 .
+<http://www.trendminer-project.eu/ontology/Twitter/274282017993138177> <http://www.trendminer-project.eu/ontology/favourites> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.trendminer-project.eu/ontology/Twitter/274282017993138177> <http://rdfs.org/sioc/ns#content> "@GimmeTop I dm it" .
+<http://www.trendminer-project.eu/ontology/Twitter/274282017993138177> <http://rdfs.org/sioc/ns#addressed_to> <http://www.trendminer-project.eu/ontology/Twitter/user/542920721> .
+<http://www.trendminer-project.eu/ontology/Twitter/274282017993138177> <http://purl.org/dc/elements/1.1/creator> <http://www.trendminer-project.eu/ontology/Twitter/user/54380788> .
+<http://www.trendminer-project.eu/ontology/Twitter/274282017993138177> <http://rdfs.org/sioc/ns#container> "Twitter" .
+<http://www.trendminer-project.eu/ontology/Twitter/274282017993138177> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Item> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/542920721> <http://www.trendminer-project.eu/ontology/num_subscribers> "0.0"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/542920721> <http://rdfs.org/sioc/ns#account_of> <http://www.trendminer-project.eu/ontology/Twitter/person/542920721> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/542920721> <http://xmlns.com/foaf/0.1/name> "GimmeTop" .
+<http://www.trendminer-project.eu/ontology/Twitter/user/542920721> <http://purl.org/dc/elements/1.1/identifier> "5.42920721E8"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/542920721> <http://www.trendminer-project.eu/ontology/num_subscriptions> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/542920721> <http://www.trendminer-project.eu/ontology/num_postings> "0.0"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.trendminer-project.eu/ontology/Twitter/person/54380788> <http://purl.org/dc/elements/1.1/language> "en" .
+<http://www.trendminer-project.eu/ontology/Twitter/person/54380788> <http://xmlns.com/foaf/0.1/name> "Nisa Castillo" .
+<http://www.trendminer-project.eu/ontology/Twitter/person/542920721> <http://xmlns.com/foaf/0.1/name> "Basic Nigga" .
+_:AX2dX7319c65dX3aX13b4e5337eeX3aXX2dX8e0 <http://www.trendminer-project.eu/ontology/analysis/langid_confidence> "0.019615464937166736"^^<http://www.w3.org/2001/XMLSchema#double> .
+_:AX2dX7319c65dX3aX13b4e5337eeX3aXX2dX8e0 <http://www.trendminer-project.eu/ontology/analysis/langid_language> "en" .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://xmlns.com/foaf/0.1/name> "NisaCastillo" .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://purl.org/dc/elements/1.1/language> "en" .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://rdfs.org/sioc/ns#avatar> "http://a0.twimg.com/profile_images/2599776889/image_normal.jpg" .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://rdfs.org/sioc/ns#account_of> <http://www.trendminer-project.eu/ontology/Twitter/person/54380788> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://www.trendminer-project.eu/ontology/num_subscriptions> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://xmlns.com/foaf/0.1/page> "http://www.facebook.com/nisa.castillo" .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://purl.org/dc/elements/1.1/identifier> "5.4380788E7"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://www.trendminer-project.eu/ontology/num_postings> "12457.0"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://www.trendminer-project.eu/ontology/Twitter/user/54380788> <http://www.trendminer-project.eu/ontology/num_subscribers> "2568.0"^^<http://www.w3.org/2001/XMLSchema#double> .

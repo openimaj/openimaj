@@ -1,8 +1,9 @@
 package org.openimaj.rdf.storm.tool.topology;
 
-import org.apache.log4j.Logger;
 import org.kohsuke.args4j.Option;
-import org.openimaj.rdf.storm.tool.ReteStormOptions;
+import org.openimaj.storm.tool.StormToolOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -17,7 +18,7 @@ import backtype.storm.utils.Utils;
  */
 public class LocalTopologyMode implements TopologyMode {
 	private static final int DEFAULT_SLEEP_TIME = 10000;
-	private final static Logger logger = Logger.getLogger(LocalTopologyMode.class);
+	private final static Logger logger = LoggerFactory.getLogger(LocalTopologyMode.class);
 	/**
 	 * Time to wait in local mode
 	 */
@@ -31,7 +32,7 @@ public class LocalTopologyMode implements TopologyMode {
 	private LocalCluster cluster;
 
 	@Override
-	public void submitTopology(ReteStormOptions options) throws Exception {
+	public void submitTopology(StormToolOptions options) throws Exception {
 		logger.debug("Configuring topology");
 		Config conf = options.prepareConfig();
 		logger.debug("Instantiating cluster");
@@ -39,11 +40,11 @@ public class LocalTopologyMode implements TopologyMode {
 		logger.debug("Constructing topology");
 		StormTopology topology = options.constructTopology();
 		logger.debug("Submitting topology");
-		cluster.submitTopology(options.topologyName, conf, topology);
+		cluster.submitTopology(options.topologyName(), conf, topology);
 	}
 
 	@Override
-	public void finish(ReteStormOptions options) throws Exception {
+	public void finish(StormToolOptions options) throws Exception {
 		try {
 			if (sleepTime < 0) {
 				logger.debug("Waiting forever");
@@ -57,10 +58,10 @@ public class LocalTopologyMode implements TopologyMode {
 			}
 		} finally {
 			logger.debug("Killing topology");
-			cluster.killTopology(options.topologyName);
+			cluster.killTopology(options.topologyName());
 			logger.debug("Shutting down cluster");
 			cluster.shutdown();
-			options.mmOp.close();
+			options.topologyCleanup();
 		}
 	}
 

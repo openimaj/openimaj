@@ -87,15 +87,15 @@ import eu.larkc.csparql.parser.StreamInfo;
 /**
  * This topology builder attempts to support groups of paths and subqueries in
  * SPARQL queries
- *
- *
+ * 
+ * 
  * This base interface takes care of recording filters, joins etc. and leaves
  * the job of actually adding the bolts to the topology as well as the
  * construction of the {@link ReteConflictSetBolt} instance down to its
  * subclasses.
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopologyBuilder {
 
@@ -456,27 +456,39 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		Node p = asTriple.getPredicate();
 		Node s = asTriple.getSubject();
 
-		if (s.isVariable())
-			s = updateNode((Node_Variable) s, context.bindingVector);
-		if (p.isVariable())
-			p = updateNode((Node_Variable) p, context.bindingVector);
-		if (o.isVariable())
-			o = updateNode((Node_Variable) o, context.bindingVector);
+		s = updateNode(s, context.bindingVector);
+		p = updateNode(p, context.bindingVector);
+		o = updateNode(o, context.bindingVector);
+
+		return new TriplePattern(s, p, o);
+	}
+
+	private Node updateNode(Node o, HashMap<String, Integer> bindingVector) {
+		if (o.isVariable()) {
+			return updateVariableNode((Node_Variable) o, bindingVector);
+		}
+		else if (o.isURI()) {
+			return updateURINode(o);
+		}
 		else if (o.isLiteral() && o.getLiteralValue() instanceof Functor)
 		{
 			Node[] fargs = ((Functor) o.getLiteralValue()).getArgs();
 			for (int i = 0; i < fargs.length; i++) {
 				Node node = fargs[i];
 				if (node.isVariable())
-					fargs[i] = updateNode((Node_Variable) node, context.bindingVector);
+					fargs[i] = updateVariableNode((Node_Variable) node, context.bindingVector);
 			}
 
 		}
+		return o;
 
-		return new TriplePattern(s, p, o);
 	}
 
-	private Node_RuleVariable updateNode(Node_Variable o, HashMap<String, Integer> bindingVector) {
+	private Node updateURINode(Node o) {
+		return Node.createURI(this.context.query.simpleQuery.getPrefixMapping().expandPrefix(o.getURI()));
+	}
+
+	private Node_RuleVariable updateVariableNode(Node_Variable o, HashMap<String, Integer> bindingVector) {
 		return new Node_RuleVariable(o.getName(), bindingVector.get(o.getName()));
 	}
 
@@ -497,11 +509,11 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 		}
 		// We have a prior, we have a terminal bolt, we can go ahead and
 
-		String finalTerminalName = createFinalTerminalName() ;
+		String finalTerminalName = createFinalTerminalName();
 		countFinalTerminals++;
 		logger.debug("Construct the final terminal called: " + finalTerminalName);
-		StormSPARQLReteConflictSetBolt finalTerm = constructConflictSetBolt(finalTerminalName,this.secondToLast);
-		BoltDeclarer finalTerminalDeclarer = connectConflictSetBolt(finalTerminalName,finalTerm);
+		StormSPARQLReteConflictSetBolt finalTerm = constructConflictSetBolt(finalTerminalName, this.secondToLast);
+		BoltDeclarer finalTerminalDeclarer = connectConflictSetBolt(finalTerminalName, finalTerm);
 		logger.debug("Registering finalTerm (creating its rule + SPARQL)");
 		registerFinalTerminalCompilation(finalTerminalName, finalTerm);
 		logger.debug("Connecting the final terminal to: " + secondToLast.size() + " second to last bolts");
@@ -511,7 +523,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 
 			for (NamedCompilation namedCompilation : nodes) {
 				logger.debug("Connecting final terminal to: " + namedCompilation.secondObject());
-				connectToFinalTerminal(context,finalTerminalDeclarer,finalTerminalName,finalTerm, namedCompilation);
+				connectToFinalTerminal(context, finalTerminalDeclarer, finalTerminalName, finalTerm, namedCompilation);
 			}
 		}
 
@@ -538,33 +550,40 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	}
 
 	private BoltDeclarer connectConflictSetBolt(String finalTerminalName, StormSPARQLReteConflictSetBolt finalTerm) {
-		if(context.query.simpleQuery.hasGroupBy() && context.query.simpleQuery.getGroupBy().size() > 0){
+		if (context.query.simpleQuery.hasGroupBy() && context.query.simpleQuery.getGroupBy().size() > 0) {
 			logger.debug("GroupBy detected! Parallelism set to: " + this.getJoinBoltParallelism());
-			return this.context.builder.setBolt(finalTerminalName, finalTerm,this.getJoinBoltParallelism());
+			return this.context.builder.setBolt(finalTerminalName, finalTerm, this.getJoinBoltParallelism());
 		}
-		else if(!context.query.simpleQuery.hasAggregators()){
+		else if (!context.query.simpleQuery.hasAggregators()) {
 			logger.debug("No aggregation! Parallelism set to: " + this.getJoinBoltParallelism());
-			return this.context.builder.setBolt(finalTerminalName, finalTerm,this.getJoinBoltParallelism());
+			return this.context.builder.setBolt(finalTerminalName, finalTerm, this.getJoinBoltParallelism());
 		}
-		else{
+		else {
 			logger.debug("Aggergation! Parallelism set to 1");
-			return this.context.builder.setBolt(finalTerminalName, finalTerm,1);
+			return this.context.builder.setBolt(finalTerminalName, finalTerm, 1);
 		}
 	}
 
 	/**
-	 * Given a finalTerminalDeclarer from storm, connect each bolt to this final terminal.
-	 * Depending on the query the final terminal is connected in many different ways
-	 *
-	 * if there is no aggregation then the final terminal is connected to the previous bolts
-	 * with a shuffleGrouping. No aggregation means no need to go to the same place. This is the MOST parallel
-	 *
-	 * if there is an aggregation with a groupBy the final bolt is connected with a fieldsGrouping based on the grouped
+	 * Given a finalTerminalDeclarer from storm, connect each bolt to this final
+	 * terminal.
+	 * Depending on the query the final terminal is connected in many different
+	 * ways
+	 * 
+	 * if there is no aggregation then the final terminal is connected to the
+	 * previous bolts
+	 * with a shuffleGrouping. No aggregation means no need to go to the same
+	 * place. This is the MOST parallel
+	 * 
+	 * if there is an aggregation with a groupBy the final bolt is connected
+	 * with a fieldsGrouping based on the grouped
 	 * by variables
-	 *
-	 * finally if there is no group by but still an aggregation this means that ALL tuples must be sent to a single
-	 * final terminal instance. Anything more would result in inaccurate aggregation. This is the least parallel mode.
-	 *
+	 * 
+	 * finally if there is no group by but still an aggregation this means that
+	 * ALL tuples must be sent to a single
+	 * final terminal instance. Anything more would result in inaccurate
+	 * aggregation. This is the least parallel mode.
+	 * 
 	 * @param context
 	 * @param finalTerminalDeclarer
 	 * @param finalTerminalName
@@ -573,39 +592,38 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	 */
 	protected void connectToFinalTerminal(
 			SPARQLReteTopologyBuilderContext context,
-			BoltDeclarer finalTerminalDeclarer ,
+			BoltDeclarer finalTerminalDeclarer,
 			String finalTerminalName,
 			StormSPARQLReteConflictSetBolt finalTerm,
 			NamedCompilation namedCompilation
-	) {
+			) {
 		CompilationStormSPARQLBoltHolder secondToLastCompilation = namedCompilation.secondObject();
 		String secondToLastBolt = namedCompilation.firstObject();
 
+		if (context.query.simpleQuery.getGroupBy().size() > 0) {
+			logger.debug("GroupBy detected! Constructing fields grouping!");
+			String[] vars = secondToLastCompilation.getVars();
+			VarExprList groupBys = context.query.simpleQuery.getGroupBy();
+			int[] joinIndecies = new int[groupBys.size()];
 
-			if(context.query.simpleQuery.getGroupBy().size() > 0){
-				logger.debug("GroupBy detected! Constructing fields grouping!");
-				String[] vars = secondToLastCompilation.getVars();
-				VarExprList groupBys = context.query.simpleQuery.getGroupBy();
-				int[] joinIndecies = new int[groupBys.size()];
+			int i = 0;
+			for (Var groupVar : groupBys.getVars()) {
+				joinIndecies[i++] = Arrays.asList(vars).indexOf(((Node_Variable) groupVar).getName());
+			}
 
-				int i = 0;
-				for (Var groupVar : groupBys.getVars()) {
-					joinIndecies[i++] = Arrays.asList(vars).indexOf(((Node_Variable) groupVar).getName());
-				}
-
-				Fields fields = QueryHoldingReteJoinBolt.getJoinFieldsByIndex(joinIndecies);
-				logger.debug("Constructing fieldsGrouping based on: " + fields);
-				finalTerminalDeclarer.fieldsGrouping(secondToLastBolt, fields);
-			}
-			else if(!context.query.simpleQuery.hasAggregators()){
-				logger.debug("No aggregation or groupby detected! Using shuffle grouping");
-				finalTerminalDeclarer.shuffleGrouping(secondToLastBolt);
-			}
-			else{
-				logger.debug("Aggregation detected without groupby! global grouping!");
-				finalTerminalDeclarer.globalGrouping(secondToLastBolt);
-			}
-			finalTerm.registerSourceVariables(secondToLastBolt, secondToLastCompilation.getVars());
+			Fields fields = QueryHoldingReteJoinBolt.getJoinFieldsByIndex(joinIndecies);
+			logger.debug("Constructing fieldsGrouping based on: " + fields);
+			finalTerminalDeclarer.fieldsGrouping(secondToLastBolt, fields);
+		}
+		else if (!context.query.simpleQuery.hasAggregators()) {
+			logger.debug("No aggregation or groupby detected! Using shuffle grouping");
+			finalTerminalDeclarer.shuffleGrouping(secondToLastBolt);
+		}
+		else {
+			logger.debug("Aggregation detected without groupby! global grouping!");
+			finalTerminalDeclarer.globalGrouping(secondToLastBolt);
+		}
+		finalTerm.registerSourceVariables(secondToLastBolt, secondToLastCompilation.getVars());
 
 	}
 
@@ -622,12 +640,15 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 
 	/**
 	 * This function is asked to register a finalTerminal.
-	 * This involves the construction of a final terminal {@link CompilationStormSPARQLBoltHolder}
-	 * which contains a rule which describes the final terminal and a select which describes the final terminal
-	 *
-	 * This function constructs a subquery select using the context query and assigns it to the compilation
+	 * This involves the construction of a final terminal
+	 * {@link CompilationStormSPARQLBoltHolder} which contains a rule which
+	 * describes the final terminal and a select which describes the final
+	 * terminal
+	 * 
+	 * This function constructs a subquery select using the context query and
+	 * assigns it to the compilation
 	 * element query
-	 *
+	 * 
 	 * @param finalTerminalName
 	 * @param finalTerm
 	 * @param secondToLast
@@ -669,7 +690,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	}
 
 	protected void connectFilterBolt(SPARQLReteTopologyBuilderContext context, String name, StormSPARQLFilterBolt bolt) {
-		context.builder.setBolt(name, bolt,this.getFilterBoltParallelism()).shuffleGrouping(bolt.getPrevious());
+		context.builder.setBolt(name, bolt, this.getFilterBoltParallelism()).shuffleGrouping(bolt.getPrevious());
 	}
 
 	/**
@@ -677,7 +698,7 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	 * behaviour is to add the bolt as
 	 * {@link BoltDeclarer#globalGrouping(String)} with both sources (this might
 	 * be optimisabled)
-	 *
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -694,20 +715,19 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	 * {@link BoltDeclarer#shuffleGrouping(String)} to the
 	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source}
 	 * and the {@link ReteConflictSetBolt} instance
-	 *
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
 	 */
 	public void connectFilterBolt(SPARQLReteTopologyBuilderContext context, String name, QueryHoldingReteFilterBolt bolt) {
-		BoltDeclarer midBuild = context.builder.setBolt(name, bolt,this.getFilterBoltParallelism());
+		BoltDeclarer midBuild = context.builder.setBolt(name, bolt, this.getFilterBoltParallelism());
 		// All the filter bolts are given triples from the source spout
 		// and the final terminal
 		midBuild.shuffleGrouping(context.source);
 		//		if (this.finalTerminalBuilder != null)
 		//			midBuild.shuffleGrouping(FINAL_TERMINAL);
 	}
-
 
 	/**
 	 * @return a {@link StormSPARQLReteConflictSetBoltSink} implementation
@@ -768,12 +788,15 @@ public abstract class StaticDataSPARQLReteTopologyBuilder extends SPARQLReteTopo
 	/**
 	 * Note: There is only ever 1 finalTerminal for any given compilation!
 	 * All Unions are combined into a single final terminal.
-	 *
-	 * This final terminal may be spread across multiple tasks/executors/workers in storm
-	 * if it is appropriate (i.e. there is no aggregation or there is a groupby aggregation)
-	 * but there will only ever be 1 named finalTerminal. This is provided as a list for
+	 * 
+	 * This final terminal may be spread across multiple tasks/executors/workers
+	 * in storm
+	 * if it is appropriate (i.e. there is no aggregation or there is a groupby
+	 * aggregation)
+	 * but there will only ever be 1 named finalTerminal. This is provided as a
+	 * list for
 	 * a conveniance for compilation of subqueries.
-	 *
+	 * 
 	 * @return the final bolt of this builder
 	 */
 	public List<List<NamedCompilation>> getFinalTerminalList() {

@@ -11,11 +11,11 @@ import org.openimaj.rdf.storm.topology.RuleReteStormTopologyFactory;
  * {@link RuleReteStormTopologyFactory} and
  * allows the construction and deployment of Rete topologies based on various
  * rule languages
- *
+ * 
  * Currently only the Jena rules language is supported.
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteStorm {
 	Logger logger = Logger.getLogger(ReteStorm.class);
@@ -23,7 +23,7 @@ public class ReteStorm {
 
 	/**
 	 * Prepare and launch the ReteStorm
-	 *
+	 * 
 	 * @param args
 	 * @throws Exception
 	 */
@@ -45,7 +45,7 @@ public class ReteStorm {
 
 	/**
 	 * Runs the tool
-	 *
+	 * 
 	 * @param args
 	 * @throws Exception
 	 */
@@ -56,12 +56,12 @@ public class ReteStorm {
 	}
 
 	private void perform() throws Throwable {
-		if(this.options.prepopulate){
+		if (this.options.prepopulate) {
 			prepareInputs();
 			populateInputs();
 			submitTopology();
 			toolComplete();
-		}else{
+		} else {
 			prepareInputs();
 			submitTopology();
 			populateInputs();

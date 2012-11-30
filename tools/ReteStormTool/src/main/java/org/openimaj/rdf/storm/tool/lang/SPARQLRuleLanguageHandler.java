@@ -59,6 +59,16 @@ public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
 			usage = "Force an unreliable kestrel spout to be used")
 	public String ackQueue = null;
 
+	/**
+	 *
+	 */
+	@Option(
+			name = "--kestrel-intput-plain-ntriples",
+			aliases = "-kintriples",
+			required = false,
+			usage = "The kestrel queue contains plain ntriples")
+	public boolean plainNTriples = false;
+
 	@Override
 	public void initConfig(Config config) {
 		config.put(KestrelStaticDataSPARQLReteTopologyBuilder.RETE_TOPOLOGY_KESTREL_UNRELIABLE, unreliableKestrelSpout);
@@ -66,6 +76,7 @@ public class SPARQLRuleLanguageHandler implements RuleLanguageHandler {
 			ackQueue = KestrelStaticDataSPARQLReteTopologyBuilder.RETE_TOPOLOGY_KESTREL_ACK_QUEUE_DEFAULT;
 		}
 		config.put(KestrelStaticDataSPARQLReteTopologyBuilder.RETE_TOPOLOGY_KESTREL_ACK_QUEUE, ackQueue);
+		config.put(KestrelStaticDataSPARQLReteTopologyBuilder.RETE_TOPOLOGY_KESTREL_PLAIN_TRIPLES, plainNTriples);
 	}
 
 	@Override

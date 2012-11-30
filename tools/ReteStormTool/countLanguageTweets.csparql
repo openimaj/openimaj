@@ -1,3 +1,4 @@
+REGISTER QUERY Query1 AS
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX sioc: <http://rdfs.org/sioc/ns#>
 PREFIX sioct: <http://rdfs.org/sioc/types#>
@@ -7,10 +8,11 @@ PREFIX dctypens: <http://purl.org/dc/dcmitype/>
 PREFIX dcamns: <http://purl.org/dc/dcam/>
 PREFIX tm: <http://www.trendminer-project.eu/ontology/>
 PREFIX tma: <http://www.trendminer-project.eu/ontology/analysis/>
-
-INSERT DATA 
-{
-	?socialEvent tma:langid ?langid.
+select ?language (count(?post) as ?postCounts)
+FROM STREAM <http://deri.org/poststream> [RANGE 1s STEP 100ms]
+where{
+	?post sioc:content ?text .
+	?post tma:langid ?langid .
 	?langid tma:langid_language ?language.
-	?langid tma:langid_confidence ?confidence
 }
+GROUP BY ?language

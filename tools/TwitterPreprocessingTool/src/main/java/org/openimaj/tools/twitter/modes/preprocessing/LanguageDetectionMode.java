@@ -84,12 +84,13 @@ public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String, 
 			private String query;
 
 			@Override
-			public void addAnalysis(Model m, Resource analysisResource, GeneralJSON analysisSource) {
+			public void addAnalysis(Model m, Resource socialEvent, GeneralJSON analysisSource) {
 				Map<String, Object> analysis = analysisSource.getAnalysis(LANGUAGES);
 				if (analysis == null)
 					return;
+
 				ParameterizedSparqlString pss = new ParameterizedSparqlString(query); // wasteful? makes it threadsafe but is it bad?
-				pss.setParam("analysis", analysisResource);
+				pss.setParam("socialEvent", socialEvent);
 				Resource langNode = m.createResource();
 				pss.setParam("langid", langNode);
 				pss.setLiteral("language", analysis.get("language").toString());

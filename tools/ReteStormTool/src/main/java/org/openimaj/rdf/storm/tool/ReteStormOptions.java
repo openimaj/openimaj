@@ -26,11 +26,10 @@ import org.openimaj.rdf.storm.tool.source.TriplesInputMode;
 import org.openimaj.rdf.storm.tool.source.TriplesInputModeOption;
 import org.openimaj.rdf.storm.tool.staticdata.StaticDataMode;
 import org.openimaj.rdf.storm.tool.staticdata.StaticDataModeOption;
-import org.openimaj.rdf.storm.tool.topology.TopologyMode;
 import org.openimaj.rdf.storm.tool.topology.TopologyModeOption;
-import org.openimaj.rdf.storm.topology.utils.KestrelUtils;
 import org.openimaj.rdf.storm.utils.JenaStormUtils;
-import org.openimaj.tools.InOutToolOptions;
+import org.openimaj.storm.tool.StormToolOptions;
+import org.openimaj.storm.utils.KestrelUtils;
 
 import backtype.storm.Config;
 import backtype.storm.generated.StormTopology;
@@ -41,9 +40,12 @@ import backtype.storm.generated.StormTopology;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class ReteStormOptions extends InOutToolOptions {
+public class ReteStormOptions extends StormToolOptions {
+	public ReteStormOptions(String[] args) {
+		super(args);
+	}
+
 	private static final Logger logger = Logger.getLogger(ReteStormOptions.class);
-	private static final String KESTREL_FORMAT = "%s:%s";
 	/**
 	 * The name of the topology to submit
 	 */
@@ -69,21 +71,6 @@ public class ReteStormOptions extends InOutToolOptions {
 	 * The actual {@link RuleLanguageHandler}
 	 */
 	public RuleLanguageHandler ruleLanguageModeOp = null;
-
-	/**
-	 * The topology
-	 */
-	@Option(
-			name = "--topology-mode",
-			aliases = "-tm",
-			required = false,
-			usage = "The kind of topology to submit to",
-			handler = ProxyOptionHandler.class)
-	public TopologyModeOption tm = TopologyModeOption.STORM;
-	/**
-	 * The topology mode options
-	 */
-	public TopologyMode tmOp = tm.getOptions();
 
 	/**
 	 * The Monitor
@@ -115,21 +102,7 @@ public class ReteStormOptions extends InOutToolOptions {
 	 */
 	public TriplesInputMode triplesInputModeOp = triplesInputMode.getOptions();
 
-	private String[] args;
-
 	private String rules;
-
-	/**
-	 *
-	 */
-	@Option(
-			name = "--kestrel-host",
-			aliases = "-kh",
-			required = false,
-			usage = "The message queue host from which and to which triples will be written",
-			metaVar = "STRING",
-			multiValued = true)
-	public List<String> kestrelHosts = new ArrayList<String>();
 
 	/**
 	 *
@@ -167,18 +140,23 @@ public class ReteStormOptions extends InOutToolOptions {
 	private boolean feedBack = false;
 
 	/**
-	 * parsed kestrel server specs
-	 */
-	public List<KestrelServerSpec> kestrelSpecList = new ArrayList<KestrelServerSpec>();
-
-	/**
 	 * the input queue from which triples are read by the pipeline
 	 */
+	@Option(
+			name = "--kestrel-input-queue",
+			aliases = "-kiq",
+			required = false,
+			usage = "The input queue")
 	public String inputQueue = "inputQueue";
 
 	/**
 	 *
 	 */
+	@Option(
+			name = "--kestrel-output-queue",
+			aliases = "-koq",
+			required = false,
+			usage = "The input queue")
 	public String outputQueue = "outputQueue";
 
 	@Option(
@@ -229,13 +207,6 @@ public class ReteStormOptions extends InOutToolOptions {
 	public String topologyFilterParallelism = null;
 
 	@Option(
-			name = "--topology-workers",
-			aliases = "-twork",
-			required = false,
-			usage = "The number of workers running the executors of this topology")
-	private int numberOfWorkers = 2;
-
-	@Option(
 			name = "--topology-max-parallelism",
 			aliases = "-maxpar",
 			required = false,
@@ -243,38 +214,12 @@ public class ReteStormOptions extends InOutToolOptions {
 	private int maxParallelism = 4;
 	private Config preparedConfig;
 
-	/**
-	 * @param args
-	 */
-	public ReteStormOptions(String[] args) {
-		this.args = args;
-	}
-
-	/**
-	 * Parse arguments and validate
-	 * 
-	 * @throws IOException
-	 */
-	public void prepare() throws IOException {
-		final CmdLineParser parser = new CmdLineParser(this);
-		try {
-			parser.parseArgument(args);
-			this.validate(parser);
-		} catch (final CmdLineException e) {
-			e.printStackTrace();
-			System.err.println(e.getMessage());
-			System.err.println("Usage: java -jar ReteStormTool.jar [options...] ");
-			parser.printUsage(System.err);
-			System.err.println(this.getExtractUsageInfo());
-			System.exit(1);
-		}
-	}
-
-	private String getExtractUsageInfo() {
+	public String getExtractUsageInfo() {
 		return "";
 	}
 
-	private void validate(CmdLineParser parser) throws CmdLineException, IOException {
+	@Override
+	public void validate(CmdLineParser parser) throws CmdLineException, IOException {
 		if (this.topologyName == null) {
 			this.topologyName = ruleLanguageMode.toString() + "_topology_" + System.currentTimeMillis();
 		}
@@ -287,10 +232,7 @@ public class ReteStormOptions extends InOutToolOptions {
 		}
 		this.rules = FileUtils.readall(rulesFile);
 		this.triplesInputModeOp.init(this);
-		if (this.kestrelHosts.size() == 0) {
-			this.kestrelHosts.add(String.format(KESTREL_FORMAT, KestrelServerSpec.LOCALHOST, KestrelServerSpec.DEFAULT_KESTREL_THRIFT_PORT));
-		}
-		this.kestrelSpecList = KestrelServerSpec.parseKestrelAddressList(this.kestrelHosts);
+
 		this.prepareConfig();
 	}
 
@@ -359,9 +301,14 @@ public class ReteStormOptions extends InOutToolOptions {
 	 * @throws TException
 	 */
 	public void prepareQueues() throws TException {
-		logger.info("Preparing Kestrel Queues");
-		for (KestrelServerSpec ks : this.kestrelSpecList) {
-			KestrelUtils.deleteQueues(ks, inputQueue, outputQueue);
+		if (this.triplesInputMode != TriplesInputModeOption.NONE) {
+			logger.info("Preparing Kestrel Queues");
+			for (KestrelServerSpec ks : this.kestrelSpecList) {
+				KestrelUtils.deleteQueues(ks, inputQueue, outputQueue);
+			}
+		}
+		else {
+			logger.info("Not touching queues");
 		}
 	}
 
@@ -408,6 +355,18 @@ public class ReteStormOptions extends InOutToolOptions {
 			Thread thread = new Thread(this.mmOp);
 			thread.setDaemon(true);
 			thread.start();
+		}
+	}
+
+	@Override
+	public String topologyName() {
+		return this.topologyName;
+	}
+
+	@Override
+	public void topologyCleanup() {
+		if (this.tm == TopologyModeOption.LOCAL) {
+			mmOp.close(); // when the local mode is done we close the monitor
 		}
 	}
 
