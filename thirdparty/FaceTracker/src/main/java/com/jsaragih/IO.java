@@ -96,6 +96,8 @@ public class IO {
 	 * @return the matrix
 	 */
 	public static Matrix readMat(Scanner s) {
+		s.useLocale(Locale.UK);
+
 		final int r = s.nextInt();
 		final int c = s.nextInt();
 		s.nextInt(); // types are ignored
@@ -137,6 +139,8 @@ public class IO {
 	}
 
 	static FImage readImg(Scanner s) {
+		s.useLocale(Locale.UK);
+
 		final int r = s.nextInt();
 		final int c = s.nextInt();
 		s.nextInt(); // types are ignored
@@ -164,6 +168,8 @@ public class IO {
 	}
 
 	static int[][] readIntArray(Scanner s) {
+		s.useLocale(Locale.UK);
+
 		final int r = s.nextInt();
 		final int c = s.nextInt();
 		s.nextInt(); // types are ignored
@@ -254,6 +260,8 @@ public class IO {
 	}
 
 	static FImage readImgByte(Scanner s) {
+		s.useLocale(Locale.UK);
+
 		final int r = s.nextInt();
 		final int c = s.nextInt();
 		s.nextInt(); // types are ignored
