@@ -44,7 +44,7 @@ import org.openimaj.util.comparator.DistanceComparator;
  *            Type of object being compared.
  */
 public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T, float[]> {
-	protected DistanceComparator<T> distance;
+	protected DistanceComparator<? super T> distance;
 
 	/**
 	 * Construct with the given distance measure
@@ -52,7 +52,7 @@ public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T,
 	 * @param distance
 	 *            the distance measure
 	 */
-	public ObjectNearestNeighbours(DistanceComparator<T> distance) {
+	public ObjectNearestNeighbours(final DistanceComparator<? super T> distance) {
 		this.distance = distance;
 	}
 
@@ -72,8 +72,8 @@ public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T,
 	 * @param dsq_out
 	 *            The resultant distances.
 	 */
-	public static <T> void distanceFunc(final DistanceComparator<T> distance, final T qu, final List<T> pnts,
-			float[] dsq_out)
+	public static <T> void distanceFunc(final DistanceComparator<? super T> distance, final T qu, final List<T> pnts,
+			final float[] dsq_out)
 	{
 		final int N = pnts.size();
 

@@ -67,7 +67,7 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 	 * @param distance
 	 *            the distance function
 	 */
-	public ObjectNearestNeighboursExact(final List<T> pnts, final DistanceComparator<T> distance) {
+	public ObjectNearestNeighboursExact(final List<T> pnts, final DistanceComparator<? super T> distance) {
 		super(distance);
 		this.pnts = pnts;
 	}
@@ -88,12 +88,12 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 	}
 
 	@Override
-	public void searchNN(final List<T> qus, int[] argmins, float[] mins) {
+	public void searchNN(final List<T> qus, final int[] argmins, final float[] mins) {
 		final int N = qus.size();
-		final float[] dsqout = new float[pnts.size()];
+		final float[] dsqout = new float[this.pnts.size()];
 
 		for (int n = 0; n < N; ++n) {
-			distanceFunc(distance, qus.get(n), pnts, dsqout);
+			ObjectNearestNeighbours.distanceFunc(this.distance, qus.get(n), this.pnts, dsqout);
 
 			argmins[n] = ArrayUtils.minIndex(dsqout);
 
@@ -102,24 +102,24 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 	}
 
 	@Override
-	public void searchKNN(final List<T> qus, int K, int[][] argmins, float[][] mins) {
+	public void searchKNN(final List<T> qus, int K, final int[][] argmins, final float[][] mins) {
 		// Fix for when the user asks for too many points.
-		K = Math.min(K, pnts.size());
+		K = Math.min(K, this.pnts.size());
 
-		final float[] dsqout = new float[pnts.size()];
+		final float[] dsqout = new float[this.pnts.size()];
 		final int N = qus.size();
 
-		final FloatIntPair[] knn_prs = new FloatIntPair[pnts.size()];
+		final FloatIntPair[] knn_prs = new FloatIntPair[this.pnts.size()];
 
 		for (int n = 0; n < N; ++n) {
-			distanceFunc(distance, qus.get(n), pnts, dsqout);
+			ObjectNearestNeighbours.distanceFunc(this.distance, qus.get(n), this.pnts, dsqout);
 
-			for (int p = 0; p < pnts.size(); ++p)
+			for (int p = 0; p < this.pnts.size(); ++p)
 				knn_prs[p] = new FloatIntPair(dsqout[p], p);
 
 			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
 				@Override
-				public boolean apply(Object arg0, Object arg1) {
+				public boolean apply(final Object arg0, final Object arg1) {
 					final FloatIntPair p1 = (FloatIntPair) arg0;
 					final FloatIntPair p2 = (FloatIntPair) arg1;
 
@@ -139,12 +139,12 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 	}
 
 	@Override
-	public void searchNN(final T[] qus, int[] argmins, float[] mins) {
+	public void searchNN(final T[] qus, final int[] argmins, final float[] mins) {
 		final int N = qus.length;
-		final float[] dsqout = new float[pnts.size()];
+		final float[] dsqout = new float[this.pnts.size()];
 
 		for (int n = 0; n < N; ++n) {
-			distanceFunc(distance, qus[n], pnts, dsqout);
+			ObjectNearestNeighbours.distanceFunc(this.distance, qus[n], this.pnts, dsqout);
 
 			argmins[n] = ArrayUtils.minIndex(dsqout);
 
@@ -153,24 +153,24 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 	}
 
 	@Override
-	public void searchKNN(final T[] qus, int K, int[][] argmins, float[][] mins) {
+	public void searchKNN(final T[] qus, int K, final int[][] argmins, final float[][] mins) {
 		// Fix for when the user asks for too many points.
-		K = Math.min(K, pnts.size());
+		K = Math.min(K, this.pnts.size());
 
-		final float[] dsqout = new float[pnts.size()];
+		final float[] dsqout = new float[this.pnts.size()];
 		final int N = qus.length;
 
-		final FloatIntPair[] knn_prs = new FloatIntPair[pnts.size()];
+		final FloatIntPair[] knn_prs = new FloatIntPair[this.pnts.size()];
 
 		for (int n = 0; n < N; ++n) {
-			distanceFunc(distance, qus[n], pnts, dsqout);
+			ObjectNearestNeighbours.distanceFunc(this.distance, qus[n], this.pnts, dsqout);
 
-			for (int p = 0; p < pnts.size(); ++p)
+			for (int p = 0; p < this.pnts.size(); ++p)
 				knn_prs[p] = new FloatIntPair(dsqout[p], p);
 
 			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
 				@Override
-				public boolean apply(Object arg0, Object arg1) {
+				public boolean apply(final Object arg0, final Object arg1) {
 					final FloatIntPair p1 = (FloatIntPair) arg0;
 					final FloatIntPair p2 = (FloatIntPair) arg1;
 
@@ -191,22 +191,22 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 
 	@Override
 	public int size() {
-		return pnts.size();
+		return this.pnts.size();
 	}
 
 	@Override
-	public int[] addAll(List<T> d) {
+	public int[] addAll(final List<T> d) {
 		final int[] indexes = new int[d.size()];
 
 		for (int i = 0; i < indexes.length; i++) {
-			indexes[i] = add(d.get(i));
+			indexes[i] = this.add(d.get(i));
 		}
 
 		return indexes;
 	}
 
 	@Override
-	public int add(T o) {
+	public int add(final T o) {
 		final int ret = this.pnts.size();
 		this.pnts.add(o);
 		return ret;
