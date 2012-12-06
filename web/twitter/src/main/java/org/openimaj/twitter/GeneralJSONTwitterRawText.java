@@ -27,55 +27,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.twitter.options;
+package org.openimaj.twitter;
 
-import org.openimaj.twitter.GeneralJSON;
-import org.openimaj.twitter.GeneralJSONRDF;
-import org.openimaj.twitter.GeneralJSONTwitter;
-import org.openimaj.twitter.GeneralJSONTwitterRawText;
-import org.openimaj.twitter.USMFStatus;
+import java.io.IOException;
+import java.util.Scanner;
+
 
 /**
- * The social media status to be read in (useful for tools which control
- * reading)
+ * {@link GeneralJSONTwitterRawText} extends {@link GeneralJSONTwitter} to provide an object that can
+ * read raw strings. It can also then be used by USMFFStatus to
+ * fill a USMFSStatus with the relevant twitter fields.
  *
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
- *         (ss@ecs.soton.ac.uk)
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public enum StatusType {
-	/**
-	 * the twitter JSON status type
-	 */
-	TWITTER {
-		@Override
-		public Class<? extends GeneralJSON> type() {
-			return GeneralJSONTwitter.class;
-		}
-	},
-	/**
-	 * the USMF json status type
-	 */
-	USMF {
-		@Override
-		public Class<? extends GeneralJSON> type() {
-			return USMFStatus.class;
-		}
-	},
-	RDF {
-		@Override
-		public Class<? extends GeneralJSON> type() {
-			return GeneralJSONRDF.class;
-		}
-	},
-	RAW {
-		@Override
-		public Class<? extends GeneralJSON> type() {
-			return GeneralJSONTwitterRawText.class;
-		}
-	};
-	/**
-	 * @return the status type class which can instantiate USMF instances
-	 */
-	public abstract Class<? extends GeneralJSON> type();
+public class GeneralJSONTwitterRawText extends GeneralJSONTwitter {
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		this.text = in.nextLine();
+	}
+
+	@Override
+	public GeneralJSON instanceFromString(String line) {
+		GeneralJSONTwitterRawText ret = new GeneralJSONTwitterRawText();
+		ret.text = line;
+		return ret ;
+	}
 }

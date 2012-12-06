@@ -51,6 +51,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.GeneralJSONTwitter;
+import org.openimaj.twitter.GeneralJSONTwitterRawText;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.ConvertUSMFList;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
@@ -132,7 +133,7 @@ public class TwitterUtilsTest {
 	@Test
 	public void readWriteStreamMemoryTweets() throws IOException{
 		InputStream stream = USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/tweets.txt");
-		TwitterStatusList<USMFStatus> status = StreamTwitterStatusList.readUSMF(stream, GeneralJSONTwitter.class);
+		TwitterStatusList<USMFStatus> status = StreamTwitterStatusList.readUSMF(stream, GeneralJSONTwitterRawText.class);
 		TwitterStatusList<USMFStatus> memoryLoaded = new MemoryTwitterStatusList<USMFStatus>(status);
 
 		File ascii = folder.newFile("twitter"+ stream.hashCode() +".json");
@@ -150,7 +151,7 @@ public class TwitterUtilsTest {
 	@Test
 	public void readWriteFileTweets() throws IOException{
 		File twitterfile = fileFromeStream(USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/tweets.txt"));
-		List<USMFStatus> status = FileTwitterStatusList.readUSMF(twitterfile);
+		List<USMFStatus> status = FileTwitterStatusList.readUSMF(twitterfile,GeneralJSONTwitterRawText.class);
 		MemoryTwitterStatusList<USMFStatus> memoryLoaded = new MemoryTwitterStatusList<USMFStatus>(status);
 		memoryLoaded = new MemoryTwitterStatusList<USMFStatus>(memoryLoaded.subList(0, 10));
 		File ascii = folder.newFile("twitter" +twitterfile.hashCode()+ ".json");

@@ -336,4 +336,22 @@ public class GeneralJSONTwitter extends GeneralJSON {
 		this.fromUSMF(status);
 	}
 
+	@Override
+	public GeneralJSON instanceFromString(String line){
+		GeneralJSONTwitter jsonInstance = null;
+		try {
+			jsonInstance = gson.fromJson(line, GeneralJSONTwitter.class);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+		if (jsonInstance.id == 0) {
+			GeneralJSONTwitterRawText raw = new GeneralJSONTwitterRawText();
+			raw .text = jsonInstance.text;
+			return raw;
+		}
+		return jsonInstance;
+	}
+
+
+
 }

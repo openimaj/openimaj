@@ -36,9 +36,9 @@ import backtype.storm.generated.StormTopology;
 
 /**
  * The options for preparing, configuring and running a {@link ReteStorm}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteStormOptions extends StormToolOptions {
 	public ReteStormOptions(String[] args) {
@@ -214,6 +214,7 @@ public class ReteStormOptions extends StormToolOptions {
 	private int maxParallelism = 4;
 	private Config preparedConfig;
 
+	@Override
 	public String getExtractUsageInfo() {
 		return "";
 	}
@@ -239,10 +240,11 @@ public class ReteStormOptions extends StormToolOptions {
 	/**
 	 * Given a storm configuration construct a Storm topology using the
 	 * specified ruleLanguageMode
-	 * 
+	 *
 	 * @param conf
 	 * @return the constructed storm topology
 	 */
+	@Override
 	public StormTopology constructTopology() {
 		return this.ruleLanguageModeOp.constructTopology(this);
 	}
@@ -315,10 +317,11 @@ public class ReteStormOptions extends StormToolOptions {
 	/**
 	 * @return
 	 */
+	@Override
 	public Config prepareConfig() {
 		if (this.preparedConfig == null) {
 			preparedConfig = new Config();
-			preparedConfig.setMaxSpoutPending(5000);
+			preparedConfig.setMaxSpoutPending(100);
 			preparedConfig.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_PARALLELISM, topologyParallelism);
 			preparedConfig.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_JOIN_PARALLELISM, topologyJoinParallelism);
 			preparedConfig.put(SPARQLReteTopologyBuilder.RETE_TOPOLOGY_FILTER_PARALLELISM, topologyFilterParallelism);
@@ -336,7 +339,7 @@ public class ReteStormOptions extends StormToolOptions {
 
 	/**
 	 * @throws IOException
-	 * 
+	 *
 	 */
 	public void initMonitor() throws IOException {
 		if (this.mmOp != null) {
@@ -347,7 +350,7 @@ public class ReteStormOptions extends StormToolOptions {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void startMonitor() {
 		if (this.mmOp != null) {

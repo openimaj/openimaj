@@ -22,9 +22,9 @@ import com.hp.hpl.jena.sparql.engine.QueryIterator;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
 /**
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class KestrelConflictSetSink implements StormSPARQLReteConflictSetBoltSink {
 
@@ -40,7 +40,7 @@ public class KestrelConflictSetSink implements StormSPARQLReteConflictSetBoltSin
 	/**
 	 * The kestrel servers and queue which will be written to with triples or
 	 * bindings (depending on the query)
-	 * 
+	 *
 	 * @param serverSpecs
 	 *            the kestrel servers to write to (in a round robin fasion)
 	 * @param queue
@@ -61,7 +61,7 @@ public class KestrelConflictSetSink implements StormSPARQLReteConflictSetBoltSin
 	 * see {@link #KestrelConflictSetSink(List, String)}. Also allows the
 	 * specification of
 	 * the {@link QuerySolutionSerializer} assuming the query is a select
-	 * 
+	 *
 	 * @param streamDataSources
 	 * @param outputQueue
 	 * @param qss
@@ -100,7 +100,7 @@ public class KestrelConflictSetSink implements StormSPARQLReteConflictSetBoltSin
 			RiotWriter.writeTriples(baos, graph);
 			baos.flush();
 			byte[] serialised = baos.toByteArray();
-			client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 10);
+			client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 10000);
 		} catch (Exception e) {
 			logger.error("Failed to write triple to kestrel client, " + e.getMessage(), e);
 		}
@@ -122,7 +122,7 @@ public class KestrelConflictSetSink implements StormSPARQLReteConflictSetBoltSin
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			qss.serialize(bindingsIter, varOrder, baos);
 			byte[] serialised = baos.toByteArray();
-			client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 10);
+			client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 10000);
 		} catch (Exception e) {
 			logger.error("Failed to write bindings to kestrel client, " + e.getMessage(), e);
 		}

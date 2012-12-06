@@ -51,9 +51,9 @@ import com.google.gson.GsonBuilder;
  * string structure. It is up to the extending programmer to implement their
  * object so that it is accurately filled by GSon. See more here
  * http://code.google.com/p/google-gson/
- * 
+ *
  * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
- * 
+ *
  */
 public abstract class GeneralJSON implements ReadWriteable {
 
@@ -64,7 +64,7 @@ public abstract class GeneralJSON implements ReadWriteable {
 	 * the matching values from the extending class.
 	 * It is up to the extending programmer to carry this out as they see fit.
 	 * See GeneralJSONTwitter for a Twitter example.
-	 * 
+	 *
 	 * @param status
 	 *            = USMFStatus to be filled
 	 */
@@ -75,7 +75,7 @@ public abstract class GeneralJSON implements ReadWriteable {
 	 * to fill itself from a USMF object. Implementations must guarantee
 	 * that they hold on and copy internal ANALYSIS. we recommend the
 	 * helper function
-	 * 
+	 *
 	 * @param status
 	 *            = USMFStatus to be filled
 	 */
@@ -115,7 +115,7 @@ public abstract class GeneralJSON implements ReadWriteable {
 
 	/**
 	 * Convenience to allow writing of just the analysis to a writer
-	 * 
+	 *
 	 * @param outputWriter
 	 * @param selectiveAnalysis
 	 */
@@ -126,7 +126,7 @@ public abstract class GeneralJSON implements ReadWriteable {
 	/**
 	 * Convenience to allow writing of just the analysis and some status
 	 * information to a writer
-	 * 
+	 *
 	 * @param outputWriter
 	 * @param selectiveAnalysis
 	 * @param selectiveStatus
@@ -163,7 +163,7 @@ public abstract class GeneralJSON implements ReadWriteable {
 	/**
 	 * Add analysis to the analysis object. This is where all non twitter stuff
 	 * should go
-	 * 
+	 *
 	 * @param <T>
 	 *            The type of data being saved
 	 * @param annKey
@@ -190,7 +190,7 @@ public abstract class GeneralJSON implements ReadWriteable {
 
 	/**
 	 * Get all the Analysis in JSON format.
-	 * 
+	 *
 	 * @return String of JSON.
 	 */
 	public String analysisToJSON() {
@@ -203,5 +203,11 @@ public abstract class GeneralJSON implements ReadWriteable {
 	public void fillAnalysis(GeneralJSON other) {
 		other.analysis = this.analysis;
 	}
+
+	/**
+	 * @param line
+	 * @return construct an instance of this type from a string
+	 */
+	public abstract GeneralJSON instanceFromString(String line);
 
 }

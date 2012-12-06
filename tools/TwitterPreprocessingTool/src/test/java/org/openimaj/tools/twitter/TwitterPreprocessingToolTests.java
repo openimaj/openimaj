@@ -57,6 +57,7 @@ import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
 import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.GeneralJSONTwitter;
+import org.openimaj.twitter.GeneralJSONTwitterRawText;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.MemoryTwitterStatusList;
@@ -272,13 +273,13 @@ public class TwitterPreprocessingToolTests {
 	public void testTweetTokeniseRAW() throws IOException{
 		String tokMode = "TOKENISE";
 		File tokenOutRAW = folder.newFile("tokens-testTweetTokeniseRAW.json");
-		String commandArgs = String.format(commandFormat,rawTwitterInputFile,tokenOutRAW,tokMode,"APPEND");
+		String commandArgs = String.format(commandFormat,rawTwitterInputFile,tokenOutRAW,tokMode,"APPEND") + " -it RAW";
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Tokenising");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		System.out.println("Done tokenising, checking equality...");
 		TokeniseMode m = new TokeniseMode();
-		assertTrue(checkSameAnalysis(rawTwitterInputFile,tokenOutRAW,m));
+		assertTrue(checkSameAnalysis(rawTwitterInputFile,tokenOutRAW,m,USMFStatus.class,GeneralJSONTwitterRawText.class));
 		tokenOutRAW.delete();
 	}
 
@@ -293,13 +294,13 @@ public class TwitterPreprocessingToolTests {
 	public void testTweetTokeniseBrokenRAW() throws IOException{
 		String tokMode = "TOKENISE";
 		File tokenOutRAW = folder.newFile("tokens-testTweetTokeniseBrokenRAW.json");
-		String commandArgs = String.format(commandFormat,brokenRawTwitterInputFile,tokenOutRAW,tokMode,"APPEND");
+		String commandArgs = String.format(commandFormat,brokenRawTwitterInputFile,tokenOutRAW,tokMode,"APPEND") + " -it RAW";
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Tokenising");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		System.out.println("Done tokenising, checking equality...");
 		TokeniseMode m = new TokeniseMode();
-		assertTrue(checkSameAnalysis(brokenRawTwitterInputFile,tokenOutRAW,m));
+		assertTrue(checkSameAnalysis(brokenRawTwitterInputFile,tokenOutRAW,m,USMFStatus.class,GeneralJSONTwitterRawText.class));
 		tokenOutRAW.delete();
 	}
 
@@ -312,13 +313,13 @@ public class TwitterPreprocessingToolTests {
 	public void testTweetStemJSON() throws IOException{
 		String stemMode = "PORTER_STEM";
 		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
-		String commandArgs = String.format(commandFormat,rawFewerTwitterInputFile,stemOutRAW,stemMode,"APPEND");
+		String commandArgs = String.format(commandFormat,rawFewerTwitterInputFile,stemOutRAW,stemMode,"APPEND") + " -it RAW";
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Stemming");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		System.out.println("Done tokenising, checking equality...");
 		StemmingMode m = new StemmingMode();
-		assertTrue(checkSameAnalysis(rawFewerTwitterInputFile,stemOutRAW,m));
+		assertTrue(checkSameAnalysis(rawFewerTwitterInputFile,stemOutRAW,m,USMFStatus.class,GeneralJSONTwitterRawText.class));
 		stemOutRAW.delete();
 	}
 	/**
@@ -505,7 +506,7 @@ public class TwitterPreprocessingToolTests {
 		listWriter.flush();
 		listWriter.close();
 		commandFormat = "-if %s -o %s -m %s -om %s -rm -q";
-		String commandArgs = String.format(commandFormat,inputList.getAbsolutePath(),stemOutJSON,stemMode,"APPEND");
+		String commandArgs = String.format(commandFormat,inputList.getAbsolutePath(),stemOutJSON,stemMode,"APPEND") + " -it RAW";
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Tokenising");
 		TwitterPreprocessingTool.main(commandArgsArr);
@@ -528,7 +529,10 @@ public class TwitterPreprocessingToolTests {
 		return checkSameAnalysis(unanalysed,analysed, m,USMFStatus.class);
 	}
 	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode<?> m, Class<? extends GeneralJSON> readclass) throws IOException {
-		TwitterStatusList<USMFStatus>  unanalysedTweetsF = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",GeneralJSONTwitter.class);
+		return checkSameAnalysis(unanalysed,analysed,m,readclass,GeneralJSONTwitter.class);
+	}
+	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode<?> m, Class<? extends GeneralJSON> readclass,Class<? extends GeneralJSON> originalClass) throws IOException {
+		TwitterStatusList<USMFStatus>  unanalysedTweetsF = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",originalClass);
 		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.readUSMF(analysed,"UTF-8",readclass);
 
 		MemoryTwitterStatusList<USMFStatus> unanalysedTweets = new MemoryTwitterStatusList<USMFStatus>();

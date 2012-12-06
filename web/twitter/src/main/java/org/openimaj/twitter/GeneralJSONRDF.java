@@ -27,9 +27,9 @@ import com.hp.hpl.jena.update.UpdateRequest;
 /**
  * Holds an internal Jena Graph of the USMF status. The default language used is
  * NTriples
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class GeneralJSONRDF extends GeneralJSON {
 
@@ -93,7 +93,7 @@ public class GeneralJSONRDF extends GeneralJSON {
 
 	/**
 	 * Registers an analysis provider to be used when some analysis key is met
-	 * 
+	 *
 	 * @param analysis
 	 * @param analysisProvider
 	 */
@@ -244,4 +244,15 @@ public class GeneralJSONRDF extends GeneralJSON {
 		//		m.read(GeneralJSONRDF.class.getResourceAsStream("rdf/base_usmf.rdf"), "");
 	}
 
+	@Override
+	public GeneralJSON instanceFromString(String line){
+		GeneralJSONRDF jsonInstance = null;
+		try {
+			jsonInstance = new GeneralJSONRDF();
+			jsonInstance.m.read(new StringReader(line), "");
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+		return jsonInstance;
+	}
 }

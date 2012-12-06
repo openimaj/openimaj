@@ -33,15 +33,17 @@ import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.openimaj.io.FileUtils;
 import org.openimaj.twitter.GeneralJSON;
+import org.openimaj.twitter.GeneralJSONTwitterRawText;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.list.AbstractFileBackedList;
 
 
 /**
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T>
@@ -49,7 +51,7 @@ import org.openimaj.util.list.AbstractFileBackedList;
 public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBackedList<T> implements TwitterStatusList<T> {
 
 	private Class<? extends GeneralJSON> seedClass=null;
-	
+
 	protected FileTwitterStatusList(int size, File file, String charset, Class<T> clazz) {
 		super(size, false, 0, -1, file, clazz,charset);
 	}
@@ -57,14 +59,14 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 		super(size, false, 0, -1, file, clazz,charset);
 		this.seedClass = seedClass;
 	}
-	
+
 	protected FileTwitterStatusList(int size, File file,Class<T> clazz) {
 		super(size, false, 0, -1, file, clazz);
 	}
-	
+
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -785707085718120105L;
 
@@ -75,7 +77,7 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 			out.println();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected T newElementInstance() {
@@ -84,12 +86,12 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 		else
 			return (T) new USMFStatus(seedClass);
 	}
-	
+
 	@Override
 	public String asciiHeader() {
 		return "";
 	}
-	
+
 	/**
 	 * @param f
 	 * @return a status list of {@link USMFStatus} instances read from a file assuming the {@link USMFStatus} format
@@ -99,7 +101,7 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 		int size = FileUtils.countLines(f);
 		return new FileTwitterStatusList<USMFStatus>(size, f,USMFStatus.class);
 	}
-	
+
 	/**
 	 * @param f
 	 * @param charset the charset for the reader
@@ -110,7 +112,7 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 		int size = FileUtils.countLines(f);
 		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class);
 	}
-	
+
 	/**
 	 * @param f
 	 * @param size number of statuses to read
@@ -120,7 +122,7 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 	public static FileTwitterStatusList<USMFStatus>  readUSMF(File f,int size) throws IOException {
 		return new FileTwitterStatusList<USMFStatus>(size, f,USMFStatus.class);
 	}
-	
+
 	/**
 	 * @param f
 	 * @param charset the charset for the reader
@@ -131,7 +133,7 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 	public static FileTwitterStatusList<USMFStatus>  readUSMF(File f,String charset,int size) throws IOException {
 		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class);
 	}
-	
+
 	/**
 	 * @param f
 	 * @param charset the charset for the reader
@@ -142,7 +144,7 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 		int size = FileUtils.countLines(f);
 		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class,generalJSON);
 	}
-	
+
 	/**
 	 * @param f
 	 * @param charset the charset for the reader
@@ -153,11 +155,11 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 	public static FileTwitterStatusList<USMFStatus> readUSMF(File f, int size, String charset, Class<? extends GeneralJSON> generalJSON){
 		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class,generalJSON);
 	}
-	
+
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		throw new UnsupportedOperationException();
-		
+
 	}
 
 	@Override
@@ -165,11 +167,17 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 		throw new UnsupportedOperationException();
 	}
 
-	
-	
+
+
 	@Override
 	protected AbstractFileBackedList<T> newInstance(int newSize, boolean isBinary, int newHeaderLength, int recordLength, File file) {
 		return new FileTwitterStatusList<T>(newSize,file,this.charset,this.clz);
+	}
+
+	public static List<USMFStatus> readUSMF(File f, Class<? extends GeneralJSON> generalJSON) {
+		int size = FileUtils.countLines(f);
+		String charset = "UTF-8";
+		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class,generalJSON);
 	}
 
 }
