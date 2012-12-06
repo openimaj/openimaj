@@ -54,7 +54,8 @@ import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
  * {@link VideoDisplayListener}s can be added to be informed when the display
  * is about to be updated or has just been updated. {@link VideoDisplayStateListener}s
  * can be added to be informed about when the playback state of the display changes
- * (e.g. when it entered play or pause mode).
+ * (e.g. when it entered play or pause mode). {@link VideoPositionListener}s can
+ * be added to be informed when the video hits the start or end frame.
  * <p>
  * The video can be played, paused and stopped. Pause and stop have slightly
  * different semantics. After pause mode, the playback will continue from the
@@ -66,13 +67,13 @@ import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
  * be altered with {@link #setEndAction(EndAction)}.
  * <p>
  * The VideoDisplay constructor takes an {@link ImageComponent} which is used
- * to draw the video to. This allows video displays to be integrated in
- * an Swing UI. Use the {@link #createVideoDisplay(Video)} to have the video
+ * to draw the video to. This allows video displays to be integrated into
+ * a Swing UI. Use the {@link #createVideoDisplay(Video)} to have the video
  * display create an appropriate image component and a basic frame into which
  * to display the video. There is a {@link #createOffscreenVideoDisplay(Video)}
  * method which will not display the resulting component.
  * <p>
- * The class uses a separate class for controlling the speed of playback. The
+ * The player uses a separate object for controlling the speed of playback. The
  * {@link TimeKeeper} class is used to generate timestamps which the video
  * display will do its best to synchronise with. A basic time keeper is
  * encapsulated in this class ({@link BasicVideoTimeKeeper}) which is used for
@@ -86,9 +87,9 @@ import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
  * not check to see if the frame was in the past - it always assumes that
  * {@link Video#getNextFrame()} will return the latest frame to be displayed.
  * <p>
- * The VideoDisplay class that also accept an {@link AudioStream} as input.
+ * The VideoDisplay class can also accept an {@link AudioStream} as input.
  * If this is supplied, an {@link AudioPlayer} will be instantiated to playback
- * the audio and this player will be designated the {@link TimeKeeper} for
+ * the audio and this audio player will be designated the {@link TimeKeeper} for
  * the video playback. That means the audio will control the speed of playback
  * for the video. An example of playing back a video with sound might look like
  * this:
@@ -153,7 +154,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	}
 
 	/**
-	 * 	A timekeeper for videos without audio - simply used the system time
+	 * 	A timekeeper for videos without audio - simply uses the system time
 	 *	to keep track of where in a video a video should be.
 	 *
 	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
@@ -312,6 +313,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 	/** List of state listeners */
 	private final List<VideoDisplayStateListener> stateListeners;
+	
+	/** List of position listeners */
+	private final List<VideoPositionListener> positionListeners;
 
 	/** Whether to display the screen */
 	private boolean displayMode = true;
@@ -374,6 +378,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		this.screen = screen;
 		this.videoDisplayListeners = new ArrayList<VideoDisplayListener<T>>();
 		this.stateListeners = new ArrayList<VideoDisplayStateListener>();
+		this.positionListeners = new ArrayList<VideoPositionListener>();
 	}
 
 	@Override
@@ -400,6 +405,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		// Used to calculate the FPS the video's playing at
 		long lastTimestamp = 0, currentTimestamp = 0;
 
+		// Just about the start the video
+		this.fireVideoStartEvent();
+		
 		// Keep going until the mode becomes closed
 		while( this.mode != Mode.CLOSED )
 		{
@@ -622,6 +630,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 */
 	protected void processEndAction( final EndAction e )
 	{
+		this.fireVideoEndEvent();
+		
 		switch( e )
 		{
 			// The video needs to loop, so we reset the video, any audio player,
@@ -633,6 +643,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 					this.audioPlayer.reset();
 				this.timeKeeper.reset();
 				this.currentFrameTimestamp = 0;
+				this.fireVideoStartEvent();
 				break;
 				
 			// Pause the video player
@@ -683,6 +694,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		{
 		// -------------------------------------------------
 		case PLAY:
+			if( this.mode == Mode.STOP )
+				this.fireVideoStartEvent();
+			
 			// Restart the timekeeper
 			new Thread( this.timeKeeper ).start();
 
@@ -842,6 +856,42 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		}
 	}
 
+	/**
+	 * 	Add a video position listener to this display
+	 *	@param vpl The video position listener
+	 */
+	public void addVideoPositionListener( final VideoPositionListener vpl )
+	{
+		this.positionListeners.add( vpl );
+	}
+	
+	/**
+	 * 	Remove visible panty lines... or video position listeners.
+	 *	@param vpl The video position listener
+	 */
+	public void removeVideoPositionListener( final VideoPositionListener vpl )
+	{
+		this.positionListeners.remove( vpl );
+	}
+	
+	/**
+	 * 	Fire the event that says the video is at the start.
+	 */
+	protected void fireVideoStartEvent()
+	{
+		for( final VideoPositionListener vpl: this.positionListeners )
+			vpl.videoAtStart( this );
+	}
+	
+	/**
+	 * 	Fire the event that says the video is at the end.
+	 */
+	protected void fireVideoEndEvent()
+	{
+		for( final VideoPositionListener vpl: this.positionListeners )
+			vpl.videoAtEnd( this );
+	}
+	
 	/**
 	 * 	Pause or resume the display. This will only have an affect if the
 	 * 	video is not in STOP mode.

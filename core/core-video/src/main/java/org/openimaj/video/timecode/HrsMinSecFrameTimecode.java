@@ -32,6 +32,9 @@
  */
 package org.openimaj.video.timecode;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * 	A timecode representation that extends the standard frame count representation
  * 	to provide hours, minutes, seconds and frames timecode.
@@ -49,7 +52,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 *  @param number The frame number.
 	 *  @param framesPerSec The number of frames per second.
 	 */
-	public HrsMinSecFrameTimecode( long number, double framesPerSec )
+	public HrsMinSecFrameTimecode( final long number, final double framesPerSec )
 	{
 		super( number, framesPerSec );
 	}
@@ -60,7 +63,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public int getHours()
 	{
-		return (int)(getFrameNumber() / fps / 3600d);		
+		return (int)(this.getFrameNumber() / this.fps / 3600d);		
 	}
 	
 	/**
@@ -69,7 +72,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public int getMinutes()
 	{
-		return (int)(getFrameNumber() / fps / 60d) % 60;
+		return (int)(this.getFrameNumber() / this.fps / 60d) % 60;
 	}
 	
 	/**
@@ -78,7 +81,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public int getSeconds()
 	{
-		return (int)(getFrameNumber() / fps) % 60;
+		return (int)(this.getFrameNumber() / this.fps) % 60;
 	}
 	
 	/**
@@ -87,7 +90,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public int getFrames()
 	{
-		return (int)(getFrameNumber() % fps);
+		return (int)(this.getFrameNumber() % this.fps);
 	}
 
 	/**
@@ -97,9 +100,42 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	@Override
 	public String toString()
 	{
-	    return getHours()+":"+getMinutes()+":"+getSeconds()+":"+getFrames();
+	    return this.getHours()+":"+this.getMinutes()+":"+this.getSeconds()+":"
+	    		+this.getFrames()+"/"+this.fps;
 	}
 
+	/**
+	 * 	Parses a string (formatted as {@link #toString()}) back into a
+	 * 	timecode object.
+	 * 
+	 *	@param s The string to parse
+	 *	@return A new {@link HrsMinSecFrameTimecode} or null if the string
+	 *		couldn't be parsed.
+	 */
+	public static HrsMinSecFrameTimecode fromString( final String s )
+	{
+		final Pattern p = Pattern.compile( "(\\d+):(\\d+):(\\d+):(\\d+)/([\\d.]+)");
+		final Matcher m = p.matcher( s );
+
+		// Check for a match
+		if( !m.find() )
+			return null;
+		
+		// Extract all the bits and bobs
+		final double fps = Double.parseDouble(m.group(3));
+		final int hrs = Integer.parseInt( m.group(0) );
+		final int min = Integer.parseInt( m.group(1) );
+		final int sec = Integer.parseInt( m.group(2) );
+		final int frames = Integer.parseInt( m.group(3) );
+		
+		// Work out the frame number from the bits and bobs
+		final int frameNumber = (int)(frames + sec*fps + min*60*fps + hrs*3600*fps);
+		
+		// Create a new object
+		final HrsMinSecFrameTimecode h = new HrsMinSecFrameTimecode( frameNumber, fps );
+		return h;
+	}
+	
 	/**
 	 *  {@inheritDoc}
 	 *  @see java.lang.Object#hashCode()
@@ -107,7 +143,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	@Override
 	public int hashCode()
 	{
-	    return toString().hashCode();
+	    return this.toString().hashCode();
 	}
 
 	/**
@@ -115,15 +151,15 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 *  @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals( Object obj )
+	public boolean equals( final Object obj )
 	{
 		if( obj instanceof HrsMinSecFrameTimecode )
 		{
-			HrsMinSecFrameTimecode h = (HrsMinSecFrameTimecode)obj;
-			return h.getHours() == getHours() &&
-				h.getMinutes() == getMinutes() &&
-				h.getSeconds() == getSeconds() &&
-				h.getFrames() == getFrames();
+			final HrsMinSecFrameTimecode h = (HrsMinSecFrameTimecode)obj;
+			return h.getHours() == this.getHours() &&
+				h.getMinutes() == this.getMinutes() &&
+				h.getSeconds() == this.getSeconds() &&
+				h.getFrames() == this.getFrames();
 		}
 		
 		return false;
@@ -136,6 +172,6 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	@Override
 	public HrsMinSecFrameTimecode clone()
 	{
-		return new HrsMinSecFrameTimecode( getFrameNumber(), fps );
+		return new HrsMinSecFrameTimecode( this.getFrameNumber(), this.fps );
 	}
 }

@@ -63,8 +63,8 @@ import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
  * 	This class is an extension of the {@link VideoDisplay} class that provides
  * 	GUI elements for starting, stopping, pausing and rewinding video. 
  * 	<p>
- * 	The class relies on the underlying {@link VideoDisplay}to actually provide 
- * 	the main functionality for video playing and indeed still allows those
+ * 	The class relies on the underlying {@link VideoDisplay} to actually provide 
+ * 	the main functionality for video playing and indeed still allows its
  * 	methods to be used. This class then provides a simple API for starting,
  * 	pausing and stopping video.
  * 	<p>
