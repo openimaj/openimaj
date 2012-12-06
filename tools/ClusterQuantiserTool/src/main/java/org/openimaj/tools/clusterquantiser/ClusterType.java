@@ -69,6 +69,7 @@ import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatchByteDataSource;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatchIntDataSource;
 import org.openimaj.util.array.ByteArrayConverter;
+import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
 
 /**
  * Different clustering algorithms
@@ -363,7 +364,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 
 		private KMeansConfiguration<ByteNearestNeighbours, byte[]> confByte(int ndims) {
 			NearestNeighboursFactory<? extends ByteNearestNeighbours, byte[]> assigner;
-			final ExecutorService pool = Executors.newFixedThreadPool(jj);
+			final ExecutorService pool = Executors.newFixedThreadPool(jj, new DaemonThreadFactory());
 
 			if (E) {
 				assigner = new ByteNearestNeighboursExact.Factory();
@@ -379,7 +380,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 
 		private KMeansConfiguration<IntNearestNeighbours, int[]> confInt(int ndims) {
 			NearestNeighboursFactory<? extends IntNearestNeighbours, int[]> assigner;
-			final ExecutorService pool = Executors.newFixedThreadPool(jj);
+			final ExecutorService pool = Executors.newFixedThreadPool(jj, new DaemonThreadFactory());
 
 			if (E) {
 				assigner = new IntNearestNeighboursExact.Factory();
@@ -514,7 +515,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 
 		private KMeansConfiguration<IntNearestNeighbours, int[]> confInt(int ndims) {
 			NearestNeighboursFactory<? extends IntNearestNeighbours, int[]> assigner;
-			final ExecutorService pool = Executors.newFixedThreadPool(jj);
+			final ExecutorService pool = Executors.newFixedThreadPool(jj, new DaemonThreadFactory());
 
 			if (E) {
 				assigner = new IntNearestNeighboursExact.Factory();

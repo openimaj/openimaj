@@ -57,6 +57,7 @@ import org.openimaj.time.Timer;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 import org.openimaj.util.array.ByteArrayConverter;
+import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
 
 /**
  * A tool for clustering and quantising local features.
@@ -322,7 +323,7 @@ public class ClusterQuantiser {
 	 * @throws InterruptedException
 	 */
 	public static void do_quant(ClusterQuantiserOptions cqo) throws IOException, InterruptedException {
-		final ExecutorService es = Executors.newFixedThreadPool(cqo.getConcurrency());
+		final ExecutorService es = Executors.newFixedThreadPool(cqo.getConcurrency(), new DaemonThreadFactory());
 
 		final List<QuantizerJob> jobs = QuantizerJob.getJobs(cqo);
 
