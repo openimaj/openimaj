@@ -1,0 +1,331 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ 
+ /*** 
+ 	{ m -> 
+ 		if (m['T'] == DOUBLE) {
+ 			return (m['R'] == DOUBLE); 		
+ 		}
+ 		if (m['T'] == LONG) {
+ 			return (m['R'] == DOUBLE);
+ 		}
+ 		return (m['R'] == FLOAT);
+ 	}
+ ***/
+
+package org.openimaj.knn.pq;
+
+import jal.objects.BinaryPredicate;
+import jal.objects.Sorting;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.data.DataSource;
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.IncrementalNearestNeighbours;
+import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.pair.#R#IntPair;
+
+/**
+ * Incremental Nearest-neighbours using Asymmetric Distance Computation (ADC) 
+ * on Product Quantised vectors. In ADC, only the database points are quantised.
+ * The queries themselves are not quantised. The overall distance is computed
+ * as the summed distance of each subvector of the query to each corresponding
+ * centroids of each database vector.
+ * <p>
+ * For efficiency, the distance of each sub-vector of a query is computed to
+ * every centroid (for the sub-vector under consideration) only once, and is
+ * then cached for the lookup during the computation of the distance to each
+ * database vector.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Jegou, Herve", "Douze, Matthijs", "Schmid, Cordelia" },
+		title = "Product Quantization for Nearest Neighbor Search",
+		year = "2011",
+		journal = "IEEE Trans. Pattern Anal. Mach. Intell.",
+		pages = { "117", "", "128" },
+		url = "http://dx.doi.org/10.1109/TPAMI.2010.57",
+		month = "January",
+		number = "1",
+		publisher = "IEEE Computer Society",
+		volume = "33",
+		customData = {
+				"issn", "0162-8828",
+				"numpages", "12",
+				"doi", "10.1109/TPAMI.2010.57",
+				"acmid", "1916695",
+				"address", "Washington, DC, USA",
+				"keywords", "High-dimensional indexing, High-dimensional indexing, image indexing, very large databases, approximate search., approximate search., image indexing, very large databases"
+		})
+public class Incremental#T#ADCNearestNeighbours extends #T#NearestNeighbours implements IncrementalNearestNeighbours<#t#[], #r#[]> {
+	protected final #T#ProductQuantiser pq;
+	protected final int ndims;
+	protected final List<byte[]> data;
+
+	/**
+	 * Construct the ADC with the given quantiser and data points.
+	 * 
+	 * @param pq
+	 *            the Product Quantiser
+	 * @param dataPoints
+	 *            the data points to index
+	 */
+	public Incremental#T#ADCNearestNeighbours(#T#ProductQuantiser pq, #t#[][] dataPoints) {
+		this.pq = pq;
+		this.ndims = dataPoints[0].length;
+
+		this.data = new ArrayList<byte[]>(dataPoints.length);
+		for (int i = 0; i < dataPoints.length; i++) {
+			data.add(pq.quantise(dataPoints[i]));
+		}
+	}
+	
+	/**
+	 * Construct the ADC with the given quantiser and data points.
+	 * 
+	 * @param pq
+	 *            the Product Quantiser
+	 * @param dataPoints
+	 *            the data points to index
+	 */
+	public Incremental#T#ADCNearestNeighbours(#T#ProductQuantiser pq, List<#t#[]> dataPoints) {
+		this.pq = pq;
+		this.ndims = dataPoints.get(0).length;
+		
+		final int size = dataPoints.size();
+		this.data = new ArrayList<byte[]>(size);
+		for (int i = 0; i < size; i++) {
+			data.add(pq.quantise(dataPoints.get(i)));
+		}
+	}
+	
+	/**
+	 * Construct the ADC with the given quantiser and data points.
+	 * 
+	 * @param pq
+	 *            the Product Quantiser
+	 * @param dataPoints
+	 *            the data points to index
+	 */
+	public Incremental#T#ADCNearestNeighbours(#T#ProductQuantiser pq, DataSource<#t#[]> dataPoints) {
+		this.pq = pq;
+		this.ndims = dataPoints.getData(0).length;
+
+		final int size = dataPoints.numRows();
+		this.data = new ArrayList<byte[]>(size);
+		for (int i = 0; i < size; i++) {
+			data.add(pq.quantise(dataPoints.getData(i)));
+		}
+	}
+	
+	/**
+	 * Construct an empty ADC with the given quantiser.
+	 * 
+	 * @param pq
+	 *            the Product Quantiser
+	 * @param ndims
+	 *            the data dimensionality
+	 */
+	public Incremental#T#ADCNearestNeighbours(#T#ProductQuantiser pq, int ndims) {
+		this.pq = pq;
+		this.ndims = ndims;
+
+		this.data = new ArrayList<byte[]>();
+	}
+	
+	@Override
+	public int[] addAll(List<#t#[]> d) {
+		final int[] indexes = new int[d.size()];
+
+		for (int i = 0; i < indexes.length; i++) {
+			indexes[i] = add(d.get(i));
+		}
+
+		return indexes;
+	}
+
+	@Override
+	public int add(#t#[] o) {
+		final int ret = data.size();
+		data.add(pq.quantise(o));
+		return ret;
+	}
+
+	@Override
+	public void searchNN(#t#[][] qus, int[] argmins, #r#[] mins) {
+		final int N = qus.length;
+		final #r#[] dsqout = new #r#[data.size()];
+
+		for (int n = 0; n < N; ++n) {
+			computeDistances(qus[n], dsqout);
+
+			argmins[n] = ArrayUtils.minIndex(dsqout);
+
+			mins[n] = dsqout[argmins[n]];
+		}
+	}
+
+	protected void computeDistances(#t#[] fullQuery, #r#[] dsqout) {
+		final #r#[][] distances = new #r#[pq.assigners.length][];
+
+		for (int j = 0, from = 0; j < this.pq.assigners.length; j++) {
+			final #T#NearestNeighbours nn = this.pq.assigners[j];
+			final int to = nn.numDimensions();
+			final int K = nn.size();
+
+			final #t#[][] qus = { Arrays.copyOfRange(fullQuery, from, from + to) };
+			final int[][] idx = new int[1][K];
+			final #r#[][] dst = new #r#[1][K];
+			nn.searchKNN(qus, K, idx, dst);
+
+			distances[j] = new #r#[K];
+			for (int k = 0; k < K; k++) {
+				distances[j][idx[0][k]] = dst[0][k];
+			}
+
+			from += to;
+		}
+
+		final int size = data.size();
+		for (int i = 0; i < size; i++) {
+			dsqout[i] = 0;
+
+			for (int j = 0; j < this.pq.assigners.length; j++) {
+				final int centroid = this.data.get(i)[j] + 128; //byte is signed, but we want centroids to be counted from 0
+				dsqout[i] += distances[j][centroid];
+			}
+		}
+	}
+
+	@Override
+	public void searchKNN(#t#[][] qus, int K, int[][] argmins, #r#[][] mins) {
+		// Fix for when the user asks for too many points.
+		K = Math.min(K, data.size());
+
+		final #r#[] dsqout = new #r#[data.size()];
+		final int N = qus.length;
+
+		final #R#IntPair[] knn_prs = new #R#IntPair[data.size()];
+
+		for (int n = 0; n < N; ++n) {
+			computeDistances(qus[n], dsqout);
+
+			for (int p = 0; p < knn_prs.length; ++p)
+				knn_prs[p] = new #R#IntPair(dsqout[p], p);
+
+			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
+				@Override
+				public boolean apply(Object arg0, Object arg1) {
+					final #R#IntPair p1 = (#R#IntPair) arg0;
+					final #R#IntPair p2 = (#R#IntPair) arg1;
+
+					if (p1.first < p2.first)
+						return true;
+					if (p2.first < p1.first)
+						return false;
+					return (p1.second < p2.second);
+				}
+			});
+
+			for (int k = 0; k < K; ++k) {
+				argmins[n][k] = knn_prs[k].second;
+				mins[n][k] = knn_prs[k].first;
+			}
+		}
+	}
+
+	@Override
+	public void searchNN(final List<#t#[]> qus, int[] argmins, #r#[] mins) {
+		final int N = qus.size();
+		final #r#[] dsqout = new #r#[data.size()];
+
+		for (int n = 0; n < N; ++n) {
+			computeDistances(qus.get(n), dsqout);
+
+			argmins[n] = ArrayUtils.minIndex(dsqout);
+
+			mins[n] = dsqout[argmins[n]];
+		}
+	}
+
+	@Override
+	public void searchKNN(final List<#t#[]> qus, int K, int[][] argmins, #r#[][] mins) {
+		// Fix for when the user asks for too many points.
+		K = Math.min(K, data.size());
+
+		final #r#[] dsqout = new #r#[data.size()];
+		final int N = qus.size();
+
+		final #R#IntPair[] knn_prs = new #R#IntPair[data.size()];
+
+		for (int n = 0; n < N; ++n) {
+			computeDistances(qus.get(n), dsqout);
+
+			for (int p = 0; p < knn_prs.length; ++p)
+				knn_prs[p] = new #R#IntPair(dsqout[p], p);
+
+			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
+				@Override
+				public boolean apply(Object arg0, Object arg1) {
+					final #R#IntPair p1 = (#R#IntPair) arg0;
+					final #R#IntPair p2 = (#R#IntPair) arg1;
+
+					if (p1.first < p2.first)
+						return true;
+					if (p2.first < p1.first)
+						return false;
+					return (p1.second < p2.second);
+				}
+			});
+
+			for (int k = 0; k < K; ++k) {
+				argmins[n][k] = knn_prs[k].second;
+				mins[n][k] = knn_prs[k].first;
+			}
+		}
+	}
+
+	@Override
+	public int numDimensions() {
+		return ndims;
+	}
+
+	@Override
+	public int size() {
+		return data.size();
+	}
+}

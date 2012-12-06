@@ -32,6 +32,7 @@ package org.openimaj.knn;
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.util.array.ArrayUtils;
@@ -48,7 +49,10 @@ import org.openimaj.util.pair.FloatIntPair;
  * @param <T>
  *            Type of object being compared.
  */
-public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T> {
+public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
+		implements
+		IncrementalNearestNeighbours<T, float[]>
+{
 	protected final List<T> pnts;
 
 	/**
@@ -66,6 +70,21 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T> 
 	public ObjectNearestNeighboursExact(final List<T> pnts, final DistanceComparator<T> distance) {
 		super(distance);
 		this.pnts = pnts;
+	}
+
+	/**
+	 * Construct any empty {@link ObjectNearestNeighboursExact} with the given
+	 * distance function.
+	 * <p>
+	 * Note: If the distance function provides similarities rather than
+	 * distances they are automatically inverted.
+	 * 
+	 * @param distance
+	 *            the distance function
+	 */
+	public ObjectNearestNeighboursExact(final DistanceComparator<T> distance) {
+		super(distance);
+		this.pnts = new ArrayList<T>();
 	}
 
 	@Override
@@ -173,5 +192,23 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T> 
 	@Override
 	public int size() {
 		return pnts.size();
+	}
+
+	@Override
+	public int[] addAll(List<T> d) {
+		final int[] indexes = new int[d.size()];
+
+		for (int i = 0; i < indexes.length; i++) {
+			indexes[i] = add(d.get(i));
+		}
+
+		return indexes;
+	}
+
+	@Override
+	public int add(T o) {
+		final int ret = this.pnts.size();
+		this.pnts.add(o);
+		return ret;
 	}
 }

@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.openimaj.knn.NearestNeighbours;
+import org.openimaj.knn.IncrementalNearestNeighbours;
 import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
@@ -66,7 +66,7 @@ import org.openimaj.util.pair.FloatIntPair;
  */
 public class LSHNearestNeighbours<OBJECT>
 		implements
-		NearestNeighbours<OBJECT, float[]>
+		IncrementalNearestNeighbours<OBJECT, float[]>
 {
 	/**
 	 * Encapsulates a hash table with an associated hash function and pointers
@@ -194,19 +194,16 @@ public class LSHNearestNeighbours<OBJECT>
 		}
 	}
 
-	/**
-	 * Add a single object
-	 * 
-	 * @param o
-	 *            the object to add
-	 */
-	public void add(OBJECT o) {
+	@Override
+	public int add(OBJECT o) {
 		final int index = this.data.size();
 		this.data.add(o);
 
 		for (final Table<OBJECT> table : tables) {
 			table.insertPoint(o, index);
 		}
+
+		return index;
 	}
 
 	/**
@@ -402,5 +399,16 @@ public class LSHNearestNeighbours<OBJECT>
 	 */
 	public OBJECT get(int i) {
 		return data.get(i);
+	}
+
+	@Override
+	public int[] addAll(List<OBJECT> d) {
+		final int[] indexes = new int[d.size()];
+
+		for (int i = 0; i < indexes.length; i++) {
+			indexes[i] = add(d.get(i));
+		}
+
+		return indexes;
 	}
 }
