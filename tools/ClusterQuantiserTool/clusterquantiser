@@ -6,4 +6,4 @@
 
 bin=`dirname "$0"`
 
-java -Xmx6G -jar $bin/target/ClusterQuantiserTool.jar $@	
+java -Xmx5G -jar $bin/target/ClusterQuantiserTool.jar $@	

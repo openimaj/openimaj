@@ -130,8 +130,8 @@
           </descriptors>
           <archive>
             <manifest>
-              <!-- <mainClass>org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool</mainClass> -->
-							<mainClass>org.openimaj.hadoop.tools.localfeature.VLADExtractor</mainClass>
+              <mainClass>org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool</mainClass>
+							<!-- <mainClass>org.openimaj.hadoop.tools.localfeature.VLADExtractor</mainClass> -->
             </manifest>
           </archive>
         </configuration>

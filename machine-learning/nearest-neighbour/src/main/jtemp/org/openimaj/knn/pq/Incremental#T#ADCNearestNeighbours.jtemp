@@ -45,6 +45,9 @@ package org.openimaj.knn.pq;
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +55,8 @@ import java.util.List;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
+import org.openimaj.io.IOUtils;
+import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.knn.#T#NearestNeighbours;
 import org.openimaj.knn.IncrementalNearestNeighbours;
 import org.openimaj.util.array.ArrayUtils;
@@ -91,10 +96,14 @@ import org.openimaj.util.pair.#R#IntPair;
 				"address", "Washington, DC, USA",
 				"keywords", "High-dimensional indexing, High-dimensional indexing, image indexing, very large databases, approximate search., approximate search., image indexing, very large databases"
 		})
-public class Incremental#T#ADCNearestNeighbours extends #T#NearestNeighbours implements IncrementalNearestNeighbours<#t#[], #r#[]> {
-	protected final #T#ProductQuantiser pq;
-	protected final int ndims;
-	protected final List<byte[]> data;
+public class Incremental#T#ADCNearestNeighbours extends #T#NearestNeighbours implements IncrementalNearestNeighbours<#t#[], #r#[]>, ReadWriteableBinary {
+	protected #T#ProductQuantiser pq;
+	protected int ndims;
+	protected List<byte[]> data;
+
+    protected Incremental#T#ADCNearestNeighbours() {
+        //for deserialization
+    }
 
 	/**
 	 * Construct the ADC with the given quantiser and data points.
@@ -165,6 +174,23 @@ public class Incremental#T#ADCNearestNeighbours extends #T#NearestNeighbours imp
 		this.ndims = ndims;
 
 		this.data = new ArrayList<byte[]>();
+	}
+	
+	/**
+	 * Construct an empty ADC with the given quantiser.
+	 * 
+	 * @param pq
+	 *            the Product Quantiser
+	 * @param ndims
+	 *            the data dimensionality
+	 * @param nitems
+	 *            the expected number of data items
+	 */
+	public Incremental#T#ADCNearestNeighbours(#T#ProductQuantiser pq, int ndims, int nitems) {
+		this.pq = pq;
+		this.ndims = ndims;
+
+		this.data = new ArrayList<byte[]>(nitems);
 	}
 	
 	@Override
@@ -327,5 +353,37 @@ public class Incremental#T#ADCNearestNeighbours extends #T#NearestNeighbours imp
 	@Override
 	public int size() {
 		return data.size();
+	}
+	
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		pq = IOUtils.read(in);
+		ndims = in.readInt();
+
+		int size = in.readInt();
+		int dim = pq.assigners.length;
+		data = new ArrayList<byte[]>(size);
+		for (int i=0; i<size; i++) {
+			byte[] bytes = new byte[dim];
+			in.readFully(bytes);
+			data.add(bytes);
+		}
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "I#T#ADCNN".getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		IOUtils.write(pq, out);
+		out.writeInt(ndims);
+
+		int size = data.size();
+		out.writeInt(size);
+
+		for (int i=0; i<size; i++)
+			out.write(data.get(i));
 	}
 }
