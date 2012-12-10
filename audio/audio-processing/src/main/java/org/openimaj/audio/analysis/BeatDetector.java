@@ -73,7 +73,7 @@ public class BeatDetector extends AudioProcessor
 	private boolean beatPulse;
 
 	/** The timecode of the detected beat */
-	private AudioTimecode beatTimecode = new AudioTimecode(0);
+	private final AudioTimecode beatTimecode = new AudioTimecode(0);
 	
 	/** Whether a beat has been detected within a sample chunk */
 	private boolean beatDetected = false;
@@ -82,7 +82,8 @@ public class BeatDetector extends AudioProcessor
 	public static final float FREQ_LP_BEAT = 150.0f;
 
 	/** Low Pass filter time constant */
-	public static final float T_FILTER = (float) (1.0f / (2.0f * Math.PI * FREQ_LP_BEAT));
+	public static final float T_FILTER = (float) (1.0f / (2.0f * Math.PI 
+			* BeatDetector.FREQ_LP_BEAT));
 
 	/** Release time of envelope detector in seconds */
 	public static final float BEAT_RTIME = 0.02f;
@@ -91,7 +92,7 @@ public class BeatDetector extends AudioProcessor
 	 * 	Default constructor
 	 * 	@param af The format of the incoming data.
 	 */
-	public BeatDetector( AudioFormat af )
+	public BeatDetector( final AudioFormat af )
 	{
 		this( null, af );
 	}
@@ -100,7 +101,7 @@ public class BeatDetector extends AudioProcessor
 	 * 	Chainable constructor
 	 *	@param as The audio stream to process
 	 */
-	public BeatDetector( AudioStream as )
+	public BeatDetector( final AudioStream as )
 	{
 		this( as, as.getFormat() );
 	}
@@ -110,14 +111,14 @@ public class BeatDetector extends AudioProcessor
 	 *	@param as The audio stream to process
 	 *	@param af The format to process.
 	 */
-	protected BeatDetector( AudioStream as, AudioFormat af )
+	protected BeatDetector( final AudioStream as, final AudioFormat af )
 	{
 		super( as );
-		filter1Out = 0.0f;
-		filter2Out = 0.0f;
-		peakEnv = 0.0f;
-		beatTrigger = false;
-		prevBeatPulse = false;
+		this.filter1Out = 0.0f;
+		this.filter2Out = 0.0f;
+		this.peakEnv = 0.0f;
+		this.beatTrigger = false;
+		this.prevBeatPulse = false;
 		this.format = af;
 		this.setSampleRate( (float)(af.getSampleRateKHz()*1000f) );
 	}
@@ -127,10 +128,10 @@ public class BeatDetector extends AudioProcessor
 	 * 	Set the sample rate of the incoming data.
 	 *	@param sampleRate The sample rate
 	 */
-	private void setSampleRate( float sampleRate )
+	private void setSampleRate( final float sampleRate )
 	{
-		kBeatFilter = (float) (1.0 / (sampleRate * T_FILTER));
-		beatRelease = (float) Math.exp( -1.0f / (sampleRate * BEAT_RTIME) );
+		this.kBeatFilter = (float) (1.0 / (sampleRate * BeatDetector.T_FILTER));
+		this.beatRelease = (float) Math.exp( -1.0f / (sampleRate * BeatDetector.BEAT_RTIME) );
 	}
 
 	/**
@@ -138,20 +139,20 @@ public class BeatDetector extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk samples )
+	public SampleChunk process( final SampleChunk samples )
 	{
 		// Detect beats. Note that we stop as soon as we detect a beat.
 		this.beatDetected = false;
-		SampleBuffer sb = samples.getSampleBuffer();
+		final SampleBuffer sb = samples.getSampleBuffer();
 		int i = 0;
 		for(; i < sb.size(); i++ )
 		{
-			if( this.beatDetected = processSample( sb.get(i) ) )
+			if( this.beatDetected = this.processSample( sb.get(i) ) )
 				break;
 		}
 		
 		if( this.beatDetected() )
-			beatTimecode.setTimecodeInMilliseconds( (long)( 
+			this.beatTimecode.setTimecodeInMilliseconds( (long)( 
 				samples.getStartTimecode().getTimecodeInMilliseconds() +
 				i * this.format.getSampleRateKHz() ) );
 		
@@ -166,42 +167,42 @@ public class BeatDetector extends AudioProcessor
 	 *	@param input The sample to process.
 	 *	@return TRUE if a beat was detected at this sample
 	 */
-	private boolean processSample( float in )
+	private boolean processSample( final float in )
 	{
 		float EnvIn;
 		
-		float input = in / Integer.MAX_VALUE;
+		final float input = in / Integer.MAX_VALUE;
 
 		// Step 1 : 2nd order low pass filter (made of two 1st order RC filter)
-		filter1Out = filter1Out + (kBeatFilter * (input - filter1Out));
-		filter2Out = filter2Out + (kBeatFilter * (filter1Out - filter2Out));
+		this.filter1Out = this.filter1Out + (this.kBeatFilter * (input - this.filter1Out));
+		this.filter2Out = this.filter2Out + (this.kBeatFilter * (this.filter1Out - this.filter2Out));
 
 		// Step 2 : peak detector
-		EnvIn = Math.abs( filter2Out );
-		if( EnvIn > peakEnv )
-			peakEnv = EnvIn; // Attack time = 0
+		EnvIn = Math.abs( this.filter2Out );
+		if( EnvIn > this.peakEnv )
+			this.peakEnv = EnvIn; // Attack time = 0
 		else
 		{
-			peakEnv *= beatRelease;
-			peakEnv += (1.0f - beatRelease) * EnvIn;
+			this.peakEnv *= this.beatRelease;
+			this.peakEnv += (1.0f - this.beatRelease) * EnvIn;
 		}
 
 		// Step 3 : Schmitt trigger
-		if( !beatTrigger )
+		if( !this.beatTrigger )
 		{
-			if( peakEnv > 0.3 ) beatTrigger = true;
+			if( this.peakEnv > 0.3 ) this.beatTrigger = true;
 		}
 		else	
 		{
-			if( peakEnv < 0.15 ) beatTrigger = false;
+			if( this.peakEnv < 0.15 ) this.beatTrigger = false;
 		}
 
 		// Step 4 : rising edge detector
-		beatPulse = false;
-		if( (beatTrigger) && (!prevBeatPulse) ) beatPulse = true;
-		prevBeatPulse = beatTrigger;
+		this.beatPulse = false;
+		if( (this.beatTrigger) && (!this.prevBeatPulse) ) this.beatPulse = true;
+		this.prevBeatPulse = this.beatTrigger;
 		
-		return beatPulse;
+		return this.beatPulse;
 	}
 	
 	/**

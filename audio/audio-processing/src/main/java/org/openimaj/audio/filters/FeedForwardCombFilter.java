@@ -72,7 +72,7 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	 *	@param nSamplesDelay The number of delay samples
 	 *	@param gain The gain of the delayed signal
 	 */
-	public FeedForwardCombFilter( int nSamplesDelay, double gain )
+	public FeedForwardCombFilter( final int nSamplesDelay, final double gain )
 	{
 		super( nSamplesDelay );
 		this.gain = gain;
@@ -87,7 +87,7 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	 *	@param sampleRate The sample rate of the signal in Hz
 	 *	@param gain the gain of the delayed signal
 	 */
-	public FeedForwardCombFilter( double frequency, double sampleRate, double gain )
+	public FeedForwardCombFilter( final double frequency, final double sampleRate, final double gain )
 	{
 		this( (int)(sampleRate/frequency), gain );
 		this.frequency = frequency;
@@ -108,27 +108,27 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample ) throws Exception
+	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{
 		// If we don't yet have a buffer, we must be at the start of
 		// the stream, so we pass the first samples on unedited and store
 		// them for the delayed signal.
-		if( buffer == null )
+		if( this.buffer == null )
 		{
-			buffer = sample.getSampleBuffer();
+			this.buffer = sample.getSampleBuffer();
 			return sample;
 		}
 		
 		// Make a copy of the sample chunk and store it for later.
-		buffer = sample.clone().getSampleBuffer();
+		this.buffer = sample.clone().getSampleBuffer();
 		
 		// We'll side-affect the incoming chunk here
 		double p = 0;
 		double ip = 0;
-		SampleBuffer b = sample.getSampleBuffer();
+		final SampleBuffer b = sample.getSampleBuffer();
 		for( int i = 0; i < b.size(); i++ )
 		{
-			float d = (float)(b.get(i) - gain*buffer.get(i));
+			final float d = (float)(b.get(i) - this.gain*this.buffer.get(i));
 			p += d*d;
 			ip += b.get(i) * b.get(i);
 			b.set( i, d );
@@ -147,7 +147,7 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	 */
 	public double getOutputPower()
 	{
-		return outputPower;
+		return this.outputPower;
 	}
 	
 	/**
@@ -156,7 +156,7 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	 */
 	public double getInputPower()
 	{
-		return inputPower;
+		return this.inputPower;
 	}
 	
 	/**
@@ -165,6 +165,6 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	 */
 	public double getHarmonicity()
 	{
-		return getOutputPower() / (getInputPower()*4);
+		return this.getOutputPower() / (this.getInputPower()*4);
 	}
 }

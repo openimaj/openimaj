@@ -85,10 +85,10 @@ public class BitDepthConverter extends AudioProcessor
 		NEAREST
 		{
 			@Override
-            public SampleChunk process( SampleChunk s, AudioFormat output )
+            public SampleChunk process( final SampleChunk s, final AudioFormat output )
             {
-				SampleBuffer sbin = s.getSampleBuffer();
-				SampleBuffer sbout = SampleBufferFactory.createSampleBuffer( 
+				final SampleBuffer sbin = s.getSampleBuffer();
+				final SampleBuffer sbout = SampleBufferFactory.createSampleBuffer( 
 						output, sbin.size() );
 				sbout.setFormat( output );
 				
@@ -126,8 +126,8 @@ public class BitDepthConverter extends AudioProcessor
 	 *  @param converter The converter to use
 	 *  @param outputFormat The output format to convert to
 	 */
-	public BitDepthConverter( BitDepthConversionAlgorithm converter,
-			AudioFormat outputFormat )
+	public BitDepthConverter( final BitDepthConversionAlgorithm converter,
+			final AudioFormat outputFormat )
     {
 		this.bitDepthConverter = converter;
 		this.outputFormat = outputFormat;
@@ -141,8 +141,8 @@ public class BitDepthConverter extends AudioProcessor
 	 *  @param converter The converter to use
 	 *  @param outputFormat The output format to convert to
 	 */
-	public BitDepthConverter( AudioStream as, BitDepthConversionAlgorithm converter,
-			AudioFormat outputFormat )
+	public BitDepthConverter( final AudioStream as, final BitDepthConversionAlgorithm converter,
+			final AudioFormat outputFormat )
 	{
 		super( as );
 		this.bitDepthConverter = converter;
@@ -155,23 +155,23 @@ public class BitDepthConverter extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample ) throws Exception
+	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{
-		if( sample.getFormat().getSampleRateKHz() != outputFormat.getSampleRateKHz() )
+		if( sample.getFormat().getSampleRateKHz() != this.outputFormat.getSampleRateKHz() )
 			throw new IllegalArgumentException( "The sample rate of the " +
 					"output format is not the same as the sample chunk. Use a " +
 					"sample rate converter first before using the bit depth" +
 					"converter." );
 
-		if( sample.getFormat().getNumChannels() != outputFormat.getNumChannels() )
+		if( sample.getFormat().getNumChannels() != this.outputFormat.getNumChannels() )
 			throw new IllegalArgumentException( "The number of channels in the " +
 					"output format is not the same as the sample chunk. Use a " +
 					"channel converter first before using the bit-depth " +
 					"converter." );
 		
-		if( sample.getFormat().getNBits() == outputFormat.getNBits() )
+		if( sample.getFormat().getNBits() == this.outputFormat.getNBits() )
 			return sample;
 		
-		return bitDepthConverter.process( sample, outputFormat );
+		return this.bitDepthConverter.process( sample, this.outputFormat );
 	}
 }

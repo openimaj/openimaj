@@ -78,7 +78,7 @@ public class MelFilterBank
 	 *	@param lowFreq The lowest frequency covered by the bank
 	 *	@param highFreq The highest frequency covered by the bank
 	 */
-	public MelFilterBank( int nFilters, double lowFreq, double highFreq )
+	public MelFilterBank( final int nFilters, final double lowFreq, final double highFreq )
 	{
 		this.lowestFreq = lowFreq;
 		this.highestFreq = highFreq;
@@ -90,23 +90,23 @@ public class MelFilterBank
 	 */
 	private void createFilterBank()
 	{
-		if( filters == null )
+		if( this.filters == null )
 		{
-			filters = new ArrayList<MelFilter>();
+			this.filters = new ArrayList<MelFilter>();
 			
 			// Convert the range of the filter banks (in Hz) to Mel frequencies
-			double lowFreqMel = AudioUtils.frequencyToMelFrequency( lowestFreq );
-			double highFreqMel = AudioUtils.frequencyToMelFrequency( highestFreq );
-			double melFreqRange = highFreqMel-lowFreqMel;
+			final double lowFreqMel = AudioUtils.frequencyToMelFrequency( this.lowestFreq );
+			final double highFreqMel = AudioUtils.frequencyToMelFrequency( this.highestFreq );
+			final double melFreqRange = highFreqMel-lowFreqMel;
 			
 			// The filters are evenly distributed on the Mel Scale.
-			double melFreqPerFilter = 2*melFreqRange /(double)(nFilters+1);
+			final double melFreqPerFilter = 2*melFreqRange /(double)(this.nFilters+1);
 
 			// Create the Filters
-			for( int filter = 0; filter < nFilters; filter++ )
+			for( int filter = 0; filter < this.nFilters; filter++ )
 			{
-				double mf = melFreqPerFilter * filter / 2 + lowFreqMel;
-				filters.add( new MelFilter( 
+				final double mf = melFreqPerFilter * filter / 2 + lowFreqMel;
+				this.filters.add( new MelFilter( 
 					AudioUtils.melFrequencyToFrequency( mf ), 
 					AudioUtils.melFrequencyToFrequency( mf+melFreqPerFilter ) ) 
 				);
@@ -120,8 +120,8 @@ public class MelFilterBank
 	 */
 	public List<MelFilter> getFilters()
 	{
-		createFilterBank();
-		return filters;
+		this.createFilterBank();
+		return this.filters;
 	}
 	
 	/**
@@ -135,16 +135,16 @@ public class MelFilterBank
 	 *		spectrum
 	 *	@return The Mel frequency coefficients
 	 */
-	public float[][] process( float[][] spectrum, AudioFormat format )
+	public float[][] process( final float[][] spectrum, final AudioFormat format )
 	{
 		// Make sure we've got some filters to apply
-		createFilterBank();
+		this.createFilterBank();
 		
-		float[][] output = new float[spectrum.length][filters.size()];
+		final float[][] output = new float[spectrum.length][this.filters.size()];
 		
 		for( int c = 0; c < spectrum.length; c++ )
-			for( int i = 0; i < filters.size(); i++ )
-				output[c][i] = (float)filters.get(i).process( spectrum[c], format ); 
+			for( int i = 0; i < this.filters.size(); i++ )
+				output[c][i] = (float)this.filters.get(i).process( spectrum[c], format ); 
 		
 		return output;
 	}

@@ -57,7 +57,7 @@ public class VolumeAdjustProcessor extends AudioProcessor
 	 * 	factor as a double.
 	 *  @param factor 
 	 */
-	public VolumeAdjustProcessor( double factor )
+	public VolumeAdjustProcessor( final double factor )
 	{
 		this( factor, null );
 	}
@@ -69,7 +69,7 @@ public class VolumeAdjustProcessor extends AudioProcessor
 	 *	@param factor the factor to apply
 	 *	@param a The audio stream to apply the factor to
 	 */
-	public VolumeAdjustProcessor( double factor, AudioStream a )
+	public VolumeAdjustProcessor( final double factor, final AudioStream a )
 	{
 		super( a );
 		this.factor = factor;
@@ -81,22 +81,22 @@ public class VolumeAdjustProcessor extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample ) throws Exception
+	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{		
 		switch( sample.getFormat().getNBits() )
 		{
 			case 16:
 			{
-				ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
+				final ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
 				for( int x = 0; x < b.limit(); x++ )
-					b.put( x, (short)(b.get( x )*factor) );
+					b.put( x, (short)(b.get( x )*this.factor) );
 				break;
 			}
 			case 8:
 			{
-				ByteBuffer b = sample.getSamplesAsByteBuffer();
+				final ByteBuffer b = sample.getSamplesAsByteBuffer();
 				for( int x = 0; x < b.limit(); x++ )
-					b.put( x, (byte)(b.get( x )*factor) );
+					b.put( x, (byte)(b.get( x )*this.factor) );
 				break;
 			}
 			default:

@@ -55,7 +55,7 @@ public class MelFilter
 	private double endFrequency = 44100;
 	
 	/** The centre frequency (HZ) */
-	private double centreFrequency = (endFrequency - startFrequency)/2; 
+	private double centreFrequency = (this.endFrequency - this.startFrequency)/2; 
 	
 	/** The height of the filter */
 	private double filterAmplitude = 1;
@@ -72,7 +72,7 @@ public class MelFilter
 	 *	@param startFreq The start frequency of the filter
 	 *	@param endFreq The end frequency of the filter
 	 */
-	public MelFilter( double startFreq, double endFreq )
+	public MelFilter( final double startFreq, final double endFreq )
 	{
 		// Ensure the end frequency is greater than the start frequency
 		if( endFreq <= startFreq )
@@ -90,9 +90,9 @@ public class MelFilter
 				 AudioUtils.frequencyToMelFrequency( startFreq )) /2d 
 			);
 		
-		this.filterAmplitude = 2f / (endFrequency - startFrequency);
-		this.lowSlope = filterAmplitude / (centreFrequency - startFrequency);
-		this.highSlope = filterAmplitude / (endFrequency - centreFrequency);
+		this.filterAmplitude = 2f / (this.endFrequency - this.startFrequency);
+		this.lowSlope = this.filterAmplitude / (this.centreFrequency - this.startFrequency);
+		this.highSlope = this.filterAmplitude / (this.endFrequency - this.centreFrequency);
 	}
 	
 	/**
@@ -103,27 +103,26 @@ public class MelFilter
 	 * 	@param format The format of the samples used to create the spectrum 
 	 *	@return The output power for the filter
 	 */
-	public double process( float[] frequencySpectrum, AudioFormat format )
+	public double process( final float[] frequencySpectrum, final AudioFormat format )
 	{
 		double output = 0d;
 		
 		// The size of each bin in Hz (using the first channel as examplar)
-		double binSize = (format.getSampleRateKHz()*1000) 
+		final double binSize = (format.getSampleRateKHz()*1000) 
 				/ (frequencySpectrum.length/2);
 
-		int startBin = (int)(startFrequency / binSize);
-		int endBin = (int)(endFrequency / binSize);
+		final int startBin = (int)(this.startFrequency / binSize);
+		final int endBin = (int)(this.endFrequency / binSize);
 		
-		System.out.println( "Filter "+this );
 		// Now apply the filter to the spectrum and accumulate the output
 		for( int x = startBin; x < endBin; x++ )
 		{
 			// Ensure we're within the bounds of the spectrum
 			if( x >= 0 && x < frequencySpectrum.length )
 			{				
-				double binFreq = binSize * x;
-				double weight = getWeightAt(binFreq);
-				System.out.println( "Weight at bin "+x+" ("+binFreq+"Hz) is "+weight );
+				final double binFreq = binSize * x;
+				final double weight = this.getWeightAt(binFreq);
+//				System.out.println( "Weight at bin "+x+" ("+binFreq+"Hz) is "+weight );
 				output += weight * frequencySpectrum[x];
 			}
 		}
@@ -140,13 +139,13 @@ public class MelFilter
 	 * 	@param maxFreq The maximum frequency (sample rate) 
 	 *	@return The response curve.
 	 */
-	public double[] getResponseCurve( int nSpectrumBins, double maxFreq )
+	public double[] getResponseCurve( final int nSpectrumBins, final double maxFreq )
 	{
-		double[] curve = new double[nSpectrumBins];				
-		double binSize = maxFreq / nSpectrumBins;
+		final double[] curve = new double[nSpectrumBins];				
+		final double binSize = maxFreq / nSpectrumBins;
 		
 		for( int x = 0; x < nSpectrumBins; x++ )
-			curve[x] = getWeightAt( binSize * x);
+			curve[x] = this.getWeightAt( binSize * x);
 		
 		return curve;
 	}
@@ -156,14 +155,14 @@ public class MelFilter
 	 *	@param frequency The frequency (Hz) to get the weight for
 	 *	@return The weight at the given frequency (Hz) for this filter
 	 */
-	public double getWeightAt( double frequency )
+	public double getWeightAt( final double frequency )
 	{
 		// Up or down slope depending on whether we're left or
 		// right of the centre frequency
 		double weight = 0;
-		if( frequency < centreFrequency )
-				weight = filterAmplitude - lowSlope * (centreFrequency - frequency);
-		else	weight = filterAmplitude - highSlope * (frequency - centreFrequency);
+		if( frequency < this.centreFrequency )
+				weight = this.filterAmplitude - this.lowSlope * (this.centreFrequency - frequency);
+		else	weight = this.filterAmplitude - this.highSlope * (frequency - this.centreFrequency);
 
 		if( weight < 0 ) weight = 0;
 		
@@ -215,6 +214,6 @@ public class MelFilter
 	@Override
 	public String toString()
 	{
-		return "mf{"+startFrequency+"->"+endFrequency+"}";
+		return "mf{"+this.startFrequency+"->"+this.endFrequency+"}";
 	}
 }

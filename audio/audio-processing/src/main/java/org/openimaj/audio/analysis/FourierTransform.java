@@ -63,11 +63,11 @@ public class FourierTransform extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-    public SampleChunk process( SampleChunk sample )
+    public SampleChunk process( final SampleChunk sample )
     {
 		// Get a sample buffer object for this data
 		final SampleBuffer sb = sample.getSampleBuffer();
-		return process( sb ).getSampleChunk();
+		return this.process( sb ).getSampleChunk();
     }
 	
 	/**
@@ -75,7 +75,7 @@ public class FourierTransform extends AudioProcessor
 	 *	@param sb The sample buffer
 	 *	@return The sample buffer
 	 */
-	public SampleBuffer process( SampleBuffer sb )
+	public SampleBuffer process( final SampleBuffer sb )
 	{
 		// The number of channels we need to process
 		final int nChannels = sb.getFormat().getNumChannels();
@@ -87,14 +87,14 @@ public class FourierTransform extends AudioProcessor
 		final FloatFFT_1D fft = new FloatFFT_1D( nSamplesPerChannel );
 		
 		// Creates an FFT for each of the channels in turn
-		lastFFT = new float[nChannels][];
+		this.lastFFT = new float[nChannels][];
 		for( int c = 0; c < nChannels; c++ )
 		{
-			lastFFT[c] = new float[ nSamplesPerChannel*2 ];
+			this.lastFFT[c] = new float[ nSamplesPerChannel*2 ];
 			for( int x = 0; x < nSamplesPerChannel; x++ )
-				lastFFT[c][x*2] = (float)(sb.get( x*nChannels+c ));
+				this.lastFFT[c][x*2] = (float)(sb.get( x*nChannels+c ));
 			
-			fft.complexForward( lastFFT[c] );
+			fft.complexForward( this.lastFFT[c] );
 		}
 		
 	    return sb;
@@ -109,8 +109,8 @@ public class FourierTransform extends AudioProcessor
 	 *	@param transformedData The frequency domain data
 	 *	@return A {@link SampleChunk}
 	 */
-	static public SampleChunk inverseTransform( AudioFormat format, 
-			float[][] transformedData )
+	static public SampleChunk inverseTransform( final AudioFormat format, 
+			final float[][] transformedData )
 	{
 		// Check the data has something in it.
 		if( transformedData == null || transformedData.length == 0 )
@@ -165,14 +165,14 @@ public class FourierTransform extends AudioProcessor
 	 */
 	public float[][] getMagnitudes()
 	{
-		float[][] mags = new float[lastFFT.length][];
-		for( int c = 0; c < lastFFT.length; c++ )
+		final float[][] mags = new float[this.lastFFT.length][];
+		for( int c = 0; c < this.lastFFT.length; c++ )
 		{
-			mags[c] = new float[ lastFFT[c].length/4 ];
-			for( int i = 0; i < lastFFT[c].length/4; i++ )
+			mags[c] = new float[ this.lastFFT[c].length/4 ];
+			for( int i = 0; i < this.lastFFT[c].length/4; i++ )
 			{
-				float re = lastFFT[c][i*2];
-				float im = lastFFT[c][i*2+1];
+				final float re = this.lastFFT[c][i*2];
+				final float im = this.lastFFT[c][i*2+1];
 				mags[c][i] = (float)Math.sqrt( re*re + im*im );
 			}
 		}
@@ -190,14 +190,14 @@ public class FourierTransform extends AudioProcessor
 	 */
 	public float[][] getPowerMagnitudes()
 	{
-		float[][] mags = new float[lastFFT.length][];
-		for( int c = 0; c < lastFFT.length; c++ )
+		final float[][] mags = new float[this.lastFFT.length][];
+		for( int c = 0; c < this.lastFFT.length; c++ )
 		{
-			mags[c] = new float[ lastFFT[c].length/2 ];
-			for( int i = 0; i < lastFFT[c].length/2; i++ )
+			mags[c] = new float[ this.lastFFT[c].length/2 ];
+			for( int i = 0; i < this.lastFFT[c].length/2; i++ )
 			{
-				float re = lastFFT[c][i*2];
-				float im = lastFFT[c][i*2+1];
+				final float re = this.lastFFT[c][i*2];
+				final float im = this.lastFFT[c][i*2+1];
 				mags[c][i] = 10f * (float)Math.log10( re*re + im*im );
 			}
 		}
@@ -212,16 +212,16 @@ public class FourierTransform extends AudioProcessor
 	 *	@param scalar The scalar
 	 *	@return Normalised magnitudes.
 	 */
-	public float[][] getNormalisedMagnitudes( float scalar )
+	public float[][] getNormalisedMagnitudes( final float scalar )
 	{
-		float[][] mags = new float[lastFFT.length][];
-		for( int c = 0; c < lastFFT.length; c++ )
+		final float[][] mags = new float[this.lastFFT.length][];
+		for( int c = 0; c < this.lastFFT.length; c++ )
 		{
-			mags[c] = new float[ lastFFT[c].length/2 ];
-			for( int i = 0; i < lastFFT[c].length/2; i++ )
+			mags[c] = new float[ this.lastFFT[c].length/2 ];
+			for( int i = 0; i < this.lastFFT[c].length/2; i++ )
 			{
-				float re = lastFFT[c][i*2] * scalar;
-				float im = lastFFT[c][i*2+1] * scalar;
+				final float re = this.lastFFT[c][i*2] * scalar;
+				final float im = this.lastFFT[c][i*2+1] * scalar;
 				mags[c][i] = re*re + im*im;
 			}
 		}
@@ -236,12 +236,12 @@ public class FourierTransform extends AudioProcessor
 	 */
 	public float[][] getReals()
 	{
-		float[][] reals = new float[lastFFT.length][];
-		for( int c = 0; c < lastFFT.length; c++ )
+		final float[][] reals = new float[this.lastFFT.length][];
+		for( int c = 0; c < this.lastFFT.length; c++ )
 		{
-			reals[c] = new float[ lastFFT[c].length/2 ];
-			for( int i = 0; i < lastFFT[c].length/2; i++ )
-				reals[c][i] = lastFFT[c][i*2];
+			reals[c] = new float[ this.lastFFT[c].length/2 ];
+			for( int i = 0; i < this.lastFFT[c].length/2; i++ )
+				reals[c][i] = this.lastFFT[c][i*2];
 		}
 		
 		return reals;		

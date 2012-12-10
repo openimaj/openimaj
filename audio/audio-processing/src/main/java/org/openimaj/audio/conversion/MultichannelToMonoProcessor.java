@@ -63,10 +63,10 @@ public class MultichannelToMonoProcessor extends AudioProcessor
 	 * 
 	 *	@param a The audio stream to process.
 	 */
-	public MultichannelToMonoProcessor( AudioStream a )
+	public MultichannelToMonoProcessor( final AudioStream a )
 	{
 		super( a );
-		setFormat( getFormat().clone().setNumChannels( 1 ) );
+		this.setFormat( this.getFormat().clone().setNumChannels( 1 ) );
 	}
 	
 	/** 
@@ -74,17 +74,17 @@ public class MultichannelToMonoProcessor extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample )
+	public SampleChunk process( final SampleChunk sample )
 	{
 		if( sample.getFormat().getNumChannels() == 1 )
 			return sample;
 		
 		// Get the samples.
-		SampleBuffer sb = sample.getSampleBuffer();
-		int nChannels = sample.getFormat().getNumChannels();
+		final SampleBuffer sb = sample.getSampleBuffer();
+		final int nChannels = sample.getFormat().getNumChannels();
 		
 		// Create a new buffer for the mono samples.
-		SampleBuffer sb2 = SampleBufferFactory.createSampleBuffer(
+		final SampleBuffer sb2 = SampleBufferFactory.createSampleBuffer(
 			sb.getFormat().clone().setNumChannels( 1 ),
 			sb.size()/nChannels );
 		

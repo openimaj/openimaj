@@ -61,7 +61,7 @@ public class Preemphasiser extends AudioProcessor
 	 * 	Constructor that takes the emphasis factor.
 	 *	@param factor The emphasis factor
 	 */
-	public Preemphasiser( double factor )
+	public Preemphasiser( final double factor )
 	{
 		this.factor = factor;
 	}
@@ -70,7 +70,7 @@ public class Preemphasiser extends AudioProcessor
 	 * 	Chainiable constructor
 	 *	@param as The stream to chain to
 	 */
-	public Preemphasiser( AudioStream as )
+	public Preemphasiser( final AudioStream as )
 	{
 		super( as );
 	}
@@ -80,7 +80,7 @@ public class Preemphasiser extends AudioProcessor
 	 *	@param as The stream to chain to
 	 *	@param factor The emphasis factor
 	 */
-	public Preemphasiser( AudioStream as, double factor )
+	public Preemphasiser( final AudioStream as, final double factor )
 	{
 		this( as );
 		this.factor = factor;
@@ -91,17 +91,17 @@ public class Preemphasiser extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample ) throws Exception
+	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{
-		SampleBuffer sb = sample.getSampleBuffer();
-		int nc = sb.getFormat().getNumChannels();
+		final SampleBuffer sb = sample.getSampleBuffer();
+		final int nc = sb.getFormat().getNumChannels();
 		for( int c = 0; c < nc; c++ )
 		{
 			float previous = 0;
 			for( int s = 1; s < sb.size()/nc; s++ )
 			{
-				float v = sb.get(s*c);
-				sb.set( s*c, (float)(v - factor * previous) );
+				final float v = sb.get(s*c);
+				sb.set( s*c, (float)(v - this.factor * previous) );
 				previous = v;
 			}
 		}

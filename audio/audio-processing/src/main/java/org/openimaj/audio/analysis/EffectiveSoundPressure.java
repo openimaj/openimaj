@@ -61,7 +61,7 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor
 	 * 	@param windowSizeSamples Size of the processing window in samples
 	 * 	@param overlapSamples The overlap of the windows in samples
 	 */
-	public EffectiveSoundPressure( int windowSizeSamples, int overlapSamples )
+	public EffectiveSoundPressure( final int windowSizeSamples, final int overlapSamples )
 	{
 		super( windowSizeSamples );
 		this.setWindowStep( overlapSamples );
@@ -76,8 +76,8 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor
 	 * 	@param windowSizeMillis The window size in milliseconds
 	 * 	@param overlapMillis The overlap between windows in milliseconds
 	 */
-	public EffectiveSoundPressure( AudioStream stream, int windowSizeMillis,
-			int overlapMillis )
+	public EffectiveSoundPressure( final AudioStream stream, final int windowSizeMillis,
+			final int overlapMillis )
 	{
 		super( stream, (int) (stream.getFormat().getSampleRateKHz()
 				* windowSizeMillis * stream.getFormat().getNumChannels()) );
@@ -90,7 +90,7 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor
 	 * 	@see org.openimaj.audio.processor.FixedSizeSampleAudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample ) throws Exception
+	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{
 		long accum = 0;
 		final int size;
@@ -99,7 +99,7 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor
 		{
 			case 16:
 			{
-				ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
+				final ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
 				size = b.limit();
 				for( int x = 0; x < size; x++ )
 					accum += b.get( x ) * b.get( x );
@@ -107,7 +107,7 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor
 			}
 			case 8:
 			{
-				ByteBuffer b = sample.getSamplesAsByteBuffer();
+				final ByteBuffer b = sample.getSamplesAsByteBuffer();
 				size = b.limit();
 				for( int x = 0; x < size; x++ )
 					accum += b.get( x ) * b.get( x );
@@ -117,7 +117,7 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor
 				throw new Exception( "Unsupported Format" );
 		}
 
-		rms = Math.sqrt( (double) accum / (double) size );
+		this.rms = Math.sqrt( (double) accum / (double) size );
 
 		return sample;
 	}
@@ -127,6 +127,6 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor
 	 */
 	public double getEffectiveSoundPressure()
 	{
-		return rms;
+		return this.rms;
 	}
 }

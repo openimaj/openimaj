@@ -53,32 +53,37 @@ public class PowerCepstrumTransform extends AudioProcessor
 	private float[][] lastCepstrum = null;
 
 	@Override
-    public SampleChunk process( SampleChunk sample ) throws Exception
+    public SampleChunk process( final SampleChunk sample ) throws Exception
     {
-		FourierTransform fft = new FourierTransform();
+		final FourierTransform fft = new FourierTransform();
 		
+		//
+		// The squared magnitude of the Fourier transform of the logarithm 
+		// of the squared magnitude of the Fourier transform of a signal...
+		//
 		// Working backwards...
 		// ... the FFT of a signal...
+		//
 		fft.process( sample );
-		float[][] fftCoeffs = fft.getLastFFT();
+		final float[][] fftCoeffs = fft.getLastFFT();
 		
 		// ...the logarithm of the squared magnitude...
-		float logMags[][] = new float[fftCoeffs.length][];
+		final float logMags[][] = new float[fftCoeffs.length][];
 		for( int c = 0; c < fftCoeffs.length; c++ )
 		{
 			logMags[c] = new float[fftCoeffs[c].length/4];
 			for( int i = 0; i < fftCoeffs[c].length/4; i++ )
 			{
 				// Calculate magnitude
-				float re = fftCoeffs[c][i*2];
-				float im = fftCoeffs[c][i*2+1];
+				final float re = fftCoeffs[c][i*2];
+				final float im = fftCoeffs[c][i*2+1];
 				float mag = (float)Math.log(Math.sqrt( re*re + im*im )+1);
 				
 				// Square
 				mag *= mag;
 				
 				// Logarithm
-				float logMag = (float)Math.log( mag );
+				final float logMag = (float)Math.log( mag );
 				
 				// Store
 				logMags[c][i] = logMag;
@@ -87,7 +92,7 @@ public class PowerCepstrumTransform extends AudioProcessor
 		
 		// ... the Fast Fourier (of the log-squared-mags)
 		this.lastCepstrum  = new float[ logMags.length ][];
-		FloatFFT_1D fft2 = new FloatFFT_1D( logMags[0].length/4 );
+		final FloatFFT_1D fft2 = new FloatFFT_1D( logMags[0].length/4 );
 		for( int c = 0; c < logMags.length; c++ )
 		{
 			fft2.complexForward( logMags[c] );
@@ -98,8 +103,8 @@ public class PowerCepstrumTransform extends AudioProcessor
 			for( int i = 0; i < logMags[c].length/4; i++ )
 			{
 				// Calculate magnitude
-				float re = logMags[c][i*2];
-				float im = logMags[c][i*2+1];
+				final float re = logMags[c][i*2];
+				final float im = logMags[c][i*2+1];
 				float mag = (float)Math.log(Math.sqrt( re*re + im*im )+1);
 				
 				// Square

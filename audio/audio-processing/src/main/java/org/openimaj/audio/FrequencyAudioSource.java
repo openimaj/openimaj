@@ -66,8 +66,8 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable {
 		
 	}
 
-	private FourierTransform fftProc;
-	private List<IndependentPair<Listener, Pair<Integer>>> listeners;
+	private final FourierTransform fftProc;
+	private final List<IndependentPair<Listener, Pair<Integer>>> listeners;
 	private float[] fftReal;
 	private float[] fftImag;
 	
@@ -76,40 +76,40 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable {
 	 * Construct on top of given stream
 	 * @param stream the stream
 	 */
-	public FrequencyAudioSource(AudioStream stream) {
+	public FrequencyAudioSource(final AudioStream stream) {
 		super(stream);
-		fftProc = new FourierTransform();
+		this.fftProc = new FourierTransform();
 		this.listeners = new ArrayList<IndependentPair<Listener, Pair<Integer>>>();
 		new Thread(this).start();
 	}
 	
 	@Override
-	public SampleChunk process(SampleChunk sample) throws Exception {
-		fftProc.process(sample);
-		float[] fft = fftProc.getLastFFT()[0];
-		fireFrequencyEvent(fft,sample);
+	public SampleChunk process(final SampleChunk sample) throws Exception {
+		this.fftProc.process(sample);
+		final float[] fft = this.fftProc.getLastFFT()[0];
+		this.fireFrequencyEvent(fft,sample);
 		return sample;
 	}
 
-	private void fireFrequencyEvent(float[] fft,SampleChunk sample) {
-		double binSize = (sample.getFormat().getSampleRateKHz()*1000) / (fft.length/2);
-		if(fftReal == null || fft.length/4 != fftReal.length){
-			fftReal = new float[fft.length/4];
-			fftImag = new float[fft.length/4];
+	private void fireFrequencyEvent(final float[] fft,final SampleChunk sample) {
+		final double binSize = (sample.getFormat().getSampleRateKHz()*1000) / (fft.length/2);
+		if(this.fftReal == null || fft.length/4 != this.fftReal.length){
+			this.fftReal = new float[fft.length/4];
+			this.fftImag = new float[fft.length/4];
 		}
 		// Extract the spectra
 		for( int i = 0; i < fft.length/4; i++ )
 		{
-			float re = fft[i*2];
-			float im = fft[i*2+1];
-			fftReal[i] = re;
-			fftImag[i] = im;
+			final float re = fft[i*2];
+			final float im = fft[i*2+1];
+			this.fftReal[i] = re;
+			this.fftImag[i] = im;
 		}
-		for(IndependentPair<Listener,Pair<Integer>> l : listeners){
-			Pair<Integer> range = l.secondObject();
-			int low = (int) (range.firstObject()/binSize);
-			int high = (int) (range.secondObject()/binSize);
-			l.firstObject().consumeFrequency(fftReal,fftImag,low,high);
+		for(final IndependentPair<Listener,Pair<Integer>> l : this.listeners){
+			final Pair<Integer> range = l.secondObject();
+			final int low = (int) (range.firstObject()/binSize);
+			final int high = (int) (range.secondObject()/binSize);
+			l.firstObject().consumeFrequency(this.fftReal,this.fftImag,low,high);
 		}
 	}
 
@@ -120,15 +120,15 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable {
 	        {
 		        Thread.sleep( 500 );
 		        SampleChunk s = null;
-		        while( (s = nextSampleChunk()) != null ) {
-		        	process( s );
+		        while( (s = this.nextSampleChunk()) != null ) {
+		        	this.process( s );
 		        }
 	        }
-	        catch( InterruptedException e )
+	        catch( final InterruptedException e )
 	        {
 	        	e.printStackTrace();
 	        } 
-	        catch (Exception e) 
+	        catch (final Exception e) 
 	        {
 	        	e.printStackTrace();
 	        }
@@ -140,8 +140,8 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable {
 	 * Add a listener
 	 * @param l the listener
 	 */
-	public void addFrequencyListener(Listener l) {
-		Pair<Integer> range = null;
+	public void addFrequencyListener(final Listener l) {
+		final Pair<Integer> range = null;
 		this.listeners.add(IndependentPair.pair(l,range));
 	}
 	
@@ -150,7 +150,7 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable {
 	 * @param l the listener
 	 * @param requestFrequencyRange the range
 	 */
-	public void addFrequencyListener(Listener l, Pair<Integer> requestFrequencyRange) {
+	public void addFrequencyListener(final Listener l, final Pair<Integer> requestFrequencyRange) {
 		this.listeners.add(IndependentPair.pair(l,requestFrequencyRange));
 	}
 }

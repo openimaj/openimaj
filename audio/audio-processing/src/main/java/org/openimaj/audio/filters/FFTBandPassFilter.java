@@ -85,11 +85,11 @@ public class FFTBandPassFilter extends AudioProcessor
 	 * 	@param highPassHz The frequency of the high pass filter. 
 	 * 	@param lowPassHz The frequency of the low pass filter.
 	 */
-	public FFTBandPassFilter( AudioStream as, int highPassHz, int lowPassHz )
+	public FFTBandPassFilter( final AudioStream as, final int highPassHz, final int lowPassHz )
 	{
 		super( as );
-		ft = new FourierTransform();
-		hap = new HanningAudioProcessor( 1024 );
+		this.ft = new FourierTransform();
+		this.hap = new HanningAudioProcessor( 1024 );
 		this.highPassHz = highPassHz;
 		this.lowPassHz = lowPassHz;
 	}
@@ -100,10 +100,10 @@ public class FFTBandPassFilter extends AudioProcessor
 	 * 	@param highPassHz The frequency of the high pass filter
 	 * 	@param lowPassHz  The frequency of the low pass filter.
 	 */
-	public FFTBandPassFilter( int highPassHz, int lowPassHz )
+	public FFTBandPassFilter( final int highPassHz, final int lowPassHz )
 	{
-		ft = new FourierTransform();
-		hap = new HanningAudioProcessor( 1024 );
+		this.ft = new FourierTransform();
+		this.hap = new HanningAudioProcessor( 1024 );
 		this.highPassHz = highPassHz;
 		this.lowPassHz = lowPassHz;
 	}
@@ -113,25 +113,25 @@ public class FFTBandPassFilter extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	final public SampleChunk process( SampleChunk sample ) throws Exception
+	final public SampleChunk process( final SampleChunk sample ) throws Exception
 	{		
 		// Perform an FFT and get the data.
-		ft.process( hap.process( sample ) );
-		float[][] transformedData = ft.getLastFFT();
+		this.ft.process( this.hap.process( sample ) );
+		final float[][] transformedData = this.ft.getLastFFT();
 		
 		// Number of channels to process
-		int nc = transformedData.length;
+		final int nc = transformedData.length;
 		
 		// If the FFT failed we'll not try to process anything
 		if( nc > 0 )
 		{
 			// The size of each bin in Hz (using the first channel as examplar)
-			double binSize = (sample.getFormat().getSampleRateKHz()*1000) 
+			final double binSize = (sample.getFormat().getSampleRateKHz()*1000) 
 					/ (transformedData[0].length/2);
 			
 			// Work out which bins we will wipe out 
-			int highPassBin = (int)Math.floor( highPassHz / binSize );
-			int lowPassBin  = (int)Math.ceil(  lowPassHz  / binSize );
+			final int highPassBin = (int)Math.floor( this.highPassHz / binSize );
+			final int lowPassBin  = (int)Math.ceil(  this.lowPassHz  / binSize );
 						
 			// Loop through the channels.
 			for( int c = 0; c < nc; c++ )
@@ -143,12 +143,12 @@ public class FFTBandPassFilter extends AudioProcessor
 			}
 			
 			// Do the inverse transform from frequency to time.
-			SampleChunk s = FourierTransform.inverseTransform( 
+			final SampleChunk s = FourierTransform.inverseTransform( 
 					sample.getFormat(), transformedData );
 			
-			return processSamples( s );
+			return this.processSamples( s );
 		}
-		else	return processSamples( sample );
+		else	return this.processSamples( sample );
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class FFTBandPassFilter extends AudioProcessor
 	 *	@param sc The band-filtered samples
 	 * 	@return Processed samples 
 	 */
-	public SampleChunk processSamples( SampleChunk sc )
+	public SampleChunk processSamples( final SampleChunk sc )
 	{
 		return sc;
 	}

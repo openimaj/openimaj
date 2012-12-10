@@ -83,48 +83,48 @@ public class SampleRateConverter extends AudioProcessor
 		LINEAR_INTERPOLATION
 		{
 			@Override
-            public SampleChunk process( SampleChunk s, AudioFormat output)
+            public SampleChunk process( final SampleChunk s, final AudioFormat output)
             {
-				AudioFormat input = s.getFormat();
+				final AudioFormat input = s.getFormat();
 				
 				// Check to see if the input and output are the same
 				if( input.getSampleRateKHz() == output.getSampleRateKHz() )
 					return s;
 				
 				// Work out the size of the output sample chunk
-				double scalar = input.getSampleRateKHz() / output.getSampleRateKHz();
-				SampleBuffer sbin = s.getSampleBuffer();
-				double size = sbin.size() / scalar;
+				final double scalar = input.getSampleRateKHz() / output.getSampleRateKHz();
+				final SampleBuffer sbin = s.getSampleBuffer();
+				final double size = sbin.size() / scalar;
 				
-				if( sbout == null || sbout.size() != (int)size )
+				if( this.sbout == null || this.sbout.size() != (int)size )
 				{
-					sbout = SampleBufferFactory.createSampleBuffer( 
+					this.sbout = SampleBufferFactory.createSampleBuffer( 
 						output, (int)size );
-					sbout.setFormat( output );
+					this.sbout.setFormat( output );
 				}
 				
 				// If the input format has a greater sample rate than the
 				// output format - down sampling (scalar > 1)
 				if( scalar > 1 )
 				{
-					for( int i = 0; i < sbout.size(); i++ )
-						sbout.set( i, sbin.get( (int)(i * scalar) ) );
-					return sbout.getSampleChunk();
+					for( int i = 0; i < this.sbout.size(); i++ )
+						this.sbout.set( i, sbin.get( (int)(i * scalar) ) );
+					return this.sbout.getSampleChunk();
 				}
 				// If the input format has a sample rate less than that
 				// of the output - up sampling (scalar < 1)
 				else
 				{
 					// Linear interpolate each sample value
-					for( int i = 0; i < sbout.size()-1; i++ )
+					for( int i = 0; i < this.sbout.size()-1; i++ )
 					{
-						int inputSampleX = (int)(i * scalar);
-						sbout.set( i, Interpolation.lerp( (float)(i*scalar), 
+						final int inputSampleX = (int)(i * scalar);
+						this.sbout.set( i, Interpolation.lerp( (float)(i*scalar), 
 								inputSampleX, sbin.get(inputSampleX), 
 								inputSampleX+1, sbin.get(inputSampleX+1) ) );
 					}
-					sbout.set( sbout.size()-1, sbin.get(sbin.size()-1) );
-					return sbout.getSampleChunk();
+					this.sbout.set( this.sbout.size()-1, sbin.get(sbin.size()-1) );
+					return this.sbout.getSampleChunk();
 				}
             }			
 		};
@@ -157,8 +157,8 @@ public class SampleRateConverter extends AudioProcessor
 	 *  @param converter The converter to use
 	 *  @param outputFormat The output format to convert to
 	 */
-	public SampleRateConverter( SampleRateConversionAlgorithm converter,
-			AudioFormat outputFormat )
+	public SampleRateConverter( final SampleRateConversionAlgorithm converter,
+			final AudioFormat outputFormat )
     {
 		this.sampleConverter = converter;
 		this.outputFormat = outputFormat;
@@ -172,8 +172,8 @@ public class SampleRateConverter extends AudioProcessor
 	 *  @param converter The converter to use
 	 *  @param outputFormat The output format to convert to
 	 */
-	public SampleRateConverter( AudioStream as, SampleRateConversionAlgorithm converter,
-			AudioFormat outputFormat )
+	public SampleRateConverter( final AudioStream as, final SampleRateConversionAlgorithm converter,
+			final AudioFormat outputFormat )
 	{
 		super( as );
 		this.sampleConverter = converter;
@@ -186,23 +186,23 @@ public class SampleRateConverter extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample ) throws Exception
+	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{
-		if( sample.getFormat().getNBits() != outputFormat.getNBits() )
+		if( sample.getFormat().getNBits() != this.outputFormat.getNBits() )
 			throw new IllegalArgumentException( "The number of bits in the " +
 					"output format is not the same as the sample chunk. Use a " +
 					"resampling conversion first before using the sample-rate " +
 					"converter." );
 
-		if( sample.getFormat().getNumChannels() != outputFormat.getNumChannels() )
+		if( sample.getFormat().getNumChannels() != this.outputFormat.getNumChannels() )
 			throw new IllegalArgumentException( "The number of channels in the " +
 					"output format is not the same as the sample chunk. Use a " +
 					"channel converter first before using the sample-rate " +
 					"converter." );
 		
-		if( sample.getFormat().getSampleRateKHz() == outputFormat.getSampleRateKHz() )
+		if( sample.getFormat().getSampleRateKHz() == this.outputFormat.getSampleRateKHz() )
 			return sample;
 		
-		return sampleConverter.process( sample, outputFormat );
+		return this.sampleConverter.process( sample, this.outputFormat );
 	}
 }

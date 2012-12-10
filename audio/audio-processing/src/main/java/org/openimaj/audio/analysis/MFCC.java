@@ -36,10 +36,13 @@ import java.util.Arrays;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
+import org.openimaj.audio.analysis.MFCC.MFCCFeatureVector;
 import org.openimaj.audio.filters.HanningAudioProcessor;
 import org.openimaj.audio.filters.MelFilterBank;
 import org.openimaj.audio.samples.FloatSampleBuffer;
 import org.openimaj.audio.samples.SampleBuffer;
+import org.openimaj.feature.FeatureExtractor;
+import org.openimaj.feature.FloatFV;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
@@ -58,19 +61,48 @@ import org.openimaj.util.array.ArrayUtils;
  *  @created 23 Jul 2012
  *	@version $Author$, $Revision$, $Date$
  */
-public class MFCC
+public class MFCC implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
 {
+	/**
+	 * 	A feature vector class for MFCCs
+	 *
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *  @created 6 Dec 2012
+	 *	@version $Author$, $Revision$, $Date$
+	 */
+	public static class MFCCFeatureVector extends FloatFV
+	{
+		/** */
+		private static final long serialVersionUID = 1L;
+		
+		/** The number of channels in the fv */
+		public int nChans;
+
+		/**
+		 *	Construct a feature vector from the mfccs 
+		 *	@param mfcc The mfccs [chan][coeff]
+		 */
+		public MFCCFeatureVector( final float[][] mfcc )
+		{
+			super( ArrayUtils.reshape( mfcc ) );
+			this.nChans = mfcc.length;
+		}
+	}
+	
+	/** Whether to debug the class */
+	private static final boolean DEBUG = false;
+	
 	/** The Fourier transform processor */
-	private FourierTransform fft = new FourierTransform();
+	private final FourierTransform fft = new FourierTransform();
 	
 	/** The Hanning window processor */
-	private HanningAudioProcessor hanning = new HanningAudioProcessor( 1024 );
+	private final HanningAudioProcessor hanning = new HanningAudioProcessor( 1024 );
 	
 	/** The sum of the Hanning window processor */
 	private double sum = -1;
 	
 	/** The number of coefficients to get */
-	private int nCoeffs = 20;
+	private final int nCoeffs = 20;
 	
 	/**
 	 *	Default constructor
@@ -95,9 +127,9 @@ public class MFCC
 	 * 	@param samples The sample chunk to generate MFCC for
 	 *	@return The MFCC coefficients for each channel
 	 */
-	public float[][] calculateMFCC( SampleChunk samples )
+	public float[][] calculateMFCC( final SampleChunk samples )
 	{
-		return calculateMFCC( ArrayUtils.normalise( 
+		return this.calculateMFCC( ArrayUtils.normalise( 
 				samples.getSampleBuffer().asDoubleArray() ), 
 				samples.getFormat() );
 	}
@@ -121,37 +153,45 @@ public class MFCC
 	 */
 	public float[][] calculateMFCC( final double[] samples, final AudioFormat format )
 	{
-		if( sum == -1 )
-			sum = hanning.getWindowSum( samples.length, format.getNumChannels() );
+		// Lazily calculate the hanning window sum
+		if( this.sum == -1 )
+			this.sum = this.hanning.getWindowSum( samples.length, format.getNumChannels() );
 		
 		// Create a non-scaling buffer
-		FloatSampleBuffer sb = new FloatSampleBuffer( samples, format );
+		final FloatSampleBuffer sb = new FloatSampleBuffer( samples, format );
 		
 		// Convert to db power
 		sb.multiply( Math.pow( 10, 96/20 ) );
 
 		// Weight the samples with a Hanning window
-		SampleBuffer windowedSamples = hanning.process( sb );
+		final SampleBuffer windowedSamples = this.hanning.process( sb );
 		
 		// FFT the windowed samples
-		fft.process( windowedSamples );
-		float[][] lastFFT = fft.getLastFFT();
+		this.fft.process( windowedSamples );
+		final float[][] lastFFT = this.fft.getLastFFT();
 
-		System.out.println( "FFT: "+Arrays.deepToString( lastFFT ) );
-		System.out.println( "Window function sum: "+sum );
+		if( MFCC.DEBUG )
+		{
+			System.out.println( "FFT: "+Arrays.deepToString( lastFFT ) );
+			System.out.println( "Window function sum: "+this.sum );
+		}
 		
 		// Normalise Power FFT
-		float[][] powerSpectrum = fft.getNormalisedMagnitudes( 2f*(float)sum );
+		final float[][] powerSpectrum = this.fft.getNormalisedMagnitudes( 2f*(float)this.sum );
 		
-		System.out.println( "Size of power spectrum: "+powerSpectrum[0].length );		
-		System.out.println( "PowerSpectrum: "+Arrays.deepToString( powerSpectrum ) );
+		if( MFCC.DEBUG )
+		{
+			System.out.println( "Size of power spectrum: "+powerSpectrum[0].length );		
+			System.out.println( "PowerSpectrum: "+Arrays.deepToString( powerSpectrum ) );
+		}
 		
 		// Apply Mel-filters
-		int nFilters = 40;
-		float[][] melPowerSpectrum = new MelFilterBank( nFilters, 20, 16000 )
+		final int nFilters = 40;
+		final float[][] melPowerSpectrum = new MelFilterBank( nFilters, 20, 16000 )
 							.process( powerSpectrum, format );
 
-		System.out.println( "MelPowerSpectrum: "+Arrays.deepToString( melPowerSpectrum ) );
+		if( MFCC.DEBUG )
+			System.out.println( "MelPowerSpectrum: "+Arrays.deepToString( melPowerSpectrum ) );
 		
 		// Convert to dB
 		for( int c = 0; c < melPowerSpectrum.length; c++ )
@@ -159,27 +199,38 @@ public class MFCC
 				melPowerSpectrum[c][i] = (float)(10 * Math.log10( 
 						Math.max( melPowerSpectrum[c][i], 1 ) ) );
 
-		System.out.println( "MelPowerSpectrum(db): "+Arrays.deepToString( melPowerSpectrum ) );
-		System.out.println( "Size of Mel Power Cepstrum: "+melPowerSpectrum[0].length );
+		if( MFCC.DEBUG )
+		{
+			System.out.println( "MelPowerSpectrum(db): "+Arrays.deepToString( melPowerSpectrum ) );
+			System.out.println( "Size of Mel Power Cepstrum: "+melPowerSpectrum[0].length );
+		}
 		
 		// DCT to get MFCC
 //		FloatDCT_1D dct = new FloatDCT_1D( melPowerSpectrum[0].length );
 //		for( int c = 0; c < melPowerSpectrum.length; c++ )
 //			coeffs[c] = dct.forward( melPowerSpectrum[c], false );
 
-	    double k = Math.PI/nFilters;
-	    double w1 = 1.0/( Math.sqrt( nFilters ) );
-	    double w2 = Math.sqrt( 2.0 / nFilters);
+	    final double k = Math.PI/nFilters;
+	    final double w1 = 1.0/( Math.sqrt( nFilters ) );
+	    final double w2 = Math.sqrt( 2.0 / nFilters);
 
-		float[][] coeffs = new float[melPowerSpectrum.length][nCoeffs];
+		final float[][] coeffs = new float[melPowerSpectrum.length][this.nCoeffs];
 		for( int c = 0; c < melPowerSpectrum.length; c++ )
-			for( int cc = 0; cc < nCoeffs; cc++ )
+			for( int cc = 0; cc < this.nCoeffs; cc++ )
 				for( int f = 0; f < melPowerSpectrum[c].length; f++ )
 					coeffs[c][cc] += melPowerSpectrum[c][f] *
 							(cc==0?w1:w2) * Math.cos( k*cc * ( f + 0.5d ) );
 						
 		
-		System.out.println( "Number of coefficients: "+coeffs[0].length );
+		if( MFCC.DEBUG )
+			System.out.println( "Number of coefficients: "+coeffs[0].length );
+		
 		return coeffs;
+	}
+
+	@Override
+	public MFCCFeatureVector extractFeature( final SampleChunk object )
+	{
+		return new MFCCFeatureVector( this.calculateMFCC( object ) );
 	}
 }

@@ -56,7 +56,7 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 * 	Default constructor for non chainable processing.
 	 * 	@param sizeRequired Size of the window required 
 	 */
-	public HanningAudioProcessor( int sizeRequired )
+	public HanningAudioProcessor( final int sizeRequired )
 	{
 		super( sizeRequired );
 	}
@@ -67,7 +67,7 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 *  @param stream The audio stream to process
 	 *  @param sizeRequired The size of window required.
 	 */
-	public HanningAudioProcessor( AudioStream stream, int sizeRequired )
+	public HanningAudioProcessor( final AudioStream stream, final int sizeRequired )
     {
 	    super( stream, sizeRequired );
     }
@@ -79,7 +79,7 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 */
 	private void generateCosTableCache( final SampleChunk sample )
 	{
-		generateCosTableCache( 
+		this.generateCosTableCache( 
 				sample.getNumberOfSamples()/sample.getFormat().getNumChannels(), 
 				sample.getFormat().getNumChannels() );
 	}
@@ -92,10 +92,10 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	private void generateCosTableCache( final int length, final int nc )
 	{
 		final int ns = length;
-		cosTable = new double[ length ];
+		this.cosTable = new double[ length ];
 		for( int n = 0; n < ns; n++ )
 			for( int c = 0; c < nc; c++ )
-				cosTable[n*nc+c] = 0.5*(1-Math.cos((2*Math.PI*n)/ns));
+				this.cosTable[n*nc+c] = 0.5*(1-Math.cos((2*Math.PI*n)/ns));
 	}
 	
 	/**
@@ -107,16 +107,16 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 *  @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	final public SampleChunk process( SampleChunk sample )
+	final public SampleChunk process( final SampleChunk sample )
 	{
 		if( sample == null ) return null;
-		if( cosTable == null )
-			generateCosTableCache( sample );
+		if( this.cosTable == null )
+			this.generateCosTableCache( sample );
 		
 		// Apply the Hanning weights
-		process( sample.getSampleBuffer() );
+		this.process( sample.getSampleBuffer() );
 		
-		return processSamples( sample );
+		return this.processSamples( sample );
 	}
 	
 	/**
@@ -124,20 +124,18 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 *	@param b The sample buffer
 	 *	@return The sample buffer
 	 */
-	final public SampleBuffer process( SampleBuffer b )
+	final public SampleBuffer process( final SampleBuffer b )
 	{
-		System.out.println( b );
-		
 		final int nc = b.getFormat().getNumChannels();
-		if( cosTable == null )
-			generateCosTableCache( b.size()/nc, nc );
+		if( this.cosTable == null )
+			this.generateCosTableCache( b.size()/nc, nc );
 
 		for( int c = 0; c < nc; c++ )
 		{
 			for( int n = 0; n < b.size()/nc; n++ )
 			{
-				float x = b.get(n*nc+c);
-				float v = (float)(x * cosTable[n*nc+c]);
+				final float x = b.get(n*nc+c);
+				final float v = (float)(x * this.cosTable[n*nc+c]);
 				b.set( n*nc+c, v );
 			}
 		}
@@ -151,7 +149,7 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 *	@param sample The samples to process
 	 *	@return The processed samples
 	 */
-	public SampleChunk processSamples( SampleChunk sample )
+	public SampleChunk processSamples( final SampleChunk sample )
 	{
 		return sample;
 	}
@@ -161,9 +159,9 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 * 	@param samples A representative sample 
 	 *	@return The sum of the hanning window
 	 */
-	public double getWindowSum( SampleChunk samples )
+	public double getWindowSum( final SampleChunk samples )
     {
-		return getWindowSum( 
+		return this.getWindowSum( 
 				samples.getNumberOfSamples() / samples.getFormat().getNumChannels(),  
 				samples.getFormat().getNumChannels() );
     }
@@ -176,12 +174,12 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 */
 	public double getWindowSum( final int length, final int numChannels )
 	{
-		if( cosTable == null )
-			generateCosTableCache( length, numChannels );
+		if( this.cosTable == null )
+			this.generateCosTableCache( length, numChannels );
 		
 		double sum = 0;
-		for( int i = 0; i < cosTable.length; i += numChannels )
-			sum += cosTable[i];
+		for( int i = 0; i < this.cosTable.length; i += numChannels )
+			sum += this.cosTable[i];
 		return sum;
     }
 	
@@ -191,6 +189,6 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 */
 	public double[] getWeights()
 	{
-		return cosTable;
+		return this.cosTable;
 	}
 }

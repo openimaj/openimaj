@@ -30,34 +30,35 @@
 /**
  * 
  */
-package org.openimaj.audio.filters;
+package org.openimaj.audio.analysis;
 
 import org.openimaj.audio.SampleChunk;
+import org.openimaj.audio.filters.VolumeAdjustProcessor;
 import org.openimaj.audio.processor.AudioProcessor;
+import org.openimaj.audio.samples.SampleBuffer;
 
 /**
- *	Uses a {@link MusicalNoteFilterBank} to determine the power output of
- *	the notes of a western scale over the frame. It calculates the power
- *	difference between successive frames to determine whether a new note
- *	has been detected.
+ *	Calculates the scalar necessary to achieve peak value of the loudest part of
+ *	the given input signal. This scalar can be retrieved using the 
+ *	{@link #getVolumeScalar()} method which will return the scalar as it
+ *	has currently been calculated for the stream which has passed. This will
+ *	only return the correct value for the whole audio stream once the whole
+ *	audio stream has passed through the processor. This processor will not
+ *	perform attenuation - that is, the volume scalar will always be greater
+ *	than 1 (and positive).
+ *	<p>
+ *	The value of the peak volume scalar is compatible with the 
+ *	{@link VolumeAdjustProcessor} which can adjust the volume to the maximum
+ *	peak value.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *  @created 22 May 2012
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *  @created 10 Dec 2012
  *	@version $Author$, $Revision$, $Date$
  */
-public class MusicalNoteOnsetDetector extends AudioProcessor
+public class PeakNormalisationCalculator extends AudioProcessor
 {
-	/** The filter bank to use */
-	private final MusicalNoteFilterBank filterBank = new MusicalNoteFilterBank( 60, 72, null );
-	
-	/** The previous calculated output power */
-	private double previousPower = 0;
-	
-	/** Whether an onset was detected during the last process */
-	private boolean onsetDetected = false;
-	
-	/** The threshold over which onset is detected */
-	private final double threshold = 100;
+	/** The peak scalar as it's been calcultated so far in the stream */
+	private float scalar = Float.MAX_VALUE;
 	
 	/** 
 	 *	{@inheritDoc}
@@ -66,26 +67,26 @@ public class MusicalNoteOnsetDetector extends AudioProcessor
 	@Override
 	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{
-		this.filterBank.process( sample );
-		final double p = this.filterBank.getOutputPower();
+		// This allows us to retrieve samples that are scaled to 0..1 float values
+		final SampleBuffer sb = sample.getSampleBuffer();
 		
-		final double delta = Math.abs( this.previousPower - p );
-		
-		if( delta > this.threshold )
-			this.onsetDetected = true;
-		
-		this.previousPower = p;
+		for( final float s : sb )
+			if( Math.abs(s) * this.scalar > 1 )
+				this.scalar = 1/Math.abs(s);
 		
 		return sample;
 	}
 
 	/**
-	 * 	Returns whether an onset was detected during the last processing cycle.
-	 *	@return TRUE if an onset was detected during the last processing cycle;
-	 *		FALSE otherwise.
+	 * 	Returns the calculated peak scalar as it currently stands in the stream.
+	 * 	If no audio has passed through the processor, this will return
+	 * 	{@link Float#MAX_VALUE} otherwise the value will always be positive
+	 * 	and greater than 1.
+	 * 
+	 *	@return	The calculated peak scalar.
 	 */
-	public boolean hasOnsetBeenDetected()
+	public float getVolumeScalar()
 	{
-		return this.onsetDetected;
+		return this.scalar;
 	}
 }

@@ -43,7 +43,7 @@ import org.openimaj.audio.util.WesternScaleNote;
 /**
  * 	A filter bank for musical note detection. Uses a set of comb filters
  * 	tuned to the notes that are to be detected.
- * 
+ *
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
  *	@created 30 Apr 2012
@@ -73,7 +73,7 @@ public class MusicalNoteFilterBank extends AudioProcessor
 	 * 
 	 * 	@param af The audio format of the filter bank
 	 */
-	public MusicalNoteFilterBank( AudioFormat af )
+	public MusicalNoteFilterBank( final AudioFormat af )
     {
 		this( 60, 72, af );
     }
@@ -88,7 +88,7 @@ public class MusicalNoteFilterBank extends AudioProcessor
 	 *  @param endOfRange The end MIDI note number to detect.
 	 *  @param af The format
 	 */
-	public MusicalNoteFilterBank( int startOfRange, int endOfRange, AudioFormat af )
+	public MusicalNoteFilterBank( final int startOfRange, final int endOfRange, final AudioFormat af )
     {
 		this.startOfRange = startOfRange;
 		this.endOfRange = endOfRange;
@@ -103,15 +103,15 @@ public class MusicalNoteFilterBank extends AudioProcessor
 	 */
 	private void setupFilters()
 	{
-		filters = new ArrayList<FeedForwardCombFilter>();
-		for( int i = startOfRange; i < endOfRange; i++ )
+		this.filters = new ArrayList<FeedForwardCombFilter>();
+		for( int i = this.startOfRange; i < this.endOfRange; i++ )
 		{
 			// Get the frequency of the given note
-			double f = WesternScaleNote.createNote( i ).frequency;
+			final double f = WesternScaleNote.createNote( i ).frequency;
 			
 			// Add a feed-forward comb filter for that frequency
-			filters.add( new FeedForwardCombFilter( f, 
-					format.getSampleRateKHz()*1000d, 1f ) );
+			this.filters.add( new FeedForwardCombFilter( f, 
+					this.format.getSampleRateKHz()*1000d, 1f ) );
 		}
     }
 
@@ -120,20 +120,20 @@ public class MusicalNoteFilterBank extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample ) throws Exception
+	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{
-		if( filters == null )
+		if( this.filters == null )
 		{
 			this.format = sample.getFormat();
 			this.setupFilters();
 		}
 		
-		outputPower = 0;
-		for( FeedForwardCombFilter filter : filters )
+		this.outputPower = 0;
+		for( final FeedForwardCombFilter filter : this.filters )
 		{
 			// Process the sample with each filter
 			filter.process( sample );
-			outputPower += filter.getOutputPower();
+			this.outputPower += filter.getOutputPower();
 		}
 		
 		return sample;

@@ -71,8 +71,8 @@ public class AudioMixer extends AudioStream
 	}
 	
 	/** A list of the audio streams to mix in this mixer */
-	private List<AudioStream> streams = new ArrayList<AudioStream>();
-	private List<Float> gain = new ArrayList<Float>(); 
+	private final List<AudioStream> streams = new ArrayList<AudioStream>();
+	private final List<Float> gain = new ArrayList<Float>(); 
 	
 	/** The currently processed sample in the mixer */
 	private SampleChunk currentSample = null;
@@ -93,7 +93,7 @@ public class AudioMixer extends AudioStream
 	private AudioTimecode timecode = null;
 	
 	/** Listeners of the mix event */
-	private List<MixEventListener> mixEventListeners = 
+	private final List<MixEventListener> mixEventListeners = 
 		new ArrayList<MixEventListener>();
 	
 	/**
@@ -103,22 +103,22 @@ public class AudioMixer extends AudioStream
 	 * 
 	 * 	@param af The {@link AudioFormat}
 	 */
-	public AudioMixer( AudioFormat af )
+	public AudioMixer( final AudioFormat af )
 	{
 		this.setFormat( af );
 		
 		// Create the current sample chunk that we'll reuse
-		currentSample = new SampleChunk( af );
-		currentSample.setSamples( new byte[bufferSize*af.getNumChannels()] );
+		this.currentSample = new SampleChunk( af );
+		this.currentSample.setSamples( new byte[this.bufferSize*af.getNumChannels()] );
 		
-		timecode = new AudioTimecode( 0 );
+		this.timecode = new AudioTimecode( 0 );
 	}
 	
 	/**
 	 * 	The timecode object
 	 *	@param tc The timecode object.
 	 */
-	public void setTimecodeObject( AudioTimecode tc )
+	public void setTimecodeObject( final AudioTimecode tc )
 	{
 		this.timecode = tc;
 	}
@@ -131,7 +131,7 @@ public class AudioMixer extends AudioStream
 	 * 	@param as The {@link AudioStream} to add to this mixer.
 	 * 	@param defaultGain The default gain of this stream.
 	 */
-	public void addStream( AudioStream as, float defaultGain )
+	public void addStream( final AudioStream as, final float defaultGain )
 	{
 		if( as.format.equals( this.getFormat() ) )
 		{
@@ -154,12 +154,12 @@ public class AudioMixer extends AudioStream
 			
 			// Add the stream wrapped in a fixed size audio processor.
 			this.gain.add( defaultGain );
-			synchronized( streams )
+			synchronized( this.streams )
 			{
-				this.streams.add( new FixedSizeSampleAudioProcessor( stream, bufferSize )
+				this.streams.add( new FixedSizeSampleAudioProcessor( stream, this.bufferSize )
 				{
 					@Override
-					public SampleChunk process(SampleChunk sample)
+					public SampleChunk process(final SampleChunk sample)
 					{
 						return sample;
 					}				
@@ -179,29 +179,29 @@ public class AudioMixer extends AudioStream
 	{
 		// If there are no streams attached to this mixer, then
 		// we return null - end of mixer stream.
-		if( streams.size() == 0 && !alwaysRun )
+		if( this.streams.size() == 0 && !this.alwaysRun )
 			return null;
 		
 		// Set the time the mixer started
-		if( startMillis == -1 )
-			startMillis = System.currentTimeMillis();
+		if( this.startMillis == -1 )
+			this.startMillis = System.currentTimeMillis();
 		
 		// Get the next sample chunk from each stream.
 		final SampleBuffer sb = this.currentSample.getSampleBuffer();
 		SampleBuffer[] chunks = null; 
-		synchronized( streams )
+		synchronized( this.streams )
 		{
-			List<SampleBuffer> chunkList = new ArrayList<SampleBuffer>();
-			for( int stream = 0; stream < streams.size(); stream++ )
+			final List<SampleBuffer> chunkList = new ArrayList<SampleBuffer>();
+			for( int stream = 0; stream < this.streams.size(); stream++ )
 			{
-				final SampleChunk sc = streams.get(stream).nextSampleChunk();
+				final SampleChunk sc = this.streams.get(stream).nextSampleChunk();
 				if( sc != null )
 					chunkList.add( sc.getSampleBuffer() );
 				else	
 				{
 					// Got to the end of the stream, so we'll remove it
-					streams.remove( stream );
-					gain.remove( stream );
+					this.streams.remove( stream );
+					this.gain.remove( stream );
 				}
 			}			
 			chunks = chunkList.toArray( new SampleBuffer[0] ); 
@@ -213,7 +213,7 @@ public class AudioMixer extends AudioStream
 				float Z = 0;
 				for( int stream = 0; stream < chunks.length; stream++ )
 					if( chunks[stream] != null )
-						Z += chunks[stream].get(i) * gain.get(stream);
+						Z += chunks[stream].get(i) * this.gain.get(stream);
 					
 				// Set the value in the new sample buffer
 				sb.set( i, Z );
@@ -221,13 +221,14 @@ public class AudioMixer extends AudioStream
 		}
 		
 		// Fire the mix event
-		for( MixEventListener mel : mixEventListeners )
+		for( final MixEventListener mel : this.mixEventListeners )
 			mel.mix( chunks, sb );
 
 		// Create a SampleChunk for our mix stream
-		SampleChunk sc = sb.getSampleChunk();
-		timecode.setTimecodeInMilliseconds( System.currentTimeMillis() - startMillis );
-		sc.setStartTimecode( timecode );
+		final SampleChunk sc = sb.getSampleChunk();
+		this.timecode.setTimecodeInMilliseconds( System.currentTimeMillis() - 
+				this.startMillis );
+		sc.setStartTimecode( this.timecode );
 		
 		return sc;
 	}
@@ -248,17 +249,18 @@ public class AudioMixer extends AudioStream
 	 * 
 	 *	@param bufferSize The buffer size in samples per channel.
 	 */
-	public void setBufferSize( int bufferSize )
+	public void setBufferSize( final int bufferSize )
 	{
 		this.bufferSize = bufferSize;
-		currentSample.setSamples( new byte[bufferSize*format.getNumChannels()] );
+		this.currentSample.setSamples( new byte[bufferSize*
+		                                        this.format.getNumChannels()] );
 	}
 	
 	/**
 	 * 	Whether to run the mixer when there are no audio streams to mix.
 	 *	@param alwaysRun TRUE to make the mixer always run.
 	 */
-	public void setAlwaysRun( boolean alwaysRun )
+	public void setAlwaysRun( final boolean alwaysRun )
 	{
 		this.alwaysRun = alwaysRun;
 	}
@@ -267,18 +269,18 @@ public class AudioMixer extends AudioStream
 	 * 	Add a mix event listener to this AudioMixer.
 	 *	@param mel The {@link MixEventListener} to add
 	 */
-	public void addMixEventListener( MixEventListener mel )
+	public void addMixEventListener( final MixEventListener mel )
 	{
-		mixEventListeners.add( mel );
+		this.mixEventListeners.add( mel );
 	}
 	
 	/**
 	 * 	Remove the given {@link MixEventListener} from this mixer.
 	 *	@param mel The {@link MixEventListener} to remove
 	 */
-	public void removeMixEventListener( MixEventListener mel )
+	public void removeMixEventListener( final MixEventListener mel )
 	{
-		mixEventListeners.remove( mel );
+		this.mixEventListeners.remove( mel );
 	}
 
 	/**

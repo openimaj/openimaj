@@ -63,23 +63,23 @@ public class Synthesizer extends AudioStream
 		SINE
 		{
 			@Override
-            protected SampleChunk getSampleChunk( int length, double time,
-    				double freq, AudioFormat format )
+            protected SampleChunk getSampleChunk( final int length, final double time,
+    				final double freq, final AudioFormat format )
             {
 				// Work out how many samples per frequency wave
-				double samplesPerWave = format.getSampleRateKHz()*1000d/freq;
+				final double samplesPerWave = format.getSampleRateKHz()*1000d/freq;
 				
 				// Phase offset in samples. (f*t)-floor(f*t) is the part number
 				// of waves at this point (assuming the first wave starts at a 
 				// phase of zero). 
-				double p = 2*Math.PI*((freq*time)-Math.floor(freq*time));
+				final double p = 2*Math.PI*((freq*time)-Math.floor(freq*time));
 				
 				// Create an appropriate sample buffer
-				SampleBuffer sb = SampleBufferFactory.createSampleBuffer( 
+				final SampleBuffer sb = SampleBufferFactory.createSampleBuffer( 
 						format, length );
 				
 				// Fill it with sin waves
-				double z = 2*Math.PI/samplesPerWave;
+				final double z = 2*Math.PI/samplesPerWave;
 				for( int i = 0; i < length; i++ )
 					sb.set( i, (float)(Math.sin( i*z+p )*Integer.MAX_VALUE) );
 				
@@ -93,21 +93,21 @@ public class Synthesizer extends AudioStream
 		SQUARE
 		{
 			@Override
-            protected SampleChunk getSampleChunk( int length, double time,
-    				double freq, AudioFormat format )
+            protected SampleChunk getSampleChunk( final int length, final double time,
+    				final double freq, final AudioFormat format )
             {
-				SampleBuffer sb = SampleBufferFactory.createSampleBuffer( 
+				final SampleBuffer sb = SampleBufferFactory.createSampleBuffer( 
 						format, length );
 
-				double samplesPerWave = format.getSampleRateKHz()*1000d/freq;
+				final double samplesPerWave = format.getSampleRateKHz()*1000d/freq;
 				
 				// phase offset in samples
-				int p = (int)( samplesPerWave *
+				final int p = (int)( samplesPerWave *
 					((freq*time)-Math.floor(freq*time)));
 								
 				for( int i = 0; i < length; i++ )
 				{
-					int x = (i+p) % (int)samplesPerWave;
+					final int x = (i+p) % (int)samplesPerWave;
 					if( x > samplesPerWave/2 )
 							sb.set( i, Integer.MAX_VALUE );
 					else	sb.set( i, Integer.MIN_VALUE );
@@ -123,21 +123,21 @@ public class Synthesizer extends AudioStream
 		SAW
 		{
 			@Override
-            protected SampleChunk getSampleChunk( int length, double time,
-    				double freq, AudioFormat format )
+            protected SampleChunk getSampleChunk( final int length, final double time,
+    				final double freq, final AudioFormat format )
             {
-				SampleBuffer sb = SampleBufferFactory.createSampleBuffer( 
+				final SampleBuffer sb = SampleBufferFactory.createSampleBuffer( 
 						format, length );
 
-				double samplesPerWave = format.getSampleRateKHz()*1000d/freq;
+				final double samplesPerWave = format.getSampleRateKHz()*1000d/freq;
 				
 				// phase offset in samples
-				int p = (int)( samplesPerWave *
+				final int p = (int)( samplesPerWave *
 					((freq*time)-Math.floor(freq*time)));
 								
 				for( int i = 0; i < length; i++ )
 				{
-					int x = (i+p) % (int)samplesPerWave;
+					final int x = (i+p) % (int)samplesPerWave;
 					sb.set( i, (float)(x*(Integer.MAX_VALUE/samplesPerWave)) );
 				}
 				
@@ -164,7 +164,7 @@ public class Synthesizer extends AudioStream
 	private WaveType oscillator = WaveType.SINE;
 	
 	/** Default sample chunk length is 1024 bytes */
-	private int sampleChunkLength = 1024;
+	private final int sampleChunkLength = 1024;
 	
 	/** Default frequency is the standard A4 (440Hz) tuning pitch */
 	private double frequency = 440;
@@ -174,7 +174,7 @@ public class Synthesizer extends AudioStream
 	 */
 	public Synthesizer()
     {
-		setFormat( new AudioFormat( 16, 44.1, 1 ) );
+		this.setFormat( new AudioFormat( 16, 44.1, 1 ) );
     }
 
 	/**
@@ -184,11 +184,11 @@ public class Synthesizer extends AudioStream
 	@Override
     public SampleChunk nextSampleChunk()
     {
-	    SampleChunk x = oscillator.getSampleChunk( sampleChunkLength, 
-	    		currentTime, frequency, format );
+	    final SampleChunk x = this.oscillator.getSampleChunk( this.sampleChunkLength, 
+	    		this.currentTime, this.frequency, this.format );
 	    
-	    currentTime += x.getSampleBuffer().size() / 
-	    	(format.getSampleRateKHz()*1000d);
+	    this.currentTime += x.getSampleBuffer().size() / 
+	    	(this.format.getSampleRateKHz()*1000d);
 	    
 	    return x;
     }
@@ -197,7 +197,7 @@ public class Synthesizer extends AudioStream
 	 * 	Set the frequency at which the synth will generate tones.
 	 *  @param f The frequency
 	 */
-	public void setFrequency( double f )
+	public void setFrequency( final double f )
 	{
 		this.frequency = f;
 	}
@@ -206,7 +206,7 @@ public class Synthesizer extends AudioStream
 	 * 	Set the type of oscillator used to generate tones.
 	 *  @param t The type of oscillator.
 	 */
-	public void setOscillatorType( WaveType t )
+	public void setOscillatorType( final WaveType t )
 	{
 		this.oscillator = t;
 	}
@@ -218,7 +218,7 @@ public class Synthesizer extends AudioStream
 	@Override
     public void reset()
     {
-		currentTime = 0;
+		this.currentTime = 0;
     }
 
 	/**
