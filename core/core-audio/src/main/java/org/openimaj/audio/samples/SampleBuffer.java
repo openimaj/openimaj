@@ -52,7 +52,7 @@ import org.openimaj.audio.SampleChunk;
  * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 23rd November 2011
  */
-public interface SampleBuffer
+public interface SampleBuffer extends Iterable<Float>
 {
 	/**
 	 * 	Get the sample at the given index. The sample will be a float and have

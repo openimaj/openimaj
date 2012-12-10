@@ -32,6 +32,11 @@
  */
 package org.openimaj.audio.samples;
 
+import gnu.trove.iterator.TFloatIterator;
+import gnu.trove.list.array.TFloatArrayList;
+
+import java.util.Iterator;
+
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.util.array.ArrayUtils;
@@ -44,12 +49,14 @@ import org.openimaj.util.array.ArrayUtils;
  * @created 27 Jul 2012
  * @version $Author$, $Revision$, $Date$
  */
-public class FloatSampleBuffer implements SampleBuffer {
+public class FloatSampleBuffer implements SampleBuffer, Iterator<Float> {
 	/** The samples */
 	private float[] samples = null;
 
 	/** The audio format */
 	private AudioFormat format = null;
+
+	private TFloatIterator tfIterator;
 
 	/**
 	 * @param samples
@@ -57,7 +64,7 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 * @param af
 	 *            The audio format of the samples
 	 */
-	public FloatSampleBuffer(float[] samples, AudioFormat af) {
+	public FloatSampleBuffer(final float[] samples, final AudioFormat af) {
 		this.format = af.clone();
 		this.format.setNBits(-1);
 		this.samples = samples;
@@ -70,7 +77,7 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 * @param af
 	 *            The audio format
 	 */
-	public FloatSampleBuffer(double[] samples, AudioFormat af) {
+	public FloatSampleBuffer(final double[] samples, final AudioFormat af) {
 		this(ArrayUtils.doubleToFloat(samples), af);
 	}
 
@@ -80,8 +87,8 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 * @see org.openimaj.audio.samples.SampleBuffer#get(int)
 	 */
 	@Override
-	public float get(int index) {
-		return samples[index];
+	public float get(final int index) {
+		return this.samples[index];
 	}
 
 	/**
@@ -90,8 +97,8 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 * @see org.openimaj.audio.samples.SampleBuffer#set(int, float)
 	 */
 	@Override
-	public void set(int index, float sample) {
-		samples[index] = sample;
+	public void set(final int index, final float sample) {
+		this.samples[index] = sample;
 	}
 
 	/**
@@ -101,7 +108,7 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 */
 	@Override
 	public int size() {
-		return samples.length;
+		return this.samples.length;
 	}
 
 	/**
@@ -111,7 +118,7 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 */
 	@Override
 	public AudioFormat getFormat() {
-		return format;
+		return this.format;
 	}
 
 	/**
@@ -120,9 +127,9 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 * @see org.openimaj.audio.samples.SampleBuffer#setFormat(org.openimaj.audio.AudioFormat)
 	 */
 	@Override
-	public void setFormat(AudioFormat af) {
-		format = af.clone();
-		format.setNBits(-1);
+	public void setFormat(final AudioFormat af) {
+		this.format = af.clone();
+		this.format.setNBits(-1);
 	}
 
 	/**
@@ -151,7 +158,7 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 * @see org.openimaj.audio.samples.SampleBuffer#getSampleChunk(int)
 	 */
 	@Override
-	public SampleChunk getSampleChunk(int channel) {
+	public SampleChunk getSampleChunk(final int channel) {
 		return null;
 	}
 
@@ -162,7 +169,7 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 */
 	@Override
 	public double[] asDoubleArray() {
-		return ArrayUtils.floatToDouble(samples);
+		return ArrayUtils.floatToDouble(this.samples);
 	}
 
 	/**
@@ -171,8 +178,8 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 * @see org.openimaj.audio.samples.SampleBuffer#getUnscaled(int)
 	 */
 	@Override
-	public float getUnscaled(int index) {
-		return get(index);
+	public float getUnscaled(final int index) {
+		return this.get(index);
 	}
 
 	/**
@@ -182,9 +189,9 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 *            The scalar
 	 * @return this object
 	 */
-	public FloatSampleBuffer multiply(double scalar) {
-		for (int i = 0; i < samples.length; i++)
-			set(i, (float) (samples[i] * scalar));
+	public FloatSampleBuffer multiply(final double scalar) {
+		for (int i = 0; i < this.samples.length; i++)
+			this.set(i, (float) (this.samples[i] * scalar));
 		return this;
 	}
 
@@ -195,9 +202,61 @@ public class FloatSampleBuffer implements SampleBuffer {
 	 *            The scalar
 	 * @return this object
 	 */
-	public FloatSampleBuffer add(double scalar) {
-		for (int i = 0; i < samples.length; i++)
-			set(i, (float) (samples[i] + scalar));
+	public FloatSampleBuffer add(final double scalar) {
+		for (int i = 0; i < this.samples.length; i++)
+			this.set(i, (float) (this.samples[i] + scalar));
 		return this;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.lang.Iterable#iterator()
+	 */
+	public Iterator<Float> iterator()
+	{
+		this.tfIterator = this.tf_iterator();
+		return this;
+	}
+	
+	/**	
+	 * 	Returns a trove float iterator
+	 *	@return a trove float iterator
+	 */
+	public TFloatIterator tf_iterator()
+	{
+		final TFloatArrayList l = new TFloatArrayList();
+		for( final float f : this.samples )
+			l.add( f );
+		return l.iterator();
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.util.Iterator#hasNext()
+	 */
+	@Override
+	public boolean hasNext()
+	{
+		return this.tfIterator.hasNext();
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.util.Iterator#next()
+	 */
+	@Override
+	public Float next()
+	{
+		return this.tfIterator.next();
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.util.Iterator#remove()
+	 */
+	@Override
+	public void remove()
+	{
+		this.tfIterator.remove();
 	}
 }

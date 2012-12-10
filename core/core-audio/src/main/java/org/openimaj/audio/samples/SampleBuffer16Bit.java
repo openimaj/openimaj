@@ -35,7 +35,9 @@ package org.openimaj.audio.samples;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.Iterator;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 
@@ -45,7 +47,7 @@ import org.openimaj.audio.SampleChunk;
  * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 23rd November 2011
  */
-public class SampleBuffer16Bit implements SampleBuffer
+public class SampleBuffer16Bit implements SampleBuffer, Iterator<Float>
 {
 	/** The underlying byte array we're wrapping */
 	private byte[] samples = null;
@@ -56,6 +58,8 @@ public class SampleBuffer16Bit implements SampleBuffer
 	/** The audio format of the samples */
 	private AudioFormat format;
 
+	private int iteratorCount;
+
 	/**
 	 * 	Create a new 16-bit sample buffer using the given
 	 * 	samples and the given audio format.
@@ -63,7 +67,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 * 	@param samples The samples to buffer.
 	 * 	@param af The audio format.
 	 */
-	public SampleBuffer16Bit( SampleChunk samples, AudioFormat af )
+	public SampleBuffer16Bit( final SampleChunk samples, final AudioFormat af )
 	{
 		this.format = af;
 		this.shortBuffer = samples.getSamplesAsByteBuffer().asShortBuffer();
@@ -80,7 +84,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 * 	@param af The audio format of the samples
 	 * 	@param nSamples The number of samples
 	 */
-	public SampleBuffer16Bit( AudioFormat af, int nSamples )
+	public SampleBuffer16Bit( final AudioFormat af, final int nSamples )
 	{
 		this.format = af.clone();
 		this.samples = new byte[ nSamples * 2 ];
@@ -108,24 +112,24 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#getSampleChunk(int)
 	 */
 	@Override
-	public SampleChunk getSampleChunk( int channel )
+	public SampleChunk getSampleChunk( final int channel )
 	{
-		if( channel > format.getNumChannels() )
+		if( channel > this.format.getNumChannels() )
 			throw new IllegalArgumentException( "Cannot generate sample chunk " +
 					"for channel "+channel+" as sample only has " + 
-					format.getNumChannels() + " channels." );
+					this.format.getNumChannels() + " channels." );
 		
-		if( channel == 0 && format.getNumChannels() == 1 )
-			return getSampleChunk();
+		if( channel == 0 && this.format.getNumChannels() == 1 )
+			return this.getSampleChunk();
 		
-		byte[] newSamples = new byte[size()*2];
-		ShortBuffer sb = ByteBuffer.wrap( newSamples ).order(
-			format.isBigEndian()?ByteOrder.BIG_ENDIAN:ByteOrder.LITTLE_ENDIAN ).
+		final byte[] newSamples = new byte[this.size()*2];
+		final ShortBuffer sb = ByteBuffer.wrap( newSamples ).order(
+			this.format.isBigEndian()?ByteOrder.BIG_ENDIAN:ByteOrder.LITTLE_ENDIAN ).
 			asShortBuffer();
-		for( int i = 0; i < size()/format.getNumChannels(); i++ )
-			sb.put( i, shortBuffer.get( i*format.getNumChannels() + channel ) );
+		for( int i = 0; i < this.size()/this.format.getNumChannels(); i++ )
+			sb.put( i, this.shortBuffer.get( i*this.format.getNumChannels() + channel ) );
 		
-		AudioFormat af = format.clone();
+		final AudioFormat af = this.format.clone();
 		af.setNumChannels( 1 );
 		return new SampleChunk( newSamples, af );
 	}
@@ -135,13 +139,13 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#get(int)
 	 */
 	@Override
-	public float get( int index ) 
+	public float get( final int index ) 
 	{
-		if( index >= shortBuffer.limit() )
+		if( index >= this.shortBuffer.limit() )
 			return 0;
 		
 		// Convert the short to an integer
-		return (float)shortBuffer.get(index) * Integer.MAX_VALUE / Short.MAX_VALUE;
+		return (float)this.shortBuffer.get(index) * Integer.MAX_VALUE / Short.MAX_VALUE;
 	}
 
 	/**
@@ -149,9 +153,9 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#getUnscaled(int)
 	 */
 	@Override
-	public float getUnscaled( int index )
+	public float getUnscaled( final int index )
 	{
-		return shortBuffer.get(index);
+		return this.shortBuffer.get(index);
 	}
 	
 	/**
@@ -159,7 +163,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#set(int, float)
 	 */
 	@Override
-	public void set( int index, float sample ) 
+	public void set( final int index, final float sample ) 
 	{
 		// Clipping
 		float s = sample;
@@ -168,7 +172,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 		if( s < Integer.MIN_VALUE )
 			s = Integer.MIN_VALUE;
 		
-		shortBuffer.put( index, (short)(sample  * Short.MAX_VALUE / Integer.MAX_VALUE) );
+		this.shortBuffer.put( index, (short)(sample  * Short.MAX_VALUE / Integer.MAX_VALUE) );
 	}
 
 	/**
@@ -178,7 +182,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	@Override
 	public int size() 
 	{ 
-		return shortBuffer.limit();
+		return this.shortBuffer.limit();
 	}
 	
 	/**
@@ -188,7 +192,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	@Override
 	public AudioFormat getFormat()
 	{
-		return format;
+		return this.format;
 	}
 
 	/**
@@ -196,7 +200,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#setFormat(org.openimaj.audio.AudioFormat)
 	 */
 	@Override
-	public void setFormat( AudioFormat af )
+	public void setFormat( final AudioFormat af )
 	{
 		this.format = af;
 	}
@@ -208,9 +212,52 @@ public class SampleBuffer16Bit implements SampleBuffer
 	@Override
 	public double[] asDoubleArray()
 	{
-		double[] d = new double[size()];
-		for( int i = 0; i < size(); i++ )
-			d[i] = get(i);
+		final double[] d = new double[this.size()];
+		for( int i = 0; i < this.size(); i++ )
+			d[i] = this.get(i);
 		return d;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.lang.Iterable#iterator()
+	 */
+	@Override
+	public Iterator<Float> iterator()
+	{
+		this.iteratorCount = 0;
+		return this;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.util.Iterator#hasNext()
+	 */
+	@Override
+	public boolean hasNext()
+	{
+		return this.iteratorCount < this.size();
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.util.Iterator#next()
+	 */
+	@Override
+	public Float next()
+	{
+		final float f = this.get(this.iteratorCount);
+		this.iteratorCount++;
+		return f;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.util.Iterator#remove()
+	 */
+	@Override
+	public void remove()
+	{
+		throw new NotImplementedException( "Cannot remove from 16bit sample buffer" );
 	}
 }
