@@ -262,10 +262,16 @@ class ExtendedImageIO {
 			throw new IllegalArgumentException("stream == null!");
 		}
 
-		final ImageInfo info = Sanselan.getImageInfo(binput, null);
-		binput.reset();
-		if (info.getFormat() == ImageFormat.IMAGE_FORMAT_JPEG) {
+		ImageInfo info;
+		try {
+			info = Sanselan.getImageInfo(binput, null);
+		} catch (final ImageReadException ire) {
+			info = null;
+		} finally {
+			binput.reset();
+		}
 
+		if (info != null && info.getFormat() == ImageFormat.IMAGE_FORMAT_JPEG) {
 			if (info.getColorType() == ImageInfo.COLOR_TYPE_CMYK) {
 				final ImageReader reader = getMonkeyReader();
 
