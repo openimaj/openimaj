@@ -71,7 +71,7 @@ public class #T#KDTreeEnsemble {
     /**
  	 * An internal node of the KDTree
  	 */	
-	public class #T#KDTreeNode {
+	public static class #T#KDTreeNode {
 		class NodeData {}
 		
 	    class InternalNodeData extends NodeData {
@@ -90,6 +90,8 @@ public class #T#KDTreeEnsemble {
 	    #T#KDTreeNode left;
 
 	    NodeData node_data;
+	    
+	    private Uniform rng;
 	    
 	    boolean is_leaf() { 
 	    	return left==null; 
@@ -160,9 +162,9 @@ public class #T#KDTreeEnsemble {
 	        // If either partition is empty -> vectors identical!
 	        if (l==0 || l==N) { l = N/2; } // The vectors are identical, so keep nlogn performance.
 
-	        left = new #T#KDTreeNode(pnts, inds.subView(0, l));
+	        left = new #T#KDTreeNode(pnts, inds.subView(0, l),rng);
 	        
-	        ((InternalNodeData)node_data).right = new #T#KDTreeNode(pnts, inds.subView(l, N));
+	        ((InternalNodeData)node_data).right = new #T#KDTreeNode(pnts, inds.subView(l, N),rng);
 	    }
 
 		/** Construct a new node */
@@ -174,7 +176,8 @@ public class #T#KDTreeEnsemble {
 		 * @param inds a list of indices that point to the relevant
 		 *			parts of the pnts array that should be used
 		 */
-	    public #T#KDTreeNode(final #t# [][] pnts, IntArrayView inds) {
+	    public #T#KDTreeNode(final #t# [][] pnts, IntArrayView inds,Uniform rng) {
+	    	this.rng = rng;
 	        if (inds.size() > leaf_max_points) { // Internal node
 	        	node_data = new InternalNodeData();
 	            split_points(pnts, inds);
@@ -268,7 +271,7 @@ public class #T#KDTreeEnsemble {
         // Create trees.
         trees = new #T#KDTreeNode[ntrees];
         for (int t=0; t<ntrees; ++t) {
-            trees[t] = new #T#KDTreeNode(pnts, inds);
+            trees[t] = new #T#KDTreeNode(pnts, inds,rng);
         }
     }
 

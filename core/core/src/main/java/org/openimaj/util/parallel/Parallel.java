@@ -46,7 +46,7 @@ import org.openimaj.util.parallel.partition.RangePartitioner;
  * Inspired by the .NET Task Parallel Library. Allows control over the way data
  * is partitioned using inspiration from
  * {@link "http://reedcopsey.com/2010/01/26/parallelism-in-net-part-5-partitioning-of-work/"}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Parallel {
@@ -69,7 +69,7 @@ public class Parallel {
 
 	/**
 	 * An integer range with a step size.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class IntRange {
@@ -97,7 +97,7 @@ public class Parallel {
 
 	/**
 	 * Parallel integer for loop.
-	 * 
+	 *
 	 * @param start
 	 *            starting value
 	 * @param stop
@@ -154,9 +154,9 @@ public class Parallel {
 
 	/**
 	 * Parallel integer for loop. Uses the default global thread pool.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param start
 	 *            starting value
 	 * @param stop
@@ -176,7 +176,7 @@ public class Parallel {
 	 * faster as it avoids auto-boxing/unboxing and results in fewer method
 	 * calls. The downside is that users have to write an extra loop to iterate
 	 * over the {@link IntRange} object. Uses the default global thread pool.
-	 * 
+	 *
 	 * @param start
 	 *            starting value
 	 * @param stop
@@ -196,7 +196,7 @@ public class Parallel {
 	 * potentially slightly faster as it avoids auto-boxing/unboxing and results
 	 * in fewer method calls. The downside is that users have to write an extra
 	 * loop to iterate over the {@link IntRange} object.
-	 * 
+	 *
 	 * @param start
 	 *            starting value
 	 * @param stop
@@ -255,9 +255,9 @@ public class Parallel {
 	 * automatically partitioned; if the data is a {@link List}, then a
 	 * {@link RangePartitioner} is used, otherwise a
 	 * {@link GrowingChunkPartitioner} is used.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param objects
@@ -270,7 +270,7 @@ public class Parallel {
 	public static <T> void forEach(final Iterable<T> objects, final Operation<T> op, final ThreadPoolExecutor pool) {
 		Partitioner<T> partitioner;
 		if (objects instanceof List) {
-			partitioner = new RangePartitioner<T>((List<T>) objects);
+			partitioner = new RangePartitioner<T>((List<T>) objects,pool.getMaximumPoolSize());
 		} else {
 			partitioner = new GrowingChunkPartitioner<T>(objects);
 		}
@@ -282,9 +282,9 @@ public class Parallel {
 	 * thread pool. The data is automatically partitioned; if the data is a
 	 * {@link List}, then a {@link RangePartitioner} is used, otherwise a
 	 * {@link GrowingChunkPartitioner} is used.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param objects
@@ -299,9 +299,9 @@ public class Parallel {
 	/**
 	 * Parallel ForEach loop over partitioned data. Uses the default global
 	 * thread pool.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param partitioner
@@ -320,7 +320,7 @@ public class Parallel {
 	 * nprocs partitions 3.) while there are still partitions to process 3.1) on
 	 * completion of a partition schedule the next one 4.) wait for completion
 	 * of remaining partitions
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param partitioner
