@@ -36,7 +36,7 @@ import java.util.Arrays;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
-import org.openimaj.audio.analysis.MFCC.MFCCFeatureVector;
+import org.openimaj.audio.analysis.MFCCOld.MFCCFeatureVector;
 import org.openimaj.audio.filters.HanningAudioProcessor;
 import org.openimaj.audio.filters.MelFilterBank;
 import org.openimaj.audio.samples.FloatSampleBuffer;
@@ -61,7 +61,7 @@ import org.openimaj.util.array.ArrayUtils;
  *  @created 23 Jul 2012
  *	@version $Author$, $Revision$, $Date$
  */
-public class MFCC implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
+public class MFCCOld implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
 {
 	/**
 	 * 	A feature vector class for MFCCs
@@ -107,7 +107,7 @@ public class MFCC implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
 	/**
 	 *	Default constructor
 	 */
-	public MFCC()
+	public MFCCOld()
     {
     }
 	
@@ -170,7 +170,7 @@ public class MFCC implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
 		this.fft.process( windowedSamples );
 		final float[][] lastFFT = this.fft.getLastFFT();
 
-		if( MFCC.DEBUG )
+		if( MFCCOld.DEBUG )
 		{
 			System.out.println( "FFT: "+Arrays.deepToString( lastFFT ) );
 			System.out.println( "Window function sum: "+this.sum );
@@ -179,7 +179,7 @@ public class MFCC implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
 		// Normalise Power FFT
 		final float[][] powerSpectrum = this.fft.getNormalisedMagnitudes( 2f*(float)this.sum );
 		
-		if( MFCC.DEBUG )
+		if( MFCCOld.DEBUG )
 		{
 			System.out.println( "Size of power spectrum: "+powerSpectrum[0].length );		
 			System.out.println( "PowerSpectrum: "+Arrays.deepToString( powerSpectrum ) );
@@ -190,7 +190,7 @@ public class MFCC implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
 		final float[][] melPowerSpectrum = new MelFilterBank( nFilters, 20, 16000 )
 							.process( powerSpectrum, format );
 
-		if( MFCC.DEBUG )
+		if( MFCCOld.DEBUG )
 			System.out.println( "MelPowerSpectrum: "+Arrays.deepToString( melPowerSpectrum ) );
 		
 		// Convert to dB
@@ -199,7 +199,7 @@ public class MFCC implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
 				melPowerSpectrum[c][i] = (float)(10 * Math.log10( 
 						Math.max( melPowerSpectrum[c][i], 1 ) ) );
 
-		if( MFCC.DEBUG )
+		if( MFCCOld.DEBUG )
 		{
 			System.out.println( "MelPowerSpectrum(db): "+Arrays.deepToString( melPowerSpectrum ) );
 			System.out.println( "Size of Mel Power Cepstrum: "+melPowerSpectrum[0].length );
@@ -222,7 +222,7 @@ public class MFCC implements FeatureExtractor<MFCCFeatureVector, SampleChunk>
 							(cc==0?w1:w2) * Math.cos( k*cc * ( f + 0.5d ) );
 						
 		
-		if( MFCC.DEBUG )
+		if( MFCCOld.DEBUG )
 			System.out.println( "Number of coefficients: "+coeffs[0].length );
 		
 		return coeffs;
