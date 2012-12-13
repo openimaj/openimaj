@@ -105,7 +105,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 				data.remove(last);
 				T lastUnwrapped = last.getWrapped();
 				decrement(lastUnwrapped);
-				CircularPriorityWindow.this.continuation.handleOverflow(lastUnwrapped);
+				CircularPriorityWindow.this.continuation.handleCapacityOverflow(lastUnwrapped);
 				last = null;
 			}
 		};
@@ -235,8 +235,8 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 	public boolean add(TimeWrapped arg0){
 		prune();
 		if (arg0 == null) return false;
-		if (data.size() == capacity){
-			CircularPriorityWindow.this.continuation.handleOverflow(
+		if (data.size() >= capacity){
+			CircularPriorityWindow.this.continuation.handleCapacityOverflow(
 					data.remove().getWrapped()
 			);
 		}
@@ -329,9 +329,31 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 
 
 	
+	/**
+	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
+	 *
+	 * @param <E>
+	 */
 	public interface OverflowHandler<E> {
 		
-		public void handleOverflow(E overflow);
+		/**
+		 * @param overflow
+		 */
+		public void handleCapacityOverflow(E overflow);
+		
+	}
+	
+	/**
+	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
+	 *
+	 * @param <E>
+	 */
+	public interface DurationOverflowHandler<E> extends OverflowHandler<E> {
+		
+		/**
+		 * @param overflow
+		 */
+		public void handleDurationOverflow(E overflow);
 		
 	}
 

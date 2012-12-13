@@ -198,6 +198,10 @@ public class LoggerBolt extends BaseRichBolt {
 		public static void declareFields(OutputFieldsDeclarer declarer){
 			declarer.declareStream(STREAM_ID, new Fields("type","timestamp","message","data"));
 		}
+
+		public OutputCollector getOutputCollector() {
+			return this.collector;
+		}
 		
 	}
 	

@@ -166,7 +166,7 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 		this.bindingsQueue = new CircularPriorityWindow<Binding>(new OverflowHandler<Binding>() {
 
 			@Override
-			public void handleOverflow(Binding overflow) {
+			public void handleCapacityOverflow(Binding overflow) {
 				logger.debug("Binding overflowing! Binding removed");
 			}
 		}, 5000, 36000, TimeUnit.SECONDS);

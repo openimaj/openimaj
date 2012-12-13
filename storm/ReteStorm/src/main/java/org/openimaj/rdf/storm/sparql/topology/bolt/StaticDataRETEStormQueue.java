@@ -11,6 +11,7 @@ import org.openimaj.rdf.storm.sparql.topology.builder.datasets.StaticRDFDataset;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.time.Timer;
 
+import backtype.storm.task.OutputCollector;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
@@ -61,8 +62,10 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 			int[] outputFields,
 			int size,
 			long delay,
-			TimeUnit unit, Query q) {
-		super(name, matchFields, outputFields, size, delay, unit);
+			TimeUnit unit,
+			OutputCollector oc,
+			Query q) {
+		super(name, matchFields, outputFields, size, delay, unit, oc);
 		this.query = q;
 	}
 
@@ -89,8 +92,10 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 			int size,
 			long delay,
 			TimeUnit unit,
-			StaticDataRETEStormQueue sib, Query q) {
-		super(name, matchFields, outputFields, size, delay, unit, sib);
+			StaticDataRETEStormQueue sib,
+			OutputCollector oc,
+			Query q) {
+		super(name, matchFields, outputFields, size, delay, unit, sib, oc);
 		this.query = q;
 	}
 
@@ -119,8 +124,10 @@ public class StaticDataRETEStormQueue extends RETEStormQueue {
 			long delay,
 			TimeUnit unit,
 			StaticDataRETEStormQueue sib,
-			RETEStormSinkNode sink, Query q) {
-		super(name, matchFields, outputFields, size, delay, unit, sib, sink);
+			RETEStormSinkNode sink,
+			OutputCollector oc,
+			Query q) {
+		super(name, matchFields, outputFields, size, delay, unit, sib, sink, oc);
 		this.query = q;
 	}
 

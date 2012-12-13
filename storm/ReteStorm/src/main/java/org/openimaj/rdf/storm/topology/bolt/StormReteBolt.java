@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.bolt.RETEStormSinkNode;
+import org.openimaj.rdf.storm.topology.logging.LoggerBolt;
 
 import scala.actors.threadpool.Arrays;
 import backtype.storm.spout.ISpout;
@@ -46,6 +47,7 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.TupleImpl;
 import backtype.storm.tuple.Values;
 
 import com.hp.hpl.jena.graph.Graph;
@@ -62,6 +64,8 @@ import com.hp.hpl.jena.reasoner.rulesys.Functor;
 public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSinkNode {
 
 	private static Logger logger = Logger.getLogger(StormReteBolt.class);
+	private static final boolean logging = false;
+	protected LoggerBolt.LogEmitter logStream;
 
 	/**
 	 * Meta-Data components of the storm values/fields list
@@ -167,6 +171,9 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		this.context = context;
 		this.stormConf = stormConf;
 		this.toFire = new HashMap<String, Values>();
+		
+		if (logging)
+			this.logStream = new LoggerBolt.LogEmitter(collector);
 
 		prepare();
 
@@ -203,6 +210,11 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		if (this.toFire.containsKey("DEFAULT")) {
 			logger.debug("Firing on default stream!");
 			this.collector.emit(anchor, toFire.get("DEFAULT"));
+			if (logging){
+				Tuple cause = new TupleImpl(context, toFire.get("DEFAULT"), 0, anchor.getSourceStreamId(), anchor.getMessageId());
+				this.logStream.emit(new LoggerBolt.LoggedEvent(LoggerBolt.LoggedEvent.EventType.TUPLE_FIRED,
+															   cause, "DEFAULT"));
+			}
 			this.toFire.remove("DEFAULT");
 		}
 	}
@@ -219,6 +231,11 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 		if (this.toFire.containsKey(streamID)) {
 			logger.debug("Firing on stream " + streamID + "!");
 			this.collector.emit(streamID, anchor, toFire.get(streamID));
+			if (logging){
+				Tuple cause = new TupleImpl(context, toFire.get(streamID), 0, anchor.getSourceStreamId(), anchor.getMessageId());
+				this.logStream.emit(new LoggerBolt.LoggedEvent(LoggerBolt.LoggedEvent.EventType.TUPLE_FIRED,
+															   cause, streamID));
+			}
 			this.toFire.remove(streamID);
 		}
 	}
@@ -241,6 +258,7 @@ public abstract class StormReteBolt extends BaseRichBolt implements RETEStormSin
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(declaredFields(this.getVariableCount()));
+		LoggerBolt.LogEmitter.declareFields(declarer);
 	}
 
 	/**

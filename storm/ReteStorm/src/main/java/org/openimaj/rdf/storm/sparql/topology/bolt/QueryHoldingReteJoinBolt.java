@@ -200,10 +200,10 @@ public class QueryHoldingReteJoinBolt extends StormReteJoinBolt {
 		for (StaticRDFDataset ds : this.dataSources) {
 			ds.prepare();
 		}
-		StaticDataRETEStormQueue staticQLeft = new StaticDataRETEStormQueue(this.leftBolt, this.matchLeft, this.templateLeft, this.capacityLeft, this.rangeLeft, this.unitLeft, QueryFactory.create(leftQueryString));
+		StaticDataRETEStormQueue staticQLeft = new StaticDataRETEStormQueue(this.leftBolt, this.matchLeft, this.templateLeft, this.capacityLeft, this.rangeLeft, this.unitLeft, this.collector, QueryFactory.create(leftQueryString));
 		staticQLeft.staticDatasets = this.dataSources;
 		this.leftQ = staticQLeft;
-		StaticDataRETEStormQueue staticQRight = new StaticDataRETEStormQueue(this.rightBolt, this.matchRight, this.templateRight, this.capacityRight, this.rangeRight, this.unitRight, (StaticDataRETEStormQueue) this.leftQ, this, QueryFactory.create(rightQueryString));
+		StaticDataRETEStormQueue staticQRight = new StaticDataRETEStormQueue(this.rightBolt, this.matchRight, this.templateRight, this.capacityRight, this.rangeRight, this.unitRight, (StaticDataRETEStormQueue) this.leftQ, this, this.collector, QueryFactory.create(rightQueryString));
 		staticQRight.staticDatasets = this.dataSources;
 		this.rightQ = staticQRight;
 	}

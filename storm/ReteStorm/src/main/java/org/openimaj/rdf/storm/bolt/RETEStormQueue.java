@@ -37,8 +37,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt.Component;
+import org.openimaj.rdf.storm.topology.logging.LoggerBolt;
 import org.openimaj.rdf.storm.utils.CircularPriorityWindow;
 
+import backtype.storm.task.OutputCollector;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
@@ -58,10 +60,12 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  *         implementation by <a href="mailto:der@hplb.hpl.hp.com">Dave
  *         Reynolds</a>
  */
-public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tuple>,
+public class RETEStormQueue implements CircularPriorityWindow.DurationOverflowHandler<Tuple>,
 		RETEStormSourceNode {
 
 	protected final static Logger logger = Logger.getLogger(RETEStormQueue.class);
+	private static final boolean logging = false;
+	private LoggerBolt.LogEmitter logStream;
 
 	/** A time-prioritised and size limited sliding window of Tuples */
 	private final CircularPriorityWindow<Tuple> window;
@@ -87,6 +91,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	/**
 	 * Constructor. The window is not usable until it has been bound
 	 * to a sibling and a continuation node.
+	 * @param name 
 	 * 
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
@@ -97,23 +102,28 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	 * @param size
 	 * @param delay
 	 * @param unit
+	 * @param oc 
 	 */
 	public RETEStormQueue(String name,
 			int[] matchFields,
 			int[] outputFields,
 			int size,
 			long delay,
-			TimeUnit unit) {
+			TimeUnit unit,
+			OutputCollector oc) {
 		this.windowName = name;
 		this.matchIndices = matchFields;
 		this.outputIndices = outputFields;
 		this.window = new CircularPriorityWindow<Tuple>(this, size, delay, unit);
+		if (logging)
+			this.logStream = new LoggerBolt.LogEmitter(oc);
 	}
 
 	/**
 	 * Constructor including sibling to bind to. The window is not usable until
 	 * it has
 	 * also been bound to a continuation node.
+	 * @param name 
 	 * 
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
@@ -125,6 +135,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	 * @param delay
 	 * @param unit
 	 * @param sib
+	 * @param oc 
 	 */
 	public RETEStormQueue(String name,
 			int[] matchFields,
@@ -132,8 +143,9 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 			int size,
 			long delay,
 			TimeUnit unit,
-			RETEStormQueue sib) {
-		this(name, matchFields, outputFields, size, delay, unit);
+			RETEStormQueue sib,
+			OutputCollector oc) {
+		this(name, matchFields, outputFields, size, delay, unit, oc);
 		this.setSibling(sib);
 		sib.setSibling(this);
 	}
@@ -142,6 +154,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	 * Constructor including sibling to bind to. The window is not usable until
 	 * it has
 	 * also been bound to a continuation node.
+	 * @param name 
 	 * 
 	 * @param matchFields
 	 *            Maps each field of the input tuple to the index of the
@@ -154,6 +167,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	 * @param unit
 	 * @param sib
 	 * @param sink
+	 * @param oc 
 	 */
 	public RETEStormQueue(String name,
 			int[] matchFields,
@@ -162,8 +176,9 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 			long delay,
 			TimeUnit unit,
 			RETEStormQueue sib,
-			RETEStormSinkNode sink) {
-		this(name, matchFields, outputFields, size, delay, unit, sib);
+			RETEStormSinkNode sink,
+			OutputCollector oc) {
+		this(name, matchFields, outputFields, size, delay, unit, sib, oc);
 		this.setContinuation(sink);
 	}
 
@@ -295,7 +310,7 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy, RETERuleContext context) {
 		RETEStormQueue clone = (RETEStormQueue) netCopy.get(this);
 		if (clone == null) {
-			clone = new RETEStormQueue(windowName, matchIndices, outputIndices, window.getCapacity(), window.getDelay(), TimeUnit.MILLISECONDS);
+			clone = new RETEStormQueue(windowName, matchIndices, outputIndices, window.getCapacity(), window.getDelay(), TimeUnit.MILLISECONDS, logStream.getOutputCollector());
 			netCopy.put(this, clone);
 			clone.setSibling((RETEStormQueue) sibling.clone(netCopy, context));
 			clone.setContinuation((RETEStormSinkNode) continuation.clone(netCopy, context));
@@ -305,7 +320,19 @@ public class RETEStormQueue implements CircularPriorityWindow.OverflowHandler<Tu
 	}
 
 	@Override
-	public void handleOverflow(Tuple overflow) {
+	public void handleCapacityOverflow(Tuple overflow) {
+		logger.debug("Window capacity exceeded.");
+		if (logging)
+			logStream.emit(new LoggerBolt.LoggedEvent(LoggerBolt.LoggedEvent.EventType.TUPLE_DROPPED,
+													  overflow, "capacity"));
+	}
+
+	@Override
+	public void handleDurationOverflow(Tuple overflow) {
+		logger.debug("Tuple exceeded age of window.");
+		if (logging)
+			logStream.emit(new LoggerBolt.LoggedEvent(LoggerBolt.LoggedEvent.EventType.TUPLE_DROPPED,
+													  overflow, "duration"));
 		Values vals = new Values();
 		vals.addAll(overflow.getValues());
 		this.continuation.fire(windowName, vals, true);
