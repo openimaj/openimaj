@@ -1384,6 +1384,52 @@ public class ArrayUtils {
 
 	/**
 	 * Sort parallel arrays. Arrays are sorted in-place. The first array
+	 * determines the order, and is sorted into ascending order.
+	 * <p>
+	 * Implementation inspired by this stackoverflow page: <a href=
+	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
+	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
+	 * get-a-sorted-list-of-indices-of-an-array </a>
+	 * 
+	 * @param main
+	 *            the values to use for determining the order
+	 * @param indices
+	 *            the second array
+	 */
+	public static void parallelQuicksortAscending(long[] main, long[] indices) {
+		parallelQuicksortAscending(main, indices, 0, indices.length - 1);
+	}
+
+	/**
+	 * Sort parallel arrays. Arrays are sorted in-place. The first array
+	 * determines the order, and is sorted into ascending order.
+	 * <p>
+	 * Implementation inspired by this stackoverflow page: <a href=
+	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
+	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
+	 * get-a-sorted-list-of-indices-of-an-array </a>
+	 * 
+	 * @param main
+	 *            the values to use for determining the order
+	 * @param indices
+	 *            the second array
+	 * @param left
+	 *            the starting index
+	 * @param right
+	 *            the ending index
+	 */
+	public static void parallelQuicksortAscending(long[] main, long[] indices, int left, int right) {
+		if (right <= left)
+			return;
+
+		final int i = partitionAsc(main, indices, left, right);
+
+		parallelQuicksortAscending(main, indices, left, i - 1);
+		parallelQuicksortAscending(main, indices, i + 1, right);
+	}
+
+	/**
+	 * Sort parallel arrays. Arrays are sorted in-place. The first array
 	 * determines the order, and is sorted into descending order.
 	 * <p>
 	 * Implementation inspired by this stackoverflow page: <a href=
@@ -1430,6 +1476,26 @@ public class ArrayUtils {
 		return i;
 	}
 
+	// partition a[left] to a[right], assumes left < right
+	private static int partitionAsc(long[] a, long[] index, int left, int right) {
+		int i = left - 1;
+		int j = right;
+		while (true) {
+			while (a[++i] < a[right])
+				// find item on left to swap
+				; // a[right] acts as sentinel
+			while (a[right] < a[--j])
+				// find item on right to swap
+				if (j == left)
+					break; // don't go out-of-bounds
+			if (i >= j)
+				break; // check if pointers cross
+			exch(a, index, i, j); // swap two elements into place
+		}
+		exch(a, index, i, right); // swap with partition element
+		return i;
+	}
+
 	// exchange a[i] and a[j]
 	private static void exch(double[] a, int[] index, int i, int j) {
 		final double swap = a[i];
@@ -1437,6 +1503,16 @@ public class ArrayUtils {
 		a[j] = swap;
 
 		final int b = index[i];
+		index[i] = index[j];
+		index[j] = b;
+	}
+
+	private static void exch(long[] a, long[] index, int i, int j) {
+		final long swap = a[i];
+		a[i] = a[j];
+		a[j] = swap;
+
+		final long b = index[i];
 		index[i] = index[j];
 		index[j] = b;
 	}

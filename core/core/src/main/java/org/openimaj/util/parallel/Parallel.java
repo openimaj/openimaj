@@ -67,6 +67,21 @@ public class Parallel {
 		}
 	}
 
+	private static class BatchTask<T> implements Runnable {
+		private Iterator<T> iterator;
+		private BatchOperation<T> op;
+
+		public BatchTask(Iterator<T> iterator, BatchOperation<T> op) {
+			this.iterator = iterator;
+			this.op = op;
+		}
+
+		@Override
+		public void run() {
+			op.perform(iterator);
+		}
+	}
+
 	/**
 	 * An integer range with a step size.
 	 *
@@ -366,5 +381,77 @@ public class Parallel {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Parallel ForEach loop over partitioned data with batches of data.
+	 * <p>
+	 * Implementation details: 1.) create partitions enumerator 2.) schedule
+	 * nprocs partitions 3.) while there are still partitions to process 3.1) on
+	 * completion of a partition schedule the next one 4.) wait for completion
+	 * of remaining partitions
+	 * 
+	 * @param <T>
+	 *            type of the data items
+	 * @param partitioner
+	 *            the partitioner applied to the data
+	 * @param op
+	 *            the operation to apply
+	 * @param pool
+	 *            the thread pool.
+	 */
+	public static <T>
+			void
+			forEach(final Partitioner<T> partitioner, final BatchOperation<T> op, final ThreadPoolExecutor pool)
+	{
+		final ExecutorCompletionService<Boolean> completion = new ExecutorCompletionService<Boolean>(pool);
+		final Iterator<Iterator<T>> partitions = partitioner.getPartitions();
+		long submitted = 0;
+
+		for (int i = 0; i < pool.getMaximumPoolSize(); i++) {
+			if (!partitions.hasNext())
+				break;
+
+			completion.submit(new BatchTask<T>(partitions.next(), op), true);
+			submitted++;
+		}
+
+		while (partitions.hasNext()) {
+			try {
+				completion.take().get();
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
+			} catch (final ExecutionException e) {
+				e.printStackTrace();
+			}
+			completion.submit(new BatchTask<T>(partitions.next(), op), true);
+		}
+
+		for (int i = 0; i < submitted; i++) {
+			try {
+				completion.take().get();
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
+			} catch (final ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Parallel ForEach loop over batched partitioned data. Uses the default
+	 * global thread pool.
+	 * 
+	 * @see GlobalExecutorPool#getPool()
+	 * 
+	 * @param <T>
+	 *            type of the data items
+	 * @param partitioner
+	 *            the partitioner applied to the data
+	 * @param op
+	 *            the operation to apply
+	 */
+	public static <T> void forEach(final Partitioner<T> partitioner, final BatchOperation<T> op) {
+		forEach(partitioner, op, GlobalExecutorPool.getPool());
 	}
 }

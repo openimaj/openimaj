@@ -96,10 +96,16 @@ import org.openimaj.util.pair.#R#IntPair;
 				"address", "Washington, DC, USA",
 				"keywords", "High-dimensional indexing, High-dimensional indexing, image indexing, very large databases, approximate search., approximate search., image indexing, very large databases"
 		})
-public class Incremental#T#ADCNearestNeighbours extends #T#NearestNeighbours implements IncrementalNearestNeighbours<#t#[], #r#[]>, ReadWriteableBinary {
+public class Incremental#T#ADCNearestNeighbours 
+	extends 
+		#T#NearestNeighbours 
+	implements 
+		IncrementalNearestNeighbours<#t#[], #r#[]>,
+		ReadWriteableBinary 
+{
 	protected #T#ProductQuantiser pq;
 	protected int ndims;
-	protected List<byte[]> data;
+ 	protected List<byte[]> data;
 
     protected Incremental#T#ADCNearestNeighbours() {
         //for deserialization

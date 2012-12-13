@@ -43,7 +43,7 @@ import java.util.List;
  * @param <DISTANCES>
  *            The type of distances measured (usually an array type)
  */
-public abstract interface NearestNeighbours<DATA, DISTANCES> {
+public interface NearestNeighbours<DATA, DISTANCES> {
 
 	/**
 	 * Search for the nearest neighbour to each of the N queries, and return the
