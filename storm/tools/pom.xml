@@ -78,6 +78,6 @@
   <modules>
     <module>StormTwitterPreprocessingTool</module>
     <module>core-storm-tool</module>
-    <module>NaiveBayesStorm</module>
+    <!-- <module>NaiveBayesStorm</module> -->
   </modules>
 </project>

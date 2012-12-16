@@ -77,11 +77,23 @@ public class WeberContrast implements ImageAnalyser<FImage>, FeatureVectorProvid
 			for (int x = 0; x < width; x++)
 				avg += image.pixels[y][x];
 
+		avg /= (width * height);
+
 		contrast = 0;
 		for (int y = 0; y < height; y++)
 			for (int x = 0; x < width; x++)
 				contrast += (image.pixels[y][x] - avg) / avg;
 
 		contrast /= (height * width);
+	}
+
+	/**
+	 * Get the contrast of the last image analysed with
+	 * {@link #analyseImage(FImage)}
+	 * 
+	 * @return the contrast
+	 */
+	public double getContrast() {
+		return contrast;
 	}
 }
