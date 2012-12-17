@@ -49,33 +49,33 @@ import org.openimaj.io.IOUtils;
  * Different file formats containing local features.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public enum FileType {
 	/**
-	 * Auto-guess between Lowe's ASCII keypoints format or the
-	 * OpenIMAJ binary format. 
+	 * Auto-guess between Lowe's ASCII keypoints format or the OpenIMAJ binary
+	 * format.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	LOWE_KEYPOINT {
 		@Override
 		public Header readHeader(File file) throws IOException {
-			try{
+			try {
 				return BINARY_KEYPOINT.readHeader(file);
-			}catch(Exception e){
+			} catch (final Exception e) {
 				return LOWE_KEYPOINT_ASCII.readHeader(file);
 			}
 		}
-		
+
 		@Override
 		public Header readHeader(InputStream bis) throws IOException {
-			BufferedInputStream bstream = new BufferedInputStream(bis);
-			
-			boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
-			
-			if(binary)
+			final BufferedInputStream bstream = new BufferedInputStream(bis);
+
+			final boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
+
+			if (binary)
 				return BINARY_KEYPOINT.readHeader(bstream);
 			else
 				return LOWE_KEYPOINT_ASCII.readHeader(bstream);
@@ -83,40 +83,40 @@ public enum FileType {
 
 		@Override
 		public FeatureFile read(File file) throws IOException {
-			try{
+			try {
 				return BINARY_KEYPOINT.read(file);
-			}catch(Exception e){
+			} catch (final Exception e) {
 				return LOWE_KEYPOINT_ASCII.read(file);
 			}
 		}
-		
+
 		@Override
 		public FeatureFile read(InputStream stream) throws IOException {
-			BufferedInputStream bstream = new BufferedInputStream(stream);
-			
-			boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
-			
-			if(binary)
+			final BufferedInputStream bstream = new BufferedInputStream(stream);
+
+			final boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
+
+			if (binary)
 				return BINARY_KEYPOINT.read(bstream);
 			else
 				return LOWE_KEYPOINT_ASCII.read(bstream);
 		}
-		
+
 		@Override
 		public byte[][] readFeatures(File file, int... index) throws IOException {
-			try{
-				return BINARY_KEYPOINT.readFeatures(file,index);
-			}catch(Exception e){
-				return LOWE_KEYPOINT_ASCII.readFeatures(file,index);
+			try {
+				return BINARY_KEYPOINT.readFeatures(file, index);
+			} catch (final Exception e) {
+				return LOWE_KEYPOINT_ASCII.readFeatures(file, index);
 			}
 		}
-		
+
 		@Override
 		public byte[][] readFeatures(InputStream file, int... index) throws IOException {
-			try{
-				return BINARY_KEYPOINT.readFeatures(file,index);
-			}catch(Exception e){
-				return LOWE_KEYPOINT_ASCII.readFeatures(file,index);
+			try {
+				return BINARY_KEYPOINT.readFeatures(file, index);
+			} catch (final Exception e) {
+				return LOWE_KEYPOINT_ASCII.readFeatures(file, index);
 			}
 		}
 	},
@@ -124,45 +124,48 @@ public enum FileType {
 	 * OpenIMAJ binary list of keypoints format
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	BINARY_KEYPOINT {
 		@Override
 		public Header readHeader(File file) throws IOException {
 			BufferedInputStream bis = null;
-			
+
 			try {
 				bis = new BufferedInputStream(new FileInputStream(file));
-				byte [] header = new byte[LocalFeatureList.BINARY_HEADER.length];
+				final byte[] header = new byte[LocalFeatureList.BINARY_HEADER.length];
 				bis.read(header, 0, LocalFeatureList.BINARY_HEADER.length);
-			
+
 				if (!Arrays.equals(header, LocalFeatureList.BINARY_HEADER)) {
-					throw new IOException("File \""+file+"\"is not a binary keypoint file");
+					throw new IOException("File \"" + file + "\"is not a binary keypoint file");
 				}
-				
-				DataInputStream dis = new DataInputStream(bis);
-				
-				Header h = new Header();
+
+				final DataInputStream dis = new DataInputStream(bis);
+
+				final Header h = new Header();
 				h.nfeatures = dis.readInt();
 				h.ndims = dis.readInt();
 				return h;
 			} finally {
-				try { bis.close(); } catch (IOException e) {}
+				try {
+					bis.close();
+				} catch (final IOException e) {
+				}
 			}
 		}
-		
+
 		@Override
 		public Header readHeader(InputStream bis) throws IOException {
-			byte [] header = new byte[LocalFeatureList.BINARY_HEADER.length];
+			final byte[] header = new byte[LocalFeatureList.BINARY_HEADER.length];
 			bis.read(header, 0, LocalFeatureList.BINARY_HEADER.length);
-		
+
 			if (!Arrays.equals(header, LocalFeatureList.BINARY_HEADER)) {
 				throw new IOException("Stream does not contain a binary keypoint");
 			}
-			
-			DataInputStream dis = new DataInputStream(bis);
-			
-			Header h = new Header();
+
+			final DataInputStream dis = new DataInputStream(bis);
+
+			final Header h = new Header();
 			h.nfeatures = dis.readInt();
 			h.ndims = dis.readInt();
 			return h;
@@ -170,51 +173,51 @@ public enum FileType {
 
 		@Override
 		public FeatureFile read(File file) throws IOException {
-			FeatureFile ff = new StreamedFeatureFile(file);
+			final FeatureFile ff = new StreamedFeatureFile(file);
 			return ff;
 		}
-		
+
 		@Override
 		public FeatureFile read(InputStream stream) throws IOException {
-			FeatureFile ff = new StreamedFeatureFile(stream);
+			final FeatureFile ff = new StreamedFeatureFile(stream);
 			return ff;
 		}
-		
+
 		@Override
 		public byte[][] readFeatures(File file, int... index) throws IOException {
-			return readFeatures(new FileInputStream(file),index);
+			return readFeatures(new FileInputStream(file), index);
 		}
-		
+
 		@Override
 		public byte[][] readFeatures(InputStream file, int... index) throws IOException {
 			BufferedInputStream bis = null;
-			byte [][] data = new byte[index.length][];
+			final byte[][] data = new byte[index.length][];
 			try {
 				bis = new BufferedInputStream(file);
-				byte [] header = new byte[LocalFeatureList.BINARY_HEADER.length];
+				final byte[] header = new byte[LocalFeatureList.BINARY_HEADER.length];
 				bis.read(header, 0, LocalFeatureList.BINARY_HEADER.length);
-			
+
 				if (!Arrays.equals(header, LocalFeatureList.BINARY_HEADER)) {
-					throw new IOException("File \""+file+"\"is not a binary keypoint file");
+					throw new IOException("File \"" + file + "\"is not a binary keypoint file");
 				}
-				
-				DataInputStream dis = new DataInputStream(bis);
-				
-				Header h = new Header();
+
+				final DataInputStream dis = new DataInputStream(bis);
+
+				final Header h = new Header();
 				h.nfeatures = dis.readInt();
 				h.ndims = dis.readInt();
-				
+
 				// == float * 4 + int * KeypointEngine.VecLength
-				int vecLength = (16 + h.ndims);
+				final int vecLength = (16 + h.ndims);
 				int skipped = 0;
 				Arrays.sort(index);
-				for (int i=0; i<index.length; i++) {
-					int toSkip = (index[i]*vecLength) - skipped ;
+				for (int i = 0; i < index.length; i++) {
+					int toSkip = (index[i] * vecLength) - skipped;
 					skipped += toSkip;
-					while(toSkip > 0) toSkip -= dis.skip(toSkip);
-					
-					
-					Keypoint kp = new Keypoint();
+					while (toSkip > 0)
+						toSkip -= dis.skip(toSkip);
+
+					final Keypoint kp = new Keypoint();
 					kp.x = dis.readFloat();
 					kp.y = dis.readFloat();
 					kp.scale = dis.readFloat();
@@ -224,9 +227,12 @@ public enum FileType {
 					data[i] = kp.ivec;
 					skipped += vecLength;
 				}
-				
+
 			} finally {
-				try { bis.close(); } catch (IOException e) {}
+				try {
+					bis.close();
+				} catch (final IOException e) {
+				}
 			}
 			return data;
 		}
@@ -246,7 +252,7 @@ public enum FileType {
 		public Header readHeader(File file) throws IOException {
 			return AsciiInterestPoint.readHeader(file, false);
 		}
-		
+
 		@Override
 		public Header readHeader(InputStream stream) throws IOException {
 			return AsciiInterestPoint.readHeader(new Scanner(stream), false);
@@ -256,7 +262,7 @@ public enum FileType {
 		public byte[][] readFeatures(File file) throws IOException {
 			return AsciiInterestPoint.readData(file, false, AsciiInterestPoint.NUM_CIRCLE_LOC_FEATS);
 		}
-		
+
 		@Override
 		public FeatureFile read(File file) throws IOException {
 			return AsciiInterestPoint.read(file, false, AsciiInterestPoint.NUM_CIRCLE_LOC_FEATS);
@@ -268,7 +274,7 @@ public enum FileType {
 		}
 	},
 	/**
-	 * Ellipse format used by Oxford tools 
+	 * Ellipse format used by Oxford tools
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
@@ -282,7 +288,7 @@ public enum FileType {
 		public Header readHeader(File file) throws IOException {
 			return AsciiInterestPoint.readHeader(file, true);
 		}
-		
+
 		@Override
 		public Header readHeader(InputStream stream) throws IOException {
 			return AsciiInterestPoint.readHeader(new Scanner(stream), true);
@@ -292,7 +298,7 @@ public enum FileType {
 		public byte[][] readFeatures(File file) throws IOException {
 			return AsciiInterestPoint.readData(file, true, AsciiInterestPoint.NUM_ELLIPSE_LOC_FEATS);
 		}
-		
+
 		@Override
 		public FeatureFile read(File file) throws IOException {
 			return AsciiInterestPoint.read(file, true, AsciiInterestPoint.NUM_ELLIPSE_LOC_FEATS);
@@ -307,13 +313,13 @@ public enum FileType {
 	 * KOEN1 ascii format used by Koen van der Sande's colour sift tools.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	KOEN1_ASCII {
 		@Override
 		public FeatureFile read(InputStream file) throws IOException {
 			// create a BufferedReader for the file
-			BufferedReader input = new BufferedReader(new InputStreamReader(file));
+			final BufferedReader input = new BufferedReader(new InputStreamReader(file));
 
 			// read the first line and check that it starts with KOEN1
 			// this way there is no need to worry about newline characters
@@ -324,36 +330,36 @@ public enum FileType {
 			} else {
 				// read the next two lines and Integer.parseInt(); to get ndims
 				// & nfeatures
-				int ndims = Integer.parseInt(input.readLine());
-				int nfeatures = Integer.parseInt(input.readLine());
+				final int ndims = Integer.parseInt(input.readLine());
+				final int nfeatures = Integer.parseInt(input.readLine());
 
-				byte[][] data = new byte[nfeatures][ndims];
-				String[] locations = new String[nfeatures];
+				final byte[][] data = new byte[nfeatures][ndims];
+				final String[] locations = new String[nfeatures];
 
 				if (nfeatures == 0) {
-					FeatureFile ff = new MemoryFeatureFile(new byte[0][],new String[0]);
+					final FeatureFile ff = new MemoryFeatureFile(new byte[0][], new String[0]);
 					return ff;
 				}
 
 				for (int i = 0; i < nfeatures; i++) {
 
 					// read the next line and split on ';'
-					String[] parts = input.readLine().split(";");
+					final String[] parts = input.readLine().split(";");
 
 					// put first element (substring) of the split into
 					// FeatureFile.locationInfo
 					locations[i] = parts[0];
 
 					// split second element (substring) on ' ' (a space)
-					String[] fvector = parts[1].trim().split(" ");
+					final String[] fvector = parts[1].trim().split(" ");
 					// parse each element as int and put into array
 					for (int j = 0; j < ndims; j++) {
 						// store array in FeatureFiel.data
-						data[i][j] = (byte) (Integer.parseInt(fvector[j])-128);
+						data[i][j] = (byte) (Integer.parseInt(fvector[j]) - 128);
 					}
 
 				}
-				FeatureFile ff = new MemoryFeatureFile(data,locations);
+				final FeatureFile ff = new MemoryFeatureFile(data, locations);
 				// return FeatureFile
 				return ff;
 			}
@@ -368,72 +374,72 @@ public enum FileType {
 	 * OpenIMAJ ASIFTENRICHED format
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
-	ASIFTENRICHED{
+	ASIFTENRICHED {
 		@Override
 		public Header readHeader(File file) throws IOException {
-			
+
 			try {
 				return ASIFTENRICHED_BINARY.readHeader(file);
-			} 
-			catch(Exception e){
+			}
+			catch (final Exception e) {
 				return ASIFTENRICHED_ASCII.readHeader(file);
 			}
 		}
-		
+
 		@Override
 		public Header readHeader(InputStream bis) throws IOException {
-			BufferedInputStream bstream = new BufferedInputStream(bis);
-			
-			boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
-			
-			if(binary)
+			final BufferedInputStream bstream = new BufferedInputStream(bis);
+
+			final boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
+
+			if (binary)
 				return ASIFTENRICHED_BINARY.readHeader(bstream);
 			else
 				return ASIFTENRICHED_ASCII.readHeader(bstream);
-			
+
 		}
 
 		@Override
 		public FeatureFile read(File file) throws IOException {
 			try {
 				return ASIFTENRICHED_BINARY.read(file);
-			} 
-			catch(Exception e){
+			}
+			catch (final Exception e) {
 				return ASIFTENRICHED_ASCII.read(file);
 			}
 		}
-		
+
 		@Override
 		public FeatureFile read(InputStream stream) throws IOException {
-			BufferedInputStream bstream = new BufferedInputStream(stream);
-			
-			boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
-			
-			if(binary)
+			final BufferedInputStream bstream = new BufferedInputStream(stream);
+
+			final boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
+
+			if (binary)
 				return ASIFTENRICHED_BINARY.read(bstream);
 			else
 				return ASIFTENRICHED_ASCII.read(bstream);
 		}
-		
+
 		@Override
 		public byte[][] readFeatures(File file, int... index) throws IOException {
 			try {
-				return ASIFTENRICHED_BINARY.readFeatures(file,index);
-			} 
-			catch(Exception e){
-				return ASIFTENRICHED_ASCII.readFeatures(file,index);
+				return ASIFTENRICHED_BINARY.readFeatures(file, index);
+			}
+			catch (final Exception e) {
+				return ASIFTENRICHED_ASCII.readFeatures(file, index);
 			}
 		}
-		
+
 		@Override
 		public byte[][] readFeatures(InputStream file, int... index) throws IOException {
 			try {
-				return ASIFTENRICHED_BINARY.readFeatures(file,index);
-			} 
-			catch(Exception e){
-				return ASIFTENRICHED_ASCII.readFeatures(file,index);
+				return ASIFTENRICHED_BINARY.readFeatures(file, index);
+			}
+			catch (final Exception e) {
+				return ASIFTENRICHED_ASCII.readFeatures(file, index);
 			}
 		}
 	},
@@ -446,39 +452,42 @@ public enum FileType {
 		@Override
 		public Header readHeader(File file) throws IOException {
 			BufferedInputStream bis = null;
-			
+
 			try {
 				bis = new BufferedInputStream(new FileInputStream(file));
-				byte [] header = new byte[LocalFeatureList.BINARY_HEADER.length];
+				final byte[] header = new byte[LocalFeatureList.BINARY_HEADER.length];
 				bis.read(header, 0, LocalFeatureList.BINARY_HEADER.length);
-			
+
 				if (!Arrays.equals(header, LocalFeatureList.BINARY_HEADER)) {
-					throw new IOException("File \""+file+"\"is not a binary keypoint file");
+					throw new IOException("File \"" + file + "\"is not a binary keypoint file");
 				}
-				
-				DataInputStream dis = new DataInputStream(bis);
-				
-				Header h = new Header();
+
+				final DataInputStream dis = new DataInputStream(bis);
+
+				final Header h = new Header();
 				h.nfeatures = dis.readInt();
 				h.ndims = dis.readInt();
 				return h;
 			} finally {
-				try { bis.close(); } catch (IOException e) {}
+				try {
+					bis.close();
+				} catch (final IOException e) {
+				}
 			}
 		}
-		
+
 		@Override
 		public Header readHeader(InputStream bis) throws IOException {
-			byte [] header = new byte[LocalFeatureList.BINARY_HEADER.length];
+			final byte[] header = new byte[LocalFeatureList.BINARY_HEADER.length];
 			bis.read(header, 0, LocalFeatureList.BINARY_HEADER.length);
-		
+
 			if (!Arrays.equals(header, LocalFeatureList.BINARY_HEADER)) {
 				throw new IOException("Strean dies not contain a binary keypoint");
 			}
-			
-			DataInputStream dis = new DataInputStream(bis);
-			
-			Header h = new Header();
+
+			final DataInputStream dis = new DataInputStream(bis);
+
+			final Header h = new Header();
 			h.nfeatures = dis.readInt();
 			h.ndims = dis.readInt();
 			return h;
@@ -486,60 +495,63 @@ public enum FileType {
 
 		@Override
 		public FeatureFile read(File file) throws IOException {
-			StreamedFeatureFile ff = new StreamedFeatureFile(file,AffineSimulationKeypoint.class);
+			final StreamedFeatureFile ff = new StreamedFeatureFile(file, AffineSimulationKeypoint.class);
 			ff.setIteratorType(AffineSimulationKeypointListArrayIterator.class);
 			return ff;
 		}
-		
+
 		@Override
 		public FeatureFile read(InputStream stream) throws IOException {
-			StreamedFeatureFile ff = new StreamedFeatureFile(stream,AffineSimulationKeypoint.class);
+			final StreamedFeatureFile ff = new StreamedFeatureFile(stream, AffineSimulationKeypoint.class);
 			ff.setIteratorType(AffineSimulationKeypointListArrayIterator.class);
 			return ff;
 		}
-		
+
 		@Override
 		public byte[][] readFeatures(File file, int... index) throws IOException {
-			return readFeatures(new FileInputStream(file),index);
+			return readFeatures(new FileInputStream(file), index);
 		}
-		
+
 		@Override
 		public byte[][] readFeatures(InputStream file, int... index) throws IOException {
 			BufferedInputStream bis = null;
-			byte [][] data = new byte[index.length][];
+			final byte[][] data = new byte[index.length][];
 			try {
 				bis = new BufferedInputStream(file);
-				byte [] header = new byte[LocalFeatureList.BINARY_HEADER.length];
+				final byte[] header = new byte[LocalFeatureList.BINARY_HEADER.length];
 				bis.read(header, 0, LocalFeatureList.BINARY_HEADER.length);
-			
+
 				if (!Arrays.equals(header, LocalFeatureList.BINARY_HEADER)) {
-					throw new IOException("File \""+file+"\"is not a binary keypoint file");
+					throw new IOException("File \"" + file + "\"is not a binary keypoint file");
 				}
-				
-				DataInputStream dis = new DataInputStream(bis);
-				
-				Header h = new Header();
+
+				final DataInputStream dis = new DataInputStream(bis);
+
+				final Header h = new Header();
 				h.nfeatures = dis.readInt();
 				h.ndims = dis.readInt();
-				
+
 				// == float * 6 + int + KeypointEngine.VecLength
-				int vecLength = (28 + h.ndims);
+				final int vecLength = (28 + h.ndims);
 				int skipped = 0;
 				Arrays.sort(index);
-				for (int i=0; i<index.length; i++) {
-					int toSkip = (index[i]*vecLength) - skipped ;
+				for (int i = 0; i < index.length; i++) {
+					int toSkip = (index[i] * vecLength) - skipped;
 					skipped += toSkip;
-					while(toSkip > 0) toSkip -= dis.skip(toSkip);
-					
-					
-					AffineSimulationKeypoint kp = new AffineSimulationKeypoint(h.ndims);
+					while (toSkip > 0)
+						toSkip -= dis.skip(toSkip);
+
+					final AffineSimulationKeypoint kp = new AffineSimulationKeypoint(h.ndims);
 					kp.readBinary(dis);
 					data[i] = kp.ivec;
 					skipped += vecLength;
 				}
-				
+
 			} finally {
-				try { bis.close(); } catch (IOException e) {}
+				try {
+					bis.close();
+				} catch (final IOException e) {
+				}
 			}
 			return data;
 		}
@@ -549,7 +561,7 @@ public enum FileType {
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
-	ASIFTENRICHED_ASCII{
+	ASIFTENRICHED_ASCII {
 		@Override
 		public byte[][] readFeatures(File file, int... index) throws IOException {
 			return AsciiInterestPoint.readData(file, index, false, AsciiInterestPoint.NUM_ASIFT_LOC_FEATS);
@@ -559,7 +571,7 @@ public enum FileType {
 		public Header readHeader(File file) throws IOException {
 			return AsciiInterestPoint.readHeader(file, false);
 		}
-		
+
 		@Override
 		public Header readHeader(InputStream stream) throws IOException {
 			return AsciiInterestPoint.readHeader(new Scanner(stream), false);
@@ -569,7 +581,7 @@ public enum FileType {
 		public byte[][] readFeatures(File file) throws IOException {
 			return AsciiInterestPoint.readData(file, false, AsciiInterestPoint.NUM_ASIFT_LOC_FEATS);
 		}
-		
+
 		@Override
 		public FeatureFile read(File file) throws IOException {
 			return AsciiInterestPoint.read(file, false, AsciiInterestPoint.NUM_ASIFT_LOC_FEATS);
@@ -579,127 +591,120 @@ public enum FileType {
 		public FeatureFile read(InputStream source) throws IOException {
 			return AsciiInterestPoint.read(source, false, AsciiInterestPoint.NUM_ASIFT_LOC_FEATS);
 		}
-	}
-	;
+	};
 
-
-	
 	/**
-	 * Read the header (num features and dimensionality of features) from given file. 
-	 * Override for performance.
+	 * Read the header (num features and dimensionality of features) from given
+	 * file. Override for performance.
 	 * 
 	 * @param file
 	 * @return header
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public Header readHeader(File file) throws IOException {
-		Header header = new Header();
-		
-		FeatureFile ff = read(file);
-		if (ff.size() > 0 ) {
+		final Header header = new Header();
+
+		final FeatureFile ff = read(file);
+		if (ff.size() > 0) {
 			header.nfeatures = ff.size();
 			header.ndims = ff.get(0).data.length;
 		} else {
 			header.nfeatures = 0;
 			header.ndims = 0;
 		}
-		
+
 		return header;
 	}
 
 	/**
-	 * Read the header (num features and dimensionality of features) from given file. 
-	 * Override for performance.
+	 * Read the header (num features and dimensionality of features) from given
+	 * file. Override for performance.
 	 * 
 	 * @param stream
 	 * @return header
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public Header readHeader(InputStream stream) throws IOException {
-		Header header = new Header();
-		
-		FeatureFile ff = read(stream);
-		if (ff.size() > 0 ) {
+		final Header header = new Header();
+
+		final FeatureFile ff = read(stream);
+		if (ff.size() > 0) {
 			header.nfeatures = ff.size();
 			header.ndims = ff.get(0).data.length;
 		} else {
 			header.nfeatures = 0;
 			header.ndims = 0;
 		}
-		
+
 		return header;
 	}
 
 	/**
-	 * Read features at given indices from the file. 
-	 * Override for performance.
+	 * Read features at given indices from the file. Override for performance.
 	 * 
 	 * @param file
 	 * @param index
 	 * @return the feature data
 	 * @throws IOException
 	 */
-	public byte [][] readFeatures(File file, int... index) throws IOException {
-		
-		return readFeatures(new FileInputStream(file),index);
+	public byte[][] readFeatures(File file, int... index) throws IOException {
+
+		return readFeatures(new FileInputStream(file), index);
 	}
-	
+
 	/**
-	 * Read features at given indices from an input stream. 
-	 * Override for performance.
+	 * Read features at given indices from an input stream. Override for
+	 * performance.
 	 * 
 	 * @param stream
 	 * @param index
 	 * @return the feature data
 	 * @throws IOException
 	 */
-	public byte [][] readFeatures(InputStream stream, int... index) throws IOException {
-		
-		byte [][] features = readFeatures(stream);
-		byte [][] selected = new byte[index.length][];
-		for (int i=0; i<index.length; i++) {
+	public byte[][] readFeatures(InputStream stream, int... index) throws IOException {
+
+		final byte[][] features = readFeatures(stream);
+		final byte[][] selected = new byte[index.length][];
+		for (int i = 0; i < index.length; i++) {
 			selected[i] = features[index[i]];
 		}
 		return selected;
 	}
-	
-	
+
 	/**
-	 * Read all the features from the file. 
-	 * Override for performance.
+	 * Read all the features from the file. Override for performance.
 	 * 
 	 * @param file
 	 * @return the feature data
 	 * @throws IOException
 	 */
 	public byte[][] readFeatures(File file) throws IOException {
-		FeatureFile ff = read(file);
-		byte [][]data = new byte[ff.size()][];
+		final FeatureFile ff = read(file);
+		final byte[][] data = new byte[ff.size()][];
 		int i = 0;
-		for(FeatureFileFeature fff : ff){
+		for (final FeatureFileFeature fff : ff) {
 			data[i++] = fff.data;
 		}
 		return data;
 	}
-	
+
 	/**
-	 * Read all the features from the file. 
-	 * Override for performance.
+	 * Read all the features from the file. Override for performance.
 	 * 
 	 * @param stream
 	 * @return the feature data
 	 * @throws IOException
 	 */
 	public byte[][] readFeatures(InputStream stream) throws IOException {
-		FeatureFile ff = read(stream);
-		byte [][]data = new byte[ff.size()][];
+		final FeatureFile ff = read(stream);
+		final byte[][] data = new byte[ff.size()][];
 		int i = 0;
-		for(FeatureFileFeature fff : ff){
+		for (final FeatureFileFeature fff : ff) {
 			data[i++] = fff.data;
 		}
 		return data;
 	}
-	
+
 	/**
 	 * Read a file
 	 * 
@@ -708,12 +713,13 @@ public enum FileType {
 	 * @throws IOException
 	 */
 	public abstract FeatureFile read(File file) throws IOException;
-	
+
 	/**
 	 * Read a file
+	 * 
 	 * @param source
-	 * @return the features 
+	 * @return the features
 	 * @throws IOException
 	 */
-	public abstract FeatureFile read(InputStream source) throws IOException;	
+	public abstract FeatureFile read(InputStream source) throws IOException;
 }

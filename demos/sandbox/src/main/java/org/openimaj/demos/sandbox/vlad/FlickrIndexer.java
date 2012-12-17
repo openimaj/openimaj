@@ -76,7 +76,7 @@ public class FlickrIndexer {
 		final URI[] paths = TextBytesSequenceFileUtility
 				.getFiles("hdfs://seurat/data/flickr-all-geo-vlad.seq", "part-m-");
 
-		final File output = new File("/Volumes/My Book/flickr46m-vlad.dat");
+		final File output = new File("/Volumes/My Book/flickr46m-vlad-2.dat");
 
 		final DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
 
@@ -94,13 +94,14 @@ public class FlickrIndexer {
 				dos.writeLong(id);
 				dos.write(tmp);
 			}
+			dos.flush();
 		}
 
 		dos.close();
 	}
 
 	public static void createPQADCNN() throws IOException {
-		final File input = new File("/Volumes/My Book/flickr46m-vlad.dat");
+		final File input = new File("/Volumes/My Book/flickr46m-vlad-2.dat");
 
 		final DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(input)));
 
@@ -128,8 +129,8 @@ public class FlickrIndexer {
 			dis.close();
 		}
 
-		IOUtils.writeBinary(new File("/Volumes/My Book/flickr46m-vlad-pqadcnn.dat"), nn);
-		IOUtils.writeToFile(indexes, new File("/Volumes/My Book/flickr46m-vlad-pqadcnn-indexes.dat"));
+		IOUtils.writeBinary(new File("/Volumes/My Book/flickr46m-vlad-pqadcnn-2.dat"), nn);
+		IOUtils.writeToFile(indexes, new File("/Volumes/My Book/flickr46m-vlad-pqadcnn-indexes-2.dat"));
 	}
 
 	public static void buildOffsets() throws IOException {
@@ -189,7 +190,7 @@ public class FlickrIndexer {
 	public static void main(String[] args) throws Exception {
 		// convertCSV();
 		// extractSequenceFileData();
-		// createPQADCNN();
-		buildOffsets();
+		createPQADCNN();
+		// buildOffsets();
 	}
 }

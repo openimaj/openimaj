@@ -140,9 +140,13 @@ public class FlickrServerTest {
 		final StringBuffer sb = new StringBuffer();
 		sb.append("<html><body>");
 		for (int j = 0; j < length; j++) {
+			sb.append("<div style='width:100px; float: left;'>");
 			sb.append("<a href=\"/search?i=" + argmins[0][j] + "\">");
 			sb.append("<img width=\"100\" src=\"" + getImageId(argmins[0][j]) + "\"/>");
 			sb.append("</a>");
+			sb.append("<br />");
+			sb.append("FID " + indexes[argmins[0][j]]);
+			sb.append("</div>");
 		}
 		sb.append("</body></html>");
 

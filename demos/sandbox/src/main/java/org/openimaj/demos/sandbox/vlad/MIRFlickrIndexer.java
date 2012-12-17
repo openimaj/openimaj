@@ -18,14 +18,15 @@ import org.openimaj.util.parallel.Parallel;
 public class MIRFlickrIndexer {
 	public static void main(String[] args) {
 		final List<File> images = Arrays.asList((new
-				File("/Volumes/Raid/mirflickr/mirflickr")).listFiles(new FileFilter() {
+				File("/Volumes/My Book/Data/ukbench/images/")).listFiles(new FileFilter() {
 					@Override
 					public boolean accept(File pathname) {
 						return pathname.getName().endsWith(".jpg");
 					}
 				}));
 
-		final File outDir = new File("/Volumes/Raid/mirflickr/sift-1x");
+		final File outDir = new File("/Volumes/My Book/Data/ukbench/features/sift-2x");
+		outDir.mkdirs();
 
 		Parallel.forEach(images, new Operation<File>() {
 			@Override
@@ -37,7 +38,7 @@ public class MIRFlickrIndexer {
 						return;
 
 					final DoGSIFTEngine engine = new DoGSIFTEngine();
-					engine.getOptions().setDoubleInitialImage(false);
+					// engine.getOptions().setDoubleInitialImage(false);
 					System.out.println(file);
 
 					final FImage image = ImageUtilities.readF(file);
