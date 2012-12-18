@@ -42,13 +42,15 @@ package org.openimaj.knn;
 
 import org.openimaj.feature.#T#FVComparison;
 
+import org.openimaj.util.pair.Int#R#Pair;
+
 /**
  * Abstract base class for k-nearest-neighbour calculations with #t#[] data.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public abstract class #T#NearestNeighbours implements NearestNeighbours<#t#[], #r#[]> {
+public abstract class #T#NearestNeighbours implements NearestNeighbours<#t#[], #r#[], Int#R#Pair> {
 	/**
 	 * Static method to find the sum-squared distance between
 	 * a query vector and each of a set of points. Results are stored 
@@ -67,6 +69,46 @@ public abstract class #T#NearestNeighbours implements NearestNeighbours<#t#[], #
 			for (int d=0; d<D; ++d) {
 				dsq_out[n] += (qu[d] - pnts[n][d]) * (qu[d] - pnts[n][d]);
 			}
+		}
+	}
+	
+	/**
+	 * Static method to find the sum-squared distance between
+	 * a query vector and a point. 
+	 
+	 * @param qu The query vector.
+	 * @param pnt The point to compare against.
+	 * @return The resultant distance.
+	 */
+	public static #r# distanceFunc(final #t# [] qu, final #t# [] pnt) {
+		final int D = pnt.length;
+		
+		#r# dsq_out = 0;
+		for (int d=0; d<D; ++d) {
+			dsq_out += (qu[d] - pnt[d]) * (qu[d] - pnt[d]);
+		}
+		
+		return dsq_out;
+	}
+
+	/**
+	 * Static method to find a distance between
+	 * a query vector and a point.
+	 *
+	 * @param distance the distance measure
+	 * @param qu The query vector.
+	 * @param pnt The point to compare against.
+	 * @return The resultant distance. 
+	 */
+	public static #r# distanceFunc(final #T#FVComparison distance, final #t# [] qu, final #t# [] pnt) {
+		if (distance == null) {
+			return distanceFunc(qu, pnt);
+		}
+		
+		if (distance.isDistance()) {
+			return (#r#) distance.compare(qu, pnt);
+		} else {
+            return - (#r#) distance.compare(qu, pnt);
 		}
 	}
 	

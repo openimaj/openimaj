@@ -30,7 +30,6 @@
 
 package org.openimaj.knn;
 
-
 /**
  * Interface for factory objects that can produce {@link NearestNeighbours}
  * objects for some given data.
@@ -42,7 +41,7 @@ package org.openimaj.knn;
  * @param <DATA>
  *            The type of data
  */
-public interface NearestNeighboursFactory<T extends NearestNeighbours<DATA, ?>, DATA> {
+public interface NearestNeighboursFactory<T extends NearestNeighbours<DATA, ?, ?>, DATA> {
 	/**
 	 * Create a {@link NearestNeighbours} object that works over the provided
 	 * data.

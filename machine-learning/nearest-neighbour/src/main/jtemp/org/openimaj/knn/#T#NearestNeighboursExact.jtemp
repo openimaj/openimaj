@@ -40,14 +40,12 @@
 ***/
 package org.openimaj.knn;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import jal.objects.BinaryPredicate;
-import jal.objects.Sorting;
-
 import org.openimaj.feature.#T#FVComparison;
-import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.util.pair.*;
+import org.openimaj.util.pair.Int#R#Pair;
+import org.openimaj.util.queue.BoundedPriorityQueue;
 
 /**
  * Exact (brute-force) k-nearest-neighbour implementation.
@@ -118,100 +116,153 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 	}
 	
 	@Override
-	public void searchNN(final #t# [][] qus, int [] argmins, #r# [] mins) {
+	public void searchNN(final #t# [][] qus, int [] indices, #r# [] distances) {
 		final int N = qus.length;
-		#r#[] dsqout = new #r#[pnts.length];
+		
+		final BoundedPriorityQueue<Int#R#Pair> queue =
+				new BoundedPriorityQueue<Int#R#Pair>(1, Int#R#Pair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+        //prepare working data
+		List<Int#R#Pair> list = new ArrayList<Int#R#Pair>(2);
+		list.add(new Int#R#Pair());
+		list.add(new Int#R#Pair());
 		
 		for (int n=0; n < N; ++n) {
-			distanceFunc(distance, qus[n], pnts, dsqout);
-
-			argmins[n] = ArrayUtils.minIndex(dsqout);
-
-			mins[n] = dsqout[argmins[n]];
+			List<Int#R#Pair> result = search(qus[n], queue, list);
+			
+			final Int#R#Pair p = result.get(0);
+			indices[n] = p.first;
+			distances[n] = p.second;
 		}
 	}
 
 	@Override
-	public void searchKNN(final #t# [][] qus, int K, int [][] argmins, #r# [][] mins) {
+	public void searchKNN(final #t# [][] qus, int K, int [][] indices, #r# [][] distances) {
 		// Fix for when the user asks for too many points.
 		K = Math.min(K, pnts.length);
-		
-		#r# [] dsqout = new #r#[pnts.length];
+
 		final int N = qus.length;
-		
-		#R#IntPair[] knn_prs = new #R#IntPair[pnts.length];
-		
-		for (int n=0; n < N; ++n) {
-			distanceFunc(distance, qus[n], pnts, dsqout);
 
-			for (int p=0; p < pnts.length; ++p)
-				knn_prs[p] = new #R#IntPair(dsqout[p], p);
+		final BoundedPriorityQueue<Int#R#Pair> queue =
+				new BoundedPriorityQueue<Int#R#Pair>(K, Int#R#Pair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
-			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
-				@Override
-				public boolean apply(Object arg0, Object arg1) {
-					#R#IntPair p1 = (#R#IntPair) arg0;
-					#R#IntPair p2 = (#R#IntPair) arg1;
-					
-					if (p1.first < p2.first) return true;
-					if (p2.first < p1.first) return false;
-					return (p1.second < p2.second);
-				}});
+        //prepare working data
+		List<Int#R#Pair> list = new ArrayList<Int#R#Pair>(K + 1);
+		for (int i = 0; i < K + 1; i++) {
+			list.add(new Int#R#Pair());
+		}
 
-			for (int k=0; k < K; ++k) {
-				argmins[n][k] = knn_prs[k].second;
-				mins[n][k] = knn_prs[k].first;
+        // search on each query
+		for (int n = 0; n < N; ++n) {
+			List<Int#R#Pair> result = search(qus[n], queue, list);
+			
+			for (int k = 0; k < K; ++k) {
+				final Int#R#Pair p = result.get(k);
+				indices[n][k] = p.first;
+				distances[n][k] = p.second;
 			}
 		}
 	}
 	
 	@Override
-	public void searchNN(final List<#t#[]> qus, int [] argmins, #r# [] mins) {
+	public void searchNN(final List<#t#[]> qus, int [] indices, #r# [] distances) {
 		final int N = qus.size();
-		#r#[] dsqout = new #r#[pnts.length];
+		
+		final BoundedPriorityQueue<Int#R#Pair> queue =
+				new BoundedPriorityQueue<Int#R#Pair>(1, Int#R#Pair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+        //prepare working data
+		List<Int#R#Pair> list = new ArrayList<Int#R#Pair>(2);
+		list.add(new Int#R#Pair());
+		list.add(new Int#R#Pair());
 		
 		for (int n=0; n < N; ++n) {
-			distanceFunc(distance, qus.get(n), pnts, dsqout);
-
-			argmins[n] = ArrayUtils.minIndex(dsqout);
-
-			mins[n] = dsqout[argmins[n]];
+			List<Int#R#Pair> result = search(qus.get(n), queue, list);
+			
+			final Int#R#Pair p = result.get(0);
+			indices[n] = p.first;
+			distances[n] = p.second;
 		}
 	}
 
 	@Override
-	public void searchKNN(final List<#t#[]> qus, int K, int [][] argmins, #r# [][] mins) {
+	public void searchKNN(final List<#t#[]> qus, int K, int [][] indices, #r# [][] distances) {
 		// Fix for when the user asks for too many points.
 		K = Math.min(K, pnts.length);
-		
-		#r# [] dsqout = new #r#[pnts.length];
+
 		final int N = qus.size();
-		
-		#R#IntPair[] knn_prs = new #R#IntPair[pnts.length];
-		
-		for (int n=0; n < N; ++n) {
-			distanceFunc(distance, qus.get(n), pnts, dsqout);
 
-			for (int p=0; p < pnts.length; ++p)
-				knn_prs[p] = new #R#IntPair(dsqout[p], p);
+		final BoundedPriorityQueue<Int#R#Pair> queue =
+				new BoundedPriorityQueue<Int#R#Pair>(K, Int#R#Pair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
-			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
-				@Override
-				public boolean apply(Object arg0, Object arg1) {
-					FloatIntPair p1 = (FloatIntPair) arg0;
-					FloatIntPair p2 = (FloatIntPair) arg1;
-					
-					if (p1.first < p2.first) return true;
-					if (p2.first < p1.first) return false;
-					return (p1.second < p2.second);
-				}});
+        //prepare working data
+		List<Int#R#Pair> list = new ArrayList<Int#R#Pair>(K + 1);
+		for (int i = 0; i < K + 1; i++) {
+			list.add(new Int#R#Pair());
+		}
 
-			for (int k=0; k < K; ++k) {
-				argmins[n][k] = knn_prs[k].second;
-				mins[n][k] = knn_prs[k].first;
+        // search on each query
+		for (int n = 0; n < N; ++n) {
+			List<Int#R#Pair> result = search(qus.get(n), queue, list);
+			
+			for (int k = 0; k < K; ++k) {
+				final Int#R#Pair p = result.get(k);
+				indices[n][k] = p.first;
+				distances[n][k] = p.second;
 			}
 		}
 	}
+
+    @Override
+	public List<Int#R#Pair> searchKNN(#t#[] query, int K) {
+		// Fix for when the user asks for too many points.
+		K = Math.min(K, pnts.length);
+
+		final BoundedPriorityQueue<Int#R#Pair> queue =
+				new BoundedPriorityQueue<Int#R#Pair>(K, Int#R#Pair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+        //prepare working data
+		List<Int#R#Pair> list = new ArrayList<Int#R#Pair>(K + 1);
+		for (int i = 0; i < K + 1; i++) {
+			list.add(new Int#R#Pair());
+		}
+
+        // search
+        return search(query, queue, list);
+	}
+
+	@Override
+	public Int#R#Pair searchNN(final #t#[] query) {
+		final BoundedPriorityQueue<Int#R#Pair> queue =
+				new BoundedPriorityQueue<Int#R#Pair>(1, Int#R#Pair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+        //prepare working data
+		List<Int#R#Pair> list = new ArrayList<Int#R#Pair>(2);
+		list.add(new Int#R#Pair());
+		list.add(new Int#R#Pair());
+		
+		return search(query, queue, list).get(0);
+	}
+
+    private List<Int#R#Pair> search(#t#[] query, BoundedPriorityQueue<Int#R#Pair> queue, List<Int#R#Pair> results) {
+        Int#R#Pair wp = null;
+        
+        // reset all values in the queue to MAX, -1
+		for (final Int#R#Pair p : results) {
+			p.second = Float.MAX_VALUE;
+			p.first = -1;
+			wp = queue.offerItem(p);
+		}
+
+        // perform the search
+		for (int i = 0; i < this.pnts.length; i++) {
+			wp.second = distanceFunc(distance, query, pnts[i]);
+			wp.first = i;
+			wp = queue.offerItem(wp);
+		}
+		
+        return queue.toOrderedListDestructive();
+    }
 
 	@Override
 	public int numDimensions() {

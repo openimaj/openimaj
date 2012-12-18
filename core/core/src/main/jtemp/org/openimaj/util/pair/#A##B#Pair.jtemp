@@ -29,6 +29,8 @@
  */
 package org.openimaj.util.pair;
 
+import java.util.Comparator;
+
 /**
  * A pair of #a# and #b# types
  * 
@@ -36,6 +38,62 @@ package org.openimaj.util.pair;
  *
  */
 public class #A##B#Pair {
+    /**
+     * Comparator for comparing the first element of a {@link #A##B#Pair} in ascending order.
+     */
+    public static final Comparator<#A##B#Pair> FIRST_ITEM_ASCENDING_COMPARATOR = new Comparator<#A##B#Pair>() {
+    	@Override
+		public int compare(#A##B#Pair o1, #A##B#Pair o2) {
+			if (o1.first < o2.first)
+				return -1;
+			if (o1.first > o2.first)
+				return 1;
+			return 0;
+		}
+	};
+	
+	/**
+     * Comparator for comparing the first element of a {@link #A##B#Pair} in descending order.
+     */
+	public static final Comparator<#A##B#Pair> FIRST_ITEM_DESCENDING_COMPARATOR = new Comparator<#A##B#Pair>() {
+    	@Override
+		public int compare(#A##B#Pair o1, #A##B#Pair o2) {
+			if (o1.first < o2.first)
+				return 1;
+			if (o1.first > o2.first)
+				return -1;
+			return 0;
+		}
+	};
+	
+	/**
+     * Comparator for comparing the second element of a {@link #A##B#Pair} in ascending order.
+     */
+	public static final Comparator<#A##B#Pair> SECOND_ITEM_ASCENDING_COMPARATOR = new Comparator<#A##B#Pair>() {
+    	@Override
+		public int compare(#A##B#Pair o1, #A##B#Pair o2) {
+			if (o1.second < o2.second)
+				return -1;
+			if (o1.second > o2.second)
+				return 1;
+			return 0;
+		}
+	};
+	
+	/**
+     * Comparator for comparing the second element of a {@link #A##B#Pair} in descending order.
+     */
+	public static final Comparator<#A##B#Pair> SECOND_ITEM_DESCENDING_COMPARATOR = new Comparator<#A##B#Pair>() {
+    	@Override
+		public int compare(#A##B#Pair o1, #A##B#Pair o2) {
+			if (o1.second < o2.second)
+				return 1;
+			if (o1.second > o2.second)
+				return -1;
+			return 0;
+		}
+	};
+    
 	/**
 	 * The first element of the pair  
 	 */

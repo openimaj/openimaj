@@ -29,15 +29,12 @@
  */
 package org.openimaj.knn;
 
-import jal.objects.BinaryPredicate;
-import jal.objects.Sorting;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.comparator.DistanceComparator;
-import org.openimaj.util.pair.FloatIntPair;
+import org.openimaj.util.pair.IntFloatPair;
+import org.openimaj.util.queue.BoundedPriorityQueue;
 
 /**
  * Exact (brute-force) k-nearest-neighbour implementation for objects with a
@@ -51,7 +48,7 @@ import org.openimaj.util.pair.FloatIntPair;
  */
 public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 		implements
-		IncrementalNearestNeighbours<T, float[]>
+		IncrementalNearestNeighbours<T, float[], IntFloatPair>
 {
 	protected final List<T> pnts;
 
@@ -88,105 +85,154 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 	}
 
 	@Override
-	public void searchNN(final List<T> qus, final int[] argmins, final float[] mins) {
-		final int N = qus.size();
-		final float[] dsqout = new float[this.pnts.size()];
+	public void searchNN(final T[] qus, int[] indices, float[] distances) {
+		final int N = qus.length;
+
+		final BoundedPriorityQueue<IntFloatPair> queue =
+				new BoundedPriorityQueue<IntFloatPair>(1, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+		// prepare working data
+		List<IntFloatPair> list = new ArrayList<IntFloatPair>(2);
+		list.add(new IntFloatPair());
+		list.add(new IntFloatPair());
 
 		for (int n = 0; n < N; ++n) {
-			ObjectNearestNeighbours.distanceFunc(this.distance, qus.get(n), this.pnts, dsqout);
+			List<IntFloatPair> result = search(qus[n], queue, list);
 
-			argmins[n] = ArrayUtils.minIndex(dsqout);
-
-			mins[n] = dsqout[argmins[n]];
+			final IntFloatPair p = result.get(0);
+			indices[n] = p.first;
+			distances[n] = p.second;
 		}
 	}
 
 	@Override
-	public void searchKNN(final List<T> qus, int K, final int[][] argmins, final float[][] mins) {
+	public void searchKNN(final T[] qus, int K, int[][] indices, float[][] distances) {
 		// Fix for when the user asks for too many points.
-		K = Math.min(K, this.pnts.size());
+		K = Math.min(K, pnts.size());
 
-		final float[] dsqout = new float[this.pnts.size()];
-		final int N = qus.size();
+		final int N = qus.length;
 
-		final FloatIntPair[] knn_prs = new FloatIntPair[this.pnts.size()];
+		final BoundedPriorityQueue<IntFloatPair> queue =
+				new BoundedPriorityQueue<IntFloatPair>(K, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
+		// prepare working data
+		List<IntFloatPair> list = new ArrayList<IntFloatPair>(K + 1);
+		for (int i = 0; i < K + 1; i++) {
+			list.add(new IntFloatPair());
+		}
+
+		// search on each query
 		for (int n = 0; n < N; ++n) {
-			ObjectNearestNeighbours.distanceFunc(this.distance, qus.get(n), this.pnts, dsqout);
-
-			for (int p = 0; p < this.pnts.size(); ++p)
-				knn_prs[p] = new FloatIntPair(dsqout[p], p);
-
-			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
-				@Override
-				public boolean apply(final Object arg0, final Object arg1) {
-					final FloatIntPair p1 = (FloatIntPair) arg0;
-					final FloatIntPair p2 = (FloatIntPair) arg1;
-
-					if (p1.first < p2.first)
-						return true;
-					if (p2.first < p1.first)
-						return false;
-					return (p1.second < p2.second);
-				}
-			});
+			List<IntFloatPair> result = search(qus[n], queue, list);
 
 			for (int k = 0; k < K; ++k) {
-				argmins[n][k] = knn_prs[k].second;
-				mins[n][k] = knn_prs[k].first;
+				final IntFloatPair p = result.get(k);
+				indices[n][k] = p.first;
+				distances[n][k] = p.second;
 			}
 		}
 	}
 
 	@Override
-	public void searchNN(final T[] qus, final int[] argmins, final float[] mins) {
-		final int N = qus.length;
-		final float[] dsqout = new float[this.pnts.size()];
+	public void searchNN(final List<T> qus, int[] indices, float[] distances) {
+		final int N = qus.size();
+
+		final BoundedPriorityQueue<IntFloatPair> queue =
+				new BoundedPriorityQueue<IntFloatPair>(1, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+		// prepare working data
+		List<IntFloatPair> list = new ArrayList<IntFloatPair>(2);
+		list.add(new IntFloatPair());
+		list.add(new IntFloatPair());
 
 		for (int n = 0; n < N; ++n) {
-			ObjectNearestNeighbours.distanceFunc(this.distance, qus[n], this.pnts, dsqout);
+			List<IntFloatPair> result = search(qus.get(n), queue, list);
 
-			argmins[n] = ArrayUtils.minIndex(dsqout);
-
-			mins[n] = dsqout[argmins[n]];
+			final IntFloatPair p = result.get(0);
+			indices[n] = p.first;
+			distances[n] = p.second;
 		}
 	}
 
 	@Override
-	public void searchKNN(final T[] qus, int K, final int[][] argmins, final float[][] mins) {
+	public void searchKNN(final List<T> qus, int K, int[][] indices, float[][] distances) {
 		// Fix for when the user asks for too many points.
-		K = Math.min(K, this.pnts.size());
+		K = Math.min(K, pnts.size());
 
-		final float[] dsqout = new float[this.pnts.size()];
-		final int N = qus.length;
+		final int N = qus.size();
 
-		final FloatIntPair[] knn_prs = new FloatIntPair[this.pnts.size()];
+		final BoundedPriorityQueue<IntFloatPair> queue =
+				new BoundedPriorityQueue<IntFloatPair>(K, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
+		// prepare working data
+		List<IntFloatPair> list = new ArrayList<IntFloatPair>(K);
+		for (int i = 0; i < K; i++) {
+			list.add(new IntFloatPair());
+		}
+
+		// search on each query
 		for (int n = 0; n < N; ++n) {
-			ObjectNearestNeighbours.distanceFunc(this.distance, qus[n], this.pnts, dsqout);
-
-			for (int p = 0; p < this.pnts.size(); ++p)
-				knn_prs[p] = new FloatIntPair(dsqout[p], p);
-
-			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
-				@Override
-				public boolean apply(final Object arg0, final Object arg1) {
-					final FloatIntPair p1 = (FloatIntPair) arg0;
-					final FloatIntPair p2 = (FloatIntPair) arg1;
-
-					if (p1.first < p2.first)
-						return true;
-					if (p2.first < p1.first)
-						return false;
-					return (p1.second < p2.second);
-				}
-			});
+			List<IntFloatPair> result = search(qus.get(n), queue, list);
 
 			for (int k = 0; k < K; ++k) {
-				argmins[n][k] = knn_prs[k].second;
-				mins[n][k] = knn_prs[k].first;
+				final IntFloatPair p = result.get(k);
+				indices[n][k] = p.first;
+				distances[n][k] = p.second;
 			}
 		}
+	}
+
+	@Override
+	public List<IntFloatPair> searchKNN(T query, int K) {
+		// Fix for when the user asks for too many points.
+		K = Math.min(K, pnts.size());
+
+		final BoundedPriorityQueue<IntFloatPair> queue =
+				new BoundedPriorityQueue<IntFloatPair>(K, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+		// prepare working data
+		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(K + 1);
+		for (int i = 0; i < K + 1; i++) {
+			list.add(new IntFloatPair());
+		}
+
+		// search
+		return search(query, queue, list);
+	}
+
+	@Override
+	public IntFloatPair searchNN(final T query) {
+		final BoundedPriorityQueue<IntFloatPair> queue =
+				new BoundedPriorityQueue<IntFloatPair>(1, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+		// prepare working data
+		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(2);
+		list.add(new IntFloatPair());
+		list.add(new IntFloatPair());
+
+		return search(query, queue, list).get(0);
+	}
+
+	private List<IntFloatPair> search(T query, BoundedPriorityQueue<IntFloatPair> queue, List<IntFloatPair> results)
+	{
+	    IntFloatPair wp = null;
+	    
+		// reset all values in the queue to MAX, -1
+		for (final IntFloatPair p : results) {
+			p.second = Float.MAX_VALUE;
+			p.first = -1;
+			wp = queue.offerItem(p);
+		}
+
+		// perform the search
+		final int size = this.pnts.size();
+		for (int i = 0; i < size; i++) {
+			wp.second = ObjectNearestNeighbours.distanceFunc(distance, query, pnts.get(i));
+			wp.first = i;
+			wp = queue.offerItem(wp);
+		}
+
+		return queue.toOrderedListDestructive();
 	}
 
 	@Override

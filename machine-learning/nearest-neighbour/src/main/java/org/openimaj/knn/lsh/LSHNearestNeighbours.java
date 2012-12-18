@@ -32,8 +32,6 @@ package org.openimaj.knn.lsh;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.TIntHashSet;
-import jal.objects.BinaryPredicate;
-import jal.objects.Sorting;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -44,8 +42,8 @@ import org.openimaj.knn.IncrementalNearestNeighbours;
 import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
-import org.openimaj.util.pair.DoubleIntPair;
-import org.openimaj.util.pair.FloatIntPair;
+import org.openimaj.util.pair.IntFloatPair;
+import org.openimaj.util.queue.BoundedPriorityQueue;
 
 /**
  * Nearest-neighbours based on Locality Sensitive Hashing (LSH). A number of
@@ -66,7 +64,7 @@ import org.openimaj.util.pair.FloatIntPair;
  */
 public class LSHNearestNeighbours<OBJECT>
 		implements
-		IncrementalNearestNeighbours<OBJECT, float[]>
+		IncrementalNearestNeighbours<OBJECT, float[], IntFloatPair>
 {
 	/**
 	 * Encapsulates a hash table with an associated hash function and pointers
@@ -334,35 +332,51 @@ public class LSHNearestNeighbours<OBJECT>
 	/*
 	 * Exact NN on a subset
 	 */
-	private void exactNN(List<OBJECT> data, int[] ids, OBJECT query, int K, int[] argmins, float[] mins) {
-		final int size = data.size();
+	private void exactNN(List<OBJECT> subset, int[] ids, OBJECT query, int K, int[] argmins, float[] mins) {
+		final int size = subset.size();
 
 		// Fix for when the user asks for too many points.
 		K = Math.min(K, size);
 
-		final FloatIntPair[] knn_prs = new FloatIntPair[size];
-		for (int i = 0; i < size; i++) {
-			knn_prs[i] = new FloatIntPair((float) distanceFcn.compare(query, data.get(i)), ids[i]);
+		final BoundedPriorityQueue<IntFloatPair> queue =
+				new BoundedPriorityQueue<IntFloatPair>(K, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+		// prepare working data
+		List<IntFloatPair> list = new ArrayList<IntFloatPair>(K+1);
+		for (int i = 0; i < K+1; i++) {
+			list.add(new IntFloatPair());
 		}
 
-		Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
-			@Override
-			public boolean apply(Object arg0, Object arg1) {
-				final DoubleIntPair p1 = (DoubleIntPair) arg0;
-				final DoubleIntPair p2 = (DoubleIntPair) arg1;
-
-				if (p1.first < p2.first)
-					return true;
-				if (p2.first < p1.first)
-					return false;
-				return (p1.second < p2.second);
-			}
-		});
+		List<IntFloatPair> result = search(subset, query, queue, list);
 
 		for (int k = 0; k < K; ++k) {
-			argmins[k] = knn_prs[k].second;
-			mins[k] = knn_prs[k].first;
+			final IntFloatPair p = result.get(k);
+			argmins[k] = p.first;
+			mins[k] = p.second;
 		}
+	}
+
+	private List<IntFloatPair> search(List<OBJECT> subset, OBJECT query, BoundedPriorityQueue<IntFloatPair> queue,
+			List<IntFloatPair> results)
+	{
+		final int size = subset.size();
+
+        IntFloatPair wp = null;
+		// reset all values in the queue to MAX, -1
+		for (final IntFloatPair p : results) {
+			p.second = Float.MAX_VALUE;
+			p.first = -1;
+			wp = queue.offerItem(p);
+		}
+
+		// perform the search
+		for (int i = 0; i < size; i++) {
+			wp.second = (float) distanceFcn.compare(query, subset.get(i));
+			wp.first = i;
+			wp = queue.offerItem(wp);
+		}
+
+		return queue.toOrderedListDestructive();
 	}
 
 	@Override
@@ -410,5 +424,36 @@ public class LSHNearestNeighbours<OBJECT>
 		}
 
 		return indexes;
+	}
+
+	@Override
+	public List<IntFloatPair> searchKNN(OBJECT query, int K) {
+		final ArrayList<OBJECT> qus = new ArrayList<OBJECT>(1);
+		qus.add(query);
+
+		final int[][] idx = new int[1][K];
+		final float[][] dst = new float[1][K];
+
+		this.searchKNN(qus, K, idx, dst);
+
+		final List<IntFloatPair> res = new ArrayList<IntFloatPair>();
+		for (int k = 0; k < K; k++) {
+			res.add(new IntFloatPair(idx[0][k], dst[0][k]));
+		}
+
+		return res;
+	}
+
+	@Override
+	public IntFloatPair searchNN(OBJECT query) {
+		final ArrayList<OBJECT> qus = new ArrayList<OBJECT>(1);
+		qus.add(query);
+
+		final int[] idx = new int[1];
+		final float[] dst = new float[1];
+
+		this.searchNN(qus, idx, dst);
+
+		return new IntFloatPair(idx[0], dst[0]);
 	}
 }

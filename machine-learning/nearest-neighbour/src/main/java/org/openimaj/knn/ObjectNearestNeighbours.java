@@ -29,9 +29,8 @@
  */
 package org.openimaj.knn;
 
-import java.util.List;
-
 import org.openimaj.util.comparator.DistanceComparator;
+import org.openimaj.util.pair.IntFloatPair;
 
 /**
  * Abstract base class for k-nearest-neighbour calculations with any form of
@@ -43,7 +42,7 @@ import org.openimaj.util.comparator.DistanceComparator;
  * @param <T>
  *            Type of object being compared.
  */
-public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T, float[]> {
+public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T, float[], IntFloatPair> {
 	protected DistanceComparator<? super T> distance;
 
 	/**
@@ -57,9 +56,7 @@ public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T,
 	}
 
 	/**
-	 * Static method to find a distance between a query vector and each of a set
-	 * of points. Results are stored in the dsq_out array, much must have the
-	 * same length as the number of points.
+	 * Static method to find a distance between a query vector and point.
 	 * 
 	 * @param <T>
 	 *            Type of object being compared.
@@ -67,24 +64,16 @@ public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T,
 	 *            the distance measure
 	 * @param qu
 	 *            The query vector.
-	 * @param pnts
-	 *            The points to compare against.
-	 * @param dsq_out
-	 *            The resultant distances.
+	 * @param pnt
+	 *            The point
+	 * @return the distance
 	 */
-	public static <T> void distanceFunc(final DistanceComparator<? super T> distance, final T qu, final List<T> pnts,
-			final float[] dsq_out)
+	public static <T> float distanceFunc(final DistanceComparator<? super T> distance, final T qu, final T pnt)
 	{
-		final int N = pnts.size();
-
 		if (distance.isDistance()) {
-			for (int n = 0; n < N; ++n) {
-				dsq_out[n] = (float) distance.compare(qu, pnts.get(n));
-			}
+			return (float) distance.compare(qu, pnt);
 		} else {
-			for (int n = 0; n < N; ++n) {
-				dsq_out[n] = -(float) distance.compare(qu, pnts.get(n));
-			}
+			return -(float) distance.compare(qu, pnt);
 		}
 	}
 }

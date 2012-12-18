@@ -162,9 +162,9 @@ public class #T#KDTreeEnsemble {
 	        // If either partition is empty -> vectors identical!
 	        if (l==0 || l==N) { l = N/2; } // The vectors are identical, so keep nlogn performance.
 
-	        left = new #T#KDTreeNode(pnts, inds.subView(0, l),rng);
+	        left = new #T#KDTreeNode(pnts, inds.subView(0, l), rng);
 	        
-	        ((InternalNodeData)node_data).right = new #T#KDTreeNode(pnts, inds.subView(l, N),rng);
+	        ((InternalNodeData)node_data).right = new #T#KDTreeNode(pnts, inds.subView(l, N), rng);
 	    }
 
 		/** Construct a new node */
@@ -172,11 +172,13 @@ public class #T#KDTreeEnsemble {
 
 		/** 
 		 * Construct a new node with the given data
+		 *
 		 * @param pnts the data for the node and its children
 		 * @param inds a list of indices that point to the relevant
 		 *			parts of the pnts array that should be used
+		 * @param rng the random number generator
 		 */
-	    public #T#KDTreeNode(final #t# [][] pnts, IntArrayView inds,Uniform rng) {
+	    public #T#KDTreeNode(final #t# [][] pnts, IntArrayView inds, Uniform rng) {
 	    	this.rng = rng;
 	        if (inds.size() > leaf_max_points) { // Internal node
 	        	node_data = new InternalNodeData();

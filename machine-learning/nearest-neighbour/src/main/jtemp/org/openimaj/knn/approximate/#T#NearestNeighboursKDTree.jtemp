@@ -40,6 +40,7 @@
 ***/
 package org.openimaj.knn.approximate;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.citation.annotation.Reference;
@@ -199,5 +200,26 @@ public class #T#NearestNeighboursKDTree extends #T#NearestNeighbours {
             argmins[n] = nn[0].first;
             mins[n] = nn[0].second;
         }
+	}
+	
+	@Override
+	public List<Int#R#Pair> searchKNN(#t#[] query, int K) {
+		// Fix for when the user asks for too many points.
+		K = Math.min(K, kdt.pnts.length);
+
+		final Int#R#Pair[] nns = new Int#R#Pair[K];
+
+		kdt.search(query, K, nns, nchecks);
+
+		return Arrays.asList(nns);
+	}
+
+	@Override
+	public Int#R#Pair searchNN(#t#[] query) {
+		final Int#R#Pair[] nn = new Int#R#Pair[1];
+
+		kdt.search(query, 1, nn, nchecks);
+		
+		return nn[0];
 	}
 }

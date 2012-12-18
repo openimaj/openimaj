@@ -41,8 +41,13 @@ import java.util.List;
  *            The type of data
  * @param <DISTANCES>
  *            The type of distances measured (usually an array type)
+ * @param <PAIR_TYPE>
+ *            The type of distance-index pair returned by the search methods
  */
-public interface IncrementalNearestNeighbours<DATA, DISTANCES> extends NearestNeighbours<DATA, DISTANCES> {
+public interface IncrementalNearestNeighbours<DATA, DISTANCES, PAIR_TYPE>
+		extends
+		NearestNeighbours<DATA, DISTANCES, PAIR_TYPE>
+{
 	/**
 	 * Insert all the given data
 	 * 

@@ -45,7 +45,7 @@ import org.openimaj.util.parallel.GlobalExecutorPool;
  * @param <DATA>
  *            The type of data
  */
-public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?>, DATA> implements Cloneable {
+public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA> implements Cloneable {
 	/**
 	 * The default number of samples per parallel assignment instance.
 	 */

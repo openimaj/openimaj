@@ -42,8 +42,10 @@ import java.util.List;
  *            The type of data
  * @param <DISTANCES>
  *            The type of distances measured (usually an array type)
+ * @param <PAIR_TYPE>
+ *            The type of distance-index pair returned by the search methods
  */
-public interface NearestNeighbours<DATA, DISTANCES> {
+public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 
 	/**
 	 * Search for the nearest neighbour to each of the N queries, and return the
@@ -55,14 +57,14 @@ public interface NearestNeighbours<DATA, DISTANCES> {
 	 * 
 	 * @param qus
 	 *            An array of N query vectors
-	 * @param argmins
+	 * @param indices
 	 *            The return N-dimensional array for holding the indices of the
 	 *            nearest neighbour of each respective query.
-	 * @param mins
+	 * @param distances
 	 *            The return N-dimensional array for holding the distances of
 	 *            the nearest neighbour to each respective query.
 	 */
-	public abstract void searchNN(final DATA[] qus, int[] argmins, DISTANCES mins);
+	public abstract void searchNN(final DATA[] qus, int[] indices, DISTANCES distances);
 
 	/**
 	 * Search for the K nearest neighbours to each of the N queries, and return
@@ -76,14 +78,14 @@ public interface NearestNeighbours<DATA, DISTANCES> {
 	 *            An array of N query vectors
 	 * @param K
 	 *            the number of neighbours to find
-	 * @param argmins
+	 * @param indices
 	 *            The return N*K-dimensional array for holding the indices of
 	 *            the K nearest neighbours of each respective query.
-	 * @param mins
+	 * @param distances
 	 *            The return N*K-dimensional array for holding the distances of
 	 *            the nearest neighbours of each respective query.
 	 */
-	public abstract void searchKNN(final DATA[] qus, int K, int[][] argmins, DISTANCES[] mins);
+	public abstract void searchKNN(final DATA[] qus, int K, int[][] indices, DISTANCES[] distances);
 
 	/**
 	 * Search for the nearest neighbour to each of the N queries, and return the
@@ -95,14 +97,14 @@ public interface NearestNeighbours<DATA, DISTANCES> {
 	 * 
 	 * @param qus
 	 *            An array of N query vectors
-	 * @param argmins
+	 * @param indices
 	 *            The return N-dimensional array for holding the indices of the
 	 *            nearest neighbour of each respective query.
-	 * @param mins
+	 * @param distances
 	 *            The return N-dimensional array for holding the distances of
 	 *            the nearest neighbour to each respective query.
 	 */
-	public abstract void searchNN(final List<DATA> qus, int[] argmins, DISTANCES mins);
+	public abstract void searchNN(final List<DATA> qus, int[] indices, DISTANCES distances);
 
 	/**
 	 * Search for the K nearest neighbours to each of the N queries, and return
@@ -116,14 +118,37 @@ public interface NearestNeighbours<DATA, DISTANCES> {
 	 *            An array of N query vectors
 	 * @param K
 	 *            the number of neighbours to find
-	 * @param argmins
+	 * @param indices
 	 *            The return N*K-dimensional array for holding the indices of
 	 *            the K nearest neighbours of each respective query.
-	 * @param mins
+	 * @param distances
 	 *            The return N*K-dimensional array for holding the distances of
 	 *            the nearest neighbours of each respective query.
 	 */
-	public abstract void searchKNN(final List<DATA> qus, int K, int[][] argmins, DISTANCES[] mins);
+	public abstract void searchKNN(final List<DATA> qus, int K, int[][] indices, DISTANCES[] distances);
+
+	/**
+	 * Search for the K nearest neighbours to the given query and return an
+	 * ordered list of pairs containing the distance and index of each
+	 * neighbour.
+	 * 
+	 * @param query
+	 *            the query vector
+	 * @param K
+	 *            the number of neighbours to search for
+	 * @return the top K nearest neighbours ordered by increasing distance
+	 */
+	public abstract List<PAIR_TYPE> searchKNN(DATA query, int K);
+
+	/**
+	 * Search for the nearest neighbour to the given query and return a pair
+	 * containing the distance and index of that neighbour.
+	 * 
+	 * @param query
+	 *            the query vector
+	 * @return the distance and index of the nearest neighbour
+	 */
+	public abstract PAIR_TYPE searchNN(final DATA query);
 
 	/**
 	 * Get the size of the dataset

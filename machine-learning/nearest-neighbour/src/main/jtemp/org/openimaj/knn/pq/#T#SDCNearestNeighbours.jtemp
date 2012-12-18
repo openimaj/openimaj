@@ -45,7 +45,8 @@ package org.openimaj.knn.pq;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.#T#FVComparison;
-
+import org.openimaj.util.pair.Int#R#Pair;
+import org.openimaj.util.queue.BoundedPriorityQueue;
 /**
  * Nearest-neighbours using Symmetric Distance Computation (SDC) on Product
  * Quantised vectors. In SDC, both query and the database points are quantised.
@@ -113,14 +114,19 @@ public class #T#SDCNearestNeighbours extends #T#ADCNearestNeighbours {
 	}
 
 	@Override
-	protected void computeDistances(#t#[] #t#Query, #r#[] dsqout) {
-		final byte[] query = pq.quantise(#t#Query);
+	protected void computeDistances(#t#[] fullQuery, BoundedPriorityQueue<Int#R#Pair> queue, Int#R#Pair workingPair)
+	{
+		final byte[] query = pq.quantise(fullQuery);
 
 		for (int i = 0; i < data.length; i++) {
-			dsqout[i] = 0;
+			workingPair.first = i;
+			workingPair.second = 0;
+
 			for (int j = 0; j < query.length; j++) {
-				dsqout[i] += distances[j][query[j] + 128][data[i][j] + 128];
+				workingPair.second += distances[j][query[j] + 128][data[i][j] + 128];
 			}
+
+			workingPair = queue.offerItem(workingPair);
 		}
 	}
 }
