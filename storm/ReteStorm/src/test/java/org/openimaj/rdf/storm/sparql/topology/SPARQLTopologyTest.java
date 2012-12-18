@@ -104,7 +104,7 @@ public class SPARQLTopologyTest {
 		f.mkdirs();
 		Map<String, String> replaceStringMap = new HashMap<String, String>();
 		File file = fileFromStream(ReteTopologyTest.class.getResourceAsStream(testFile));
-		replaceStringMap.put("TEST_FILE", "file://" + file.getAbsolutePath());
+		replaceStringMap.put("TEST_FILE", "file://" + file.getAbsolutePath().replace('\\', '/').replaceFirst("^([^/])", "/$1"));
 		StaticDataFileNTriplesSPARQLReteTopologyBuilder topologyBuilder = new StaticDataFileNTriplesSPARQLReteTopologyBuilder(f, staticSources);
 		topologyBuilder.setQuerySolutionSerializerMode(QuerySolutionSerializer.RDF_NTRIPLES);
 		StormSPARQLReteTopologyOrchestrator orchestrator = StormSPARQLReteTopologyOrchestrator.createTopologyBuilder(
