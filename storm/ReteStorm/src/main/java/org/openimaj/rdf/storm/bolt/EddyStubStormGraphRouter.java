@@ -2,7 +2,6 @@ package org.openimaj.rdf.storm.bolt;
 
 import java.util.Arrays;
 
-import backtype.storm.task.OutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
@@ -17,7 +16,7 @@ import org.openimaj.rdf.storm.bolt.StormSteMBolt.Component;
  * 
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  */
-public class EddyStubStormGraphRouter implements StormGraphRouter {
+public class EddyStubStormGraphRouter extends StormGraphRouter {
 	
 	/**
 	 * 
@@ -26,25 +25,20 @@ public class EddyStubStormGraphRouter implements StormGraphRouter {
 		
 	}
 	
-	private OutputCollector collector;
-	
-	/**
-	 * 
-	 * @param c
-	 */
-	public void setOutputCollector(OutputCollector c){
-		this.collector = c;
+	@Override
+	protected long routingTimestamp(long stamp1, long stamp2){
+		return stamp1 > stamp2 ? stamp1 : -1;
 	}
 	
 	@Override
-	public void routeGraph(Tuple anchor, boolean isAdd, Graph g, long timestamp) {
+	public void routeGraph(Tuple anchor, boolean isAdd, Graph g, long... timestamp) {
 		// The default assumption is that Tuple's from SteMs are intended for probing (i.e. NOT building).
 		routeGraph(anchor, false, isAdd, g, timestamp);
 	}
 
 	@Override
 	public void routeGraph(Tuple anchor, boolean isBuild, boolean isAdd, Graph g,
-						   long timestamp) {
+						   long... timestamp) {
 		Values vals = new Values();
 		for (Component c : Component.values()) {
 			switch (c) {
@@ -68,13 +62,13 @@ public class EddyStubStormGraphRouter implements StormGraphRouter {
 			}
 		}
 		
-		this.collector.emit(anchor, vals);
+		this.collector.emit(StormEddyBolt.STREAM_TO_EDDY, anchor, vals);
 		this.collector.ack(anchor);
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare( new Fields( Arrays.asList( Component.strings() ) ) );
+		declarer.declareStream(StormEddyBolt.STREAM_TO_EDDY, new Fields( Arrays.asList( Component.strings() ) ) );
 	}
 
 }
