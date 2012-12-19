@@ -1,3 +1,32 @@
+/**
+ * Copyright (c) ${year}, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.openimaj.rdf.storm.bolt;
 
 import java.util.Map;
@@ -18,8 +47,13 @@ import backtype.storm.tuple.Values;
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  *
  */
-public abstract class StormSteMBolt implements IRichBolt, RETEStormSinkNode {
+public abstract class StormSteMBolt implements IRichBolt{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6233820433299486911L;
+
 	/**
 	 * Meta-Data components of the storm values/fields list
 	 *
@@ -65,8 +99,10 @@ public abstract class StormSteMBolt implements IRichBolt, RETEStormSinkNode {
 		}
 	}
 	
-	public StormSteMBolt() {
-		
+	protected StormGraphRouter router;
+	
+	public StormSteMBolt(StormGraphRouter sgr) {
+		this.router = sgr;
 	}
 
 	private Map<String,Object> conf;
@@ -74,54 +110,31 @@ public abstract class StormSteMBolt implements IRichBolt, RETEStormSinkNode {
 	private OutputCollector collector;
 	
 	protected StormSteMQueue window;
-	protected StormGraphRouter router;
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void prepare(Map stormConf, TopologyContext context,
-			OutputCollector collector) {
+	public void prepare(@SuppressWarnings("rawtypes") Map stormConf,
+						TopologyContext context,
+						OutputCollector collector) {
 		this.conf = stormConf;
 		this.context = context;
 		this.collector = collector;
 		
-		this.window = new StormSteMQueue(0/*TODO*/, 5000, 10, TimeUnit.MINUTES, collector);
-		this.window.setGraphRouter(new EddyStubStormGraphRouter());
+		this.router.setOutputCollector(collector);
+		
+		this.window = new StormSteMQueue(0/*TODO*/, 5000, 10, TimeUnit.MINUTES, collector, router);
 	}
 
 	@Override
 	public void execute(Tuple input) {
-		// TODO Auto-generated method stub
-
-	}
-	
-	@Override
-	public void fire(Values output, boolean isAdd) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void fire(String streamID, Values output, boolean isAdd) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void emit(Tuple anchor) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void emit(String streamID, Tuple anchor) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean isActive() {
-		// TODO Auto-generated method stub
-		return false;
+		if (input.getBooleanByField(Component.isBuild.toString()))
+			this.window.build(input,
+							  input.getBooleanByField(Component.isAdd.toString()),
+							  input.getLongByField(Component.timestamp.toString()));
+		else
+			this.window.probe(input,
+							  input.getBooleanByField(Component.isAdd.toString()),
+							  input.getLongByField(Component.timestamp.toString()));
 	}
 
 	@Override
@@ -135,20 +148,12 @@ public abstract class StormSteMBolt implements IRichBolt, RETEStormSinkNode {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		// TODO Auto-generated method stub
-
+		this.router.declareOutputFields(declarer);
 	}
 
 	@Override
 	public Map<String, Object> getComponentConfiguration() {
 		return conf;
-	}
-
-	@Override
-	public RETEStormNode clone(Map<RETEStormNode, RETEStormNode> netCopy,
-			RETERuleContext context) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
