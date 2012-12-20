@@ -29,7 +29,11 @@
  */
 package org.openimaj.rdf.storm.bolt;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
+import org.openimaj.rdf.storm.bolt.StormSteMBolt.Component;
 
 import com.hp.hpl.jena.graph.Graph;
 
@@ -37,8 +41,14 @@ import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 
+/**
+ * @author davidlmonks
+ *
+ */
 public class StormEddyBolt implements IRichBolt {
 
 	/**
@@ -50,6 +60,9 @@ public class StormEddyBolt implements IRichBolt {
 	
 	protected StormGraphRouter router;
 	
+	/**
+	 * @param sgr
+	 */
 	public StormEddyBolt(StormGraphRouter sgr){
 		this.router = sgr;
 	}
@@ -101,6 +114,79 @@ public class StormEddyBolt implements IRichBolt {
 	@Override
 	public Map<String, Object> getComponentConfiguration() {
 		return conf;
+	}
+	
+	// INNER CLASSES
+	
+	/**
+	 * 
+	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
+	 */
+	public static class EddyStubStormGraphRouter extends StormGraphRouter {
+		
+		private final List<String> eddies;
+		
+		/**
+		 * 
+		 * @param eddies 
+		 * 			The list of eddies this router's SteM is part of.
+		 */
+		public EddyStubStormGraphRouter(List<String> eddies){
+			this.eddies = eddies;
+		}
+		
+		@Override
+		protected long routingTimestamp(long stamp1, long stamp2){
+			return stamp1 > stamp2 ? stamp1 : -1;
+		}
+		
+		@Override
+		public void routeGraph(Tuple anchor, boolean isAdd, Graph g, long... timestamp) {
+			// The default assumption is that Tuple's from SteMs are intended for probing (i.e. NOT building).
+			routeGraph(anchor, false, isAdd, g, timestamp);
+		}
+
+		@Override
+		public void routeGraph(Tuple anchor, boolean isBuild, boolean isAdd, Graph g,
+							   long... timestamp) {
+			Values vals = new Values();
+			for (Component c : Component.values()) {
+				switch (c) {
+				case isBuild:
+					// set whether this Tuple is intended for probing or building into other SteMs
+					vals.add(isBuild);
+					break;
+				case isAdd:
+					// insert this Tuple's value of isAdd to be passed onto subscribing Bolts.
+					vals.add(isAdd);
+					break;
+				case graph:
+					// insert the new graph into the array of Values
+					vals.add(g);
+					break;
+				case timestamp:
+					vals.add(timestamp);
+					break;
+				default:
+					break;
+				}
+			}
+			
+			String source = anchor.getSourceComponent();
+			if (this.eddies.contains(source))
+				this.collector.emit(source, anchor, vals);
+			else
+				for (String eddy : this.eddies)
+					this.collector.emit(eddy, anchor, vals);
+			this.collector.ack(anchor);
+		}
+
+		@Override
+		public void declareOutputFields(OutputFieldsDeclarer declarer) {
+			for (String eddy : this.eddies)
+				declarer.declareStream(eddy, new Fields( Arrays.asList( Component.strings() ) ) );
+		}
+
 	}
 
 }

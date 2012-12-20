@@ -32,16 +32,11 @@ package org.openimaj.rdf.storm.bolt;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.openimaj.rdf.storm.topology.bolt.StormReteBolt.Component;
-
-import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
-
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.tuple.Values;
 
 /**
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
@@ -101,6 +96,9 @@ public abstract class StormSteMBolt implements IRichBolt{
 	
 	protected StormGraphRouter router;
 	
+	/**
+	 * @param sgr
+	 */
 	public StormSteMBolt(StormGraphRouter sgr) {
 		this.router = sgr;
 	}
