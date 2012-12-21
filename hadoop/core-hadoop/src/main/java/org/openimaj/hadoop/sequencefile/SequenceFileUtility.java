@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -626,7 +627,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		final FileSystem fs = getFileSystem(uri, new Configuration());
 		final Path path = new Path(uri.toString());
 
-		return new ZipOutputStream(fs.create(path));
+		final ZipOutputStream zos = new ZipOutputStream(fs.create(path));
+		zos.setLevel(Deflater.BEST_COMPRESSION);
+		return zos;
 	}
 
 	/**

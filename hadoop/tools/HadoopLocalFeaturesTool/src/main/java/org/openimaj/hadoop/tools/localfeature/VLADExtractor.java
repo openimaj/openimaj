@@ -35,7 +35,8 @@ public class VLADExtractor extends Configured implements Tool {
 		@Override
 		protected void setup(Context context) throws IOException, InterruptedException
 		{
-			final Path p = new Path("hdfs://seurat.ecs.soton.ac.uk/data/vlad-indexer-mirflickr25k-1x.dat");
+			final Path p = new Path(
+					"hdfs://seurat.ecs.soton.ac.uk/data/vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.dat");
 			final InputStream is = p.getFileSystem(context.getConfiguration()).open(p);
 			indexer = VLADIndexer.read(is);
 			is.close();
@@ -74,8 +75,9 @@ public class VLADExtractor extends Configured implements Tool {
 	@Override
 	public int run(String[] args) throws Exception {
 		final Path[] paths = SequenceFileUtility.getFilePaths(
-				"hdfs://seurat.ecs.soton.ac.uk/data/flickr-all-geo-16-46M-sift-nodouble-dmax320.seq", "part");
-		final Path outputPath = new Path("hdfs://seurat.ecs.soton.ac.uk/data/flickr-all-geo-vlad.seq");
+				"hdfs://seurat.ecs.soton.ac.uk/data/flickr-all-geo-16-46M-sift1x.seq", "part");
+		final Path outputPath = new Path(
+				"hdfs://seurat.ecs.soton.ac.uk/data/flickr-all-geo-vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.seq");
 
 		if (outputPath.getFileSystem(this.getConf()).exists(outputPath))
 			outputPath.getFileSystem(this.getConf()).delete(outputPath, true);
