@@ -29,15 +29,16 @@
  */
 package org.openimaj.image;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.openimaj.image.colour.ColourSpace;
 
 /**
  * Test some colour space conversion
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+ *         (ss@ecs.soton.ac.uk)
  */
 public class ColourSpaceTest {
 	/**
@@ -45,9 +46,47 @@ public class ColourSpaceTest {
 	 */
 	@Test
 	public void testRGBtoRGBA() throws Exception {
-		MBFImage img = ImageUtilities.readMBF(ColourSpaceTest.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
-		MBFImage imgConv = ColourSpace.convert(img, ColourSpace.RGBA);
+		final MBFImage img = ImageUtilities.readMBF(ColourSpaceTest.class
+				.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
+		final MBFImage imgConv = ColourSpace.convert(img, ColourSpace.RGBA);
 		assertTrue(img.getBounds().equals(imgConv.getBounds()));
-		assertTrue(img.equals(ColourSpace.convert(imgConv,ColourSpace.RGB)));
+		assertTrue(img.equals(ColourSpace.convert(imgConv, ColourSpace.RGB)));
+	}
+
+	/**
+	 * Test the 3 band conversions
+	 */
+	@Test
+	public void test2way() {
+		final double eps = 0.05;
+
+		for (final ColourSpace cs : ColourSpace.values()) {
+			if (cs.getNumBands() == 3 && cs != ColourSpace.RGB_INTENSITY_NORMALISED) {
+				try {
+					final MBFImage rgbIn = MBFImage.randomImage(100, 100);
+
+					final MBFImage cvt = cs.convertFromRGB(rgbIn);
+					final MBFImage rgbOut = cs.convertToRGB(cvt);
+
+					for (int y = 0; y < 100; y++) {
+						for (int x = 0; x < 100; x++) {
+							final float rin = rgbIn.getBand(0).pixels[y][x];
+							final float gin = rgbIn.getBand(1).pixels[y][x];
+							final float bin = rgbIn.getBand(2).pixels[y][x];
+
+							final float rout = rgbOut.getBand(0).pixels[y][x];
+							final float gout = rgbOut.getBand(1).pixels[y][x];
+							final float bout = rgbOut.getBand(2).pixels[y][x];
+
+							assertTrue(Math.abs(rin - rout) < eps);
+							assertTrue(Math.abs(gin - gout) < eps);
+							assertTrue(Math.abs(bin - bout) < eps);
+						}
+					}
+				} catch (final UnsupportedOperationException e) {
+					// ignore
+				}
+			}
+		}
 	}
 }

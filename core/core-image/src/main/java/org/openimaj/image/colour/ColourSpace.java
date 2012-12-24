@@ -33,9 +33,9 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 
 /**
- * 	Different colour space types with conversion methods.
+ * Different colour space types with conversion methods.
  * 
- * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum ColourSpace {
 	/**
@@ -97,6 +97,7 @@ public enum ColourSpace {
 	},
 	/**
 	 * H2SV colour space
+	 * 
 	 * @see Transforms#RGB_TO_H2SV
 	 */
 	H2SV {
@@ -117,6 +118,7 @@ public enum ColourSpace {
 	},
 	/**
 	 * H2SV_2 colour space
+	 * 
 	 * @see Transforms#RGB_TO_H2SV_2
 	 */
 	H2SV_2 {
@@ -137,6 +139,7 @@ public enum ColourSpace {
 	},
 	/**
 	 * H2S colour space
+	 * 
 	 * @see Transforms#RGB_TO_H2S
 	 */
 	H2S {
@@ -157,6 +160,7 @@ public enum ColourSpace {
 	},
 	/**
 	 * H2S_2 colour space
+	 * 
 	 * @see Transforms#RGB_TO_H2S_2
 	 */
 	H2S_2 {
@@ -269,7 +273,7 @@ public enum ColourSpace {
 		public MBFImage convertToRGB(MBFImage input) {
 			return input;
 		}
-	}, 
+	},
 	/**
 	 * A custom (unknown) colour space
 	 */
@@ -288,14 +292,15 @@ public enum ColourSpace {
 		public MBFImage convertToRGB(MBFImage input) {
 			throw new UnsupportedOperationException("colour transform not implemented");
 		}
-	}, 
+	},
 	/**
 	 * RGB with alpha colour space
 	 */
 	RGBA {
 		@Override
 		public MBFImage convertFromRGB(MBFImage input) {
-			return new MBFImage(input.bands.get(0), input.bands.get(1), input.bands.get(2), new FImage(input.bands.get(0).width, input.bands.get(0).height).addInplace(1.0f));
+			return new MBFImage(input.bands.get(0), input.bands.get(1), input.bands.get(2), new FImage(
+					input.bands.get(0).width, input.bands.get(0).height).addInplace(1.0f));
 		}
 
 		@Override
@@ -307,9 +312,9 @@ public enum ColourSpace {
 		public MBFImage convertToRGB(MBFImage input) {
 			return new MBFImage(input.bands.get(0).clone(), input.bands.get(1).clone(), input.bands.get(2).clone());
 		}
-	}, 
+	},
 	/**
-	 * HSL colour space 
+	 * HSL colour space
 	 */
 	HSL {
 		@Override
@@ -326,9 +331,9 @@ public enum ColourSpace {
 		public int getNumBands() {
 			return 3;
 		}
-	}, 
+	},
 	/**
-	 * HSY colour space 
+	 * HSY colour space
 	 */
 	HSY {
 		@Override
@@ -345,9 +350,9 @@ public enum ColourSpace {
 		public int getNumBands() {
 			return 3;
 		}
-	}, 
+	},
 	/**
-	 * HS colour space 
+	 * HS colour space
 	 */
 	HS {
 		@Override
@@ -366,7 +371,7 @@ public enum ColourSpace {
 		}
 	},
 	/**
-	 * HS_2 colour space 
+	 * HS_2 colour space
 	 */
 	HS_2 {
 		@Override
@@ -383,10 +388,11 @@ public enum ColourSpace {
 		public int getNumBands() {
 			return 2;
 		}
-	}, 
+	},
 	/**
 	 * H1H2 colour space (two component hue)
-	 * @see Transforms#H_TO_H1H2 
+	 * 
+	 * @see Transforms#H_TO_H1H2
 	 */
 	H1H2 {
 		@Override
@@ -406,6 +412,7 @@ public enum ColourSpace {
 	},
 	/**
 	 * H1H2_2 colour space (two component hue)
+	 * 
 	 * @see Transforms#H_TO_H1H2_2
 	 */
 	H1H2_2 {
@@ -425,8 +432,8 @@ public enum ColourSpace {
 		}
 	},
 	/**
-	 * CIE_XYZ color space, using the same transform as in OpenCV,
-	 * which in turn came from:
+	 * CIE_XYZ color space, using the same transform as in OpenCV, which in turn
+	 * came from:
 	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html
 	 */
 	CIE_XYZ {
@@ -446,12 +453,12 @@ public enum ColourSpace {
 		}
 	},
 	/**
-	 * CIE_Lab color space, using the same transform as in OpenCV,
-	 * which in turn came from:
-	 * <a href="http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html">
+	 * CIE_Lab color space, using the same transform as in OpenCV, which in turn
+	 * came from: <a href=
+	 * "http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html">
 	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html</a>
 	 * <p>
-	 * The resultant L values are in the range 0-100, and the a & b values are 
+	 * The resultant L values are in the range 0-100, and the a & b values are
 	 * in -127..127 inclusive.
 	 */
 	CIE_Lab {
@@ -472,8 +479,8 @@ public enum ColourSpace {
 	},
 	/**
 	 * Normalised CIE_Lab color space, using the same transform as in OpenCV,
-	 * which in turn came from:
-	 * <a href="http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html">
+	 * which in turn came from: <a href=
+	 * "http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html">
 	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html</a>
 	 * <p>
 	 * The L, a & b values are normalised to 0..1.
@@ -493,45 +500,77 @@ public enum ColourSpace {
 		public int getNumBands() {
 			return 3;
 		}
-	}
-	;
-	
+	},
+	/**
+	 * CIE L*u*v* color space (CIE 1976).
+	 * <p>
+	 * The resultant L values are in the range 0-100, and the u & v values are
+	 * in -100..100 inclusive.
+	 */
+	CIE_Luv {
+
+		@Override
+		public MBFImage convertFromRGB(MBFImage input) {
+			return Transforms.RGB_TO_CIELUV(input);
+		}
+
+		@Override
+		public MBFImage convertToRGB(MBFImage input) {
+			return Transforms.CIELUV_TO_RGB(input);
+		}
+
+		@Override
+		public int getNumBands() {
+			return 3;
+		}
+	};
+
 	/**
 	 * Convert the given RGB image to the current colour space
-	 * @param input RGB image
+	 * 
+	 * @param input
+	 *            RGB image
 	 * @return image in the current colour space
 	 */
 	public abstract MBFImage convertFromRGB(MBFImage input);
-	
+
 	/**
 	 * Convert the image in this color space to RGB
-	 * @param input image in this colour space
+	 * 
+	 * @param input
+	 *            image in this colour space
 	 * @return RGB image
 	 */
 	public abstract MBFImage convertToRGB(MBFImage input);
-	
+
 	/**
-	 * Convert the image to this colour space 
-	 * @param input an image
+	 * Convert the image to this colour space
+	 * 
+	 * @param input
+	 *            an image
 	 * @return image in this colour space
 	 */
 	public MBFImage convert(MBFImage input) {
 		return convertFromRGB(input.getColourSpace().convertToRGB(input));
 	}
-	
+
 	/**
 	 * Convert the image to the given colour space
-	 * @param image the image
-	 * @param cs the target colour space
+	 * 
+	 * @param image
+	 *            the image
+	 * @param cs
+	 *            the target colour space
 	 * @return the converted image
 	 */
 	public static MBFImage convert(MBFImage image, ColourSpace cs) {
 		return cs.convertFromRGB(image.colourSpace.convertToRGB(image));
 	}
-	
+
 	/**
 	 * Get the number of bands required by this colour space
-	 * @return the number of bands 
+	 * 
+	 * @return the number of bands
 	 */
 	public abstract int getNumBands();
 }

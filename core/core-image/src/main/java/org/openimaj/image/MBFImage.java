@@ -451,4 +451,24 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 		return this;
 	}
+
+	/**
+	 * Create a random RGB image.
+	 * 
+	 * @param width
+	 *            the width
+	 * @param height
+	 *            the height
+	 * @return the image
+	 */
+	public static MBFImage randomImage(int width, int height) {
+		final MBFImage img = new MBFImage();
+		img.colourSpace = ColourSpace.RGB;
+
+		for (int i = 0; i < 3; i++) {
+			img.bands.add(FImage.randomImage(width, height));
+		}
+
+		return img;
+	}
 }

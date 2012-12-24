@@ -1834,4 +1834,23 @@ public class FImage extends SingleBandImage<Float, FImage>
 	{
 		return overlayInplace(image, this.clone().fill(1f), x, y);
 	}
+
+	/**
+	 * Create a random image of the given size.
+	 * 
+	 * @param width
+	 *            the width
+	 * @param height
+	 *            the height
+	 * @return the image
+	 */
+	public static FImage randomImage(int width, int height) {
+		final FImage img = new FImage(width, height);
+
+		for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
+				img.pixels[y][x] = (float) Math.random();
+
+		return img;
+	}
 }
