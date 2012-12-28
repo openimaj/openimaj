@@ -523,8 +523,51 @@ public enum ColourSpace {
 		public int getNumBands() {
 			return 3;
 		}
-	};
+	},
+	/**
+	 * YUV
+	 * <p>
+	 * The resultant Y is in the range [0, 1]; U is [-0.436, 0.436] and V is
+	 * [-0.615, 0.615].
+	 */
+	YUV {
+		@Override
+		public MBFImage convertFromRGB(MBFImage input) {
+			return Transforms.RGB_TO_YUV(input);
+		}
 
+		@Override
+		public MBFImage convertToRGB(MBFImage input) {
+			return Transforms.YUV_TO_RGB(input);
+		}
+
+		@Override
+		public int getNumBands() {
+			return 3;
+		}
+	},
+	/**
+	 * Normalised YUV.
+	 * <p>
+	 * Each of the Y, U and V values are in [0, 1].
+	 * 
+	 */
+	YUV_Norm {
+		@Override
+		public MBFImage convertFromRGB(MBFImage input) {
+			return Transforms.RGB_TO_YUVNormalised(input);
+		}
+
+		@Override
+		public MBFImage convertToRGB(MBFImage input) {
+			return Transforms.YUVNormalised_TO_RGB(input);
+		}
+
+		@Override
+		public int getNumBands() {
+			return 3;
+		}
+	};
 	/**
 	 * Convert the given RGB image to the current colour space
 	 * 

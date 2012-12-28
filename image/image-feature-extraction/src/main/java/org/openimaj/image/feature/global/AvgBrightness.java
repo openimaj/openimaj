@@ -36,55 +36,109 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.mask.AbstractMaskedObject;
 
-
 /**
- * Extract the average brightness of an image. THe brightness is
- * calculated as the NTSC-weighted average of the RGB channels.
+ * Extract the average brightness of an image. Brightness can be computed in a
+ * number of different ways, depending on the chosen {@link Mode}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class AvgBrightness extends AbstractMaskedObject<FImage> implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class AvgBrightness extends AbstractMaskedObject<FImage>
+		implements
+		ImageAnalyser<MBFImage>,
+		FeatureVectorProvider<DoubleFV>
+{
+	/**
+	 * Modes for computing brightness.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public enum Mode {
+		/**
+		 * Luminance using the NTSC weighting scheme (equivalent to the Y in the
+		 * YUV colour space)
+		 */
+		NTSC_LUMINANCE {
+			@Override
+			public double computeBrightness(MBFImage image, FImage mask) {
+				final FImage R = image.getBand(0);
+				final FImage G = image.getBand(1);
+				final FImage B = image.getBand(2);
+
+				double brightness = 0;
+
+				if (mask != null) {
+					for (int y = 0; y < R.height; y++) {
+						for (int x = 0; x < R.width; x++) {
+							if (mask.pixels[y][x] == 1)
+								brightness += (0.299f * R.pixels[y][x] + 0.587f * G.pixels[y][x] + 0.114f * B.pixels[y][x]);
+						}
+					}
+				} else {
+					for (int y = 0; y < R.height; y++)
+						for (int x = 0; x < R.width; x++)
+							brightness += (0.299f * R.pixels[y][x] + 0.587f * G.pixels[y][x] + 0.114f * B.pixels[y][x]);
+				}
+
+				return brightness / (R.height * R.width);
+			}
+		};
+
+		/**
+		 * Compute the average brightness of the given image (applying the mask
+		 * if it's not <code>null</code>).
+		 * 
+		 * @param img
+		 *            the image to extract the average brightness from
+		 * @param mask
+		 *            the mask
+		 * @return the average brightness
+		 */
+		public abstract double computeBrightness(MBFImage img, FImage mask);
+	}
+
+	private Mode mode;
 	private double brightness;
 
 	/**
-	 * Construct with no mask set
+	 * Construct with the NTSC_LUMINANCE mode and no mask set
 	 */
 	public AvgBrightness() {
-		super();
+		this(Mode.NTSC_LUMINANCE, null);
 	}
 
 	/**
-	 * Construct with a mask.
-	 * @param mask the mask.
+	 * Construct with the given mode and no mask set
+	 * 
+	 * @param mode
+	 *            the {@link Mode}
 	 */
-	public AvgBrightness(FImage mask) {
-		super(mask);
+	public AvgBrightness(Mode mode) {
+		this(mode, null);
 	}
-	
+
+	/**
+	 * Construct with the given mode and a mask.
+	 * 
+	 * @param mode
+	 *            the {@link Mode}
+	 * @param mask
+	 *            the mask.
+	 */
+	public AvgBrightness(Mode mode, FImage mask) {
+		super(mask);
+
+		this.mode = mode;
+	}
+
 	@Override
 	public void analyseImage(MBFImage image) {
-		FImage R = image.getBand(0);
-		FImage G = image.getBand(1);
-		FImage B = image.getBand(2);
-
-		if (mask != null) {
-			for (int y=0; y<R.height; y++) {
-				for (int x=0; x<R.width; x++) {
-					if (mask.pixels[y][x] == 1)
-						brightness += (0.299f * R.pixels[y][x] + 0.587f * G.pixels[y][x] + 0.114f * B.pixels[y][x]);
-				}
-			}
-		} else {
-			for (int y=0; y<R.height; y++)
-				for (int x=0; x<R.width; x++)
-					brightness += (0.299f * R.pixels[y][x] + 0.587f * G.pixels[y][x] + 0.114f * B.pixels[y][x]);
-		}
-
-		brightness /= (R.height*R.width);
+		brightness = mode.computeBrightness(image, mask);
 	}
 
 	/**
 	 * Get the brightness.
+	 * 
 	 * @return the brightness
 	 */
 	public double getBrightness() {
@@ -93,6 +147,6 @@ public class AvgBrightness extends AbstractMaskedObject<FImage> implements Image
 
 	@Override
 	public DoubleFV getFeatureVector() {
-		return new DoubleFV(new double [] { brightness });
+		return new DoubleFV(new double[] { brightness });
 	}
 }

@@ -1401,4 +1401,183 @@ public class Transforms {
 	public static MBFImage CIELUV_TO_RGB(MBFImage input) {
 		return CIEXYZ_TO_RGB(CIELUV_TO_CIEXYZ(input));
 	}
+
+	/**
+	 * Convert from RGB to YUV. Y is in the range [0, 1]; U is [-0.436, 0.436]
+	 * and V is [-0.615, 0.615].
+	 * 
+	 * @param input
+	 *            input RGB image
+	 * @return transformed YUV image
+	 */
+	public static MBFImage RGB_TO_YUV(MBFImage input) {
+		return RGB_TO_YUV(input, false, false);
+	}
+
+	/**
+	 * Convert from RGB to normalised YUV. Y, U and V are all in the range [0,
+	 * 1].
+	 * 
+	 * @param input
+	 *            input RGB image
+	 * @return transformed normalised YUV image
+	 */
+	public static MBFImage RGB_TO_YUVNormalised(MBFImage input) {
+		return RGB_TO_YUV(input, false, true);
+	}
+
+	/**
+	 * Convert from RGB to YUV. Conversion can be either in place or in a new
+	 * image. The U and V components can optionally be normalised to 0..1 or
+	 * alternatively take the standard ranges: U in [-0.436, 0.436] and V in
+	 * [-0.615, 0.615].
+	 * 
+	 * @param input
+	 *            input RGB image
+	 * @param inPlace
+	 *            if true the output will overwrite the input; otherwise a new
+	 *            image is created.
+	 * @param norm
+	 *            true if the U and V values are normalised to [0, 1].
+	 * @return transformed YUV image
+	 */
+	public static MBFImage RGB_TO_YUV(MBFImage input, boolean inPlace, boolean norm) {
+		final int width = input.getWidth();
+		final int height = input.getHeight();
+		MBFImage out = null;
+
+		if (inPlace) {
+			out = input;
+			out.colourSpace = norm ? ColourSpace.YUV_Norm : ColourSpace.YUV;
+		} else {
+			out = new MBFImage(width, height, norm ? ColourSpace.YUV_Norm : ColourSpace.YUV);
+		}
+
+		final float[][] Rb = input.getBand(0).pixels;
+		final float[][] Gb = input.getBand(1).pixels;
+		final float[][] Bb = input.getBand(2).pixels;
+
+		final float[][] Yb = out.getBand(0).pixels;
+		final float[][] Ub = out.getBand(1).pixels;
+		final float[][] Vb = out.getBand(2).pixels;
+
+		final double Wr = 0.299;
+		final double Wb = 0.114;
+		final double Wg = 0.587;
+		final double Umax = 0.436;
+		final double Vmax = 0.615;
+
+		final double deltaU = norm ? -Umax : 0;
+		final double deltaV = norm ? -Vmax : 0;
+		final double Unorm = norm ? 2 * Umax : 1;
+		final double Vnorm = norm ? 2 * Vmax : 1;
+
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				final double R = Rb[y][x];
+				final double G = Gb[y][x];
+				final double B = Bb[y][x];
+
+				final double Y = Wr * R + Wg * G + Wb * B;
+				double U = Umax * ((B - Y) / (1.0 - Wb));
+				double V = Vmax * ((R - Y) / (1.0 - Wr));
+
+				U = (U - deltaU) / Unorm;
+				V = (V - deltaV) / Vnorm;
+
+				Yb[y][x] = (float) Y;
+				Ub[y][x] = (float) U;
+				Vb[y][x] = (float) V;
+			}
+		}
+
+		return out;
+	}
+
+	/**
+	 * Convert from normalised YUV to RGB.
+	 * 
+	 * @param input
+	 *            input normalised YUV image
+	 * @return transformed RGB image
+	 */
+	public static MBFImage YUVNormalised_TO_RGB(MBFImage input) {
+		return YUV_TO_RGB(input, false, true);
+	}
+
+	/**
+	 * Convert from YUV to RGB.
+	 * 
+	 * @param input
+	 *            input YUV image
+	 * @return transformed RGB image
+	 */
+	public static MBFImage YUV_TO_RGB(MBFImage input) {
+		return YUV_TO_RGB(input, false, false);
+	}
+
+	/**
+	 * Convert from YUV to RGB. Conversion can be either in place or in a new
+	 * image. The U and V components are either in [0, 1] (norm = true) or
+	 * alternatively take the standard ranges (norm = false): U in [-0.436,
+	 * 0.436] and V in [-0.615, 0.615].
+	 * 
+	 * @param input
+	 *            input RGB image
+	 * @param inPlace
+	 *            if true the output will overwrite the input; otherwise a new
+	 *            image is created.
+	 * @param norm
+	 *            true if the U and V values should be normalised to [0, 1].
+	 * @return transformed YUV image
+	 */
+	public static MBFImage YUV_TO_RGB(MBFImage input, boolean inPlace, boolean norm) {
+		final int width = input.getWidth();
+		final int height = input.getHeight();
+		MBFImage out = null;
+
+		if (inPlace) {
+			out = input;
+			out.colourSpace = ColourSpace.RGB;
+		} else {
+			out = new MBFImage(width, height, ColourSpace.RGB);
+		}
+
+		final float[][] Yb = input.getBand(0).pixels;
+		final float[][] Ub = input.getBand(1).pixels;
+		final float[][] Vb = input.getBand(2).pixels;
+
+		final float[][] Rb = out.getBand(0).pixels;
+		final float[][] Gb = out.getBand(1).pixels;
+		final float[][] Bb = out.getBand(2).pixels;
+
+		final double Wr = 0.299;
+		final double Wb = 0.114;
+		final double Wg = 0.587;
+		final double Umax = 0.436;
+		final double Vmax = 0.615;
+
+		final double deltaU = norm ? -Umax : 0;
+		final double deltaV = norm ? -Vmax : 0;
+		final double Unorm = norm ? 2 * Umax : 1;
+		final double Vnorm = norm ? 2 * Vmax : 1;
+
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				final double Y = Yb[y][x];
+				final double U = (Ub[y][x] * Unorm) + deltaU;
+				final double V = (Vb[y][x] * Vnorm) + deltaV;
+
+				final double R = Y + V * ((1 - Wr) / Vmax);
+				final double G = Y - U * ((Wb * (1 - Wb)) / (Umax * Wg)) - V * ((Wr * (1 - Wr)) / (Vmax * Wg));
+				final double B = Y + U * ((1 - Wb) / Umax);
+
+				Rb[y][x] = (float) R;
+				Gb[y][x] = (float) G;
+				Bb[y][x] = (float) B;
+			}
+		}
+
+		return out;
+	}
 }

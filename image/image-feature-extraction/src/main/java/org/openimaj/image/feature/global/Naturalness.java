@@ -61,8 +61,8 @@ import org.openimaj.image.mask.AbstractMaskedObject;
 		volume = "103")
 public class Naturalness extends AbstractMaskedObject<FImage>
 		implements
-			ImageAnalyser<MBFImage>,
-			FeatureVectorProvider<DoubleFV>
+		ImageAnalyser<MBFImage>,
+		FeatureVectorProvider<DoubleFV>
 {
 	private final static double grassLower = 95.0 / 360.0;
 	private final static double grassUpper = 135.0 / 360.0;
@@ -84,8 +84,6 @@ public class Naturalness extends AbstractMaskedObject<FImage>
 
 	private double grassMean = 0;
 	private int grassN = 0;
-
-	private int nPixels = 0;
 
 	/**
 	 * Construct with no mask set
@@ -113,15 +111,12 @@ public class Naturalness extends AbstractMaskedObject<FImage>
 		skinN = 0;
 		grassMean = 0;
 		grassN = 0;
-		nPixels = 0;
 
 		final MBFImage hsl = Transforms.RGB_TO_HSL(image);
 
 		final FImage H = (hsl).getBand(0);
 		final FImage S = (hsl).getBand(1);
 		final FImage L = (hsl).getBand(2);
-
-		nPixels = H.height * H.width;
 
 		for (int y = 0; y < H.height; y++) {
 			for (int x = 0; x < H.width; x++) {
@@ -169,9 +164,14 @@ public class Naturalness extends AbstractMaskedObject<FImage>
 		final double NGrass = Math.exp(-0.5 * Math.pow((grassMean - 0.81) / (0.53), 2));
 		final double NSky = Math.exp(-0.5 * Math.pow((skyMean - 0.43) / (0.22), 2));
 
-		final double wSkin = (double) skinN / (double) nPixels;
-		final double wGrass = (double) grassN / (double) nPixels;
-		final double wSky = (double) skyN / (double) nPixels;
+		final double nPixels = skinN + grassN + skyN;
+
+		if (nPixels == 0)
+			return 0;
+
+		final double wSkin = skinN / nPixels;
+		final double wGrass = grassN / nPixels;
+		final double wSky = skyN / nPixels;
 
 		return wSkin * NSkin + wGrass * NGrass + wSky * NSky;
 	}
