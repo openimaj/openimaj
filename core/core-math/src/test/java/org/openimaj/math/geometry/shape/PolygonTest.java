@@ -33,6 +33,7 @@
 package org.openimaj.math.geometry.shape;
 
 
+import static org.junit.Assert.*;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -55,6 +56,81 @@ public class PolygonTest
 	{
 		Polygon p = new Rectangle( 100f, 100f, 100f, 100f ).asPolygon();
 		Assert.assertTrue( p.isInside( new Point2dImpl( 150f, 150f ) ) );
+	}
+	
+	/**
+	 * Tests for the polygon's get centroid (i.e. first moment)
+	 */
+	@Test
+	public void testPolygonCentroid(){
+		Polygon p = new Polygon(new Point2dImpl[]{
+			new Point2dImpl(2, 0),
+			new Point2dImpl(0, 4),
+			new Point2dImpl(8, 8),
+			new Point2dImpl(10, 4),
+		});
+		
+		double[] centroid = p.calculateCentroid();
+		assertEquals(centroid[0],5,0.001);
+		assertEquals(centroid[1],4,0.001);
+	}
+	
+	/**
+	 * Tests for the polygon's second moments
+	 */
+	@Test
+	public void testPolygonSecondMoment(){
+		Polygon p = new Polygon(new Point2dImpl[]{
+			new Point2dImpl(2, 0),
+			new Point2dImpl(0, 4),
+			new Point2dImpl(8, 8),
+			new Point2dImpl(10, 4),
+		});
+		
+		
+		double[] secondMoment = p.calculateSecondMoment();
+		assertEquals(secondMoment[0], 30 + 2f/3f, 0.0001);
+		assertEquals(secondMoment[1], 22, 0.0001);
+		assertEquals(secondMoment[2], 18 + 2f/3f, 0.0001);
+		
+	}
+	
+	/**
+	 * Tests for the polygon's second moments
+	 */
+	@Test
+	public void testPolygonSecondMomentCentralised(){
+		Polygon p = new Polygon(new Point2dImpl[]{
+			new Point2dImpl(2, 0),
+			new Point2dImpl(0, 4),
+			new Point2dImpl(8, 8),
+			new Point2dImpl(10, 4),
+		});
+		
+		
+		double[] secondMoment = p.calculateSecondMomentCentralised();
+		assertEquals(secondMoment[0], 17f/3f, 0.0001);
+		assertEquals(secondMoment[1], 2, 0.0001);
+		assertEquals(secondMoment[2], 8f/3f, 0.0001);
+		
+	}
+	
+	/**
+	 * Tests for the polygon's second moments
+	 */
+	@Test
+	public void testPolygonDirection(){
+		Polygon p = new Polygon(new Point2dImpl[]{
+			new Point2dImpl(2, 0),
+			new Point2dImpl(0, 4),
+			new Point2dImpl(8, 8),
+			new Point2dImpl(10, 4),
+		});
+		
+		
+		double direction = p.calculateDirection();
+		System.out.println(direction);
+		
 	}
 	
 	/**

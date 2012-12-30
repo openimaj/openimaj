@@ -20,7 +20,7 @@ public class TwitterNaiveBayesTopologyOrchestrator implements StormTopologyOrche
 	@Override
 	public StormTopology buildTopology() {
 		UnreliableKestrelThriftSpout spout = new UnreliableKestrelThriftSpout(serverList,new StringScheme(),queue);
-		TwitterBolt bolt = new TwitterBolt();
+		// TwitterBolt bolt = new TwitterBolt();
 		return null;
 	}
 

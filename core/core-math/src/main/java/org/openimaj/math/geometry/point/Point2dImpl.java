@@ -247,5 +247,13 @@ public class Point2dImpl implements Point2d, Cloneable {
 	 */
 	public static Point2d createRandomPoint() {
 		return new Point2dImpl((float)Math.random(), (float)Math.random());
+	}
+
+	/**
+	 * @param calculateCentroid
+	 * @return a point from a double array
+	 */
+	public static Point2d fromDoubleArray(double[] calculateCentroid) {
+		return new Point2dImpl((float)calculateCentroid[0],(float)calculateCentroid[1]);
 	}	
 }

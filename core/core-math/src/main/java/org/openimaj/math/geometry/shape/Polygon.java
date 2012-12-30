@@ -34,6 +34,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -148,7 +150,7 @@ public class Polygon extends PointList implements Shape
 	 */
 	public void open() {
 		if (isClosed() && points.size() > 0 )
-			points.remove(points.get(points.size()-1));
+			points.remove(points.size()-1);
 	}
 
 	/**
@@ -832,5 +834,175 @@ public class Polygon extends PointList implements Shape
 		ySum /= n;
 
 		return new Point2dImpl( xSum, ySum );
+	}
+
+	/**
+	 * Calculate the centroid of the polygon.
+	 * 
+	 * @return calls {@link #calculateFirstMoment()};
+	 */
+	public double[] calculateCentroid() {
+		return calculateFirstMoment();
+	}
+
+	
+	
+	/**
+	 * Treating the polygon as a continuous peicewise function, calculate exactly
+	 * the first moment. This follows working presented by Carsten Steger in 
+	 * "On the Calculation of Moments of Polygons"
+	 * ,
+	 * @return the first moment 
+	 */
+	@Reference(
+			author = { "Carsten Steger" }, 
+			title = "On the Calculation of Moments of Polygons", 
+			type = ReferenceType.Techreport,
+			month = "August",
+			year = "1996",
+			url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
+	)
+	public double[] calculateFirstMoment() {
+		boolean closed = isClosed();
+		double area = calculateArea();
+
+		if (!closed) close();
+		
+		double ax = 0;
+		double ay = 0;
+		// TODO: This does not take into account the winding 
+		// rule and therefore holes
+		for (int k=0; k<points.size()-1; k++) {
+			float xk1 = points.get(k).getX();
+			float yk1 = points.get(k).getY();
+			float xk = points.get(k+1).getX();
+			float yk = points.get(k+1).getY();
+
+			float shared = xk*yk1 - xk1*yk;
+			ax += (xk + xk1) * shared;
+			ay += (yk + yk1) * shared;
+		}
+
+		if (!closed) open();
+
+		return new double[] {Math.abs(ax / (6 * area)),Math.abs(ay/(6*area))};
+	}
+	
+	/**
+	 * Treating the polygon as a continuous peicewise function, calculate exactly
+	 * the second moment. This follows working presented by Carsten Steger in 
+	 * "On the Calculation of Moments of Polygons"
+	 * ,
+	 * @return the second moment as an array with values: (axx,axy,ayy)
+	 */
+	@Reference(
+			author = { "Carsten Steger" }, 
+			title = "On the Calculation of Moments of Polygons", 
+			type = ReferenceType.Techreport,
+			month = "August",
+			year = "1996",
+			url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
+	)
+	public double[] calculateSecondMoment() {
+		boolean closed = isClosed();
+		double area = calculateArea();
+
+		if (!closed) close();
+		
+		double axx = 0;
+		double ayy = 0;
+		double axy = 0;
+		// TODO: This does not take into account the winding 
+		// rule and therefore holes
+		for (int k=0; k<points.size()-1; k++) {
+			float xk1 = points.get(k).getX();
+			float yk1 = points.get(k).getY();
+			float xk = points.get(k+1).getX();
+			float yk = points.get(k+1).getY();
+
+			float shared = xk*yk1 - xk1*yk;
+			axx += (xk * xk + xk * xk1 + xk1 * xk1) * shared;
+			ayy += (yk * yk + yk * yk1 + yk1 * yk1) * shared;
+			axy += (2 * xk * yk + xk * yk1 + xk1 * yk + 2 * xk1 * yk1) * shared;
+		}
+
+		if (!closed) open();
+
+		return new double[] {
+				Math.abs(axx / (12 * area)),
+				Math.abs(axy / (24 * area)),
+				Math.abs(ayy/(12*area))
+		};
+	}
+	
+	/**
+	 * Treating the polygon as a continuous peicewise function, calculate exactly
+	 * the centralised second moment. This follows working presented by Carsten Steger in 
+	 * "On the Calculation of Moments of Polygons"
+	 * ,
+	 * @return the second moment as an array with values: (axx,axy,ayy)
+	 */
+	@Reference(
+			author = { "Carsten Steger" }, 
+			title = "On the Calculation of Moments of Polygons", 
+			type = ReferenceType.Techreport,
+			month = "August",
+			year = "1996",
+			url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
+	)
+	public double[] calculateSecondMomentCentralised() {
+		double[] firstMoment = this.calculateFirstMoment();
+		double[] secondMoment = this.calculateSecondMoment();
+		
+		return new double[]{
+			secondMoment[0] - firstMoment[0] * firstMoment[0],
+			secondMoment[1] - firstMoment[0] * firstMoment[1],
+			secondMoment[2] - firstMoment[1] * firstMoment[1],
+		};
+		
+	}
+
+	/**
+	 * Calculates the principle direction of the connected component. This is
+	 * given by
+	 * <code>0.5 * atan( (M<sub>20</sub>-M<sub>02</sub>) / 2 * M<sub>11</sub> )</code>
+	 * so results in an angle between -PI and +PI.
+	 * 
+	 * @return The principle direction (-PI/2 to +PI/2 radians) of the connected
+	 *         component.
+	 */
+	public double calculateDirection() {
+		double[] secondMoment = calculateSecondMomentCentralised();
+		double u20 = secondMoment[0];
+		double u02 = secondMoment[1];
+		double u11 = secondMoment[2];
+		final double theta = 0.5 * Math.atan2((2 * u11), (u20 - u02));
+
+		return theta;
+	}
+	
+	/**
+	 * Using {@link EllipseUtilities#ellipseFromCovariance(float, float, Matrix, float)} and
+	 * the {@link #calculateSecondMomentCentralised()} return the Ellipse best fitting
+	 * the shape of this polygon.
+	 * @return {@link Ellipse} defining the shape of the polygon
+	 */
+	public Ellipse toEllipse(){
+		double[] secondMoment = calculateSecondMomentCentralised();
+		double u20 = secondMoment[0];
+		double u11 = secondMoment[1];
+		double u02 = secondMoment[2];
+		double[] center = calculateCentroid();
+		Matrix sm = new Matrix(new double[][]{
+			new double[] {u20,u11},
+			new double[] {u11,u02},
+		});
+		// Used the sqrt(3) as the scale, not sure why. This is not correct. Find the correct value!
+		return EllipseUtilities.ellipseFromCovariance(
+				(float)center[0], 
+				(float)center[1], 
+				sm,
+				(float)Math.sqrt(3)
+		);
 	}
 }
