@@ -31,23 +31,29 @@ package org.openimaj.demos.video.utils;
 
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
-import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.image.renderer.ScanRasteriser;
+import org.openimaj.image.renderer.ScanRasteriser.ScanLineListener;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- * Extract a polygon from an image
+ * Extract a polygon from an image. The output image will just contain the
+ * polygon. The polygon is rasterised using a {@link ScanRasteriser}.
  * 
- * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <T> The pixel type
- * @param <S> The {@link Image} type
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <T>
+ *            The pixel type
+ * @param <S>
+ *            The {@link Image} type
  */
-public class PolygonExtractionProcessor<T, S extends Image<T,S>> implements SinglebandImageProcessor<T, S> {
+public class PolygonExtractionProcessor<T, S extends Image<T, S>> implements SinglebandImageProcessor<T, S> {
 	private Polygon polygon;
 	private T background;
-	
+
 	/**
 	 * Construct with the given polygon and background colour
+	 * 
 	 * @param p
 	 * @param colour
 	 */
@@ -55,25 +61,34 @@ public class PolygonExtractionProcessor<T, S extends Image<T,S>> implements Sing
 		this.polygon = p;
 		this.background = colour;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
+	 * .image.Image)
 	 */
 	@Override
-	public void processImage(S image) {
-		Polygon p = this.polygon.clone();
-		Rectangle r = p.calculateRegularBoundingBox();
-		
-		p.translate(-r.x, -r.y);
-		
-		image.internalAssign(image.extractROI((int)r.x, (int)r.y,(int) r.width, (int)r.height));
+	public void processImage(final S image) {
+		final Polygon p = this.polygon;
+		final Rectangle r = p.calculateRegularBoundingBox();
 
-		for(int y = 0 ; y < image.getHeight(); y++) {
-			for(int x = 0; x < image.getWidth(); x++) {
-				if(!p.isInside(new Point2dImpl(x,y))) {
-					image.setPixel(x, y,background);
+		final int dx = (int) r.x;
+		final int dy = (int) r.y;
+
+		final S output = image.newInstance((int) r.width, (int) r.height);
+		output.fill(background);
+
+		ScanRasteriser.scanFill(p.getVertices(), new ScanLineListener() {
+			@Override
+			public void process(int x1, int x2, int y) {
+				for (int x = x1; x <= x2; x++) {
+					output.setPixel(x - dx, y - dy, image.getPixel(x, y));
 				}
 			}
-		}
+		});
+
+		image.internalAssign(output);
 	}
 }
