@@ -31,7 +31,6 @@ package org.openimaj.image.processing.face.detection;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
@@ -45,8 +44,6 @@ import org.openimaj.image.Image;
  * 
  */
 public class DatasetFaceDetector {
-	private static Logger logger = Logger.getLogger(DatasetFaceDetector.class);
-
 	private DatasetFaceDetector() {
 	}
 

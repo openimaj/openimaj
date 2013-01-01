@@ -15,7 +15,7 @@
   </para>
   <programlisting>
 Video&lt;MBFImage&gt; video;
-</programlisting>
+	</programlisting>
   <para>
     Exactly what kind of video is loaded depends on what you want to do.
     To load a video from a file we use the
@@ -35,7 +35,7 @@ Video&lt;MBFImage&gt; video;
   </para>
   <programlisting>
 video = new XuggleVideo(new File(&quot;/path/to/keyboardcat.flv&quot;));
-</programlisting>
+	</programlisting>
   <para>
     If your computer has a webcam, OpenIMAJ also supports live video
     input. These are called capture devices and you can use one through
@@ -43,7 +43,7 @@ video = new XuggleVideo(new File(&quot;/path/to/keyboardcat.flv&quot;));
   </para>
   <programlisting>
 video = new VideoCapture(320,240);
-</programlisting>
+	</programlisting>
   <para>
     This will find the first video capture device attached to your
     system and render it as closely to 320 × 240 pixels as it can. To
@@ -64,7 +64,7 @@ video = new VideoCapture(320,240);
   </para>
   <programlisting>
 VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
-</programlisting>
+	</programlisting>
   <para>
     Simply by creating a display, the video starts and plays. You can
     test this by running your app after Xuggle is installed.
@@ -93,7 +93,7 @@ VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
 for (MBFImage mbfImage : video) {
     DisplayUtilities.displayName(mbfImage.process(new CannyEdgeDetector2()), &quot;videoFrames&quot;);
 }
-</programlisting>
+	</programlisting>
   <para>
     Here we’re applying a Canny edge detector to each frame and
     displaying the frame in a named window. Another approach, which ties
@@ -113,7 +113,7 @@ display.addVideoListener(
     public void afterUpdate(VideoDisplay&lt;MBFImage&gt; display) {
     }
   });
-</programlisting>
+	</programlisting>
   <para>
     These <literal>VideoDisplayListener</literal>s are given video
     frames before they are rendered and they are handed the video

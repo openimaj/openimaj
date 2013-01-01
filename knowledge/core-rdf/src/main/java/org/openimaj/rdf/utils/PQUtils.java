@@ -6,10 +6,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
- * Some toots for playing with {@link ParameterizedSparqlString} instances
+ * Some tools for playing with {@link ParameterizedSparqlString} instances
  * 
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class PQUtils {
 
@@ -59,7 +58,7 @@ public class PQUtils {
 	}
 
 	public static ParameterizedSparqlString constructPQ(String query, Model m) {
-		ParameterizedSparqlString pss = new ParameterizedSparqlString(query, m);
+		final ParameterizedSparqlString pss = new ParameterizedSparqlString(query, m);
 		return pss;
 	}
 }

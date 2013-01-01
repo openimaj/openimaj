@@ -37,12 +37,13 @@ import org.openimaj.tools.globalfeature.GlobalFeatureExtractor;
 
 /**
  * Average brightness
+ * 
  * @see AvgBrightness
  */
 public class AverageBrightnessExtractor extends GlobalFeatureExtractor {
 	@Override
 	public FeatureVector extract(MBFImage image, FImage mask) {
-		AvgBrightness f = new AvgBrightness(mask);
+		final AvgBrightness f = new AvgBrightness(AvgBrightness.Mode.NTSC_LUMINANCE, mask);
 		return f.getFeatureVector();
 	}
 }

@@ -59,6 +59,10 @@ public class ScanRasteriser {
 		public abstract void process(int x1, int x2, int y);
 	}
 
+	private ScanRasteriser() {
+		// not instantiable
+	}
+
 	/**
 	 * The scan-fill algorithm. Scans are reported via the
 	 * {@link ScanLineListener}.

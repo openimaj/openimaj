@@ -23,9 +23,8 @@
     image):
   </para>
   <programlisting>
-MBFImage input = ImageUtilities.readMBF(
-   new URL(&quot;http://...&quot;));
-</programlisting>
+MBFImage input = ImageUtilities.readMBF(new URL(&quot;http://...&quot;));
+	</programlisting>
   <para>
     To segment our image we are going to use a machine learning
     technique called <emphasis role="strong">clustering</emphasis>.
@@ -61,13 +60,13 @@ MBFImage input = ImageUtilities.readMBF(
   </para>
   <programlisting>
 input = ColourSpace.convert(input,ColourSpace.CIE_Lab);
-</programlisting>
+	</programlisting>
   <para>
     We can then construct the K-Means algorithm:
   </para>
   <programlisting>
 FastFloatKMeans cluster = new FastFloatKMeans(3,2,true);
-</programlisting>
+	</programlisting>
   <para>
     The first parameter is the dimensionality of the space (3 in this
     case corresponding to the <emphasis role="strong">L</emphasis>,
@@ -92,14 +91,14 @@ FastFloatKMeans cluster = new FastFloatKMeans(3,2,true);
   </para>
   <programlisting>
 float[][] imageData = input.getPixelVectorNative(new float[input.getWidth() * input.getHeight()][3]);
-</programlisting>
+	</programlisting>
   <para>
     The K-Means algorithm can then be run to group all the pixels into
     the requested number of classes:
   </para>
   <programlisting>
 cluster.cluster(imageData);
-</programlisting>
+	</programlisting>
   <para>
     Each class or cluster produced by the K-Means algorithm has an
     index, starting from 0. Each class is represented by its centroid
@@ -111,7 +110,7 @@ float[][] centroids = cluster.getCentroids();
 for (float[] fs : centroids) {
     System.out.println(Arrays.toString(fs));
 }
-</programlisting>
+	</programlisting>
   <para>
     Now is a good time to test the code. Running it should print the
     (<literal>L, a, b</literal>) coordinates of each of the classes.
@@ -141,7 +140,7 @@ for (int y=0; y&lt;input.getHeight(); y++) {
         input.setPixelNative(x, y, centroids[centroid]);
     }
 }
-</programlisting>
+	</programlisting>
   <para>
     We can then display the resultant image. Note that we need to
     convert the image back to RGB colour space for it to display
@@ -150,7 +149,7 @@ for (int y=0; y&lt;input.getHeight(); y++) {
   <programlisting>
 input = ColourSpace.convert(input, ColourSpace.RGB);
 DisplayUtilities.display(input);
-</programlisting>
+	</programlisting>
   <para>
     Running the code will display an image that looks a little like the
     original image but with as many colours as there are classes.
@@ -170,7 +169,7 @@ DisplayUtilities.display(input);
   <programlisting>
 GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
 List&lt;ConnectedComponent&gt; components = labeler.findComponents(input.flatten());
-</programlisting>
+	</programlisting>
   <para>
     Note that the <literal>GreyscaleConnectedComponentLabeler</literal>
     only processes greyscale images (the <literal>FImage</literal>
@@ -194,13 +193,13 @@ for (ConnectedComponent comp : components) {
         continue;
     input.drawText(&quot;Point:&quot; + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM,20);
 }
-</programlisting>
+	</programlisting>
   <para>
     Finally, we can display the image with the labels:
   </para>
   <programlisting>
 DisplayUtilities.display(input);
-</programlisting>
+	</programlisting>
   <sect1 id="exercises-2">
     <title>Exercises</title>
     <sect2 id="exercise-1-the-pixelprocessor">
@@ -216,7 +215,7 @@ image.processInplace(new PixelProcessor&lt;Float[]&gt;() {
         ...
     }
 });
-</programlisting>
+			</programlisting>
       <para>
         Can you re-implement the loop that replaces each pixel with its
         class centroid using a <literal>PixelProcessor</literal>?

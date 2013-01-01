@@ -1,0 +1,905 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<variablelist>
+<varlistentry>
+<term><filename>OpenIMAJ</filename></term>
+<listitem>
+<para>OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and tools for multimedia analysis written in the Java programming language. OpenIMAJ intends to be the first truly complete multimedia analysis library and contains modules for analysing images, videos, text, audio and even webpages. The OpenIMAJ image and video analysis and feature extraction modules contain methods for processing visual content and extracting state-of-the-art features, including SIFT. The OpenIMAJ clustering and nearest-neighbour libraries contain efficient, multi-threaded implementations of clustering algorithms including Hierarchical K-Means and Approximate K-Means. The clustering library makes it possible to easily create visual-bag-of-words representations for images and video with very large vocabularies. The text-analysis modules contain implementations of a statistical language classifier and low-level processing pipeline. A number of modules deal with content creation, including interactive slideshows and animations. The hardware integration modules allow cross-platform integration with devices including webcams, the Microsoft Kinect, and even devices such as GPS's. OpenIMAJ also incorporates a number of tools to enable extremely-large-scale multimedia analysis using a distributed computing approach based on Apache Hadoop.</para>
+<variablelist>
+<varlistentry>
+<term><filename>archetypes</filename></term>
+<listitem>
+<para>Maven archetypes for OpenIMAJ</para>
+<variablelist>
+<varlistentry>
+<term><filename>openimaj-quickstart-archetype</filename></term>
+<listitem>
+<para>Maven quickstart archetype for OpenIMAJ</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>openimaj-subproject-archetype</filename></term>
+<listitem>
+<para>Maven archetype for creating OpenIMAJ subprojects with the most of the standard configuration completed automatically</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core</filename></term>
+<listitem>
+<para>Submodule for modules containing functionality used across the OpenIMAJ libraries.</para>
+<variablelist>
+<varlistentry>
+<term><filename>core</filename></term>
+<listitem>
+<para>Core library functionality concerned with general programming problems rather than multimedia specific functionality. Includes I/O utilities, randomisation, hashing and type conversion.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-image</filename></term>
+<listitem>
+<para>Core definitions of images, pixels and connected components. Also contains interfaces for processors for these basic types. Includes loading, saving and displaying images.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-video</filename></term>
+<listitem>
+<para>Core definitions of a video type and functionality for displaying and processing videos.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-audio</filename></term>
+<listitem>
+<para>Core definitions of audio streams and samples/chunks. Also contains interfaces for processors for these basic types.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-math</filename></term>
+<listitem>
+<para>Mathematical implementations including geometric, matrix and statistical operators.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-feature</filename></term>
+<listitem>
+<para>Core notion of features, usually denoted as arrays of data. Definitions of features for all primitive types, features with location and lists of features (both in memory and on disk).</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-experiment</filename></term>
+<listitem>
+<para>Classes to formally describe experiments and evaluations, with support for automatically evaluating their results.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-citation</filename></term>
+<listitem>
+<para>Tools for annotating code with publication references and automatically generating bibliographies for your code.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-aop-support</filename></term>
+<listitem>
+<para>Core support for Aspect Oriented Programming and Bytecode manipulation as used in core-citation and core-experiment</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>image</filename></term>
+<listitem>
+<para>Submodule for image related functionality.</para>
+<variablelist>
+<varlistentry>
+<term><filename>image-processing</filename></term>
+<listitem>
+<para>Implementations of various image, pixel and connected component processors (resizing, convolution, edge detection, ...).</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>image-local-features</filename></term>
+<listitem>
+<para>Methods for the extraction of local features. Local features are descriptions of regions of images (SIFT, ...) selected by detectors (Difference of Gaussian, Harris, ...).</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>image-feature-extraction</filename></term>
+<listitem>
+<para>Methods for the extraction of low-level image features, including global image features and pixel/patch classification models.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>faces</filename></term>
+<listitem>
+<para>Implementation of a flexible face-recognition pipeline, including pluggable detectors, aligners, feature extractors and recognisers.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>image-annotation</filename></term>
+<listitem>
+<para>Methods for describing automatic image annotators</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>object-detection</filename></term>
+<listitem>
+<para>Support for object detection, including a haar-cascade implementation</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>video</filename></term>
+<listitem>
+<para>Sub-modules containing support for analysing and processing video.</para>
+<variablelist>
+<varlistentry>
+<term><filename>video-processing</filename></term>
+<listitem>
+<para>Various video processing algorithms, such as shot-boundary detection.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>xuggle-video</filename></term>
+<listitem>
+<para>Plugin to use Xuggler as a video source. Allows most video formats to be read into OpenIMAJ.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>audio</filename></term>
+<listitem>
+<para>Submodule for audio processing and analysis related functionality.</para>
+<variablelist>
+<varlistentry>
+<term><filename>audio-processing</filename></term>
+<listitem>
+<para>Implementations of various audio processors (e.g. multichannel conversion, volume change, ...).</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>machine-learning</filename></term>
+<listitem>
+<para>Sub-module for machine-learning libraries.</para>
+<variablelist>
+<varlistentry>
+<term><filename>clustering</filename></term>
+<listitem>
+<para>Various clustering algorithm implementations for all primitive types including random, random forest, K-Means (Exact, Hierarchical and Approximate), ...</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>nearest-neighbour</filename></term>
+<listitem>
+<para>Implementations of K-Nearest-Neighbour methods, including approximate methods.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>machine-learning</filename></term>
+<listitem>
+<para>The OpenIMAJ Machine Learning Library contains implementations of optimised machine learning techniques that can be applied to OpenIMAJ structures and features.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>text</filename></term>
+<listitem>
+<para>Text Analysis functionality for OpenIMAJ.</para>
+<variablelist>
+<varlistentry>
+<term><filename>nlp</filename></term>
+<listitem>
+<para>The OpenIMAJ NLP Library contains a text pre-processing pipeline which goes from raw unstructured text to part of speech tagged stemmed text.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>thirdparty</filename></term>
+<listitem>
+<para>Useful third-party libraries (possibly originally written in other languages) that have been ported to Java and integrated with OpenIMAJ. Not all modules have the same license.</para>
+<variablelist>
+<varlistentry>
+<term><filename>klt-tracker</filename></term>
+<listitem>
+<para>A port of Stan Birchfield's Kanade-Lucas-Tomasi tracker to OpenIMAJ. See http://www.ces.clemson.edu/~stb/klt/.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>tld</filename></term>
+<listitem>
+<para>A port of Georg Nebehay's tracker https://github.com/gnebehay/OpenTLD originally created by Zdenek Kalal https://github.com/zk00006/OpenTLD</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ImprovedArgs4J</filename></term>
+<listitem>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>IREval</filename></term>
+<listitem>
+<para>A modified version of the IREval module (version 4.12) from the lemur project with extensions to better integrate with OpenIMAJ. See http://www.lemurproject.org</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>FaceTracker</filename></term>
+<listitem>
+<para>Port of Jason Mora Saragih's FaceTracker to Java using OpenIMAJ. FaceTracker is an implementation of a facial model tracker using a Constrained Local Model.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>demos</filename></term>
+<listitem>
+<para>Demos showing the functionality of OpenIMAJ.</para>
+<variablelist>
+<varlistentry>
+<term><filename>demos</filename></term>
+<listitem>
+<para>Demos showing the use of OpenIMAJ!</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>sandbox</filename></term>
+<listitem>
+<para>A project for various tests that don't quite constitute demos but might be useful to look at.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>touchtable</filename></term>
+<listitem>
+<para>Work on patrick's touchtable</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>SimpleMosaic</filename></term>
+<listitem>
+<para>Demo showing SIFT matching with a Homography model to achieve image mosaicing.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>CampusView</filename></term>
+<listitem>
+<para>Demo showing how we used OpenIMAJ to create a Street-View-esq capture system.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ACMMM-Presentation</filename></term>
+<listitem>
+<para>The OpenIMAJ presentation for ACMMM 2011. Unlike a normal presentation, this one isn't PowerPoint, but is actually an OpenIMAJ Demo App!</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>examples</filename></term>
+<listitem>
+<para>Example code snippets showing specific functionalities</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>knowledge</filename></term>
+<listitem>
+<para>Submodule for modules related to knowledge representation and reasoning.</para>
+<variablelist>
+<varlistentry>
+<term><filename>core-rdf</filename></term>
+<listitem>
+<para>Core support for the Resource Description Framework (RDF), including object-rdf mapping.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ontologies</filename></term>
+<listitem>
+<para>Submodule for modules which each represent a specific ontology represented in java</para>
+<variablelist>
+<varlistentry>
+<term><filename>sioc</filename></term>
+<listitem>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>test-resources</filename></term>
+<listitem>
+<para>Resources for running OpenIMAJ JUnit tests.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>tools</filename></term>
+<listitem>
+<para>Sub-modules containing commandline tools exposing OpenIMAJ functionality.</para>
+<variablelist>
+<varlistentry>
+<term><filename>core-tool</filename></term>
+<listitem>
+<para>Core of all tools</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>GlobalFeaturesTool</filename></term>
+<listitem>
+<para>A tool for extracting various global features from images.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ClusterQuantiserTool</filename></term>
+<listitem>
+<para>Tool for clustering and quantising features.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>LocalFeaturesTool</filename></term>
+<listitem>
+<para>Tool for extracting local image features.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>FaceTools</filename></term>
+<listitem>
+<para>Tools for detecting, extracting and comparing faces within images.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>FeatureVisualisation</filename></term>
+<listitem>
+<para>Tools for visualising certain types of image feature.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>CityLandscapeClassifier</filename></term>
+<listitem>
+<para>Tool for classifying images as cityscapes (or images containing man-made objects) or landscapes. Based on the edge direction coherence vector.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>WebTools</filename></term>
+<listitem>
+<para>Tools and utilities for extracting info from web-pages</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>OCRTools</filename></term>
+<listitem>
+<para>Tools for training and testing OCR.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ImageCollectionTool</filename></term>
+<listitem>
+<para>Tool for extracting images from collections (zip, gallery, video etc.).</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>SimilarityMatrixTool</filename></term>
+<listitem>
+<para>A tool for performing operations on Similarity Matrices.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>TwitterPreprocessingTool</filename></term>
+<listitem>
+<para>Tool for applying a text preprocessing pipeline to twitter tweets.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>RedditHarvester</filename></term>
+<listitem>
+<para>A tool for harvesting posts and comments from reddit.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>picslurper</filename></term>
+<listitem>
+<para>Tool for grabbing all the images from a social media stream and holding on to some simple stats</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ReteStormTool</filename></term>
+<listitem>
+<para>Tool for compiling/deploying storm topologies</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ReferencesTool</filename></term>
+<listitem>
+<para>Tool for running an OpenIMAJ program and extracting the references for used methods and classes.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>hadoop</filename></term>
+<listitem>
+<para>Sub-modules for integrating OpenIMAJ with Apache Hadoop to allow Map-Reduce style distributed processing.</para>
+<variablelist>
+<varlistentry>
+<term><filename>core-hadoop</filename></term>
+<listitem>
+<para>Reusable wrappers and helpers to access and create sequence-files and map-reduce jobs.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>tools</filename></term>
+<listitem>
+<para>Tools that provide multimedia analysis algorithms expressed as Map-Reduce jobs that can be run on a Hadoop cluster.</para>
+<variablelist>
+<varlistentry>
+<term><filename>core-hadoop-tool</filename></term>
+<listitem>
+<para>Tool for clustering and quantising features using Map-Reduce jobs on a Hadoop cluster.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>HadoopFastKMeans</filename></term>
+<listitem>
+<para>Distributed feature clustering tool.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>HadoopDownloader</filename></term>
+<listitem>
+<para>Distributed download tool.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>HadoopLocalFeaturesTool</filename></term>
+<listitem>
+<para>Distributed local image feature extraction tool.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>SequenceFileTool</filename></term>
+<listitem>
+<para>Tool for building, inspecting and extracting Hadoop SequenceFiles.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>HadoopGlobalFeaturesTool</filename></term>
+<listitem>
+<para>Distributed global image feature extraction tool.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>HadoopClusterQuantiserTool</filename></term>
+<listitem>
+<para>Distributed feature quantisation tool.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>HadoopTwitterPreprocessingTool</filename></term>
+<listitem>
+<para>Tool for clustering and quantising features using Map-Reduce jobs on a Hadoop cluster.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>HadoopTwitterTokenTool</filename></term>
+<listitem>
+<para>Tool for clustering and quantising features using Map-Reduce jobs on a Hadoop cluster.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>SequenceFileIndexer</filename></term>
+<listitem>
+<para>Tool for building an index of the keys in a Hadoop SequenceFile.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>HadoopEXIFTool</filename></term>
+<listitem>
+<para>Tool for extracting EXIF information from images on a Hadoop cluster.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>SequenceFileMerger</filename></term>
+<listitem>
+<para>...</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>storm</filename></term>
+<listitem>
+<para>Sub-modules for integrating OpenIMAJ with Storm to allow distrbuted stream processing.</para>
+<variablelist>
+<varlistentry>
+<term><filename>core-storm</filename></term>
+<listitem>
+<para>The main Storm dependency and some extra utility classes specific to OpenIMAJ</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ReteStorm</filename></term>
+<listitem>
+<para>Rete implemented across storm.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>tools</filename></term>
+<listitem>
+<para>Tools that provide multimedia analysis algorithms expressed as Storm topology that can be run locally or on a Storm cluster.</para>
+<variablelist>
+<varlistentry>
+<term><filename>StormTwitterPreprocessingTool</filename></term>
+<listitem>
+<para>Tool for processing tweets on Storm</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-storm-tool</filename></term>
+<listitem>
+<para>Tool for clustering and quantising features using Map-Reduce jobs on a storm cluster.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>web</filename></term>
+<listitem>
+<para>Sub-modules containing support for analysing and processing web-pages.</para>
+<variablelist>
+<varlistentry>
+<term><filename>core-web</filename></term>
+<listitem>
+<para>Implementation of a programatic offscreen web browser and utility functions.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>webpage-analysis</filename></term>
+<listitem>
+<para>Utilities for analysing the content and visual layout of a web-page.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>readability4j</filename></term>
+<listitem>
+<para>Readability4J is a partial re-implementation of the original readability.js script in Java. Many modifications have been made however.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>twitter</filename></term>
+<listitem>
+<para>The twitter project contains tools with which to read JSON data from the twitter API and process the data.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>hardware</filename></term>
+<listitem>
+<para>Sub-modules containing interfaces to hardware devices that we've used in projects built using OpenIMAJ.</para>
+<variablelist>
+<varlistentry>
+<term><filename>core-video-capture</filename></term>
+<listitem>
+<para>Cross-platform video capture interface using a lightweight native interface. Supports 32 and 64 bit JVMs under Linux, OSX and Windows.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>serial-driver</filename></term>
+<listitem>
+<para>Interface to hardware devices that connect to serial or USB-serial ports.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>gps</filename></term>
+<listitem>
+<para>Interface to GPS devices that support the NMEA protocol.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>compass</filename></term>
+<listitem>
+<para>Interface to an OceanServer OS5000 digital compass.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>nmea-parser</filename></term>
+<listitem>
+<para>Contains a parser for NMEA sentences written in Groovy.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>kinect</filename></term>
+<listitem>
+<para>The OpenIMAJ Core Video Capture Library contains the core classes and native code required interface with the Kinect device.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>turntable</filename></term>
+<listitem>
+<para>Integration with our serially controlled turntable</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>core-gpgpu</filename></term>
+<listitem>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>content</filename></term>
+<listitem>
+<para>Libraries for multimedia content creation.</para>
+<variablelist>
+<varlistentry>
+<term><filename>slideshow</filename></term>
+<listitem>
+<para>A library for creating slideshows and presentations that can contain interactive demos that utilise all OpenIMAJ components.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>animation</filename></term>
+<listitem>
+<para>Code to help make an animation of data/models/etc.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>visualisations</filename></term>
+<listitem>
+<para>A library that contains classes for visualising various different features, such as audio and video.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>ide-integration</filename></term>
+<listitem>
+<para>Plugins to aid OpenIMAJ development in various IDE's.</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>documentation</filename></term>
+<listitem>
+<para>Submodule for documentation.</para>
+<variablelist>
+<varlistentry>
+<term><filename>tutorial</filename></term>
+<listitem>
+<para>The OpenIMAJ tutorial</para>
+<variablelist>
+<varlistentry>
+<term><filename>tutorial-content</filename></term>
+<listitem>
+<para>The content of the OpenIMAJ tutorial</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>tutorial-pdf</filename></term>
+<listitem>
+<para>OpenIMAJ tutorial in PDF format</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><filename>tutorial-html</filename></term>
+<listitem>
+<para>OpenIMAJ Tutorial in HTML format</para>
+<variablelist>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry>
+</variablelist>

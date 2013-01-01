@@ -20,12 +20,12 @@
   </para>
   <programlisting>
 MBFImage query = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/query.jpg&quot;));
-</programlisting>
+	</programlisting>
   <para>
   </para>
   <programlisting>
 MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/target.jpg&quot;));
-</programlisting>
+	</programlisting>
   <para>
     The first step is feature extraction. We’ll use the
     <emphasis role="strong">difference-of-Gaussian</emphasis> feature
@@ -40,7 +40,7 @@ MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8
 DoGSIFTEngine engine = new DoGSIFTEngine();	
 LocalFeatureList&lt;Keypoint&gt; queryKeypoints = engine.findFeatures(query.flatten());
 LocalFeatureList&lt;Keypoint&gt; targetKeypoints = engine.findFeatures(target.flatten());
-</programlisting>
+	</programlisting>
   <para>
     Once the engine is constructed, we can use it to extract
     <literal>Keypoint</literal> objects from our images. The
@@ -68,7 +68,7 @@ LocalFeatureList&lt;Keypoint&gt; targetKeypoints = engine.findFeatures(target.fl
 LocalFeatureMatcher&lt;Keypoint&gt; matcher = new BasicMatcher&lt;Keypoint&gt;(80);
 matcher.setModelFeatures(queryKeypoints);
 matcher.findMatches(targetKeypoints);
-</programlisting>
+	</programlisting>
   <para>
     We can now draw the matches between these two images found with this
     basic matcher using the <literal>MatchingUtilities</literal> class:
@@ -76,7 +76,7 @@ matcher.findMatches(targetKeypoints);
   <programlisting>
 MBFImage basicMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
 DisplayUtilities.display(basicMatches);
-</programlisting>
+	</programlisting>
   <para>
     As you can see, the basic matcher finds many matches, many of which
     are clearly incorrect. A more advanced approach is to filter the
@@ -109,12 +109,12 @@ matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(
 matcher.setModelFeatures(queryKeypoints);
 matcher.findMatches(targetKeypoints);
 MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
-</programlisting>
+	</programlisting>
   <para>
   </para>
   <programlisting>
 DisplayUtilities.display(consistentMatches);
-</programlisting>
+	</programlisting>
   <para>
     The <literal>AffineTransformModel</literal> class models a
     two-dimensional Affine transform in OpenIMAJ. An interesting
@@ -129,7 +129,7 @@ DisplayUtilities.display(consistentMatches);
   <programlisting>
 target.drawShape(query.getBounds().transform(fittingModel.getTransform().inverse()), 3,RGBColour.BLUE);
 DisplayUtilities.display(target); 
-</programlisting>
+	</programlisting>
   <sect1 id="exercises-6">
     <title>Exercises</title>
     <sect2 id="exercise-1-different-matchers">

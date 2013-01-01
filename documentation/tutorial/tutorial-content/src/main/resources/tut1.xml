@@ -12,29 +12,31 @@
 	    OpenIMAJ (basically a project template) that lets you get started
 	    programming with OpenIMAJ quickly.
 	  </para>
+		<tip>
+			<para>
+				You can find out more about Apache Maven at <link href="http://maven.apache.org">http://maven.apache.org</link>.
+			</para>
+		</tip>
 	  <para>
-	    OpenIMAJ requires Maven 3. You can check if you have Maven installed
+	    OpenIMAJ requires Maven 2 or 3; if you want to build OpenIMAJ from source you will need Maven 3. You can check if you have Maven installed
 	    already by opening a terminal (or DOS command prompt) and typing:
 	  </para>
-	  <programlisting>
-	mvn -version
-	</programlisting>
+	  <screen>
+<command>mvn <option>-version</option></command>
+		</screen>
 	  <para>
 	    If Maven is found the, version will be printed. If the version is
-	    less than 3.0, or Maven was not found, go to
+	    less than 2.2.1, or Maven was not found, go to
 	    <ulink url="http://maven.apache.org"><literal>http://maven.apache.org</literal></ulink>
 	    to download and install it. Once you’ve installed Maven try the
 	    above command to test that it is working.
 	  </para>
 	  <para>
-	    To create a new OpenIMAJ project, run the following command (note
-	    that the command is all on one line and there is no space between
-	    <literal>maven.openimaj.org/</literal> and
-	    <literal>archetype-catalog.xml</literal>):
+	    To create a new OpenIMAJ project, run the following command:
 	  </para>
-	  <programlisting>
-	mvn -DarchetypeCatalog=http://maven.openimaj.org/archetype-catalog.xml archetype:generate
-	</programlisting>
+	  <screen>
+<command>mvn <option>-DarchetypeCatalog=http://maven.openimaj.org/archetype-catalog.xml</option> <option>archetype:generate</option></command>
+		</screen>
 	  <para>
 	    Maven will then prompt you for some input. Firstly, when prompted,
 	    choose the <literal>openimaj-quickstart-archetype</literal> and
@@ -50,51 +52,72 @@
 	    settings. Maven will then generate a new project in a directory with
 	    the same name as the <literal>artifactId</literal> you provided.
 	  </para>
+		<note>
+			<title>Overriding the OpenIMAJ version</title>
+			<para>
+			Versions of the archetype after <literal>1.0.5</literal> automatically select the corresponding 
+			OpenIMAJ version. With all versions of the archetype, you can override this 
+			by setting the <literal>openimajVersion</literal> on the command-line with the <command><option>-D</option></command> argument.
+		</para>
+		</note>
 	  <para>
 	    The project directory contains a file called
-	    <literal>pom.xml</literal> and a directory called
-	    <literal>src</literal>. The <literal>pom.xml</literal> file
+	    <filename>pom.xml</filename> and a directory called
+	    <filename>src</filename>. The <filename>pom.xml</filename> file
 	    describes all of the dependencies of the project and also contains
 	    instructions for packaging the project into a fat jar that contains
 	    all your project code and resources together with the dependencies.
 	    If you find that you need to add another library to your project,
-	    you should do so by editing the <literal>pom.xml</literal> file and
-	    adding a new dependency. The <literal>src</literal> directory
+	    you should do so by editing the <filename>pom.xml</filename> file and
+	    adding a new dependency. The <filename>src</filename> directory
 	    contains the code for your project. In particular,
-	    <literal>src/main/java</literal> contains your java application code
-	    and <literal>src/test/java</literal> contains unit tests.
+	    <filename>src/main/java</filename> contains your java application code
+	    and <filename>src/test/java</filename> contains unit tests.
 	  </para>
 	  <para>
 	    The default project created by the archetype contains a small
 	    <quote>hello world</quote> application. To compile and assemble the
-	    <quote>hello world</quote> application you <literal>cd</literal>
+	    <quote>hello world</quote> application you <command>cd</command>
 	    into the project directory from the command line (replacing
-	    <literal>OpenIMAJ-Tutorial01</literal> with the name of your
+	    <command><replaceable>OpenIMAJ-Tutorial01</replaceable></command> with the name of your
 	    project):
 	  </para>
-	  <programlisting>
-	cd OpenIMAJ-Tutorial01
-	</programlisting>
+	  <screen>
+<command>cd <replaceable>OpenIMAJ-Tutorial01</replaceable></command>
+		</screen>
 	  <para>
 	    and run the command:
 	  </para>
-	  <programlisting>
-	mvn assembly:assembly
-	</programlisting>
+	  <screen>
+<command>mvn <option>assembly:assembly</option></command>
+		</screen>
 	  <para>
 	    This will create a new directory called target that contains the
 	    assembled application jar (the assembled jar is the one whose name
-	    ends with -jar-with-dependencies.jar). To run the application,
+	    ends with <filename>-jar-with-dependencies.jar</filename>). To run the application,
 	    enter:
 	  </para>
-	  <programlisting>
-	java -jar target/OpenIMAJ-Tutorial01-1.0-SNAPSHOT-jar-with-dependencies.jar
-	</programlisting>
+	  <screen>
+<command>java <option>-jar</option> <replaceable>target/OpenIMAJ-Tutorial01-1.0-SNAPSHOT-jar-with-dependencies.jar</replaceable></command>
+		</screen>
 	  <para>
 	    The application will then run, and a window should open displaying a
 	    picture with the text <quote>hello world</quote>. Closing the
-	    window, or ctrl-c on the command line, will quit the application.
+	    window, or <command>ctrl-c</command> on the command line, will quit the application.
 	  </para>
+	
+		<mediaobject>
+	    <imageobject condition="web">
+				<imagedata fileref="figs/web/hello-world.png" format="PNG" scale="100" align="center"/>
+      </imageobject>
+			<imageobject condition="print">
+        <imagedata fileref="figs/print/hello-world.pdf" format="PDF" align="center"/>
+			</imageobject>
+      <textobject>
+				<phrase>OpenIMAJ Hello World</phrase>
+      </textobject>
+    </mediaobject>
+
 	  <sect1 id="integration-with-your-favourite-ide">
 	    <title>Integration with your favourite IDE</title>
 	    <para>
@@ -105,8 +128,7 @@
 	    </para>
 	    <para>
 	      Maven integrates with all the popular IDEs. The OpenIMAJ
-	      developers all use Eclipse
-	      (<ulink url="http://www.eclipse.org"><literal>http://www.eclipse.org</literal></ulink>)
+	      developers all use <ulink url="http://www.eclipse.org">Eclipse</ulink>
 	      so that is what we’re most familiar with, however we should be
 	      able to help getting it set up in a different IDE if you wish.
 	    </para>
@@ -114,18 +136,18 @@
 	      Integration with Eclipse is quite simple. From the command line,
 	      inside the project directory, issue the command:
 	    </para>
-	    <programlisting>
-	mvn eclipse:eclipse
-	</programlisting>
+			<screen>
+<command>mvn eclipse:eclipse</command>
+			</screen>
 	    <para>
 	      This will generate Eclipse project files in the same directory. In
 	      Eclipse you can then import the project into the Eclipse workspace
-	      (File&gt;import..., choose <quote>Existing projects into
-	      workspace</quote>, select the project directory, make sure
-	      <quote>Copy projects into workspace</quote> is
+	      (<guimenu>File</guimenu> &gt; <guimenuitem>import...</guimenuitem>, choose <guibutton>Existing projects into
+	      workspace</guibutton>, select the project directory, make sure
+	      <guibutton>Copy projects into workspace</guibutton> is
 	      <emphasis role="strong">unchecked</emphasis>, then click
-	      <quote>Finish</quote>). The project should then appear in the
-	      workspace and you’ll be able to look at the App.java file that was
+	      <guibutton>Finish</guibutton>). The project should then appear in the
+	      workspace and you’ll be able to look at the <filename>App.java</filename> file that was
 	      generated by the archetype.
 	    </para>
 	    <para>
@@ -133,27 +155,48 @@
 	      doesn’t know about Maven and its repositories of jars. When you
 	      first import an OpenIMAJ project into Eclipse it will have errors.
 	      You can fix this by adding a new Java classpath variable
-	      (<literal>Eclipse&gt;Preferences&gt;Java&gt;</literal>
-	      <literal>Build Path&gt;Classpath Variables</literal>) called
+	      (<guimenu>Eclipse</guimenu> &gt; <guimenuitem>Preferences</guimenuitem> &gt; <guibutton>Java</guibutton> &gt;
+	      <guibutton>Build Path</guibutton> &gt; <guibutton>Classpath Variables</guibutton>) called
 	      <literal>M2_REPO</literal>. The value of this variable is the
-	      location of your <literal>.m2/repository</literal> directory. For
+	      location of your <filename>.m2/repository</filename> directory. For
 	      Unix systems this is usually found in your home directory, for
-	      Windows systems it is found in <literal>C:\Documents and</literal>
-	      <literal>Settings\&lt;user&gt;\</literal>.
+	      Windows systems it is found in <filename>C:\Documents and Settings\&lt;user&gt;\</filename>.
 	    </para>
+			<mediaobject>
+		    <imageobject condition="web">
+					<imagedata fileref="figs/web/classpath.png" format="PNG" scale="100" align="center"/>
+	      </imageobject>
+				<imageobject condition="print">
+	        <imagedata fileref="figs/print/classpath.pdf" format="PDF" align="center"/>
+				</imageobject>
+	      <textobject>
+					<phrase>Eclipse classpath variables</phrase>
+	      </textobject>
+	    </mediaobject>
 	    <para>
-	      Once you’ve opened the <literal>App.java</literal> file in
+	      Once you’ve opened the <filename>App.java</filename> file in
 	      Eclipse, you can right-click on it and select
-	      <literal>Run as&gt;Java Application</literal> to run it from
+	      <guisubmenu>Run as</guisubmenu> &gt; <guimenuitem>Java Application</guimenuitem> to run it from
 	      within Eclipse.
 	    </para>
+			<mediaobject>
+		    <imageobject condition="web">
+					<imagedata fileref="figs/web/runas.png" format="PNG" scale="100" align="center"/>
+	      </imageobject>
+				<imageobject condition="print">
+	        <imagedata fileref="figs/print/runas.pdf" format="PDF" align="center"/>
+				</imageobject>
+	      <textobject>
+					<phrase>Eclipse Run as...</phrase>
+	      </textobject>
+	    </mediaobject>
 	  </sect1>
 	  <sect1 id="exercises">
 	    <title>Exercises</title>
 	    <sect2 id="exercise-1-playing-with-the-sample-application">
 	      <title>Exercise 1: Playing with the sample application</title>
 	      <para>
-	        Take a look at the App.java from within your IDE. Can you modify
+	        Take a look at the <filename>App.java</filename> from within your IDE. Can you modify
 	        the code to render something other than <quote>hello
 	        world</quote> in a different font and colour?
 	      </para>

@@ -30,27 +30,36 @@
 /**
  * 
  */
-package org.openimaj.demos.sandbox.vis;
+package org.openimaj.examples.vis;
 
 import org.openimaj.vis.general.BarVisualisation;
 
 /**
- *	
- *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 30 Jul 2012
- *	@version $Author$, $Revision$, $Date$
+ * Example showing how to draw a bar chart in a swing component.
+ * 
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 30 Jul 2012
  */
 public class BarVisualisationTest
 {
 	/**
-	 *	@param args
+	 * Main method
+	 * 
+	 * @param args
+	 *            ignored
 	 */
-	public static void main( String[] args )
-    {
-	    double[] data1 = new double[]{ -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-	    BarVisualisation bv = new BarVisualisation( 1000, 400 );
-	    bv.setData( data1 );
-	    bv.showWindow( "Data" );
+	public static void main(String[] args)
+	{
+		// The data:
+		final double[] data1 = new double[] { -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+		// The chart generator
+		final BarVisualisation bv = new BarVisualisation(1000, 400);
+
+		// set the data
+		bv.setData(data1);
+
+		// show the result
+		bv.showWindow("Data");
 	}
 }

@@ -42,7 +42,7 @@ vd.addVideoListener(
     public void afterUpdate( VideoDisplay&lt;MBFImage&gt; display ) {
     }
   });
-</programlisting>
+	</programlisting>
   <para>
     For finding faces in images (or in this case video frames) we use a
     face detector. The <literal>FaceDetector</literal> interface
@@ -61,7 +61,7 @@ vd.addVideoListener(
   </para>
   <programlisting>
 FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
-</programlisting>
+	</programlisting>
   <para>
     Like all <literal>FaceDetector</literal> implementations, the
     <literal>HaarCascadeDetector</literal> has a method
@@ -77,7 +77,7 @@ FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
   </para>
   <programlisting>
 List&lt;DetectedFace&gt; faces = fd.detectFaces(Transforms.calculateIntensity(frame));
-</programlisting>
+	</programlisting>
   <para>
     The <literal>detectFaces()</literal> method returns a list of
     <literal>DetectedFace</literal> objects which contain information
@@ -97,7 +97,7 @@ List&lt;DetectedFace&gt; faces =
 for( DetectedFace face : faces ) {
     frame.drawShape(face.getBounds(), RGBColour.RED);
 }
-</programlisting>
+	</programlisting>
   <para>
     OpenIMAJ has other face detectors which go a bit further than just
     finding the face. The <literal>FKEFaceDetector</literal> finds
@@ -115,7 +115,7 @@ for( DetectedFace face : faces ) {
   <programlisting>
 FaceDetector&lt;KEDetectedFace,FImage&gt; fd = new FKEFaceDetector();
 List&lt;KEDetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity( frame ) );
-</programlisting>
+	</programlisting>
   <para>
     If you run the demo now, you will see exactly the sameas before, as
     the <literal>FKEFaceDetector</literal> still detects bounding boxes.

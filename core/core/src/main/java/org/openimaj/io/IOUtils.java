@@ -1072,7 +1072,9 @@ public class IOUtils {
 		DataInputStream din = null;
 		try {
 			din = new DataInputStream(new FileInputStream(in));
-			return read(din);
+
+			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+			return IOUtils.<T> read(din);
 		} finally {
 			if (din != null)
 				try {

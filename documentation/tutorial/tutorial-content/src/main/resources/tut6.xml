@@ -43,7 +43,7 @@
   </para>
   <programlisting>
 Histogram histogram = new Histogram( 4, 4, 4 );
-</programlisting>
+	</programlisting>
   <para>
     This code creates a histogram that has 64 (4 × 4 × 4) bins. However,
     this data structure does not do anything on its own. The
@@ -56,7 +56,7 @@ Histogram histogram = new Histogram( 4, 4, 4 );
 HistogramModel model = new HistogramModel( 4, 4, 4 );
 model.estimateModel( image );
 Histogram histogram = model.histogram;
-</programlisting>
+	</programlisting>
   <para>
     You can print out the histogram to see what sort of numbers you get
     for different images. Let’s load in 3 images then generate and store
@@ -74,7 +74,7 @@ for( URL u : imageURLs ) {
     model.estimateModel(ImageUtilities.readMBF(u));
     histograms.add( model.histogram );
 }
-</programlisting>
+	</programlisting>
   <para>
     We now have a list of histograms from our images. The
     <literal>Histogram</literal> class extends a class called the
@@ -92,7 +92,7 @@ for( URL u : imageURLs ) {
   </para>
   <programlisting>
 double distanceScore = histogram1.compare( histogram2, DoubleFVComparison.EUCLIDEAN );
-</programlisting>
+	</programlisting>
   <para>
     This will give us a score of how similar (or dissimilar) the
     histograms are. It’s useful to think of the output score as a
@@ -114,7 +114,7 @@ for( int i = 0; i &lt; histograms.size(); i++ ) {
         double distance = histograms.get(i).compare( histograms.get(j), DoubleFVComparison.EUCLIDEAN );
     }
 }
-</programlisting>
+	</programlisting>
   <sect1 id="exercises-5">
     <title>Exercises</title>
     <sect2 id="exercise-1-finding-and-displaying-similar-images">

@@ -30,7 +30,7 @@
 /**
  * 
  */
-package org.openimaj.demos.sandbox.image;
+package org.openimaj.examples.image.processing.edges;
 
 import java.io.IOException;
 import java.net.URL;
@@ -51,7 +51,7 @@ import org.openimaj.video.capture.VideoCapture;
  *	
  *	@created 18 Jun 2012
  */
-public class SusanTest
+public class SusanExample
 {
 	/**
 	 *  @param args

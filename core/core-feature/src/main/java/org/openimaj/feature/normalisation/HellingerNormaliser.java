@@ -15,12 +15,21 @@ import org.openimaj.feature.FloatFV;
  * 
  */
 public class HellingerNormaliser implements Normaliser<FloatFV> {
-	int offset;
+	protected int offset;
 
+	/**
+	 * Construct with no offset
+	 */
 	public HellingerNormaliser() {
 		this.offset = 0;
 	}
 
+	/**
+	 * Construct with the given offset
+	 * 
+	 * @param offset
+	 *            the offset
+	 */
 	public HellingerNormaliser(int offset) {
 		this.offset = offset;
 	}
@@ -30,6 +39,15 @@ public class HellingerNormaliser implements Normaliser<FloatFV> {
 		normalise(feature.values, offset);
 	}
 
+	/**
+	 * Static utility function to perform Hellinger normalisation.
+	 * 
+	 * @param values
+	 *            the values to normalise
+	 * @param offset
+	 *            the offset to add to the values before normalisation (to
+	 *            ensure they are +ve).
+	 */
 	public static void normalise(float[] values, int offset) {
 		double sum = 0;
 

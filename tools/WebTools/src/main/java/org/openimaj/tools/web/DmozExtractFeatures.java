@@ -45,66 +45,66 @@ import org.openimaj.web.layout.ElementInfo;
 import org.openimaj.web.layout.LayoutExtractor;
 
 /**
- * Extract features from the webpages listed in files created by {@link Dmoz2CSV}.
+ * Extract features from the webpages listed in files created by
+ * {@link Dmoz2CSV}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class DmozExtractFeatures {
 	final static String csvregex = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
 
 	/**
-	 * Main method. First arg is the csv; second is the output directory. 
+	 * Main method. First arg is the csv; second is the output directory.
 	 * 
 	 * 
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-//		File inputCSV = new File("/Users/jsh2/Desktop/NewWebAnalysis/dmoz-content.csv");
-//		File outputDirBase = new File("/Users/jsh2/Desktop/NewWebAnalysis/extracted");
-		
-		File inputCSV = new File(args[0]);
-		File outputDirBase = new File(args[1]);
+		final File inputCSV = new File(args[0]);
+		final File outputDirBase = new File(args[1]);
 
 		System.setOut(new PrintStream(System.out, true, "UTF-8"));
 
-
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputCSV), "UTF-8"));
+		final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputCSV), "UTF-8"));
 
 		String it;
-		while ( (it = br.readLine()) != null) {
-			String[] parts = it.split(csvregex);
-			
-			String url = parts[2];				
+		while ((it = br.readLine()) != null) {
+			final String[] parts = it.split(csvregex);
+
+			final String url = parts[2];
 			System.out.println(url);
 
-			File dir = new File(outputDirBase, parts[0].replace("\"", "") + "/" + parts[1] + "/" + url.replace(":", "|").replace("/", "_"));
-			File layoutfile = new File(dir, "layout.csv");
-			File imagefile = new File(dir, "render.png");
+			final File dir = new File(outputDirBase, parts[0].replace("\"", "") + "/" + parts[1] + "/"
+					+ url.replace(":", "|").replace("/", "_"));
+			final File layoutfile = new File(dir, "layout.csv");
+			final File imagefile = new File(dir, "render.png");
 
-
-			if (dir.exists()) 
+			if (dir.exists())
 				continue;
 			if (!dir.mkdirs())
 				continue;
 
-			LayoutExtractor le = new LayoutExtractor(30000L); //timeout after 30s
+			final LayoutExtractor le = new LayoutExtractor(30000L); // timeout
+																	// after 30s
 			if (le.load(url)) {
-				PrintWriter layoutfilePW = new PrintWriter(new FileWriter(layoutfile));
+				final PrintWriter layoutfilePW = new PrintWriter(new FileWriter(layoutfile));
 
-				List<ElementInfo> info = le.getLayoutInfo();
+				final List<ElementInfo> info = le.getLayoutInfo();
 				layoutfilePW.println(ElementInfo.getCSVHeader());
-				for (ElementInfo ei : info) {
+				for (final ElementInfo ei : info) {
 					layoutfilePW.println(ei.toCSVString());
 				}
 
 				layoutfilePW.close();
 
-				MBFImage image = le.render(1024,768);
+				final MBFImage image = le.render(1024, 768);
 				if (image != null)
 					ImageUtilities.write(image, imagefile);
 			}
 		}
+
+		br.close();
 	}
 }

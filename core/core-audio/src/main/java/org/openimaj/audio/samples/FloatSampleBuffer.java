@@ -209,30 +209,34 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float> {
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see java.lang.Iterable#iterator()
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Iterable#iterator()
 	 */
+	@Override
 	public Iterator<Float> iterator()
 	{
 		this.tfIterator = this.tf_iterator();
 		return this;
 	}
-	
-	/**	
-	 * 	Returns a trove float iterator
-	 *	@return a trove float iterator
+
+	/**
+	 * Returns a trove float iterator
+	 * 
+	 * @return a trove float iterator
 	 */
 	public TFloatIterator tf_iterator()
 	{
 		final TFloatArrayList l = new TFloatArrayList();
-		for( final float f : this.samples )
-			l.add( f );
+		for (final float f : this.samples)
+			l.add(f);
 		return l.iterator();
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see java.util.Iterator#hasNext()
+	 * {@inheritDoc}
+	 * 
+	 * @see java.util.Iterator#hasNext()
 	 */
 	@Override
 	public boolean hasNext()
@@ -241,8 +245,9 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float> {
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see java.util.Iterator#next()
+	 * {@inheritDoc}
+	 * 
+	 * @see java.util.Iterator#next()
 	 */
 	@Override
 	public Float next()
@@ -251,8 +256,9 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float> {
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see java.util.Iterator#remove()
+	 * {@inheritDoc}
+	 * 
+	 * @see java.util.Iterator#remove()
 	 */
 	@Override
 	public void remove()
