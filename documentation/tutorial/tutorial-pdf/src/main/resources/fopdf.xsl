@@ -118,19 +118,58 @@
   <xsl:attribute-set name="chap.title.properties">
   </xsl:attribute-set>
   <!--
-      ################################################### Custom Title Page
+      ################################################### 
+			Disable title pages completely - we'll do them externally
       ###################################################
     -->
-  <xsl:template name="book.titlepage.recto">
-  </xsl:template>
+	<xsl:template name="book.titlepage">
+	</xsl:template>
+	
+	<xsl:template match="d:book">
+	  <xsl:variable name="id">
+	    <xsl:call-template name="object.id"/>
+	  </xsl:variable>
 
-  <!-- Prevent blank pages in output -->
-  <xsl:template name="book.titlepage.before.verso">
-  </xsl:template>
-  <xsl:template name="book.titlepage.verso">
-  </xsl:template>
-  <xsl:template name="book.titlepage.separator">
-  </xsl:template>
+	  <!-- <xsl:variable name="preamble"
+	                select="title|subtitle|titleabbrev|bookinfo|info"/> -->
+
+	  <xsl:variable name="content"
+	                select="node()[not(self::title or self::subtitle
+	                            or self::titleabbrev
+	                            or self::info
+	                            or self::bookinfo)]"/>
+
+	  <xsl:variable name="titlepage-master-reference">
+	    <xsl:call-template name="select.pagemaster">
+	      <xsl:with-param name="pageclass" select="'titlepage'"/>
+	    </xsl:call-template>
+	  </xsl:variable>
+
+	  <xsl:call-template name="front.cover"/>
+
+	  <!-- <xsl:if test="$preamble">
+	    <xsl:call-template name="page.sequence">
+	      <xsl:with-param name="master-reference"
+	                      select="$titlepage-master-reference"/>
+	      <xsl:with-param name="content">
+	        <fo:block id="{$id}">
+	          <xsl:call-template name="book.titlepage"/>
+	        </fo:block>
+	      </xsl:with-param>
+	    </xsl:call-template>
+	  </xsl:if> -->
+
+	  <xsl:apply-templates select="dedication" mode="dedication"/>
+	  <xsl:apply-templates select="acknowledgements" mode="acknowledgements"/>
+
+	  <xsl:call-template name="make.book.tocs"/>
+
+	  <xsl:apply-templates select="$content"/>
+
+	  <xsl:call-template name="back.cover"/>
+
+	</xsl:template>
+	
 
   <!--###################################################
       Header

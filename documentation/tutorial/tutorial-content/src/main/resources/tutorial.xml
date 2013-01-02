@@ -7,7 +7,7 @@
   <title>${book.title}</title>
 
   <bookinfo>
-
+		<title>${book.title}</title>
     <edition>${project.version}</edition>
 
     <!-- <author>
@@ -83,7 +83,6 @@
     </mediaobject>
   </bookinfo>
 
-  <xi:include href="copyright.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="foreword.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="preface.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="tut1.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />

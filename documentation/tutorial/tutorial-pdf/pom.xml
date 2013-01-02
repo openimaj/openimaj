@@ -107,7 +107,6 @@
 							<weight>normal</weight>
 							<embedFile>${basedir}/src/fonts/Arial.ttf</embedFile>
 							<metricsFile>${basedir}/target/fonts/Arial-metrics.xml</metricsFile>
-
 						</font>
 						<font>
 							<name>ArialBold</name>
@@ -115,7 +114,6 @@
 							<weight>normal</weight>
 							<embedFile>${basedir}/src/fonts/ArialBold.ttf</embedFile>
 							<metricsFile>${basedir}/target/fonts/ArialBold-metrics.xml</metricsFile>
-
 						</font>
 						<font>
 							<name>Courier</name>
@@ -123,7 +121,6 @@
 							<weight>normal</weight>
 							<embedFile>${basedir}/src/fonts/Courier.ttf</embedFile>
 							<metricsFile>${basedir}/target/fonts/Courier-metrics.xml</metricsFile>
-
 						</font>
 						<font>
 							<name>Courier</name>
@@ -131,7 +128,6 @@
 							<weight>bold</weight>
 							<embedFile>${basedir}/src/fonts/Courier-Bold.ttf</embedFile>
 							<metricsFile>${basedir}/target/fonts/Courier-Bold-metrics.xml</metricsFile>
-
 						</font>
 						<font>
 							<name>Courier</name>
@@ -139,7 +135,6 @@
 							<weight>normal</weight>
 							<embedFile>${basedir}/src/fonts/Courier-Oblique.ttf</embedFile>
 							<metricsFile>${basedir}/target/fonts/Courier-Oblique-metrics.xml</metricsFile>
-
 						</font>
 						<font>
 							<name>TimesNewRoman</name>
@@ -147,7 +142,6 @@
 							<weight>normal</weight>
 							<embedFile>${basedir}/src/fonts/TimesNewRoman.ttf</embedFile>
 							<metricsFile>${basedir}/target/fonts/TimesNewRoman-metrics.xml</metricsFile>
-
 						</font>
 					</fonts>
 				</configuration>
@@ -209,8 +203,10 @@
 							<outputDir>${basedir}/target</outputDir>
 							<outputFilename>tutorial-complete.pdf</outputFilename>
 							<pdfs>
-								<pdf>${basedir}/src/main/resources/cover.pdf</pdf>
-								<!-- <pdf>${basedir}/src/main/resources/copyright-page.pdf</pdf> -->
+								<pdf>${basedir}/target/docbook/covers/cover.pdf</pdf>
+								<pdf>${basedir}/src/main/resources/copyright.pdf</pdf>
+								<pdf>${basedir}/src/main/resources/innertitle.pdf</pdf>
+								<pdf>${basedir}/src/main/resources/blank-page.pdf</pdf>
 								<pdf>${basedir}/target/tutorial.pdf</pdf>
 								<pdf>${basedir}/src/main/resources/blank-page.pdf</pdf>
 							</pdfs>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj</groupId>
@@ -17,9 +18,9 @@
   <properties>
     <book.title>The OpenIMAJ Tutorial</book.title>
     <book.subtitle>Getting started with OpenIMAJ</book.subtitle>
-    <organization.address></organization.address>
-    <organization.slogan></organization.slogan>
-    <organization.logo></organization.logo>
+    <organization.address/>
+    <organization.slogan/>
+    <organization.logo/>
     <copyright.year>2011</copyright.year>
   </properties>
   <licenses>
@@ -83,6 +84,7 @@
     <module>tutorial-content</module>
     <module>tutorial-pdf</module>
     <module>tutorial-html</module>
+    <module>tutorial-code</module>
   </modules>
 
   <pluginRepositories>

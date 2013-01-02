@@ -64,8 +64,7 @@ System.out.println(image.colourSpace);
   </para>
   <programlisting>
 DisplayUtilities.display(image);
-DisplayUtilities.display(
-image.getBand(0), &quot;RedChannel&quot;);
+DisplayUtilities.display(image.getBand(0), &quot;Red Channel&quot;);
 	</programlisting>
   <para>
     In an image-processing library, images are no good unless you can do
@@ -117,7 +116,7 @@ clone.getBand(2).fill(0f);
     We can call the Canny edge detector like so:
   </para>
   <programlisting>
-image.processInplace(new CannyEdgeDetector2());
+image.processInplace(new CannyEdgeDetector());
 	</programlisting>
   <para>
     When applied to a colour image, each pixel of each band is replaced
