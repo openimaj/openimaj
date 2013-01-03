@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.rdf.storm.bolt.StormGraphRouter.Action;
 import org.openimaj.rdf.storm.bolt.StormSteMBolt.Component;
 
 import com.hp.hpl.jena.graph.Graph;
@@ -85,18 +86,13 @@ public class StormEddyBolt implements IRichBolt {
 
 	@Override
 	public void execute(Tuple input) {
-		if (input.getBooleanByField(StormSteMBolt.Component.isBuild.toString())){
-			this.router.routeGraph(input,
-								   input.getBooleanByField(StormSteMBolt.Component.isBuild.toString()),
-								   input.getBooleanByField(StormSteMBolt.Component.isAdd.toString()),
-								   (Graph)input.getValueByField(StormSteMBolt.Component.graph.toString()),
-								   input.getLongByField(StormSteMBolt.Component.timestamp.toString()));
-		} else {
-			this.router.routeGraph(input,
-					   			   input.getBooleanByField(StormSteMBolt.Component.isAdd.toString()),
-					   			   (Graph)input.getValueByField(StormSteMBolt.Component.graph.toString()),
-					   			   input.getLongByField(StormSteMBolt.Component.timestamp.toString()));
-		}
+		this.router.routeGraph(
+					 /*anchor*/input,
+					 /*action*/(Action)input.getValueByField(Component.action.toString()),
+					  /*isAdd*/input.getBooleanByField(StormSteMBolt.Component.isAdd.toString()),
+					  /*graph*/(Graph)input.getValueByField(StormSteMBolt.Component.graph.toString()),
+				  /*timestamp*/input.getLongByField(Component.timestamp.toString())
+		);
 	}
 	
 	@Override
@@ -143,18 +139,18 @@ public class StormEddyBolt implements IRichBolt {
 		@Override
 		public void routeGraph(Tuple anchor, boolean isAdd, Graph g, long... timestamp) {
 			// The default assumption is that Tuple's from SteMs are intended for probing (i.e. NOT building).
-			routeGraph(anchor, false, isAdd, g, timestamp);
+			routeGraph(anchor, Action.probe, isAdd, g, timestamp);
 		}
 
 		@Override
-		public void routeGraph(Tuple anchor, boolean isBuild, boolean isAdd, Graph g,
+		public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g,
 							   long... timestamp) {
 			Values vals = new Values();
 			for (Component c : Component.values()) {
 				switch (c) {
-				case isBuild:
+				case action:
 					// set whether this Tuple is intended for probing or building into other SteMs
-					vals.add(isBuild);
+					vals.add(action);
 					break;
 				case isAdd:
 					// insert this Tuple's value of isAdd to be passed onto subscribing Bolts.

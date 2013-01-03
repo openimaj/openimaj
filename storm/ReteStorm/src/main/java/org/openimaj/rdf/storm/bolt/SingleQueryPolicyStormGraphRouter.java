@@ -1,15 +1,9 @@
 package org.openimaj.rdf.storm.bolt;
 
-import java.util.List;
-
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 
 import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.TripleMatch;
-import com.hp.hpl.jena.graph.compose.MultiUnion;
-import com.hp.hpl.jena.graph.compose.Polyadic;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
@@ -17,19 +11,13 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  */
 public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 	
-	private List<String> queries;
+	private String query;
 	
 	/**
-	 * @param qs
+	 * @param q
 	 */
-	public SingleQueryPolicyStormGraphRouter(List<String> qs){
-		this.queries = qs;
-		/*
-		 * Separate the queries into their component triples, represented
-		 * by filtered SteMs.
-		 * 
-		 * Decide which SteMs are part of which queries
-		 */
+	public SingleQueryPolicyStormGraphRouter(String q){
+		this.query = q;
 	}
 	
 	@Override
@@ -44,7 +32,7 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 	}
 
 	@Override
-	public void routeGraph(Tuple anchor, boolean isBuild, boolean isAdd, Graph g,
+	public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g,
 						   long... timestamp) {
 		// TODO Auto-generated method stub
 

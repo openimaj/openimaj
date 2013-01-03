@@ -11,6 +11,44 @@ import com.hp.hpl.jena.graph.Graph;
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  */
 public abstract class StormGraphRouter {
+	
+	/**
+	 * 
+	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
+	 */
+	public static enum Action {
+
+		/**
+		 * 
+		 */
+		build
+		,
+		/**
+		 *
+		 */
+		check
+		,
+		/**
+		 *
+		 */
+		probe
+		;
+		private static String[] strings;
+		static {
+			Action[] vals = Action.values();
+			strings = new String[vals.length];
+			for (int i = 0; i < vals.length; i++) {
+				strings[i] = vals[i].toString();
+			}
+		}
+
+		/**
+		 * @return like {@link #values()} but {@link String} instances
+		 */
+		public static String[] strings() {
+			return strings;
+		}
+	}
 
 	protected OutputCollector collector;
 	
@@ -47,10 +85,10 @@ public abstract class StormGraphRouter {
 	 * @param newtimestamp
 	 * @param oldtimestamp
 	 */
-	public void routeGraph(Tuple anchor, boolean isBuild, boolean isAdd, Graph g, long newtimestamp, long oldtimestamp){
+	public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g, long newtimestamp, long oldtimestamp){
 		long ts = routingTimestamp(newtimestamp, oldtimestamp);
 		if (ts >= 0)
-			routeGraph(anchor, isBuild, isAdd, g, ts);
+			routeGraph(anchor, action, isAdd, g, ts);
 	}
 	
 	/**
@@ -70,7 +108,7 @@ public abstract class StormGraphRouter {
 	 * @param isAdd
 	 * @param timestamp
 	 */
-	public abstract void routeGraph(Tuple anchor, boolean isBuild, boolean isAdd, Graph g, long... timestamp);
+	public abstract void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g, long... timestamp);
 	
 	/**
 	 * 

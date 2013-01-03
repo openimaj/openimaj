@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.bolt.StormGraphRouter.Action;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.topology.logging.LoggerBolt;
 import org.openimaj.rdf.storm.utils.CircularPriorityWindow;
@@ -66,17 +67,11 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 	/** A time-prioritised and size limited sliding window of Tuples */
 	private final CircularPriorityWindow<Tuple> window;
 
-	/** The name of the stream over which this bolt acts */
-//	private final String windowName;
+	/** The age of the oldest tuple in the queue */
+	private long timestampLimit;
 
 	/** A count of {@link Fields} which should match between the two inputs */
 	private int varCount;
-
-	/**
-	 * A set of {@link Fields} which should be produced by joins between the two
-	 * inputs
-	 */
-//	protected final int[] outputIndices;
 
 	/** The router that results should be passed on to */
 	protected StormGraphRouter router;
@@ -97,6 +92,7 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 						  OutputCollector oc) {
 		this.varCount = vars;
 		this.window = new CircularPriorityWindow<Tuple>(this, size, delay, unit);
+		this.timestampLimit = Long.MAX_VALUE;
 		if (logging)
 			this.logStream = new LoggerBolt.LogEmitter(oc);
 	}
@@ -139,13 +135,15 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 	 *            the time at which the triple was added from the stream
 	 */
 	public void build(Tuple env, boolean isAdd, long timestamp) {
-		if (isAdd)
+		if (isAdd) {
 			// Store the new token in this store
 			this.window.offer(env);
-		else
+			if (timestamp < this.timestampLimit)
+				this.timestampLimit = timestamp;
+		} else
 			// Remove any existing instances of the token from this store
 			this.window.remove(env);
-		this.router.routeGraph(env, false, isAdd,
+		this.router.routeGraph(env, Action.check, isAdd,
 							   (Graph) env.getValueByField(StormSteMBolt.Component.graph.toString()),
 							   (Long) env.getValueByField(StormSteMBolt.Component.timestamp.toString()));
 	}
@@ -195,6 +193,13 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 		newG.addGraph((Graph) thisTuple.getValueByField(StormSteMBolt.Component.graph.toString()));
 		newG.addGraph((Graph) steMTuple.getValueByField(StormSteMBolt.Component.graph.toString()));
 		return newG;
+	}
+	
+	/**
+	 * @return oldest timestamp
+	 */
+	public long getOldestTimestamp(){
+		return this.window.getOldestTimestamp();
 	}
 
 	@Override

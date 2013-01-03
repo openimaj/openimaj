@@ -44,7 +44,7 @@ public class MultiQueryPolicyStormGraphRouter extends StormGraphRouter {
 	}
 
 	@Override
-	public void routeGraph(Tuple anchor, boolean isBuild, boolean isAdd, Graph g,
+	public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g,
 						   long... timestamp) {
 		// TODO Auto-generated method stub
 

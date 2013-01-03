@@ -32,6 +32,10 @@ package org.openimaj.rdf.storm.bolt;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.openimaj.rdf.storm.bolt.StormGraphRouter.Action;
+
+import com.hp.hpl.jena.graph.Graph;
+
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
@@ -61,7 +65,7 @@ public abstract class StormSteMBolt implements IRichBolt{
 		/**
 		 * 
 		 */
-		isBuild
+		action
 		,
 		/**
 		 *
@@ -125,14 +129,22 @@ public abstract class StormSteMBolt implements IRichBolt{
 
 	@Override
 	public void execute(Tuple input) {
-		if (input.getBooleanByField(Component.isBuild.toString()))
-			this.window.build(input,
-							  input.getBooleanByField(Component.isAdd.toString()),
-							  input.getLongByField(Component.timestamp.toString()));
-		else
-			this.window.probe(input,
-							  input.getBooleanByField(Component.isAdd.toString()),
-							  input.getLongByField(Component.timestamp.toString()));
+		long timestamp = input.getLongByField(Component.timestamp.toString());
+		boolean isAdd = input.getBooleanByField(Component.isAdd.toString());
+		switch ((Action)input.getValueByField(Component.action.toString())){
+			case build:
+				this.window.build(input, isAdd, timestamp);
+				break;
+			case check:
+				//TODO: implement proper checking
+				this.router.routeGraph(input, Action.probe, isAdd,
+									   (Graph)input.getValueByField(Component.graph.toString()),
+									   timestamp);
+			case probe:
+				this.window.probe(input, isAdd, timestamp);
+				break;
+			default:
+		}
 	}
 
 	@Override
