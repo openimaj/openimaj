@@ -29,8 +29,7 @@
     below, but check out the previous tutorial on video processing if
     you’re not sure what it means.
   </para>
-  <programlisting>
-VideoCapture vc = new VideoCapture( 320, 240 );
+  <programlisting>VideoCapture vc = new VideoCapture( 320, 240 );
 VideoDisplay&lt;MBFImage&gt; vd = VideoDisplay.createVideoDisplay( vc );
 vd.addVideoListener( 
   new VideoDisplayListener&lt;MBFImage&gt;() {
@@ -41,8 +40,7 @@ vd.addVideoListener(
     @Override
     public void afterUpdate( VideoDisplay&lt;MBFImage&gt; display ) {
     }
-  });
-	</programlisting>
+  });</programlisting>
   <para>
     For finding faces in images (or in this case video frames) we use a
     face detector. The <literal>FaceDetector</literal> interface
@@ -59,9 +57,7 @@ vd.addVideoListener(
     minimum size in pixels that a face can be detected at. For now, set
     this to <literal>40</literal> pixels:
   </para>
-  <programlisting>
-FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
-	</programlisting>
+  <programlisting>FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);</programlisting>
   <para>
     Like all <literal>FaceDetector</literal> implementations, the
     <literal>HaarCascadeDetector</literal> has a method
@@ -75,9 +71,7 @@ FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
     method does the same thing as the <literal>flatten()</literal>
     method we used earlier when used on RGB images.
   </para>
-  <programlisting>
-List&lt;DetectedFace&gt; faces = fd.detectFaces(Transforms.calculateIntensity(frame));
-	</programlisting>
+  <programlisting>List&lt;DetectedFace&gt; faces = fd.detectFaces(Transforms.calculateIntensity(frame));</programlisting>
   <para>
     The <literal>detectFaces()</literal> method returns a list of
     <literal>DetectedFace</literal> objects which contain information
@@ -89,15 +83,13 @@ List&lt;DetectedFace&gt; faces = fd.detectFaces(Transforms.calculateIntensity(fr
     code and you have a webcam attached, you should see yourself with a
     box drawn around your face. The complete code is shown below:
   </para>
-  <programlisting>
-FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
+  <programlisting>FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
 List&lt;DetectedFace&gt; faces =
             fd.detectFaces( Transforms.calculateIntensity(frame));
 
 for( DetectedFace face : faces ) {
     frame.drawShape(face.getBounds(), RGBColour.RED);
-}
-	</programlisting>
+}</programlisting>
   <para>
     OpenIMAJ has other face detectors which go a bit further than just
     finding the face. The <literal>FKEFaceDetector</literal> finds
@@ -112,10 +104,8 @@ for( DetectedFace face : faces ) {
     lines of our code to instantiate the detector and detect faces can
     now be changed to the following:
   </para>
-  <programlisting>
-FaceDetector&lt;KEDetectedFace,FImage&gt; fd = new FKEFaceDetector();
-List&lt;KEDetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity( frame ) );
-	</programlisting>
+  <programlisting>FaceDetector&lt;KEDetectedFace,FImage&gt; fd = new FKEFaceDetector();
+List&lt;KEDetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity( frame ) );</programlisting>
   <para>
     If you run the demo now, you will see exactly the sameas before, as
     the <literal>FKEFaceDetector</literal> still detects bounding boxes.

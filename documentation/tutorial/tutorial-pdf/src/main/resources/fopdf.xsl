@@ -391,11 +391,12 @@
     <xsl:attribute name="border-style">solid</xsl:attribute>
     <xsl:attribute name="border-width">0.2pt</xsl:attribute>
     <xsl:attribute name="padding-top">0.5em</xsl:attribute>
-    <xsl:attribute name="padding-left">0.3em</xsl:attribute>
-    <xsl:attribute name="padding-right">0.3em</xsl:attribute>
+    <xsl:attribute name="padding-left">1em</xsl:attribute>
+    <xsl:attribute name="padding-right">1em</xsl:attribute>
     <xsl:attribute name="padding-bottom">0.5em</xsl:attribute>
     <xsl:attribute name="margin-left">0em</xsl:attribute>
     <xsl:attribute name="margin-right">0em</xsl:attribute>
+		<xsl:attribute name="keep-together.within-column">always</xsl:attribute>
   </xsl:attribute-set>
 
   <!-- Shade (background) programlistings -->

@@ -18,14 +18,10 @@
     Firstly, lets load up a couple of images. Here we have a magazine
     and a scene containing the magazine:
   </para>
-  <programlisting>
-MBFImage query = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/query.jpg&quot;));
-	</programlisting>
+  <programlisting>MBFImage query = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/query.jpg&quot;));</programlisting>
   <para>
   </para>
-  <programlisting>
-MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/target.jpg&quot;));
-	</programlisting>
+  <programlisting>MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/target.jpg&quot;));</programlisting>
   <para>
     The first step is feature extraction. We’ll use the
     <emphasis role="strong">difference-of-Gaussian</emphasis> feature
@@ -36,11 +32,9 @@ MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8
     tasks. The standard implementation of SIFT in OpenIMAJ can be found
     in the <literal>DoGSIFTEngine</literal> class:
   </para>
-  <programlisting>
-DoGSIFTEngine engine = new DoGSIFTEngine();	
+  <programlisting>DoGSIFTEngine engine = new DoGSIFTEngine();	
 LocalFeatureList&lt;Keypoint&gt; queryKeypoints = engine.findFeatures(query.flatten());
-LocalFeatureList&lt;Keypoint&gt; targetKeypoints = engine.findFeatures(target.flatten());
-	</programlisting>
+LocalFeatureList&lt;Keypoint&gt; targetKeypoints = engine.findFeatures(target.flatten());</programlisting>
   <para>
     Once the engine is constructed, we can use it to extract
     <literal>Keypoint</literal> objects from our images. The
@@ -64,19 +58,15 @@ LocalFeatureList&lt;Keypoint&gt; targetKeypoints = engine.findFeatures(target.fl
     <literal>BasicMatcher</literal>. Next we’ll construct and setup such
     a matcher:
   </para>
-  <programlisting>
-LocalFeatureMatcher&lt;Keypoint&gt; matcher = new BasicMatcher&lt;Keypoint&gt;(80);
+  <programlisting>LocalFeatureMatcher&lt;Keypoint&gt; matcher = new BasicMatcher&lt;Keypoint&gt;(80);
 matcher.setModelFeatures(queryKeypoints);
-matcher.findMatches(targetKeypoints);
-	</programlisting>
+matcher.findMatches(targetKeypoints);</programlisting>
   <para>
     We can now draw the matches between these two images found with this
     basic matcher using the <literal>MatchingUtilities</literal> class:
   </para>
-  <programlisting>
-MBFImage basicMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
-DisplayUtilities.display(basicMatches);
-	</programlisting>
+  <programlisting>MBFImage basicMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
+DisplayUtilities.display(basicMatches);</programlisting>
   <para>
     As you can see, the basic matcher finds many matches, many of which
     are clearly incorrect. A more advanced approach is to filter the
@@ -99,8 +89,7 @@ DisplayUtilities.display(basicMatches);
     We’ll now set up our model, our RANSAC model fitter and our
     consistent matcher:
   </para>
-  <programlisting>
-AffineTransformModel fittingModel = new AffineTransformModel(5);
+  <programlisting>AffineTransformModel fittingModel = new AffineTransformModel(5);
 RANSAC&lt;Point2d, Point2d&gt; ransac = new RANSAC&lt;Point2d, Point2d&gt;(fittingModel, 1500, new RANSAC.PercentageInliersStoppingCondition(0.5), true);
 
 matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(
@@ -108,13 +97,10 @@ matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(
 
 matcher.setModelFeatures(queryKeypoints);
 matcher.findMatches(targetKeypoints);
-MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
-	</programlisting>
+MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);</programlisting>
   <para>
   </para>
-  <programlisting>
-DisplayUtilities.display(consistentMatches);
-	</programlisting>
+  <programlisting>DisplayUtilities.display(consistentMatches);</programlisting>
   <para>
     The <literal>AffineTransformModel</literal> class models a
     two-dimensional Affine transform in OpenIMAJ. An interesting
@@ -126,10 +112,8 @@ DisplayUtilities.display(consistentMatches);
     therefore we can draw a polygon around the estimated location of the
     query within the target:
   </para>
-  <programlisting>
-target.drawShape(query.getBounds().transform(fittingModel.getTransform().inverse()), 3,RGBColour.BLUE);
-DisplayUtilities.display(target); 
-	</programlisting>
+  <programlisting>target.drawShape(query.getBounds().transform(fittingModel.getTransform().inverse()), 3,RGBColour.BLUE);
+DisplayUtilities.display(target); </programlisting>
   <sect1 id="exercises-6">
     <title>Exercises</title>
     <sect2 id="exercise-1-different-matchers">

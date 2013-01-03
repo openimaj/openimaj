@@ -41,9 +41,7 @@
     implementation that is constructed using the number of bins required
     in each dimension. For example:
   </para>
-  <programlisting>
-Histogram histogram = new Histogram( 4, 4, 4 );
-	</programlisting>
+  <programlisting>Histogram histogram = new Histogram( 4, 4, 4 );</programlisting>
   <para>
     This code creates a histogram that has 64 (4 × 4 × 4) bins. However,
     this data structure does not do anything on its own. The
@@ -52,18 +50,15 @@ Histogram histogram = new Histogram( 4, 4, 4 );
     <literal>HistogramModel</literal> class assumes the image has been
     normalised and returns a normalised histogram:
   </para>
-  <programlisting>
-HistogramModel model = new HistogramModel( 4, 4, 4 );
+  <programlisting>HistogramModel model = new HistogramModel( 4, 4, 4 );
 model.estimateModel( image );
-Histogram histogram = model.histogram;
-	</programlisting>
+Histogram histogram = model.histogram;</programlisting>
   <para>
     You can print out the histogram to see what sort of numbers you get
     for different images. Let’s load in 3 images then generate and store
     the histograms for them:
   </para>
-  <programlisting>
-URL[] imageURLs = new URL[] {
+  <programlisting>URL[] imageURLs = new URL[] {
    new URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg&quot; ),
    new URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist2.jpg&quot; ), 
    new  URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist3.jpg&quot; ) 
@@ -73,8 +68,7 @@ for( URL u : imageURLs ) {
     HistogramModel model = new HistogramModel(4, 4, 4);
     model.estimateModel(ImageUtilities.readMBF(u));
     histograms.add( model.histogram );
-}
-	</programlisting>
+}</programlisting>
   <para>
     We now have a list of histograms from our images. The
     <literal>Histogram</literal> class extends a class called the
@@ -90,9 +84,7 @@ for( URL u : imageURLs ) {
     So, we can compare two histograms using the Euclidean distance
     measure like so:
   </para>
-  <programlisting>
-double distanceScore = histogram1.compare( histogram2, DoubleFVComparison.EUCLIDEAN );
-	</programlisting>
+  <programlisting>double distanceScore = histogram1.compare( histogram2, DoubleFVComparison.EUCLIDEAN );</programlisting>
   <para>
     This will give us a score of how similar (or dissimilar) the
     histograms are. It’s useful to think of the output score as a
@@ -108,13 +100,11 @@ double distanceScore = histogram1.compare( histogram2, DoubleFVComparison.EUCLID
     to <literal>histogram1</literal>) so we can compare all the
     histograms with each other in a simple, efficient, nested loop:
   </para>
-  <programlisting>
-for( int i = 0; i &lt; histograms.size(); i++ ) {
+  <programlisting>for( int i = 0; i &lt; histograms.size(); i++ ) {
     for( int j = i; j &lt; histograms.size(); j++ ) {
         double distance = histograms.get(i).compare( histograms.get(j), DoubleFVComparison.EUCLIDEAN );
     }
-}
-	</programlisting>
+}</programlisting>
   <sect1 id="exercises-5">
     <title>Exercises</title>
     <sect2 id="exercise-1-finding-and-displaying-similar-images">

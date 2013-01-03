@@ -27,15 +27,11 @@
     <filename>App.java</filename> class file remove the sample code within
     the main method and add the following line:
   </para>
-  <programlisting>
-MBFImage image = ImageUtilities.readMBF(new File(&quot;file.jpg&quot;));
-	</programlisting>
+  <programlisting>MBFImage image = ImageUtilities.readMBF(new File(&quot;file.jpg&quot;));</programlisting>
   <para>
     For this tutorial, read the image from the following URL:
   </para>
-  <programlisting>
-MBFImage image = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/sinaface.jpg&quot;));
-	</programlisting>
+  <programlisting>MBFImage image = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/sinaface.jpg&quot;));</programlisting>
   <para>
     The <code>ImageUtilities</code> class provides the ability to
     read <code>MBFImage</code>s and <code>FImage</code>s. An
@@ -48,9 +44,7 @@ MBFImage image = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/87
     given by the image’s public <code>colourSpace</code> field,
     which we can print as follows:
   </para>
-  <programlisting>
-System.out.println(image.colourSpace);
-	</programlisting>
+  <programlisting>System.out.println(image.colourSpace);</programlisting>
   <para>
     If we run the code, we’ll see that the image is an RGB image with
     three <code>FImage</code>s representing the red, blue and
@@ -62,10 +56,8 @@ System.out.println(image.colourSpace);
     display the image we have loaded then we display the red channel of
     the image alone:
   </para>
-  <programlisting>
-DisplayUtilities.display(image);
-DisplayUtilities.display(image.getBand(0), &quot;Red Channel&quot;);
-	</programlisting>
+  <programlisting>DisplayUtilities.display(image);
+DisplayUtilities.display(image.getBand(0), &quot;Red Channel&quot;);</programlisting>
   <para>
     In an image-processing library, images are no good unless you can do
     something to them. The most basic thing you can do to an image is
@@ -73,16 +65,14 @@ DisplayUtilities.display(image.getBand(0), &quot;Red Channel&quot;);
     floats, we make this is quite easy. Let’s go through our colour
     image and set all its blue and green pixels to black:
   </para>
-  <programlisting>
-MBFImage clone = image.clone();
+  <programlisting>MBFImage clone = image.clone();
 for (int y=0; y&lt;image.getHeight(); y++) {
     for(int x=0; x&lt;image.getWidth(); x++) {
         clone.getBand(1).pixels[y][x] = 0;
         clone.getBand(2).pixels[y][x] = 0;
     }
 }
-DisplayUtilities.display(clone);
-	</programlisting>
+DisplayUtilities.display(clone);</programlisting>
   <para>
     Note that the first thing we do here is to <code>clone</code>
     the image to preserve the original image for the remainder of the
@@ -98,10 +88,8 @@ DisplayUtilities.display(clone);
     pixels, OpenIMAJ provides a lot of methods to make things easier.
     For example, we could have done the above like this instead:
   </para>
-  <programlisting>
-clone.getBand(1).fill(0f);
-clone.getBand(2).fill(0f);
-	</programlisting>
+  <programlisting>clone.getBand(1).fill(0f);
+clone.getBand(2).fill(0f);</programlisting>
   <para>
     More complex image operations are wrapped up by OpenIMAJ processor
     interfaces: <code>ImageProcessor</code>s,
@@ -115,9 +103,7 @@ clone.getBand(2).fill(0f);
     detection algorithm is the <emphasis>Canny edge detector</emphasis>.
     We can call the Canny edge detector like so:
   </para>
-  <programlisting>
-image.processInplace(new CannyEdgeDetector());
-	</programlisting>
+  <programlisting>image.processInplace(new CannyEdgeDetector());</programlisting>
   <para>
     When applied to a colour image, each pixel of each band is replaced
     with the edge response at that point (for simplicity you can think
@@ -126,24 +112,20 @@ image.processInplace(new CannyEdgeDetector());
     then that colour will be strong, resulting in the psychedelic
     colours you should see if you display the image:
   </para>
-  <programlisting>
-DisplayUtilities.display(image);
-	</programlisting>
+  <programlisting>DisplayUtilities.display(image);</programlisting>
   <para>
     Finally, we can also draw on our image in OpenIMAJ. On every
     <code>Image</code> object there is a set of drawing functions
     that can be called to draw points, lines, shapes and text on images.
     Let’s draw some speech bubbles on our image:
   </para>
-  <programlisting>
-image.drawShapeFilled(new Ellipse(700f, 450f, 20f, 10f, 0f), RGBColour.WHITE);
+  <programlisting>image.drawShapeFilled(new Ellipse(700f, 450f, 20f, 10f, 0f), RGBColour.WHITE);
 image.drawShapeFilled(new Ellipse(650f, 425f, 25f, 12f, 0f), RGBColour.WHITE);
 image.drawShapeFilled(new Ellipse(600f, 380f, 30f, 15f, 0f), RGBColour.WHITE);
 image.drawShapeFilled(new Ellipse(500f, 300f, 100f, 70f, 0f), RGBColour.WHITE);
 image.drawText(&quot;OpenIMAJ is&quot;, 425, 300, HersheyFont.ASTROLOGY, 20, RGBColour.BLACK);
 image.drawText(&quot;Awesome&quot;, 425, 330, HersheyFont.ASTROLOGY, 20, RGBColour.BLACK);
-DisplayUtilities.display(image);
-	</programlisting>
+DisplayUtilities.display(image);</programlisting>
   <para>
     Here we construct a series of ellipses (defined by their centre [x,
     y], axes [major, minor] and rotation) and draw them as white filled

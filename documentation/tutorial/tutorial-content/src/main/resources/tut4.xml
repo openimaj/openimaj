@@ -13,9 +13,7 @@
     class. This class is typed on the type of underlying frame. In this
     case, let’s create a video which holds coloured frames:
   </para>
-  <programlisting>
-Video&lt;MBFImage&gt; video;
-	</programlisting>
+  <programlisting>Video&lt;MBFImage&gt; video;</programlisting>
   <para>
     Exactly what kind of video is loaded depends on what you want to do.
     To load a video from a file we use the
@@ -33,17 +31,13 @@ Video&lt;MBFImage&gt; video;
     While this is downloading, let’s write the code. If we want to load
     a video from a file we use a <literal>XuggleVideo</literal> object:
   </para>
-  <programlisting>
-video = new XuggleVideo(new File(&quot;/path/to/keyboardcat.flv&quot;));
-	</programlisting>
+  <programlisting>video = new XuggleVideo(new File(&quot;/path/to/keyboardcat.flv&quot;));</programlisting>
   <para>
     If your computer has a webcam, OpenIMAJ also supports live video
     input. These are called capture devices and you can use one through
     the <literal>VideoCapture</literal> class:
   </para>
-  <programlisting>
-video = new VideoCapture(320,240);
-	</programlisting>
+  <programlisting>video = new VideoCapture(320,240);</programlisting>
   <para>
     This will find the first video capture device attached to your
     system and render it as closely to 320 × 240 pixels as it can. To
@@ -62,9 +56,7 @@ video = new VideoCapture(320,240);
     (which mirror those found in <literal>DisplayUtilities</literal> for
     images) like so:
   </para>
-  <programlisting>
-VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
-	</programlisting>
+  <programlisting>VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);</programlisting>
   <para>
     Simply by creating a display, the video starts and plays. You can
     test this by running your app after Xuggle is installed.
@@ -89,19 +81,16 @@ VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
     <literal>Iterable</literal>, so you can do something like this to
     iterate through every frame and process it:
   </para>
-  <programlisting>
-for (MBFImage mbfImage : video) {
+  <programlisting>for (MBFImage mbfImage : video) {
     DisplayUtilities.displayName(mbfImage.process(new CannyEdgeDetector2()), &quot;videoFrames&quot;);
-}
-	</programlisting>
+}</programlisting>
   <para>
     Here we’re applying a Canny edge detector to each frame and
     displaying the frame in a named window. Another approach, which ties
     processing to image display automatically, is to use an event driven
     technique:
   </para>
-  <programlisting>
-VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
+  <programlisting>VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
 display.addVideoListener(
   new VideoDisplayListener&lt;MBFImage&gt;() {
     @Override
@@ -112,8 +101,7 @@ display.addVideoListener(
     @Override
     public void afterUpdate(VideoDisplay&lt;MBFImage&gt; display) {
     }
-  });
-	</programlisting>
+  });</programlisting>
   <para>
     These <literal>VideoDisplayListener</literal>s are given video
     frames before they are rendered and they are handed the video
