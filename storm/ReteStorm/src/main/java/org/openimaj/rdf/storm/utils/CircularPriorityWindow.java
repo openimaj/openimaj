@@ -80,6 +80,14 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 	public long getDelay() {
 		return delay;
 	}
+	
+	/**
+	 * @return oldest timestamp
+	 */
+	public long getOldestTimestamp(){
+		this.prune();
+		return data.peek().getTimestamp();
+	}
 
 	@Override
 	public void clear() {
@@ -105,7 +113,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 				data.remove(last);
 				T lastUnwrapped = last.getWrapped();
 				decrement(lastUnwrapped);
-				CircularPriorityWindow.this.continuation.handleCapacityOverflow(lastUnwrapped);
+				continuation.handleCapacityOverflow(lastUnwrapped);
 				last = null;
 			}
 		};
@@ -236,9 +244,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		prune();
 		if (arg0 == null) return false;
 		if (data.size() >= capacity){
-			CircularPriorityWindow.this.continuation.handleCapacityOverflow(
-					data.remove().getWrapped()
-			);
+			continuation.handleCapacityOverflow(data.remove().getWrapped());
 		}
 		increment(arg0.getWrapped());
 		return data.add(arg0);
@@ -395,6 +401,7 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 	private class TimeWrapped extends Wrapped implements Delayed {
 
 		private long droptime;
+		private long timestamp;
 
 		public TimeWrapped (T toWrap, long ts, long delay, TimeUnit delayUnit) {
 			super(toWrap);
@@ -418,6 +425,10 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		@Override
 		public long getDelay(TimeUnit arg0) {
 			return arg0.convert(droptime - (new Date()).getTime(),TimeUnit.MILLISECONDS);
+		}
+		
+		public long getTimestamp() {
+			return timestamp;
 		}
 
 	}
