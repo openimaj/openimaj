@@ -66,7 +66,7 @@ MavenProject loadProject(File pomFile) {
     return new MavenProject(model);
 }
 
-void process(MavenProject p, int level, File baseDir, MarkupBuilder builder) {
+void process(MavenProject p, File baseDir, MarkupBuilder builder) {
 	builder.varlistentry() {
 		term() {
 			filename( baseDir.name == "." ? "OpenIMAJ" : baseDir.name );
@@ -82,12 +82,25 @@ void process(MavenProject p, int level, File baseDir, MarkupBuilder builder) {
 			        modules.each { module ->
 						File baseDir2 = new File(baseDir, module)
 						MavenProject mp = loadProject(new File(baseDir2, "/pom.xml"));
-			            process(mp, level+1, baseDir2, builder);
+			            process(mp, baseDir2, builder);
 			        }
 				}
 		    }
 		}
 	}
+}
+
+void processRoot(MavenProject p, MarkupBuilder builder) {
+    def modules = p.getModules();
+    if (modules != null) {
+		builder.variablelist() {
+	        modules.each { module ->
+				File baseDir2 = new File(p.basedir, module)
+				MavenProject mp = loadProject(new File(baseDir2, "/pom.xml"));
+	            process(mp, baseDir2, builder);
+	        }
+		}
+    }
 }
 
 MavenProject rootProject = getRootProject();
@@ -98,8 +111,6 @@ def xml = new MarkupBuilder(writer)
 
 writer << '<?xml version="1.0" encoding="UTF-8"?>\n';
 writer <<  '<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">\n';
-xml.variablelist() {
-	process(rootProject, 1, rootProject.basedir, xml);
-}
+processRoot(rootProject, xml);
 
 writer.close();
