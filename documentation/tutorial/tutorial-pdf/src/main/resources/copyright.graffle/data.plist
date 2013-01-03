@@ -51,13 +51,20 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 503.26346}, {330, 13}}</string>
+			<string>{{100.8, 500.46616}, {330, 14}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>Flow</key>
 			<string>Resize</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica</string>
+				<key>Size</key>
+				<real>10</real>
+			</dict>
 			<key>ID</key>
 			<integer>165</integer>
 			<key>Shape</key>
@@ -87,13 +94,13 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 TheSansMonoCondensed-Plain;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 InconsolataLGC;}
 {\colortbl;\red255\green255\blue255;}
 \deftab720
 \pard\pardeftab720\sa240\qj
 
-\f0\fs24 \cf0 http://creativecommons.org/licenses/by-sa/3.0/legalcode}</string>
+\f0\fs20 \cf0 http://creativecommons.org/licenses/by-sa/3.0/legalcode}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -102,13 +109,20 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 324.48401}, {192, 13}}</string>
+			<string>{{100.8, 322.61914}, {192, 14}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>Flow</key>
 			<string>Resize</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica</string>
+				<key>Size</key>
+				<real>10</real>
+			</dict>
 			<key>ID</key>
 			<integer>164</integer>
 			<key>Shape</key>
@@ -138,12 +152,12 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 TheSansMonoCondensed-Plain;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 InconsolataLGC;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\fs24 \cf0 http://users.ecs.soton.ac.uk/dpd}</string>
+\f0\fs20 \cf0 http://users.ecs.soton.ac.uk/dpd}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -152,13 +166,20 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 243.58972}, {186, 13}}</string>
+			<string>{{100.8, 241.72485}, {186, 14}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>Flow</key>
 			<string>Resize</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica</string>
+				<key>Size</key>
+				<real>10</real>
+			</dict>
 			<key>ID</key>
 			<integer>162</integer>
 			<key>Shape</key>
@@ -188,12 +209,12 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 TheSansMonoCondensed-Plain;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 InconsolataLGC;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\fs24 \cf0 http://users.ecs.soton.ac.uk/ss}</string>
+\f0\fs20 \cf0 http://users.ecs.soton.ac.uk/ss}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -202,13 +223,20 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 163.40329}, {198, 13}}</string>
+			<string>{{100.8, 161.53842}, {198, 14}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>Flow</key>
 			<string>Resize</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica</string>
+				<key>Size</key>
+				<real>10</real>
+			</dict>
 			<key>ID</key>
 			<integer>161</integer>
 			<key>Shape</key>
@@ -238,12 +266,12 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 TheSansMonoCondensed-Plain;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 InconsolataLGC;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\fs24 \cf0 http://users.ecs.soton.ac.uk/jsh2}</string>
+\f0\fs20 \cf0 http://users.ecs.soton.ac.uk/jsh2}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -262,9 +290,9 @@
 			<key>FontInfo</key>
 			<dict>
 				<key>Font</key>
-				<string>Birka</string>
+				<string>Helvetica</string>
 				<key>Size</key>
-				<real>13</real>
+				<real>12</real>
 			</dict>
 			<key>ID</key>
 			<integer>160</integer>
@@ -295,8 +323,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 Birka;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 LinLibertine;}
 {\colortbl;\red255\green255\blue255;}
 \deftab720
 \pard\pardeftab720\sa240\qj
@@ -320,7 +348,7 @@ While every precaution has been taken in the preparation of this book, the publi
 			<key>FontInfo</key>
 			<dict>
 				<key>Font</key>
-				<string>Times-Roman</string>
+				<string>LinLibertine</string>
 				<key>Size</key>
 				<real>12</real>
 			</dict>
@@ -353,8 +381,8 @@ While every precaution has been taken in the preparation of this book, the publi
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 Birka;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 LinLibertine;}
 {\colortbl;\red255\green255\blue255;}
 \deftab720
 \pard\pardeftab720\sa240\qj
@@ -366,7 +394,7 @@ While every precaution has been taken in the preparation of this book, the publi
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 366.20737}, {386, 14}}</string>
+			<string>{{100.8, 366.20737}, {376, 14}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -376,9 +404,9 @@ While every precaution has been taken in the preparation of this book, the publi
 			<key>FontInfo</key>
 			<dict>
 				<key>Font</key>
-				<string>Birka</string>
+				<string>Helvetica</string>
 				<key>Size</key>
-				<real>13</real>
+				<real>12</real>
 			</dict>
 			<key>ID</key>
 			<integer>158</integer>
@@ -409,8 +437,8 @@ While every precaution has been taken in the preparation of this book, the publi
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 Birka;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 LinLibertine;}
 {\colortbl;\red255\green255\blue255;}
 \deftab720
 \pard\pardeftab720\sa240
@@ -424,7 +452,7 @@ While every precaution has been taken in the preparation of this book, the publi
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 62.216858}, {271, 34}}</string>
+			<string>{{100.8, 62.216858}, {213, 34}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -434,7 +462,7 @@ While every precaution has been taken in the preparation of this book, the publi
 			<key>FontInfo</key>
 			<dict>
 				<key>Font</key>
-				<string>OpenSans-Bold</string>
+				<string>Helvetica-Bold</string>
 				<key>Size</key>
 				<real>24</real>
 			</dict>
@@ -467,8 +495,8 @@ While every precaution has been taken in the preparation of this book, the publi
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 OpenSans;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 OpenSans-CondensedBold;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
@@ -481,7 +509,7 @@ While every precaution has been taken in the preparation of this book, the publi
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 270.62399}, {171, 51}}</string>
+			<string>{{100.8, 268.75912}, {168, 54}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -524,18 +552,19 @@ While every precaution has been taken in the preparation of this book, the publi
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 OpenSans;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 Birka;
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 OpenSans-CondensedBold;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 LinLibertine;
 }
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\b\fs34 \cf0 David Dupplaw
-\fs26 , 
-\fs22 Ph.D.
-\f1\b0\fs26 \
+\f0\b\fs38 \cf0 David Dupplaw
+\fs30 , 
+\fs26 Ph.D.
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f2\fs24 Electronics and Computer Science\
+\f2\fs24 \cf0 Electronics and Computer Science\
 The University of Southampton}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
@@ -545,7 +574,7 @@ The University of Southampton}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 190.12436}, {180, 51}}</string>
+			<string>{{100.8, 188.25949}, {168, 54}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -588,18 +617,19 @@ The University of Southampton}</string>
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 OpenSans;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 Birka;
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 OpenSans-CondensedBold;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 LinLibertine;
 }
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\b\fs34 \cf0 Sina Samangooei
-\fs26 , 
-\fs22 Ph.D.
-\f1\b0\fs26 \
+\f0\b\fs38 \cf0 Sina Samangooei
+\fs30 , 
+\fs26 Ph.D.
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f2\fs24 Electronics and Computer Science\
+\f2\fs24 \cf0 Electronics and Computer Science\
 The University of Southampton}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
@@ -609,7 +639,7 @@ The University of Southampton}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{100.8, 109.62486}, {171, 51}}</string>
+			<string>{{100.8, 107.75999}, {168, 54}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -652,18 +682,19 @@ The University of Southampton}</string>
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 OpenSans;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 Birka;
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 OpenSans-CondensedBold;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 LinLibertine;
 }
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\b\fs34 \cf0 Jonathon Hare
-\fs26 , 
-\fs22 Ph.D.
-\f1\b0\fs26 \
+\f0\b\fs38 \cf0 Jonathon Hare
+\fs30 , 
+\fs26 Ph.D.
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f2\fs24 Electronics and Computer Science\
+\f2\fs24 \cf0 Electronics and Computer Science\
 The University of Southampton}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
@@ -789,7 +820,7 @@ The University of Southampton}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-01-03 10:36:21 +0000</string>
+	<string>2013-01-03 12:43:19 +0000</string>
 	<key>Modifier</key>
 	<string>Jonathon Hare</string>
 	<key>NotesVisible</key>
@@ -875,7 +906,7 @@ The University of Southampton}</string>
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{522, 24}, {1201, 1154}}</string>
+		<string>{{444, 4}, {1201, 1024}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>
@@ -889,7 +920,7 @@ The University of Southampton}</string>
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-191, -68.999931}, {993.93939, 930.53607}}</string>
+		<string>{{-191, -9.0000248}, {993.93939, 809.32391}}</string>
 		<key>Zoom</key>
 		<real>1.0724999904632568</real>
 		<key>ZoomValues</key>

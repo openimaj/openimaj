@@ -97,51 +97,72 @@
 					<xincludeSupported>true</xincludeSupported>
 					<imgSrcPath>${basedir}/target/docbook/</imgSrcPath>
 					<foCustomization>${basedir}/target/classes/fopdf.xsl</foCustomization>
-					<bodyFontFamily>TimesNewRoman</bodyFontFamily>
-					<monospaceFontFamily>Courier</monospaceFontFamily>
-					<titleFontFamily>ArialBold</titleFontFamily>
+					<bodyFontFamily>LinLibertine</bodyFontFamily>
+					<monospaceFontFamily>Inconsolata LGC</monospaceFontFamily>
+					<titleFontFamily>OpenSans-CondBold</titleFontFamily>
 					<fonts>
 						<font>
-							<name>Arial</name>
+							<name>OpenSans-CondBold</name>
 							<style>normal</style>
 							<weight>normal</weight>
-							<embedFile>${basedir}/src/fonts/Arial.ttf</embedFile>
-							<metricsFile>${basedir}/target/fonts/Arial-metrics.xml</metricsFile>
+							<embedFile>${basedir}/src/fonts/OpenSans-CondBold.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/OpenSans-CondBold-metrics.xml</metricsFile>
 						</font>
 						<font>
-							<name>ArialBold</name>
+							<name>Inconsolata LGC</name>
 							<style>normal</style>
 							<weight>normal</weight>
-							<embedFile>${basedir}/src/fonts/ArialBold.ttf</embedFile>
-							<metricsFile>${basedir}/target/fonts/ArialBold-metrics.xml</metricsFile>
+							<embedFile>${basedir}/src/fonts/inconsolatalgc.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/inconsolatalgc-metrics.xml</metricsFile>
 						</font>
 						<font>
-							<name>Courier</name>
-							<style>normal</style>
-							<weight>normal</weight>
-							<embedFile>${basedir}/src/fonts/Courier.ttf</embedFile>
-							<metricsFile>${basedir}/target/fonts/Courier-metrics.xml</metricsFile>
-						</font>
-						<font>
-							<name>Courier</name>
+							<name>Inconsolata LGC</name>
 							<style>normal</style>
 							<weight>bold</weight>
-							<embedFile>${basedir}/src/fonts/Courier-Bold.ttf</embedFile>
-							<metricsFile>${basedir}/target/fonts/Courier-Bold-metrics.xml</metricsFile>
+							<embedFile>${basedir}/src/fonts/inconsolatalgcbold.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/inconsolatalgcbold-metrics.xml</metricsFile>
 						</font>
 						<font>
-							<name>Courier</name>
+							<name>Inconsolata LGC</name>
 							<style>italic</style>
 							<weight>normal</weight>
-							<embedFile>${basedir}/src/fonts/Courier-Oblique.ttf</embedFile>
-							<metricsFile>${basedir}/target/fonts/Courier-Oblique-metrics.xml</metricsFile>
+							<embedFile>${basedir}/src/fonts/inconsolatalgcitalic.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/inconsolatalgcitalic-metrics.xml</metricsFile>
 						</font>
 						<font>
-							<name>TimesNewRoman</name>
+							<name>Inconsolata LGC</name>
+							<style>italic</style>
+							<weight>bold</weight>
+							<embedFile>${basedir}/src/fonts/inconsolatalgcbolditalic.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/inconsolatalgcbolditalic-metrics.xml</metricsFile>
+						</font>
+						<font>
+							<name>LinLibertine</name>
 							<style>normal</style>
 							<weight>normal</weight>
-							<embedFile>${basedir}/src/fonts/TimesNewRoman.ttf</embedFile>
-							<metricsFile>${basedir}/target/fonts/TimesNewRoman-metrics.xml</metricsFile>
+							<embedFile>${basedir}/src/fonts/LinLibertine_Rah.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/LinLibertine_Rah-metrics.xml</metricsFile>
+						</font>
+						<font>
+							<name>LinLibertine</name>
+							<style>normal</style>
+							<weight>bold</weight>
+							<embedFile>${basedir}/src/fonts/LinLibertine_RBah.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/LinLibertine_RBah-metrics.xml</metricsFile>
+						</font>
+						<font>
+							<name>LinLibertine</name>
+							<style>italic</style>
+							<weight>bold</weight>
+							<embedFile>${basedir}/src/fonts/LinLibertine_RBIah.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/LinLibertine_RBIah-metrics.xml</metricsFile>
+						</font>
+						<font>
+							<name>LinLibertine</name>
+							<style>italic</style>
+							<weight>normal</weight>
+							<embedFile>${basedir}/src/fonts/LinLibertine_RIah.ttf</embedFile>
+							<metricsFile>${basedir}/target/fonts/LinLibertine_RIah-metrics.xml</metricsFile>
 						</font>
 					</fonts>
 				</configuration>

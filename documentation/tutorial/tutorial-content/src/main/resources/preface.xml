@@ -134,8 +134,4 @@
       </para>
     </listitem>
   </itemizedlist>
-  <sect1 id="the-openimaj-modules">
-    <title>The OpenIMAJ Modules</title>
-    <xi:include href="modules.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  </sect1>
 </preface>
