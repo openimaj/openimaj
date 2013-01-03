@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,8 @@ import org.apache.log4j.Logger;
 import org.mortbay.io.RuntimeIOException;
 import org.openimaj.io.IOUtils;
 import org.openimaj.rdf.storm.bolt.RETEStormNode;
+import org.openimaj.rdf.storm.topology.logging.LoggerBolt.LoggedEvent;
+import org.openimaj.rdf.storm.topology.logging.LoggerBolt.LoggedEvent.EventType;
 import org.openimaj.rdf.storm.utils.CircularPriorityWindow;
 import org.openimaj.rdf.storm.utils.CircularPriorityWindow.OverflowHandler;
 
@@ -164,9 +167,9 @@ public abstract class StormSPARQLReteConflictSetBolt extends StormSPARQLReteBolt
 	@Override
 	public void prepare() {
 		this.bindingsQueue = new CircularPriorityWindow<Binding>(new OverflowHandler<Binding>() {
-
 			@Override
 			public void handleCapacityOverflow(Binding overflow) {
+				logStream.emit("Binding overflowing! Binding removed",overflow);
 				logger.debug("Binding overflowing! Binding removed");
 			}
 		}, 5000, 36000, TimeUnit.SECONDS);

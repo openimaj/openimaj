@@ -82,9 +82,9 @@ public class LoggerBolt extends BaseRichBolt {
 	@Override
 	public void execute(Tuple input) {
 		Calendar c = Calendar.getInstance();
-		c.setTimeInMillis((Long) input.getValue(0));
+		c.setTimeInMillis(input.getLong(0));
 		LogType type = (LogType) input.getValue(1);
-		String message = (String) input.getValue(2);
+		String message = input.getString(2);
 		out.format("%s/%s/%s %s:%s:%s.%s | %s -> %s: ",
 					c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH),
 					c.get(Calendar.HOUR), c.get(Calendar.MINUTE), c.get(Calendar.SECOND),
@@ -186,8 +186,8 @@ public class LoggerBolt extends BaseRichBolt {
 		
 		private void emit(LogType type, String message, Object data){
 			Values log = new Values();
-			log.add(type);
 			log.add(new Date().getTime());
+			log.add(type);
 			log.add(message);
 			log.add(data);
 			this.collector.emit(STREAM_ID, log);
