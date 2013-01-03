@@ -17,8 +17,8 @@
     <literal>pom.xml</literal> file you will see that the
     <literal>faces</literal> dependency from OpenIMAJ is already
     included. As you’ve already done the video-processing tutorial,
-    we’ll try to find faces within the video that your webcam produces.
-    If you don’t have a webcam, follow the video tutorial on how to use
+    we’ll try to find faces within the video that your cam produces.
+    If you don’t have a cam, follow the video tutorial on how to use
     video from a file instead.
   </para>
   <para>
@@ -80,7 +80,7 @@ vd.addVideoListener(
     video frame. As we’re doing all this in our
     <literal>beforeUpdate()</literal> method, the video display will end
     up showing the bounding boxes on the displayed video. If you run the
-    code and you have a webcam attached, you should see yourself with a
+    code and you have a cam attached, you should see yourself with a
     box drawn around your face. The complete code is shown below:
   </para>
   <programlisting>FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);

@@ -58,6 +58,21 @@
   </para>
   <programlisting>DisplayUtilities.display(image);
 DisplayUtilities.display(image.getBand(0), &quot;Red Channel&quot;);</programlisting>
+
+	<para role="centered">
+		<inlinemediaobject>
+		  <imageobject condition="">
+				<imagedata fileref="figs//sinaface.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+		  </imageobject>
+		</inlinemediaobject>
+	
+		<inlinemediaobject>
+		  <imageobject condition="">
+				<imagedata fileref="figs//sinaface-rc.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+		  </imageobject>
+		</inlinemediaobject>
+	</para>
+
   <para>
     In an image-processing library, images are no good unless you can do
     something to them. The most basic thing you can do to an image is
@@ -73,6 +88,13 @@ for (int y=0; y&lt;image.getHeight(); y++) {
     }
 }
 DisplayUtilities.display(clone);</programlisting>
+
+<mediaobject>
+  <imageobject condition="">
+		<imagedata fileref="figs//sinaface-red.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+  </imageobject>
+</mediaobject>
+
   <para>
     Note that the first thing we do here is to <code>clone</code>
     the image to preserve the original image for the remainder of the
@@ -113,6 +135,13 @@ clone.getBand(2).fill(0f);</programlisting>
     colours you should see if you display the image:
   </para>
   <programlisting>DisplayUtilities.display(image);</programlisting>
+
+	<mediaobject>
+	  <imageobject condition="">
+			<imagedata fileref="figs//sinaface-canny.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</mediaobject>
+
   <para>
     Finally, we can also draw on our image in OpenIMAJ. On every
     <code>Image</code> object there is a set of drawing functions
@@ -131,6 +160,13 @@ DisplayUtilities.display(image);</programlisting>
     y], axes [major, minor] and rotation) and draw them as white filled
     shapes. Finally, we draw some text on the image and display it.
   </para>
+
+	<mediaobject>
+	  <imageobject condition="">
+			<imagedata fileref="figs//sinaface-awesome.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</mediaobject>
+
   <sect1 id="exercises-1">
     <title>Exercises</title>
     <sect2 id="exercise-1-displayutilities">

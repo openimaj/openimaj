@@ -107,12 +107,9 @@
 	  </para>
 	
 		<mediaobject>
-	    <imageobject condition="web">
-				<imagedata fileref="figs/web/hello-world.png" format="PNG" scale="100" align="center"/>
+	    <imageobject>
+				<imagedata fileref="figs/hello-world.png" format="PNG" scale="100" align="center"/>
       </imageobject>
-			<imageobject condition="print">
-        <imagedata fileref="figs/print/hello-world.pdf" format="PDF" align="center"/>
-			</imageobject>
       <textobject>
 				<phrase>OpenIMAJ Hello World</phrase>
       </textobject>
@@ -163,12 +160,9 @@
 	      Windows systems it is found in <filename>C:\Documents and Settings\&lt;user&gt;\</filename>.
 	    </para>
 			<mediaobject>
-		    <imageobject condition="web">
-					<imagedata fileref="figs/web/classpath.png" format="PNG" scale="100" align="center"/>
+		    <imageobject>
+					<imagedata fileref="figs/classpath.png" format="PNG" align="center" contentwidth="5cm"/>
 	      </imageobject>
-				<imageobject condition="print">
-	        <imagedata fileref="figs/print/classpath.pdf" format="PDF" align="center"/>
-				</imageobject>
 	      <textobject>
 					<phrase>Eclipse classpath variables</phrase>
 	      </textobject>
@@ -180,12 +174,9 @@
 	      within Eclipse.
 	    </para>
 			<mediaobject>
-		    <imageobject condition="web">
-					<imagedata fileref="figs/web/runas.png" format="PNG" scale="100" align="center"/>
+		    <imageobject>
+					<imagedata fileref="figs/runas.png" format="PNG" align="center" contentwidth="10cm"/>
 	      </imageobject>
-				<imageobject condition="print">
-	        <imagedata fileref="figs/print/runas.pdf" format="PDF" align="center"/>
-				</imageobject>
 	      <textobject>
 					<phrase>Eclipse Run as...</phrase>
 	      </textobject>

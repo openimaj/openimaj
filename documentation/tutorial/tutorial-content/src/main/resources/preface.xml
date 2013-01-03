@@ -9,7 +9,7 @@
     contains everything from state-of-the-art computer vision (e.g. SIFT
     descriptors, salient region detection, face detection, etc.) and
     advanced data clustering, through to software that performs analysis
-    on the content, layout and structure of webpages.
+    on the content, layout and structure of pages.
   </para>
   <para>
     OpenIMAJ is primarily written in pure Java and, as such, is

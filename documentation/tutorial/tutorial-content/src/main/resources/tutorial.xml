@@ -5,7 +5,7 @@
   <?dbhtml filename="index.html"?>
 
   <title>${book.title}</title>
-
+		
   <bookinfo>
 		<title>${book.title}</title>
     <edition>${project.version}</edition>

@@ -48,7 +48,7 @@
 
   <!-- Space between paper border and content (chaotic stuff, don't touch) -->
   <xsl:param name="region.before.extent">0.0in</xsl:param>
-  <xsl:param name="body.margin.top">0.0in</xsl:param>
+  <xsl:param name="body.margin.top">0.4in</xsl:param>
 
     <xsl:param name="body.margin.bottom">0.4in</xsl:param>
     <xsl:param name="region.after.extent">0.3in</xsl:param>
@@ -87,6 +87,13 @@
   <xsl:attribute-set name="normal.para.spacing">
     <xsl:attribute name="space-after.optimum">6pt</xsl:attribute>
     <xsl:attribute name="space-before.optimum">3pt</xsl:attribute>
+
+	  <xsl:attribute name="text-align">
+	    <xsl:choose>
+	      <xsl:when test="@role = 'centered'">center</xsl:when>
+	      <xsl:otherwise>start</xsl:otherwise>
+	    </xsl:choose>
+	  </xsl:attribute>
   </xsl:attribute-set>
 
   <xsl:attribute-set name="component.title.properties">
@@ -176,21 +183,50 @@
       ################################################### -->
 
   <!-- More space in the center header for long text -->
-  <xsl:attribute-set name="header.content.properties">
+  <!-- <xsl:attribute-set name="header.content.properties">
     <xsl:attribute name="font-family">
       <xsl:value-of select="$body.font.family"/>
     </xsl:attribute>
     <xsl:attribute name="margin-left">-5em</xsl:attribute>
     <xsl:attribute name="margin-right">-5em</xsl:attribute>
-  </xsl:attribute-set>
+  </xsl:attribute-set> -->
+	<xsl:param name="header.column.widths">0 0 1</xsl:param>
+
+  <xsl:template name="header.content">
+		<xsl:param name="pageclass" select="''"/>
+    <xsl:param name="sequence" select="''"/>
+    <xsl:param name="position" select="''"/>
+    <xsl:param name="gentext-key" select="''"/>
+
+    <xsl:choose>
+      <!-- for double sided printing, print page numbers on alternating sides (of the page) -->
+      <xsl:when test="$double.sided != 0">
+        <xsl:choose>
+          <xsl:when test="$sequence = 'even' and $position='left'">
+            <xsl:apply-templates select="." mode="titleabbrev.markup"/>
+          </xsl:when>
+          <xsl:when test="$sequence = 'odd' and $position='right'">
+            <xsl:apply-templates select="." mode="titleabbrev.markup"/>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+      <!-- for single sided printing, print all page numbers on the right (of the page) -->
+      <xsl:when test="$double.sided = 0">
+        <xsl:choose>
+          <xsl:when test="$position='right'">
+            <xsl:apply-templates select="." mode="titleabbrev.markup"/>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
 
   <xsl:param name="ulink.footnotes">1</xsl:param>
 
   <!--###################################################
       Custom Footer
       ################################################### -->
-  <xsl:template name="header.content">
-  </xsl:template>
+	<xsl:param name="footer.column.widths">1 2 1</xsl:param>
 
   <xsl:template name="footer.content">
     <xsl:param name="pageclass" select="''"/>
@@ -198,8 +234,8 @@
     <xsl:param name="position" select="''"/>
     <xsl:param name="gentext-key" select="''"/>
     <xsl:variable name="Version">
-      <xsl:if test="//releaseinfo">
-	<xsl:text>Developing with Eclipse and Maven (</xsl:text><xsl:value-of select="//releaseinfo" /><xsl:text>)</xsl:text>
+      <xsl:if test="//d:edition">
+				<xsl:text>The OpenIMAJ Tutorial (</xsl:text><xsl:value-of select="//d:edition" /><xsl:text>)</xsl:text>
       </xsl:if>
     </xsl:variable>
     <xsl:choose>

@@ -4,7 +4,7 @@
 <preface id="foreword">
   <title>Foreword: ${project.version}</title>
 
-  <para>The latest version of this book is always available on the OpenIMAJ website: <ulink
+  <para>The latest version of this book is always available on the OpenIMAJ site: <ulink
   url="http://www.openimaj.org">http://www.openimaj.org</ulink></para>
 
   <para>We welcome your feedback. Please do not hesitate to contact the

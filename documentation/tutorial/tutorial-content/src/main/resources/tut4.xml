@@ -33,7 +33,7 @@
   </para>
   <programlisting>video = new XuggleVideo(new File(&quot;/path/to/keyboardcat.flv&quot;));</programlisting>
   <para>
-    If your computer has a webcam, OpenIMAJ also supports live video
+    If your computer has a cam, OpenIMAJ also supports live video
     input. These are called capture devices and you can use one through
     the <literal>VideoCapture</literal> class:
   </para>
@@ -46,7 +46,7 @@
     method to obtain the available devices.
   </para>
   <para>
-    Note that webcam capture does not require a Xuggle install and is
+    Note that cam capture does not require a Xuggle install and is
     completely built into OpenIMAJ.
   </para>
   <para>
