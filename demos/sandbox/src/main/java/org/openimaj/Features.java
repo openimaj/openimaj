@@ -11,6 +11,7 @@ import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.global.AvgBrightness;
 import org.openimaj.image.feature.global.Colorfulness;
 import org.openimaj.image.feature.global.Naturalness;
+import org.openimaj.image.feature.global.RGBRMSContrast;
 import org.openimaj.image.feature.global.RMSContrast;
 import org.openimaj.image.feature.global.Saturation;
 import org.openimaj.image.feature.global.SaturationVariation;
@@ -23,6 +24,7 @@ public class Features {
 		final Colorfulness colorfulness = new Colorfulness();
 		final Naturalness naturalness = new Naturalness();
 		final RMSContrast contrast = new RMSContrast();
+		final RGBRMSContrast rgbcontrast = new RGBRMSContrast();
 		final Sharpness sharpness = new Sharpness();
 		final SharpnessVariation sharpnessVariation = new SharpnessVariation();
 		final Saturation saturation = new Saturation();
@@ -50,6 +52,9 @@ public class Features {
 
 			contrast.analyseImage(fimage);
 			System.out.println(f.getName() + "\trms-contrast\t" + contrast.getContrast());
+
+			rgbcontrast.analyseImage(image);
+			System.out.println(f.getName() + "\trgb-rms-contrast\t" + rgbcontrast.getContrast());
 
 			sharpness.analyseImage(fimage);
 			System.out.println(f.getName() + "\tsharpness\t" + sharpness.getSharpness());
