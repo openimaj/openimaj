@@ -45,11 +45,11 @@ public class PropertyDef
 	/**
 	 * @param go
 	 */
-	public PropertyDef(GeneratorOptions go) {
+	public PropertyDef(final GeneratorOptions go) {
 		try {
 			this.generator = (GeneratorOptions) go.clone();
 			this.generator.skipPom = true;
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 		}
 	}
 
@@ -73,7 +73,7 @@ public class PropertyDef
 		// will add ".*" to the end of the import strings.
 		PropertyDef.importMap.put(
 			new URIImpl("http://www.w3.org/2001/XMLSchema#date"),
-			"java.util.Date" );
+			"org.joda.time.DateTime" );
 
 		PropertyDef.importMap.put(
 			new URIImpl("http://www.w3.org/2001/XMLSchema#dateTime"),
@@ -86,24 +86,27 @@ public class PropertyDef
 		// Some won't work int=Integer.  It may be necessary to map some
 		// other URIs to specific types here.
 		PropertyDef.typeMap.put(
-			new URIImpl("http://www.w3.org/2001/XMLSchema#int"),
-			"java.lang.Integer" );
+				new URIImpl("http://www.w3.org/2001/XMLSchema#int"),
+				"Integer" );
 		PropertyDef.typeMap.put(
 				new URIImpl("http://www.w3.org/2001/XMLSchema#int"),
-				"java.lang.Integer" );
+				"Integer" );
 		PropertyDef.typeMap.put(
-			new URIImpl("http://www.w3.org/2000/01/rdf-schema#Literal"),
-			"java.lang.String" );
+				new URIImpl("http://www.w3.org/2000/01/rdf-schema#Literal"),
+				"String" );
 		PropertyDef.typeMap.put(
 				new URIImpl("http://www.w3.org/2001/XMLSchema#nonNegativeInteger"),
-				"java.lang.Integer" );
+				"Integer" );
+		PropertyDef.typeMap.put(
+				new URIImpl("http://www.w3.org/2001/XMLSchema#date"),
+				"DateTime" );
 
 		// ----------- URL Maps ---------- //
 		// Some URIs need further semantics to make sense. These semantic can
 		// be resolved from this map
 		try {
 			PropertyDef.uriResolveMap.put(new URIImpl("http://www.w3.org/2004/03/trix/rdfg-1/Graph"), new URL("http://www.w3.org/2004/03/trix/rdfg-1/Graph"));
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 		}
 
 	}
@@ -162,7 +165,7 @@ public class PropertyDef
 
 	/**
 	 * 	Returns the import required for the Java declaration of this
-	 * 	property. If no import is required, then null will be returned.
+	 * 	property. If no import is required, then an empty list will be returned.
 	 * 	@param implementation Whether we're generating implementations or interfaces
 	 *	@return The import type as a string.
 	 */
@@ -213,16 +216,20 @@ public class PropertyDef
 				}
 				else if(PropertyDef.uriResolveMap.get(rangeURI) != null){
 					try {
-						Generator.generate(PropertyDef.uriResolveMap.get(rangeURI).openStream(), generator);
-					} catch (Exception e) {
+						Generator.generate(
+							PropertyDef.uriResolveMap.get(rangeURI).openStream(), 
+							this.generator );
+					} catch (final Exception e) {
 						System.out.println("URL not resolveable");
 					}
-					valueType = Generator.getPackageName(rangeURI) + "." +  Generator.getTypeName( rangeURI );
+					valueType = /* Generator.getPackageName(rangeURI) + "." + */  
+						Generator.getTypeName( rangeURI );
 				}
 				// Otherwise, capitalise the name of the type and use that
 				else{
 					// try to unmarshal the URI to generate a few more classes!
-					valueType = Generator.getPackageName(rangeURI) + "." +  Generator.getTypeName( rangeURI );
+					valueType = /*Generator.getPackageName(rangeURI) + "." + */ 
+							Generator.getTypeName( rangeURI );
 				}
 			}
 			// If there's multiple ranges, we'll just use Object
@@ -376,7 +383,7 @@ public class PropertyDef
 	 *	@throws MalformedQueryException
 	 *	@throws QueryEvaluationException
 	 */
-	static Set<PropertyDef> loadProperties( GeneratorOptions go, final URI uri, final RepositoryConnection conn )
+	static Set<PropertyDef> loadProperties( final GeneratorOptions go, final URI uri, final RepositoryConnection conn )
 			throws RepositoryException,	MalformedQueryException, QueryEvaluationException
 	{
 		// SPARQL query to get the properties and property comments
