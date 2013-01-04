@@ -1,5 +1,9 @@
 body {
 	font-family: "linux_libertine";
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+    text-align: justify;
 }
 
 h1,
@@ -24,4 +28,90 @@ samp {
 .authorblurb p {
 	margin-top: 0.15em;
 	margin-bottom: 0;
+}
+
+div.book > .titlepage div {
+    float: left;
+    width: 500px;
+}
+
+div.cover {
+    padding-left: 50px;
+}
+
+div.cover img {
+    width: 450;
+}
+
+div.book > .titlepage hr {
+    clear: both;
+}
+
+div#nav-sub-block
+{
+    margin-left: auto;
+	margin-right: auto;
+	width: 1000px;
+    font-family: "open_sans_condensedbold"
+}
+
+
+ul#nav-sub
+{
+    list-style-type:none;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background-color:#5C669C;
+}
+
+ul#nav-sub li
+{
+    float:left;
+    width:333px;
+    text-align:center;
+}
+
+ul#nav-sub li.first
+{
+    float:left;
+    width:330px;
+    text-align:left;
+    padding-left: 3px;
+}
+
+ul#nav-sub li.last
+{
+    float:right;
+    width:330px;
+    text-align:right;
+    padding-right: 3px;
+}
+
+ul#nav-sub li a:link, 
+ul#nav-sub li a:visited
+{
+    display:block;
+    font-weight:normal;
+    color:#FFFFFF;
+    background-color:#5C669C;
+    padding:4px;
+}
+
+ul#nav-sub li a:hover, 
+ul#nav-sub li a:active
+{
+    background-color:#19007D;
+}
+
+.hide {
+    display: none;
+}
+
+.centered {
+    text-align: center;
+}
+
+h3.author {
+    margin-bottom: 0em;
 }

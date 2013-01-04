@@ -3,6 +3,7 @@
     This is the XSL HTML configuration file for the Spring Reference Documentation.
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+								xmlns:d="http://docbook.org/ns/docbook"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version="1.0">
 
@@ -20,7 +21,7 @@
     <xsl:param name="callout.graphics.path">../images/callouts/</xsl:param>
     <xsl:param name="admon.graphics.path">../images/</xsl:param>
     <xsl:param name="graphicsize.extension">0</xsl:param>
-    <xsl:param name="ignore.image.scaling">1</xsl:param>
+    <xsl:param name="ignore.image.scaling">0</xsl:param>
     <xsl:param name="highlight.source">1</xsl:param>
     <!--###################################################
                       Table Of Contents
@@ -51,6 +52,17 @@
     <!--###################################################
                           Misc
     ################################################### -->
+
+		<xsl:template name="book.titlepage.verso">
+			<div class="cover">
+				<img>
+					<xsl:attribute name="src">
+						<xsl:value-of select="//d:mediaobject[@role='cover']/d:imageobject[@role='front-large']/d:imagedata/@fileref" />
+					</xsl:attribute>
+				</img>
+			</div>
+		</xsl:template>
+
     <!-- Placement of titles -->
     <xsl:param name="formal.title.placement">
         figure after
@@ -116,7 +128,7 @@
                                                 <xsl:with-param name="object" select="$prev"/>
                                             </xsl:call-template>
                                         </xsl:attribute>
-                                        <span><xsl:text>Prev : </xsl:text><xsl:apply-templates select="$prev" mode="object.title.markup"/></span>
+                                        <span><xsl:text>Prev : </xsl:text><xsl:apply-templates select="$prev" mode="object.titleabbrev.markup"/></span>
                                 </a></li>
                             </xsl:if> 
                             <xsl:choose>
@@ -127,7 +139,7 @@
                                                     <xsl:with-param name="object" select="$home"/>
                                                 </xsl:call-template>
                                             </xsl:attribute>
-											<span>TOC</span>
+											<span>Contents</span>
                                     </a></li>
                                     <xsl:if test="$chunk.tocs.and.lots != 0 and $nav.context != 'toc'">
                                         <xsl:text>&#160;|&#160;</xsl:text>
@@ -144,7 +156,7 @@
                                             <xsl:text>-toc</xsl:text>
                                             <xsl:value-of select="$html.ext"/>
                                         </xsl:attribute>
-									    <span>TOC</span>
+									    <span>Contents</span>
                                 </a></li>
                             </xsl:if>
                             <xsl:if test="count($next)>0">
@@ -154,7 +166,7 @@
                                                 <xsl:with-param name="object" select="$next"/>
                                             </xsl:call-template>
                                         </xsl:attribute>
-                                        <span><xsl:text>Next : </xsl:text><xsl:apply-templates select="$next" mode="object.title.markup"/></span>
+                                        <span><xsl:text>Next : </xsl:text><xsl:apply-templates select="$next" mode="object.titleabbrev.markup"/></span>
                                 </a></li>
                             </xsl:if>
                         </ul> 
@@ -193,7 +205,7 @@
                                                 <xsl:with-param name="object" select="$prev"/>
                                             </xsl:call-template>
                                         </xsl:attribute>
-                                        <span><xsl:text>Prev : </xsl:text><xsl:apply-templates select="$prev" mode="object.title.markup"/></span>
+                                        <span><xsl:text>Prev : </xsl:text><xsl:apply-templates select="$prev" mode="object.titleabbrev.markup"/></span>
                                 </a></li>
                             </xsl:if> 
                             <xsl:choose>
@@ -204,7 +216,7 @@
                                                     <xsl:with-param name="object" select="$home"/>
                                                 </xsl:call-template>
                                             </xsl:attribute>
-											<span>TOC</span>
+											<span>Contents</span>
                                     </a></li>
                                     <xsl:if test="$chunk.tocs.and.lots != 0 and $nav.context != 'toc'">
                                         <xsl:text>&#160;|&#160;</xsl:text>
@@ -221,7 +233,7 @@
                                             <xsl:text>-toc</xsl:text>
                                             <xsl:value-of select="$html.ext"/>
                                         </xsl:attribute>
-									    <span>TOC</span>
+									    <span>Contents</span>
                                 </a></li>
                             </xsl:if>
                             <xsl:if test="count($next)>0">
@@ -231,7 +243,7 @@
                                                 <xsl:with-param name="object" select="$next"/>
                                             </xsl:call-template>
                                         </xsl:attribute>
-                                        <span><xsl:text>Next : </xsl:text><xsl:apply-templates select="$next" mode="object.title.markup"/></span>
+                                        <span><xsl:text>Next : </xsl:text><xsl:apply-templates select="$next" mode="object.titleabbrev.markup"/></span>
                                 </a></li>
                             </xsl:if>
                         </ul> 

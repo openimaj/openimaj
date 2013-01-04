@@ -72,6 +72,9 @@
 						<copy todir="${project.build.directory}/html/tutorial/figs/">
 							<fileset dir="target/docbook/figs/" />
 						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/covers/">
+							<fileset dir="target/docbook/covers/" />
+						</copy>
 						<copy todir="${project.build.directory}/html/tutorial/css">
 							<fileset dir="${basedir}/src/main/resources/css" />
 						</copy>

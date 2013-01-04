@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<book id="book-m2eclipse">
+<book id="openimaj-tutorial">
   <?dbhtml filename="index.html"?>
 
   <title>${book.title}</title>
@@ -48,7 +48,7 @@
     </authorgroup>
 
     <copyright>
-      <year>2011</year>
+      <year>2012</year>
       <holder>The University of Southampton and the individual authors.</holder>
     </copyright>
 
@@ -60,27 +60,11 @@
       <address><street>Highfield</street><city>Southampton</city><state>Hampshire</state><postcode>SO17 1BJ</postcode></address>
     </publisher>
 
-    <abstract>
-      <para>The OpenIMAJ Tutorial provides a hands-on introduction to programming with OpenIMAJ.</para>
-    </abstract>
-
     <mediaobject role="cover">
       <imageobject remap="lrg" role="front-large">
-        <imagedata fileref="covers/cvr_lrg.jpg" format="JPEG" width="600px" />
+        <imagedata fileref="covers/cover.png" format="PNG" />
       </imageobject>
-
-      <imageobject remap="s" role="front">
-        <imagedata fileref="covers/cvr_s.gif" format="GIF" />
-      </imageobject>
-
-      <imageobject remap="xs" role="front-small">
-        <imagedata fileref="covers/cvr_xs.gif" format="GIF" />
-      </imageobject>
-
-      <imageobject remap="cs" role="thumbnail">
-        <imagedata fileref="covers/cvr_cs.gif" format="GIF" />
-      </imageobject>
-    </mediaobject>
+		</mediaobject>
   </bookinfo>
 
   <xi:include href="foreword.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
