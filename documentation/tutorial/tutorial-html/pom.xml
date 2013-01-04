@@ -64,12 +64,19 @@
 					<xincludeSupported>true</xincludeSupported>
 					<chunkedOutput>true</chunkedOutput>
 					<chunkSectionDepth>1</chunkSectionDepth>
+					<htmlStylesheet>css/stylesheet.css fonts/fonts.css</htmlStylesheet>
 					<postProcess>
 						<copy todir="${project.build.directory}/html/tutorial/images">
 							<fileset dir="${basedir}/src/main/resources/images" />
 						</copy>
 						<copy todir="${project.build.directory}/html/tutorial/figs/">
 							<fileset dir="target/docbook/figs/" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/css">
+							<fileset dir="${basedir}/src/main/resources/css" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/fonts">
+							<fileset dir="${basedir}/src/main/resources/fonts" />
 						</copy>
 					</postProcess>
 				</configuration>
