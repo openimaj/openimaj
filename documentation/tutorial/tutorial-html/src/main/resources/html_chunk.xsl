@@ -28,14 +28,14 @@
     ################################################### -->
     <!-- Generate the TOCs for named components only -->
     <xsl:param name="generate.toc">
-        book toc,figure,example
-        chapter toc
+        book toc,title
         part toc
         preface toc
         qandaset toc
     </xsl:param>
     <!-- Show only Sections up to level 2 in the TOCs -->
     <xsl:param name="toc.section.depth">2</xsl:param>
+		<xsl:param name="toc.max.depth">2</xsl:param>
     <!--###################################################
                          Labels
     ################################################### -->

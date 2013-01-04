@@ -115,3 +115,8 @@ ul#nav-sub li a:active
 h3.author {
     margin-bottom: 0em;
 }
+
+.toc p b {
+    font-family: "open_sans_condensedbold";   
+    font-size: 19px;
+}
