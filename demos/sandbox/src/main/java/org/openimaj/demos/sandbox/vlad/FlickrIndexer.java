@@ -21,9 +21,6 @@ import org.apache.hadoop.io.Text;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.io.IOUtils;
 import org.openimaj.knn.pq.IncrementalFloatADCNearestNeighbours;
-import org.openimaj.util.array.ArrayUtils;
-
-import scala.actors.threadpool.Arrays;
 
 public class FlickrIndexer {
 	public static void convertCSV() throws IOException {
@@ -74,9 +71,10 @@ public class FlickrIndexer {
 
 	public static void extractSequenceFileData() throws IOException {
 		final URI[] paths = TextBytesSequenceFileUtility
-				.getFiles("hdfs://seurat/data/flickr-all-geo-vlad.seq", "part-m-");
+				.getFiles("hdfs://seurat/data/flickr-all-geo-vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.seq",
+						"part-m-");
 
-		final File output = new File("/Volumes/My Book/flickr46m-vlad-2.dat");
+		final File output = new File("/Volumes/My Book/flickr46m-vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.dat");
 
 		final DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
 
@@ -101,11 +99,12 @@ public class FlickrIndexer {
 	}
 
 	public static void createPQADCNN() throws IOException {
-		final File input = new File("/Volumes/My Book/flickr46m-vlad-2.dat");
+		final File input = new File("/Volumes/My Book/flickr46m-vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.dat");
 
 		final DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(input)));
 
-		final VLADIndexer indexer = VLADIndexer.read(new File("/Users/jsh2/vlad-indexer-mirflickr25k-1x.dat"));
+		final VLADIndexer indexer = VLADIndexer.read(new File(
+				"/Users/jsh2/vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.dat"));
 		final IncrementalFloatADCNearestNeighbours nn = new IncrementalFloatADCNearestNeighbours(indexer.pq, 128,
 				46000000);
 		final TLongArrayList indexes = new TLongArrayList(46000000);
@@ -129,68 +128,15 @@ public class FlickrIndexer {
 			dis.close();
 		}
 
-		IOUtils.writeBinary(new File("/Volumes/My Book/flickr46m-vlad-pqadcnn-2.dat"), nn);
-		IOUtils.writeToFile(indexes, new File("/Volumes/My Book/flickr46m-vlad-pqadcnn-indexes-2.dat"));
-	}
-
-	public static void buildOffsets() throws IOException {
-		final TLongArrayList aIds = new TLongArrayList(46000000);
-		final TLongArrayList aoffsets = new TLongArrayList(46000000);
-
-		final File input = new File("/Volumes/My Book/flickr46m-id2farm-server-secret.map");
-
-		final DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(input)));
-
-		try {
-			int offset = 0;
-			for (int i = 0;; i++) {
-				if (i % 1000000 == 0)
-					System.out.println(i);
-
-				final long currentOffset = offset;
-				final long id = dis.readLong();
-				offset += 8;
-				dis.readInt();
-				offset += 4;
-				dis.readInt();
-				offset += 4;
-
-				final int len = dis.readUnsignedShort();
-				final byte[] tmp = new byte[len];
-				dis.readFully(tmp);
-				offset += len + 2;
-
-				aIds.add(id);
-				aoffsets.add(currentOffset);
-			}
-		} catch (final EOFException e) {
-			dis.close();
-		}
-
-		final long[] ids = aIds.toArray();
-		final long[] offsets = aoffsets.toArray();
-
-		ArrayUtils.parallelQuicksortAscending(ids, offsets);
-
-		final TLongArrayList indexedIDs = IOUtils.readFromFile(new File(
-				"/Volumes/My Book/flickr46m-vlad-pqadcnn-indexes.dat"));
-		final long[] indexedOffsets = new long[indexedIDs.size()];
-
-		for (int i = 0; i < indexedOffsets.length; i++) {
-			final long indexedId = indexedIDs.get(i);
-
-			if (i % 1000000 == 0)
-				System.out.println(i);
-
-			final int idx = Arrays.binarySearch(ids, indexedId);
-			indexedOffsets[i] = offsets[idx];
-		}
+		IOUtils.writeBinary(new File(
+				"/Volumes/My Book/flickr46m-vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x-pqadcnn.dat"), nn);
+		IOUtils.writeToFile(indexes, new File(
+				"/Volumes/My Book/flickr46m-vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x-pqadcnn-indexes.dat"));
 	}
 
 	public static void main(String[] args) throws Exception {
 		// convertCSV();
 		// extractSequenceFileData();
 		createPQADCNN();
-		// buildOffsets();
 	}
 }

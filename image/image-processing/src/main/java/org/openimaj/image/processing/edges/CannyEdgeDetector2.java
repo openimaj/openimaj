@@ -32,15 +32,21 @@ package org.openimaj.image.processing.edges;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
+ * This implementation is deprecated and is only kept for backward-compatibility
+ * of old {@link EdgeDirectionCoherenceVector} features. Use the
+ * {@link CannyEdgeDetector} instead.
+ * <p>
  * This is an implementation of the canny edge detector that was found somewhere
  * out there on the web with no attribution. If this is your code and you don't
  * want it in OpenIMAJ, please let us know.
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
+@Deprecated
 public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImage>
 {
 	private boolean complete;

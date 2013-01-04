@@ -1,6 +1,7 @@
 package org.openimaj.demos.sandbox.vlad;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,16 +46,22 @@ public class VLADPrep {
 
 	private File outputFile;
 	protected boolean entropyFilter = false;
-	protected boolean hellinger = false;
+	protected boolean hellinger = true;
 
 	public static void main(String[] args) throws IOException {
 		final VLADPrep vp = new VLADPrep();
+		vp.localFeatures = Arrays.asList(new File("/Volumes/Raid/mirflickr/sift-1x/").listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".sift");
+			}
+		}));
+		vp.outputFile = new File("/Users/jsh2/vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.dat");
 		// vp.localFeatures = Arrays.asList(new
-		// File("/Volumes/Raid/mirflickr/sift-1x/").listFiles());
+		// File("/Users/jsh2/Data/ukbench/sift/").listFiles());
 		// vp.outputFile = new
-		// File("/Users/jsh2/vlad-indexer-mirflickr25k-1x.dat");
-		vp.localFeatures = Arrays.asList(new File("/Users/jsh2/Data/ukbench/sift/").listFiles());
-		vp.outputFile = new File("/Users/jsh2/vlad-indexer-ukbench-2x-nohell.dat");
+		// File("/Users/jsh2/vlad-indexer-ukbench-2x-nohell.dat");
 		vp.process();
 	}
 
