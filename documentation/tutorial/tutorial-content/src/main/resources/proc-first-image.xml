@@ -61,14 +61,14 @@ DisplayUtilities.display(image.getBand(0), &quot;Red Channel&quot;);</programlis
 
 	<para role="centered">
 		<inlinemediaobject>
-		  <imageobject condition="">
-				<imagedata fileref="figs//sinaface.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+		  <imageobject>
+				<imagedata fileref="figs/sinaface.png" format="PNG" align="center" contentwidth="5cm"/>
 		  </imageobject>
 		</inlinemediaobject>
 	
 		<inlinemediaobject>
-		  <imageobject condition="">
-				<imagedata fileref="figs//sinaface-rc.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+		  <imageobject>
+				<imagedata fileref="figs/sinaface-rc.png" format="PNG" align="center" contentwidth="5cm"/>
 		  </imageobject>
 		</inlinemediaobject>
 	</para>

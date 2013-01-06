@@ -18,10 +18,23 @@
     Firstly, lets load up a couple of images. Here we have a magazine
     and a scene containing the magazine:
   </para>
-  <programlisting>MBFImage query = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/query.jpg&quot;));</programlisting>
-  <para>
-  </para>
-  <programlisting>MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/target.jpg&quot;));</programlisting>
+  <programlisting>MBFImage query = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/query.jpg&quot;));
+MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/target.jpg&quot;));</programlisting>
+
+<para role="centered">
+	<inlinemediaobject>
+	  <imageobject>
+			<imagedata fileref="figs/query.png" format="PNG" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</inlinemediaobject>
+
+	<inlinemediaobject>
+	  <imageobject>
+			<imagedata fileref="figs/target.png" format="PNG" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</inlinemediaobject>
+</para>
+
   <para>
     The first step is feature extraction. We’ll use the
     <emphasis role="strong">difference-of-Gaussian</emphasis> feature
@@ -30,32 +43,32 @@
     which makes them invariant to size changes, rotation and position.
     These are quite powerful features and are used in a variety of
     tasks. The standard implementation of SIFT in OpenIMAJ can be found
-    in the <literal>DoGSIFTEngine</literal> class:
+    in the <code>DoGSIFTEngine</code> class:
   </para>
   <programlisting>DoGSIFTEngine engine = new DoGSIFTEngine();	
 LocalFeatureList&lt;Keypoint&gt; queryKeypoints = engine.findFeatures(query.flatten());
 LocalFeatureList&lt;Keypoint&gt; targetKeypoints = engine.findFeatures(target.flatten());</programlisting>
   <para>
     Once the engine is constructed, we can use it to extract
-    <literal>Keypoint</literal> objects from our images. The
-    <literal>Keypoint</literal> class contain a public field called
-    <literal>ivec</literal> which, in the case of a standard SIFT
+    <code>Keypoint</code> objects from our images. The
+    <code>Keypoint</code> class contain a public field called
+    <code>ivec</code> which, in the case of a standard SIFT
     descriptor is a 128 dimensional description of a patch of pixels
     around a detected point. Various distance measures can be used to
-    compare <literal>Keypoint</literal>s to
-    <literal>Keypoint</literal>s.
+    compare <code>Keypoint</code>s to
+    <code>Keypoint</code>s.
   </para>
   <para>
-    The challenge in comparing <literal>Keypoint</literal>s is trying to
-    figure out which <literal>Keypoint</literal>s match between
-    <literal>Keypoint</literal>s from some query image and those from
+    The challenge in comparing <code>Keypoint</code>s is trying to
+    figure out which <code>Keypoint</code>s match between
+    <code>Keypoint</code>s from some query image and those from
     some target. The most basic approach is to take a given
-    <literal>Keypoint</literal> in the query and find the
-    <literal>Keypoint</literal> that is closest in the target. A minor
+    <code>Keypoint</code> in the query and find the
+    <code>Keypoint</code> that is closest in the target. A minor
     improvement on top of this is to disregard those points which match
     well with MANY other points in the target. Such point are considered
     non-descriptive. Matching can be achieved in OpenIMAJ using the
-    <literal>BasicMatcher</literal>. Next we’ll construct and setup such
+    <code>BasicMatcher</code>. Next we’ll construct and setup such
     a matcher:
   </para>
   <programlisting>LocalFeatureMatcher&lt;Keypoint&gt; matcher = new BasicMatcher&lt;Keypoint&gt;(80);
@@ -63,16 +76,21 @@ matcher.setModelFeatures(queryKeypoints);
 matcher.findMatches(targetKeypoints);</programlisting>
   <para>
     We can now draw the matches between these two images found with this
-    basic matcher using the <literal>MatchingUtilities</literal> class:
+    basic matcher using the <code>MatchingUtilities</code> class:
   </para>
   <programlisting>MBFImage basicMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
 DisplayUtilities.display(basicMatches);</programlisting>
+<mediaobject>
+  <imageobject>
+		<imagedata fileref="figs/matches.png" format="PNG" align="center" contentwidth="5cm"/>
+  </imageobject>
+</mediaobject>
   <para>
     As you can see, the basic matcher finds many matches, many of which
     are clearly incorrect. A more advanced approach is to filter the
     matches based on a given geometric model. One way of achieving this
     in OpenIMAJ is to use a
-    <literal>ConsistentLocalFeatureMatcher</literal> which given an
+    <code>ConsistentLocalFeatureMatcher</code> which given an
     internal matcher, a geometric model and a model fitter, finds which
     matches given by the internal matcher are consistent with respect to
     the model and are therefore likely to be correct.
@@ -85,6 +103,7 @@ DisplayUtilities.display(basicMatches);</programlisting>
     set of matches, learning a model from this random set and then
     testing the remaining matches against the learnt model.
   </para>
+<tip>An Affine transform models the transformation between two parallelograms.</tip>
   <para>
     We’ll now set up our model, our RANSAC model fitter and our
     consistent matcher:
@@ -97,38 +116,48 @@ matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(
 
 matcher.setModelFeatures(queryKeypoints);
 matcher.findMatches(targetKeypoints);
-MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);</programlisting>
+MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
+
+DisplayUtilities.display(consistentMatches);</programlisting>
+<mediaobject>
+  <imageobject>
+		<imagedata fileref="figs/matches-affine.png" format="PNG" align="center" contentwidth="5cm"/>
+  </imageobject>
+</mediaobject>
   <para>
-  </para>
-  <programlisting>DisplayUtilities.display(consistentMatches);</programlisting>
-  <para>
-    The <literal>AffineTransformModel</literal> class models a
+    The <code>AffineTransformModel</code> class models a
     two-dimensional Affine transform in OpenIMAJ. An interesting
     byproduct of this technique is that the
-    <literal>AffineTransformModel</literal> contains the best transform
+    <code>AffineTransformModel</code> contains the best transform
     matrix to go from the query to the target. We can take advantage of
     this by transforming the bounding box of our query with the
-    transform estimated in the <literal>AffineTransformModel</literal>,
+    transform estimated in the <code>AffineTransformModel</code>,
     therefore we can draw a polygon around the estimated location of the
     query within the target:
   </para>
   <programlisting>target.drawShape(query.getBounds().transform(fittingModel.getTransform().inverse()), 3,RGBColour.BLUE);
 DisplayUtilities.display(target); </programlisting>
+<mediaobject>
+  <imageobject>
+		<imagedata fileref="figs/fittedmodel.png" format="PNG" align="center" contentwidth="5cm"/>
+  </imageobject>
+</mediaobject>
   <sect1 id="exercises-6">
     <title>Exercises</title>
     <sect2 id="exercise-1-different-matchers">
       <title>Exercise 1: Different matchers</title>
       <para>
         Experiment with different matchers; try the
-        <literal>BasicTwoWayMatcher</literal> for example.
+        <code>BasicTwoWayMatcher</code> for example.
       </para>
     </sect2>
     <sect2 id="exercise-2-different-models">
       <title>Exercise 2: Different models</title>
       <para>
         Experiment with different models (such as a
-        <literal>HomographyModel</literal>) in the consistent matcher.
+        <code>HomographyModel</code>) in the consistent matcher.
       </para>
+			<tip>A HomographyModel models a planar Homography between two planes. Planar Homographies are more general than Affine transforms and map quadrilaterals to quadrilaterals.</tip>
     </sect2>
   </sect1>
 </chapter>

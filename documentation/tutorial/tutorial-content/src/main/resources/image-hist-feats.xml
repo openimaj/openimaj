@@ -37,7 +37,7 @@
     cube, where each small cubic bin is accruing counts for that colour.
   </para>
   <para>
-    OpenIMAJ contains a multidimensional <literal>Histogram</literal>
+    OpenIMAJ contains a multidimensional <code>Histogram</code>
     implementation that is constructed using the number of bins required
     in each dimension. For example:
   </para>
@@ -45,9 +45,9 @@
   <para>
     This code creates a histogram that has 64 (4 × 4 × 4) bins. However,
     this data structure does not do anything on its own. The
-    <literal>HistogramModel</literal> class provides a means for
-    creating a <literal>Histogram</literal> from an image. The
-    <literal>HistogramModel</literal> class assumes the image has been
+    <code>HistogramModel</code> class provides a means for
+    creating a <code>Histogram</code> from an image. The
+    <code>HistogramModel</code> class assumes the image has been
     normalised and returns a normalised histogram:
   </para>
   <programlisting>HistogramModel model = new HistogramModel( 4, 4, 4 );
@@ -69,16 +69,37 @@ for( URL u : imageURLs ) {
     model.estimateModel(ImageUtilities.readMBF(u));
     histograms.add( model.histogram );
 }</programlisting>
+
+<para role="centered">
+	<inlinemediaobject>
+	  <imageobject>
+			<imagedata fileref="figs/hist1.png" format="PNG" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</inlinemediaobject>
+
+	<inlinemediaobject>
+	  <imageobject>
+			<imagedata fileref="figs/hist2.png" format="PNG" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</inlinemediaobject>
+	
+	<inlinemediaobject>
+	  <imageobject>
+			<imagedata fileref="figs/hist3.png" format="PNG" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</inlinemediaobject>
+</para>
+
   <para>
     We now have a list of histograms from our images. The
-    <literal>Histogram</literal> class extends a class called the
-    <literal>MultidimensionalDoubleFV</literal> which is a feature
+    <code>Histogram</code> class extends a class called the
+    <code>MultidimensionalDoubleFV</code> which is a feature
     vector represented by multidimensional set of double precision
-    numbers. This class provides us with a <literal>compare()</literal>
+    numbers. This class provides us with a <code>compare()</code>
     method which allows comparison between two multidimensional sets of
     doubles. This method takes the other feature vector to compare
     against and a comparison method which is implemented in the
-    <literal>DoubleFVComparison</literal> class.
+    <code>DoubleFVComparison</code> class.
   </para>
   <para>
     So, we can compare two histograms using the Euclidean distance
@@ -95,9 +116,9 @@ for( URL u : imageURLs ) {
   </para>
   <para>
     The Euclidean distance measure is symmetric (that is, if you compare
-    <literal>histogram1</literal> to <literal>histogram2</literal> you
-    will get the same score if you compare <literal>histogram2</literal>
-    to <literal>histogram1</literal>) so we can compare all the
+    <code>histogram1</code> to <code>histogram2</code> you
+    will get the same score if you compare <code>histogram2</code>
+    to <code>histogram1</code>) so we can compare all the
     histograms with each other in a simple, efficient, nested loop:
   </para>
   <programlisting>for( int i = 0; i &lt; histograms.size(); i++ ) {
@@ -119,7 +140,7 @@ for( URL u : imageURLs ) {
       <title>Exercise 2: Exploring comparison measures</title>
       <para>
         What happens when you use a different comparison measure (such
-        as <literal>DoubleFVComparison.INTERSECTION</literal>)?
+        as <code>DoubleFVComparison.INTERSECTION</code>)?
       </para>
     </sect2>
   </sect1>

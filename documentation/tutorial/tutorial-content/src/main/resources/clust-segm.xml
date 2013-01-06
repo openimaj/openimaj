@@ -17,8 +17,8 @@
   <para>
     To get started, create a new OpenIMAJ project using the Maven
     archetype, import it into your IDE, and delete the sample code from
-    within the generated <literal>main()</literal> method of the
-    <literal>App</literal> class. In the <literal>main()</literal>
+    within the generated <code>main()</code> method of the
+    <code>App</code> class. In the <code>main()</code>
     method, start by adding code to load an image (choose your own
     image):
   </para>
@@ -35,6 +35,12 @@
     you wish to find <emphasis role="strong">a priori</emphasis> (i.e.
     beforehand).
   </para>
+	<tip>
+		<title>K-means Clustering</title>
+		K-Means initialises cluster centroids with randomly selected data points and 
+		then iteratively assigns the data points to their closest cluster and updates 
+		the centroids to the mean of the respective data points.
+	</tip>
   <para>
     Colours in our input image are represented in
     <emphasis role="strong">RGB colour space</emphasis>; that is each
@@ -52,6 +58,10 @@
     closely matches the perceived similarity of a colour pair by a human
     observer.
   </para>
+	<tip>
+		<title>Euclidean Distance</title>
+		The Euclidean distance is the straight-line distance between two points. It is named after the "Father of Geometry", the Greek mathematician Euclid.
+	</tip>
   <para>
     To start our implementation, we’ll first apply a colour-space
     transform to the image:
@@ -79,9 +89,9 @@
   </para>
   <para>
     The FastFloatKMeans algorithm takes its input as an array of
-    floating point vectors (<literal>float[][]</literal>). We can
+    floating point vectors (<code>float[][]</code>). We can
     flatten the pixels of an image into the required form using the
-    <literal>getPixelVectorNative()</literal> method:
+    <code>getPixelVectorNative()</code> method:
   </para>
   <programlisting>float[][] imageData = input.getPixelVectorNative(new float[input.getWidth() * input.getHeight()][3]);</programlisting>
   <para>
@@ -104,15 +114,15 @@ for (float[] fs : centroids) {
     (<literal>L, a, b</literal>) coordinates of each of the classes.
   </para>
   <para>
-    We can now use a <literal>HardAssigner</literal> to assign each
+    We can now use a <code>HardAssigner</code> to assign each
     pixel in our image to its respective class using the centroids
-    learned during the <literal>FastFloatKMeans</literal>. This is a
+    learned during the <code>FastFloatKMeans</code>. This is a
     process known as <emphasis role="strong">classification</emphasis>.
-    There are a number of different <literal>HardAssigner</literal>s,
-    however, <literal>FastFloatKMeans</literal> has a method called
-    <literal>defaultHardAssigner()</literal> which will return an
-    assigner fit for our purposes. <literal>HardAssigner</literal>s have
-    a method called <literal>assign()</literal> which takes a vector
+    There are a number of different <code>HardAssigner</code>s,
+    however, <code>FastFloatKMeans</code> has a method called
+    <code>defaultHardAssigner()</code> which will return an
+    assigner fit for our purposes. <code>HardAssigner</code>s have
+    a method called <code>assign()</code> which takes a vector
     (the <literal>L, a, b</literal> value of a single pixel) and returns
     the index of the class that it belongs to. We’ll start by creating
     an image that visualises the pixels and their respective classes by
@@ -138,30 +148,39 @@ DisplayUtilities.display(input);</programlisting>
     Running the code will display an image that looks a little like the
     original image but with as many colours as there are classes.
   </para>
+	<mediaobject>
+	  <imageobject>
+			<imagedata fileref="figs/kmeans.png" format="PNG" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</mediaobject>
   <para>
     To actually produce a segmentation of the image we need to group
     together all pixels with the same class that are touching each
     other. Each set of pixels representing a segment is often referred
     to as a <emphasis role="strong">connected component</emphasis>.
     Connected components in OpenIMAJ are modelled by the
-    <literal>ConnectedComponent</literal> class.
+    <code>ConnectedComponent</code> class.
   </para>
   <para>
-    The <literal>GreyscaleConnectedComponentLabeler</literal> class can
+    The <code>GreyscaleConnectedComponentLabeler</code> class can
     be used to find the connected components:
   </para>
   <programlisting>GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
 List&lt;ConnectedComponent&gt; components = labeler.findComponents(input.flatten());</programlisting>
   <para>
-    Note that the <literal>GreyscaleConnectedComponentLabeler</literal>
-    only processes greyscale images (the <literal>FImage</literal>
-    class) and not the colour image (<literal>MBFImage</literal> class)
-    that we created. The <literal>flatten()</literal> method on
-    <literal>MBFImage</literal> merges the colours into grey values by
+    Note that the <code>GreyscaleConnectedComponentLabeler</code>
+    only processes greyscale images (the <code>FImage</code>
+    class) and not the colour image (<code>MBFImage</code> class)
+    that we created. The <code>flatten()</code> method on
+    <code>MBFImage</code> merges the colours into grey values by
     averaging their RGB values.
   </para>
+  <tip>
+		OpenIMAJ also contains a class called <code>ConnectedComponentLabeler</code> which can only 
+		be used on binary (pure black and white) <code>FImage</code>s.
+	</tip>
   <para>
-    The <literal>ConnectedComponent</literal> class has many useful
+    The <code>ConnectedComponent</code> class has many useful
     methods for extracting information about the shape of the region.
     Lets draw an image with the components numbered on it. We’ll use the
     centre of mass of each region to position the number and only render
@@ -178,13 +197,20 @@ for (ConnectedComponent comp : components) {
     Finally, we can display the image with the labels:
   </para>
   <programlisting>DisplayUtilities.display(input);</programlisting>
+
+	<mediaobject>
+	  <imageobject>
+			<imagedata fileref="figs/segmented.png" format="PNG" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</mediaobject>
+
   <sect1 id="exercises-2">
     <title>Exercises</title>
     <sect2 id="exercise-1-the-pixelprocessor">
       <title>Exercise 1: The PixelProcessor</title>
       <para>
         Rather than looping over the image pixels using two for loops,
-        it is possible to use a <literal>PixelProcessor</literal> to
+        it is possible to use a <code>PixelProcessor</code> to
         accomplish the same task:
       </para>
       <programlisting>image.processInplace(new PixelProcessor&lt;Float[]&gt;() {
@@ -194,11 +220,11 @@ for (ConnectedComponent comp : components) {
 });</programlisting>
       <para>
         Can you re-implement the loop that replaces each pixel with its
-        class centroid using a <literal>PixelProcessor</literal>?
+        class centroid using a <code>PixelProcessor</code>?
       </para>
       <para>
         What are the advantages and disadvantages of using a
-        <literal>PixelProcessor</literal>?
+        <code>PixelProcessor</code>?
       </para>
     </sect2>
     <sect2 id="exercise-2-a-real-segmentation-algorithm">
@@ -207,14 +233,14 @@ for (ConnectedComponent comp : components) {
         The segmentation algorithm we just implemented can work
         reasonably well, but is rather naïve. OpenIMAJ contains an
         implementation of a popular segmentation algorithm called the
-        <literal>FelzenszwalbHuttenlocherSegmenter</literal>.
+        <code>FelzenszwalbHuttenlocherSegmenter</code>.
       </para>
       <para>
         Try using the
-        <literal>FelzenszwalbHuttenlocherSegmenter</literal> for
+        <code>FelzenszwalbHuttenlocherSegmenter</code> for
         yourself and see how it compares to the basic segmentation
         algorithm we implemented. You can use the
-        <literal>SegmentationUtilities.renderSegments()</literal> static
+        <code>SegmentationUtilities.renderSegments()</code> static
         method to draw the connected components produced by the
         segmenter.
       </para>

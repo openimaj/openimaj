@@ -120,3 +120,16 @@ h3.author {
     font-family: "open_sans_condensedbold";   
     font-size: 19px;
 }
+
+.programlisting {
+    border-color: #151B54;
+	border-style: solid;
+	border-width: 0.2px;
+	background-color: #E3E4FA;
+	margin-top: 6px;
+	padding-top: 6px;
+	margin-bottom: 6px;
+	padding-bottom: 6px;
+	padding-left: 6px;
+	padding-right: 6px;
+}

@@ -73,24 +73,28 @@
 
 	<part>
 		<title>Getting Started</title>
-  	<xi:include href="tut1.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  	<xi:include href="getting-started-maven.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 	
 	<part>
 		<title>Images</title>
-  	<xi:include href="tut2.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  	<xi:include href="tut3.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  	<xi:include href="proc-first-image.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  	<xi:include href="clust-segm.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  	<xi:include href="image-hist-feats.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  	<xi:include href="sift-matching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 	
 	<part>
 		<title>Video</title>
-  	<xi:include href="tut4.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  	<xi:include href="tut5.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  	<xi:include href="tut6.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  	<xi:include href="tut7.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  	<xi:include href="video-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  	<xi:include href="face-finding.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
+
+	<!-- <part>
+		<title>Audio</title>
+	</part> -->
 		
-	<part>
+	<!-- <part>
 		<title>Advanced Features</title>
-	</part>
+	</part> -->
 </book>
