@@ -374,7 +374,7 @@ public class DisplayUtilities
 		private boolean keepAspect = true;
 
 		/** Draw a grid where there is no image */
-		private boolean drawTransparencyGrid = true;
+		private boolean drawTransparencyGrid = false;
 
 		/** Whether to draw the mouse over pixel colour on the next paint */
 		private boolean drawPixelColour = false;
@@ -428,11 +428,8 @@ public class DisplayUtilities
 		private final ArrayList<ImageComponentListener> listeners = 
 				new ArrayList<ImageComponentListener>();
 
-		/** Remembered each time the component is drawn */
-		private int lastComponentWidth = -1;
-
-		/** Remember each time the component is drawn */
-		private int lastComponentHeight = -1;
+		/** The last displayed image */
+		private BufferedImage displayedImage = null;
 
 		/**
 		 * Default constructor
@@ -508,11 +505,8 @@ public class DisplayUtilities
 				@Override
 				public void componentResized( final ComponentEvent e )
 				{
-					final double[] scalars = ImageComponent.this.calculateScaleFactorsToFit( 
+					ImageComponent.this.calculateScaleFactorsToFit( 
 						ImageComponent.this.image, ImageComponent.this.getBounds() );
-					ImageComponent.this.setScaleFactor( scalars[0], scalars[1] );
-					ImageComponent.this.lastComponentWidth = ImageComponent.this.getSize().width;
-					ImageComponent.this.lastComponentHeight = ImageComponent.this.getSize().height;
 				};
 			} );
 		}
@@ -597,24 +591,19 @@ public class DisplayUtilities
 		public void setImage( final BufferedImage image )
 		{
 			this.image = image;
+			
 			if( this.autoFit )
 			{
-				final double[] scalars = this.calculateScaleFactorsToFit( 
-						image, this.getBounds() );
-				this.setScaleFactor( scalars[0], scalars[1] );
+				this.calculateScaleFactorsToFit( image, this.getBounds() );
 			}
 			else
 			if( this.autoResize )
 			{
 				// If the component isn't the right shape, we'll resize the
-				// component. Note that we need reset the lastComponentSize
-				// here as we want to set the size of the component absolutely
-				// without affecting the scale factors.
+				// component.
 				if( image.getWidth() != this.getWidth() ||
 					image.getHeight() != this.getHeight() )
 				{
-					this.lastComponentHeight = -1;
-					this.lastComponentWidth = -1;
 					this.setPreferredSize( new Dimension(
 							(int) (image.getWidth() * this.scaleFactorX),
 							(int) (image.getHeight() * this.scaleFactorY) ) );
@@ -634,8 +623,10 @@ public class DisplayUtilities
 				}
 			}
 
-			// This forces a repaint
-			this.updatePixelColours();
+			if( this.showPixelColours )
+					// This forces a repaint if showPixelColours is true
+					this.updatePixelColours();
+			else	this.repaint();
 		}
 
 		/**
@@ -646,39 +637,28 @@ public class DisplayUtilities
 		 *	@param image The image to fit
 		 *	@param bounds The bounds to fit within
 		 */
-		private double[] calculateScaleFactorsToFit( final BufferedImage image,
+		private void calculateScaleFactorsToFit( final BufferedImage image,
 				final java.awt.Rectangle bounds )
 		{
 			if( image == null || bounds == null )
-				return new double[]{1,1};
-			
-			final double[] scaleFactors = new double[2];
+				return;
 			
 			if( this.autoFit )
 			{
 				// If we can stretch the image it's pretty simple.
 				if( !this.keepAspect )
 				{
-					scaleFactors[0] = bounds.width  / (double)image.getWidth();
-					scaleFactors[1] = bounds.height / (double)image.getHeight();
+					this.scaleFactorX = bounds.width  / (double)image.getWidth();
+					this.scaleFactorY = bounds.height / (double)image.getHeight();
 				}
 				// Otherwise we need to find the ratios to fit while keeping aspect
 				else
 				{
-					scaleFactors[0] = scaleFactors[1] = Math.min( 
+					this.scaleFactorX = this.scaleFactorY = Math.min( 
 							bounds.width / (double)image.getWidth(),
 							bounds.height/ (double)image.getHeight() );
 				}
 			}
-			else
-			{
-				// Not set to auto fit? In which case we return whatever the
-				// current scale factors are.
-				scaleFactors[0] = this.scaleFactorX;
-				scaleFactors[1] = this.scaleFactorY;
-			}
-			
-			return scaleFactors;
 		}
 
 		/**
@@ -790,8 +770,12 @@ public class DisplayUtilities
 		 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 		 */
 		@Override
-		public void paint( final Graphics g )
+		public void paint( final Graphics gfx )
 		{
+			// Create a double buffer into which we'll draw first.
+			final BufferedImage img = new BufferedImage( this.getWidth(), this.getHeight(), BufferedImage.TYPE_3BYTE_BGR );
+			final Graphics2D g = (Graphics2D)img.getGraphics();
+			
 			if( this.drawTransparencyGrid )
 			{
 				final BufferedImage transparencyGrid = new BufferedImage(
@@ -819,38 +803,15 @@ public class DisplayUtilities
 			}
 
 			// Draw the image
-			if( this.image != null && this.lastComponentWidth > 0
-					&& this.lastComponentHeight > 0 )
+			if( this.image != null )
 			{
 				// Scale and translate to the image drawing coordinates
 				((Graphics2D)g).scale( this.scaleFactorX, this.scaleFactorY );
 				((Graphics2D)g).translate( -this.drawX, -this.drawY );
 
-				// Create the image to draw
-				final java.awt.Image img = this.image;
-
-				/*
-				// Some handy debug for your perusal
-				if( this.originalImage != null )
-					System.out.println( "Original Image: "
-							+ this.originalImage.getWidth() + "x"
-							+ this.originalImage.getHeight() );
-
-				System.out.println( "Image  : " + img.getWidth( null ) + "x"
-						+ img.getHeight( null ) );
-				System.out.println( "Component: " + this.getWidth() + "x"
-						+ this.getHeight() );
-				System.out.println( "Scale factor X: " + this.scaleFactorX );
-				System.out.println( "Scale factor Y: " + this.scaleFactorY );
-				System.out.println( "Auto resize: " + this.autoResize );
-				System.out.println( "Auto pack: " + this.autoPack );
-				System.out.println( "Auto fit: "+this.autoFit );
-				System.out.println( "DrawX,Y: "+this.drawX+","+this.drawY );
-				System.out.println( "=================================================" );
-				*/
-
 				// Blat the image to the screen
-				g.drawImage( img, 0, 0, this.image.getWidth(), this.image.getHeight(), null );
+				g.drawImage( this.image, 0, 0, this.image.getWidth(), 
+						this.image.getHeight(), null );
 
 				// Reset the graphics back to the original pixel-based coords
 				((Graphics2D)g).translate( this.drawX, this.drawY );
@@ -895,6 +856,12 @@ public class DisplayUtilities
 							+ fm.getHeight() + p / 2 );
 				}
 			}
+			
+			// Blat our offscreen image to the screen
+			gfx.drawImage( img, 0,0, null );
+
+			// Store this displayed image
+			this.displayedImage = img;
 		}
 
 		/**
@@ -1142,6 +1109,25 @@ public class DisplayUtilities
 		public Float[] getCurrentPixelColour()
 		{
 			return this.currentPixelColour;
+		}
+		
+		/**
+		 * 	Returns the current displayed pixel colour (as an RGB encoded int)
+		 * 	from the currently displayed image.
+		 *	@return The current displayed pixel colour.
+		 */
+		public int getCurrentDisplayedPixelColour()
+		{
+			return this.displayedImage.getRGB( this.mouseX, this.mouseY );
+		}
+		
+		/**
+		 * 	Returns the currently displaying image.
+		 *	@return The displayed image.
+		 */
+		public BufferedImage getDisplayedImage()
+		{
+			return this.displayedImage;
 		}
 	}
 
