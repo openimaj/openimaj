@@ -986,7 +986,7 @@ public class DisplayUtilities
 		 */
 		protected void updatePixelColours()
 		{
-			if( (this.showPixelColours || this.showXY) && this.image != null )
+			if( this.showPixelColours && this.image != null )
 			{
 				// If we don't have the original image, we'll just use the
 				// colours from the BufferedImage
@@ -1018,6 +1018,12 @@ public class DisplayUtilities
 					}
 				}
 
+				this.drawPixelColour = true;
+				this.repaint();
+			}
+			
+			if( this.showXY )
+			{
 				this.drawPixelColour = true;
 				this.repaint();
 			}
