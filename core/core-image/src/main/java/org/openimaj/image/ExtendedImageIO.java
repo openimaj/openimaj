@@ -284,13 +284,16 @@ class ExtendedImageIO {
 				}
 			} else {
 				try {
+					// OpenJDK7 doesn't work properly with JAI as some of the
+					// classes are missing!! This next line will throw in such
+					// cases:
+					Class.forName("com.sun.image.codec.jpeg.ImageFormatException");
+
 					synchronized (JAI.class) {
 						return JAI.create("stream", SeekableStream.wrapInputStream(binput, false)).getAsBufferedImage();
 					}
 				} catch (final Exception e) {
-					// OpenJDK7 doesn't work properly with JAI as some of the
-					// classes are missing!!
-					// we'll fall back to ImageIO
+					// JAI didn't work... we'll fall back to ImageIO
 					binput.reset();
 					return ImageIO.read(binput);
 				}
