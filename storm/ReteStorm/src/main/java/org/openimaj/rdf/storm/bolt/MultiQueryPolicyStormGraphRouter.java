@@ -2,8 +2,11 @@ package org.openimaj.rdf.storm.bolt;
 
 import java.util.List;
 
+import org.openimaj.rdf.storm.bolt.StormGraphRouter.EddyStubStormGraphRouter;
+
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.TripleMatch;
@@ -54,5 +57,21 @@ public class MultiQueryPolicyStormGraphRouter extends StormGraphRouter {
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		
 	}
+	
+	// INNER CLASSES
+	
+		public static class MQPESStormGraphRouter extends EddyStubStormGraphRouter {
+
+			public MQPESStormGraphRouter(List<String> eddies) {
+				super(eddies);
+			}
+
+			@Override
+			protected void distributeToEddies(Tuple anchor, Values vals) {
+				for (String eddy : this.eddies)
+					this.collector.emit(eddy, anchor, vals);
+			}
+			
+		}
 
 }

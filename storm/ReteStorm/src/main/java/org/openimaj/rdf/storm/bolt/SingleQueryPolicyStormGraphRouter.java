@@ -1,7 +1,10 @@
 package org.openimaj.rdf.storm.bolt;
 
+import java.util.List;
+
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 
 import com.hp.hpl.jena.graph.Graph;
 
@@ -40,6 +43,27 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		
+	}
+	
+	// INNER CLASSES
+	
+	public static class SQPESStormGraphRouter extends EddyStubStormGraphRouter {
+
+		public SQPESStormGraphRouter(List<String> eddies) {
+			super(eddies);
+		}
+
+		@Override
+		protected void distributeToEddies(Tuple anchor, Values vals) {
+			String source = anchor.getSourceComponent();
+			if (this.eddies.contains(source))
+				this.collector.emit(source, anchor, vals);
+			else
+				for (String eddy : this.eddies)
+					this.collector.emit(eddy, anchor, vals);
+			this.collector.ack(anchor);
+		}
 		
 	}
 
