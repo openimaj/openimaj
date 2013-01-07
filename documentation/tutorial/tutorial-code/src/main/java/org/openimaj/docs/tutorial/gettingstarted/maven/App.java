@@ -1,4 +1,4 @@
-package org.openimaj.docs.tutorial.t1;
+package org.openimaj.docs.tutorial.gettingstarted.maven;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;

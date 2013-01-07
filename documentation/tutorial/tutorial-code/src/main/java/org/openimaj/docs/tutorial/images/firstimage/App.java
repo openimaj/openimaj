@@ -1,4 +1,4 @@
-package org.openimaj.docs.tutorial.t2;
+package org.openimaj.docs.tutorial.images.firstimage;
 
 import java.io.IOException;
 import java.net.URL;

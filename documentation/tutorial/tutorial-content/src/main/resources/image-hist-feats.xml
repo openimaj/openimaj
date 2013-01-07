@@ -37,22 +37,22 @@
     cube, where each small cubic bin is accruing counts for that colour.
   </para>
   <para>
-    OpenIMAJ contains a multidimensional <code>Histogram</code>
+    OpenIMAJ contains a multidimensional <code>MultidimensionalHistogram</code>
     implementation that is constructed using the number of bins required
     in each dimension. For example:
   </para>
-  <programlisting>Histogram histogram = new Histogram( 4, 4, 4 );</programlisting>
+  <programlisting>MultidimensionalHistogram histogram = new MultidimensionalHistogram( 4, 4, 4 );</programlisting>
   <para>
     This code creates a histogram that has 64 (4 × 4 × 4) bins. However,
     this data structure does not do anything on its own. The
     <code>HistogramModel</code> class provides a means for
-    creating a <code>Histogram</code> from an image. The
+    creating a <code>MultidimensionalHistogram</code> from an image. The
     <code>HistogramModel</code> class assumes the image has been
     normalised and returns a normalised histogram:
   </para>
   <programlisting>HistogramModel model = new HistogramModel( 4, 4, 4 );
 model.estimateModel( image );
-Histogram histogram = model.histogram;</programlisting>
+MultidimensionalHistogram histogram = model.histogram;</programlisting>
   <para>
     You can print out the histogram to see what sort of numbers you get
     for different images. Let’s load in 3 images then generate and store
@@ -63,9 +63,11 @@ Histogram histogram = model.histogram;</programlisting>
    new URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist2.jpg&quot; ), 
    new  URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist3.jpg&quot; ) 
 };
-List&lt;Histogram&gt; histograms = new ArrayList&lt;Histogram&gt;();
+
+List&lt;MultidimensionalHistogram&gt; histograms = new ArrayList&lt;MultidimensionalHistogram&gt;();
+HistogramModel model = new HistogramModel(4, 4, 4);
+
 for( URL u : imageURLs ) {
-    HistogramModel model = new HistogramModel(4, 4, 4);
     model.estimateModel(ImageUtilities.readMBF(u));
     histograms.add( model.histogram );
 }</programlisting>
@@ -73,19 +75,19 @@ for( URL u : imageURLs ) {
 <para role="centered">
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/hist1.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="figs/hist1.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/hist2.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="figs/hist2.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 	
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/hist3.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="figs/hist3.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 </para>

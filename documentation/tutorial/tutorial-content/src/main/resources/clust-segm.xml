@@ -66,29 +66,39 @@
     To start our implementation, we’ll first apply a colour-space
     transform to the image:
   </para>
-  <programlisting>input = ColourSpace.convert(input,ColourSpace.CIE_Lab);</programlisting>
+  <programlisting>input = ColourSpace.convert(input, ColourSpace.CIE_Lab);</programlisting>
   <para>
     We can then construct the K-Means algorithm:
   </para>
-  <programlisting>FastFloatKMeans cluster = new FastFloatKMeans(3,2,true);</programlisting>
+  <programlisting>FloatKMeans cluster = FloatKMeans.createExact(3, 2);</programlisting>
   <para>
     The first parameter is the dimensionality of the space (3 in this
     case corresponding to the <emphasis role="strong">L</emphasis>,
     <emphasis role="strong">a</emphasis>, and
     <emphasis role="strong">b</emphasis> dimensions of the colour
     vectors). The second argument is the number of clusters or classes
-    we wish the algorithm to generate. The final boolean flag indicates
-    whether the underlying algorithm should be the <quote>exact</quote>
-    K-means algorithm (true) or an
-    <emphasis role="strong">approximate</emphasis> algorithm (false).
-    The approximate algorithm is much faster than the exact algorithm
-    when there is very high-dimensional data; in this case, with only
-    three dimensions, the approximate algorithm is not required. The
-    OpenIMAJ K-Means implementation is multithreaded and automatically
-    takes advantage of all the processing power it can obtain.
-  </para>
+    we wish the algorithm to generate. 
+	</para>
+	<tip>
+		<para>
+			There are a number of different static factory methods on the 
+			<code>FloatKMeans</code> class, as well as constructors that allow 
+			various flavours of the K-Means algorithm to be instantiated. In 
+			particular, the <code>FloatKMeans.createKDTreeEnsemble(int, int)</code>
+			method creates an <emphasis>approximate</emphasis> K-means implementation
+			using a technique based on an ensemble of KD-Trees. The approximate 
+			algorithm is much faster than the exact algorithm
+	    when there is very high-dimensional data; in this case, with only
+	    three dimensions, the approximate algorithm is not required. 
+		</para>
+		<para>
+	    All the OpenIMAJ K-Means implementations are multithreaded and automatically
+	    takes advantage of all the processing power they can obtain by default.
+			This behaviour can of course be controlled programatically however.
+		</para>
+  </tip>
   <para>
-    The FastFloatKMeans algorithm takes its input as an array of
+    The <code>FloatKMeans</code> algorithm takes its input as an array of
     floating point vectors (<code>float[][]</code>). We can
     flatten the pixels of an image into the required form using the
     <code>getPixelVectorNative()</code> method:
@@ -98,14 +108,14 @@
     The K-Means algorithm can then be run to group all the pixels into
     the requested number of classes:
   </para>
-  <programlisting>cluster.cluster(imageData);</programlisting>
+  <programlisting>FloatCentroidsResult result = cluster.cluster(imageData);</programlisting>
   <para>
     Each class or cluster produced by the K-Means algorithm has an
     index, starting from 0. Each class is represented by its centroid
     (the average location of all the points belonging to the class). We
     can print the coordinates of each centroid:
   </para>
-  <programlisting>float[][] centroids = cluster.getCentroids();
+  <programlisting>float[][] centroids = result.centroids;
 for (float[] fs : centroids) {
     System.out.println(Arrays.toString(fs));
 }</programlisting>
@@ -116,10 +126,10 @@ for (float[] fs : centroids) {
   <para>
     We can now use a <code>HardAssigner</code> to assign each
     pixel in our image to its respective class using the centroids
-    learned during the <code>FastFloatKMeans</code>. This is a
+    learned during the <code>FloatKMeans</code>. This is a
     process known as <emphasis role="strong">classification</emphasis>.
     There are a number of different <code>HardAssigner</code>s,
-    however, <code>FastFloatKMeans</code> has a method called
+    however, <code>FloatCentroidsResult</code> has a method called
     <code>defaultHardAssigner()</code> which will return an
     assigner fit for our purposes. <code>HardAssigner</code>s have
     a method called <code>assign()</code> which takes a vector
@@ -129,7 +139,7 @@ for (float[] fs : centroids) {
     replacing each pixel in the input image with the centroid of its
     respective class:
   </para>
-  <programlisting>HardAssigner&lt;float[],?,?&gt; assigner = cluster.defaultHardAssigner();
+  <programlisting>HardAssigner&lt;float[],?,?&gt; assigner = result.defaultHardAssigner();
 for (int y=0; y&lt;input.getHeight(); y++) {
     for (int x=0; x&lt;input.getWidth(); x++) {
         float[] pixel = input.getPixelNative(x, y);
@@ -214,7 +224,7 @@ for (ConnectedComponent comp : components) {
         accomplish the same task:
       </para>
       <programlisting>image.processInplace(new PixelProcessor&lt;Float[]&gt;() {
-    Float[] processPixel(Float[] pixel, Number[]...otherpixels) {
+    Float[] processPixel(Float[] pixel) {
         ...
     }
 });</programlisting>

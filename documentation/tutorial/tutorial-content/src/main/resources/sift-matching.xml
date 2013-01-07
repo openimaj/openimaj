@@ -24,13 +24,13 @@ MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8
 <para role="centered">
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/query.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="figs/query.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/target.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="figs/target.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 </para>
@@ -109,14 +109,17 @@ DisplayUtilities.display(basicMatches);</programlisting>
     consistent matcher:
   </para>
   <programlisting>AffineTransformModel fittingModel = new AffineTransformModel(5);
-RANSAC&lt;Point2d, Point2d&gt; ransac = new RANSAC&lt;Point2d, Point2d&gt;(fittingModel, 1500, new RANSAC.PercentageInliersStoppingCondition(0.5), true);
+RANSAC&lt;Point2d, Point2d&gt; ransac = 
+	new RANSAC&lt;Point2d, Point2d&gt;(fittingModel, 1500, new RANSAC.PercentageInliersStoppingCondition(0.5), true);
 
 matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(
   new FastBasicKeypointMatcher&lt;Keypoint&gt;(8), ransac);
 
 matcher.setModelFeatures(queryKeypoints);
 matcher.findMatches(targetKeypoints);
-MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
+
+MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, 
+	matcher.getMatches(), RGBColour.RED);
 
 DisplayUtilities.display(consistentMatches);</programlisting>
 <mediaobject>

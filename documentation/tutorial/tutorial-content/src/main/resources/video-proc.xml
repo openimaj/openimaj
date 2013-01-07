@@ -27,14 +27,15 @@
   </para>
   <programlisting>video = new XuggleVideo(new File(&quot;/path/to/keyboardcat.flv&quot;));</programlisting>
 	<tip>
-		The <code>XuggleVideo</code> class also has constructors that let you pass a URL to a video on the web without downloading it first.
+		The <code>XuggleVideo</code> class also has constructors that let you pass a URL to a video on the web without downloading it first:
+		<programlisting>video = new XuggleVideo(new URL("http://dl.dropbox.com/u/8705593/keyboardcat.flv"));</programlisting>
 	</tip>
   <para>
     If your computer has a camera, OpenIMAJ also supports live video
     input. These are called capture devices and you can use one through
     the <code>VideoCapture</code> class:
   </para>
-  <programlisting>video = new VideoCapture(320,240);</programlisting>
+  <programlisting>video = new VideoCapture(320, 240);</programlisting>
   <para>
     This will find the first video capture device attached to your
     system and render it as closely to 320 × 240 pixels as it can. To
@@ -69,7 +70,7 @@
     iterate through every frame and process it:
   </para>
   <programlisting>for (MBFImage mbfImage : video) {
-    DisplayUtilities.displayName(mbfImage.process(new CannyEdgeDetector2()), &quot;videoFrames&quot;);
+    DisplayUtilities.displayName(mbfImage.process(new CannyEdgeDetector()), &quot;videoFrames&quot;);
 }</programlisting>
   <para>
     Here we’re applying a Canny edge detector to each frame and
@@ -82,7 +83,7 @@ display.addVideoListener(
   new VideoDisplayListener&lt;MBFImage&gt;() {
     @Override
     public void beforeUpdate(MBFImage frame) {
-        frame.processInplace(new CannyEdgeDetector2());
+        frame.processInplace(new CannyEdgeDetector());
     }
 
     @Override

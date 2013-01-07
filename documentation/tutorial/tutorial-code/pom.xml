@@ -90,6 +90,24 @@
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
+      <artifactId>image-feature-extraction</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+		<dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>xuggle-video</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+		<dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>faces</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+		<dependency>
+      <groupId>org.openimaj</groupId>
       <artifactId>clustering</artifactId>
       <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>

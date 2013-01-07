@@ -84,8 +84,7 @@ vd.addVideoListener(
     box drawn around your face. The complete code is shown below:
   </para>
   <programlisting>FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
-List&lt;DetectedFace&gt; faces =
-            fd.detectFaces( Transforms.calculateIntensity(frame));
+List&lt;DetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity(frame));
 
 for( DetectedFace face : faces ) {
     frame.drawShape(face.getBounds(), RGBColour.RED);
