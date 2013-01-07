@@ -505,7 +505,7 @@ public class DisplayUtilities
 				@Override
 				public void componentResized( final ComponentEvent e )
 				{
-//					System.out.println( "Resize" );
+					System.out.println( "Resize" );
 					ImageComponent.this.calculateScaleFactorsToFit( 
 						ImageComponent.this.image, ImageComponent.this.getBounds() );
 				};
@@ -540,6 +540,8 @@ public class DisplayUtilities
 		public void setAllowZoom( final boolean allowZoom )
 		{
 			this.allowZooming = allowZoom;
+			if( allowZoom )
+				this.autoFit = false;
 		}
 
 		/**
@@ -550,6 +552,8 @@ public class DisplayUtilities
 		public void setAllowPanning( final boolean allowPan )
 		{
 			this.allowDragging = allowPan;
+			if( allowPan )
+				this.autoFit = false;
 		}
 
 		/**
@@ -880,10 +884,12 @@ public class DisplayUtilities
 					// Scale the scalars down
 					this.scaleFactorX /= 2;
 					this.scaleFactorY /= 2;
-					
-					this.moveTo( 
-							this.drawX - e.getX()/this.scaleFactorX/2, 
-							this.drawY - e.getY()/this.scaleFactorY/2 );
+
+					double moveX = this.drawX - e.getX()/this.scaleFactorX/2;
+					double moveY = this.drawY - e.getY()/this.scaleFactorY/2;
+					if( this.allowDragging )
+							this.moveTo( moveX, moveY );
+					else	this.moveTo( 0, 0 );
 				}
 				else	
 				{
@@ -892,9 +898,11 @@ public class DisplayUtilities
 					this.scaleFactorY *= 2;
 					
 					// Make sure we zoom in on the bit the user clicked on
-					this.moveTo( 
-							this.drawX + e.getX()/this.scaleFactorX, 
-							this.drawY + e.getY()/this.scaleFactorY );
+					if( this.allowDragging )
+							this.moveTo( 
+								this.drawX + e.getX()/this.scaleFactorX, 
+								this.drawY + e.getY()/this.scaleFactorY );
+					else	this.moveTo( 0, 0 );
 				}
 
 				// Make sure we're not going to draw out of bounds.
@@ -1035,13 +1043,19 @@ public class DisplayUtilities
 		/**
 		 * 	Sets whether to automatically size the image to fit within the
 		 * 	bounds of the image component which is being sized externally. This
-		 * 	shouldn't be used in combination with autoResize.
+		 * 	shouldn't be used in combination with autoResize. When this
+		 * 	method is called with TRUE, zooming and dragging are disabled.
 		 * 
 		 *	@param tf TRUE to auto fit the image.
 		 */
 		public void setAutoFit( final boolean tf )
 		{
 			this.autoFit = tf;
+			if( this.autoFit )
+			{
+				this.allowZooming = false;
+				this.allowDragging = false;
+			}
 		}
 		
 		/**
