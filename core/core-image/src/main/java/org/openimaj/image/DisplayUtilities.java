@@ -505,6 +505,7 @@ public class DisplayUtilities
 				@Override
 				public void componentResized( final ComponentEvent e )
 				{
+//					System.out.println( "Resize" );
 					ImageComponent.this.calculateScaleFactorsToFit( 
 						ImageComponent.this.image, ImageComponent.this.getBounds() );
 				};
@@ -958,6 +959,8 @@ public class DisplayUtilities
 		@Override
 		public void mouseMoved( final MouseEvent e )
 		{
+			if( this.image == null ) return;
+			
 			// Convert the screen coords into image coords
 			final double x = e.getX()/this.scaleFactorX + this.drawX;
 			final double y = e.getY()/this.scaleFactorY + this.drawY;
