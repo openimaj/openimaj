@@ -283,8 +283,16 @@ class ExtendedImageIO {
 					return loadWithReader(reader, binput);
 				}
 			} else {
-				synchronized (JAI.class) {
-					return JAI.create("stream", SeekableStream.wrapInputStream(binput, false)).getAsBufferedImage();
+				try {
+					synchronized (JAI.class) {
+						return JAI.create("stream", SeekableStream.wrapInputStream(binput, false)).getAsBufferedImage();
+					}
+				} catch (final Exception e) {
+					// OpenJDK7 doesn't work properly with JAI as some of the
+					// classes are missing!!
+					// we'll fall back to ImageIO
+					binput.reset();
+					return ImageIO.read(binput);
 				}
 			}
 		} else {
