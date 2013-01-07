@@ -35,8 +35,7 @@
 
 static void errno_exit(const char * s)
 {
-        fprintf (stderr, "%s error %d, %s\n",
-                 s, errno, strerror (errno));
+        fprintf (stderr, "%s error %d, %s\n", s, errno, strerror (errno));
 
         exit (EXIT_FAILURE);
 }
@@ -72,8 +71,7 @@ static int read_frame(VideoGrabber* grabber)
 
                         case EIO:
                                 /* Could ignore EIO, see spec. */
-
-                                /* fall through */
+								return 0;
 
                         default:
                                 errno_exit ("read");
@@ -97,9 +95,8 @@ static int read_frame(VideoGrabber* grabber)
 
                         case EIO:
                                 /* Could ignore EIO, see spec. */
-
-                                /* fall through */
-
+								return 0;
+								
                         default:
                                 errno_exit ("VIDIOC_DQBUF");
                         }
@@ -127,9 +124,8 @@ static int read_frame(VideoGrabber* grabber)
 
                         case EIO:
                                 /* Could ignore EIO, see spec. */
-
-                                /* fall through */
-
+								return 0;
+								
                         default:
                                 errno_exit ("VIDIOC_DQBUF");
                         }
