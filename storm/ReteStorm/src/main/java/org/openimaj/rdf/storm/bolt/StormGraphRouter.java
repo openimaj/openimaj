@@ -59,29 +59,18 @@ public abstract class StormGraphRouter {
 
 	protected OutputCollector collector;
 	
+	protected abstract void prepare();
+	
 	/**
 	 * 
 	 * @param c
 	 */
 	public void setOutputCollector(OutputCollector c){
 		this.collector = c;
+		this.prepare();
 	}
 	
 	protected abstract long routingTimestamp(long stamp1, long stamp2);
-	
-	/**
-	 * 
-	 * @param anchor 
-	 * @param g
-	 * @param isAdd
-	 * @param newtimestamp
-	 * @param oldtimestamp
-	 */
-	public void routeGraph(Tuple anchor, boolean isAdd, Graph g, long newtimestamp, long oldtimestamp){
-		long ts = routingTimestamp(newtimestamp, oldtimestamp);
-		if (ts >= 0)
-			routeGraph(anchor, isAdd, g, ts);
-	}
 	
 	/**
 	 * 
@@ -102,20 +91,11 @@ public abstract class StormGraphRouter {
 	 * 
 	 * @param anchor 
 	 * @param g
-	 * @param isAdd
-	 * @param timestamp
-	 */
-	public abstract void routeGraph(Tuple anchor, boolean isAdd, Graph g, long... timestamp);
-	
-	/**
-	 * 
-	 * @param anchor 
-	 * @param g
 	 * @param isBuild 
 	 * @param isAdd
 	 * @param timestamp
 	 */
-	public abstract void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g, long... timestamp);
+	public abstract void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g, long timestamp);
 	
 	/**
 	 * 
@@ -144,16 +124,10 @@ public abstract class StormGraphRouter {
 		protected long routingTimestamp(long stamp1, long stamp2){
 			return stamp1 > stamp2 ? stamp1 : -1;
 		}
-		
-		@Override
-		public void routeGraph(Tuple anchor, boolean isAdd, Graph g, long... timestamp) {
-			// The default assumption is that Tuple's from SteMs are intended for probing (i.e. NOT building).
-			routeGraph(anchor, Action.probe, isAdd, g, timestamp);
-		}
 
 		@Override
 		public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g,
-							   long... timestamp) {
+							   long timestamp) {
 			Values vals = new Values();
 			for (Component c : Component.values()) {
 				switch (c) {

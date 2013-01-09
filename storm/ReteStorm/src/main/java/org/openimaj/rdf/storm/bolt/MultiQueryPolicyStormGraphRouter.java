@@ -29,20 +29,18 @@ public class MultiQueryPolicyStormGraphRouter extends StormGraphRouter {
 		 */
 	}
 	
+	protected void prepare(){
+		
+	}
+	
 	@Override
 	protected long routingTimestamp(long stamp1, long stamp2){
 		return stamp1 > stamp2 ? stamp1 : -1;
 	}
-	
-	@Override
-	public void routeGraph(Tuple anchor, boolean isAdd, Graph g, long... timestamp) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g,
-						   long... timestamp) {
+						   long timestamp) {
 		// TODO Auto-generated method stub
 
 	}
@@ -58,6 +56,10 @@ public class MultiQueryPolicyStormGraphRouter extends StormGraphRouter {
 
 			public MQPESStormGraphRouter(List<String> eddies) {
 				super(eddies);
+			}
+			
+			protected void prepare(){
+				
 			}
 
 			@Override

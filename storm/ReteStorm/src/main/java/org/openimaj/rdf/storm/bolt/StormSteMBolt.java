@@ -136,10 +136,8 @@ public abstract class StormSteMBolt implements IRichBolt{
 				this.window.build(input, isAdd, timestamp);
 				break;
 			case check:
-				//TODO: implement proper checking
-				this.router.routeGraph(input, Action.probe, isAdd,
-									   (Graph)input.getValueByField(Component.graph.toString()),
-									   timestamp);
+				this.window.check(input, isAdd, timestamp);
+				break;
 			case probe:
 				this.window.probe(input, isAdd, timestamp);
 				break;

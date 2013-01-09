@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.bolt.StormGraphRouter.Action;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt.Component;
 import org.openimaj.rdf.storm.topology.logging.LoggerBolt;
 import org.openimaj.rdf.storm.utils.CircularPriorityWindow;
 
@@ -149,6 +150,23 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 	}
 	
 	/**
+	 * Check a tuple against the SteM.
+	 * 
+	 * @param env
+	 *            a set of variable bindings for the rule being processed.
+	 * @param isAdd
+	 *            distinguishes between add and remove operations.
+	 * @param timestamp
+	 *            the time at which the triple was added from the stream
+	 */
+	public void check(Tuple env, boolean isAdd, long timestamp) {
+		// TODO: implement proper checking.
+		this.router.routeGraph(env, Action.probe, isAdd,
+							   (Graph) env.getValueByField(StormSteMBolt.Component.graph.toString()),
+							   timestamp);
+	}
+	
+	/**
 	 * Probe a tuple into this SteM.
 	 * 
 	 * @param env
@@ -165,6 +183,9 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 		logger.debug("Comparing new tuple to " + this.window.size() + " other tuples");
 		for (Iterator<Tuple> i = this.window.iterator(); i.hasNext();) {
 			Tuple candidate = i.next();
+			long candStamp = candidate.getLongByField(StormSteMBolt.Component.timestamp.toString());
+			if (timestamp < candStamp)
+				break;
 			boolean matchOK = true;
 			for (int j = 0; j < this.varCount; j++) {
 				// If the queue match indices indicate there should be a match get the
@@ -182,7 +203,7 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 				Graph g = joinSubGraphs(env, candidate);
 
 				// initiate graph routing
-				this.router.routeGraph(env, isAdd, g, timestamp,
+				this.router.routeGraph(env, Action.probe, isAdd, g, timestamp,
 									   candidate.getLongByField(StormSteMBolt.Component.timestamp.toString()));
 			}
 		}
