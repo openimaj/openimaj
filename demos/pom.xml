@@ -82,5 +82,6 @@ Demos showing the functionality of OpenIMAJ.
     <module>CampusView</module>
     <module>ACMMM-Presentation</module>
     <module>examples</module>
+    <module>SimpleOCR</module>
   </modules>
 </project>
