@@ -38,15 +38,15 @@ import org.openimaj.math.geometry.shape.Polygon;
 /**
  * {@link ImageRenderer} for {@link FImage} images. Supports both anti-aliased
  * and fast rendering.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * Construct with given target image.
-	 * 
+	 *
 	 * @param targetImage
 	 *            the target image.
 	 */
@@ -56,7 +56,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * Construct with given target image and rendering hints.
-	 * 
+	 *
 	 * @param targetImage
 	 *            the target image.
 	 * @param hints
@@ -78,7 +78,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, double,
 	 *      int, int, java.lang.Object)
 	 */
@@ -92,7 +92,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, int,
 	 *      int, int, java.lang.Object)
 	 */
@@ -105,7 +105,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to the
 	 * coordinates specified by <code>(x1,y1)</code> using the given color and
 	 * thickness. Side-affects this image.
-	 * 
+	 *
 	 * @param x0
 	 *            The x-coordinate at the start of the line.
 	 * @param y0
@@ -319,23 +319,26 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawPoint(org.openimaj.math.geometry.point.Point2d,
 	 *      java.lang.Object, int)
 	 */
 	@Override
 	public void drawPoint(final Point2d p, final Float grey, final int size) {
+
 		if (!this.targetImage.getBounds().isInside(p))
 			return;
+		int halfsize = (size+1)/2; // 3 == 2, 4 = 2, 5 = 3, 6 = 3 etc.
 		// TODO anti-aliased point rendering
 		final int x = Math.round(p.getX());
 		final int y = Math.round(p.getY());
+		int startx = Math.max(0, x-(halfsize-1));
+		int starty = Math.max(0, y-(halfsize-1));
+		int endx = Math.min(this.targetImage.width,x+halfsize);
+		int endy = Math.min(this.targetImage.height,y+halfsize);
 
-		if (x > this.targetImage.width || y > this.targetImage.height)
-			return;
-
-		for (int j = y; j < Math.min(y + size, this.targetImage.height); j++) {
-			for (int i = x; i < Math.min(x + size, this.targetImage.width); i++) {
+		for (int j = starty; j < endy; j++) {
+			for (int i = startx; i < endx; i++) {
 				this.targetImage.pixels[j][i] = grey;
 			}
 		}
@@ -343,7 +346,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawPolygon(org.openimaj.math.geometry.shape.Polygon,
 	 *      int, java.lang.Object)
 	 */

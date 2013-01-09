@@ -1214,6 +1214,30 @@ public class MatrixUtils {
 	}
 
 	/**
+	 * Subtract the given col vector (held as a Matrix) from every col of the given matrix,
+	 * returning the result in a new matrix.
+	 *
+	 * @param in the matrix
+	 * @param col the col Matrix (Only the first column is used)
+	 * @return the resultant matrix
+	 */
+	public static Matrix minusCol(Matrix in, Matrix col) {
+		final Matrix out = in.copy();
+		final double[][] outData = out.getArray();
+		final int rows = out.getRowDimension();
+		final int cols = out.getColumnDimension();
+		double[][] colArr = col.getArray();
+
+		for (int r=0; r<rows; r++) {
+			for (int c=0; c<cols; c++) {
+				outData[r][c] -= colArr[r][0];
+			}
+		}
+
+		return out;
+	}
+
+	/**
 	 * Add a matrix to another inline.
 	 * @param result the matrix to add to
 	 * @param add the matrix to add
@@ -1272,5 +1296,49 @@ public class MatrixUtils {
 			}
 		}
 		return out;
+	}
+
+	/**
+	 * Compute the sum of values in all rows
+	 * @param m the matrix
+	 * @return the sum of values across all cols in all rows
+	 */
+	public static Matrix sumRows(Matrix m) {
+		final double[][] data = m.getArray();
+		final int cols = m.getColumnDimension();
+		final int rows = m.getRowDimension();
+
+		Matrix sum = new Matrix(rows,1);
+		double[][] sumArr = sum.getArray();
+		for (int c = 0; c < cols; c++) {
+			for (int r=0; r<rows; r++)
+			{
+				sumArr[r][0] += data[r][c];
+			}
+		}
+
+		return sum;
+	}
+
+	/**
+	 * Compute the sum of values in all cols
+	 * @param m the matrix
+	 * @return the sum of values across all rows in all cols
+	 */
+	public static Matrix sumCols(Matrix m) {
+		final double[][] data = m.getArray();
+		final int cols = m.getColumnDimension();
+		final int rows = m.getRowDimension();
+
+		Matrix sum = new Matrix(1,cols);
+		double[][] sumArr = sum.getArray();
+		for (int c = 0; c < cols; c++) {
+			for (int r=0; r<rows; r++)
+			{
+				sumArr[0][c] += data[r][c];
+			}
+		}
+
+		return sum;
 	}
 }
