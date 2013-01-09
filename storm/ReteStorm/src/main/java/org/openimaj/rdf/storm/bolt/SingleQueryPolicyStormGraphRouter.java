@@ -43,7 +43,7 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		
+		// TODO Auto-generated method stub
 	}
 	
 	// INNER CLASSES
