@@ -108,7 +108,6 @@ public class CannyEdgeDetector implements SinglebandImageProcessor<Float, FImage
 		float cumSum = 0;
 		for (int i = 0; i < 64; i++) {
 			if (cumSum > 0.7 * magnitudes.width * magnitudes.height) {
-				System.out.println(i);
 				return i / 64f;
 			}
 			cumSum += hist.values[i];
