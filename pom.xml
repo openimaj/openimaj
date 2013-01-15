@@ -110,10 +110,13 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
         <version>2.9</version>
         <configuration>
           <header><![CDATA[
-							<link rel="stylesheet" type="text/css" href="/Users/jon/Work/openimaj/trunk/site/src/site/resources/css/reference.css" />
+						<div style="display:none">
+							<link rel="stylesheet" type="text/css" href="/css/reference.css" />
 							<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-							<script type="text/javascript" src="/Users/jon/Work/openimaj/trunk/site/src/site/resources/js/reference.js"></script>
-							]]></header>
+							<script type="text/javascript" src="/js/reference.js"></script>
+						</div>
+						]]></header>
+						<linksource>true</linksource>
         </configuration>
       </plugin>
       <plugin>
@@ -215,10 +218,13 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
               <version>2.9</version>
               <configuration>
                 <header><![CDATA[
-									<link rel="stylesheet" type="text/css" href="/Users/jsh2/Work/openimaj/trunk/site/src/site/resources/css/reference.css" />
-									<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-									<script type="text/javascript" src="/Users/jsh2/Work/openimaj/trunk/site/src/site/resources/js/reference.js"></script>
+									<div style="display:none">
+										<link rel="stylesheet" type="text/css" href="/css/reference.css" />
+										<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+										<script type="text/javascript" src="/js/reference.js"></script>
+									</div>
 									]]></header>
+									<linksource>true</linksource>
               </configuration>
             </plugin>
             <plugin>
