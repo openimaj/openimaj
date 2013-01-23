@@ -1,9 +1,10 @@
-package org.openimaj.rdf.storm.bolt;
+package org.openimaj.rdf.storm.eddying.routing;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.openimaj.rdf.storm.bolt.StormSteMBolt.Component;
+import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt;
+import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt.Component;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;

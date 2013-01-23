@@ -1,4 +1,4 @@
-package org.openimaj.rdf.storm.bolt;
+package org.openimaj.rdf.storm.eddying.routing;
 
 import java.util.List;
 

@@ -27,14 +27,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.rdf.storm.bolt;
+package org.openimaj.rdf.storm.eddying.eddies;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.rdf.storm.bolt.StormGraphRouter.Action;
-import org.openimaj.rdf.storm.bolt.StormSteMBolt.Component;
+import org.openimaj.rdf.storm.eddying.routing.StormGraphRouter;
+import org.openimaj.rdf.storm.eddying.routing.StormGraphRouter.Action;
+import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt;
+import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt.Component;
 
 import com.hp.hpl.jena.graph.Graph;
 
