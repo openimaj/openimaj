@@ -1,9 +1,9 @@
 package org.openimaj.rdf.storm.eddying.routing;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt;
 import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt.Component;
 
 import backtype.storm.task.OutputCollector;
@@ -18,8 +18,13 @@ import com.hp.hpl.jena.graph.Graph;
  * 
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  */
-public abstract class StormGraphRouter {
+public abstract class StormGraphRouter implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3433809982075329507L;
+
 	/**
 	 * 
 	 * @author David Monks <dm11g08@ecs.soton.ac.uk>
@@ -110,6 +115,10 @@ public abstract class StormGraphRouter {
 	 */
 	public static abstract class EddyStubStormGraphRouter extends StormGraphRouter {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3683430533570003022L;
 		protected final List<String> eddies;
 		
 		/**
