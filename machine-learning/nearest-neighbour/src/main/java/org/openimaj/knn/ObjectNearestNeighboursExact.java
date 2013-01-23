@@ -92,12 +92,12 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 				new BoundedPriorityQueue<IntFloatPair>(1, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
 		// prepare working data
-		List<IntFloatPair> list = new ArrayList<IntFloatPair>(2);
+		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(2);
 		list.add(new IntFloatPair());
 		list.add(new IntFloatPair());
 
 		for (int n = 0; n < N; ++n) {
-			List<IntFloatPair> result = search(qus[n], queue, list);
+			final List<IntFloatPair> result = search(qus[n], queue, list);
 
 			final IntFloatPair p = result.get(0);
 			indices[n] = p.first;
@@ -116,14 +116,14 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 				new BoundedPriorityQueue<IntFloatPair>(K, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
 		// prepare working data
-		List<IntFloatPair> list = new ArrayList<IntFloatPair>(K + 1);
+		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(K + 1);
 		for (int i = 0; i < K + 1; i++) {
 			list.add(new IntFloatPair());
 		}
 
 		// search on each query
 		for (int n = 0; n < N; ++n) {
-			List<IntFloatPair> result = search(qus[n], queue, list);
+			final List<IntFloatPair> result = search(qus[n], queue, list);
 
 			for (int k = 0; k < K; ++k) {
 				final IntFloatPair p = result.get(k);
@@ -141,12 +141,12 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 				new BoundedPriorityQueue<IntFloatPair>(1, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
 		// prepare working data
-		List<IntFloatPair> list = new ArrayList<IntFloatPair>(2);
+		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(2);
 		list.add(new IntFloatPair());
 		list.add(new IntFloatPair());
 
 		for (int n = 0; n < N; ++n) {
-			List<IntFloatPair> result = search(qus.get(n), queue, list);
+			final List<IntFloatPair> result = search(qus.get(n), queue, list);
 
 			final IntFloatPair p = result.get(0);
 			indices[n] = p.first;
@@ -165,14 +165,14 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 				new BoundedPriorityQueue<IntFloatPair>(K, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
 		// prepare working data
-		List<IntFloatPair> list = new ArrayList<IntFloatPair>(K);
-		for (int i = 0; i < K; i++) {
+		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(K + 1);
+		for (int i = 0; i < K + 1; i++) {
 			list.add(new IntFloatPair());
 		}
 
 		// search on each query
 		for (int n = 0; n < N; ++n) {
-			List<IntFloatPair> result = search(qus.get(n), queue, list);
+			final List<IntFloatPair> result = search(qus.get(n), queue, list);
 
 			for (int k = 0; k < K; ++k) {
 				final IntFloatPair p = result.get(k);
@@ -215,8 +215,8 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 
 	private List<IntFloatPair> search(T query, BoundedPriorityQueue<IntFloatPair> queue, List<IntFloatPair> results)
 	{
-	    IntFloatPair wp = null;
-	    
+		IntFloatPair wp = null;
+
 		// reset all values in the queue to MAX, -1
 		for (final IntFloatPair p : results) {
 			p.second = Float.MAX_VALUE;
