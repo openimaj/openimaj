@@ -47,7 +47,7 @@ import backtype.storm.tuple.Tuple;
  * @author David Monks <dm11g08@ecs.soton.ac.uk>
  *
  */
-public abstract class StormSteMBolt implements IRichBolt{
+public class StormSteMBolt implements IRichBolt{
 	
 	/**
 	 * 
@@ -125,7 +125,7 @@ public abstract class StormSteMBolt implements IRichBolt{
 		
 		this.router.setOutputCollector(collector);
 		
-		this.window = new StormSteMQueue(0/*TODO*/, 5000, 10, TimeUnit.MINUTES, collector, router);
+		this.window = new StormSteMQueue(3, 5000, 10, TimeUnit.MINUTES, collector, router);
 	}
 
 	@Override

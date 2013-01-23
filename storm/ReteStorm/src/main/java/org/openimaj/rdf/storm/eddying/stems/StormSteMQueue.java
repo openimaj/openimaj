@@ -194,7 +194,7 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 				// values of j in the queue and matchIndices[j] in the sibling
 				Node thisNode = (Node) values.get(j);
 				Node steMNode = (Node) candidate.getValue(j);
-				if (!(thisNode.sameValueAs(steMNode) ||thisNode.isVariable())) {
+				if ( !( thisNode.sameValueAs(steMNode) || thisNode.isVariable() ) ) {
 					matchOK = false;
 					break;
 				}
