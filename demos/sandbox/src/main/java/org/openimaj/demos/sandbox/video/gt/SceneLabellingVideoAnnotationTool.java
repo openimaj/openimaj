@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import org.openimaj.audio.AudioStream;
 import org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifiableVideoFrame;
 import org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifierProducer;
 import org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.StateProvider;
+import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -37,8 +40,12 @@ import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 import org.openimaj.video.timecode.VideoTimecode;
 
 /**
- *	A tool for annotating scenes within videos as containing music, speech,
- *	both or neither.
+ *	A tool for annotating scenes within videos. This class provides the 
+ *	methods and UI for doing shot detection (using a {@link VideoShotDetector}),
+ *	and then adding annotations to the detected scenes. The tags for annotation
+ *	are provided by subclasses of this class through the {@link #getStates()}
+ *	method. Annotated scenes are added to a {@link Dataset} via the 
+ *	{@link VideoGroundTruth} class.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 5 Dec 2012
@@ -85,7 +92,10 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 	private final ButtonGroup stateButtonGroup = new ButtonGroup();
 
 	/** The currently selected state */
-	private String currentState;
+	private List<String> currentState;
+	
+	/** Determines whether the tags are singular (more than one cannot be selected at once) */
+	private final boolean exclusiveTags = true;
 
 	/**
 	 * 	Returns a list of the states that are able to be labelled for any
@@ -104,6 +114,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 		this.video = video;
 		this.groundTruth = new VideoGroundTruth( video, audio, this );
 		this.shotDetector = new VideoShotDetector( video );
+		this.currentState = new ArrayList<String>();
 		this.init();
 	}
 
@@ -117,7 +128,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 		if( this.currentState == null ) return null;
 		
 		final List<String> list = new ArrayList<String>();
-		list.add( this.currentState );
+		list.addAll( this.currentState );
 		return list;
 	}
 
@@ -171,18 +182,48 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 			gbc.gridy++;
 			this.add( this.radioButtons[i] = 
 					new JToggleButton( states[i] ), gbc );
-			this.stateButtonGroup.add( this.radioButtons[i] );
+			
+			// If only one tag can be selected at a time, then the button group
+			// itemListener will be used to change the currentState member
+			// This itemListener is added immediately after this loop.
+			// Otherwise, we use an actionListener on the button to add or
+			// remove the state represented by the button to the currentState
+			// field. Use setExclusiveTags() to determine this option.
+			if( this.exclusiveTags )
+				this.stateButtonGroup.add( this.radioButtons[i] );
+			else
+			{
+				final int f = i;
+				this.radioButtons[i].addActionListener( new ActionListener()
+				{
+					@Override
+					public void actionPerformed( final ActionEvent e )
+					{
+						if( SceneLabellingVideoAnnotationTool.this.
+							radioButtons[f].isSelected() )
+								SceneLabellingVideoAnnotationTool.this.
+									currentState.add( SceneLabellingVideoAnnotationTool.
+											this.radioButtons[f].getText() );
+						else	SceneLabellingVideoAnnotationTool.this.
+									currentState.remove( SceneLabellingVideoAnnotationTool.
+											this.radioButtons[f].getText() );
+					}
+				} );
+			}
 		}
 		
 		// Add an item listener that sets the current state when a button is pressed
+		// This is only used when the button group is used, and that's only used
+		// when only one tag can be selected for a scene. 
 		this.stateButtonGroup.addItemListener( new ItemListener()
 		{
 			@Override
 			public void itemStateChanged( final ItemEvent e )
 			{
-				SceneLabellingVideoAnnotationTool.this.currentState = 
+				SceneLabellingVideoAnnotationTool.this.currentState.clear();
+				SceneLabellingVideoAnnotationTool.this.currentState.add( 
 						SceneLabellingVideoAnnotationTool.this.
-							stateButtonGroup.getSelected().getText(); 
+							stateButtonGroup.getSelected().getText() ); 
 			}
 		} );
 		
@@ -302,4 +343,18 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 	{
 		return null;
 	}	
+	
+	/**
+	 * 	Determines whether tags are exclusive (only one can be selected
+	 * 	at a time).
+	 * 
+	 *	@param tf Whether tags can be selected or not.
+	 */
+	public void setExclusiveTags( final boolean tf )
+	{
+		this.stateButtonGroup.clear();
+		if( tf )
+			for( final AbstractButton b : this.radioButtons )
+				this.stateButtonGroup.add( b );
+	}
 }

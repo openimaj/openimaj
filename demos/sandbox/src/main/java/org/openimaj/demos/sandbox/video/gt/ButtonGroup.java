@@ -126,4 +126,12 @@ public class ButtonGroup
 				il.itemStateChanged( ie );
 			}
 	}
+	
+	/**
+	 * 	Removes all the buttons being controlled by this button group.
+	 */
+	public void clear()
+	{
+		this.buttons.clear();
+	}
 }
