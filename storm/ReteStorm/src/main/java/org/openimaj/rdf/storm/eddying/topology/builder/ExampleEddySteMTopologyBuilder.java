@@ -12,9 +12,9 @@ import org.openimaj.rdf.storm.eddying.routing.SingleQueryPolicyStormGraphRouter;
 import org.openimaj.rdf.storm.eddying.routing.StormGraphRouter.Action;
 import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt;
 import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt.Component;
-import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 import org.openimaj.rdf.storm.topology.bolt.StormReteFilterBolt;
+import org.openimaj.rdf.storm.utils.JenaStormUtils;
 import org.openimaj.storm.spout.SimpleSpout;
 
 import com.hp.hpl.jena.graph.Graph;
@@ -25,6 +25,7 @@ import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
+import backtype.storm.Config;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -42,6 +43,14 @@ public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 					 predicates = {"pred0",
 								   "pred1",
 								   "pred2"};
+	
+	public Config initialiseConfig(){
+		Config conf = new Config();
+		conf.setDebug(true);
+		conf.setNumWorkers(2);
+		JenaStormUtils.registerSerializers(conf);
+		return conf;
+	}
 	
 	public void build(){
 		final String spoutname = "spout";
@@ -106,7 +115,8 @@ class ExampleNTriplesSpout extends SimpleSpout {
 	}
 	
 	@Override
-	public void open(Map conf, TopologyContext context, SpoutOutputCollector collector){
+	public void open(@SuppressWarnings("rawtypes") Map conf, TopologyContext context,
+					 SpoutOutputCollector collector){
 		super.open(conf, context, collector);
 		random = new Random();
 	}
@@ -134,10 +144,12 @@ class ExampleNTriplesSpout extends SimpleSpout {
 
 class AlphaToStemTranslatorBolt extends BaseRichBolt {
 
+	private static final long serialVersionUID = 527786537447539815L;
 	private OutputCollector collector;
 	
 	@Override
-	public void prepare(Map stormConf, TopologyContext context,
+	public void prepare(@SuppressWarnings("rawtypes") Map stormConf,
+						TopologyContext context,
 			OutputCollector collector) {
 		this.collector = collector;
 	}
