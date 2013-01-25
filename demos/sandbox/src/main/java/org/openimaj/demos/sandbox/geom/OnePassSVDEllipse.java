@@ -97,6 +97,8 @@ public class OnePassSVDEllipse implements MouseListener, MouseMotionListener {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		dragClick = false;
+		image.fill(RGBColour.BLACK);
+		redrawEllipses();
 	}
 	@Override
 	public void mouseEntered(MouseEvent e) {

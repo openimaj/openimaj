@@ -31,6 +31,7 @@ package org.openimaj.math.matrix;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Random;
 
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
@@ -1340,5 +1341,22 @@ public class MatrixUtils {
 		}
 
 		return sum;
+	}
+
+	/**
+	 * @param rows
+	 * @param cols
+	 * @return a matrix containing values drawn from a 0 mean 1.0 sdev gaussian
+	 */
+	public static Matrix randGaussian(int rows, int cols) {
+		Matrix m = new Matrix(rows,cols);
+		double[][] d = m.getArray();
+		Random r = new Random();
+		for (int row = 0; row < d.length; row++) {
+			for (int col = 0; col < d[row].length; col++) {
+				d[row][col] = r.nextGaussian();
+			}
+		}
+		return m;
 	}
 }
