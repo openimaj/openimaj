@@ -54,8 +54,8 @@ public class ExampleStormGraphRouter extends StormGraphRouter {
 									: Node.createLiteral(parts[2]);
 				Values vals = new Values();
 				vals.add(g.find(subject,predicate,object).next().getObject());
-				vals.add(Node.createVariable("p"));
-				vals.add(Node.createVariable("o"));
+				vals.add(Node.createVariable("?p"));
+				vals.add(Node.createVariable("?o"));
 				vals.add(action);
 				vals.add(isAdd);
 				vals.add(g);
