@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.openimaj.rdf.storm.eddying.topology.builder.ExampleEddySteMTopologyBuilder;
+import org.openimaj.rdf.storm.utils.JenaStormUtils;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -19,6 +20,7 @@ public class EddyingTopologyTest {
 		Config conf = new Config();
 		conf.setDebug(true);
 		conf.setNumWorkers(2);
+		JenaStormUtils.registerSerializers(conf);
 
 		LocalCluster cluster = new LocalCluster();
 		cluster.submitTopology("test", conf, builder.createTopology());
