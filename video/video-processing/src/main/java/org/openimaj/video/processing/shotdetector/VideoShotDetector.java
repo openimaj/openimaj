@@ -263,7 +263,7 @@ public abstract class VideoShotDetector<I extends Image<?,I>>
 					this.frameCounter, this.video.getFPS() ), dist, frame );
 		}
 		
-		System.out.println( "is "+dist+" > "+this.threshold+"? "+(dist>this.threshold) );
+//		System.out.println( "is "+dist+" > "+this.threshold+"? "+(dist>this.threshold) );
 		
 		// We generate a shot boundary if the threshold is exceeded or we're
 		// at the very start of the video.
