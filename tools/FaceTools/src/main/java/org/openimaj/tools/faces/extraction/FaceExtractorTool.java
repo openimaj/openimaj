@@ -54,7 +54,7 @@ import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.processing.shotdetector.ShotBoundary;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 import org.openimaj.video.processing.timefinder.ObjectTimeFinder;
 import org.openimaj.video.processing.timefinder.ObjectTimeFinder.TimeFinderListener;
 import org.openimaj.video.processing.tracking.BasicMBFImageObjectTracker;
@@ -132,7 +132,7 @@ public class FaceExtractorTool
 		// This is the video shot detector we'll use to find the shots in
 		// the incoming video. These shots will provide hard limits for the
 		// face tracking.
-		VideoShotDetector vsd = new VideoShotDetector( this.video );
+		HistogramVideoShotDetector vsd = new HistogramVideoShotDetector( this.video );
 		vsd.setThreshold( this.options.threshold );
 		vsd.setFindKeyframes( true );
 		vsd.setStoreAllDifferentials( false );
