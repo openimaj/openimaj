@@ -1,6 +1,7 @@
 package org.openimaj.rdf.storm.eddying.routing;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +149,7 @@ public class ExampleStormGraphRouter extends StormGraphRouter {
 			this.collector.ack(anchor);
 			return;
 		}else{
-			System.out.println(g.toString()+" Complete!");
+			System.out.println(g.toString()+" Completed at: "+timestamp+"\nTook "+(new Date().getTime() - timestamp)+" milliseconds.");
 		}
 	}
 
