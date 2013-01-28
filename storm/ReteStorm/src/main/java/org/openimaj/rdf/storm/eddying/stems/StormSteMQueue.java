@@ -63,7 +63,7 @@ import com.hp.hpl.jena.graph.compose.Polyadic;
  */
 public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHandler<Tuple> {
 
-	protected final static Logger logger = Logger.getLogger(RETEStormQueue.class);
+	protected final static Logger logger = Logger.getLogger(StormSteMQueue.class);
 	private static final boolean logging = false;
 	private LoggerBolt.LogEmitter logStream;
 
@@ -182,7 +182,7 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 		// Cross match new token against the entries in the sibling queue
 		List<Object> values = env.getValues();
 		logger.debug("\nChecking new tuple values: " + StormReteBolt.cleanString(values));
-		logger.debug("Comparing new tuple to " + this.window.size() + " other tuples");
+		logger.debug("\nComparing new tuple to " + this.window.size() + " other tuples");
 		for (Iterator<Tuple> i = this.window.iterator(); i.hasNext();) {
 			Tuple candidate = i.next();
 			long candStamp = candidate.getLongByField(StormSteMBolt.Component.timestamp.toString());
@@ -200,21 +200,20 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 				}
 			}
 			if (matchOK) {
-				logger.debug("Match Found! preparing for emit!");
 				// Instantiate a new combined graph
 				Graph g = joinSubGraphs(env, candidate);
-
+				logger.debug("\nMatch Found! preparing for emit!\n"+g.toString());
 				// initiate graph routing
 				this.router.routeGraph(env, Action.probe, isAdd, g, timestamp,
-									   candidate.getLongByField(StormSteMBolt.Component.timestamp.toString()));
+									   candidate.getLongByField(Component.timestamp.toString()));
 			}
 		}
 	}
 
 	protected static Graph joinSubGraphs(Tuple thisTuple, Tuple steMTuple) {
 		Polyadic newG = new MultiUnion();
-		newG.addGraph((Graph) thisTuple.getValueByField(StormSteMBolt.Component.graph.toString()));
-		newG.addGraph((Graph) steMTuple.getValueByField(StormSteMBolt.Component.graph.toString()));
+		newG.addGraph((Graph) thisTuple.getValueByField(Component.graph.toString()));
+		newG.addGraph((Graph) steMTuple.getValueByField(Component.graph.toString()));
 		return newG;
 	}
 	

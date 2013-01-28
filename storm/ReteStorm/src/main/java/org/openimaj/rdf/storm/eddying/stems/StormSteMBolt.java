@@ -32,8 +32,10 @@ package org.openimaj.rdf.storm.eddying.stems;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.eddying.routing.StormGraphRouter;
 import org.openimaj.rdf.storm.eddying.routing.StormGraphRouter.Action;
+import org.openimaj.rdf.storm.topology.bolt.StormReteBolt;
 
 import com.hp.hpl.jena.graph.Graph;
 
@@ -49,10 +51,8 @@ import backtype.storm.tuple.Tuple;
  */
 public class StormSteMBolt implements IRichBolt{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6233820433299486911L;
+	private static Logger logger = Logger.getLogger(StormSteMBolt.class);
 
 	/**
 	 * Meta-Data components of the storm values/fields list
@@ -99,12 +99,14 @@ public class StormSteMBolt implements IRichBolt{
 		}
 	}
 	
+	protected String name;
 	protected StormGraphRouter router;
 	
 	/**
 	 * @param sgr
 	 */
-	public StormSteMBolt(StormGraphRouter sgr) {
+	public StormSteMBolt(String name, StormGraphRouter sgr) {
+		this.name = name;
 		this.router = sgr;
 	}
 
@@ -134,12 +136,20 @@ public class StormSteMBolt implements IRichBolt{
 		boolean isAdd = input.getBooleanByField(Component.isAdd.toString());
 		switch ((Action)input.getValueByField(Component.action.toString())){
 			case build:
+				logger.debug(String.format("\nSteM %s building in triple: %s %s %s", this.name,
+										   input.getValue(0).toString(),
+										   input.getValue(1).toString(),
+										   input.getValue(2).toString()));
 				this.window.build(input, isAdd, timestamp);
 				break;
 			case check:
 				this.window.check(input, isAdd, timestamp);
 				break;
 			case probe:
+				logger.debug(String.format("\nSteM %s being probed with triple: %s %s %s", this.name,
+						   				   input.getValue(0).toString(),
+						   				   input.getValue(1).toString(),
+						   				   input.getValue(2).toString()));
 				this.window.probe(input, isAdd, timestamp);
 				break;
 			default:
