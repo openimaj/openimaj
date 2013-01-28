@@ -49,6 +49,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Node_Blank;
 import com.hp.hpl.jena.graph.Node_Literal;
 import com.hp.hpl.jena.graph.Node_URI;
+import com.hp.hpl.jena.graph.Node_Variable;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
@@ -160,6 +161,27 @@ public class JenaStormUtils {
 		public Node_Blank read(Kryo kryo, Input input, Class<Node_Blank> type) {
 			String label = input.readString();
 			Node_Blank retNode = (Node_Blank) Node.createAnon(AnonId.create(label));
+			return retNode;
+		}
+
+	}
+	
+	/**
+	 * @author David Monks<dm11g08@ecs.soton.ac.uk>
+	 * 
+	 */
+	public static class NodeSerialiser_Variable extends Serializer<Node_Variable> {
+
+		@Override
+		public void write(Kryo kryo, Output output, Node_Variable object) {
+			String blankNodeString = object.toString();
+			output.writeString(blankNodeString);
+		}
+
+		@Override
+		public Node_Variable read(Kryo kryo, Input input, Class<Node_Variable> type) {
+			String label = input.readString();
+			Node_Variable retNode = (Node_Variable) Node.createVariable(label.replaceFirst("\\?", ""));
 			return retNode;
 		}
 
@@ -310,6 +332,8 @@ public class JenaStormUtils {
 		conf.registerSerialization(Node[].class, NodeSerialiser_ARRAY.class);
 		conf.registerSerialization(Node_URI.class, NodeSerialiser_URI.class);
 		conf.registerSerialization(Node_Literal.class, NodeSerialiser_Literal.class);
+		conf.registerSerialization(Node_Blank.class, NodeSerialiser_Blank.class);
+		conf.registerSerialization(Node_Variable.class, NodeSerialiser_Variable.class);
 		conf.registerSerialization(Triple.class, TripleSerialiser.class);
 		conf.registerSerialization(ArrayList.class);
 		conf.registerSerialization(KestrelServerSpec.class, KestrelServerSpec_Serializer.class);
@@ -318,7 +342,6 @@ public class JenaStormUtils {
 		conf.registerSerialization(GraphMem.class, GraphSerialiser.class);
 		conf.registerSerialization(MultiUnion.class, GraphSerialiser.class);
 		conf.registerSerialization(Template.class, TemplateSerialiser.class);
-		conf.registerSerialization(Node_Blank.class, NodeSerialiser_Blank.class);
 		conf.registerSerialization(ElementFilter.class);
 		// conf.registerSerialization(Node_NULL.class);
 		// conf.registerSerialization(Node_Blank.class);
