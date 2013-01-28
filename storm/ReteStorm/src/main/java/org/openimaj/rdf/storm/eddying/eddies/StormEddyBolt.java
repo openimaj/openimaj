@@ -29,10 +29,9 @@
  */
 package org.openimaj.rdf.storm.eddying.eddies;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.eddying.routing.StormGraphRouter;
 import org.openimaj.rdf.storm.eddying.routing.StormGraphRouter.Action;
 import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt;
@@ -44,9 +43,7 @@ import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
-import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.tuple.Values;
 
 /**
  * @author davidlmonks
@@ -54,10 +51,8 @@ import backtype.storm.tuple.Values;
  */
 public class StormEddyBolt implements IRichBolt {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1073714124183765931L;
+	private static Logger logger = Logger.getLogger(StormEddyBolt.class);
 
 	public static final String STREAM_TO_EDDY = "eddy stream";
 	
