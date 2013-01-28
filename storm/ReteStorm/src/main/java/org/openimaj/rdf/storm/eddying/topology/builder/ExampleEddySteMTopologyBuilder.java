@@ -1,6 +1,7 @@
 package org.openimaj.rdf.storm.eddying.topology.builder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
 
 public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 	
@@ -81,7 +83,7 @@ public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 		for (int i = 0; i < stems.length; i++) {
 			List<String> eddies = new ArrayList<String>();
 			eddies.add(eddyname);
-			stems[i] = new StormSteMBolt(new SingleQueryPolicyStormGraphRouter.SQPESStormGraphRouter(eddies));
+			stems[i] = new StormSteMBolt(stemprefix+i,new SingleQueryPolicyStormGraphRouter.SQPESStormGraphRouter(eddies));
 			stemMap.put(stemprefix+i, ","+predicates[i]+",");
 		}
 		
@@ -123,13 +125,14 @@ class ExampleNTriplesSpout extends SimpleSpout {
 	
 	@Override
 	public void nextTuple() {
+		Utils.sleep(100);
 		Triple t = new Triple(Node.createLiteral(subjects[random.nextInt(subjects.length)]),
 							  Node.createLiteral(predicates[random.nextInt(predicates.length)]),
 							  Node.createLiteral(subjects[random.nextInt(subjects.length)]));
 		Graph graph = new GraphMem();
 		graph.add(t);
 		try {
-			this.collector.emit(StormReteBolt.asValues(true,graph,0l));
+			this.collector.emit(StormReteBolt.asValues(true,graph,new Date().getTime()));
 		} catch (Exception e) {
 
 		}
