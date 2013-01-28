@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.eddying.stems.StormSteMQueue;
 import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt.Component;
 
 import backtype.storm.task.OutputCollector;
@@ -20,10 +22,8 @@ import com.hp.hpl.jena.graph.Graph;
  */
 public abstract class StormGraphRouter implements Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3433809982075329507L;
+	protected final static Logger logger = Logger.getLogger(StormGraphRouter.class);
 
 	/**
 	 * 
@@ -88,6 +88,7 @@ public abstract class StormGraphRouter implements Serializable {
 	 * @param oldtimestamp
 	 */
 	public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g, long newtimestamp, long oldtimestamp){
+		logger.debug(String.format("\nComparing timestamps: %s and %s",newtimestamp,oldtimestamp));
 		long ts = routingTimestamp(newtimestamp, oldtimestamp);
 		if (ts >= 0)
 			routeGraph(anchor, action, isAdd, g, ts);

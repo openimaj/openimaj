@@ -2,6 +2,9 @@ package org.openimaj.rdf.storm.eddying.routing;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.eddying.stems.StormSteMQueue;
+
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
@@ -13,7 +16,9 @@ import com.hp.hpl.jena.graph.Graph;
  *
  */
 public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
-	
+
+	protected final static Logger logger = Logger.getLogger(SingleQueryPolicyStormGraphRouter.class);
+
 	private String query;
 	
 	/**
@@ -59,11 +64,14 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 		@Override
 		protected void distributeToEddies(Tuple anchor, Values vals) {
 			String source = anchor.getSourceComponent();
-			if (this.eddies.contains(source))
+			if (this.eddies.contains(source)){
+				logger.debug(String.format("\nRouting back to Eddy %s for %s", source, vals.get(0).toString()));
 				this.collector.emit(source, anchor, vals);
-			else
-				for (String eddy : this.eddies)
+			}else
+				for (String eddy : this.eddies){
+					logger.debug(String.format("\nRouting on to Eddy %s for %s from %s", eddy, vals.get(0).toString(), source));
 					this.collector.emit(eddy, anchor, vals);
+				}
 			this.collector.ack(anchor);
 		}
 		
