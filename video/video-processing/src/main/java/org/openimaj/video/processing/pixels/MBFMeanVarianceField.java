@@ -2,14 +2,14 @@ package org.openimaj.video.processing.pixels;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.analyser.VideoAnalyser;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 
 /**
  * Compute the mean and variance fields from a video of {@link MBFImage} frames.
  * The generated fields could be used to analyse which parts of a video are
  * stationary or change a lot. If your video consists of multiple shots, between
  * which there are large changes in the content, then it probably makes sense to
- * segment the video using a {@link VideoShotDetector} and apply a new analyser
+ * segment the video using a {@link HistogramVideoShotDetector} and apply a new analyser
  * to each shot independently.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)

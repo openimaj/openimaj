@@ -36,7 +36,7 @@ import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.video.xuggle.XuggleVideo;
 
@@ -247,7 +247,7 @@ public class SpeakerDiarizationTool extends JPanel implements
 	private final CLMFaceTracker tracker = new CLMFaceTracker();
 	
 	/** The shot detector used to determine scenes within the video */
-	private VideoShotDetector shotDetector = null;
+	private HistogramVideoShotDetector shotDetector = null;
 	
 	/** The frame in which the tool will be displayed */
 	private JFrame frame = null;
@@ -271,7 +271,7 @@ public class SpeakerDiarizationTool extends JPanel implements
 	public SpeakerDiarizationTool( final Video<MBFImage> video, final AudioStream audio )
 	{
 		this.vgt = new VideoGroundTruth( video, audio, this, this );
-		this.shotDetector = new VideoShotDetector( video );
+		this.shotDetector = new HistogramVideoShotDetector( video );
 		
 		this.init();
 	}

@@ -39,7 +39,7 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
@@ -52,7 +52,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
 public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 {
 	/** The shot detector to use */
-	private VideoShotDetector shotDetector = null; 
+	private HistogramVideoShotDetector shotDetector = null; 
 
 	/** The face tracker we're going to use */
 	private CLMFaceTracker tracker = new CLMFaceTracker();
@@ -93,7 +93,7 @@ public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 	{
 		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( v );
 		vd.addVideoListener( this );
-		shotDetector = new VideoShotDetector( v.getFPS() );
+		shotDetector = new HistogramVideoShotDetector( v.getFPS() );
 //		shotDetector.setThreshold( 500 );
 	}
 

@@ -77,10 +77,10 @@ import org.openimaj.math.geometry.shape.Rectangle;
 	)
 public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	/** The basic text extractor implementation */
-	private LiuSamarabanduTextExtractorBasic basicTextExtractor =
+	private final LiuSamarabanduTextExtractorBasic basicTextExtractor =
 		new LiuSamarabanduTextExtractorBasic();
 
 	/** The extracted regions from the processing */
@@ -113,15 +113,15 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		 * 	@see org.openimaj.image.analysis.pyramid.PyramidProcessor#process(org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid)
 		 */
 		@Override
-		public void process( GaussianPyramid<FImage> pyramid )
+		public void process( final GaussianPyramid<FImage> pyramid )
 		{
 			FImage fmap = null;
 			
 			// Process each of the octaves in the pyramid
-			for( GaussianOctave<FImage> octave : pyramid )
+			for( final GaussianOctave<FImage> octave : pyramid )
 			{
 				// Extract text regions using the basic text extractor
-				FImage octaveFMap = basicTextExtractor.textRegionDetection( 
+				FImage octaveFMap = LiuSamarabanduTextExtractorMultiscale.this.basicTextExtractor.textRegionDetection( 
 						octave.getNextOctaveImage() );
 				
 				if( fmap == null )
@@ -132,7 +132,7 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 					octaveFMap = ResizeProcessor.resample( octaveFMap, 
 							fmap.getWidth(), fmap.getHeight() ).normalise();
 					
-					if( DEBUG )
+					if( LiuSamarabanduTextExtractorMultiscale.DEBUG )
 						DisplayUtilities.display( octaveFMap, "Resized feature map" );
 					
 					fmap.addInplace( octaveFMap );
@@ -148,7 +148,7 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 	 */
 	protected void forceWait()
 	{
-		synchronized(this){ try	{ wait( 200000 ); } catch( InterruptedException e1 ) {} }
+		synchronized(this){ try	{ this.wait( 200000 ); } catch( final InterruptedException e1 ) {} }
 	}
 	
 	/**
@@ -156,19 +156,19 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage( FImage image )
+	public void processImage( final FImage image )
 	{
-		PyramidTextExtractor ped = new PyramidTextExtractor();
+		final PyramidTextExtractor ped = new PyramidTextExtractor();
 		
 		// Unlike Lowe's SIFT DoG pyramid, we just need a basic pyramid
-		GaussianPyramidOptions<FImage> gpo = new GaussianPyramidOptions<FImage>();
+		final GaussianPyramidOptions<FImage> gpo = new GaussianPyramidOptions<FImage>();
 		gpo.setScales( 1 );
 		gpo.setExtraScaleSteps( 1 );
 		gpo.setPyramidProcessor( ped );
 		gpo.setDoubleInitialImage( false );
 		
 		// Create and process the pyramid
-		GaussianPyramid<FImage> gp = new GaussianPyramid<FImage>( gpo );
+		final GaussianPyramid<FImage> gp = new GaussianPyramid<FImage>( gpo );
 		image.analyseWith( gp );
 
 		// -------------------------------------------------------------
@@ -177,13 +177,13 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		FImage msFMap = ped.getFeatureMap();
 		
 		// Single scale feature map
-		FImage fmap = this.basicTextExtractor.textRegionDetection( image );
+		final FImage fmap = this.basicTextExtractor.textRegionDetection( image );
 		
 		// Combine the two.
 		msFMap = fmap.add( msFMap );
 		// -------------------------------------------------------------
 		
-		if( DEBUG )
+		if( LiuSamarabanduTextExtractorMultiscale.DEBUG )
 			DisplayUtilities.display( msFMap.normalise(), "Fused Feature Map" );
 		
 		// Process the feature map
@@ -192,8 +192,8 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		// Store the regions
 		this.extractedRegions = this.basicTextExtractor.getTextRegions();
 		
-		if( DEBUG )
-			forceWait();
+		if( LiuSamarabanduTextExtractorMultiscale.DEBUG )
+			this.forceWait();
 		
 		// The output of the processor is the feature map
 		image.internalAssign( fmap );
@@ -206,6 +206,6 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 	@Override
 	public Map<Rectangle, FImage> getTextRegions()
 	{
-		return extractedRegions;
+		return this.extractedRegions;
 	}
 }

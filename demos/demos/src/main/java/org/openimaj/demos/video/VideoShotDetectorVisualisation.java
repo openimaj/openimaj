@@ -41,15 +41,15 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.video.processing.shotdetector.LocalHistogramVideoShotDetector;
 import org.openimaj.video.processing.shotdetector.ShotBoundary;
 import org.openimaj.video.processing.shotdetector.ShotDetectedListener;
 import org.openimaj.video.processing.shotdetector.VideoKeyframe;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
 import org.openimaj.video.timecode.VideoTimecode;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
- * Demonstration of the OpenIMAJ VideoShotDetector and visualisation thereof.
+ * Demonstration of the OpenIMAJ HistogramVideoShotDetector and visualisation thereof.
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 1 Jun 2011
@@ -82,14 +82,14 @@ public class VideoShotDetectorVisualisation {
 		final ResizeProcessor rp = new ResizeProcessor(tw, th, true);
 
 		final int threshold = 8000;
-		final VideoShotDetector vsd = new VideoShotDetector(
+		final LocalHistogramVideoShotDetector vsd = new LocalHistogramVideoShotDetector(
 				new XuggleVideo(
-						VideoShotDetectorVisualisation.class.
-								getResource("/org/openimaj/demos/video/guy_goma.mp4")),
-						false);
+						"src/main/resources/org/openimaj/demos/video/guy_goma.mp4" ), 20 );
+//						VideoShotDetectorVisualisation.class.
+//								getResource("/org/openimaj/demos/video/guy_goma.mp4")) );
 		vsd.setStoreAllDifferentials(true);
 		vsd.setFindKeyframes(true);
-		vsd.setThreshold(threshold);
+//		vsd.setThreshold(threshold);
 		vsd.addShotDetectedListener(new ShotDetectedListener<MBFImage>()
 		{
 			private double lastMax = 10000;

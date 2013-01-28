@@ -48,7 +48,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.Video;
 import org.openimaj.video.processing.shotdetector.ShotBoundary;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 import org.openimaj.video.processing.timefinder.ObjectTimeFinder;
 import org.openimaj.video.processing.tracking.BasicMBFImageObjectTracker;
 import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
@@ -109,7 +109,7 @@ public class VideoFaceRangeFinderDemo
 			nFrames = video.countFrames();
 			
 			// Work out the shot boundaries (just for visualisation)
-			VideoShotDetector sd = new VideoShotDetector( video );
+			HistogramVideoShotDetector sd = new HistogramVideoShotDetector( video );
 			sd.process();
 			shotBoundaries = sd.getShotBoundaries();
 

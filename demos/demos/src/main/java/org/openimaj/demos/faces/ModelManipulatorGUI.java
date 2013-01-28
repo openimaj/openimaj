@@ -73,7 +73,7 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplay.Mode;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
@@ -478,7 +478,7 @@ public class ModelManipulatorGUI extends JPanel {
 
 	/** Shot detector used to force redetects on shot changes */
 	// Note that the fps isn't used, so we just give 25 as anything will do
-	private final VideoShotDetector shotDetector = new VideoShotDetector(25);
+	private final HistogramVideoShotDetector shotDetector = new HistogramVideoShotDetector(25);
 
 	/** The global sliders */
 	private final List<JSlider> globalSliders = new ArrayList<JSlider>();

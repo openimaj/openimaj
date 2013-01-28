@@ -43,7 +43,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.time.Timecode;
 import org.openimaj.video.Video;
 import org.openimaj.video.processing.shotdetector.ShotBoundary;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 
 /**
  *	Will display a video in a timeline with shot detections marked on it.
@@ -55,7 +55,7 @@ import org.openimaj.video.processing.shotdetector.VideoShotDetector;
 public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 {
 	/** Shot detector */
-	private VideoShotDetector shotDetector = null;
+	private HistogramVideoShotDetector shotDetector = null;
 	
 	/** 
 	 * 	To avoid constantly resampling, we cache the resampled images against
@@ -83,7 +83,7 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 	public ShotBoundaryVideoBarVisualisation( Video<MBFImage> video, AudioStream audio )
 	{
 		super( video );
-		this.shotDetector = new VideoShotDetector( video );
+		this.shotDetector = new HistogramVideoShotDetector( video );
 		this.shotDetector.setFindKeyframes( true );
 	}
 	

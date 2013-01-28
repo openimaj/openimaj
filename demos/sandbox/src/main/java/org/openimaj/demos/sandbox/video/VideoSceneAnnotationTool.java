@@ -14,10 +14,11 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.video.Video;
 import org.openimaj.video.processing.shotdetector.ShotBoundary;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 import org.openimaj.video.timecode.VideoTimecode;
 import org.openimaj.video.xuggle.XuggleVideo;
@@ -28,7 +29,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
  *	shot will be a scene. However, there is the ability for scenes to include
  *	multiple shots.  Each scene also has a set of {@link SceneAnnotation}
  *	objects which each have a set of annotations that describe the content
- *	of the scene. 
+ *	of the scene.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 21 Jan 2013
@@ -51,7 +52,7 @@ public class VideoSceneAnnotationTool
 	protected static class VideoScene
 	{
 		/** The shot boundary at the beginning of each shot */
-		protected List<ShotBoundary<MBFImage>> startOfShot;
+		protected List<ShotBoundary<MBFImage>> listOfShots;
 		
 		/** The timecode of the first frame in the scene */
 		protected VideoTimecode startOfScene;
@@ -64,7 +65,7 @@ public class VideoSceneAnnotationTool
 		 */
 		public VideoScene()
 		{
-			this.startOfShot = new ArrayList<ShotBoundary<MBFImage>>();
+			this.listOfShots = new ArrayList<ShotBoundary<MBFImage>>();
 		}
 		
 		@Override
@@ -281,7 +282,7 @@ public class VideoSceneAnnotationTool
 		
 		// Create a shot detector as we're actually going to be processing
 		// shots, not the whole video
-		final VideoShotDetector vsd = new VideoShotDetector( video );
+		final HistogramVideoShotDetector vsd = new HistogramVideoShotDetector( video );
 		
 		// Go through the frames in the video detecting shots
 		for( final MBFImage frame : video )
@@ -290,6 +291,13 @@ public class VideoSceneAnnotationTool
 			boolean newScene = false;
 			
 			// Process the frame with the shot detector
+			final OtsuThreshold o = new OtsuThreshold();
+			double t = (o.calculateThreshold( frame.getBand( 0 ) ) +
+						o.calculateThreshold( frame.getBand( 1 ) ) +
+						o.calculateThreshold( frame.getBand( 2 ) ) ) / 3;
+			t *= frame.getWidth() * frame.getHeight()/2;
+			System.out.println( t );
+			vsd.setThreshold( t );
 			vsd.processFrame( frame );
 
 			// TODO: Scene detection needs to be implemented. We use shots here.
@@ -303,12 +311,12 @@ public class VideoSceneAnnotationTool
 				// First time around, currentScene will be null.
 				if( this.currentScene != null )
 				{
-					// If we already had a scene, we'll set it's end
+					// If we already had a scene, we'll set its end
 					// time to be the previous frame processed.
 					this.currentScene.endOfScene = new HrsMinSecFrameTimecode( 
 						video.getCurrentFrameIndex()-1, video.getFPS() );
 
-					// Store the current annotation for the last scene
+					// Store the current annotations for the last scene
 					this.currentScene.annotations = new HashSet<SceneAnnotation>();
 					for( final VideoAnnotator<MBFImage, String> annotator : 
 																this.annotators )
@@ -325,7 +333,6 @@ public class VideoSceneAnnotationTool
 					}
 					
 					System.out.println( "Scene complete: " );
-					System.out.println( this.currentScene );
 					
 					// Check the scene is long enough to be considered a scene.
 					if( this.currentScene.endOfScene.getTimecodeInMilliseconds() -
@@ -344,9 +351,10 @@ public class VideoSceneAnnotationTool
 				this.resetAnnotators();
 			}
 			
-			// If we've changed shot, then add the shot to the scene
+			// If we've changed shot within this scene, then add the 
+			// shot to the scene
 			if( vsd.wasLastFrameBoundary() )
-				this.currentScene.startOfShot.add( vsd.getLastShotBoundary() );
+				this.currentScene.listOfShots.add( vsd.getLastShotBoundary() );
 			
 			// Carry on annotating the scene with the next frame
 			this.processFrame( frame );

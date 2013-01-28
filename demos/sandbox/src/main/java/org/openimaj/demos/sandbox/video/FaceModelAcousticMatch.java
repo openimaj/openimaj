@@ -45,7 +45,7 @@ import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplay.EndAction;
 import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.video.xuggle.XuggleVideo;
 
@@ -91,7 +91,7 @@ public class FaceModelAcousticMatch
 		final CLMFaceTracker faceTracker = new CLMFaceTracker();
 		
 		// The shot detector used to control the face tracker
-		final VideoShotDetector shotDetector = new VideoShotDetector( fps );
+		final HistogramVideoShotDetector shotDetector = new HistogramVideoShotDetector( fps );
 		
 		// An image to display the vis.
 		final MBFImage visImage = new MBFImage( 800, 400, 3 );

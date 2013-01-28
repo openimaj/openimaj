@@ -35,13 +35,13 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
 import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 import org.openimaj.video.timecode.VideoTimecode;
 
 /**
  *	A tool for annotating scenes within videos. This class provides the 
- *	methods and UI for doing shot detection (using a {@link VideoShotDetector}),
+ *	methods and UI for doing shot detection (using a {@link HistogramVideoShotDetector}),
  *	and then adding annotations to the detected scenes. The tags for annotation
  *	are provided by subclasses of this class through the {@link #getStates()}
  *	method. Annotated scenes are added to a {@link Dataset} via the 
@@ -61,7 +61,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 	private VideoGroundTruth groundTruth = null;
 
 	/** The shot detector to use to analyse the video */
-	private VideoShotDetector shotDetector = null;
+	private HistogramVideoShotDetector shotDetector = null;
 	
 	/** A list of the detected shot boundaries */
 	private final Set<IdentifiableVideoFrame> shotBoundaries = 
@@ -113,7 +113,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 	{
 		this.video = video;
 		this.groundTruth = new VideoGroundTruth( video, audio, this );
-		this.shotDetector = new VideoShotDetector( video );
+		this.shotDetector = new HistogramVideoShotDetector( video );
 		this.currentState = new ArrayList<String>();
 		this.init();
 	}
