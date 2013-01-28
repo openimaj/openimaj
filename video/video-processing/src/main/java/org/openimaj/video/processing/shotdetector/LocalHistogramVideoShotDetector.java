@@ -36,7 +36,9 @@ import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.statistics.HistogramModel;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.video.Video;
 
@@ -72,17 +74,17 @@ public class LocalHistogramVideoShotDetector
 	private int nGridElements = 20;
 	
 	/** The percentage of tiles to use as the most similar */
-	private final double pcMostSimilar = 0.33;
+	private final double pcMostSimilar = 0.1;
 	
+	/** The percentage of tiles to use as the most dissimilar */
+	private final double pcMostDissimilar = 0.1;
+
 	/** The boosting factor to use */
 	private final double boostFactor = 1.1;
 	
 	/** The limiting factor to use */
 	private final double limitingFactor = 0.9;
 	
-	/** The percentage of tiles to use as the most dissimilar */
-	private final double pcMostDissimilar = 0.33;
-
 	/**
 	 * 
 	 *	@param video The video to process 
@@ -160,16 +162,21 @@ public class LocalHistogramVideoShotDetector
 		for( int index = 0; index < indices.length; index++ )
 		{
 			double factor = 1;
-			if( index < this.nGridElements * this.pcMostDissimilar )
-				factor = this.limitingFactor;
-			if( index >= this.nGridElements * (1-this.pcMostSimilar) )
-				factor = this.boostFactor;
+			if( index < this.nGridElements * this.nGridElements * this.pcMostDissimilar )
+					factor = this.limitingFactor;
+			else
+			if( index >= this.nGridElements * this.nGridElements * (1-this.pcMostSimilar) )
+					factor = this.boostFactor;
+			else	factor = 1;
 			
-			final int y = index / this.nGridElements;
-			final int x = index % this.nGridElements;
+			final int y = indices[index] / this.nGridElements;
+			final int x = indices[index] % this.nGridElements;
 			similarDissimilar[y][x] = factor;
 		}
 
+		// DEBUG
+//		this.drawBoxes( frame, similarDissimilar );
+		
 		// Boost the avgHisto values based on the distance measures
 		for( int y = 0; y < this.nGridElements; y++ )
 			for( int x = 0; x < this.nGridElements; x++ )
@@ -186,5 +193,29 @@ public class LocalHistogramVideoShotDetector
 				flattenedAvgHisto ) / (this.nGridElements*this.nGridElements) );
 
 		return stdDev;
+	}
+	
+	/**
+	 * 	Draws the boxes to show movements.
+	 *	@param img The image to draw to
+	 */
+	protected void drawBoxes( final MBFImage img, final double[][] sim )
+	{
+		final int gw = img.getWidth()  / this.nGridElements;
+		final int gh = img.getHeight() / this.nGridElements;		
+		for( int y = 0; y < this.nGridElements; y++ )
+		{
+			for( int x = 0; x < this.nGridElements; x++ )
+			{
+				Float[] c = new Float[]{0f,0f,0f,0f};
+				if( sim[y][x] == this.boostFactor )
+						c = RGBColour.RED;
+				else
+				if( sim[y][x] == this.limitingFactor )
+						c = RGBColour.BLUE;
+				else	c = RGBColour.BLACK;
+				img.drawShape( new Rectangle(x*gw,y*gh,gw,gh), c );
+			}
+		}
 	}
 }

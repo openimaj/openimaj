@@ -384,6 +384,15 @@ public abstract class VideoShotDetector<I extends Image<?,I>>
 	{
 		this.threshold = threshold;
 	}
+	
+	/**
+	 * 	Returns the current threshold value.
+	 *	@return The current threshold
+	 */
+	public double getThreshold()
+	{
+		return this.threshold;
+	}
 
 	/**
 	 * 	Set whether to store keyframes of boundaries when they
