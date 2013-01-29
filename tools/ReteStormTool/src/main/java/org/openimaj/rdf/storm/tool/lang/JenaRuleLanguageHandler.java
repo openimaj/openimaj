@@ -17,9 +17,9 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
 /**
  * Given a string which can be compiled as Jena {@link Rule} instances construct
  * a storm topology using {@link RuleReteStormTopologyFactory}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class JenaRuleLanguageHandler extends BaseRuleLanguageHandler {
 	Logger logger = Logger.getLogger(JenaRuleLanguageHandler.class);
@@ -27,12 +27,10 @@ public class JenaRuleLanguageHandler extends BaseRuleLanguageHandler {
 	@Override
 	public StormTopology constructTopology(ReteStormOptions options) {
 		RuleReteStormTopologyFactory factory = new RuleReteStormTopologyFactory(options.prepareConfig(), options.getRules());
-		String inputQueue = "triples";
-		String outputQueue = "processedTriples";
+		String inputQueue = options.inputQueue;
+		String outputQueue = options.outputQueue;
 		StormTopology topology = null;
 		try {
-			KestrelTupleWriter rdfWriter = options.triplesKestrelWriter();
-			rdfWriter.write(options.kestrelSpecList, inputQueue, outputQueue);
 			topology = factory.buildTopology(options.kestrelSpecList.get(0), inputQueue, outputQueue); // FIXME
 		} catch (Exception e) {
 			logger.error("Couldn't construct topology: " + e.getMessage());

@@ -156,7 +156,7 @@ public class ReteStormOptions extends StormToolOptions {
 			name = "--kestrel-output-queue",
 			aliases = "-koq",
 			required = false,
-			usage = "The input queue")
+			usage = "The output queue")
 	public String outputQueue = "outputQueue";
 
 	@Option(

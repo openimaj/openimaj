@@ -43,7 +43,7 @@ import org.openimaj.math.geometry.shape.Polygon;
  * {@link MouseListener} that allows users to click
  * a series of points in an image representing the vertices
  * of a {@link Polygon}.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
@@ -56,9 +56,9 @@ public class PolygonDrawingListener implements MouseListener {
 	public PolygonDrawingListener() {
 		this.polygon = new Polygon();
 	}
-	
+
 	/**
-	 * Reset the polygon. 
+	 * Reset the polygon.
 	 */
 	public void reset() {
 		this.polygon = new Polygon();
@@ -66,7 +66,7 @@ public class PolygonDrawingListener implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		this.polygon.getVertices().add(new Point2dImpl(arg0.getX(),arg0.getY()));
+
 	}
 
 	@Override
@@ -76,7 +76,9 @@ public class PolygonDrawingListener implements MouseListener {
 	public void mouseExited(MouseEvent arg0) {}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {}
+	public void mousePressed(MouseEvent arg0) {
+		this.polygon.getVertices().add(new Point2dImpl(arg0.getX(),arg0.getY()));
+	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {}
@@ -90,7 +92,7 @@ public class PolygonDrawingListener implements MouseListener {
 
 	/**
 	 * Draw the polygon onto an image.
-	 * @param image the image to draw on. 
+	 * @param image the image to draw on.
 	 */
 	public void drawPoints(MBFImage image) {
 		Polygon p = getPolygon();

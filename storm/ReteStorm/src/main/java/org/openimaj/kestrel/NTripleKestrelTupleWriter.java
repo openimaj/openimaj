@@ -93,15 +93,17 @@ public class NTripleKestrelTupleWriter extends KestrelTupleWriter {
 
 	@Override
 	public synchronized void send(List<Triple> item) {
-		List<Object> tripleList = Arrays.asList((Object) item);
-		byte[] serialised = this.scheme.serialize(tripleList);
-		logger.debug("Writing triple: " + item);
-		try {
-			for (String queue : this.getQueues()) {
-				this.getNextClient().put(queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
+		for (Triple triple : item) {
+			List<Object> tripleList = Arrays.asList((Object)triple);
+			byte[] serialised = this.scheme.serialize(tripleList);
+			logger.debug("Writing triple: " + item);
+			try {
+				for (String queue : this.getQueues()) {
+					this.getNextClient().put(queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
+				}
+			} catch (TException e) {
+				logger.error("Failed to add");
 			}
-		} catch (TException e) {
-			logger.error("Failed to add");
 		}
 	}
 
