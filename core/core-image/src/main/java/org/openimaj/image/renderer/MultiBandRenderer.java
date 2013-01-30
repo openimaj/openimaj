@@ -55,7 +55,7 @@ public abstract class MultiBandRenderer
 	 * Construct with given target image.
 	 * @param targetImage the target image.
 	 */
-	public MultiBandRenderer(I targetImage) {
+	public MultiBandRenderer(final I targetImage) {
 		super(targetImage);
 	}
 	
@@ -64,7 +64,7 @@ public abstract class MultiBandRenderer
 	 * @param targetImage the target image.
 	 * @param hints the render hints
 	 */
-	public MultiBandRenderer(I targetImage, RenderHints hints) {
+	public MultiBandRenderer(final I targetImage, final RenderHints hints) {
 		super(targetImage, hints);
 	}
 	
@@ -77,9 +77,9 @@ public abstract class MultiBandRenderer
 	 *  @param x The x-coordinate for the top-left of the drawn image
 	 *  @param y The y-coordinate for the top-left of the drawn image
 	 */
-	public void drawImage(S image, int x, int y) {
-		for (S band : targetImage.bands) 
-			band.createRenderer(hints).drawImage(image, x, y);
+	public void drawImage(final S image, final int x, final int y) {
+		for (final S band : this.targetImage.bands) 
+			band.createRenderer(this.hints).drawImage(image, x, y);
 	}
 
 	/**
@@ -92,8 +92,8 @@ public abstract class MultiBandRenderer
 	 *  @param x The x-coordinate for the top-left of the drawn image
 	 *  @param y The y-coordinate for the top-left of the drawn image
 	 */
-	public void drawImage(S image, int band, int x, int y) {
-		targetImage.bands.get(band).createRenderer(hints).drawImage(image, x, y);
+	public void drawImage(final S image, final int band, final int x, final int y) {
+		this.targetImage.bands.get(band).createRenderer(this.hints).drawImage(image, x, y);
 	}
 
 	/**
@@ -101,11 +101,11 @@ public abstract class MultiBandRenderer
 	 *  @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, double, int, int, java.lang.Object)
 	 */
 	@Override
-	public void drawLine(int x1, int y1, double theta, int length, int thickness, T[] grey) {
-		assert(grey.length == targetImage.bands.size());
+	public void drawLine(final int x1, final int y1, final double theta, final int length, final int thickness, final T[] grey) {
+		assert(grey.length >= this.targetImage.bands.size());
 		
-		for (int i=0; i<grey.length; i++) {
-			targetImage.bands.get(i).createRenderer(hints).drawLine(x1, y1, theta, length, thickness, grey[i]);
+		for (int i=0; i<this.targetImage.bands.size(); i++) {
+			this.targetImage.bands.get(i).createRenderer(this.hints).drawLine(x1, y1, theta, length, thickness, grey[i]);
 		}
 	}
 
@@ -114,11 +114,11 @@ public abstract class MultiBandRenderer
 	 *  @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, int, int, int, java.lang.Object)
 	 */
 	@Override
-	public void drawLine(int x0, int y0, int x1, int y1, int thickness, T[] grey) {
-		assert(grey.length == targetImage.bands.size());
+	public void drawLine(final int x0, final int y0, final int x1, final int y1, final int thickness, final T[] grey) {
+		assert(grey.length >= this.targetImage.bands.size());
 		
-		for (int i=0; i<grey.length; i++) {
-			targetImage.bands.get(i).createRenderer(hints).drawLine(x0, y0, x1, y1, thickness, grey[i]);
+		for (int i=0; i<this.targetImage.bands.size(); i++) {
+			this.targetImage.bands.get(i).createRenderer(this.hints).drawLine(x0, y0, x1, y1, thickness, grey[i]);
 		}
 	}
 
@@ -127,9 +127,9 @@ public abstract class MultiBandRenderer
 	 *  @see org.openimaj.image.renderer.ImageRenderer#drawPoint(org.openimaj.math.geometry.point.Point2d, java.lang.Object, int)
 	 */
 	@Override
-	public void drawPoint(Point2d p, T[] col, int size) {
-		for (int i = 0; i < targetImage.bands.size(); i++)
-			targetImage.bands.get(i).createRenderer(hints).drawPoint(p, col[i], size);
+	public void drawPoint(final Point2d p, final T[] col, final int size) {
+		for (int i = 0; i < this.targetImage.bands.size(); i++)
+			this.targetImage.bands.get(i).createRenderer(this.hints).drawPoint(p, col[i], size);
 	}
 
 	/**
@@ -137,11 +137,11 @@ public abstract class MultiBandRenderer
 	 *  @see org.openimaj.image.renderer.ImageRenderer#drawPolygon(org.openimaj.math.geometry.shape.Polygon, int, java.lang.Object)
 	 */
 	@Override
-	public void drawPolygon(Polygon p, int thickness, T[] grey) {
-		assert(grey.length == targetImage.bands.size());
+	public void drawPolygon(final Polygon p, final int thickness, final T[] grey) {
+		assert(grey.length >= this.targetImage.bands.size());
 		
-		for (int i=0; i<grey.length; i++) {
-			targetImage.bands.get(i).createRenderer(hints).drawPolygon(p, thickness, grey[i]);
+		for (int i=0; i<this.targetImage.bands.size(); i++) {
+			this.targetImage.bands.get(i).createRenderer(this.hints).drawPolygon(p, thickness, grey[i]);
 		}
 	}
 }
