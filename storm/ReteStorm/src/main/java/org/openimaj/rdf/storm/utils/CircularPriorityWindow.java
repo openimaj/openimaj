@@ -81,13 +81,13 @@ public class CircularPriorityWindow <T> implements Queue <T> {
 		return delay;
 	}
 	
-	/**
-	 * @return oldest timestamp
-	 */
-	public long getOldestTimestamp(){
-		this.prune();
-		return data.peek().getTimestamp();
-	}
+//	/**
+//	 * @return oldest timestamp
+//	 */
+//	public long getOldestTimestamp(){
+//		this.prune();
+//		return data.peek().getTimestamp();
+//	}
 
 	@Override
 	public void clear() {

@@ -29,6 +29,7 @@
  */
 package org.openimaj.rdf.storm.eddying.stems;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -183,6 +184,7 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 		List<Object> values = env.getValues();
 		logger.debug("\nChecking new tuple values: " + StormReteBolt.cleanString(values));
 		logger.debug("\nComparing new tuple to " + this.window.size() + " other tuples");
+		boolean matched = false;
 		for (Iterator<Tuple> i = this.window.iterator(); i.hasNext();) {
 			Tuple candidate = i.next();
 			long candStamp = candidate.getLongByField(StormSteMBolt.Component.timestamp.toString());
@@ -200,6 +202,9 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 				}
 			}
 			if (matchOK) {
+				
+				matched = true;
+				
 				// Instantiate a new combined graph
 				Graph g = joinSubGraphs(env, candidate);
 				logger.debug("\nMatch Found! preparing for emit!\n"+g.toString());
@@ -208,6 +213,8 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 									   candidate.getLongByField(Component.timestamp.toString()));
 			}
 		}
+		if (!matched)
+			logger.debug(String.format("\nCould not match partially complete graph: %s\nTook %s milliseconds.", env.getValueByField(Component.graph.toString()).toString(), (new Date().getTime() - timestamp)));
 	}
 
 	protected static Graph joinSubGraphs(Tuple thisTuple, Tuple steMTuple) {
@@ -217,12 +224,12 @@ public class StormSteMQueue implements CircularPriorityWindow.DurationOverflowHa
 		return newG;
 	}
 	
-	/**
-	 * @return oldest timestamp
-	 */
-	public long getOldestTimestamp(){
-		return this.window.getOldestTimestamp();
-	}
+//	/**
+//	 * @return oldest timestamp
+//	 */
+//	public long getOldestTimestamp(){
+//		return this.window.getOldestTimestamp();
+//	}
 
 	@Override
 	public void handleCapacityOverflow(Tuple overflow) {
