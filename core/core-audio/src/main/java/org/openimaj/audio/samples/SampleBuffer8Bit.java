@@ -218,6 +218,20 @@ public class SampleBuffer8Bit implements SampleBuffer, Iterator<Float>
 		return d;
 	}
 	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.samples.SampleBuffer#asDoubleChannelArray()
+	 */
+	@Override
+	public double[][] asDoubleChannelArray()
+	{
+		final int nc = this.format.getNumChannels();
+		final double[][] s = new double[nc][this.size()/nc];
+		for( int c = 0; c < nc; c++ )
+			for( int sa = 0; sa < this.size()/nc; sa++ )
+				s[c][sa] = this.get( sa*nc + c );
+		return s;
+	}
 
 	/**
 	 *	{@inheritDoc}

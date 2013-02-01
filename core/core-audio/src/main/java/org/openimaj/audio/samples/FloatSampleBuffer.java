@@ -173,6 +173,21 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float> {
 	}
 
 	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.samples.SampleBuffer#asDoubleChannelArray()
+	 */
+	@Override
+	public double[][] asDoubleChannelArray() 
+	{
+		final int nc = this.format.getNumChannels();
+		final double[][] s = new double[nc][this.samples.length/nc];
+		for( int c = 0; c < nc; c++ )
+			for( int sa = 0; sa < this.samples.length/nc; sa++ )
+				s[c][sa] = this.samples[sa*nc+c];
+		return s;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#getUnscaled(int)

@@ -117,10 +117,17 @@ public interface SampleBuffer extends Iterable<Float>
 	public SampleChunk getSampleChunk( int channel );
 	
 	/**
-	 * 	Returns the sample buffer data as a double array.
+	 * 	Returns the normalised (0..1) sample buffer data as a double array.
 	 *	@return A double array containing the normalised samples
 	 */
 	public double[] asDoubleArray();
+	
+	/**
+	 * 	Returns the samples in their channels as normalise (0..1) sample buffer
+	 * 	data.
+	 *	@return The array where the first dimension is the channels.
+	 */
+	public double[][] asDoubleChannelArray();
 	
 	/**
 	 * 	Returns the sample value at the given index without scaling - that is,
