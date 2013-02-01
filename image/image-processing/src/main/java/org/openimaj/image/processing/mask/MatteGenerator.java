@@ -205,11 +205,12 @@ public class MatteGenerator
 	 *	@param band The band of the image to write the matte into
 	 *	@param type The type of the matte to draw
 	 *	@param args The arguments for the matte generator
+	 * 	@return The input image (for chaining) 
 	 */
-	public static void generateMatte( final MBFImage image, final int band,
+	public static FImage generateMatte( final MBFImage image, final int band,
 			final MatteType type, final Object... args )
 	{
-		MatteGenerator.generateMatte( image.getBand( band ), type, args );
+		return MatteGenerator.generateMatte( image.getBand( band ), type, args );
 	}
 
 	/**
@@ -218,9 +219,11 @@ public class MatteGenerator
 	 *	@param image The image to write the matte into
 	 *	@param type The type of the matte to draw
 	 *	@param args The arguments for the matte generator
+	 * 	@return The input image (for chaining) 
 	 */
-	public static void generateMatte( final FImage image, final MatteType type, final Object... args )
+	public static FImage generateMatte( final FImage image, final MatteType type, final Object... args )
 	{
 		type.generateMatte( image, args );
+		return image;
 	}
 }
