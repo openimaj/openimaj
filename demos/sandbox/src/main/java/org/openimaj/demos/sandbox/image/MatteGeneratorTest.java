@@ -69,15 +69,15 @@ public class MatteGeneratorTest
 
 		// Load an image
 		final String testImage = "/org/openimaj/image/image_for_testing.jpg";
-		final MBFImage i = ImageUtilities.readMBF( MatteGeneratorTest.class.getResource( testImage ) );
-		final FImage a = new FImage( i.getWidth(), i.getHeight() );
-		i.addBand( a );
+		final MBFImage i = ImageUtilities.readMBFAlpha( 
+				MatteGeneratorTest.class.getResource( testImage ) );
 
 		// Clone and invert the image, add an alpha matte using a radial gradient
 		final MBFImage f = i.clone().inverse();
 		radialWhiteMiddle = new FImage( i.getWidth(), i.getHeight() );
-		MatteGenerator.generateMatte( radialWhiteMiddle, MatteType.RADIAL_GRADIENT, true );
-		f.addBand( radialWhiteMiddle );
+		MatteGenerator.generateMatte( radialWhiteMiddle, 
+				MatteType.RADIAL_GRADIENT, false );
+		f.bands.set( 3, radialWhiteMiddle );
 
 		// Draw the matted image onto the original image
 		i.drawImage( f, 0, 0 );
