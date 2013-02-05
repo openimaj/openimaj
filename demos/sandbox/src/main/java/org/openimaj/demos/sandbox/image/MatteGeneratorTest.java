@@ -60,8 +60,7 @@ public class MatteGeneratorTest
 			DisplayUtilities.display( angledGrad, "Angled Gradient - "+Math.floor(angle*57.3)+" degrees" );
 		}
 
-		// This test should show using the matte generate to generate image alpha mattes.
-		// TODO: Something's not right here, captain!
+		// This test should show using the matte generator used to generate image alpha mattes
 
 		// Loads an image, makes a copy and inverts the copy adding an alpha matte to it.
 		// It then plonks the matted image back into the original image, so there should end
