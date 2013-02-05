@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.video.processing.motion;
 
@@ -38,15 +38,17 @@ import java.util.Map;
 import org.openimaj.image.FImage;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoFrame;
+import org.openimaj.video.VideoSubFrame;
 
 /**
  *	Estimates the motion field over a grid.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 1 Mar 2012
- *	
+ *
  */
 public class GridMotionEstimator extends MotionEstimator
 {
@@ -58,13 +60,13 @@ public class GridMotionEstimator extends MotionEstimator
 	 * 	true, the x and y values represent the width and height of the pixel
 	 * 	blocks. If <code>fixed</code> is false, the x and y represent the number
 	 * 	of grid elements to spread evenly across the frame.
-	 * 
+	 *
 	 *	@param alg The estimator algorithm to use
 	 *	@param x The x value
 	 *	@param y The y value
 	 *	@param fixed Whether x and y represent pixels or grid count.
 	 */
-	public GridMotionEstimator( MotionEstimatorAlgorithm alg, 
+	public GridMotionEstimator( MotionEstimatorAlgorithm alg,
 			int x, int y, boolean fixed )
 	{
 		super( alg );
@@ -84,7 +86,7 @@ public class GridMotionEstimator extends MotionEstimator
 	 *	@param y The y value
 	 *	@param fixed Whether x and y represent pixels or grid count.
 	 */
-	public GridMotionEstimator( Video<FImage> v, MotionEstimatorAlgorithm alg, 
+	public GridMotionEstimator( Video<FImage> v, MotionEstimatorAlgorithm alg,
 			int x, int y, boolean fixed )
 	{
 		super( v, alg );
@@ -98,12 +100,12 @@ public class GridMotionEstimator extends MotionEstimator
 	 */
 	@Override
 	protected Map<Point2d, Point2d> estimateMotionField(
-			MotionEstimatorAlgorithm estimator, VideoFrame<FImage> vf, 
+			MotionEstimatorAlgorithm estimator, VideoFrame<FImage> vf,
 			VideoFrame<FImage>[] array )
 	{
 		if( array.length < 1 )
 			return new HashMap<Point2d,Point2d>();
-		
+
 		int gw = 0, gh = 0;
 		if( fixed )
 		{
@@ -115,31 +117,33 @@ public class GridMotionEstimator extends MotionEstimator
 			gw = vf.frame.getWidth()/x;
 			gh = vf.frame.getHeight()/y;
 		}
-		
+
 		Map<Point2d,Point2d> out = new HashMap<Point2d, Point2d>();
-		
+
 		@SuppressWarnings( "unchecked" )
-		VideoFrame<FImage>[] otherFrames = new VideoFrame[array.length];
-		
+		VideoSubFrame<FImage>[] otherFrames = new VideoSubFrame[array.length];
+
 		for( int yy = 0; yy < vf.frame.getHeight(); yy += gh )
 		{
 			for( int xx = 0; xx < vf.frame.getWidth(); xx += gw )
 			{
 				for( int ff = 0; ff < array.length; ff++ )
-					otherFrames[ff] = new VideoFrame<FImage>(
-							array[ff].frame.extractROI( xx, yy, gw, gh ), 
-							array[ff].timecode );
-				
+					otherFrames[ff] = new VideoSubFrame<FImage>(
+							array[ff].frame,
+							array[ff].timecode,
+							new Rectangle(xx, yy, gw, gh));
+
 				// vf.frame.drawShape( new Rectangle(xx,yy,gw,gh), 1, 0f );
-				
-				out.put( new Point2dImpl(xx+gw/2f,yy+gh/2f), 
-						estimator.estimateMotion( new VideoFrame<FImage>( 
-							vf.frame.extractROI( xx, yy, gw, gh ), 
-							vf.timecode ), 
+
+				out.put( new Point2dImpl(xx+gw/2f,yy+gh/2f),
+						estimator.estimateMotion( new VideoSubFrame<FImage>(
+							vf.frame,
+							vf.timecode,
+							new Rectangle(xx, yy, gw, gh)),
 							otherFrames ) );
 			}
 		}
-		
+
 		return out;
 	}
 }

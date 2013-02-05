@@ -41,7 +41,6 @@ import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.processing.motion.GridMotionEstimator;
 import org.openimaj.video.processing.motion.MotionEstimator;
-import org.openimaj.video.processing.motion.MotionEstimator.MotionEstimatorAlgorithm;
 import org.openimaj.video.translator.FImageToMBFImageVideoTranslator;
 import org.openimaj.video.translator.MBFImageToFImageVideoTranslator;
 
