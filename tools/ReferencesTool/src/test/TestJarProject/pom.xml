@@ -6,7 +6,6 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>ReferenceTest</name>
-  <url>http://www.openimaj.org</url>
   <properties>
     <openimaj.version>1.0.6-SNAPSHOT</openimaj.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

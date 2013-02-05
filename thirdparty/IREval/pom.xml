@@ -12,24 +12,11 @@
   <version>1.0.6-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>IREval</name>
-  <url>http://www.openimaj.org/thirdparty/IREval</url>
   <inceptionYear>2011</inceptionYear>
   <description>
 		A modified version of the IREval module (version 4.12) from the lemur project with 
 		extensions to better integrate with OpenIMAJ. See http://www.lemurproject.org
 	</description>
-  <licenses>
-    <license>
-      <name>New BSD</name>
-      <url>http://www.openimaj.org/LICENSE.txt</url>
-      <distribution>repo,manual</distribution>
-      <comments>The New BSD License</comments>
-    </license>
-  </licenses>
-  <organization>
-    <name>The University of Southampton</name>
-    <url>http://www.soton.ac.uk</url>
-  </organization>
   <developers>
     <developer>
       <id>ts</id>
@@ -54,10 +41,6 @@
       <timezone>0</timezone>
     </developer>
   </developers>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.openimaj.org</url>
-  </issueManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

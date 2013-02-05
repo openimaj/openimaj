@@ -11,7 +11,6 @@
   <artifactId>readability4j</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>readability4j</name>
-  <url>http://www.openimaj.org/openimaj-web/Readability4J</url>
   <inceptionYear>2010</inceptionYear>
   <description>
 		Readability4J is a partial re-implementation of the original
@@ -26,10 +25,6 @@
       <comments>The Apache Software License, version 2.0</comments>
     </license>
   </licenses>
-  <organization>
-    <name>The University of Southampton</name>
-    <url>http://www.soton.ac.uk</url>
-  </organization>
   <developers>
     <developer>
       <id>jonhare</id>
@@ -71,10 +66,6 @@
       <timezone>0</timezone>
     </developer>
   </developers>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.openimaj.org</url>
-  </issueManagement>
   <dependencies>
     <dependency>
       <groupId>org.openimaj</groupId>

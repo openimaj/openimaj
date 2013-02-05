@@ -13,7 +13,6 @@
     <relativePath>../</relativePath>
   </parent>
   <description>The OpenIMAJ tutorial</description>
-  <url>http://www.openimaj.org/docs/tutorial</url>
   <inceptionYear>2011</inceptionYear>
   <properties>
     <book.title>The OpenIMAJ Tutorial</book.title>
@@ -23,63 +22,6 @@
     <organization.logo/>
     <copyright.year>2011</copyright.year>
   </properties>
-  <licenses>
-    <license>
-      <name>New BSD</name>
-      <url>http://www.openimaj.org/LICENSE.txt</url>
-      <distribution>repo,manual</distribution>
-      <comments>The New BSD License</comments>
-    </license>
-  </licenses>
-  <organization>
-    <name>The University of Southampton</name>
-    <url>http://www.soton.ac.uk</url>
-  </organization>
-  <developers>
-    <developer>
-      <id>jonhare</id>
-      <name>Jonathon Hare</name>
-      <email>jsh2@ecs.soton.ac.uk</email>
-      <url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-      <organization>The University of Southampton</organization>
-      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>sinjax</id>
-      <name>Sina Samangooei</name>
-      <email>ss@ecs.soton.ac.uk</email>
-      <url>http://www.ecs.soton.ac.uk/people/ss</url>
-      <organization>The University of Southampton</organization>
-      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>davedupplaw</id>
-      <name>David Dupplaw</name>
-      <email>dpd@ecs.soton.ac.uk</email>
-      <url>http://www.ecs.soton.ac.uk/people/dpd</url>
-      <organization>The University of Southampton</organization>
-      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-  </developers>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.openimaj.org</url>
-  </issueManagement>
   <modules>
     <module>tutorial-content</module>
     <module>tutorial-pdf</module>
@@ -113,27 +55,6 @@
       </snapshots>
       <id>Codehaus Snapshots</id>
       <url>http://snapshots.repository.codehaus.org</url>
-    </pluginRepository>
-    <pluginRepository>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>Central</id>
-      <url>http://repo1.maven.org/maven2</url>
-    </pluginRepository>
-    <pluginRepository>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>central</id>
-      <name>Maven Plugin Repository</name>
-      <url>http://repo1.maven.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
 </project>

@@ -11,7 +11,6 @@
   <artifactId>core-gpgpu</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>core-gpgpu</name>
-  <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

@@ -11,24 +11,11 @@
   <artifactId>klt-tracker</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>OpenIMAJ Kanade-Lucas-Tomasi Tracker</name>
-  <url>http://www.openimaj.org/thirdparty/klt-tracker</url>
   <inceptionYear>2011</inceptionYear>
   <description>
 		A port of Stan Birchfield's Kanade-Lucas-Tomasi tracker to
 		OpenIMAJ. See http://www.ces.clemson.edu/~stb/klt/.
   	</description>
-  <licenses>
-    <license>
-      <name>New BSD</name>
-      <url>http://www.openimaj.org/LICENSE.txt</url>
-      <distribution>repo,manual</distribution>
-      <comments>The New BSD License</comments>
-    </license>
-  </licenses>
-  <organization>
-    <name>The University of Southampton</name>
-    <url>http://www.soton.ac.uk</url>
-  </organization>
   <developers>
     <developer>
       <id>stb</id>
@@ -53,10 +40,6 @@
       <timezone>0</timezone>
     </developer>
   </developers>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.openimaj.org</url>
-  </issueManagement>
   <dependencies>
     <dependency>
       <groupId>org.openimaj</groupId>

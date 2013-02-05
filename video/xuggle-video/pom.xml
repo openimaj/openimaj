@@ -11,6 +11,8 @@
   <artifactId>xuggle-video</artifactId>
   <name>OpenIMAJ Xuggle Video Wrapper</name>
   <version>1.0.6-SNAPSHOT</version>
+  <description>Plugin to use Xuggler as a video source. Allows most video formats to be read into OpenIMAJ.</description>
+  <inceptionYear>2011</inceptionYear>
   <dependencies>
     <dependency>
       <groupId>xuggle</groupId>
@@ -34,9 +36,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <description>Plugin to use Xuggler as a video source. Allows most video formats to be read into OpenIMAJ.</description>
-  <url>http://www.openimaj.org/video/xuggle-video</url>
-  <inceptionYear>2011</inceptionYear>
   <build>
     <plugins>
       <plugin>

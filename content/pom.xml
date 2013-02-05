@@ -12,68 +12,10 @@
     <version>1.0.6-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <url>http://www.openimaj.org/openimaj-content-libs</url>
   <inceptionYear>2011</inceptionYear>
   <description>
 		 	Libraries for multimedia content creation.
- 		</description>
-  <licenses>
-    <license>
-      <name>New BSD</name>
-      <url>http://www.openimaj.org/LICENSE.txt</url>
-      <distribution>repo,manual</distribution>
-      <comments>The New BSD License</comments>
-    </license>
-  </licenses>
-  <organization>
-    <name>The University of Southampton</name>
-    <url>http://www.soton.ac.uk</url>
-  </organization>
-  <developers>
-    <developer>
-      <id>jonhare</id>
-      <name>Jonathon Hare</name>
-      <email>jsh2@ecs.soton.ac.uk</email>
-      <url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-      <organization>The University of Southampton</organization>
-      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>sinjax</id>
-      <name>Sina Samangooei</name>
-      <email>ss@ecs.soton.ac.uk</email>
-      <url>http://www.ecs.soton.ac.uk/people/ss</url>
-      <organization>The University of Southampton</organization>
-      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>davedupplaw</id>
-      <name>David Dupplaw</name>
-      <email>dpd@ecs.soton.ac.uk</email>
-      <url>http://www.ecs.soton.ac.uk/people/dpd</url>
-      <organization>The University of Southampton</organization>
-      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-  </developers>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.openimaj.org</url>
-  </issueManagement>
+	</description>
   <modules>
     <module>slideshow</module>
     <module>animation</module>

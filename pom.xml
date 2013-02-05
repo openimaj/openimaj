@@ -75,7 +75,22 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
       </roles>
       <timezone>+1</timezone>
     </contributor>
+    <contributor>
+      <name>Michael Cook</name>
+      <email>Michael_J_Cook@cable.comcast.com</email>
+      <url>http://www.comcast.com/corporate/about/pressroom/corporateoverview/boardofdirectors/jmichaelcook.html</url>
+      <organization>Comcast</organization>
+      <organizationUrl>http://www.comcast.com</organizationUrl>
+      <roles>
+        <role>Demos Contributor</role>
+      </roles>
+      <timezone>-8</timezone>
+    </contributor>
   </contributors>
+	<ciManagement>
+	    <system>jenkins</system>
+	    <url>http://jenkins.ecs.soton.ac.uk/job/OpenIMAJ/</url>
+	  </ciManagement>
   <issueManagement>
     <system>JIRA</system>
     <url>http://jira.openimaj.org</url>

@@ -11,24 +11,11 @@
   <artifactId>tld</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>OpenIMAJ TLD tracker</name>
-  <url>http://www.openimaj.org/thirdparty/tld</url>
   <inceptionYear>2011</inceptionYear>
   <description>
 		A port of Georg Nebehay's tracker https://github.com/gnebehay/OpenTLD
 		originally created by Zdenek Kalal https://github.com/zk00006/OpenTLD
   	</description>
-  <licenses>
-    <license>
-      <name>New BSD</name>
-      <url>http://www.openimaj.org/LICENSE.txt</url>
-      <distribution>repo,manual</distribution>
-      <comments>The New BSD License</comments>
-    </license>
-  </licenses>
-  <organization>
-    <name>The University of Southampton</name>
-    <url>http://www.soton.ac.uk</url>
-  </organization>
   <developers>
     <developer>
       <id>gnebehay</id>
@@ -62,10 +49,6 @@
       <timezone>0</timezone>
     </developer>
   </developers>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.openimaj.org</url>
-  </issueManagement>
   <dependencies>
     <dependency>
       <groupId>org.openimaj</groupId>
