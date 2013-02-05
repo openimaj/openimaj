@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.examples.video.processing.motion;
 
@@ -41,13 +41,14 @@ import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.processing.motion.GridMotionEstimator;
 import org.openimaj.video.processing.motion.MotionEstimator;
+import org.openimaj.video.processing.motion.MotionEstimatorAlgorithm;
 import org.openimaj.video.translator.FImageToMBFImageVideoTranslator;
 import org.openimaj.video.translator.MBFImageToFImageVideoTranslator;
 
 /**
  * Example showing how to estimate a motion field in a video using phase
  * correlation.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 public class PhaseCorrelationExample {
@@ -59,7 +60,7 @@ public class PhaseCorrelationExample {
 		final VideoCapture vc = new VideoCapture(320, 240);
 		final MotionEstimator me = new GridMotionEstimator(
 				new MBFImageToFImageVideoTranslator(vc),
-				MotionEstimatorAlgorithm.PHASE_CORRELATION, 10, 10, true);
+				new MotionEstimatorAlgorithm.PHASE_CORRELATION(), 10, 10, true);
 
 		final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(
 				new FImageToMBFImageVideoTranslator(me));
