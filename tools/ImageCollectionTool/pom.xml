@@ -88,7 +88,7 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>0.5.5</version>
+      <version>0.8.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

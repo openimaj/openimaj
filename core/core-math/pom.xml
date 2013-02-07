@@ -71,17 +71,17 @@
 			<artifactId>xstream</artifactId>
 			<version>1.4.3</version>
 		</dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>gov.sandia.foundry</groupId>
       <artifactId>gov-sandia-cognition-common-data</artifactId>
       <version>3.3.0</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>gov.sandia.foundry</groupId>
       <artifactId>gov-sandia-cognition-learning-core</artifactId>
       <version>3.3.0</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>gov.sandia.foundry</groupId>
       <artifactId>gov-sandia-cognition-text-core</artifactId>
       <version>3.3.0</version>
@@ -95,7 +95,7 @@
       <groupId>gov.sandia.foundry</groupId>
       <artifactId>gov-sandia-cognition-framework-learning</artifactId>
       <version>3.3.0</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-math</artifactId>

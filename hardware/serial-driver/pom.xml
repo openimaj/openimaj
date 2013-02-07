@@ -35,7 +35,7 @@
     <dependency>
       <groupId>com.nativelibs4java</groupId>
       <artifactId>bridj</artifactId>
-      <version>0.6.2.20120807</version>
+      <version>0.6.3-20130205</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -46,7 +46,7 @@
     <dependency>
     	<groupId>junit</groupId>
     	<artifactId>junit</artifactId>
-    	<version>4.0</version>
+    	<version>4.8.2</version>
     	<scope>test</scope>
     </dependency>
   </dependencies>

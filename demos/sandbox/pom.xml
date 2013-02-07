@@ -68,12 +68,6 @@
 			<version>4.0.0-ALPHA</version>
 		</dependency>
 		<dependency>
-			<groupId>jmatio</groupId>
-			<artifactId>jmatio</artifactId>
-			<version>0.2.2</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-local-features</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
@@ -90,11 +84,6 @@
 			<artifactId>core-hadoop-tool</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>

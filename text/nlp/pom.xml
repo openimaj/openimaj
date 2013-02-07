@@ -31,6 +31,11 @@
 			<version>1.5.2-incubating</version>
 		</dependency>
 		<dependency>
+      <groupId>gov.sandia.foundry</groupId>
+      <artifactId>gov-sandia-cognition-text-core</artifactId>
+      <version>3.3.0</version>
+    </dependency>
+		<dependency>
 			<groupId>org.apache.opennlp</groupId>
 			<artifactId>opennlp-maxent</artifactId>
 			<version>3.0.2-incubating</version>
