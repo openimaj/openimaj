@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.openimaj.rdf.storm.eddying.eddies.StormEddyBolt;
 import org.openimaj.rdf.storm.eddying.routing.ExampleStormGraphRouter;
@@ -83,7 +84,12 @@ public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 		for (int i = 0; i < stems.length; i++) {
 			List<String> eddies = new ArrayList<String>();
 			eddies.add(eddyname);
-			stems[i] = new StormSteMBolt(stemprefix+i,new SingleQueryPolicyStormGraphRouter.SQPESStormGraphRouter(eddies));
+			stems[i] = new StormSteMBolt(stemprefix+i,new SingleQueryPolicyStormGraphRouter.SQPESStormGraphRouter(eddies)
+										 ,3
+										 ,1000
+										 ,500
+										 ,TimeUnit.MILLISECONDS
+										 );
 			stemMap.put(stemprefix+i, ","+predicates[i]+",");
 		}
 		
