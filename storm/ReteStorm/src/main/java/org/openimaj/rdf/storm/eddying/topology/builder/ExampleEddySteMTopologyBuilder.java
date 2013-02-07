@@ -42,6 +42,11 @@ import backtype.storm.utils.Utils;
 
 public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 	
+	public static final int SLEEP = 5;
+	public static final int STEMSIZE = 1000;
+	public static final long STEMDELAY = 500;
+	public static final TimeUnit STEMUNIT = TimeUnit.MILLISECONDS;
+	
 	private String[] subjects = {"0","1","2","3","4","5","6","7","8","9"},
 					 predicates = {"pred0",
 								   "pred1",
@@ -85,20 +90,17 @@ public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 			List<String> eddies = new ArrayList<String>();
 			eddies.add(eddyname);
 			stems[i] = new StormSteMBolt(stemprefix+i,new SingleQueryPolicyStormGraphRouter.SQPESStormGraphRouter(eddies)
-										 ,3
-										 ,1000
-										 ,500
-										 ,TimeUnit.MILLISECONDS
-										 );
+,3,STEMSIZE,STEMDELAY,STEMUNIT
+);
 			stemMap.put(stemprefix+i, ","+predicates[i]+",");
 		}
 		
 		// Eddy
 		StormEddyBolt eddy = new StormEddyBolt(new ExampleStormGraphRouter(stemMap));
+		BoltDeclarer eddyDeclarer = this.setBolt(eddyname, eddy);
 		
 		// Construct Topology
 		this.setSpout(spoutname, spout);
-		BoltDeclarer eddyDeclarer = this.setBolt(eddyname, eddy);
 		for (int i = 0; i < predicates.length; i++){
 			this.setBolt(alphaprefix+i, filters[i]).shuffleGrouping(spoutname);
 			this.setBolt(transprefix+i, translators[i]).shuffleGrouping(alphaprefix+i);
@@ -131,7 +133,7 @@ class ExampleNTriplesSpout extends SimpleSpout {
 	
 	@Override
 	public void nextTuple() {
-		Utils.sleep(5);
+		Utils.sleep(ExampleEddySteMTopologyBuilder.SLEEP);
 		Triple t = new Triple(Node.createLiteral(subjects[random.nextInt(subjects.length)]),
 							  Node.createLiteral(predicates[random.nextInt(predicates.length)]),
 							  Node.createLiteral(subjects[random.nextInt(subjects.length)]));

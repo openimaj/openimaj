@@ -201,13 +201,13 @@ public class StormSteMBolt implements IRichBolt{
 	}
 
 	@Override
-	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		this.router.declareOutputFields(declarer);
+	public Map<String, Object> getComponentConfiguration() {
+		return conf;
 	}
 
 	@Override
-	public Map<String, Object> getComponentConfiguration() {
-		return conf;
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		this.router.declareOutputFields(declarer);
 	}
 
 }
