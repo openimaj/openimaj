@@ -34,9 +34,11 @@ public class ExampleStormGraphRouter extends StormGraphRouter {
 		Collections.sort(sortedStems);
 	}
 	
+	private int completeCount;
+	
 	@Override
 	protected void prepare() {
-		
+		completeCount = 0;
 	}
 
 	@Override
@@ -149,7 +151,7 @@ public class ExampleStormGraphRouter extends StormGraphRouter {
 			this.collector.ack(anchor);
 			return;
 		}else{
-			System.out.println(g.toString()+" Completed at: "+timestamp+"\nTook "+(new Date().getTime() - timestamp)+" milliseconds.");
+			System.out.println(g.toString()+" Completed graph "+(++completeCount)+" at: "+timestamp+"\nTook "+(new Date().getTime() - timestamp)+" milliseconds.");
 		}
 	}
 
