@@ -102,12 +102,47 @@ public class StormSteMBolt implements IRichBolt{
 	protected String name;
 	protected StormGraphRouter router;
 	
+	protected int vars;
+	protected int size;
+	protected long delay;
+	protected TimeUnit unit;
+	
 	/**
-	 * @param sgr
+	 * Create a new SteM with fully customised characteristics.
+	 * @param vars - variables available for matching
+	 * @param size - capacity of the window
+	 * @param delay - maximum age of graphs in the window
+	 * @param unit - unit of time used
+	 * @param name - the name of the SteM in the Storm topology.
+	 * @param sgr - the graph routing object for use by the SteM.
 	 */
-	public StormSteMBolt(String name, StormGraphRouter sgr) {
+	public StormSteMBolt(String name,
+						 StormGraphRouter sgr,
+						 int vars,
+						 int size,
+						 long delay,
+						 TimeUnit unit) {
 		this.name = name;
 		this.router = sgr;
+		this.vars = vars;
+		this.size = size;
+		this.delay = delay;
+		this.unit = unit;
+	}
+	
+	/**
+	 * Create a new SteM with default queue characteristics:
+	 * <ul>
+	 * 	<li>variables available for matching: 3</li>
+	 * 	<li>capacity of the window: 5000 graphs</li>
+	 * 	<li>maximum age of graphs in the window: 10 units</li>
+	 * 	<li>unit of time used: minutes</li>
+	 * </ul>
+	 * @param name - the name of the SteM in the Storm topology.
+	 * @param sgr - the graph routing object for use by the SteM.
+	 */
+	public StormSteMBolt(String name, StormGraphRouter sgr) {
+		this(name,sgr,3,5000,10,TimeUnit.MINUTES);
 	}
 
 	private Map<String,Object> conf;
@@ -127,7 +162,7 @@ public class StormSteMBolt implements IRichBolt{
 		
 		this.router.setOutputCollector(collector);
 		
-		this.window = new StormSteMQueue(3, 5000, 10, TimeUnit.MINUTES, collector, router);
+		this.window = new StormSteMQueue(vars, size, delay, unit, collector, router);
 	}
 
 	@Override
