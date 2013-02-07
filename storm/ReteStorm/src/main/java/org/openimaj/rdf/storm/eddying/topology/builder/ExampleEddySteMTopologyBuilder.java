@@ -125,7 +125,7 @@ class ExampleNTriplesSpout extends SimpleSpout {
 	
 	@Override
 	public void nextTuple() {
-		Utils.sleep(100);
+		Utils.sleep(5);
 		Triple t = new Triple(Node.createLiteral(subjects[random.nextInt(subjects.length)]),
 							  Node.createLiteral(predicates[random.nextInt(predicates.length)]),
 							  Node.createLiteral(subjects[random.nextInt(subjects.length)]));
