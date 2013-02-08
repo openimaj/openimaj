@@ -1,6 +1,7 @@
 package org.openimaj.rdf.storm.eddying.routing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +33,8 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 
 	protected final static Logger logger = Logger.getLogger(SingleQueryPolicyStormGraphRouter.class);
+	protected static int[] FACTORIALS = {0,1,2,6,24,120,720};
+	
 
 	private String query;
 	
@@ -43,19 +46,21 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 	}
 	
 	private int varCount;
-	private Map<TriplePattern,Integer> patternStats;
+	private Set<TriplePattern> pattern;
+	private Map<TripleMatch,Integer> stemStats;
 	private Map<TripleMatch,Integer> stemRefs;
 	
 	protected void prepare(){
 		Rule rule = Rule.parseRule(query);
 		varCount = rule.getNumVars();
-		patternStats = new HashMap<TriplePattern,Integer>();
+		pattern = new HashSet<TriplePattern>();
 		stemRefs = new HashMap<TripleMatch,Integer>();
 		try{
 			int count = 0;
 			TriplePattern[] pattern = (TriplePattern[]) rule.getBody();
 			for (TriplePattern tp : pattern){
-				patternStats.put(tp,count++);
+				this.pattern.add(tp);
+				stemStats.put(tp.asTripleMatch(), count++);
 				if (stemRefs.containsKey(tp.asTripleMatch()))
 					stemRefs.put(tp.asTripleMatch(), stemRefs.get(tp.asTripleMatch()) + 1);
 				else
@@ -72,28 +77,71 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 	@Override
 	public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g,
 						   long timestamp) {
-		PriorityQueue<TriplePattern> stemQueue = new PriorityQueue<TriplePattern>(this.patternStats.size(), new Comparator<TriplePattern>(){
+		PriorityQueue<TriplePattern> stemQueue = new PriorityQueue<TriplePattern>(this.pattern.size(), new Comparator<TriplePattern>(){
 			@Override
 			public int compare(TriplePattern arg0, TriplePattern arg1) {
-				return SingleQueryPolicyStormGraphRouter.this.patternStats.get(arg0)
-						- SingleQueryPolicyStormGraphRouter.this.patternStats.get(arg1);
+				return SingleQueryPolicyStormGraphRouter.this.stemStats.get(arg0.asTripleMatch())
+						- SingleQueryPolicyStormGraphRouter.this.stemStats.get(arg1.asTripleMatch());
 			}
 		});
-		stemQueue.addAll(this.patternStats.keySet());
 		
-		Node[] env = new Node[varCount];
-		Node subject,predicate,object;
+		List<Node[]> envs = new ArrayList<Node[]>();
+		List<Node[]> newEnvs;
+		envs.add(new Node[varCount]);
 		 
-		for (TriplePattern current = stemQueue.poll(); !stemQueue.isEmpty(); current = stemQueue.poll()){
-				
-			ExtendedIterator<Triple> matchingTriples = g.find(current.asTripleMatch());
-			if (matchingTriples.hasNext()){
-				Triple match = matchingTriples.next();
-//				if (){
-//					
-//				}
+		for (TriplePattern current : this.pattern){
+			newEnvs = new ArrayList<Node[]>();
+			for (Node[] env : envs){
+				//Initialise subject, object and predicate according to the current environment.
+				Node subject = current.getSubject().isVariable() ? env[((Node_RuleVariable) current.getSubject()).getIndex()] : current.getSubject(),
+					 predicate = current.getPredicate().isVariable() ? env[((Node_RuleVariable) current.getPredicate()).getIndex()] : current.getPredicate(),
+					 object = current.getObject().isVariable() ? env[((Node_RuleVariable) current.getObject()).getIndex()] : current.getObject();
+				//Iterate over all triples in the graph that match the SteM of the current triple pattern.
+				ExtendedIterator<Triple> matchingTriples = g.find(current.asTripleMatch());
+				boolean accountedFor = false;
+				if (accountedFor = matchingTriples.hasNext()){
+					//Initialise a variable describing SteM uses unaccounted for with regards to this triple pattern
+					int count = stemRefs.get(current.asTripleMatch());
+					//For each triple that fits the stem, see if it matches the triple pattern (including any previously fixed bindings in the current environment),
+					//then subtract one from the number of unaccounted for uses.
+					while (matchingTriples.hasNext()){
+						Triple match = matchingTriples.next();
+						//If the current triple matches the triple pattern within the binding environment, then create a new environment with the relevant, previously
+						//empty bindings bound with the new values in the triple.
+						if ((subject == null || match.getSubject().equals(subject))
+								&& (predicate == null || match.getPredicate().equals(predicate))
+								&& (object == null || match.getObject().equals(object))){
+							Node[] newEnv = Arrays.copyOf(env, varCount);
+							if (subject == null){
+								newEnv[((Node_RuleVariable) current.getSubject()).getIndex()] = match.getSubject();
+							}
+							if (predicate == null){
+								newEnv[((Node_RuleVariable) current.getPredicate()).getIndex()] = match.getPredicate();
+							}
+							if (object == null){
+								newEnv[((Node_RuleVariable) current.getObject()).getIndex()] = match.getObject();
+							}
+							//Add the new environment to the list of new environments
+							newEnvs.add(newEnv);
+						}
+						//Whether the triple matched within the environment or not, decrement the count of unaccounted for SteM uses.
+						count--;
+					}
+					//If there are unaccounted for uses of the SteM, make a note of it.
+					accountedFor = !(count > 0);
+				}
+				//If there are unaccounted for uses of the SteM, create a new environment that does not fill this triple pattern,
+				//and add this triple pattern to the set of viable triple patterns to route to.
+				if (!accountedFor){
+					newEnvs.add(env);
+					stemQueue.add(current);
+				}
 			}
+			//Make the new set of environments (those that have led to dead ends removed, new branches from the most recent triple pattern added)
+			//the base set of environments.
+			envs = newEnvs;
 		}
+		//TODO select a stem to send to, then send a probe request to it.
 	}
 
 	@Override
