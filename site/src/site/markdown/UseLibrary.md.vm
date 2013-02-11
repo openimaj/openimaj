@@ -1,0 +1,50 @@
+# Introduction
+Maven is the project management tool that powers the OpenIMAJ project. OpenIMAJ has been released on a publicly visible maven repository and can be included into any existing Java Maven project through addition of dependencies in the project's `pom.xml`. This page assumes knowledge of Maven; for further information on Maven  please consult the [maven documentation](http://maven.apache.org).
+
+If you are new to Maven or creating a new project using the OpenIMAJ libraries, we suggest that you take a look at the [OpenIMAJ Tutorial](/tutorial/), and use the OpenIMAJ Maven Archetype described there to create your project.
+
+# OpenIMAJ as a Library 
+
+To successfully use OpenIMAJ as a library in your maven project you must first define the repository which contains the compiled OpenIMAJ jar files and then add the exact modules you require in your project's `pom.xml`. This section provides details for the repository and pom details for each submodule.
+
+## Repository
+The details for the OpenIMAJ repository are provided below
+
+~~~~
+::::xml
+<repositories>
+	<repository>
+		<id>OpenIMAJ maven releases repository</id>
+		<url>http://maven.openimaj.org</url>
+	</repository>
+        <repository>
+		<id>OpenIMAJ maven snapshots repository</id>
+		<url>http://snapshots.openimaj.org</url>
+	</repository>
+</repositories>
+~~~~
+
+To use the repositories add this to the `project` element of your project's `pom.xml`.
+
+## OpenIMAJ dependencies
+
+The individual submodules of OpenIMAJ may be included into your project. The following is the dependency for including the core OpenIMAJ submodule to your project; it must be appended to your project's `pom.xml` `dependencies` element.
+
+~~~~
+:::xml
+<dependency>
+	<groupId>org.openimaj</groupId>
+	<artifactId>core</artifactId>
+	<version>${version}</version>
+	<scope>compile</scope>
+</dependency>
+~~~~ 
+
+** Note that above we are using the SNAPSHOT version of 1.0.6, another release will be made soon!**
+
+To include any other module simply change the `artifactId` to the name of the required module. A list of all the modules can be found [here](/tutorial/modules.html).
+
+
+
+
+
