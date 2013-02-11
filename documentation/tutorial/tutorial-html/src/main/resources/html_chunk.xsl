@@ -106,7 +106,7 @@
 				<div class="navbar-inner">
 					<div class="container">
 						<div class="nav-collapse">
-							<a class="brand" href="index.html" title="OpenIMAJ">
+							<a class="brand" href="../index.html" title="OpenIMAJ">
 								<img src="images/logo-tiny.png" alt="OpenIMAJ" />
               </a>
 							<ul class="nav">
