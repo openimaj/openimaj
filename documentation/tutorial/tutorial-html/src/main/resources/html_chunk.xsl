@@ -111,7 +111,7 @@
               </a>
 							<ul class="nav">
 								<li class="dropdown">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Overview</a>
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Overview <b class="caret"/></a>
 									<ul class="dropdown-menu">
 										<li>
 											<a href="../index.html" title="Introduction">Introduction</a>
@@ -139,7 +139,7 @@
 									</ul>
 								</li>
 								<li class="dropdown">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation</a>
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"/></a>
 									<ul class="dropdown-menu">
 										<li class="dropdown-submenu">
 											<a href="../#gettingstarted" title="Getting Started">Getting Started</a>

@@ -81,6 +81,9 @@
 						<copy todir="${project.build.directory}/html/tutorial/fonts">
 							<fileset dir="${basedir}/src/main/resources/fonts" />
 						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/js">
+							<fileset dir="${basedir}/src/main/resources/js" />
+						</copy>
 					</postProcess>
 				</configuration>
 			</plugin>

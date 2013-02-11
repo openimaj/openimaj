@@ -9,7 +9,6 @@ If you are trying to develop core OpenIMAJ functionality, hack around with its i
 
 The source for the project is available from our [Sourceforge svn repository](https://sourceforge.net/p/openimaj/code). If you already have subversion installed you can download the source using this command.
 
-	:::bash
 	> svn checkout svn://svn.code.sf.net/p/openimaj/code/trunk openimaj
 
 The rest of these instructions concern themselves with building the project using a project management tool called [Apache Maven](http://maven.apache.org). These instructions were created by installing OpenIMAJ on a fresh install of Ubuntu. They include the process of installing java, maven, svn and eclipse leaving you with a working development copy of OpenIMAJ. The process is as verbose as possible to guarantee correct results. If any steps go wrong, or you have problems, please get in [contact](Contact.html).
@@ -26,12 +25,10 @@ To install the latest version of the Java JDK please follow [the instructions fo
 
 On **Ubuntu** you can install openjdk-6 (or openjdk-7 should you prefer) using the command: 
 
-	:::bash
 	> sudo apt-get install openjdk-6-jdk
 
 Once this is complete you should be able to do:
 	
-	:::bash
 	> java -version
 	> javac -version
 
@@ -55,12 +52,10 @@ On **MacOSX** 10.4+ Maven 2 or Maven 3 may already be installed, but you can alw
 
 On **Ubuntu** you can install Maven 2 using:
 
-	:::bash
 	> sudo apt-get install maven2
 
 Once Maven is properly installed, you should be able to do:
 
-	:::bash
 	> mvn -version
 
 and get something along the lines of:
@@ -83,12 +78,10 @@ On **MacOSX** 10.4+ subversion should come pre-installed
 
 On **Ubuntu** you can install subversion using the command:
 
-	:::bash
 	> sudo apt-get install subversion
 
 At this point you should be able to do:
 
-	:::bash
 	> svn --version
 
 and get something along the lines of:
@@ -129,7 +122,6 @@ Downloading and Installing
 
 To checkout a readonly version of the OpenIMAJ codebase you can use the command:
 
-	:::bash
 	> svn checkout svn://svn.code.sf.net/p/openimaj/code/trunk openimaj
 
 By doing this a new directory will be created called openimaj. This directory is the root of the openimaj project. Inside this directory there are several sub directories containing the modules and sub-modules of the OpenIMAJ project. The dependencies can be explored by reading the `pom.xml` files in each directory. 
@@ -155,6 +147,6 @@ Once this process is complete, the OpenIMAJ project is compiled and installed. T
 	
 This will create the appropriate Eclipse settings/classpath files for each project. From Eclipse, you can import all the OpenIMAJ modules by importing the root project directory. When importing it is often most useful to not copy the source files into your eclipse workspace, as this will mean any changes you make will be reflected in the OpenIMAJ hierarchy. 
 
-**IMPORTANT** By default Eclipse doesn't know about maven and it's reposistories of jars. When you first import the OpenIMAJ projects into eclipse they will all have errors. You can fix this by added a new Java classpath variable (Eclipse>Preferences>Java>Build Path>Classpath Variables) called "M2_REPO". The value of this variable is the location of your .m2/repository directory. For unix systems this is usally found in your home directory, for windows systems it is found in Documents and Settings/<your user>
+**IMPORTANT** By default Eclipse doesn't know about maven and it's reposistories of jars. When you first import the OpenIMAJ projects into eclipse they will all have errors. You can fix this by added a new Java classpath variable (Eclipse>Preferences>Java>Build Path>Classpath Variables) called "M2_REPO". The value of this variable is the location of your .m2/repository directory. For unix systems this is usally found in your home directory, for windows systems it is found in Documents and Settings/&lt;your user&gt;
 
 Once imported into Eclipse all submodules should correctly reference each other's Eclipse projects and therefore changes between sub-projects should be useable without the need for a Maven recompilation. 

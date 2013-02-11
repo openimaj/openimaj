@@ -101,13 +101,13 @@
 			<item name="Screencasts" href="#screencasts">
 	    </item>
 			<item name="Using OpenIMAJ" href="#using">
-				<item name="Building OpenIMAJ from Source" href=""/>
-				<item name="Using OpenIMAJ as a Library" href=""/>
-				<item name="Using OpenIMAJ with Groovy" href=""/>
-				<item name="Using OpenIMAJ with Android" href=""/>
+				<item name="Building OpenIMAJ from Source" href="BuildFromSource.html"/>
+				<item name="Using OpenIMAJ as a Library" href="UseLibrary.html"/>
+				<item name="Using OpenIMAJ with Groovy" href="Groovy.html"/>
+				<item name="Using OpenIMAJ with Android" href="Android.html"/>
 				<item name="OpenIMAJ Tools" href="#tools">
-					<item name="OpenIMAJ commandline tools introduction" href=""/>
-					<item name="The FlickrCrawler Tool" href=""/>
+					<item name="OpenIMAJ commandline tools introduction" href="Tools.html"/>
+					<item name="The FlickrCrawler Tool" href="FlickrCrawler.html"/>
 				</item>
 	    </item>
 			<item name="API Reference" href="apidocs/index.html"/>
