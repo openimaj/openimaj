@@ -97,4 +97,5 @@
 	<!-- <part>
 		<title>Advanced Features</title>
 	</part> -->
+	<xi:include href="colophon.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

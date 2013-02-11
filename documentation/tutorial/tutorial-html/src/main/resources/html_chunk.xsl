@@ -55,11 +55,13 @@
 
 		<xsl:template name="book.titlepage.verso">
 			<div class="cover">
-				<img>
-					<xsl:attribute name="src">
-						<xsl:value-of select="//d:mediaobject[@role='cover']/d:imageobject[@role='front-large']/d:imagedata/@fileref" />
-					</xsl:attribute>
-				</img>
+				<a href="../tutorial-pdf.pdf">
+					<img>
+						<xsl:attribute name="src">
+							<xsl:value-of select="//d:mediaobject[@role='cover']/d:imageobject[@role='front-large']/d:imagedata/@fileref" />
+						</xsl:attribute>
+					</img>
+				</a>
 			</div>
 		</xsl:template>
 
@@ -96,10 +98,184 @@
                      Headers and Footers
     ################################################### -->
     <xsl:template name="user.head.content">
+			<script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script>
+    </xsl:template>
 
-    </xsl:template>
     <xsl:template name="user.header.navigation">
+			<div id="topbar" class="navbar navbar-fixed-top navbar-inverse">
+				<div class="navbar-inner">
+					<div class="container">
+						<div class="nav-collapse">
+							<a class="brand" href="index.html" title="OpenIMAJ">
+								<img src="images/logo-tiny.png" alt="OpenIMAJ" />
+              </a>
+							<ul class="nav">
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Overview</a>
+									<ul class="dropdown-menu">
+										<li>
+											<a href="../index.html" title="Introduction">Introduction</a>
+										</li>
+										<li>
+											<a href="../sponsors.html" title="History &amp; Sponsors">Sponsors</a>
+										</li>
+										<li>
+											<a href="../contact.html" title="Contact Us!">Contact Us!</a>
+										</li>
+										<li>
+											<a href="http://blogs.ecs.soton.ac.uk/multimedia" title="The Blog">The Blog</a>
+										</li>
+										<li>
+											<a href="http://www.sf.net/p/openimaj/code" title="Source Code">Source Code</a>
+										</li>
+										<li class="dropdown-submenu">
+											<a href="../#related" title="Related Projects">Related Projects</a>
+											<ul class="dropdown-menu">
+												<li>
+													<a href="http://www.imageterrier.org/" title="ImageTerrier">ImageTerrier</a>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation</a>
+									<ul class="dropdown-menu">
+										<li class="dropdown-submenu">
+											<a href="../#gettingstarted" title="Getting Started">Getting Started</a>
+											<ul class="dropdown-menu">
+												<li>
+													<a href="../tutorial-pdf.pdf" title="The Tutorial (PDF)">The Tutorial (PDF)</a>
+												</li>
+												<li>
+													<a href="../tutorial/index.html" title="The Tutorial (HTML)">The Tutorial (HTML)</a>
+												</li>
+											</ul>
+										</li>
+										<li>
+											<a href="../#screencasts" title="Screencasts">Screencasts</a>
+										</li>
+										<li class="dropdown-submenu">
+											<a href="../#using" title="Using OpenIMAJ">Using OpenIMAJ</a>
+											<ul class="dropdown-menu">
+												<li>
+													<a href="../" title="Building OpenIMAJ from Source">Building OpenIMAJ from Source</a>
+												</li>
+												<li>
+													<a href="../" title="Using OpenIMAJ as a Library">Using OpenIMAJ as a Library</a>
+												</li>
+												<li>
+													<a href="../" title="Using OpenIMAJ with Groovy">Using OpenIMAJ with Groovy</a>
+												</li>
+												<li>
+													<a href="../" title="Using OpenIMAJ with Android">Using OpenIMAJ with Android</a>
+												</li>
+												<li>
+													<a href="../#tools" title="OpenIMAJ Tools">OpenIMAJ Tools</a>
+												</li>
+											</ul>
+										</li>
+										<li>
+											<a href="../apidocs/index.html" title="API Reference">API Reference</a>
+										</li>
+										<li class="dropdown-submenu">
+	       							<a href="#info" title="Project Information">Project Information</a>
+						          <ul class="dropdown-menu">
+                        <li><a href="../plugin-management.html" title="Plugin Management">Plugin Management</a></li>
+                        <li><a href="../mail-lists.html" title="Mailing Lists">Mailing Lists</a></li>
+                        <li><a href="../integration.html" title="Continuous Integration">Continuous Integration</a></li>
+                        <li><a href="../license.html" title="Project License">Project License</a></li>
+                        <li><a href="../team-list.html" title="Project Team">Project Team</a></li>
+                        <li><a href="../source-repository.html" title="Source Repository">Source Repository</a></li>
+                        <li><a href="../index.html" title="About">About</a></li>
+                        <li><a href="../issue-tracking.html" title="Issue Tracking">Issue Tracking</a></li>
+                        <li><a href="../project-summary.html" title="Project Summary">Project Summary</a></li>
+                        <li><a href="../plugins.html" title="Project Plugins">Project Plugins</a></li>
+                        <li><a href="../dependency-convergence.html" title="Dependency Convergence">Dependency Convergence</a></li>
+                        <li><a href="../dependencies.html" title="Dependencies">Dependencies</a></li>
+                      </ul>
+				            </li>
+									</ul>
+								</li>
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Modules <b class="caret"/></a>
+									<ul class="dropdown-menu">
+										<li>
+											<a href="openimaj-maven-archetypes/index.html" title="OpenIMAJ Maven Archetypes">OpenIMAJ Maven Archetypes</a>
+										</li>
+										<li>
+											<a href="openimaj-core-libs/index.html" title="OpenIMAJ Core Libraries">OpenIMAJ Core Libraries</a>
+										</li>
+										<li>
+											<a href="openimaj-image/index.html" title="OpenIMAJ Image Processing Libraries">OpenIMAJ Image Processing Libraries</a>
+										</li>
+										<li>
+											<a href="openimaj-video/index.html" title="OpenIMAJ Video Processing Libraries">OpenIMAJ Video Processing Libraries</a>
+										</li>
+										<li>
+											<a href="openimaj-audio/index.html" title="OpenIMAJ Audio Processing Libraries">OpenIMAJ Audio Processing Libraries</a>
+										</li>
+										<li>
+											<a href="openimaj-machine-learning/index.html" title="OpenIMAJ Machine Learning Subprojects">OpenIMAJ Machine Learning Subprojects</a>
+										</li>
+										<li>
+											<a href="openimaj-text/index.html" title="OpenIMAJ Text Analysis Subprojects">OpenIMAJ Text Analysis Subprojects</a>
+										</li>
+										<li>
+											<a href="thirdparty/index.html" title="OpenIMAJ Third Party Ported Libraries">OpenIMAJ Third Party Ported Libraries</a>
+										</li>
+										<li>
+											<a href="openimaj-demos/index.html" title="OpenIMAJ Demos Subproject">OpenIMAJ Demos Subproject</a>
+										</li>
+										<li>
+											<a href="openimaj-knowledge/index.html" title="OpenIMAJ Knowledge Representation and Reasoning Libraries">OpenIMAJ Knowledge Representation and Reasoning Libraries</a>
+										</li>
+										<li>
+											<a href="test-resources/index.html" title="OpenIMAJ Unit Test Resources">OpenIMAJ Unit Test Resources</a>
+										</li>
+										<li>
+											<a href="openimaj-tools/index.html" title="OpenIMAJ Tools">OpenIMAJ Tools</a>
+										</li>
+										<li>
+											<a href="openimaj-hadoop/index.html" title="OpenIMAJ Hadoop Subproject">OpenIMAJ Hadoop Subproject</a>
+										</li>
+										<li>
+											<a href="openimaj-storm/index.html" title="OpenIMAJ Storm Subproject">OpenIMAJ Storm Subproject</a>
+										</li>
+										<li>
+											<a href="openimaj-web/index.html" title="OpenIMAJ web subproject">OpenIMAJ web subproject</a>
+										</li>
+										<li>
+											<a href="openimaj-hardware/index.html" title="OpenIMAJ Hardware Subprojects">OpenIMAJ Hardware Subprojects</a>
+										</li>
+										<li>
+											<a href="openimaj-content-libs/index.html" title="OpenIMAJ Content Creation Libraries">OpenIMAJ Content Creation Libraries</a>
+										</li>
+										<li>
+											<a href="openimaj-ide-integration/index.html" title="OpenIMAJ IDE Integration Plugins">OpenIMAJ IDE Integration Plugins</a>
+										</li>
+										<li>
+											<a href="openimaj-documentation/index.html" title="OpenIMAJ Documentation">OpenIMAJ Documentation</a>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<form id="search-form" action="http://www.google.com/search" method="get" class="navbar-search pull-right" name="search-form">
+								<input value="" name="sitesearch" type="hidden"></input> <input class="search-query" name="q" id="query" type="text"></input>
+							</form><script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=search-form">
+			</script> <iframe src="http://www.facebook.com/plugins/like.php?href=http://www.openimaj.org/openimaj-maven-archetypes&amp;send=false&amp;layout=button_count&amp;show-faces=false&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" style="border:none; width:80px; height:20px; margin-top: 10px;" class="pull-right"></iframe> <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+			</script>
+							<ul class="nav pull-right">
+								<li style="margin-top: 10px;">
+									<div class="g-plusone" data-href="http://www.openimaj.org/openimaj-maven-archetypes" data-size="medium" width="60px" align="right"></div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
     </xsl:template>
+
     <!-- no other header navigation (prev, next, etc.) -->
     <xsl:template name="header.navigation">
         <xsl:param name="prev" select="/foo"/>
@@ -196,7 +372,7 @@
             </xsl:if>
             <xsl:if test="$row1 or $row2">
                 <xsl:if test="$row1">
-                    <div id="nav-sub-block"> <a class="hide" name="nav-sub-a"></a> 
+                    <div id="nav-sub-block" class="bottom"> <a class="hide" name="nav-sub-a"></a> 
                         <ul id="nav-sub"> 
                             <xsl:if test="count($prev)>0">
                                 <li class="first"><a accesskey="p">
@@ -253,11 +429,31 @@
         </xsl:if>
     </xsl:template>
     
+		<xsl:template name="user.footer.navigation">
+			<footer>
+				<div class="container">
+			  	<div class="row span12">Copyright © 2011-2013 <a href="http://www.soton.ac.uk">The University of Southampton</a>. All Rights Reserved.
+  				</div>
+					<p id="poweredBy" class="pull-right">
+			  		<a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+			    		<img class="builtBy" alt="Built by Maven" src="./images/logos/maven-feather.png" />
+			    	</a>
+		    	</p>
+					<div id="ohloh" class="pull-right">
+			      <script type="text/javascript" src="http://www.ohloh.net/p/openimaj/widgets/project_partner_badge.js"></script>
+			    </div>
+				</div>
+   		</footer>
+		</xsl:template>
     
     <!--  Getting Rid of the Body Attributes - TOB -->
     <xsl:template name="body.attributes">
+			<xsl:attribute name="class">topBarEnabled</xsl:attribute>
     </xsl:template>
     	
+		<xsl:template name="user.preroot">
+			<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
+		</xsl:template>
     	
     <!-- Customizing Overall Chunk Output -->
     <xsl:template name="chunk-element-content">
@@ -280,16 +476,34 @@
       <xsl:call-template name="body.attributes"/>
       <xsl:call-template name="user.header.navigation"/>
 
+			<div class="container">
+				<div id="banner">
+					<div class="pull-left">
+						<div id="bannerLeft">
+				    	<h2>OpenIMAJ</h2>
+				    </div>
+					</div>
+				  <div class="pull-right">  </div>
+				  <div class="clear"><hr /></div>
+				</div>
+
+				<div id="breadcrumbs">
+				  <ul class="breadcrumb">
+				     <li id="publishDate" class="pull-right">Last Published: 2013-02-07</li> <li class="divider pull-right">|</li>
+				   <li id="projectVersion" class="pull-right">Version: 1.0.6-SNAPSHOT</li>
+				  </ul>
+				</div>
+
       <xsl:call-template name="header.navigation">
         <xsl:with-param name="prev" select="$prev"/>
         <xsl:with-param name="next" select="$next"/>
         <xsl:with-param name="nav.context" select="$nav.context"/>
       </xsl:call-template>
     
-      <xsl:call-template name="user.header.content"/>
-
-      <xsl:copy-of select="$content"/>
-
+      <xsl:call-template name="user.header.content"/>				
+      	<xsl:copy-of select="$content"/>
+			</div>
+			
       <xsl:call-template name="user.footer.content"/>
 
       <xsl:call-template name="footer.navigation">

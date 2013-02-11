@@ -15,15 +15,24 @@
   url="mailto:openimaj@gmail.com">openimaj@gmail.com</ulink> or to file an issue on the OpenIMAJ issue tracker at <ulink url="http://jira.openimaj.org">http://jira.openimaj.org</ulink>.</para>
 
   <para>
-	Current development of the OpenIMAJ and ImageTerrier software is funded 
-	by the European Union Seventh Framework Programme (FP7/2007-2013) under 
-	grant agreement n$^{\circ}$ 270239 (ARCOMEM). Earlier releases were funded
-	by the European Union Seventh Framework Programme (FP7/2007-2013) under grant
-	agreement 231126 (LivingKnowledge) together with the LiveMemories project, 
-	graciously funded by the Autonomous Province of Trento (Italy).
-	We are also grateful to the Arts and Humanities Research Council 
-	(`Bridging the Semantic Gap' - MRG-AN6770/APN17429) and Ordnance Survey, 
-	for earlier funding under which a number of the older OpenIMAJ classes were created.
+	OpenIMAJ has a long history, starting well before its public release; 
+	Parts of the original codebase come from projects funded by the European Union's 
+	<ulink url="http://cordis.europa.eu/fp6/">6th Framework Programme</ulink>), 
+	the <ulink url="http://www.epsrc.ac.uk">Engineering and Physical Sciences Research Council</ulink> 
+	the <ulink url="http://www.ahrc.ac.uk">Arts and Humanities Research Council</ulink>, 
+	<ulink url="http://www.ordnancesurvey.co.uk/">Ordnance Survey</ulink> 
+	and the <ulink url="http://www.bbc.co.uk">BBC</ulink>.
+	</para>
+	
+	<para>
+	Current development of the OpenIMAJ and ImageTerrier software is primarily funded 
+	by the European Union <ulink url="http://cordis.europa.eu/fp7/home_en.html">Seventh Framework Programme</ulink> under 
+	the <ulink url="http://www.arcomem.eu">ARCOMEM</ulink> project (grant agreement 270239). 
+	The initial public releases were also funded by the European Union 
+	<ulink url="http://cordis.europa.eu/fp7/home_en.html">Seventh Framework Programme</ulink> 
+	under the <ulink url="http://www.livingknowledge-project.eu">LivingKnowledge</ulink> (grant agreement 231126) 
+	together with the <ulink url="http://livememories.org/">LiveMemories</ulink> project, 
+	graciously funded by the <ulink url="http://www.provincia.tn.it">Autonomous Province of Trento</ulink>.
   </para>
 
   <para>Edition: ${project.version}</para>

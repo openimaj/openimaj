@@ -71,7 +71,6 @@
   <xsl:param name="alignment">justify</xsl:param>
   <xsl:param name="hyphenate">true</xsl:param>
 
-
   <!-- Line height in body text -->
   <xsl:param name="line-height">1.3</xsl:param>
 
@@ -91,7 +90,7 @@
 	  <xsl:attribute name="text-align">
 	    <xsl:choose>
 	      <xsl:when test="@role = 'centered'">center</xsl:when>
-	      <xsl:otherwise>start</xsl:otherwise>
+	      <xsl:otherwise>justify</xsl:otherwise>
 	    </xsl:choose>
 	  </xsl:attribute>
   </xsl:attribute-set>

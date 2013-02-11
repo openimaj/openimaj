@@ -1,0 +1,29 @@
+#banner {
+	margin-top: 40px;
+}
+
+#breadcrumbs {
+	position: fixed;
+	left:0;
+	right:0;
+	top:40px;
+	background-color: #f5f5f5;
+}
+
+#bannerLeft h2 {
+	display: none;
+}
+
+#breadcrumbs ul.breadcrumb {
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.container {
+	width:1000px;
+}
+
+.navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
+	width:1000px;	
+}

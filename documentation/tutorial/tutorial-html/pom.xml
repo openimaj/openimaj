@@ -64,7 +64,7 @@
 					<xincludeSupported>true</xincludeSupported>
 					<chunkedOutput>true</chunkedOutput>
 					<chunkSectionDepth>1</chunkSectionDepth>
-					<htmlStylesheet>css/stylesheet.css fonts/fonts.css</htmlStylesheet>
+					<htmlStylesheet>css/apache-maven-fluido-1.3.0.min.css css/stylesheet.css fonts/fonts.css</htmlStylesheet>
 					<postProcess>
 						<copy todir="${project.build.directory}/html/tutorial/images">
 							<fileset dir="${basedir}/src/main/resources/images" />

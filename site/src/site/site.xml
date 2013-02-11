@@ -3,10 +3,15 @@
     xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
   <bannerLeft>
     <name>OpenIMAJ</name>
-    <src>images/OpenImaj.png</src>
+    <!-- <src>images/OpenImaj.png</src>
     <alt>OpenIMAJ Logo</alt>
-    <href>http://www.openimaj.org</href>
+    <href>http://www.openimaj.org</href> -->
   </bannerLeft>
+
+	<googleAnalyticsAccountId>UA-38338744-1</googleAnalyticsAccountId>
+
+	<version position="right"/>
+	<publishDate position="right"/>
 
   <skin>
 	  <groupId>org.apache.maven.skins</groupId>
@@ -20,6 +25,12 @@
 			<topBarEnabled>true</topBarEnabled>
 	    <googlePlusOne />
 			<navBarStyle>navbar-inverse</navBarStyle>
+			<topBarIcon>
+        <name>OpenIMAJ</name>
+        <alt>OpenIMAJ</alt>
+        <src>/images/logo-tiny.png</src>
+        <href>/index.html</href>
+      </topBarIcon>
 		<facebookLike />
 		<googleSearch>
 			<sitesearch/>
@@ -32,24 +43,89 @@
   </custom>
 
   <body>
-	<head>
-		<link rel="stylesheet" href="/css/site.css" type="text/css" />
-	</head>
+		<head>
+			<style type="text/css">
+				#banner {
+					margin-top: 40px;
+				}
+
+				#breadcrumbs {
+					position: fixed;
+					left:0;
+					right:0;
+					top:40px;
+					background-color: #f5f5f5;
+				}
+
+				#bannerLeft h2 {
+					display: none;
+				}
+
+				#breadcrumbs ul.breadcrumb {
+					width: 1000px;
+					margin-left: auto;
+					margin-right: auto;
+				}
+
+				.container {
+					width:1000px;
+				}
+
+				.navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
+					width:1000px;	
+				}
+				
+				.navbar .brand {
+					padding-top:5px;
+					padding-bottom:5px;
+				}
+			</style>
+		</head>
 		
+		<menu ref="parent" inherit="top"/>
     <menu name="Overview" inherit="top">
       <item name="Introduction" href="/index.html"/>
-	  <item name="Sponsors" href="sponsors.html"/>
-      <item name="Development Site" href="http://www.sf.net/p/openimaj/"/>
-      <item name="The Tutorial" href="tutorial.pdf"/>
-	  <item name="The Blog" href="http://blogs.ecs.soton.ac.uk/multimedia"/>
-	  <item name="The OpenIMAJ Wiki" href="http://www.sf.net/p/openimaj/wiki/"/>
-      <item name="Javadoc" href="apidocs/index.html"/>
+	  	<item name="History &amp; Sponsors" href="sponsors.html"/>
+			<item name="Contact Us!" href="contact.html"/>
+		  <item name="The Blog" href="http://blogs.ecs.soton.ac.uk/multimedia"/>
+      <item name="Source Code" href="http://www.sf.net/p/openimaj/code"/>
+			<item name="Related Projects" href="#related">
+				<item name="ImageTerrier" href="http://www.imageterrier.org/"/>
+	    </item>
     </menu>
-	<menu name="Related Projects" inherit="top">
-      <item name="ImageTerrier" href="http://www.imageterrier.org/"/>
-    </menu>		
-	<menu ref="parent" inherit="top"/>
-	<!-- <menu ref="modules" inherit="top"/> -->
-	<menu ref="reports" inherit="top"/>
+		<menu name="Documentation" inherit="top">
+			<item name="Getting Started" href="#gettingstarted">
+				<item name="The Tutorial (PDF)" href="tutorial-pdf.pdf"/>
+				<item name="The Tutorial (HTML)" href="tutorial/index.html"/>
+	    </item>
+			<item name="Screencasts" href="#screencasts">
+	    </item>
+			<item name="Using OpenIMAJ" href="#using">
+				<item name="Building OpenIMAJ from Source" href=""/>
+				<item name="Using OpenIMAJ as a Library" href=""/>
+				<item name="Using OpenIMAJ with Groovy" href=""/>
+				<item name="Using OpenIMAJ with Android" href=""/>
+				<item name="OpenIMAJ Tools" href="#tools">
+					<item name="OpenIMAJ commandline tools introduction" href=""/>
+					<item name="The FlickrCrawler Tool" href=""/>
+				</item>
+	    </item>
+			<item name="API Reference" href="apidocs/index.html"/>
+			<item name="Project Information" href="#info">
+				<item href="plugin-management.html" name="Plugin Management" />
+				<item href="mail-lists.html" name="Mailing Lists" />
+				<item href="integration.html" name="Continuous Integration" />
+				<item href="license.html" name="Project License" />
+				<item href="team-list.html" name="Project Team" />
+				<item href="source-repository.html" name="Source Repository" />
+				<item href="index.html" name="About" />
+				<item href="issue-tracking.html" name="Issue Tracking" />
+				<item href="project-summary.html" name="Project Summary" />
+				<item href="plugins.html" name="Project Plugins" />
+				<item href="dependency-convergence.html" name="Dependency Convergence" />
+				<item href="dependencies.html" name="Dependencies" />
+			</item>
+		</menu>
+		<menu ref="modules" inherit="top"/>
   </body>
 </project>
