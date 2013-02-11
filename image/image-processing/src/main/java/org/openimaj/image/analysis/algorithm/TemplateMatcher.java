@@ -679,7 +679,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		if (this.searchBounds == null)
 			return halfWidth;
 		else
-			return (int) Math.max(searchBounds.x - halfWidth, halfWidth);
+			return (int) Math.max(searchBounds.x , halfWidth);
 	}
 
 	/**
@@ -693,7 +693,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		if (this.searchBounds == null)
 			return halfHeight;
 		else
-			return (int) Math.max(searchBounds.y - halfHeight, halfHeight);
+			return (int) Math.max(searchBounds.y , halfHeight);
 	}
 
 	/**

@@ -29,15 +29,22 @@ import org.openimaj.video.translator.MBFImageToFImageVideoTranslator;
 public class OpticFlowPlayground {
 	public static Direction direction = Direction.NONE;
 	public static void main(String[] args) throws FileNotFoundException, IOException {
+//		Video<FImage> capture = new MBFImageToFImageVideoTranslator(new VideoCapture(160,120));
 		Video<FImage> capture = new MBFImageToFImageVideoTranslator(new VideoCapture(640,480));
+		MotionEstimatorAlgorithm.TEMPLATE_MATCH alg = new MotionEstimatorAlgorithm.TEMPLATE_MATCH();
 		MotionEstimator e = new GridMotionEstimator(capture,
 //				new MotionEstimatorAlgorithm.PHASE_CORRELATION(),
-				new MotionEstimatorAlgorithm.TEMPLATE_MATCH(),
+				alg,
 				30, 30,true);
 		NaiveBayesAnnotator<Double, Direction, FeatureExtractor<? extends FeatureVector,Double>> dirAnn
 			= IOUtils.read(new DataInputStream(new FileInputStream("/Users/ss/.rhino/opticflowann")));
 
+		boolean first = true;
 		for (FImage fImage : e) {
+			if(first){
+				first = false;
+				continue;
+			}
 			Point2dImpl meanMotion = new Point2dImpl(0,0);
 			Map<Point2d, Point2d> analysis = e.getMotionVectors();
 			for (Entry<Point2d, Point2d> line : analysis.entrySet()) {
@@ -76,7 +83,7 @@ public class OpticFlowPlayground {
 				Iterator<Direction> iterator = dirAnn.classify((double)meanMotion.x).getPredictedClasses().iterator();
 				if(iterator.hasNext()){
 					Direction dir = iterator.next();
-					System.out.println("Current flow: " + dir);
+//					System.out.println("Current flow: " + dir);
 				}
 			}
 		}

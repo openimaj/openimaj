@@ -57,6 +57,7 @@ public abstract class MotionEstimatorAlgorithm
 
 		@Override
 		Point2d estimateMotion(VideoSubFrame<FImage> img1sub, VideoSubFrame<FImage>... imagesSub) {
+
 			VideoFrame<FImage> current = img1sub.extract();
 			VideoFrame<FImage> prev = imagesSub[0];
 			Rectangle prevSearchRect = imagesSub[0].roi;
@@ -67,22 +68,30 @@ public abstract class MotionEstimatorAlgorithm
 			int sy = (int) (prevSearchRect.y + ((prevSearchRect.height - sh) / 2.f));
 
 			Rectangle searchRect = new Rectangle(sx,sy,sw,sh);
+//			System.out.println("Search window: " + searchRect);
 //			MBFImage searchRectDraw = new MBFImage(img1sub.frame.clone(),img1sub.frame.clone(),img1sub.frame.clone());
 //			searchRectDraw.drawShape(searchRect, RGBColour.RED);
 //			searchRectDraw.drawPoint(img1sub.roi.getCOG(), RGBColour.GREEN, 3);
 			TemplateMatcher matcher = new TemplateMatcher(current.frame, mode,searchRect);
 			matcher.analyseImage(prev.frame);
 			FValuePixel[] responses = matcher.getBestResponses(1);
-			FValuePixel firstBest = null;
-			for (FValuePixel bestRespose : responses) {
-				if(bestRespose == null) continue;
-				if(firstBest == null) firstBest = bestRespose;
-				bestRespose.translate(current.frame.width/2, current.frame.height/2);
-//				searchRectDraw.drawPoint(bestRespose, RGBColour.BLUE, 3);
-			}
+			FValuePixel firstBest = responses[0];
+//			for (FValuePixel bestRespose : responses) {
+//				if(bestRespose == null) continue;
+//				if(firstBest == null) firstBest = bestRespose;
+//				bestRespose.translate(current.frame.width/2, current.frame.height/2);
+////				searchRectDraw.drawPoint(bestRespose, RGBColour.BLUE, 3);
+//			}
+			Point2d centerOfGrid = img1sub.roi.getCOG();
+//			System.out.println("First reponse: " + firstBest );
+//			System.out.println("Center of template: " + centerOfGrid);
+
 //			DisplayUtilities.displayName(searchRectDraw, "searchWindow");
 			if(firstBest == null) return new Point2dImpl(0,0);
-			return img1sub.roi.getCOG().minus(firstBest);
+//			firstBest.translate(current.frame.width/2, current.frame.height/2);
+//			System.out.println("First reponse (corrected): " + firstBest );
+//			System.out.println("Diff: " + centerOfGrid.minus(firstBest));
+			return centerOfGrid.minus(firstBest);
 		}
 
 

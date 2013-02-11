@@ -45,6 +45,28 @@
   <body>
 		<head>
 			<style type="text/css">
+				#module {
+					float: right;
+					width: 479px;
+					margin: 0 0 20px 1em;
+					background-color: #326a99;
+					padding-left: 1em;
+					color: whitesmoke;
+					-webkit-border-radius: 4px;
+					-moz-border-radius: 4px;
+					border-radius: 4px;
+				}
+				.module_body{
+					background-color: white;
+					margin: 1em;
+					padding: 1em;
+					width: 85%;
+				}
+				.module_head{
+					font-size: 24px;
+					padding-top: 1em;
+					font-weight:bold;
+				}
 				#banner {
 					margin-top: 40px;
 				}
