@@ -6,82 +6,92 @@
 
 	<span class="row">
 		<span id="module">
-			
-			<p class="module_head">Maven Dependencies</p>
-			<div class="btn-group">
-				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-					Select task
-					<span class="caret"></span>
-				</a>
-				<ul id="dependency_select" class="dropdown-menu">
-					<li>
-<div id="image_processing" class="dependencies" style="display:none;">
-	<div class="maven"><dependency>
-	<artifactId>image-processing</artifactId>
-	<groupId>org.openimaj</groupId>
-	<version>1.0.6-SNAPSHOT</version>
-	<scope>compile</scope></dependency></div>
-	<div class="ivy"><dependency org="org.openimaj" 
-      name="image-processing" 
-      rev="1.0.6-SNAPSHOT" /></div>
-</div>
-						<a href="#" id="imageprocopt">Image Processing</a>
-					</li>
-					<li>
-<div class="dependencies" style="display:none;"><dependency>
-	<artifactId>video-processing</artifactId>
-	<groupId>org.openimaj</groupId>
-	<version>1.0.6-SNAPSHOT</version>
-	<scope>compile</scope>
-</dependency></div>
-						<a href="#">Video Processing</a>
-					</li>
-					<li>
-<div class="dependencies" style="display:none;"><dependency>
-	<artifactId>faces</artifactId>
-	<groupId>org.openimaj</groupId>
-	<version>1.0.6-SNAPSHOT</version>
-	<scope>compile</scope>
-</dependency></div>
-						<a href="#">Face Detection/Recognition</a>
-					</li>
-					<li>
-<div class="dependencies" style="display:none;"><dependency>
-	<artifactId>image-processing</artifactId>
-	<groupId>org.openimaj</groupId>
-	<version>1.0.6-SNAPSHOT</version>
-	<scope>compile</scope>
-</dependency>
-<dependency>
-	<artifactId>core-hadoop</artifactId>
-	<groupId>org.openimaj</groupId>
-	<version>1.0.6-SNAPSHOT</version>
-	<scope>compile</scope>
-</dependency></div>
-						<a href="#">Hadoop + Image</a>
-					</li>
-					<li>
-<div class="dependencies" style="display:none;"><dependency>
-	<artifactId>image-processing</artifactId>
-	<groupId>org.openimaj</groupId>
-	<version>1.0.6-SNAPSHOT</version>
-	<scope>compile</scope>
-</dependency>
-<dependency>
-	<artifactId>core-tool</artifactId>
-	<groupId>org.openimaj.tools</groupId>
-	<version>1.0.6-SNAPSHOT</version>
-	<scope>compile</scope>
-</dependency>
-</div>
-						<a href="#">Image processing Tool</a>
-					</li>
-				</ul>
-			</div>
-			<div class="btn-group" data-toggle="buttons-radio">
-				<button class="btn btn-primary active" id="mavenmode" managername="maven">Maven</button>
-				<button class="btn btn-primary" managername="ivy">Ivy</button>
-				<button class="btn btn-primary" managername="stb">STB</button>
+			<p class="module_head">Dependencies</p>
+			<div class="row">
+				<div class="span3">
+					<div class="btn-group">
+						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+							Select task
+							<span class="caret"></span>
+						</a>
+						<ul id="dependency_select" class="dropdown-menu">
+							<li>
+								<div id="image_processing" class="dependencies" style="display:none;">
+									<dependency>
+										<artifactId>image-processing</artifactId>
+										<groupId>org.openimaj</groupId>
+										<version>1.0.6-SNAPSHOT</version>
+										<scope>compile</scope>
+									</dependency>
+								</div>
+								<a href="#" id="imageprocopt">Image Processing</a>
+							</li>
+							<li>
+								<div class="dependencies" style="display:none;">
+									<dependency>
+										<artifactId>video-processing</artifactId>
+										<groupId>org.openimaj</groupId>
+										<version>1.0.6-SNAPSHOT</version>
+										<scope>compile</scope>
+									</dependency>
+								</div>
+								<a href="#">Video Processing</a>
+							</li>
+							<li>
+								<div class="dependencies" style="display:none;">
+									<dependency>
+										<artifactId>faces</artifactId>
+										<groupId>org.openimaj</groupId>
+										<version>1.0.6-SNAPSHOT</version>
+										<scope>compile</scope>
+									</dependency>
+								</div>
+								<a href="#">Face Detection/Recognition</a>
+							</li>
+							<li>
+								<div class="dependencies" style="display:none;">
+									<dependency>
+										<artifactId>image-processing</artifactId>
+										<groupId>org.openimaj</groupId>
+										<version>1.0.6-SNAPSHOT</version>
+										<scope>compile</scope>
+									</dependency>
+									<dependency>
+										<artifactId>core-hadoop</artifactId>
+										<groupId>org.openimaj</groupId>
+										<version>1.0.6-SNAPSHOT</version>
+										<scope>compile</scope>
+									</dependency>
+								</div>
+								<a href="#">Hadoop + Image</a>
+							</li>
+							<li>
+								<div class="dependencies" style="display:none;">
+									<dependency>
+										<artifactId>image-processing</artifactId>
+										<groupId>org.openimaj</groupId>
+										<version>1.0.6-SNAPSHOT</version>
+										<scope>compile</scope>
+									</dependency>
+									<dependency>
+										<artifactId>core-tool</artifactId>
+										<groupId>org.openimaj.tools</groupId>
+										<version>1.0.6-SNAPSHOT</version>
+										<scope>compile</scope>
+									</dependency>
+								</div>
+								<a href="#">Image processing Tool</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="span5">
+					<div id="manager_select" class="btn-group span5" data-toggle="buttons-radio">
+						<button class="btn btn-primary active" id="mavenmode" managername="maven">Maven</button>
+						<button class="btn btn-primary" managername="ivy">Ivy</button>
+						<button class="btn btn-primary" managername="stb">STB</button>
+					</div>
+				</div>
 			</div>
 			<pre id="task_mvn_dep" class="module_body">
 			</pre>
@@ -90,16 +100,73 @@
 				    deps:$("#imageprocopt"),
 				    manager:$("#mavenmode")
 				}
+				var managermodefuncs = {
+					"maven":mavenDep,
+					"ivy":ivyDep,
+					"stb":stbDep
+				}
+				console.log(mode)
 				function loadDependencies(){
-					$("#task_mvn_dep").text(mode.deps.parent().find(".dependencies ."+mode.manager.attr("managername")).html())
+					$("#task_mvn_dep").text(
+						managermodefuncs[mode.manager.attr("managername")](
+							mode.deps.parent().find(".dependencies dependency")
+						)
+					)
+				}
+				function renderDep(temp,dependency){
+					return Mustache.render(
+						temp,
+						{
+							artifact:$(dependency).find("artifactId").html(),
+							group:$(dependency).find("groupId").html(),
+							version:$(dependency).find("version").html()
+						}
+					)
+				}
+				function mavenDep(dependencies){
+					
+					var retStr = []
+					dependencies.each(function (id,thing) {
+						retStr = retStr.concat(renderDep(
+							"<dependency>\n" +
+							"	<artifactId>{{artifact}}</artifactId>\n" + 
+							"	<groupId>{{group}}</groupId>\n" +
+							"	<version>{{version}}</version>\n" +
+							"	<scope>compile</scope>\n" +
+							"</dependency>",thing
+						))
+					})
+					
+					return retStr.join("\n")
+				}
+				function ivyDep(dependencies){
+					var retStr = []
+					dependencies.each(function (id,thing) {
+						retStr = retStr.concat(renderDep('<dependency org="{{group}}" name="{{artifact}}" rev="{{version}}" />',thing))
+					})
+					
+					return retStr.join("\n")
+				}
+				function stbDep(dependencies){
+					var retStr = []
+					dependencies.each(function (id,thing) {
+						retStr = retStr.concat(renderDep('val dependency = "{{group}}" % "{{artifact}}" % "{{version}}"',thing))
+					})
+					return retStr.join("\n")
 				}
 			</script>
 			<script type="text/javascript">
+				loadDependencies();
 				$("#dependency_select a").each(function (index,thing) {
 					$(thing).click(function () {
 						mode.deps=$(thing)
 						loadDependencies();
-						$('#dependency_select').dropdown()
+					})
+				})
+				$("#manager_select button").each(function (index,thing) {
+					$(thing).click(function () {
+						mode.manager=$(thing)
+						loadDependencies();
 					})
 				})
 

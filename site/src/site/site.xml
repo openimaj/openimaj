@@ -45,6 +45,7 @@
   <body>
 		<head>
 			<link rel="image_src" href="images/OpenImaj.png" />
+			<script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.0/mustache.min.js" type="text/javascript" charset="utf-8"></script>
 			<style type="text/css">
 				#module {
 					float: right;

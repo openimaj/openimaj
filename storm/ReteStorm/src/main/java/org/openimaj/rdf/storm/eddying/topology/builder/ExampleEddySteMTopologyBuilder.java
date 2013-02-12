@@ -89,9 +89,9 @@ public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 		for (int i = 0; i < stems.length; i++) {
 			List<String> eddies = new ArrayList<String>();
 			eddies.add(eddyname);
-			stems[i] = new StormSteMBolt(stemprefix+i,new SingleQueryPolicyStormGraphRouter.SQPESStormGraphRouter(eddies)
-,3,STEMSIZE,STEMDELAY,STEMUNIT
-);
+// 			stems[i] = new StormSteMBolt(stemprefix+i,new SingleQueryPolicyStormGraphRouter.SQPESStormGraphRouter(eddies)
+// ,3,STEMSIZE,STEMDELAY,STEMUNIT
+// );
 			stemMap.put(stemprefix+i, ","+predicates[i]+",");
 		}
 		
