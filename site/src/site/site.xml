@@ -44,6 +44,7 @@
 
   <body>
 		<head>
+			<link rel="image_src" href="images/OpenImaj.png" />
 			<style type="text/css">
 				#module {
 					float: right;
