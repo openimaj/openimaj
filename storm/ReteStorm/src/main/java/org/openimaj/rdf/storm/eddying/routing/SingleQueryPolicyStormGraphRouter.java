@@ -12,8 +12,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.eddying.stems.StormSteMQueue;
+import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt.Component;
 
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
@@ -32,6 +34,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  */
 public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 
+	private static final long serialVersionUID = 4342744138230718341L;
 	protected final static Logger logger = Logger.getLogger(SingleQueryPolicyStormGraphRouter.class);
 	protected static int[] FACTORIALS = {0,1,2,6,24,120,720};
 	
@@ -46,20 +49,18 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 	}
 	
 	private int varCount;
-	private Set<TriplePattern> pattern;
+	private TriplePattern[] pattern;
 	private Map<TripleMatch,Integer> stemStats;
 	private Map<TripleMatch,Integer> stemRefs;
 	
 	protected void prepare(){
 		Rule rule = Rule.parseRule(query);
 		varCount = rule.getNumVars();
-		pattern = new HashSet<TriplePattern>();
 		stemRefs = new HashMap<TripleMatch,Integer>();
 		try{
 			int count = 0;
-			TriplePattern[] pattern = (TriplePattern[]) rule.getBody();
+			pattern = (TriplePattern[]) rule.getBody();
 			for (TriplePattern tp : pattern){
-				this.pattern.add(tp);
 				stemStats.put(tp.asTripleMatch(), count++);
 				if (stemRefs.containsKey(tp.asTripleMatch()))
 					stemRefs.put(tp.asTripleMatch(), stemRefs.get(tp.asTripleMatch()) + 1);
@@ -77,7 +78,7 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 	@Override
 	public void routeGraph(Tuple anchor, Action action, boolean isAdd, Graph g,
 						   long timestamp) {
-		PriorityQueue<TriplePattern> stemQueue = new PriorityQueue<TriplePattern>(this.pattern.size(), new Comparator<TriplePattern>(){
+		PriorityQueue<TriplePattern> stemQueue = new PriorityQueue<TriplePattern>(this.pattern.length, new Comparator<TriplePattern>(){
 			@Override
 			public int compare(TriplePattern arg0, TriplePattern arg1) {
 				return SingleQueryPolicyStormGraphRouter.this.stemStats.get(arg0.asTripleMatch())
@@ -88,18 +89,19 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 		List<Node[]> envs = new ArrayList<Node[]>();
 		List<Node[]> newEnvs;
 		envs.add(new Node[varCount]);
-		 
+		
+		// Iterate over all triple patterns in the graph pattern
 		for (TriplePattern current : this.pattern){
 			newEnvs = new ArrayList<Node[]>();
 			for (Node[] env : envs){
-				//Initialise subject, object and predicate according to the current environment.
-				Node subject = current.getSubject().isVariable() ? env[((Node_RuleVariable) current.getSubject()).getIndex()] : current.getSubject(),
-					 predicate = current.getPredicate().isVariable() ? env[((Node_RuleVariable) current.getPredicate()).getIndex()] : current.getPredicate(),
-					 object = current.getObject().isVariable() ? env[((Node_RuleVariable) current.getObject()).getIndex()] : current.getObject();
 				//Iterate over all triples in the graph that match the SteM of the current triple pattern.
 				ExtendedIterator<Triple> matchingTriples = g.find(current.asTripleMatch());
 				boolean accountedFor = false;
 				if (accountedFor = matchingTriples.hasNext()){
+					//Initialise subject, object and predicate according to the current environment.
+					Node subject = current.getSubject().isVariable() ? env[((Node_RuleVariable) current.getSubject()).getIndex()] : current.getSubject(),
+						 predicate = current.getPredicate().isVariable() ? env[((Node_RuleVariable) current.getPredicate()).getIndex()] : current.getPredicate(),
+						 object = current.getObject().isVariable() ? env[((Node_RuleVariable) current.getObject()).getIndex()] : current.getObject();
 					//Initialise a variable describing SteM uses unaccounted for with regards to this triple pattern
 					int count = stemRefs.get(current.asTripleMatch());
 					//For each triple that fits the stem, see if it matches the triple pattern (including any previously fixed bindings in the current environment),
@@ -141,19 +143,59 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 			//the base set of environments.
 			envs = newEnvs;
 		}
+		
+		// By this stage the probing graph has been verified against the current pattern for all environments.
+		// Check to see if the probing graph matches the current pattern completely
+		// (only requires checking that the graph and the pattern are the same size)
+		if (g.size() == pattern.length) {
+			this.reportCompletePattern(envs);
+			return;
+		}
+		
 		//TODO select a stem to send to, then send a probe request to it.
+	}
+	
+	private void reportCompletePattern(List<Node[]> bindings) {
+		System.out.println(String.format("Pattern %s complete, with bindings:", (Object) pattern));
+		for (Node[] binding : bindings)
+			System.out.println(binding.toString());
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		// TODO Auto-generated method stub
+		Set<TripleMatch> stems = new HashSet<TripleMatch>();
+		try{
+			// Convert query string to graph pattern
+			TriplePattern[] pattern = (TriplePattern[]) Rule.parseRule(query).getBody();
+			// Iterate through all triple patterns in the graph pattern
+			for (TriplePattern tp : pattern){
+				// If the stem that provides for the current query pattern hasn't been seen before
+				TripleMatch tm = tp.asTripleMatch();
+				if (stems.add(tm)){
+					declarer.declareStream(String.format("%s,%s,%s",
+															tm.getMatchSubject() == null ? "" : tm.getMatchSubject().toString(),
+															tm.getMatchPredicate() == null ? "" : tm.getMatchPredicate().toString(),
+															tm.getMatchObject() == null ? "" : tm.getMatchObject().toString()
+														),
+												new Fields("s","p","o",
+															Component.action.toString(),
+															Component.isAdd.toString(),
+															Component.graph.toString(),
+															Component.timestamp.toString()
+														)
+											);
+				}
+			}
+		} catch (ClassCastException e){}
 	}
 	
 	// INNER CLASSES
 	
-	public static class SQPESStormGraphRouter extends EddyStubStormGraphRouter {
+	public static class SQPEddyStubStormGraphRouter extends EddyStubStormGraphRouter {
 
-		public SQPESStormGraphRouter(List<String> eddies) {
+		private static final long serialVersionUID = -1974101140071769900L;
+
+		public SQPEddyStubStormGraphRouter(List<String> eddies) {
 			super(eddies);
 		}
 		
