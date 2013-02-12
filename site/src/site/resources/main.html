@@ -1,12 +1,171 @@
-<div class="foo">
-	<div class="btn-group">
-	  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-	    Action
-	    <span class="caret"></span>
-	  </a>
-	  <ul class="dropdown-menu">
-			<li>1</li>
-			<li>2</li>
-	  </ul>
-	</div>
+<div>
+
+	<span class="row">
+		<img src="images/OpenImaj.png" title="OpenIMAJ: Intelligent Multimedia Analysis"/>
+	</span>
+
+	<span class="row">
+		<span id="module">
+			
+			<p class="module_head">Maven Dependencies</p>
+			<div class="btn-group">
+				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+					Select task
+					<span class="caret"></span>
+				</a>
+				<ul id="dependency_select" class="dropdown-menu">
+					<li>
+<div id="image_processing" class="dependencies" style="display:none;">
+	<div class="maven"><dependency>
+	<artifactId>image-processing</artifactId>
+	<groupId>org.openimaj</groupId>
+	<version>1.0.6-SNAPSHOT</version>
+	<scope>compile</scope></dependency></div>
+	<div class="ivy"><dependency org="org.openimaj" 
+      name="image-processing" 
+      rev="1.0.6-SNAPSHOT" /></div>
+</div>
+						<a href="#" id="imageprocopt">Image Processing</a>
+					</li>
+					<li>
+<div class="dependencies" style="display:none;"><dependency>
+	<artifactId>video-processing</artifactId>
+	<groupId>org.openimaj</groupId>
+	<version>1.0.6-SNAPSHOT</version>
+	<scope>compile</scope>
+</dependency></div>
+						<a href="#">Video Processing</a>
+					</li>
+					<li>
+<div class="dependencies" style="display:none;"><dependency>
+	<artifactId>faces</artifactId>
+	<groupId>org.openimaj</groupId>
+	<version>1.0.6-SNAPSHOT</version>
+	<scope>compile</scope>
+</dependency></div>
+						<a href="#">Face Detection/Recognition</a>
+					</li>
+					<li>
+<div class="dependencies" style="display:none;"><dependency>
+	<artifactId>image-processing</artifactId>
+	<groupId>org.openimaj</groupId>
+	<version>1.0.6-SNAPSHOT</version>
+	<scope>compile</scope>
+</dependency>
+<dependency>
+	<artifactId>core-hadoop</artifactId>
+	<groupId>org.openimaj</groupId>
+	<version>1.0.6-SNAPSHOT</version>
+	<scope>compile</scope>
+</dependency></div>
+						<a href="#">Hadoop + Image</a>
+					</li>
+					<li>
+<div class="dependencies" style="display:none;"><dependency>
+	<artifactId>image-processing</artifactId>
+	<groupId>org.openimaj</groupId>
+	<version>1.0.6-SNAPSHOT</version>
+	<scope>compile</scope>
+</dependency>
+<dependency>
+	<artifactId>core-tool</artifactId>
+	<groupId>org.openimaj.tools</groupId>
+	<version>1.0.6-SNAPSHOT</version>
+	<scope>compile</scope>
+</dependency>
+</div>
+						<a href="#">Image processing Tool</a>
+					</li>
+				</ul>
+			</div>
+			<div class="btn-group" data-toggle="buttons-radio">
+				<button class="btn btn-primary active" id="mavenmode" managername="maven">Maven</button>
+				<button class="btn btn-primary" managername="ivy">Ivy</button>
+				<button class="btn btn-primary" managername="stb">STB</button>
+			</div>
+			<pre id="task_mvn_dep" class="module_body">
+			</pre>
+			<script type="text/javascript">
+				var mode = {
+				    deps:$("#imageprocopt"),
+				    manager:$("#mavenmode")
+				}
+				function loadDependencies(){
+					$("#task_mvn_dep").text(mode.deps.parent().find(".dependencies ."+mode.manager.attr("managername")).html())
+				}
+			</script>
+			<script type="text/javascript">
+				$("#dependency_select a").each(function (index,thing) {
+					$(thing).click(function () {
+						mode.deps=$(thing)
+						loadDependencies();
+						$('#dependency_select').dropdown()
+					})
+				})
+
+			</script>
+
+			<p class="module_head">Get the code</p>
+			<pre class="module_body">svn checkout svn://svn.code.sf.net/p/openimaj/code/trunk openimaj-code</pre>
+
+		</span>
+
+		<p>
+			Welcome to the home of the Open Intelligent Multimedia Analysis toolkit for Java (OpenIMAJ).
+		</p>
+
+		<p>
+			OpenIMAJ is a collection of libraries for multimedia analysis written in the Java programming language. Currently most of the focus in OpenIMAJ is on image analysis and feature extraction, and as such the OpenIMAJ libraries contain methods for processing images and extracting state-of-the-art features, including SIFT. The OpenIMAJ clustering and nearest-neighbour libraries contain efficient, multi-threaded implementations of clustering algorithms including Hierarchical K-Means and Approximate K-Means. The clustering library makes it possible to easily create visual-bag-of-words representations for images. OpenIMAJ also incorporates a number of tools to enable extremely-large-scale multimedia analysis using a distributed computing approach based on
+			<a href="http://hadoop.apache.org">Apache Hadoop</a>
+			.
+		</p>
+
+		<p>
+			The library is available as a modular set of Jars and the source is also available (mostly under a
+			<a href="./license.html">BSD-style license</a>
+			). To get started quickly with OpenIMAJ, we recommend you try the
+			<a href="/tutorial/">tutorial</a>
+			. For more information about installing the source code, integrating the jars with your java project or using the command line tools please consult the documentation menu above. The
+			<a href="http://blogs.ecs.soton.ac.uk/multimedia/">blog</a>
+			shows some cool examples of things we've been doing with OpenIMAJ and our sister project
+			<a href="http://www.imageterrier.org">ImageTerrier</a>
+			.
+		</p>
+
+		<p>
+			For more information and details please contact
+			<a href="mailto:jsh2@ecs.soton.ac.uk">Jonathon Hare</a>
+			,
+			<a href="mailto:ss@ecs.soton.ac.uk">Sina Samangooei</a>
+			or
+			<a href="mailto:dpd@ecs.soton.ac.uk">David Dupplaw</a>
+			in
+			<a href="http://www.ecs.soton.ac.uk">Electronics and Computer Science</a>
+			at the
+			<a href="http://www.soton.ac.uk">University of Southampton</a>
+			.
+		</p>
+
+		<p>
+			The development of OpenIMAJ was graciously funded by
+			<a href="http://cordis.europa.eu/fp7/">The European Union Seventh Framework</a>
+			projects (FP7/2007-2013)
+			<a href="http://www.livingknowledge-project.eu">LivingKnowledge</a>
+			(grant agreement no 231126) and
+			<a href="http://www.arcomem.eu">ARCOMEM</a>
+			(grant agreement no 270239), and by
+			<a href="http://www.provincia.tn.it/">The Autonomous Province of Trento (Italy)</a>
+			, under the
+			<a href="http://www.livememories.org">Livememories</a>
+			project.
+		</p>
+
+		<div>
+			<img src="images/soton_sm.png"/>
+			<img src="images/fp7_sm.png"/>
+			<img src="images/arcomem_logo_sm.png"/>
+			<img src="images/livememories_sm.jpg"/>
+			<img src="images/livingknowledge_sm.png"/>
+		</div>
+	</span>
 </div>

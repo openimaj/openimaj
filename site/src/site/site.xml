@@ -50,7 +50,7 @@
 					float: right;
 					width: 479px;
 					margin: 0 0 20px 1em;
-					background-color: #326a99;
+					background-color: rgb(29, 76, 116);
 					padding-left: 1em;
 					color: whitesmoke;
 					-webkit-border-radius: 4px;
