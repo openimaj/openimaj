@@ -89,7 +89,7 @@
 					<div id="manager_select" class="btn-group span5" data-toggle="buttons-radio">
 						<button class="btn btn-primary active" id="mavenmode" managername="maven">Maven</button>
 						<button class="btn btn-primary" managername="ivy">Ivy</button>
-						<button class="btn btn-primary" managername="stb">STB</button>
+						<button class="btn btn-primary" managername="sbt">SBT</button>
 					</div>
 				</div>
 			</div>
@@ -103,7 +103,7 @@
 				var managermodefuncs = {
 					"maven":mavenDep,
 					"ivy":ivyDep,
-					"stb":stbDep
+					"sbt":sbtDep
 				}
 				console.log(mode)
 				function loadDependencies(){
@@ -147,12 +147,14 @@
 					
 					return retStr.join("\n")
 				}
-				function stbDep(dependencies){
+				function sbtDep(dependencies){
 					var retStr = []
 					dependencies.each(function (id,thing) {
-						retStr = retStr.concat(renderDep('val dependency = "{{group}}" % "{{artifact}}" % "{{version}}"',thing))
+						retStr = retStr.concat(renderDep('"{{group}}" % "{{artifact}}" % "{{version}}"',thing))
 					})
-					return retStr.join("\n")
+					return "val deps = Seq(\n\t" +
+								retStr.join(",\n\t") +
+							"\n)"
 				}
 			</script>
 			<script type="text/javascript">
