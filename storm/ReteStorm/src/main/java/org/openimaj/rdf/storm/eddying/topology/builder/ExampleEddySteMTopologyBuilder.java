@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.openimaj.rdf.storm.eddying.eddies.StormEddyBolt;
 import org.openimaj.rdf.storm.eddying.routing.ExampleStormGraphRouter;
 import org.openimaj.rdf.storm.eddying.routing.SingleQueryPolicyStormGraphRouter;
+import org.openimaj.rdf.storm.eddying.routing.SingleQueryPolicyStormGraphRouter.SQPEddyStubStormGraphRouter;
 import org.openimaj.rdf.storm.eddying.routing.StormGraphRouter.Action;
 import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt;
 import org.openimaj.rdf.storm.eddying.stems.StormSteMBolt.Component;
@@ -89,9 +90,9 @@ public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 		for (int i = 0; i < stems.length; i++) {
 			List<String> eddies = new ArrayList<String>();
 			eddies.add(eddyname);
-// 			stems[i] = new StormSteMBolt(stemprefix+i,new SingleQueryPolicyStormGraphRouter.SQPESStormGraphRouter(eddies)
-// ,3,STEMSIZE,STEMDELAY,STEMUNIT
-// );
+ 			stems[i] = new StormSteMBolt(stemprefix+i,new SQPEddyStubStormGraphRouter(eddies)
+ ,3,STEMSIZE,STEMDELAY,STEMUNIT
+ );
 			stemMap.put(stemprefix+i, ","+predicates[i]+",");
 		}
 		
