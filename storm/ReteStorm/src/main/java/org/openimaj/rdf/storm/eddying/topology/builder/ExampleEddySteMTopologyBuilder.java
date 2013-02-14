@@ -105,6 +105,7 @@ public class ExampleEddySteMTopologyBuilder extends TopologyBuilder {
 		for (int i = 0; i < predicates.length; i++){
 			this.setBolt(alphaprefix+i, filters[i]).shuffleGrouping(spoutname);
 			this.setBolt(transprefix+i, translators[i]).shuffleGrouping(alphaprefix+i);
+			// TODO sort out what to do about field groupings.
 			this.setBolt(stemprefix+i, stems[i]).fieldsGrouping(eddyname, stemprefix+i, new Fields("s","p","o"))
 												.fieldsGrouping(transprefix+i, new Fields("s","p","o"));
 			eddyDeclarer.shuffleGrouping(stemprefix+i,eddyname);

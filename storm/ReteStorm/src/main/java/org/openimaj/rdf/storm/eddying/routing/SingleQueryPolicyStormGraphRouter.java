@@ -90,6 +90,7 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 		List<Node[]> newEnvs;
 		envs.add(new Node[varCount]);
 		
+		// TODO take into account strict triple patterns that could occlude relaxed triple patterns.  
 		// Iterate over all triple patterns in the graph pattern
 		for (TriplePattern current : this.pattern){
 			newEnvs = new ArrayList<Node[]>();
@@ -136,6 +137,8 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 				//and add this triple pattern to the set of viable triple patterns to route to.
 				if (!accountedFor){
 					newEnvs.add(env);
+					// TODO sort out SteM selection: need to store relevant environment, not just SteM.
+					// TODO sort out SteM selection: need to fully qualify a pattern environment before deciding which SteMs are viable.
 					stemQueue.add(current);
 				}
 			}
@@ -152,7 +155,7 @@ public class SingleQueryPolicyStormGraphRouter extends StormGraphRouter {
 			return;
 		}
 		
-		//TODO select a stem to send to, then send a probe request to it.
+		//TODO select a stem to send to, then send a probe request to it, satisfying as many environments as possible.
 	}
 	
 	private void reportCompletePattern(List<Node[]> bindings) {
