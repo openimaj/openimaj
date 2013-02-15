@@ -1,2 +1,0 @@
-#!/usr/bin/env sh 
-java -Xmx1G -cp src/main/resources:`storm classpath`:target/ReteStormTool.jar org.openimaj.rdf.storm.tool.ReteStorm $*

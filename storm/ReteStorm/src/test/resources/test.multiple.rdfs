@@ -1,5 +1,0 @@
-<http://example.com/John> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Driver> .
-<http://example.com/John> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Womble> .
-<http://example.com/Steve> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Driver> .
-<http://example.com/Steve> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Person> .
-<http://example.com/Alan> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/NotInvolved> .

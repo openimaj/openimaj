@@ -1,9 +1,0 @@
-#------------------------------------------------------------------
-# Sina's Test Production Rules
-# A really simple set of production rules 
-#------------------------------------------------------------------
-
-@prefix rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-@prefix ex: http://example.com/
-@prefix xs: http://www.w3.org/2001/XMLSchema#
-[safeDriver: (?d ex:accidentsNumber "0"^^xs:integer) -> (?d rdf:type ex:SafeDriver)]

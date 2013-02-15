@@ -16,7 +16,6 @@
   <description>Sub-modules for integrating OpenIMAJ with Storm to allow distrbuted stream processing.</description>
   <modules>
     <module>core-storm</module>
-    <module>ReteStorm</module>
     <module>tools</module>
   </modules>
 </project>
