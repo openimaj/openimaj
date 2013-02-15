@@ -192,6 +192,21 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 	@Override
 	public List<CLMDetectedFace> detectFaces(FImage image) {
 		final List<Rectangle> detRects = config.faceDetector.detect(image);
+
+		return detectFaces(image, detRects);
+	}
+
+	/**
+	 * Detect faces in the image using the given rectangles as the seeds from
+	 * which to start fitting the model.
+	 * 
+	 * @param image
+	 *            the image
+	 * @param detRects
+	 *            the seed rectangles
+	 * @return the detected faces
+	 */
+	public List<CLMDetectedFace> detectFaces(FImage image, List<Rectangle> detRects) {
 		final List<CLMDetectedFace> faces = new ArrayList<CLMDetectedFace>();
 
 		for (final Rectangle f : detRects) {
@@ -248,5 +263,14 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 			d[i][0] = a * s[i][0] - b * s[i + n][0] + tx;
 			d[i + n][0] = b * s[i][0] + a * s[i + n][0] + ty;
 		}
+	}
+
+	/**
+	 * Get the internal configuration of the detector.
+	 * 
+	 * @return the internal configuration of the detector.
+	 */
+	public Configuration getConfiguration() {
+		return config;
 	}
 }

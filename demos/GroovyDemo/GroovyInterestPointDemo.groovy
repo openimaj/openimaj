@@ -27,14 +27,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-@GrabResolver(name='octopussy-releases', root='http://octopussy.ecs.soton.ac.uk/m2/releases/')
-@Grab('org.openimaj:core-image:1.0-SNAPSHOT')
+@GrabResolver(name='openimaj-releases', root='http://maven.openimaj.org/')
+@Grab('org.openimaj:core-image:1.1-SNAPSHOT')
 import org.openimaj.io.*
 import org.openimaj.image.*
 import org.openimaj.image.colour.*
 import org.openimaj.math.geometry.shape.*
 
-@Grab('org.openimaj:image-local-features:1.0-SNAPSHOT')
+@Grab('org.openimaj:image-local-features:1.1-SNAPSHOT')
 import org.openimaj.image.feature.local.interest.*
 
 //Load an image

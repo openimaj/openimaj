@@ -132,8 +132,9 @@ public class FDet {
 
 		List<Rectangle> rects = detector.detect(small_img_);
 		rects = ObjectIntPair.getFirst(grouping.apply(rects));
-		for (final Rectangle r : rects)
+		for (final Rectangle r : rects) {
 			r.scale(_img_scale);
+		}
 
 		return rects;
 	}

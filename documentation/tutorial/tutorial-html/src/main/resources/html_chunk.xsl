@@ -117,10 +117,10 @@
 											<a href="../index.html" title="Introduction">Introduction</a>
 										</li>
 										<li>
-											<a href="../sponsors.html" title="History &amp; Sponsors">Sponsors</a>
+											<a href="../sponsors.html" title="History &amp; Sponsors">History &amp; Sponsors</a>
 										</li>
 										<li>
-											<a href="../contact.html" title="Contact Us!">Contact Us!</a>
+											<a href="../contact.html" title="Support &amp; Contacts">Support &amp; Contacts</a>
 										</li>
 										<li>
 											<a href="http://blogs.ecs.soton.ac.uk/multimedia" title="The Blog">The Blog</a>

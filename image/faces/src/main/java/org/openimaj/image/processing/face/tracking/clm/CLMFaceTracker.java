@@ -96,7 +96,7 @@ public class CLMFaceTracker {
 	private Float[] connectionColour = RGBColour.WHITE;
 
 	/** Colour to draw the points */
-	private Float[] pointColour = RGBColour.RED;
+	private Float[] pointColour = RGBColour.GREEN;
 
 	/** Colour to draw the mesh */
 	private Float[] meshColour = RGBColour.BLACK;
@@ -485,17 +485,17 @@ public class CLMFaceTracker {
 			if (visi != null &&
 					(visi.get(triangles[i][0], 0) == 0 ||
 							visi.get(triangles[i][1], 0) == 0 ||
-							visi.get(triangles[i][2], 0) == 0))
+					visi.get(triangles[i][2], 0) == 0))
 			{
 				tris.add(null);
 			} else {
 				final Triangle t = new Triangle(
 						new Point2dImpl((float) shape.get(triangles[i][0], 0),
-										(float) shape.get(triangles[i][0] + n, 0)),
+								(float) shape.get(triangles[i][0] + n, 0)),
 						new Point2dImpl((float) shape.get(triangles[i][1], 0),
-										(float) shape.get(triangles[i][1] + n, 0)),
+								(float) shape.get(triangles[i][1] + n, 0)),
 						new Point2dImpl((float) shape.get(triangles[i][2], 0),
-										(float) shape.get(triangles[i][2] + n, 0))
+								(float) shape.get(triangles[i][2] + n, 0))
 						);
 				tris.add(t);
 			}

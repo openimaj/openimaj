@@ -27,18 +27,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-@GrabResolver(name='octopussy-releases', root='http://octopussy.ecs.soton.ac.uk/m2/releases/')
-@Grab('org.openimaj:core-image:1.0')
+//@GrabResolver(name='openimaj-releases', root='http://maven.openimaj.org/')
+@GrabResolver(name='openimaj-snapshots', root='http://snapshots.openimaj.org/')
+@Grab('org.openimaj:core-image:1.0.6-SNAPSHOT')
 import org.openimaj.io.*
 import org.openimaj.image.*
 import org.openimaj.image.colour.*
 import org.openimaj.math.geometry.shape.*
 
-@Grab('org.openimaj:image-local-features:1.0')
+@Grab('org.openimaj:image-local-features:1.0.6-SNAPSHOT')
 import org.openimaj.image.feature.local.engine.*
 
 //Load an image
-img = ImageUtilities.readMBF( args.length>0 ? new File(args[0]) : getClass().getResource("/org/openimaj/OpenIMAJ.png"))
+try {
+    img = ImageUtilities.readMBF( args.length>0 ? new File(args[0]) : getClass().getResource("/org/openimaj/OpenIMAJ.png"))
+} catch (Throwable t) {
+    t.printStackTrace();
+}
 
 //create a default difference-of-Gaussian SIFT extraction engine
 engine = new DoGSIFTEngine()

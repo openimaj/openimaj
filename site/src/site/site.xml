@@ -110,7 +110,8 @@
     <menu name="Overview" inherit="top">
       <item name="Introduction" href="/index.html"/>
 	  	<item name="History &amp; Sponsors" href="sponsors.html"/>
-			<item name="Contact Us!" href="contact.html"/>
+			<item name="Support &amp; Contacts" href="contact.html"/>
+			<item name="Team" href="team.html"/>
 		  <item name="The Blog" href="http://blogs.ecs.soton.ac.uk/multimedia"/>
       <item name="Source Code" href="http://www.sf.net/p/openimaj/code"/>
 			<item name="Related Projects" href="#related">

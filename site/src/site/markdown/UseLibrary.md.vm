@@ -11,7 +11,6 @@ To successfully use OpenIMAJ as a library in your maven project you must first d
 The details for the OpenIMAJ repository are provided below
 
 ~~~~
-::::xml
 <repositories>
 	<repository>
 		<id>OpenIMAJ maven releases repository</id>
@@ -31,7 +30,6 @@ To use the repositories add this to the `project` element of your project's `pom
 The individual submodules of OpenIMAJ may be included into your project. The following is the dependency for including the core OpenIMAJ submodule to your project; it must be appended to your project's `pom.xml` `dependencies` element.
 
 ~~~~
-:::xml
 <dependency>
 	<groupId>org.openimaj</groupId>
 	<artifactId>core</artifactId>
@@ -39,8 +37,6 @@ The individual submodules of OpenIMAJ may be included into your project. The fol
 	<scope>compile</scope>
 </dependency>
 ~~~~ 
-
-** Note that above we are using the SNAPSHOT version of 1.0.6, another release will be made soon!**
 
 To include any other module simply change the `artifactId` to the name of the required module. A list of all the modules can be found [here](/tutorial/modules.html).
 
