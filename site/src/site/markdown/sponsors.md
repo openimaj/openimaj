@@ -3,7 +3,7 @@ OpenIMAJ History and Sponsors
 
 OpenIMAJ is primarily developed and maintained by a team of academic researchers in [Electronics and Computer Science](http://ecs.soton.ac.uk) at the [University of Southampton](http://www.soton.ac.uk). 
 
-OpenIMAJ has a long history, starting well before its public release; Parts of the original codebase come from projects funded by the European Union's [6th Framework Programme](http://cordis.europa.eu/fp6/), the [Engineering and Physical Sciences Research Council](http://www.epsrc.ac.uk), the [Arts and Humanities Research Council](http://www.ahrc.ac.uk), [http://www.ordnancesurvey.co.uk/](Ordnance Survey) and the [BBC](http://www.bbc.co.uk). The following image depicts the history up to the first public releases:
+OpenIMAJ has a long history, starting well before its public release; Parts of the original codebase come from projects funded by the European Union's [6th Framework Programme](http://cordis.europa.eu/fp6/), the [Engineering and Physical Sciences Research Council](http://www.epsrc.ac.uk), the [Arts and Humanities Research Council](http://www.ahrc.ac.uk), [Ordnance Survey](http://www.ordnancesurvey.co.uk/) and the [BBC](http://www.bbc.co.uk). The following image depicts the history up to the first public releases:
 
 ![OpenIMAJ History](images/history.png)
 
