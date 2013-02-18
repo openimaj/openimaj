@@ -184,8 +184,77 @@
 
 			<p class="module_head">Get the code</p>
 			<pre class="module_body">svn checkout svn://svn.code.sf.net/p/openimaj/code/trunk openimaj-code</pre>
-
+			
+			<p class="module_head">Reference OpenIMAJ</p>
+			<div id="ref_manager_select" class="btn-group" data-toggle="buttons-radio">
+				<button class="btn btn-primary active" id="txt" managername="txt">Plain Text</button>
+				<button class="btn btn-primary" managername="bibtex">BibTeX</button>
+				<button class="btn btn-primary" managername="endnote">EndNote</button>
+			</div>
+			<pre id="txt-refs" class="module_body">
+Jonathon S. Hare, Sina Samangooei, and David P. Dupplaw. 2011. OpenIMAJ and ImageTerrier: Java libraries and tools for scalable multimedia analysis and indexing of images. In Proceedings of the 19th ACM international conference on Multimedia (MM '11). ACM, New York, NY, USA, 691-694. DOI=10.1145/2072298.2072421 http://doi.acm.org/10.1145/2072298.2072421
+			</pre>
+			<pre id="bibtex-refs" class="module_body" style="display: none">
+@inproceedings{Hare:2011:OIJ:2072298.2072421,
+ author = {Hare, Jonathon S. and Samangooei, Sina and Dupplaw, David P.},
+ title = {OpenIMAJ and ImageTerrier: Java libraries and tools for scalable multimedia analysis and indexing of images},
+ booktitle = {Proceedings of the 19th ACM international conference on Multimedia},
+ series = {MM '11},
+ year = {2011},
+ isbn = {978-1-4503-0616-4},
+ location = {Scottsdale, Arizona, USA},
+ pages = {691--694},
+ numpages = {4},
+ url = {http://doi.acm.org/10.1145/2072298.2072421},
+ doi = {10.1145/2072298.2072421},
+ acmid = {2072421},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+}
+			</pre>
+			<pre id="endnote-refs" class="module_body" style="display: none">
+%0 Conference Paper
+%1 2072421
+%A Jonathon S. Hare
+%A Sina Samangooei
+%A David P. Dupplaw 
+%T OpenIMAJ and ImageTerrier: Java libraries and tools for scalable multimedia analysis and indexing of images
+%B Proceedings of the 19th ACM international conference on Multimedia
+%@ 978-1-4503-0616-4
+%C Scottsdale, Arizona, USA
+%P 691-694
+%D 2011
+%R 10.1145/2072298.2072421
+%I ACM
+			</pre>
 		</span>
+		<script type="text/javascript">
+			renderRefs('#txt');
+		
+			$("#ref_manager_select button").each(function (index,thing) {
+				$(thing).click(function () {
+					renderRefs(thing);
+				});
+			});
+			
+			function renderRefs(thing) {
+				var type = $(thing).attr("managername");
+				
+				if ( type === 'txt') {
+					$('#txt-refs').css("display", "block");
+					$('#bibtex-refs').css("display", "none");
+					$('#endnote-refs').css("display", "none");
+				} else if (type === 'bibtex') {
+					$('#txt-refs').css("display", "none");
+					$('#bibtex-refs').css("display", "block");
+					$('#endnote-refs').css("display", "none");
+				} else if (type === 'endnote') {
+					$('#txt-refs').css("display", "none");
+					$('#bibtex-refs').css("display", "none");
+					$('#endnote-refs').css("display", "block");
+				}
+			}
+		</script>
 
 		<p>
 			Welcome to the home of the Open Intelligent Multimedia Analysis toolkit for Java (OpenIMAJ).
