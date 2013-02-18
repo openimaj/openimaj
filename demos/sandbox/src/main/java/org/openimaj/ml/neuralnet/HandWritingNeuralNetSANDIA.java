@@ -29,9 +29,9 @@
  */
 package org.openimaj.ml.neuralnet;
 
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TIntObjectProcedure;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.procedure.TIntObjectProcedure;
 import gov.sandia.cognition.algorithm.IterativeAlgorithm;
 import gov.sandia.cognition.algorithm.IterativeAlgorithmListener;
 import gov.sandia.cognition.io.CSVUtility;
@@ -53,23 +53,25 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
- * Just some experiments using the sandia cognitive foundary neural nets.
- *
+ * 
+ *         Just some experiments using the sandia cognitive foundary neural
+ *         nets.
+ * 
  */
 public class HandWritingNeuralNetSANDIA implements IterativeAlgorithmListener {
-	
+
 	/**
 	 * Default location of inputs
 	 */
 	public static final String INPUT_LOCATION = "/org/openimaj/ml/handwriting/inputs.csv";
-	
+
 	/**
 	 * Default location of outputs
 	 */
@@ -86,44 +88,48 @@ public class HandWritingNeuralNetSANDIA implements IterativeAlgorithmListener {
 	private int nHiddenLayer = 20;
 
 	private TIntIntHashMap examples;
-	private TIntObjectHashMap<List<IndependentPair<Vector,Vector>>> tests;
+	private TIntObjectHashMap<List<IndependentPair<Vector, Vector>>> tests;
 
 	private GradientDescendable neuralNet;
 
 	private int totalTests = 0;
-	
+
 	/**
 	 * @throws IOException
-	 * Load X input and y output from {@link #INPUT_LOCATION} and {@link #OUTPUT_LOCATION}
+	 *             Load X input and y output from {@link #INPUT_LOCATION} and
+	 *             {@link #OUTPUT_LOCATION}
 	 */
 	public HandWritingNeuralNetSANDIA() throws IOException {
-		BufferedReader xReader = new BufferedReader(new InputStreamReader(HandWritingNeuralNetSANDIA.class.getResourceAsStream(INPUT_LOCATION)));
-		BufferedReader yReader = new BufferedReader(new InputStreamReader(HandWritingNeuralNetSANDIA.class.getResourceAsStream(OUTPUT_LOCATION)));
-		this.xVals = fromCSV(xReader,5000);
-		this.yVals = fromCSV(yReader,5000);
-		
+		final BufferedReader xReader = new BufferedReader(new InputStreamReader(
+				HandWritingNeuralNetSANDIA.class.getResourceAsStream(INPUT_LOCATION)));
+		final BufferedReader yReader = new BufferedReader(new InputStreamReader(
+				HandWritingNeuralNetSANDIA.class.getResourceAsStream(OUTPUT_LOCATION)));
+		this.xVals = fromCSV(xReader, 5000);
+		this.yVals = fromCSV(yReader, 5000);
+
 		examples = new TIntIntHashMap();
-		this.tests = new TIntObjectHashMap<List<IndependentPair<Vector,Vector>>>();
+		this.tests = new TIntObjectHashMap<List<IndependentPair<Vector, Vector>>>();
 		prepareDataCollection();
 		learnNeuralNet();
 		testNeuralNet();
-//		new HandWritingInputDisplay(xVals);
+		// new HandWritingInputDisplay(xVals);
 	}
-	
+
 	private void testNeuralNet() {
-		final double[][] xVals = new double[totalTests ][];
-		final int[] yVals = new int[totalTests ];
-		this.tests.forEachEntry(new TIntObjectProcedure<List<IndependentPair<Vector,Vector>>>() {
+		final double[][] xVals = new double[totalTests][];
+		final int[] yVals = new int[totalTests];
+		this.tests.forEachEntry(new TIntObjectProcedure<List<IndependentPair<Vector, Vector>>>() {
 			int done = 0;
 			DenseVectorFactoryMTJ fact = new DenseVectorFactoryMTJ();
+
 			@Override
 			public boolean execute(int number, List<IndependentPair<Vector, Vector>> xypairs) {
-				for (IndependentPair<Vector, Vector> xyval: xypairs) {
-					Vector guessed = neuralNet.evaluate(xyval.firstObject());
+				for (final IndependentPair<Vector, Vector> xyval : xypairs) {
+					final Vector guessed = neuralNet.evaluate(xyval.firstObject());
 					int maxIndex = 0;
 					double maxValue = 0;
-					for (VectorEntry vectorEntry : guessed) {
-						if(maxValue  < vectorEntry.getValue())
+					for (final VectorEntry vectorEntry : guessed) {
+						if (maxValue < vectorEntry.getValue())
 						{
 							maxValue = vectorEntry.getValue();
 							maxIndex = vectorEntry.getIndex();
@@ -131,7 +137,7 @@ public class HandWritingNeuralNetSANDIA implements IterativeAlgorithmListener {
 					}
 					xVals[done] = fact.copyVector(xyval.firstObject()).getArray();
 					yVals[done] = maxIndex;
-					done ++;
+					done++;
 				}
 				return true;
 			}
@@ -141,85 +147,92 @@ public class HandWritingNeuralNetSANDIA implements IterativeAlgorithmListener {
 
 	private void prepareDataCollection() {
 		this.dataCollection = new ArrayList<InputOutputPair<Vector, Vector>>();
-		double[][] xArr = this.xVals.getArray();
-		double[][] yArr = this.yVals.getArray();
-		
+		final double[][] xArr = this.xVals.getArray();
+		final double[][] yArr = this.yVals.getArray();
+
 		for (int i = 0; i < xArr.length; i++) {
-			Vector xVector = VectorFactory.getDefault().copyArray(xArr[i]);
-			double[] yValues = new double[10];
-			int number = (int) (yArr[i][0] % 10);
-			int count = examples.adjustOrPutValue(number, 1, 1);
+			final Vector xVector = VectorFactory.getDefault().copyArray(xArr[i]);
+			final double[] yValues = new double[10];
+			final int number = (int) (yArr[i][0] % 10);
+			final int count = examples.adjustOrPutValue(number, 1, 1);
 			yValues[number] = 1;
-			Vector yVector = VectorFactory.getDefault().copyValues(yValues);
-			if(this.maxExamples != -1 && count >  maxExamples){
-				if(count>maxTests+maxExamples){
+			final Vector yVector = VectorFactory.getDefault().copyValues(yValues);
+			if (this.maxExamples != -1 && count > maxExamples) {
+				if (count > maxTests + maxExamples) {
 					continue;
 				}
-				List<IndependentPair<Vector,Vector>> numberTest = this.tests.get(number);
-				if(numberTest == null){
-					this.tests.put(number, numberTest = new ArrayList<IndependentPair<Vector,Vector>>());
+				List<IndependentPair<Vector, Vector>> numberTest = this.tests.get(number);
+				if (numberTest == null) {
+					this.tests.put(number, numberTest = new ArrayList<IndependentPair<Vector, Vector>>());
 				}
-				numberTest.add(IndependentPair.pair(xVector,yVector));
-				totalTests  ++;
+				numberTest.add(IndependentPair.pair(xVector, yVector));
+				totalTests++;
 			}
-			else{
-				this.dataCollection.add(DefaultInputOutputPair.create(xVector,yVector));	
+			else {
+				this.dataCollection.add(DefaultInputOutputPair.create(xVector, yVector));
 			}
-			
+
 		}
 	}
 
 	private void learnNeuralNet() {
-//		ArrayList<Integer> nodesPerLayer = toArrayList(
-//				new Integer[]{this.xVals.getColumnDimension(),this.xVals.getColumnDimension()/4,10}
-//		);
-//		ArrayList<DifferentiableUnivariateScalarFunction> squashFunctions = toArrayList(
-//				new DifferentiableUnivariateScalarFunction[]{new SigmoidFunction(),new SigmoidFunction()}
-//		); 
-		ArrayList<Integer> nodesPerLayer = toArrayList(
-				new Integer[]{this.xVals.getColumnDimension(),nHiddenLayer,10}
-		);
-		ArrayList<DifferentiableUnivariateScalarFunction> squashFunctions = toArrayList(
-				new DifferentiableUnivariateScalarFunction[]{new AtanFunction(),new AtanFunction()}
-		); 
-//		DifferentiableFeedforwardNeuralNetwork nn = new DifferentiableFeedforwardNeuralNetwork(
-//			nodesPerLayer,
-//			squashFunctions,			
-//			new Random()
-//		);
-		ThreeLayerFeedforwardNeuralNetwork nn = new ThreeLayerFeedforwardNeuralNetwork( this.xVals.getColumnDimension(), nHiddenLayer, 10);
-		ParameterDifferentiableCostMinimizer conjugateGradient = new ParameterDifferentiableCostMinimizer(new FunctionMinimizerLiuStorey() );
-        conjugateGradient.setObjectToOptimize( nn );
-//        conjugateGradient.setCostFunction( new MeanSquaredErrorCostFunction() );
-        conjugateGradient.addIterativeAlgorithmListener(this);
-        conjugateGradient.setMaxIterations(50);
-//		FletcherXuHybridEstimation minimiser = new FletcherXuHybridEstimation();
-//		minimiser.setObjectToOptimize( nn );
-//		minimiser.setMaxIterations(50);
+		// ArrayList<Integer> nodesPerLayer = toArrayList(
+		// new
+		// Integer[]{this.xVals.getColumnDimension(),this.xVals.getColumnDimension()/4,10}
+		// );
+		// ArrayList<DifferentiableUnivariateScalarFunction> squashFunctions =
+		// toArrayList(
+		// new DifferentiableUnivariateScalarFunction[]{new
+		// SigmoidFunction(),new SigmoidFunction()}
+		// );
+		final ArrayList<Integer> nodesPerLayer = toArrayList(
+				new Integer[] { this.xVals.getColumnDimension(), nHiddenLayer, 10 }
+				);
+		final ArrayList<DifferentiableUnivariateScalarFunction> squashFunctions = toArrayList(
+				new DifferentiableUnivariateScalarFunction[] { new AtanFunction(), new AtanFunction() }
+				);
+		// DifferentiableFeedforwardNeuralNetwork nn = new
+		// DifferentiableFeedforwardNeuralNetwork(
+		// nodesPerLayer,
+		// squashFunctions,
+		// new Random()
+		// );
+		final ThreeLayerFeedforwardNeuralNetwork nn = new ThreeLayerFeedforwardNeuralNetwork(
+				this.xVals.getColumnDimension(), nHiddenLayer, 10);
+		final ParameterDifferentiableCostMinimizer conjugateGradient = new ParameterDifferentiableCostMinimizer(
+				new FunctionMinimizerLiuStorey());
+		conjugateGradient.setObjectToOptimize(nn);
+		// conjugateGradient.setCostFunction( new MeanSquaredErrorCostFunction()
+		// );
+		conjugateGradient.addIterativeAlgorithmListener(this);
+		conjugateGradient.setMaxIterations(50);
+		// FletcherXuHybridEstimation minimiser = new
+		// FletcherXuHybridEstimation();
+		// minimiser.setObjectToOptimize( nn );
+		// minimiser.setMaxIterations(50);
 		neuralNet = conjugateGradient.learn(this.dataCollection);
 	}
 
-
 	private static <T> ArrayList<T> toArrayList(T[] values) {
-		ArrayList<T> configList = new ArrayList<T>();
-		for (T t : values) {
+		final ArrayList<T> configList = new ArrayList<T>();
+		for (final T t : values) {
 			configList.add(t);
 		}
 		return configList;
 	}
 
 	private Matrix fromCSV(BufferedReader bufferedReader, int nLines) throws IOException {
-		
+
 		String[] lineValues = null;
 		double[][] outArr = null;
 		Matrix retMat = null;
 		int row = 0;
 		while ((lineValues = CSVUtility.nextNonEmptyLine(bufferedReader)) != null) {
-			if(outArr == null) {
+			if (outArr == null) {
 				retMat = new Matrix(nLines, lineValues.length);
 				outArr = retMat.getArray();
 			}
-			
+
 			for (int col = 0; col < lineValues.length; col++) {
 				outArr[row][col] = Double.parseDouble(lineValues[col]);
 			}
@@ -227,7 +240,7 @@ public class HandWritingNeuralNetSANDIA implements IterativeAlgorithmListener {
 		}
 		return retMat;
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		new HandWritingNeuralNetSANDIA();
 	}

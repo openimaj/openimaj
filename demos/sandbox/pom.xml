@@ -175,7 +175,7 @@
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.imageterrier</groupId>
 			<artifactId>ImageTerrier</artifactId>
 			<version>3.5-SNAPSHOT</version>
@@ -184,7 +184,7 @@
 			<groupId>org.imageterrier</groupId>
 			<artifactId>ImageTerrierTools</artifactId>
 			<version>3.5-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.encog</groupId>
 			<artifactId>encog-core</artifactId>

@@ -58,13 +58,13 @@ public class ASMFitAnimation {
 	public static void main(String[] args) throws IOException {
 //		final File dir = new File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
 		final File dir = new File("/Users/jsh2/Downloads/imm_face_db");
-		ASFDataset dataset = new ASFDataset(dir);
+		final ASFDataset dataset = new ASFDataset(dir);
 		
 		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
 		final PointListConnections conns = dataset.getConnections();
 
 		final float scale = 0.02f;
-		FNormalLandmarkModel.Factory factory = new FNormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED, 5, 9, scale);
+		final FNormalLandmarkModel.Factory factory = new FNormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED, 5, 9, scale);
 		//BlockLandmarkModel.Factory factory = new BlockLandmarkModel.Factory();
 		final ActiveShapeModel asm = ActiveShapeModel.trainModel(new PercentageEnergyComponentSelector(0.95), data, new PointDistributionModel.BoxConstraint(3), factory);
 
@@ -84,7 +84,7 @@ public class ASMFitAnimation {
 				frame.drawImage(img.toRGB(), 0, 0);
 				frame.drawLines(conns.getLines(shape), 1, RGBColour.BLUE);
 
-				IterationResult next = asm.performIteration(img, shape);
+				final IterationResult next = asm.performIteration(img, shape);
 				shape = next.shape;
 				
 //				frame.drawPoint(pt, RGBColour.RED, 3);
