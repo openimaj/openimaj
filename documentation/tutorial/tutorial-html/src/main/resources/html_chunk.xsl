@@ -98,7 +98,23 @@
                      Headers and Footers
     ################################################### -->
     <xsl:template name="user.head.content">
+			<link rel="image_src" href="../images/OpenImaj.png" />
+			<meta property="og:image" content="http://openimaj.org/images/OpenImaj.png" />
+			<meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis" />
+			<meta property="og:url" content="http://www.openimaj.org" />
+			<meta property="og:description" content="OpenIMAJ is an award-winning set of libraries and tools for multimedia content analysis and content generation." />
 			<script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script>
+			<script type="text/javascript">
+	      var _gaq = _gaq || [];
+	      _gaq.push(['_setAccount', 'UA-38338744-1']);
+	      _gaq.push(['_trackPageview']);
+
+	      (function() {
+	        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	      })();
+	    </script>
     </xsl:template>
 
     <xsl:template name="user.header.navigation">
@@ -122,6 +138,9 @@
 										<li>
 											<a href="../contact.html" title="Support &amp; Contacts">Support &amp; Contacts</a>
 										</li>
+										<li>
+											<a href="team.html"  title="Team">Team</a>
+										</li>										
 										<li>
 											<a href="http://blogs.ecs.soton.ac.uk/multimedia" title="The Blog">The Blog</a>
 										</li>
@@ -152,26 +171,26 @@
 												</li>
 											</ul>
 										</li>
-										<li>
-											<a href="../#screencasts" title="Screencasts">Screencasts</a>
-										</li>
 										<li class="dropdown-submenu">
 											<a href="../#using" title="Using OpenIMAJ">Using OpenIMAJ</a>
 											<ul class="dropdown-menu">
 												<li>
-													<a href="../" title="Building OpenIMAJ from Source">Building OpenIMAJ from Source</a>
+													<a href="../BuildFromSource.html" title="Building OpenIMAJ from Source">Building OpenIMAJ from Source</a>
 												</li>
 												<li>
-													<a href="../" title="Using OpenIMAJ as a Library">Using OpenIMAJ as a Library</a>
+													<a href="../UseLibrary.html" title="Using OpenIMAJ as a Library">Using OpenIMAJ as a Library</a>
 												</li>
 												<li>
-													<a href="../" title="Using OpenIMAJ with Groovy">Using OpenIMAJ with Groovy</a>
+													<a href="../Groovy.html" title="Using OpenIMAJ with Groovy">Using OpenIMAJ with Groovy</a>
 												</li>
 												<li>
-													<a href="../" title="Using OpenIMAJ with Android">Using OpenIMAJ with Android</a>
+													<a href="../tools.html"  title="OpenIMAJ commandline tools introduction">OpenIMAJ commandline tools introduction</a>
 												</li>
 												<li>
-													<a href="../#tools" title="OpenIMAJ Tools">OpenIMAJ Tools</a>
+													<a href="../flickrCrawler.html"  title="The FlickrCrawler Tool">The FlickrCrawler Tool</a>
+												</li>
+												<li>
+													<a href="../bibliography.html"  title="Bibliography">Bibliography</a>
 												</li>
 											</ul>
 										</li>

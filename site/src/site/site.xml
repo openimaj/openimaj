@@ -45,6 +45,10 @@
   <body>
 		<head>
 			<link rel="image_src" href="images/OpenImaj.png" />
+			<meta property="og:image" content="http://openimaj.org/images/OpenImaj.png" />
+			<meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis" />
+			<meta property="og:url" content="http://www.openimaj.org" />
+			<meta property="og:description" content="OpenIMAJ is an award-winning set of libraries and tools for multimedia content analysis and content generation." />
 			<script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.0/mustache.min.js" type="text/javascript" charset="utf-8"></script>
 			<style type="text/css">
 				p {
@@ -130,16 +134,12 @@
 				<item name="The Tutorial (PDF)" href="tutorial-pdf.pdf"/>
 				<item name="The Tutorial (HTML)" href="tutorial/index.html"/>
 	    </item>
-			<item name="Screencasts" href="#screencasts">
-	    </item>
 			<item name="Using OpenIMAJ" href="#using">
 				<item name="Building OpenIMAJ from Source" href="BuildFromSource.html" />
 				<item name="Using OpenIMAJ as a Library" href="UseLibrary.html" />
 				<item name="Using OpenIMAJ with Groovy" href="Groovy.html" />
-				<item name="OpenIMAJ Tools" href="#tools">
-					<item name="OpenIMAJ commandline tools introduction" href="tools.html" />
-					<item name="The FlickrCrawler Tool" href="flickrCrawler.html" />
-				</item>
+				<item name="OpenIMAJ commandline tools introduction" href="tools.html" />
+				<item name="The FlickrCrawler Tool" href="flickrCrawler.html" />
 	    </item>
 			<item name="API Reference" href="apidocs/index.html" />
 			<item name="Bibliography" href="bibliography.html" />
