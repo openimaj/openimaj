@@ -89,9 +89,6 @@ public class PersonMatcher
 	/** The face recognition engine we'll use */
 	private final FaceRecognitionEngine<? extends DetectedFace, ?, String> faceRecogniser;
 
-	/** Whether to display the images */
-	private final boolean display = false;
-
 	/** Whether to cache search results */
 	private final boolean cacheImages = true;
 
@@ -195,7 +192,7 @@ public class PersonMatcher
 
 	/**
 	 * 	@param fi The image to find the query person within
-	 * 	@return
+	 * 	@return The matching results
 	 */
 	public List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>>
 		query( final FImage fi )
