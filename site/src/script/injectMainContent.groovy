@@ -14,10 +14,16 @@ if (!templateFile.exists())
 String templateContent = templateFile.text;
 
 sourceDir.eachFile { file ->
+	File newFile = new File(targetDir, file.name);
+	File tFile = new File(targetDir, "template-"+file.name);
     String sourceContent = file.text;
 
-    String newContent = templateContent.replace(insertPoint, sourceContent);
-    File newFile = new File(targetDir, file.name);
+	thisTemplateContent = templateContent;
+	if (tFile.exists()) {
+		thisTemplateContent = tFile.text;
+	}
+
+    String newContent = thisTemplateContent.replace(insertPoint, sourceContent);
 
     newFile.write(newContent);
 }

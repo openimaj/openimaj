@@ -5,9 +5,14 @@
 
 	<span class="row">
 		<span id="module">
+			<p class="module_head">Learn</p>
+			<div class="module_body" style="text-align:center;-webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;">
+				<a href="tutorial/index.html"><img src="images/tutorial.png" /></a>
+			</div>
+			
 			<p class="module_head">Dependencies</p>
 			<div class="row-fluid">
-				<div class="span3">
+				<div style="float:left">
 					<div class="btn-group">
 						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 							Select task
@@ -84,8 +89,8 @@
 						</ul>
 					</div>
 				</div>
-				<div class="span5">
-					<div id="manager_select" class="btn-group span5" data-toggle="buttons-radio">
+				<div>
+					<div id="manager_select" class="btn-group" data-toggle="buttons-radio" style="float:right">
 						<button class="btn btn-primary active" id="mavenmode" managername="maven">Maven</button>
 						<button class="btn btn-primary" managername="ivy">Ivy</button>
 						<button class="btn btn-primary" managername="sbt">SBT</button>
@@ -192,8 +197,7 @@
 				<button class="btn btn-primary" managername="endnote">EndNote</button>
 			</div>
 			<pre id="txt-refs" class="module_body">
-Jonathon S. Hare, Sina Samangooei, and David P. Dupplaw. 2011. OpenIMAJ and ImageTerrier: Java libraries and tools for scalable multimedia analysis and indexing of images. In Proceedings of the 19th ACM international conference on Multimedia (MM '11). ACM, New York, NY, USA, 691-694. DOI=10.1145/2072298.2072421 http://doi.acm.org/10.1145/2072298.2072421
-			</pre>
+Jonathon S. Hare, Sina Samangooei, and David P. Dupplaw. 2011. OpenIMAJ and ImageTerrier: Java libraries and tools for scalable multimedia analysis and indexing of images. In Proceedings of the 19th ACM international conference on Multimedia (MM '11). ACM, New York, NY, USA, 691-694. DOI=10.1145/2072298.2072421 http://doi.acm.org/10.1145/2072298.2072421</pre>
 			<pre id="bibtex-refs" class="module_body" style="display: none">
 @inproceedings{Hare:2011:OIJ:2072298.2072421,
  author = {Hare, Jonathon S. and Samangooei, Sina and Dupplaw, David P.},
@@ -210,8 +214,7 @@ Jonathon S. Hare, Sina Samangooei, and David P. Dupplaw. 2011. OpenIMAJ and Imag
  acmid = {2072421},
  publisher = {ACM},
  address = {New York, NY, USA},
-}
-			</pre>
+}</pre>
 			<pre id="endnote-refs" class="module_body" style="display: none">
 %0 Conference Paper
 %1 2072421
@@ -225,8 +228,7 @@ Jonathon S. Hare, Sina Samangooei, and David P. Dupplaw. 2011. OpenIMAJ and Imag
 %P 691-694
 %D 2011
 %R 10.1145/2072298.2072421
-%I ACM
-			</pre>
+%I ACM</pre>
 		</span>
 		<script type="text/javascript">
 			renderRefs('#txt');
@@ -256,62 +258,41 @@ Jonathon S. Hare, Sina Samangooei, and David P. Dupplaw. 2011. OpenIMAJ and Imag
 			}
 		</script>
 
-		<p>
+		<h4>
 			Welcome to the home of the Open Intelligent Multimedia Analysis toolkit for Java (OpenIMAJ).
-		</p>
+		</h4>
 
 		<p>
-			OpenIMAJ is a collection of libraries for multimedia analysis written in the Java programming language. Currently most of the focus in OpenIMAJ is on image analysis and feature extraction, and as such the OpenIMAJ libraries contain methods for processing images and extracting state-of-the-art features, including SIFT. The OpenIMAJ clustering and nearest-neighbour libraries contain efficient, multi-threaded implementations of clustering algorithms including Hierarchical K-Means and Approximate K-Means. The clustering library makes it possible to easily create visual-bag-of-words representations for images. OpenIMAJ also incorporates a number of tools to enable extremely-large-scale multimedia analysis using a distributed computing approach based on
-			<a href="http://hadoop.apache.org">Apache Hadoop</a>
-			.
-		</p>
-
-		<p>
-			The library is available as a modular set of Jars and the source is also available (mostly under a
-			<a href="./license.html">BSD-style license</a>
-			). To get started quickly with OpenIMAJ, we recommend you try the
-			<a href="./tutorial/">tutorial</a>
-			. For more information about installing the source code, integrating the jars with your java project or using the command line tools please consult the documentation menu above. The
-			<a href="http://blogs.ecs.soton.ac.uk/multimedia/">blog</a>
-			shows some cool examples of things we've been doing with OpenIMAJ and our sister project
-			<a href="http://www.imageterrier.org">ImageTerrier</a>
-			.
-		</p>
-
-		<p>
-			For more information and details please contact
-			<a href="mailto:jsh2@ecs.soton.ac.uk">Jonathon Hare</a>
-			,
-			<a href="mailto:ss@ecs.soton.ac.uk">Sina Samangooei</a>
-			or
-			<a href="mailto:dpd@ecs.soton.ac.uk">David Dupplaw</a>
-			in
-			<a href="http://www.ecs.soton.ac.uk">Electronics and Computer Science</a>
-			at the
-			<a href="http://www.soton.ac.uk">University of Southampton</a>
-			.
-		</p>
-
-		<p>
-			The development of OpenIMAJ was graciously funded by
-			<a href="http://cordis.europa.eu/fp7/">The European Union Seventh Framework</a>
-			projects (FP7/2007-2013)
-			<a href="http://www.livingknowledge-project.eu">LivingKnowledge</a>
-			(grant agreement no 231126) and
-			<a href="http://www.arcomem.eu">ARCOMEM</a>
-			(grant agreement no 270239), and by
-			<a href="http://www.provincia.tn.it/">The Autonomous Province of Trento (Italy)</a>
-			, under the
-			<a href="http://www.livememories.org">Livememories</a>
-			project.
+			OpenIMAJ is an <a href="http://www.acmmm11.org/content-awards-recognitions.html">award-winning</a> set of libraries
+	    and tools for multimedia content analysis and content generation. OpenIMAJ is very broad and contains everything from state-of-the-art 
+			computer vision (e.g. SIFT descriptors, salient region detection, face detection, etc.) and advanced data clustering, through to 
+			software that performs analysis on the content, layout and structure of webpages.
 		</p>
 
 		<div>
-			<img src="images/soton_sm.png"/>
-			<img src="images/fp7_sm.png"/>
-			<img src="images/arcomem_logo_sm.png"/>
-			<img src="images/livememories_sm.jpg"/>
-			<img src="images/livingknowledge_sm.png"/>
+			The following short video gives a brief introduction to OpenIMAJ and our sister project
+			<a href="http://www.imageterrier.org">ImageTerrier</a>:
+			<iframe width="560" height="315" src="http://www.youtube.com/embed/TNEQ0eNqLgA" frameborder="0" allowfullscreen style="margin: 0 auto; display:block;"></iframe>
+			<br />
+		</div>
+		
+		<p>
+			The library is available as a modular set of Jars and the source is freely available under a
+			<a href="./license.html">BSD-style license</a>. If you use OpenIMAJ for academic work, we'd appreciate it if you <a href="http://dl.acm.org/citation.cfm?id=2072421">reference</a> us. To get started quickly with OpenIMAJ, we recommend you try the
+			<a href="./tutorial/index.html">tutorial</a>. For more information about installing the source code, integrating the jars with your java project or using the command line tools please consult the documentation menu above. The <a href="http://blogs.ecs.soton.ac.uk/multimedia/">blog</a> shows some cool examples of things we've been doing with OpenIMAJ and
+			<a href="http://www.imageterrier.org">ImageTerrier</a>.
+		</p>
+
+		<p>
+			Development of OpenIMAJ is hosted by <a href="http://ecs.soton.ac.uk">Electronics and Computer Science</a> at the <a href="http://www.soton.ac.uk">University of Southampton</a>. Current development of OpenIMAJ is graciously funded by
+			<a href="http://cordis.europa.eu/fp7/">The European Union Seventh Framework</a> under the 
+			<a href="http://www.arcomem.eu">ARCOMEM</a> project. Click <a href="sponsors.html">here</a> more information on the history of OpenIMAJ.
+		</p>
+		
+		<div style="text-align: center;">
+			<a href="http://www.soton.ac.uk"><img src="images/soton.png" alt="University of Southampton"/></a>
+			<a href="http://cordis.europa.eu/fp7/home_en.html"><img src="images/fp7.png" alt="FP 7" /></a>
+			<a href="http://www.arcomem.eu"><img src="images/arcomem_logo.jpg" alt="ARCOMEM" /></a>
 		</div>
 	</span>
 </div>

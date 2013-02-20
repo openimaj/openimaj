@@ -47,12 +47,17 @@
 			<link rel="image_src" href="images/OpenImaj.png" />
 			<script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.0/mustache.min.js" type="text/javascript" charset="utf-8"></script>
 			<style type="text/css">
+				p {
+					text-align: justify;
+				}
+				
 				#module {
 					float: right;
-					width: 479px;
+					width: 380px;
 					margin: 0 0 20px 1em;
 					background-color: rgb(29, 76, 116);
 					padding-left: 1em;
+					padding-right: 1em;
 					color: whitesmoke;
 					-webkit-border-radius: 4px;
 					-moz-border-radius: 4px;
@@ -61,9 +66,9 @@
 				
 				.module_body{
 					background-color: white;
-					margin: 1em;
+					margin-top: 1em;
 					padding: 1em;
-					width: 85%;
+					//width: 85%;
 					font-size: x-small;
 				}
 				.module_head{
@@ -128,16 +133,16 @@
 			<item name="Screencasts" href="#screencasts">
 	    </item>
 			<item name="Using OpenIMAJ" href="#using">
-				<item name="Building OpenIMAJ from Source" href="BuildFromSource.html"/>
-				<item name="Using OpenIMAJ as a Library" href="UseLibrary.html"/>
-				<item name="Using OpenIMAJ with Groovy" href="Groovy.html"/>
-				<item name="Using OpenIMAJ with Android" href="Android.html"/>
+				<item name="Building OpenIMAJ from Source" href="BuildFromSource.html" />
+				<item name="Using OpenIMAJ as a Library" href="UseLibrary.html" />
+				<item name="Using OpenIMAJ with Groovy" href="Groovy.html" />
 				<item name="OpenIMAJ Tools" href="#tools">
-					<item name="OpenIMAJ commandline tools introduction" href="Tools.html"/>
-					<item name="The FlickrCrawler Tool" href="FlickrCrawler.html"/>
+					<item name="OpenIMAJ commandline tools introduction" href="tools.html" />
+					<item name="The FlickrCrawler Tool" href="flickrCrawler.html" />
 				</item>
 	    </item>
-			<item name="API Reference" href="apidocs/index.html"/>
+			<item name="API Reference" href="apidocs/index.html" />
+			<item name="Bibliography" href="bibliography.html" />
 			<item name="Project Information" href="#info">
 				<item href="plugin-management.html" name="Plugin Management" />
 				<item href="mail-lists.html" name="Mailing Lists" />

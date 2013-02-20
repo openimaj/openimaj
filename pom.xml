@@ -22,6 +22,15 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 		<name>The University of Southampton</name>
 		<url>http://www.soton.ac.uk</url>
 	</organization>
+	<mailingLists>
+	    <mailingList>
+	      <name>OpenIMAJ Mailing List</name>
+	      <subscribe>openimaj-discuss-join@lists.sourceforge.net</subscribe>
+	      <unsubscribe>openimaj-discuss-leave@lists.sourceforge.net</unsubscribe>
+	      <post>openimaj-discuss@lists.sourceforge.net</post>
+	      <archive>https://sourceforge.net/mailarchive/forum.php?forum_name=openimaj-discuss</archive>
+	    </mailingList>
+	  </mailingLists>
 	<developers>
 		<developer>
 			<id>jonhare</id>
@@ -164,7 +173,7 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 										<include name="**/target/generated-sources/annotations/bibliography.bib"/>
 									</fileset>
 								</concat>
-								<concat destfile="${basedir}/site/src/site/resources/bibliography.html" binary="no">
+								<concat destfile="${basedir}/site/src/site/static-html/bibliography.html" binary="no">
 									<fileset dir="${basedir}">
 										<include name="**/target/generated-sources/annotations/bibliography.html"/>
 									</fileset>

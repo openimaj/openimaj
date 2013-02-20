@@ -344,9 +344,9 @@ public enum StandardFormatters implements ReferenceFormatter {
 			final StringBuilder builder = new StringBuilder();
 
 			for (final Reference r : refs) {
-				builder.append("<div class=\"ref\">");
+				builder.append("<p class=\"ref\">");
 				builder.append(format(r));
-				builder.append("</div>\n");
+				builder.append("</p>\n");
 			}
 
 			return builder.toString();
@@ -438,7 +438,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 			if (ref.url().length() > 0)
 				builder.append("<a class='url' href='" + ref.url() + "'>" + ref.url() + "</a>");
 
-			return builder.toString();
+			return builder.toString().replace("{", "").replace("}", "");
 		}
 	};
 
