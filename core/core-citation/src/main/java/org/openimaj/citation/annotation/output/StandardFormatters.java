@@ -29,8 +29,16 @@
  */
 package org.openimaj.citation.annotation.output;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Collection;
+import java.util.List;
 
+import org.jbibtex.LaTeXObject;
+import org.jbibtex.LaTeXParser;
+import org.jbibtex.LaTeXPrinter;
+import org.jbibtex.ParseException;
 import org.openimaj.citation.annotation.Reference;
 
 /**
@@ -265,6 +273,8 @@ public enum StandardFormatters implements ReferenceFormatter {
 		}
 
 		String formatName(String name) {
+			name = format(name);
+
 			if (name.contains(",")) {
 				final String lastName = name.substring(0, name.indexOf(","));
 				final String[] firstNames = name.substring(name.indexOf(",") + 1).split(" ");
@@ -295,20 +305,20 @@ public enum StandardFormatters implements ReferenceFormatter {
 
 			appendNames(builder, ref.author());
 
-			builder.append(ref.title() + ". ");
+			builder.append(format(ref.title()) + ". ");
 
 			if (ref.journal().length() > 0)
-				builder.append(ref.journal() + ". ");
+				builder.append(format(ref.journal()) + ". ");
 			if (ref.booktitle().length() > 0)
-				builder.append(ref.booktitle() + ". ");
+				builder.append(format(ref.booktitle()) + ". ");
 			if (ref.institution().length() > 0)
-				builder.append(ref.institution() + ". ");
+				builder.append(format(ref.institution()) + ". ");
 			if (ref.school().length() > 0)
-				builder.append(ref.school() + ". ");
+				builder.append(format(ref.school()) + ". ");
 			if (ref.publisher().length() > 0)
-				builder.append(ref.publisher() + ". ");
+				builder.append(format(ref.publisher()) + ". ");
 			if (ref.organization().length() > 0)
-				builder.append(ref.organization() + ". ");
+				builder.append(format(ref.organization()) + ". ");
 
 			if (ref.pages().length > 0) {
 				if (ref.pages().length == 1)
@@ -324,11 +334,11 @@ public enum StandardFormatters implements ReferenceFormatter {
 			}
 
 			if (ref.month().length() > 0)
-				builder.append(ref.month() + ", ");
-			builder.append(ref.year() + ". ");
+				builder.append(format(ref.month()) + ", ");
+			builder.append(format(ref.year()) + ". ");
 
 			if (ref.url().length() > 0)
-				builder.append(ref.url());
+				builder.append(format(ref.url()));
 
 			return builder.toString();
 		}
@@ -357,7 +367,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 				return;
 
 			if (authors.length == 1) {
-				builder.append(formatName(authors[0]) + ".");
+				builder.append(formatName(authors[0]) + ". ");
 				return;
 			}
 
@@ -369,6 +379,8 @@ public enum StandardFormatters implements ReferenceFormatter {
 		}
 
 		String formatName(String name) {
+			name = format(name);
+
 			if (name.contains(",")) {
 				final String lastName = name.substring(0, name.indexOf(","));
 				final String[] firstNames = name.substring(name.indexOf(",") + 1).split(" ");
@@ -402,21 +414,21 @@ public enum StandardFormatters implements ReferenceFormatter {
 			builder.append("</span>");
 
 			builder.append("<span class='title'>");
-			builder.append(ref.title() + ". ");
+			builder.append(format(ref.title()) + ". ");
 			builder.append("</span>");
 
 			if (ref.journal().length() > 0)
-				builder.append("<span class='journal'>" + ref.journal() + ". </span>");
+				builder.append("<span class='journal'>" + format(ref.journal()) + ". </span>");
 			if (ref.booktitle().length() > 0)
-				builder.append("<span class='booktitle'>" + ref.booktitle() + ". </span>");
+				builder.append("<span class='booktitle'>" + format(ref.booktitle()) + ". </span>");
 			if (ref.institution().length() > 0)
-				builder.append("<span class='institution'>" + ref.institution() + ". </span>");
+				builder.append("<span class='institution'>" + format(ref.institution()) + ". </span>");
 			if (ref.school().length() > 0)
-				builder.append("<span class='school'>" + ref.school() + ". </span>");
+				builder.append("<span class='school'>" + format(ref.school()) + ". </span>");
 			if (ref.publisher().length() > 0)
-				builder.append("<span class='publisher'>" + ref.publisher() + ". </span>");
+				builder.append("<span class='publisher'>" + format(ref.publisher()) + ". </span>");
 			if (ref.organization().length() > 0)
-				builder.append("<span class='organization'>" + ref.organization() + ". </span>");
+				builder.append("<span class='organization'>" + format(ref.organization()) + ". </span>");
 
 			if (ref.pages().length > 0) {
 				if (ref.pages().length == 1)
@@ -432,13 +444,13 @@ public enum StandardFormatters implements ReferenceFormatter {
 			}
 
 			if (ref.month().length() > 0)
-				builder.append("<span class='month'>" + ref.month() + ", </span>");
-			builder.append("<span class='year'>" + ref.year() + ". </span>");
+				builder.append("<span class='month'>" + format(ref.month()) + ", </span>");
+			builder.append("<span class='year'>" + format(ref.year()) + ". </span>");
 
 			if (ref.url().length() > 0)
-				builder.append("<a class='url' href='" + ref.url() + "'>" + ref.url() + "</a>");
+				builder.append("<a class='url' href='" + format(ref.url()) + "'>" + format(ref.url()) + "</a>");
 
-			return builder.toString().replace("{", "").replace("}", "");
+			return builder.toString();
 		}
 	};
 
@@ -450,5 +462,31 @@ public enum StandardFormatters implements ReferenceFormatter {
 	@Override
 	public String format(Collection<Reference> refs) {
 		return formatRefs(refs);
+	}
+
+	static List<LaTeXObject> parseLaTeX(String string) throws IOException, ParseException {
+		final Reader reader = new StringReader(string);
+
+		try {
+			final LaTeXParser parser = new LaTeXParser();
+
+			return parser.parse(reader);
+		} finally {
+			reader.close();
+		}
+	}
+
+	static String printLaTeX(List<LaTeXObject> objects) {
+		final LaTeXPrinter printer = new LaTeXPrinter();
+
+		return printer.print(objects);
+	}
+
+	static String format(String latex) {
+		try {
+			return printLaTeX(parseLaTeX(latex));
+		} catch (final Exception e) {
+			return latex;
+		}
 	}
 }
