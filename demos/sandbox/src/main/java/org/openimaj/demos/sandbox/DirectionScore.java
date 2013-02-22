@@ -1,3 +1,4 @@
+package org.openimaj.demos.sandbox;
 /**
  * Copyright (c) 2011, The University of Southampton and the individual contributors.
  * All rights reserved.
