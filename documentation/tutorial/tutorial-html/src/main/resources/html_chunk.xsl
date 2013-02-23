@@ -200,18 +200,18 @@
 										<li class="dropdown-submenu">
 	       							<a href="#info" title="Project Information">Project Information</a>
 						          <ul class="dropdown-menu">
-                        <li><a href="../plugin-management.html" title="Plugin Management">Plugin Management</a></li>
-                        <li><a href="../mail-lists.html" title="Mailing Lists">Mailing Lists</a></li>
-                        <li><a href="../integration.html" title="Continuous Integration">Continuous Integration</a></li>
-                        <li><a href="../license.html" title="Project License">Project License</a></li>
-                        <li><a href="../team-list.html" title="Project Team">Project Team</a></li>
-                        <li><a href="../source-repository.html" title="Source Repository">Source Repository</a></li>
-                        <li><a href="../index.html" title="About">About</a></li>
-                        <li><a href="../issue-tracking.html" title="Issue Tracking">Issue Tracking</a></li>
-                        <li><a href="../project-summary.html" title="Project Summary">Project Summary</a></li>
-                        <li><a href="../plugins.html" title="Project Plugins">Project Plugins</a></li>
-                        <li><a href="../dependency-convergence.html" title="Dependency Convergence">Dependency Convergence</a></li>
-                        <li><a href="../dependencies.html" title="Dependencies">Dependencies</a></li>
+												<li><a href="../plugin-management.html" title="Plugin Management">Plugin Management</a></li>
+												<li><a href="../mail-lists.html" title="Mailing Lists">Mailing Lists</a></li>
+												<li><a href="../integration.html" title="Continuous Integration">Continuous Integration</a></li>
+												<li><a href="../license.html" title="Project License">Project License</a></li>
+												<li><a href="../team-list.html" title="Project Team">Project Team</a></li>
+												<li><a href="../source-repository.html" title="Source Repository">Source Repository</a></li>
+												<li><a href="../index.html" title="About">About</a></li>
+												<li><a href="../issue-tracking.html" title="Issue Tracking">Issue Tracking</a></li>
+												<li><a href="../project-summary.html" title="Project Summary">Project Summary</a></li>
+												<li><a href="../plugins.html" title="Project Plugins">Project Plugins</a></li>
+												<li><a href="../dependency-convergence.html" title="Dependency Convergence">Dependency Convergence</a></li>
+												<li><a href="../dependencies.html" title="Dependencies">Dependencies</a></li>
                       </ul>
 				            </li>
 									</ul>

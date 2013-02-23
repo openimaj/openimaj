@@ -274,7 +274,7 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 					<!-- Site assembly -->
 					<execution>
 						<id>unpack-html</id>
-						<phase>package</phase>
+						<phase>site</phase>
 						<goals>
 							<goal>unpack</goal>
 						</goals>
@@ -291,7 +291,7 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 					</execution>
 					<execution>
 						<id>copy-pdf</id>
-						<phase>package</phase>
+						<phase>site</phase>
 						<goals>
 							<goal>copy</goal>
 						</goals>
