@@ -58,8 +58,14 @@ MavenProject loadProject(File pomFile) {
     try {
         reader = new FileReader(pomFile);
         model = mavenreader.read(reader);
-        model.setPomFile(pomFile);
+        
+		try {
+			model.setPomFile(pomFile);
+		} catch (Exception nsm) {
+			//ignore. Model 2.x doesn't have this method; 3.x does...
+		}
     } catch(Exception ex) {
+		ex.printStackTrace();
         fail("Unable to read pom " + pomFile);
     }
 

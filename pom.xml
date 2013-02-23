@@ -133,13 +133,24 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9</version>
 				<configuration>
-					<header><![CDATA[
+					<bottom><![CDATA[
 						<div style="display:none">
-							<link rel="stylesheet" type="text/css" href="/css/reference.css" />
+							<link rel="stylesheet" type="text/css" href="{@docRoot}/../css/reference.css" />
 							<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-							<script type="text/javascript" src="/js/reference.js"></script>
+							<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
+							<script type="text/javascript">
+					      var _gaq = _gaq || [];
+					      _gaq.push(['_setAccount', 'UA-38338744-1']);
+					      _gaq.push(['_trackPageview']);
+
+					      (function() {
+					        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+					        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+					        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+					      })();
+					    </script>
 						</div>
-						]]></header>
+						]]></bottom>
 					<linksource>true</linksource>
 				</configuration>
 			</plugin>
@@ -261,42 +272,42 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 				<inherited>false</inherited>
 				<executions>
 					<!-- Site assembly -->
-					<!-- <execution>
-											<id>unpack-html</id>
-											<phase>site</phase>
-											<goals>
-												<goal>unpack</goal>
-											</goals>
-											<configuration>
-												<artifactItems>
-													<artifactItem>
-														<groupId>org.openimaj</groupId>
-														<artifactId>tutorial-html</artifactId>
-														<version>${project.version}</version>
-													</artifactItem>
-												</artifactItems>
-												<outputDirectory>${basedir}/target/site/</outputDirectory>
-											</configuration>
-										</execution>
-										<execution>
-											<id>copy-pdf</id>
-											<phase>site</phase>
-											<goals>
-												<goal>copy</goal>
-											</goals>
-											<configuration>
-												<artifactItems>
-													<artifactItem>
-														<groupId>org.openimaj</groupId>
-														<artifactId>tutorial-pdf</artifactId>
-														<version>${project.version}</version>
-														<type>pdf</type>
-													</artifactItem>
-												</artifactItems>
-												<outputDirectory>${basedir}/target/site/</outputDirectory>
-												<stripVersion>true</stripVersion>
-											</configuration>
-										</execution> -->
+					<execution>
+						<id>unpack-html</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.openimaj</groupId>
+									<artifactId>tutorial-html</artifactId>
+									<version>${project.version}</version>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${basedir}/target/site/</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-pdf</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.openimaj</groupId>
+									<artifactId>tutorial-pdf</artifactId>
+									<version>${project.version}</version>
+									<type>pdf</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${basedir}/target/site/</outputDirectory>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
@@ -361,16 +372,16 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 				<reportSets>
 					<reportSet>
 						<reports>
-							<!-- <report>cim</report> -->
-							<!-- <report>dependencies</report>
-							<report>dependency-convergence</report> -->
+							<report>cim</report>
+							<report>dependencies</report>
+							<report>dependency-convergence</report>
 							<report>dependency-management</report>
 							<report>distribution-management</report>
 							<report>help</report>
 							<report>index</report>
 							<report>issue-tracking</report>
 							<report>license</report>
-							<!-- <report>mailing-list</report> -->
+							<report>mailing-list</report>
 							<report>modules</report>
 							<report>plugin-management</report>
 							<report>plugins</report>
@@ -387,11 +398,11 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 				<version>2.9</version>
 				<configuration>
 					<excludePackageNames>org.openimaj.demos.*:org.openimaj.examples.*</excludePackageNames>
-					<header><![CDATA[
+					<bottom><![CDATA[
 						<div style="display:none">
-							<link rel="stylesheet" type="text/css" href="/css/reference.css" />
+							<link rel="stylesheet" type="text/css" href="{@docRoot}/../css/reference.css" />
 							<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-							<script type="text/javascript" src="/js/reference.js"></script>
+							<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
 							<script type="text/javascript">
 					      var _gaq = _gaq || [];
 					      _gaq.push(['_setAccount', 'UA-38338744-1']);
@@ -404,18 +415,32 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 					      })();
 					    </script>
 						</div>
-						]]></header>
+						]]></bottom>
 					<linksource>true</linksource>
 				</configuration>
+				<reportSets>
+					<reportSet>
+						<id>javadoc</id>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>aggregate</id>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
-			<!-- <plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
 					<linkJavadoc>true</linkJavadoc>
 				</configuration>
-			</plugin> -->
+			</plugin>
 		</plugins>
 	</reporting>
 	<repositories>
