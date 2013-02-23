@@ -3,13 +3,13 @@
   <parent>
     <artifactId>openimaj-hadoop-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.1</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>SequenceFileTool</artifactId>
-  <version>1.0.6-SNAPSHOT</version>
+  <version>1.1</version>
   <packaging>jar</packaging>
   <name>SequenceFileTool</name>
   <inceptionYear>2011</inceptionYear>
@@ -23,19 +23,19 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-hadoop</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
+      <version>1.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
+      <version>1.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
+      <version>1.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

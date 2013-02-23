@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-hardware</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.1</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj.hardware</groupId>
   <artifactId>kinect</artifactId>
-  <version>1.0.6-SNAPSHOT</version>
+  <version>1.1</version>
   <name>The OpenIMAJ Kinect Interface Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>The OpenIMAJ Kinect Library contains the core classes and native code required interface with the Kinect device.</description>
@@ -17,7 +17,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
+      <version>1.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
