@@ -3,14 +3,14 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>LocalFeaturesTool</artifactId>
   <packaging>jar</packaging>
-  <version>1.1</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>LocalFeaturesTool</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -23,19 +23,19 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
-      <version>1.1</version>
+      <version>1.1.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-local-features</artifactId>
-      <version>1.1</version>
+      <version>1.1.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.1</version>
+      <version>1.1.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>

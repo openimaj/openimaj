@@ -3,14 +3,14 @@
   <parent>
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj-ide-integration</artifactId>
   <packaging>pom</packaging>
-  <version>1.1</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>OpenIMAJ IDE Integration Plugins</name>
   <inceptionYear>2011</inceptionYear>
   <description>

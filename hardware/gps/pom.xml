@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.openimaj</groupId>
     <artifactId>openimaj-hardware</artifactId>
-    <version>1.1</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj.hardware</groupId>
   <artifactId>gps-reader</artifactId>
-  <version>1.1</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>OpenIMAJ Groovy GPS Reader</name>
   <description>Interface to GPS devices that support the NMEA protocol.</description>
   <inceptionYear>2011</inceptionYear>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.openimaj.hardware</groupId>
       <artifactId>nmea-parser</artifactId>
-      <version>1.1</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.rxtx</groupId>
@@ -74,7 +74,7 @@
     <dependency>
       <groupId>org.openimaj.hardware</groupId>
       <artifactId>serial-driver</artifactId>
-      <version>1.1</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>

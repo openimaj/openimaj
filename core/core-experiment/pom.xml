@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-core-libs</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>core-experiment</artifactId>
-  <version>1.1</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>The OpenIMAJ Core Experiment Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -20,12 +20,12 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>IREval</artifactId>
-      <version>1.1</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-math</artifactId>
-      <version>1.1</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.googlecode.jatl</groupId>
