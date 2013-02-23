@@ -54,12 +54,12 @@
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-core</artifactId>
-			<version>[2.2,)</version>
+			<version>2.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-stream</artifactId>
-			<version>[2.2,)</version>
+			<version>2.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj.tools</groupId>
