@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-demos</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1</version>
+    <version>1.0.6-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj.demos</groupId>
   <artifactId>SimpleMosaic</artifactId>
-  <version>1.1</version>
+  <version>1.0.6-SNAPSHOT</version>
   <name>SimpleMosaic</name>
   <inceptionYear>2011</inceptionYear>
   <description>Demo showing SIFT matching with a Homography model to achieve image mosaicing.</description>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>demos</artifactId>
-      <version>1.1</version>
+      <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
