@@ -4,7 +4,7 @@
 	<groupId>org.openimaj</groupId>
 	<artifactId>openimaj</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.6-SNAPSHOT</version>
+	<version>1.1</version>
 	<name>OpenIMAJ master project</name>
 	<url>http://www.openimaj.org</url>
 	<inceptionYear>2011</inceptionYear>
@@ -181,17 +181,17 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 							<tasks>
 								<concat destfile="${basedir}/site/src/site/resources/bibliography.bib" binary="no">
 									<fileset dir="${basedir}">
-										<include name="**/target/generated-sources/annotations/bibliography.bib"/>
+										<include name="**/target/generated-sources/annotations/bibliography.bib" />
 									</fileset>
 								</concat>
 								<concat destfile="${basedir}/site/src/site/static-html/bibliography.html" binary="no">
 									<fileset dir="${basedir}">
-										<include name="**/target/generated-sources/annotations/bibliography.html"/>
+										<include name="**/target/generated-sources/annotations/bibliography.html" />
 									</fileset>
 								</concat>
 								<concat destfile="${basedir}/site/src/site/resources/bibliography.txt" binary="no">
 									<fileset dir="${basedir}">
-										<include name="**/target/generated-sources/annotations/bibliography.txt"/>
+										<include name="**/target/generated-sources/annotations/bibliography.txt" />
 									</fileset>
 								</concat>
 							</tasks>
@@ -477,8 +477,8 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 	<scm>
-		<connection>scm:svn:svn://svn.code.sf.net/p/openimaj/code/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/openimaj/code/trunk</developerConnection>
-		<url>https://sourceforge.net/p/openimaj/code</url>
+		<connection>scm:svn:svn://svn.code.sf.net/p/openimaj/code/tags/openimaj-1.1</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/openimaj/code/tags/openimaj-1.1</developerConnection>
+		<url>https://sourceforge.net/p/openimaj/code/tags/openimaj-1.1</url>
 	</scm>
 </project>
