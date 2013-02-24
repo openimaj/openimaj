@@ -98,8 +98,8 @@
                      Headers and Footers
     ################################################### -->
     <xsl:template name="user.head.content">
-			<link rel="image_src" href="../images/OpenImaj.png" />
-			<meta property="og:image" content="http://openimaj.org/images/OpenImaj.png" />
+			<link rel="image_src" href="../images/OpenImaj-sq.png" />
+			<meta property="og:image" content="http://openimaj.org/images/OpenImaj-sq.png" />
 			<meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis" />
 			<meta property="og:url" content="http://www.openimaj.org" />
 			<meta property="og:description" content="OpenIMAJ is an award-winning set of libraries and tools for multimedia content analysis and content generation." />
