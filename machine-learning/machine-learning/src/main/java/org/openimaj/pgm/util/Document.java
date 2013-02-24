@@ -36,9 +36,50 @@ import org.openimaj.feature.SparseIntFV;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class Document {
+public class Document extends SparseIntFV{
+
 	/**
-	 *
+	 * 
 	 */
-	public SparseIntFV words;
+	private static final long serialVersionUID = 2073772149798865435L;
+	private int length;
+	
+	/**
+	 * @param corpus documents from the same corpus share the same vocabulary size
+	 */
+	public Document(Corpus corpus) {
+		super(corpus.vocabularySize());
+	}
+	
+	/**
+	 * @param vocabularySize the number of words in this vocabulary
+	 */
+	public Document(int vocabularySize) {
+		super(vocabularySize);
+	}
+	/**
+	 * @return the number of unique words in this document
+	 */
+	public int countUniqueWords(){
+		return this.getVector().used();
+	}
+	
+	
+	public int length(){
+		return this.length;
+	}
+	
+	/**
+	 * sets a word in the document's count.
+	 * @param word
+	 * @param count
+	 */
+	public void setWordCount(int word, int count){
+		if(this.getVector().isUsed(word)){
+			this.length -= this.getVector().get(word);
+		}
+		this.length += this.getVector().set(word, count);
+	}
+
+	
 }

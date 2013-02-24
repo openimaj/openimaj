@@ -29,6 +29,7 @@
  */
 package org.openimaj.pgm.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,10 +40,22 @@ import java.util.List;
 public class Corpus {
 	private List<Document> documents;
 	private int vocabularySize;
-	public int getVocabularySize() {
+	
+	public Corpus(int vocabularySize) {
+		this.vocabularySize = vocabularySize;
+		this.documents = new ArrayList<Document>();
+	}
+	public int vocabularySize() {
 		return vocabularySize;
 	}
 	public List<Document> getDocuments() {
 		return documents;
 	}
+	public int size() {
+		return documents.size();
+	}
+	public void addDocument(Document d) {
+		this.documents.add(d);
+	}
+	
 }
