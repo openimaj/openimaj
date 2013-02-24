@@ -226,6 +226,11 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.2</version>
 				<dependencies>
+					<dependency><!-- add support for ssh/scp -->
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-ssh</artifactId>
+            <version>1.0</version>
+          </dependency>
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
