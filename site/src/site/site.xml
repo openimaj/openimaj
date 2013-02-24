@@ -28,8 +28,8 @@
 			<topBarIcon>
         <name>OpenIMAJ</name>
         <alt>OpenIMAJ</alt>
-        <src>/images/logo-tiny.png</src>
-        <href>/index.html</href>
+        <src>http://openimaj.org/images/logo-tiny.png</src>
+        <href>http://openimaj.org/index.html</href>
       </topBarIcon>
 		<facebookLike />
 		<googleSearch>
@@ -44,7 +44,7 @@
 
   <body>
 		<head>
-			<link rel="image_src" href="images/OpenImaj-sq.png" />
+			<link rel="image_src" href="http://openimaj.org/images/OpenImaj-sq.png" />
 			<meta property="og:image" content="http://openimaj.org/images/OpenImaj-sq.png" />
 			<meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis" />
 			<meta property="og:url" content="http://www.openimaj.org" />
