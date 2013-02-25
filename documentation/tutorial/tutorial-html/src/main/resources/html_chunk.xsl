@@ -98,6 +98,8 @@
                      Headers and Footers
     ################################################### -->
     <xsl:template name="user.head.content">
+			<meta property="fb:admins" content="286108206" />
+			<meta property="og:type" content="website" />
 			<link rel="image_src" href="../images/OpenImaj-sq.png" />
 			<meta property="og:image" content="http://openimaj.org/images/OpenImaj-sq.png" />
 			<meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis" />
