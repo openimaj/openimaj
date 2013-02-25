@@ -98,6 +98,8 @@
                      Headers and Footers
     ################################################### -->
     <xsl:template name="user.head.content">
+			<meta property="fb:admins" content="286108206" />
+			<meta property="og:type" content="website" />
 			<link rel="image_src" href="../images/OpenImaj-sq.png" />
 			<meta property="og:image" content="http://openimaj.org/images/OpenImaj-sq.png" />
 			<meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis" />
@@ -282,11 +284,11 @@
 							<form id="search-form" action="http://www.google.com/search" method="get" class="navbar-search pull-right" name="search-form">
 								<input value="" name="sitesearch" type="hidden"></input> <input class="search-query" name="q" id="query" type="text"></input>
 							</form><script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=search-form">
-			</script> <iframe src="http://www.facebook.com/plugins/like.php?href=http://www.openimaj.org/openimaj-maven-archetypes&amp;send=false&amp;layout=button_count&amp;show-faces=false&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" style="border:none; width:80px; height:20px; margin-top: 10px;" class="pull-right"></iframe> <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+			</script> <iframe src="http://www.facebook.com/plugins/like.php?href=http://www.openimaj.org/&amp;send=false&amp;layout=button_count&amp;show-faces=false&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" style="border:none; width:80px; height:20px; margin-top: 10px;" class="pull-right"></iframe> <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
 			</script>
 							<ul class="nav pull-right">
 								<li style="margin-top: 10px;">
-									<div class="g-plusone" data-href="http://www.openimaj.org/openimaj-maven-archetypes" data-size="medium" width="60px" align="right"></div>
+									<div class="g-plusone" data-href="http://www.openimaj.org/" data-size="medium" width="60px" align="right"></div>
 								</li>
 							</ul>
 						</div>
