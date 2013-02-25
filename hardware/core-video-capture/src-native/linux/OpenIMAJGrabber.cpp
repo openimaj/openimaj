@@ -178,12 +178,15 @@ bool OpenIMAJGrabber::startSession(int width, int height, double rate, Device * 
 }
 
 void OpenIMAJGrabber::stopSession() {
+    if (VG == NULL) return;
+    
     stop_capturing(VG);
     uninit_device(VG);
     close_device(VG);
 
     delete VG;
     data = NULL;
+    VG = NULL;
 }
 
 int OpenIMAJGrabber::getWidth() {
@@ -194,7 +197,7 @@ int OpenIMAJGrabber::getHeight() {
     return VG->format.fmt.pix.height;
 }
 
-void process_image(VideoGrabber*grabber, void* buffer, size_t length) {
+void process_image(VideoGrabber* grabber, void* buffer, size_t length) {
     if (grabber->rgb_buffer.length != length) {
         if (grabber->rgb_buffer.start != NULL) {
             free(grabber->rgb_buffer.start);

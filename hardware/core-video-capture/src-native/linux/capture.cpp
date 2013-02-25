@@ -184,6 +184,8 @@ void grabNextFrame(VideoGrabber * grabber) {
 }
 
 void stop_capturing(VideoGrabber * grabber) {
+        if (grabber == NULL) return;
+        
         enum v4l2_buf_type type;
 
         switch (grabber->io) {
@@ -203,6 +205,8 @@ void stop_capturing(VideoGrabber * grabber) {
 }
 
 void start_capturing(VideoGrabber * grabber) {
+        if (grabber == NULL) return;
+        
         unsigned int i;
         enum v4l2_buf_type type;
 
@@ -258,6 +262,8 @@ void start_capturing(VideoGrabber * grabber) {
 }
 
 void uninit_device(VideoGrabber * grabber) {
+        if (grabber == NULL) return;
+
         unsigned int i;
 
         switch (grabber->io) {
@@ -281,6 +287,8 @@ void uninit_device(VideoGrabber * grabber) {
 }
 
 static void init_read(VideoGrabber* grabber, unsigned int buffer_size) {
+        if (grabber == NULL) return;
+            
         grabber->buffers = (buffer*)calloc (1, sizeof (*(grabber->buffers)));
 
         if (!grabber->buffers) {
@@ -299,6 +307,8 @@ static void init_read(VideoGrabber* grabber, unsigned int buffer_size) {
 
 static void init_mmap(VideoGrabber* grabber)
 {
+        if (grabber == NULL) return;
+    
         struct v4l2_requestbuffers req;
 
         CLEAR (req);
@@ -357,6 +367,8 @@ static void init_mmap(VideoGrabber* grabber)
 
 static void init_userp(VideoGrabber* grabber, unsigned int buffer_size)
 {
+        if (grabber == NULL) return;
+    
         struct v4l2_requestbuffers req;
         unsigned int page_size;
 
@@ -508,6 +520,8 @@ void init_device(VideoGrabber * grabber) {
 }
 
 void close_device(VideoGrabber * grabber) {
+        if (grabber == NULL) return;
+    
         if (-1 == v4l2_close (grabber->fd))
                 errno_exit ("close");
 
@@ -515,6 +529,8 @@ void close_device(VideoGrabber * grabber) {
 }
 
 void open_device(VideoGrabber * grabber) {
+        if (grabber == NULL) return;
+    
         struct stat st;
 
         if (-1 == stat (grabber->dev_name, &st)) {
