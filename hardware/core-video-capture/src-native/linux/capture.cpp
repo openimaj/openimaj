@@ -224,7 +224,7 @@ void grabNextFrame(VideoGrabber * grabber) {
 }
 
 int stop_capturing(VideoGrabber * grabber) {
-        if (grabber == NULL) return;
+        if (grabber == NULL) return 0;
         
         enum v4l2_buf_type type;
 
@@ -246,7 +246,7 @@ int stop_capturing(VideoGrabber * grabber) {
 }
 
 int start_capturing(VideoGrabber * grabber) {
-        if (grabber == NULL) return;
+        if (grabber == NULL) return 0;
         
         unsigned int i;
         enum v4l2_buf_type type;
@@ -305,7 +305,7 @@ int start_capturing(VideoGrabber * grabber) {
 }
 
 int uninit_device(VideoGrabber * grabber) {
-        if (grabber == NULL) return;
+        if (grabber == NULL) return 0;
 
         unsigned int i;
 
@@ -332,7 +332,7 @@ int uninit_device(VideoGrabber * grabber) {
 }
 
 static int init_read(VideoGrabber* grabber, unsigned int buffer_size) {
-        if (grabber == NULL) return;
+        if (grabber == NULL) return 0;
             
         grabber->buffers = (buffer*)calloc (1, sizeof (*(grabber->buffers)));
 
@@ -353,7 +353,7 @@ static int init_read(VideoGrabber* grabber, unsigned int buffer_size) {
 
 static int init_mmap(VideoGrabber* grabber)
 {
-        if (grabber == NULL) return;
+        if (grabber == NULL) return 0;
     
         struct v4l2_requestbuffers req;
 
@@ -415,7 +415,7 @@ static int init_mmap(VideoGrabber* grabber)
 
 static int init_userp(VideoGrabber* grabber, unsigned int buffer_size)
 {
-        if (grabber == NULL) return;
+        if (grabber == NULL) return 0;
     
         struct v4l2_requestbuffers req;
         unsigned int page_size;
@@ -569,7 +569,7 @@ int init_device(VideoGrabber * grabber) {
 }
 
 int close_device(VideoGrabber * grabber) {
-        if (grabber == NULL) return;
+        if (grabber == NULL) return 0;
     
         if (-1 == v4l2_close (grabber->fd))
                 return -1;
@@ -580,7 +580,7 @@ int close_device(VideoGrabber * grabber) {
 }
 
 int open_device(VideoGrabber * grabber) {
-        if (grabber == NULL) return;
+        if (grabber == NULL) return 0;
     
         struct stat st;
 
