@@ -208,12 +208,12 @@ void grabNextFrame(VideoGrabber * grabber) {
                                 if (EINTR == errno)
                                         continue;
 
-                                errno_exit ("select");
+                                //errno_exit ("select");
+                                continue;
                         }
 
                         if (0 == r) {
-                                fprintf (stderr, "select timeout\n");
-                                exit (EXIT_FAILURE);
+                                continue;
                         }
 
                         if (read_frame(grabber))

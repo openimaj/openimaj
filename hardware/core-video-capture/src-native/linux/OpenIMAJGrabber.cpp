@@ -178,7 +178,7 @@ bool OpenIMAJGrabber::startSession(int width, int height, double rate, Device * 
 }
 
 void OpenIMAJGrabber::stopSession() {
-    if (VG == NULL) return;
+    if (data == NULL) return;
     
     stop_capturing(VG);
     uninit_device(VG);
@@ -186,7 +186,6 @@ void OpenIMAJGrabber::stopSession() {
 
     delete VG;
     data = NULL;
-    VG = NULL;
 }
 
 int OpenIMAJGrabber::getWidth() {
