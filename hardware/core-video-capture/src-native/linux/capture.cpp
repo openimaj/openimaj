@@ -59,14 +59,14 @@ static io_method getIOType(struct v4l2_capability cap) {
     return IO_METHOD_READ;
 }
 
-static set_rate(VideoGrabber* grabber, double fps) {
+static int set_rate(VideoGrabber* grabber, double fps) {
     struct v4l2_streamparm parm;
 	int ret;
 
 	memset(&parm, 0, sizeof parm);
 	parm.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-	ret = ioctl(dev, VIDIOC_G_PARM, &parm);
+	ret = xioctl(grabber->fd, VIDIOC_G_PARM, &parm);
 	if (ret < 0) {
 		printf("Unable to get frame rate: %d.\n", errno);
 		return ret;
@@ -79,13 +79,13 @@ static set_rate(VideoGrabber* grabber, double fps) {
 	parm.parm.capture.timeperframe.numerator = 100;
 	parm.parm.capture.timeperframe.denominator = (int)(fps*100);
 
-	ret = ioctl(dev, VIDIOC_S_PARM, &parm);
+	ret = xioctl(grabber->fd, VIDIOC_S_PARM, &parm);
 	if (ret < 0) {
 		printf("Unable to set frame rate: %d.\n", errno);
 		return ret;
 	}
 
-	ret = ioctl(dev, VIDIOC_G_PARM, &parm);
+	ret = xioctl(grabber->fd, VIDIOC_G_PARM, &parm);
 	if (ret < 0) {
 		printf("Unable to get frame rate: %d.\n", errno);
 		return ret;
