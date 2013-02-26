@@ -170,9 +170,9 @@ bool OpenIMAJGrabber::startSession(int width, int height, double rate, Device * 
     VG->requested_height = height;
     VG->requested_rate = rate;
 
-    open_device(VG);
-    init_device(VG);
-    start_capturing(VG);
+    if (open_device(VG) < 0) return false;
+    if (init_device(VG) < 0) return false;
+    if (start_capturing(VG) < 0) return false;
 
     return true;
 }

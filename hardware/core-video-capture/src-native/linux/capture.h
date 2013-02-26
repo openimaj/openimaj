@@ -72,13 +72,13 @@ typedef struct _VideoGrabber {
     buffer rgb_buffer;
 } VideoGrabber;
 
-void open_device(VideoGrabber * grabber);
-void init_device(VideoGrabber * grabber);
-void start_capturing(VideoGrabber * grabber);
+int open_device(VideoGrabber * grabber);
+int init_device(VideoGrabber * grabber);
+int start_capturing(VideoGrabber * grabber);
 void grabNextFrame(VideoGrabber * grabber);
-void stop_capturing(VideoGrabber * grabber);
-void uninit_device(VideoGrabber * grabber);
-void close_device(VideoGrabber * grabber);
+int stop_capturing(VideoGrabber * grabber);
+int uninit_device(VideoGrabber * grabber);
+int close_device(VideoGrabber * grabber);
 
 void process_image(VideoGrabber*grabber, void* buffer, size_t length);
 
