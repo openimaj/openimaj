@@ -34,13 +34,6 @@
 #define FORCE_READ_MODE "OPENIMAJ_GRABBER_READ"
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
-static void errno_exit(const char * s)
-{
-        fprintf (stderr, "%s error %d, %s\n", s, errno, strerror (errno));
-
-        exit (EXIT_FAILURE);
-}
-
 static int xioctl(int fd, int request, void * arg) {
         int r;
 
@@ -208,7 +201,6 @@ void grabNextFrame(VideoGrabber * grabber) {
                                 if (EINTR == errno)
                                         continue;
 
-                                //errno_exit ("select");
                                 continue;
                         }
 
