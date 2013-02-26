@@ -31,6 +31,7 @@
 
 #include <libv4l2.h>
 
+#define FORCE_READ_MODE "OPENIMAJ_GRABBER_READ"
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
 static void errno_exit(const char * s)
@@ -49,12 +50,51 @@ static int xioctl(int fd, int request, void * arg) {
         return r;
 }
 
-static io_method getIOType(struct v4l2_capability cap) {    
-    if (cap.capabilities & V4L2_CAP_STREAMING) {
+static io_method getIOType(struct v4l2_capability cap) {
+    //if streaming is supported use Mem mapping, unless FORCE_READ_MODE is set in the environment
+    if ((cap.capabilities & V4L2_CAP_STREAMING) && (getenv(FORCE_READ_MODE) == NULL)) {
         return IO_METHOD_MMAP;
     }
     
     return IO_METHOD_READ;
+}
+
+static set_rate(VideoGrabber* grabber, double fps) {
+    struct v4l2_streamparm parm;
+	int ret;
+
+	memset(&parm, 0, sizeof parm);
+	parm.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+	ret = ioctl(dev, VIDIOC_G_PARM, &parm);
+	if (ret < 0) {
+		printf("Unable to get frame rate: %d.\n", errno);
+		return ret;
+	}
+
+	printf("Current frame rate: %u/%u\n",
+		parm.parm.capture.timeperframe.numerator,
+		parm.parm.capture.timeperframe.denominator);
+
+	parm.parm.capture.timeperframe.numerator = 100;
+	parm.parm.capture.timeperframe.denominator = (int)(fps*100);
+
+	ret = ioctl(dev, VIDIOC_S_PARM, &parm);
+	if (ret < 0) {
+		printf("Unable to set frame rate: %d.\n", errno);
+		return ret;
+	}
+
+	ret = ioctl(dev, VIDIOC_G_PARM, &parm);
+	if (ret < 0) {
+		printf("Unable to get frame rate: %d.\n", errno);
+		return ret;
+	}
+
+	printf("Frame rate set: %u/%u\n",
+		parm.parm.capture.timeperframe.numerator,
+		parm.parm.capture.timeperframe.denominator);
+	return 0;
 }
 
 static int read_frame(VideoGrabber* grabber)
@@ -503,6 +543,8 @@ void init_device(VideoGrabber * grabber) {
         min = grabber->format.fmt.pix.bytesperline * grabber->format.fmt.pix.height;
         if (grabber->format.fmt.pix.sizeimage < min)
                 grabber->format.fmt.pix.sizeimage = min;
+
+        set_rate(grabber, grabber->requested_rate);
 
         switch (grabber->io) {
         case IO_METHOD_READ:
