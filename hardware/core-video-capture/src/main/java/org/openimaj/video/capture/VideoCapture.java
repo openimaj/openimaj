@@ -249,8 +249,12 @@ public class VideoCapture extends Video<MBFImage> {
 		if (isStopped)
 			return frame;
 
-		grabber.nextFrame();
-
+		int err = grabber.nextFrame();
+		if (err == -1) 
+			throw new RuntimeException(new VideoCaptureException("Timed out waiting for next frame"));
+		if (err < -1)
+			throw new RuntimeException(new VideoCaptureException("Error occurred getting next frame"));
+			
 		final Pointer<Byte> data = grabber.getImage();
 		if (data == null) {
 			return frame;
