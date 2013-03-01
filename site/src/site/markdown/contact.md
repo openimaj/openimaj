@@ -7,7 +7,7 @@ For general queries and technical questions we suggest you join and post to the 
 Feature Requests and Bug Reporting
 ==================================
 
-Please report any issues, and make feature requests using the [OpenIMAJ JIRA Bug Tracker](htttp://jira.openimaj.org).
+Please report any issues, and make feature requests using the [OpenIMAJ JIRA Bug Tracker](http://jira.openimaj.org).
 
 
 
