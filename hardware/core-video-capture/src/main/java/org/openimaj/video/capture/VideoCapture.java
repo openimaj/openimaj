@@ -118,14 +118,14 @@ public class VideoCapture extends Video<MBFImage> {
 						defaultDevice = d;
 						break;
 					}
+				}
 
-					if (defaultDevice == null) {
-						System.err.println("Warning: The device name given by the " + DEFAULT_DEVICE_NUMBER_PROPERTY
-								+ " property (" + defaultDeviceStr + ") setting was not found and has been ignored.");
-						System.err.println("Valid devices are:");
-						for (int x = 0; x < devices.size(); x++)
-							System.err.println(x + " : " + devices.get(x).getIdentifierStr());
-					}
+				if (defaultDevice == null) {
+					System.err.println("Warning: The device name given by the " + DEFAULT_DEVICE_NUMBER_PROPERTY
+							+ " property (" + defaultDeviceStr + ") setting was not found and has been ignored.");
+					System.err.println("Valid devices are:");
+					for (int x = 0; x < devices.size(); x++)
+						System.err.println(x + " : " + devices.get(x).getIdentifierStr());
 				}
 			}
 		}
@@ -249,12 +249,12 @@ public class VideoCapture extends Video<MBFImage> {
 		if (isStopped)
 			return frame;
 
-		int err = grabber.nextFrame();
-		if (err == -1) 
+		final int err = grabber.nextFrame();
+		if (err == -1)
 			throw new RuntimeException(new VideoCaptureException("Timed out waiting for next frame"));
 		if (err < -1)
 			throw new RuntimeException(new VideoCaptureException("Error occurred getting next frame"));
-			
+
 		final Pointer<Byte> data = grabber.getImage();
 		if (data == null) {
 			return frame;
