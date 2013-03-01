@@ -65,10 +65,6 @@ static int set_rate(VideoGrabber* grabber, double fps) {
 		return ret;
 	}
 
-	printf("Current frame rate: %u/%u\n",
-		parm.parm.capture.timeperframe.numerator,
-		parm.parm.capture.timeperframe.denominator);
-
 	parm.parm.capture.timeperframe.numerator = 100;
 	parm.parm.capture.timeperframe.denominator = (int)(fps*100);
 
@@ -84,9 +80,6 @@ static int set_rate(VideoGrabber* grabber, double fps) {
 		return ret;
 	}
 
-	printf("Frame rate set: %u/%u\n",
-		parm.parm.capture.timeperframe.numerator,
-		parm.parm.capture.timeperframe.denominator);
 	return 0;
 }
 
