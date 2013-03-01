@@ -115,6 +115,7 @@ const char* Device::getIdentifier() {
 
 OpenIMAJGrabber::OpenIMAJGrabber() {
     data = NULL;
+    timeout = 5000;
 }
 
 OpenIMAJGrabber::~OpenIMAJGrabber() {
@@ -142,11 +143,15 @@ unsigned char* OpenIMAJGrabber::getImage() {
     return (unsigned char*)(VG->rgb_buffer.start);
 }
 
-void OpenIMAJGrabber::nextFrame() {
-    grabNextFrame(VG);
+int OpenIMAJGrabber::nextFrame() {
+    return grabNextFrame(VG);
 }
 
-bool OpenIMAJGrabber::startSession(int width, int height, double rate ) {
+void OpenIMAJGrabber::setTimeout(int timeout) {
+    VG->timeout = timeout;
+}
+
+bool OpenIMAJGrabber::startSession(int width, int height, double rate) {
     return startSession(width, height, rate, NULL);
 }
 

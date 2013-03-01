@@ -64,8 +64,9 @@ class OpenIMAJGrabber
         DeviceList* getVideoDevices();
 
         unsigned char* getImage();
-        void nextFrame();
-        bool startSession(int width, int height, double rate );
+        int nextFrame();
+        void setTimeout(int timeout);
+        bool startSession(int width, int height, double rate);
         bool startSession(int width, int height, double rate, Device * device);
         void stopSession();
 

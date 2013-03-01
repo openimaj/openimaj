@@ -30,9 +30,18 @@
 #
 
 
-g++ -fno-rtti -fno-exceptions -fPIC -g -c OpenIMAJGrabber.cpp
-g++ -fno-rtti -fno-exceptions -fPIC -g -c capture.cpp 
-g++ -fno-rtti -fno-exceptions -fPIC -g -c support.cpp
-gcc -nostdlibs -static-libgcc --shared -Wl,-soname,OpenIMAJGrabber.so -o OpenIMAJGrabber.so OpenIMAJGrabber.o capture.o support.o -lrt -lc -Wl,-Bstatic -lv4l2 -ljpeg
-cp OpenIMAJGrabber.so ../../src/main/resources/org/openimaj/video/capture/nativelib/linux_arm32_arm/
+echo "Building ARMHF"
+g++ -march=armv6 -mfpu=vfp -mfloat-abi=hard -fno-rtti -fno-exceptions -fPIC -g -c OpenIMAJGrabber.cpp
+g++ -march=armv6 -mfpu=vfp -mfloat-abi=hard -fno-rtti -fno-exceptions -fPIC -g -c capture.cpp 
+g++ -march=armv6 -mfpu=vfp -mfloat-abi=hard -fno-rtti -fno-exceptions -fPIC -g -c support.cpp
+gcc -march=armv6 -mfpu=vfp -mfloat-abi=hard -nostdlibs -static-libgcc --shared -Wl,-soname,OpenIMAJGrabber.so -o OpenIMAJGrabber.so OpenIMAJGrabber.o capture.o support.o -lrt -lc -lv4l2 -lv4lconvert -ljpeg
+cp OpenIMAJGrabber.so ../../src/main/resources/org/openimaj/video/capture/nativelib/linux_arm32_armhf/
 
+rm OpenIMAJGrabber.so
+
+echo "Building ARMEL"
+g++ -march=armv6 -mabi=aapcs-linux -mfloat-abi=soft -meabi=4 -fno-rtti -fno-exceptions -fPIC -g -c OpenIMAJGrabber.cpp
+g++ -march=armv6 -mabi=aapcs-linux -mfloat-abi=soft -meabi=4 -fno-rtti -fno-exceptions -fPIC -g -c capture.cpp 
+g++ -march=armv6 -mabi=aapcs-linux -mfloat-abi=soft -meabi=4 -fno-rtti -fno-exceptions -fPIC -g -c support.cpp
+gcc -march=armv6 -mabi=aapcs-linux -mfloat-abi=soft -meabi=4 -nostdlibs -static-libgcc --shared -Wl,-soname,OpenIMAJGrabber.so -o OpenIMAJGrabber.so OpenIMAJGrabber.o capture.o support.o -lrt -lc -lv4l2 -lv4lconvert -ljpeg
+cp OpenIMAJGrabber.so ../../src/main/resources/org/openimaj/video/capture/nativelib/linux_arm32_armel/

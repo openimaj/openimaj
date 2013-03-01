@@ -182,37 +182,37 @@ static int read_frame(VideoGrabber* grabber)
         return 1;
 }
 
-void grabNextFrame(VideoGrabber * grabber) {
-                for (;;) {
-                        fd_set fds;
-                        struct timeval tv;
-                        int r;
+int grabNextFrame(VideoGrabber * grabber) {
+    while (true) {
+        fd_set fds;
+        struct timeval tv;
+        int r;
 
-                        FD_ZERO (&fds);
-                        FD_SET (grabber->fd, &fds);
+        FD_ZERO (&fds);
+        FD_SET (grabber->fd, &fds);
 
-                        /* Timeout. */
-                        tv.tv_sec = 5;
-                        tv.tv_usec = 0;
+        /* Timeout. */
+        tv.tv_sec = grabber->timeout;
+        tv.tv_usec = 0;
 
-                        r = select (grabber->fd + 1, &fds, NULL, NULL, &tv);
+        r = select (grabber->fd + 1, &fds, NULL, NULL, &tv);
 
-                        if (-1 == r) {
-                                if (EINTR == errno)
-                                        continue;
+        if (-1 == r) {
+            if (EINTR == errno)
+                continue;
 
-                                continue;
-                        }
+            return -2;
+        }
 
-                        if (0 == r) {
-                                continue;
-                        }
+        if (0 == r) {
+            return -1;
+        }
 
-                        if (read_frame(grabber))
-                                break;
+        if (read_frame(grabber))
+            return 1;
 
-                        /* EAGAIN - continue select loop. */
-                }
+        /* EAGAIN - continue select loop. */
+    }
 }
 
 int stop_capturing(VideoGrabber * grabber) {
