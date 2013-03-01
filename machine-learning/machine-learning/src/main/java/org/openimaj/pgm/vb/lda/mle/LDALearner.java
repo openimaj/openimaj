@@ -219,8 +219,8 @@ public class LDALearner {
 	}
 
 	private boolean modelConverged(LDAModel model) {
-		final double EM_CONVERGED = this.getConfig(LDAConfig.EM_CONVERGED);
-		final int MAX_ITER = this.getConfig(LDAConfig.MAX_ITERATIONS);
+		final double EM_CONVERGED = (Double) this.getConfig(LDAConfig.EM_CONVERGED);
+		final int MAX_ITER = (Integer) this.getConfig(LDAConfig.MAX_ITERATIONS);
 		// if likelihood ~= oldLikelihood then this value will approach 0.
 		final double converged = (model.likelihood - model.oldLikelihood) / model.oldLikelihood;
 		final boolean liklihoodSettled = ((converged < EM_CONVERGED) || (model.iteration <= 2));
@@ -230,8 +230,8 @@ public class LDALearner {
 	}
 
 	private boolean variationalStateConverged(LDAVariationlState vstate) {
-		final double EM_CONVERGED = this.getConfig(LDAConfig.VAR_EM_CONVERGED);
-		final int MAX_ITER = this.getConfig(LDAConfig.VAR_MAX_ITERATIONS);
+		final double EM_CONVERGED = (Double) this.getConfig(LDAConfig.VAR_EM_CONVERGED);
+		final int MAX_ITER = (Integer) this.getConfig(LDAConfig.VAR_MAX_ITERATIONS);
 		// if likelihood ~= oldLikelihood then this value will approach 0.
 		final double converged = (vstate.likelihood - vstate.oldLikelihood) / vstate.oldLikelihood;
 		final boolean liklihoodSettled = ((converged < EM_CONVERGED) || (vstate.iteration <= 2));
