@@ -76,7 +76,7 @@ typedef struct _VideoGrabber {
 int open_device(VideoGrabber * grabber);
 int init_device(VideoGrabber * grabber);
 int start_capturing(VideoGrabber * grabber);
-void grabNextFrame(VideoGrabber * grabber);
+int grabNextFrame(VideoGrabber * grabber);
 int stop_capturing(VideoGrabber * grabber);
 int uninit_device(VideoGrabber * grabber);
 int close_device(VideoGrabber * grabber);
