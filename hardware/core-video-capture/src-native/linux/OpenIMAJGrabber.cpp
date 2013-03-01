@@ -115,7 +115,6 @@ const char* Device::getIdentifier() {
 
 OpenIMAJGrabber::OpenIMAJGrabber() {
     data = NULL;
-    timeout = 5000;
 }
 
 OpenIMAJGrabber::~OpenIMAJGrabber() {
@@ -174,6 +173,7 @@ bool OpenIMAJGrabber::startSession(int width, int height, double rate, Device * 
     VG->requested_width = width;
     VG->requested_height = height;
     VG->requested_rate = rate;
+    VG->timeout = 5000;
 
     if (open_device(VG) < 0) return false;
     if (init_device(VG) < 0) return false;
