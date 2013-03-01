@@ -5,9 +5,11 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 								xmlns:d="http://docbook.org/ns/docbook"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
+								xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
                 version="1.0">
 
     <xsl:import href="urn:docbkx:stylesheet"/>
+
     <!--###################################################
                      HTML Settings
     ################################################### -->
@@ -510,8 +512,13 @@
 
 				<div id="breadcrumbs">
 				  <ul class="breadcrumb">
-				     <li id="publishDate" class="pull-right">Last Published: 2013-02-07</li> <li class="divider pull-right">|</li>
-				   <li id="projectVersion" class="pull-right">Version: 1.0.6-SNAPSHOT</li>
+				     <li id="publishDate" class="pull-right">Last Published: 
+								<!-- <xsl:value-of select="format-date(current-date(), '[Y0001]-[M01]-[D01]')"/> -->
+								<!-- <xsl:value-of select="java:format(java:java.text.SimpleDateFormat.new('yyyy-mm-dd'), java:java.util.Date.new())"/> -->
+								<xsl:value-of select="date:date()"/>
+							</li>
+							<li class="divider pull-right">|</li>
+				   <li id="projectVersion" class="pull-right">Version: <xsl:value-of select="//d:edition" /></li>
 				  </ul>
 				</div>
 
