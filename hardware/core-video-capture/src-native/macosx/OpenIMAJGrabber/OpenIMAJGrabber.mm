@@ -84,6 +84,7 @@ OpenIMAJGrabberPriv::OpenIMAJGrabberPriv() {
     mCaptureDeviceInput = NULL;
     mCaptureDecompressedVideoOutput = NULL;
     delegate = NULL;
+    timeout = 5; //secs
 }
 
 OpenIMAJGrabber::~OpenIMAJGrabber() {
@@ -130,21 +131,39 @@ DeviceList* OpenIMAJGrabber::getVideoDevices() {
     return new DeviceList(devices, count);
 }
 
-void OpenIMAJGrabber::nextFrame() {
-    ((OpenIMAJGrabberPriv*)data)->nextFrame();
+int OpenIMAJGrabber::nextFrame() {
+    return ((OpenIMAJGrabberPriv*)data)->nextFrame();
 }
 
-void OpenIMAJGrabberPriv::nextFrame() {
+int OpenIMAJGrabberPriv::nextFrame() {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-	double sleepTime = 0.005; 
+	double sleepTime = 0.005;
+    double accum = 0;
+    int ret = -1;
     
-	NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime];
-	while (![delegate updateImage] &&
-		   [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil])
-		loopUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime]; 
+    while (accum < timeout) {
+        if ([delegate updateImage]) {
+            ret = 1;
+            break;
+        }
+    
+        NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime];
+        [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil];
+        accum += sleepTime;
+    }
     
     [pool drain];
+    
+    return ret;
+}
+
+void OpenIMAJGrabber::setTimeout(int timeoutMS) {
+    return ((OpenIMAJGrabberPriv*)data)->setTimeout(timeoutMS);
+}
+
+void OpenIMAJGrabberPriv::setTimeout(int timeoutMS) {
+    this->timeout = timeoutMS / 1000.0;
 }
 
 unsigned char* OpenIMAJGrabber::getImage() {
