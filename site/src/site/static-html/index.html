@@ -1,7 +1,26 @@
 <div>
-	<span class="row">
-		<img src="images/OpenImaj.png" title="OpenIMAJ: Intelligent Multimedia Analysis"/>
-	</span>
+	<div id="exampleCarousel" class="carousel slide">
+		<span style="position:absolute;">
+			<img src="images/OpenImaj.png" title="OpenIMAJ: Intelligent Multimedia Analysis"/>
+		</span>
+		<ol class="carousel-indicators">
+			<li data-target="#exampleCarousel" data-slide-to="0" class="active"></li>
+			<li data-target="#exampleCarousel" data-slide-to="1"></li>NN
+			<li data-target="#exampleCarousel" data-slide-to="2"></li>
+		</ol>
+		<!-- Carousel items -->
+		<div class="carousel-inner">
+			<div class="active item">Slide the first</div>
+			<div class="item">Slide the second</div>
+			<div class="item">Slide the third changes</div>
+		</div>
+		<!-- Carousel nav -->
+		<a class="carousel-control left" href="#exampleCarousel" data-slide="prev">&lsaquo;</a>
+		<a class="carousel-control right" href="#exampleCarousel" data-slide="next">&rsaquo;</a>
+	</div>
+	<script type="text/javascript" charset="utf-8">
+		$("#exampleCarousel").carousel()
+	</script>
 
 	<span class="row">
 		<span id="module">
@@ -24,7 +43,7 @@
 									<dependency>
 										<artifactId>image-processing</artifactId>
 										<groupId>org.openimaj</groupId>
-										<version>1.1</version>
+										<version>1.0.6-SNAPSHOT</version>
 										<scope>compile</scope>
 									</dependency>
 								</div>
@@ -35,7 +54,7 @@
 									<dependency>
 										<artifactId>video-processing</artifactId>
 										<groupId>org.openimaj</groupId>
-										<version>1.1</version>
+										<version>1.0.6-SNAPSHOT</version>
 										<scope>compile</scope>
 									</dependency>
 								</div>
@@ -46,7 +65,7 @@
 									<dependency>
 										<artifactId>faces</artifactId>
 										<groupId>org.openimaj</groupId>
-										<version>1.1</version>
+										<version>1.0.6-SNAPSHOT</version>
 										<scope>compile</scope>
 									</dependency>
 								</div>
@@ -57,13 +76,13 @@
 									<dependency>
 										<artifactId>image-processing</artifactId>
 										<groupId>org.openimaj</groupId>
-										<version>1.1</version>
+										<version>1.0.6-SNAPSHOT</version>
 										<scope>compile</scope>
 									</dependency>
 									<dependency>
 										<artifactId>core-hadoop</artifactId>
 										<groupId>org.openimaj</groupId>
-										<version>1.1</version>
+										<version>1.0.6-SNAPSHOT</version>
 										<scope>compile</scope>
 									</dependency>
 								</div>
@@ -74,13 +93,13 @@
 									<dependency>
 										<artifactId>image-processing</artifactId>
 										<groupId>org.openimaj</groupId>
-										<version>1.1</version>
+										<version>1.0.6-SNAPSHOT</version>
 										<scope>compile</scope>
 									</dependency>
 									<dependency>
 										<artifactId>core-tool</artifactId>
 										<groupId>org.openimaj.tools</groupId>
-										<version>1.1</version>
+										<version>1.0.6-SNAPSHOT</version>
 										<scope>compile</scope>
 									</dependency>
 								</div>

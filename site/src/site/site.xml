@@ -47,6 +47,8 @@
 			<meta property="fb:admins" content="286108206" />
 			<meta property="og:type" content="website" />
 			<link rel="image_src" href="http://openimaj.org/images/OpenImaj-sq.png" />
+			<script src="./js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+			<link rel="stylesheet" href="./css/bootstrap.min.css" />
 			<meta property="og:image" content="http://openimaj.org/images/OpenImaj-sq.png" />
 			<meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis" />
 			<meta property="og:url" content="http://www.openimaj.org" />
@@ -55,6 +57,12 @@
 			<style type="text/css">
 				p {
 					text-align: justify;
+				}
+
+				#exampleCarousel{
+					height:400px;
+					border:2px solid black;
+					background-color:lightgrey;
 				}
 				
 				#module {
