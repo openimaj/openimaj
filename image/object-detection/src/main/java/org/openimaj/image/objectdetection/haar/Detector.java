@@ -176,8 +176,12 @@ public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle
 					results.add(new Rectangle(x, y, windowWidth, windowHeight));
 				}
 
-				// if there is no hint of detection, then increase the step size
-				xstep = result == 0 ? smallStep : bigStep;
+				// if there is no detection, then increase the step size
+				xstep = (result > 0 ? smallStep : bigStep);
+
+				// TODO: think about what to do if there isn't a detection, but
+				// we're very close to having one based on the ratio of stages
+				// passes to total stages.
 			}
 		}
 	}
