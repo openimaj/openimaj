@@ -35,6 +35,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 void error(const char *str) {
     fprintf(stderr, "%s", str);
@@ -135,6 +136,13 @@ int OpenIMAJGrabber::nextFrame() {
     return ((OpenIMAJGrabberPriv*)data)->nextFrame();
 }
 
+double getTime() {
+    struct timeval  tv;
+    gettimeofday(&tv, NULL);
+    
+    return (((tv.tv_sec * 1000.0) + (tv.tv_usec / 1000.0))) / 1000;
+}
+
 int OpenIMAJGrabberPriv::nextFrame() {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
@@ -148,9 +156,10 @@ int OpenIMAJGrabberPriv::nextFrame() {
             break;
         }
     
+        double t1 = getTime();
         NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime];
         [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:loopUntil];
-        accum += sleepTime;
+        accum += getTime() - t1;
     }
     
     [pool drain];
