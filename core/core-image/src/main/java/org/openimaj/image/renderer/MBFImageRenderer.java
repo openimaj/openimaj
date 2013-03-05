@@ -36,15 +36,15 @@ import org.openimaj.image.MBFImage;
 
 /**
  * {@link ImageRenderer} for {@link MBFImage} images.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage> {
 
 	/**
 	 * Construct with given target image.
-	 * 
+	 *
 	 * @param targetImage
 	 *            the target image.
 	 */
@@ -54,7 +54,7 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 
 	/**
 	 * Construct with given target image and rendering hints.
-	 * 
+	 *
 	 * @param targetImage
 	 *            the target image.
 	 * @param hints
@@ -79,7 +79,7 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 	/**
 	 * Draw the provided image at the given coordinates. Parts of the image
 	 * outside the bounds of this image will be ignored
-	 * 
+	 *
 	 * @param image
 	 *            Image to draw.
 	 * @param x
@@ -195,7 +195,8 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 	}
 
 	@Override
-	protected void drawHorizLine(final int x1, final int x2, final int y, final Float[] col) {
+	protected void drawHorizLine(final int x1, final int x2, final int y, Float[] col) {
+		col = this.sanitise( col );
 		if (y < 0 || y > this.targetImage.getHeight()-1)
 			return;
 
@@ -213,4 +214,9 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 		}
 	}
 
+	@Override
+	protected Float[] sanitise( final Float[] colour )
+	{
+		return this.targetImage.colourSpace.sanitise( colour );
+	}
 }

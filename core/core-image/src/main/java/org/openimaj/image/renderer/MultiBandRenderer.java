@@ -35,20 +35,20 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 
 /**
- * Abstract base for {@link ImageRenderer}s that work on 
+ * Abstract base for {@link ImageRenderer}s that work on
  * {@link MultiBandImage}s.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> The pixel type
  * @param <I> The concrete subclass type
  * @param <S> The concrete subclass type of each band
  */
-public abstract class MultiBandRenderer 
-		<T extends Comparable<T>, 
-		I extends MultiBandImage<T,I,S>, 
-		S extends SingleBandImage<T,S>> 
-	extends 
+public abstract class MultiBandRenderer
+		<T extends Comparable<T>,
+		I extends MultiBandImage<T,I,S>,
+		S extends SingleBandImage<T,S>>
+	extends
 		ImageRenderer<T[], I>
 {
 	/**
@@ -58,7 +58,7 @@ public abstract class MultiBandRenderer
 	public MultiBandRenderer(final I targetImage) {
 		super(targetImage);
 	}
-	
+
 	/**
 	 * Construct with given target image and rendering hints.
 	 * @param targetImage the target image.
@@ -67,18 +67,18 @@ public abstract class MultiBandRenderer
 	public MultiBandRenderer(final I targetImage, final RenderHints hints) {
 		super(targetImage, hints);
 	}
-	
+
 	/**
 	 * 	Draws the given single band image onto each band at the given
 	 * 	position. Side-affects this image. The single band image must be of
 	 * 	the same type as the bands within this image.
-	 * 
+	 *
 	 *  @param image A {@link SingleBandImage} to draw
 	 *  @param x The x-coordinate for the top-left of the drawn image
 	 *  @param y The y-coordinate for the top-left of the drawn image
 	 */
 	public void drawImage(final S image, final int x, final int y) {
-		for (final S band : this.targetImage.bands) 
+		for (final S band : this.targetImage.bands)
 			band.createRenderer(this.hints).drawImage(image, x, y);
 	}
 
@@ -86,7 +86,7 @@ public abstract class MultiBandRenderer
 	 * 	Draws the given single band image onto the specific band at the given
 	 * 	position. Side-affects this image. The single band image must be of
 	 * 	the same type as the bands within this image.
-	 * 
+	 *
 	 *  @param image A {@link SingleBandImage} to draw
 	 *  @param band The band onto which the image will be drawn
 	 *  @param x The x-coordinate for the top-left of the drawn image
@@ -101,9 +101,9 @@ public abstract class MultiBandRenderer
 	 *  @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, double, int, int, java.lang.Object)
 	 */
 	@Override
-	public void drawLine(final int x1, final int y1, final double theta, final int length, final int thickness, final T[] grey) {
-		assert(grey.length >= this.targetImage.bands.size());
-		
+	public void drawLine(final int x1, final int y1, final double theta, final int length, final int thickness, T[] grey) {
+		grey = this.sanitise( grey );
+
 		for (int i=0; i<this.targetImage.bands.size(); i++) {
 			this.targetImage.bands.get(i).createRenderer(this.hints).drawLine(x1, y1, theta, length, thickness, grey[i]);
 		}
@@ -114,9 +114,9 @@ public abstract class MultiBandRenderer
 	 *  @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, int, int, int, java.lang.Object)
 	 */
 	@Override
-	public void drawLine(final int x0, final int y0, final int x1, final int y1, final int thickness, final T[] grey) {
-		assert(grey.length >= this.targetImage.bands.size());
-		
+	public void drawLine(final int x0, final int y0, final int x1, final int y1, final int thickness, T[] grey) {
+		grey = this.sanitise( grey );
+
 		for (int i=0; i<this.targetImage.bands.size(); i++) {
 			this.targetImage.bands.get(i).createRenderer(this.hints).drawLine(x0, y0, x1, y1, thickness, grey[i]);
 		}
@@ -127,7 +127,8 @@ public abstract class MultiBandRenderer
 	 *  @see org.openimaj.image.renderer.ImageRenderer#drawPoint(org.openimaj.math.geometry.point.Point2d, java.lang.Object, int)
 	 */
 	@Override
-	public void drawPoint(final Point2d p, final T[] col, final int size) {
+	public void drawPoint(final Point2d p, T[] col, final int size) {
+		col = this.sanitise( col );
 		for (int i = 0; i < this.targetImage.bands.size(); i++)
 			this.targetImage.bands.get(i).createRenderer(this.hints).drawPoint(p, col[i], size);
 	}
@@ -137,9 +138,10 @@ public abstract class MultiBandRenderer
 	 *  @see org.openimaj.image.renderer.ImageRenderer#drawPolygon(org.openimaj.math.geometry.shape.Polygon, int, java.lang.Object)
 	 */
 	@Override
-	public void drawPolygon(final Polygon p, final int thickness, final T[] grey) {
-		assert(grey.length >= this.targetImage.bands.size());
-		
+	public void drawPolygon(final Polygon p, final int thickness, T[] grey) {
+
+		grey = this.sanitise( grey );
+
 		for (int i=0; i<this.targetImage.bands.size(); i++) {
 			this.targetImage.bands.get(i).createRenderer(this.hints).drawPolygon(p, thickness, grey[i]);
 		}

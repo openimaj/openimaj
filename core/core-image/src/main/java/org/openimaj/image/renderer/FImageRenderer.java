@@ -328,14 +328,14 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 		if (!this.targetImage.getBounds().isInside(p))
 			return;
-		int halfsize = (size+1)/2; // 3 == 2, 4 = 2, 5 = 3, 6 = 3 etc.
+		final int halfsize = (size+1)/2; // 3 == 2, 4 = 2, 5 = 3, 6 = 3 etc.
 		// TODO anti-aliased point rendering
 		final int x = Math.round(p.getX());
 		final int y = Math.round(p.getY());
-		int startx = Math.max(0, x-(halfsize-1));
-		int starty = Math.max(0, y-(halfsize-1));
-		int endx = Math.min(this.targetImage.width,x+halfsize);
-		int endy = Math.min(this.targetImage.height,y+halfsize);
+		final int startx = Math.max(0, x-(halfsize-1));
+		final int starty = Math.max(0, y-(halfsize-1));
+		final int endx = Math.min(this.targetImage.width,x+halfsize);
+		final int endy = Math.min(this.targetImage.height,y+halfsize);
 
 		for (int j = starty; j < endy; j++) {
 			for (int i = startx; i < endx; i++) {
@@ -380,5 +380,11 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 		for (int x = startx; x <= stopx; x++) {
 			img[y][x] = c;
 		}
+	}
+
+	@Override
+	protected Float sanitise( final Float colour )
+	{
+		return colour;
 	}
 }
