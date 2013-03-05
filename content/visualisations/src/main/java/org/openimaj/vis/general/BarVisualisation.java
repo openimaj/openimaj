@@ -28,16 +28,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.vis.general;
 
 import java.awt.Font;
 
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.typography.general.GeneralFont;
-import org.openimaj.image.typography.general.GeneralFontRenderer;
-import org.openimaj.image.typography.general.GeneralFontStyle;
+import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.vis.Visualisation;
@@ -56,22 +56,22 @@ public class BarVisualisation extends Visualisation<double[]>
 	private static final long serialVersionUID = 1L;
 
 	/** The colour of the background */
-	private final Float[] backgroundColour = new Float[]{0f,0f,0f,0.75f};
+	private Float[] backgroundColour = new Float[]{0f,0f,0f,1f};
 
 	/** The colour of the bar */
-	private final Float[] barColour = new Float[]{1f,0f,0f,1f};
+	private Float[] barColour = new Float[]{1f,0f,0f,1f};
 
 	/** The colour to stroke the bar */
-	private final Float[] strokeColour = new Float[]{0f,0f,0f,1f};
+	private Float[] strokeColour = new Float[]{0f,0f,0f,1f};
 
 	/** The colour of the text to draw */
-	private final Float[] textColour = new Float[]{1f,1f,1f,1f};
+	private Float[] textColour = new Float[]{1f,1f,1f,1f};
 
 	/** The colour to stroke any text */
-	private final Float[] textStrokeColour = new Float[]{0f,0f,0f,1f};
+	private Float[] textStrokeColour = new Float[]{0f,0f,0f,1f};
 
 	/** Colour of the axis */
-	private final Float[] axisColour = new Float[]{1f,1f,1f,1f};
+	private Float[] axisColour = new Float[]{1f,1f,1f,1f};
 
 	/** Width of the axis line */
 	private final int axisWidth = 1;
@@ -80,7 +80,7 @@ public class BarVisualisation extends Visualisation<double[]>
 	private final int textBasePad = 4;
 
 	/** The font to draw any text in */
-	private final GeneralFont font = new GeneralFont( "Arial", Font.BOLD );
+	private final GeneralFont font = new GeneralFont( "Arial", Font.PLAIN );
 
 	/** Whether to auto scale the vertical axis */
 	private final boolean autoScale = true;
@@ -103,6 +103,24 @@ public class BarVisualisation extends Visualisation<double[]>
 	/** Whether to draw the main axis */
 	private final boolean drawAxis = true;
 
+	/** Whether or not to fix the axis */
+	private boolean fixAxis = false;
+
+	/** The location of the fixed axis, if it is to be fixed */
+	private double axisLocation = 100;
+
+	/** Whether to outline the text used to draw the values */
+	private boolean outlineText = false;
+
+	/** The size of the text to draw */
+	private int textSize = 12;
+
+	/** Whether to use a colour map or not */
+	private boolean useColourMap = true;
+
+	/** The colour map to use if useColourMap == true */
+	private ColourMap colourMap = ColourMap.Autumn;
+
 	/**
 	 * 	Create a bar visualisation of the given size
 	 *	@param width The width of the image
@@ -116,7 +134,7 @@ public class BarVisualisation extends Visualisation<double[]>
 	/**
 	 * 	Create a bar visualisation that will draw to the given
 	 * 	image.
-	 * 
+	 *
 	 *	@param imageToDrawTo The image to draw to.
 	 */
 	public BarVisualisation( final MBFImage imageToDrawTo )
@@ -162,7 +180,7 @@ public class BarVisualisation extends Visualisation<double[]>
 	public void plotBars( final double[] data )
 	{
 		// Set the background
-		this.visImage.fill( this.backgroundColour );
+		this.visImage.fill( this.getBackgroundColour() );
 
 		final int w = this.visImage.getWidth();
 		final int h = this.visImage.getHeight();
@@ -175,19 +193,26 @@ public class BarVisualisation extends Visualisation<double[]>
 		if( this.autoScale )
 			min = ArrayUtils.minValue( data );
 
+		final double maxR = Math.max( Math.abs(max), Math.abs( min ) );
+
 		// Work out the scalars
-		final double yscale = h/(max-min);
+		double yscale = h/maxR;
 		final double xscale = w/(double)data.length;
 
 		// Position of the axis
-		final double z = min * yscale;
+		if( !this.fixAxis )
+				this.axisLocation = min * yscale;
+		else	yscale = Math.min( (h-this.axisLocation)/min, (h-this.axisLocation)/max );
 
 		for( int i = 0; i < data.length; i++ )
 		{
 			final int x = (int)(i*xscale);
-			double s = data[i] * yscale;
+			double s = -data[i] * yscale;
 			double offset = 0;
-			Float[] c = this.barColour;
+			Float[] c = this.getBarColour();
+
+			if( this.useColourMap )
+				c = this.colourMap.apply( (float)(Math.abs(data[i]) / maxR) );
 
 			if( s < 0 )
 			{
@@ -198,41 +223,53 @@ public class BarVisualisation extends Visualisation<double[]>
 			if( this.useIndividualBarColours )
 				c = this.barColours[i%this.barColours.length];
 
-			this.visImage.drawShapeFilled( new Rectangle( x, (int)(h-s+z+offset),
+			this.visImage.drawShapeFilled( new Rectangle( x, (int)(h-s+this.axisLocation+offset),
 					(int)xscale, (int)s ), c );
-			this.visImage.drawShape( new Rectangle( x, (int)(h-s+z+offset),
-					(int)xscale, (int)s ), this.strokeColour );
+			this.visImage.drawShape( new Rectangle( x, (int)(h-s+this.axisLocation+offset),
+					(int)xscale, (int)s ), this.getStrokeColour() );
 
 			if( this.drawValue )
 			{
 				final String text = ""+data[i];
 
-				// Work out the text size
-				final GeneralFontStyle<Float[]> fs = new GeneralFontStyle<Float[]>(
-						this.font, this.visImage.createRenderer(), false );
-				fs.setFontSize( 30 );
-				final Rectangle r = new GeneralFontRenderer<Float[]>().getBounds( text, fs );
+				final HersheyFont f = HersheyFont.TIMES_BOLD;
+				final Rectangle r = f.createStyle( this.visImage.createRenderer() )
+					.getRenderer( this.visImage.createRenderer() )
+					.getBounds( text, f.createStyle( this.visImage.createRenderer() ) );
 
 				// Work out where to put the text
-				final int tx = (int)(x+xscale/2-r.width/2);
-				int ty = (int)(h-s+z+offset)-this.textBasePad;
-				if( ty - r.height < 0 )
-					ty = (int)r.height + this.textBasePad;
+				int tx = (int)(x+xscale/2-r.width/2);
+				final int ty = (int)(h-s+this.axisLocation+offset)-this.textBasePad;
 
-				// Fill the text
-				fs.setColour( this.textColour );
-				this.visImage.drawText( text, tx, ty, fs );
+//				if( ty - r.height < 0 )
+//					ty = (int)r.height + this.textBasePad;
+
+				if( tx < 0 )
+					tx = 0;
+
+				if( tx + r.width > this.getWidth() )
+					tx = this.getWidth() - (int)r.width;
 
 				// Stroke the text
-				fs.setOutline( true );
-				fs.setColour( this.textStrokeColour );
-				this.visImage.drawText( text, tx, ty, fs );
+				if( this.isOutlineText() )
+				{
+					this.visImage.drawText( text, tx-1, ty-1, f, this.textSize, this.getTextStrokeColour() );
+					this.visImage.drawText( text, tx+1, ty-1, f, this.textSize, this.getTextStrokeColour() );
+					this.visImage.drawText( text, tx-1, ty+1, f, this.textSize, this.getTextStrokeColour() );
+					this.visImage.drawText( text, tx+1, ty+1, f, this.textSize, this.getTextStrokeColour() );
+				}
+
+				// Fill the text
+				this.visImage.drawText( text, tx, ty, f, this.textSize, this.getTextColour() );
+
 			}
 		}
 
 		if( this.drawAxis )
 		{
-			this.visImage.drawLine( 0, (int)(h+z), this.getWidth(), (int)(h+z), this.axisWidth, this.axisColour );
+			this.visImage.drawLine( 0, (int)(h+this.axisLocation),
+					this.getWidth(), (int)(h+this.axisLocation),
+					this.axisWidth, this.getAxisColour() );
 		}
 	}
 
@@ -282,5 +319,173 @@ public class BarVisualisation extends Visualisation<double[]>
 	public void setData( final long[] data )
 	{
 		super.setData( ArrayUtils.longToDouble( data ) );
+	}
+
+	/**
+	 * 	Fix the x-axis to the given position in pixels. Note that the
+	 * 	position is given from the bottom of the visualisation window.
+	 *
+	 *	@param position The position in pixels
+	 */
+	public void fixAxis( final int position )
+	{
+		this.axisLocation = -position;
+		this.fixAxis = true;
+	}
+
+	/**
+	 * 	Allow the x-axis to move as best to fit the data
+	 */
+	public void floatAxis()
+	{
+		this.fixAxis = false;
+	}
+
+	/**
+	 *	@return the outlineText
+	 */
+	public boolean isOutlineText()
+	{
+		return this.outlineText;
+	}
+
+	/**
+	 *	@param outlineText the outlineText to set
+	 */
+	public void setOutlineText( final boolean outlineText )
+	{
+		this.outlineText = outlineText;
+	}
+
+	/**
+	 *	@return the textSize
+	 */
+	public int getTextSize()
+	{
+		return this.textSize;
+	}
+
+	/**
+	 *	@param textSize the textSize to set
+	 */
+	public void setTextSize( final int textSize )
+	{
+		this.textSize = textSize;
+	}
+
+	/**
+	 * 	Whether to use a colour map and which one.
+	 *	@param cp The colour map to use
+	 */
+	public void useColourMap( final ColourMap cp )
+	{
+		this.colourMap = cp;
+		this.useColourMap = true;
+	}
+
+	/**
+	 * 	Revert back to using a static colour rather than
+	 * 	a colour map;
+	 */
+	public void useStaticColour()
+	{
+		this.useColourMap = false;
+	}
+
+	/**
+	 *	@return the barColour
+	 */
+	public Float[] getBarColour()
+	{
+		return this.barColour;
+	}
+
+	/**
+	 *	@return the strokeColour
+	 */
+	public Float[] getStrokeColour()
+	{
+		return this.strokeColour;
+	}
+
+	/**
+	 *	@return the textColour
+	 */
+	public Float[] getTextColour()
+	{
+		return this.textColour;
+	}
+
+	/**
+	 *	@return the textStrokeColour
+	 */
+	public Float[] getTextStrokeColour()
+	{
+		return this.textStrokeColour;
+	}
+
+	/**
+	 *	@return the backgroundColour
+	 */
+	public Float[] getBackgroundColour()
+	{
+		return this.backgroundColour;
+	}
+
+	/**
+	 *	@param backgroundColour the backgroundColour to set
+	 */
+	public void setBackgroundColour( final Float[] backgroundColour )
+	{
+		this.backgroundColour = backgroundColour;
+	}
+
+	/**
+	 *	@param barColour the barColour to set
+	 */
+	public void setBarColour( final Float[] barColour )
+	{
+		this.barColour = barColour;
+		this.useColourMap = false;
+	}
+
+	/**
+	 *	@param strokeColour the strokeColour to set
+	 */
+	public void setStrokeColour( final Float[] strokeColour )
+	{
+		this.strokeColour = strokeColour;
+	}
+
+	/**
+	 *	@param textColour the textColour to set
+	 */
+	public void setTextColour( final Float[] textColour )
+	{
+		this.textColour = textColour;
+	}
+
+	/**
+	 *	@param textStrokeColour the textStrokeColour to set
+	 */
+	public void setTextStrokeColour( final Float[] textStrokeColour )
+	{
+		this.textStrokeColour = textStrokeColour;
+	}
+
+	/**
+	 *	@return the axisColour
+	 */
+	public Float[] getAxisColour()
+	{
+		return this.axisColour;
+	}
+
+	/**
+	 *	@param axisColour the axisColour to set
+	 */
+	public void setAxisColour( final Float[] axisColour )
+	{
+		this.axisColour = axisColour;
 	}
 }
