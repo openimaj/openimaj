@@ -28,22 +28,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos.sandbox.audio;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
-import org.openimaj.audio.features.MFCC;
+import org.openimaj.audio.features.MFCCJAudio;
 import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.vis.general.BarVisualisation;
 
+import scala.actors.threadpool.Arrays;
+
 /**
- * 
- * 
+ *
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 26 Jul 2012
  * @version $Author$, $Revision$, $Date$
@@ -54,35 +55,34 @@ public class MFCCVisualiser
 	 * @param args
 	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws InterruptedException
+	public static void main(final String[] args) throws InterruptedException
 	{
 		// Setup a thread grabbing audio
-		// JavaSoundAudioGrabber a = new JavaSoundAudioGrabber();
-		// a.setFormat( new AudioFormat( 16, 96.1, 1 ) );
-		// a.setMaxBufferSize( 1024 );
-		// new Thread( a ).start();
+//		 final JavaSoundAudioGrabber a = new JavaSoundAudioGrabber();
+//		 a.setFormat( new AudioFormat( 16, 96.1, 1 ) );
+//		 a.setMaxBufferSize( 1024 );
+//		 new Thread( a ).start();
 		final XuggleAudio xa = new XuggleAudio(new File("heads1.mpeg"));
 		final MultichannelToMonoProcessor a = new MultichannelToMonoProcessor(xa);
 
 		// Setup a visualisation
 		final BarVisualisation bv = new BarVisualisation(1500, 500);
-		bv.setDrawValues(false);
+		bv.setDrawValues(true);
+		bv.fixAxis( 250 );
 		bv.showWindow("MFCCs");
 
 		// Setup an MFCC processor
-		final MFCC mfcc = new MFCC();
+		final MFCCJAudio mfcc = new MFCCJAudio();
 
 		// Read sample chunks
 		SampleChunk sc = null;
 		while ((sc = a.nextSampleChunk()) != null)
 		{
 			bv.getVisualisationImage().zero();
-			final double[][] mfccs = mfcc.calculateMFCC(sc);
+			final double[][] mfccs = mfcc.calculateMFCC(sc.getSampleBuffer());
+			bv.setData( Arrays.copyOfRange( mfccs[0], 1, mfccs[0].length ) );
 
-			System.out.println(Arrays.deepToString(mfccs));
-			bv.setData(mfccs[0]);
-
-			Thread.sleep(20000);
+			Thread.sleep(50);
 		}
 	}
 }
