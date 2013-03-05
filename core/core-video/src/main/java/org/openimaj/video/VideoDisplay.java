@@ -397,7 +397,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		this.positionListeners = new ArrayList<VideoPositionListener>();
 	}
 
-	@SuppressWarnings( { "unchecked", "rawtypes" } )
+	@SuppressWarnings( "rawtypes" )
 	@Override
 	public void run()
 	{
