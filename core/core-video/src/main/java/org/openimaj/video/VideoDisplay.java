@@ -397,7 +397,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		this.positionListeners = new ArrayList<VideoPositionListener>();
 	}
 
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	@Override
 	public void run()
 	{
@@ -474,7 +474,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 						nextFrame = this.video.getNextFrame();
 						nextFrameTimestamp = this.video.getTimeStamp();
 						if( this.currentFrame == null && (this.timeKeeper instanceof VideoDisplay.BasicVideoTimeKeeper) )
-							((VideoDisplay<T>.BasicVideoTimeKeeper)this.timeKeeper).setTimeOffset( -nextFrameTimestamp );
+							((VideoDisplay.BasicVideoTimeKeeper)this.timeKeeper).setTimeOffset( -nextFrameTimestamp );
 					}
 
 					// We've got to the end of the video. What should we do?
