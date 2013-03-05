@@ -423,9 +423,6 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 		// Start the timekeeper (if we have audio, this will start the
 		// audio playing)
-		if( this.timeKeeper instanceof VideoDisplay.BasicVideoTimeKeeper )
-			((VideoDisplay<T>.BasicVideoTimeKeeper)this.timeKeeper).setTimeOffset( -this.currentFrameTimestamp );
-		System.out.println( "first frame timestamp: "+this.currentFrameTimestamp );
 		new Thread( this.timeKeeper ).start();
 
 		// Keep going until the mode becomes closed
