@@ -98,7 +98,7 @@ import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
  * 		XuggleAudio xa = new XuggleAudio( videoFile );
  * 		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( xv, xa );
  * </code></pre><p>
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -109,7 +109,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 {
 	/**
 	 *	Enumerator to represent the state of the player.
-	 * 
+	 *
 	 * 	@author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
@@ -154,8 +154,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	}
 
 	/**
-	 * 	A timekeeper for videos without audio - simply uses the system time
-	 *	to keep track of where in a video a video should be.
+	 * 	A timekeeper for videos without audio - uses the system time
+	 *	to keep track of where in a video a video should be. Also used
+	 *	for live videos that are to be displayed at a given rate.
 	 *
 	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 14 Aug 2012
@@ -269,7 +270,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		public void seek( final long timestamp )
 		{
 			if( !this.liveVideo )
-				this.lastStarted = System.currentTimeMillis() - timestamp;
+					this.lastStarted = System.currentTimeMillis() - timestamp;
 		}
 
 		/**
@@ -297,6 +298,18 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				this.pausedAt = System.currentTimeMillis();
 			}
 		}
+
+		/**
+		 * 	Set the time offset to use in the current time calculation.
+		 * 	Can be used to force the time keeper to start at a different
+		 * 	point in time.
+		 *
+		 *	@param timeOffset the new time offset.
+		 */
+		public void setTimeOffset( final long timeOffset )
+		{
+			this.timeOffset = timeOffset;
+		}
 	}
 
 	/** The default mode is to play the player */
@@ -313,7 +326,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 	/** List of state listeners */
 	private final List<VideoDisplayStateListener> stateListeners;
-	
+
 	/** List of position listeners */
 	private final List<VideoPositionListener> positionListeners;
 
@@ -340,9 +353,12 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 	/** The current frame being displayed */
 	private T currentFrame = null;
-	
+
 	/** A count of the number of frames that have been dropped while playing */
 	private int droppedFrameCount = 0;
+
+	/** Whether to calculate frames per second at each frame */
+	private boolean calculateFPS = true;
 
 	/**
 	 * Construct a video display with the given video and frame.
@@ -381,18 +397,15 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		this.positionListeners = new ArrayList<VideoPositionListener>();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void run()
 	{
 		BufferedImage bimg = null;
 
-		// Start the timekeeper (if we have audio, this will start the
-		// audio playing)
-		new Thread( this.timeKeeper ).start();
-
 		// Current frame
-		this.currentFrame = this.video.getCurrentFrame();
-		this.currentFrameTimestamp = this.video.getTimeStamp();
+//		this.currentFrame = this.video.getCurrentFrame();
+//		this.currentFrameTimestamp = this.video.getTimeStamp();
 
 		// We'll estimate each iteration how long we should wait before
 		// trying again.
@@ -407,7 +420,14 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 		// Just about the start the video
 		this.fireVideoStartEvent();
-		
+
+		// Start the timekeeper (if we have audio, this will start the
+		// audio playing)
+		if( this.timeKeeper instanceof VideoDisplay.BasicVideoTimeKeeper )
+			((VideoDisplay<T>.BasicVideoTimeKeeper)this.timeKeeper).setTimeOffset( -this.currentFrameTimestamp );
+		System.out.println( "first frame timestamp: "+this.currentFrameTimestamp );
+		new Thread( this.timeKeeper ).start();
+
 		// Keep going until the mode becomes closed
 		while( this.mode != Mode.CLOSED )
 		{
@@ -417,9 +437,12 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			if( this.mode == Mode.PLAY || this.mode == Mode.PAUSE )
 			{
 				// Calculate the display's FPS
-				currentTimestamp = System.currentTimeMillis();
-				this.calcualtedFPS = 1000d/(currentTimestamp - lastTimestamp);
-				lastTimestamp = currentTimestamp;
+				if( this.calculateFPS )
+				{
+					currentTimestamp = System.currentTimeMillis();
+					this.calcualtedFPS = 1000d/(currentTimestamp - lastTimestamp);
+					lastTimestamp = currentTimestamp;
+				}
 
 				// We initially set up with the last frame
 				T nextFrame = this.currentFrame;
@@ -433,7 +456,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 					// We only do this if we're not working on live video. If
 					// we're working on live video, then getNextFrame() will always
 					// deliver the latest video frame, so we never have to catch up.
-					if( this.video.countFrames() != -1 )
+					if( this.video.countFrames() != -1 && this.currentFrame != null )
 					{
 						final long t = this.timeKeeper.getTime().getTimecodeInMilliseconds();
 //						System.out.println( "Should be at "+t );
@@ -453,6 +476,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 					{
 						nextFrame = this.video.getNextFrame();
 						nextFrameTimestamp = this.video.getTimeStamp();
+						if( this.currentFrame == null && (this.timeKeeper instanceof VideoDisplay.BasicVideoTimeKeeper) )
+							((VideoDisplay<T>.BasicVideoTimeKeeper)this.timeKeeper).setTimeOffset( -nextFrameTimestamp );
 					}
 
 					// We've got to the end of the video. What should we do?
@@ -469,11 +494,11 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				{
 //					nextFrame = this.currentFrame.clone();
 					this.fireBeforeUpdate( this.currentFrame );
-					
+
 				}
 
 				// Draw the image into the display
-				if( this.displayMode )
+				if( this.displayMode && this.currentFrame != null )
 				{
 //					System.out.println( "Drawing frame");
 					this.screen.setImage( bimg = ImageUtilities.
@@ -491,7 +516,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				{
 //					System.out.println("Next frame:   "+nextFrameTimestamp );
 //					System.out.println("Current time: "+this.timeKeeper.getTime().getTimecodeInMilliseconds() );
-					
+
 					// Wait until the timekeeper says we should be displaying the next frame
 					// We also check to see we're still in play mode, as it's
 					// in this wait that the state is most likely to get the time
@@ -626,12 +651,12 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 	/**
 	 *	Process the end of the video action.
-	 * 	@param e The end action to process 
+	 * 	@param e The end action to process
 	 */
 	protected void processEndAction( final EndAction e )
 	{
 		this.fireVideoEndEvent();
-		
+
 		switch( e )
 		{
 			// The video needs to loop, so we reset the video, any audio player,
@@ -645,17 +670,17 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				this.currentFrameTimestamp = 0;
 				this.fireVideoStartEvent();
 				break;
-				
+
 			// Pause the video player
 			case PAUSE_AT_END:
 				this.setMode( Mode.PAUSE );
 				break;
-				
+
 			// Stop the video player
 			case STOP_AT_END:
 				this.setMode( Mode.STOP );
 				break;
-				
+
 			// Close the video player
 			case CLOSE_AT_END:
 				this.setMode( Mode.CLOSED );
@@ -676,7 +701,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * 	Set whether this player is playing, paused or stopped. This method
 	 * 	will also control the state of the timekeeper by calling its run, stop
 	 * 	or reset method.
-	 * 
+	 *
 	 *	@param m The new mode
 	 */
 	synchronized public void setMode( final Mode m )
@@ -696,7 +721,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		case PLAY:
 			if( this.mode == Mode.STOP )
 				this.fireVideoStartEvent();
-			
+
 			// Restart the timekeeper
 			new Thread( this.timeKeeper ).start();
 
@@ -757,7 +782,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	/**
 	 * 	Fire the event to the video listeners that a frame is about to be
 	 * 	displayed on the video.
-	 * 
+	 *
 	 *  @param currentFrame The frame that is about to be displayed
 	 */
 	protected void fireBeforeUpdate(final T currentFrame) {
@@ -864,7 +889,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		this.positionListeners.add( vpl );
 	}
-	
+
 	/**
 	 * 	Remove visible panty lines... or video position listeners.
 	 *	@param vpl The video position listener
@@ -873,7 +898,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		this.positionListeners.remove( vpl );
 	}
-	
+
 	/**
 	 * 	Fire the event that says the video is at the start.
 	 */
@@ -882,7 +907,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		for( final VideoPositionListener vpl: this.positionListeners )
 			vpl.videoAtStart( this );
 	}
-	
+
 	/**
 	 * 	Fire the event that says the video is at the end.
 	 */
@@ -891,7 +916,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		for( final VideoPositionListener vpl: this.positionListeners )
 			vpl.videoAtEnd( this );
 	}
-	
+
 	/**
 	 * 	Pause or resume the display. This will only have an affect if the
 	 * 	video is not in STOP mode.
@@ -927,7 +952,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	/**
 	 * 	Set the action to occur when the video reaches its end. Possible values
 	 * 	are given in the {@link EndAction} enumeration.
-	 * 
+	 *
 	 *	@param action The {@link EndAction} action to occur.
 	 */
 	public void setEndAction( final EndAction action )
@@ -1158,23 +1183,45 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		this.timeKeeper = t;
 	}
-	
+
 	/**
 	 * 	Returns the number of frames that have been dropped while playing
 	 * 	the video.
-	 * 
+	 *
 	 *	@return The number of dropped frames
 	 */
 	public int getDroppedFrameCount()
 	{
 		return this.droppedFrameCount;
 	}
-	
+
 	/**
 	 * 	Reset the dropped frame count to zero.
 	 */
 	public void resetDroppedFrameCount()
 	{
 		this.droppedFrameCount = 0;
+	}
+
+	/**
+	 * 	Returns whether the frames per second are being calculated at every
+	 * 	frame. If this returns false, then {@link #getDisplayFPS()} will not
+	 * 	return a valid value.
+	 *
+	 *	@return whether the FPS is being calculated
+	 */
+	public boolean isCalculateFPS()
+	{
+		return this.calculateFPS;
+	}
+
+	/**
+	 * 	Set whether the frames per second display rate will be calculated
+	 * 	at every frame.
+	 *	@param calculateFPS TRUE to calculate the FPS; FALSE otherwise.
+	 */
+	public void setCalculateFPS( final boolean calculateFPS )
+	{
+		this.calculateFPS = calculateFPS;
 	}
 }
