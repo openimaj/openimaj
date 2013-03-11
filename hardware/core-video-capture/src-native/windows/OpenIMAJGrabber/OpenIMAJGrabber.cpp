@@ -84,10 +84,21 @@ const char* Device::getIdentifier() {
     return identifier;
 }
 
+const bool isVerbose() {
+	size_t requiredSize;
+	getenv_s( &requiredSize, NULL, 0, "OPENIMAJ_GRABBER_VERBOSE");
+	
+	if (requiredSize == 0)
+		return false;
+	else 
+		return true;
+}
+
 /** END DEVICE + DEVICE LIST**/
 
-OpenIMAJGrabber::OpenIMAJGrabber(){
-	// cout << "Called this constructor ey?" << endl;
+OpenIMAJGrabber::OpenIMAJGrabber() {
+	videoInput::setVerbose(isVerbose());
+	
 	this->data = (void*)new videoData();
 	((videoData*)this->data)->VI = new videoInput();
 	((videoData*)this->data)->device = 0;
@@ -105,7 +116,7 @@ OpenIMAJGrabber::~OpenIMAJGrabber(){
 }
 
 DeviceList * OpenIMAJGrabber::getVideoDevices(){
-	int count = ((videoData*)this->data)->VI->listDevices();
+	int count = videoInput::listDevices(!isVerbose());
 	Device ** devices = new Device*[count];
     
     for (int i=0; i<count; i++) {
