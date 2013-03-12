@@ -388,7 +388,8 @@ import org.openimaj.util.pair.Int#R#Pair;
 	 *            the dimensionality of the data being clustered
 	 * @param K
 	 *            the number of clusters
-	 * @return a {@link #T#KMeans} instance configured for exact k-means
+	 * @return a {@link #T#KMeans} instance configured for approximate k-means 
+	 *              using an ensemble of KD-Trees
 	 */
 	public static #T#KMeans createKDTreeEnsemble(int M, int K) {
 		final KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf =
