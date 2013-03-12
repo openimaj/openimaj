@@ -78,7 +78,7 @@ public class BagOfVisualWords<T> implements VectorAggregator<ArrayFeatureVector<
 	 */
 	public static <L extends Location, T> List<QuantisedLocalFeature<L>> computeQuantisedFeatures(
 			HardAssigner<T, ?, ?> assigner,
-			List<LocalFeature<L, ? extends ArrayFeatureVector<T>>> features)
+			List<? extends LocalFeature<L, ? extends ArrayFeatureVector<T>>> features)
 	{
 		final List<QuantisedLocalFeature<L>> out = new ArrayList<QuantisedLocalFeature<L>>(features.size());
 
@@ -88,7 +88,6 @@ public class BagOfVisualWords<T> implements VectorAggregator<ArrayFeatureVector<
 		}
 
 		return out;
-
 	}
 
 	/**
@@ -101,7 +100,7 @@ public class BagOfVisualWords<T> implements VectorAggregator<ArrayFeatureVector<
 	 */
 	public static <L extends Location>
 			SparseIntFV
-			extractFeatureFromQuantised(Collection<QuantisedLocalFeature<L>> qfeatures)
+			extractFeatureFromQuantised(Collection<? extends QuantisedLocalFeature<L>> qfeatures)
 	{
 		final SparseIntFV fv = new SparseIntFV();
 
