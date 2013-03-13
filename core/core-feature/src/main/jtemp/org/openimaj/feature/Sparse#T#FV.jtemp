@@ -52,13 +52,6 @@ public class Sparse#T#FV implements FeatureVector {
 	 * The underlying data backing the feature vector
 	 */
 	public Sparse#T#Array values;
-	
-	/**
-	 * Construct an empty feature vector
-	 */
-	public Sparse#T#FV() {
-		values = new SparseBinSearch#T#Array(0);
-	}
 
 	/**
 	 * Construct empty FV with given number of bins

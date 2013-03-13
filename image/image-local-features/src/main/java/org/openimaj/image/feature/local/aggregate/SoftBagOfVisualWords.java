@@ -68,7 +68,7 @@ public class SoftBagOfVisualWords<DATATYPE, DISTANCE> implements VectorAggregato
 
 	@Override
 	public SparseDoubleFV aggregate(List<? extends LocalFeature<?, ? extends ArrayFeatureVector<DATATYPE>>> features) {
-		final SparseDoubleFV fv = new SparseDoubleFV();
+		final SparseDoubleFV fv = new SparseDoubleFV(assigner.numDimensions());
 
 		for (final LocalFeature<?, ? extends ArrayFeatureVector<DATATYPE>> f : features) {
 			final IndependentPair<int[], DISTANCE> a = assigner.assignWeighted(f.getFeatureVector().values);

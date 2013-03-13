@@ -96,13 +96,15 @@ public class BagOfVisualWords<T> implements VectorAggregator<ArrayFeatureVector<
 	 * 
 	 * @param qfeatures
 	 *            the quantised features.
+	 * @param nfeatures
+	 *            the number of visual words.
 	 * @return a histogram of the occurrences of the visual words
 	 */
 	public static <L extends Location>
 			SparseIntFV
-			extractFeatureFromQuantised(Collection<? extends QuantisedLocalFeature<L>> qfeatures)
+			extractFeatureFromQuantised(Collection<? extends QuantisedLocalFeature<L>> qfeatures, final int nfeatures)
 	{
-		final SparseIntFV fv = new SparseIntFV();
+		final SparseIntFV fv = new SparseIntFV(nfeatures);
 
 		for (final QuantisedLocalFeature<L> qf : qfeatures) {
 			fv.values.increment(qf.id, 1);

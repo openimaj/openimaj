@@ -3,13 +3,16 @@ package org.openimaj.examples.image.feature.local;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.feature.local.quantised.QuantisedLocalFeature;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.aggregate.BagOfVisualWords;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.feature.local.keypoints.KeypointLocation;
 import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.ByteKMeans;
@@ -21,6 +24,14 @@ import org.openimaj.ml.clustering.kmeans.ByteKMeans;
  * 
  */
 public class BoVWExample {
+	/**
+	 * Main method
+	 * 
+	 * @param args
+	 *            ignored
+	 * @throws IOException
+	 *             if the image can't be read
+	 */
 	public static void main(String[] args) throws MalformedURLException, IOException {
 		final MBFImage image = ImageUtilities.readMBF(new URL(
 				"http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg"));
@@ -53,6 +64,7 @@ public class BoVWExample {
 		 */
 		final BagOfVisualWords<byte[]> bagOfVisualWords = new BagOfVisualWords<byte[]>(assigner);
 
-		final Object quantizationResult = BagOfVisualWords.computeQuantisedFeatures(assigner, imageKeypoints);
+		final List<QuantisedLocalFeature<KeypointLocation>> quantizationResult =
+				BagOfVisualWords.computeQuantisedFeatures(assigner, imageKeypoints);
 	}
 }
