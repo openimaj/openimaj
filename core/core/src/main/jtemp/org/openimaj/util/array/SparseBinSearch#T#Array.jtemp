@@ -87,7 +87,7 @@ public class SparseBinSearch#T#Array extends Sparse#T#Array {
 	 * @param capacity the capacity
 	 */
 	public SparseBinSearch#T#Array(int length, int capacity) {
-		if (length <= 0) throw new IllegalArgumentException("length must be > 0");
+		if (length < 0) throw new IllegalArgumentException("length must be >= 0");
 		if (capacity <= 0) throw new IllegalArgumentException("capacity must be > 0");
 		
 		this.length = length;
@@ -101,7 +101,7 @@ public class SparseBinSearch#T#Array extends Sparse#T#Array {
 	 * @param density the density
 	 */
 	public SparseBinSearch#T#Array(int length, float density) {
-		if (length <= 0) throw new IllegalArgumentException("length must be > 0");
+		if (length < 0) throw new IllegalArgumentException("length must be >= 0");
 		if (density <= 0 || density > 1) throw new IllegalArgumentException("density must be > 0 and < 1");
 		
 		this.length = length;
