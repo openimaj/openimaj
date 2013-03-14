@@ -32,14 +32,17 @@ public class BoVWExample {
 	 * @throws IOException
 	 *             if the image can't be read
 	 */
-	public static void main(String[] args) throws MalformedURLException, IOException {
+	public static void main(String[] args) throws IOException {
+		//load an image
 		final MBFImage image = ImageUtilities.readMBF(new URL(
 				"http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg"));
 
+		// Extract some local features; in this case, we'll get SIFT features
+		// located at the extrema in the difference-of-Gaussian pyramid.
 		final DoGSIFTEngine engine = new DoGSIFTEngine();
-
 		final LocalFeatureList<Keypoint> imageKeypoints = engine.findFeatures(image.flatten());
 
+		//Build 
 		final byte[][] AllFeaturesDescriptors = new byte[imageKeypoints.size()][];
 
 		for (int i = 0; i < imageKeypoints.size(); i++) {
