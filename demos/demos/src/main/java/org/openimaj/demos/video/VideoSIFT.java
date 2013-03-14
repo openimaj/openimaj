@@ -58,7 +58,6 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
-import org.openimaj.image.feature.local.engine.asift.ASIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
@@ -234,7 +233,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 		this.videoFrame.addVideoListener(this);
 		this.engine = new DoGSIFTEngine();
-		this.engine.getOptions().setDoubleInitialImage(false);
+		this.engine.getOptions().setDoubleInitialImage(true);
 	}
 
 	@Override
@@ -262,13 +261,13 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 				this.modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(this.modelImage));
 
-				// DoGSIFTEngine engine = new DoGSIFTEngine();
-				// engine.getOptions().setDoubleInitialImage(false);
+				final DoGSIFTEngine engine = new DoGSIFTEngine();
+				engine.getOptions().setDoubleInitialImage(true);
 
-				final ASIFTEngine engine = new ASIFTEngine(true);
+				// final ASIFTEngine engine = new ASIFTEngine(true);
 
 				final FImage modelF = Transforms.calculateIntensityNTSC(this.modelImage);
-				this.matcher.setModelFeatures(engine.findKeypoints(modelF));
+				this.matcher.setModelFeatures(engine.findFeatures(modelF));
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
