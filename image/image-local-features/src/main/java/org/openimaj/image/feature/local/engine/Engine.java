@@ -53,5 +53,5 @@ public interface Engine<FEATURE extends LocalFeature<?, ?>, IMAGE extends Image<
 	 *            the image
 	 * @return the features.
 	 */
-	public abstract LocalFeatureList<FEATURE> findFeatures(IMAGE image);
+	public LocalFeatureList<FEATURE> findFeatures(IMAGE image);
 }

@@ -47,27 +47,34 @@ import org.openimaj.data.RandomData;
 import org.openimaj.io.Readable;
 
 /**
- * A (currently) read-only list that iterates over a file. Both ascii and binary files are
- * supported. Binary files are required to have fixed length records.
+ * A (currently) read-only list that iterates over a file. Both ascii and binary
+ * files are supported. Binary files are required to have fixed length records.
  * 
  * @author Jonathon Hare
- *
- * @param <T> the type of readable item held in array
+ * 
+ * @param <T>
+ *            the type of readable item held in array
  */
-public abstract class AbstractFileBackedList<T extends Readable> extends AbstractList<T> implements RandomisableList<T>, Cloneable {
+public abstract class AbstractFileBackedList<T extends Readable> extends AbstractList<T>
+		implements
+			RandomisableList<T>,
+			Cloneable
+{
 	protected final int size;
 	protected final Class<T> clz;
-	
+
 	protected final boolean isBinary;
 	protected final int headerLength;
 	protected final int recordLength;
-	
+
 	protected final File file;
-	
+
 	private int ascii_offset = 0;
 	protected String charset;
-	
-	protected AbstractFileBackedList(int size, boolean isBinary, int headerLength, int recordLength, File file, Class<T> clz) {
+
+	protected AbstractFileBackedList(int size, boolean isBinary, int headerLength, int recordLength, File file,
+			Class<T> clz)
+	{
 		this.size = size;
 		this.isBinary = isBinary;
 		this.headerLength = headerLength;
@@ -76,8 +83,10 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 		this.clz = clz;
 		this.charset = Charset.defaultCharset().name();
 	}
-	
-	protected AbstractFileBackedList(int size, boolean isBinary, int headerLength, int recordLength, File file, Class<T> clz, String charset) {
+
+	protected AbstractFileBackedList(int size, boolean isBinary, int headerLength, int recordLength, File file,
+			Class<T> clz, String charset)
+	{
 		this.size = size;
 		this.isBinary = isBinary;
 		this.headerLength = headerLength;
@@ -88,30 +97,31 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 	}
 
 	/**
-	 * Override this if your instances can't be constructed with a no-args constructor
+	 * Override this if your instances can't be constructed with a no-args
+	 * constructor
 	 * 
 	 * @return
 	 */
 	protected T newElementInstance() {
 		try {
 			return clz.newInstance();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	protected T readRecord(DataInput input) throws IOException {
-		T element = newElementInstance();
+		final T element = newElementInstance();
 		element.readBinary(input);
 		return element;
 	}
-	
+
 	protected T readRecordASCII(Scanner br) throws IOException {
-		T element = newElementInstance();
+		final T element = newElementInstance();
 		element.readASCII(br);
 		return element;
 	}
-	
+
 	@Override
 	public int size() {
 		return size;
@@ -124,7 +134,7 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 
 	@Override
 	public boolean contains(Object o) {
-		for (T k : this) {
+		for (final T k : this) {
 			if (k.equals(o))
 				return true;
 		}
@@ -132,7 +142,7 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 		return false;
 	}
 
-	class FLBinaryIterator implements Iterator<T>{
+	class FLBinaryIterator implements Iterator<T> {
 		protected int count = 0;
 		protected RandomAccessFile raf;
 
@@ -140,78 +150,83 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 			try {
 				this.raf = new RandomAccessFile(file, "r");
 				raf.seek(headerLength);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				close();
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		@Override
 		public boolean hasNext() {
-			if (count < size()) return true;
+			if (count < size())
+				return true;
 			close();
 			return false;
 		}
 
 		protected void close() {
 			if (raf != null) {
-				try { 
+				try {
 					raf.close();
 					raf = null;
-				} catch (IOException e) {}
+				} catch (final IOException e) {
+				}
 			}
 		}
-		
+
 		@Override
 		public T next() {
 			try {
-				if (raf==null) return null;
-				
-				T k = readRecord(raf);
+				if (raf == null)
+					return null;
+
+				final T k = readRecord(raf);
 				count++;
 				return k;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("Modifying a FileKeypointList isn't supported");
 		}
-		
+
 		@Override
 		public void finalize() {
 			close();
 		}
 	}
-	
+
 	class FLAsciiIterator implements Iterator<T> {
 		protected int count = 0;
 		protected Scanner br;
 
 		FLAsciiIterator() {
 			reset();
-			for (int i=0; i<ascii_offset; i++) 
+			for (int i = 0; i < ascii_offset; i++)
 				next();
 			count = 0;
 		}
-		
+
 		protected void reset() {
 			try {
 				close();
-				FileInputStream fis = new FileInputStream(file);
-				br = new Scanner(fis,charset); 
-				for (int i=0; i<headerLength; i++) br.nextLine();
-			} catch (IOException e) {
+				final FileInputStream fis = new FileInputStream(file);
+				br = new Scanner(fis, charset);
+				for (int i = 0; i < headerLength; i++)
+					br.nextLine();
+			} catch (final IOException e) {
 				close();
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		@Override
 		public boolean hasNext() {
-			if (count < size()) return true;
+			if (count < size())
+				return true;
 			close();
 			return false;
 		}
@@ -222,34 +237,36 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 				br = null;
 			}
 		}
-		
+
 		@Override
 		public T next() {
 			try {
-				if (br==null) return null;
-				
-				T k = readRecordASCII(br);
+				if (br == null)
+					return null;
+
+				final T k = readRecordASCII(br);
 				count++;
 				return k;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		@Override
-		public void remove	() {
-			throw new UnsupportedOperationException("Modifying a FileKeypointList isn't supported");
+		public void remove() {
+			throw new UnsupportedOperationException("Modifying a FileList isn't supported");
 		}
-		
+
 		@Override
 		public void finalize() {
 			close();
 		}
 	}
-	
+
 	@Override
 	public Iterator<T> iterator() {
-		if (isBinary) return new FLBinaryIterator();
+		if (isBinary)
+			return new FLBinaryIterator();
 		return new FLAsciiIterator();
 	}
 
@@ -258,22 +275,23 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 	public <E> E[] toArray(E[] a) {
 		if (a.length < size)
 			return (E[]) Arrays.copyOf(toArray(), size, a.getClass());
-		
-		int i=0;
-		for (T k : this) 
+
+		int i = 0;
+		for (final T k : this)
 			a[i++] = (E) k;
-		
+
 		if (a.length > size)
 			a[size] = null;
-		
+
 		return a;
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		List<T> seen = new ArrayList<T>();
-		for (T k : this) {
-			if (c.contains(k)) seen.add(k);
+		final List<T> seen = new ArrayList<T>();
+		for (final T k : this) {
+			if (c.contains(k))
+				seen.add(k);
 		}
 		return seen.size() == c.size();
 	}
@@ -282,24 +300,28 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 	public T get(int index) {
 		if (index > size)
 			throw new IllegalArgumentException("Index out of bounds");
-		
+
 		if (!isBinary) {
-			int count = 0; 
-			for (T k : this) {
-				if (count++ == index) 
+			int count = 0;
+			for (final T k : this) {
+				if (count++ == index)
 					return k;
 			}
 		} else {
-			long offset = (index * recordLength) + headerLength;
+			final long offset = (index * recordLength) + headerLength;
 			RandomAccessFile raf = null;
 			try {
 				raf = new RandomAccessFile(file, "r");
 				raf.seek(offset);
 				return readRecord(raf);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new RuntimeException(e);
 			} finally {
-				if (raf != null) try {raf.close();} catch(IOException e){}
+				if (raf != null)
+					try {
+						raf.close();
+					} catch (final IOException e) {
+					}
 			}
 		}
 		return null;
@@ -318,8 +340,9 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 	@Override
 	public int indexOf(Object o) {
 		int count = 0;
-		for (T k : this) {
-			if (o.equals(k)) return count;
+		for (final T k : this) {
+			if (o.equals(k))
+				return count;
 			count++;
 		}
 		return -1;
@@ -329,122 +352,129 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 	public int lastIndexOf(Object o) {
 		int count = 0;
 		int found = -1;
-		for (T k : this) {
-			if (o.equals(k)) found = count;
+		for (final T k : this) {
+			if (o.equals(k))
+				found = count;
 			count++;
 		}
 		return found;
 	}
-	
-	protected abstract AbstractFileBackedList<T> newInstance(int newSize, boolean isBinary, int newHeaderLength, int recordLength, File file);
-	
+
+	protected abstract AbstractFileBackedList<T> newInstance(int newSize, boolean isBinary, int newHeaderLength,
+			int recordLength, File file);
+
 	@Override
 	public RandomisableList<T> subList(int fromIndex, int toIndex) {
 		if (fromIndex < 0 || fromIndex > size || toIndex < 0 || toIndex > size)
 			throw new IllegalArgumentException("bad offsets");
-		
+
 		if (!isBinary) {
-			AbstractFileBackedList<T> fkl = newInstance(toIndex-fromIndex, isBinary, headerLength, recordLength, file);
+			final AbstractFileBackedList<T> fkl = newInstance(toIndex - fromIndex, isBinary, headerLength, recordLength,
+					file);
 			fkl.ascii_offset = ascii_offset + fromIndex;
 			return fkl;
 		} else {
-			int newHeaderLength = headerLength + (fromIndex*recordLength);
-			int newSize = toIndex - fromIndex;
-			
-			AbstractFileBackedList<T> fkl = newInstance(newSize, isBinary, newHeaderLength, recordLength, file);
+			final int newHeaderLength = headerLength + (fromIndex * recordLength);
+			final int newSize = toIndex - fromIndex;
+
+			final AbstractFileBackedList<T> fkl = newInstance(newSize, isBinary, newHeaderLength, recordLength, file);
 			return fkl;
 		}
 	}
-	
+
 	class FLRandomSubList extends AbstractFileBackedList<T> {
-		protected final int [] indices;
-		
-		FLRandomSubList(boolean isBinary, int headerLength, int recordLength, File file, int [] indices, Class<T> clz) {
+		protected final int[] indices;
+
+		FLRandomSubList(boolean isBinary, int headerLength, int recordLength, File file, int[] indices, Class<T> clz) {
 			super(indices.length, isBinary, headerLength, recordLength, file, clz);
 			this.indices = indices;
 		}
-		
+
 		@Override
-		public int size() { 
+		public int size() {
 			return indices.length;
 		}
-		
+
 		@Override
 		public T get(int index) {
 			return super.get(indices[index]);
 		}
-		
+
 		@Override
 		public RandomisableList<T> subList(int fromIndex, int toIndex) {
 			if (fromIndex < 0 || fromIndex > size() || toIndex < 0 || toIndex > size())
 				throw new IllegalArgumentException("bad offsets");
-			
-			int [] newIndices = new int[toIndex - fromIndex];
-			
+
+			final int[] newIndices = new int[toIndex - fromIndex];
+
 			return new FLRandomSubList(isBinary, headerLength, recordLength, file, newIndices, clz);
 		}
-		
+
 		class FLRandomBinaryIterator extends FLBinaryIterator {
 			@Override
 			public T next() {
 				try {
-					if (count>=indices.length) return null;
-					
-					int idx = indices[count];
-					raf.seek(headerLength + (idx * recordLength)); 
-					
-					T k = readRecord(raf);
+					if (count >= indices.length)
+						return null;
+
+					final int idx = indices[count];
+					raf.seek(headerLength + (idx * recordLength));
+
+					final T k = readRecord(raf);
 					count++;
 					return k;
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		}
-		
+
 		class FLRandomAsciiIterator extends FLAsciiIterator {
 			@Override
 			public T next() {
 				try {
-					if (count>=indices.length) return null;
-					
+					if (count >= indices.length)
+						return null;
+
 					int offset = 0;
-					if (count > 0) offset = indices[count] - indices[count-1];
-					
+					if (count > 0)
+						offset = indices[count] - indices[count - 1];
+
 					if (offset < 0) {
 						reset();
 						offset = indices[count];
 					}
-					
-					for (int i=0; i<offset-1; i++) {
+
+					for (int i = 0; i < offset - 1; i++) {
 						readRecordASCII(br);
 					}
-					
-					T k = readRecordASCII(br);
+
+					final T k = readRecordASCII(br);
 					count++;
 					return k;
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		}
-		
+
 		@Override
 		public Iterator<T> iterator() {
-			if (isBinary) return new FLRandomBinaryIterator();
+			if (isBinary)
+				return new FLRandomBinaryIterator();
 			return new FLRandomAsciiIterator();
 		}
-		
+
 		@Override
-		public RandomisableList<T> randomSubList(int nelem) { 
-			if (nelem > size()) 
+		public RandomisableList<T> randomSubList(int nelem) {
+			if (nelem > size())
 				throw new IllegalArgumentException("number of requested elements is greater than the list size");
-			
-			int [] newindices = RandomData.getUniqueRandomInts(nelem, 0, size());
-			
-			for (int i=0; i<newindices.length; i++)
+
+			final int[] newindices = RandomData.getUniqueRandomInts(nelem, 0, size());
+
+			for (int i = 0; i < newindices.length; i++)
 				newindices[i] = indices[newindices[i]];
-			
+
 			return new FLRandomSubList(isBinary, headerLength, recordLength, file, newindices, clz);
 		}
 
@@ -459,26 +489,28 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 		}
 
 		@Override
-		protected AbstractFileBackedList<T> newInstance(int newSize, boolean isBinary, int newHeaderLength, int recordLength, File file) {
+		protected AbstractFileBackedList<T> newInstance(int newSize, boolean isBinary, int newHeaderLength,
+				int recordLength, File file)
+		{
 			return AbstractFileBackedList.this.newInstance(newSize, isBinary, newHeaderLength, recordLength, file);
 		}
 	}
-	
+
 	@Override
-	public RandomisableList<T> randomSubList(int nelem) { 
-		if (nelem > size()) 
+	public RandomisableList<T> randomSubList(int nelem) {
+		if (nelem > size())
 			throw new IllegalArgumentException("number of requested elements is greater than the list size");
-		
-		int [] indices = RandomData.getUniqueRandomInts(nelem, 0, size());
-		
+
+		final int[] indices = RandomData.getUniqueRandomInts(nelem, 0, size());
+
 		return new FLRandomSubList(isBinary, headerLength, recordLength, file, indices, clz);
 	}
-	
+
 	@Override
 	public Object[] toArray() {
-		Object [] objs = new Object[size()];
-		int i=0;
-		for (T o : this) {
+		final Object[] objs = new Object[size()];
+		int i = 0;
+		for (final T o : this) {
 			objs[i++] = o;
 		}
 		return objs;

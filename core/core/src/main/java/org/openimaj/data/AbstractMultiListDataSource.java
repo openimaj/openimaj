@@ -1,7 +1,9 @@
 package org.openimaj.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An abstract {@link DataSource} backed by multiple lists of data.
@@ -36,6 +38,17 @@ public abstract class AbstractMultiListDataSource<DATATYPE, ELEMENTTYPE> extends
 		this.data = Arrays.asList(data);
 	}
 
+	/**
+	 * Construct with the given map of data. The keys are ignored, and only the
+	 * values are used.
+	 * 
+	 * @param data
+	 *            the data
+	 */
+	public AbstractMultiListDataSource(Map<?, ? extends List<ELEMENTTYPE>> data) {
+		this.data = new ArrayList<List<ELEMENTTYPE>>(data.values());
+	}
+
 	@Override
 	public void getData(int startRow, int stopRow, DATATYPE[] data) {
 		for (int i = 0, row = startRow; row < stopRow; row++, i++) {
@@ -48,7 +61,7 @@ public abstract class AbstractMultiListDataSource<DATATYPE, ELEMENTTYPE> extends
 		int cumsum = 0;
 
 		for (int i = 0; i < data.size(); i++) {
-			final int sz = data.size();
+			final int sz = data.get(i).size();
 
 			if (row < cumsum + sz) {
 				return convert(data.get(i).get(row - cumsum));
