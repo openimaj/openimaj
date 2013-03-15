@@ -54,6 +54,7 @@ import org.openimaj.text.nlp.patterns.EmailPatternProvider;
 import org.openimaj.text.nlp.patterns.EmoticonPatternProvider;
 import org.openimaj.text.nlp.patterns.PatternProvider;
 import org.openimaj.text.nlp.patterns.PunctuationPatternProvider;
+import org.openimaj.text.nlp.patterns.TruncatedURLPatternProvider;
 import org.openimaj.text.nlp.patterns.TwitterStuffPatternProvider;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
 import org.openimaj.text.nlp.patterns.URLPatternProvider.DFURLPatternProvider;
@@ -132,6 +133,39 @@ public class TweetTokeniserTest {
 						1), IndependentPair.pair("@glamthug well what the fuck man:(", 1), IndependentPair.pair(
 				"@dezfafranco -.-' burlate u.u", 2)
 
+		};
+
+		testProvider(provider, teststr);
+	}
+
+	/**
+	 * Test if emoticons are dealt with properly (Using an
+	 * {@link EmoticonPatternProvider})
+	 */
+	@Test
+	public void truncated() {
+		final TruncatedURLPatternProvider provider = new TruncatedURLPatternProvider();
+		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] {
+				IndependentPair.pair(
+					"RT @SportParadise: TOMMY HILFIGER BOY PRINTED MULTI FULL SHEET SET 200 TC 100% COMBED COTTON NIP 651862293835 | eBay http://bit.l...",
+					1
+				),
+				IndependentPair.pair(
+					"Make money online,only you need to do is click! Be relaxed. How to be brave. Get innovatiion. Feel brilliant. #AUTOFOLLOW http://adf...",
+					1
+				),
+				IndependentPair.pair(
+					"RT @1DReport: #2yearsOf1D \u2665 Thank you boys for everything. No words can describe how proud I am to call myself a Directioner. http://t.c ...",
+					1
+				),
+				IndependentPair.pair(
+					"RT @AfterSchoolDaze: Video: #AfterSchool Performing \"Flashback\" - 2012 Olympic In London Fighting Korea Concert [Air Date 120722] http:/ ...",
+					1
+				),
+				IndependentPair.pair(
+					"RT @LittlecBeadles: Boston was amazing!!!  Here are the pics for the BOSTON MA Meet &amp; Greet... @LittlecBeadles @godsgirl8494 http:// ...",
+					1
+				),
 		};
 
 		testProvider(provider, teststr);
@@ -422,7 +456,9 @@ public class TweetTokeniserTest {
 				// int[]{1,1,0}), # FIXME: This should work, or should not?
 				// current it does something strange and unintended
 				IndependentPair.pair("D'angelo=", new int[] { 2, 0, 2 }),
-				IndependentPair.pair("@dezfafranco -.-' burlate u.u", new int[] { 4, 1, 3 })
+				IndependentPair.pair("@dezfafranco -.-' burlate u.u", new int[] { 4, 1, 3 }),
+				IndependentPair.pair("RT @SportParadise: TOMMY HILFIGER BOY PRINTED MULTI FULL SHEET SET 200 TC 100% COMBED COTTON NIP 651862293835 | eBay http://bit.l...", new int[] { 21, 16, 5 }),
+				IndependentPair.pair("RT @AfterSchoolDaze: Video: #AfterSchool Performing \"Flashback\" - 2012 Olympic In London Fighting Korea Concert [Air Date 120722] http:/ ...", new int[] { 24, 13, 11 })
 
 		};
 

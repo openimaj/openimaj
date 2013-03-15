@@ -50,6 +50,7 @@ import org.openimaj.text.nlp.patterns.EmoticonPatternProvider;
 import org.openimaj.text.nlp.patterns.EntityPatternProvider;
 import org.openimaj.text.nlp.patterns.PunctuationPatternProvider;
 import org.openimaj.text.nlp.patterns.TimePatternProvider;
+import org.openimaj.text.nlp.patterns.TruncatedURLPatternProvider;
 import org.openimaj.text.nlp.patterns.TwitterStuffPatternProvider;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
 import org.openimaj.text.util.RegexUtil;
@@ -59,11 +60,11 @@ import org.openimaj.text.util.RegexUtil;
  * Protects various elements of the text with an assumption that if the user
  * made the mark, it was an important mark that carries meaning because of the
  * relatively high premium of each key stroke.
- * 
+ *
  * Based on the twokenise by Brendan O'Connor
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class TweetTokeniser implements Iterable<Token> {
 
@@ -78,7 +79,7 @@ public class TweetTokeniser implements Iterable<Token> {
 	 * Check whether this locale is supported by this tokeniser. The unsupported
 	 * languages are those which don't need space characters to delimit words,
 	 * namely the CJK languages.
-	 * 
+	 *
 	 * @param locale
 	 * @return true if the local is supported
 	 */
@@ -91,7 +92,7 @@ public class TweetTokeniser implements Iterable<Token> {
 	 * {@link Locale}) is supported by this tokeniser. The unsupported languages
 	 * are those which don't need space characters to delimit words, namely the
 	 * CJK languages.
-	 * 
+	 *
 	 * @param locale
 	 * @return true if the local is supported
 	 */
@@ -123,6 +124,7 @@ public class TweetTokeniser implements Iterable<Token> {
 	static EmoticonPatternProvider emoticons = new EmoticonPatternProvider();
 	static PunctuationPatternProvider punctuation = new PunctuationPatternProvider();
 	static EntityPatternProvider entity = new EntityPatternProvider();
+	static TruncatedURLPatternProvider truncatedURL = new TruncatedURLPatternProvider();
 	static URLPatternProvider url = new URLPatternProvider();
 	static TimePatternProvider time = new TimePatternProvider();
 	static ComplicatedNumberPatternProvider number = new ComplicatedNumberPatternProvider();
@@ -135,24 +137,25 @@ public class TweetTokeniser implements Iterable<Token> {
 	static EmbeddedApostrophePatternProvider embedded = new EmbeddedApostrophePatternProvider(punctuation);
 	static EmbeddedDashPatternProvider embeddedDash = new EmbeddedDashPatternProvider(punctuation);
 
-	static String[] ProtectThese = new String[] { 
-		twitterPart.patternString(), 
+	static String[] ProtectThese = new String[] {
+		twitterPart.patternString(),
 		emoticons.patternString(),
-		url.patternString(), 
-		email.patternString(), 
-		entity.patternString(), 
+		truncatedURL.patternString(),
+		url.patternString(),
+		email.patternString(),
+		entity.patternString(),
 		time.patternString(),
 		number.patternString(),
 		// embeddedDash.patternString(),
-		embedded.patternString(), 
-		punctuation.patternString(), 
-		abbrev.patternString(), 
-		Separators, 
-		Decorations, 
+		embedded.patternString(),
+		punctuation.patternString(),
+		abbrev.patternString(),
+		Separators,
+		Decorations,
 	};
-	
-	
-	
+
+
+
 	static String oredProtect = RegexUtil.regex_or_match(ProtectThese);
 	static Pattern Protect_RE = Pattern.compile(oredProtect, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
 

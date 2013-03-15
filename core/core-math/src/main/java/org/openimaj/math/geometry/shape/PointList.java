@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.math.geometry.GeometricObject;
+import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
@@ -43,11 +44,11 @@ import Jama.Matrix;
 /**
  * A base implementation of a {@link GeometricObject} that is
  * a set of points in space.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class PointList implements GeometricObject, Iterable<Point2d> {
+public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable {
 	/** The points in the {@link PointList} */
 	public List<Point2d> points = new ArrayList<Point2d>();
 
@@ -69,7 +70,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 	}
 
 	/**
-	 * Construct a {@link PointList} from the points, possibly 
+	 * Construct a {@link PointList} from the points, possibly
 	 * copying the points first
 	 * @param points the points
 	 * @param copy should the points be copied
@@ -116,7 +117,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 	/**
 	 * Compute the regular (oriented to the axes) bounding box
 	 * of the {@link PointList}.
-	 * 
+	 *
 	 * @return the regular bounding box
 	 */
 	@Override
@@ -135,7 +136,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 
 	/**
 	 * Translate the {@link PointList}s position
-	 *  
+	 *
 	 * @param x x-translation
 	 * @param y y-translation
 	 */
@@ -149,7 +150,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 
 	/**
 	 * Scale the {@link PointList} by the given amount about (0,0). Scalefactors
-	 * between 0 and 1 shrink the {@link PointList}. 
+	 * between 0 and 1 shrink the {@link PointList}.
 	 * @param sc the scale factor.
 	 */
 	@Override
@@ -162,7 +163,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 
 	/**
 	 * 	Scale the {@link PointList} only in the x-direction by the given amount about
-	 * 	(0,0). Scale factors between 0 and 1 will shrink the {@link PointList} 
+	 * 	(0,0). Scale factors between 0 and 1 will shrink the {@link PointList}
 	 *	@param sc The scale factor
 	 *  @return this {@link PointList}
 	 */
@@ -190,7 +191,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 
 	/**
 	 * Scale the {@link PointList} by the given amount about (0,0). Scale factors
-	 * between 0 and 1 shrink the {@link PointList}. 
+	 * between 0 and 1 shrink the {@link PointList}.
 	 * @param scx the scale factor in the x direction
 	 * @param scy the scale factor in the y direction.
 	 * @return this {@link PointList}
@@ -205,7 +206,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 	}
 
 	/**
-	 * Scale the {@link PointList} by the given amount about the given point. 
+	 * Scale the {@link PointList} by the given amount about the given point.
 	 * Scalefactors between 0 and 1 shrink the {@link PointList}.
 	 * @param centre the centre of the scaling operation
 	 * @param sc the scale factor
@@ -285,7 +286,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 	public double maxY() { Rectangle r = calculateRegularBoundingBox(); return r.y+r.height; }
 
 	/**
-	 * @return the width of the regular bounding box 
+	 * @return the width of the regular bounding box
 	 */
 	@Override
 	public double getWidth() { return maxX()-minX(); }
@@ -338,36 +339,36 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 	}
 
 	/**
-	 * Compute the mean of a set of {@link PointList}s. 
+	 * Compute the mean of a set of {@link PointList}s.
 	 * It is assumed that the number of points in the {@link PointList}s
 	 * is equal, and that their is a one-to-one correspondance between
 	 * the ith point in each list.
-	 * 
+	 *
 	 * @param shapes the shapes to average
 	 * @return the average shape
 	 */
 	public static PointList computeMean(Collection<PointList> shapes) {
 		final int npoints = shapes.iterator().next().points.size();
 		PointList mean = new PointList();
-		
+
 		for (int i=0; i<npoints; i++) mean.points.add(new Point2dImpl());
-		
+
 		for (PointList shape : shapes) {
 			for (int i=0; i<npoints; i++) {
 				Point2dImpl pt = (Point2dImpl) mean.points.get(i);
-				
+
 				pt.x += shape.points.get(i).getX();
 				pt.y += shape.points.get(i).getY();
 			}
 		}
-		
+
 		for (int i=0; i<npoints; i++) {
 			Point2dImpl pt = (Point2dImpl) mean.points.get(i);
-			
+
 			pt.x /= shapes.size();
 			pt.y /= shapes.size();
 		}
-		
+
 		return mean;
 	}
 
@@ -377,7 +378,7 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 	public int size() {
 		return points.size();
 	}
-	
+
 	/**
 	 * Calculate the intrinsic scale of the shape.
 	 * This is the RMS distance of all the points
@@ -387,14 +388,14 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 	public float computeIntrinsicScale() {
 		Point2d cog = this.getCOG();
 		float scale = 0;
-		
+
 		for (Point2d pt : this) {
 			double x = pt.getX() - cog.getX();
 			double y = pt.getY() - cog.getY();
-			
+
 			scale += x*x + y*y;
 		}
-		
+
 		return (float) Math.sqrt(scale / points.size());
 	}
 
@@ -405,5 +406,38 @@ public class PointList implements GeometricObject, Iterable<Point2d> {
 	 */
 	public Point2d get(int i) {
 		return points.get(i);
+	}
+
+	/**
+	 * @return A list of {@link Line2d} assuming the points in this list are connected in order
+	 */
+	public List<Line2d> getLines(){
+		List<Line2d> lines = new ArrayList<Line2d>(points.size()-1);
+
+		for (int i = 1; i < this.points.size(); i++) {
+			lines.add(new Line2d(
+				points.get(i-1),
+				points.get(i)
+			));
+		}
+
+		return lines;
+	}
+
+	/**
+	 * @param conns
+	 * @return calls {@link PointListConnections#getLines(PointList)} with this
+	 */
+	public List<Line2d> getLines(PointListConnections conns){
+		return conns.getLines(this);
+	}
+
+	@Override
+	public PointList clone(){
+		PointList p = new PointList();
+		for (Point2d point2d : this) {
+			p.points.add(point2d.copy());
+		}
+		return p;
 	}
 }
