@@ -68,7 +68,7 @@ public class SampleChunk extends Audio
 	 * 
 	 *	@param af The audio format of the samples
 	 */
-	public SampleChunk( AudioFormat af )
+	public SampleChunk( final AudioFormat af )
 	{
 		this( new byte[1], af );
 	}
@@ -80,7 +80,7 @@ public class SampleChunk extends Audio
 	 *	@param samples The samples to initialise with
 	 *	@param af The audio format of the samples
 	 */
-	public SampleChunk( byte[] samples, AudioFormat af )
+	public SampleChunk( final byte[] samples, final AudioFormat af )
 	{
 		this.setSamples( samples );
 		super.format = af;
@@ -94,7 +94,7 @@ public class SampleChunk extends Audio
 	 *	@param af The audio format of the samples
 	 *	@param tc The audio timecode of these samples
 	 */
-	public SampleChunk( byte[] samples, AudioFormat af, AudioTimecode tc )
+	public SampleChunk( final byte[] samples, final AudioFormat af, final AudioTimecode tc )
 	{
 		this.setSamples( samples );
 		this.startTimecode = tc;
@@ -105,7 +105,7 @@ public class SampleChunk extends Audio
 	 * 	Set the samples in this sample chunk.
 	 *	@param samples the samples in this sample chunk.
 	 */
-	public void setSamples( byte[] samples )
+	public void setSamples( final byte[] samples )
 	{
 		synchronized( this.samples )
         {
@@ -119,7 +119,7 @@ public class SampleChunk extends Audio
 	 */
 	public byte[] getSamples()
 	{
-		return samples;
+		return this.samples;
 	}
 	
 	/**
@@ -133,7 +133,7 @@ public class SampleChunk extends Audio
 	 */
 	public int getNumberOfSamples()
 	{
-		return samples.length / (format.getNBits()/8);
+		return this.samples.length / (this.format.getNBits()/8);
 	}
 	
 	/**
@@ -145,15 +145,15 @@ public class SampleChunk extends Audio
 	 */
 	public ByteBuffer getSamplesAsByteBuffer()
 	{
-		if( samples == null ) return null;
+		if( this.samples == null ) return null;
 		
 		ByteOrder bo = null;
 		
-		if( format.isBigEndian() )
+		if( this.format.isBigEndian() )
 				bo = ByteOrder.BIG_ENDIAN;
 		else	bo = ByteOrder.LITTLE_ENDIAN;
 		
-		return ByteBuffer.wrap( samples ).order( bo );
+		return ByteBuffer.wrap( this.samples ).order( bo );
 	}
 	
 	/**
@@ -175,7 +175,7 @@ public class SampleChunk extends Audio
 	 * 	Set the timecode at the start of this audio chunk.
 	 *	@param startTimecode the timecode at the start of the chunk.
 	 */
-	public void setStartTimecode( AudioTimecode startTimecode )
+	public void setStartTimecode( final AudioTimecode startTimecode )
 	{
 		this.startTimecode = startTimecode;
 	}
@@ -186,7 +186,7 @@ public class SampleChunk extends Audio
 	 */
 	public AudioTimecode getStartTimecode()
 	{
-		return startTimecode;
+		return this.startTimecode;
 	}
 	
 	/**
@@ -202,23 +202,23 @@ public class SampleChunk extends Audio
 	 *  @param length The length of the samples get.
 	 *  @return The sample slice as a new {@link SampleChunk}
 	 */
-	public SampleChunk getSampleSlice( int start, int length )
+	public SampleChunk getSampleSlice( final int start, final int length )
 	{
-		final int nBytesPerSample = format.getNBits()/8;
+		final int nBytesPerSample = this.format.getNBits()/8;
 		final int startSampleByteIndex = start * nBytesPerSample;
 		final byte[] newSamples = new byte[length * nBytesPerSample];
 		
-		synchronized( samples )
+		synchronized( this.samples )
         {
-			System.arraycopy( samples, startSampleByteIndex, 
+			System.arraycopy( this.samples, startSampleByteIndex, 
 					newSamples, 0, length*nBytesPerSample );
         }
 		
-		final SampleChunk s = new SampleChunk( format );
+		final SampleChunk s = new SampleChunk( this.format );
 		s.setSamples( newSamples );
 		
 		// Set the timestamp to the start of this new slice
-		double samplesPerChannelPerMillisec = format.getSampleRateKHz();
+		final double samplesPerChannelPerMillisec = this.format.getSampleRateKHz();
 		s.setStartTimecode( new AudioTimecode( 
 			this.getStartTimecode().getTimecodeInMilliseconds() +
 			(long)(start / samplesPerChannelPerMillisec) ) );
@@ -236,24 +236,24 @@ public class SampleChunk extends Audio
 	 *  @param sample the samples to add
 	 *  @return This sample chunk with the bytes prepended
 	 */
-	public SampleChunk prepend( SampleChunk sample )
+	public SampleChunk prepend( final SampleChunk sample )
 	{
 		// Check the sample formats are the same
-		if( !sample.getFormat().equals( format ) )
+		if( !sample.getFormat().equals( this.format ) )
 			throw new IllegalArgumentException("Sample types are not equivalent");
 		
 		// Get the samples from the given chunk
-		byte[] x1 = sample.getSamplesAsByteBuffer().array();
+		final byte[] x1 = sample.getSamplesAsByteBuffer().array();
 		
 		// Create an array for the concatenated pair
-		byte[] newSamples = new byte[ samples.length + x1.length ];
+		final byte[] newSamples = new byte[ this.samples.length + x1.length ];
 		
 		// Loop through adding the new samples
 		System.arraycopy( x1, 0, newSamples, 0, x1.length );
 		
-		synchronized( samples )
+		synchronized( this.samples )
         {
-			System.arraycopy( samples, 0, newSamples, x1.length, samples.length );
+			System.arraycopy( this.samples, 0, newSamples, x1.length, this.samples.length );
         }
 		
 		// Update this object
@@ -272,24 +272,24 @@ public class SampleChunk extends Audio
 	 *  @param sample the samples to add
 	 *  @return This sample chunk with the bytes appended
 	 */
-	public SampleChunk append( SampleChunk sample )
+	public SampleChunk append( final SampleChunk sample )
 	{
 		// Check the sample formats are the same
-		if( !sample.getFormat().equals( format ) )
+		if( !sample.getFormat().equals( this.format ) )
 			throw new IllegalArgumentException("Sample types are not equivalent");
 		
 		// Get the samples from the given chunk
-		byte[] x1 = sample.getSamplesAsByteBuffer().array();
+		final byte[] x1 = sample.getSamplesAsByteBuffer().array();
 		
 		// Create an array for the concatenated pair
-		byte[] newSamples = new byte[ samples.length + x1.length ];
+		final byte[] newSamples = new byte[ this.samples.length + x1.length ];
 		
-		synchronized( samples )
+		synchronized( this.samples )
         {
-			System.arraycopy( samples, 0, newSamples, 0, samples.length );
+			System.arraycopy( this.samples, 0, newSamples, 0, this.samples.length );
         }
 
-		System.arraycopy( x1, 0, newSamples, samples.length, x1.length );
+		System.arraycopy( x1, 0, newSamples, this.samples.length, x1.length );
 		
 		// Update this object
 		this.samples = newSamples;		
@@ -302,6 +302,17 @@ public class SampleChunk extends Audio
 	@Override
 	public SampleChunk clone()
 	{
-		return new SampleChunk( samples.clone(), this.format.clone(), this.startTimecode.clone() );
+		return new SampleChunk( this.samples.clone(), this.format.clone(), this.startTimecode.clone() );
+	}
+
+	/**
+	 * 	Pads the sample chunk to the given size with zeros.
+	 *	@param requiredSampleSetSize The required sample size
+	 */
+	public void pad( final int requiredSampleSetSize )
+	{
+		final byte[] samples = new byte[requiredSampleSetSize];
+		System.arraycopy( this.samples, 0, samples, 0, this.samples.length );
+		this.samples = samples;
 	}
 }

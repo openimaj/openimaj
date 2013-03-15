@@ -40,7 +40,7 @@ import java.util.Arrays;
  *	and frequencies.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
+ *	@see "http://www.musicdsp.org/showone.php?id=125"
  *	@created 27 Nov 2011
  */
 public class WesternScaleNote
@@ -64,7 +64,9 @@ public class WesternScaleNote
 	@Override
 	public String toString()
 	{
-		return noteName+octaveNumber;
+		return this.noteName + this.octaveNumber + 
+				" ("+this.frequency+"Hz, "+this.noteNumber+")";
+//		return this.noteName+this.octaveNumber;
 	}
 	
 	// ---------------------- Static stuff below here ------------------------ //
@@ -85,10 +87,33 @@ public class WesternScaleNote
 	 *	@param note2 The second note of the interval
 	 *	@return The number of half-steps between the two notes.
 	 */
-	public final static int nStepsBetween( WesternScaleNote note1, 
-			WesternScaleNote note2 )
+	public final static int nStepsBetween( final WesternScaleNote note1, 
+			final WesternScaleNote note2 )
 	{
 		return note1.noteNumber - note2.noteNumber;
+	}
+	
+	/**
+	 * 	Converts a MIDI note number to a frequency.
+	 *	@param noteNumber The note number
+	 *	@return The frequency
+	 */
+	public final static float noteToFrequency( final int noteNumber )
+	{
+		return (float)(WesternScaleNote.tuningOfA * 
+				Math.pow( 2, (noteNumber-69)/12d ));
+	}
+	
+	/**
+	 * 	Converts a frequency to the nearest note number
+	 *	@param frequency The frequency
+	 *	@return The note number
+	 */
+	public final static int frequencyToNote( final float frequency )
+	{
+		return (int)Math.round( 12 * Math.log( 
+				frequency/WesternScaleNote.tuningOfA )/Math.log(2) )
+				+69;
 	}
 	
 	/**
@@ -99,19 +124,15 @@ public class WesternScaleNote
 	 *	@param octaveNumber The octave of the note.
 	 *	@return A new WesternScaleNote
 	 */
-	public final static WesternScaleNote createNote( String noteName, 
-			int octaveNumber )
+	public final static WesternScaleNote createNote( final String noteName, 
+			final int octaveNumber )
 	{
-		WesternScaleNote n = new WesternScaleNote();
+		final WesternScaleNote n = new WesternScaleNote();
 		n.noteName = noteName;
 		n.octaveNumber = octaveNumber;
-		n.noteNumber = Arrays.asList( noteNames ).indexOf( noteName ) + 
+		n.noteNumber = Arrays.asList( WesternScaleNote.noteNames ).indexOf( noteName ) + 
 			(octaveNumber+1)*12;
-		
-		if( noteName.equals("A") && octaveNumber == 4 )
-				n.frequency = WesternScaleNote.tuningOfA;
-		else	n.frequency = (float)(tuningOfA * Math.pow( twelfthRootOfTwo, 
-					nStepsBetween( WesternScaleNote.createNote("A",4), n ) ));
+		n.frequency = WesternScaleNote.noteToFrequency( n.noteNumber );
 					  
 		return n;
 	}
@@ -126,10 +147,9 @@ public class WesternScaleNote
 	 *	@param frequency The frequency to convert to a note.
 	 *	@return A {@link WesternScaleNote}
 	 */
-	public final static WesternScaleNote createNote( float frequency )
+	public final static WesternScaleNote createNote( final float frequency )
 	{
-		double f = frequency/tuningOfA;
-		int noteNum = (int)(69 + 12*(Math.log(f)/Math.log(2)));
+		final int noteNum = WesternScaleNote.frequencyToNote( frequency );
 		return WesternScaleNote.createNote( noteNum );
 	}
 
@@ -140,18 +160,15 @@ public class WesternScaleNote
 	 *	@param noteNumber A note number
 	 *	@return A {@link WesternScaleNote}
 	 */
-	public final static WesternScaleNote createNote( int noteNumber )
+	public final static WesternScaleNote createNote( final int noteNumber )
 	{
-		WesternScaleNote n = new WesternScaleNote();
+		final WesternScaleNote n = new WesternScaleNote();
 		n.noteNumber = noteNumber;
 		n.octaveNumber = noteNumber/12 -1;
-		n.noteName = noteNames[ noteNumber%12 ];
-
-		if( n.noteName.equals("A") && n.octaveNumber == 4 )
-				n.frequency = WesternScaleNote.tuningOfA;
-		else	n.frequency = (float)(tuningOfA * Math.pow( twelfthRootOfTwo, 
-					nStepsBetween( WesternScaleNote.createNote("A",4), n ) ));
-				  
+		n.noteName = WesternScaleNote.noteNames[ noteNumber%12 ];
+		n.frequency = WesternScaleNote.noteToFrequency( noteNumber );
+		
 		return n;
 	}
+
 }

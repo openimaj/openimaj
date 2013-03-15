@@ -74,7 +74,7 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	 * 	Create processor that will process chunks of the given size.
 	 *  @param sizeRequired The size of the chunks required (in samples)
 	 */
-	public FixedSizeSampleAudioProcessor( int sizeRequired )
+	public FixedSizeSampleAudioProcessor( final int sizeRequired )
 	{
 		this.requiredSampleSetSize = sizeRequired;
 	}
@@ -84,12 +84,40 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	 * 	@param stream An audio stream to process
 	 *  @param sizeRequired The size of the chunks required (in samples)
 	 */
-	public FixedSizeSampleAudioProcessor( AudioStream stream, int sizeRequired )
+	public FixedSizeSampleAudioProcessor( final AudioStream stream, final int sizeRequired )
 	{
 		super( stream );
 		this.requiredSampleSetSize = sizeRequired;
 	}
 	
+	/**
+	 *	Constructor that takes the size of the window and the size of the
+	 *	window overlap. 
+	 *	@param nSamplesInWindow The number of samples in the window
+	 *	@param nSamplesOverlap The size of the overlap
+	 */
+	public FixedSizeSampleAudioProcessor( final int nSamplesInWindow,
+			final int nSamplesOverlap )
+	{
+		this( nSamplesInWindow );
+		this.setWindowStep( nSamplesOverlap );
+	}
+
+	/**
+	 * 	Chainable constructor that takes the size of the window and 
+	 * 	the number of samples overlap.
+	 * 
+	 * 	@param as The chained audio stream
+	 *	@param nSamplesInWindow Samples in window
+	 *	@param nSamplesOverlap Samples in window overlap
+	 */
+	public FixedSizeSampleAudioProcessor( final AudioStream as, final int nSamplesInWindow,
+			final int nSamplesOverlap )
+	{
+		this( as, nSamplesInWindow );
+		this.setWindowStep( nSamplesOverlap );
+	}
+
 	/**
 	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.processor.AudioProcessor#nextSampleChunk()
@@ -104,27 +132,27 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 		// buffer, we'll just use that, otherwise we'll get a new sample
 		// chunk from the stream.
 		SampleChunk s = null;
-		if( sampleBuffer != null && 
-			sampleBuffer.getNumberOfSamples() >= requiredSampleSetSize )
+		if( this.sampleBuffer != null && 
+			this.sampleBuffer.getNumberOfSamples() >= this.requiredSampleSetSize )
 		{
-			s = sampleBuffer;
-			sampleBuffer = null;
+			s = this.sampleBuffer;
+			this.sampleBuffer = null;
 		}
 		else	
 		{
-			s = getUnderlyingStream().nextSampleChunk();
+			s = this.getUnderlyingStream().nextSampleChunk();
 			if( s != null )
 				s = s.clone();
 			
 			// If we have something in our buffer, prepend it to the new
 			// sample chunk
-			if( sampleBuffer != null && sampleBuffer.getNumberOfSamples() > 0 
+			if( this.sampleBuffer != null && this.sampleBuffer.getNumberOfSamples() > 0 
 				&& s != null )
 			{
 				// Prepend the contents of the sample buffer to the new sample
 				// chunk
-				s.prepend( sampleBuffer );
-				sampleBuffer = null;
+				s.prepend( this.sampleBuffer );
+				this.sampleBuffer = null;
 			}
 		}
 		
@@ -138,10 +166,10 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 		// more audio, so we return null.
 		if( s == null )
 		{
-			if( sampleBuffer != null )
+			if( this.sampleBuffer != null )
 			{
-				s = sampleBuffer;
-				sampleBuffer = null;
+				s = this.sampleBuffer;
+				this.sampleBuffer = null;
 				return s;
 			}
 			else	
@@ -154,9 +182,9 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 		// If we don't have enough samples, we'll keep getting chunks until
 		// we have enough or until the end of the stream is reached.
 		boolean endOfStream = false;
-		while( !endOfStream && nSamples < requiredSampleSetSize )
+		while( !endOfStream && nSamples < this.requiredSampleSetSize )
 		{
-			SampleChunk nextSamples = getUnderlyingStream().nextSampleChunk();
+			final SampleChunk nextSamples = this.getUnderlyingStream().nextSampleChunk();
 			if( nextSamples != null )
 			{
 				// Append the new samples onto the end of the sample chunk
@@ -172,29 +200,35 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 		// or we've got to the end of the stream
 		// then we just return the chunk we have.
 		SampleChunk ss;
-		if( !endOfStream && (overlapping || nSamples > requiredSampleSetSize) )
+		if( !endOfStream && (this.overlapping || nSamples > this.requiredSampleSetSize) )
 		{
 			// We must now have too many samples...
 			// Store the excess back into the buffer
 			int start = 0;
-			if( overlapping )
-					start = windowStep;
-			else	start = requiredSampleSetSize;
+			if( this.overlapping )
+					start = this.windowStep;
+			else	start = this.requiredSampleSetSize;
 			
 			// Store the rest into the sample buffer
-			sampleBuffer = s.getSampleSlice( start,	nSamples-start );
+			this.sampleBuffer = s.getSampleSlice( start, nSamples-start );
 			
 			// Process a slice of the sample chunk
-			ss = s.getSampleSlice( 0, requiredSampleSetSize );
+			ss = s.getSampleSlice( 0, this.requiredSampleSetSize );
 		}
-		else	ss = s;
+		else	
+		{
+			ss = s;
+			
+			if( ss.getNumberOfSamples() < this.requiredSampleSetSize )
+				ss.pad( this.requiredSampleSetSize );
+		}
 		
 		try
         {
 			// Return the processed samples
-	        return process( ss );
+	        return this.process( ss );
         }
-        catch( Exception e )
+        catch( final Exception e )
         {
         	// If there's an error, log it and return the unprocessed samples
 	        e.printStackTrace();
@@ -206,7 +240,7 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	 * 	Set the step of each overlapping window.
 	 *  @param overlap The step of each overlapping window.
 	 */
-	public void setWindowStep( int overlap )
+	public void setWindowStep( final int overlap )
 	{
 		this.windowStep = overlap;
 		this.overlapping  = true;
@@ -221,6 +255,27 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	public int getWindowStep()
 	{
 		return this.windowStep;
+	}
+	
+	/**
+	 * 	Set the size of the window required. Should be called before
+	 * 	the object has been used to process anything. The result is undefined
+	 * 	if it's called during processing and will probably lead to some
+	 * 	sort of bounds error.
+	 *	@param sizeRequired The size required.
+	 */
+	public void setWindowSize( final int sizeRequired )
+	{
+		this.requiredSampleSetSize = sizeRequired;
+	}
+	
+	/**
+	 * 	Returns the size of the sample window.
+	 *	@return The size of the sample window.
+	 */
+	public int getWindowSize()
+	{
+		return this.requiredSampleSetSize;
 	}
 	
 	/**
@@ -242,7 +297,7 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample ) throws Exception
+	public SampleChunk process( final SampleChunk sample ) throws Exception
 	{
 		return sample;
 	}

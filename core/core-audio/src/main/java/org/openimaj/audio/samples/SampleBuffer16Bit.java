@@ -214,7 +214,7 @@ public class SampleBuffer16Bit implements SampleBuffer, Iterator<Float>
 	{
 		final double[] d = new double[this.size()];
 		for( int i = 0; i < this.size(); i++ )
-			d[i] = this.get(i);
+			d[i] = this.get(i) / Integer.MAX_VALUE;
 		return d;
 	}
 	
@@ -229,7 +229,7 @@ public class SampleBuffer16Bit implements SampleBuffer, Iterator<Float>
 		final double[][] s = new double[nc][this.size()/nc];
 		for( int c = 0; c < nc; c++ )
 			for( int sa = 0; sa < this.size()/nc; sa++ )
-				s[c][sa] = this.get( sa*nc + c );
+				s[c][sa] = this.get( sa*nc + c )  / Integer.MAX_VALUE;
 		return s;
 	}
 

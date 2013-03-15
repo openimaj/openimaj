@@ -69,8 +69,8 @@ public class AudioUtils
 	 */
 	static public List<AudioDevice> getDevices()
 	{
-		List<AudioDevice> l = new ArrayList<AudioDevice>();
-		Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+		final List<AudioDevice> l = new ArrayList<AudioDevice>();
+		final Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 		 
 		for(int i = 0; i < mixerInfo.length; i++)
 		{
@@ -91,16 +91,16 @@ public class AudioUtils
 	 *	@return A Java sound line.
 	 * 	@throws LineUnavailableException 
 	 */
-	static public SourceDataLine getJavaOutputLine( String deviceName, 
-			AudioFormat af ) 
+	static public SourceDataLine getJavaOutputLine( final String deviceName, 
+			final AudioFormat af ) 
 		throws LineUnavailableException
 	{
-		Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-		for( Mixer.Info info: mixerInfo )
+		final Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+		for( final Mixer.Info info: mixerInfo )
 		{
 			if( info.getName().equals( deviceName ) )
 			{
-				Mixer m = AudioSystem.getMixer(info);
+				final Mixer m = AudioSystem.getMixer(info);
 				if( m.getSourceLineInfo().length > 0 )
 					return (SourceDataLine)AudioSystem.getLine( 
 							m.getSourceLineInfo()[0] );
@@ -118,14 +118,14 @@ public class AudioUtils
 	 *	@return A SourceDataLine
 	 *	@throws LineUnavailableException
 	 */
-	static public SourceDataLine getAnyJavaOutputLine( AudioFormat af ) 
+	static public SourceDataLine getAnyJavaOutputLine( final AudioFormat af ) 
 		throws LineUnavailableException
 	{
 		// Convert the OpenIMAJ audio format to a Java Sound audio format object
-		javax.sound.sampled.AudioFormat audioFormat = af.getJavaAudioFormat();
+		final javax.sound.sampled.AudioFormat audioFormat = af.getJavaAudioFormat();
 		
 		// Create info to create an output data line
-		DataLine.Info info = new DataLine.Info(	
+		final DataLine.Info info = new DataLine.Info(	
 				SourceDataLine.class, audioFormat );
 		
 		// Get the output line to write to using the given
@@ -141,9 +141,10 @@ public class AudioUtils
 	 *	@param freq The frequency to convert
 	 *	@return The Mel frequency
 	 */
-	static public double frequencyToMelFrequency( double freq )
+	static public double frequencyToMelFrequency( final double freq )
 	{
-		return (2595d * Math.log10(1 + freq/700d) );
+		return (1127d * Math.log( 1 + freq/700d ) );
+//		return (2595d * Math.log10(1 + freq/700d) );
 	}
 	
 	/**
@@ -152,9 +153,10 @@ public class AudioUtils
 	 *	@param melFreq The Mel frequency to convert
 	 *	@return The frequency
 	 */
-	static public double melFrequencyToFrequency( double melFreq )
+	static public double melFrequencyToFrequency( final double melFreq )
 	{
-		 return (700d * (Math.pow(10, melFreq/2595d) - 1) );
+		return (700d * Math.exp( melFreq/1127d ) -700d );
+//		 return (700d * (Math.pow(10, melFreq/2595d) - 1) );
 	}
 	
 	/**
@@ -163,7 +165,7 @@ public class AudioUtils
 	 *	@param freq The frequency to convert
 	 *	@return The Bark frequency
 	 */
-	static public double frequencyToBarkFrequency( double freq )
+	static public double frequencyToBarkFrequency( final double freq )
 	{
 		return 6*Math.log( (freq/600d) + Math.sqrt(Math.pow(freq/600d,2) + 1 ) );
 	}
@@ -172,15 +174,15 @@ public class AudioUtils
 	 * 
 	 *	@param args
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
 	{
 		try
 		{
-			System.out.println( getDevices() );
-			System.out.println( getJavaOutputLine( "Line 1/2 (M-Audio Delta 44)", 
+			System.out.println( AudioUtils.getDevices() );
+			System.out.println( AudioUtils.getJavaOutputLine( "Line 1/2 (M-Audio Delta 44)", 
 					new AudioFormat( 16, 44.1, 2 ) ) );
 		}
-		catch( LineUnavailableException e )
+		catch( final LineUnavailableException e )
 		{
 			e.printStackTrace();
 		}

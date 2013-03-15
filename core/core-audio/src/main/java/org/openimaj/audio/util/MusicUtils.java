@@ -32,6 +32,12 @@
  */
 package org.openimaj.audio.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.openimaj.util.pair.IndependentPair;
+
 /**
  *	Static utility methods that are related to music (more semantic
  *	than audio utilities).
@@ -51,8 +57,78 @@ public class MusicUtils
 	 *	@param bpm Beats per minute
 	 *	@return Number of milliseconds per beat.
 	 */
-	public static int millisPerBeat( float bpm )
+	public static int millisPerBeat( final float bpm )
 	{
 		return (int)(60000f/bpm);
+	}
+	
+	/**
+	 * 	Parses the music notation from ABC files (without the header). Note number
+	 * 	-1 signifies a rest.
+	 * 
+	 *	@param abc The abc note string
+	 *	@return An list of note numbers and lengths
+	 */
+	public static List<IndependentPair<Integer,Double>> 
+		parseABCNotes( final String abc )
+	{
+		final List<IndependentPair<Integer, Double>> ret = 
+				new ArrayList<IndependentPair<Integer,Double>>();
+		
+		// Start with middle-C and alter from there
+		int nn = 60;
+		int length = 1;
+		IndependentPair<Integer,Double> lastNote = null;
+		
+		for( int i = 0; i < abc.length(); i++ )
+		{
+			char c = abc.charAt( i );
+			
+			switch( c )
+			{
+				case '_': nn -= 1; break;
+				case '=': nn -= 0; break;
+				case '^': nn += 1; break;
+				case ',': nn -= 12; break;
+				case '\'': nn += 12; break;
+				case '/': 
+					if( lastNote != null )
+						lastNote.setSecondObject( lastNote.getSecondObject()/2d );
+					break;
+				case '-':
+				case 'z':
+					nn = -1; break;
+				default: 
+				break; 
+			}
+			
+			if( Character.isDigit( c ) && lastNote != null )
+				lastNote.setSecondObject( lastNote.getSecondObject() * (c-48) );
+			
+			// If it's a note name...
+			if( Character.isLetter( c ) && "abcdefgABCDEFG".contains( ""+c ) )
+			{
+				// If it's lower case it's the upper octave
+				if( Character.isLowerCase( c ) )
+					nn += 12;
+				
+				// Convert to upper case and get the note offset
+				c = Character.toUpperCase( c );
+				nn += Arrays.asList( WesternScaleNote.noteNames ).indexOf( ""+c );
+				
+				// Add it to the list
+				ret.add( lastNote = new IndependentPair<Integer, Double>( nn, 
+						(double)length ) );
+				
+				// Reset our variables for the next note
+				nn = 60;
+				length = 1;
+			}
+			else
+			if( nn == -1 )
+				ret.add( new IndependentPair<Integer, Double>( -1, (double)length ) );
+		}
+		
+		return ret;
 	}
 }
