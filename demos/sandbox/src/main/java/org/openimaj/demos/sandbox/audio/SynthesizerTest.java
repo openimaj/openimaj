@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos.sandbox.audio;
 
@@ -45,66 +45,80 @@ import org.jfree.data.xy.DefaultXYDataset;
 import org.openimaj.audio.AudioPlayer;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.generation.Synthesizer;
-import org.openimaj.audio.generation.Synthesizer.WaveType;
 import org.openimaj.audio.samples.SampleBuffer;
 
 /**
- * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- * 
- * @created 2 May 2012
+ * 	Instantiates the synthesiser and plays the sound from the synth.
+ * 	Also displays the waveform of the first 3 sample chunks delivered
+ * 	by the synth.
+ *
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	@created 2 May 2012
  */
 public class SynthesizerTest
 {
 	/**
-	 * 
+	 *
 	 *  @param args
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
 	{
-		Synthesizer synth = new Synthesizer();
-		synth.setFrequency( 440 );
-		synth.setOscillatorType( WaveType.SINE );
+		final Synthesizer synth = new Synthesizer();
+		synth.setFrequency( 220 );
 		SampleChunk s = synth.nextSampleChunk();
 		SampleBuffer b = s.getSampleBuffer();
-		
+
 		int n = 3;
 
-		DefaultXYDataset ds = new DefaultXYDataset();
-		
-		int x = 0, y = 0;		
+		final DefaultXYDataset ds = new DefaultXYDataset();
+
+		int x = 0, y = 0;
 		while( n > 0 )
 		{
 			// Convert sample to a XY data plot
-			double[][] data = new double[2][];
+			final double[][] data = new double[2][];
 			data[0] = new double[b.size()]; // x
 			data[1] = new double[b.size()]; // y
 
 			for( x = 0; x < b.size(); x++ )
 			{
-				data[0][x] = b.get(x); 
+				data[0][x] = b.get(x);
 				data[1][x] = x+y;
 			}
-			
+
 			s = synth.nextSampleChunk();
 			b = s.getSampleBuffer();
 			y += x;
 			n--;
-			
+
 			ds.addSeries( "samples "+n, data );
 		}
 
-		JFreeChart c = ChartFactory.createXYLineChart( "Sample", "samples",
+		final JFreeChart c = ChartFactory.createXYLineChart( "Sample", "samples",
 		        "amplitude", ds, PlotOrientation.HORIZONTAL, false, false,
 		        false );
-		ChartPanel chartPanel = new ChartPanel( c, false );
+		final ChartPanel chartPanel = new ChartPanel( c, false );
 		chartPanel.setPreferredSize( new Dimension( 640, 480 ) );
 
-		JFrame f = new JFrame();
+		final JFrame f = new JFrame();
 		f.add( chartPanel, BorderLayout.CENTER );
 		f.pack();
 		f.setVisible( true );
-		
-		AudioPlayer ap = AudioPlayer.createAudioPlayer( synth );
-		ap.run();
+
+		// Play the audio from the synth in a new thread
+		final AudioPlayer ap = AudioPlayer.createAudioPlayer( synth );
+		new Thread( ap ).start();
+
+		// Wait 2 seconds
+		try
+		{
+			Thread.sleep( 2000 );
+		}
+		catch( final InterruptedException e )
+		{
+		}
+
+		// Set the synth to note off
+		synth.noteOff();
 	}
 }

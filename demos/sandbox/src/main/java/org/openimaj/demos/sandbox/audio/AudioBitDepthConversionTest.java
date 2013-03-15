@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos.sandbox.audio;
 
@@ -54,13 +54,12 @@ import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.BitDepthConverter;
 import org.openimaj.audio.conversion.BitDepthConverter.BitDepthConversionAlgorithm;
 import org.openimaj.audio.generation.Synthesizer;
-import org.openimaj.audio.generation.Synthesizer.WaveType;
 import org.openimaj.audio.samples.SampleBuffer;
 
 
 /**
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
+ *
  *	@created 18 Jun 2012
  */
 public class AudioBitDepthConversionTest
@@ -68,48 +67,47 @@ public class AudioBitDepthConversionTest
 	/**
 	 *  @param args
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
     {
 		try
         {
 	        // ============================================================== //
 	        // This is what we'll convert from
-	        AudioFormat inputFormat  = new AudioFormat( 16, 22.05, 1 );
-	        
+	        final AudioFormat inputFormat  = new AudioFormat( 16, 22.05, 1 );
+
 	        // This is what we'll convert to
-	        AudioFormat outputFormat1 = new AudioFormat( 8, 22.05, 1 );
-	        
+	        final AudioFormat outputFormat1 = new AudioFormat( 8, 22.05, 1 );
+
 	        // Create a synthesiser to output stuff
-	        Synthesizer synth = new Synthesizer();
+	        final Synthesizer synth = new Synthesizer();
 	        synth.setFrequency( 500 );
 	        synth.setFormat( inputFormat );
-	        synth.setOscillatorType( WaveType.SINE );
 //	        XuggleAudio xa = new XuggleAudio( new File( "videoplayback.3gp" ) );
 //	        MultichannelToMonoProcessor synth = new MultichannelToMonoProcessor(xa);
-	        
+
 	        // The sample rate converter we're testing
-	        BitDepthConverter bdc1 = new BitDepthConverter( synth, 
-	        		BitDepthConversionAlgorithm.NEAREST, 
+	        final BitDepthConverter bdc1 = new BitDepthConverter( synth,
+	        		BitDepthConversionAlgorithm.NEAREST,
 	        		outputFormat1 );
-	        
+
 	        // ============================================================== //
 	        // Add the synth's chunks to the display
-	        ArrayList<SampleChunk> chunks = new ArrayList<SampleChunk>();
+	        final ArrayList<SampleChunk> chunks = new ArrayList<SampleChunk>();
 	        for( int n = 0; n < 3; n++ )
 	        	chunks.add( synth.nextSampleChunk().clone() );
-	        DefaultXYDataset ds1 = getDataSet( chunks );
-	        
+	        final DefaultXYDataset ds1 = AudioBitDepthConversionTest.getDataSet( chunks );
+
 	        // ============================================================== //
 	        // Now add the resampled chunks to the display
-	        ArrayList<SampleChunk> resampledChunks1 = new ArrayList<SampleChunk>();
+	        final ArrayList<SampleChunk> resampledChunks1 = new ArrayList<SampleChunk>();
 	        for( int n = 0; n < chunks.size(); n++ )
 	        	resampledChunks1.add( bdc1.process( chunks.get(n) ).clone() );
-	        DefaultXYDataset ds2 = getDataSet( resampledChunks1 );	    
-	        
+	        final DefaultXYDataset ds2 = AudioBitDepthConversionTest.getDataSet( resampledChunks1 );
+
 	        // ============================================================== //
 	        // Set up the display
-	        JPanel p = new JPanel( new GridBagLayout() );
-	        GridBagConstraints gbc = new GridBagConstraints();
+	        final JPanel p = new JPanel( new GridBagLayout() );
+	        final GridBagConstraints gbc = new GridBagConstraints();
 	        gbc.gridx = gbc.gridy = 0;
 	        gbc.fill = GridBagConstraints.BOTH;
 	        gbc.weightx = gbc.weighty = 1;
@@ -132,64 +130,64 @@ public class AudioBitDepthConversionTest
 	                false );
 	        chartPanel = new ChartPanel( c, false );
 	        chartPanel.setPreferredSize( new Dimension( 1500, 300 ) );
-	        
+
 	        gbc.gridy++;
 	        p.add( chartPanel, gbc );
-	        
+
 	        // ============================================================== //
 	        // Display
-	        JFrame f = new JFrame();
+	        final JFrame f = new JFrame();
 	        f.add( p, BorderLayout.CENTER );
 	        f.pack();
 	        f.setVisible( true );
 
 	        // Play the sample (minus the first three chunks ;)
-	        AudioPlayer ap = new AudioPlayer( bdc1 );
+	        final AudioPlayer ap = new AudioPlayer( bdc1 );
 	        ap.run();
-	       
+
         }
-        catch( HeadlessException e )
+        catch( final HeadlessException e )
         {
 	        e.printStackTrace();
         }
-        catch( Exception e )
+        catch( final Exception e )
         {
 	        e.printStackTrace();
         }
     }
-	
+
 	/**
 	 * 	Returns a data set that displays the sample chunks.
-	 * 
+	 *
 	 *  @param chunks
 	 *  @return a dataset
 	 */
-	public static DefaultXYDataset getDataSet( List<SampleChunk> chunks )
+	public static DefaultXYDataset getDataSet( final List<SampleChunk> chunks )
 	{
-		DefaultXYDataset ds = new DefaultXYDataset();
-		
+		final DefaultXYDataset ds = new DefaultXYDataset();
+
 		int x = 0, y = 0;
 		for( int n = 0; n < chunks.size(); n++ )
 		{
-			SampleChunk sc = chunks.get(n);
-			SampleBuffer b = sc.getSampleBuffer();
-			
+			final SampleChunk sc = chunks.get(n);
+			final SampleBuffer b = sc.getSampleBuffer();
+
 			// Convert sample to a XY data plot
-			double[][] data = new double[2][];
+			final double[][] data = new double[2][];
 			data[0] = new double[b.size()]; // x
 			data[1] = new double[b.size()]; // y
 
 			for( x = 0; x < b.size(); x++ )
 			{
-				data[0][x] = b.get(x); 
+				data[0][x] = b.get(x);
 				data[1][x] = x+y;
 			}
-			
+
 			y += x;
-			
+
 			ds.addSeries( "samples "+n, data );
 		}
-		
+
 		return ds;
 	}
 }
