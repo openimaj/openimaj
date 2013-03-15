@@ -228,6 +228,17 @@ public class TriangularFilter
 	{
 		return this.filterAmplitude;
 	}
+	
+	/**
+	 * 	Set the filter amplitude
+	 *	@param fa The filter amplitude
+	 */
+	public void setFilterAmplitude( final double fa )
+	{
+		this.filterAmplitude = fa;
+		this.lowSlope = this.filterAmplitude / (this.centreFrequency - this.lowFrequency);
+		this.highSlope = this.filterAmplitude / (this.highFrequency - this.centreFrequency);
+	}
 
 	/**
 	 *	{@inheritDoc}

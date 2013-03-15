@@ -6,7 +6,11 @@ package org.openimaj.audio.features;
 import jAudioFeatureExtractor.AudioFeatures.MFCC;
 import jAudioFeatureExtractor.AudioFeatures.MagnitudeSpectrum;
 
+import org.openimaj.audio.AudioAnnotator;
+import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.samples.SampleBuffer;
+import org.openimaj.feature.DoubleFV;
+import org.openimaj.util.array.ArrayUtils;
 
 /**
  *	A wrapper around the MFCC implementation of jAudio (which itself
@@ -16,7 +20,7 @@ import org.openimaj.audio.samples.SampleBuffer;
  *  @created 5 Mar 2013
  *	@version $Author$, $Revision$, $Date$
  */
-public class MFCCJAudio
+public class MFCCJAudio extends AudioAnnotator
 {
 	/** The jAudio MFCC feature extractor */
 	private final MFCC mfccFeatureExtractor = new MFCC();
@@ -75,5 +79,22 @@ public class MFCCJAudio
 		}
 
 		return mfccs;
+	}
+
+	/**
+	 * 	Calculates the MFCC for each channel, then flattens the channel arrays
+	 * 	into a single {@link DoubleFV}.
+	 *
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.feature.FeatureExtractor#extractFeature(java.lang.Object)
+	 */
+	@Override
+	public DoubleFV extractFeature( final SampleChunk sc )
+	{
+		// Calculate the MFCC for this frame.
+		final double[][] calculatedMFCC =
+				this.calculateMFCC( sc.getSampleBuffer() );
+
+		return new DoubleFV( ArrayUtils.reshape( calculatedMFCC ) );
 	}
 }

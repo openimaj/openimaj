@@ -33,25 +33,16 @@
 package org.openimaj.audio.filters;
 
 import org.openimaj.audio.AudioStream;
-import org.openimaj.audio.SampleChunk;
-import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
-import org.openimaj.audio.samples.SampleBuffer;
 
 /**
  * 	Applies a Hanning window on top of the audio signal.
- *  Assumes that all incoming audio samples will be the same size (or smaller)
- *  than the initial sample. This is because the Hanning function is cached
- *  the first time that the function is called.
  *  
  * 	@see "http://cnx.org/content/m0505/latest/"
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 31 Oct 2011
  */
-public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
+public class HanningAudioProcessor extends WeightedWindowedAudioProcessor
 {
-	/** A table of cos */
-	private double[] cosTable = null; 
-
 	/**
 	 * 	Default constructor for non chainable processing.
 	 * 	@param sizeRequired Size of the window required 
@@ -73,122 +64,43 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
     }
 
 	/**
-	 * 	Generate a cache of the COS function used for the Hanning.
-	 *  @param sample An example of the sample that will have the Hanning
-	 *  	function applied.
+	 * 	Constructor that takes the size of the window and the number of samples
+	 * 	overlap.
+	 * 
+	 *	@param nSamplesInWindow Samples in window
+	 *	@param nSamplesOverlap Samples in window overlap
 	 */
-	private void generateCosTableCache( final SampleChunk sample )
+	public HanningAudioProcessor( final int nSamplesInWindow, final int nSamplesOverlap )
 	{
-		this.generateCosTableCache( 
-				sample.getNumberOfSamples()/sample.getFormat().getNumChannels(), 
-				sample.getFormat().getNumChannels() );
+		super( nSamplesInWindow, nSamplesOverlap );
 	}
-	
+
+	/**
+	 * 	Chainable constructor that takes the size of the window and 
+	 * 	the number of samples overlap.
+	 * 
+	 * 	@param as The chained audio stream
+	 *	@param nSamplesInWindow Samples in window
+	 *	@param nSamplesOverlap Samples in window overlap
+	 */
+	public HanningAudioProcessor( final AudioStream as, final int nSamplesInWindow,
+			final int nSamplesOverlap )
+	{
+		super( as, nSamplesInWindow, nSamplesOverlap );
+	}
+
 	/**
 	 * 	Generate the cos table cache
 	 *	@param length The length of the window to generate (per channel)
 	 *	@param nc The number of channels for which to generate a weight table
 	 */
-	private void generateCosTableCache( final int length, final int nc )
+	@Override
+	protected void generateWeightTableCache( final int length, final int nc )
 	{
 		final int ns = length;
-		this.cosTable = new double[ length ];
+		this.weightTable = new double[ length ];
 		for( int n = 0; n < ns; n++ )
 			for( int c = 0; c < nc; c++ )
-				this.cosTable[n*nc+c] = 0.5*(1-Math.cos((2*Math.PI*n)/ns));
-	}
-	
-	/**
-	 * 	Process the given sample chunk. Note that it is expected that the 
-	 * 	sample will be the correct length (as given in the constructor). If it
-	 * 	is not, the window will not be applied correctly.
-	 * 
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
-	 */
-	@Override
-	final public SampleChunk process( final SampleChunk sample )
-	{
-		if( sample == null ) return null;
-		if( this.cosTable == null )
-			this.generateCosTableCache( sample );
-		
-		// Apply the Hanning weights
-		this.process( sample.getSampleBuffer() );
-		
-		return this.processSamples( sample );
-	}
-	
-	/**
-	 * 	Process the given sample buffer with the Hanning window.
-	 *	@param b The sample buffer
-	 *	@return The sample buffer
-	 */
-	final public SampleBuffer process( final SampleBuffer b )
-	{
-		final int nc = b.getFormat().getNumChannels();
-		if( this.cosTable == null )
-			this.generateCosTableCache( b.size()/nc, nc );
-
-		for( int c = 0; c < nc; c++ )
-		{
-			for( int n = 0; n < b.size()/nc; n++ )
-			{
-				final float x = b.get(n*nc+c);
-				final float v = (float)(x * this.cosTable[n*nc+c]);
-				b.set( n*nc+c, v );
-			}
-		}
-		
-		return b;
-	}
-	
-	/**
-	 * 	Process the Hanning samples.
-	 * 
-	 *	@param sample The samples to process
-	 *	@return The processed samples
-	 */
-	public SampleChunk processSamples( final SampleChunk sample )
-	{
-		return sample;
-	}
-
-	/**
-	 * 	The sum of the Hanning window
-	 * 	@param samples A representative sample 
-	 *	@return The sum of the hanning window
-	 */
-	public double getWindowSum( final SampleChunk samples )
-    {
-		return this.getWindowSum( 
-				samples.getNumberOfSamples() / samples.getFormat().getNumChannels(),  
-				samples.getFormat().getNumChannels() );
-    }
-	
-	/**
-	 * 	Get the sum of the Hanning window for the given parameters
-	 *	@param length The length of the window
-	 *	@param numChannels The number of channels in the window
-	 *	@return The sum of the window
-	 */
-	public double getWindowSum( final int length, final int numChannels )
-	{
-		if( this.cosTable == null )
-			this.generateCosTableCache( length, numChannels );
-		
-		double sum = 0;
-		for( int i = 0; i < this.cosTable.length; i += numChannels )
-			sum += this.cosTable[i];
-		return sum;
-    }
-	
-	/**
-	 * 	Get the weights used.
-	 *	@return The weights
-	 */
-	public double[] getWeights()
-	{
-		return this.cosTable;
-	}
+				this.weightTable[n*nc+c] = 0.5*(1-Math.cos((2*Math.PI*n)/ns));
+	}	
 }

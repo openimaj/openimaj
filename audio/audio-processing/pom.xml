@@ -69,6 +69,12 @@
     	<version>1.0.4</version>
     	<scope>compile</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.openimaj</groupId>
+    	<artifactId>machine-learning</artifactId>
+    	<version>1.1.1-SNAPSHOT</version>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
