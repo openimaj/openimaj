@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.video.processing.shotdetector;
 
@@ -61,37 +61,51 @@ import org.openimaj.video.Video;
 			"address", "{L}yon, {FRANCE}"
 		}
 	)
-public class LocalHistogramVideoShotDetector 
+public class LocalHistogramVideoShotDetector
 	extends VideoShotDetector<MBFImage>
 {
 	/** The histogram model used to estimate the histogram for each frame */
 	private final HistogramModel histogramModel = new HistogramModel( 4,4,4 );
-	
+
 	/** The histogram of the previous frame */
 	private double[][][] lastHistogram = null;
-	
+
 	/** The number of grid elements in the grid */
 	private int nGridElements = 20;
-	
+
 	/** The percentage of tiles to use as the most similar */
 	private final double pcMostSimilar = 0.1;
-	
+
 	/** The percentage of tiles to use as the most dissimilar */
 	private final double pcMostDissimilar = 0.1;
 
 	/** The boosting factor to use */
 	private final double boostFactor = 1.1;
-	
+
 	/** The limiting factor to use */
 	private final double limitingFactor = 0.9;
-	
+
 	/**
-	 * 
-	 *	@param video The video to process 
-	 * 	@param nGridElements The number of x and y grid elements 
+	 * 	If you use this constructor, your timecodes will be messed up
+	 * 	unless you call {@link #setFPS(double)} before you process
+	 * 	any frames.
+	 * 	@param nGridElements The number of x and y grid elements
 	 *		(there will be this number squared in total)
 	 */
-	public LocalHistogramVideoShotDetector( final Video<MBFImage> video, 
+	public LocalHistogramVideoShotDetector( final int nGridElements )
+	{
+		this.nGridElements = nGridElements;
+		this.lastHistogram = new double[this.nGridElements][this.nGridElements][];
+		this.threshold = 0.2;
+	}
+
+	/**
+	 *
+	 *	@param video The video to process
+	 * 	@param nGridElements The number of x and y grid elements
+	 *		(there will be this number squared in total)
+	 */
+	public LocalHistogramVideoShotDetector( final Video<MBFImage> video,
 			final int nGridElements )
 	{
 		super( video );
@@ -109,11 +123,11 @@ public class LocalHistogramVideoShotDetector
 	{
 		// The histogram distance at each element
 		final double[][] avgHisto = new double[this.nGridElements][this.nGridElements];
-		
+
 		// Work out the size of each grid element in pixels
 		final int gw = frame.getWidth()  / this.nGridElements;
 		final int gh = frame.getHeight() / this.nGridElements;
-		
+
 		// Loop through the grid elements
 		for( int y = 0; y < this.nGridElements; y++ )
 		{
@@ -121,41 +135,41 @@ public class LocalHistogramVideoShotDetector
 			{
 				// Extract the local image
 				final MBFImage img = frame.extractROI( x*gw, y*gh, gw, gh );
-				
+
 				// Estimate the histogram
 				this.histogramModel.estimateModel( img );
 				final double[] histogram = this.histogramModel.
 						histogram.asDoubleVector();
 
-				// If we have a grid element histogram to compare against, 
+				// If we have a grid element histogram to compare against,
 				// we will implement the algorithm
 				if( this.lastHistogram[y][x] != null )
 				{
-					final double dist = DoubleFVComparison.EUCLIDEAN.compare( 
-							histogram, this.lastHistogram[y][x] ); 
+					final double dist = DoubleFVComparison.EUCLIDEAN.compare(
+							histogram, this.lastHistogram[y][x] );
 					avgHisto[y][x] = dist;
 				}
-				
+
 				// Store the histogram for this grid element for next time
 				this.lastHistogram[y][x] = histogram;
 			}
-			
+
 		}
-		
+
 		// We'll work now with a 1D array
 		double[] flattenedAvgHisto = ArrayUtils.reshape( avgHisto );
-		
+
 		// --- Calculate most similar and dissimilar tiles for boosting ---
 		// Sort the avgHisto values retaining their original indices
 		final int[] indices = new int[this.nGridElements*this.nGridElements];
-		
+
 		// Sort the histogram distance array. The smallest values will end
 		// up at the end of the array - the smallest values are the most similar.
-		ArrayUtils.parallelQuicksortDescending(	flattenedAvgHisto, 
+		ArrayUtils.parallelQuicksortDescending(	flattenedAvgHisto,
 				ArrayUtils.fill( indices ) );
 
 		// Create an array with the boost/limit factors in it
-		final double[][] similarDissimilar = 
+		final double[][] similarDissimilar =
 				new double[this.nGridElements][this.nGridElements];
 
 		// Set the boost/limit factors
@@ -168,7 +182,7 @@ public class LocalHistogramVideoShotDetector
 			if( index >= this.nGridElements * this.nGridElements * (1-this.pcMostSimilar) )
 					factor = this.boostFactor;
 			else	factor = 1;
-			
+
 			final int y = indices[index] / this.nGridElements;
 			final int x = indices[index] % this.nGridElements;
 			similarDissimilar[y][x] = factor;
@@ -176,25 +190,25 @@ public class LocalHistogramVideoShotDetector
 
 		// DEBUG
 //		this.drawBoxes( frame, similarDissimilar );
-		
+
 		// Boost the avgHisto values based on the distance measures
 		for( int y = 0; y < this.nGridElements; y++ )
 			for( int x = 0; x < this.nGridElements; x++ )
 				avgHisto[y][x] *= similarDissimilar[y][x];
-	
+
 		// Calculate the average histogram distance (over all the grid elements)
 		flattenedAvgHisto = ArrayUtils.reshape( avgHisto );
 		double avgDist = ArrayUtils.sumValues( flattenedAvgHisto );
 		avgDist /= this.nGridElements * this.nGridElements;
-				
+
 		// Calculate the stddev
 		ArrayUtils.subtract( flattenedAvgHisto, avgDist );
-		final double stdDev = Math.sqrt( ArrayUtils.sumValuesSquared( 
+		final double stdDev = Math.sqrt( ArrayUtils.sumValuesSquared(
 				flattenedAvgHisto ) / (this.nGridElements*this.nGridElements) );
 
 		return stdDev;
 	}
-	
+
 	/**
 	 * 	Draws the boxes to show movements.
 	 *	@param img The image to draw to
@@ -202,7 +216,7 @@ public class LocalHistogramVideoShotDetector
 	protected void drawBoxes( final MBFImage img, final double[][] sim )
 	{
 		final int gw = img.getWidth()  / this.nGridElements;
-		final int gh = img.getHeight() / this.nGridElements;		
+		final int gh = img.getHeight() / this.nGridElements;
 		for( int y = 0; y < this.nGridElements; y++ )
 		{
 			for( int x = 0; x < this.nGridElements; x++ )

@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.video.processing.shotdetector;
 
@@ -47,7 +47,7 @@ import org.openimaj.video.Video;
  *	by the weighting value for that detector.  The final score is divided by
  *	the number of detectors to get a probability value for the frame being
  *	a shot boundary. By default the threshold is set to 0.75 - that is, there must
- *	be a 3/4 correlation of shot boundary for it to be considered a shot boundary.  
+ *	be a 3/4 correlation of shot boundary for it to be considered a shot boundary.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 28 Jan 2013
@@ -57,9 +57,20 @@ public class CombiShotDetector extends VideoShotDetector<MBFImage>
 {
 	/** The detectors to use for evidence gathering */
 	private Map<VideoShotDetector<MBFImage>,Double> detectors = null;
-	
+
 	/**
-	 *	Default constructor that takes the video to be processed 
+	 * 	If you use this constructor, your timecodes will be messed up
+	 * 	unless you call {@link #setFPS(double)} before you process
+	 * 	any frames.
+	 */
+	public CombiShotDetector()
+	{
+		this.detectors = new HashMap<VideoShotDetector<MBFImage>, Double>();
+		this.threshold = 0.75;
+	}
+
+	/**
+	 *	Default constructor that takes the video to be processed
 	 *	@param video The video
 	 */
 	public CombiShotDetector( final Video<MBFImage> video )
@@ -68,22 +79,22 @@ public class CombiShotDetector extends VideoShotDetector<MBFImage>
 		this.detectors = new HashMap<VideoShotDetector<MBFImage>, Double>();
 		this.threshold = 0.75;
 	}
-	
+
 	/**
 	 * 	Add a shot detector that will be used in the evidence gathering.
 	 *	@param detector The detector
-	 * 	@param weight The weight to use for this detector 
+	 * 	@param weight The weight to use for this detector
 	 */
-	public void addVideoShotDetector( final VideoShotDetector<MBFImage> detector, 
+	public void addVideoShotDetector( final VideoShotDetector<MBFImage> detector,
 			final double weight )
 	{
 		if( weight > 1 || weight < 0 )
-			throw new IllegalArgumentException( 
+			throw new IllegalArgumentException(
 					"Detector weight must be between "+
 					"0 and 1 inclusive" );
 		this.detectors.put( detector, weight );
 	}
-	
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processing.shotdetector.VideoShotDetector#getInterframeDistance(org.openimaj.image.Image)
@@ -98,7 +109,7 @@ public class CombiShotDetector extends VideoShotDetector<MBFImage>
 			if( detector.wasLastFrameBoundary() )
 				score += this.detectors.get(detector);
 		}
-		
+
 		return score/this.detectors.size();
-	}	
+	}
 }

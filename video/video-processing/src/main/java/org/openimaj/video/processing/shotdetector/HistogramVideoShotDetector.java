@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.video.processing.shotdetector;
 
@@ -49,17 +49,27 @@ import org.openimaj.video.Video;
  * 	a list of keyframes you must store this list yourself by listening to the
  * 	ShotDetected event which provides a VideoKeyframe which has a timecode
  * 	and an image. Each event will receive the same VideoKeyframe instance
- * 	containing different information. USe VideoKeyframe#clone() to make a copy. 
- * 
+ * 	containing different information. USe VideoKeyframe#clone() to make a copy.
+ *
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
+ *
  *	@created 1 Jun 2011
  */
-public class HistogramVideoShotDetector 
+public class HistogramVideoShotDetector
 	extends VideoShotDetector<MBFImage>
 {
 	/** The previous frame's histogram */
 	private Histogram lastHistogram;
+
+	/**
+	 * 	If you use this constructor, your timecodes will be messed up
+	 * 	unless you call {@link #setFPS(double)} before you process
+	 * 	any frames.
+	 */
+	public HistogramVideoShotDetector()
+	{
+		this.threshold = 5000;
+	}
 
 	/**
 	 * 	Constructor that takes the frame rate of the source material.
@@ -70,9 +80,9 @@ public class HistogramVideoShotDetector
 		super( fps );
 		this.threshold = 5000;
 	}
-	
+
 	/**
-	 *	Default constructor takes the video to process. 
+	 *	Default constructor takes the video to process.
 	 *	@param video The video
 	 */
 	public HistogramVideoShotDetector( final Video<MBFImage> video )
@@ -80,7 +90,7 @@ public class HistogramVideoShotDetector
 		super( video );
 		this.threshold = 5000;
 	}
-	
+
 	/**
 	 * 	Constructor that determines whether to display the processing.
 	 *	@param video The video
@@ -96,7 +106,7 @@ public class HistogramVideoShotDetector
 	 * 	Checks whether a shot boundary occurred between the given frame
 	 * 	and the previous frame, and if so, it will add a shot boundary
 	 * 	to the shot boundary list.
-	 * 
+	 *
 	 *  @param frame The new frame to process.
 	 */
 	@Override
@@ -105,17 +115,17 @@ public class HistogramVideoShotDetector
 		// Get the histogram for the frame.
 		final HistogramAnalyser hp = new HistogramAnalyser( 64 );
 		if( frame instanceof MBFImage )
-			hp.analyseImage( ((MBFImage)frame).getBand(0) );
+			hp.analyseImage( frame.getBand(0) );
 		final Histogram newHisto = hp.getHistogram();
-		
+
 		double dist = 0;
-		
+
 		// If we have a last histogram, compare against it.
 		if( this.lastHistogram != null )
 			dist = newHisto.compare( this.lastHistogram, DoubleFVComparison.EUCLIDEAN );
 
 		this.lastHistogram = newHisto;
-		
+
 		return dist;
 	}
 }
