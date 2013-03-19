@@ -42,7 +42,28 @@ import org.openimaj.video.VideoDisplay;
 
 /**
  * VideoCapture is a type of {@link Video} that can capture live video streams
- * from a webcam or other video device.
+ * from a webcam or other video device. On OSX and Windows, this is completely
+ * dependency-free and no extra software needs to be installed. On linux you
+ * need to have video4linux installed.
+ * <p>
+ * <strong>Environment variables</strong>
+ * <ul>
+ * <li>The environment variable OPENIMAJ_GRABBER_VERBOSE can be set (to any
+ * non-zero length value) on windows to make the native library print lots of
+ * debugging information</li>
+ * <li>The environment variable OPENIMAJ_GRABBER_READ can be set on linux to
+ * force the native library use v4l in read-mode rather than through memory
+ * mapping the device. This can be useful if you have lots of cameras attached
+ * as it reduces the bandwidth required.</li>
+ * </ul>
+ * <p>
+ * <strong>System properties</strong>
+ * <ul>
+ * <li>The system property with the name given by
+ * {@link #DEFAULT_DEVICE_NUMBER_PROPERTY} can be used to set the default
+ * capture device and can either be a device number, or device identifer string.
+ * See {@link #VideoCapture(int, int)} for more details.</li>
+ * </ul>
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -244,6 +265,19 @@ public class VideoCapture extends Video<MBFImage> {
 		return frame;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws RuntimeException
+	 *             wrapping a {@link VideoCaptureException} with the message
+	 *             "Timed out waiting for next frame" if there is a timeout
+	 *             waiting for the next frame. This could potentially be caught
+	 *             and ignored (i.e. the frame is dropped).
+	 * @throws RuntimeException
+	 *             wrapping a {@link VideoCaptureException} with the message
+	 *             "Error occurred getting next frame" if there is an error the
+	 *             next frame. Currently this can only occur on linux.
+	 */
 	@Override
 	public synchronized MBFImage getNextFrame() {
 		if (isStopped)
