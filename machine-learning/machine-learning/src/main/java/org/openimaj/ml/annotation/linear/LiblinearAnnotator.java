@@ -110,20 +110,26 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExt
 			annotations = helper.getAnnotations();
 			annotationsList = new ArrayList<ANNOTATION>(annotations);
 
-			final int nItems = data.size();
 			final int featureLength = extractor.extractFeature(data.get(0).getObject()).length();
 
 			models = new Model[annotationsList.size()];
 
 			for (int i = 0; i < annotationsList.size(); i++) {
-				final Problem problem = new Problem();
-				problem.l = nItems;
-				problem.n = featureLength;
-				problem.x = new Feature[nItems][];
-				problem.y = new double[nItems];
-
 				final ANNOTATION annotation = annotationsList.get(i);
-				positive = helper.extractFeatures(annotation, extractor);
+				final List<? extends FeatureVector> positive = helper.extractFeatures(annotation,
+						(FeatureExtractor<? extends FeatureVector, OBJECT>) extractor);
+				final List<? extends FeatureVector> negative = helper.extractFeaturesExclude(annotation,
+						(FeatureExtractor<? extends FeatureVector, OBJECT>) extractor);
+
+				final Problem problem = new Problem();
+				problem.l = positive.size() + negative.size();
+				problem.n = featureLength;
+				problem.x = new Feature[problem.l][];
+				problem.y = new double[problem.l];
+
+				for (int j = 0; j < negative.size(); j++) {
+
+				}
 
 				// for (int i = 0; i < nItems; i++) {
 				// final Annotated<OBJECT, ANNOTATION> object = data.get(i);
