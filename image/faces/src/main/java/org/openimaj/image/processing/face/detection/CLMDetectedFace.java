@@ -41,6 +41,7 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
+import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackerVars;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 
@@ -51,7 +52,7 @@ import Jama.Matrix;
  * detection rectangle, also provides the shape matrix (describing the 2D point
  * positions in the patch image), and the weight vectors for the model pose
  * (relative to the detection image) and shape.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
@@ -80,13 +81,13 @@ public class CLMDetectedFace extends DetectedFace {
 	/**
 	 * Construct a {@link CLMDetectedFace} by copying the state from a
 	 * {@link TrackedFace}
-	 * 
+	 *
 	 * @param face
 	 *            the {@link TrackedFace}
 	 * @param image
 	 *            the image in which the tracked face was detected
 	 */
-	public CLMDetectedFace(TrackedFace face, FImage image) {
+	public CLMDetectedFace(final TrackedFace face, final FImage image) {
 		this(face.redetectedBounds, face.shape.copy(), face.clm._pglobl.copy(), face.clm._plocal.copy(),
 				face.clm._visi[face.clm.getViewIdx()].copy(), image);
 	}
@@ -94,7 +95,7 @@ public class CLMDetectedFace extends DetectedFace {
 	/**
 	 * Construct with the given bounds, shape and pose parameters and detection
 	 * image. The face patch is extracted automatically.
-	 * 
+	 *
 	 * @param bounds
 	 * @param shape
 	 * @param poseParameters
@@ -102,8 +103,8 @@ public class CLMDetectedFace extends DetectedFace {
 	 * @param visibility
 	 * @param fullImage
 	 */
-	public CLMDetectedFace(Rectangle bounds, Matrix shape, Matrix poseParameters, Matrix shapeParameters,
-			Matrix visibility, FImage fullImage)
+	public CLMDetectedFace(final Rectangle bounds, final Matrix shape, final Matrix poseParameters, final Matrix shapeParameters,
+			final Matrix visibility, final FImage fullImage)
 	{
 		super(bounds, fullImage.extractROI(bounds), 1);
 
@@ -122,33 +123,35 @@ public class CLMDetectedFace extends DetectedFace {
 		}
 	}
 
+
+
 	/**
 	 * Helper method to convert a list of {@link TrackedFace}s to
 	 * {@link CLMDetectedFace}s.
-	 * 
+	 *
 	 * @param faces
 	 *            the {@link TrackedFace}s.
 	 * @param image
 	 *            the image the {@link TrackedFace}s came from.
 	 * @return the list of {@link CLMDetectedFace}s
 	 */
-	public static List<CLMDetectedFace> convert(List<TrackedFace> faces, MBFImage image) {
+	public static List<CLMDetectedFace> convert(final List<TrackedFace> faces, final MBFImage image) {
 		final FImage fimage = image.flatten();
 
-		return convert(faces, fimage);
+		return CLMDetectedFace.convert(faces, fimage);
 	}
 
 	/**
 	 * Helper method to convert a list of {@link TrackedFace}s to
 	 * {@link CLMDetectedFace}s.
-	 * 
+	 *
 	 * @param faces
 	 *            the {@link TrackedFace}s.
 	 * @param image
 	 *            the image the {@link TrackedFace}s came from.
 	 * @return the list of {@link CLMDetectedFace}s
 	 */
-	public static List<CLMDetectedFace> convert(List<TrackedFace> faces, FImage image) {
+	public static List<CLMDetectedFace> convert(final List<TrackedFace> faces, final FImage image) {
 		final List<CLMDetectedFace> cvt = new ArrayList<CLMDetectedFace>();
 
 		for (final TrackedFace f : faces) {
@@ -158,13 +161,28 @@ public class CLMDetectedFace extends DetectedFace {
 		return cvt;
 	}
 
+	/**
+	 * 	Helper method that converts this {@link CLMDetectedFace} into
+	 * 	a {@link TrackedFace}.
+	 *	@return A {@link TrackedFace}
+	 */
+	public TrackedFace convert()
+	{
+		final TrackerVars tv = new TrackerVars();
+		tv.clm._pglobl = this.poseParameters.copy();
+		tv.clm._plocal = this.shapeParameters.copy();
+		tv.shape = this.shape.copy();
+		tv.clm._visi[ tv.clm.getViewIdx() ] = this.visibility.copy();
+		return new TrackedFace( this.bounds, tv );
+	}
+
 	@Override
-	public void writeBinary(DataOutput out) throws IOException {
+	public void writeBinary(final DataOutput out) throws IOException {
 		super.writeBinary(out);
 
-		IOUtils.write(getShape(), out);
-		IOUtils.write(poseParameters, out);
-		IOUtils.write(shapeParameters, out);
+		IOUtils.write(this.getShape(), out);
+		IOUtils.write(this.poseParameters, out);
+		IOUtils.write(this.shapeParameters, out);
 	}
 
 	@Override
@@ -173,77 +191,77 @@ public class CLMDetectedFace extends DetectedFace {
 	}
 
 	@Override
-	public void readBinary(DataInput in) throws IOException {
+	public void readBinary(final DataInput in) throws IOException {
 		super.readBinary(in);
-		shape = IOUtils.read(in);
-		poseParameters = IOUtils.read(in);
-		shapeParameters = IOUtils.read(in);
+		this.shape = IOUtils.read(in);
+		this.poseParameters = IOUtils.read(in);
+		this.shapeParameters = IOUtils.read(in);
 	}
 
 	/**
 	 * @return the scale of the model
 	 */
 	public double getScale() {
-		return poseParameters.get(0, 0);
+		return this.poseParameters.get(0, 0);
 	}
 
 	/**
 	 * @return the pitch of the model
 	 */
 	public double getPitch() {
-		return poseParameters.get(1, 0);
+		return this.poseParameters.get(1, 0);
 	}
 
 	/**
 	 * @return the yaw of the model
 	 */
 	public double getYaw() {
-		return poseParameters.get(2, 0);
+		return this.poseParameters.get(2, 0);
 	}
 
 	/**
 	 * @return the roll of the model
 	 */
 	public double getRoll() {
-		return poseParameters.get(3, 0);
+		return this.poseParameters.get(3, 0);
 	}
 
 	/**
 	 * @return the x-translation of the model
 	 */
 	public double getTranslationX() {
-		return poseParameters.get(4, 0);
+		return this.poseParameters.get(4, 0);
 	}
 
 	/**
 	 * @return the y-translation of the model
 	 */
 	public double getTranslationY() {
-		return poseParameters.get(5, 0);
+		return this.poseParameters.get(5, 0);
 	}
 
 	/**
 	 * Get the parameters describing the pose of the face. This doesn't include
 	 * the translation or scale. The values are {pitch, yaw, roll}
-	 * 
+	 *
 	 * @return the pose parameters
 	 */
 	public DoubleFV getPoseParameters() {
-		return new DoubleFV(new double[] { getPitch(), getYaw(), getRoll() });
+		return new DoubleFV(new double[] { this.getPitch(), this.getYaw(), this.getRoll() });
 	}
 
 	/**
 	 * Get the parameters describing the shape model (i.e. the weights for the
 	 * eigenvectors of the point distribution model)
-	 * 
+	 *
 	 * @return the shape parameters
 	 */
 	public DoubleFV getShapeParameters() {
-		final int len = shapeParameters.getRowDimension();
+		final int len = this.shapeParameters.getRowDimension();
 		final double[] vector = new double[len];
 
 		for (int i = 0; i < len; i++) {
-			vector[i] = shapeParameters.get(i, 0);
+			vector[i] = this.shapeParameters.get(i, 0);
 		}
 
 		return new DoubleFV(vector);
@@ -252,19 +270,19 @@ public class CLMDetectedFace extends DetectedFace {
 	/**
 	 * Get a vector describing the pose (pitch, yaw and roll only) and shape of
 	 * the model.
-	 * 
+	 *
 	 * @return the combined pose and shape vector
 	 */
 	public DoubleFV getPoseShapeParameters() {
-		final int len = shapeParameters.getRowDimension();
+		final int len = this.shapeParameters.getRowDimension();
 		final double[] vector = new double[len + 3];
 
-		vector[0] = getPitch();
-		vector[1] = getYaw();
-		vector[2] = getRoll();
+		vector[0] = this.getPitch();
+		vector[1] = this.getYaw();
+		vector[2] = this.getRoll();
 
 		for (int i = 3; i < len + 3; i++) {
-			vector[i] = shapeParameters.get(i, 0);
+			vector[i] = this.shapeParameters.get(i, 0);
 		}
 
 		return new DoubleFV(vector);
@@ -273,19 +291,19 @@ public class CLMDetectedFace extends DetectedFace {
 	/**
 	 * Get the matrix of points describing the model. The points are relative to
 	 * the image given by {@link #getFacePatch()}.
-	 * 
+	 *
 	 * @return the shape matrix
 	 */
 	public Matrix getShapeMatrix() {
-		return shape;
+		return this.shape;
 	}
 
 	/**
 	 * Get the visibility matrix
-	 * 
+	 *
 	 * @return the visibility matrix
 	 */
 	public Matrix getVisibility() {
-		return visibility;
+		return this.visibility;
 	}
 }
