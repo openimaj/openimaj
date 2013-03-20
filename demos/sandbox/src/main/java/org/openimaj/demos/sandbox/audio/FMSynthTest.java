@@ -2,7 +2,6 @@ package org.openimaj.demos.sandbox.audio;
 
 import java.util.Arrays;
 
-import org.junit.Test;
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.generation.Oscillator;
 import org.openimaj.audio.generation.Synthesizer;
@@ -22,8 +21,7 @@ public class FMSynthTest
 	/**
 	 *
 	 */
-	@Test
-	public void test()
+	public static void main( final String args[] )
 	{
 		final Synthesizer s = new Synthesizer();
 		s.setOscillatorType( new Oscillator.FrequencyModulatedOscillator() );
