@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.openimaj.demos.sandbox.audio;
 
@@ -8,7 +8,7 @@ import org.openimaj.vis.audio.AudioFramePlot;
 
 
 /**
- *	
+ *
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 13 Feb 2013
@@ -16,6 +16,9 @@ import org.openimaj.vis.audio.AudioFramePlot;
  */
 public class FixSynth
 {
+	/**
+	 *	@param args
+	 */
 	public static void main( final String args[] )
 	{
 		final Synthesizer s = new Synthesizer();
@@ -24,8 +27,7 @@ public class FixSynth
 		s.setRelease( 100 );
 		s.noteOn( 60, 1f );
 		s.noteOff();
-		
-		final AudioFramePlot afp = new AudioFramePlot();
-		afp.drawChart( s );
+
+		AudioFramePlot.drawChart( s );
 	}
 }

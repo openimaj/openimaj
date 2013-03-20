@@ -19,7 +19,7 @@ import org.openimaj.vis.audio.AudioFramePlot;
 public class FMSynthTest
 {
 	/**
-	 *
+	 * @param args
 	 */
 	public static void main( final String args[] )
 	{
