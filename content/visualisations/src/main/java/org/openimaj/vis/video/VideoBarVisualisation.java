@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.vis.video;
 
@@ -54,7 +54,7 @@ import org.openimaj.vis.timeline.TimelineObject;
  * This class will process the data in a separate thread. Obviously, it's not
  * sensible to call this class with a "live" data stream, such as from a
  * VideoCapture object.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 3 Jul 2012
  * @version $Author$, $Revision$, $Date$
@@ -65,7 +65,7 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 
 	/**
 	 * A marker for marking data frames within the data bar
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 6 Jul 2012
 	 * @version $Author$, $Revision$, $Date$
@@ -78,7 +78,7 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 	/**
 	 * Process a particular frame of the data. The frame and timecode of the
 	 * frame are provided.
-	 * 
+	 *
 	 * @param frame
 	 *            The frame to process
 	 * @param t
@@ -87,8 +87,11 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 	public abstract void processFrame(MBFImage frame, Timecode t);
 
 	/**
-	 * Forces a redraw of the specific visImage onto the bar canvas.
-	 * 
+	 * Forces a redraw of the specific visImage onto the bar canvas. The
+	 * method should completely redraw the visualisation into the given
+	 * MBFImage, but it should not clear the visualisation first. It can
+	 * be assumed that the image will have been cleared already.
+	 *
 	 * @param vis
 	 *            The visImage to update.
 	 */
@@ -97,25 +100,25 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.vis.Visualisation#update()
 	 */
 	@Override
 	public void update() {
-		updateVis(visImage);
+		this.updateVis(this.visImage);
 	}
 
 	/** The background colour of the bar */
 	private Float[] barColour = new Float[] { 0.3f, 0.5f, 0.7f };
 
 	/** Whether to also show the audio waveform. */
-	private boolean showAudio = false;
+	private final boolean showAudio = false;
 
 	/** The height to plot the audio */
-	private int audioHeight = 50;
+	private final int audioHeight = 50;
 
 	/** Number of frames in the data in total */
-	private long nFrames;
+	private long nFrames = -1;
 
 	/** The start position of the data (as a timeline object) */
 	private long start = 0;
@@ -123,15 +126,18 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 	/** The marker that's used for processing progress */
 	private VideoTimelineMarker processingMarker = new VideoTimelineMarker();
 
+	/** The frame being processed */
+	private int nFrame = 0;
+
 	/**
-	 * 
+	 *
 	 * @param data
 	 */
-	protected VideoBarVisualisation(Video<MBFImage> video) {
+	protected VideoBarVisualisation(final Video<MBFImage> video) {
 		this.data = video;
 
 		this.nFrames = this.data.countFrames();
-		setPreferredSize(new Dimension(1, 120 + (this.showAudio ? this.audioHeight : 0)));
+		this.setPreferredSize(new Dimension(1, 120 + (this.showAudio ? this.audioHeight : 0)));
 	}
 
 	/**
@@ -154,60 +160,62 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 	 * The processing method used in the processing thread.
 	 */
 	private void processVideoThread() {
-		processingMarker = new VideoTimelineMarker();
-		processingMarker.type = TimelineMarkerType.LABEL;
+		this.processingMarker = new VideoTimelineMarker();
+		this.processingMarker.type = TimelineMarkerType.LABEL;
 
 		// Iterate through the data to get each frame.
-		int nFrame = 0;
+		this.nFrame = 0;
 		for (final MBFImage frame : this.data) {
-			processingMarker.frameNumber = nFrame;
+			this.processingMarker.frameNumber = this.nFrame;
 
 			// Process the frame
-			processFrame(frame, new FrameNumberVideoTimecode(nFrame, this.data.getFPS()));
-			nFrame++;
+			this.processFrame(frame, new FrameNumberVideoTimecode(
+					this.nFrame, this.data.getFPS()));
+			this.nFrame++;
+			System.out.println( this.nFrame );
 
-			repaint();
+			this.repaint();
 		}
 
-		processingMarker = null;
+		this.processingMarker = null;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
 	@Override
-	public void paint(Graphics g) {
+	public void paint(final Graphics g) {
 		// Resize the vis image if necessary
-		final int w = Math.min(getWidth(), getViewSize().width);
-		final int h = Math.min(getHeight(), getViewSize().height);
+		final int w = Math.min(this.getWidth(), this.getViewSize().width);
+		final int h = Math.min(this.getHeight(), this.getViewSize().height);
 
 		// Create a new vis image if the current image is the wrong size,
 		// or the image is not yet instantiated.
-		if (visImage == null ||
-				(w > 0 && h > 0 && visImage.getWidth() != w &&
-				visImage.getHeight() != h))
-			visImage = new MBFImage(w, h, 3);
+		if (this.visImage == null ||
+				(w > 0 && h > 0 && this.visImage.getWidth() != w &&
+				this.visImage.getHeight() != h))
+			this.visImage = new MBFImage(w, h, 3);
 
 		// Wipe out the vis.
-		visImage.fill(barColour);
+		this.visImage.fill(this.barColour);
 
 		// Draw the vis specifics
-		updateVis(visImage);
+		this.updateVis(this.visImage);
 
 		// Copy the vis to the Swing UI
-		g.drawImage(ImageUtilities.createBufferedImage(visImage),
+		g.drawImage(ImageUtilities.createBufferedImage(this.visImage),
 				0, 0, null);
 
 		// Draw the processing marker
-		if (processingMarker != null) {
-			final double d = getTimePosition(processingMarker.frameNumber);
+		if (this.processingMarker != null) {
+			final double d = this.getTimePosition(this.processingMarker.frameNumber);
 			final HrsMinSecFrameTimecode tc = new HrsMinSecFrameTimecode(
-					processingMarker.frameNumber, data.getFPS());
-			processingMarker.label = String.format("%.2f%% %s",
-					processingMarker.frameNumber / (float) nFrames * 100f, tc.toString());
-			processingMarker.type.drawMarker(processingMarker, g, (int) d, h);
+					this.processingMarker.frameNumber, this.data.getFPS());
+			this.processingMarker.label = String.format("%.2f%% %s",
+					this.processingMarker.frameNumber / (float) this.nFrames * 100f, tc.toString());
+			this.processingMarker.type.drawMarker(this.processingMarker, g, (int) d, h);
 		}
 	}
 
@@ -215,78 +223,79 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 	 * @return the barColour
 	 */
 	public Float[] getBarColour() {
-		return barColour;
+		return this.barColour;
 	}
 
 	/**
 	 * @param barColour
 	 *            the barColour to set
 	 */
-	public void setBarColour(Float[] barColour) {
+	public void setBarColour(final Float[] barColour) {
 		this.barColour = barColour;
 	}
 
 	/**
 	 * Return the data being shown by this bar.
-	 * 
+	 *
 	 * @return The data.
 	 */
 	public Video<MBFImage> getVideo() {
-		return data;
+		return this.data;
 	}
 
 	/**
 	 * Returns the position of the given timecode at the scale of the current
 	 * display. The position is given in pixels from the start of the bar.
-	 * 
+	 *
 	 * @param t
 	 *            the timecode for which to give the position.
 	 * @return The position in pixels of the timecode.
 	 */
-	protected double getTimePosition(Timecode t) {
-		final double msLength = nFrames / this.data.getFPS() * 1000;
-		return t.getTimecodeInMilliseconds() / msLength * getWidth();
+	protected double getTimePosition(final Timecode t) {
+		final long n = (this.nFrames <0? this.nFrame : this.nFrames);
+		final double msLength = n / this.data.getFPS() * 1000;
+		return t.getTimecodeInMilliseconds() / msLength * this.getWidth();
 	}
 
 	/**
 	 * Returns the position of the given frame at the scale of the current
 	 * display. The position is given in pixel from the start of the bar.
-	 * 
+	 *
 	 * @param nFrame
 	 *            The frame index
 	 * @return The position in pixels of the frame.
 	 */
-	protected double getTimePosition(int nFrame) {
-		return nFrame / (double) nFrames * getWidth();
+	protected double getTimePosition(final int nFrame) {
+		return nFrame / (double) this.nFrames * this.getWidth();
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.vis.timeline.TimelineObject#getStartTimeMilliseconds()
 	 */
 	@Override
 	public long getStartTimeMilliseconds() {
-		return start;
+		return this.start;
 	}
 
 	/**
 	 * Set the start time of this data object.
-	 * 
+	 *
 	 * @param t
 	 *            The start time.
 	 */
-	public void setStartTimeMilliseconds(long t) {
+	public void setStartTimeMilliseconds(final long t) {
 		this.start = t;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.vis.timeline.TimelineObject#getEndTimeMilliseconds()
 	 */
 	@Override
 	public long getEndTimeMilliseconds() {
-		return start + (long) (nFrames / this.data.getFPS() * 1000);
+		return this.start + (long) (this.nFrames / this.data.getFPS() * 1000);
 	}
 }

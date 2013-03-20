@@ -94,13 +94,13 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	private MBFImage overlayImage = null;
 	
 	/** The list of visualisations that wish to overlay on this vis */
-	private List<Visualisation<?>> overlays = new ArrayList<Visualisation<?>>();
+	private final List<Visualisation<?>> overlays = new ArrayList<Visualisation<?>>();
 	
 	/** Whether to clear the image before redrawing */
 	protected boolean clearBeforeDraw = true;
 	
 	/** The background colour to clear the image to */
-	private Float[] backgroundColour = new Float[]{0f,0f,0f,1f};
+	private final Float[] backgroundColour = new Float[]{0f,0f,0f,1f};
 	
 	/** The visualisation that this vis is being overlaid on */
 	private Visualisation<?> overlaidOn = null;
@@ -115,7 +115,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 *	@param width The width
 	 *	@param height The height
 	 */
-	public Visualisation( int width, int height )
+	public Visualisation( final int width, final int height )
 	{
 		this.visImage = new MBFImage( width, height, 4 );
 		this.setPreferredSize( new Dimension( width, height ) );
@@ -127,12 +127,12 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	Create a new visualisation using an existing image.
 	 *	@param overlayOn The visualisation on which to overlay
 	 */
-	public Visualisation( Visualisation<?> overlayOn )
+	public Visualisation( final Visualisation<?> overlayOn )
 	{
 		this.overlaidOn = overlayOn;
 		
 		// Create an image the same size as the overlay vis
-		MBFImage vi = overlayOn.getVisualisationImage();
+		final MBFImage vi = overlayOn.getVisualisationImage();
 		this.visImage = new MBFImage( vi.getWidth(), vi.getHeight(), 4 );
 		this.setPreferredSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
 		this.setSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
@@ -147,17 +147,17 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	Add an overlay to this visualisation
 	 *	@param v The visualisation to overlay on this visualisation
 	 */
-	public void addOverlay( Visualisation<?> v )
+	public void addOverlay( final Visualisation<?> v )
 	{
 		this.overlays.add( v );
-		v.updateVis( visImage );
+		v.updateVis( this.visImage );
 	}
 	
 	/**
 	 * 	Remove the given overlay from this visualisation
 	 *	@param v The visualisation to remove
 	 */
-	public void removeOverlay( Visualisation<?> v )
+	public void removeOverlay( final Visualisation<?> v )
 	{
 		this.overlays.remove( v );
 	}
@@ -175,25 +175,28 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 */
 	public void updateVis()
 	{
-		if( allowResize && (visImage == null ||
-				visImage.getWidth() != getWidth() ||
-				 visImage.getHeight() != getHeight()) )
-			visImage = new MBFImage( getWidth(), getHeight(), 4 );
-		
-		if( clearBeforeDraw )
-			visImage.fill( backgroundColour );
-		
-		if( overlayImage != null )
-			visImage.drawImage( overlayImage
-//				.process( new ResizeProcessor( getWidth(), getHeight(), false ) )
-				, 0, 0 );
+		synchronized( this.visImage )
+		{
+			if( this.allowResize && (this.visImage == null ||
+					this.visImage.getWidth() != this.getWidth() ||
+					 this.visImage.getHeight() != this.getHeight()) )
+				this.visImage = new MBFImage( this.getWidth(), this.getHeight(), 4 );
+			
+			if( this.clearBeforeDraw )
+				this.visImage.fill( this.backgroundColour );
+			
+			if( this.overlayImage != null )
+				this.visImage.drawImage( this.overlayImage
+	//				.process( new ResizeProcessor( getWidth(), getHeight(), false ) )
+					, 0, 0 );
+		}
 		
 		System.out.println( "Update "+this );
 		this.update();
-		repaint();
+		this.repaint();
 		
-		for( Visualisation<?> v : overlays )
-			v.updateVis( visImage );
+		for( final Visualisation<?> v : this.overlays )
+			v.updateVis( this.visImage );
 	}
 	
 	/**
@@ -201,7 +204,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	on which to overlay.
 	 *	@param overlay The overlay
 	 */
-	public void updateVis( MBFImage overlay )
+	public void updateVis( final MBFImage overlay )
 	{
 		if( overlay != null )
 				this.overlayImage = overlay.clone();
@@ -213,7 +216,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	Set the data to be visualised.
 	 *	@param data The data to be visualised
 	 */
-	public void setData( T data )
+	public void setData( final T data )
 	{
 		this.data = data;
 		this.updateVis();
@@ -233,10 +236,10 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
 	@Override
-	public void paint( Graphics g )
+	public void paint( final Graphics g )
 	{
-		g.drawImage( ImageUtilities.createBufferedImageForDisplay( visImage ), 
-				0, 0, null );
+		g.drawImage( ImageUtilities.createBufferedImageForDisplay( this.visImage ), 
+			0, 0, null );
 	}
 	
 	/**
@@ -244,12 +247,12 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	@param title The title of the window 
 	 * 	@return The window that was created 
 	 */
-	public JFrame showWindow( String title )
+	public JFrame showWindow( final String title )
 	{
-		JFrame f = new JFrame( title );
+		final JFrame f = new JFrame( title );
 		f.getContentPane().setLayout( new GridLayout(1,1) );
 		f.getContentPane().add( this );
-		f.setResizable( allowResize );
+		f.setResizable( this.allowResize );
 		f.pack();
 		f.setVisible( true );
 		return f;
@@ -261,14 +264,14 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 */
 	public boolean isAllowResize()
     {
-	    return allowResize;
+	    return this.allowResize;
     }
 
 	/**
 	 * 	Set whether this visualisation can be resized.
 	 *	@param allowResize TRUE to allow the visualisation to be resizable
 	 */
-	public void setAllowResize( boolean allowResize )
+	public void setAllowResize( final boolean allowResize )
     {
 	    this.allowResize = allowResize;
     }
@@ -278,31 +281,31 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	fade drawing is used.
 	 *	@param tf TRUE to clear the image
 	 */
-	public void setClearBeforeDraw( boolean tf )
+	public void setClearBeforeDraw( final boolean tf )
 	{
 		this.clearBeforeDraw = tf;
 	}
 
 	@Override
-	public void componentHidden( ComponentEvent e )
+	public void componentHidden( final ComponentEvent e )
 	{
 	}
 	
 	@Override
-	public void componentMoved( ComponentEvent e )
+	public void componentMoved( final ComponentEvent e )
 	{
 	}
 
 	@Override
-	public void componentShown( ComponentEvent e )
+	public void componentShown( final ComponentEvent e )
 	{
 	}
 	
 	@Override
-	public void componentResized( ComponentEvent e )
+	public void componentResized( final ComponentEvent e )
 	{
-		if( overlaidOn != null )
-				overlaidOn.setSize( getSize() );
-		else	updateVis();
+		if( this.overlaidOn != null )
+				this.overlaidOn.setSize( this.getSize() );
+		else	this.updateVis();
 	}
 }

@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.vis.video;
 
@@ -39,11 +39,14 @@ import java.util.List;
 import org.openimaj.audio.AudioStream;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.time.Timecode;
 import org.openimaj.video.Video;
-import org.openimaj.video.processing.shotdetector.ShotBoundary;
 import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
+import org.openimaj.video.processing.shotdetector.ShotBoundary;
 
 /**
  *	Will display a video in a timeline with shot detections marked on it.
@@ -56,72 +59,77 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 {
 	/** Shot detector */
 	private HistogramVideoShotDetector shotDetector = null;
-	
-	/** 
+
+	/**
 	 * 	To avoid constantly resampling, we cache the resampled images against
 	 * 	the hash code of the original image.
 	 */
-	private HashMap<Integer, MBFImage> imageCache = new HashMap<Integer,MBFImage>();
-	
+	private final HashMap<Integer, MBFImage> imageCache = new HashMap<Integer,MBFImage>();
+
 	/** */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 
+	 *
 	 *	@param video
 	 */
-	public ShotBoundaryVideoBarVisualisation( Video<MBFImage> video )
+	public ShotBoundaryVideoBarVisualisation( final Video<MBFImage> video )
 	{
 		this( video, null );
 	}
 
 	/**
-	 * 
+	 *
 	 *	@param video
 	 *	@param audio
 	 */
-	public ShotBoundaryVideoBarVisualisation( Video<MBFImage> video, AudioStream audio )
+	public ShotBoundaryVideoBarVisualisation( final Video<MBFImage> video, final AudioStream audio )
 	{
 		super( video );
 		this.shotDetector = new HistogramVideoShotDetector( video );
 		this.shotDetector.setFindKeyframes( true );
 	}
-	
-	/** 
+
+	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.vis.video.VideoBarVisualisation#processFrame(org.openimaj.image.MBFImage, org.openimaj.time.Timecode)
 	 */
 	@Override
-	public void processFrame( MBFImage frame, Timecode t )
+	public void processFrame( final MBFImage frame, final Timecode t )
 	{
 		this.shotDetector.processFrame( frame );
 	}
 
-	/** 
+	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.vis.video.VideoBarVisualisation#updateVis(org.openimaj.image.MBFImage)
 	 */
 	@Override
-	public void updateVis( MBFImage vis )
+	public void updateVis( final MBFImage vis )
 	{
-		List<ShotBoundary<MBFImage>> sbs = new ArrayList<ShotBoundary<MBFImage>>(
+		final List<ShotBoundary<MBFImage>> sbs = new ArrayList<ShotBoundary<MBFImage>>(
 				this.shotDetector.getShotBoundaries() );
-		for( ShotBoundary<MBFImage> sb : sbs )
+		for( final ShotBoundary<MBFImage> sb : sbs )
 		{
-			int hash = sb.getKeyframe().imageAtBoundary.hashCode();
-			MBFImage img = imageCache.get( hash );
+			final int hash = sb.getKeyframe().imageAtBoundary.hashCode();
+			MBFImage img = this.imageCache.get( hash );
 			if( img == null )
-				imageCache.put( hash, img = sb.getKeyframe().imageAtBoundary
+				this.imageCache.put( hash, img = sb.getKeyframe().imageAtBoundary
 					.process( new ResizeProcessor( 100, 100 ) ) );
-			
+
 			if( img != null )
 			{
-				int x = (int)getTimePosition( sb.getTimecode() );
+				final int x = (int)this.getTimePosition( sb.getTimecode() );
+				System.out.println( sb.getTimecode()+" -> "+x );
 				try
 				{
-					vis.createRenderer().drawImage( img, x, 0 );
+					final MBFImageRenderer r = vis.createRenderer();
+					r.drawImage( img, x, 0 );
+					r.drawLine( x, 0, x, this.getHeight(), 2, RGBColour.BLACK );
+					r.drawText( sb.getTimecode().toString(), x+4, img.getHeight() + 15,
+							HersheyFont.TIMES_BOLD, 12, RGBColour.BLACK );
 				}
-				catch( Exception e )
+				catch( final Exception e )
 				{
 					e.printStackTrace();
 					System.out.println( "Image was: "+img );
@@ -131,15 +139,15 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 					System.out.println( "    - Size: "+vis.getWidth()+"x"+vis.getHeight() );
 					System.out.println( "    - Num Bands: "+vis.numBands() );
 					System.out.println( "    - At Position: "+x+",0 ");
-					
+
 					DisplayUtilities.display( img, "img" );
 					DisplayUtilities.display( vis, "Vis" );
-					
+
 					try
 					{
 						Thread.sleep( 100000000 );
 					}
-					catch( InterruptedException e1 )
+					catch( final InterruptedException e1 )
 					{
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

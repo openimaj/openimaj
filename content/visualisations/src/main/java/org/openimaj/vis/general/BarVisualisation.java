@@ -32,11 +32,8 @@
  */
 package org.openimaj.vis.general;
 
-import java.awt.Font;
-
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
-import org.openimaj.image.typography.general.GeneralFont;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.array.ArrayUtils;
@@ -44,7 +41,7 @@ import org.openimaj.vis.Visualisation;
 
 /**
  *	The {@link BarVisualisation} can be used to draw to an image a bar graph
- *	of any data set.
+ *	of any data set to an RGBA MBFImage.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 26 Jul 2012
@@ -74,13 +71,10 @@ public class BarVisualisation extends Visualisation<double[]>
 	private Float[] axisColour = new Float[]{1f,1f,1f,1f};
 
 	/** Width of the axis line */
-	private final int axisWidth = 1;
+	private int axisWidth = 1;
 
 	/** Number of pixels to pad the base of the text */
 	private final int textBasePad = 4;
-
-	/** The font to draw any text in */
-	private final GeneralFont font = new GeneralFont( "Arial", Font.PLAIN );
 
 	/** Whether to auto scale the vertical axis */
 	private final boolean autoScale = true;
@@ -185,7 +179,7 @@ public class BarVisualisation extends Visualisation<double[]>
 		final int w = this.visImage.getWidth();
 		final int h = this.visImage.getHeight();
 
-		// Find min and max
+		// Find min and max values from the data
 		double max = this.maxValue;
 		if( this.autoScale )
 			max = ArrayUtils.maxValue( data );
@@ -193,45 +187,63 @@ public class BarVisualisation extends Visualisation<double[]>
 		if( this.autoScale )
 			min = ArrayUtils.minValue( data );
 
-		final double maxR = Math.max( Math.abs(max), Math.abs( min ) );
+		// Find the maximum value that occurs on one or t'other
+		// side of the main axis
+		final double largestAxisValue = Math.max( Math.abs(max), Math.abs( min ) );
 
-		// Work out the scalars
-		double yscale = h/maxR;
+		// Work out the scalars for the values to fit within the window
+		double yscale = (largestAxisValue == max ? this.axisLocation :
+				(h-this.axisLocation) )/largestAxisValue;
+
+		// The width of each of the bars
 		final double xscale = w/(double)data.length;
 
-		// Position of the axis
+		// Position of the axis - either fixed or moving to fit best
 		if( !this.fixAxis )
 				this.axisLocation = min * yscale;
 		else	yscale = Math.min( (h-this.axisLocation)/min, (h-this.axisLocation)/max );
 
+		// Now draw the bars
 		for( int i = 0; i < data.length; i++ )
 		{
+			// Position on the x-axis
 			final int x = (int)(i*xscale);
+
+			// The value (negative as we're drawing from the bottom of the window)
 			double s = -data[i] * yscale;
+
+			// This is used to ensure we draw the rectangle from the top-left each time.
 			double offset = 0;
+
+			// Get the bar colour. We'll get the colour map colour if we're doing that,
+			// or if we've fixed bar colours use those.
 			Float[] c = this.getBarColour();
-
 			if( this.useColourMap )
-				c = this.colourMap.apply( (float)(Math.abs(data[i]) / maxR) );
-
-			if( s < 0 )
-			{
-				offset = -s;
-				s = Math.abs( s );
-			}
-
+				c = this.colourMap.apply( (float)(Math.abs(data[i]) / largestAxisValue) );
 			if( this.useIndividualBarColours )
 				c = this.barColours[i%this.barColours.length];
 
+			// If we need to draw the rectangle below the axis, we need to draw
+			// from a different position, so we update the offset and height of bar
+			if( s < 0 )
+			{
+				offset = -s;
+				s = -s;
+			}
+
+			// Draw the filled rectangle, and then stroke it.
 			this.visImage.drawShapeFilled( new Rectangle( x, (int)(h-s+this.axisLocation+offset),
 					(int)xscale, (int)s ), c );
 			this.visImage.drawShape( new Rectangle( x, (int)(h-s+this.axisLocation+offset),
 					(int)xscale, (int)s ), this.getStrokeColour() );
 
+			// If we're to draw the bar's value, do that here.
 			if( this.drawValue )
 			{
+				// We'll draw the bar's value
 				final String text = ""+data[i];
 
+				// Find the width and height of the text to draw
 				final HersheyFont f = HersheyFont.TIMES_BOLD;
 				final Rectangle r = f.createStyle( this.visImage.createRenderer() )
 					.getRenderer( this.visImage.createRenderer() )
@@ -241,16 +253,13 @@ public class BarVisualisation extends Visualisation<double[]>
 				int tx = (int)(x+xscale/2-r.width/2);
 				final int ty = (int)(h-s+this.axisLocation+offset)-this.textBasePad;
 
-//				if( ty - r.height < 0 )
-//					ty = (int)r.height + this.textBasePad;
-
+				// Make sure the text will be drawn within the bounds of the image.
 				if( tx < 0 )
 					tx = 0;
-
 				if( tx + r.width > this.getWidth() )
 					tx = this.getWidth() - (int)r.width;
 
-				// Stroke the text
+				// Stroke the text, if necessary
 				if( this.isOutlineText() )
 				{
 					this.visImage.drawText( text, tx-1, ty-1, f, this.textSize, this.getTextStrokeColour() );
@@ -261,10 +270,10 @@ public class BarVisualisation extends Visualisation<double[]>
 
 				// Fill the text
 				this.visImage.drawText( text, tx, ty, f, this.textSize, this.getTextColour() );
-
 			}
 		}
 
+		// Finally, draw the axis on top of everything.
 		if( this.drawAxis )
 		{
 			this.visImage.drawLine( 0, (int)(h+this.axisLocation),
@@ -487,5 +496,23 @@ public class BarVisualisation extends Visualisation<double[]>
 	public void setAxisColour( final Float[] axisColour )
 	{
 		this.axisColour = axisColour;
+	}
+
+	/**
+	 * 	Get the width of the axis being drawn
+	 *	@return The axis width
+	 */
+	public int getAxisWidth()
+	{
+		return this.axisWidth;
+	}
+
+	/**
+	 * 	Set the axis width
+	 *	@param axisWidth The new axis width
+	 */
+	public void setAxisWidth( final int axisWidth )
+	{
+		this.axisWidth = axisWidth;
 	}
 }
