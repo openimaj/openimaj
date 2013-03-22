@@ -29,7 +29,6 @@
  */
 package org.openimaj.demos.sandbox.video;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.openimaj.image.MBFImage;
@@ -39,12 +38,12 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
+import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
-import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
  *  Tracks faces in video using the CLM Tracker.
- * 
+ *
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@version $Author$, $Revision$, $Date$
  *	@created 4 Jul 2012
@@ -52,14 +51,14 @@ import org.openimaj.video.xuggle.XuggleVideo;
 public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 {
 	/** The shot detector to use */
-	private HistogramVideoShotDetector shotDetector = null; 
+	private HistogramVideoShotDetector shotDetector = null;
 
 	/** The face tracker we're going to use */
-	private CLMFaceTracker tracker = new CLMFaceTracker();
+	private final CLMFaceTracker tracker = new CLMFaceTracker();
 
 	/** Frame counter for FPS display */
 	private int fnum = 0;
-	
+
 	/** Cache for the FPS text generated every 10 frames */
 	private String fpsText = "";
 
@@ -67,33 +66,33 @@ public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 	private long t1, t0 = System.currentTimeMillis();
 
 	/** Whether to show the FPS on the view */
-	private boolean showFPS = true;
+	private final boolean showFPS = true;
 
 	/** Whether to draw triangles on the video */
-	private boolean drawTriangles = false;
+	private final boolean drawTriangles = false;
 
 	/** Whether to draw connection on the video */
-	private boolean drawConnections = true;
+	private final boolean drawConnections = true;
 
 	/** Whether to draw points on the video */
-	private boolean drawPoints = true;
-	
+	private final boolean drawPoints = true;
+
 	/** Whether to draw the face bounds */
-	private boolean drawBounds = true;
-	
+	private final boolean drawBounds = true;
+
 	/** Whether to draw the template match search area */
-	private boolean drawSearchArea = true;
+	private final boolean drawSearchArea = true;
 
 	/**
 	 * 	Default constructor
-	 * 	@param v The video to track faces in 
+	 * 	@param v The video to track faces in
 	 *	@throws IOException
 	 */
-	public VideoFaceTracker( Video<MBFImage> v ) throws IOException
+	public VideoFaceTracker( final Video<MBFImage> v ) throws IOException
 	{
-		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( v );
+		final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( v );
 		vd.addVideoListener( this );
-		shotDetector = new HistogramVideoShotDetector( v.getFPS() );
+		this.shotDetector = new HistogramVideoShotDetector( v.getFPS() );
 //		shotDetector.setThreshold( 500 );
 	}
 
@@ -102,41 +101,43 @@ public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 	 * 	@see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override
-	public void beforeUpdate( MBFImage frame )
+	public void beforeUpdate( final MBFImage frame )
 	{
+		if( frame == null ) return;
+
 		// Process the frame.
-		shotDetector.processFrame( frame );
-		if( shotDetector.wasLastFrameBoundary() )
+		this.shotDetector.processFrame( frame );
+		if( this.shotDetector.wasLastFrameBoundary() )
 		{
 			System.out.println( "Shot detected. Forcing redetect on face tracker.");
-			tracker.reset();
+			this.tracker.reset();
 		}
 
 		// Track faces in the image
-		tracker.track( frame );
-		
+		this.tracker.track( frame );
+
 		// Draw the tracked model to the image
-		tracker.drawModel( frame, drawTriangles, drawConnections, drawPoints,
-				drawSearchArea, drawBounds );
-	
+		this.tracker.drawModel( frame, this.drawTriangles, this.drawConnections, this.drawPoints,
+				this.drawSearchArea, this.drawBounds );
+
 		// Whether to show FPS
-		if( showFPS )
+		if( this.showFPS )
 		{
 			// Draw framerate on display image (average of 10 frames)
-			if( fnum >= 9 )
+			if( this.fnum >= 9 )
 			{
-				t1 = System.currentTimeMillis();
-				double fps = 10 / ((double)(t1 - t0) / 1000.0);
-				t0 = t1;
-				fnum = 0;
-				fpsText = String.format( "%d frames/sec", (int)Math.round( fps ) );
+				this.t1 = System.currentTimeMillis();
+				final double fps = 10 / ((this.t1 - this.t0) / 1000.0);
+				this.t0 = this.t1;
+				this.fnum = 0;
+				this.fpsText = String.format( "%d frames/sec", (int)Math.round( fps ) );
 			}
 			else
 			{
-				fnum++;
+				this.fnum++;
 			}
 
-			frame.drawText( fpsText, 10, 20, HersheyFont.ROMAN_SIMPLEX, 20,
+			frame.drawText( this.fpsText, 10, 20, HersheyFont.ROMAN_SIMPLEX, 20,
 			        RGBColour.GREEN );
 		}
 	}
@@ -146,7 +147,7 @@ public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 	 * 	@see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
-	public void afterUpdate( VideoDisplay<MBFImage> display )
+	public void afterUpdate( final VideoDisplay<MBFImage> display )
 	{
 		// No implementation
 	}
@@ -155,8 +156,8 @@ public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 	 *	@param args
 	 *	@throws Exception
 	 */
-	public static void main( String[] args ) throws Exception
+	public static void main( final String[] args ) throws Exception
 	{
-		new VideoFaceTracker( new XuggleVideo( new File( "/home/dd/rt20111114.mp4" ) ) );
+		new VideoFaceTracker( new VideoCapture(320,240) );// new XuggleVideo( "rt20111114.mp4" ) );
 	}
 }

@@ -29,6 +29,7 @@
  */
 package org.openimaj.demos.sandbox.video;
 
+import java.awt.Dimension;
 import java.io.File;
 
 import javax.swing.JFrame;
@@ -37,7 +38,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
 import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
 
 /**
- *	
+ *
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 3 Jul 2012
@@ -46,19 +47,24 @@ import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
 public class ShotBoundaryVis
 {
 	/**
-	 * 
+	 *
 	 *	@param args
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
 	{
-		XuggleVideo x = new XuggleVideo( new File("/home/dd/video.m4v") );
-		ShotBoundaryVideoBarVisualisation sbvbv = new ShotBoundaryVideoBarVisualisation( x );
-		JFrame f = new JFrame();
+		final XuggleVideo x = new XuggleVideo( new File("heads2.mpeg") );
+
+		System.out.println( "HERRE" );
+		final ShotBoundaryVideoBarVisualisation sbvbv =
+				new ShotBoundaryVideoBarVisualisation( x );
+		sbvbv.setViewSize( new Dimension(1000,300), 0 );
+		final JFrame f = new JFrame();
 		f.getContentPane().add( sbvbv );
 		f.setSize( 1000, 300 );
 		f.setVisible( true );
+
 		sbvbv.processVideo();
 	}
-	
+
 }
 
