@@ -33,20 +33,43 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Interface for classes capable of reading objects
- * from a {@link InputStream}.
+ * Interface for classes capable of reading objects from a {@link InputStream}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> Type of object being read.
+ * 
+ * @param <T>
+ *            Type of object being read.
  */
 public interface ObjectReader<T> {
 	/**
 	 * Read an object from the stream
 	 * 
-	 * @param stream the stream
+	 * @param stream
+	 *            the stream
 	 * @return the object
-	 * @throws IOException if an error occurs
+	 * @throws IOException
+	 *             if an error occurs
 	 */
 	public T read(InputStream stream) throws IOException;
+
+	/**
+	 * Returns true if the stream can be read, or false otherwise.
+	 * <p>
+	 * Typically implementations will read just the first few bytes from the
+	 * stream to determine if the data can be read. This method is not normally
+	 * called directly; rather,
+	 * {@link IOUtils#canRead(ObjectReader, java.io.BufferedInputStream, String)}
+	 * should be used instead as it is capable of resetting the stream to its
+	 * initial condition.
+	 * 
+	 * @see IOUtils#canRead(ObjectReader, java.io.BufferedInputStream, String)
+	 * 
+	 * @param stream
+	 *            the input stream
+	 * @param name
+	 *            the name of the file behind the stream (can be null).
+	 * @return true if this {@link ObjectReader} can read the stream; false
+	 *         otherwise.
+	 */
+	public boolean canRead(InputStream stream, String name);
 }
