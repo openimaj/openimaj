@@ -1,0 +1,146 @@
+package org.openimaj.demos.sandbox.dataset;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.util.Iterator;
+
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSelectInfo;
+import org.apache.commons.vfs2.FileSelector;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.VFS;
+import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.io.IOUtils;
+import org.openimaj.io.ObjectReader;
+import org.openimaj.util.array.ArrayIterator;
+
+/**
+ * A {@link ListDataset} backed by a directory of items (either locally or
+ * remotely), or items stored in a compressed archive.
+ * 
+ * As an example, this class can be used to easily create a {@link ListDataset}
+ * from a directory of images:
+ * 
+ * <pre>
+ * ListDataset&lt;FImage&gt; dataset = new VFSListDataset&lt;FImage&gt;(&quot;/path/to/directory/of/images&quot;,
+ * 		ImageUtilities.FIMAGE_READER);
+ * </pre>
+ * 
+ * a zip file of images:
+ * 
+ * <pre>
+ * ListDataset&lt;FImage&gt; dataset = new VFSListDataset&lt;FImage&gt;(
+ * 		&quot;zip:file:/path/to/images.zip&quot;, ImageUtilities.FIMAGE_READER);
+ * </pre>
+ * 
+ * or even a remote zip of images hosted via http:
+ * 
+ * <pre>
+ * final ListDataset&lt;FImage&gt; dataset2 = new VFSListDataset&lt;FImage&gt;(
+ * 		&quot;zip:http://localhost/&tilde;jsh2/thumbnails.zip&quot;, ImageUtilities.FIMAGE_READER);
+ * </pre>
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <INSTANCE>
+ *            The type of instance in the dataset
+ */
+public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
+	private FileObject[] files;
+
+	/**
+	 * Construct a list dataset from any virtual file system source (local
+	 * directory, remote zip file, etc).
+	 * 
+	 * @see "http://commons.apache.org/proper/commons-vfs//filesystems.html"
+	 * @param path
+	 *            the file system path or uri. See the Apache Commons VFS2
+	 *            documentation for all the details.
+	 * @param reader
+	 *            the {@link ObjectReader} that reads the data from the VFS
+	 * @throws FileSystemException
+	 *             if an error occurs accessing the VFS
+	 */
+	public VFSListDataset(final String path, final ObjectReader<INSTANCE> reader) throws FileSystemException {
+		super(reader);
+
+		final FileSystemManager fsManager = VFS.getManager();
+		final FileObject file = fsManager.resolveFile(path);
+
+		files = file.findFiles(new FileSelector() {
+
+			@Override
+			public boolean traverseDescendents(FileSelectInfo fileInfo) throws Exception {
+				return true;
+			}
+
+			@Override
+			public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
+				if (fileInfo.getFile().getType() == FileType.FILE) {
+					final BufferedInputStream stream = new BufferedInputStream(fileInfo.getFile().getContent()
+							.getInputStream());
+
+					try {
+						return IOUtils.canRead(reader, stream, fileInfo.getFile().getName().getBaseName());
+					} finally {
+						if (stream != null)
+							stream.close();
+					}
+				}
+
+				return false;
+			}
+		});
+	}
+
+	@Override
+	public INSTANCE getInstance(int index) {
+		try {
+			return read(files[index]);
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public int size() {
+		return files.length;
+	}
+
+	private INSTANCE read(FileObject file) throws IOException {
+		return reader.read(file.getContent().getInputStream());
+	}
+
+	@Override
+	public Iterator<INSTANCE> iterator() {
+		return new Iterator<INSTANCE>() {
+			ArrayIterator<FileObject> filesIterator = new ArrayIterator<FileObject>(files);
+
+			@Override
+			public boolean hasNext() {
+				return filesIterator.hasNext();
+			}
+
+			@Override
+			public INSTANCE next() {
+				try {
+					return read(filesIterator.next());
+				} catch (final IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			@Override
+			public void remove() {
+				filesIterator.remove();
+			}
+		};
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s(%d images)", this.getClass().getName(), this.files.length);
+	}
+}

@@ -19,6 +19,16 @@
 	</properties>
 	<dependencies>
 		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-vfs2</artifactId>
+		    <version>2.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.aetrion.flickr</groupId>
+		    <artifactId>flickrapi</artifactId>
+		    <version>1.2ss.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj.hardware</groupId>
 		  <artifactId>serial-driver</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
