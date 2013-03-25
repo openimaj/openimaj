@@ -52,6 +52,10 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
+import org.apache.sanselan.ImageFormat;
+import org.apache.sanselan.Sanselan;
+import org.apache.sanselan.common.byteSources.ByteSource;
+import org.apache.sanselan.common.byteSources.ByteSourceInputStream;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.io.ObjectReader;
 
@@ -69,6 +73,17 @@ public class ImageUtilities {
 		public FImage read(InputStream stream) throws IOException {
 			return ImageUtilities.readF(stream);
 		}
+
+		@Override
+		public boolean canRead(InputStream stream, String name) {
+			try {
+				final ByteSource src = new ByteSourceInputStream(stream, name);
+
+				return Sanselan.guessFormat(src) != ImageFormat.IMAGE_FORMAT_UNKNOWN;
+			} catch (final Exception e) {
+				return false;
+			}
+		}
 	};
 
 	/**
@@ -78,6 +93,17 @@ public class ImageUtilities {
 		@Override
 		public MBFImage read(InputStream stream) throws IOException {
 			return ImageUtilities.readMBF(stream);
+		}
+
+		@Override
+		public boolean canRead(InputStream stream, String name) {
+			try {
+				final ByteSource src = new ByteSourceInputStream(stream, name);
+
+				return Sanselan.guessFormat(src) != ImageFormat.IMAGE_FORMAT_UNKNOWN;
+			} catch (final Exception e) {
+				return false;
+			}
 		}
 	};
 
@@ -180,7 +206,7 @@ public class ImageUtilities {
 	 *             If the image cannot be written to the file.
 	 */
 	public static void write(Image<?, ?> image, String formatName, File output) throws IOException {
-		ImageIO.write(createBufferedImage(image), formatName, output);
+		ImageIO.write(createBufferedImageForDisplay(image), formatName, output);
 	}
 
 	/**
@@ -199,7 +225,7 @@ public class ImageUtilities {
 	 *             If the image cannot be written to the file.
 	 */
 	public static void write(Image<?, ?> image, String formatName, OutputStream output) throws IOException {
-		ImageIO.write(createBufferedImage(image), formatName, output);
+		ImageIO.write(createBufferedImageForDisplay(image), formatName, output);
 	}
 
 	/**
@@ -218,7 +244,7 @@ public class ImageUtilities {
 	 *             If the image cannot be written to the file.
 	 */
 	public static void write(Image<?, ?> image, String formatName, ImageOutputStream output) throws IOException {
-		ImageIO.write(createBufferedImage(image), formatName, output);
+		ImageIO.write(createBufferedImageForDisplay(image), formatName, output);
 	}
 
 	/**
@@ -239,7 +265,7 @@ public class ImageUtilities {
 
 		format = format.toLowerCase().trim();
 
-		ImageIO.write(createBufferedImage(image), format, output);
+		ImageIO.write(createBufferedImageForDisplay(image), format, output);
 	}
 
 	/**
