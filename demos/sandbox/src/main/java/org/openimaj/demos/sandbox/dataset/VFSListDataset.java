@@ -95,6 +95,28 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
 		});
 	}
 
+	/**
+	 * Get the underlying file descriptors of the files in the dataset
+	 * 
+	 * @return the array of file objects
+	 */
+	public FileObject[] getFileObjects() {
+		return files;
+	}
+
+	/**
+	 * Get the underlying file descriptor for a particular instance in the
+	 * dataset.
+	 * 
+	 * @param index
+	 *            index of the instance
+	 * 
+	 * @return the file object corresponding to the instance
+	 */
+	public FileObject getFileObject(int index) {
+		return files[index];
+	}
+
 	@Override
 	public INSTANCE getInstance(int index) {
 		try {
