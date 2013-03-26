@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;

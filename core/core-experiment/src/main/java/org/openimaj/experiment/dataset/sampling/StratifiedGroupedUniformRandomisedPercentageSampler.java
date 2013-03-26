@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.openimaj.data.RandomData;
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListBackedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.MapBackedDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.util.list.AcceptingListView;
 import org.openimaj.util.list.SkippingListView;

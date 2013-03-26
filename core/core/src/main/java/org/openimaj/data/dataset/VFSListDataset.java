@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.dataset;
+package org.openimaj.data.dataset;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.VFS;
-import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ObjectReader;
 import org.openimaj.util.array.ArrayIterator;
@@ -49,12 +48,13 @@ import org.openimaj.util.array.ArrayIterator;
  */
 public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
 	private FileObject[] files;
+	private FileObject base;
 
 	/**
 	 * Construct a list dataset from any virtual file system source (local
 	 * directory, remote zip file, etc).
 	 * 
-	 * @see "http://commons.apache.org/proper/commons-vfs//filesystems.html"
+	 * @see "http://commons.apache.org/proper/commons-vfs/filesystems.html"
 	 * @param path
 	 *            the file system path or uri. See the Apache Commons VFS2
 	 *            documentation for all the details.
@@ -67,9 +67,9 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
 		super(reader);
 
 		final FileSystemManager fsManager = VFS.getManager();
-		final FileObject file = fsManager.resolveFile(path);
+		base = fsManager.resolveFile(path);
 
-		files = file.findFiles(new FileSelector() {
+		files = base.findFiles(new FileSelector() {
 
 			@Override
 			public boolean traverseDescendents(FileSelectInfo fileInfo) throws Exception {
@@ -159,6 +159,15 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
 				filesIterator.remove();
 			}
 		};
+	}
+
+	@Override
+	public String getID(int index) {
+		try {
+			return base.getName().getRelativeName(files[index].getName());
+		} catch (final FileSystemException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

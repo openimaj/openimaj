@@ -50,8 +50,8 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.openimaj.experiment.dataset.ListBackedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;

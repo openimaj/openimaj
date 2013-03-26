@@ -31,7 +31,7 @@ package org.openimaj.experiment.validation.cross;
 
 import java.util.Iterator;
 
-import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.data.dataset.Dataset;
 import org.openimaj.experiment.validation.ValidationData;
 
 /**

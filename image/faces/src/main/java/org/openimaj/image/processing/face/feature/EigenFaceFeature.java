@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
-import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.data.dataset.Dataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;

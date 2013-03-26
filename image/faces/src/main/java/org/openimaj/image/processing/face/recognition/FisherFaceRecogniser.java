@@ -32,8 +32,8 @@ package org.openimaj.image.processing.face.recognition;
 import java.io.DataInput;
 import java.io.IOException;
 
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FVProviderExtractor;

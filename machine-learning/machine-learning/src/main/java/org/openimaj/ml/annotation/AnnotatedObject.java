@@ -35,8 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
 
 /**
  * Basic implementation of {@link Annotated}. 

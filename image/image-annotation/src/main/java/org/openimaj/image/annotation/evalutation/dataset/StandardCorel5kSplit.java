@@ -34,8 +34,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.openimaj.experiment.dataset.ListBackedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.experiment.dataset.split.TestSplitProvider;
 import org.openimaj.experiment.dataset.split.TrainSplitProvider;
 

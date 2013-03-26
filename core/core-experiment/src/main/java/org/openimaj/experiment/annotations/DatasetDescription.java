@@ -35,8 +35,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.openimaj.data.dataset.Dataset;
 import org.openimaj.experiment.ExperimentContext;
-import org.openimaj.experiment.dataset.Dataset;
 
 /**
  * An annotation for marking up a specific {@link Dataset} subclass

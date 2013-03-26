@@ -29,7 +29,7 @@
  */
 package org.openimaj.experiment.dataset.split;
 
-import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.data.dataset.Dataset;
 
 /**
  * An object that can provide a validation dataset.

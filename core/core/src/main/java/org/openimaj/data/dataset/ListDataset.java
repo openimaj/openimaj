@@ -27,60 +27,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.dataset.cache;
+package org.openimaj.data.dataset;
 
-import java.util.Collection;
-
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListBackedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.MapBackedDataset;
+import java.util.List;
 
 /**
- * In-memory implementation of a {@link GroupedListCache}
+ * A {@link ListDataset} is a {@link Dataset} presented as an ordered list of
+ * instances.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *  
- * @param <OBJECT> Type of instances
- * @param <KEY> Type of groups
+ * 
+ * @param <INSTANCE>
+ *            the type of instances in the dataset
  */
-public class InMemoryGroupedListCache<KEY, OBJECT> implements GroupedListCache<KEY, OBJECT> {
-	MapBackedDataset<KEY, ListDataset<OBJECT>, OBJECT> dataset = new MapBackedDataset<KEY, ListDataset<OBJECT>, OBJECT>();
+public interface ListDataset<INSTANCE> extends Dataset<INSTANCE>, List<INSTANCE> {
 
-	@Override
-	public void add(Collection<KEY> keys, OBJECT object) {
-		for (KEY key : keys) {
-			ListBackedDataset<OBJECT> list = (ListBackedDataset<OBJECT>) dataset.getInstances(key);
-			if (list == null) dataset.getMap().put(key, list = new ListBackedDataset<OBJECT>());
-			
-			list.add(object);
-		}
-	}
-
-	@Override
-	public void add(KEY key, OBJECT object) {
-		ListBackedDataset<OBJECT> list = (ListBackedDataset<OBJECT>) dataset.getInstances(key);
-		if (list == null) dataset.getMap().put(key, list = new ListBackedDataset<OBJECT>());
-		
-		list.add(object);
-	}
-
-	@Override
-	public void add(KEY key, Collection<OBJECT> objects) {
-		ListBackedDataset<OBJECT> list = (ListBackedDataset<OBJECT>) dataset.getInstances(key);
-		if (list == null) dataset.getMap().put(key, list = new ListBackedDataset<OBJECT>());
-		
-		for (OBJECT object : objects)
-			list.add(object);
-	}
-
-	@Override
-	public GroupedDataset<KEY, ListDataset<OBJECT>, OBJECT> getDataset() {
-		return dataset;
-	}
-
-	@Override
-	public void reset() {
-		dataset.getMap().clear();
-	}
+	/**
+	 * Returns the instance at the specified position in this dataset.
+	 * 
+	 * @param index
+	 *            index of the instance to return
+	 * @return the element at the specified position in this list
+	 * @throws IndexOutOfBoundsException
+	 *             if the index is out of range (
+	 *             <tt>index &lt; 0 || index &gt;= size()</tt>)
+	 */
+	public INSTANCE getInstance(int index);
 }

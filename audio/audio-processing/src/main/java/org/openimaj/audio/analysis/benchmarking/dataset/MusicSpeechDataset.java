@@ -6,10 +6,10 @@ import java.io.FilenameFilter;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.data.dataset.Dataset;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.MapBackedDataset;
 import org.openimaj.experiment.annotations.DatasetDescription;
-import org.openimaj.experiment.dataset.Dataset;
-import org.openimaj.experiment.dataset.ListBackedDataset;
-import org.openimaj.experiment.dataset.MapBackedDataset;
 
 import cern.colt.Arrays;
 

@@ -31,10 +31,10 @@ package org.openimaj.image.processing.face.detection;
 
 import java.util.List;
 
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListBackedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.MapBackedDataset;
 import org.openimaj.image.Image;
 
 /**

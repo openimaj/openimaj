@@ -29,7 +29,7 @@
  */
 package org.openimaj.experiment.dataset.sampling;
 
-import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.data.dataset.Dataset;
 
 /**
  * Interface describing classes that can sample instances

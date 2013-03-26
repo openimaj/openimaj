@@ -32,8 +32,8 @@ package org.openimaj.ml.annotation;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.cache.GroupedListCache;
-import org.openimaj.experiment.dataset.cache.InMemoryGroupedListCache;
+import org.openimaj.data.dataset.cache.GroupedListCache;
+import org.openimaj.data.dataset.cache.InMemoryGroupedListCache;
 import org.openimaj.feature.FeatureExtractor;
 
 /**

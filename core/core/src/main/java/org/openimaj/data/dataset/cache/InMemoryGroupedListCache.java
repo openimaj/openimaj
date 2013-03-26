@@ -27,36 +27,60 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.dataset;
+package org.openimaj.data.dataset.cache;
+
+import java.util.Collection;
+
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.MapBackedDataset;
 
 /**
- * An {@link Identifiable} is an object that has an associated identifier.
- * Two instances of {@link Identifiable} with the same identifier
- * should be considered equal. 
- * 
- * {@link Identifiable}s are used in {@link Dataset} as a way
- * of relating a Java object instance back to the original
- * data entity from which it was derived. Within a {@link Dataset}
- * each unique instance should have a unique identifier. 
- * {@link Dataset}s can of course contain multiple instances of the
- * same {@link Identifiable}.
+ * In-memory implementation of a {@link GroupedListCache}
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *  
+ * @param <OBJECT> Type of instances
+ * @param <KEY> Type of groups
  */
-public interface Identifiable {
-	/**
-	 * @return the identifier of this object
-	 */
-	public String getID();
-	
-	/**
-	 * Tests if this {@link Identifiable} is equal to a given  
-	 * {@link Object} instance. Equality is defined by equality 
-	 * of the identifier.
-	 * 
-	 * @param o the object to compare to
-	 * @return true if equal; false otherwise
-	 */
+public class InMemoryGroupedListCache<KEY, OBJECT> implements GroupedListCache<KEY, OBJECT> {
+	MapBackedDataset<KEY, ListDataset<OBJECT>, OBJECT> dataset = new MapBackedDataset<KEY, ListDataset<OBJECT>, OBJECT>();
+
 	@Override
-	public boolean equals(Object o);
+	public void add(Collection<KEY> keys, OBJECT object) {
+		for (KEY key : keys) {
+			ListBackedDataset<OBJECT> list = (ListBackedDataset<OBJECT>) dataset.getInstances(key);
+			if (list == null) dataset.getMap().put(key, list = new ListBackedDataset<OBJECT>());
+			
+			list.add(object);
+		}
+	}
+
+	@Override
+	public void add(KEY key, OBJECT object) {
+		ListBackedDataset<OBJECT> list = (ListBackedDataset<OBJECT>) dataset.getInstances(key);
+		if (list == null) dataset.getMap().put(key, list = new ListBackedDataset<OBJECT>());
+		
+		list.add(object);
+	}
+
+	@Override
+	public void add(KEY key, Collection<OBJECT> objects) {
+		ListBackedDataset<OBJECT> list = (ListBackedDataset<OBJECT>) dataset.getInstances(key);
+		if (list == null) dataset.getMap().put(key, list = new ListBackedDataset<OBJECT>());
+		
+		for (OBJECT object : objects)
+			list.add(object);
+	}
+
+	@Override
+	public GroupedDataset<KEY, ListDataset<OBJECT>, OBJECT> getDataset() {
+		return dataset;
+	}
+
+	@Override
+	public void reset() {
+		dataset.getMap().clear();
+	}
 }

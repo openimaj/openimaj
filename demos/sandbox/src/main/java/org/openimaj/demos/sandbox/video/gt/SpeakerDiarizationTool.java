@@ -55,9 +55,9 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.openimaj.audio.AudioStream;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifierProducer;
 import org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.StateProvider;
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
@@ -70,19 +70,19 @@ import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
- *	This tool provides a tool for ground-truthing video data based around
- *	people. The tool implements a VideoPlayer which does face tracking
- *	and face extraction. The detected faces are displayed in a window alongside
- *	a classification chooser. When a classification is chosen it is remembered
- *	along with the timecode at which the classification was chosen. This is
- *	shown in a list which can be edited. 
- *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 10 Aug 2012
- *	@version $Author$, $Revision$, $Date$
+ * This tool provides a tool for ground-truthing video data based around people.
+ * The tool implements a VideoPlayer which does face tracking and face
+ * extraction. The detected faces are displayed in a window alongside a
+ * classification chooser. When a classification is chosen it is remembered
+ * along with the timecode at which the classification was chosen. This is shown
+ * in a list which can be edited.
+ * 
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 10 Aug 2012
+ * @version $Author$, $Revision$, $Date$
  */
-public class SpeakerDiarizationTool extends JPanel implements 
-	StateProvider, IdentifierProducer
+public class SpeakerDiarizationTool extends JPanel implements
+		StateProvider, IdentifierProducer
 {
 	/**
 	 * A class that provides a display of the information that the tracker is
@@ -92,7 +92,7 @@ public class SpeakerDiarizationTool extends JPanel implements
 	 * @created 17 Jul 2012
 	 * @version $Author$, $Revision$, $Date$
 	 */
-	protected class TrackerInfo extends JPanel 
+	protected class TrackerInfo extends JPanel
 	{
 		/** */
 		private static final long serialVersionUID = 1L;
@@ -157,13 +157,13 @@ public class SpeakerDiarizationTool extends JPanel implements
 			toRemove.addAll(this.map.keySet());
 
 			// Add new faces
-			for (final SortableTrackedFace face : faces ) {
+			for (final SortableTrackedFace face : faces) {
 				if (!this.map.keySet().contains(face)) {
 					// Add the face to the list as a toggle button
 					final JToggleButton b = new JToggleButton(face.toString(),
 							new ImageIcon(ImageUtilities.createBufferedImage(
 									face.face.templateImage)));
-					
+
 					// Store the map from the face to the button
 					this.map.put(face.face, b);
 
@@ -206,48 +206,50 @@ public class SpeakerDiarizationTool extends JPanel implements
 		}
 	}
 
-
 	/**
-	 * 	Provides a comparable interface for tracked faces such that they can
-	 * 	be sorted in a left-to-right order over the frame.
-	 *
-	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *  @created 28 Aug 2012
-	 *	@version $Author$, $Revision$, $Date$
+	 * Provides a comparable interface for tracked faces such that they can be
+	 * sorted in a left-to-right order over the frame.
+	 * 
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * @created 28 Aug 2012
+	 * @version $Author$, $Revision$, $Date$
 	 */
-	private class SortableTrackedFace 
-		implements Comparable<SortableTrackedFace>, Identifiable
+	private class SortableTrackedFace
+			implements Comparable<SortableTrackedFace>, Identifiable
 	{
 		/** The tracked face */
 		public TrackedFace face = null;
 
 		/** The identifier of the face */
 		public String identifier = "";
-		
+
 		/**
-		 * 	Construct a sortable face
-		 *	@param f The face to wrap
+		 * Construct a sortable face
+		 * 
+		 * @param f
+		 *            The face to wrap
 		 */
-		public SortableTrackedFace( final TrackedFace f )
+		public SortableTrackedFace(final TrackedFace f)
 		{
 			this.face = f;
 		}
-		
+
 		/**
-		 *	{@inheritDoc}
-		 * 	@see java.lang.Comparable#compareTo(java.lang.Object)
+		 * {@inheritDoc}
+		 * 
+		 * @see java.lang.Comparable#compareTo(java.lang.Object)
 		 */
 		@Override
-		public int compareTo( final SortableTrackedFace o )
+		public int compareTo(final SortableTrackedFace o)
 		{
 			// (4,0) in the global matrix is the x-translation.
-			return o.face.clm._pglobl.get(4,0) <
-					this.face.clm._pglobl.get(4,0)? 1 : 0;
+			return o.face.clm._pglobl.get(4, 0) < this.face.clm._pglobl.get(4, 0) ? 1 : 0;
 		}
 
 		/**
-		 *	{@inheritDoc}
-		 * 	@see org.openimaj.experiment.dataset.Identifiable#getID()
+		 * {@inheritDoc}
+		 * 
+		 * @see org.openimaj.data.identity.Identifiable#getID()
 		 */
 		@Override
 		public String getID()
@@ -256,8 +258,9 @@ public class SpeakerDiarizationTool extends JPanel implements
 		}
 
 		/**
-		 *	{@inheritDoc}
-		 * 	@see java.lang.Object#toString()
+		 * {@inheritDoc}
+		 * 
+		 * @see java.lang.Object#toString()
 		 */
 		@Override
 		public String toString()
@@ -265,22 +268,22 @@ public class SpeakerDiarizationTool extends JPanel implements
 			return this.identifier;
 		}
 	}
-	
+
 	/** */
 	private static final long serialVersionUID = 1L;
 
 	/** The ground truth tool */
 	private VideoGroundTruth vgt = null;
-	
+
 	/** The face tracker we'll use in the video */
 	private final CLMFaceTracker tracker = new CLMFaceTracker();
-	
+
 	/** The shot detector used to determine scenes within the video */
 	private HistogramVideoShotDetector shotDetector = null;
-	
+
 	/** The frame in which the tool will be displayed */
 	private JFrame frame = null;
-	
+
 	/** The scene counter - used in creating unique identifiers */
 	private int scene = 0;
 
@@ -293,155 +296,163 @@ public class SpeakerDiarizationTool extends JPanel implements
 	private TrackerInfo trackerInfo;
 
 	/**
-	 * 	Initiate the speaker diarization tool.
-	 * 	@param video The video to diarize 
-	 * 	@param audio The audio to play (can be null)
+	 * Initiate the speaker diarization tool.
+	 * 
+	 * @param video
+	 *            The video to diarize
+	 * @param audio
+	 *            The audio to play (can be null)
 	 */
-	public SpeakerDiarizationTool( final Video<MBFImage> video, final AudioStream audio )
+	public SpeakerDiarizationTool(final Video<MBFImage> video, final AudioStream audio)
 	{
-		this.vgt = new VideoGroundTruth( video, audio, this, this );
-		this.shotDetector = new HistogramVideoShotDetector( video );
-		
+		this.vgt = new VideoGroundTruth(video, audio, this, this);
+		this.shotDetector = new HistogramVideoShotDetector(video);
+
 		this.init();
 	}
-	
+
 	/**
-	 * 	Initialises the GUI widgets
+	 * Initialises the GUI widgets
 	 */
 	private void init()
 	{
-		this.setLayout( new GridBagLayout() );
-		
+		this.setLayout(new GridBagLayout());
+
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = gbc.gridy = 1;
 		gbc.weightx = gbc.weighty = 1;
 		gbc.fill = GridBagConstraints.BOTH;
-		
+
 		this.trackerInfo = new TrackerInfo();
-		this.add( this.trackerInfo, gbc );
-		
+		this.add(this.trackerInfo, gbc);
+
 		// Set up the video player.
-		this.vgt.getVideoPlayer().setButtons( new String[]{"play","pause"} );
+		this.vgt.getVideoPlayer().setButtons(new String[] { "play", "pause" });
 		this.vgt.getVideoPlayer().pause();
-		this.vgt.getVideoPlayer().addVideoListener( new VideoDisplayListener<MBFImage>()
+		this.vgt.getVideoPlayer().addVideoListener(new VideoDisplayListener<MBFImage>()
 		{
 			@Override
-			public void beforeUpdate( final MBFImage frame )
+			public void beforeUpdate(final MBFImage frame)
 			{
-				SpeakerDiarizationTool.this.processFrame( frame );
+				SpeakerDiarizationTool.this.processFrame(frame);
 			}
-			
+
 			@Override
-			public void afterUpdate( final VideoDisplay<MBFImage> display )
+			public void afterUpdate(final VideoDisplay<MBFImage> display)
 			{
 			}
-		} );
-		
+		});
+
 		// Show the video player
 		final JFrame f = this.vgt.getVideoPlayer().showFrame();
-		
+
 		// Show the tool
-		this.showFrame().setLocation( f.getLocation().x + f.getWidth(), 
-				f.getLocation().y );
+		this.showFrame().setLocation(f.getLocation().x + f.getWidth(),
+				f.getLocation().y);
 	}
-	
+
 	/**
-	 * 	This is the method that actually does most of the work.
-	 *	@param frame The frame to process
+	 * This is the method that actually does most of the work.
+	 * 
+	 * @param frame
+	 *            The frame to process
 	 */
-	private void processFrame( final MBFImage frame )
+	private void processFrame(final MBFImage frame)
 	{
 		// Pass the frame to our shot detector to see if the shot has changed.
-		this.shotDetector.processFrame( frame );
+		this.shotDetector.processFrame(frame);
 
 		// If we're in to a new scene, we update the scene counter
-		if( this.shotDetector.wasLastFrameBoundary() || this.needsRedetect )
+		if (this.shotDetector.wasLastFrameBoundary() || this.needsRedetect)
 		{
-			if( !this.needsRedetect )
+			if (!this.needsRedetect)
 				this.scene++;
-			
-			System.out.println( "=========== Scene "+this.scene+" ===========");
-		
+
+			System.out.println("=========== Scene " + this.scene + " ===========");
+
 			// Now try to find faces in the image
 			this.tracker.reset();
-			this.tracker.track( frame );
-			
+			this.tracker.track(frame);
+
 			// Get a list of the faces being tracked
 			final List<TrackedFace> faces = this.tracker.getModelTracker().trackedFaces;
-			
+
 			// Created a sorted list of faces (left-to-right in the image)
 			this.sortedFaces = new ArrayList<SortableTrackedFace>();
-			for( int i = 0; i < faces.size(); i++ )
-				this.sortedFaces.add( new SortableTrackedFace( faces.get(i) ) );
-			Collections.sort( this.sortedFaces );
-			
+			for (int i = 0; i < faces.size(); i++)
+				this.sortedFaces.add(new SortableTrackedFace(faces.get(i)));
+			Collections.sort(this.sortedFaces);
+
 			// Update the identifiers based on the position in the scene
-			for( int i = 0; i < this.sortedFaces.size(); i++ )
-				this.sortedFaces.get(i).identifier = "Scene "+this.scene+" Face "+i;
-			
-			System.out.println( this.sortedFaces );
-			
-			this.trackerInfo.setFaceList( this.sortedFaces );
+			for (int i = 0; i < this.sortedFaces.size(); i++)
+				this.sortedFaces.get(i).identifier = "Scene " + this.scene + " Face " + i;
+
+			System.out.println(this.sortedFaces);
+
+			this.trackerInfo.setFaceList(this.sortedFaces);
 		}
 		else
 			// Continue to track the faces we already have.
-			this.tracker.track( frame );
-		
+			this.tracker.track(frame);
+
 		// Draw the tracked model onto the frame
-		this.tracker.drawModel( frame, true, true, true, true, true );
+		this.tracker.drawModel(frame, true, true, true, true, true);
 	}
-	
+
 	/**
-	 * 	Shows the tool in a frame. If a frame already exists it will be
-	 * 	made visible.
-	 * 	@return Returns the frame shown 
+	 * Shows the tool in a frame. If a frame already exists it will be made
+	 * visible.
+	 * 
+	 * @return Returns the frame shown
 	 */
 	public JFrame showFrame()
 	{
-		if( this.frame == null )
+		if (this.frame == null)
 		{
 			this.frame = new JFrame();
-			this.frame.add( this );
+			this.frame.add(this);
 			this.frame.pack();
 		}
 
-		this.frame.setVisible( true );
+		this.frame.setVisible(true);
 		return this.frame;
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifierProducer#getIdentifiers()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifierProducer#getIdentifiers()
 	 */
 	@Override
 	public List<Identifiable> getIdentifiers()
 	{
 		final List<Identifiable> l = new ArrayList<Identifiable>();
-		l.addAll( this.sortedFaces );
+		l.addAll(this.sortedFaces);
 		return l;
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.StateProvider#getCurrentState(org.openimaj.experiment.dataset.Identifiable)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.StateProvider#getCurrentState(org.openimaj.data.identity.Identifiable)
 	 */
 	@Override
-	public List<String> getCurrentState( final Identifiable id )
+	public List<String> getCurrentState(final Identifiable id)
 	{
 		return null;
 	}
 
 	/**
-	 *	@param args
+	 * @param args
 	 */
-	public static void main( final String[] args )
+	public static void main(final String[] args)
 	{
 		String name = "heads1.mpeg";
-		if( args.length > 0 )
+		if (args.length > 0)
 			name = args[0];
-		
-		final XuggleVideo xv = new XuggleVideo( new File( name ) );
-		final XuggleAudio xa = new XuggleAudio( new File( name ) );
-		new SpeakerDiarizationTool( xv, xa );
+
+		final XuggleVideo xv = new XuggleVideo(new File(name));
+		final XuggleAudio xa = new XuggleAudio(new File(name));
+		new SpeakerDiarizationTool(xv, xa);
 	}
 }

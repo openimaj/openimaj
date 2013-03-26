@@ -27,50 +27,61 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.dataset;
+package org.openimaj.data.dataset.cache;
 
-import java.util.Set;
+import java.util.Collection;
+
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
 
 /**
- * A {@link Dataset} that is grouped into separate classes or groups. 
- * Each group is represented by a key, and each key corresponds to
- * a sub-dataset. 
- * <p>
- * Sub-datasets can be any kind of {@link Dataset},
- * including {@link GroupedDataset}s, so it is possible to build
- * tree structures. 
+ * Definition of a cache for groups of lists.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <KEY> Type of dataset class key 
- * @param <DATASET> Type of sub-datasets. 
- * @param <INSTANCE> Type of instances in the dataset
+ * 
+ * @param <OBJECT>
+ *            Type of instances
+ * @param <KEY>
+ *            Type of groups
  */
-public interface GroupedDataset<
-	KEY extends Object, 
-	DATASET extends Dataset<INSTANCE>, 
-	INSTANCE> 
-extends 
-	Dataset<INSTANCE>
-{
+public interface GroupedListCache<KEY, OBJECT> {
 	/**
-	 * Get sub-dataset corresponding to the given group key
-	 * @param key the key.
-	 * @return the sub dataset, or null if the key was unknown
+	 * Add an object with many keys to the cache
+	 * 
+	 * @param keys
+	 *            the instance's keys
+	 * @param object
+	 *            the instance
 	 */
-	public DATASET getInstances(KEY key);
-	
+	public void add(Collection<KEY> keys, OBJECT object);
+
 	/**
-	 * Get the set of all defined group keys.
-	 * @return the the set of all defined group keys.
+	 * Add an object with a key to the cache
+	 * 
+	 * @param key
+	 *            the instance's key
+	 * @param object
+	 *            the instance
 	 */
-	public Set<KEY> getGroups();
-	
+	public void add(KEY key, OBJECT object);
+
 	/**
-	 * Get a random instance from the sub-dataset corresponding to 
-	 * a specific group.
-	 * @param key the group key
-	 * @return a random item from the group.
+	 * Add an collection of objects with the same key to the cache
+	 * 
+	 * @param key
+	 *            the instance's key
+	 * @param objects
+	 *            the instances
 	 */
-	public INSTANCE getRandomInstances(KEY key);
+	public void add(KEY key, Collection<OBJECT> objects);
+
+	/**
+	 * @return a dataset view of the cache
+	 */
+	public GroupedDataset<KEY, ListDataset<OBJECT>, OBJECT> getDataset();
+
+	/**
+	 * Reset the cache
+	 */
+	public void reset();
 }

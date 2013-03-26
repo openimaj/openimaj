@@ -29,7 +29,6 @@
  */
 package org.openimaj.math.geometry.shape;
 
-
 import org.openimaj.math.statistics.distribution.MultivariateGaussian;
 import org.openimaj.math.util.QuadraticEquation;
 
@@ -38,17 +37,18 @@ import Jama.Matrix;
 
 /**
  * An elliptical shape
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class EllipseUtilities {
 	/***
 	 * Construct an ellipse using a parametric ellipse equation, namely:
-	 *
-	 * X(t) = centerX + major * cos(t) * cos(rotation) - minor * sin(t) * sin(rotation)
-	 * Y(t) = centerY + major * cos(t) * cos(rotation) + minor * sin(t) * sin(rotation)
-	 *
+	 * 
+	 * X(t) = centerX + major * cos(t) * cos(rotation) - minor * sin(t) *
+	 * sin(rotation) Y(t) = centerY + major * cos(t) * cos(rotation) + minor *
+	 * sin(t) * sin(rotation)
+	 * 
 	 * @param centerX
 	 * @param centerY
 	 * @param major
@@ -56,98 +56,117 @@ public class EllipseUtilities {
 	 * @param rotation
 	 * @return an ellipse
 	 */
-	public static Ellipse ellipseFromEquation(double centerX, double centerY, double major, double minor, double rotation) {
-		return new Ellipse(centerX,centerY,major,minor,rotation);
+	public static Ellipse
+			ellipseFromEquation(double centerX, double centerY, double major, double minor, double rotation)
+	{
+		return new Ellipse(centerX, centerY, major, minor, rotation);
 	}
 
 	/**
 	 * Construct ellipse from second moment matrix and centroid.
-	 * @param x x-ordinate of centroid
-	 * @param y y-ordinate of centroid
-	 * @param secondMoments second moments matrix
+	 * 
+	 * @param x
+	 *            x-ordinate of centroid
+	 * @param y
+	 *            y-ordinate of centroid
+	 * @param secondMoments
+	 *            second moments matrix
 	 * @return an ellipse
 	 */
 	public static Ellipse ellipseFromSecondMoments(float x, float y, Matrix secondMoments) {
-		return EllipseUtilities.ellipseFromSecondMoments(x, y, secondMoments,  1);
+		return EllipseUtilities.ellipseFromSecondMoments(x, y, secondMoments, 1);
 	}
 
 	/**
 	 * Construct ellipse from second moment matrix, scale-factor and centroid.
-	 * @param x x-ordinate of centroid
-	 * @param y y-ordinate of centroid
-	 * @param secondMoments second moments matrix
-	 * @param scaleFactor the scale factor
+	 * 
+	 * @param x
+	 *            x-ordinate of centroid
+	 * @param y
+	 *            y-ordinate of centroid
+	 * @param secondMoments
+	 *            second moments matrix
+	 * @param scaleFactor
+	 *            the scale factor
 	 * @return an ellipse
 	 */
 	public static Ellipse ellipseFromSecondMoments(float x, float y, Matrix secondMoments, double scaleFactor) {
-		double divFactor = 1/Math.sqrt(secondMoments.det());
-		EigenvalueDecomposition rdr = secondMoments.times(divFactor).eig();
-		double d1,d2;
-		if(rdr.getD().get(0,0) == 0)
+		final double divFactor = 1 / Math.sqrt(secondMoments.det());
+		final EigenvalueDecomposition rdr = secondMoments.times(divFactor).eig();
+		double d1, d2;
+		if (rdr.getD().get(0, 0) == 0)
 			d1 = 0;
 		else
-			d1 = 1.0/Math.sqrt(rdr.getD().get(0,0));
-		if(rdr.getD().get(1,1) == 0)
+			d1 = 1.0 / Math.sqrt(rdr.getD().get(0, 0));
+		if (rdr.getD().get(1, 1) == 0)
 			d2 = 0;
 		else
-			d2 = 1.0/Math.sqrt(rdr.getD().get(1,1));
+			d2 = 1.0 / Math.sqrt(rdr.getD().get(1, 1));
 
-		double scaleCorrectedD1 = d1 * scaleFactor;
-		double scaleCorrectedD2 = d2 * scaleFactor;
+		final double scaleCorrectedD1 = d1 * scaleFactor;
+		final double scaleCorrectedD2 = d2 * scaleFactor;
 
-		Matrix eigenMatrix = rdr.getV();
+		final Matrix eigenMatrix = rdr.getV();
 
-		double rotation = Math.atan2(eigenMatrix.get(1,0),eigenMatrix.get(0,0));
-		return ellipseFromEquation(x,y,scaleCorrectedD1,scaleCorrectedD2,rotation);
+		final double rotation = Math.atan2(eigenMatrix.get(1, 0), eigenMatrix.get(0, 0));
+		return ellipseFromEquation(x, y, scaleCorrectedD1, scaleCorrectedD2, rotation);
 	}
 
 	/**
 	 * Construct ellipse from covariance matrix, scale-factor and centroid.
-	 * @param x x-ordinate of centroid
-	 * @param y y-ordinate of centroid
-	 * @param sm covariance matrix
-	 * @param sf scale-factor
+	 * 
+	 * @param x
+	 *            x-ordinate of centroid
+	 * @param y
+	 *            y-ordinate of centroid
+	 * @param sm
+	 *            covariance matrix
+	 * @param sf
+	 *            scale-factor
 	 * @return an ellipse
 	 */
 	public static Ellipse ellipseFromCovariance(float x, float y, Matrix sm, float sf) {
-		double xy = sm.get(1, 0);
-		double xx = sm.get(0, 0);
-		double yy = sm.get(1, 1);
-		double theta = 0.5 * Math.atan2(2*xy, xx-yy);
+		final double xy = sm.get(1, 0);
+		final double xx = sm.get(0, 0);
+		final double yy = sm.get(1, 1);
+		final double theta = 0.5 * Math.atan2(2 * xy, xx - yy);
 
-		double trace = xx + yy;
-		double det = (xx*yy) - (xy*xy);
-		double [] eigval = QuadraticEquation.solveGeneralQuadratic(1, -trace, det);
+		final double trace = xx + yy;
+		final double det = (xx * yy) - (xy * xy);
+		final double[] eigval = QuadraticEquation.solveGeneralQuadratic(1, -trace, det);
 
-		double a = Math.sqrt(eigval[1]) * sf ;
-		double b = Math.sqrt(eigval[0]) * sf ;
-		return ellipseFromEquation(x,y,a,b,theta);
+		final double a = Math.sqrt(eigval[1]) * sf;
+		final double b = Math.sqrt(eigval[0]) * sf;
+		return ellipseFromEquation(x, y, a, b, theta);
 	}
 
 	/**
 	 * Create the covariance matrix of an ellipse.
-	 * @param e the ellipse
+	 * 
+	 * @param e
+	 *            the ellipse
 	 * @return the corresponding covariance matrix
 	 */
-	public static Matrix ellipseToCovariance(Ellipse e){
-		Matrix transform = e.transformMatrix();
-		Matrix Q = transform.getMatrix(0, 1,0,1);
+	public static Matrix ellipseToCovariance(Ellipse e) {
+		final Matrix transform = e.transformMatrix();
+		final Matrix Q = transform.getMatrix(0, 1, 0, 1);
 		return Q.times(Q.transpose());
-//		double sinrot = Math.sin(e.getRotation());
-//		double cosrot = Math.cos(e.getRotation());
-//		double cosrot2 = cosrot * cosrot;
-//		double sinrot2 = sinrot * sinrot;
-//		double a2 = e.getMajor() * e.getMajor();
-//		double b2 = e.getMinor() * e.getMinor();
-//		Matrix Q = new Matrix(new double[][]{
-//			{cosrot2 / a2 + sinrot2 / b2 , sinrot*cosrot*(1/a2 - 1/b2)},
-//			{sinrot*cosrot*(1/a2 - 1/b2) , sinrot2 / a2 + cosrot2 / b2}
-//		});
-//		return Q.inverse();
+		// double sinrot = Math.sin(e.getRotation());
+		// double cosrot = Math.cos(e.getRotation());
+		// double cosrot2 = cosrot * cosrot;
+		// double sinrot2 = sinrot * sinrot;
+		// double a2 = e.getMajor() * e.getMajor();
+		// double b2 = e.getMinor() * e.getMinor();
+		// Matrix Q = new Matrix(new double[][]{
+		// {cosrot2 / a2 + sinrot2 / b2 , sinrot*cosrot*(1/a2 - 1/b2)},
+		// {sinrot*cosrot*(1/a2 - 1/b2) , sinrot2 / a2 + cosrot2 / b2}
+		// });
+		// return Q.inverse();
 	}
 
 	/**
 	 * Create an ellipse.
+	 * 
 	 * @param U
 	 * @param x
 	 * @param y
@@ -156,13 +175,14 @@ public class EllipseUtilities {
 	 */
 	public static Ellipse fromTransformMatrix2x2(Matrix U, float x, float y, float scale) {
 		Matrix uVal, uVec;
-		EigenvalueDecomposition ueig = U.eig();
+		final EigenvalueDecomposition ueig = U.eig();
 		uVal = ueig.getD();
 		uVec = ueig.getV();
 
-		//Normalize min eigenvalue to 1 to expand patch in the direction of min eigenvalue of U.inv()
-		double uval1 = uVal.get(0, 0);
-		double uval2 = uVal.get(1, 1);
+		// Normalize min eigenvalue to 1 to expand patch in the direction of min
+		// eigenvalue of U.inv()
+		final double uval1 = uVal.get(0, 0);
+		final double uval2 = uVal.get(1, 1);
 
 		if (Math.abs(uval1) < Math.abs(uval2))
 		{
@@ -175,18 +195,28 @@ public class EllipseUtilities {
 			uVal.set(0, 0, uval1 / uval2);
 		}
 
-		float ax1 = (float) (1 / Math.abs(uVal.get(1, 1)) * scale);
-		float ax2 = (float) (1 / Math.abs(uVal.get(0, 0)) * scale);
-		double phi = Math.atan(uVec.get(1, 1) / uVec.get(0, 1)) ;
+		final float ax1 = (float) (1 / Math.abs(uVal.get(1, 1)) * scale);
+		final float ax2 = (float) (1 / Math.abs(uVal.get(0, 0)) * scale);
+		final double phi = Math.atan(uVec.get(1, 1) / uVec.get(0, 1));
 
 		return new Ellipse(x, y, ax1, ax2, phi);
 	}
 
+	/**
+	 * Construct an ellipse that encompasses the shape of a
+	 * {@link MultivariateGaussian}.
+	 * 
+	 * @param gaussian
+	 *            the {@link MultivariateGaussian}
+	 * @param scale
+	 *            the relative size of the ellipse
+	 * @return the ellipse
+	 */
 	public static Ellipse ellipseFromGaussian(MultivariateGaussian gaussian, float scale) {
-		Matrix mean = gaussian.getMean();
-		float x = (float) mean.get(0, 0);
-		float y = (float) mean.get(0, 1);
-		Matrix covar = gaussian.getCovar();
+		final Matrix mean = gaussian.getMean();
+		final float x = (float) mean.get(0, 0);
+		final float y = (float) mean.get(0, 1);
+		final Matrix covar = gaussian.getCovar();
 		return ellipseFromCovariance(x, y, covar, scale);
 	}
 }

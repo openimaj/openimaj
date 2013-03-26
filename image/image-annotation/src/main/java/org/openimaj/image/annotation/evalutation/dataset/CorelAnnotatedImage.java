@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.ml.annotation.Annotated;
@@ -43,7 +43,7 @@ import org.openimaj.ml.annotation.Annotated;
 class ImageWrapper implements Identifiable {
 	private String id;
 	private File imageFile;
-	
+
 	public ImageWrapper(String id, File imageFile) {
 		this.id = id;
 		this.imageFile = imageFile;
@@ -53,11 +53,11 @@ class ImageWrapper implements Identifiable {
 	public String getID() {
 		return id;
 	}
-	
+
 	public MBFImage getImage() {
 		try {
 			return ImageUtilities.readMBF(imageFile);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -66,13 +66,13 @@ class ImageWrapper implements Identifiable {
 public class CorelAnnotatedImage implements Annotated<ImageWrapper, String>, Identifiable {
 	private List<String> annotations;
 	private ImageWrapper wrapper;
-	
+
 	public CorelAnnotatedImage(String id, File imageFile, File keywordFile) throws IOException {
 		this.wrapper = new ImageWrapper(id, imageFile);
-		
+
 		annotations = FileUtils.readLines(keywordFile);
 	}
-	
+
 	@Override
 	public ImageWrapper getObject() {
 		return wrapper;

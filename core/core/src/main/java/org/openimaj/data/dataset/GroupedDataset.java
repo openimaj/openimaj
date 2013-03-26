@@ -27,29 +27,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.dataset;
+package org.openimaj.data.dataset;
 
+import java.util.Set;
 
 /**
- * The super-interface for all types of dataset. Each data instance
- * may have attributes. All instances must be {@link Identifiable}.
- * All datasets provide a way to iterate through their instances via
- * the {@link Iterable} interface.
+ * A {@link Dataset} that is grouped into separate classes or groups. 
+ * Each group is represented by a key, and each key corresponds to
+ * a sub-dataset. 
+ * <p>
+ * Sub-datasets can be any kind of {@link Dataset},
+ * including {@link GroupedDataset}s, so it is possible to build
+ * tree structures. 
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <INSTANCE> the type of items in the dataset
+ * @param <KEY> Type of dataset class key 
+ * @param <DATASET> Type of sub-datasets. 
+ * @param <INSTANCE> Type of instances in the dataset
  */
-public interface Dataset<INSTANCE> extends Iterable<INSTANCE> {
+public interface GroupedDataset<
+	KEY extends Object, 
+	DATASET extends Dataset<INSTANCE>, 
+	INSTANCE> 
+extends 
+	Dataset<INSTANCE>
+{
 	/**
-	 * @return a randomly selected instance from the dataset.
+	 * Get sub-dataset corresponding to the given group key
+	 * @param key the key.
+	 * @return the sub dataset, or null if the key was unknown
 	 */
-	public INSTANCE getRandomInstance();
+	public DATASET getInstances(KEY key);
 	
 	/**
-     * Returns the number of instances in this dataset.
-     *
-     * @return the number of instances in this list
-     */
-    int size();
+	 * Get the set of all defined group keys.
+	 * @return the the set of all defined group keys.
+	 */
+	public Set<KEY> getGroups();
+	
+	/**
+	 * Get a random instance from the sub-dataset corresponding to 
+	 * a specific group.
+	 * @param key the group key
+	 * @return a random item from the group.
+	 */
+	public INSTANCE getRandomInstances(KEY key);
 }

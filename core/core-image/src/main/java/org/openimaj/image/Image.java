@@ -418,12 +418,32 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param image
 	 *            The image to draw.
 	 * @param x
-	 *            The x-coordinate of the top-left of the image
+	 *            The x-ordinate of the top-left of the image
 	 * @param y
-	 *            The y-coordinate of the top-left of the image
+	 *            The y-ordinate of the top-left of the image
 	 */
 	public void drawImage(I image, int x, int y) {
 		createRenderer().drawImage(image, x, y);
+	}
+
+	/**
+	 * Draw into this image the provided image at the given coordinates. Parts
+	 * of the image outside the bounds of this image will be ignored.
+	 * Side-affects this image.
+	 * 
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()} to get
+	 * the default renderer to do the actual drawing. Create the renderer
+	 * yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param image
+	 *            The image to draw.
+	 * @param pt
+	 *            the coordinate at which to draw
+	 */
+	public void drawImage(I image, Point2d pt) {
+		createRenderer().drawImage(image, (int) pt.getX(), (int) pt.getY());
 	}
 
 	/**
@@ -441,9 +461,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param image
 	 *            The image to draw.
 	 * @param x
-	 *            The x-coordinate of the top-left of the image
+	 *            The x-ordinate of the top-left of the image
 	 * @param y
-	 *            The y-coordinate of the top-left of the image
+	 *            The y-ordinate of the top-left of the image
 	 * @param ignoreList
 	 *            The list of pixels to ignore when copying the image
 	 */
@@ -463,9 +483,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * </p>
 	 * 
 	 * @param x1
-	 *            The x-coordinate to start the line.
+	 *            The x-ordinate to start the line.
 	 * @param y1
-	 *            The y-coordinate to start the line.
+	 *            The y-ordinate to start the line.
 	 * @param theta
 	 *            The angle at which to draw the line.
 	 * @param length
@@ -491,9 +511,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * </p>
 	 * 
 	 * @param x1
-	 *            The x-coordinate to start the line.
+	 *            The x-ordinate to start the line.
 	 * @param y1
-	 *            The y-coordinate to start the line.
+	 *            The y-ordinate to start the line.
 	 * @param theta
 	 *            The angle at which to draw the line.
 	 * @param length
@@ -517,13 +537,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * </p>
 	 * 
 	 * @param x0
-	 *            The x-coordinate at the start of the line.
+	 *            The x-ordinate at the start of the line.
 	 * @param y0
-	 *            The y-coordinate at the start of the line.
+	 *            The y-ordinate at the start of the line.
 	 * @param x1
-	 *            The x-coordinate at the end of the line.
+	 *            The x-ordinate at the end of the line.
 	 * @param y1
-	 *            The y-coordinate at the end of the line.
+	 *            The y-ordinate at the end of the line.
 	 * @param thickness
 	 *            The thickness which to draw the line.
 	 * @param col
@@ -545,13 +565,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * </p>
 	 * 
 	 * @param x0
-	 *            The x-coordinate at the start of the line.
+	 *            The x-ordinate at the start of the line.
 	 * @param y0
-	 *            The y-coordinate at the start of the line.
+	 *            The y-ordinate at the start of the line.
 	 * @param x1
-	 *            The x-coordinate at the end of the line.
+	 *            The x-ordinate at the end of the line.
 	 * @param y1
-	 *            The y-coordinate at the end of the line.
+	 *            The y-ordinate at the end of the line.
 	 * @param col
 	 *            The colour in which to draw the line.
 	 */
@@ -1197,9 +1217,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Get the value of the pixel at coordinate <code>(x, y)</code>.
 	 * 
 	 * @param x
-	 *            The x-coordinate to get
+	 *            The x-ordinate to get
 	 * @param y
-	 *            The y-coordinate to get
+	 *            The y-ordinate to get
 	 * 
 	 * @return The pixel value at (x, y)
 	 */
@@ -1229,9 +1249,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Get the value of a sub-pixel using linear-interpolation.
 	 * 
 	 * @param x
-	 *            The x-coordinate to get
+	 *            The x-ordinate to get
 	 * @param y
-	 *            The y-coordinate to get
+	 *            The y-ordinate to get
 	 * @return The value of the interpolated point at <code>(x,y)</code>
 	 */
 	public abstract Q getPixelInterp(double x, double y);
@@ -1241,9 +1261,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * colour of the background (for interpolation at the edge)
 	 * 
 	 * @param x
-	 *            The x-coordinate to get.
+	 *            The x-ordinate to get.
 	 * @param y
-	 *            The y-coordinate to get.
+	 *            The y-ordinate to get.
 	 * @param backgroundColour
 	 *            The colour of the background pixel.
 	 * @return The value of the interpolated point at <code>(x,y)</code>
@@ -1729,9 +1749,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * this image.
 	 * 
 	 * @param x
-	 *            The x-coordinate of the pixel to set
+	 *            The x-ordinate of the pixel to set
 	 * @param y
-	 *            The y-coordinate of the pixel to set
+	 *            The y-ordinate of the pixel to set
 	 * @param val
 	 *            The value to set the pixel to.
 	 */
@@ -1925,7 +1945,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I shiftRightInplace(int count);
 
 	/**
-	 * Returns a new image that is it shifted around the x-coordinates by one
+	 * Returns a new image that is it shifted around the x-ordinates by one
 	 * pixel
 	 * 
 	 * @return A new image shifted around to the left by one pixel
@@ -1935,7 +1955,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 
 	/**
-	 * Returns a new image that is it shifted around the x-coordinates by the
+	 * Returns a new image that is it shifted around the x-ordinates by the
 	 * number of pixels given.
 	 * 
 	 * @param nPixels
@@ -1953,7 +1973,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 
 	/**
-	 * Returns a new image that is it shifted around the x-coordinates by one
+	 * Returns a new image that is it shifted around the x-ordinates by one
 	 * pixel
 	 * 
 	 * @return A new image shifted around to the right by one pixel
@@ -1963,7 +1983,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 
 	/**
-	 * Returns a new image that is it shifted around the x-coordinates by the
+	 * Returns a new image that is it shifted around the x-ordinates by the
 	 * number of pixels given.
 	 * 
 	 * @param nPixels

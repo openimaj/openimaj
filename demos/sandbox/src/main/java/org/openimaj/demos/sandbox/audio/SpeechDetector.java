@@ -20,10 +20,10 @@ import org.openimaj.audio.AudioAnnotator.AudioAnnotatorType;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
 import org.openimaj.audio.features.MFCCJAudio;
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListBackedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.MapBackedDataset;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.video.xuggle.XuggleAudio;
 

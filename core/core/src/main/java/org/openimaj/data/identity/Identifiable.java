@@ -27,26 +27,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.dataset;
-
+package org.openimaj.data.identity;
 
 /**
- * A {@link ListDataset} is a {@link Dataset} presented as an ordered
- * list of instances.
+ * An {@link Identifiable} is an object that has an associated identifier. Two
+ * instances of {@link Identifiable} with the same identifier should be
+ * considered equal.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <INSTANCE> the type of instances in the dataset
  */
-public interface ListDataset<INSTANCE> extends Dataset<INSTANCE> {
+public interface Identifiable {
+	/**
+	 * @return the identifier of this object
+	 */
+	public String getID();
 
 	/**
-	 * Returns the instance at the specified position in this dataset.
-	 *
-	 * @param index index of the instance to return
-	 * @return the element at the specified position in this list
-	 * @throws IndexOutOfBoundsException if the index is out of range
-	 *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+	 * Tests if this {@link Identifiable} is equal to a given {@link Object}
+	 * instance. Equality is defined by equality of the identifier.
+	 * 
+	 * @param o
+	 *            the object to compare to
+	 * @return true if equal; false otherwise
 	 */
-	public INSTANCE getInstance(int index);
+	@Override
+	public boolean equals(Object o);
 }

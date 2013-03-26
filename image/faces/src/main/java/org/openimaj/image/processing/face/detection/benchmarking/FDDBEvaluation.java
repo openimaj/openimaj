@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.image.objectdetection.filtering.OpenCVGrouping;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;

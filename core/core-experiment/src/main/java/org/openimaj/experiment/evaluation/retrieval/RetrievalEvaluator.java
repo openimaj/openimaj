@@ -35,103 +35,122 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.Evaluator;
 
 /**
- * An implementation of an {@link Evaluator} for the evaluation of
- * retrieval experiments using the Cranfield methodology.
+ * An implementation of an {@link Evaluator} for the evaluation of retrieval
+ * experiments using the Cranfield methodology.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <RESULT> Type of analysed data
- * @param <DOCUMENT> Type of documents
- * @param <QUERY> Type of query
+ * 
+ * @param <RESULT>
+ *            Type of analysed data
+ * @param <DOCUMENT>
+ *            Type of documents
+ * @param <QUERY>
+ *            Type of query
  */
-public class RetrievalEvaluator<
-	RESULT extends AnalysisResult, 
-	DOCUMENT extends Identifiable, 
-	QUERY> 
-implements 
-	Evaluator<Map<QUERY, List<DOCUMENT>>, RESULT> 
+public class RetrievalEvaluator<RESULT extends AnalysisResult, DOCUMENT extends Identifiable, QUERY>
+		implements
+		Evaluator<Map<QUERY, List<DOCUMENT>>, RESULT>
 {
 	protected RetrievalEngine<DOCUMENT, QUERY> engine;
 	protected Collection<QUERY> queries;
-	protected Map<QUERY, Set<DOCUMENT>> relevant; //in the future we might want a model more like trec qrels with relevance levels
+	protected Map<QUERY, Set<DOCUMENT>> relevant; // in the future we might want
+													// a model more like trec
+													// qrels with relevance
+													// levels
 	protected RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser;
-	
+
 	/**
-	 * Construct a new {@link RetrievalEvaluator} with a search engine,
-	 * a set of queries to perform, relevant documents for each query,
-	 * and a {@link RetrievalAnalyser} to analyse the results.
+	 * Construct a new {@link RetrievalEvaluator} with a search engine, a set of
+	 * queries to perform, relevant documents for each query, and a
+	 * {@link RetrievalAnalyser} to analyse the results.
 	 * 
-	 * @param engine the query engine
-	 * @param queries the queries
-	 * @param relevant the relevant documents for each query
-	 * @param analyser the analyser
+	 * @param engine
+	 *            the query engine
+	 * @param queries
+	 *            the queries
+	 * @param relevant
+	 *            the relevant documents for each query
+	 * @param analyser
+	 *            the analyser
 	 */
-	public RetrievalEvaluator(RetrievalEngine<DOCUMENT, QUERY> engine, Collection<QUERY> queries, Map<QUERY, Set<DOCUMENT>> relevant, RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser) {
+	public RetrievalEvaluator(RetrievalEngine<DOCUMENT, QUERY> engine, Collection<QUERY> queries,
+			Map<QUERY, Set<DOCUMENT>> relevant, RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser)
+	{
 		this.engine = engine;
 		this.queries = queries;
 		this.relevant = relevant;
 		this.analyser = analyser;
 	}
-	
+
 	/**
-	 * Construct a new {@link RetrievalEvaluator} with a search engine,
-	 * relevant documents for each query, and a {@link RetrievalAnalyser} 
-	 * to analyse the results. The queries are determined automatically
-	 * from the keys of the map of relevant documents.
+	 * Construct a new {@link RetrievalEvaluator} with a search engine, relevant
+	 * documents for each query, and a {@link RetrievalAnalyser} to analyse the
+	 * results. The queries are determined automatically from the keys of the
+	 * map of relevant documents.
 	 * 
-	 * @param engine the query engine
-	 * @param relevant the relevant documents for each query
-	 * @param analyser the analyser
+	 * @param engine
+	 *            the query engine
+	 * @param relevant
+	 *            the relevant documents for each query
+	 * @param analyser
+	 *            the analyser
 	 */
-	public RetrievalEvaluator(RetrievalEngine<DOCUMENT, QUERY> engine, Map<QUERY, Set<DOCUMENT>> relevant, RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser) {
+	public RetrievalEvaluator(RetrievalEngine<DOCUMENT, QUERY> engine, Map<QUERY, Set<DOCUMENT>> relevant,
+			RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser)
+	{
 		this.engine = engine;
 		this.queries = relevant.keySet();
 		this.relevant = relevant;
 		this.analyser = analyser;
 	}
-	
+
 	/**
-	 * Construct a new {@link RetrievalEvaluator} with the given ranked
-	 * results lists and sets of relevant documents for each query, and 
-	 * a {@link RetrievalAnalyser} to analyse the results.
+	 * Construct a new {@link RetrievalEvaluator} with the given ranked results
+	 * lists and sets of relevant documents for each query, and a
+	 * {@link RetrievalAnalyser} to analyse the results.
 	 * <p>
 	 * Internally, this constructor wraps a simple {@link RetrievalEngine}
-	 * implementation around the results, and determines the set of
-	 * queries from the keys of the relevant document map.
+	 * implementation around the results, and determines the set of queries from
+	 * the keys of the relevant document map.
 	 * 
-	 * @param results the ranked results per query
-	 * @param relevant the relevant results per query
-	 * @param analyser the analyser
+	 * @param results
+	 *            the ranked results per query
+	 * @param relevant
+	 *            the relevant results per query
+	 * @param analyser
+	 *            the analyser
 	 */
-	public RetrievalEvaluator(final Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant, RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser) {
+	public RetrievalEvaluator(final Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant,
+			RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser)
+	{
 		this.engine = new RetrievalEngine<DOCUMENT, QUERY>() {
 			@Override
 			public List<DOCUMENT> search(QUERY query) {
 				return results.get(query);
 			}
 		};
-		
+
 		this.queries = relevant.keySet();
 		this.relevant = relevant;
 		this.analyser = analyser;
 	}
-	
+
 	@Override
 	public Map<QUERY, List<DOCUMENT>> evaluate() {
-		Map<QUERY, List<DOCUMENT>> results = new HashMap<QUERY, List<DOCUMENT>>();
-		
-		for (QUERY query : queries) {
+		final Map<QUERY, List<DOCUMENT>> results = new HashMap<QUERY, List<DOCUMENT>>();
+
+		for (final QUERY query : queries) {
 			results.put(query, engine.search(query));
 		}
-		
+
 		return results;
 	}
-	
+
 	@Override
 	public RESULT analyse(Map<QUERY, List<DOCUMENT>> results) {
 		return analyser.analyse(results, relevant);

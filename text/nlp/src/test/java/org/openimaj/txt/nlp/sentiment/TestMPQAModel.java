@@ -38,9 +38,9 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.experiment.dataset.ListBackedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.MapBackedDataset;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
 import org.openimaj.experiment.evaluation.classification.analysers.roc.ROCAnalyser;
 import org.openimaj.experiment.evaluation.classification.analysers.roc.ROCResult;

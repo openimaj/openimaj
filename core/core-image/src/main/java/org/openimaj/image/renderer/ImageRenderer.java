@@ -58,9 +58,9 @@ import com.caffeineowl.graphics.bezier.flatnessalgos.SimpleConvexHullSubdivCrite
 /**
  * ImageRenderer is the abstract base class for all renderers capable of drawing
  * to images.
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  * @param <Q>
  *            Pixel type
  * @param <I>
@@ -72,7 +72,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Construct with given target image.
-	 *
+	 * 
 	 * @param targetImage
 	 *            the target image.
 	 */
@@ -82,7 +82,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Construct with given target image and rendering hints.
-	 *
+	 * 
 	 * @param targetImage
 	 *            the target image.
 	 * @param hints
@@ -96,7 +96,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw onto this image lines drawn with the given colour between the points
 	 * given. No points are drawn.
-	 *
+	 * 
 	 * @param pts
 	 *            The point list to draw onto this image.
 	 * @param col
@@ -121,7 +121,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw into this image the provided image at the given coordinates. Parts
 	 * of the image outside the bounds of this image will be ignored.
-	 *
+	 * 
 	 * @param image
 	 *            The image to draw.
 	 * @param x
@@ -145,7 +145,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * certain pixels. Parts of the image outside the bounds of this image will
 	 * be ignored. Pixels in the ignore list will be stripped from the image to
 	 * draw.
-	 *
+	 * 
 	 * @param image
 	 *            The image to draw.
 	 * @param x
@@ -155,7 +155,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param ignoreList
 	 *            The list of pixels to ignore when copying the image
 	 */
-	public void drawImage(final I image, final int x, final int y, @SuppressWarnings( "unchecked" ) final Q... ignoreList) {
+	public void drawImage(final I image, final int x, final int y, final Q... ignoreList) {
 		final int stopx = Math.min(this.targetImage.getWidth(), x + image.getWidth());
 		final int stopy = Math.min(this.targetImage.getHeight(), y + image.getHeight());
 		final int startx = Math.max(0, x);
@@ -173,7 +173,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> at an
 	 * angle of <code>theta</code> with the given length, thickness and colour.
-	 *
+	 * 
 	 * @param x1
 	 *            The x-coordinate to start the line.
 	 * @param y1
@@ -193,7 +193,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> at an
 	 * angle of <code>theta</code> with the given length and colour.
 	 * Line-thickness will be 1.
-	 *
+	 * 
 	 * @param x1
 	 *            The x-coordinate to start the line.
 	 * @param y1
@@ -213,7 +213,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to the
 	 * coordinates specified by <code>(x1,y1)</code> using the given color and
 	 * thickness.
-	 *
+	 * 
 	 * @param x0
 	 *            The x-coordinate at the start of the line.
 	 * @param y0
@@ -233,7 +233,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to
 	 * <code>(x1,y1)</code> using the given colour. The line thickness will be 1
 	 * pixel.
-	 *
+	 * 
 	 * @param x0
 	 *            The x-coordinate at the start of the line.
 	 * @param y0
@@ -253,7 +253,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to
 	 * <code>(x1,y1)</code> using the given colour. The line thickness will be 1
 	 * pixel.
-	 *
+	 * 
 	 * @param p1
 	 *            The coordinate of the start of the line.
 	 * @param p2
@@ -270,7 +270,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to
 	 * <code>(x1,y1)</code> using the given colour and thickness.
-	 *
+	 * 
 	 * @param p1
 	 *            The coordinate of the start of the line.
 	 * @param p2
@@ -288,7 +288,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw a line from the specified Line2d object
-	 *
+	 * 
 	 * @param line
 	 *            the line
 	 * @param thickness
@@ -304,7 +304,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw the given list of lines using {@link #drawLine(Line2d, int, Object)}
 	 * with the given colour and thickness.
-	 *
+	 * 
 	 * @param lines
 	 *            The list of lines to draw.
 	 * @param thickness
@@ -320,8 +320,8 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw a dot centered on the given location (rounded to nearest integer
 	 * location) at the given size and with the given color.
-	 *
-	 *
+	 * 
+	 * 
 	 * @param p
 	 *            The coordinates at which to draw the point
 	 * @param col
@@ -334,7 +334,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw the given list of points using
 	 * {@link #drawPoint(Point2d, Object, int)} with the given colour and size.
-	 *
+	 * 
 	 * @param pts
 	 *            The list of points to draw.
 	 * @param col
@@ -350,8 +350,8 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw the given polygon in the specified colour with the given thickness
 	 * lines.
-	 *
-	 *
+	 * 
+	 * 
 	 * @param p
 	 *            The polygon to draw.
 	 * @param thickness
@@ -364,8 +364,8 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw the given polygon in the specified colour. Uses
 	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
-	 *
-	 *
+	 * 
+	 * 
 	 * @param p
 	 *            The polygon to draw.
 	 * @param col
@@ -377,7 +377,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw a horizontal line with the specified colour.
-	 *
+	 * 
 	 * @param x1
 	 *            starting x (inclusive)
 	 * @param x2
@@ -391,7 +391,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw the given polygon, filled with the specified colour.
-	 *
+	 * 
 	 * @param p
 	 *            The polygon to draw.
 	 * @param col
@@ -416,7 +416,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw the given shape in the specified colour with the given thickness
 	 * lines.
-	 *
+	 * 
 	 * @param s
 	 *            The shape to draw.
 	 * @param thickness
@@ -431,7 +431,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw the given shape in the specified colour. Uses
 	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
-	 *
+	 * 
 	 * @param p
 	 *            The shape to draw.
 	 * @param col
@@ -443,14 +443,14 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw the given shape, filled with the specified colour.
-	 *
+	 * 
 	 * @param s
 	 *            The shape to draw.
 	 * @param col
 	 *            The colour to fill the polygon with.
 	 */
 	public void drawShapeFilled(final Shape s, Q col) {
-		col = this.sanitise( col );
+		col = this.sanitise(col);
 		if (s instanceof Polygon) {
 			this.drawPolygonFilled((Polygon) s, col);
 		} else {
@@ -473,7 +473,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Render the text in the given font with the default style.
-	 *
+	 * 
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -496,7 +496,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Render the text in the given font in the given colour with the default
 	 * style.
-	 *
+	 * 
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -512,7 +512,9 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param col
 	 *            the font color
 	 */
-	public <F extends Font<F>> void drawText(final String text, final int x, final int y, final F f, final int sz, final Q col) {
+	public <F extends Font<F>> void drawText(final String text, final int x, final int y, final F f, final int sz,
+			final Q col)
+	{
 		final FontStyle<F, Q> sty = f.createStyle(this);
 		sty.setFontSize(sz);
 		sty.setColour(col);
@@ -521,7 +523,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Render the text in the given font with the default style.
-	 *
+	 * 
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -542,7 +544,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Render the text in the given font in the given colour with the default
 	 * style.
-	 *
+	 * 
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -565,7 +567,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Render the text with the given {@link FontStyle}.
-	 *
+	 * 
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -583,7 +585,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Render the text with the given {@link FontStyle}.
-	 *
+	 * 
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -599,7 +601,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Render the text using its attributes.
-	 *
+	 * 
 	 * @param text
 	 *            the text
 	 * @param x
@@ -613,7 +615,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Render the text using its attributes.
-	 *
+	 * 
 	 * @param text
 	 *            the text
 	 * @param pt
@@ -625,7 +627,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw a cubic Bezier curve into the image with 100 point accuracy.
-	 *
+	 * 
 	 * @param p1
 	 *            One end point of the line
 	 * @param p2
@@ -650,19 +652,19 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 				c2.getX(), c2.getY(), p2.getX(), p2.getY());
 		BezierUtils.adaptiveHalving(c, new SimpleConvexHullSubdivCriterion(),
 				new CubicSegmentConsumer()
-		{
-			@Override
-			public void processSegment(final CubicCurve2D segment,
-					final double startT, final double endT)
-			{
-				if (0.0 == startT)
-					points.add(new Point2dImpl(
-							(float) segment.getX1(), (float) segment.getY1()));
+				{
+					@Override
+					public void processSegment(final CubicCurve2D segment,
+							final double startT, final double endT)
+					{
+						if (0.0 == startT)
+							points.add(new Point2dImpl(
+									(float) segment.getX1(), (float) segment.getY1()));
 
-				points.add(new Point2dImpl(
-						(float) segment.getX2(), (float) segment.getY2()));
-			}
-		}
+						points.add(new Point2dImpl(
+								(float) segment.getX2(), (float) segment.getY2()));
+					}
+				}
 				);
 
 		Point2d last = null;
@@ -678,7 +680,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw a Quadratic Bezier curve
-	 *
+	 * 
 	 * @param p1
 	 * @param p2
 	 * @param c1
@@ -695,18 +697,18 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 				p1.getX(), p1.getY(), c1.getX(), c1.getY(), p2.getX(), p2.getY());
 		BezierUtils.adaptiveHalving(c, new SimpleConvexHullSubdivCriterion(),
 				new QuadSegmentConsumer()
-		{
-			@Override
-			public void processSegment(final QuadCurve2D segment, final double startT, final double endT)
-			{
-				if (0.0 == startT)
-					points.add(new Point2dImpl(
-							(float) segment.getX1(), (float) segment.getY1()));
+				{
+					@Override
+					public void processSegment(final QuadCurve2D segment, final double startT, final double endT)
+					{
+						if (0.0 == startT)
+							points.add(new Point2dImpl(
+									(float) segment.getX1(), (float) segment.getY1()));
 
-				points.add(new Point2dImpl(
-						(float) segment.getX2(), (float) segment.getY2()));
-			}
-		}
+						points.add(new Point2dImpl(
+								(float) segment.getX2(), (float) segment.getY2()));
+					}
+				}
 				);
 
 		Point2d last = null;
@@ -723,21 +725,21 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Get the default foreground colour.
-	 *
+	 * 
 	 * @return the default foreground colour.
 	 */
 	public abstract Q defaultForegroundColour();
 
 	/**
 	 * Get the default foreground colour.
-	 *
+	 * 
 	 * @return the default foreground colour.
 	 */
 	public abstract Q defaultBackgroundColour();
 
 	/**
 	 * Get the target image
-	 *
+	 * 
 	 * @return the image
 	 */
 	public I getImage() {
@@ -746,7 +748,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Change the target image of this renderer.
-	 *
+	 * 
 	 * @param image
 	 *            new target
 	 */
@@ -756,7 +758,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Get the render hints object associated with this renderer
-	 *
+	 * 
 	 * @return the render hints
 	 */
 	public RenderHints getRenderHints() {
@@ -765,7 +767,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Set the render hints associated with this renderer
-	 *
+	 * 
 	 * @param hints
 	 *            the new hints
 	 */
@@ -774,9 +776,11 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	}
 
 	/**
-	 * 	Sanitize the colour given to fit this image's pixel type.
-	 *	@param size The colour to sanitize
-	 *	@return The array
+	 * Sanitize the colour given to fit this image's pixel type.
+	 * 
+	 * @param size
+	 *            The colour to sanitize
+	 * @return The array
 	 */
-	protected abstract Q sanitise( Q colour );
+	protected abstract Q sanitise(Q colour);
 }

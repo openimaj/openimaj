@@ -29,14 +29,14 @@
  */
 package org.openimaj.image.processing.face.recognition.benchmarking;
 
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.experiment.ExperimentContext;
 import org.openimaj.experiment.RunnableExperiment;
 import org.openimaj.experiment.annotations.DependentVariable;
 import org.openimaj.experiment.annotations.Experiment;
 import org.openimaj.experiment.annotations.IndependentVariable;
 import org.openimaj.experiment.annotations.Time;
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.AggregatedCMResult;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAggregator;

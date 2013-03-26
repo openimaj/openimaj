@@ -33,33 +33,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 
 /**
- * A {@link RetrievalAnalyser} is used to analyse the raw search
- * results from a {@link RetrievalEngine} in the context of
- * a {@link RetrievalEvaluator} and to produce an {@link AnalysisResult}
- * describing the performance of the {@link RetrievalEngine}.
+ * A {@link RetrievalAnalyser} is used to analyse the raw search results from a
+ * {@link RetrievalEngine} in the context of a {@link RetrievalEvaluator} and to
+ * produce an {@link AnalysisResult} describing the performance of the
+ * {@link RetrievalEngine}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <RESULT> the type of {@link AnalysisResult} produced. 
- * @param <QUERY> the type of the queries
- * @param <DOCUMENT> the type of the documents
+ * 
+ * @param <RESULT>
+ *            the type of {@link AnalysisResult} produced.
+ * @param <QUERY>
+ *            the type of the queries
+ * @param <DOCUMENT>
+ *            the type of the documents
  */
-public interface RetrievalAnalyser<
-	RESULT extends AnalysisResult, 
-	QUERY, 
-	DOCUMENT extends Identifiable> 
+public interface RetrievalAnalyser<RESULT extends AnalysisResult, QUERY, DOCUMENT extends Identifiable>
 {
 	/**
-	 * Analyse ranked results from a {@link RetrievalEngine} against
-	 * a ground-truth set of relevant results and produce an {@link AnalysisResult}
-	 * which can be read by a human.
+	 * Analyse ranked results from a {@link RetrievalEngine} against a
+	 * ground-truth set of relevant results and produce an
+	 * {@link AnalysisResult} which can be read by a human.
 	 * 
-	 * @param results the results per query from the {@link RetrievalEngine}.
-	 * @param relevant the ground-truth relevant documents per query.
+	 * @param results
+	 *            the results per query from the {@link RetrievalEngine}.
+	 * @param relevant
+	 *            the ground-truth relevant documents per query.
 	 * @return the results of the analysis
 	 */
 	public RESULT analyse(Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant);

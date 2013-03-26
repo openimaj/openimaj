@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.dataset;
+package org.openimaj.image.dataset;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,13 +9,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.openimaj.data.dataset.ReadableListDataset;
 import org.openimaj.image.Image;
+import org.openimaj.io.HttpUtils;
 import org.openimaj.io.ObjectReader;
 
 import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.REST;
 import com.aetrion.flickr.collections.CollectionsInterface;
 import com.aetrion.flickr.collections.CollectionsSearchParameters;
+import com.aetrion.flickr.photos.Extras;
 import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
 import com.aetrion.flickr.photosets.PhotosetsInterface;
@@ -75,13 +80,19 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 		return photos.size();
 	}
 
+	@Override
+	public String getID(int index) {
+		return photos.get(index).getMediumUrl();
+	}
+
 	private IMAGE read(Photo next) {
 		if (next == null)
 			return null;
 
 		InputStream stream = null;
 		try {
-			stream = new URL(next.getUrl()).openStream();
+			stream = HttpUtils.readURL(new URL(next.getMediumUrl()));
+
 			return reader.read(stream);
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
@@ -238,7 +249,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			String apikey, String secret,
 			String urlString, int number) throws Exception
 	{
-		final Flickr flickr = new Flickr(apikey, secret, new REST(Flickr.DEFAULT_HOST));
+		final Flickr flickr = makeFlickr(apikey, secret);
 
 		final String galleryId = flickr.getUrlsInterface().lookupGallery(urlString);
 
@@ -263,7 +274,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			String apikey, String secret,
 			String urlString, int number) throws Exception
 	{
-		final Flickr flickr = new Flickr(apikey, secret, new REST(Flickr.DEFAULT_HOST));
+		final Flickr flickr = makeFlickr(apikey, secret);
 
 		final Matcher matcher = COLLECTION_URL_PATTERN.matcher(urlString);
 		matcher.find();
@@ -328,7 +339,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			String apikey, String secret,
 			com.aetrion.flickr.galleries.SearchParameters params, int number) throws Exception
 	{
-		final Flickr flickr = new Flickr(apikey, secret, new REST(Flickr.DEFAULT_HOST));
+		final Flickr flickr = makeFlickr(apikey, secret);
+
+		params.setExtras(Extras.ALL_EXTRAS);
 
 		final List<Photo> photos = new ArrayList<Photo>();
 		final PhotoList first = flickr.getGalleriesInterface().getPhotos(params, 250, 0);
@@ -396,19 +409,19 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			String apikey, String secret,
 			String setId, int number) throws Exception
 	{
-		final Flickr flickr = new Flickr(apikey, secret, new REST(Flickr.DEFAULT_HOST));
+		final Flickr flickr = makeFlickr(apikey, secret);
 
 		final PhotosetsInterface setsInterface = flickr.getPhotosetsInterface();
 
 		final List<Photo> photos = new ArrayList<Photo>();
-		final PhotoList first = setsInterface.getPhotos(setId, 250, 0);
+		final PhotoList first = setsInterface.getPhotos(setId, Extras.ALL_EXTRAS, 0, 250, 0);
 		photos.addAll(first);
 
 		if (number > 0)
 			number = Math.min(number, first.getTotal());
 
 		for (int page = 1, n = photos.size(); n < number; page++) {
-			final PhotoList result = setsInterface.getPhotos(setId, 250, page);
+			final PhotoList result = setsInterface.getPhotos(setId, Extras.ALL_EXTRAS, 0, 250, page);
 			photos.addAll(result);
 			n += result.size();
 		}
@@ -469,7 +482,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			String apikey, String secret,
 			com.aetrion.flickr.collections.CollectionsSearchParameters params, int number) throws Exception
 	{
-		final Flickr flickr = new Flickr(apikey, secret, new REST(Flickr.DEFAULT_HOST));
+		final Flickr flickr = makeFlickr(apikey, secret);
+
+		params.setExtras(Extras.ALL_EXTRAS);
 
 		List<Photo> photos = new ArrayList<Photo>();
 		final CollectionsInterface collectionsInterface = flickr.getCollectionsInterface();
@@ -533,7 +548,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			String apikey, String secret,
 			com.aetrion.flickr.photos.SearchParameters params, int number) throws Exception
 	{
-		final Flickr flickr = new Flickr(apikey, secret, new REST(Flickr.DEFAULT_HOST));
+		final Flickr flickr = makeFlickr(apikey, secret);
+
+		params.setExtras(Extras.ALL_EXTRAS);
 
 		final List<Photo> photos = new ArrayList<Photo>();
 		final PhotoList first = flickr.getPhotosInterface().search(params, 250, 0);
@@ -549,5 +566,11 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 		}
 
 		return new FlickrImageDataset<IMAGE>(reader, photos);
+	}
+
+	private static Flickr makeFlickr(String apikey, String secret) throws ParserConfigurationException {
+		if (secret == null)
+			return new Flickr(apikey, new REST(Flickr.DEFAULT_HOST));
+		return new Flickr(apikey, secret, new REST(Flickr.DEFAULT_HOST));
 	}
 }

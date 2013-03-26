@@ -29,7 +29,7 @@
  */
 package org.openimaj.experiment.validation;
 
-import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.data.dataset.Dataset;
 
 /**
  * Data for performing validation. Contains datasets for 

@@ -31,7 +31,7 @@ package org.openimaj.experiment.validation;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.data.dataset.Dataset;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.ResultAggregator;
 import org.openimaj.experiment.validation.cross.CrossValidator;

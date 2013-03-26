@@ -31,8 +31,8 @@ package org.openimaj.ml.annotation;
 
 import java.util.List;
 
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.training.BatchTrainer;
 

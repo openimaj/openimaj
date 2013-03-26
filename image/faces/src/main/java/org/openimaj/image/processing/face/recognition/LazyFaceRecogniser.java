@@ -36,10 +36,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.cache.GroupedListCache;
-import org.openimaj.experiment.dataset.cache.InMemoryGroupedListCache;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.cache.GroupedListCache;
+import org.openimaj.data.dataset.cache.InMemoryGroupedListCache;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;

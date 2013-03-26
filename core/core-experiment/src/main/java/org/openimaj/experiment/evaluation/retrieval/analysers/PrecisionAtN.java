@@ -33,43 +33,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
 
 /**
- * {@link RetrievalAnalyser} that computes the precision after
- * N documents have been retrieved (P@N). 
+ * {@link RetrievalAnalyser} that computes the precision after N documents have
+ * been retrieved (P@N).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <QUERY> Type of query
- * @param <DOCUMENT> Type of document
+ * 
+ * @param <QUERY>
+ *            Type of query
+ * @param <DOCUMENT>
+ *            Type of document
  */
-public class PrecisionAtN<
-	QUERY, 
-	DOCUMENT extends Identifiable> 
-implements 
-	RetrievalAnalyser<PrecisionAtNResult<QUERY>, QUERY, DOCUMENT> 
+public class PrecisionAtN<QUERY, DOCUMENT extends Identifiable>
+		implements
+		RetrievalAnalyser<PrecisionAtNResult<QUERY>, QUERY, DOCUMENT>
 {
 	protected int N;
-	
+
 	/**
 	 * Construct with the given N.
-	 * @param n N, the number of top-ranked documents to consider.
+	 * 
+	 * @param n
+	 *            N, the number of top-ranked documents to consider.
 	 */
 	public PrecisionAtN(int n) {
 		N = n;
 	}
-	
+
 	@Override
 	public PrecisionAtNResult<QUERY> analyse(Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant) {
-		PrecisionAtNResult<QUERY> scores = new PrecisionAtNResult<QUERY>(N);
-		
-		for (QUERY query : relevant.keySet()) {
-			List<DOCUMENT> qres = results.get(query);
-			
+		final PrecisionAtNResult<QUERY> scores = new PrecisionAtNResult<QUERY>(N);
+
+		for (final QUERY query : relevant.keySet()) {
+			final List<DOCUMENT> qres = results.get(query);
+
 			if (qres != null) {
-				List<DOCUMENT> topN = qres.subList(0, Math.min(N, qres.size()));
+				final List<DOCUMENT> topN = qres.subList(0, Math.min(N, qres.size()));
 				scores.allScores.put(query, score(topN, relevant.get(query)));
 			} else {
 				scores.allScores.put(query, 0);
@@ -81,12 +83,12 @@ implements
 
 	private double score(List<DOCUMENT> topN, Set<DOCUMENT> rel) {
 		int count = 0;
-		
-		for (DOCUMENT ret : topN) {
+
+		for (final DOCUMENT ret : topN) {
 			if (rel.contains(ret))
-				count ++;
+				count++;
 		}
-		
-		return (double)count / (double)topN.size();
+
+		return (double) count / (double) topN.size();
 	}
 }

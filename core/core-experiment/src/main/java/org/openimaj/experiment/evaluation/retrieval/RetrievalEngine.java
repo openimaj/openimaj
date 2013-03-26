@@ -31,20 +31,25 @@ package org.openimaj.experiment.evaluation.retrieval;
 
 import java.util.List;
 
-import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.data.identity.Identifiable;
 
 /**
  * Interface describing a retrieval engine
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <DOCUMENT> Type of document being retrieved
- * @param <QUERY> Type of query 
+ * 
+ * @param <DOCUMENT>
+ *            Type of document being retrieved
+ * @param <QUERY>
+ *            Type of query
  */
 public interface RetrievalEngine<DOCUMENT extends Identifiable, QUERY> {
 	/**
-	 * Search with the given query and return a ranked list of matching documents.
-	 * @param query the query
+	 * Search with the given query and return a ranked list of matching
+	 * documents.
+	 * 
+	 * @param query
+	 *            the query
 	 * @return the results of the search
 	 */
 	List<DOCUMENT> search(QUERY query);
