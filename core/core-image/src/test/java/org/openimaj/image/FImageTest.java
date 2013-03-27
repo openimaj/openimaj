@@ -29,65 +29,28 @@
  */
 package org.openimaj.image;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.image.colour.ColourSpace;
 
 /**
- * Tests for MBFImage
+ * Tests for FImage
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
  */
-public class MBFImageTest {
-	private MBFImage alphaImage;
-	private MBFImage testImage;
-
-	/**
-	 * Setup test
-	 * 
-	 * @throws IOException
-	 *             if error occurs
-	 */
-	@Before
-	public void setup() throws IOException {
-		final InputStream alphaStream = this.getClass().getResourceAsStream("/org/openimaj/image/data/alphaimage.png");
-		final InputStream testImageStream = this.getClass().getResourceAsStream("/org/openimaj/image/data/sinaface.jpg");
-
-		alphaImage = ImageUtilities.readMBFAlpha(alphaStream);
-		testImage = ImageUtilities.readMBF(testImageStream);
-	}
-
-	/**
-	 * Test alpha reading and compositing
-	 */
-	@Test
-	public void alphaTest() {
-		assertEquals(ColourSpace.RGBA, alphaImage.getColourSpace());
-		assertEquals(ColourSpace.RGB, testImage.getColourSpace());
-	}
+public class FImageTest {
 
 	/**
 	 * Test drawing of one image into another over a range of positions
 	 */
 	@Test
 	public void testDrawImage() {
-		for (int cs1 = 1; cs1 < 5; cs1++) {
-			final MBFImage im1 = new MBFImage(100, 100, cs1);
+		final FImage im1 = new FImage(100, 100);
+		final FImage im2 = new FImage(11, 11);
 
-			for (int cs2 = 1; cs2 < 5; cs2++) {
-				final MBFImage im2 = new MBFImage(11, 11, cs2);
-
-				for (int y = -20; y < 120; y++) {
-					for (int x = -20; x < 120; x++) {
-						im1.drawImage(im2, x, y);
-					}
-				}
+		for (int y = -20; y < 120; y++) {
+			for (int x = -20; x < 120; x++) {
+				im1.drawImage(im2, x, y);
 			}
 		}
 	}
