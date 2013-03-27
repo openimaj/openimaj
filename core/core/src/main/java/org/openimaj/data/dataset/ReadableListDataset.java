@@ -51,12 +51,25 @@ public abstract class ReadableListDataset<INSTANCE> extends AbstractList<INSTANC
 		return index + "";
 	}
 
+	/**
+	 * Get the index of the instance with the given ID, or -1 if it can't be
+	 * found.
+	 * 
+	 * @param id
+	 *            the ID string
+	 * @return the index; or -1 if not found.
+	 */
 	public int indexOfID(String id) {
 		for (int i = 0; i < size(); i++) {
 			if (getID(i).equals(id))
 				return i;
 		}
 		return -1;
+	}
+
+	@Override
+	public final int size() {
+		return numInstances();
 	}
 
 	private class WrappedListDataset extends AbstractList<IdentifiableObject<INSTANCE>>
@@ -88,6 +101,11 @@ public abstract class ReadableListDataset<INSTANCE> extends AbstractList<INSTANC
 
 		@Override
 		public int size() {
+			return internal.size();
+		}
+
+		@Override
+		public int numInstances() {
 			return internal.size();
 		}
 	}

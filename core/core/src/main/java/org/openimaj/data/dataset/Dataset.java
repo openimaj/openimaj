@@ -50,5 +50,5 @@ public interface Dataset<INSTANCE> extends Iterable<INSTANCE> {
 	 * 
 	 * @return the number of instances in this list
 	 */
-	int size();
+	int numInstances();
 }

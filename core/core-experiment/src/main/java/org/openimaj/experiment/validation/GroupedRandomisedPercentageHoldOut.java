@@ -54,7 +54,8 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public class GroupedRandomisedPercentageHoldOut<KEY, INSTANCE>
 		extends
-		DefaultValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>> {
+		DefaultValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>
+{
 	/**
 	 * Construct with the given dataset and percentage of training data (0..1).
 	 * 
@@ -64,20 +65,21 @@ public class GroupedRandomisedPercentageHoldOut<KEY, INSTANCE>
 	 *            the dataset
 	 */
 	public GroupedRandomisedPercentageHoldOut(double percentageTraining,
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset) {
+			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset)
+	{
 		if (percentageTraining < 0 || percentageTraining > 1)
 			throw new IllegalArgumentException(
 					"percentage of training instances must be between 0 and 1");
 
-		int size = dataset.size();
-		int[] indices = RandomData.getUniqueRandomInts(size, 0, size);
-		int nTrain = (int) (percentageTraining * size);
+		final int size = dataset.numInstances();
+		final int[] indices = RandomData.getUniqueRandomInts(size, 0, size);
+		final int nTrain = (int) (percentageTraining * size);
 
 		this.training = new MapBackedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>();
-		Map<KEY, ListDataset<INSTANCE>> trainMap = ((MapBackedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>) training)
+		final Map<KEY, ListDataset<INSTANCE>> trainMap = ((MapBackedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>) training)
 				.getMap();
 		for (int i = 0; i < nTrain; i++) {
-			IndependentPair<KEY, INSTANCE> p = select(indices[i], dataset);
+			final IndependentPair<KEY, INSTANCE> p = select(indices[i], dataset);
 
 			ListBackedDataset<INSTANCE> lmd = (ListBackedDataset<INSTANCE>) trainMap
 					.get(p.firstObject());
@@ -88,10 +90,10 @@ public class GroupedRandomisedPercentageHoldOut<KEY, INSTANCE>
 		}
 
 		this.validation = new MapBackedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>();
-		Map<KEY, ListDataset<INSTANCE>> validMap = ((MapBackedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>) validation)
+		final Map<KEY, ListDataset<INSTANCE>> validMap = ((MapBackedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>) validation)
 				.getMap();
 		for (int i = nTrain; i < size; i++) {
-			IndependentPair<KEY, INSTANCE> p = select(indices[i], dataset);
+			final IndependentPair<KEY, INSTANCE> p = select(indices[i], dataset);
 
 			ListBackedDataset<INSTANCE> lmd = (ListBackedDataset<INSTANCE>) validMap
 					.get(p.firstObject());
@@ -103,10 +105,11 @@ public class GroupedRandomisedPercentageHoldOut<KEY, INSTANCE>
 	}
 
 	private IndependentPair<KEY, INSTANCE> select(int idx,
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset) {
-		for (KEY k : dataset.getGroups()) {
-			ListDataset<INSTANCE> instances = dataset.getInstances(k);
-			int sz = instances.size();
+			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset)
+	{
+		for (final KEY k : dataset.getGroups()) {
+			final ListDataset<INSTANCE> instances = dataset.getInstances(k);
+			final int sz = instances.size();
 
 			if (idx < sz) {
 				return new IndependentPair<KEY, INSTANCE>(k,

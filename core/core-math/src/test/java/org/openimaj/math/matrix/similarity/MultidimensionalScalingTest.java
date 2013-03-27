@@ -29,39 +29,45 @@
  */
 package org.openimaj.math.matrix.similarity;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
+import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.matrix.similarity.processor.MultidimensionalScaling;
 
 /**
  * Tests for Multidimensional Scaling
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class MultidimensionalScalingTest {
 	/**
-	 * Test basic operation. Two points, A & B are close and
-	 * the third point, C, is very different. The layout created
-	 * by MDS should respect this. 
+	 * Test basic operation. Two points, A & B are close and the third point, C,
+	 * is very different. The layout created by MDS should respect this.
 	 */
 	@Test
 	public void testMDS1() {
-		double [][] sims = {{1, 0.1, 0}, {0.1, 1, 0.01}, {0, 0.01, 1}};
-		String [] index = {"A", "B", "C"};
+		final double[][] sims = { { 1, 0.1, 0, 0.99 }, { 0.1, 1, 0.01, 0 }, { 0, 0.01, 1, 0 }, { 0.99, 0, 0, 1 } };
+		final String[] index = { "A", "B", "C", "D" };
 
-		SimilarityMatrix m = new SimilarityMatrix(index, sims);
-		MultidimensionalScaling mds = new MultidimensionalScaling();
+		final SimilarityMatrix m = new SimilarityMatrix(index, sims);
+		final MultidimensionalScaling mds = new MultidimensionalScaling();
 		m.process(mds);
-		
-//		Point2d ptA = mds.getPoint("A");
-//		Point2d ptB = mds.getPoint("B");
-//		Point2d ptC = mds.getPoint("C");
-		
-//		double AB = Line2d.distance(ptA, ptB);
-//		double AC = Line2d.distance(ptA, ptC);
-//		double BC = Line2d.distance(ptB, ptC);
-		
-//		assertTrue(AB < AC);
-//		assertTrue(AB < BC);
+
+		System.out.println(m);
+		System.out.println(mds.getPoints());
+
+		final Point2d ptA = mds.getPoint("A");
+		final Point2d ptB = mds.getPoint("B");
+		final Point2d ptC = mds.getPoint("C");
+
+		final double AB = Line2d.distance(ptA, ptB);
+		final double AC = Line2d.distance(ptA, ptC);
+		final double BC = Line2d.distance(ptB, ptC);
+
+		assertTrue(AB < AC);
+		assertTrue(AB < BC);
 	}
 }

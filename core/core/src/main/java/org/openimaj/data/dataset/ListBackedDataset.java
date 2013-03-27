@@ -36,15 +36,15 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * A {@link ListBackedDataset} is a {@link Dataset} backed by an ordered
- * list of items. For convenience, the dataset is itself presented as 
- * as list. 
+ * A {@link ListBackedDataset} is a {@link Dataset} backed by an ordered list of
+ * items. For convenience, the dataset is itself presented as as list.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> the type of items in the dataset
+ * 
+ * @param <T>
+ *            the type of items in the dataset
  */
-public class ListBackedDataset<T> implements ListDataset<T>, List<T> {
+public class ListBackedDataset<T> implements ListDataset<T> {
 	protected List<T> data;
 
 	/**
@@ -53,40 +53,48 @@ public class ListBackedDataset<T> implements ListDataset<T>, List<T> {
 	public ListBackedDataset() {
 		this.data = new ArrayList<T>();
 	}
-	
+
 	/**
 	 * Construct with the given list of items.
-	 * @param backingList the backing list
+	 * 
+	 * @param backingList
+	 *            the backing list
 	 */
 	public ListBackedDataset(List<T> backingList) {
 		this.data = backingList;
 	}
-	
+
 	/**
-	 * Construct by consuming the contents of the given
-	 * iterator into the backing list.
+	 * Construct by consuming the contents of the given iterator into the
+	 * backing list.
 	 * <p>
-	 * Obviously this method could cause problems if the
-	 * number of items in the iterator is very large, as
-	 * memory could be exhausted. Care should be taken. 
+	 * Obviously this method could cause problems if the number of items in the
+	 * iterator is very large, as memory could be exhausted. Care should be
+	 * taken.
 	 * 
-	 * @param iterator the data to read
+	 * @param iterator
+	 *            the data to read
 	 */
 	public ListBackedDataset(Iterable<T> iterator) {
 		super();
-		
-		for (T item : iterator) {
+
+		for (final T item : iterator) {
 			data.add(item);
 		}
 	}
 
 	@Override
 	public T getRandomInstance() {
-		return data.get((int)(Math.random() * data.size()));
+		return data.get((int) (Math.random() * data.size()));
 	}
 
 	@Override
-	public int size() {
+	public final int size() {
+		return data.size();
+	}
+
+	@Override
+	public int numInstances() {
 		return data.size();
 	}
 
@@ -213,7 +221,7 @@ public class ListBackedDataset<T> implements ListDataset<T>, List<T> {
 	public List<T> subList(int fromIndex, int toIndex) {
 		return data.subList(fromIndex, toIndex);
 	}
-	
+
 	@Override
 	public String toString() {
 		return data.toString();

@@ -49,6 +49,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1619,6 +1620,28 @@ public class DisplayUtilities
 		for (int i = 0; i < images.length; i++)
 			bimages[i] = ImageUtilities
 					.createBufferedImageForDisplay(images[i]);
+
+		return DisplayUtilities.display(title, bimages);
+	}
+
+	/**
+	 * Display multiple images in a collection
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param images
+	 *            the images
+	 * @return the frame
+	 */
+	public static JFrame display(final String title,
+			final Collection<? extends Image<?, ?>> images)
+	{
+		final BufferedImage[] bimages = new BufferedImage[images.size()];
+
+		int i = 0;
+		for (final Image<?, ?> img : images)
+			bimages[i++] = ImageUtilities
+					.createBufferedImageForDisplay(img);
 
 		return DisplayUtilities.display(title, bimages);
 	}

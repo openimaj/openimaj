@@ -76,7 +76,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	}
 
 	@Override
-	public int size() {
+	public int numInstances() {
 		return photos.size();
 	}
 

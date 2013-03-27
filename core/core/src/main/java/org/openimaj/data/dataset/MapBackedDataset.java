@@ -37,36 +37,37 @@ import java.util.Set;
 import org.openimaj.util.iterator.ConcatenatedIterable;
 
 /**
- * A {@link MapBackedDataset} is a concrete implementation of a 
- * {@link GroupedDataset} backed by a {@link Map}. For efficiency,
- * the implementation also maintains a flat list of all data items.
+ * A {@link MapBackedDataset} is a concrete implementation of a
+ * {@link GroupedDataset} backed by a {@link Map}. For efficiency, the
+ * implementation also maintains a flat list of all data items.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <KEY> Type of dataset class key 
- * @param <DATASET> Type of sub-datasets. 
- * @param <INSTANCE> Type of objects in the dataset
+ * 
+ * @param <KEY>
+ *            Type of dataset class key
+ * @param <DATASET>
+ *            Type of sub-datasets.
+ * @param <INSTANCE>
+ *            Type of objects in the dataset
  */
-public class MapBackedDataset<
-	KEY extends Object, 
-	DATASET extends Dataset<INSTANCE>, 
-	INSTANCE> 
-implements 
-	GroupedDataset<KEY, DATASET, INSTANCE> 
+public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTANCE>, INSTANCE>
+		implements
+		GroupedDataset<KEY, DATASET, INSTANCE>
 {
 	protected Map<KEY, DATASET> map;
-	
+
 	/**
-	 * Construct an empty {@link MapBackedDataset} backed by
-	 * a {@link HashMap}.
+	 * Construct an empty {@link MapBackedDataset} backed by a {@link HashMap}.
 	 */
 	public MapBackedDataset() {
 		this.map = new HashMap<KEY, DATASET>();
 	}
-	
+
 	/**
 	 * Construct with the given map.
-	 * @param map the map
+	 * 
+	 * @param map
+	 *            the map
 	 */
 	public MapBackedDataset(Map<KEY, DATASET> map) {
 		this.map = map;
@@ -74,37 +75,38 @@ implements
 
 	/**
 	 * Get the underlying map.
+	 * 
 	 * @return the underlying map
 	 */
 	public Map<KEY, DATASET> getMap() {
 		return map;
 	}
-	
+
 	@Override
 	public DATASET getInstances(KEY key) {
 		return map.get(key);
 	}
-	
+
 	@Override
 	public Set<KEY> getGroups() {
 		return map.keySet();
 	}
-	
+
 	@Override
 	public INSTANCE getRandomInstances(KEY key) {
 		return map.get(key).getRandomInstance();
 	}
-	
+
 	@Override
 	public INSTANCE getRandomInstance() {
-		int index = (int)(Math.random() * size());
+		final int index = (int) (Math.random() * numInstances());
 		int count = 0;
-		
-		for (DATASET d : map.values()) {
-			for (INSTANCE i : d) {
+
+		for (final DATASET d : map.values()) {
+			for (final INSTANCE i : d) {
 				if (index == count)
 					return i;
-				
+
 				count++;
 			}
 		}
@@ -112,13 +114,13 @@ implements
 	}
 
 	@Override
-	public int size() {
+	public int numInstances() {
 		int size = 0;
-		
-		for (DATASET d : map.values()) {
-			size += d.size();
+
+		for (final DATASET d : map.values()) {
+			size += d.numInstances();
 		}
-		
+
 		return size;
 	}
 
@@ -126,7 +128,7 @@ implements
 	public Iterator<INSTANCE> iterator() {
 		return new ConcatenatedIterable<INSTANCE>(map.values()).iterator();
 	}
-	
+
 	@Override
 	public String toString() {
 		return map.toString();

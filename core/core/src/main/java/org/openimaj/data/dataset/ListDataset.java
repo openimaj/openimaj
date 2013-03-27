@@ -33,7 +33,8 @@ import java.util.List;
 
 /**
  * A {@link ListDataset} is a {@link Dataset} presented as an ordered list of
- * instances.
+ * instances. For convenience it extends the {@link List} interface; note
+ * however, that many dataset implementations will be read-only.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 

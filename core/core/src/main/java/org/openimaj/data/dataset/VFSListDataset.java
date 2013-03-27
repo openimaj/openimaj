@@ -127,7 +127,7 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
 	}
 
 	@Override
-	public int size() {
+	public int numInstances() {
 		return files.length;
 	}
 
