@@ -29,8 +29,8 @@
  */
 package org.openimaj.image.objectdetection.haar.training;
 
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.ObjectFloatPair;
-import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.parallel.Parallel.IntRange;
 

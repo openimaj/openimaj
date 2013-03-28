@@ -55,8 +55,8 @@ import org.openimaj.ml.clustering.kmeans.FloatKMeans;
 import org.openimaj.ml.pca.FeatureVectorPCA;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.filter.FilterUtils;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.list.AcceptingListView;
-import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
 
 import Jama.Matrix;

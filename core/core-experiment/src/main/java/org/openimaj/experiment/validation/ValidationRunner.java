@@ -35,8 +35,8 @@ import org.openimaj.data.dataset.Dataset;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.ResultAggregator;
 import org.openimaj.experiment.validation.cross.CrossValidator;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.GlobalExecutorPool;
-import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.parallel.partition.FixedSizeChunkPartitioner;
 

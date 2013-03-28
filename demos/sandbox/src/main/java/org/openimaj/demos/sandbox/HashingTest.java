@@ -54,11 +54,11 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.lsh.functions.DoubleGaussianFactory;
 import org.openimaj.lsh.sketch.IntLSHSketcher;
 import org.openimaj.util.filter.FilterUtils;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
 import org.openimaj.util.hash.modifier.LSBModifier;
 import org.openimaj.util.pair.IntObjectPair;
-import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
 
 import cern.jet.random.engine.MersenneTwister;

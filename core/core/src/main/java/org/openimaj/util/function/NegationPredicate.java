@@ -27,25 +27,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.util.parallel;
-
-import java.util.Iterator;
+package org.openimaj.util.function;
 
 /**
- * An interface for defining an operation that can be applied to a list of
- * objects by a thread.
+ * Negates the result of another {@link Predicate}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <T>
- *            the type of objects processed by the operation.
+ *            type of object being filtered.
  */
-public interface BatchOperation<T> {
+public class NegationPredicate<T> implements Predicate<T> {
+	Predicate<T> innerFilter;
+
 	/**
-	 * Perform the operation on the given objects.
+	 * Construct with the given filter.
 	 * 
-	 * @param objects
-	 *            the objects.
+	 * @param innerFilter
+	 *            the filter that this filter negates.
 	 */
-	public void perform(Iterator<T> objects);
+	public NegationPredicate(Predicate<T> innerFilter) {
+		this.innerFilter = innerFilter;
+	}
+
+	@Override
+	public boolean test(T object) {
+		return !innerFilter.test(object);
+	}
 }

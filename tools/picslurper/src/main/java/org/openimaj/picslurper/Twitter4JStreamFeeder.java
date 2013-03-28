@@ -5,8 +5,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
-import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.parallel.partition.FixedSizeBlockingChunkPartitioner;
 import org.openimaj.util.queue.BoundedPriorityQueue;

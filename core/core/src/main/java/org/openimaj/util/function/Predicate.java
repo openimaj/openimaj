@@ -27,29 +27,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.util.filter;
+package org.openimaj.util.function;
 
 /**
- * Negates the filtering performed by another
- * {@link Filter}.
+ * A {@link Predicate} is used to apply a boolean test to a particular object to
+ * see if it passes some criteria.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> type of object being filtered.
+ * 
+ * @param <T>
+ *            type of object being tested
  */
-public class NegationFilter<T> implements Filter<T> {
-	Filter<T> innerFilter;
-	
+public interface Predicate<T> {
 	/**
-	 * Construct with the given filter.
-	 * @param innerFilter the filter that this filter negates.
+	 * Tests whether a specific object passes some criteria.
+	 * 
+	 * @param object
+	 *            the object being tested.
+	 * @return true if object passes the criteria; false otherwise.
 	 */
-	public NegationFilter(Filter<T> innerFilter) {
-		this.innerFilter = innerFilter;
-	}
-	
-	@Override
-	public boolean accept(T object) {
-		return !innerFilter.accept(object);
-	}
+	public abstract boolean test(T object);
 }

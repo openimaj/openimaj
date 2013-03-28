@@ -172,6 +172,6 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
 
 	@Override
 	public String toString() {
-		return String.format("%s(%d images)", this.getClass().getName(), this.files.length);
+		return String.format("%s(%d instances)", this.getClass().getName(), this.files.length);
 	}
 }

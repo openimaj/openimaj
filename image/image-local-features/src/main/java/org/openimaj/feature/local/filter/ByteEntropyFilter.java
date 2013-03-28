@@ -34,7 +34,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.ByteFV;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
-import org.openimaj.util.filter.Filter;
+import org.openimaj.util.function.Predicate;
 
 /**
  * Filter {@link LocalFeature}s typed on {@link ByteFV} by rejecting those that
@@ -55,7 +55,7 @@ import org.openimaj.util.filter.Filter;
 		year = "2012",
 		booktitle = "ACM International Conference on Multimedia Retrieval",
 		customData = { "location", "Hong Kong, China" })
-public class ByteEntropyFilter implements Filter<LocalFeature<?, ByteFV>> {
+public class ByteEntropyFilter implements Predicate<LocalFeature<?, ByteFV>> {
 	double threshold = 4.4;
 
 	/**
@@ -76,7 +76,7 @@ public class ByteEntropyFilter implements Filter<LocalFeature<?, ByteFV>> {
 	}
 
 	@Override
-	public boolean accept(LocalFeature<?, ByteFV> object) {
+	public boolean test(LocalFeature<?, ByteFV> object) {
 		return entropy(object.getFeatureVector().values) >= threshold;
 	}
 

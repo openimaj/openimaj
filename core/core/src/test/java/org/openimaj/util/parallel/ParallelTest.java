@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.partition.GrowingChunkPartitioner;
 import org.openimaj.util.parallel.partition.RangePartitioner;
 

@@ -34,8 +34,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.GlobalExecutorPool;
-import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.parallel.Parallel.IntRange;
 

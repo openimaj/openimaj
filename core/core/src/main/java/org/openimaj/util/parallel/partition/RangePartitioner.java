@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openimaj.util.parallel.Operation;
+import org.openimaj.util.function.Operation;
 
 /**
  * A {@link RangePartitioner} partitions data of a known size into

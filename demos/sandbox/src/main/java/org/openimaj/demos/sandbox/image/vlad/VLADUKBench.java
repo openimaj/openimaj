@@ -44,8 +44,8 @@ import org.openimaj.feature.normalisation.HellingerNormaliser;
 import org.openimaj.image.feature.local.keypoints.FloatKeypoint;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.FloatIntPair;
-import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.queue.BoundedPriorityQueue;
 

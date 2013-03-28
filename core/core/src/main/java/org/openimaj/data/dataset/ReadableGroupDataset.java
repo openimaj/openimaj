@@ -1,8 +1,11 @@
 package org.openimaj.data.dataset;
 
 import java.util.AbstractMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.openimaj.io.ObjectReader;
+import org.openimaj.util.iterator.ConcatenatedIterable;
 
 /**
  * Base class for {@link GroupedDataset}s in which each instance is read with an
@@ -58,5 +61,25 @@ public abstract class ReadableGroupDataset<KEY, DATASET extends Dataset<INSTANCE
 		}
 
 		return size;
+	}
+
+	@Override
+	public Iterator<INSTANCE> iterator() {
+		return new ConcatenatedIterable<INSTANCE>(this.values()).iterator();
+	}
+
+	@Override
+	public DATASET getInstances(KEY key) {
+		return this.get(key);
+	}
+
+	@Override
+	public Set<KEY> getGroups() {
+		return this.keySet();
+	}
+
+	@Override
+	public INSTANCE getRandomInstances(KEY key) {
+		return get(key).getRandomInstance();
 	}
 }

@@ -34,7 +34,7 @@ import java.util.List;
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.objectdetection.haar.HaarFeature;
 import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.util.parallel.Operation;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.Parallel;
 
 public class CachedTrainingData implements HaarTrainingData {

@@ -27,21 +27,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.util.filter;
+package org.openimaj.util.function;
 
 /**
- * A {@link Filter} is used to determine whether
- * a particular object should be accepted or rejected.
+ * An interface for defining an operation that can be applied to an object.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> type of object being filtered
+ * 
+ * @param <T>
+ *            the type of objects processed by the operation.
  */
-public interface Filter<T> {
+public interface Operation<T> {
 	/**
-	 * Tests whether a specific object should be accepted or rejected.
-	 * @param object the object being tested.
-	 * @return true if object is accepted; false if rejected.
+	 * Perform the operation on the given object.
+	 * 
+	 * @param object
+	 *            the object.
 	 */
-	public abstract boolean accept(T object);
+	public void perform(T object);
 }

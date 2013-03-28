@@ -41,7 +41,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.io.IOUtils;
-import org.openimaj.util.parallel.Operation;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.Parallel;
 
 public class MIRFlickrIndexer {

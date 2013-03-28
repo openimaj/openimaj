@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.openimaj.tools.FileToolsUtil;
 import org.openimaj.twitter.collection.StreamJSONStatusList;
 import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
-import org.openimaj.util.parallel.Operation;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
 import org.openimaj.util.parallel.partition.FixedSizeChunkPartitioner;

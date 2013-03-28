@@ -10,7 +10,7 @@ import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.SIFTGeoKeypoint;
 import org.openimaj.io.IOUtils;
-import org.openimaj.util.parallel.Operation;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.Parallel;
 
 /**
