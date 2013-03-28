@@ -33,14 +33,14 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Random;
 import java.util.Scanner;
 
 import Jama.Matrix;
 
-
 /**
  * Simple concrete implementation of a two dimensional point.
- *  
+ * 
  * @author Jonathon Hare
  */
 public class Point2dImpl implements Point2d, Cloneable {
@@ -48,46 +48,52 @@ public class Point2dImpl implements Point2d, Cloneable {
 	 * The x-coordinate
 	 */
 	public float x;
-	
+
 	/**
-	 * The y-coordinate 
+	 * The y-coordinate
 	 */
 	public float y;
-	
+
 	/**
 	 * Construct a Point2dImpl with the given (x, y) coordinates
-	 * @param x x-coordinate
-	 * @param y y-coordinate
+	 * 
+	 * @param x
+	 *            x-coordinate
+	 * @param y
+	 *            y-coordinate
 	 */
 	public Point2dImpl(float x, float y)
 	{
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	/**
-	 * 	Construct a Point2dImpl with the (x,y) coordinates
-	 * 	given via another point.
-	 *  @param p The point to copy from.
+	 * Construct a Point2dImpl with the (x,y) coordinates given via another
+	 * point.
+	 * 
+	 * @param p
+	 *            The point to copy from.
 	 */
-	public Point2dImpl( Point2d p )
+	public Point2dImpl(Point2d p)
 	{
-		this.copyFrom( p );
-	}
-	
-	/**
-	 * 	Construct a Point2dImpl at the origin.
-	 */
-	public Point2dImpl()
-	{
-		//do nothing
+		this.copyFrom(p);
 	}
 
 	/**
-	 * Construct a {@link Point2dImpl} using the first two
-	 * ordinates of a {@link Coordinate}.
+	 * Construct a Point2dImpl at the origin.
+	 */
+	public Point2dImpl()
+	{
+		// do nothing
+	}
+
+	/**
+	 * Construct a {@link Point2dImpl} using the first two ordinates of a
+	 * {@link Coordinate}.
 	 * 
-	 * @param coord the {@link Coordinate}
+	 * @param coord
+	 *            the {@link Coordinate}
 	 */
 	public Point2dImpl(Coordinate coord) {
 		x = coord.getOrdinate(0).floatValue();
@@ -115,23 +121,23 @@ public class Point2dImpl implements Point2d, Cloneable {
 	}
 
 	@Override
-	public void copyFrom( Point2d p )
+	public void copyFrom(Point2d p)
 	{
 		this.x = p.getX();
 		this.y = p.getY();
 	}
-	
+
 	@Override
 	public String toString() {
-		return "("+x+","+y+")";
+		return "(" + x + "," + y + ")";
 	}
-	
+
 	@Override
 	public Point2dImpl clone() {
 		Point2dImpl clone;
 		try {
 			clone = (Point2dImpl) super.clone();
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			return null;
 		}
 		return clone;
@@ -139,7 +145,8 @@ public class Point2dImpl implements Point2d, Cloneable {
 
 	@Override
 	public Float getOrdinate(int dimension) {
-		if (dimension == 0) return x;
+		if (dimension == 0)
+			return x;
 		return y;
 	}
 
@@ -153,7 +160,7 @@ public class Point2dImpl implements Point2d, Cloneable {
 		this.x += x;
 		this.y += y;
 	}
-	
+
 	@Override
 	public void translate(Point2d v) {
 		this.x += v.getX();
@@ -163,35 +170,41 @@ public class Point2dImpl implements Point2d, Cloneable {
 	@Override
 	public Point2dImpl transform(Matrix transform) {
 		if (transform.getRowDimension() == 3) {
-			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-			float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
-			
+			float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY()
+					+ (float) transform.get(0, 2);
+			float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY()
+					+ (float) transform.get(1, 2);
+			final float zt = (float) transform.get(2, 0) * getX() + (float) transform.get(2, 1) * getY()
+					+ (float) transform.get(2, 2);
+
 			xt /= zt;
 			yt /= zt;
-			
-			return new Point2dImpl(xt,yt);
+
+			return new Point2dImpl(xt, yt);
 		} else if (transform.getRowDimension() == 2 && transform.getColumnDimension() == 2) {
-			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY();
-			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY();
-			
-			return new Point2dImpl(xt,yt);
+			final float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY();
+			final float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY();
+
+			return new Point2dImpl(xt, yt);
 		} else if (transform.getRowDimension() == 2 && transform.getColumnDimension() == 3) {
-			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-			
-			return new Point2dImpl(xt,yt);
+			final float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY()
+					+ (float) transform.get(0, 2);
+			final float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY()
+					+ (float) transform.get(1, 2);
+
+			return new Point2dImpl(xt, yt);
 		}
 		throw new IllegalArgumentException("Transform matrix has unexpected size");
 	}
-	
+
 	@Override
-	public boolean equals(Object o){
-		if(!(o instanceof Point2d)) return false;
-		Point2d p = (Point2d) o;
+	public boolean equals(Object o) {
+		if (!(o instanceof Point2d))
+			return false;
+		final Point2d p = (Point2d) o;
 		return p.getX() == this.x && p.getY() == this.y;
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
@@ -200,7 +213,7 @@ public class Point2dImpl implements Point2d, Cloneable {
 
 	@Override
 	public Point2d minus(Point2d a) {
-		return new Point2dImpl(this.x - a.getX(),this.y - a.getY());
+		return new Point2dImpl(this.x - a.getX(), this.y - a.getY());
 	}
 
 	@Override
@@ -243,10 +256,23 @@ public class Point2dImpl implements Point2d, Cloneable {
 
 	/**
 	 * Create a random point in ([0..1], [0..1]).
+	 * 
 	 * @return random point.
 	 */
 	public static Point2d createRandomPoint() {
-		return new Point2dImpl((float)Math.random(), (float)Math.random());
+		return new Point2dImpl((float) Math.random(), (float) Math.random());
+	}
+
+	/**
+	 * Create a random point in ([0..1], [0..1]) with the given random number
+	 * generator.
+	 * 
+	 * @param rng
+	 *            the random number generator
+	 * @return random point.
+	 */
+	public static Point2d createRandomPoint(Random rng) {
+		return new Point2dImpl(rng.nextFloat(), rng.nextFloat());
 	}
 
 	/**
@@ -254,6 +280,6 @@ public class Point2dImpl implements Point2d, Cloneable {
 	 * @return a point from a double array
 	 */
 	public static Point2d fromDoubleArray(double[] calculateCentroid) {
-		return new Point2dImpl((float)calculateCentroid[0],(float)calculateCentroid[1]);
-	}	
+		return new Point2dImpl((float) calculateCentroid[0], (float) calculateCentroid[1]);
+	}
 }

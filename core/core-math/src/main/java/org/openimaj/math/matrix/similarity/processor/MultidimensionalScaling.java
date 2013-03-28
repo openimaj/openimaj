@@ -31,6 +31,7 @@ package org.openimaj.math.matrix.similarity.processor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
@@ -49,6 +50,7 @@ import org.openimaj.util.pair.IndependentPair;
  * 
  */
 public class MultidimensionalScaling implements SimilarityMatrixProcessor {
+	protected Random rng = new Random();
 	protected int numIterations = 1000;
 	protected double rate = 0.01;
 	protected List<IndependentPair<String, Point2d>> points;
@@ -62,6 +64,17 @@ public class MultidimensionalScaling implements SimilarityMatrixProcessor {
 	}
 
 	/**
+	 * Construct with the given random number generator and default learning
+	 * rate at 0.01 and the maximum number of iterations to 1000.
+	 * 
+	 * @param rng
+	 *            the random number generator
+	 */
+	public MultidimensionalScaling(Random rng) {
+		this.rng = rng;
+	}
+
+	/**
 	 * Construct MDS with the given maximum number of iterations and rate.
 	 * 
 	 * @param numIterations
@@ -72,6 +85,23 @@ public class MultidimensionalScaling implements SimilarityMatrixProcessor {
 	public MultidimensionalScaling(int numIterations, double rate) {
 		this.numIterations = numIterations;
 		this.rate = rate;
+	}
+
+	/**
+	 * Construct MDS with the given maximum number of iterations, rate and
+	 * random number generator.
+	 * 
+	 * @param numIterations
+	 *            number of iterations
+	 * @param rate
+	 *            learning rate
+	 * @param rng
+	 *            the random number generator
+	 */
+	public MultidimensionalScaling(int numIterations, double rate, Random rng) {
+		this.numIterations = numIterations;
+		this.rate = rate;
+		this.rng = rng;
 	}
 
 	/*

@@ -31,6 +31,8 @@ package org.openimaj.math.matrix.similarity;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Random;
+
 import org.junit.Test;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
@@ -53,7 +55,7 @@ public class MultidimensionalScalingTest {
 		final String[] index = { "A", "B", "C", "D" };
 
 		final SimilarityMatrix m = new SimilarityMatrix(index, sims);
-		final MultidimensionalScaling mds = new MultidimensionalScaling();
+		final MultidimensionalScaling mds = new MultidimensionalScaling(10000, 0.01, new Random(0L));
 		m.process(mds);
 
 		System.out.println(m);
