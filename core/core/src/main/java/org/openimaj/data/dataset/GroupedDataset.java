@@ -29,6 +29,7 @@
  */
 package org.openimaj.data.dataset;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -49,7 +50,7 @@ import java.util.Set;
  */
 public interface GroupedDataset<KEY extends Object, DATASET extends Dataset<INSTANCE>, INSTANCE>
 		extends
-		Dataset<INSTANCE>
+		Dataset<INSTANCE>, Map<KEY, DATASET>
 {
 	/**
 	 * Get sub-dataset corresponding to the given group key

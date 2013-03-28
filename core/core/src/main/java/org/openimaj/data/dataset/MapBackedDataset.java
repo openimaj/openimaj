@@ -29,6 +29,7 @@
  */
 package org.openimaj.data.dataset;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -51,8 +52,8 @@ import org.openimaj.util.iterator.ConcatenatedIterable;
  *            Type of objects in the dataset
  */
 public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTANCE>, INSTANCE>
-		implements
-		GroupedDataset<KEY, DATASET, INSTANCE>
+		extends AbstractMap<KEY, DATASET>
+		implements GroupedDataset<KEY, DATASET, INSTANCE>
 {
 	protected Map<KEY, DATASET> map;
 
@@ -132,5 +133,10 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	@Override
 	public String toString() {
 		return map.toString();
+	}
+
+	@Override
+	public Set<Entry<KEY, DATASET>> entrySet() {
+		return map.entrySet();
 	}
 }
