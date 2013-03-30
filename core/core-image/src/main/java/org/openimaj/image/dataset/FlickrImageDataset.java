@@ -15,6 +15,7 @@ import org.openimaj.data.dataset.ReadableListDataset;
 import org.openimaj.image.Image;
 import org.openimaj.io.HttpUtils;
 import org.openimaj.io.ObjectReader;
+import org.openimaj.util.api.auth.common.FlickrAPIToken;
 
 import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.REST;
@@ -35,16 +36,124 @@ import com.aetrion.flickr.photosets.PhotosetsInterface;
  *            The type of {@link Image} instance held by the dataset.
  */
 public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableListDataset<IMAGE> {
+	/**
+	 * Possible sizes of image from flickr.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+	public enum Size {
+		/**
+		 * The original uploaded size
+		 */
+		Original {
+			@Override
+			protected URL getURL(Photo photo) {
+				try {
+					return new URL(photo.getOriginalUrl());
+				} catch (final Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		},
+		/**
+		 * Large size
+		 */
+		Large {
+			@Override
+			protected URL getURL(Photo photo) {
+				try {
+					return new URL(photo.getLargeUrl());
+				} catch (final Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		},
+		/**
+		 * Medium size
+		 */
+		Medium {
+			@Override
+			protected URL getURL(Photo photo) {
+				try {
+					return new URL(photo.getMediumUrl());
+				} catch (final Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		},
+		/**
+		 * Small size
+		 */
+		Small {
+			@Override
+			protected URL getURL(Photo photo) {
+				try {
+					return new URL(photo.getSmallUrl());
+				} catch (final Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		},
+		/**
+		 * Thumbnail size
+		 */
+		Thumbnail {
+			@Override
+			protected URL getURL(Photo photo) {
+				try {
+					return new URL(photo.getThumbnailUrl());
+				} catch (final Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		},
+		/**
+		 * Square thumbnail size
+		 */
+		Square {
+			@Override
+			protected URL getURL(Photo photo) {
+				try {
+					return new URL(photo.getSmallSquareUrl());
+				} catch (final Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+
+		protected abstract URL getURL(Photo photo);
+	}
+
 	private final static Pattern GALLERY_URL_PATTERN = Pattern.compile(".*/photos/.*/galleries/[0-9]*(/|$)");
 	private final static Pattern PHOTOSET_URL_PATTERN = Pattern.compile(".*/photos/.*/sets/([0-9]*)(/|$)");
 	private final static Pattern COLLECTION_URL_PATTERN = Pattern.compile(".*/photos/(.*)/collections/([0-9]*)(/|$)");
 
 	protected List<Photo> photos;
+	protected Size targetSize = Size.Medium;
 
 	protected FlickrImageDataset(ObjectReader<IMAGE> reader, List<Photo> photos) {
 		super(reader);
 
 		this.photos = photos;
+	}
+
+	/**
+	 * Set the size of the images that this dataset produces.
+	 * 
+	 * @param size
+	 *            the size
+	 */
+	public void setImageSize(Size size) {
+		this.targetSize = size;
+	}
+
+	/**
+	 * Get the size of the images that this dataset produces.
+	 * 
+	 * @return the size of the returned images
+	 */
+	public Size getImageSize() {
+		return targetSize;
 	}
 
 	/**
@@ -82,7 +191,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 
 	@Override
 	public String getID(int index) {
-		return photos.get(index).getMediumUrl();
+		return targetSize.getURL(photos.get(index)).toString();
 	}
 
 	private IMAGE read(Photo next) {
@@ -91,7 +200,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 
 		InputStream stream = null;
 		try {
-			stream = HttpUtils.readURL(new URL(next.getMediumUrl()));
+			stream = HttpUtils.readURL(targetSize.getURL(next));
 
 			return reader.read(stream);
 		} catch (final IOException e) {
@@ -139,10 +248,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param url
 	 *            the url of the collection/gallery/photo-set
 	 * @return a {@link FlickrImageDataset} created from the given url
@@ -150,10 +257,10 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			URL url) throws Exception
 	{
-		return create(reader, apikey, secret, url, 0);
+		return create(reader, token, url, 0);
 	}
 
 	/**
@@ -161,10 +268,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param searchTerms
 	 *            the search terms; space separated. Prepending a term with a
 	 *            "-" means that the term should not appear.
@@ -173,10 +278,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
-			String searchTerms) throws Exception
+			FlickrAPIToken token, String searchTerms) throws Exception
 	{
-		return create(reader, apikey, secret, searchTerms, 0);
+		return create(reader, token, searchTerms, 0);
 	}
 
 	/**
@@ -185,10 +289,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param searchTerms
 	 *            the search terms; space separated. Prepending a term with a
 	 *            "-" means that the term should not appear.
@@ -200,13 +302,13 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			String searchTerms, int number) throws Exception
 	{
 		final com.aetrion.flickr.photos.SearchParameters params = new com.aetrion.flickr.photos.SearchParameters();
 		params.setText(searchTerms);
 
-		return createFromSearch(reader, apikey, secret, params, number);
+		return createFromSearch(reader, token, params, number);
 	}
 
 	/**
@@ -215,10 +317,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param url
 	 *            the url of the collection/gallery/photo-set
 	 * @param number
@@ -229,52 +329,52 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			URL url, int number) throws Exception
 	{
 		final String urlString = url.toString();
 
 		if (GALLERY_URL_PATTERN.matcher(urlString).matches()) {
-			return fromGallery(reader, apikey, secret, urlString, number);
+			return fromGallery(reader, token, urlString, number);
 		} else if (PHOTOSET_URL_PATTERN.matcher(urlString).matches()) {
-			return fromPhotoset(reader, apikey, secret, urlString, number);
+			return fromPhotoset(reader, token, urlString, number);
 		} else if (COLLECTION_URL_PATTERN.matcher(urlString).matches()) {
-			return fromCollection(reader, apikey, secret, urlString, number);
+			return fromCollection(reader, token, urlString, number);
 		}
 
 		throw new IllegalArgumentException("Unknown URL type " + urlString);
 	}
 
 	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromGallery(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			String urlString, int number) throws Exception
 	{
-		final Flickr flickr = makeFlickr(apikey, secret);
+		final Flickr flickr = makeFlickr(token);
 
 		final String galleryId = flickr.getUrlsInterface().lookupGallery(urlString);
 
 		final com.aetrion.flickr.galleries.SearchParameters params = new com.aetrion.flickr.galleries.SearchParameters();
 		params.setGalleryId(galleryId);
 
-		return createFromGallery(reader, apikey, secret, params, number);
+		return createFromGallery(reader, token, params, number);
 	}
 
 	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromPhotoset(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			String urlString, int number) throws Exception
 	{
 		final Matcher matcher = PHOTOSET_URL_PATTERN.matcher(urlString);
 		matcher.find();
 		final String setId = matcher.group(1);
 
-		return createFromPhotoset(reader, apikey, secret, setId, number);
+		return createFromPhotoset(reader, token, setId, number);
 	}
 
 	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromCollection(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			String urlString, int number) throws Exception
 	{
-		final Flickr flickr = makeFlickr(apikey, secret);
+		final Flickr flickr = makeFlickr(token);
 
 		final Matcher matcher = COLLECTION_URL_PATTERN.matcher(urlString);
 		matcher.find();
@@ -285,7 +385,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 		params.setCollectionId(collectionsId);
 		params.setUserId(flickr.getPeopleInterface().findByUsername(userName).getId());
 
-		return createFromCollection(reader, apikey, secret, params, number);
+		return createFromCollection(reader, token, params, number);
 	}
 
 	/**
@@ -294,10 +394,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param params
 	 *            the parameters describing the gallery and any additional
 	 *            constraints.
@@ -307,10 +405,10 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromGallery(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			com.aetrion.flickr.galleries.SearchParameters params) throws Exception
 	{
-		return createFromGallery(reader, apikey, secret, params, 0);
+		return createFromGallery(reader, token, params, 0);
 	}
 
 	/**
@@ -319,10 +417,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param params
 	 *            the parameters describing the gallery and any additional
 	 *            constraints.
@@ -336,10 +432,10 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 */
 	@SuppressWarnings("unchecked")
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromGallery(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			com.aetrion.flickr.galleries.SearchParameters params, int number) throws Exception
 	{
-		final Flickr flickr = makeFlickr(apikey, secret);
+		final Flickr flickr = makeFlickr(token);
 
 		params.setExtras(Extras.ALL_EXTRAS);
 
@@ -364,10 +460,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param setId
 	 *            the photoset identifier
 	 * @return a {@link FlickrImageDataset} created from the gallery described
@@ -376,11 +470,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromPhotoset(
-			ObjectReader<IMAGE> reader,
-			String apikey, String secret,
-			String setId) throws Exception
+			ObjectReader<IMAGE> reader, FlickrAPIToken token, String setId) throws Exception
 	{
-		return createFromPhotoset(reader, apikey, secret, setId, 0);
+		return createFromPhotoset(reader, token, setId, 0);
 	}
 
 	/**
@@ -389,10 +481,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param setId
 	 *            the photoset identifier
 	 * @param number
@@ -406,10 +496,10 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	@SuppressWarnings("unchecked")
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromPhotoset(
 			ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			String setId, int number) throws Exception
 	{
-		final Flickr flickr = makeFlickr(apikey, secret);
+		final Flickr flickr = makeFlickr(token);
 
 		final PhotosetsInterface setsInterface = flickr.getPhotosetsInterface();
 
@@ -435,10 +525,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param params
 	 *            the parameters describing the gallery and any additional
 	 *            constraints.
@@ -449,10 +537,10 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromCollection(
 			ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			com.aetrion.flickr.collections.CollectionsSearchParameters params) throws Exception
 	{
-		return createFromCollection(reader, apikey, secret, params, 0);
+		return createFromCollection(reader, token, params, 0);
 	}
 
 	/**
@@ -461,10 +549,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param params
 	 *            the parameters describing the gallery and any additional
 	 *            constraints.
@@ -479,10 +565,10 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	@SuppressWarnings("unchecked")
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromCollection(
 			ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			com.aetrion.flickr.collections.CollectionsSearchParameters params, int number) throws Exception
 	{
-		final Flickr flickr = makeFlickr(apikey, secret);
+		final Flickr flickr = makeFlickr(token);
 
 		params.setExtras(Extras.ALL_EXTRAS);
 
@@ -503,10 +589,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param params
 	 *            the parameters describing the gallery and any additional
 	 *            constraints.
@@ -516,10 +600,10 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromSearch(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			com.aetrion.flickr.photos.SearchParameters params) throws Exception
 	{
-		return createFromSearch(reader, apikey, secret, params, 0);
+		return createFromSearch(reader, token, params, 0);
 	}
 
 	/**
@@ -528,10 +612,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * 
 	 * @param reader
 	 *            the reader with which to load the images
-	 * @param apikey
-	 *            the flickr api key
-	 * @param secret
-	 *            the flickr api secret
+	 * @param token
+	 *            the flickr api authentication token
 	 * @param params
 	 *            the parameters describing the gallery and any additional
 	 *            constraints.
@@ -545,10 +627,10 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 */
 	@SuppressWarnings("unchecked")
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromSearch(ObjectReader<IMAGE> reader,
-			String apikey, String secret,
+			FlickrAPIToken token,
 			com.aetrion.flickr.photos.SearchParameters params, int number) throws Exception
 	{
-		final Flickr flickr = makeFlickr(apikey, secret);
+		final Flickr flickr = makeFlickr(token);
 
 		params.setExtras(Extras.ALL_EXTRAS);
 
@@ -568,9 +650,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 		return new FlickrImageDataset<IMAGE>(reader, photos);
 	}
 
-	private static Flickr makeFlickr(String apikey, String secret) throws ParserConfigurationException {
-		if (secret == null)
-			return new Flickr(apikey, new REST(Flickr.DEFAULT_HOST));
-		return new Flickr(apikey, secret, new REST(Flickr.DEFAULT_HOST));
+	private static Flickr makeFlickr(FlickrAPIToken token) throws ParserConfigurationException {
+		if (token.secret == null)
+			return new Flickr(token.apikey, new REST(Flickr.DEFAULT_HOST));
+		return new Flickr(token.apikey, token.secret, new REST(Flickr.DEFAULT_HOST));
 	}
 }
