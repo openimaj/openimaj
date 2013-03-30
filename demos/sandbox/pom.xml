@@ -242,11 +242,6 @@
 			<artifactId>jersey-grizzly2</artifactId>
 			<version>1.15</version>
 		</dependency>
-		<dependency>
-			<groupId>net.billylieurance.azuresearch</groupId>
-			<artifactId>azure-bing-search-java</artifactId>
-			<version>0.12.0</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

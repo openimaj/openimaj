@@ -14,16 +14,17 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
 import org.openimaj.math.matrix.similarity.processor.MultidimensionalScaling;
+import org.openimaj.util.api.auth.DefaultTokenFactory;
+import org.openimaj.util.api.auth.common.FlickrAPIToken;
 import org.openimaj.util.pair.IndependentPair;
 
 public class ImageFeatureMDS {
 	public static void main(String[] args) throws Exception {
-		final String apikey = "";
-		final String secret = "";
+		final FlickrAPIToken token = DefaultTokenFactory.getInstance().getToken(FlickrAPIToken.class);
 		final int numImages = 2;
 
-		final FlickrImageDataset<MBFImage> dataset = FlickrImageDataset.create(ImageUtilities.MBFIMAGE_READER, apikey,
-				secret, "colorful", numImages);
+		final FlickrImageDataset<MBFImage> dataset = FlickrImageDataset.create(ImageUtilities.MBFIMAGE_READER, token,
+				"colorful", numImages);
 
 		dataset.getPhotos().set(1, dataset.getPhoto(0));
 
