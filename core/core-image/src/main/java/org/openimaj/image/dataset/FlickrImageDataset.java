@@ -439,7 +439,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 
 		params.setExtras(Extras.ALL_EXTRAS);
 
-		final List<Photo> photos = new ArrayList<Photo>();
+		List<Photo> photos = new ArrayList<Photo>();
 		final PhotoList first = flickr.getGalleriesInterface().getPhotos(params, 250, 0);
 		photos.addAll(first);
 
@@ -451,6 +451,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			photos.addAll(result);
 			n += result.size();
 		}
+
+		if (number > 0 && number < photos.size())
+			photos = photos.subList(0, number);
 
 		return new FlickrImageDataset<IMAGE>(reader, photos);
 	}
@@ -503,7 +506,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 
 		final PhotosetsInterface setsInterface = flickr.getPhotosetsInterface();
 
-		final List<Photo> photos = new ArrayList<Photo>();
+		List<Photo> photos = new ArrayList<Photo>();
 		final PhotoList first = setsInterface.getPhotos(setId, Extras.ALL_EXTRAS, 0, 250, 0);
 		photos.addAll(first);
 
@@ -515,6 +518,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			photos.addAll(result);
 			n += result.size();
 		}
+
+		if (number > 0 && number < photos.size())
+			photos = photos.subList(0, number);
 
 		return new FlickrImageDataset<IMAGE>(reader, photos);
 	}
@@ -634,7 +640,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 
 		params.setExtras(Extras.ALL_EXTRAS);
 
-		final List<Photo> photos = new ArrayList<Photo>();
+		List<Photo> photos = new ArrayList<Photo>();
 		final PhotoList first = flickr.getPhotosInterface().search(params, 250, 0);
 		photos.addAll(first);
 
@@ -646,6 +652,9 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 			photos.addAll(result);
 			n += result.size();
 		}
+
+		if (number > 0 && number < photos.size())
+			photos = photos.subList(0, number);
 
 		return new FlickrImageDataset<IMAGE>(reader, photos);
 	}
