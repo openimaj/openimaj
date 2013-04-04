@@ -7,6 +7,15 @@ import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
 
+/**
+ * Abstract base implementation of a read-only (i.e. {@link #remove()} not
+ * supported) {@link Stream}.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <T>
+ *            The type of data item in the stream
+ */
 public abstract class AbstractStream<T> implements Stream<T> {
 	@Override
 	public void forEach(Operation<T> op) {

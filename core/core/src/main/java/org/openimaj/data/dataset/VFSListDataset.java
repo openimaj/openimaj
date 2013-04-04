@@ -18,7 +18,7 @@ import org.openimaj.util.array.ArrayIterator;
 /**
  * A {@link ListDataset} backed by a directory of items (either locally or
  * remotely), or items stored in a compressed archive.
- * 
+ * <p>
  * As an example, this class can be used to easily create a {@link ListDataset}
  * from a directory of images:
  * 
@@ -37,7 +37,7 @@ import org.openimaj.util.array.ArrayIterator;
  * or even a remote zip of images hosted via http:
  * 
  * <pre>
- * final ListDataset&lt;FImage&gt; dataset2 = new VFSListDataset&lt;FImage&gt;(
+ * ListDataset&lt;FImage&gt; dataset = new VFSListDataset&lt;FImage&gt;(
  * 		&quot;zip:http://localhost/&tilde;jsh2/thumbnails.zip&quot;, ImageUtilities.FIMAGE_READER);
  * </pre>
  * 

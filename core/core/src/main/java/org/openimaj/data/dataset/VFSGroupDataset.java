@@ -12,6 +12,43 @@ import org.apache.commons.vfs2.FileTypeSelector;
 import org.apache.commons.vfs2.VFS;
 import org.openimaj.io.ObjectReader;
 
+/**
+ * A {@link GroupedDataset} of {@link VFSListDataset}s backed by directories of
+ * items (either locally or remotely), or items stored in a hierarchical
+ * structure within a compressed archive.
+ * <p>
+ * This implementation only supports a basic grouped dataset with {@link String}
+ * keys created from the names of directories, and {@link VFSListDataset} values
+ * from all the readable files within each directory.
+ * <p>
+ * As an example, this class can be used to easily create a
+ * {@link GroupedDataset} from a directory containing directories of images:
+ * 
+ * <pre>
+ * GroupDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
+ * 		&quot;/path/to/directory/of/images&quot;,
+ * 		ImageUtilities.FIMAGE_READER);
+ * </pre>
+ * 
+ * a zip file of directories of images:
+ * 
+ * <pre>
+ * GroupDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
+ * 		&quot;zip:file:/path/to/images.zip&quot;, ImageUtilities.FIMAGE_READER);
+ * </pre>
+ * 
+ * or even a remote zip of directories of images hosted via http:
+ * 
+ * <pre>
+ * GroupDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
+ * 		&quot;zip:http://localhost/&tilde;jsh2/thumbnails.zip&quot;, ImageUtilities.FIMAGE_READER);
+ * </pre>
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <INSTANCE>
+ *            The type of instance in the dataset
+ */
 public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSListDataset<INSTANCE>, INSTANCE> {
 	private Map<String, VFSListDataset<INSTANCE>> files = new HashMap<String, VFSListDataset<INSTANCE>>();
 	private Map<String, FileObject> directoryInfo = new HashMap<String, FileObject>();
@@ -19,7 +56,10 @@ public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSL
 
 	/**
 	 * Construct a grouped dataset from any virtual file system source (local
-	 * directory, remote zip file, etc).
+	 * directory, remote zip file, etc). Only the child directories under the
+	 * given path will be used to create groups; the contents of any
+	 * sub-directories will be merged automatically. Only directories with
+	 * readable items as children will be included in the resultant dataset.
 	 * 
 	 * @see "http://commons.apache.org/proper/commons-vfs/filesystems.html"
 	 * @param path
@@ -40,7 +80,10 @@ public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSL
 
 		for (final FileObject folder : folders) {
 			directoryInfo.put(folder.getName().getBaseName(), folder);
-			files.put(folder.getName().getBaseName(), new VFSListDataset<INSTANCE>(folder.getName().getURI(), reader));
+			final VFSListDataset<INSTANCE> list = new VFSListDataset<INSTANCE>(folder.getName().getURI(), reader);
+
+			if (list.size() > 0)
+				files.put(folder.getName().getBaseName(), list);
 		}
 	}
 

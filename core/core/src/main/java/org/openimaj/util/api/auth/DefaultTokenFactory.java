@@ -16,6 +16,24 @@ import java.util.prefs.Preferences;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.WordUtils;
 
+/**
+ * Default implementation of a {@link TokenFactory} that loads the token
+ * parameters from the default Java user preference store or interactively
+ * queries the user for the required token parameters if the token has not been
+ * used before.
+ * <p>
+ * Interactive querying is performed via the command-line (using
+ * {@link System#err} for prompts and {@link System#in} for reading user input.
+ * As such, this class will only be really useful for interactive querying in
+ * console applications. It is possible however to just use this class for
+ * manually storing and retrieving tokens with the appropriate methods.
+ * <p>
+ * For this class to work in interactive mode, the token class must have a
+ * public no-args constructor.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
 public class DefaultTokenFactory implements TokenFactory {
 	private static final DefaultTokenFactory instance = new DefaultTokenFactory();
 	private static final String PREFS_BASE_NODE = "/org/openimaj/util/api/auth";
@@ -23,28 +41,65 @@ public class DefaultTokenFactory implements TokenFactory {
 	private DefaultTokenFactory() {
 	}
 
+	/**
+	 * Get the default singleton instance
+	 * 
+	 * @return the default instance
+	 */
 	public static DefaultTokenFactory getInstance() {
 		return instance;
 	}
 
+	/**
+	 * Delete the default token parameters for the given class from the store.
+	 * 
+	 * @param tokenClass
+	 *            the token class
+	 * @throws BackingStoreException
+	 *             if a problem occurred communicating with the backing
+	 *             preference store
+	 */
 	public <T> void deleteToken(Class<T> tokenClass) throws BackingStoreException {
+		deleteToken(tokenClass, null);
+	}
+
+	/**
+	 * Delete the named token parameters for the given class from the store.
+	 * 
+	 * @param tokenClass
+	 *            the token class
+	 * @param name
+	 *            the name of the token, or <tt>null</tt> for the default token
+	 * @throws BackingStoreException
+	 *             if a problem occurred communicating with the backing
+	 *             preference store
+	 */
+	public <T> void deleteToken(Class<T> tokenClass, String name) throws BackingStoreException {
+		final String tokName = name == null ? tokenClass.getName() : tokenClass.getName() + "-" + name;
 		final Preferences base = Preferences.userRoot().node(PREFS_BASE_NODE);
-		base.node(tokenClass.getName()).removeNode();
+
+		base.node(tokName).removeNode();
+
 		base.sync();
 	}
 
 	@Override
 	public <T> T getToken(Class<T> tokenClass) {
+		return getToken(tokenClass, null);
+	}
+
+	@Override
+	public <T> T getToken(Class<T> tokenClass, String name) {
 		final Token tokenDef = tokenClass.getAnnotation(Token.class);
 
 		if (tokenDef == null)
 			throw new IllegalArgumentException("The provided class is not annotated with @Token");
 
 		try {
-			T token = tryLoadToken(tokenClass);
+			T token = loadToken(tokenClass, name);
 
 			if (token == null) {
-				token = createToken(tokenDef, tokenClass);
+				token = createToken(tokenDef, tokenClass, name);
 			}
 
 			return token;
@@ -67,7 +122,8 @@ public class DefaultTokenFactory implements TokenFactory {
 		return msg;
 	}
 
-	private <T> T createToken(Token def, Class<T> clz) throws InstantiationException, IllegalAccessException,
+	private <T> T createToken(Token def, Class<T> clz, String name) throws InstantiationException,
+			IllegalAccessException,
 			IOException, IllegalArgumentException, BackingStoreException
 	{
 		final Map<Field, Parameter> params = getParameters(clz);
@@ -96,24 +152,43 @@ public class DefaultTokenFactory implements TokenFactory {
 			if (br.readLine().trim().equalsIgnoreCase("y")) {
 				break;
 			} else if (br.readLine().trim().equalsIgnoreCase("n")) {
-				return createToken(def, clz);
+				return createToken(def, clz, name);
 			}
 		}
 
-		saveToken(instance);
+		saveToken(instance, name);
 
 		return instance;
 	}
 
-	public <T> void saveToken(T token) throws IllegalArgumentException, IllegalAccessException, BackingStoreException {
+	/**
+	 * Save the parameters of the given token to the backing preference store.
+	 * 
+	 * @param token
+	 *            the token to save
+	 * @param name
+	 *            the name of the token, or <tt>null</tt> for the default
+	 * @throws IllegalArgumentException
+	 *             if the token class isn't annotated with {@link Token}.
+	 * @throws IllegalAccessException
+	 *             if an error occurred reading a parameter of the token
+	 * @throws BackingStoreException
+	 *             if a problem occurred communicating with the backing
+	 *             preference store
+	 */
+	public <T> void saveToken(T token, String name) throws IllegalArgumentException, IllegalAccessException,
+			BackingStoreException
+	{
+
 		final Class<?> tokenClass = token.getClass();
+		final String tokName = name == null ? tokenClass.getName() : tokenClass.getName() + "-" + name;
 
 		final Token tokenDef = tokenClass.getAnnotation(Token.class);
 
 		if (tokenDef == null)
 			throw new IllegalArgumentException("The provided class is not annotated with @Token");
 
-		final Preferences prefs = Preferences.userRoot().node(PREFS_BASE_NODE).node(tokenClass.getName());
+		final Preferences prefs = Preferences.userRoot().node(PREFS_BASE_NODE).node(tokName);
 		final Map<Field, Parameter> params = getParameters(tokenClass);
 
 		for (final Entry<Field, Parameter> entry : params.entrySet()) {
@@ -247,14 +322,33 @@ public class DefaultTokenFactory implements TokenFactory {
 		return fields;
 	}
 
-	private <T> T tryLoadToken(Class<T> clz) throws BackingStoreException, InstantiationException, IllegalAccessException
+	/**
+	 * Load a token with an optional name tag from the backing store.
+	 * 
+	 * @param clz
+	 *            the class of the token
+	 * @param name
+	 *            the name of the token, or <tt>null</tt> for the default token
+	 * @return a token loaded with the previously saved parameters, or
+	 *         <tt>null</tt> if the token could not be read
+	 * @throws BackingStoreException
+	 *             if a problem occurred communicating with the backing
+	 *             preference store
+	 * @throws InstantiationException
+	 *             if the token could not be constructed
+	 * @throws IllegalAccessException
+	 *             if an error occurred setting a parameter
+	 */
+	public <T> T loadToken(Class<T> clz, String name) throws BackingStoreException, InstantiationException,
+			IllegalAccessException
 	{
+		final String tokName = name == null ? clz.getName() : clz.getName() + "-" + name;
 		Preferences prefs = Preferences.userRoot().node(PREFS_BASE_NODE);
 
-		if (!prefs.nodeExists(clz.getName()))
+		if (!prefs.nodeExists(tokName))
 			return null;
 
-		prefs = prefs.node(clz.getName());
+		prefs = prefs.node(tokName);
 		final String[] keys = prefs.keys();
 
 		final T instance = clz.newInstance();
@@ -309,7 +403,31 @@ public class DefaultTokenFactory implements TokenFactory {
 		}
 	}
 
-	public static <T> T loadToken(Class<T> tokenClass) {
+	/**
+	 * Convenience method equivalent to
+	 * <tt>getInstance().getToken(tokenClass)</tt>.
+	 * 
+	 * @see #getToken(Class)
+	 * @param tokenClass
+	 *            the class of the token to build
+	 * @return the token
+	 */
+	public static <T> T get(Class<T> tokenClass) {
+		return getInstance().getToken(tokenClass);
+	}
+
+	/**
+	 * Convenience method equivalent to
+	 * <tt>getInstance().getToken(tokenClass, name)</tt>.
+	 * 
+	 * @see #getToken(Class, String)
+	 * @param tokenClass
+	 *            the class of the token to build
+	 * @param name
+	 *            the name of the token
+	 * @return the token
+	 */
+	public static <T> T get(Class<T> tokenClass, String name) {
 		return getInstance().getToken(tokenClass);
 	}
 }
