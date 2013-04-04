@@ -35,20 +35,17 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 
 class FaceRecognitionToolOptions {
-	
-	@Option(name="-f", aliases="--file", usage="Recogniser file", required=true)
+	@Option(name = "-f", aliases = "--file", usage = "Recogniser file", required = true)
 	File recogniserFile;
-	
+
 	@Argument()
 	List<File> files;
-	
-	public <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR, String> getEngine() throws IOException {
+
+	public <FACE extends DetectedFace> FaceRecognitionEngine<FACE, String> getEngine() throws IOException {
 		return FaceRecognitionEngine.load(recogniserFile);
 	}
-	
 }

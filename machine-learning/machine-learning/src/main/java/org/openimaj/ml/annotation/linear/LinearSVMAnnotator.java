@@ -64,16 +64,15 @@ import org.openimaj.ml.annotation.utils.AnnotatedListHelper;
  *            Type of object being annotated
  * @param <ANNOTATION>
  *            Type of annotation
- * @param <EXTRACTOR>
- *            Type of feature extractor
  */
-public class LinearSVMAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<? extends FeatureVector, OBJECT>>
+public class LinearSVMAnnotator<OBJECT, ANNOTATION>
 		extends
-		BatchAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
+		BatchAnnotator<OBJECT, ANNOTATION>
 {
 	private final Map<ANNOTATION, LinearBinaryCategorizer> classifiers = new HashMap<ANNOTATION, LinearBinaryCategorizer>();
 	private Set<ANNOTATION> annotations;
 	private ANNOTATION negativeClass;
+	private FeatureExtractor<? extends FeatureVector, OBJECT> extractor;
 
 	/**
 	 * Construct a new {@link LinearSVMAnnotator} with the given extractor and
@@ -85,8 +84,8 @@ public class LinearSVMAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExt
 	 * @param negativeClass
 	 *            the negative class to exclude from predictions
 	 */
-	public LinearSVMAnnotator(EXTRACTOR extractor, ANNOTATION negativeClass) {
-		super(extractor);
+	public LinearSVMAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, ANNOTATION negativeClass) {
+		this.extractor = extractor;
 		this.negativeClass = negativeClass;
 	}
 
@@ -96,7 +95,7 @@ public class LinearSVMAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExt
 	 * @param extractor
 	 *            the extractor
 	 */
-	public LinearSVMAnnotator(EXTRACTOR extractor) {
+	public LinearSVMAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor) {
 		this(extractor, null);
 	}
 

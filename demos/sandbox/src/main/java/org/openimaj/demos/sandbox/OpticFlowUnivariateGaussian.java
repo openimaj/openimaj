@@ -1,4 +1,5 @@
 package org.openimaj.demos.sandbox;
+
 /**
  * Copyright (c) 2011, The University of Southampton and the individual contributors.
  * All rights reserved.
@@ -41,25 +42,23 @@ import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.annotation.bayes.NaiveBayesAnnotator;
 
-
-
-
 public class OpticFlowUnivariateGaussian {
 	public static void main(String[] args) throws IOException {
-		FeatureExtractor<? extends FeatureVector, Double> extractor = new FeatureExtractor<FeatureVector, Double>() {
+		final FeatureExtractor<? extends FeatureVector, Double> extractor = new FeatureExtractor<FeatureVector, Double>()
+		{
 
 			@Override
 			public FeatureVector extractFeature(Double object) {
-				return new DoubleFV(new double[]{object});
+				return new DoubleFV(new double[] { object });
 			}
 		};
-		NaiveBayesAnnotator<Double, Direction, FeatureExtractor<? extends FeatureVector,Double>> ann
-			= new NaiveBayesAnnotator<Double, Direction, FeatureExtractor<? extends FeatureVector,Double>>(extractor, NaiveBayesAnnotator.Mode.ALL);
-		String[] lines = FileUtils.readlines(OpticFlowUnivariateGaussian.class.getResourceAsStream("directions"));
-		for (String line : lines) {
-			String[] scoreDir = line.split(",");
-			double score = Double.parseDouble(scoreDir[0]);
-			Direction dir = Direction.valueOf(scoreDir[1]);
+		NaiveBayesAnnotator<Double, Direction> ann = new NaiveBayesAnnotator<Double, Direction>(extractor,
+				NaiveBayesAnnotator.Mode.ALL);
+		final String[] lines = FileUtils.readlines(OpticFlowUnivariateGaussian.class.getResourceAsStream("directions"));
+		for (final String line : lines) {
+			final String[] scoreDir = line.split(",");
+			final double score = Double.parseDouble(scoreDir[0]);
+			final Direction dir = Direction.valueOf(scoreDir[1]);
 			ann.train(new DirectionScore(score, dir));
 		}
 		IOUtils.write(ann, new DataOutputStream(new FileOutputStream("/Users/ss/.rhino/opticflowann")));

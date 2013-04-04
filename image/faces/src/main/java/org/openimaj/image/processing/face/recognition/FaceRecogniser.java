@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
@@ -48,29 +47,17 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
  * 
  * @param <FACE>
  *            Type of {@link DetectedFace}
- * @param <EXTRACTOR>
- *            Type of {@link FeatureExtractor}
  * @param <PERSON>
  *            Type of object representing a person
  */
-public abstract class FaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
+public abstract class FaceRecogniser<FACE extends DetectedFace, PERSON>
 		extends
-		IncrementalAnnotator<FACE, PERSON, EXTRACTOR>
+		IncrementalAnnotator<FACE, PERSON>
 		implements
 		RestrictedAnnotator<FACE, PERSON>,
 		ReadWriteableBinary
 {
 	protected FaceRecogniser() {
-	}
-
-	/**
-	 * Construct with the given feature extractor.
-	 * 
-	 * @param extractor
-	 *            the feature extractor
-	 */
-	public FaceRecogniser(EXTRACTOR extractor) {
-		super(extractor);
 	}
 
 	/**

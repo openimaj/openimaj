@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
@@ -51,53 +50,55 @@ import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
- * Annotator that randomly assigns annotations, but takes account
- * of the prior probability of each annotation based on the proportion
- * of times it occurred in training. Annotations that occurred less in 
- * training are less likely to be picked. The number of annotations produced
- * is set by the type of {@link NumAnnotationsChooser} used. 
+ * Annotator that randomly assigns annotations, but takes account of the prior
+ * probability of each annotation based on the proportion of times it occurred
+ * in training. Annotations that occurred less in training are less likely to be
+ * picked. The number of annotations produced is set by the type of
+ * {@link NumAnnotationsChooser} used.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object being annotated
- * @param <ANNOTATION> Type of annotation.
+ * 
+ * @param <OBJECT>
+ *            Type of object being annotated
+ * @param <ANNOTATION>
+ *            Type of annotation.
  */
-public class IndependentPriorRandomAnnotator<OBJECT, ANNOTATION> extends BatchAnnotator<OBJECT, ANNOTATION, FeatureExtractor<Object, OBJECT>> {
+public class IndependentPriorRandomAnnotator<OBJECT, ANNOTATION> extends BatchAnnotator<OBJECT, ANNOTATION> {
 	protected List<ANNOTATION> annotations;
 	protected NumAnnotationsChooser numAnnotations;
 	protected EmpiricalWalker annotationProbability;
-	
+
 	/**
-	 * Construct with the given {@link NumAnnotationsChooser} to
-	 * determine how many annotations are produced by calls
-	 * to {@link #annotate(Object)}.
+	 * Construct with the given {@link NumAnnotationsChooser} to determine how
+	 * many annotations are produced by calls to {@link #annotate(Object)}.
 	 * 
-	 * @param chooser the {@link NumAnnotationsChooser} to use.
+	 * @param chooser
+	 *            the {@link NumAnnotationsChooser} to use.
 	 */
 	public IndependentPriorRandomAnnotator(NumAnnotationsChooser chooser) {
-		super(null);
 		this.numAnnotations = chooser;
 	}
 
 	@Override
 	public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
-		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
-		TObjectIntHashMap<ANNOTATION> annotationCounts = new TObjectIntHashMap<ANNOTATION>();
+		final TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
+		final TObjectIntHashMap<ANNOTATION> annotationCounts = new TObjectIntHashMap<ANNOTATION>();
 		int maxVal = 0;
-		
-		for (Annotated<OBJECT, ANNOTATION> sample : data) {
-			Collection<ANNOTATION> annos = sample.getAnnotations();
 
-			for (ANNOTATION s : annos) {
+		for (final Annotated<OBJECT, ANNOTATION> sample : data) {
+			final Collection<ANNOTATION> annos = sample.getAnnotations();
+
+			for (final ANNOTATION s : annos) {
 				annotationCounts.adjustOrPutValue(s, 1, 1);
 			}
 
 			nAnnotationCounts.adjustOrPutValue(annos.size(), 1, 1);
-			
-			if (annos.size()>maxVal) maxVal = annos.size();
+
+			if (annos.size() > maxVal)
+				maxVal = annos.size();
 		}
-		
-		//build distribution and rng for each annotation
+
+		// build distribution and rng for each annotation
 		annotations = new ArrayList<ANNOTATION>();
 		final TDoubleArrayList probs = new TDoubleArrayList();
 		annotationCounts.forEachEntry(new TObjectIntProcedure<ANNOTATION>() {
@@ -115,15 +116,16 @@ public class IndependentPriorRandomAnnotator<OBJECT, ANNOTATION> extends BatchAn
 
 	@Override
 	public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT image) {
-		int nAnnotations = numAnnotations.numAnnotations();
-		
-		List<ScoredAnnotation<ANNOTATION>> annos = new ArrayList<ScoredAnnotation<ANNOTATION>>();
-		
-		for (int i=0; i<nAnnotations; i++) {
-			int annotationIdx = annotationProbability.nextInt();
-			annos.add(new ScoredAnnotation<ANNOTATION>(annotations.get(annotationIdx), (float) annotationProbability.pdf(annotationIdx+1)));
+		final int nAnnotations = numAnnotations.numAnnotations();
+
+		final List<ScoredAnnotation<ANNOTATION>> annos = new ArrayList<ScoredAnnotation<ANNOTATION>>();
+
+		for (int i = 0; i < nAnnotations; i++) {
+			final int annotationIdx = annotationProbability.nextInt();
+			annos.add(new ScoredAnnotation<ANNOTATION>(annotations.get(annotationIdx), (float) annotationProbability
+					.pdf(annotationIdx + 1)));
 		}
-		
+
 		return annos;
 	}
 

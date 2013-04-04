@@ -39,65 +39,71 @@ import org.openimaj.feature.IdentityFeatureExtractor;
 
 /**
  * Adaptor that allows a {@link BatchAnnotator} to behave like a
- * {@link IncrementalAnnotator} by caching extracted features and
- * then performing training only when {@link #annotate(Object)} is
- * called. 
+ * {@link IncrementalAnnotator} by caching extracted features and then
+ * performing training only when {@link #annotate(Object)} is called.
  * <p>
- * Because the features are cached, the internal annotator must 
- * rely on a {@link IdentityFeatureExtractor}, and thus not perform
- * any extraction itself.
+ * Because the features are cached, the internal annotator must rely on a
+ * {@link IdentityFeatureExtractor} or similar, and thus not perform any
+ * extraction itself.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object
- * @param <ANNOTATION> Type of annotation
- * @param <FEATURE> Type of feature extracted and cached.
- * @param <EXTRACTOR> Type of object capable of extracting features from the object
+ * 
+ * @param <OBJECT>
+ *            Type of object
+ * @param <ANNOTATION>
+ *            Type of annotation
+ * @param <FEATURE>
+ *            Type of feature extracted and cached.
  */
-public class FeatureCachingIncrementalBatchAnnotator<
-	OBJECT, 
-	ANNOTATION,
-	FEATURE,
-	EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>> 
-extends IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR> 
+public class FeatureCachingIncrementalBatchAnnotator<OBJECT, ANNOTATION, FEATURE>
+		extends IncrementalAnnotator<OBJECT, ANNOTATION>
 {
-	BatchAnnotator<FEATURE, ANNOTATION, IdentityFeatureExtractor<FEATURE>> batchAnnotator;
+	BatchAnnotator<FEATURE, ANNOTATION> batchAnnotator;
 	GroupedListCache<ANNOTATION, FEATURE> featureCache;
+	private FeatureExtractor<FEATURE, OBJECT> extractor;
 	boolean isInvalid = true;
-	
+
 	/**
-	 * Construct with the given feature extractor and batch annotator, and
-	 * use an in-memory cache.
+	 * Construct with the given feature extractor and batch annotator, and use
+	 * an in-memory cache.
 	 * 
-	 * @param extractor the extractor
-	 * @param batchAnnotator the annotator
+	 * @param extractor
+	 *            the extractor
+	 * @param batchAnnotator
+	 *            the annotator
 	 */
-	public FeatureCachingIncrementalBatchAnnotator(EXTRACTOR extractor, BatchAnnotator<FEATURE, ANNOTATION, IdentityFeatureExtractor<FEATURE>> batchAnnotator) {
-		super(extractor);
+	public FeatureCachingIncrementalBatchAnnotator(FeatureExtractor<FEATURE, OBJECT> extractor,
+			BatchAnnotator<FEATURE, ANNOTATION> batchAnnotator)
+	{
+		this.extractor = extractor;
 		this.featureCache = new InMemoryGroupedListCache<ANNOTATION, FEATURE>();
 		this.batchAnnotator = batchAnnotator;
 	}
-	
+
 	/**
-	 * Construct with the given feature extractor and batch annotator, and
-	 * use an in-memory cache.
+	 * Construct with the given feature extractor and batch annotator, and use
+	 * an in-memory cache.
 	 * 
-	 * @param extractor the extractor
-	 * @param batchAnnotator the annotator
-	 * @param cache the cache
+	 * @param extractor
+	 *            the extractor
+	 * @param batchAnnotator
+	 *            the annotator
+	 * @param cache
+	 *            the cache
 	 */
-	public FeatureCachingIncrementalBatchAnnotator(EXTRACTOR extractor, 
-			BatchAnnotator<FEATURE, ANNOTATION, IdentityFeatureExtractor<FEATURE>> batchAnnotator,
-			GroupedListCache<ANNOTATION, FEATURE> cache) {
-		super(extractor);
+	public FeatureCachingIncrementalBatchAnnotator(FeatureExtractor<FEATURE, OBJECT> extractor,
+			BatchAnnotator<FEATURE, ANNOTATION> batchAnnotator,
+			GroupedListCache<ANNOTATION, FEATURE> cache)
+	{
+		this.extractor = extractor;
 		this.batchAnnotator = batchAnnotator;
 		this.featureCache = cache;
 	}
 
 	@Override
 	public void train(Annotated<OBJECT, ANNOTATION> annotated) {
-		FEATURE fv = extractor.extractFeature(annotated.getObject());
-		
+		final FEATURE fv = extractor.extractFeature(annotated.getObject());
+
 		featureCache.add(annotated.getAnnotations(), fv);
 		isInvalid = true;
 	}

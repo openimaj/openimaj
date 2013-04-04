@@ -29,15 +29,11 @@
  */
 package org.openimaj.image.processing.face.recognition;
 
-import java.io.DataInput;
-import java.io.IOException;
-
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FVProviderExtractor;
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FisherFaceFeature.Extractor;
@@ -57,19 +53,9 @@ import org.openimaj.ml.annotation.basic.KNNAnnotator;
  */
 public class FisherFaceRecogniser<FACE extends DetectedFace, PERSON>
 		extends
-		LazyFaceRecogniser<FACE, Extractor<FACE>, PERSON>
+		LazyFaceRecogniser<FACE, PERSON, Extractor<FACE>>
 {
 	protected FisherFaceRecogniser() {
-	}
-
-	/**
-	 * Construct with the given underlying {@link FaceRecogniser}.
-	 * 
-	 * @param internalRecogniser
-	 *            the face recogniser
-	 */
-	public FisherFaceRecogniser(FaceRecogniser<FACE, Extractor<FACE>, PERSON> internalRecogniser) {
-		super(internalRecogniser);
 	}
 
 	/**
@@ -82,19 +68,9 @@ public class FisherFaceRecogniser<FACE extends DetectedFace, PERSON>
 	 *            the face recogniser
 	 */
 	public FisherFaceRecogniser(Extractor<FACE> extractor,
-			FaceRecogniser<FACE, ? extends FeatureExtractor<?, FACE>, PERSON> internalRecogniser)
+			FaceRecogniser<FACE, PERSON> internalRecogniser)
 	{
 		super(extractor, internalRecogniser);
-	}
-
-	/**
-	 * Construct with the given underlying {@link IncrementalAnnotator}.
-	 * 
-	 * @param annotator
-	 *            the annotator
-	 */
-	public FisherFaceRecogniser(IncrementalAnnotator<FACE, PERSON, Extractor<FACE>> annotator) {
-		this(AnnotatorFaceRecogniser.create(annotator));
 	}
 
 	/**
@@ -107,7 +83,7 @@ public class FisherFaceRecogniser<FACE extends DetectedFace, PERSON>
 	 *            the annotator
 	 */
 	public FisherFaceRecogniser(Extractor<FACE> extractor,
-			IncrementalAnnotator<FACE, PERSON, ? extends FeatureExtractor<?, FACE>> annotator)
+			IncrementalAnnotator<FACE, PERSON> annotator)
 	{
 		this(extractor, AnnotatorFaceRecogniser.create(annotator));
 	}
@@ -139,7 +115,7 @@ public class FisherFaceRecogniser<FACE extends DetectedFace, PERSON>
 		final Extractor<FACE> extractor = new Extractor<FACE>(numComponents, aligner);
 		final FVProviderExtractor<DoubleFV, FACE> extractor2 = FVProviderExtractor.create(extractor);
 
-		final KNNAnnotator<FACE, PERSON, FVProviderExtractor<DoubleFV, FACE>, DoubleFV> knn =
+		final KNNAnnotator<FACE, PERSON, DoubleFV> knn =
 				KNNAnnotator.create(extractor2, compar, k, threshold);
 
 		return new FisherFaceRecogniser<FACE, PERSON>(extractor, knn);
@@ -148,14 +124,6 @@ public class FisherFaceRecogniser<FACE extends DetectedFace, PERSON>
 	@Override
 	protected void beforeBatchTrain(GroupedDataset<PERSON, ListDataset<FACE>, FACE> dataset) {
 		extractor.train(dataset);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void readBinary(DataInput in) throws IOException {
-		super.readBinary(in);
-
-		this.extractor = (Extractor<FACE>) ((FVProviderExtractor<DoubleFV, FACE>) this.internalRecogniser.extractor).extractor;
 	}
 
 	@Override

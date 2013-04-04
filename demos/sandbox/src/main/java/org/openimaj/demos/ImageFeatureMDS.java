@@ -21,7 +21,7 @@ import org.openimaj.util.pair.IndependentPair;
 public class ImageFeatureMDS {
 	public static void main(String[] args) throws Exception {
 		final FlickrAPIToken token = DefaultTokenFactory.getInstance().getToken(FlickrAPIToken.class);
-		final int numImages = 2;
+		final int numImages = 20;
 
 		final FlickrImageDataset<MBFImage> dataset = FlickrImageDataset.create(ImageUtilities.MBFIMAGE_READER, token,
 				"colorful", numImages);

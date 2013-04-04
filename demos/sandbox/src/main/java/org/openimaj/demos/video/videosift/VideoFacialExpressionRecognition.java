@@ -63,7 +63,7 @@ public class VideoFacialExpressionRecognition extends KeyAdapter implements Vide
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
-	private AnnotatorFaceRecogniser<CLMDetectedFace, ?, String> recogniser;
+	private AnnotatorFaceRecogniser<CLMDetectedFace, String> recogniser;
 	private CLMFaceTracker engine;
 	private FImage currentFrame;
 
@@ -83,8 +83,8 @@ public class VideoFacialExpressionRecognition extends KeyAdapter implements Vide
 				FaceFVComparator<CLMShapeFeature, DoubleFV>(
 						DoubleFVComparison.EUCLIDEAN);
 
-		final KNNAnnotator<CLMDetectedFace, String, CLMShapeFeature.Extractor, CLMShapeFeature> knn =
-				KNNAnnotator.create(extractor, comparator, 1, 5f);
+		final KNNAnnotator<CLMDetectedFace, String, CLMShapeFeature> knn = KNNAnnotator.create(extractor, comparator, 1,
+				5f);
 
 		recogniser = AnnotatorFaceRecogniser.create(knn);
 	}

@@ -34,47 +34,48 @@ import java.util.Set;
 
 import org.openimaj.data.dataset.cache.GroupedListCache;
 import org.openimaj.data.dataset.cache.InMemoryGroupedListCache;
-import org.openimaj.feature.FeatureExtractor;
 
 /**
  * Adaptor that allows a {@link BatchAnnotator} to behave like a
- * {@link IncrementalAnnotator} by caching instances and
- * then performing training only when {@link #annotate(Object)} is
- * called. 
+ * {@link IncrementalAnnotator} by caching instances and then performing
+ * training only when {@link #annotate(Object)} is called.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object
- * @param <ANNOTATION> Type of annotation
- * @param <EXTRACTOR> Type of object capable of extracting features from the object
+ * 
+ * @param <OBJECT>
+ *            Type of object
+ * @param <ANNOTATION>
+ *            Type of annotation
  */
-public class InstanceCachingIncrementalBatchAnnotator<
-	OBJECT, 
-	ANNOTATION,
-	EXTRACTOR extends FeatureExtractor<?, OBJECT>> 
-extends IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR> 
+public class InstanceCachingIncrementalBatchAnnotator<OBJECT, ANNOTATION>
+		extends IncrementalAnnotator<OBJECT, ANNOTATION>
 {
-	BatchAnnotator<OBJECT, ANNOTATION, EXTRACTOR> batchAnnotator;
+	BatchAnnotator<OBJECT, ANNOTATION> batchAnnotator;
 	GroupedListCache<ANNOTATION, OBJECT> objectCache;
 	boolean isInvalid = true;
-	
+
 	/**
 	 * Construct with an in-memory cache and the given batch annotator.
-	 * @param batchAnnotator the batch annotator
+	 * 
+	 * @param batchAnnotator
+	 *            the batch annotator
 	 */
-	public InstanceCachingIncrementalBatchAnnotator(BatchAnnotator<OBJECT, ANNOTATION, EXTRACTOR> batchAnnotator) {
-		super(batchAnnotator.extractor);
+	public InstanceCachingIncrementalBatchAnnotator(BatchAnnotator<OBJECT, ANNOTATION> batchAnnotator) {
 		this.batchAnnotator = batchAnnotator;
 		this.objectCache = new InMemoryGroupedListCache<ANNOTATION, OBJECT>();
 	}
-	
+
 	/**
 	 * Construct with the given batch annotator and cache implementation.
-	 * @param batchAnnotator the batch annotator
-	 * @param cache the cache 
+	 * 
+	 * @param batchAnnotator
+	 *            the batch annotator
+	 * @param cache
+	 *            the cache
 	 */
-	public InstanceCachingIncrementalBatchAnnotator(BatchAnnotator<OBJECT, ANNOTATION, EXTRACTOR> batchAnnotator, GroupedListCache<ANNOTATION, OBJECT> cache) {
-		super(batchAnnotator.extractor);
+	public InstanceCachingIncrementalBatchAnnotator(BatchAnnotator<OBJECT, ANNOTATION> batchAnnotator,
+			GroupedListCache<ANNOTATION, OBJECT> cache)
+	{
 		this.batchAnnotator = batchAnnotator;
 		this.objectCache = cache;
 	}

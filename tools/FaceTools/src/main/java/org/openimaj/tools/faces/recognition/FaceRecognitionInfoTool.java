@@ -38,9 +38,7 @@ import java.util.List;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 
 /**
@@ -75,7 +73,7 @@ public class FaceRecognitionInfoTool {
 			return;
 		}
 
-		final FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
+		final FaceRecognitionEngine<T, String> engine = options.getEngine();
 
 		System.out.println("Detector:\n" + engine.getDetector());
 		System.out.println();
@@ -89,9 +87,7 @@ public class FaceRecognitionInfoTool {
 		System.out.println(people);
 	}
 
-	<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>>
-			FaceRecognitionEngine<FACE, EXTRACTOR, String>
-			getEngine() throws IOException
+	<FACE extends DetectedFace> FaceRecognitionEngine<FACE, String> getEngine() throws IOException
 	{
 		return FaceRecognitionEngine.load(recogniserFile);
 	}

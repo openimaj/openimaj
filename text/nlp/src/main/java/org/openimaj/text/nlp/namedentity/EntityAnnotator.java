@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.feature.IdentityFeatureExtractor;
 import org.openimaj.ml.annotation.AbstractAnnotator;
 
 /**
@@ -46,7 +45,7 @@ import org.openimaj.ml.annotation.AbstractAnnotator;
  */
 public abstract class EntityAnnotator
 		extends
-			AbstractAnnotator<List<String>, HashMap<String, Object>, IdentityFeatureExtractor<List<String>>>
+		AbstractAnnotator<List<String>, HashMap<String, Object>>
 {
 
 	/**
@@ -71,12 +70,8 @@ public abstract class EntityAnnotator
 	static String SCORE = "SCORE";
 
 	/**
-	 * Default entity annotator calls
-	 * {@link AbstractAnnotator#AbstractAnnotator(org.openimaj.feature.FeatureExtractor)}
-	 * with an {@link IdentityFeatureExtractor}
+	 * Default entity annotator
 	 */
 	public EntityAnnotator() {
-		super(new IdentityFeatureExtractor<List<String>>());
 	}
-
 }

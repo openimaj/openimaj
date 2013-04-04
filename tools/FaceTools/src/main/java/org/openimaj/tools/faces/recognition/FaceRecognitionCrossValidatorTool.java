@@ -79,7 +79,7 @@ public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 	File savedRecogniser;
 
 	protected void performBenchmark() throws IOException {
-		final FaceRecognitionEngine<FACE, ?, String> engine = strategyOp.createRecognitionEngine();
+		final FaceRecognitionEngine<FACE, String> engine = strategyOp.createRecognitionEngine();
 
 		final CrossValidationBenchmark<String, FImage, FACE> benchmark = new CrossValidationBenchmark<String, FImage, FACE>(
 				new StratifiedGroupedKFold<String, FACE>(10),
@@ -87,13 +87,13 @@ public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 				engine.getDetector(),
 				new FaceRecogniserProvider<FACE, String>() {
 					@Override
-					public FaceRecogniser<FACE, ?, String>
+					public FaceRecogniser<FACE, String>
 							create(GroupedDataset<String, ListDataset<FACE>, FACE> dataset)
 					{
 						// Note: we need a new instance of a recogniser, hence
 						// we don't
 						// use the engine object.
-						final FaceRecogniser<FACE, ?, String> rec = strategyOp.createRecognitionEngine().getRecogniser();
+						final FaceRecogniser<FACE, String> rec = strategyOp.createRecognitionEngine().getRecogniser();
 
 						rec.train(dataset);
 
@@ -113,7 +113,7 @@ public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 	}
 
 	protected void saveRecogniser() throws IOException {
-		final FaceRecognitionEngine<FACE, ?, String> engine = strategyOp.createRecognitionEngine();
+		final FaceRecognitionEngine<FACE, String> engine = strategyOp.createRecognitionEngine();
 		engine.train(getDataset());
 		engine.save(savedRecogniser);
 	}

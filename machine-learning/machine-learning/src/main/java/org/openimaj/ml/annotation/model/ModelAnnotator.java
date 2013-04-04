@@ -41,48 +41,57 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * An {@link BatchAnnotator} backed by a {@link Model}. This only 
- * really makes sense if the dependent variable of the model
- * can take a set of discrete values. 
+ * An {@link BatchAnnotator} backed by a {@link Model}. This only really makes
+ * sense if the dependent variable of the model can take a set of discrete
+ * values.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object being annotated
- * @param <ANNOTATION> Type of annotation
- * @param <EXTRACTOR> Type of feature extractor
- * @param <FEATURE> Type of feature extracted by the extractor
+ * 
+ * @param <OBJECT>
+ *            Type of object being annotated
+ * @param <ANNOTATION>
+ *            Type of annotation
+ * @param <FEATURE>
+ *            Type of feature extracted by the extractor
  */
-public class ModelAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE> 
-extends
-	BatchAnnotator<OBJECT, ANNOTATION, EXTRACTOR> 
+public class ModelAnnotator<OBJECT, ANNOTATION, FEATURE>
+		extends
+		BatchAnnotator<OBJECT, ANNOTATION>
 {
 	Model<FEATURE, ANNOTATION> model;
 	Set<ANNOTATION> annotations;
-	
+	private FeatureExtractor<FEATURE, OBJECT> extractor;
+
 	/**
 	 * Construct with the given parameters.
-	 * @param extractor The feature extractor
-	 * @param model The model
-	 * @param annotations The set of annotations that the model can produce
+	 * 
+	 * @param extractor
+	 *            The feature extractor
+	 * @param model
+	 *            The model
+	 * @param annotations
+	 *            The set of annotations that the model can produce
 	 */
-	public ModelAnnotator(EXTRACTOR extractor, Model<FEATURE, ANNOTATION> model, Set<ANNOTATION> annotations) {
-		super(extractor);
+	public ModelAnnotator(FeatureExtractor<FEATURE, OBJECT> extractor, Model<FEATURE, ANNOTATION> model,
+			Set<ANNOTATION> annotations)
+	{
+		this.extractor = extractor;
 		this.model = model;
 		this.annotations = annotations;
 	}
-	
+
 	@Override
 	public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
-		List<IndependentPair<FEATURE, ANNOTATION>> featureData = new ArrayList<IndependentPair<FEATURE,ANNOTATION>>();
-		
-		for (Annotated<OBJECT, ANNOTATION> a : data) {
-			FEATURE f = extractor.extractFeature(a.getObject());
-			
-			for (ANNOTATION ann : a.getAnnotations())
+		final List<IndependentPair<FEATURE, ANNOTATION>> featureData = new ArrayList<IndependentPair<FEATURE, ANNOTATION>>();
+
+		for (final Annotated<OBJECT, ANNOTATION> a : data) {
+			final FEATURE f = extractor.extractFeature(a.getObject());
+
+			for (final ANNOTATION ann : a.getAnnotations())
 				featureData.add(IndependentPair.pair(f, ann));
 		}
-		
+
 		model.estimate(featureData);
 	}
 
@@ -93,11 +102,11 @@ extends
 
 	@Override
 	public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object) {
-		FEATURE f = extractor.extractFeature(object);
-		
-		List<ScoredAnnotation<ANNOTATION>> result = new ArrayList<ScoredAnnotation<ANNOTATION>>();
+		final FEATURE f = extractor.extractFeature(object);
+
+		final List<ScoredAnnotation<ANNOTATION>> result = new ArrayList<ScoredAnnotation<ANNOTATION>>();
 		result.add(new ScoredAnnotation<ANNOTATION>(model.predict(f), 1));
-		
+
 		return result;
 	}
 }

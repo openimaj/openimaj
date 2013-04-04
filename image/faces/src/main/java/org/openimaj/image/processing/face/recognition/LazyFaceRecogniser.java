@@ -56,16 +56,15 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
  * 
  * @param <FACE>
  *            Type of {@link DetectedFace}
- * @param <EXTRACTOR>
- *            Type of {@link FeatureExtractor}
  * @param <PERSON>
  *            Type of object representing a person
  */
-abstract class LazyFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
+abstract class LazyFaceRecogniser<FACE extends DetectedFace, PERSON, EXTRACTOR extends FeatureExtractor<?, FACE>>
 		extends
-		FaceRecogniser<FACE, EXTRACTOR, PERSON>
+		FaceRecogniser<FACE, PERSON>
 {
-	FaceRecogniser<FACE, ? extends FeatureExtractor<?, FACE>, PERSON> internalRecogniser;
+	EXTRACTOR extractor;
+	FaceRecogniser<FACE, PERSON> internalRecogniser;
 	GroupedListCache<PERSON, FACE> faceCache;
 	boolean isInvalid = true;
 
@@ -74,56 +73,38 @@ abstract class LazyFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends F
 
 	/**
 	 * Construct with an in-memory cache and the given internal face recogniser.
-	 * It is assumed that the FeatureExtractor of the given recogniser is
-	 * somehow linked to the given feature extractor, but they might not be the
-	 * same object.
+	 * It is assumed that the internals of the given recogniser are somehow
+	 * linked to or use the given feature extractor.
 	 * 
 	 * @param extractor
 	 *            the feature extractor
 	 * @param internalRecogniser
 	 *            the internal recogniser.
 	 */
-	public LazyFaceRecogniser(EXTRACTOR extractor,
-			FaceRecogniser<FACE, ? extends FeatureExtractor<?, FACE>, PERSON> internalRecogniser)
+	public LazyFaceRecogniser(EXTRACTOR extractor, FaceRecogniser<FACE, PERSON> internalRecogniser)
 	{
-		super(extractor);
-
-		this.internalRecogniser = internalRecogniser;
-		faceCache = new InMemoryGroupedListCache<PERSON, FACE>();
-	}
-
-	/**
-	 * Construct with an in-memory cache and the given internal face recogniser.
-	 * 
-	 * @param internalRecogniser
-	 *            the internal recogniser.
-	 */
-	public LazyFaceRecogniser(FaceRecogniser<FACE, EXTRACTOR, PERSON> internalRecogniser) {
-		super(internalRecogniser.extractor);
-
+		this.extractor = extractor;
 		this.internalRecogniser = internalRecogniser;
 		faceCache = new InMemoryGroupedListCache<PERSON, FACE>();
 	}
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		internalRecogniser = IOUtils.newInstance(in.readUTF());
-		internalRecogniser.readBinary(in);
-		faceCache = IOUtils.read(in);
-		isInvalid = in.readBoolean();
+		final LazyFaceRecogniser<FACE, PERSON, EXTRACTOR> wrapper = IOUtils.read(in);
+		this.extractor = wrapper.extractor;
+		this.faceCache = wrapper.faceCache;
+		this.internalRecogniser = wrapper.internalRecogniser;
+		this.isInvalid = wrapper.isInvalid;
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		IOUtils.write(this, out);
 	}
 
 	@Override
 	public byte[] binaryHeader() {
 		return "BFRec".getBytes();
-	}
-
-	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		out.writeUTF(internalRecogniser.getClass().getName());
-		internalRecogniser.writeBinary(out);
-		IOUtils.write(faceCache, out);
-		out.writeBoolean(isInvalid);
 	}
 
 	@Override

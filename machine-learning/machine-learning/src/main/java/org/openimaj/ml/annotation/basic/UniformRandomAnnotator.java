@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
@@ -47,67 +46,69 @@ import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
- * An annotator that chooses annotations completely randomly from
- * the set of all known annotations. The number of annotations produced
- * is set by the type of {@link NumAnnotationsChooser} used.
- *  
+ * An annotator that chooses annotations completely randomly from the set of all
+ * known annotations. The number of annotations produced is set by the type of
+ * {@link NumAnnotationsChooser} used.
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object being annotated
- * @param <ANNOTATION> Type of annotation.
+ * 
+ * @param <OBJECT>
+ *            Type of object being annotated
+ * @param <ANNOTATION>
+ *            Type of annotation.
  */
-public class UniformRandomAnnotator<OBJECT, ANNOTATION> extends BatchAnnotator<OBJECT, ANNOTATION, FeatureExtractor<Object, OBJECT>> {
+public class UniformRandomAnnotator<OBJECT, ANNOTATION> extends BatchAnnotator<OBJECT, ANNOTATION> {
 	protected List<ANNOTATION> annotations;
 	protected NumAnnotationsChooser numAnnotations;
 	protected Uniform rnd;
-	
+
 	/**
-	 * Construct with the given {@link NumAnnotationsChooser} to
-	 * determine how many annotations are produced by calls
-	 * to {@link #annotate(Object)}.
+	 * Construct with the given {@link NumAnnotationsChooser} to determine how
+	 * many annotations are produced by calls to {@link #annotate(Object)}.
 	 * 
-	 * @param chooser the {@link NumAnnotationsChooser} to use.
+	 * @param chooser
+	 *            the {@link NumAnnotationsChooser} to use.
 	 */
 	public UniformRandomAnnotator(NumAnnotationsChooser chooser) {
-		super(null);
 		this.numAnnotations = chooser;
 	}
-	
+
 	@Override
 	public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
-		HashSet<ANNOTATION> annotationsSet = new HashSet<ANNOTATION>();
-		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
+		final HashSet<ANNOTATION> annotationsSet = new HashSet<ANNOTATION>();
+		final TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
 		int maxVal = 0;
-		
-		for (Annotated<OBJECT, ANNOTATION> sample : data) {
-			Collection<ANNOTATION> annos = sample.getAnnotations();
+
+		for (final Annotated<OBJECT, ANNOTATION> sample : data) {
+			final Collection<ANNOTATION> annos = sample.getAnnotations();
 			annotationsSet.addAll(annos);
 			nAnnotationCounts.adjustOrPutValue(annos.size(), 1, 1);
-			
-			if (annos.size()>maxVal) maxVal = annos.size();
+
+			if (annos.size() > maxVal)
+				maxVal = annos.size();
 		}
-		
+
 		annotations = new ArrayList<ANNOTATION>(annotationsSet);
-		
-		rnd = new Uniform(0, annotations.size()-1, new MersenneTwister());
+
+		rnd = new Uniform(0, annotations.size() - 1, new MersenneTwister());
 
 		numAnnotations.train(data);
 	}
-	
+
 	@Override
 	public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT image) {
-		int nAnnotations = numAnnotations.numAnnotations();
-		
-		List<ScoredAnnotation<ANNOTATION>> annos = new ArrayList<ScoredAnnotation<ANNOTATION>>();
-		
-		for (int i=0; i<nAnnotations; i++) {
-			int annotationIdx = rnd.nextInt();
-			annos.add(new ScoredAnnotation<ANNOTATION>(annotations.get(annotationIdx), 1.0f/annotations.size()));
+		final int nAnnotations = numAnnotations.numAnnotations();
+
+		final List<ScoredAnnotation<ANNOTATION>> annos = new ArrayList<ScoredAnnotation<ANNOTATION>>();
+
+		for (int i = 0; i < nAnnotations; i++) {
+			final int annotationIdx = rnd.nextInt();
+			annos.add(new ScoredAnnotation<ANNOTATION>(annotations.get(annotationIdx), 1.0f / annotations.size()));
 		}
-		
+
 		return annos;
 	}
-	
+
 	@Override
 	public Set<ANNOTATION> getAnnotations() {
 		return new HashSet<ANNOTATION>(annotations);

@@ -33,46 +33,32 @@ import java.util.List;
 
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.training.BatchTrainer;
 
 /**
- * An {@link Annotator} that is trained in "batch" mode; all 
- * training examples are presented at once. Calling the
- * {@link #train(List)} method more than once will cause
- * the internal model to be re-initialised using the new
- * data. If you want to implement an {@link Annotator} that 
- * can be updated, implement the {@link IncrementalAnnotator}
- * interface instead. 
+ * An {@link Annotator} that is trained in "batch" mode; all training examples
+ * are presented at once. Calling the {@link #train(List)} method more than once
+ * will cause the internal model to be re-initialised using the new data. If you
+ * want to implement an {@link Annotator} that can be updated, implement the
+ * {@link IncrementalAnnotator} interface instead.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object being annotated
- * @param <ANNOTATION> Type of annotation
- * @param <EXTRACTOR> Type of feature extractor
+ * 
+ * @param <OBJECT>
+ *            Type of object being annotated
+ * @param <ANNOTATION>
+ *            Type of annotation
  */
-public abstract class BatchAnnotator<
-	OBJECT, 
-	ANNOTATION, 
-	EXTRACTOR extends FeatureExtractor<?, OBJECT>> 
-extends 
-	AbstractAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
-implements
-	BatchTrainer<Annotated<OBJECT, ANNOTATION>>
+public abstract class BatchAnnotator<OBJECT, ANNOTATION>
+		extends
+		AbstractAnnotator<OBJECT, ANNOTATION>
+		implements
+		BatchTrainer<Annotated<OBJECT, ANNOTATION>>
 {
 	/**
-	 * Construct with the given feature extractor.
-	 * @param extractor the feature extractor
-	 */
-	public BatchAnnotator(EXTRACTOR extractor) {
-		super(extractor);
-	}
-	
-	/**
-	 * Train the annotator with the given grouped dataset. Internally, 
-	 * the dataset is converted to a list containing exactly one 
-	 * reference to each object in the dataset with (potentially) 
-	 * multiple annotations. 
+	 * Train the annotator with the given grouped dataset. Internally, the
+	 * dataset is converted to a list containing exactly one reference to each
+	 * object in the dataset with (potentially) multiple annotations.
 	 * 
 	 * @param dataset
 	 *            the dataset to train on

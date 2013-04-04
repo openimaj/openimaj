@@ -44,5 +44,5 @@ public interface RecognitionEngineProvider<FACE extends DetectedFace> {
 	/**
 	 * @return the configured recognition engine
 	 */
-	public FaceRecognitionEngine<FACE, ?, String> createRecognitionEngine();
+	public FaceRecognitionEngine<FACE, String> createRecognitionEngine();
 }

@@ -47,7 +47,6 @@ import org.openimaj.image.processing.face.feature.CLMPoseShapeFeature;
 import org.openimaj.image.processing.face.feature.CLMShapeFeature;
 import org.openimaj.image.processing.face.feature.FacePatchFeature;
 import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
-import org.openimaj.image.processing.face.feature.LocalLBPHistogram.Extractor;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
@@ -77,7 +76,6 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 				@Option(name = "--num-components", usage = "number of components")
 				int numComponents = 10;
 
-				@SuppressWarnings("unused")
 				@Option(name = "--aligner", usage = "aligner", required = false, handler = ProxyOptionHandler.class)
 				AnyAligner aligner = AnyAligner.Identity;
 				AlignerDetectorProvider<DetectedFace> alignerOp;
@@ -92,7 +90,7 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 				float threshold = Float.NaN;
 
 				@Override
-				public FaceRecognitionEngine<DetectedFace, ?, String> createRecognitionEngine() {
+				public FaceRecognitionEngine<DetectedFace, String> createRecognitionEngine() {
 					if (threshold == Float.NaN)
 						threshold = comparison.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE;
 
@@ -114,7 +112,6 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 				@Option(name = "--num-components", usage = "number of components")
 				int numComponents = 10;
 
-				@SuppressWarnings("unused")
 				@Option(name = "--aligner", usage = "aligner", required = false, handler = ProxyOptionHandler.class)
 				AnyAligner aligner = AnyAligner.Identity;
 				AlignerDetectorProvider<DetectedFace> alignerOp;
@@ -129,7 +126,7 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 				float threshold = Float.NaN;
 
 				@Override
-				public FaceRecognitionEngine<DetectedFace, ?, String> createRecognitionEngine() {
+				public FaceRecognitionEngine<DetectedFace, String> createRecognitionEngine() {
 					if (threshold == Float.NaN)
 						threshold = comparison.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE;
 
@@ -158,7 +155,7 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 				float threshold = Float.NaN;
 
 				@Override
-				public FaceRecognitionEngine<KEDetectedFace, ?, String> createRecognitionEngine() {
+				public FaceRecognitionEngine<KEDetectedFace, String> createRecognitionEngine() {
 					if (threshold == Float.NaN)
 						threshold = comparison.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE;
 
@@ -166,8 +163,8 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 					final FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature, FloatFV>(
 							comparison);
 
-					final AnnotatorFaceRecogniser<KEDetectedFace, FacePatchFeature.Extractor, String> recogniser = AnnotatorFaceRecogniser
-							.create(new KNNAnnotator<KEDetectedFace, String, FacePatchFeature.Extractor, FacePatchFeature>(
+					final AnnotatorFaceRecogniser<KEDetectedFace, String> recogniser = AnnotatorFaceRecogniser
+							.create(new KNNAnnotator<KEDetectedFace, String, FacePatchFeature>(
 									extractor, comparator, K, threshold));
 
 					final FKEFaceDetector detector = new FKEFaceDetector();
@@ -194,7 +191,7 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 				float threshold = Float.NaN;
 
 				@Override
-				public FaceRecognitionEngine<DetectedFace, ?, String> createRecognitionEngine() {
+				public FaceRecognitionEngine<DetectedFace, String> createRecognitionEngine() {
 					if (threshold == Float.NaN)
 						threshold = comparison.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE;
 
@@ -203,10 +200,10 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 					final FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram, FloatFV>(
 							comparison);
 
-					final KNNAnnotator<DetectedFace, String, Extractor<DetectedFace>, LocalLBPHistogram> knn =
+					final KNNAnnotator<DetectedFace, String, LocalLBPHistogram> knn =
 							KNNAnnotator.create(extractor, comparator, K, threshold);
 
-					final AnnotatorFaceRecogniser<DetectedFace, ?, String> recogniser =
+					final AnnotatorFaceRecogniser<DetectedFace, String> recogniser =
 							AnnotatorFaceRecogniser.create(knn);
 
 					return FaceRecognitionEngine.create(alignerOp.getDetector(), recogniser);
@@ -222,7 +219,7 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 		public RecognitionEngineProvider<DetectedFace> getOptions() {
 			return new LBPHistogramBaseOptions() {
 				@Override
-				public FaceRecognitionEngine<DetectedFace, ?, String> createRecognitionEngine() {
+				public FaceRecognitionEngine<DetectedFace, String> createRecognitionEngine() {
 					final LocalLBPHistogram.Extractor<DetectedFace> extractor =
 							new LocalLBPHistogram.Extractor<DetectedFace>(alignerOp.getAligner(), blocksX, blocksY,
 									samples, radius);
@@ -230,11 +227,11 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 					final FVProviderExtractor<FloatFV, DetectedFace> extractor2 =
 							FVProviderExtractor.create(extractor);
 
-					final NaiveBayesAnnotator<DetectedFace, String, FVProviderExtractor<FloatFV, DetectedFace>> bayes =
-							new NaiveBayesAnnotator<DetectedFace, String, FVProviderExtractor<FloatFV, DetectedFace>>(
+					final NaiveBayesAnnotator<DetectedFace, String> bayes =
+							new NaiveBayesAnnotator<DetectedFace, String>(
 									extractor2, NaiveBayesAnnotator.Mode.MAXIMUM_LIKELIHOOD);
 
-					final AnnotatorFaceRecogniser<DetectedFace, FVProviderExtractor<FloatFV, DetectedFace>, String> recogniser =
+					final AnnotatorFaceRecogniser<DetectedFace, String> recogniser =
 							AnnotatorFaceRecogniser.create(bayes);
 
 					return FaceRecognitionEngine.create(alignerOp.getDetector(), recogniser);
@@ -250,7 +247,7 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 		public RecognitionEngineProvider<DetectedFace> getOptions() {
 			return new LBPHistogramBaseOptions() {
 				@Override
-				public FaceRecognitionEngine<DetectedFace, ?, String> createRecognitionEngine() {
+				public FaceRecognitionEngine<DetectedFace, String> createRecognitionEngine() {
 					final LocalLBPHistogram.Extractor<DetectedFace> extractor =
 							new LocalLBPHistogram.Extractor<DetectedFace>(alignerOp.getAligner(), blocksX, blocksY,
 									samples, radius);
@@ -258,16 +255,14 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 					final FVProviderExtractor<FloatFV, DetectedFace> extractor2 =
 							FVProviderExtractor.create(extractor);
 
-					final LinearSVMAnnotator<DetectedFace, String, FVProviderExtractor<FloatFV, DetectedFace>> svm =
-							new LinearSVMAnnotator<DetectedFace, String, FVProviderExtractor<FloatFV, DetectedFace>>(
-									extractor2);
+					final LinearSVMAnnotator<DetectedFace, String> svm = new LinearSVMAnnotator<DetectedFace, String>(
+							extractor2);
 
-					final InstanceCachingIncrementalBatchAnnotator<DetectedFace, String, FVProviderExtractor<FloatFV, DetectedFace>> wrapper =
-							new InstanceCachingIncrementalBatchAnnotator<DetectedFace, String, FVProviderExtractor<FloatFV, DetectedFace>>(
-									svm);
+					final InstanceCachingIncrementalBatchAnnotator<DetectedFace, String> wrapper =
+							new InstanceCachingIncrementalBatchAnnotator<DetectedFace, String>(svm);
 
-					final AnnotatorFaceRecogniser<DetectedFace, FVProviderExtractor<FloatFV, DetectedFace>, String> recogniser =
-							AnnotatorFaceRecogniser.create(wrapper);
+					final AnnotatorFaceRecogniser<DetectedFace, String> recogniser = AnnotatorFaceRecogniser
+							.create(wrapper);
 
 					return FaceRecognitionEngine.create(alignerOp.getDetector(), recogniser);
 				}
@@ -292,13 +287,13 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 		public RecognitionEngineProvider<?> getOptions() {
 			return new CLMFeaturesBaseOptions() {
 				@Override
-				public FaceRecognitionEngine<CLMDetectedFace, ?, String> createRecognitionEngine() {
+				public FaceRecognitionEngine<CLMDetectedFace, String> createRecognitionEngine() {
 					final FVProviderExtractor<DoubleFV, CLMDetectedFace> extractor = getWrapperExtractor();
 
-					final KNNAnnotator<CLMDetectedFace, String, FVProviderExtractor<DoubleFV, CLMDetectedFace>, DoubleFV> knn =
+					final KNNAnnotator<CLMDetectedFace, String, DoubleFV> knn =
 							KNNAnnotator.create(extractor, comparison, K, threshold);
 
-					final AnnotatorFaceRecogniser<CLMDetectedFace, ?, String> recogniser = AnnotatorFaceRecogniser
+					final AnnotatorFaceRecogniser<CLMDetectedFace, String> recogniser = AnnotatorFaceRecogniser
 							.create(knn);
 
 					return FaceRecognitionEngine.create(new CLMFaceDetector(), recogniser);
@@ -315,14 +310,14 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 		public RecognitionEngineProvider<?> getOptions() {
 			return new CLMFeaturesBaseOptions() {
 				@Override
-				public FaceRecognitionEngine<CLMDetectedFace, ?, String> createRecognitionEngine() {
+				public FaceRecognitionEngine<CLMDetectedFace, String> createRecognitionEngine() {
 					final FVProviderExtractor<DoubleFV, CLMDetectedFace> extractor = getWrapperExtractor();
 
-					final NaiveBayesAnnotator<CLMDetectedFace, String, FVProviderExtractor<DoubleFV, CLMDetectedFace>> bayes =
-							new NaiveBayesAnnotator<CLMDetectedFace, String, FVProviderExtractor<DoubleFV, CLMDetectedFace>>(
+					final NaiveBayesAnnotator<CLMDetectedFace, String> bayes =
+							new NaiveBayesAnnotator<CLMDetectedFace, String>(
 									extractor, NaiveBayesAnnotator.Mode.MAXIMUM_LIKELIHOOD);
 
-					final AnnotatorFaceRecogniser<CLMDetectedFace, ?, String> recogniser = AnnotatorFaceRecogniser
+					final AnnotatorFaceRecogniser<CLMDetectedFace, String> recogniser = AnnotatorFaceRecogniser
 							.create(bayes);
 
 					return FaceRecognitionEngine.create(new CLMFaceDetector(), recogniser);
@@ -335,7 +330,6 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 	public abstract RecognitionEngineProvider<?> getOptions();
 
 	private static abstract class LBPHistogramBaseOptions implements RecognitionEngineProvider<DetectedFace> {
-		@SuppressWarnings("unused")
 		@Option(name = "--aligner", usage = "aligner", required = false, handler = ProxyOptionHandler.class)
 		AnyAligner aligner = AnyAligner.Identity;
 		AlignerDetectorProvider<DetectedFace> alignerOp;

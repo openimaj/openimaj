@@ -33,11 +33,10 @@ import de.bwaldvogel.liblinear.SolverType;
  * 
  * @param <OBJECT>
  * @param <ANNOTATION>
- * @param <EXTRACTOR>
  */
-public class LiblinearAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<? extends FeatureVector, OBJECT>>
+public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		extends
-		BatchAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
+		BatchAnnotator<OBJECT, ANNOTATION>
 {
 	public enum Mode {
 		MULTICLASS, MULTILABEL;
@@ -138,10 +137,8 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExt
 
 			for (int i = 0; i < annotationsList.size(); i++) {
 				final ANNOTATION annotation = annotationsList.get(i);
-				final List<? extends FeatureVector> positive = helper.extractFeatures(annotation,
-						(FeatureExtractor<? extends FeatureVector, OBJECT>) extractor);
-				final List<? extends FeatureVector> negative = helper.extractFeaturesExclude(annotation,
-						(FeatureExtractor<? extends FeatureVector, OBJECT>) extractor);
+				final List<? extends FeatureVector> positive = helper.extractFeatures(annotation, extractor);
+				final List<? extends FeatureVector> negative = helper.extractFeaturesExclude(annotation, extractor);
 
 				final Problem problem = new Problem();
 				problem.l = positive.size() + negative.size();
@@ -192,9 +189,13 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExt
 	InternalModel<OBJECT, ANNOTATION> internal;
 	private Set<ANNOTATION> annotations;
 	private ArrayList<ANNOTATION> annotationsList;
+	private FeatureExtractor<? extends FeatureVector, OBJECT> extractor;
 
-	public LiblinearAnnotator(EXTRACTOR extractor, Mode mode, SolverType solver, double C, double eps) {
-		super(extractor);
+	@SuppressWarnings("unchecked")
+	public LiblinearAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, Mode mode, SolverType solver,
+			double C, double eps)
+	{
+		this.extractor = extractor;
 
 		switch (mode) {
 		case MULTICLASS:
@@ -230,7 +231,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExt
 	}
 
 	public static void main(String[] args) {
-		final LiblinearAnnotator<DoubleFV, String, IdentityFeatureExtractor<DoubleFV>> ann = new LiblinearAnnotator<DoubleFV, String, IdentityFeatureExtractor<DoubleFV>>(
+		final LiblinearAnnotator<DoubleFV, String> ann = new LiblinearAnnotator<DoubleFV, String>(
 				new IdentityFeatureExtractor<DoubleFV>(), Mode.MULTICLASS, SolverType.L2R_LR, 1.0, 0.01);
 
 		final List<Annotated<DoubleFV, String>> trainingData = new ArrayList<Annotated<DoubleFV, String>>();

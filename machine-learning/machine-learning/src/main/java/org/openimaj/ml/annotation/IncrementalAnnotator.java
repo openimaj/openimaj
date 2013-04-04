@@ -31,7 +31,6 @@ package org.openimaj.ml.annotation;
 
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.training.IncrementalTrainer;
 
 /**
@@ -43,26 +42,14 @@ import org.openimaj.ml.training.IncrementalTrainer;
  *            Type of object
  * @param <ANNOTATION>
  *            Type of annotation
- * @param <EXTRACTOR>
- *            Type of object capable of extracting features from the object
  */
-public abstract class IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<?, OBJECT>>
+public abstract class IncrementalAnnotator<OBJECT, ANNOTATION>
 		extends
-		AbstractAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
+		AbstractAnnotator<OBJECT, ANNOTATION>
 		implements
 		IncrementalTrainer<Annotated<OBJECT, ANNOTATION>>
 {
 	protected IncrementalAnnotator() {
-	}
-
-	/**
-	 * Construct with the given feature extractor.
-	 * 
-	 * @param extractor
-	 *            the feature extractor
-	 */
-	public IncrementalAnnotator(EXTRACTOR extractor) {
-		super(extractor);
 	}
 
 	/**

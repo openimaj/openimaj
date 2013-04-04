@@ -31,7 +31,6 @@ package org.openimaj.ml.annotation;
 
 import org.openimaj.experiment.evaluation.classification.BasicClassificationResult;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
-import org.openimaj.feature.FeatureExtractor;
 
 /**
  * Abstract base class for objects capable of annotating things. Implementors
@@ -45,29 +44,12 @@ import org.openimaj.feature.FeatureExtractor;
  *            Type of object being annotated
  * @param <ANNOTATION>
  *            Type of annotation
- * @param <EXTRACTOR>
- *            Type of object capable of extracting features from the object
  */
-public abstract class AbstractAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<?, OBJECT>>
+public abstract class AbstractAnnotator<OBJECT, ANNOTATION>
 		implements
-		Annotator<OBJECT, ANNOTATION, EXTRACTOR>
+		Annotator<OBJECT, ANNOTATION>
 {
-	/**
-	 * The underlying feature extractor
-	 */
-	public EXTRACTOR extractor;
-
 	protected AbstractAnnotator() {
-	}
-
-	/**
-	 * Construct with the given feature extractor.
-	 * 
-	 * @param extractor
-	 *            the feature extractor
-	 */
-	public AbstractAnnotator(EXTRACTOR extractor) {
-		this.extractor = extractor;
 	}
 
 	@Override

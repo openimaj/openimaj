@@ -37,7 +37,6 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.util.pair.IndependentPair;
@@ -72,7 +71,7 @@ public class FaceRecognitionTool {
 			return;
 		}
 
-		final FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
+		final FaceRecognitionEngine<T, String> engine = options.getEngine();
 
 		if (options.files == null) {
 			System.err.println("No images to test");

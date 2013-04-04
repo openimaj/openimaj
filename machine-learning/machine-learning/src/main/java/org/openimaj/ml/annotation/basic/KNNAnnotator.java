@@ -58,14 +58,12 @@ import org.openimaj.util.comparator.DistanceComparator;
  *            Type of object being annotated
  * @param <ANNOTATION>
  *            Type of annotation
- * @param <EXTRACTOR>
- *            Type of feature extractor
  * @param <FEATURE>
  *            Type of feature produced by extractor
  */
-public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
+public class KNNAnnotator<OBJECT, ANNOTATION, FEATURE>
 		extends
-		IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
+		IncrementalAnnotator<OBJECT, ANNOTATION>
 {
 	private int k = 1;
 	private final List<FEATURE> features = new ArrayList<FEATURE>();
@@ -74,6 +72,7 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	private ObjectNearestNeighbours<FEATURE> nn;
 	private DistanceComparator<? super FEATURE> comparator;
 	private float threshold = 0;
+	private FeatureExtractor<FEATURE, OBJECT> extractor;
 
 	/**
 	 * Construct with the given extractor, comparator and threshold. The number
@@ -90,7 +89,10 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	 * @param threshold
 	 *            the threshold for successful matches
 	 */
-	public KNNAnnotator(final EXTRACTOR extractor, final DistanceComparator<? super FEATURE> comparator, final float threshold) {
+	public KNNAnnotator(final FeatureExtractor<FEATURE, OBJECT> extractor,
+			final DistanceComparator<? super FEATURE> comparator,
+			final float threshold)
+	{
 		this(extractor, comparator, 1, threshold);
 	}
 
@@ -103,7 +105,9 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	 * @param comparator
 	 *            the comparator
 	 */
-	public KNNAnnotator(final EXTRACTOR extractor, final DistanceComparator<? super FEATURE> comparator) {
+	public KNNAnnotator(final FeatureExtractor<FEATURE, OBJECT> extractor,
+			final DistanceComparator<? super FEATURE> comparator)
+	{
 		this(extractor, comparator, 1, comparator.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE);
 	}
 
@@ -118,7 +122,9 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	 * @param k
 	 *            the number of neighbours
 	 */
-	public KNNAnnotator(final EXTRACTOR extractor, final DistanceComparator<? super FEATURE> comparator, final int k) {
+	public KNNAnnotator(final FeatureExtractor<FEATURE, OBJECT> extractor,
+			final DistanceComparator<? super FEATURE> comparator, final int k)
+	{
 		this(extractor, comparator, k, comparator.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE);
 	}
 
@@ -139,8 +145,11 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	 * @param threshold
 	 *            the threshold for successful matches
 	 */
-	public KNNAnnotator(final EXTRACTOR extractor, final DistanceComparator<? super FEATURE> comparator, final int k, final float threshold) {
-		super(extractor);
+	public KNNAnnotator(final FeatureExtractor<FEATURE, OBJECT> extractor,
+			final DistanceComparator<? super FEATURE> comparator, final int k,
+			final float threshold)
+	{
+		this.extractor = extractor;
 		this.comparator = comparator;
 		this.k = k;
 		this.threshold = threshold;
@@ -172,10 +181,10 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	 * @return new {@link KNNAnnotator}
 	 */
 	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
-			KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE> create(final EXTRACTOR extractor,
+			KNNAnnotator<OBJECT, ANNOTATION, FEATURE> create(final EXTRACTOR extractor,
 					final DistanceComparator<FEATURE> comparator, final float threshold)
 	{
-		return new KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE>(
+		return new KNNAnnotator<OBJECT, ANNOTATION, FEATURE>(
 				extractor, comparator, threshold);
 	}
 
@@ -200,10 +209,10 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	 * @return new {@link KNNAnnotator}
 	 */
 	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
-			KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE> create(final EXTRACTOR extractor,
+			KNNAnnotator<OBJECT, ANNOTATION, FEATURE> create(final EXTRACTOR extractor,
 					final DistanceComparator<FEATURE> comparator)
 	{
-		return new KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE>(
+		return new KNNAnnotator<OBJECT, ANNOTATION, FEATURE>(
 				extractor, comparator);
 	}
 
@@ -229,10 +238,10 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	 * @return new {@link KNNAnnotator}
 	 */
 	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
-			KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE> create(final EXTRACTOR extractor,
+			KNNAnnotator<OBJECT, ANNOTATION, FEATURE> create(final EXTRACTOR extractor,
 					final DistanceComparator<FEATURE> comparator, final int k)
 	{
-		return new KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE>(
+		return new KNNAnnotator<OBJECT, ANNOTATION, FEATURE>(
 				extractor, comparator, k);
 	}
 
@@ -264,10 +273,10 @@ public class KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor
 	 * @return new {@link KNNAnnotator}
 	 */
 	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
-			KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE> create(final EXTRACTOR extractor,
+			KNNAnnotator<OBJECT, ANNOTATION, FEATURE> create(final EXTRACTOR extractor,
 					final DistanceComparator<FEATURE> comparator, final int k, final float threshold)
 	{
-		return new KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE>(
+		return new KNNAnnotator<OBJECT, ANNOTATION, FEATURE>(
 				extractor, comparator, k, threshold);
 	}
 

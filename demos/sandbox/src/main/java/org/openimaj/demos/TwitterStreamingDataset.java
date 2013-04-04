@@ -66,11 +66,11 @@ public class TwitterStreamingDataset extends BlockingDroppingBufferedStream<Stat
 			public void perform(Status object) {
 				System.out.println("inserted: " + buffer.insertCount() + "\tdropped: " + buffer.dropCount());
 
-				// try {
-				// Thread.sleep(100);
-				// } catch (final InterruptedException e) {
-				// e.printStackTrace();
-				// }
+				try {
+					Thread.sleep(100);
+				} catch (final InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}

@@ -69,7 +69,7 @@ import org.openimaj.util.pair.ObjectDoublePair;
  */
 public class AnnotationEvaluator<OBJECT extends Identifiable, ANNOTATION>
 {
-	Annotator<OBJECT, ANNOTATION, ?> annotator;
+	Annotator<OBJECT, ANNOTATION> annotator;
 	Dataset<? extends Annotated<OBJECT, ANNOTATION>> testData;
 	AnnotationEvaluationEngine<OBJECT, ANNOTATION> engine;
 
@@ -82,7 +82,7 @@ public class AnnotationEvaluator<OBJECT extends Identifiable, ANNOTATION>
 	 * @param testData
 	 *            the test data with ground-truth annotations.
 	 */
-	public AnnotationEvaluator(Annotator<OBJECT, ANNOTATION, ?> annotator,
+	public AnnotationEvaluator(Annotator<OBJECT, ANNOTATION> annotator,
 			Dataset<? extends Annotated<OBJECT, ANNOTATION>> testData)
 	{
 		this.annotator = annotator;
@@ -197,7 +197,7 @@ public class AnnotationEvaluator<OBJECT extends Identifiable, ANNOTATION>
 	{
 		Map<OBJECT, List<ScoredAnnotation<ANNOTATION>>> results = new HashMap<OBJECT, List<ScoredAnnotation<ANNOTATION>>>();
 
-		public AnnotationEvaluationEngine(Annotator<OBJECT, ANNOTATION, ?> annotator,
+		public AnnotationEvaluationEngine(Annotator<OBJECT, ANNOTATION> annotator,
 				Dataset<? extends Annotated<OBJECT, ANNOTATION>> testData)
 		{
 			for (final Annotated<OBJECT, ANNOTATION> item : testData) {

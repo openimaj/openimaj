@@ -128,7 +128,7 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 							GroupedDataset<KEY, ListDataset<FACE>, FACE> training,
 							GroupedDataset<KEY, ListDataset<FACE>, FACE> validation)
 					{
-						final FaceRecogniser<FACE, ?, KEY> rec = engine.create(training);
+						final FaceRecogniser<FACE, KEY> rec = engine.create(training);
 
 						final ClassificationEvaluator<CMResult<KEY>, KEY, FACE> eval =
 								new ClassificationEvaluator<CMResult<KEY>, KEY, FACE>(

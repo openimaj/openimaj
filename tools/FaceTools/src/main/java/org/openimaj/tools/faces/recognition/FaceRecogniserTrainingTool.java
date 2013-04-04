@@ -36,7 +36,6 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.TextFileDataset;
 import org.openimaj.tools.faces.recognition.options.RecognitionStrategy;
@@ -45,58 +44,59 @@ import org.openimaj.tools.faces.recognition.options.RecognitionStrategy;
  * A tool for training face recognisers
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> Type of {@link DetectedFace}
+ * 
+ * @param <T>
+ *            Type of {@link DetectedFace}
  */
 public class FaceRecogniserTrainingTool<T extends DetectedFace> {
-	
+
 	/**
 	 * The main method of the tool.
 	 * 
-	 * @param <T> Type of DetectedFace
+	 * @param <T>
+	 *            Type of DetectedFace
 	 * 
 	 * @param args
 	 * @throws IOException
 	 */
-	public static <T extends DetectedFace> void main(String [] args) throws IOException {
-		FaceRecogniserTrainingToolOptions options = new FaceRecogniserTrainingToolOptions();
-        CmdLineParser parser = new CmdLineParser( options );
+	public static <T extends DetectedFace> void main(String[] args) throws IOException {
+		final FaceRecogniserTrainingToolOptions options = new FaceRecogniserTrainingToolOptions();
+		final CmdLineParser parser = new CmdLineParser(options);
 
-        try
-        {
-	        parser.parseArgument( args );
-        }
-        catch( CmdLineException e )
-        {
-	        System.err.println( e.getMessage() );
-	        System.err.println( "java FaceRecogniserTrainingTool [options...] IMAGE-FILES-OR-DIRECTORIES");
-	        parser.printUsage( System.err );
-	        
-	        System.err.println();
-	        System.err.println("Strategy information:");
-	        for (RecognitionStrategy s : RecognitionStrategy.values()) {
-	        	System.err.println(s);
-	        }
-	        return;
-        }
+		try
+		{
+			parser.parseArgument(args);
+		} catch (final CmdLineException e)
+		{
+			System.err.println(e.getMessage());
+			System.err.println("java FaceRecogniserTrainingTool [options...] IMAGE-FILES-OR-DIRECTORIES");
+			parser.printUsage(System.err);
 
-        FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
-        
-        if (options.identifier == null) {
-        	if(options.datasetFile == null)
-        	{
-        		for (File f : options.files)
-        			engine.train(options.identifier, ImageUtilities.readF(f));
-        	}
-        	else{
-        		engine.train(new TextFileDataset(options.datasetFile));
-        	}
-        } else {
-        	for (File f : options.files)
-        		engine.train(options.identifier, ImageUtilities.readF(f));
-        }
-        
-        engine.save(options.recogniserFile);
+			System.err.println();
+			System.err.println("Strategy information:");
+			for (final RecognitionStrategy s : RecognitionStrategy.values()) {
+				System.err.println(s);
+			}
+			return;
+		}
+
+		final FaceRecognitionEngine<T, String> engine = options.getEngine();
+
+		if (options.identifier == null) {
+			if (options.datasetFile == null)
+			{
+				for (final File f : options.files)
+					engine.train(options.identifier, ImageUtilities.readF(f));
+			}
+			else {
+				engine.train(new TextFileDataset(options.datasetFile));
+			}
+		} else {
+			for (final File f : options.files)
+				engine.train(options.identifier, ImageUtilities.readF(f));
+		}
+
+		engine.save(options.recogniserFile);
 	}
-	
+
 }

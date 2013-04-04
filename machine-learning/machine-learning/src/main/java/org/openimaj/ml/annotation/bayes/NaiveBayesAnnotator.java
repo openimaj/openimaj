@@ -47,6 +47,7 @@ import java.util.Set;
 
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FeatureVector;
+import org.openimaj.feature.IdentityFeatureExtractor;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
@@ -54,19 +55,17 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
 /**
  * Annotator based on a Naive Bayes Classifier. Uses a
  * {@link VectorNaiveBayesCategorizer} as the actual classifier.
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  * @param <OBJECT>
  *            Type of object being annotated
  * @param <ANNOTATION>
  *            Type of annotation
- * @param <EXTRACTOR>
- *            Type of feature extractor
  */
-public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<? extends FeatureVector, OBJECT>>
+public class NaiveBayesAnnotator<OBJECT, ANNOTATION>
 		extends
-		IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
+		IncrementalAnnotator<OBJECT, ANNOTATION>
 {
 	private static class PDF extends UnivariateGaussian.PDF {
 		private static final long serialVersionUID = 1L;
@@ -76,7 +75,7 @@ public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureEx
 
 	private static class PDFLearner extends AbstractCloneableSerializable
 			implements
-				IncrementalLearner<Double, PDF>
+			IncrementalLearner<Double, PDF>
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -108,9 +107,9 @@ public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureEx
 
 	/**
 	 * Modes of operation for prediction using the {@link NaiveBayesAnnotator}.
-	 *
+	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static enum Mode {
 		/**
@@ -166,20 +165,37 @@ public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureEx
 	private VectorNaiveBayesCategorizer<ANNOTATION, PDF> categorizer;
 	private OnlineLearner<ANNOTATION, PDF> learner;
 	private final Mode mode;
+	private FeatureExtractor<? extends FeatureVector, OBJECT> extractor;
 
 	/**
 	 * Construct a {@link NaiveBayesAnnotator} with the given feature extractor
 	 * and mode of operation.
-	 *
+	 * 
 	 * @param extractor
 	 *            the feature extractor.
 	 * @param mode
 	 *            the mode of operation during prediction
 	 */
-	public NaiveBayesAnnotator(EXTRACTOR extractor, Mode mode) {
-		super(extractor);
+	public NaiveBayesAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, Mode mode) {
+		this.extractor = extractor;
 		this.mode = mode;
 		reset();
+	}
+
+	/**
+	 * Convenience method to construct a {@link NaiveBayesAnnotator} in the case
+	 * where the raw objects are themselves the feature and thus an
+	 * {@link IdentityFeatureExtractor} can be used. This method is equivalent
+	 * to calling
+	 * <tt>new NaiveBayesAnnotator<OBJECT,ANNOTATION>(new IdentityFeatureExtractor<OBJECT>(), mode)</tt>
+	 * .
+	 * 
+	 * @param mode
+	 *            the mode of operation during prediction
+	 * @return the new {@link NaiveBayesAnnotator}
+	 */
+	public static <OBJECT extends FeatureVector, ANNOTATION> NaiveBayesAnnotator<OBJECT, ANNOTATION> create(Mode mode) {
+		return new NaiveBayesAnnotator<OBJECT, ANNOTATION>(new IdentityFeatureExtractor<OBJECT>(), mode);
 	}
 
 	@Override

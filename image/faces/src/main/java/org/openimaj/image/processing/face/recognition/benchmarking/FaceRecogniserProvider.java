@@ -53,5 +53,5 @@ public interface FaceRecogniserProvider<FACE extends DetectedFace, PERSON> {
 	 *            the dataset
 	 * @return newly created and trained recogniser instance
 	 */
-	public abstract FaceRecogniser<FACE, ?, PERSON> create(GroupedDataset<PERSON, ListDataset<FACE>, FACE> dataset);
+	public abstract FaceRecogniser<FACE, PERSON> create(GroupedDataset<PERSON, ListDataset<FACE>, FACE> dataset);
 }

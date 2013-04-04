@@ -33,45 +33,44 @@ import java.util.List;
 import java.util.Set;
 
 import org.openimaj.experiment.evaluation.classification.Classifier;
-import org.openimaj.feature.FeatureExtractor;
 
 /**
- * Base class for objects capable of annotating things. Annotators
- * are essentially general forms of classifiers; annotation and 
- * classification should be seen as synonymous.
+ * Base class for objects capable of annotating things. Annotators are
+ * essentially general forms of classifiers; annotation and classification
+ * should be seen as synonymous.
  * <p>
- * The annotation interface extends the idea of a classifier with
- * support for feature-extraction from certain forms of object
- * in order to generate the classifications/annotations. The
- * {@link #annotate(Object)} and {@link #classify(Object)} methods
- * do exactly the same thing, but return results in different forms.
- * Which method is used might depend on the task at hand. A simple
- * implementation of the {@link #classify(Object)} method that
+ * The annotation interface extends the idea of a classifier with support for
+ * feature-extraction from certain forms of object in order to generate the
+ * classifications/annotations. The {@link #annotate(Object)} and
+ * {@link #classify(Object)} methods do exactly the same thing, but return
+ * results in different forms. Which method is used might depend on the task at
+ * hand. A simple implementation of the {@link #classify(Object)} method that
  * calls the {@link #annotate(Object)} method can be found in the
- * {@link AbstractAnnotator} class. Implementors are advised to
- * extend the {@link AbstractAnnotator} class or one of its subclasses.
+ * {@link AbstractAnnotator} class. Implementors are advised to extend the
+ * {@link AbstractAnnotator} class or one of its subclasses.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object being annotated
- * @param <ANNOTATION> Type of annotation
- * @param <EXTRACTOR> Type of object capable of extracting features from the object
+ * 
+ * @param <OBJECT>
+ *            Type of object being annotated
+ * @param <ANNOTATION>
+ *            Type of annotation
  */
-public interface Annotator<
-	OBJECT, 
-	ANNOTATION,
-	EXTRACTOR extends FeatureExtractor<?, OBJECT>>
-extends
-	Classifier<ANNOTATION, OBJECT>
+public interface Annotator<OBJECT, ANNOTATION>
+		extends
+		Classifier<ANNOTATION, OBJECT>
 {
 	/**
-	 * @return a {@link Set} of all annotations this {@link Annotator} knows about
+	 * @return a {@link Set} of all annotations this {@link Annotator} knows
+	 *         about
 	 */
 	public abstract Set<ANNOTATION> getAnnotations();
-	
+
 	/**
 	 * Generate annotations for the given object.
-	 * @param object the image
+	 * 
+	 * @param object
+	 *            the image
 	 * @return generated annotations
 	 */
 	public abstract List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object);

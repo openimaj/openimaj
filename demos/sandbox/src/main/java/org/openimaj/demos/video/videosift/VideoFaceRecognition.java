@@ -64,7 +64,7 @@ public class VideoFaceRecognition extends KeyAdapter implements VideoDisplayList
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
-	private AnnotatorFaceRecogniser<CLMDetectedFace, ?, String> recogniser;
+	private AnnotatorFaceRecogniser<CLMDetectedFace, String> recogniser;
 	private CLMFaceTracker engine;
 	private FImage currentFrame;
 
@@ -84,8 +84,8 @@ public class VideoFaceRecognition extends KeyAdapter implements VideoDisplayList
 		final FacialFeatureComparator<LocalLBPHistogram> comparator = new
 				FaceFVComparator<LocalLBPHistogram, FloatFV>(
 						FloatFVComparison.EUCLIDEAN);
-		final KNNAnnotator<CLMDetectedFace, String, LocalLBPHistogram.Extractor<CLMDetectedFace>, LocalLBPHistogram> knn =
-				KNNAnnotator.create(extractor, comparator, 1, 5f);
+		final KNNAnnotator<CLMDetectedFace, String, LocalLBPHistogram> knn = KNNAnnotator.create(extractor, comparator,
+				1, 5f);
 		// final CLMShapeFeature.Extractor extractor = new
 		// CLMShapeFeature.Extractor();
 		// final FacialFeatureComparator<CLMShapeFeature> comparator = new

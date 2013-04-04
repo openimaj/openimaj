@@ -44,7 +44,6 @@ import net.billylieurance.azuresearch.AzureSearchImageQuery;
 import net.billylieurance.azuresearch.AzureSearchImageResult;
 import net.billylieurance.azuresearch.AzureSearchResultSet;
 
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -88,7 +87,7 @@ public class PersonMatcher
 	private final FaceDetector<?, FImage> faceDetector;
 
 	/** The face recognition engine we'll use */
-	private final FaceRecognitionEngine<? extends DetectedFace, ?, String> faceRecogniser;
+	private final FaceRecognitionEngine<? extends DetectedFace, String> faceRecogniser;
 
 	/** Whether to cache search results */
 	private final boolean cacheImages = true;
@@ -239,15 +238,14 @@ public class PersonMatcher
 	 * @return The face recogniser engine
 	 * @throws IOException
 	 */
-	private FaceRecognitionEngine<? extends DetectedFace, ?, String> getFaceRecogniserEngine(final File recogniserFile)
+	private FaceRecognitionEngine<? extends DetectedFace, String> getFaceRecogniserEngine(final File recogniserFile)
 			throws IOException
 	{
 		if (recogniserFile.exists())
 		{
 			System.out.println("Loading existing recogniser from " + recogniserFile + " to update...");
 
-			final FaceRecognitionEngine<DetectedFace, FeatureExtractor<?, DetectedFace>, String> fre = FaceRecognitionEngine
-					.load(recogniserFile);
+			final FaceRecognitionEngine<DetectedFace, String> fre = FaceRecognitionEngine.load(recogniserFile);
 			return fre;
 		}
 

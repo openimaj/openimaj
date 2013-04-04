@@ -54,16 +54,14 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
  * 
  * @param <FACE>
  *            Type of {@link DetectedFace}
- * @param <EXTRACTOR>
- *            Type of {@link FeatureExtractor}
  * @param <PERSON>
  *            Type of object representing a person
  */
-public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
+public class AnnotatorFaceRecogniser<FACE extends DetectedFace, PERSON>
 		extends
-		FaceRecogniser<FACE, EXTRACTOR, PERSON>
+		FaceRecogniser<FACE, PERSON>
 {
-	protected IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator;
+	protected IncrementalAnnotator<FACE, PERSON> annotator;
 
 	protected AnnotatorFaceRecogniser() {
 	}
@@ -74,9 +72,7 @@ public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extend
 	 * @param annotator
 	 *            the annotator
 	 */
-	public AnnotatorFaceRecogniser(IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator) {
-		super(annotator.extractor);
-
+	public AnnotatorFaceRecogniser(IncrementalAnnotator<FACE, PERSON> annotator) {
 		this.annotator = annotator;
 	}
 
@@ -95,16 +91,15 @@ public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extend
 	 * @return the new {@link AnnotatorFaceRecogniser} instance
 	 */
 	public static <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
-			AnnotatorFaceRecogniser<FACE, EXTRACTOR, PERSON> create(
-					IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator)
+			AnnotatorFaceRecogniser<FACE, PERSON> create(
+					IncrementalAnnotator<FACE, PERSON> annotator)
 	{
-		return new AnnotatorFaceRecogniser<FACE, EXTRACTOR, PERSON>(annotator);
+		return new AnnotatorFaceRecogniser<FACE, PERSON>(annotator);
 	}
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		annotator = IOUtils.read(in);
-		extractor = annotator.extractor;
 	}
 
 	@Override
@@ -166,7 +161,6 @@ public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extend
 
 	@Override
 	public String toString() {
-		return String.format("AnnotatorFaceRecogniser[extractor=%s; recogniser=%s]",
-				this.extractor, this.annotator);
+		return String.format("AnnotatorFaceRecogniser[recogniser=%s]", this.annotator);
 	}
 }

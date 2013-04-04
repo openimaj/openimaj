@@ -36,7 +36,6 @@ import java.util.List;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.tools.faces.recognition.options.RecognitionEngineProvider;
@@ -223,14 +222,14 @@ class FaceRecogniserTrainingToolOptions {
 	List<File> files;
 
 	@SuppressWarnings("unchecked")
-	public <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>>
-			FaceRecognitionEngine<FACE, EXTRACTOR, String>
+	public <FACE extends DetectedFace>
+			FaceRecognitionEngine<FACE, String>
 			getEngine() throws IOException
 	{
 		if (recogniserFile.exists()) {
 			return FaceRecognitionEngine.load(recogniserFile);
 		}
 
-		return (FaceRecognitionEngine<FACE, EXTRACTOR, String>) strategyOp.createRecognitionEngine();
+		return (FaceRecognitionEngine<FACE, String>) strategyOp.createRecognitionEngine();
 	}
 }
