@@ -34,6 +34,8 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -282,7 +284,7 @@ public class WordIndex extends StageAppender {
 		}
 		ArrayList<MLArray> list = new ArrayList<MLArray>();
 		list.add(wordCell);
-		new MatFileWriter(fs.create(wordMatPath),list );
+		new MatFileWriter(Channels.newChannel(fs.create(wordMatPath)),list );
 	}
 
 }

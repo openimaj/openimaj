@@ -36,9 +36,9 @@ import Jama.Matrix;
 
 /**
  * A circle shape
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class Circle implements Shape {
 	protected Point2d centre;
@@ -46,7 +46,7 @@ public class Circle implements Shape {
 
 	/**
 	 * Construct a circle with the given position and radius
-	 * 
+	 *
 	 * @param x
 	 *            the x-coordinate of the centre
 	 * @param y
@@ -60,7 +60,7 @@ public class Circle implements Shape {
 
 	/**
 	 * Construct a circle with the given position and radius
-	 * 
+	 *
 	 * @param centre
 	 *            the coordinate of the centre
 	 * @param radius
@@ -73,7 +73,7 @@ public class Circle implements Shape {
 
 	/**
 	 * Construct a circle with the given circle
-	 * 
+	 *
 	 * @param c
 	 *            the circle
 	 */
@@ -197,7 +197,7 @@ public class Circle implements Shape {
 
 	/**
 	 * Set the x-ordinate of the centre of the circle.
-	 * 
+	 *
 	 * @param x
 	 *            The x-ordinate
 	 */
@@ -207,7 +207,7 @@ public class Circle implements Shape {
 
 	/**
 	 * Set the y-ordinate of the centre of the circle.
-	 * 
+	 *
 	 * @param y
 	 *            The y-ordinate
 	 */
@@ -217,7 +217,7 @@ public class Circle implements Shape {
 
 	/**
 	 * Set the radius of the circle.
-	 * 
+	 *
 	 * @param r
 	 *            The radius.
 	 */
@@ -281,5 +281,13 @@ public class Circle implements Shape {
 	@Override
 	public Circle clone() {
 		return new Circle(this.centre.copy(), this.radius);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Circle)) return false;
+
+		Circle that = (Circle)obj;
+		return that.centre.equals(this.centre) && that.radius == this.radius;
 	}
 }

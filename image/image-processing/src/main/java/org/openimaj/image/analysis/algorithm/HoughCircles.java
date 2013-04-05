@@ -33,41 +33,40 @@ import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.round;
 import static java.lang.Math.sin;
-
 import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TIntFloatProcedure;
 import gnu.trove.procedure.TIntObjectProcedure;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.math.geometry.shape.Circle;
+import org.openimaj.util.queue.BoundedPriorityQueue;
 
 
 /**
  * An implementation of the Hough transform for circles.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HoughCircles implements ImageAnalyser<FImage> {
+	Logger logger = Logger.getLogger(HoughCircles.class);
 	/**
 	 * A circle with an associated weight.
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
-	public static class WeightedCircle extends Circle {
+	public static class WeightedCircle extends Circle implements Comparable<WeightedCircle> {
 		/**
-		 * The weight 
+		 * The weight
 		 */
 		public float weight;
-		
+
 		/**
 		 * Construct with the given geometry and weight.
 		 * @param x the x-ordinate of the center
@@ -79,43 +78,45 @@ public class HoughCircles implements ImageAnalyser<FImage> {
 			super(x, y, radius);
 			this.weight = weight;
 		}
+
+		@Override
+		public int compareTo(WeightedCircle o) {
+			return Float.compare(o.weight, this.weight);
+		}
 	}
-	
+
 	protected int minRad;
 	protected int maxRad;
 	protected TIntObjectHashMap<TIntObjectHashMap<TIntFloatHashMap>> radmap;
 	private float[][] cosanglemap;
 	private float[][] sinanglemap;
-	private float[][] radiusweight;
 	private int nRadius;
 	private int nDegree;
 	private int radIncr;
-	private int degIncr;
 
 	/**
 	 * Construct with the given parameters.
-	 * 
+	 *
 	 * @param minRad minimum search radius
 	 * @param maxRad maximum search radius
 	 */
-	public HoughCircles(int minRad, int maxRad) {
+	public HoughCircles(int minRad, int maxRad, int radIncrement, int nDegree) {
 		super();
 		this.minRad = minRad;
+		if(this.minRad <= 0) this.minRad = 1;
 		this.maxRad = maxRad;
 		this.radmap = new TIntObjectHashMap<TIntObjectHashMap<TIntFloatHashMap>>();
-		this.radIncr = 5;
-		this.degIncr = 5;
+		this.radIncr = radIncrement;
 		this.nRadius = (maxRad-minRad) / this.radIncr;
-		this.nDegree = 360 / this.degIncr;
+		this.nDegree = nDegree;
 		this.cosanglemap = new float[nRadius][nDegree];
 		this.sinanglemap = new float[nRadius][nDegree];
-		this.radiusweight = new float[nRadius][nDegree];
-		for (int rad=minRad; rad<maxRad; rad+=this.radIncr) {
-			for (int ang=0; ang<nDegree; ang+=this.degIncr) {
-				double t = (ang * PI) / 180.0;
-				this.cosanglemap [rad - minRad][ang] = (float) (rad*cos(t));
-				this.sinanglemap [rad - minRad][ang] = (float) (rad*sin(t));
-				this.radiusweight[rad - minRad][ang] = (float) (2 * Math.PI * rad);
+		for (int radIndex=0; radIndex<this.nRadius; radIndex++) {
+			for (int angIndex=0; angIndex<nDegree; angIndex++) {
+				double ang = angIndex * (2 * PI / nDegree);
+				double rad = minRad + (radIndex * this.radIncr);
+				this.cosanglemap [radIndex][angIndex] = (float) (rad*cos(ang));
+				this.sinanglemap [radIndex][angIndex] = (float) (rad*sin(ang));
 			}
 		}
 	}
@@ -129,41 +130,57 @@ public class HoughCircles implements ImageAnalyser<FImage> {
 			for (int x=0; x<width; x++) {
 				if (image.pixels[y][x] == 1)
 				{
-					for (int rad = 0; rad < nRadius; rad+=this.radIncr) {
-						for (int ang = 0; ang < nDegree; ang+=this.degIncr) {
+					for (int rad = 0; rad < nRadius; rad++) {
+						int actualrad = (rad*this.radIncr) + this.minRad;
+						float radiusWeight = 1f/this.nDegree;
+//						if(actualrad == 0){
+//							throw new RuntimeException("The weight should never be 0");
+//						}
+						for (int ang = 0; ang < nDegree; ang++) {
 							int x0 = round(x + this.cosanglemap[rad][ang]);
 							int y0 = round(y + this.sinanglemap[rad][ang]);
-	//						System.out.println(x0 + "," + y0 + " = " + this.radmap.pixels[y0+maxRad][x0+maxRad]);
-							int actualrad = rad + this.minRad; 
+
 							TIntObjectHashMap<TIntFloatHashMap> xMap = this.radmap.get(actualrad);
 							if(xMap == null){
-								xMap = new TIntObjectHashMap<TIntFloatHashMap>();
-								this.radmap.put(actualrad, xMap);
+								this.radmap.put(actualrad, xMap = new TIntObjectHashMap<TIntFloatHashMap>());
 							}
 							TIntFloatHashMap yMap = xMap.get(x0);
 							if(yMap == null){
-								yMap = new TIntFloatHashMap();
-								xMap.put(x0, yMap);
+								xMap.put(x0, yMap = new TIntFloatHashMap());
 							}
-							yMap.adjustOrPutValue(y0, 1f/this.radiusweight[rad][ang], 1f/this.radiusweight[rad][ang]);
-//							yMap.adjustOrPutValue(y0, 1f, 1f);
-							
+							yMap.adjustOrPutValue(y0, radiusWeight, radiusWeight);
+//							if(x0 == 37 && y0 == 22 && actualrad == 1){
+//								logger.debug("This should not be !");
+//								logger.debug(String.format("Pixel = %d,%d", x,y));
+//								logger.debug(String.format("x=%d,y=%d,r=%d,v=%2.5f",x0 ,y0 ,actualrad , newValue ));
+//							}
+//							if(x0 > 22 && x0 < 27 && y0 > 22  && y0 < 27 && actualrad > 10 && actualrad < 14){
+//								logger.debug("This should be correct!");
+//								logger.debug(String.format("x=%d,y=%d,r=%d,v=%2.5f",x0 ,y0 ,actualrad , newValue ));
+//							}
+//							if(Float.isInfinite(newValue)){
+//								throw new RuntimeException("The value held should never be infinity");
+//							}
+//							logger.debug(String.format("x=%d,y=%d,r=%d,v=%2.5f\n",x0 ,y0 ,actualrad , newValue ));
+//							maxWeight = Math.max(newValue, maxWeight);
 						}
 					}
 				}
 			}
 		}
+		logger.debug("Done analysing the image!");
 	}
-	
+
 	/**
 	 * Get the n-best detected circles.
 	 * @param n the number of circles to return
 	 * @return the n best detected circles.
 	 */
 	public List<WeightedCircle> getBest(int n) {
-		final List<WeightedCircle> toSort = new ArrayList<WeightedCircle>();
+//		final List<WeightedCircle> toSort = new ArrayList<WeightedCircle>();
+		final BoundedPriorityQueue<WeightedCircle> bpq = new BoundedPriorityQueue<WeightedCircle>(n);
 		this.radmap.forEachEntry(new TIntObjectProcedure<TIntObjectHashMap<TIntFloatHashMap>>() {
-			
+
 			@Override
 			public boolean execute(final int radius, TIntObjectHashMap<TIntFloatHashMap> b) {
 				b.forEachEntry(new TIntObjectProcedure<TIntFloatHashMap>() {
@@ -171,10 +188,10 @@ public class HoughCircles implements ImageAnalyser<FImage> {
 					@Override
 					public boolean execute(final int x, TIntFloatHashMap b) {
 						b.forEachEntry(new TIntFloatProcedure() {
-							
+
 							@Override
 							public boolean execute(int y, float weightedCount) {
-								toSort.add(new WeightedCircle(x,y,radius,weightedCount));
+								bpq.offer(new WeightedCircle(x,y,radius,weightedCount));
 								return true;
 							}
 						});
@@ -184,21 +201,7 @@ public class HoughCircles implements ImageAnalyser<FImage> {
 				return true;
 			}
 		});
-		
-		Collections.sort(toSort, new Comparator<WeightedCircle>(){
 
-			@Override
-			public int compare(WeightedCircle circ1, WeightedCircle circ2) {
-				if(circ1.weight < circ2.weight)
-					return 1;
-				else if(circ1.weight > circ2.weight)
-					return -1;
-				else
-					return 0;
-			}
-			
-		});
-		
-		return toSort.subList(0, n > toSort.size() ? toSort.size() : n);
+		return bpq.toOrderedList();
 	}
 }

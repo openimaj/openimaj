@@ -88,26 +88,26 @@ public class CorrelationModeTest {
 	
 	@Test
 	public void testWordIDFTimeSeries() throws Exception{
-		String command = String.format(
-				hadoopCommand,
-				dest.getAbsolutePath(),
-				"CSV",
-				output
-		);
-		String[] args = command.split(" ");
-		HadoopTwitterTokenTool.main(args);
-		
-		WordTimeValue wordTimeSeries = new WordTimeValue(output.getAbsolutePath());
-		long[] timePeriods = new long[]{
-				1285887600000l, // 1285974000000l, 1286060400000l, 
-				1286146800000l, // 1286233200000l, 1286319600000l, 
-				1286406000000l, // 1286492400000l, 1286578800000l
-		};
-		WordDFIDFTimeSeries wts = wordTimeSeries.values.get("#lol");
-		System.out.println(wts);
-		IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries> isp = new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(timePeriods);
-		isp.process(wts);
-		System.out.println(wts);
+//		String command = String.format(
+//				hadoopCommand,
+//				dest.getAbsolutePath(),
+//				"CSV",
+//				output
+//		);
+//		String[] args = command.split(" ");
+//		HadoopTwitterTokenTool.main(args);
+//		
+//		WordTimeValue wordTimeSeries = new WordTimeValue(output.getAbsolutePath());
+//		long[] timePeriods = new long[]{
+//				1285887600000l, // 1285974000000l, 1286060400000l, 
+//				1286146800000l, // 1286233200000l, 1286319600000l, 
+//				1286406000000l, // 1286492400000l, 1286578800000l
+//		};
+//		WordDFIDFTimeSeries wts = wordTimeSeries.values.get("#lol");
+//		System.out.println(wts);
+//		IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries> isp = new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(timePeriods);
+//		isp.process(wts);
+//		System.out.println(wts);
 	}
 	
 	@Test

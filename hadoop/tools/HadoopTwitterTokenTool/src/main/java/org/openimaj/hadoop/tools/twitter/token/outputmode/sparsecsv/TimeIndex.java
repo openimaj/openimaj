@@ -34,6 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -188,7 +189,7 @@ public class TimeIndex extends StageProvider{
 		}
 		ArrayList<MLArray> list = new ArrayList<MLArray>();
 		list.add(timeCell);
-		new MatFileWriter(fs.create(timeMatPath),list );
+		new MatFileWriter(Channels.newChannel(fs.create(timeMatPath)),list );
 	}
 
 }

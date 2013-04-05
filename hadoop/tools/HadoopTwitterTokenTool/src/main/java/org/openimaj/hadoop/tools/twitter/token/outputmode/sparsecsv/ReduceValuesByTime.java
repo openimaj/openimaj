@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -165,6 +166,6 @@ public class ReduceValuesByTime extends Reducer<LongWritable, BytesWritable, Nul
 		Path outLoc = new Path(String.format(valuesLocation, timeslot.get()));
 		FileSystem fs = HadoopToolsUtil.getFileSystem(outLoc);
 		FSDataOutputStream os = fs.create(outLoc);
-		new MatFileWriter(os, list);
+		new MatFileWriter(Channels.newChannel(os), list);
 	}
 }
