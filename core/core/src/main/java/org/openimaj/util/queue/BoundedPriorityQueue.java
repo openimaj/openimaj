@@ -38,7 +38,7 @@ import java.util.PriorityQueue;
 
 /**
  * A bounded priority queue based on an {@link InvertedPriorityQueue}.
- * Insertions to the queue are worst-case O(log(N)) and O(1) is the insertion is
+ * Insertions to the queue are worst-case O(log(N)) and O(1) if the insertion is
  * rejected. {@link #peek()} and {@link #poll()} are very inefficient (O(N)) as
  * they have to search for the head of the queue. {@link #peekTail()} and
  * {@link #pollTail()} have complexity O(1) and O(log(N)) respectively.
