@@ -52,7 +52,8 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	}
 
 	/**
-	 * Construct an MBFImage from single band images
+	 * Construct an MBFImage from single band images. The given images are used
+	 * directly as the bands and are not cloned.
 	 * 
 	 * @param colourSpace
 	 *            the colourspace
@@ -66,7 +67,10 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	/**
 	 * Construct an MBFImage from single band images with the default RGB
 	 * colourspace if there are three images, RGBA if there are 4 images, or
-	 * CUSTOM otherwise.
+	 * CUSTOM otherwise. The given images are used directly as the bands and are
+	 * not cloned; if you want to create an RGB {@link MBFImage} from a single
+	 * {@link FImage}, you would need to clone the {@link FImage} at least
+	 * twice.
 	 * 
 	 * @param images
 	 *            the bands
@@ -470,5 +474,18 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		}
 
 		return img;
+	}
+
+	/**
+	 * Convenience method to create an RGB {@link MBFImage} from an
+	 * {@link FImage} by cloning the {@link FImage} for each of the R, G and B
+	 * bands.
+	 * 
+	 * @param image
+	 *            the {@link FImage} to convert
+	 * @return the new RGB {@link MBFImage}
+	 */
+	public static MBFImage createRGB(FImage image) {
+		return new MBFImage(image.clone(), image.clone(), image.clone());
 	}
 }
