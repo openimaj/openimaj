@@ -35,20 +35,15 @@ package org.openimaj.demos.sandbox.image;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.UUID;
-
-import net.billylieurance.azuresearch.AbstractAzureSearchQuery.AZURESEARCH_FORMAT;
-import net.billylieurance.azuresearch.AzureSearchImageQuery;
-import net.billylieurance.azuresearch.AzureSearchImageResult;
-import net.billylieurance.azuresearch.AzureSearchResultSet;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.dataset.BingImageDataset;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
@@ -57,6 +52,8 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.tools.faces.recognition.options.RecognitionEngineProvider;
 import org.openimaj.tools.faces.recognition.options.RecognitionStrategy;
+import org.openimaj.util.api.auth.DefaultTokenFactory;
+import org.openimaj.util.api.auth.common.BingAPIToken;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -67,7 +64,10 @@ import org.openimaj.util.pair.IndependentPair;
  * using Bing) to retrieve images of the people in question and trains a face
  * recognition engine using these. It then looks in the query image for faces
  * and attempts to classify the found faces.
- * 
+ * <p>
+ * Note that, when run for the first time, the system will ask you to go and
+ * get an APPID for the Bing Search, and it will give you the URL to go get it.
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 5 Feb 2013
  * @version $Author$, $Revision$, $Date$
@@ -94,7 +94,7 @@ public class PersonMatcher
 
 	/**
 	 * Create a person matcher
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public PersonMatcher() throws Exception
@@ -104,7 +104,7 @@ public class PersonMatcher
 
 	/**
 	 * Create a person matcher with the given file
-	 * 
+	 *
 	 * @param recogniserFile
 	 *            The recogniser file to load
 	 * @throws Exception
@@ -123,7 +123,7 @@ public class PersonMatcher
 
 	/**
 	 * Create a recogniser for the given person into the given file.
-	 * 
+	 *
 	 * @param person
 	 *            The person to create a recogniser for
 	 * @param recogniserFile
@@ -138,7 +138,7 @@ public class PersonMatcher
 
 	/**
 	 * Constructor that takes a query string.
-	 * 
+	 *
 	 * @param queries
 	 *            The query strings to use
 	 * @param recogniserFile
@@ -156,7 +156,7 @@ public class PersonMatcher
 
 	/**
 	 * Constructor that takes a set of queries to search for
-	 * 
+	 *
 	 * @param queries
 	 *            The query strings to use
 	 * @param recogniserFile
@@ -184,7 +184,7 @@ public class PersonMatcher
 
 	/**
 	 * After training, you might want to save the recogniser
-	 * 
+	 *
 	 * @param recogniserFile
 	 *            The recogniser file to save to
 	 * @throws IOException
@@ -200,7 +200,7 @@ public class PersonMatcher
 	/**
 	 * Train the recogniser with examples retrieved from searching with the
 	 * given queries.
-	 * 
+	 *
 	 * @param queries
 	 *            The query strings
 	 */
@@ -222,8 +222,8 @@ public class PersonMatcher
 		System.out.println("Querying with image");
 
 		// Recognise the unknown faces in the image.
-		final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> recognisedFaces = this.faceRecogniser
-				.recogniseBest(fi);
+		final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>>
+			recognisedFaces = this.faceRecogniser.recogniseBest(fi);
 
 		System.out.println("Recognised " + recognisedFaces.size() + " faces.");
 		System.out.println(recognisedFaces);
@@ -233,23 +233,25 @@ public class PersonMatcher
 
 	/**
 	 * Returns a face recogniser by using the FaceRecogniserTools.
-	 * 
+	 *
 	 * @param recogniserFile
 	 * @return The face recogniser engine
 	 * @throws IOException
 	 */
-	private FaceRecognitionEngine<? extends DetectedFace, String> getFaceRecogniserEngine(final File recogniserFile)
-			throws IOException
+	private FaceRecognitionEngine<? extends DetectedFace, String> getFaceRecogniserEngine(
+			final File recogniserFile )	throws IOException
 	{
-		if (recogniserFile.exists())
+		if( recogniserFile.exists() )
 		{
 			System.out.println("Loading existing recogniser from " + recogniserFile + " to update...");
 
-			final FaceRecognitionEngine<DetectedFace, String> fre = FaceRecognitionEngine.load(recogniserFile);
+			final FaceRecognitionEngine<DetectedFace, String> fre =
+					FaceRecognitionEngine.load(recogniserFile);
 			return fre;
 		}
 
-		final RecognitionEngineProvider<? extends DetectedFace> o = RecognitionStrategy.CLMFeature_KNN.getOptions();
+		final RecognitionEngineProvider<? extends DetectedFace> o =
+				RecognitionStrategy.CLMFeature_KNN.getOptions();
 		return o.createRecognitionEngine();
 	}
 
@@ -278,88 +280,76 @@ public class PersonMatcher
 			{
 				try
 				{
-					this.processImageURL(cachedImage.toURI().toURL().toString(), label);
-				} catch (final MalformedURLException m)
+					this.processImageURL(ImageUtilities.readMBF(cachedImage), label);
+				}
+				catch (final MalformedURLException m)
 				{
 					m.printStackTrace();
+				}
+				catch( final IOException e )
+				{
+					e.printStackTrace();
 				}
 			}
 			return;
 		}
 
-		// Do an image search with the given query. Note that the format
-		// must be XML - the library has no parser for JSON
-		final AzureSearchImageQuery aq = new AzureSearchImageQuery();
-		aq.setAppid(PersonMatcher.APPID);
-		aq.setFormat(AZURESEARCH_FORMAT.XML);
-		aq.setMarket("en-us");
-		aq.setQuery(query);
-		aq.doQuery();
+		final BingAPIToken apiToken = DefaultTokenFactory.get( BingAPIToken.class );
+		final BingImageDataset<MBFImage> results = BingImageDataset.create(
+				ImageUtilities.MBFIMAGE_READER, apiToken, query, 10 );
 
-		// Get the results
-		final AzureSearchResultSet<AzureSearchImageResult> results =
-				aq.getQueryResult();
-
-		System.out.println("    - Got " + results.getImageTotal() + " results");
+		System.out.println("    - Got " + results.getImages().size() + " results");
 
 		// Loop over all the results and process each one
-		for (final AzureSearchImageResult result : results)
-			this.processImageURL(result.getMediaUrl(), label);
+		for (final MBFImage result : results )
+			this.processImageURL( result, label );
 	}
 
 	/**
 	 * For each URL (that is an image representation of the query), load it in
 	 * and train the face recogniser.
-	 * 
-	 * @param url
+	 *
+	 * @param result
 	 *            The URL of an image that is a representation of the query
 	 * @param label
 	 *            The classification of the URL
 	 */
-	private void processImageURL(final String url, final String label)
+	private void processImageURL(final MBFImage result, final String label)
 	{
 		if (this.cacheImages)
 		{
 			try
 			{
-				final MBFImage i = ImageUtilities.readMBF(new URL(url));
-				final UUID uuid = UUID.nameUUIDFromBytes(i.toByteImage());
+				final UUID uuid = UUID.nameUUIDFromBytes( result.toByteImage() );
 				final File f = new File(PersonMatcher.CACHE_DIR + "/" + label + "/" + uuid + ".png");
 				f.getParentFile().mkdirs();
 				if (!f.exists())
-					ImageUtilities.write(i, f);
+					ImageUtilities.write(result, f);
 			} catch (final IOException e)
 			{
 				e.printStackTrace();
 			}
 		}
 
-		try
-		{
-			System.out.println("Reading " + url);
+		System.out.println("Reading " + result);
 
-			// Read in the result image
-			final FImage img = ImageUtilities.readF(
-					new URL(url));
+		// Read in the result image
+		final FImage img = result.flatten();
 
-			// Get the detected faces from the given image
-			final List<? extends DetectedFace> detectedFaces =
-					this.faceDetector.detectFaces(img);
+		// Get the detected faces from the given image
+		final List<? extends DetectedFace> detectedFaces =
+				this.faceDetector.detectFaces(img);
 
-			System.out.println("    - Found " + detectedFaces.size() + " faces ");
+		System.out.println("    - Found " + detectedFaces.size() + " faces ");
 
-			// If there is more than one person in the image (or none),
-			// then we can't sensibly say which one was the query.. so
-			// we must ignore. If there is only one detected face, we
-			// assume that it's the face of the person in the query
-			if (detectedFaces.size() == 1)
-				this.faceRecogniser.train(label, img);
-			else
-				System.out.println("    - Ignoring this image.");
-		} catch (final IOException e)
-		{
-			System.out.println("    - Could not read image " + url);
-		}
+		// If there is more than one person in the image (or none),
+		// then we can't sensibly say which one was the query.. so
+		// we must ignore. If there is only one detected face, we
+		// assume that it's the face of the person in the query
+		if (detectedFaces.size() == 1)
+			this.faceRecogniser.train(label, img);
+		else
+			System.out.println("    - Ignoring this image.");
 	}
 
 	/**
@@ -388,7 +378,8 @@ public class PersonMatcher
 			final FImage fi = ImageUtilities.readF(PersonMatcher.class.getResource(
 					"/org/openimaj/demos/sandbox/BarackObama1.jpg"));
 			final PersonMatcher pm = new PersonMatcher(new File(PersonMatcher.RECOGNISER_FILE));
-			final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> l = pm.query(fi);
+			final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>>
+				l = pm.query(fi);
 
 			final MBFImage m = new MBFImage(fi, fi, fi);
 			for (final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> i : l)
