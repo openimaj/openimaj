@@ -283,6 +283,7 @@ class ExtendedImageIO {
 					return loadWithReader(reader, binput);
 				}
 			} else {
+				// first try JAI if it's available
 				try {
 					// OpenJDK7 doesn't work properly with JAI as some of the
 					// classes are missing!! This next line will throw in such
@@ -293,9 +294,27 @@ class ExtendedImageIO {
 						return JAI.create("stream", SeekableStream.wrapInputStream(binput, false)).getAsBufferedImage();
 					}
 				} catch (final Exception e) {
-					// JAI didn't work... we'll fall back to ImageIO
+					// JAI didn't work... we'll fall back to ImageIO, but try
+					// the monkey first
 					binput.reset();
-					return ImageIO.read(binput);
+
+					// First try the Monkey reader
+					final ImageReader reader = getMonkeyReader();
+
+					if (reader == null) {
+						// fallback to the ImageIO reader... one day it might be
+						// fixed
+						return ImageIO.read(binput);
+					} else {
+						try {
+							return loadWithReader(reader, binput);
+						} catch (final Exception ee) {
+							// fallback to the ImageIO reader... one day it
+							// might be
+							// fixed
+							return ImageIO.read(binput);
+						}
+					}
 				}
 			}
 		} else {
