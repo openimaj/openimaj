@@ -38,7 +38,8 @@ import org.openimaj.data.dataset.MapBackedDataset;
 import org.openimaj.image.Image;
 
 /**
- * Convenience methods for dealing with face detections in datasets of images.
+ * Convenience methods for dealing with face detections in datasets and lists of
+ * images.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
@@ -65,7 +66,7 @@ public class DatasetFaceDetector {
 	 */
 	public static <PERSON, IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace>
 			GroupedDataset<PERSON, ListDataset<FACE>, FACE>
-			process(GroupedDataset<PERSON, ListDataset<IMAGE>, IMAGE> input, FaceDetector<FACE, IMAGE> detector)
+			process(GroupedDataset<PERSON, ? extends ListDataset<IMAGE>, IMAGE> input, FaceDetector<FACE, IMAGE> detector)
 	{
 		final MapBackedDataset<PERSON, ListDataset<FACE>, FACE> output = new MapBackedDataset<PERSON, ListDataset<FACE>, FACE>();
 
@@ -95,6 +96,47 @@ public class DatasetFaceDetector {
 		}
 
 		return output;
+	}
+
+	/**
+	 * Apply a face detector to all the images in the given dataset, choosing
+	 * only the biggest face if multiple are found.
+	 * 
+	 * @param <IMAGE>
+	 *            Type of image
+	 * @param <FACE>
+	 *            Type of {@link DetectedFace} extracted
+	 * @param instances
+	 *            The input faces
+	 * @param detector
+	 *            The face detector
+	 * @return a dataset of detected faces.
+	 */
+	public static <IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace>
+			ListDataset<FACE>
+			process(List<IMAGE> instances, FaceDetector<FACE, IMAGE> detector)
+	{
+		final ListBackedDataset<FACE> detected = new ListBackedDataset<FACE>();
+
+		for (int i = 0; i < instances.size(); i++) {
+			final IMAGE img = instances.get(i);
+			final List<FACE> faces = detector.detectFaces(img);
+
+			if (faces == null || faces.size() == 0) {
+				System.err.println("There was no face detected in instance " + i);
+				// detected.add(null);
+				continue;
+			}
+
+			if (faces.size() == 1) {
+				detected.add(faces.get(0));
+				continue;
+			}
+
+			detected.add(getBiggest(faces));
+		}
+
+		return detected;
 	}
 
 	/**

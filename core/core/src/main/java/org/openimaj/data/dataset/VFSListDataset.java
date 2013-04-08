@@ -11,6 +11,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.VFS;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ObjectReader;
 import org.openimaj.util.array.ArrayIterator;
@@ -46,7 +47,7 @@ import org.openimaj.util.array.ArrayIterator;
  * @param <INSTANCE>
  *            The type of instance in the dataset
  */
-public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
+public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> implements Identifiable {
 	private FileObject[] files;
 	private FileObject base;
 
@@ -173,5 +174,10 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> {
 	@Override
 	public String toString() {
 		return String.format("%s(%d instances)", this.getClass().getName(), this.files.length);
+	}
+
+	@Override
+	public String getID() {
+		return base.getName().getBaseName();
 	}
 }

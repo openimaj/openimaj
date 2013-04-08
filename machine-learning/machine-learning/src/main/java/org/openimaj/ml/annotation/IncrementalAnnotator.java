@@ -79,7 +79,7 @@ public abstract class IncrementalAnnotator<OBJECT, ANNOTATION>
 	 * @param dataset
 	 *            the dataset to train on
 	 */
-	public void trainMultiClass(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+	public void trainMultiClass(GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset) {
 		for (final ANNOTATION grp : dataset.getGroups()) {
 			for (final OBJECT inst : dataset.getInstances(grp)) {
 				train(new AnnotatedObject<OBJECT, ANNOTATION>(inst, grp));
@@ -106,7 +106,7 @@ public abstract class IncrementalAnnotator<OBJECT, ANNOTATION>
 	 * @param dataset
 	 *            the dataset to train on
 	 */
-	public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+	public void train(GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset) {
 		for (final AnnotatedObject<OBJECT, ANNOTATION> ao : AnnotatedObject.createList(dataset)) {
 			train(ao);
 		}

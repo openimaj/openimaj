@@ -79,7 +79,6 @@ public class ReferencesClassTransformer implements ClassTransformer {
 				final String code = ReferenceListener.class.getName() + ".addReference(" + ctclz.getName()
 						+ ".class,\"" + m.getName() + "\",\"" + m.getLongName() + "\");";
 
-				System.out.println(code);
 				m.insertBefore(code);
 			}
 		}

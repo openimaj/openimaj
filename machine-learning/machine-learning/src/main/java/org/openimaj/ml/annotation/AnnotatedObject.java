@@ -149,7 +149,7 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 	 * @return the list of annotated instances
 	 */
 	public static <OBJECT, ANNOTATION> List<AnnotatedObject<OBJECT, ANNOTATION>> createList(
-			GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset)
+			GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset)
 	{
 		final Map<OBJECT, AnnotatedObject<OBJECT, ANNOTATION>> annotated = new HashMap<OBJECT, AnnotatedObject<OBJECT, ANNOTATION>>(
 				dataset.numInstances());

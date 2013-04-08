@@ -37,73 +37,77 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint;
-import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint.FacialKeypointType;
+import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;
 
 /**
- * Attempt to align a face by rotating and scaling it. Facial
- * Keypoints are used to judge the alignment. Specifically, 
- * the distance between the eyes is normalised by scaling,
- * and the eyes are rotated to be level. The face is then
+ * Attempt to align a face by rotating and scaling it. Facial Keypoints are used
+ * to judge the alignment. Specifically, the distance between the eyes is
+ * normalised by scaling, and the eyes are rotated to be level. The face is then
  * translated to a known position (again, based on the eyes).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 	private static final FImage DEFAULT_MASK = loadDefaultMask();
-	
-	//Define the geometry
+
+	// Define the geometry
 	private int eyeDist = 56;
 	private int eyePaddingLeftRight = 12;
-	private int eyePaddingTop = 20;	
-	
+	private int eyePaddingTop = 20;
+
 	private FImage mask = DEFAULT_MASK;
-	
+
 	/**
 	 * Default constructor with no mask.
 	 */
-	public RotateScaleAligner() {};
-	
+	public RotateScaleAligner() {
+	}
+
 	/**
 	 * Construct with a mask (in the canonical frame) to apply after alignment.
-	 * @param mask The mask.
+	 * 
+	 * @param mask
+	 *            The mask.
 	 */
 	public RotateScaleAligner(FImage mask) {
 		this.mask = mask;
 	}
-	
+
 	@Override
 	public FImage align(KEDetectedFace descriptor) {
-		FacialKeypoint lefteye = descriptor.getKeypoint(FacialKeypointType.EYE_LEFT_LEFT);
-		FacialKeypoint righteye = descriptor.getKeypoint(FacialKeypointType.EYE_RIGHT_RIGHT);
-		
-		float dx = righteye.position.x - lefteye.position.x;
-		float dy = righteye.position.y - lefteye.position.y;
-		
-		float rotation = (float) Math.atan2(dy, dx);
-		float scaling = (float) (eyeDist / Math.sqrt(dx*dx + dy*dy));
-		
-		float tx = lefteye.position.x - eyePaddingLeftRight / scaling;
-		float ty = lefteye.position.y - eyePaddingTop / scaling;
-		
-		Matrix tf0 = TransformUtilities.scaleMatrix(scaling, scaling).times(TransformUtilities.translateMatrix(-tx, -ty)).times(TransformUtilities.rotationMatrixAboutPoint(-rotation, lefteye.position.x, lefteye.position.y));
-		Matrix tf = tf0.inverse();
-		
-		FImage J = FKEFaceDetector.pyramidResize(descriptor.getFacePatch(), tf);
-		return FKEFaceDetector.extractPatch(J, tf, 2*eyePaddingLeftRight + eyeDist, 0);
+		final FacialKeypoint lefteye = descriptor.getKeypoint(FacialKeypointType.EYE_LEFT_LEFT);
+		final FacialKeypoint righteye = descriptor.getKeypoint(FacialKeypointType.EYE_RIGHT_RIGHT);
+
+		final float dx = righteye.position.x - lefteye.position.x;
+		final float dy = righteye.position.y - lefteye.position.y;
+
+		final float rotation = (float) Math.atan2(dy, dx);
+		final float scaling = (float) (eyeDist / Math.sqrt(dx * dx + dy * dy));
+
+		final float tx = lefteye.position.x - eyePaddingLeftRight / scaling;
+		final float ty = lefteye.position.y - eyePaddingTop / scaling;
+
+		final Matrix tf0 = TransformUtilities.scaleMatrix(scaling, scaling)
+				.times(TransformUtilities.translateMatrix(-tx, -ty))
+				.times(TransformUtilities.rotationMatrixAboutPoint(-rotation, lefteye.position.x, lefteye.position.y));
+		final Matrix tf = tf0.inverse();
+
+		final FImage J = FKEFaceDetector.pyramidResize(descriptor.getFacePatch(), tf);
+		return FKEFaceDetector.extractPatch(J, tf, 2 * eyePaddingLeftRight + eyeDist, 0);
 	}
-	
+
 	private static FImage loadDefaultMask() {
 		try {
 			return ImageUtilities.readF(FaceAligner.class.getResourceAsStream("affineMask.png"));
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -117,7 +121,7 @@ public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 		eyeDist = in.readInt();
 		eyePaddingLeftRight = in.readInt();
 		eyePaddingTop = in.readInt();
-		
+
 		mask = ImageUtilities.readF(in);
 	}
 
@@ -131,7 +135,7 @@ public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 		out.writeInt(eyeDist);
 		out.writeInt(eyePaddingLeftRight);
 		out.writeInt(eyePaddingTop);
-		
+
 		ImageUtilities.write(mask, "png", out);
 	}
 }

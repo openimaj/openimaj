@@ -57,32 +57,35 @@ import org.openimaj.image.processing.face.recognition.FaceRecogniser;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
- * @param <KEY>
+ * @param <PERSON>
+ *            type representing a person or class
  * @param <IMAGE>
+ *            type of image containing the face of each person
  * @param <FACE>
+ *            type of {@link DetectedFace}
  */
 @Experiment(
 		author = "Jonathon Hare",
 		dateCreated = "2012-07-26",
 		description = "Face recognition cross validation experiment")
-public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace>
+public class CrossValidationBenchmark<PERSON, IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace>
 		implements
 		RunnableExperiment
 {
 	@IndependentVariable
-	protected CrossValidator<GroupedDataset<KEY, ListDataset<FACE>, FACE>> crossValidator;
+	protected CrossValidator<GroupedDataset<PERSON, ListDataset<FACE>, FACE>> crossValidator;
 
 	@IndependentVariable
-	protected GroupedDataset<KEY, ListDataset<IMAGE>, IMAGE> dataset;
+	protected GroupedDataset<PERSON, ? extends ListDataset<IMAGE>, IMAGE> dataset;
 
 	@IndependentVariable
 	protected FaceDetector<FACE, IMAGE> faceDetector;
 
 	@IndependentVariable
-	protected FaceRecogniserProvider<FACE, KEY> engine;
+	protected FaceRecogniserProvider<FACE, PERSON> engine;
 
 	@DependentVariable
-	protected AggregatedCMResult<KEY> result;
+	protected AggregatedCMResult<PERSON> result;
 
 	/**
 	 * Construct the {@link CrossValidationBenchmark} experiment with the given
@@ -98,10 +101,10 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 	 *            the recogniser
 	 */
 	public CrossValidationBenchmark(
-			CrossValidator<GroupedDataset<KEY, ListDataset<FACE>, FACE>> crossValidator,
-			GroupedDataset<KEY, ListDataset<IMAGE>, IMAGE> dataset,
+			CrossValidator<GroupedDataset<PERSON, ListDataset<FACE>, FACE>> crossValidator,
+			GroupedDataset<PERSON, ? extends ListDataset<IMAGE>, IMAGE> dataset,
 			FaceDetector<FACE, IMAGE> faceDetector,
-			FaceRecogniserProvider<FACE, KEY> engine)
+			FaceRecogniserProvider<FACE, PERSON> engine)
 	{
 		this.dataset = dataset;
 		this.crossValidator = crossValidator;
@@ -111,28 +114,28 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 
 	@Override
 	public void perform() {
-		final CMAggregator<KEY> aggregator = new CMAggregator<KEY>();
+		final CMAggregator<PERSON> aggregator = new CMAggregator<PERSON>();
 
-		final GroupedDataset<KEY, ListDataset<FACE>, FACE> faceDataset = DatasetFaceDetector.process(dataset,
+		final GroupedDataset<PERSON, ListDataset<FACE>, FACE> faceDataset = DatasetFaceDetector.process(dataset,
 				faceDetector);
 
 		result = ValidationRunner.run(
 				aggregator,
 				faceDataset,
 				crossValidator,
-				new ValidationOperation<GroupedDataset<KEY, ListDataset<FACE>, FACE>, CMResult<KEY>>()
+				new ValidationOperation<GroupedDataset<PERSON, ListDataset<FACE>, FACE>, CMResult<PERSON>>()
 				{
 					@Time(identifier = "Train and Evaluate recogniser")
 					@Override
-					public CMResult<KEY> evaluate(
-							GroupedDataset<KEY, ListDataset<FACE>, FACE> training,
-							GroupedDataset<KEY, ListDataset<FACE>, FACE> validation)
+					public CMResult<PERSON> evaluate(
+							GroupedDataset<PERSON, ListDataset<FACE>, FACE> training,
+							GroupedDataset<PERSON, ListDataset<FACE>, FACE> validation)
 					{
-						final FaceRecogniser<FACE, KEY> rec = engine.create(training);
+						final FaceRecogniser<FACE, PERSON> rec = engine.create(training);
 
-						final ClassificationEvaluator<CMResult<KEY>, KEY, FACE> eval =
-								new ClassificationEvaluator<CMResult<KEY>, KEY, FACE>(
-										rec, validation, new CMAnalyser<FACE, KEY>(CMAnalyser.Strategy.SINGLE)
+						final ClassificationEvaluator<CMResult<PERSON>, PERSON, FACE> eval =
+								new ClassificationEvaluator<CMResult<PERSON>, PERSON, FACE>(
+										rec, validation, new CMAnalyser<FACE, PERSON>(CMAnalyser.Strategy.SINGLE)
 								);
 
 						return eval.analyse(eval.evaluate());

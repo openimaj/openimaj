@@ -88,7 +88,7 @@ public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 				new FaceRecogniserProvider<FACE, String>() {
 					@Override
 					public FaceRecogniser<FACE, String>
-							create(GroupedDataset<String, ListDataset<FACE>, FACE> dataset)
+							create(GroupedDataset<String, ? extends ListDataset<FACE>, FACE> dataset)
 					{
 						// Note: we need a new instance of a recogniser, hence
 						// we don't

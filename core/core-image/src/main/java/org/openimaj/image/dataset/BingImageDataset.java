@@ -11,6 +11,7 @@ import net.billylieurance.azuresearch.AzureSearchImageQuery;
 import net.billylieurance.azuresearch.AzureSearchImageResult;
 
 import org.openimaj.data.dataset.ReadableListDataset;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.image.Image;
 import org.openimaj.io.HttpUtils;
 import org.openimaj.io.ObjectReader;
@@ -24,12 +25,16 @@ import org.openimaj.util.api.auth.common.BingAPIToken;
  * @param <IMAGE>
  *            The type of {@link Image} instance held by the dataset.
  */
-public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableListDataset<IMAGE> {
+public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableListDataset<IMAGE> implements Identifiable {
 	List<AzureSearchImageResult> images;
+	AzureSearchImageQuery query;
 
-	protected BingImageDataset(ObjectReader<IMAGE> reader, List<AzureSearchImageResult> results) {
+	protected BingImageDataset(ObjectReader<IMAGE> reader, List<AzureSearchImageResult> results,
+			AzureSearchImageQuery query)
+	{
 		super(reader);
 		this.images = results;
+		this.query = query;
 	}
 
 	@Override
@@ -137,7 +142,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
 			AzureSearchImageQuery query, int number)
 	{
-		return new BingImageDataset<IMAGE>(reader, performQuery(query, number));
+		return new BingImageDataset<IMAGE>(reader, performQuery(query, number), query);
 	}
 
 	/**
@@ -159,7 +164,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 			BingAPIToken token, AzureSearchImageQuery query, int number)
 	{
 		query.setAppid(token.accountKey);
-		return new BingImageDataset<IMAGE>(reader, performQuery(query, number));
+		return new BingImageDataset<IMAGE>(reader, performQuery(query, number), query);
 	}
 
 	/**
@@ -187,7 +192,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 		if (imageFilters != null)
 			aq.setImageFilters(imageFilters);
 
-		return new BingImageDataset<IMAGE>(reader, performQuery(aq, number));
+		return new BingImageDataset<IMAGE>(reader, performQuery(aq, number), aq);
 	}
 
 	/**
@@ -211,6 +216,11 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 		aq.setAppid(token.accountKey);
 		aq.setQuery(query);
 
-		return new BingImageDataset<IMAGE>(reader, performQuery(aq, number));
+		return new BingImageDataset<IMAGE>(reader, performQuery(aq, number), aq);
+	}
+
+	@Override
+	public String getID() {
+		return query.getQuery();
 	}
 }

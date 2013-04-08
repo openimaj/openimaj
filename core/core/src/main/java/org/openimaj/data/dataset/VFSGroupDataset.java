@@ -10,6 +10,7 @@ import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.FileTypeSelector;
 import org.apache.commons.vfs2.VFS;
+import org.openimaj.data.identity.Identifiable;
 import org.openimaj.io.ObjectReader;
 
 /**
@@ -49,7 +50,10 @@ import org.openimaj.io.ObjectReader;
  * @param <INSTANCE>
  *            The type of instance in the dataset
  */
-public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSListDataset<INSTANCE>, INSTANCE> {
+public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSListDataset<INSTANCE>, INSTANCE>
+		implements
+			Identifiable
+{
 	private Map<String, VFSListDataset<INSTANCE>> files = new HashMap<String, VFSListDataset<INSTANCE>>();
 	private Map<String, FileObject> directoryInfo = new HashMap<String, FileObject>();
 	private FileObject base;
@@ -118,5 +122,10 @@ public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSL
 	@Override
 	public Set<Entry<String, VFSListDataset<INSTANCE>>> entrySet() {
 		return files.entrySet();
+	}
+
+	@Override
+	public String getID() {
+		return base.getName().getBaseName();
 	}
 }
