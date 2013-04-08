@@ -182,7 +182,34 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 			final Matrix T1 = new Matrix(new double[][] { { scale, 0, tx }, { 0, scale, ty }, { 0, 0, 1 } });
 			FacialKeypoint.updateImagePosition(kpts, T1);
 
-			final KEDetectedFace kedf = new KEDetectedFace(r, df.getFacePatch(), kpts, df.getConfidence());
+			// recompute the bounding box based on the positions of the facial
+			// keypoints
+			final FacialKeypoint eyeLL = FacialKeypoint.getKeypoint(kpts,
+					FacialKeypoint.FacialKeypointType.EYE_LEFT_LEFT);
+			final FacialKeypoint eyeRR = FacialKeypoint.getKeypoint(kpts,
+					FacialKeypoint.FacialKeypointType.EYE_RIGHT_RIGHT);
+			final FacialKeypoint eyeLR = FacialKeypoint.getKeypoint(kpts,
+					FacialKeypoint.FacialKeypointType.EYE_LEFT_RIGHT);
+			final FacialKeypoint eyeRL = FacialKeypoint.getKeypoint(kpts,
+					FacialKeypoint.FacialKeypointType.EYE_RIGHT_LEFT);
+
+			final float eyeSpace = (0.5f * (eyeRR.position.x + eyeRL.position.x))
+					- (0.5f * (eyeLR.position.x + eyeLL.position.x));
+			final float deltaX = (0.5f * (eyeLR.position.x + eyeLL.position.x)) - eyeSpace;
+			r.x = r.x + deltaX;
+			r.width = eyeSpace * 3;
+
+			final float eyeVavg = 0.5f * ((0.5f * (eyeRR.position.y + eyeRL.position.y)) + (0.5f * (eyeLR.position.y + eyeLL.position.y)));
+
+			r.height = 1.2f * r.width;
+			final float deltaY = eyeVavg - 0.4f * r.height;
+			r.y = r.y + deltaY;
+
+			FacialKeypoint.updateImagePosition(kpts, TransformUtilities.translateMatrix(-deltaX, -deltaY));
+
+			// final KEDetectedFace kedf = new KEDetectedFace(r,
+			// df.getFacePatch(), kpts, df.getConfidence());
+			final KEDetectedFace kedf = new KEDetectedFace(r, image.extractROI(r), kpts, df.getConfidence());
 
 			descriptors.add(kedf);
 		}

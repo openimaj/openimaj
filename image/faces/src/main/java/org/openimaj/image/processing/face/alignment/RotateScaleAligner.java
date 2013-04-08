@@ -56,8 +56,8 @@ public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 	private static final FImage DEFAULT_MASK = loadDefaultMask();
 
 	// Define the geometry
-	private int eyeDist = 56;
-	private int eyePaddingLeftRight = 12;
+	private int eyeDist = 68;
+	private int eyePaddingLeftRight = 6;
 	private int eyePaddingTop = 20;
 
 	private FImage mask = DEFAULT_MASK;
@@ -66,6 +66,19 @@ public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 	 * Default constructor with no mask.
 	 */
 	public RotateScaleAligner() {
+	}
+
+	/**
+	 * Default constructor with no mask.
+	 */
+	public RotateScaleAligner(int targetSize) {
+		final int canonicalSize = 2 * eyePaddingLeftRight + eyeDist;
+
+		final double sf = targetSize / canonicalSize;
+
+		eyeDist = (int) (eyeDist * sf);
+		eyePaddingLeftRight = (targetSize - eyeDist) / 2;
+		eyePaddingTop = (int) (eyePaddingTop * sf);
 	}
 
 	/**
