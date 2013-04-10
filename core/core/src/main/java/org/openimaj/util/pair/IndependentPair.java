@@ -35,9 +35,9 @@ import java.util.List;
 /**
  * {@link IndependentPair} represents a generic pair of objects of different
  * (independent) types.
- * 
+ *
  * @author Jonathon Hare
- * 
+ *
  * @param <A>
  *            the class of the first object in the pair
  * @param <B>
@@ -50,16 +50,16 @@ public class IndependentPair<A, B> {
 
 	/**
 	 * Constructs a Pair object with two objects obj1 and obj2
-	 * 
+	 *
 	 * @param obj1
 	 *            first object in pair
 	 * @param obj2
 	 *            second objec in pair
 	 */
-	public IndependentPair(A obj1, B obj2)
+	public IndependentPair(final A obj1, final B obj2)
 	{
-		o1 = obj1;
-		o2 = obj2;
+		this.o1 = obj1;
+		this.o2 = obj2;
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class IndependentPair<A, B> {
 	 */
 	public A firstObject()
 	{
-		return o1;
+		return this.o1;
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class IndependentPair<A, B> {
 	 */
 	public B secondObject()
 	{
-		return o2;
+		return this.o2;
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class IndependentPair<A, B> {
 	 */
 	public A getFirstObject()
 	{
-		return o1;
+		return this.o1;
 	}
 
 	/**
@@ -91,48 +91,49 @@ public class IndependentPair<A, B> {
 	 */
 	public B getSecondObject()
 	{
-		return o2;
+		return this.o2;
 	}
 
 	/**
 	 * Set first object in pair to obj
-	 * 
+	 *
 	 * @param obj
 	 *            the object
 	 */
-	public void setFirstObject(A obj)
+	public void setFirstObject(final A obj)
 	{
-		o1 = obj;
+		this.o1 = obj;
 	}
 
 	/**
 	 * Set second object in pair to obj
-	 * 
+	 *
 	 * @param obj
 	 *            the object
 	 */
-	public void setSecondObject(B obj)
+	public void setSecondObject(final B obj)
 	{
-		o2 = obj;
+		this.o2 = obj;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + this.o1.toString() + "," + this.o2.toString() + "]";
+		return "[" + this.o1 + "," + this.o2 + "]";
 	}
 
 	@Override
-	public boolean equals(Object thatObject) {
+	public boolean equals(final Object thatObject) {
 		if (!(thatObject instanceof IndependentPair))
 			return false;
 		@SuppressWarnings("rawtypes")
+		final
 		IndependentPair that = (IndependentPair) thatObject;
 		return this.o1 == that.o1 && this.o2 == that.o2;
 	}
 
 	/**
 	 * Create a pair from the given objects.
-	 * 
+	 *
 	 * @param <T>
 	 *            Type of first object.
 	 * @param <Q>
@@ -143,13 +144,13 @@ public class IndependentPair<A, B> {
 	 *            The second object.
 	 * @return The pair.
 	 */
-	public static <T, Q> IndependentPair<T, Q> pair(T t, Q q) {
+	public static <T, Q> IndependentPair<T, Q> pair(final T t, final Q q) {
 		return new IndependentPair<T, Q>(t, q);
 	}
 
 	/**
 	 * Extract the first objects from a list of pairs.
-	 * 
+	 *
 	 * @param <T>
 	 *            type of first object
 	 * @param <Q>
@@ -158,10 +159,10 @@ public class IndependentPair<A, B> {
 	 *            the data
 	 * @return extracted first objects
 	 */
-	public static <T, Q> List<T> getFirst(Iterable<IndependentPair<T, Q>> data) {
-		List<T> extracted = new ArrayList<T>();
+	public static <T, Q> List<T> getFirst(final Iterable<IndependentPair<T, Q>> data) {
+		final List<T> extracted = new ArrayList<T>();
 
-		for (IndependentPair<T, Q> item : data)
+		for (final IndependentPair<T, Q> item : data)
 			extracted.add(item.o1);
 
 		return extracted;
@@ -169,7 +170,7 @@ public class IndependentPair<A, B> {
 
 	/**
 	 * Extract the second objects from a list of pairs.
-	 * 
+	 *
 	 * @param <T>
 	 *            type of first object
 	 * @param <Q>
@@ -178,10 +179,10 @@ public class IndependentPair<A, B> {
 	 *            the data
 	 * @return extracted second objects
 	 */
-	public static <T, Q> List<Q> getSecond(Iterable<IndependentPair<T, Q>> data) {
-		List<Q> extracted = new ArrayList<Q>();
+	public static <T, Q> List<Q> getSecond(final Iterable<IndependentPair<T, Q>> data) {
+		final List<Q> extracted = new ArrayList<Q>();
 
-		for (IndependentPair<T, Q> item : data)
+		for (final IndependentPair<T, Q> item : data)
 			extracted.add(item.o2);
 
 		return extracted;
