@@ -75,18 +75,17 @@ import org.openimaj.util.pair.IndependentPair;
  * recognition engine using these. It then looks in the query image for faces
  * and attempts to classify the found faces. It will classify them in increasing
  * size order; so if more than one face is classified as a particular person,
- * then only the largest instance will remain (if the options to allow
- * only one instance is true). Annotations which are removed due to this
- * constraint will be relabelled, if possible.
- * There is also an option to ignore faces which
- * are significantly blurred ("significantly" can be defined).
+ * then only the largest instance will remain (if the options to allow only one
+ * instance is true). Annotations which are removed due to this constraint will
+ * be relabelled, if possible. There is also an option to ignore faces which are
+ * significantly blurred ("significantly" can be defined).
  * <p>
- * Note that, when run for the first time, the system will ask you to go and
- * get an APPID for the Bing Search, and it will give you the URL to go get it.
+ * Note that, when run for the first time, the system will ask you to go and get
+ * an APPID for the Bing Search, and it will give you the URL to go get it.
  * <p>
- * The main method is just a test method - it will delete the recogniser after it's
- * done.
- *
+ * The main method is just a test method - it will delete the recogniser after
+ * it's done.
+ * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 5 Feb 2013
  * @version $Author$, $Revision$, $Date$
@@ -111,34 +110,37 @@ public class PersonMatcher
 	/** Whether to save the recogniser or not */
 	private boolean saveRecogniser = false;
 
-	/** The threshold to apply to the annotator above which no match will be considered */
-	@Option( name = "--threshold", aliases = "-t",
-			usage = "The matching threshold (default: 8)" )
+	/**
+	 * The threshold to apply to the annotator above which no match will be
+	 * considered
+	 */
+	@Option(name = "--threshold", aliases = "-t",
+			usage = "The matching threshold (default: 8)")
 	private float matchingThreshold = 8f;
 
 	/** The recognition strategy to use */
-	@Option( name = "--strategy", aliases = "-s",
-			usage = "The recognition strategy to use (default: CLMFeature_KNN)" )
+	@Option(name = "--strategy", aliases = "-s",
+			usage = "The recognition strategy to use (default: CLMFeature_KNN)")
 	private final RecognitionStrategy strategy = RecognitionStrategy.CLMFeature_KNN;
 
-	@Option( name = "--onlyOne", aliases = "-o",
-			usage = "Allow only one instance of each person (default: true)" )
+	@Option(name = "--onlyOne", aliases = "-o",
+			usage = "Allow only one instance of each person (default: true)")
 	/** If true, only one instance of each person will be allowed in a photo */
 	private final boolean allowOnlyOneInstance = true;
 
-	@Option( name = "--ignoreBlurred", aliases = "-b",
-			usage = "Ignore faces which are considerably blurred (default: true)" )
+	@Option(name = "--ignoreBlurred", aliases = "-b",
+			usage = "Ignore faces which are considerably blurred (default: true)")
 	/** If true, will ignore faces which are blurred */
 	private final boolean ignoreBlurredFaces = true;
 
-	@Option( name = "--blurThreshold", aliases = "-bt",
-			usage = "The threshold to use for blur detection (default: 0.2)" )
+	@Option(name = "--blurThreshold", aliases = "-bt",
+			usage = "The threshold to use for blur detection (default: 0.2)")
 	/** Only used if ignoreBlurredFaces is true */
 	private final float blurThreshold = 0.2f;
 
 	/**
 	 * Create a person matcher
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public PersonMatcher() throws Exception
@@ -148,7 +150,7 @@ public class PersonMatcher
 
 	/**
 	 * Create a person matcher with the given file
-	 *
+	 * 
 	 * @param recogniserFile
 	 *            The recogniser file to load
 	 * @throws Exception
@@ -167,7 +169,7 @@ public class PersonMatcher
 
 	/**
 	 * Create a recogniser for the given person into the given file.
-	 *
+	 * 
 	 * @param person
 	 *            The person to create a recogniser for
 	 * @param recogniserFile
@@ -182,7 +184,7 @@ public class PersonMatcher
 
 	/**
 	 * Constructor that takes a query string.
-	 *
+	 * 
 	 * @param queries
 	 *            The query strings to use
 	 * @param recogniserFile
@@ -201,7 +203,7 @@ public class PersonMatcher
 
 	/**
 	 * Constructor that takes a set of queries to search for
-	 *
+	 * 
 	 * @param queries
 	 *            The query strings to use
 	 * @param recogniserFile
@@ -217,7 +219,7 @@ public class PersonMatcher
 	{
 		this(recogniserFile);
 
-		if( recogniserFile != null )
+		if (recogniserFile != null)
 			this.saveRecogniser = true;
 
 		// Train using the given queries
@@ -228,13 +230,13 @@ public class PersonMatcher
 			this.addCounterExamples();
 
 		// Save the recogniser for later
-		if( this.saveRecogniser )
+		if (this.saveRecogniser)
 			this.saveRecogniser(recogniserFile);
 	}
 
 	/**
 	 * After training, you might want to save the recogniser
-	 *
+	 * 
 	 * @param recogniserFile
 	 *            The recogniser file to save to
 	 * @throws IOException
@@ -250,7 +252,7 @@ public class PersonMatcher
 	/**
 	 * Train the recogniser with examples retrieved from searching with the
 	 * given queries.
-	 *
+	 * 
 	 * @param queries
 	 *            The query strings
 	 */
@@ -272,98 +274,105 @@ public class PersonMatcher
 		System.out.println("Querying with image");
 
 		// Recognise the unknown faces in the image.
-		final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>>
-			recognisedFaces = this.faceRecogniser.recogniseBest(fi);
+		final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> recognisedFaces = this.faceRecogniser
+				.recogniseBest(fi);
 
 		// If we are to ignore blurred faces, we'll remove them here
 		// by using the SharpPixelProportion analyser to detect whether
 		// the image within the face region is blurred or not
-		if( this.ignoreBlurredFaces )
+		if (this.ignoreBlurredFaces)
 		{
-			// We'll use the SharpPixelProportion analyser to work out how much is blurred
+			// We'll use the SharpPixelProportion analyser to work out how much
+			// is blurred
 			final SharpPixelProportion spp = new SharpPixelProportion();
 
 			// Iterate over the detected faces
-			final Iterator<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> it
-				= recognisedFaces.iterator();
-			while( it.hasNext() )
+			final Iterator<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> it = recognisedFaces
+					.iterator();
+			while (it.hasNext())
 			{
-				final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>
-					facePair = it.next();
+				final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> facePair = it.next();
 
 				// Analyse the face patch...
-				facePair.firstObject().getFacePatch().analyseWith( spp );
+				facePair.firstObject().getFacePatch().analyseWith(spp);
 
-				// If the pixels are mostly blurred, remove the face from the list.
+				// If the pixels are mostly blurred, remove the face from the
+				// list.
 				final double pp = spp.getBlurredPixelProportion();
-				if( pp < this.blurThreshold )
+				if (pp < this.blurThreshold)
 					it.remove();
 			}
 		}
 
 		// Sort on the size of the face
-		Collections.sort( recognisedFaces,
-			new Comparator<IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>>()
-			{
-				@Override
-				public int compare(
-						final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> o1,
-						final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> o2 )
+		Collections.sort(recognisedFaces,
+				new Comparator<IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>>()
 				{
-					return (int) (o2.firstObject().getShape().calculateArea()
-							- o1.firstObject().getShape().calculateArea());
-				}
-			} );
+					@Override
+					public int compare(
+							final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> o1,
+							final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> o2)
+					{
+						return (int) (o2.firstObject().getShape().calculateArea()
+						- o1.firstObject().getShape().calculateArea());
+					}
+				});
 
 		System.out.println("Recognised " + recognisedFaces.size() + " faces.");
 		System.out.println(recognisedFaces);
 
-		// If we're only allowing a single instance of a face within an image, we need
-		// to check whether the recognised faces have been assigned to the same person
-		// more than once. If so, we'll check the faces in size order and remove any
+		// If we're only allowing a single instance of a face within an image,
+		// we need
+		// to check whether the recognised faces have been assigned to the same
+		// person
+		// more than once. If so, we'll check the faces in size order and remove
+		// any
 		// existing names.
-		if( this.allowOnlyOneInstance )
+		if (this.allowOnlyOneInstance)
 		{
 			final HashSet<String> seenPeople = new HashSet<String>();
-			final Iterator<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> it
-						= recognisedFaces.iterator();
-			while( it.hasNext() )
+			final Iterator<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> it = recognisedFaces
+					.iterator();
+			while (it.hasNext())
 			{
 				final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> facePair = it.next();
 
 				// If we've already seen the person that this face might be, we
 				// remove it from the list. We'll try again at recognising them.
-				if( seenPeople.contains( facePair.secondObject().annotation ) )
+				if (seenPeople.contains(facePair.secondObject().annotation))
 				{
-//					it.remove();
-					facePair.secondObject().annotation = "Removed "+facePair.secondObject().annotation;
+					// it.remove();
+					facePair.secondObject().annotation = "Removed " + facePair.secondObject().annotation;
 
-					// Try to annotate this face again but within some constraints.
-					// The constraints will be all the possible annotations minus those
+					// Try to annotate this face again but within some
+					// constraints.
+					// The constraints will be all the possible annotations
+					// minus those
 					// that we've already seen.
 					final HashSet<String> constraints = new HashSet<String>();
-					constraints.addAll( this.faceRecogniser.getRecogniser().getAnnotations() );
-					constraints.removeAll( seenPeople );
+					constraints.addAll(this.faceRecogniser.getRecogniser().getAnnotations());
+					constraints.removeAll(seenPeople);
 
 					// Recognise the best from the people we've not already seen
-					final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> r
-						= this.faceRecogniser.recogniseBest(
-							facePair.firstObject().getFacePatch(), constraints );
+					final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> r = this.faceRecogniser
+							.recogniseBest(
+									facePair.firstObject().getFacePatch(), constraints);
 
-					// If we have a new person, then update the pair and add it to
+					// If we have a new person, then update the pair and add it
+					// to
 					// the seen people
-					if( r != null && r.size() > 0 && r.get(0).getSecondObject() != null )
+					if (r != null && r.size() > 0 && r.get(0).getSecondObject() != null)
 					{
 						// Update the annotation for this face.
 						facePair.getSecondObject().annotation = r.get(0).getSecondObject().annotation;
 
 						// Remember that this person has been seen
-						seenPeople.add( facePair.getSecondObject().annotation );
+						seenPeople.add(facePair.getSecondObject().annotation);
 					}
 				}
 
 				// Note that we've seen this person
-				seenPeople.add( facePair.secondObject().annotation );
+				seenPeople.add(facePair.secondObject().annotation);
 			}
 		}
 
@@ -372,13 +381,13 @@ public class PersonMatcher
 
 	/**
 	 * Returns a face recogniser by using the FaceRecogniserTools.
-	 *
+	 * 
 	 * @param recogniserFile
 	 * @return The face recogniser engine
 	 * @throws IOException
 	 */
 	private FaceRecognitionEngine<? extends DetectedFace, String> getFaceRecogniserEngine(
-			final File recogniserFile )	throws IOException
+			final File recogniserFile) throws IOException
 	{
 		// If we have a pre-trained file to load, load it in.
 		if (recogniserFile != null && recogniserFile.exists())
@@ -394,22 +403,24 @@ public class PersonMatcher
 		// new engine.
 		try
 		{
-			// We look for a field called "threshold" in the strategy and set the threshold
-			// to the value in the options. If the field doesn't exist, we'll ignore it.
-			final Field f = this.strategy.getClass().getDeclaredField( "threshold" );
-			f.setAccessible( true );
-			f.setFloat( this.strategy, this.matchingThreshold );
-			System.out.println( "Field: "+f );
-		}
-		catch( NoSuchFieldException | SecurityException e )
+			// We look for a field called "threshold" in the strategy and set
+			// the threshold
+			// to the value in the options. If the field doesn't exist, we'll
+			// ignore it.
+			final Field f = this.strategy.getClass().getDeclaredField("threshold");
+			f.setAccessible(true);
+			f.setFloat(this.strategy, this.matchingThreshold);
+			System.out.println("Field: " + f);
+		} catch (final NoSuchFieldException e)
 		{
-			System.out.println( "WARNING: No threshold field to set in "+this.strategy+"." );
-		}
-		catch( final IllegalArgumentException e )
+			System.out.println("WARNING: No threshold field to set in " + this.strategy + ".");
+		} catch (final SecurityException e)
+		{
+			System.out.println("WARNING: No threshold field to set in " + this.strategy + ".");
+		} catch (final IllegalArgumentException e)
 		{
 			e.printStackTrace();
-		}
-		catch( final IllegalAccessException e )
+		} catch (final IllegalAccessException e)
 		{
 			e.printStackTrace();
 		}
@@ -441,21 +452,19 @@ public class PersonMatcher
 			for (final File cachedImage : f.listFiles(new FilenameFilter()
 			{
 				@Override
-				public boolean accept( final File file, final String filename )
+				public boolean accept(final File file, final String filename)
 				{
-					return filename.endsWith( ".png" );
+					return filename.endsWith(".png");
 				}
 			}))
 			{
 				try
 				{
 					this.processImageURL(ImageUtilities.readMBF(cachedImage), label);
-				}
-				catch (final MalformedURLException m)
+				} catch (final MalformedURLException m)
 				{
 					m.printStackTrace();
-				}
-				catch( final IOException e )
+				} catch (final IOException e)
 				{
 					e.printStackTrace();
 				}
@@ -463,21 +472,21 @@ public class PersonMatcher
 			return;
 		}
 
-		final BingAPIToken apiToken = DefaultTokenFactory.get( BingAPIToken.class );
+		final BingAPIToken apiToken = DefaultTokenFactory.get(BingAPIToken.class);
 		final BingImageDataset<MBFImage> results = BingImageDataset.create(
-				ImageUtilities.MBFIMAGE_READER, apiToken, query, 10 );
+				ImageUtilities.MBFIMAGE_READER, apiToken, query, 10);
 
 		System.out.println("    - Got " + results.getImages().size() + " results");
 
 		// Loop over all the results and process each one
-		for (final MBFImage result : results )
-			this.processImageURL( result, label );
+		for (final MBFImage result : results)
+			this.processImageURL(result, label);
 	}
 
 	/**
 	 * For each URL (that is an image representation of the query), load it in
 	 * and train the face recogniser.
-	 *
+	 * 
 	 * @param result
 	 *            The URL of an image that is a representation of the query
 	 * @param label
@@ -485,7 +494,7 @@ public class PersonMatcher
 	 */
 	private void processImageURL(final MBFImage result, final String label)
 	{
-		final UUID uuid = UUID.nameUUIDFromBytes( result.toByteImage() );
+		final UUID uuid = UUID.nameUUIDFromBytes(result.toByteImage());
 		final String cacheFilename = PersonMatcher.CACHE_DIR + "/" + label + "/" + uuid + ".png";
 		if (this.cacheImages)
 		{
@@ -508,11 +517,14 @@ public class PersonMatcher
 
 		// Get the detected faces from the given image
 		List<? extends DetectedFace> detectedFaces = null;
-		if( this.cacheImages && new File(cacheFilename+".detectedFaces").exists() )
+		if (this.cacheImages && new File(cacheFilename + ".detectedFaces").exists())
 		{
-			System.out.println( "    - Reading from file "+cacheFilename+".detectedFaces...");
-			try	{ detectedFaces = IOUtils.readFromFile( new File(cacheFilename+".detectedFaces") );
-			} catch( final IOException e1 ) { e1.printStackTrace();	}
+			System.out.println("    - Reading from file " + cacheFilename + ".detectedFaces...");
+			try {
+				detectedFaces = IOUtils.readFromFile(new File(cacheFilename + ".detectedFaces"));
+			} catch (final IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 		// No cache? Let's run the face detector.
 		else
@@ -520,14 +532,13 @@ public class PersonMatcher
 			detectedFaces = this.faceDetector.detectFaces(img);
 
 			// If we're caching, let's also cache the face detection results
-			if( this.cacheImages )
+			if (this.cacheImages)
 			{
 				try
 				{
-					final File f = new File( cacheFilename+".detectedFaces" );
-					IOUtils.writeToFile( detectedFaces, f );
-				}
-				catch( final IOException e )
+					final File f = new File(cacheFilename + ".detectedFaces");
+					IOUtils.writeToFile(detectedFaces, f);
+				} catch (final IOException e)
 				{
 					e.printStackTrace();
 				}
@@ -547,8 +558,9 @@ public class PersonMatcher
 	}
 
 	/**
-	 * 	Get the current matching threhsold of this person matcher.
-	 *	@return The matching threshold
+	 * Get the current matching threhsold of this person matcher.
+	 * 
+	 * @return The matching threshold
 	 */
 	public float getMatchingThreshold()
 	{
@@ -556,41 +568,41 @@ public class PersonMatcher
 	}
 
 	/**
-	 * 	Set the matching threshold of this person matcher. Note that this must be
-	 * 	called prior to processing a frame; calling afterwards will have no
-	 * 	effect.
-	 *
-	 *	@param matchingThreshold The matching threshold to set
+	 * Set the matching threshold of this person matcher. Note that this must be
+	 * called prior to processing a frame; calling afterwards will have no
+	 * effect.
+	 * 
+	 * @param matchingThreshold
+	 *            The matching threshold to set
 	 */
-	public void setMatchingThreshold( final float matchingThreshold )
+	public void setMatchingThreshold(final float matchingThreshold)
 	{
 		this.matchingThreshold = matchingThreshold;
 	}
 
 	/**
-	 *
-	 *	@param resource
-	 * 	@return The displayed image
-	 * 	@throws Exception
+	 * 
+	 * @param resource
+	 * @return The displayed image
+	 * @throws Exception
 	 */
-	public static MBFImage displayQueryResults( final URL resource ) throws Exception
+	public static MBFImage displayQueryResults(final URL resource) throws Exception
 	{
 		System.out.println("----------- QUERYING ----------- ");
-		final FImage fi = ImageUtilities.readF( resource );
+		final FImage fi = ImageUtilities.readF(resource);
 		final PersonMatcher pm = new PersonMatcher(new File(PersonMatcher.RECOGNISER_FILE));
-		final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>>
-			l = pm.query(fi);
+		final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> l = pm.query(fi);
 
-		final MBFImage m = new MBFImage( fi.getWidth(), fi.getHeight(), 3 );
-		m.addInplace( fi );
+		final MBFImage m = new MBFImage(fi.getWidth(), fi.getHeight(), 3);
+		m.addInplace(fi);
 		int count = 1;
 		for (final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> i : l)
 		{
 			final Rectangle b = i.firstObject().getBounds();
 			m.drawShape(b, RGBColour.RED);
-			final String name = count+" : "+
-					(i.secondObject() == null? "Unknown" : i.secondObject().annotation);
-			m.drawText( name, (int) b.x, (int) b.y,
+			final String name = count + " : " +
+					(i.secondObject() == null ? "Unknown" : i.secondObject().annotation);
+			m.drawText(name, (int) b.x, (int) b.y,
 					HersheyFont.TIMES_MEDIUM, 12, RGBColour.GREEN);
 			count++;
 		}
@@ -612,8 +624,7 @@ public class PersonMatcher
 			new PersonMatcher(
 					new String[] { "Barack Obama", "Arnold Schwarzenegger" },
 					new File(PersonMatcher.RECOGNISER_FILE), true);
-		}
-		catch (final Exception e)
+		} catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -623,24 +634,23 @@ public class PersonMatcher
 		{
 			PersonMatcher.displayQueryResults(
 					PersonMatcher.class.getResource(
-							"/org/openimaj/demos/sandbox/BarackObama1.jpg") );
+							"/org/openimaj/demos/sandbox/BarackObama1.jpg"));
 
 			PersonMatcher.displayQueryResults(
 					PersonMatcher.class.getResource(
-							"/org/openimaj/demos/sandbox/BarackObama2.jpg") );
+							"/org/openimaj/demos/sandbox/BarackObama2.jpg"));
 
 			PersonMatcher.displayQueryResults(
 					PersonMatcher.class.getResource(
-							"/org/openimaj/demos/sandbox/BarackObama5.jpg") );
+							"/org/openimaj/demos/sandbox/BarackObama5.jpg"));
 
 			PersonMatcher.displayQueryResults(
 					PersonMatcher.class.getResource(
-							"/org/openimaj/demos/sandbox/ArnoldSchwarzenegger1.jpg") );
+							"/org/openimaj/demos/sandbox/ArnoldSchwarzenegger1.jpg"));
 
 			// Remove the recogniser (for testing)
-			new File( PersonMatcher.RECOGNISER_FILE ).delete();
-		}
-		catch (final Exception e)
+			new File(PersonMatcher.RECOGNISER_FILE).delete();
+		} catch (final Exception e)
 		{
 			e.printStackTrace();
 		}

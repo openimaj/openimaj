@@ -46,7 +46,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
  * <p>
  * There are various challenges associated with doing this. For example, how
  * much training is needed?
- *
+ * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 12 Mar 2013
  */
@@ -54,7 +54,7 @@ public class PersonLinker
 {
 	/**
 	 * A tracked person is a tracked face with a person identifier.
-	 *
+	 * 
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 18 Mar 2013
 	 */
@@ -69,7 +69,7 @@ public class PersonLinker
 
 	/**
 	 * Options for the person matcher.
-	 *
+	 * 
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk) 8 * @created 12 Mar 2013
 	 */
 	protected static class PersonLinkerOptions
@@ -90,7 +90,7 @@ public class PersonLinker
 		public boolean display = false;
 
 		@Option(name = "--strategy", aliases = "-s",
-				usage = "The recognition strategy to use (default: CLMFeature_KNN)" )
+				usage = "The recognition strategy to use (default: CLMFeature_KNN)")
 		/** The recognition strategy to use */
 		public RecognitionStrategy strategy = RecognitionStrategy.CLMFeature_KNN;
 
@@ -144,7 +144,7 @@ public class PersonLinker
 
 	/**
 	 * Default constructor that takes the options object.
-	 *
+	 * 
 	 * @param options
 	 *            The options for the new PersonLinker
 	 */
@@ -167,7 +167,7 @@ public class PersonLinker
 
 	/**
 	 * Process the video
-	 *
+	 * 
 	 * @param v
 	 *            The video to process
 	 */
@@ -179,7 +179,7 @@ public class PersonLinker
 
 	/**
 	 * Process the video frame given
-	 *
+	 * 
 	 * @param frame
 	 *            The frame to process
 	 */
@@ -209,7 +209,7 @@ public class PersonLinker
 			if (this.faceRecogniser.getRecogniser().getAnnotations().size() == 0)
 			{
 				final int nPersons = this.faceRecogniser.getRecogniser().getAnnotations().size();
-				System.out.println( "Annotator empty. Adding " + faces.size() + " faces to training list...");
+				System.out.println("Annotator empty. Adding " + faces.size() + " faces to training list...");
 				for (int i = 0; i < faces.size(); i++)
 				{
 					final String personName = "Person " + (nPersons + i);
@@ -280,8 +280,8 @@ public class PersonLinker
 				final IndependentPair<DetectedFace, String> facePair = it.next();
 				final String person = facePair.getSecondObject();
 				Integer nExamplesSoFar = this.trainingExamplesCount.get(person);
-				if( nExamplesSoFar == null )
-					nExamplesSoFar = new Integer( 0 );
+				if (nExamplesSoFar == null)
+					nExamplesSoFar = new Integer(0);
 				final DetectedFace face = facePair.getFirstObject();
 				if (nExamplesSoFar < this.options.maxTrainingFrames)
 				{
@@ -355,7 +355,7 @@ public class PersonLinker
 	 * as it goes - that is, if a {@link TrackedFace} does not exist in the list
 	 * passed in that does exist in the cache, it will be removed from the
 	 * cache.
-	 *
+	 * 
 	 * @param list
 	 *            The list of {@link TrackedFace}s to convert
 	 * @param img
@@ -394,7 +394,7 @@ public class PersonLinker
 
 	/**
 	 * Returns the shot detector in use.
-	 *
+	 * 
 	 * @return The shot detector being used.
 	 */
 	public VideoShotDetector<MBFImage> getShotDetector()
@@ -405,7 +405,7 @@ public class PersonLinker
 	// ======================================================================
 	/**
 	 * Returns a face recogniser by using the FaceRecogniserTools.
-	 *
+	 * 
 	 * @param recogniserFile
 	 * @return The face recogniser engine
 	 * @throws IOException
@@ -429,22 +429,24 @@ public class PersonLinker
 		try
 		{
 			// This is a bit of a hack:
-			// We look for a field called "threshold" in the strategy and set the threshold
-			// to the value in the options. If the field doesn't exist, we'll ignore it.
-			final Field f = this.options.strategy.getClass().getDeclaredField( "threshold" );
-			f.setAccessible( true );
-			f.setFloat( this.options.strategy, this.options.threshold );
-			System.out.println( "Field: "+f );
-		}
-		catch( NoSuchFieldException | SecurityException e )
+			// We look for a field called "threshold" in the strategy and set
+			// the threshold
+			// to the value in the options. If the field doesn't exist, we'll
+			// ignore it.
+			final Field f = this.options.strategy.getClass().getDeclaredField("threshold");
+			f.setAccessible(true);
+			f.setFloat(this.options.strategy, this.options.threshold);
+			System.out.println("Field: " + f);
+		} catch (final NoSuchFieldException e)
 		{
-			System.out.println( "WARNING: No threshold field to set in "+this.options.strategy+"." );
-		}
-		catch( final IllegalArgumentException e )
+			System.out.println("WARNING: No threshold field to set in " + this.options.strategy + ".");
+		} catch (final SecurityException e)
+		{
+			System.out.println("WARNING: No threshold field to set in " + this.options.strategy + ".");
+		} catch (final IllegalArgumentException e)
 		{
 			e.printStackTrace();
-		}
-		catch( final IllegalAccessException e )
+		} catch (final IllegalAccessException e)
 		{
 			e.printStackTrace();
 		}
@@ -454,7 +456,7 @@ public class PersonLinker
 
 	/**
 	 * Parses the command line arguments to create an options object.
-	 *
+	 * 
 	 * @param args
 	 *            The arguments from the command-line
 	 * @return The options that were parsed from the command-line
