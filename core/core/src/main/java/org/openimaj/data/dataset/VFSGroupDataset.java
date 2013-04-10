@@ -52,7 +52,7 @@ import org.openimaj.io.ObjectReader;
  */
 public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSListDataset<INSTANCE>, INSTANCE>
 		implements
-			Identifiable
+		Identifiable
 {
 	private Map<String, VFSListDataset<INSTANCE>> files = new HashMap<String, VFSListDataset<INSTANCE>>();
 	private Map<String, FileObject> directoryInfo = new HashMap<String, FileObject>();
@@ -83,6 +83,9 @@ public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSL
 		final FileObject[] folders = base.findFiles(new FileTypeSelector(FileType.FOLDER));
 
 		for (final FileObject folder : folders) {
+			if (folder == base)
+				continue;
+
 			directoryInfo.put(folder.getName().getBaseName(), folder);
 			final VFSListDataset<INSTANCE> list = new VFSListDataset<INSTANCE>(folder.getName().getURI(), reader);
 
