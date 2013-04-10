@@ -5,6 +5,7 @@ package org.openimaj.demos.sandbox.video;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,7 +46,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
  * <p>
  * There are various challenges associated with doing this. For example, how
  * much training is needed?
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 12 Mar 2013
  */
@@ -53,7 +54,7 @@ public class PersonLinker
 {
 	/**
 	 * A tracked person is a tracked face with a person identifier.
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 18 Mar 2013
 	 */
@@ -68,7 +69,7 @@ public class PersonLinker
 
 	/**
 	 * Options for the person matcher.
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk) 8 * @created 12 Mar 2013
 	 */
 	protected static class PersonLinkerOptions
@@ -88,10 +89,15 @@ public class PersonLinker
 		/** Whether to display the video during processing */
 		public boolean display = false;
 
+		@Option(name = "--strategy", aliases = "-s",
+				usage = "The recognition strategy to use (default: CLMFeature_KNN)" )
+		/** The recognition strategy to use */
+		public RecognitionStrategy strategy = RecognitionStrategy.CLMFeature_KNN;
+
 		@Option(name = "--threshold", aliases = "-t",
 				usage = "The confidence threshold for face matching (default: 0.75)")
 		/** The confidence threshold determining when a face is matched or a new face is found */
-		public float threshold = 0.75f;
+		public float threshold = 0;
 
 		@Option(name = "--maxTrainingFrames", aliases = "-m",
 				usage = "The maximum number of frames to train a single person on (default: 20)")
@@ -138,7 +144,7 @@ public class PersonLinker
 
 	/**
 	 * Default constructor that takes the options object.
-	 * 
+	 *
 	 * @param options
 	 *            The options for the new PersonLinker
 	 */
@@ -161,7 +167,7 @@ public class PersonLinker
 
 	/**
 	 * Process the video
-	 * 
+	 *
 	 * @param v
 	 *            The video to process
 	 */
@@ -173,7 +179,7 @@ public class PersonLinker
 
 	/**
 	 * Process the video frame given
-	 * 
+	 *
 	 * @param frame
 	 *            The frame to process
 	 */
@@ -203,7 +209,7 @@ public class PersonLinker
 			if (this.faceRecogniser.getRecogniser().getAnnotations().size() == 0)
 			{
 				final int nPersons = this.faceRecogniser.getRecogniser().getAnnotations().size();
-				System.out.println("Annotator empty. Adding " + faces.size() + " faces to training list...");
+				System.out.println( "Annotator empty. Adding " + faces.size() + " faces to training list...");
 				for (int i = 0; i < faces.size(); i++)
 				{
 					final String personName = "Person " + (nPersons + i);
@@ -249,36 +255,18 @@ public class PersonLinker
 						// the face patch, in which case we better ignore this.
 						if (x != null)
 						{
-							// Check if the confidence is over a certain
-							// threshold. If it is,
-							// we'll assume that we have matched the person in
-							// question,
-							// in which case we'll simply update the tracking
-							// map and keep tracking.
-							if (x.confidence > this.options.threshold)
-							{
-								this.trackedFacesMap.put(face, x.annotation);
-								System.out.println("Recognised " + x.annotation + " with confidence " + x.confidence);
-							}
-
-							// Otherwise, confidence is low... which means
-							// we don't recognise this new face, so we need to
-							// train
-							// the annotator on this new person instead.
-							// The person gets a number for a name.
-							else
-							{
-								final String name = "Person " + nPersons;
-								System.out.println("   - Adding " + name);
-								this.trainingFaces.add(
-										new IndependentPair<DetectedFace, String>(
-												face, name));
-								nPersons++;
-							}
+							this.trackedFacesMap.put(face, x.annotation);
+							System.out.println("Recognised " + x.annotation + " with confidence " + x.confidence);
 						}
 						else
 						{
-							System.out.println("Warning: unable to extract face from image for " + face);
+							System.out.println("Warning: unable to find matching face for " + face);
+							final String name = "Person " + nPersons;
+							System.out.println("   - Adding " + name);
+							this.trainingFaces.add(
+									new IndependentPair<DetectedFace, String>(
+											face, name));
+							nPersons++;
 						}
 					}
 				}
@@ -291,7 +279,9 @@ public class PersonLinker
 			{
 				final IndependentPair<DetectedFace, String> facePair = it.next();
 				final String person = facePair.getSecondObject();
-				final Integer nExamplesSoFar = this.trainingExamplesCount.get(person);
+				Integer nExamplesSoFar = this.trainingExamplesCount.get(person);
+				if( nExamplesSoFar == null )
+					nExamplesSoFar = new Integer( 0 );
 				final DetectedFace face = facePair.getFirstObject();
 				if (nExamplesSoFar < this.options.maxTrainingFrames)
 				{
@@ -365,7 +355,7 @@ public class PersonLinker
 	 * as it goes - that is, if a {@link TrackedFace} does not exist in the list
 	 * passed in that does exist in the cache, it will be removed from the
 	 * cache.
-	 * 
+	 *
 	 * @param list
 	 *            The list of {@link TrackedFace}s to convert
 	 * @param img
@@ -404,7 +394,7 @@ public class PersonLinker
 
 	/**
 	 * Returns the shot detector in use.
-	 * 
+	 *
 	 * @return The shot detector being used.
 	 */
 	public VideoShotDetector<MBFImage> getShotDetector()
@@ -415,7 +405,7 @@ public class PersonLinker
 	// ======================================================================
 	/**
 	 * Returns a face recogniser by using the FaceRecogniserTools.
-	 * 
+	 *
 	 * @param recogniserFile
 	 * @return The face recogniser engine
 	 * @throws IOException
@@ -436,13 +426,35 @@ public class PersonLinker
 
 		// No pre-trained file? Then just create a new, clean, fresh and sparkly
 		// new engine.
-		final RecognitionEngineProvider<?> o = RecognitionStrategy.CLMFeature_KNN.getOptions();
+		try
+		{
+			// This is a bit of a hack:
+			// We look for a field called "threshold" in the strategy and set the threshold
+			// to the value in the options. If the field doesn't exist, we'll ignore it.
+			final Field f = this.options.strategy.getClass().getDeclaredField( "threshold" );
+			f.setAccessible( true );
+			f.setFloat( this.options.strategy, this.options.threshold );
+			System.out.println( "Field: "+f );
+		}
+		catch( NoSuchFieldException | SecurityException e )
+		{
+			System.out.println( "WARNING: No threshold field to set in "+this.options.strategy+"." );
+		}
+		catch( final IllegalArgumentException e )
+		{
+			e.printStackTrace();
+		}
+		catch( final IllegalAccessException e )
+		{
+			e.printStackTrace();
+		}
+		final RecognitionEngineProvider<?> o = this.options.strategy.getOptions();
 		return (FaceRecognitionEngine<DetectedFace, String>) o.createRecognitionEngine();
 	}
 
 	/**
 	 * Parses the command line arguments to create an options object.
-	 * 
+	 *
 	 * @param args
 	 *            The arguments from the command-line
 	 * @return The options that were parsed from the command-line
