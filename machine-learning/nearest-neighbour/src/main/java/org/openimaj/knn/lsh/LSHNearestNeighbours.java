@@ -121,7 +121,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 	protected DistanceComparator<OBJECT> distanceFcn;
 	protected List<Table<OBJECT>> tables;
-	protected List<OBJECT> data;
+	protected List<OBJECT> data = new ArrayList<OBJECT>();
 
 	/**
 	 * Construct with the given hash functions and distance function. One table
@@ -342,12 +342,12 @@ public class LSHNearestNeighbours<OBJECT>
 				new BoundedPriorityQueue<IntFloatPair>(K, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
 		// prepare working data
-		List<IntFloatPair> list = new ArrayList<IntFloatPair>(K+1);
-		for (int i = 0; i < K+1; i++) {
+		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(K + 1);
+		for (int i = 0; i < K + 1; i++) {
 			list.add(new IntFloatPair());
 		}
 
-		List<IntFloatPair> result = search(subset, query, queue, list);
+		final List<IntFloatPair> result = search(subset, query, queue, list);
 
 		for (int k = 0; k < K; ++k) {
 			final IntFloatPair p = result.get(k);
@@ -361,7 +361,7 @@ public class LSHNearestNeighbours<OBJECT>
 	{
 		final int size = subset.size();
 
-        IntFloatPair wp = null;
+		IntFloatPair wp = null;
 		// reset all values in the queue to MAX, -1
 		for (final IntFloatPair p : results) {
 			p.second = Float.MAX_VALUE;
