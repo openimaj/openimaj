@@ -179,7 +179,27 @@ public class LSHNearestNeighbours<OBJECT>
 	 *            the data
 	 */
 	public void addAll(Collection<OBJECT> d) {
-		int i = d.size();
+		int i = this.data.size();
+
+		for (final OBJECT point : d) {
+			this.data.add(point);
+
+			for (final Table<OBJECT> table : tables) {
+				table.insertPoint(point, i);
+			}
+
+			i++;
+		}
+	}
+
+	/**
+	 * Insert data into the tables
+	 * 
+	 * @param d
+	 *            the data
+	 */
+	public void addAll(OBJECT[] d) {
+		int i = this.data.size();
 
 		for (final OBJECT point : d) {
 			this.data.add(point);
@@ -351,7 +371,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 		for (int k = 0; k < K; ++k) {
 			final IntFloatPair p = result.get(k);
-			argmins[k] = p.first;
+			argmins[k] = ids[p.first];
 			mins[k] = p.second;
 		}
 	}

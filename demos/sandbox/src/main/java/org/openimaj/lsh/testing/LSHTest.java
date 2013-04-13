@@ -29,7 +29,6 @@
  */
 package org.openimaj.lsh.testing;
 
-import org.openimaj.data.DoubleArrayBackedDataSource;
 import org.openimaj.data.RandomData;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
@@ -44,7 +43,7 @@ import cern.jet.random.engine.MersenneTwister;
 
 public class LSHTest {
 	public static void main(String[] args) {
-		final int dims = 50;
+		final int dims = 10;
 		final double[][] queries = RandomData.getRandomDoubleArray(100, dims, 0, 1, 2);
 		final double[][] data = new double[10000][];
 
@@ -110,9 +109,9 @@ public class LSHTest {
 			}
 		};
 
-		final DoubleArrayBackedDataSource ds = new DoubleArrayBackedDataSource(data);
 		final LSHNearestNeighbours<double[]> lsh = new LSHNearestNeighbours<double[]>(factory, ntables,
 				gauss.distanceFunction());
+		lsh.addAll(data);
 
 		final DoubleNearestNeighboursExact exact = new DoubleNearestNeighboursExact(data, DoubleFVComparison.EUCLIDEAN);
 
