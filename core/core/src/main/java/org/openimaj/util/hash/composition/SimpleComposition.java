@@ -81,10 +81,10 @@ public class SimpleComposition<OBJECT> extends HashComposition<OBJECT> {
 
 	@Override
 	public int computeHashCode(OBJECT object) {
-		final int result = HashCodeUtil.SEED;
+		int result = HashCodeUtil.SEED;
 
 		for (int i = 0; i < hashFunctions.size(); i++)
-			HashCodeUtil.hash(result, hashFunctions.get(i).computeHashCode(object));
+			result = HashCodeUtil.hash(result, hashFunctions.get(i).computeHashCode(object));
 
 		return result;
 	}
