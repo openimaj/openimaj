@@ -71,7 +71,8 @@ import org.openimaj.util.pair.ObjectIntPair;
 		number = "",
 		volume = "1",
 		customData = {
-				"keywords", " AdaBoost; background regions; boosted simple feature cascade; classifiers; face detection; image processing; image representation; integral image; machine learning; object specific focus-of-attention mechanism; rapid object detection; real-time applications; statistical guarantees; visual object detection; feature extraction; image classification; image representation; learning (artificial intelligence); object detection;",
+				"keywords",
+				" AdaBoost; background regions; boosted simple feature cascade; classifiers; face detection; image processing; image representation; integral image; machine learning; object specific focus-of-attention mechanism; rapid object detection; real-time applications; statistical guarantees; visual object detection; feature extraction; image classification; image representation; learning (artificial intelligence); object detection;",
 				"doi", "10.1109/CVPR.2001.990517",
 				"ISSN", "1063-6919 "
 		})
@@ -394,13 +395,13 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage> {
 
 	@Override
 	public int hashCode() {
-		final int hashCode = HashCodeUtil.SEED;
+		int hashCode = HashCodeUtil.SEED;
 
-		HashCodeUtil.hash(hashCode, this.detector.getMinimumDetectionSize());
-		HashCodeUtil.hash(hashCode, this.detector.getScaleFactor());
-		HashCodeUtil.hash(hashCode, this.detector.getClassifier().getName());
-		HashCodeUtil.hash(hashCode, this.groupingFilter);
-		HashCodeUtil.hash(hashCode, this.histogramEqualize);
+		hashCode = HashCodeUtil.hash(hashCode, this.detector.getMinimumDetectionSize());
+		hashCode = HashCodeUtil.hash(hashCode, this.detector.getScaleFactor());
+		hashCode = HashCodeUtil.hash(hashCode, this.detector.getClassifier().getName());
+		hashCode = HashCodeUtil.hash(hashCode, this.groupingFilter);
+		hashCode = HashCodeUtil.hash(hashCode, this.histogramEqualize);
 
 		return hashCode;
 	}
