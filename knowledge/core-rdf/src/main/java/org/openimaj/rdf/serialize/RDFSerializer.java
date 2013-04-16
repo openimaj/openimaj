@@ -313,6 +313,15 @@ public class RDFSerializer
 									count = this.processLoop( uri, field,
 											count, o, subject, predicate,
 											asCollection );
+
+								// We also need to serialize the object. If
+								// The collection is actually a subclass that contains
+								// @Predicate annotations we need to go ahead and
+								// serialise those too; so we recurse here.
+								object = new URIImpl( uri + "_"
+										+ field.getName() );
+								object = this.serializeAux( oo,
+										object.stringValue() );
 							}
 							else
 							{
@@ -662,6 +671,11 @@ public class RDFSerializer
 							// Set the field up
 							field.setAccessible( true );
 							field.set( objectToUnserialize, collection );
+							
+							// If the class is a subclass of a collection class,
+							// there may be fields that we need to unserialize,
+							// so we must recurse here with the collection class.
+							unserialize( newInstance, objectRootURI + "_" + field.getName(), repo );
 						}
 						else
 						// Same goes for if it's an array.
