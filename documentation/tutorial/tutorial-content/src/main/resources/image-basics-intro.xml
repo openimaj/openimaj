@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<partintro>
+<para>
+OpenIMAJ started life as a set of classes for analysing image content. 
+The chapters in Part II present a number of practical examples and exercises 
+that will get you up an running manipulating images and performing real-world 
+image analysis tasks.
+</para>
+
+<literallayout><xref linkend="processing-your-first-image"/>
+<xref linkend="introduction-to-clustering-segmentation-and-connected-components"/>
+<xref linkend="global-image-features"/>
+<xref linkend="sift-and-feature-matching"/>
+<xref linkend="image-datasets"/>
+</literallayout>
+</partintro>

@@ -37,6 +37,6 @@ public class Caltech101<IMAGE extends Image<?, IMAGE>> extends VFSGroupDataset<I
 			FileUtils.copyInputStreamToFile(new URL(downloadURL).openStream(), dataset);
 		}
 
-		return "zip:file:" + dataset.toString();
+		return "zip:file:" + dataset.toString() + "!101_ObjectCategories/";
 	}
 }

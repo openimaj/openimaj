@@ -77,22 +77,36 @@
 	</part>
 	
 	<part>
-		<title>Images</title>
+		<title>Image Basics</title>
+		<xi:include href="image-basics-intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
   	<xi:include href="proc-first-image.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   	<xi:include href="clust-segm.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   	<xi:include href="image-hist-feats.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   	<xi:include href="sift-matching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="image-datasets.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 	
 	<part>
-		<title>Video</title>
+		<title>Video Basics</title>
   	<xi:include href="video-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   	<xi:include href="face-finding.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
-	<!-- <part>
+	<!-- 
+	<part>
 		<title>Audio</title>
-	</part> -->
+	</part> 
+	<part>
+		<title>Machine Learning</title>
+	</part>
+	<part>
+		<title>Text analysis</title>
+	</part>
+	-->
+	<part>
+		<title>Facial Analysis</title>
+	</part>
 		
 	<!-- <part>
 		<title>Advanced Features</title>
