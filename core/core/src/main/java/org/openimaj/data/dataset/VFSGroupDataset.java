@@ -83,7 +83,7 @@ public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSL
 		final FileObject[] folders = base.findFiles(new FileTypeSelector(FileType.FOLDER));
 
 		for (final FileObject folder : folders) {
-			if (folder == base)
+			if (folder.equals(base))
 				continue;
 
 			directoryInfo.put(folder.getName().getBaseName(), folder);
