@@ -356,20 +356,28 @@ public class LSHNearestNeighbours<OBJECT>
 		final int size = subset.size();
 
 		// Fix for when the user asks for too many points.
-		K = Math.min(K, size);
+		final int actualK = Math.min(K, size);
+
+		for (int k = actualK; k < K; k++) {
+			argmins[k] = -1;
+			mins[k] = Float.MAX_VALUE;
+		}
+
+		if (actualK == 0)
+			return;
 
 		final BoundedPriorityQueue<IntFloatPair> queue =
-				new BoundedPriorityQueue<IntFloatPair>(K, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
+				new BoundedPriorityQueue<IntFloatPair>(actualK, IntFloatPair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
 		// prepare working data
-		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(K + 1);
-		for (int i = 0; i < K + 1; i++) {
+		final List<IntFloatPair> list = new ArrayList<IntFloatPair>(actualK + 1);
+		for (int i = 0; i < actualK + 1; i++) {
 			list.add(new IntFloatPair());
 		}
 
 		final List<IntFloatPair> result = search(subset, query, queue, list);
 
-		for (int k = 0; k < K; ++k) {
+		for (int k = 0; k < actualK; ++k) {
 			final IntFloatPair p = result.get(k);
 			argmins[k] = ids[p.first];
 			mins[k] = p.second;
@@ -458,7 +466,8 @@ public class LSHNearestNeighbours<OBJECT>
 
 		final List<IntFloatPair> res = new ArrayList<IntFloatPair>();
 		for (int k = 0; k < K; k++) {
-			res.add(new IntFloatPair(idx[0][k], dst[0][k]));
+			if (idx[0][k] != -1)
+				res.add(new IntFloatPair(idx[0][k], dst[0][k]));
 		}
 
 		return res;
@@ -473,6 +482,9 @@ public class LSHNearestNeighbours<OBJECT>
 		final float[] dst = new float[1];
 
 		this.searchNN(qus, idx, dst);
+
+		if (idx[0] == -1)
+			return null;
 
 		return new IntFloatPair(idx[0], dst[0]);
 	}

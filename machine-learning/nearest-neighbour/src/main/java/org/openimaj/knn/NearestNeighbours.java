@@ -54,6 +54,9 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * For efficiency, to use this method, you need to pre-construct the arrays
 	 * for storing the results outside of the method and pass them in as
 	 * arguments.
+	 * <p>
+	 * <b>If a nearest-neighbour cannot be determined, it will have an index
+	 * value of -1</b>
 	 * 
 	 * @param qus
 	 *            An array of N query vectors
@@ -73,6 +76,9 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * For efficiency, to use this method, you need to pre-construct the arrays
 	 * for storing the results outside of the method and pass them in as
 	 * arguments.
+	 * <p>
+	 * <b>If a k-th nearest-neighbour cannot be determined, it will have an
+	 * index value of -1</b>
 	 * 
 	 * @param qus
 	 *            An array of N query vectors
@@ -94,6 +100,9 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * For efficiency, to use this method, you need to pre-construct the arrays
 	 * for storing the results outside of the method and pass them in as
 	 * arguments.
+	 * <p>
+	 * <b>If a nearest-neighbour cannot be determined, it will have an index
+	 * value of -1</b>
 	 * 
 	 * @param qus
 	 *            An array of N query vectors
@@ -113,6 +122,9 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * For efficiency, to use this method, you need to pre-construct the arrays
 	 * for storing the results outside of the method and pass them in as
 	 * arguments.
+	 * <p>
+	 * <b>If a k-th nearest-neighbour cannot be determined, it will have an
+	 * index value of -1</b>
 	 * 
 	 * @param qus
 	 *            An array of N query vectors
@@ -131,6 +143,9 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * Search for the K nearest neighbours to the given query and return an
 	 * ordered list of pairs containing the distance and index of each
 	 * neighbour.
+	 * <p>
+	 * If k neighbours cannot be determined, then the resultant list might have
+	 * fewer than k elements.
 	 * 
 	 * @param query
 	 *            the query vector
@@ -143,6 +158,9 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	/**
 	 * Search for the nearest neighbour to the given query and return a pair
 	 * containing the distance and index of that neighbour.
+	 * <p>
+	 * If the nearest-neighbour cannot be determined <code>null</code> will be
+	 * returned.
 	 * 
 	 * @param query
 	 *            the query vector
