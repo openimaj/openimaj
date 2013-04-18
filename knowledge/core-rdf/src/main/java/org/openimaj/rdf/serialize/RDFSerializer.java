@@ -859,6 +859,7 @@ public class RDFSerializer
 				"", objectRootURI,
 				RDFSerializer.RDF_OPENIMAJ_P_COLLECTIONITEM );
 
+		((Collection<Object>)objectToUnserialize).clear();
 		for( int i = 0; i < seq.length; i++ )
 			((Collection<Object>)objectToUnserialize).add( seq[i] );
 	}
