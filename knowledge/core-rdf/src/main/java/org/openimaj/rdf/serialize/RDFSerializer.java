@@ -137,7 +137,7 @@ import org.springframework.core.GenericCollectionTypeResolver;
  * <p>
  * This class also provides an unserialisation routine for converting an RDF
  * graph back into an object graph.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 11 Sep 2012
  * @version $Author$, $Revision$, $Date$
@@ -145,15 +145,15 @@ import org.springframework.core.GenericCollectionTypeResolver;
 public class RDFSerializer
 {
 	/** URI used for temporary graph when loading into a store */
-	public static final String RDF_OPENIMAJ_TMP_GRAPH = 
+	public static final String RDF_OPENIMAJ_TMP_GRAPH =
 			"http://rdf.openimaj.org/tmp/";
 
 	/** Predicate for giving the class name */
-	public static final String RDF_OPENIMAJ_P_CLASSNAME 
+	public static final String RDF_OPENIMAJ_P_CLASSNAME
 		= "http://rdf.openimaj.org/hasClassName/";
-	
+
 	/** Predicate for unnamed collections */
-	public static final String RDF_OPENIMAJ_P_COLLECTIONITEM 
+	public static final String RDF_OPENIMAJ_P_COLLECTIONITEM
 		= "http://rdf.openimaj.org/hasCollectionItem/";
 
 	/** Whether to try to create predicates for unannotated fields */
@@ -180,7 +180,7 @@ public class RDFSerializer
 	/**
 	 * Constructor that determines whether to create predicates automatically
 	 * when the {@link Predicate} annotation does not exist.
-	 * 
+	 *
 	 * @param autoPredicate Whether to automatically create predicates
 	 */
 	public RDFSerializer( final boolean autoPredicate )
@@ -190,7 +190,7 @@ public class RDFSerializer
 
 	/**
 	 * Serialize the given object as RDF.
-	 * 
+	 *
 	 * @param objectToSerialize The object to serialize.
 	 * @param uri The URI of the object to serialize.
 	 * @return Returns the URI of the object (this may be different to the one
@@ -205,7 +205,7 @@ public class RDFSerializer
 
 	/**
 	 * Serialize the given object as RDF.
-	 * 
+	 *
 	 * @param objectToSerialize The object to serialize.
 	 * @param uri The URI of the object to serialize.
 	 * @return Returns the URI of the object (this may be different to the one
@@ -213,13 +213,13 @@ public class RDFSerializer
 	 */
 	public URI serializeAux( final Object objectToSerialize, final String uri )
 	{
-		return serializeAux( objectToSerialize, uri, true );
+		return this.serializeAux( objectToSerialize, uri, true );
 	}
-	
+
 	/**
 	 * Serialize the given object as RDF. This is specifically designed for
 	 * calling by the process outputting collections.
-	 * 
+	 *
 	 * @param objectToSerialize The object to serialize.
 	 * @param uri The URI of the object to serialize.
 	 * @param outputCollectionObjects Whether to output items in a collection
@@ -227,7 +227,7 @@ public class RDFSerializer
 	 *         that's passed in)
 	 */
 	public URI serializeAux( final Object objectToSerialize, final String uri,
-			boolean outputCollectionObjects )
+			final boolean outputCollectionObjects )
 	{
 		// The subject (the object to serialize) won't change, so
 		// we'll just create the URI node once.
@@ -239,9 +239,9 @@ public class RDFSerializer
 		// Check whether we've already serialized this object. If we have
 		// we just return, otherwise we add it to our memory of serialized
 		// objects so that we won't try again.
-		if( this.knownGraphs.contains( subject ) ) 
+		if( this.knownGraphs.contains( subject ) )
 			return subject;
-		
+
 		this.knownGraphs.add( subject );
 
 		// Output the class name of the object to serialise
@@ -253,7 +253,7 @@ public class RDFSerializer
 		// Check whether there's a semantic type for this object
 		final RDFType typeAnnotation = objectToSerialize.getClass()
 				.getAnnotation( RDFType.class );
-		
+
 		// If there is a type anotation, add it as a triple in the graph.
 		if( typeAnnotation != null )
 			this.addTriple( new StatementImpl( subject, RDF.TYPE, new URIImpl(
@@ -270,13 +270,13 @@ public class RDFSerializer
 		// fields in the collection object to be serialized.
 		if( objectToSerialize instanceof Collection && outputCollectionObjects )
 		{
-			processCollection( subject, new URIImpl(RDF_OPENIMAJ_P_COLLECTIONITEM), 
+			this.processCollection( subject, new URIImpl(RDFSerializer.RDF_OPENIMAJ_P_COLLECTIONITEM),
 					subject, "", objectToSerialize, false );
-			
+
 			// We will still carry on and serialize the other parts
 			// of this object...
 		}
-		
+
 		// Get all the fields
 		final List<Field> fields = this.getAllFields( objectToSerialize );
 
@@ -286,7 +286,7 @@ public class RDFSerializer
 			// We won't output static members
 			if( Modifier.isStatic( field.getModifiers() ) )
 				continue;
-			
+
 			// System.out.println( "====== Field "+field+" ============");
 
 			try
@@ -294,7 +294,7 @@ public class RDFSerializer
 				// Get the value of the field
 				field.setAccessible( true );
 				final Object oo = field.get( objectToSerialize );
-				
+
 				// Special fields have annotations which mean they will be
 				// output in some other way, as defined in the outputSpecial()
 				// method. If this field is not one of those, we'll output
@@ -305,11 +305,11 @@ public class RDFSerializer
 					// created either due to a lack of the @Predicate
 					// annotation or because autoPredicate is false
 					final URIImpl predicate = this.getPredicateName( field, uri );
-	
+
 					// If the predicate is null, we can't output this object.
 					// Otherwise, we'll go ahead and output it.
 					if( predicate != null )
-						processObject( subject, predicate, field.getName(), oo,
+						this.processObject( subject, predicate, field.getName(), oo,
 							field.getAnnotation( RDFCollection.class ) != null );
 				}
 			}
@@ -326,7 +326,7 @@ public class RDFSerializer
 	/**
 	 * 	Serialises a single object into the graph using the given
 	 * 	subject and predicate in the triple.
-	 * 
+	 *
 	 *	@param subject The URI of the subject being serialised
 	 *	@param predicate The URI of the predicate for this member
 	 *	@param field The name of the field being serialised
@@ -334,12 +334,12 @@ public class RDFSerializer
 	 *	@param asCollection Whether the field should be output as
 	 *		an {@link RDFCollection}
 	 */
-	private void processObject( URIImpl subject, URIImpl predicate, 
-			final String fieldName, final Object oo, boolean asCollection )
+	private void processObject( final URIImpl subject, final URIImpl predicate,
+			final String fieldName, final Object oo, final boolean asCollection )
 	{
 		// Get the URI of the subject (the object we're serialising)
-		String uri = subject.stringValue();
-		
+		final String uri = subject.stringValue();
+
 		// If the value of the object to output is not null, we go ahead
 		// and serialise the object.
 		if( oo != null && predicate != null )
@@ -347,26 +347,26 @@ public class RDFSerializer
 			// This will be the value of the object we're outputting.
 			// It'll be a URI for complex objects.
 			Value object;
-			
+
 			// This value will give whether we're outputting a collection object.
 			// That also includes Arrays.
 			boolean isCollective = false;
-			
+
 			// Check if we should output a primitive value. If so, we're done.
 			// Otherwise, we'll need to do some more complex analysis...
 			if( (object = this.checkPrimitive( oo )) == null )
 			{
 				// Get a URI for this object
-				URIImpl objectURI = this.getObjectURI( 
-						oo, new URIImpl( 
+				final URIImpl objectURI = this.getObjectURI(
+						oo, new URIImpl(
 							subject.stringValue() + "_" + fieldName ) );
-				
+
 				// If oo is an array, we'll call the processArray() method
 				// to output it. The object becomes a URI to the array subgraph.
 				if( oo.getClass().isArray() )
 				{
-					isCollective = true;					
-					object = processArray( subject, predicate, objectURI, 
+					isCollective = true;
+					object = this.processArray( subject, predicate, objectURI,
 							fieldName, oo, asCollection );
 				}
 				else
@@ -376,10 +376,10 @@ public class RDFSerializer
 				if( oo instanceof Collection<?> )
 				{
 					isCollective = true;
-					object = processCollection( subject, predicate, objectURI,
+					object = this.processCollection( subject, predicate, objectURI,
 							fieldName, oo, asCollection );
 				}
-				// Not a primitive, array or collection?  Must be a 
+				// Not a primitive, array or collection?  Must be a
 				// regular object, so we'll recurse this process with
 				// the value of the field.
 				else
@@ -389,7 +389,7 @@ public class RDFSerializer
 					// was taken.
 					object = new URIImpl( uri + "_"
 							+ fieldName );
-					
+
 					// Here's the recursive call to the process
 					object = this.serializeAux( oo, object.stringValue() );
 				}
@@ -410,7 +410,7 @@ public class RDFSerializer
 	/**
 	 * 	Processes an array object outputting triples for the entire array.
 	 * 	Returns the Value linking to this array.
-	 * 
+	 *
 	 *	@param subject The URI of the object to serialise
 	 *	@param predicate The predicate between the subject and this array
 	 *	@param collectionURI The URI of the collection subgraph
@@ -419,8 +419,8 @@ public class RDFSerializer
 	 *	@param asCollection Whether to output as an RDF Collection
 	 *	@return The object linking to this array
 	 */
-	private Value processArray( URIImpl subject, final URIImpl predicate,
-			URIImpl collectionURI, final String fieldName, 
+	private Value processArray( final URIImpl subject, final URIImpl predicate,
+			final URIImpl collectionURI, final String fieldName,
 			final Object arrayObject, final boolean asCollection )
 	{
 		// Loop through all the array elements and output them separately.
@@ -428,7 +428,7 @@ public class RDFSerializer
 		{
 			// Get the array element value..
 			final Object o = Array.get( arrayObject, count );
-			
+
 			// Call the processListitemObject to output the actual value.
 			// We call this method rather than the serializeAux() method because
 			// we need to deal with the various methods for outputting collections
@@ -436,13 +436,13 @@ public class RDFSerializer
 			count = this.processListItemObject( subject, predicate, collectionURI,
 					count, o, asCollection );
 		}
-		
+
 		return collectionURI;
 	}
 
 	/**
 	 * 	Processes a collection object.
-	 * 
+	 *
 	 *	@param subject The URI of the object we're serializing
 	 *	@param predicate The predicate for this collection
 	 *	@param collectionURI The URI of the collection subgraph
@@ -451,8 +451,8 @@ public class RDFSerializer
 	 *	@param asCollection Whether to output as an RDF collection
 	 *	@return The object created for this collection
 	 */
-	private Value processCollection( URIImpl subject, final URIImpl predicate,
-			URIImpl collectionURI, String fieldName, 
+	private Value processCollection( final URIImpl subject, final URIImpl predicate,
+			final URIImpl collectionURI, final String fieldName,
 			final Object collectionObject, final boolean asCollection )
 	{
 		// Loop through all the collection items outputting them one at a time.
@@ -470,28 +470,28 @@ public class RDFSerializer
 		// The collection is actually a subclass that contains
 		// @Predicate annotations we need to go ahead and
 		// serialise those too; so we recurse here.
-		Value object = this.serializeAux( collectionObject, 
+		final Value object = this.serializeAux( collectionObject,
 				collectionURI.stringValue(), false );
-		
+
 		return object;
 	}
 
 	/**
 	 * A method that's called during the processing of a list of items to write
 	 * a single item.
-	 * 
+	 *
 	 * @param subject The URI of the object in which this collection exists
 	 * @param predicate The predicate of the collection in the original graph
 	 * @param collectionURI The URI of the collection in the graph
 	 * @param listCounter The current counter in the list (1-based index)
 	 * @param listItemObject The object to be serialised
-	 * @param asSequence Whether to output as an RDF Sequence 
+	 * @param asSequence Whether to output as an RDF Sequence
 	 * 			or as individual triples
 	 * @return the next counter in the list
 	 */
-	private int processListItemObject( 
+	private int processListItemObject(
 			URIImpl subject, URIImpl predicate,
-			final URIImpl collectionURI, 
+			final URIImpl collectionURI,
 			final int listCounter, final Object listItemObject,
 			final boolean asSequence )
 	{
@@ -499,7 +499,7 @@ public class RDFSerializer
 		// alter the predicate and therefore the subject
 		if( asSequence )
 		{
-			// If we're outputting as an RDF sequence the predicate 
+			// If we're outputting as an RDF sequence the predicate
 			// becomes the rdf:_n counter predicate and the subject
 			// will be the URI of the collection
 			predicate = new URIImpl( RDF.NAMESPACE + "_" + listCounter );
@@ -510,28 +510,28 @@ public class RDFSerializer
 		// value will be output directly into the collection, otherwise
 		// we need to output a subgraph URI instead.
 		Value oo = null;
-		oo = checkPrimitive( listItemObject );
+		oo = this.checkPrimitive( listItemObject );
 
 		// If list item isn't a primitive, get a URI for it.
 		if( oo == null )
 		{
 			// Get the URI for the list item object.
-			oo = this.getObjectURI( listItemObject, 
-				new URIImpl( collectionURI.stringValue() 
+			oo = this.getObjectURI( listItemObject,
+				new URIImpl( collectionURI.stringValue()
 						+ "_listItem"+listCounter ) );
 
 			// We're here because the list item is not a primitive - it's a
 			// complex object or a collection; in which case we must
 			// link to a subgraph and output that subgraph.
-			addTriple( new StatementImpl( subject, predicate, oo ) );
+			this.addTriple( new StatementImpl( subject, predicate, oo ) );
 
 			// Now we serialize the object into the graph
-			serializeAux( listItemObject, oo.stringValue() );
+			this.serializeAux( listItemObject, oo.stringValue() );
 		}
 		// Output the primitive triple
-		else	
+		else
 		{
-			addTriple( new StatementImpl( subject, predicate, oo ) );
+			this.addTriple( new StatementImpl( subject, predicate, oo ) );
 		}
 
 		return listCounter + 1;
@@ -539,7 +539,7 @@ public class RDFSerializer
 
 	/**
 	 * Returns a predicate name for the given field.
-	 * 
+	 *
 	 * @param field The field
 	 * @param uri The URI of the object
 	 * @return A predicate URI, either generated from the @Predicate annotation
@@ -573,7 +573,7 @@ public class RDFSerializer
 	/**
 	 * Checks whether the given object is a primitive type and, if so, will
 	 * return a Node that encodes it. Otherwise NULL is returned.
-	 * 
+	 *
 	 * @param o The object to check
 	 * @return a Node or NULL
 	 */
@@ -598,7 +598,7 @@ public class RDFSerializer
 
 	/**
 	 * Returns a list of declared fields from the whole object tree.
-	 * 
+	 *
 	 * @param o The object
 	 * @return A list of fields
 	 */
@@ -619,7 +619,7 @@ public class RDFSerializer
 
 	/**
 	 * Set whether to output class names as triples.
-	 * 
+	 *
 	 * @param tf TRUE to output class name triples.
 	 */
 	public void setOutputClassNames( final boolean tf )
@@ -630,7 +630,7 @@ public class RDFSerializer
 	/**
 	 * Set whether to attempt to output all fields from the objects, not just
 	 * those annotated with {@link Predicate}.
-	 * 
+	 *
 	 * @param tf TRUE to attempt to find predicates for all members.
 	 */
 	public void setAutoPredicate( final boolean tf )
@@ -641,9 +641,9 @@ public class RDFSerializer
 	/**
 	 * Unserializes an object from the given RDF string (with the given format)
 	 * into the given object.
-	 * 
+	 *
 	 * @param <T> Type of object being unserialised
-	 * 
+	 *
 	 * @param objectToUnserialize The object to populate
 	 * @param objectRootURI The URI that gives the root of the object graph
 	 * @param rdf The RDF string
@@ -664,7 +664,7 @@ public class RDFSerializer
 			// Read the RDF into the store
 			final RepositoryConnection connection = repo.getConnection();
 			final StringReader sr = new StringReader( rdf );
-			final String graphURI = RDF_OPENIMAJ_TMP_GRAPH;
+			final String graphURI = RDFSerializer.RDF_OPENIMAJ_TMP_GRAPH;
 			connection.add( sr, graphURI, rdfFormat );
 
 			// Now unserialize the object
@@ -689,9 +689,9 @@ public class RDFSerializer
 
 	/**
 	 * Unserializes an object from an RDF graph that is rooted at the given URI.
-	 * 
+	 *
 	 * @param <T> Type of object being unserialised
-	 * 
+	 *
 	 * @param objectToUnserialize The object to populate
 	 * @param objectRootURI The URI that gives the root of the object graph
 	 * @param repo The repository storing the RDF graph
@@ -707,6 +707,16 @@ public class RDFSerializer
 			return null;
 		}
 
+		// If our starting object is a collection, then there will be no
+		// predicate for us to work with. So we'll get the items from the
+		// collection using the statically defined predicate
+		// RDF_OPENIMAJ_P_COLLECTIONITEM. We will still need to deserialise
+		// the object after this, in case the collection has any
+		// predicated members that need to be deserialised.
+		if( objectToUnserialize instanceof Collection<?> )
+			this.extractCollectionDirect( (Collection<?>)objectToUnserialize,
+					objectRootURI, repo );
+
 		try
 		{
 			final RepositoryConnection connection = repo.getConnection();
@@ -717,8 +727,8 @@ public class RDFSerializer
 			// Loop through the fields
 			for( final Field field : fields )
 			{
-				System.out.println( "=========== Field "+field.getName()+" ============= ");
-				
+//				System.out.println( "=========== Field "+field.getName()+" ============= ");
+
 				try
 				{
 					// Get the name of the predicate for this field
@@ -731,14 +741,14 @@ public class RDFSerializer
 						// If it's a collection, we'll do something special
 						if( Collection.class.isAssignableFrom( field.getType() ) )
 						{
-							unserializeCollection( field, objectToUnserialize, 
+							this.unserializeCollection( field, objectToUnserialize,
 									objectRootURI, repo, predicateName );
 						}
 						else
 						// Same goes for if it's an array.
 						if( ((Class<?>) field.getType()).isArray() )
 						{
-							unserializeArray( objectToUnserialize, 
+							this.unserializeArray( objectToUnserialize,
 									objectRootURI, repo, field, predicateName );
 						}
 						// If we don't know what it is, we'll treat it as
@@ -746,7 +756,7 @@ public class RDFSerializer
 						else
 						{
 							// Query the RDF graph for the triples that represent
-							// this field in the graph. If there are more 
+							// this field in the graph. If there are more
 							// than one, the first will be used.
 							try
 							{
@@ -772,10 +782,11 @@ public class RDFSerializer
 										// We have a value for the field. Now what
 										// we do with it depends on the field itself.
 										field.setAccessible( true );
-										field.set( objectToUnserialize, 
+										field.set( objectToUnserialize,
 											this.getFieldValue(
 												field.getGenericType(),
-												objectValue, repo, field,
+												objectValue, repo,
+												field.getName(),
 												objectRootURI ) );
 									}
 									catch( final IllegalArgumentException e )
@@ -828,8 +839,33 @@ public class RDFSerializer
 	}
 
 	/**
+	 *	@param objectToUnserialize
+	 *	@param objectRootURI
+	 *	@param repo
+	 */
+	@SuppressWarnings( "unchecked" )
+	private <T extends Collection<?>> void extractCollectionDirect(
+			final T objectToUnserialize,
+			final String objectRootURI, final Repository repo )
+	{
+		final Class<?> collectionType =
+				GenericCollectionTypeResolver.getCollectionType(
+						objectToUnserialize.getClass() );
+
+		// TODO: This needs to be sorted out. We can't pass null.
+		// Unserialize the collection items.
+		final Object[] seq = this.extractCollectionObjects(
+				objectRootURI, repo, collectionType,
+				"", objectRootURI,
+				RDFSerializer.RDF_OPENIMAJ_P_COLLECTIONITEM );
+
+		for( int i = 0; i < seq.length; i++ )
+			((Collection<Object>)objectToUnserialize).add( seq[i] );
+	}
+
+	/**
 	 * 	Unserializes an array object from the graph.
-	 * 
+	 *
 	 *	@param objectToUnserialize The object in which there is an array field
 	 *	@param objectRootURI The URI of the object in which there is an array field
 	 *	@param repo The repository containing the RDF graph
@@ -837,17 +873,17 @@ public class RDFSerializer
 	 *	@param predicateName The name of the predicate for the array items
 	 *	@throws IllegalAccessException If the field cannot be set
 	 */
-	private <T> void unserializeArray( final T objectToUnserialize, 
+	private <T> void unserializeArray( final T objectToUnserialize,
 			final String objectRootURI, final Repository repo, final Field field,
 			final URIImpl predicateName ) throws IllegalAccessException
 	{
-		Class<?> componentType = field.getType().getComponentType();
-		
+		final Class<?> componentType = field.getType().getComponentType();
+
 		// Go get all the array objects
 		@SuppressWarnings( "unchecked" )
 		final T[] seq = (T[])this
 				.extractCollectionObjects( objectRootURI, repo,
-						componentType, field,
+						componentType, field.getName(),
 						objectRootURI, predicateName
 								.stringValue() );
 
@@ -857,20 +893,21 @@ public class RDFSerializer
 	}
 
 	/**
-	 * 	Unserializes a collection object from the graph.
-	 * 
+	 * 	Unserializes a collection object from the graph. This method is mainly
+	 * 	dealing with setting up the appropriate collection instance before calling
+	 * 	{@link #extractCollectionObjects(String, Repository, Class, Field, String, String)}
+	 * 	to actually get the objects.
+	 *
 	 *	@param field The field which is the collection
 	 *	@param objectToUnserialize The object in which the field exists
 	 *	@param objectRootURI The URI of the object in which the field exists
 	 *	@param repo The repository containing the RDF graph
 	 *	@param predicateURI The name of the predicate for the collection items.
 	 */
-	private void unserializeCollection( Field field, 
-			Object objectToUnserialize, String objectRootURI, 
-			Repository repo, URIImpl predicateURI )
+	private void unserializeCollection( final Field field,
+			final Object objectToUnserialize, final String objectRootURI,
+			final Repository repo, final URIImpl predicateURI )
 	{
-		System.out.println( "Unserialize collection "+field.getName() );
-		
 		// If we have a collection object, then we can do something
 		// a bit different here. We know it's a collection, so we
 		// simply iterate through the sequence getting each item in
@@ -881,7 +918,7 @@ public class RDFSerializer
 			{
 				// We get the class from the object that we're populating
 				Class<?> cls = field.getType();
-				
+
 				// Attempt to instantiate the new object.
 				// This may fail if the object does not have a
 				// default or accessible constructor. In which case
@@ -889,24 +926,25 @@ public class RDFSerializer
 				Object newInstance;
 				try
 				{
-					System.out.println( "Instantiating "+cls );
 					newInstance = cls.newInstance();
 				}
-				catch( InstantiationException e )
+				catch( final InstantiationException e )
 				{
-					System.out.println( "Unable to instantiate "+cls );
-					
-					cls = (Class<?>)getObjectClass( 
+					cls = (Class<?>)this.getObjectClass(
 						objectRootURI+"_"+field.getName(), repo );
-					System.out.println( "Found alternative: "+cls );
+
+					// If we can't get a class to instantiate,
+					// we cannot do anything. Probably the field was null.
+					if( cls == null ) return;
+
 					newInstance = cls.newInstance();
 				}
 
 				// Cast to a collection
 				@SuppressWarnings( "unchecked" )
-				final Collection<Object> collection = 
+				final Collection<Object> collection =
 						(Collection<Object>) newInstance;
-				
+
 				// We must clear the collection here. We will populate
 				// it will everything that was in it when it was created,
 				// and if the constructor adds stuff to the collection,
@@ -918,41 +956,37 @@ public class RDFSerializer
 				Class<?> collectionType = null;
 				collectionType = GenericCollectionTypeResolver
 						.getCollectionFieldType( field );
-				
-				System.out.println( "Type of collection: "+collectionType );
-				
+
 				// Now unserialise the collection.
-				Object[] seq = extractCollectionObjects( 
-						objectRootURI, repo, collectionType, 
-						field, objectRootURI, predicateURI.stringValue() ); 
-				
-				System.out.println( "Extracted Items: "+Arrays.toString( seq ));
-				
+				final Object[] seq = this.extractCollectionObjects(
+						objectRootURI, repo, collectionType,
+						field.getName(), objectRootURI, predicateURI.stringValue() );
+
 				// If we have some stuff, then put it into the field.
 				if( seq != null )
 				{
 					// Add all the extracted objects into the collection
 					for( int i = 0; i < seq.length; i++ )
 						collection.add( seq[i] );
-					
+
 					// Set the field value to the new collection
 					field.setAccessible( true );
 					field.set( objectToUnserialize, collection );
 				}
 			}
-			catch( SecurityException e )
+			catch( final SecurityException e )
 			{
 				e.printStackTrace();
 			}
-			catch( IllegalArgumentException e )
+			catch( final IllegalArgumentException e )
 			{
 				e.printStackTrace();
 			}
-			catch( InstantiationException e1 )
+			catch( final InstantiationException e1 )
 			{
 				e1.printStackTrace();
 			}
-			catch( IllegalAccessException e )
+			catch( final IllegalAccessException e )
 			{
 				e.printStackTrace();
 			}
@@ -963,22 +997,23 @@ public class RDFSerializer
 					" something that's not a collection.");
 		}
 	}
-	
+
 	/**
 	 * Returns an object extracted from the OpenRDF {@link Value} for this field.
 	 * If it's a primitive type, the object will be that primitive type.
 	 * Otherwise, the object will be deserialised and its reference passed back.
-	 * 
-	 * @param field The field.
+	 *
+	 * @param type The type of the field
 	 * @param value The RDF value object for the field.
 	 * @param repo The RDF Graph repository in use.
+	 * @param fieldName The field name
+	 * @param subjectURI The URI of the object
 	 * @return The deserialised object.
 	 */
 	private Object getFieldValue( final Type type, final Value value,
-			final Repository repo, final Field field, final String subjectURI )
+			final Repository repo, final String fieldName,
+			final String subjectURI )
 	{
-		System.out.println( "Field: "+field.getName()+", Value: "+value );
-		System.out.println( type );
 		try
 		{
 			// ---- String value ----
@@ -1046,7 +1081,7 @@ public class RDFSerializer
 						Type type2 = this.getObjectClass( objectURI, repo );
 						if( type2 == null )
 							type2 = this.getObjectClass( objectURI = subjectURI
-									+ "_" + field.getName(), repo );
+									+ "_" + fieldName, repo );
 
 						// Attempt to instantiate the new object.
 						// This may fail if the object does not have a
@@ -1087,13 +1122,13 @@ public class RDFSerializer
 	 * 	Returns whether the collection given by collectionURI is an RDF sequence
 	 * 	or not. It does this by asking the SPARQL store whether the URI has the
 	 * 	type rdf:Seq.
-	 * 
+	 *
 	 *	@param repo The repository containing the graph
 	 *	@param collectionURI The URI of the collection to check
 	 *	@return TRUE if the collection is of type rdf:Seq; FALSE otherwise or
 	 *		if an error occurs.
 	 */
-	private boolean isRDFSequence( Repository repo, String collectionURI )
+	private boolean isRDFSequence( final Repository repo, final String collectionURI )
 	{
 		// Before we retrieve the objects from the sequence, we'll first
 		// double check that it really is a sequence. If it's not (it's a
@@ -1119,16 +1154,16 @@ public class RDFSerializer
 		{
 			e1.printStackTrace();
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * 	Returns a list of objects that have been deserialised from an unordered
 	 * 	collection or an rdf:Seq in the graph. A test is made to determine which
 	 * 	type the collection is, and it will be dealt with in the appropriate way.
 	 * 	The method, if it succeeds, always returns an array of objects.
-	 * 
+	 *
 	 *	@param collectionURI The URI of the collection from which to get items
 	 *	@param repo The repository containing the RDF graph
 	 *	@param componentType The Java type of each component in the graph
@@ -1139,47 +1174,46 @@ public class RDFSerializer
 	 */
 	@SuppressWarnings( "unchecked" )
 	private <T> T[] extractCollectionObjects( final String collectionURI,
-			final Repository repo, final Class<T> componentType, 
-			final Field field,	final String subject, final String predicate )
+			final Repository repo, final Class<T> componentType,
+			final String fieldName,	final String subject, final String predicate )
 	{
-		System.out.println( "Getting items from collection "+collectionURI+"..." );
-		
 		// This will be the output of the method - an array of
 		// all the objects in order. May contain nulls.
 		T[] sequence = null;
-		
+
 		// Check whether the collection is a sequence. If it is, then we
 		// can get the collection of objects and put them into an appropriate
 		// array
-		if( isRDFSequence( repo, collectionURI ) )
+		if( this.isRDFSequence( repo, collectionURI ) )
 		{
-			System.out.println( field.getName()+" is serialized as an rdf:Seq...");
-			
 			// We'll get all the results into this map to start with.
 			// It maps an index (in the sequence) to the binding set from the query
-			final HashMap<Integer, BindingSet> tmpMap = 
+			final HashMap<Integer, BindingSet> tmpMap =
 					new HashMap<Integer, BindingSet>();
-	
+
 			try
 			{
 				// Extract the objects from the RDF sequence
-				int max = extractRDFSequenceObjects( collectionURI, repo, tmpMap );
-	
+				final int max = this.extractRDFSequenceObjects(
+						collectionURI, repo, tmpMap );
+
 				// If there was no sequence object, we'll return
 				if( max < 0 )
 					return null;
-				
+
 				// So we've processed and stored all the results. Now we need to
 				// make sure our output array is big enough for all the results.
 				sequence = (T[]) Array.newInstance( componentType, max );
-	
+
 				// Now loop through all the values and poke them into the array.
 				// Note that we convert the indices to 0-based (RDF.Seq are
 				// 1-based indices).
 				for( final int i : tmpMap.keySet() )
-					sequence[i-1] = (T)this.getFieldValue( 
-							componentType, tmpMap.get( i )
-							.getValue( "o" ), repo, field, collectionURI );
+					sequence[i-1] = (T)this.getFieldValue(
+							componentType,
+							tmpMap.get( i ).getValue( "o" ),
+							repo, fieldName,
+							collectionURI );
 			}
 			catch( final RepositoryException e )
 			{
@@ -1192,14 +1226,13 @@ public class RDFSerializer
 			catch( final QueryEvaluationException e )
 			{
 				e.printStackTrace();
-			}	
+			}
 		}
 		else
 		{
-			System.out.println( field.getName()+" is serialized in an unorderd list.");
-			sequence = (T[])this.getUnorderedObjects( 
+			sequence = this.getUnorderedObjects(
 					collectionURI, repo, componentType,
-					field, subject, predicate );
+					fieldName, subject, predicate );
 		}
 
 		return sequence;
@@ -1207,23 +1240,21 @@ public class RDFSerializer
 
 	/**
 	 * 	Extracts a set of objects from an RDF sequence and returns a map
-	 * 	containing the objects mapped to their index. 
-	 * 
+	 * 	containing the objects mapped to their index.
+	 *
 	 *	@param collectionURI The URI of the collection to extract
 	 *	@param repo The repository containing the RDF graph
-	 *	@param objectMap The map of the sequence objects 
+	 *	@param objectMap The map of the sequence objects
 	 *	@return The maximum index of a sequence object extracted
 	 *	@throws RepositoryException
 	 *	@throws MalformedQueryException
 	 *	@throws QueryEvaluationException
 	 */
-	private int extractRDFSequenceObjects( final String collectionURI, 
+	private int extractRDFSequenceObjects( final String collectionURI,
 		final Repository repo, final HashMap<Integer, BindingSet> objectMap )
-			throws RepositoryException, MalformedQueryException, 
+			throws RepositoryException, MalformedQueryException,
 			QueryEvaluationException
 	{
-		System.out.println( "Extract RDF Sequence..." );
-		
 		int max = -1;
 
 		// First we select all the links from the collectionURI
@@ -1236,7 +1267,7 @@ public class RDFSerializer
 				+ "> ?p ?o} ORDER BY DESC(?p)";
 		final TupleQuery tupleQuery = c.prepareTupleQuery(
 				QueryLanguage.SPARQL, queryString );
-		
+
 		// This actually does the query to the store...
 		final TupleQueryResult result = tupleQuery.evaluate();
 
@@ -1248,11 +1279,11 @@ public class RDFSerializer
 				final BindingSet bs = result.next();
 
 				// If the predicate is a sequence number (starts with rdf:_)
-				// then we parse the integer into the index variable. 
-				// If it's not a NumberFormatException is thrown 
+				// then we parse the integer into the index variable.
+				// If it's not a NumberFormatException is thrown
 				// (and caught and ignored because it's clearly not an
 				// RDF sequence URI)
-				final int index = Integer.parseInt( 
+				final int index = Integer.parseInt(
 					bs.getValue( "p" ).stringValue()
 					.substring("http://www.w3.org/1999/02/22-rdf-syntax-ns#_"
 							.length() ) );
@@ -1284,7 +1315,7 @@ public class RDFSerializer
 	/**
 	 * Returns a list of unserialised objects that were unserialised from an
 	 * unordered list of triples in RDF
-	 * 
+	 *
 	 * @param sequenceURI The URI of the triples
 	 * @param repo The repository
 	 * @param fieldType The field type
@@ -1293,11 +1324,10 @@ public class RDFSerializer
 	 */
 	@SuppressWarnings( "unchecked" )
 	private <T> T[] getUnorderedObjects( final String sequenceURI,
-			final Repository repo, final Class<T> fieldType, final Field field,
+			final Repository repo, final Class<T> fieldType,
+			final String fieldName,
 			final String subjectURI, final String predicate )
 	{
-		System.out.println( "Getting unordered objects..." );
-		
 		try
 		{
 			// First select all the objects that link the main object
@@ -1310,7 +1340,7 @@ public class RDFSerializer
 					+ "> <" + predicate + "> ?o}";
 			final TupleQuery tupleQuery = c.prepareTupleQuery(
 					QueryLanguage.SPARQL, queryString );
-			
+
 			// Evaluate the query, to get the results.
 			final TupleQueryResult result = tupleQuery.evaluate();
 
@@ -1321,23 +1351,20 @@ public class RDFSerializer
 			{
 				final BindingSet bs = result.next();
 				final Value oo = bs.getBinding( "o" ).getValue();
-				
+
 				// Get the value of the field if it's a primitive, or
 				// it's URI if it's a complex object and add it to
 				// the list.
 				objs.add( (T)this.getFieldValue( fieldType,
-						oo, repo, field, sequenceURI ) );
+						oo, repo, fieldName, sequenceURI ) );
 				n++;
 			}
-			
+
 			// Copy the values into an array
-			T[] arr = (T[])Array.newInstance( fieldType, n );
+			final T[] arr = (T[])Array.newInstance( fieldType, n );
 			for( int i = 0; i < arr.length; i++ )
-			{
-				System.out.println( ""+i+": "+fieldType + " <- "+objs.get(i).getClass() );
 				arr[i] = objs.get(i);
-			}
-			
+
 			return arr;
 		}
 		catch( final RepositoryException e )
@@ -1360,7 +1387,7 @@ public class RDFSerializer
 	 * Attempts to find the correct class for the object URI given. If a class
 	 * name cannot be found in the repository, then the field is used to attempt
 	 * to instantiate a class.
-	 * 
+	 *
 	 * @param objectURI The URI of the object in the repo
 	 * @param repo The RDF repository
 	 * @return A class object.
@@ -1407,7 +1434,7 @@ public class RDFSerializer
 			c.close();
 
 			// Return the class if we have one.
-			if( clazz != null ) 
+			if( clazz != null )
 			{
 //				System.out.println( clazz );
 				return clazz;
@@ -1441,7 +1468,7 @@ public class RDFSerializer
 	 * by looking for a getURI() method in the object. If it has one, it invokes
 	 * it and uses the return value as the object's URI, otherwise it will use
 	 * the default URI passed in via the method parameters.
-	 * 
+	 *
 	 * @param obj The object
 	 * @param defaultURI A default value for the URI
 	 * @return A URI for the object
@@ -1497,7 +1524,7 @@ public class RDFSerializer
 	 * directly from the value of the object. Similarly for the
 	 * {@link RelationList} which forces the output of triples from the
 	 * pairs stored in the object's value.
-	 * 
+	 *
 	 * @param fieldValue the value of the field
 	 * @param field The field definition
 	 * @return
@@ -1564,7 +1591,7 @@ public class RDFSerializer
 
 	/**
 	 * Adds a single triple to some RDF serializer.
-	 * 
+	 *
 	 * @param t The triple to add
 	 */
 	public void addTriple( final Statement t )
