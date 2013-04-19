@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.rdf.serialize;
 
@@ -38,7 +38,10 @@ import java.lang.annotation.RetentionPolicy;
 /**
  *	An annotation that marks a member of a class that is a Collection<Statement>
  *	object to be treated specially during serialization. When it is encountered,
- *	the statements stored in the list will be added to the graph without validation.
+ *	the statements stored in the list will be added to the graph without validation;
+ *	that is the {@link RDFSerializer} will call the
+ *	{@link RDFSerializer#addTriple(org.openrdf.model.Statement)} method
+ *	with each of the elements of the collection in turn.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 16 Nov 2012

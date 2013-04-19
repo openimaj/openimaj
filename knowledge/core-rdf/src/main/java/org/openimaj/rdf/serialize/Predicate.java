@@ -34,8 +34,28 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * An annotation for members of classes that can be serialized as relationships
- * in an RDF graph.
- * 
+ * in an RDF graph by the {@link RDFSerializer}, this annotation should provide
+ * the URI of the predicate to use for the field.
+ * <p>
+ * For example:
+ * <code><pre>
+ * 		class PersonClass
+ * 		{
+ * 			@Predicate("http://example.com/hasFirstName")
+ * 			public String firstName = "Jon";
+ * 		}
+ * </pre></code>
+ * ...will be encoded to:
+ * <code><pre>
+ * 		http://example.com/PersonClass
+ * 			http://example.com/hasFirstName "Jon".
+ * </pre></code>
+ * <p>
+ * If this annotation is not used, the {@link RDFSerializer} will, by default,
+ * ignore the field.  If the {@link RDFSerializer} is set to automatically create
+ * predicates, the predicate will end up being called
+ * {@code http://example.com/MyClass_hasFirstName}.
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 11 Sep 2012
  * @version $Author$, $Revision$, $Date$

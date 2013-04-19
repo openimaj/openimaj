@@ -102,41 +102,86 @@ import org.springframework.core.GenericCollectionTypeResolver;
  * used to link the object to its field in the triple. If you wish to attempt to
  * serialise unannotated fields, then you should use the constructor that takes
  * a boolean, passing true: {@link #RDFSerializer(boolean)}. This will then
- * create predicates based on the field name, so field "name" will become
- * predicate "hasName". Complex fields are serialised into subgraphs and those
- * graphs have URIs automatically generated for them.
+ * create predicates based on the field name, so field {@code member} will become
+ * predicate {@code hasMember}. Complex fields are serialised into subgraphs and those
+ * graphs have URIs automatically generated for them based on the URI of the object
+ * in which they exist and their name. For example:
+ * <code><pre>
+ * 	http://example.com/MyObject
+ * 		http://example.com/MyObject_hasMember
+ * 		http://example.com/MyObject_member.
+ * </pre></code>
  * <p>
  * The {@link #serialize(Object, String)} method requires the URI of the object
  * to be serialised. This must be decided by the caller and passed in. It is
  * used to construct URIs for complex fields and predicates (if not given). So,
  * an object with URI <code>http://example.com/object</code> and a complex field
- * <code>name</code> will end up with a triple that links the object to a
+ * called <code>field</code> will end up with a triple that links the object to a
  * subgraph representing the complex object as so: <code><pre>
- * 		http://example.com/object :hasName http://example.com/object_name
+ * 		http://example.com/object :hasField http://example.com/object_field
  * 	</pre></code>
  * The name of the subgraph is based on the URI of the object and the name of
- * the field. The predicate is automatically generated from the name of the
- * field also. Note that this means you may need to be careful about the names
- * of the fields. For example, if the object had a complex field
- * <code>name_first</code> and also had a complex field <code>name</code> that
- * had a complex field <code>first</code> it's possible the same URI may be
- * generated for separate subgraphs.
+ * the field. The predicate is also automatically generated from the name of the
+ * field. Note that this means you may need to be careful about the names
+ * of the fields. For example, if an object had a complex field
+ * <code>name_first</code> but also had a complex field <code>name</code> that
+ * itself had a complex field <code>first</code> it's possible the same URI may be
+ * generated for both subgraphs.
  * <p>
- * Primitive types will be typed with XSD datatypes.
+ * Primitive types will be typed with XSD datatypes. For example:
+ * <code><pre>
+ * 	example:field example:hasNumber "20"^^xsd:integer
+ * </pre></code>
  * <p>
- * Lists and collections are output in the same way. They are output as separate
- * triples in an unordered way, unless the {@link RDFCollection} annotation is
- * used. When this annotation is used, they are encoded using RDF sequences;
+ * Lists and collections are output in one of two ways. By default they are
+ * output as separate triples in an unordered way:
+ * <code><pre>
+ * 		@Predicate("http://example.com/hasString")
+ * 		String[] strings = new String[] { "one", "two" };
+ * </pre></code>
+ * ...will be output, by default, as:
+ * <code><pre>
+ * 	http://example.com/object
+ * 			http://example.com/hasString "one";
+ * 			http://example.com/hasString "two".
+ * </pre></code>
+ * <p>
+ * Alternatively, the {@link RDFCollection} annotation can be used.
+ * When this annotation is used, they are encoded using RDF sequences;
  * that is as subgraphs where the items have the predicates
  * <code>rdf:_1, rdf:_2..., rdf:_n</code> and the type <code>rdf:Seq</code>.
+ * This retains the same order for the collection as when serialised.
+ * So the above example would be output as:
+ * <code><pre>
+ *	http://example.com/object
+ *		http://example.com/hasString http://example.com/strings .
+ *	http://example.com/strings
+ *		rdf:type	rdf:Seq;
+ *		rdf:_1	"one";
+ *		rdf:_2	"two".
+ * </pre></code>
  * <p>
  * By default the serialisation will also output a triple that gives the class
  * name of the object which is being serialised. If you do not want this, use
  * the {@link #setOutputClassNames(boolean)} to turn it off, although this may
- * cause the deserialization to stop working.
+ * cause the deserialization to stop working, if the original fields in the
+ * object are defined as non-concrete classes (e.g. List or Collection
+ * rather than an ArrayList). In this case, the deserialiser attempts to look
+ * for this triple to find the actual class that was serialised.
+ * <p>
+ * The {@link RelationList} annotation allows collections of independent pairs
+ * of URI and Object can be sent to the RDF graph directly without validation.
+ * This is not deserialisable as there's no way for the derserialiser to know
+ * which triples belong in this collection.
+ * <p>
+ * The {@link TripleList} annotation allows members that are collections of
+ * OpenRDF {@link Statement} objects to be sent to the RDF graph directly.
+ * Again, this is not deserialisable as there's no way for the derserialiser to know
+ * which triples belong in this collection.
  * <p>
  * This class also provides an unserialisation routine for converting an RDF
- * graph back into an object graph.
+ * graph back into an object graph. Given a string that is an RDF representation
+ * of a graph (serialised with the serialiser), it will return the object.
  *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 11 Sep 2012

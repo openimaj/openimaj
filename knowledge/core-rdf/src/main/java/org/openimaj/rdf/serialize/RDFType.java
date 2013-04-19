@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.rdf.serialize;
 
@@ -36,16 +36,30 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- *	An annotation that can be used to specify how a class can be serialized
- *	to a type in RDF. 
+ *	An annotation that can be used to specify a URI for the type of
+ *	an object as it is serialised to an RDF graph.
+ *	<p>
+ *	For example:
+ *	<p>
+ *	<code><pre>
+ *		@RDFType("http://example.com/myType")
+ *		public class MyClass
+ *		{
+ *		}
+ *	</pre></code>
+ *	<p>
+ *	...will have the following triple generated, when it is serialised:
+ *	<p>
+ *	<code><pre>
+ *		http://example.com/MyClass rdf:type http://example.com/myType
+ *	</pre></code>
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 15 Nov 2012
- *	@version $Author$, $Revision$, $Date$
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RDFType
 {
-	/** The URI of the RDF Type */ 
+	/** The URI of the RDF Type */
 	public String value();
 }
