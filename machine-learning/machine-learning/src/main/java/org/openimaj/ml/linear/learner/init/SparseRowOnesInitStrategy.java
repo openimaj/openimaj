@@ -3,6 +3,7 @@ package org.openimaj.ml.linear.learner.init;
 import java.util.Random;
 
 import org.openimaj.math.matrix.SandiaMatrixUtils;
+import org.openimaj.ml.linear.learner.OnlineLearner;
 
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;

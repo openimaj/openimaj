@@ -76,6 +76,16 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		return mat;
 	}
 	
+	private Map<String,Double> constructYMap(Matrix y){
+	 	Map<String, Double> ret = new HashMap<String, Double>();
+		for (String key : values.keySet()) {
+			Integer index = values.get(key);
+			double yvalue = y.getElement(0, index);
+			ret.put(key, yvalue);
+		}
+		return ret;
+	}
+	
 	private Matrix constructXMatrix(Map<String,Map<String, Double>> x) {
 		Matrix mat = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(vocabulary.size(), users.size());
 		for (Entry<String, Map<String, Double>> userwords : x.entrySet()) {
@@ -148,5 +158,14 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		}
 		return new Pair<Matrix>(x, y);
 	}
+
+	@Override
+	public Map<String, Double> predict(Map<String, Map<String, Double>> x) {
+		Matrix xMat = constructXMatrix(x);
+		Matrix yMat = this.bilinearLearner.predict(xMat);
+		return this.constructYMap(yMat);
+	}
+
+	
 	
 }

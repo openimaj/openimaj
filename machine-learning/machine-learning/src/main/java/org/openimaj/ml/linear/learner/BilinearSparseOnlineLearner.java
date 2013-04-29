@@ -1,10 +1,18 @@
 package org.openimaj.ml.linear.learner;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 import org.apache.log4j.Logger;
+import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.matrix.SandiaMatrixUtils;
 import org.openimaj.ml.linear.learner.init.InitStrategy;
 import org.openimaj.ml.linear.learner.loss.LossFunction;
@@ -38,24 +46,24 @@ import org.openimaj.ml.linear.learner.regul.Regulariser;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>{
+public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>, ReadWriteableBinary{
 	
 	static Logger logger = Logger.getLogger(BilinearSparseOnlineLearner.class);
 	
 	protected BilinearLearnerParameters params;
 	protected Matrix w;
 	protected Matrix u;
-	protected Boolean indu;
-	protected Boolean indw;
 	protected SparseMatrixFactoryMTJ smf = SparseMatrixFactoryMTJ.INSTANCE;
 	protected LossFunction loss;
 	protected Regulariser regul;
-	protected Double lambda;
+	protected Double lambda_w,lambda_u;
 	protected Boolean biasMode;
 	protected Matrix bias;
 	protected Matrix diagX;
 	protected Double eta0_u;
 	protected Double eta0_w;
+
+	private Boolean forceSparcity;
 	
 	public BilinearSparseOnlineLearner() {
 		this(new BilinearLearnerParameters());
@@ -66,27 +74,22 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	}
 	
 	public void reinitParams() {
-		this.indw = this.params.getTyped(BilinearLearnerParameters.INDW);
-		this.indu = this.params.getTyped(BilinearLearnerParameters.INDU);
 		this.loss = this.params.getTyped(BilinearLearnerParameters.LOSS);
 		this.regul = this.params.getTyped(BilinearLearnerParameters.REGUL);
-		this.lambda = this.params.getTyped(BilinearLearnerParameters.LAMBDA);
+		this.lambda_w = this.params.getTyped(BilinearLearnerParameters.LAMBDA_W);
+		this.lambda_u = this.params.getTyped(BilinearLearnerParameters.LAMBDA_U);
 		this.biasMode = this.params.getTyped(BilinearLearnerParameters.BIAS);
 		this.eta0_u = this.params.getTyped(BilinearLearnerParameters.ETA0_U);
 		this.eta0_w = this.params.getTyped(BilinearLearnerParameters.ETA0_W);
-		
-		if(indw && indu){
-			this.loss = new MatLossFunction(this.loss);
-		}
+		this.forceSparcity = this.params.getTyped(BilinearLearnerParameters.FORCE_SPARCITY);
+		this.loss = new MatLossFunction(this.loss);
 	}
 	private void initParams(int xrows, int xcols, int ycols) {
 		InitStrategy wstrat = this.params.getTyped(BilinearLearnerParameters.WINITSTRAT);
 		InitStrategy ustrat = this.params.getTyped(BilinearLearnerParameters.UINITSTRAT);
 		
-		if(indw) this.w = wstrat.init(xrows, ycols);
-		else this.w = wstrat.init(xrows, 1);
-		if(indu) this.u = ustrat.init(xcols, ycols);
-		else this.u = ustrat.init(xcols, 1);
+		this.w = wstrat.init(xrows, ycols);
+		this.u = ustrat.init(xcols, ycols);
 		
 		this.bias = smf.createMatrix(ycols,ycols);
 		if(this.biasMode){			
@@ -107,72 +110,92 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 			initParams(nfeatures, nusers, ntasks); // Number of words, users and tasks	
 		}
 		
-		if(indw && indu){ // Both u and w have a column per task
-			// First expand Y s.t. blocks of rows contain the task values for each row of Y. 
-			// This means Yexp has (n * t x t)
-			SparseMatrix Yexp = expandY(Y);
-			loss.setY(Yexp);
-			int iter = 0;
-			while(true) {
-				// We need to set the bias here because it is used in the loss calculation of U and W
-				if(this.biasMode) loss.setBias(this.bias);
-				iter += 1;
+		Double dampening = this.params.getTyped(BilinearLearnerParameters.DAMPENING);
+		double weighting = 1.0 - dampening ;
+		
+		logger.debug("... dampening w, u and bias by: " + weighting);
 				
-				double uLossWeight = etat(iter,eta0_u);
-				double wLossWeighted = etat(iter,eta0_w);
-				double weightedLambda = lambdat(iter,lambda);
-				// Vprime is nusers x tasks
-				Matrix Vprime = X.transpose().times(this.w);
-				// ... so the loss function's X is (tasks x nusers)
-				loss.setX(Vprime.transpose());
-				Matrix newu = updateU(this.u,uLossWeight, weightedLambda);
+		// Adjust for weighting
+		this.w.scaleEquals(weighting);
+		this.u.scaleEquals(weighting);
+		if(this.biasMode){
+			this.bias.scaleEquals(weighting);
+		}
+		// First expand Y s.t. blocks of rows contain the task values for each row of Y. 
+		// This means Yexp has (n * t x t)
+		SparseMatrix Yexp = expandY(Y);
+		loss.setY(Yexp);
+		int iter = 0;
+		while(true) {
+			// We need to set the bias here because it is used in the loss calculation of U and W
+			if(this.biasMode) loss.setBias(this.bias);
+			iter += 1;
+			
+			double uLossWeight = etat(iter,eta0_u);
+			double wLossWeighted = etat(iter,eta0_w);
+			double weightedLambda_u = lambdat(iter,lambda_u);
+			double weightedLambda_w = lambdat(iter,lambda_w);
+			// Vprime is nusers x tasks
+			Matrix Vprime = X.transpose().times(this.w);
+			// ... so the loss function's X is (tasks x nusers)
+			loss.setX(Vprime.transpose());
+			Matrix newu = updateU(this.u,uLossWeight, weightedLambda_u);
+			
+			// Dprime is tasks x nwords
+			Matrix Dprime = newu.transpose().times(X.transpose());
+			// ... as is the cost function's X
+			loss.setX(Dprime);
+			Matrix neww = updateW(this.w,wLossWeighted, weightedLambda_w);
+			
+			
+			
+			double sumchangew = SandiaMatrixUtils.absSum(neww.minus(this.w));
+			double totalw = SandiaMatrixUtils.absSum(this.w);
+			
+			double sumchangeu = SandiaMatrixUtils.absSum(newu.minus(this.u));
+			double totalu = SandiaMatrixUtils.absSum(this.u);
+			double ratio = ((sumchangeu/totalu) + (sumchangew/totalw)) / 2;
+			
+			if(this.biasMode){
+				Matrix mult = newu.transpose().times(X.transpose()).times(neww).plus(this.bias);
+				// We must set bias to null! 
+				loss.setBias(null);
+				loss.setX(diagX);
+				// Calculate gradient of bias (don't regularise)
+				Matrix biasGrad = loss.gradient(mult);
+				double biasLossWeight = biasEtat(iter);
+				Matrix newbias = updateBias(biasGrad, biasLossWeight);
 				
-				// Dprime is tasks x nwords
-				Matrix Dprime = newu.transpose().times(X.transpose());
-				// ... as is the cost function's X
-				loss.setX(Dprime);
-				Matrix neww = updateW(this.w,wLossWeighted, weightedLambda);
+				double sumchangebias = SandiaMatrixUtils.absSum(newbias.minus(this.bias));
+				double totalbias = SandiaMatrixUtils.absSum(this.bias);
 				
+				ratio = ((ratio * 2) + (sumchangebias/totalbias) )/ 3;
+				this.bias = newbias;
 				
-				
-				double sumchangew = SandiaMatrixUtils.absSum(neww.minus(this.w));
-				double totalw = SandiaMatrixUtils.absSum(this.w);
-				
-				double sumchangeu = SandiaMatrixUtils.absSum(newu.minus(this.u));
-				double totalu = SandiaMatrixUtils.absSum(this.u);
-				double ratio = ((sumchangeu/totalu) + (sumchangew/totalw)) / 2;
-				
-				if(this.biasMode){
-					Matrix mult = newu.transpose().times(X.transpose()).times(neww).plus(this.bias);
-					// We must set bias to null! 
-					loss.setBias(null);
-					loss.setX(diagX);
-					// Calculate gradient of bias (don't regularise)
-					Matrix biasGrad = loss.gradient(mult);
-					double biasLossWeight = biasEtat(iter);
-					Matrix newbias = updateBias(biasGrad, biasLossWeight);
-					
-					double sumchangebias = SandiaMatrixUtils.absSum(newbias.minus(this.bias));
-					double totalbias = SandiaMatrixUtils.absSum(this.bias);
-					
-					ratio = ((ratio * 2) + (sumchangebias/totalbias) )/ 3;
-					this.bias = newbias;
-					
-				}
-				
+			}
+			
+			/**
+			 * This is not a matter of simply type
+			 * The 0 values of the sparse matrix are also removed. very important.
+			 */
+			if(forceSparcity){
+				this.w = smf.copyMatrix(neww);
+				this.u = smf.copyMatrix(newu);
+			}
+			else{
 				
 				this.w = neww;
 				this.u = newu;
-				
-				Double biconvextol = this.params.getTyped("biconvex_tol");
-				Integer maxiter = this.params.getTyped("biconvex_maxiter");
-				if(iter%3 == 0){
-					logger.debug(String.format("Iter: %d. Last Ratio: %2.3f",iter,ratio));
-				}
-				if(biconvextol  < 0 || ratio < biconvextol || iter >= maxiter) {
-					logger.debug("tolerance reached after iteration: " + iter);
-					break;
-				}
+			}
+			
+			Double biconvextol = this.params.getTyped("biconvex_tol");
+			Integer maxiter = this.params.getTyped("biconvex_maxiter");
+			if(iter%3 == 0){
+				logger.debug(String.format("Iter: %d. Last Ratio: %2.3f",iter,ratio));
+			}
+			if(biconvextol  < 0 || ratio < biconvextol || iter >= maxiter) {
+				logger.debug("tolerance reached after iteration: " + iter);
+				break;
 			}
 		}
 	}
@@ -219,7 +242,7 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 		return Yexp;
 	}
 	private double biasEtat(int iter){
-		Double biasEta0 = this.params.getTyped(BilinearLearnerParameters.BIASETA0);
+		Double biasEta0 = this.params.getTyped(BilinearLearnerParameters.ETA0_BIAS);
 		return biasEta0 / Math.sqrt(iter);
 	}
 	
@@ -235,8 +258,7 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 		return eta(eta0) / sqrtCeil;
 	}
 	private double eta(double eta0) {
-		Integer batchsize = this.params.getTyped(BilinearLearnerParameters.BATCHSIZE);
-		return eta0 / batchsize;
+		return eta0 ;
 	}
 	
 	
@@ -284,5 +306,77 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	
 	public void setW(Matrix neww) {
 		this.w = neww;
+	}
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		int nwords = in.readInt();
+		int nusers = in.readInt();
+		int ntasks = in.readInt();
+		
+		
+		this.w = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(nwords, ntasks);
+		for (int t = 0; t < ntasks; t++) {				
+			for (int r = 0; r < nwords; r++) {
+				double readDouble = in.readDouble();
+				if(readDouble != 0){
+					this.w.setElement(r, t, readDouble);					
+				}
+			}
+		}
+		
+		this.u = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(nusers, ntasks);
+		for (int t = 0; t < ntasks; t++) {				
+			for (int r = 0; r < nusers; r++) {
+				double readDouble = in.readDouble();
+				if(readDouble != 0){
+					this.u.setElement(r, t, readDouble);					
+				}
+			}
+		}
+		
+		this.bias = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(ntasks, ntasks);
+		for (int t1 = 0; t1 < ntasks; t1++) {
+			for (int t2 = 0; t2 < ntasks; t2++) {				
+				double readDouble = in.readDouble();
+				if(readDouble != 0){
+					this.bias.setElement(t1, t2, readDouble);					
+				}
+			}
+		}
+	}
+	@Override
+	public byte[] binaryHeader() {
+		return "".getBytes();
+	}
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(w.getNumRows());
+		out.writeInt(u.getNumRows());
+		out.writeInt(u.getNumColumns());
+		double[] wdata = SandiaMatrixUtils.getData(w);
+		for (int i = 0; i < wdata.length; i++) {
+			out.writeDouble(wdata[i]);
+		}
+		double[] udata = SandiaMatrixUtils.getData(u);
+		for (int i = 0; i < udata.length; i++) {
+			out.writeDouble(udata[i]);
+		}
+		double[] biasdata = SandiaMatrixUtils.getData(bias);
+		for (int i = 0; i < biasdata.length; i++) {
+			out.writeDouble(biasdata[i]);
+		}		
+	}
+	
+	public static void main(String[] args) {
+		Matrix d = DenseMatrixFactoryMTJ.INSTANCE.createMatrix(5, 10);
+		d.setElement(4, 5, 1);
+		System.out.println(d);
+		d = SparseMatrixFactoryMTJ.INSTANCE.copyMatrix(d);
+		System.out.println(d);
+	}
+	@Override
+	public Matrix predict(Matrix x) {
+		
+		return null;
 	}
 }

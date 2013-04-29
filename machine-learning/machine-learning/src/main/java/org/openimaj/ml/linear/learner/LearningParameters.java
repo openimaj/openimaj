@@ -9,6 +9,12 @@ import java.util.Map;
  *
  */
 public class LearningParameters extends HashMap<String,Object>{
+	protected class Placeholder{
+		public Placeholder(String name) {
+			this.name = name;
+		}
+		public String name;
+	}
 	/**
 	 * 
 	 */
@@ -26,7 +32,10 @@ public class LearningParameters extends HashMap<String,Object>{
 	public <T> T getTyped(String s){
 		Object thisVal = this.get(s);
 		if(thisVal == null){
-			return (T) defaults.get(s);
+			thisVal = defaults.get(s);
+		}
+		if(thisVal!=null && thisVal instanceof Placeholder){
+			return getTyped(((Placeholder)thisVal).name);
 		}
 		return (T) thisVal;
 	}

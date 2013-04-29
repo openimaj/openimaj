@@ -2,6 +2,8 @@ package org.openimaj.ml.linear.learner.init;
 
 import java.util.Random;
 
+import org.openimaj.ml.linear.learner.OnlineLearner;
+
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
@@ -30,5 +32,4 @@ public class SparseRowRandomInitStrategy implements InitStrategy{
 		}
 		return ret;
 	}
-
 }

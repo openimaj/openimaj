@@ -25,27 +25,21 @@ public class SumLossEvaluator extends BilinearEvaluator{
 	}
 	
 	public double sumLoss(List<Pair<Matrix>> pairs, Matrix u, Matrix w, Matrix bias, BilinearLearnerParameters params) {
-		Boolean indw = params.getTyped("indw");
-		Boolean indu = params.getTyped("indu");
 		LossFunction loss = params.getTyped(BilinearLearnerParameters.LOSS);
-		if(indw && indu){
-			loss = new MatLossFunction(loss);
-		}
+		loss = new MatLossFunction(loss);
 		double total = 0;
-		if(indw && indu){
-			int i = 0;
-			for (Pair<Matrix> pair : pairs) {
-				Matrix X = pair.firstObject();
-				Matrix Y = pair.secondObject();
-				SparseMatrix Yexp = BilinearSparseOnlineLearner.expandY(Y);
-				Matrix expectedAll = u.transpose().times(X.transpose()).times(w);
-				loss.setY(Yexp);
-				loss.setX(expectedAll);
-				if(bias!=null) loss.setBias(bias);
-				logger.debug("Testing pair: " + i);
-				total += loss.eval(null); // Assums an identity w.
-				i++;
-			}
+		int i = 0;
+		for (Pair<Matrix> pair : pairs) {
+			Matrix X = pair.firstObject();
+			Matrix Y = pair.secondObject();
+			SparseMatrix Yexp = BilinearSparseOnlineLearner.expandY(Y);
+			Matrix expectedAll = u.transpose().times(X.transpose()).times(w);
+			loss.setY(Yexp);
+			loss.setX(expectedAll);
+			if(bias!=null) loss.setBias(bias);
+			logger.debug("Testing pair: " + i);
+			total += loss.eval(null); // Assums an identity w.
+			i++;
 		}
 		
 		return total;

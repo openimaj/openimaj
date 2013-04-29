@@ -2,6 +2,8 @@ package org.openimaj.ml.linear.learner.init;
 
 import java.util.Random;
 
+import org.openimaj.ml.linear.learner.OnlineLearner;
+
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
@@ -20,5 +22,6 @@ public class RandomInitStrategy implements InitStrategy{
 	public Matrix init(int rows, int cols) {
 		return smf.createUniformRandom(rows, cols, min, max, random);
 	}
+	
 
 }

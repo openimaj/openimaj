@@ -1,6 +1,7 @@
 package org.openimaj.ml.linear.learner;
 
-public interface OnlineLearner<DEPENDANT, INDEPENDANT> {
+public interface OnlineLearner<INDEPENDANT,DEPENDANT> {
 	
-	public void process(DEPENDANT y, INDEPENDANT x);
+	public void process(INDEPENDANT x, DEPENDANT y);
+	public DEPENDANT predict(INDEPENDANT x);
 }

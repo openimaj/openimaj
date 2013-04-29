@@ -1,6 +1,7 @@
 package org.openimaj.ml.linear.learner.init;
 
 import org.openimaj.math.matrix.SandiaMatrixUtils;
+import org.openimaj.ml.linear.learner.OnlineLearner;
 
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
@@ -20,5 +21,6 @@ public class SingleValueInitStrat implements InitStrategy{
 			, val
 		);
 	}
+
 
 }
