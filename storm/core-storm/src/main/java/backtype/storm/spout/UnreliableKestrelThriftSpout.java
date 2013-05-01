@@ -54,11 +54,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * A version of the {@link KestrelThriftSpout} that is purposefully
- * unreliable and cuts other corners in an effort for improved
- * speeds
+ * A version of the {@link KestrelThriftSpout} that is purposefully unreliable
+ * and cuts other corners in an effort for improved speeds
  * 
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public class UnreliableKestrelThriftSpout extends BaseRichSpout {
@@ -117,12 +116,13 @@ public class UnreliableKestrelThriftSpout extends BaseRichSpout {
 	public UnreliableKestrelThriftSpout(
 			List<KestrelServerSpec> serverSpecs,
 			Scheme scheme,
-			String inputQueue) {
+			String inputQueue)
+	{
 		this.scheme = scheme;
 		this.queue = inputQueue;
 		this.port = -1;
 		this.hosts = new ArrayList<String>();
-		for (KestrelServerSpec kestrelServerSpec : serverSpecs) {
+		for (final KestrelServerSpec kestrelServerSpec : serverSpecs) {
 			this.hosts.add(kestrelServerSpec.host);
 			this.port = kestrelServerSpec.port;
 		}
@@ -143,7 +143,7 @@ public class UnreliableKestrelThriftSpout extends BaseRichSpout {
 	public void open(@SuppressWarnings("rawtypes") Map conf, TopologyContext context, SpoutOutputCollector collector) {
 		this.collector = collector;
 		this.clients = new ArrayList<KestrelServerSpec>();
-		for (String specs : this.hosts) {
+		for (final String specs : this.hosts) {
 			clients.add(new KestrelServerSpec(specs, this.port));
 		}
 		MAX_ITEMS_PER_QUEUE = HOLD_ITEMS / this.clients.size();
@@ -154,7 +154,7 @@ public class UnreliableKestrelThriftSpout extends BaseRichSpout {
 
 	@Override
 	public void close() {
-		for (KestrelServerSpec client : this.clients)
+		for (final KestrelServerSpec client : this.clients)
 			client.close();
 	}
 
@@ -166,9 +166,9 @@ public class UnreliableKestrelThriftSpout extends BaseRichSpout {
 			Utils.sleep(10);
 			return;
 		}
-		EmitItem poll = this.tuples.poll();
+		final EmitItem poll = this.tuples.poll();
 		collector.emit(poll.tuple, poll.sourceId);
-		//		collector.emit(poll.tuple);
+		// collector.emit(poll.tuple);
 	}
 
 	int readTotal = 0;
@@ -177,26 +177,28 @@ public class UnreliableKestrelThriftSpout extends BaseRichSpout {
 		if (this.tuples.size() > HOLD_ITEMS - MAX_ITEMS_PER_QUEUE / 2)
 			return;
 		int clientIndex = 0;
-		for (KestrelServerSpec clientSpec : this.clients) {
+		for (final KestrelServerSpec clientSpec : this.clients) {
 			try {
-				KestrelThriftClient client = clientSpec.getValidClient();
-				List<Item> ret = client.get(this.queue, MAX_ITEMS_PER_QUEUE, TIMEOUT, TIMEOUT * MAX_ITEMS_PER_QUEUE);
+				final KestrelThriftClient client = clientSpec.getValidClient();
+				final List<Item> ret = client
+						.get(this.queue, MAX_ITEMS_PER_QUEUE, TIMEOUT, TIMEOUT * MAX_ITEMS_PER_QUEUE);
 				readTotal += ret.size();
 				logger.debug("Read total: " + readTotal);
-				Set<Long> ids = new HashSet<Long>();
-				for (Item item : ret) {
-					long kestrelId = item.get_id();
+				final Set<Long> ids = new HashSet<Long>();
+				for (final Item item : ret) {
+					final long kestrelId = item.get_id();
 					ids.add(kestrelId);
-					List<Object> deserialize = scheme.deserialize(item.get_data());
+					final List<Object> deserialize = scheme.deserialize(item.get_data());
 					if (deserialize == null)
 						continue; // we silently skip null items
 
-					EmitItem e = new EmitItem(deserialize, new KestrelSourceId(clientIndex, kestrelId));
+					final EmitItem e = new EmitItem(deserialize, new KestrelSourceId(clientIndex, kestrelId));
 					this.tuples.add(e);
 				}
-				// We immediately confirm ALL items. This is the thing that makes it unreliable!
+				// We immediately confirm ALL items. This is the thing that
+				// makes it unreliable!
 				client.confirm(this.queue, ids);
-			} catch (TException e) {
+			} catch (final TException e) {
 			}
 			clientIndex++;
 		}
@@ -224,13 +226,13 @@ public class UnreliableKestrelThriftSpout extends BaseRichSpout {
 
 	private void emitToAckQueue() {
 		logger.debug("Acked: " + acked);
-		float throughput = acked / ((float) ackTimer.duration() / 1000);
+		final float throughput = acked / ((float) ackTimer.duration() / 1000);
 		if (this.ackQueue != null) {
-			AckStats stats = new AckStats(throughput);
-			KestrelThriftClient client = getNextValidClient();
+			final AckStats stats = new AckStats(throughput);
+			final KestrelThriftClient client = getNextValidClient();
 			try {
 				client.put(this.ackQueue, gson.toJson(stats), 0);
-			} catch (TException e) {
+			} catch (final TException e) {
 				logger.error("Failed to write acknowledgement");
 			}
 		}
@@ -242,7 +244,7 @@ public class UnreliableKestrelThriftSpout extends BaseRichSpout {
 
 	@Override
 	public void fail(Object msgId) {
-		KestrelSourceId sourceId = (KestrelSourceId) msgId;
+		final KestrelSourceId sourceId = (KestrelSourceId) msgId;
 		logger.debug("Failing: " + sourceId);
 	}
 

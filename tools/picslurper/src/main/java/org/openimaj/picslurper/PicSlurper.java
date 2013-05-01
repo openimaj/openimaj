@@ -27,7 +27,7 @@ import twitter4j.Status;
 /**
  * A tool for slurping images off twitter
  * 
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>, Iterator<InputStream> {

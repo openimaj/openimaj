@@ -24,9 +24,9 @@ import backtype.storm.topology.TopologyBuilder;
 
 /**
  * A tool for slurping images off twitter
- *
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
  */
 public class StormPicSlurper extends InOutToolOptions {
 
@@ -98,11 +98,11 @@ public class StormPicSlurper extends InOutToolOptions {
 	 * prepare the tool for running
 	 */
 	public void prepare() {
-		CmdLineParser parser = new CmdLineParser(this);
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
 			this.validate();
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
 			parser.printUsage(System.err);
@@ -136,7 +136,7 @@ public class StormPicSlurper extends InOutToolOptions {
 				// init the output file
 				PicSlurperUtils.updateStats(this.globalStatus, new StatusConsumption());
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
 	}
@@ -144,7 +144,7 @@ public class StormPicSlurper extends InOutToolOptions {
 	/**
 	 * Validate the (local) ouput from an String and return the corresponding
 	 * file.
-	 *
+	 * 
 	 * @param out
 	 *            where the file will go
 	 * @param overwrite
@@ -160,7 +160,7 @@ public class StormPicSlurper extends InOutToolOptions {
 		if (out == null) {
 			throw new IOException("No output specified");
 		}
-		File output = new File(out);
+		final File output = new File(out);
 		if (output.exists()) {
 			if (overwrite) {
 				if (!FileUtils.deleteRecursive(output))
@@ -182,14 +182,15 @@ public class StormPicSlurper extends InOutToolOptions {
 		else {
 			spout = new LocalFileTweetSpout(this.getAllInputs());
 		}
-		TopologyBuilder builder = new TopologyBuilder();
+		final TopologyBuilder builder = new TopologyBuilder();
 		builder.setSpout("stream_spout", spout);
 		// builder.setBolt("print", new
 		// PrintBolt()).shuffleGrouping("stream_spout");
-		builder.setBolt("download", new DownloadBolt(this.stats, this.globalStatus, this.outputLocation, this.outputListenerModeOp),
+		builder.setBolt("download",
+				new DownloadBolt(this.stats, this.globalStatus, this.outputLocation, this.outputListenerModeOp),
 				this.nThreads).shuffleGrouping("stream_spout");
 
-		Config conf = new Config();
+		final Config conf = new Config();
 		conf.setDebug(false);
 		cluster.submitTopology("urltop", conf, builder.createTopology());
 		while (!LocalTweetSpout.isFinished()) {
@@ -209,7 +210,7 @@ public class StormPicSlurper extends InOutToolOptions {
 	public static void main(String[] args) throws IOException, TweetTokeniserException, InterruptedException {
 		// Load the config
 		PicSlurper.loadConfig();
-		StormPicSlurper slurper = new StormPicSlurper(args);
+		final StormPicSlurper slurper = new StormPicSlurper(args);
 		slurper.prepare();
 		slurper.start();
 	}

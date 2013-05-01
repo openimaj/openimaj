@@ -13,9 +13,9 @@ import org.openimaj.picslurper.SiteSpecificConsumer;
 /**
  * Use JSoup to load the twitpic page and find the img tag that has a source
  * which contains the string "photos" or "cloudfront"
- *
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
  */
 public class TwitPicConsumer implements SiteSpecificConsumer {
 	@Override
@@ -31,19 +31,19 @@ public class TwitPicConsumer implements SiteSpecificConsumer {
 			largeURLStr += "/full";
 		}
 		try {
-			Document doc = Jsoup.connect(largeURLStr).get();
-			Elements largeimage = doc.select("img");
+			final Document doc = Jsoup.connect(largeURLStr).get();
+			final Elements largeimage = doc.select("img");
 			String imgSrc = "";
-			for (Element e : largeimage) {
+			for (final Element e : largeimage) {
 				imgSrc = e.attr("src");
 				if (imgSrc.contains("photos") || imgSrc.contains("cloudfront")) {
 					break;
 				}
 			}
-			URL link = new URL(imgSrc);
-			List<URL> a = Arrays.asList(link);
+			final URL link = new URL(imgSrc);
+			final List<URL> a = Arrays.asList(link);
 			return a;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 

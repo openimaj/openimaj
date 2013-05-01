@@ -42,7 +42,7 @@ import backtype.storm.spout.KestrelThriftClient;
 /**
  * Define a connection to a single or set of Kestrel servers
  * 
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public class KestrelServerSpec {
@@ -98,7 +98,7 @@ public class KestrelServerSpec {
 	 * @return a local server spec using memcached
 	 */
 	public static KestrelServerSpec localMemcached() {
-		KestrelServerSpec ret = new KestrelServerSpec();
+		final KestrelServerSpec ret = new KestrelServerSpec();
 		ret.port = DEFAULT_KESTREL_MEMCACHED_PORT;
 		return ret;
 	}
@@ -107,7 +107,7 @@ public class KestrelServerSpec {
 	 * @return a local server spec using thrift
 	 */
 	public static KestrelServerSpec localThrift() {
-		KestrelServerSpec ret = new KestrelServerSpec();
+		final KestrelServerSpec ret = new KestrelServerSpec();
 		ret.port = DEFAULT_KESTREL_THRIFT_PORT;
 		return ret;
 	}
@@ -116,26 +116,25 @@ public class KestrelServerSpec {
 	 * @return a local server spec using text
 	 */
 	public static KestrelServerSpec localText() {
-		KestrelServerSpec ret = new KestrelServerSpec();
+		final KestrelServerSpec ret = new KestrelServerSpec();
 		ret.port = DEFAULT_KESTREL_TEXT_PORT;
 		return ret;
 	}
 
 	/**
 	 * Parse a list of strings in the format: host:port. If either host or port
-	 * is left blank then
-	 * the default is used
+	 * is left blank then the default is used
 	 * 
 	 * @param kestrelHosts
 	 * @return all server specs
 	 */
 	public static List<KestrelServerSpec> parseKestrelAddressList(List<String> kestrelHosts) {
-		List<KestrelServerSpec> ret = new ArrayList<KestrelServerSpec>();
-		for (String hostport : kestrelHosts) {
+		final List<KestrelServerSpec> ret = new ArrayList<KestrelServerSpec>();
+		for (final String hostport : kestrelHosts) {
 			String host = "";
 			String port = "";
 			if (hostport.contains(":")) {
-				int split = hostport.lastIndexOf(":");
+				final int split = hostport.lastIndexOf(":");
 				host = hostport.substring(0, split);
 				port = hostport.substring(split + 1);
 			}
@@ -160,8 +159,8 @@ public class KestrelServerSpec {
 	 * @return a string that looks like this: "host1:port1 host2:port2"
 	 */
 	public static String kestrelAddressListAsString(List<KestrelServerSpec> kestrelSpecList, int port) {
-		List<String> retList = new ArrayList<String>();
-		for (KestrelServerSpec kestrelServerSpec : kestrelSpecList) {
+		final List<String> retList = new ArrayList<String>();
+		for (final KestrelServerSpec kestrelServerSpec : kestrelSpecList) {
 			retList.add(String.format("%s:%s", kestrelServerSpec.host, port));
 		}
 		return StringUtils.join(retList, " ");
@@ -181,8 +180,8 @@ public class KestrelServerSpec {
 
 	/**
 	 * An iterator to access a list of {@link KestrelServerSpec} in a round
-	 * robin fasion. This iterator will always return a next as long as
-	 * there are {@link KestrelServerSpec} in the provided list.
+	 * robin fasion. This iterator will always return a next as long as there
+	 * are {@link KestrelServerSpec} in the provided list.
 	 * 
 	 * @param kestrelSpecList
 	 * @return
@@ -198,16 +197,16 @@ public class KestrelServerSpec {
 
 			@Override
 			public KestrelThriftClient next() {
-				int startIndex = index;
+				final int startIndex = index;
 				do {
-					KestrelServerSpec toRet = kestrelSpecList.get(index);
+					final KestrelServerSpec toRet = kestrelSpecList.get(index);
 					index++;
 					if (index >= kestrelSpecList.size()) {
 						index = 0;
 					}
 					try {
 						return toRet.getValidClient();
-					} catch (TException e) {
+					} catch (final TException e) {
 					}
 				} while (index != startIndex);
 				throw new RuntimeException("Couldn't find valid client");

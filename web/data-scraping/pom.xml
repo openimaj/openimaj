@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>openimaj-web</artifactId>
+    <groupId>org.openimaj</groupId>
+    <version>1.1.1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.openimaj</groupId>
+  <artifactId>data-scraping</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>data-scraping</name>
+	<inceptionYear>2011</inceptionYear>
+  <description>Utility methods and classes for extracting data and information from the web</description>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core</artifactId>
+      <version>1.1.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+	  <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>src/etc/header.txt</header>
+          <strictCheck>true</strictCheck>
+          <properties>
+            <year>${project.inceptionYear}</year>
+          </properties>
+          <excludes>
+            <exclude>AUTHORS</exclude>
+            <exclude>COPYING</exclude>
+          </excludes>
+          <mapping>
+            <jtemp>JAVADOC_STYLE</jtemp>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

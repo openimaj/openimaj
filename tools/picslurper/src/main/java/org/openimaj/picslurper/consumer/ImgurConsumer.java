@@ -9,9 +9,9 @@ import org.openimaj.picslurper.consumer.ImgurClient.ImageResponse;
 
 /**
  * Downloads images hosted on imgur.com using their API
- *
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
  */
 public class ImgurConsumer implements SiteSpecificConsumer {
 
@@ -34,14 +34,14 @@ public class ImgurConsumer implements SiteSpecificConsumer {
 	public List<URL> consume(URL url) {
 		try {
 			List<ImageResponse> imageJSON = null;
-			List<URL> ret = new ArrayList<URL>();
+			final List<URL> ret = new ArrayList<URL>();
 			imageJSON = client.getImages(ImgurClient.imgurURLtoHash(url));
-			for (ImageResponse imageResponse : imageJSON) {
-				URL link = imageResponse.getOriginalLink();
+			for (final ImageResponse imageResponse : imageJSON) {
+				final URL link = imageResponse.getOriginalLink();
 				ret.add(link);
 			}
 			return ret;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}

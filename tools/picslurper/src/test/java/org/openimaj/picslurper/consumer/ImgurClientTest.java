@@ -13,7 +13,7 @@ import org.openimaj.picslurper.consumer.ImgurClient.ImageResponse;
 import org.openimaj.picslurper.consumer.ImgurClient.ImgurTypeHash;
 
 /**
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public class ImgurClientTest {
@@ -24,7 +24,7 @@ public class ImgurClientTest {
 	 */
 	@Test
 	public void testURLTranslate() throws MalformedURLException {
-		String[][] tests = new String[][] {
+		final String[][] tests = new String[][] {
 				new String[] { "http://imgur.com/a/Qlh7Y", "ALBUM", "Qlh7Y" },
 				new String[] { "http://i.imgur.com/kwWo0.jpg", "IMAGE", "kwWo0" },
 				new String[] { "http://i.imgur.com/kwWo0", "IMAGE", "kwWo0" },
@@ -33,9 +33,9 @@ public class ImgurClientTest {
 				new String[] { "http://imgur.com/gallery", "GALLERY", null },
 				new String[] { "http://imgur.com/gallery/kwWo0", "IMAGE", "kwWo0" },
 		};
-		for (String[] test : tests) {
+		for (final String[] test : tests) {
 			System.out.println("Testing: " + test[0]);
-			ImgurTypeHash res = ImgurClient.imgurURLtoHash(new URL(test[0]));
+			final ImgurTypeHash res = ImgurClient.imgurURLtoHash(new URL(test[0]));
 			System.out.println(res);
 		}
 	}
@@ -47,14 +47,14 @@ public class ImgurClientTest {
 	 */
 	@Test
 	public void testImgurImageLists() throws ClientProtocolException, IOException {
-		ImgurClient client = new ImgurClient();
-		String album = "http://imgur.com/a/Qlh7Y";
+		final ImgurClient client = new ImgurClient();
+		final String album = "http://imgur.com/a/Qlh7Y";
 		ImgurTypeHash typehash = ImgurClient.imgurURLtoHash(new URL(album));
 
 		List<ImageResponse> images = client.getImages(typehash);
 		assertTrue(images.size() > 0);
 
-		String image = "http://i.imgur.com/kwWo0.jpg";
+		final String image = "http://i.imgur.com/kwWo0.jpg";
 		typehash = ImgurClient.imgurURLtoHash(new URL(image));
 		images = client.getImages(typehash);
 		assertTrue(images.size() == 1);

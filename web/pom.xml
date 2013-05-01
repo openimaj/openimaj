@@ -19,5 +19,6 @@
     <module>webpage-analysis</module>
     <module>readability4j</module>
     <module>twitter</module>
+    <module>data-scraping</module>
   </modules>
 </project>

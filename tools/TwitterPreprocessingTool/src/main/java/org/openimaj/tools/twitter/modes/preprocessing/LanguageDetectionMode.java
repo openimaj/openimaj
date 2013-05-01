@@ -70,7 +70,7 @@ public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String, 
 		try {
 			language = detector.classify(twitterStatus.text).asMap();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 		}
 		twitterStatus.addAnalysis(LANGUAGES, language);
 		return language;
@@ -78,20 +78,27 @@ public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String, 
 	}
 
 	@Override
-	public RDFAnalysisProvider<Map<String, Object>> rdfAnalysisProvider() {
-		return new RDFAnalysisProvider<Map<String, Object>>() {
+	public RDFAnalysisProvider rdfAnalysisProvider() {
+		return new RDFAnalysisProvider() {
 			private static final String DETECTED_LANGUAGE_INSERT_SPARQL = "/org/openimaj/tools/twiiter/rdf/detected_language_insert.sparql";
 			private String query;
 
 			@Override
 			public void addAnalysis(Model m, Resource socialEvent, GeneralJSON analysisSource) {
-				Map<String, Object> analysis = analysisSource.getAnalysis(LANGUAGES);
+				final Map<String, Object> analysis = analysisSource.getAnalysis(LANGUAGES);
 				if (analysis == null)
 					return;
 
-				ParameterizedSparqlString pss = new ParameterizedSparqlString(query); // wasteful? makes it threadsafe but is it bad?
+				final ParameterizedSparqlString pss = new ParameterizedSparqlString(query); // wasteful?
+																							// makes
+																							// it
+																							// threadsafe
+																							// but
+																							// is
+																							// it
+																							// bad?
 				pss.setParam("socialEvent", socialEvent);
-				Resource langNode = m.createResource();
+				final Resource langNode = m.createResource();
 				pss.setParam("langid", langNode);
 				pss.setLiteral("language", analysis.get("language").toString());
 				pss.setLiteral("confidence", (Double) analysis.get("confidence"));
@@ -102,7 +109,7 @@ public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String, 
 			public void init() {
 				try {
 					query = FileUtils.readall(GeneralJSONRDF.class.getResourceAsStream(DETECTED_LANGUAGE_INSERT_SPARQL));
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					throw new RuntimeException(e);
 				}
 

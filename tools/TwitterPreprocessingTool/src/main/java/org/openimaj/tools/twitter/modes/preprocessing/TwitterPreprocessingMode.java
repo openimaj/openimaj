@@ -38,8 +38,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * A processing mode that is able to process a tweet and also typed on the data
- * which it
- * analyses from the tweet (so it can return this data if required)
+ * which it analyses from the tweet (so it can return this data if required)
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T>
@@ -60,8 +59,8 @@ public abstract class TwitterPreprocessingMode<T> {
 	/**
 	 * @return by default this adds no analysis and does nothing whatsoever
 	 */
-	public RDFAnalysisProvider<T> rdfAnalysisProvider() {
-		return new RDFAnalysisProvider<T>() {
+	public RDFAnalysisProvider rdfAnalysisProvider() {
+		return new RDFAnalysisProvider() {
 
 			@Override
 			public void init() {
@@ -79,10 +78,10 @@ public abstract class TwitterPreprocessingMode<T> {
 
 	/**
 	 * Given a twitter status, attempts to extract the analysis for this mode.
-	 * If the analysis does not exist, the provided mode instance is used
-	 * to create the analysis. If the provided mode is null a new mode is
-	 * created. This
-	 * mode creation might be slow, be careful about using this in this way.
+	 * If the analysis does not exist, the provided mode instance is used to
+	 * create the analysis. If the provided mode is null a new mode is created.
+	 * This mode creation might be slow, be careful about using this in this
+	 * way.
 	 * 
 	 * @param <Q>
 	 * @param status

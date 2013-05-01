@@ -55,234 +55,264 @@ import com.twitter.util.Duration;
 import com.twitter.util.Time;
 
 /**
- * A simple Kestrel client taken from https://github.com/hogelog/simple-kestrel-client by Hogelog.
- * Using this one over {@link KestrelThriftClient} which seemed to have some major issues
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * A simple Kestrel client taken from
+ * https://github.com/hogelog/simple-kestrel-client by Hogelog. Using this one
+ * over {@link KestrelThriftClient} which seemed to have some major issues
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
  */
 public class SimpleKestrelClient implements Closeable {
-    private static final Logger LOG = Logger.getLogger(SimpleKestrelClient.class);
+	private static final Logger LOG = Logger.getLogger(SimpleKestrelClient.class);
 
-    private final Client client;
+	private final Client client;
 
-    /**
-     * Initialise an {@link InetSocketAddress#InetSocketAddress(String, int)} instance
-     *  
-     * @param host
-     * @param port
-     */
-    public SimpleKestrelClient(String host, int port) {
-        this(new InetSocketAddress(host, port));
-    }
+	/**
+	 * Initialise an {@link InetSocketAddress#InetSocketAddress(String, int)}
+	 * instance
+	 * 
+	 * @param host
+	 * @param port
+	 */
+	public SimpleKestrelClient(String host, int port) {
+		this(new InetSocketAddress(host, port));
+	}
 
-    /**
-     * initialise a {@link Client} instance using {@link ServiceFactory} from a {@link ClientBuilder}
-     * @param addr
-     */
-    public SimpleKestrelClient(InetSocketAddress addr) {
-        ClientBuilder<Command, Response, Yes, Yes, Yes> builder = ClientBuilder.get()
-                    .codec(Kestrel.get())
-                    .hosts(addr)
-                    .hostConnectionLimit(1);
-        ServiceFactory<Command, Response> kestrelClientBuilder = ClientBuilder.safeBuildFactory(builder);
-        client = Client.newInstance(kestrelClientBuilder);
-    }
+	/**
+	 * initialise a {@link Client} instance using {@link ServiceFactory} from a
+	 * {@link ClientBuilder}
+	 * 
+	 * @param addr
+	 */
+	public SimpleKestrelClient(InetSocketAddress addr) {
+		final ClientBuilder<Command, Response, Yes, Yes, Yes> builder = ClientBuilder.get()
+				.codec(Kestrel.get())
+				.hosts(addr)
+				.hostConnectionLimit(1);
+		final ServiceFactory<Command, Response> kestrelClientBuilder = ClientBuilder.safeBuildFactory(builder);
+		client = Client.newInstance(kestrelClientBuilder);
+	}
 
-    /**
-     * Calls {@link Client#delete(String)} on the underlying {@link Client} instance.
-     * This deletes the underlying journal instance in the kestrel queue
-     * @param queueName
-     */
-    public void delete(String queueName) {
-        client.delete(queueName).apply();
-    }
+	/**
+	 * Calls {@link Client#delete(String)} on the underlying {@link Client}
+	 * instance. This deletes the underlying journal instance in the kestrel
+	 * queue
+	 * 
+	 * @param queueName
+	 */
+	public void delete(String queueName) {
+		client.delete(queueName).apply();
+	}
 
-    @Override
-    public void close() {
-        client.close();
-    }
+	@Override
+	public void close() {
+		client.close();
+	}
 
-    /**
-     * Performs a put kestrel call on the string value with a expiary of 0 (i.e. does not expire)
-     * @param queueName
-     * @param value
-     */
-    public void set(String queueName, String value) {
-        set(queueName, 0, value);
-    }
+	/**
+	 * Performs a put kestrel call on the string value with a expiary of 0 (i.e.
+	 * does not expire)
+	 * 
+	 * @param queueName
+	 * @param value
+	 */
+	public void set(String queueName, String value) {
+		set(queueName, 0, value);
+	}
 
-    /**
-     * Performs a put kestrel call with the provided expiration.
-     * @param queueName
-     * @param exp
-     * @param value
-     */
-    public void set(String queueName, int exp, String value) {
-        Time expTime = Time.fromMilliseconds(exp);
-        ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(value.getBytes(CharsetUtil.UTF_8));
-        client.set(queueName, buffer, expTime);
-    }
-    
-    /**
-     * Performs a put with the byte array value with no expiration
-     * @param queueName
-     * @param value
-     */
-    public void set(String queueName, byte[] value) {
-        set(queueName, 0, value);
-    }
+	/**
+	 * Performs a put kestrel call with the provided expiration.
+	 * 
+	 * @param queueName
+	 * @param exp
+	 * @param value
+	 */
+	public void set(String queueName, int exp, String value) {
+		final Time expTime = Time.fromMilliseconds(exp);
+		final ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(value.getBytes(CharsetUtil.UTF_8));
+		client.set(queueName, buffer, expTime);
+	}
 
-    /**
-     * Performs a put with the byte array valye with an expiration
-     * @param queueName
-     * @param exp
-     * @param value
-     */
-    public void set(String queueName, int exp, byte[] value) {
-        Time expTime = Time.fromMilliseconds(exp);
-        ChannelBuffer buffer = ChannelBufferUtils.bytesToChannelBuffer(value);
-        client.set(queueName, buffer, expTime);
-    }
+	/**
+	 * Performs a put with the byte array value with no expiration
+	 * 
+	 * @param queueName
+	 * @param value
+	 */
+	public void set(String queueName, byte[] value) {
+		set(queueName, 0, value);
+	}
 
-    /**
-     * Get the next value in the queue
-     * @param queueName
-     * @return the next value
-     */
-    public String get(String queueName) {
-        return get(queueName, 0);
-    }
-    
-    /**
-     * Get the next value in the queue
-     * @param queueName
-     * @return the next value
-     */
-    public byte[] getByte(String queueName) {
-        return getByte(queueName, 0);
-    }
+	/**
+	 * Performs a put with the byte array valye with an expiration
+	 * 
+	 * @param queueName
+	 * @param exp
+	 * @param value
+	 */
+	public void set(String queueName, int exp, byte[] value) {
+		final Time expTime = Time.fromMilliseconds(exp);
+		final ChannelBuffer buffer = ChannelBufferUtils.bytesToChannelBuffer(value);
+		client.set(queueName, buffer, expTime);
+	}
 
-    /**
-     * Get the next value in the queue
-     * @param queueName
-     * @param waitFor
-     * @return the next value
-     */
-    public byte[] getByte(String queueName, int waitFor) {
-        Duration waitDuration = Duration.apply(waitFor, TimeUnit.MILLISECONDS);
-        return getByte(queueName, waitDuration);
-    }
-    
-    /**
-     * Get the next value in the queue
-     * @param queueName
-     * @param waitFor
-     * @return the next value
-     */
-    public String get(String queueName, int waitFor) {
-        Duration waitDuration = Duration.apply(waitFor, TimeUnit.MILLISECONDS);
-        return get(queueName, waitDuration);
-    }
+	/**
+	 * Get the next value in the queue
+	 * 
+	 * @param queueName
+	 * @return the next value
+	 */
+	public String get(String queueName) {
+		return get(queueName, 0);
+	}
 
-    private static final List<Class<? extends Exception>> THROUGH_EXCEPTIONS = new ArrayList<Class<? extends Exception>>();
-    static {
-        THROUGH_EXCEPTIONS.add(ChannelClosedException.class);
-    };
-    /**
-     * Get the next value from the queue
-     * @param queueName
-     * @param waitDuration
-     * @return the next value
-     */
-    public String get(String queueName, Duration waitDuration) {
-        try {
-            ChannelBuffer value = client.get(queueName, waitDuration).apply();
-            return value == null ? null : value.toString(CharsetUtil.UTF_8);
-        } catch (Exception e) {
-            if (THROUGH_EXCEPTIONS.contains(e.getClass())) {
-                 return null;
-            }
-            LOG.error(e.getMessage(), e);
-            throw new IllegalStateException(e);
-        }
-    }
-    
-    /**
-     * Get the next value from the queue
-     * @param queueName
-     * @param waitDuration an amount of time to wait before returning null
-     * @return the next value
-     */
-    public byte[] getByte(String queueName, Duration waitDuration) {
-        try {
-            ChannelBuffer value = client.get(queueName, waitDuration).apply();
-            return value == null ? null : value.array();
-        } catch (Exception e) {
-            if (THROUGH_EXCEPTIONS.contains(e.getClass())) {
-                 return null;
-            }
-            LOG.error(e.getMessage(), e);
-            throw new IllegalStateException(e);
-        }
-    }
+	/**
+	 * Get the next value in the queue
+	 * 
+	 * @param queueName
+	 * @return the next value
+	 */
+	public byte[] getByte(String queueName) {
+		return getByte(queueName, 0);
+	}
 
-    /**
-     * Get the next value without popping it
-     * @param queueName
-     * @return the next value
-     */
-    public String peek(String queueName) {
-        return peek(queueName, 0);
-    }
+	/**
+	 * Get the next value in the queue
+	 * 
+	 * @param queueName
+	 * @param waitFor
+	 * @return the next value
+	 */
+	public byte[] getByte(String queueName, int waitFor) {
+		final Duration waitDuration = Duration.apply(waitFor, TimeUnit.MILLISECONDS);
+		return getByte(queueName, waitDuration);
+	}
 
-    /**
-     * The next value without popping it
-     * @param queueName
-     * @param waitFor an amount of time to wait before returning null
-     * @return the next value
-     */
-    public String peek(String queueName, int waitFor) {
-        Duration waitDuration = Duration.apply(waitFor, TimeUnit.MILLISECONDS);
-        return peek(queueName, waitDuration);
-    }
+	/**
+	 * Get the next value in the queue
+	 * 
+	 * @param queueName
+	 * @param waitFor
+	 * @return the next value
+	 */
+	public String get(String queueName, int waitFor) {
+		final Duration waitDuration = Duration.apply(waitFor, TimeUnit.MILLISECONDS);
+		return get(queueName, waitDuration);
+	}
 
-    /**
-     * The next value without popping it
-     * @param queueName
-     * @param waitDuration an amount of time to wait before returning null
-     * @return the next value
-     */
-    public String peek(String queueName, Duration waitDuration) {
-        return get(queueName + "/peek", waitDuration);
-    }
-    
-    /**
-     * Get the next value without popping it
-     * @param queueName
-     * @return the next value
-     */
-    public byte[] peekByte(String queueName) {
-        return peekByte(queueName, 0);
-    }
+	private static final List<Class<? extends Exception>> THROUGH_EXCEPTIONS = new ArrayList<Class<? extends Exception>>();
+	static {
+		THROUGH_EXCEPTIONS.add(ChannelClosedException.class);
+	};
 
-    /**
-     * The next value without popping it
-     * @param queueName
-     * @param waitFor an amount of time to wait before returning null
-     * @return the next value
-     */
-    public byte[] peekByte(String queueName, int waitFor) {
-        Duration waitDuration = Duration.apply(waitFor, TimeUnit.MILLISECONDS);
-        return peekByte(queueName, waitDuration);
-    }
+	/**
+	 * Get the next value from the queue
+	 * 
+	 * @param queueName
+	 * @param waitDuration
+	 * @return the next value
+	 */
+	public String get(String queueName, Duration waitDuration) {
+		try {
+			final ChannelBuffer value = client.get(queueName, waitDuration).apply();
+			return value == null ? null : value.toString(CharsetUtil.UTF_8);
+		} catch (final Exception e) {
+			if (THROUGH_EXCEPTIONS.contains(e.getClass())) {
+				return null;
+			}
+			LOG.error(e.getMessage(), e);
+			throw new IllegalStateException(e);
+		}
+	}
 
-    /**
-     * The next value without popping it
-     * @param queueName
-     * @param waitDuration an amount of time to wait before returning null
-     * @return the next value
-     */
-    public byte[] peekByte(String queueName, Duration waitDuration) {
-        return getByte(queueName + "/peek", waitDuration);
-    }
+	/**
+	 * Get the next value from the queue
+	 * 
+	 * @param queueName
+	 * @param waitDuration
+	 *            an amount of time to wait before returning null
+	 * @return the next value
+	 */
+	public byte[] getByte(String queueName, Duration waitDuration) {
+		try {
+			final ChannelBuffer value = client.get(queueName, waitDuration).apply();
+			return value == null ? null : value.array();
+		} catch (final Exception e) {
+			if (THROUGH_EXCEPTIONS.contains(e.getClass())) {
+				return null;
+			}
+			LOG.error(e.getMessage(), e);
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/**
+	 * Get the next value without popping it
+	 * 
+	 * @param queueName
+	 * @return the next value
+	 */
+	public String peek(String queueName) {
+		return peek(queueName, 0);
+	}
+
+	/**
+	 * The next value without popping it
+	 * 
+	 * @param queueName
+	 * @param waitFor
+	 *            an amount of time to wait before returning null
+	 * @return the next value
+	 */
+	public String peek(String queueName, int waitFor) {
+		final Duration waitDuration = Duration.apply(waitFor, TimeUnit.MILLISECONDS);
+		return peek(queueName, waitDuration);
+	}
+
+	/**
+	 * The next value without popping it
+	 * 
+	 * @param queueName
+	 * @param waitDuration
+	 *            an amount of time to wait before returning null
+	 * @return the next value
+	 */
+	public String peek(String queueName, Duration waitDuration) {
+		return get(queueName + "/peek", waitDuration);
+	}
+
+	/**
+	 * Get the next value without popping it
+	 * 
+	 * @param queueName
+	 * @return the next value
+	 */
+	public byte[] peekByte(String queueName) {
+		return peekByte(queueName, 0);
+	}
+
+	/**
+	 * The next value without popping it
+	 * 
+	 * @param queueName
+	 * @param waitFor
+	 *            an amount of time to wait before returning null
+	 * @return the next value
+	 */
+	public byte[] peekByte(String queueName, int waitFor) {
+		final Duration waitDuration = Duration.apply(waitFor, TimeUnit.MILLISECONDS);
+		return peekByte(queueName, waitDuration);
+	}
+
+	/**
+	 * The next value without popping it
+	 * 
+	 * @param queueName
+	 * @param waitDuration
+	 *            an amount of time to wait before returning null
+	 * @return the next value
+	 */
+	public byte[] peekByte(String queueName, Duration waitDuration) {
+		return getByte(queueName + "/peek", waitDuration);
+	}
 }

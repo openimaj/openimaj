@@ -56,9 +56,9 @@ import com.hp.hpl.jena.update.UpdateRequest;
 /**
  * Holds an internal Jena Graph of the USMF status. The default language used is
  * NTriples
- *
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
  */
 public class GeneralJSONRDF extends GeneralJSON {
 
@@ -95,7 +95,8 @@ public class GeneralJSONRDF extends GeneralJSON {
 
 	}
 
-	//	private static final String ITEM_QUERY_FILE = "/org/openimaj/twitter/rdf/usmf_query.sparql";
+	// private static final String ITEM_QUERY_FILE =
+	// "/org/openimaj/twitter/rdf/usmf_query.sparql";
 	private static final String INSERT_ITEM_QUERY_FILE = "/org/openimaj/twitter/rdf/insert_usmf_query.sparql";
 	private static final String DELETE_TM_NULL = "/org/openimaj/twitter/rdf/delete_null.sparql";
 	private static final String LINK_INSERT_QUERY_FILE = "/org/openimaj/twitter/rdf/insert_usmf_links_query.sparql";
@@ -114,30 +115,30 @@ public class GeneralJSONRDF extends GeneralJSON {
 		try {
 			baseModelString = FileUtils.readall(GeneralJSONRDF.class.getResourceAsStream("rdf/base_usmf.rdf"));
 			System.out.println("Read in base model!");
-		} catch (IOException e) {
+		} catch (final IOException e) {
 
 		}
 	}
-	private static final Map<String, RDFAnalysisProvider<?>> providers = new HashMap<String, RDFAnalysisProvider<?>>();
+	private static final Map<String, RDFAnalysisProvider> providers = new HashMap<String, RDFAnalysisProvider>();
 
 	/**
 	 * Registers an analysis provider to be used when some analysis key is met
-	 *
+	 * 
 	 * @param analysis
 	 * @param analysisProvider
 	 */
-	public static void registerRDFAnalysisProvider(String analysis, RDFAnalysisProvider<?> analysisProvider) {
+	public static void registerRDFAnalysisProvider(String analysis, RDFAnalysisProvider analysisProvider) {
 		analysisProvider.init();
 		providers.put(analysis, analysisProvider);
 	}
 
 	@Override
 	public void readASCII(final Scanner in) throws IOException {
-		StringBuffer b = new StringBuffer();
+		final StringBuffer b = new StringBuffer();
 		while (in.hasNext()) {
 			b.append(in.next());
 		}
-		InputStream stream = new ByteArrayInputStream(b.toString().getBytes("UTF-8"));
+		final InputStream stream = new ByteArrayInputStream(b.toString().getBytes("UTF-8"));
 		m = ModelFactory.createDefaultModel();
 		m.read(stream, "", "NTRIPLES");
 		m.close();
@@ -162,7 +163,7 @@ public class GeneralJSONRDF extends GeneralJSON {
 	private static String readQuery(String qf) {
 		try {
 			return FileUtils.readall(GeneralJSONRDF.class.getResourceAsStream(qf));
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -170,11 +171,11 @@ public class GeneralJSONRDF extends GeneralJSON {
 	@Override
 	public void fromUSMF(USMFStatus status) {
 		prepareModel();
-		//		m.add(
-		//			ResourceFactory.createResource("dc:wangSub"),
-		//			ResourceFactory.createProperty("dc:wangPre"),
-		//			"wangObj"
-		//		);
+		// m.add(
+		// ResourceFactory.createResource("dc:wangSub"),
+		// ResourceFactory.createProperty("dc:wangPre"),
+		// "wangObj"
+		// );
 		ParameterizedSparqlString pss = PQUtils.constructPQ(queryCache(INSERT_ITEM_QUERY_FILE), m);
 		this.eventIRI = m.createResource(generateSocialEventIRI(status));
 		PQUtils.setPSSResource(pss, Variables.SOCIAL_EVENT.name, eventIRI);
@@ -190,7 +191,7 @@ public class GeneralJSONRDF extends GeneralJSON {
 		// the inreply user
 
 		// the mentioned users
-		for (User key : status.to_users) {
+		for (final User key : status.to_users) {
 			PQUtils.setPSSResource(pss, Variables.SOCIAL_EVENT.name, eventIRI);
 			addUserParameters(pss, key, status);
 			UpdateAction.execute(pss.asUpdate(), m);
@@ -198,13 +199,13 @@ public class GeneralJSONRDF extends GeneralJSON {
 		}
 		pss = PQUtils.constructPQ(readQuery(LINK_INSERT_QUERY_FILE), m);
 		PQUtils.setPSSResource(pss, Variables.SOCIAL_EVENT.name, eventIRI);
-		for (Link link : status.links) {
+		for (final Link link : status.links) {
 			PQUtils.setPSSLiteral(pss, Variables.LINK.name, link.href);
 			UpdateAction.execute(pss.asUpdate(), m);
 		}
 		pss = PQUtils.constructPQ(readQuery(KEYWORDS_INSERT_QUERY_FILE), m);
 		PQUtils.setPSSResource(pss, Variables.SOCIAL_EVENT.name, eventIRI);
-		for (String key : status.keywords) {
+		for (final String key : status.keywords) {
 			PQUtils.setPSSLiteral(pss, Variables.KEYWORD.name, key);
 			UpdateAction.execute(pss.asUpdate(), m);
 		}
@@ -214,7 +215,7 @@ public class GeneralJSONRDF extends GeneralJSON {
 	}
 
 	private void cleanupModel() {
-		UpdateRequest del = PQUtils.constructPQ(readQuery(DELETE_TM_NULL), m).asUpdate();
+		final UpdateRequest del = PQUtils.constructPQ(readQuery(DELETE_TM_NULL), m).asUpdate();
 		UpdateAction.execute(del, m);
 	}
 
@@ -238,19 +239,21 @@ public class GeneralJSONRDF extends GeneralJSON {
 	}
 
 	@Override
-	public void writeASCIIAnalysis(PrintWriter outputWriter, List<String> selectiveAnalysis, List<String> selectiveStatus) {
+	public void
+			writeASCIIAnalysis(PrintWriter outputWriter, List<String> selectiveAnalysis, List<String> selectiveStatus)
+	{
 		if (selectiveAnalysis == null) {
 			selectiveAnalysis = new ArrayList<String>();
 			selectiveAnalysis.addAll(this.analysis.keySet());
 		}
-		for (String ana : selectiveAnalysis) {
-			RDFAnalysisProvider<?> prov = providers.get(ana);
+		for (final String ana : selectiveAnalysis) {
+			final RDFAnalysisProvider prov = providers.get(ana);
 			if (prov == null)
 				continue;
 			prov.addAnalysis(m, eventIRI, this);
 		}
 
-		//		m.write(System.out, "N-TRIPLES");
+		// m.write(System.out, "N-TRIPLES");
 		m.write(outputWriter, "N-TRIPLES");
 	}
 
@@ -270,16 +273,17 @@ public class GeneralJSONRDF extends GeneralJSON {
 	private synchronized void prepareModel() {
 		m = ModelFactory.createDefaultModel();
 		m.read(new StringReader(baseModelString), "");
-		//		m.read(GeneralJSONRDF.class.getResourceAsStream("rdf/base_usmf.rdf"), "");
+		// m.read(GeneralJSONRDF.class.getResourceAsStream("rdf/base_usmf.rdf"),
+		// "");
 	}
 
 	@Override
-	public GeneralJSON instanceFromString(String line){
+	public GeneralJSON instanceFromString(String line) {
 		GeneralJSONRDF jsonInstance = null;
 		try {
 			jsonInstance = new GeneralJSONRDF();
 			jsonInstance.m.read(new StringReader(line), "");
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			throw new RuntimeException(e);
 		}
 		return jsonInstance;

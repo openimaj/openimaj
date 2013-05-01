@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 /**
  * An imgur client has the various functionality of the imgur.com api
  * 
- * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public class ImgurClient {
@@ -116,12 +116,12 @@ public class ImgurClient {
 		 * @return return links.original from the imgur API response
 		 */
 		public URL getOriginalLink() {
-			String orig = (String) links.get("original");
+			final String orig = (String) links.get("original");
 			if (orig == null)
 				return null;
 			try {
 				return new URL(orig);
-			} catch (MalformedURLException e) {
+			} catch (final MalformedURLException e) {
 			}
 			return null;
 		}
@@ -161,7 +161,7 @@ public class ImgurClient {
 	 * @throws ClientProtocolException
 	 */
 	public List<ImageResponse> getImages(ImgurTypeHash typehash) throws ClientProtocolException, IOException {
-		List<ImageResponse> ret = new ArrayList<ImageResponse>();
+		final List<ImageResponse> ret = new ArrayList<ImageResponse>();
 		switch (typehash.type) {
 		case IMAGE:
 			ret.add(getSingleImage(typehash.hash));
@@ -185,9 +185,10 @@ public class ImgurClient {
 	 * @throws ClientProtocolException
 	 */
 	public ImageResponse getSingleImage(String hash) throws ClientProtocolException, IOException {
-		HttpGet get = new HttpGet(String.format("%s/image/%s.json", ENDPOINT, hash));
-		HttpResponse response = client.execute(get);
-		ImgurResponse resp = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), ImgurResponse.class);
+		final HttpGet get = new HttpGet(String.format("%s/image/%s.json", ENDPOINT, hash));
+		final HttpResponse response = client.execute(get);
+		final ImgurResponse resp = gson.fromJson(new InputStreamReader(response.getEntity().getContent()),
+				ImgurResponse.class);
 		return resp.image;
 	}
 
@@ -200,9 +201,10 @@ public class ImgurClient {
 	 * @throws ClientProtocolException
 	 */
 	public List<ImageResponse> getAlbumImages(String hash) throws ClientProtocolException, IOException {
-		HttpGet get = new HttpGet(String.format("%s/album/%s.json", ENDPOINT, hash));
-		HttpResponse response = client.execute(get);
-		ImgurResponse resp = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), ImgurResponse.class);
+		final HttpGet get = new HttpGet(String.format("%s/album/%s.json", ENDPOINT, hash));
+		final HttpResponse response = client.execute(get);
+		final ImgurResponse resp = gson.fromJson(new InputStreamReader(response.getEntity().getContent()),
+				ImgurResponse.class);
 		return resp.album.images;
 	}
 
@@ -222,33 +224,33 @@ public class ImgurClient {
 	public static ImgurTypeHash imgurURLtoHash(URL url) {
 		if (!url.getHost().contains("imgur"))
 			return null;
-		String path = url.getPath();
-		String[] split = path.split("[/]+");
+		final String path = url.getPath();
+		final String[] split = path.split("[/]+");
 		if (split.length == 0)
 			return null;
 		else if (split.length == 2) {
 			if (split[1].equals("gallery"))
 				return new ImgurTypeHash(ImgurType.GALLERY, null);
 			else {
-				Matcher matcher = hashPattern.matcher(split[1]);
+				final Matcher matcher = hashPattern.matcher(split[1]);
 				if (matcher.find())
 				{
-					String hash = split[1].substring(0, matcher.end());
+					final String hash = split[1].substring(0, matcher.end());
 					return new ImgurTypeHash(ImgurType.IMAGE, hash);
 				}
 				return null;
 			}
 		}
 		else {
-			String hashPart = split[split.length - 1];
-			String typePart = split[split.length - 2];
+			final String hashPart = split[split.length - 1];
+			final String typePart = split[split.length - 2];
 			ImgurType type = ImgurType.IMAGE;
 			if (typePart.equals("a"))
 				type = ImgurType.ALBUM;
 
-			Matcher matcher = hashPattern.matcher(hashPart);
+			final Matcher matcher = hashPattern.matcher(hashPart);
 			matcher.find();
-			String hash = hashPart.substring(0, matcher.end());
+			final String hash = hashPart.substring(0, matcher.end());
 			return new ImgurTypeHash(type, hash);
 		}
 
