@@ -2,6 +2,7 @@ package org.openimaj.util.stream;
 
 import java.util.Iterator;
 
+import org.openimaj.util.function.MultiFunction;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
@@ -74,4 +75,14 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 * @return a new stream with transformed items from this stream
 	 */
 	public <R> Stream<R> map(Function<T, R> mapper);
+
+	/**
+	 * Transform the stream by creating a new stream that transforms the items
+	 * in this stream with the given {@link Function}.
+	 * 
+	 * @param mapper
+	 *            the function to apply
+	 * @return a new stream with transformed items from this stream
+	 */
+	public <R> Stream<R> map(MultiFunction<T, R> mapper);
 }

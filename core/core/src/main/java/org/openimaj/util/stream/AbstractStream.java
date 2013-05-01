@@ -1,9 +1,11 @@
 package org.openimaj.util.stream;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.openimaj.util.function.Function;
+import org.openimaj.util.function.MultiFunction;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
 
@@ -82,6 +84,50 @@ public abstract class AbstractStream<T> implements Stream<T> {
 			@Override
 			public R next() {
 				return mapper.apply(AbstractStream.this.next());
+			}
+		};
+	}
+
+	@Override
+	public <R> Stream<R> map(final MultiFunction<T, R> mapper) {
+		return new AbstractStream<R>() {
+			List<R> current;
+			int currentIndex;
+
+			@Override
+			public boolean hasNext() {
+				if (currentIndex >= current.size()) {
+					current = null;
+					currentIndex = 0;
+				}
+
+				if (current == null) {
+					if (AbstractStream.this.hasNext()) {
+						for (final T obj : AbstractStream.this) {
+							final List<R> list = mapper.apply(obj);
+
+							if (list != null && list.size() > 0) {
+								current = list;
+								currentIndex = 0;
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+
+				return true;
+			}
+
+			@Override
+			public R next() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+
+				final R ret = current.get(currentIndex);
+				currentIndex++;
+
+				return ret;
 			}
 		};
 	}

@@ -6,7 +6,7 @@ package org.openimaj.util.function;
  * @param <IN>
  *            the type of the input to the function.
  * @param <OUT>
- *            the type of the result function.
+ *            the type of the result.
  */
 public interface Function<IN, OUT> {
 	/**
