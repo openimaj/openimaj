@@ -22,7 +22,7 @@ public class TwitterLinkExtractor implements MultiFunction<Status, URL> {
 
 	@Override
 	public List<URL> apply(Status status) {
-		final Set<URL> urls = new HashSet<URL>();
+		final Set<String> urls = new HashSet<String>();
 
 		// Add all the entries from entities.urls
 		if (status.getURLEntities() != null) {
@@ -36,11 +36,7 @@ public class TwitterLinkExtractor implements MultiFunction<Status, URL> {
 						continue;
 				}
 
-				try {
-					urls.add(new URL(u));
-				} catch (final MalformedURLException e) {
-					logger.warn("ignoring URL ", e);
-				}
+				urls.add(u);
 			}
 		}
 
@@ -52,14 +48,19 @@ public class TwitterLinkExtractor implements MultiFunction<Status, URL> {
 			while (matcher.find()) {
 				final String urlString = text.substring(matcher.start(), matcher.end());
 
-				try {
-					urls.add(new URL(urlString));
-				} catch (final MalformedURLException e) {
-					logger.warn("ignoring URL ", e);
-				}
+				urls.add(urlString);
 			}
 		}
 
-		return new ArrayList<URL>(urls);
+		// get the final URLs
+		final ArrayList<URL> finalUrls = new ArrayList<URL>();
+		for (final String u : urls) {
+			try {
+				finalUrls.add(new URL(u));
+			} catch (final MalformedURLException e) {
+				logger.warn("ignoring URL ", e);
+			}
+		}
+		return finalUrls;
 	}
 }
