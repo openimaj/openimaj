@@ -35,3 +35,4 @@
 package org.openimaj.demos.image;
 
 import org.openimaj.demos.DemoPackage;
+

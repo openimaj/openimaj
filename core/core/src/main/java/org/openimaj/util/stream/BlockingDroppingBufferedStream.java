@@ -13,9 +13,9 @@ import org.openimaj.util.concurrent.BlockingDroppingQueue;
  * that are connected to external, live data-sources that can potentially
  * produce data at a rate which exceeds the rate at which the stream can be
  * processed.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            The type of data item in the stream
  */
