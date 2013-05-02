@@ -1,0 +1,33 @@
+<div class="carousel-example">
+	<div class="example-inner example-left">
+		<div class="example-content">
+			<h2>Video Processing</h2>
+			<div class="example_body">
+				Easy webcam access and video processing!
+				<img src="images/video-proc-example.gif" />
+				<a href="tutorial/processing-video.html">Video Processing in OpenIMAJ &gt;</a>
+			</div>
+		</div>
+	</div>
+	<div class="example-inner example-right">
+		<div class="example-content">
+			<pre>
+...
+// Access First Webcam
+VideoCapture cap = new VideoCapture(640, 480);
+// Process Video
+VideoDisplay.createOffscreenVideoDisplay(cap)
+.addVideoListener(
+	new VideoDisplayListener<MBFImage>() {
+	public void beforeUpdate(MBFImage frame) {
+...
+		MBFImage diff = 
+			frame.subtract(last).abs();
+		last = frame.clone();
+...
+	}
+...
+			</pre>
+		</div>
+	</div>
+</div>

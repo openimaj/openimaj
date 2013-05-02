@@ -14,6 +14,7 @@ if (!templateFile.exists())
 String templateContent = templateFile.text;
 
 sourceDir.eachFile { file ->
+	if (file.isDirectory()) return;
 	File newFile = new File(targetDir, file.name);
 	File tFile = new File(targetDir, "template-"+file.name);
     String sourceContent = file.text;

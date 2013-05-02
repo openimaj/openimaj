@@ -1,13 +1,41 @@
 <div>
 	<span class="row">
-		<img src="images/OpenImaj.png" title="OpenIMAJ: Intelligent Multimedia Analysis"/>
+		<img src="images/OpenImaj.png" title="OpenIMAJ: Intelligent Multimedia Analysis" style="padding-bottom: 2em;"/>
 	</span>
+	<div id="exampleCarousel" class="carousel slide">
+		<ol class="carousel-indicators">
+			<li data-target="#exampleCarousel" data-slide-to="0" class="active"></li>
+			<li data-target="#exampleCarousel" data-slide-to="1"></li>
+			<li data-target="#exampleCarousel" data-slide-to="2"></li>
+		</ol>
+		<!-- Carousel items -->
+		<div class="carousel-inner">
+			<p>carousel_examples_go_here</p>
+		</div>
+		<!-- Carousel nav -->
+		<a class="carousel-control left" href="#exampleCarousel" data-slide="prev">&lsaquo;</a>
+		<a class="carousel-control right" href="#exampleCarousel" data-slide="next">&rsaquo;</a>
+	</div>
+	<script type="text/javascript" charset="utf-8">
+		$("#exampleCarousel").carousel({
+			interval:10000
+		})
+	</script>
 
 	<span class="row">
 		<span id="module">
 			<p class="module_head">Learn</p>
 			<div class="module_body" style="text-align:center;-webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;">
-				<a href="tutorial/index.html"><img src="images/tutorial.png" /></a>
+				<div class="row-fluid">
+					<div style="float:left">
+						<a href="tutorial/index.html">
+							<img src="images/tutorial.png" />
+						</a>
+					</div>
+					<div style="float:left; width:250px; color:black;font-size:12px;padding-left:10px;margin-top: 4em;padding-bottom: 0;">
+						<p>Check out the OpenIMAJ tutorial for installation instructions and some examples which show you how to use OpenIMAJ for the first time.</p>
+					</div>
+				</div>
 			</div>
 			
 			<p class="module_head">Dependencies</p>
@@ -259,7 +287,7 @@ Jonathon S. Hare, Sina Samangooei, and David P. Dupplaw. 2011. OpenIMAJ and Imag
 		</script>
 
 		<h4>
-			Welcome to the home of the Open Intelligent Multimedia Analysis toolkit for Java (OpenIMAJ).
+			Open Intelligent Multimedia Analysis for Java (OpenIMAJ)
 		</h4>
 
 		<p>

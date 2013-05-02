@@ -51,7 +51,7 @@ import org.openimaj.util.pair.Pair;
 
 /**
  * Drawing utility useful for drawing two images and the matches between their feature points
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
@@ -60,8 +60,8 @@ public class MatchingUtilities {
 	/**
 	 * Draw matches between two images in the given colour.
 	 * Places the images side-by-side and draws a line
-	 * for each match. 
-	 * 
+	 * for each match.
+	 *
 	 * @param <T> Pixel type
 	 * @param <I> Image type
 	 * @param im1 first image
@@ -73,7 +73,7 @@ public class MatchingUtilities {
 	public static <T, I extends Image<T,I>> I drawMatches(I im1, I im2, List<? extends Pair<? extends Point2d>> matches, T col) {
 		int newwidth = im1.getWidth() + im2.getWidth();
 		int newheight = Math.max(im1.getHeight(), im2.getHeight());
-		
+
 		I out = im1.newInstance(newwidth, newheight);
 		ImageRenderer<T, I> renderer = out.createRenderer();
 		renderer.drawImage(im1, 0, 0);
@@ -81,22 +81,22 @@ public class MatchingUtilities {
 
 		if (matches!=null) {
 			for (Pair<? extends Point2d> p : matches) {
-				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(), 
-								(int)p.firstObject().getY(), 
-								(int)p.secondObject().getX(), 
+				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(),
+								(int)p.firstObject().getY(),
+								(int)p.secondObject().getX(),
 								(int)p.secondObject().getY(),
-								col);
+								3,col);
 			}
 		}
-		
+
 		return out;
 	}
-	
+
 	/**
 	 * Draw two sets of matches between two images in the given colours.
 	 * Places the images side-by-side and draws a line
-	 * for each match. 
-	 * 
+	 * for each match.
+	 *
 	 * @param <T> Pixel type
 	 * @param <I> Image type
 	 * @param im1 first image
@@ -104,13 +104,13 @@ public class MatchingUtilities {
 	 * @param matches first set of matched features between images
 	 * @param col the colour to draw first set of matches in
 	 * @param matches2 second set of matched features between images
-	 * @param col2 the colour to draw second set of matches in 
+	 * @param col2 the colour to draw second set of matches in
 	 * @return image drawn on
 	 */
 	public static <T, I extends Image<T,I>> I drawMatches(I im1, I im2, List<? extends Pair<? extends Point2d>> matches, T col, List<? extends Pair<? extends Point2d>> matches2, T col2) {
 		int newwidth = im1.getWidth() + im2.getWidth();
 		int newheight = Math.max(im1.getHeight(), im2.getHeight());
-		
+
 		I out = im1.newInstance(newwidth, newheight);
 		ImageRenderer<T, I> renderer = out.createRenderer();
 		renderer.drawImage(im1, 0, 0);
@@ -118,33 +118,33 @@ public class MatchingUtilities {
 
 		if (matches!=null) {
 			for (Pair<? extends Point2d> p : matches) {
-				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(), 
-								(int)p.firstObject().getY(), 
-								(int)p.secondObject().getX(), 
+				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(),
+								(int)p.firstObject().getY(),
+								(int)p.secondObject().getX(),
 								(int)p.secondObject().getY(),
 								col);
 			}
 		}
-		
+
 		if (matches2!=null) {
 			for (Pair<? extends Point2d> p : matches2) {
-				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(), 
-								(int)p.firstObject().getY(), 
-								(int)p.secondObject().getX(), 
+				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(),
+								(int)p.firstObject().getY(),
+								(int)p.secondObject().getX(),
 								(int)p.secondObject().getY(),
 								col2);
 			}
 		}
-		
+
 		return out;
 	}
-	
+
 	/**
 	 * Draw matches between two images in the given colour. The
 	 * lines representing the matches are drawn on a copy of the
 	 * input image. The positions of the matches should represent
 	 * valid points in the input image.
-	 * 
+	 *
 	 * @param <T> Pixel type
 	 * @param <I> Image type
 	 * @param image first image
@@ -158,17 +158,17 @@ public class MatchingUtilities {
 
 		if (matches!=null) {
 			for (IndependentPair<? extends Point2d, ? extends Point2d> p  : matches) {
-				renderer.drawLine(	(int)p.firstObject().getX(), 
-								(int)p.firstObject().getY(), 
-								(int)p.secondObject().getX(), 
+				renderer.drawLine(	(int)p.firstObject().getX(),
+								(int)p.firstObject().getY(),
+								(int)p.secondObject().getX(),
 								(int)p.secondObject().getY(),
 								col);
 			}
 		}
-		
+
 		return out;
 	}
-	
+
 	static class MouseOverFeatureListener<T, I extends Image<T,I>> implements MouseMotionListener, KeyListener{
 		private JFrame frame;
 		private List<Pair<Keypoint>> matches;
@@ -229,7 +229,7 @@ public class MatchingUtilities {
 
 	/**
 	 * Create an interactive display of matches between two images.
-	 * 
+	 *
 	 * @param <T> Pixel type
 	 * @param <I> Image type
 	 * @param im1 first image
@@ -240,12 +240,12 @@ public class MatchingUtilities {
 	public static <T, I extends Image<T,I>> void displayMouseOverMatches(I im1, I im2,List<Pair<Keypoint>> matches, T col) {
 		int newwidth = im1.getWidth() + im2.getWidth();
 		int newheight = Math.max(im1.getHeight(), im2.getHeight());
-		
+
 		I out = im1.newInstance(newwidth, newheight);
 		ImageRenderer<T, I> renderer = out.createRenderer();
 		renderer.drawImage(im1, 0, 0);
 		renderer.drawImage(im2, im1.getWidth(), 0);
-		
+
 		JFrame frame = DisplayUtilities.display(out);
 		MouseOverFeatureListener<T, I> mofl = new MouseOverFeatureListener<T,I>(im1, im2, frame, matches, col);
 		frame.addKeyListener(mofl);

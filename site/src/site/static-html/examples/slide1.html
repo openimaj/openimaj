@@ -1,0 +1,35 @@
+<div class="carousel-example">
+	<div class="example-inner example-left">
+		<div class="example-content">
+			<h2>Face Detection</h2>
+			<div class="example_body">
+				Detect faces, face keypoints and construct face models!
+				<img src="images/barack-detected.png" />
+				<a href="tutorial/finding-faces.html">Face Detection in OpenIMAJ &gt;</a>
+			</div>
+		</div>
+	</div>
+	<div class="example-inner example-right">
+		<div class="example-content">
+			<pre>
+....
+// A simple Haar-Cascade face detector
+HaarCascadeDetector det1 = new HaarCascadeDetector();
+DetectedFace face1 = det1.detectFaces(img).get(0);
+new SimpleDetectedFaceRenderer()
+	.drawDetectedFace(mbf,10,face1);
+// Get the facial keypoints
+FKEFaceDetector det2 = new FKEFaceDetector();
+KEDetectedFace face2 = det2.detectFaces(img).get(0);
+new KEDetectedFaceRenderer()
+	.drawDetectedFace(mbf,10,face2);
+// With the CLM Face Model
+CLMFaceDetector det3 = new CLMFaceDetector();
+CLMDetectedFace face3 = det3.detectFaces(img).get(0);
+new CLMDetectedFaceRenderer()
+	.drawDetectedFace(mbf,10,face3);
+....
+			</pre>
+		</div>
+	</div>
+</div>

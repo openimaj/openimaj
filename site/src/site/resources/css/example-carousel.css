@@ -1,0 +1,50 @@
+#exampleCarousel{
+	height:400px;
+	border:1px solid gray;
+	background-color: rgb(29, 76, 116);
+	color:white;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+
+}
+.carousel-example{
+	width:100%;
+}
+.example-inner{
+	width:49.5%;
+	height:400px;
+	float:left;
+	margin:0;
+	padding:0;
+	border:0;
+}
+.example_body{
+	background-color: white;
+	color: black;
+	padding: 1em;
+	width: 400px;
+	border: 1px solid rgba(0,0,0,0.15);
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+.example-inner img{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 2em;
+	padding-bottom: 2em;
+}
+.example-inner pre{
+	width: 100%;
+	height: 330px;
+	background-color: white;
+	font-size:10px;
+}
+.example-left{
+	border-right:2px dashed gray;
+}
+.example-content{
+	margin:2.5em;
+}

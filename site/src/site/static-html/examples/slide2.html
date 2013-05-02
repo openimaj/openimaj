@@ -1,0 +1,35 @@
+<div class="carousel-example">
+	<div class="example-inner example-left">
+		<div class="example-content">
+			<h2>Keypoint Matching</h2>
+			<div class="example_body">
+				Find keypoints, compare images and find subimages!
+				<img src="images/keypoint-match-example.png" />
+				<a href="tutorial/sift-and-feature-matching.html">Keypoint matching in OpenIMAJ &gt;</a>
+			</div>
+		</div>
+	</div>
+	<div class="example-inner example-right">
+		<div class="example-content">
+			<pre>
+// Find the features
+DoGSIFTEngine eng = new DoGSIFTEngine();
+LocalFeatureList<Keypoint> sourceFeats = eng.findFeatures(source);
+LocalFeatureList<Keypoint> targetFeats = eng.findFeatures(target);
+// Prepare the matcher
+final HomographyModel model = new HomographyModel(5f);
+final RANSAC<Point2d, Point2d> ransac = 
+	new RANSAC<Point2d, Point2d>(model, 1500, 
+		new RANSAC.BestFitStoppingCondition(), true);
+ConsistentLocalFeatureMatcher2d<Keypoint> matcher = 
+	new ConsistentLocalFeatureMatcher2d<Keypoint>
+		(new FastBasicKeypointMatcher<Keypoint>(8));
+// Match the features
+matcher.setFittingModel(ransac);
+matcher.setModelFeatures(sourceFeats);
+matcher.findMatches(targetFeats);
+....
+			</pre>
+		</div>
+	</div>
+</div>

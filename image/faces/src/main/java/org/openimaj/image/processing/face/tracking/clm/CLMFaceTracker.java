@@ -49,7 +49,7 @@ import com.jsaragih.Tracker;
 
 /**
  * CLM-based face tracker
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 public class CLMFaceTracker {
@@ -120,7 +120,7 @@ public class CLMFaceTracker {
 
 	/**
 	 * Track the face in the given frame.
-	 * 
+	 *
 	 * @param frame
 	 *            The frame
 	 */
@@ -133,7 +133,7 @@ public class CLMFaceTracker {
 
 	/**
 	 * Track the face in the given frame.
-	 * 
+	 *
 	 * @param im
 	 *            The frame
 	 */
@@ -172,7 +172,7 @@ public class CLMFaceTracker {
 
 	/**
 	 * Draw the model onto the image
-	 * 
+	 *
 	 * @param image
 	 *            The image to draw onto
 	 * @param drawTriangles
@@ -210,7 +210,7 @@ public class CLMFaceTracker {
 
 	/**
 	 * Draw onto the given image, the given face model.
-	 * 
+	 *
 	 * @param image
 	 *            The image to draw onto
 	 * @param f
@@ -256,20 +256,22 @@ public class CLMFaceTracker {
 		if (drawTriangles) {
 			// Draw triangulation
 			for (int i = 0; i < triangles.length; i++) {
-				if (visi.get(triangles[i][0], 0) == 0
-						|| visi.get(triangles[i][1], 0) == 0
-						|| visi.get(triangles[i][2], 0) == 0)
-					continue;
+				if (visi.get(triangles[i][0], 0) == 0 ||
+					visi.get(triangles[i][1], 0) == 0 ||
+					visi.get(triangles[i][2], 0) == 0
+				) continue;
 
-				final Triangle t = new Triangle(new Point2dImpl((float) f.shape.get(
-						triangles[i][0], 0) / scale, (float) f.shape.get(
-						triangles[i][0] + n, 0) / scale), new Point2dImpl(
+				final Triangle t = new Triangle(
+					new Point2dImpl(
+						(float) f.shape.get(triangles[i][0], 0) / scale,
+						(float) f.shape.get(triangles[i][0] + n, 0) / scale),
+					new Point2dImpl(
 						(float) f.shape.get(triangles[i][1], 0) / scale,
 						(float) f.shape.get(triangles[i][1] + n, 0) / scale),
-						new Point2dImpl((float) f.shape.get(triangles[i][2], 0)
-								/ scale, (float) f.shape.get(triangles[i][2]
-								+ n, 0)
-								/ scale));
+					new Point2dImpl(
+						(float) f.shape.get(triangles[i][2], 0) / scale,
+						(float) f.shape.get(triangles[i][2] + n, 0) / scale)
+				);
 				image.drawShape(t, meshColour);
 			}
 		}
@@ -307,7 +309,7 @@ public class CLMFaceTracker {
 
 	/**
 	 * Get the reference triangles
-	 * 
+	 *
 	 * @return The triangles
 	 */
 	public int[][] getReferenceTriangles() {
@@ -316,7 +318,7 @@ public class CLMFaceTracker {
 
 	/**
 	 * Get the reference connections
-	 * 
+	 *
 	 * @return The connections
 	 */
 	public int[][] getReferenceConnections() {
@@ -325,7 +327,7 @@ public class CLMFaceTracker {
 
 	/**
 	 * Returns the model tracker
-	 * 
+	 *
 	 * @return The model tracker
 	 */
 	public MultiTracker getModelTracker() {
@@ -335,7 +337,7 @@ public class CLMFaceTracker {
 	/**
 	 * Returns the initial variables that will be used by the tracker for each
 	 * found face.
-	 * 
+	 *
 	 * @return The initial tracker variables.
 	 */
 	public TrackerVars getInitialVars() {
@@ -347,7 +349,7 @@ public class CLMFaceTracker {
 	 * {@link MultiTracker#initShape(Rectangle, Matrix, Matrix)} with the
 	 * rectangle of {@link TrackedFace#redetectedBounds} and the face shape and
 	 * the reference shape. Assumes that the bounds have been already set up.
-	 * 
+	 *
 	 * @param face
 	 *            The face to initialise
 	 */
@@ -456,7 +458,7 @@ public class CLMFaceTracker {
 
 	/**
 	 * Get the triangle mesh corresponding to a tracked face.
-	 * 
+	 *
 	 * @param face
 	 *            the {@link TrackedFace}
 	 * @return the mesh
@@ -467,14 +469,14 @@ public class CLMFaceTracker {
 
 	/**
 	 * Get the triangle mesh corresponding to a tracked face.
-	 * 
+	 *
 	 * @param shape
 	 *            the shape matrix
 	 * @param visi
 	 *            the visibility matrix
 	 * @param triangles
 	 *            the triangle definitions
-	 * 
+	 *
 	 * @return the mesh
 	 */
 	public static List<Triangle> getTriangles(Matrix shape, Matrix visi, int[][] triangles) {
