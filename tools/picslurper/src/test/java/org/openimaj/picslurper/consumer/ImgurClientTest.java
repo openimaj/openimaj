@@ -9,8 +9,9 @@ import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
-import org.openimaj.picslurper.consumer.ImgurClient.ImageResponse;
-import org.openimaj.picslurper.consumer.ImgurClient.ImgurTypeHash;
+import org.openimaj.web.scraping.images.ImgurClient;
+import org.openimaj.web.scraping.images.ImgurClient.ImageResponse;
+import org.openimaj.web.scraping.images.ImgurClient.ImgurTypeHash;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)

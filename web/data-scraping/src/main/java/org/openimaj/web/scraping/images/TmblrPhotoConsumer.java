@@ -1,4 +1,4 @@
-package org.openimaj.picslurper.consumer;
+package org.openimaj.web.scraping.images;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,19 +8,30 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.util.HttpURLConnection;
-import org.openimaj.picslurper.SiteSpecificConsumer;
+import org.openimaj.util.api.auth.DefaultTokenFactory;
+import org.openimaj.util.auth.web.TumblrAPIToken;
+import org.openimaj.web.scraping.SiteSpecificConsumer;
 
 import com.google.gson.Gson;
 
 /**
- * Using a tumblr API key (read from the tmblrapi system property) turn a Tmblr
- * URL to an image id and call the tumblr API's posts function.
+ * Using a tumblr API key turn a Tmblr URL to an image id and call the tumblr
+ * API's posts function.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 	private transient Gson gson = new Gson();
+	private TumblrAPIToken token;
+
+	public TmblrPhotoConsumer() {
+		this(DefaultTokenFactory.get(TumblrAPIToken.class));
+	}
+
+	public TmblrPhotoConsumer(TumblrAPIToken token) {
+		this.token = token;
+	}
 
 	@Override
 	public boolean canConsume(URL url) {
@@ -41,7 +52,7 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 			if (postID == null)
 				return images;
 			// NOW call the tumblrAPI
-			final String tmblrRequest = String.format(tumblrAPICall, postID, System.getProperty("tmblrapi"));
+			final String tmblrRequest = String.format(tumblrAPICall, postID, token.apikey);
 			final Map<String, Object> res = gson.fromJson(new InputStreamReader(new URL(tmblrRequest).openConnection()
 					.getInputStream()), Map.class);
 
@@ -56,8 +67,8 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 				final URL photoURL = new URL(photoURLStr);
 				images.add(photoURL);
 			}
-			return images;
 
+			return images;
 		} catch (final Throwable e) {
 			return null;
 		}
@@ -73,6 +84,7 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 	private String getPostID(URL url) throws IOException {
 		final String host = url.getHost();
 		URL loc = url;
+
 		if (host.equals("tmblr.co") || host.equals("tumblr.com") || host.equals("www.tumblr.com")) {
 			URL forwardURL = null;
 			if (url.getHost().equals("tmblr.co")) {
@@ -89,6 +101,7 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 			loc = new URL(locStr);
 			con.disconnect();
 		}
+
 		// Now extract the post ID from the actual tumblr address
 		final String[] parts = loc.getPath().split("[/]");
 		String postID = null;

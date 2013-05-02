@@ -1,4 +1,4 @@
-package org.openimaj.picslurper.consumer;
+package org.openimaj.web.scraping.images;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

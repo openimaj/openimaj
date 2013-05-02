@@ -18,21 +18,17 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.restfb</groupId>
-			<artifactId>restfb</artifactId>
-			<version>1.6.10</version>
-		</dependency>
-		<dependency>
 	      <groupId>org.openimaj</groupId>
 	      <artifactId>image-local-features</artifactId>
 	      <version>1.1.1-SNAPSHOT</version>
 	      <scope>compile</scope>
-	    </dependency> 
+    </dependency> 
 		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.6.3</version>
-		</dependency>
+	      <groupId>org.openimaj</groupId>
+	      <artifactId>data-scraping</artifactId>
+	      <version>1.1.1-SNAPSHOT</version>
+	      <scope>compile</scope>
+    </dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-processing</artifactId>

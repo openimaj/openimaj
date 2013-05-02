@@ -1,4 +1,4 @@
-package org.openimaj.picslurper;
+package org.openimaj.web.scraping;
 
 import java.net.URL;
 import java.util.List;

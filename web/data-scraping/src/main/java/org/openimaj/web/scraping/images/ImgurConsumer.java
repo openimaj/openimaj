@@ -1,11 +1,11 @@
-package org.openimaj.picslurper.consumer;
+package org.openimaj.web.scraping.images;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.picslurper.SiteSpecificConsumer;
-import org.openimaj.picslurper.consumer.ImgurClient.ImageResponse;
+import org.openimaj.web.scraping.SiteSpecificConsumer;
+import org.openimaj.web.scraping.images.ImgurClient.ImageResponse;
 
 /**
  * Downloads images hosted on imgur.com using their API

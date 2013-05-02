@@ -24,21 +24,22 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.HttpUtils;
 import org.openimaj.io.HttpUtils.MetaRefreshRedirectStrategy;
-import org.openimaj.picslurper.consumer.FacebookConsumer;
-import org.openimaj.picslurper.consumer.ImgurConsumer;
-import org.openimaj.picslurper.consumer.InstagramConsumer;
-import org.openimaj.picslurper.consumer.OwlyImageConsumer;
-import org.openimaj.picslurper.consumer.SimpleHTMLScrapingConsumer;
-import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
-import org.openimaj.picslurper.consumer.TwipleConsumer;
-import org.openimaj.picslurper.consumer.TwitPicConsumer;
-import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
-import org.openimaj.picslurper.consumer.YfrogConsumer;
 import org.openimaj.picslurper.output.OutputListener;
 import org.openimaj.picslurper.output.WriteableImageOutput;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
 import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.web.scraping.SiteSpecificConsumer;
+import org.openimaj.web.scraping.images.CommonHTMLConsumers;
+import org.openimaj.web.scraping.images.FacebookConsumer;
+import org.openimaj.web.scraping.images.ImgurConsumer;
+import org.openimaj.web.scraping.images.InstagramConsumer;
+import org.openimaj.web.scraping.images.OwlyImageConsumer;
+import org.openimaj.web.scraping.images.TmblrPhotoConsumer;
+import org.openimaj.web.scraping.images.TwipleConsumer;
+import org.openimaj.web.scraping.images.TwitPicConsumer;
+import org.openimaj.web.scraping.images.TwitterPhotoConsumer;
+import org.openimaj.web.scraping.images.YfrogConsumer;
 
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -75,12 +76,9 @@ public class StatusConsumer {
 		siteSpecific.add(new YfrogConsumer());
 		siteSpecific.add(new OwlyImageConsumer());
 		siteSpecific.add(new TwipleConsumer());
-		siteSpecific.add(new SimpleHTMLScrapingConsumer("fotolog", "#flog_img_holder img")); // for
-																								// fotolog.com
-		siteSpecific.add(new SimpleHTMLScrapingConsumer("photonui", "#image-box img")); // for
-																						// photonui.com
-		siteSpecific.add(new SimpleHTMLScrapingConsumer("pics.lockerz", "#photo")); // for
-																					// pics.lockerz.com
+		siteSpecific.add(CommonHTMLConsumers.FOTOLOG);
+		siteSpecific.add(CommonHTMLConsumers.PHOTONUI);
+		siteSpecific.add(CommonHTMLConsumers.PICS_LOCKERZ);
 	}
 	private boolean outputStats;
 	private File globalStats;

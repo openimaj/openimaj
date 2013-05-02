@@ -1,4 +1,4 @@
-package org.openimaj.picslurper.consumer;
+package org.openimaj.web.scraping.images;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openimaj.io.HttpUtils;
-import org.openimaj.picslurper.SiteSpecificConsumer;
+import org.openimaj.web.scraping.SiteSpecificConsumer;
 
 /**
  * Consume facebook posts/pictures using the {@link com.restfb.FacebookClient}

@@ -1,4 +1,4 @@
-package org.openimaj.picslurper.consumer;
+package org.openimaj.web.scraping.images;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openimaj.picslurper.SiteSpecificConsumer;
+import org.openimaj.web.scraping.SiteSpecificConsumer;
 
 /**
  * Use JSoup to load the twitpic page and find the img tag that has a source
