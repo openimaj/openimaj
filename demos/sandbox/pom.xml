@@ -19,6 +19,11 @@
 	</properties>
 	<dependencies>
 		<dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.2.5</version>
+    </dependency>
+		<dependency>
 			<groupId>org.openimaj.hardware</groupId>
 		  <artifactId>serial-driver</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
