@@ -56,6 +56,8 @@ public class ImageURLExtractor implements MultiFunction<URL, URL> {
 
 	@Override
 	public List<URL> apply(URL in) {
+		System.out.println(in);
+
 		final List<URL> imageUrls = urlToImage(in);
 
 		if (imageUrls == null)

@@ -74,6 +74,11 @@ public abstract class AbstractStream<T> implements Stream<T> {
 	}
 
 	@Override
+	public <R> Stream<R> transform(Function<Stream<T>, Stream<R>> transform) {
+		return transform.apply(this);
+	}
+
+	@Override
 	public <R> Stream<R> map(final Function<T, R> mapper) {
 		return new AbstractStream<R>() {
 			@Override
