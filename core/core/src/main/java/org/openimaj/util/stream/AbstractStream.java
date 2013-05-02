@@ -96,7 +96,7 @@ public abstract class AbstractStream<T> implements Stream<T> {
 
 			@Override
 			public boolean hasNext() {
-				if (currentIndex >= current.size()) {
+				if (current != null && currentIndex >= current.size()) {
 					current = null;
 					currentIndex = 0;
 				}

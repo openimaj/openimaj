@@ -122,7 +122,6 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			System.err.println(this.getExtractUsageInfo());
 			System.exit(1);
 		}
-
 	}
 
 	String getExtractUsageInfo() {

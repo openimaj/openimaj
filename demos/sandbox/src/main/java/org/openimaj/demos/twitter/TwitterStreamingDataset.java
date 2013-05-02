@@ -1,11 +1,8 @@
-package org.openimaj.demos;
+package org.openimaj.demos.twitter;
 
 import org.openimaj.data.dataset.StreamingDataset;
-import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
-import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
 import org.openimaj.util.concurrent.BlockingDroppingQueue;
-import org.openimaj.util.function.Operation;
 import org.openimaj.util.stream.BlockingDroppingBufferedStream;
 
 import twitter4j.Status;
@@ -53,25 +50,5 @@ public class TwitterStreamingDataset extends BlockingDroppingBufferedStream<Stat
 	@Override
 	public int numInstances() {
 		return Integer.MAX_VALUE;
-	}
-
-	public static void main(String[] args) {
-		final TwitterAPIToken token = DefaultTokenFactory.getInstance().getToken(TwitterAPIToken.class);
-
-		final ArrayBlockingDroppingQueue<Status> buffer = new ArrayBlockingDroppingQueue<Status>(1);
-		final TwitterStreamingDataset dataset = new TwitterStreamingDataset(token, buffer);
-
-		dataset.forEach(new Operation<Status>() {
-			@Override
-			public void perform(Status object) {
-				System.out.println("inserted: " + buffer.insertCount() + "\tdropped: " + buffer.dropCount());
-
-				try {
-					Thread.sleep(100);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		});
 	}
 }

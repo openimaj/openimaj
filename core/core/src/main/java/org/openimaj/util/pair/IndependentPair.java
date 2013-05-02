@@ -32,12 +32,14 @@ package org.openimaj.util.pair;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.util.function.Function;
+
 /**
  * {@link IndependentPair} represents a generic pair of objects of different
  * (independent) types.
- *
+ * 
  * @author Jonathon Hare
- *
+ * 
  * @param <A>
  *            the class of the first object in the pair
  * @param <B>
@@ -50,7 +52,7 @@ public class IndependentPair<A, B> {
 
 	/**
 	 * Constructs a Pair object with two objects obj1 and obj2
-	 *
+	 * 
 	 * @param obj1
 	 *            first object in pair
 	 * @param obj2
@@ -96,7 +98,7 @@ public class IndependentPair<A, B> {
 
 	/**
 	 * Set first object in pair to obj
-	 *
+	 * 
 	 * @param obj
 	 *            the object
 	 */
@@ -107,7 +109,7 @@ public class IndependentPair<A, B> {
 
 	/**
 	 * Set second object in pair to obj
-	 *
+	 * 
 	 * @param obj
 	 *            the object
 	 */
@@ -126,14 +128,13 @@ public class IndependentPair<A, B> {
 		if (!(thatObject instanceof IndependentPair))
 			return false;
 		@SuppressWarnings("rawtypes")
-		final
-		IndependentPair that = (IndependentPair) thatObject;
+		final IndependentPair that = (IndependentPair) thatObject;
 		return this.o1 == that.o1 && this.o2 == that.o2;
 	}
 
 	/**
 	 * Create a pair from the given objects.
-	 *
+	 * 
 	 * @param <T>
 	 *            Type of first object.
 	 * @param <Q>
@@ -150,7 +151,7 @@ public class IndependentPair<A, B> {
 
 	/**
 	 * Extract the first objects from a list of pairs.
-	 *
+	 * 
 	 * @param <T>
 	 *            type of first object
 	 * @param <Q>
@@ -170,7 +171,7 @@ public class IndependentPair<A, B> {
 
 	/**
 	 * Extract the second objects from a list of pairs.
-	 *
+	 * 
 	 * @param <T>
 	 *            type of first object
 	 * @param <Q>
@@ -188,4 +189,32 @@ public class IndependentPair<A, B> {
 		return extracted;
 	}
 
+	/**
+	 * Get the function that returns the first object from the pair
+	 * 
+	 * @return the function that returns the first object from the pair
+	 */
+	public static <T, Q> Function<IndependentPair<T, Q>, T> getFirstFunction() {
+		return new Function<IndependentPair<T, Q>, T>() {
+			@Override
+			public T apply(IndependentPair<T, Q> in) {
+				return in.o1;
+			}
+
+		};
+	}
+
+	/**
+	 * Get the function that returns the second object from the pair
+	 * 
+	 * @return the function that returns the second object from the pair
+	 */
+	public static <T, Q> Function<IndependentPair<T, Q>, Q> getSecondFunction() {
+		return new Function<IndependentPair<T, Q>, Q>() {
+			@Override
+			public Q apply(IndependentPair<T, Q> in) {
+				return in.o2;
+			}
+		};
+	}
 }

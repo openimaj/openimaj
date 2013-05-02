@@ -25,10 +25,19 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 	private transient Gson gson = new Gson();
 	private TumblrAPIToken token;
 
+	/**
+	 * Use the {@link DefaultTokenFactory} to load the default api token
+	 */
 	public TmblrPhotoConsumer() {
 		this(DefaultTokenFactory.get(TumblrAPIToken.class));
 	}
 
+	/**
+	 * Construct with the given api token
+	 * 
+	 * @param token
+	 *            the api token
+	 */
 	public TmblrPhotoConsumer(TumblrAPIToken token) {
 		this.token = token;
 	}

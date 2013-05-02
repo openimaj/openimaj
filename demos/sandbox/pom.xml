@@ -24,6 +24,11 @@
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>org.openimaj</groupId>
+		  <artifactId>data-scraping</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.googlecode.streamflyer-regex-fast</groupId>
 			<artifactId>streamflyer-regex-fast</artifactId>
 			<version>1.0.1</version>
