@@ -406,6 +406,34 @@ public class Parallel {
 	 *            the iterator of data items
 	 * @param op
 	 *            the operation to apply
+	 */
+	public static <T>
+			void
+			forEachUnpartioned(final Iterator<T> data, final Operation<T> op)
+	{
+		forEachUnpartioned(data, op, GlobalExecutorPool.getPool());
+	}
+
+	/**
+	 * Parallel ForEach loop over unpartitioned data. This is effectively the
+	 * same as using a {@link FixedSizeChunkPartitioner} with a chunk size of 1,
+	 * but with slightly less overhead. The unpartitioned for-each loop has
+	 * slightly less throughput than a partitioned for-each loop, but exhibits
+	 * much less delay in scheduling an item for processing as a partition does
+	 * not have to first be populated. The unpartitioned for-each loop is
+	 * particularly useful for processing temporal {@link Stream}s of data.
+	 * <p>
+	 * Implementation details: 1.) create partitions enumerator 2.) schedule
+	 * nprocs partitions 3.) while there are still partitions to process 3.1) on
+	 * completion of a partition schedule the next one 4.) wait for completion
+	 * of remaining partitions
+	 * 
+	 * @param <T>
+	 *            type of the data items
+	 * @param data
+	 *            the iterator of data items
+	 * @param op
+	 *            the operation to apply
 	 * @param pool
 	 *            the thread pool.
 	 */
@@ -420,16 +448,20 @@ public class Parallel {
 			if (!data.hasNext())
 				break;
 
+			final T next = data.next();
+
 			completion.submit(new Runnable() {
 				@Override
 				public void run() {
-					op.perform(data.next());
+					op.perform(next);
 				}
 			}, true);
 			submitted++;
 		}
 
 		while (data.hasNext()) {
+			final T next = data.next();
+
 			try {
 				completion.take().get();
 			} catch (final InterruptedException e) {
@@ -440,7 +472,7 @@ public class Parallel {
 			completion.submit(new Runnable() {
 				@Override
 				public void run() {
-					op.perform(data.next());
+					op.perform(next);
 				}
 			}, true);
 		}

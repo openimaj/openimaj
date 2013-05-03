@@ -3,11 +3,13 @@ package org.openimaj.util.stream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.MultiFunction;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
+import org.openimaj.util.parallel.Parallel;
 
 /**
  * Abstract base implementation of a read-only (i.e. {@link #remove()} not
@@ -36,6 +38,16 @@ public abstract class AbstractStream<T> implements Stream<T> {
 
 			operation.perform(next);
 		}
+	}
+
+	@Override
+	public void parallelForEach(Operation<T> op) {
+		Parallel.forEachUnpartioned(this, op);
+	}
+
+	@Override
+	public void parallelForEach(Operation<T> op, ThreadPoolExecutor pool) {
+		Parallel.forEachUnpartioned(this, op, pool);
 	}
 
 	class FilterStream extends AbstractStream<T> {

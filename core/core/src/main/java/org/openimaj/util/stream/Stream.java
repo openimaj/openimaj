@@ -1,11 +1,13 @@
 package org.openimaj.util.stream;
 
 import java.util.Iterator;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.MultiFunction;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
+import org.openimaj.util.parallel.Parallel;
 
 /**
  * Interface describing a stream of data items. Streams are sequences of items
@@ -55,6 +57,40 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 *            processing to stop
 	 */
 	public void forEach(Operation<T> operation, Predicate<T> stopPredicate);
+
+	/**
+	 * Apply the given {@link Operation} to each item in the stream, making use
+	 * of multiple threads. The order in which operations are performed on the
+	 * stream is not guaranteed.
+	 * <p>
+	 * This method is intended to be a shortcut to calling
+	 * {@link Parallel#forEachUnpartioned(Iterator, Operation)}.
+	 * <p>
+	 * Note: for an unbounded stream, this method will never return unless some
+	 * form of exception is raised.
+	 * 
+	 * @param op
+	 *            the {@link Operation} to apply
+	 */
+	public void parallelForEach(Operation<T> op);
+
+	/**
+	 * Apply the given {@link Operation} to each item in the stream, making use
+	 * of multiple threads. The order in which operations are performed on the
+	 * stream is not guaranteed.
+	 * <p>
+	 * This method is intended to be a shortcut to calling
+	 * {@link Parallel#forEachUnpartioned(Iterator, Operation, ThreadPoolExecutor)}.
+	 * <p>
+	 * Note: for an unbounded stream, this method will never return unless some
+	 * form of exception is raised.
+	 * 
+	 * @param op
+	 *            the {@link Operation} to apply
+	 * @param pool
+	 *            the thread pool.
+	 */
+	public void parallelForEach(Operation<T> op, ThreadPoolExecutor pool);
 
 	/**
 	 * Transform the stream by creating a view that consists of only the items

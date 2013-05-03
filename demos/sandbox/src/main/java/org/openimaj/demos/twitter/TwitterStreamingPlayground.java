@@ -54,7 +54,7 @@ public class TwitterStreamingPlayground {
 
 		dataset.map(new TwitterLinkExtractor())
 				// .map(new ImageURLExtractor())
-				.forEach(new Operation<URL>() {
+				.parallelForEach(new Operation<URL>() {
 					@Override
 					public void perform(URL url) {
 						System.out.println(buffer.dropCount() + " " + buffer.insertCount());

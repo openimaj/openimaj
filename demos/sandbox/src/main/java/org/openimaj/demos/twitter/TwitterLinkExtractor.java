@@ -46,7 +46,10 @@ public class TwitterLinkExtractor implements MultiFunction<Status, URL> {
 			final Matcher matcher = urlPattern.matcher(text);
 
 			while (matcher.find()) {
-				final String urlString = text.substring(matcher.start(), matcher.end());
+				String urlString = text.substring(matcher.start(), matcher.end());
+
+				if (!urlString.contains("://"))
+					urlString = "http://" + urlString;
 
 				urls.add(urlString);
 			}
