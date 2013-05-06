@@ -41,7 +41,7 @@ import org.openimaj.twitter.USMFStatus;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class GeoFilter extends TwitterPreprocessingFilter {
+public class GeoFilter extends TwitterPreprocessingPredicate {
 	
 	@Option(name="--bounding-box", aliases="-bb", required=false, usage="The bounding box to filter against.", metaVar="STRING")
 	String boundBox = "51.28,-0.489,51.686,0.236";
@@ -52,7 +52,7 @@ public class GeoFilter extends TwitterPreprocessingFilter {
 	}
 	
 	@Override
-	public boolean filter(USMFStatus twitterStatus) {
+	public boolean test(USMFStatus twitterStatus) {
 		if(twitterStatus.geo == null){
 			return false;
 		}

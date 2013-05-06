@@ -37,7 +37,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.tools.InOutToolOptions;
-import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingFilter;
+import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingPredicate;
 import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingFilterOption;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
@@ -70,14 +70,14 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	/**
 	 * The prefiltering to perform
 	 */
-	public List<TwitterPreprocessingFilter> preFilterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
+	public List<TwitterPreprocessingPredicate> preFilterOptionsOp = new ArrayList<TwitterPreprocessingPredicate>();
 
 	@Option(name = "--post-filter", aliases = "-pof", required = false, usage = "Define filters. Applied after other processing", handler = ProxyOptionHandler.class, multiValued = true)
 	List<TwitterPreprocessingFilterOption> postFilterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
 	/**
 	 * the postfiltering to perform
 	 */
-	public List<TwitterPreprocessingFilter> postFilterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
+	public List<TwitterPreprocessingPredicate> postFilterOptionsOp = new ArrayList<TwitterPreprocessingPredicate>();
 	//
 	@Option(name = "--encoding", aliases = "-e", required = false, usage = "The outputstreamwriter's text encoding", metaVar = "STRING")
 	String encoding = "UTF-8";
@@ -166,10 +166,10 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	}
 
 	private void validateFilters() {
-		for (TwitterPreprocessingFilter filter : this.postFilterOptionsOp) {
+		for (TwitterPreprocessingPredicate filter : this.postFilterOptionsOp) {
 			filter.validate();
 		}
-		for (TwitterPreprocessingFilter filter : this.preFilterOptionsOp) {
+		for (TwitterPreprocessingPredicate filter : this.preFilterOptionsOp) {
 			filter.validate();
 		}
 	}
@@ -249,8 +249,8 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 */
 	public boolean preProcessesSkip(USMFStatus twitterStatus) {
 		boolean skip = false;
-		for (TwitterPreprocessingFilter f : preFilterOptionsOp) {
-			skip = !f.filter(twitterStatus);
+		for (TwitterPreprocessingPredicate f : preFilterOptionsOp) {
+			skip = !f.test(twitterStatus);
 			if (skip)
 				break;
 		}
@@ -266,8 +266,8 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 */
 	public boolean postProcessesSkip(USMFStatus twitterStatus) {
 		boolean skip = false;
-		for (TwitterPreprocessingFilter f : postFilterOptionsOp) {
-			skip = !f.filter(twitterStatus);
+		for (TwitterPreprocessingPredicate f : postFilterOptionsOp) {
+			skip = !f.test(twitterStatus);
 			if (skip)
 				break;
 		}

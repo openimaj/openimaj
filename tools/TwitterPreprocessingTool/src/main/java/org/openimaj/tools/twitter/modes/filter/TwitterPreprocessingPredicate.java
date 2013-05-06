@@ -30,6 +30,7 @@
 package org.openimaj.tools.twitter.modes.filter;
 
 import org.openimaj.twitter.USMFStatus;
+import org.openimaj.util.function.Predicate;
 
 /**
  * A filter takes in a status and filters the status (says whether it should remain or be deleted)
@@ -38,15 +39,8 @@ import org.openimaj.twitter.USMFStatus;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public abstract class TwitterPreprocessingFilter {
+public abstract class TwitterPreprocessingPredicate implements Predicate<USMFStatus> {
 
-	/**
-	 * Whether the status should be filtered (i.e. true if the status should NOT be outputted)
-	 * @param twitterStatus
-	 * @return whether the status should NOT be outputted
-	 */
-	public abstract boolean filter(USMFStatus twitterStatus);
-	
 	/**
 	 * Prepare the filter
 	 */

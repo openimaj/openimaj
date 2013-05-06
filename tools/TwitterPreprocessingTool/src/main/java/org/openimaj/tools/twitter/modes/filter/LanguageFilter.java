@@ -40,15 +40,25 @@ import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.USMFStatus;
 
-public class LanguageFilter extends TwitterPreprocessingFilter {
+public class LanguageFilter extends TwitterPreprocessingPredicate {
 	
 	@Option(name="--accept-language", aliases="-l", required=false, usage="Using detected language, accept these languages", metaVar="STRING", multiValued=true)
 	List<String> localeMatch = new ArrayList<String>();
 	
 	private LanguageDetectionMode langMode;
+	
+	
+	/**
+	 * @param languages
+	 */
+	public LanguageFilter(String ... languages) {
+		for (String string : languages) {
+			localeMatch.add(string);
+		}
+	}
 
 	@Override
-	public boolean filter(USMFStatus twitterStatus) {
+	public boolean test(USMFStatus twitterStatus) {
 		try {
 			Map<String,Object> localeMap = TwitterPreprocessingMode.results(twitterStatus,langMode);
 			WeightedLocale locale = WeightedLocale.fromMap(localeMap);

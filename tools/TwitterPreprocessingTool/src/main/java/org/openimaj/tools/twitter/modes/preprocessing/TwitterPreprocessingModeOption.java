@@ -86,6 +86,21 @@ public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {
 				return null;
 			}
 		}
+	},
+	/**
+	 * Remove all stopwords from tokenised items
+	 */
+	REMOVE_STOPWORDS{
+
+		@Override
+		public TwitterPreprocessingMode<List<String>> getOptions() {
+			try {
+				return new StopwordMode();
+			} catch (IOException e) {
+				return null;
+			}
+		}
+		
 	}
 	;
 

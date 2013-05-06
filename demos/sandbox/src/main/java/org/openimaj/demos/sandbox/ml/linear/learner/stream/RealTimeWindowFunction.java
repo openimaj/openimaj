@@ -18,7 +18,6 @@ public class RealTimeWindowFunction<IN> implements Function<Stream<IN>,Stream<Li
 	private long waitTime;
 
 	private long currentWindowStartTime;
-	public String name;
 	/**
 	 * @param waitTime
 	 */
@@ -40,14 +39,13 @@ public class RealTimeWindowFunction<IN> implements Function<Stream<IN>,Stream<Li
 			public List<IN> next() {
 				currentWindowStartTime = System.currentTimeMillis();
 				ArrayList<IN> currentWindow = new ArrayList<IN>();
-				System.out.format("Starting time (%s): %d\n",name, System.currentTimeMillis());
 				while(inner.hasNext()){
 					if(System.currentTimeMillis() - currentWindowStartTime >= RealTimeWindowFunction.this.waitTime ){
 						break;
 					}
-					currentWindow.add(inner.next());
+					IN next = inner.next();
+					currentWindow.add(next);
 				}
-				System.out.format("Ending time (%s): %d\n",name, System.currentTimeMillis());
 
 //				RealTimeWindowFunction.this.currentWindowStartTime = System.currentTimeMillis();
 				return currentWindow;

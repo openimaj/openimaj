@@ -43,7 +43,7 @@ import org.openimaj.twitter.USMFStatus;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DateFilter extends TwitterPreprocessingFilter {
+public class DateFilter extends TwitterPreprocessingPredicate {
 	
 	@Option(name="--date-start", aliases="-from", required=false, usage="The start date", metaVar="STRING", multiValued=true)
 	String startDateStr;
@@ -59,7 +59,7 @@ public class DateFilter extends TwitterPreprocessingFilter {
 	
 	
 	@Override
-	public boolean filter(USMFStatus twitterStatus) {
+	public boolean test(USMFStatus twitterStatus) {
 		DateTime date;
 		
 		try {

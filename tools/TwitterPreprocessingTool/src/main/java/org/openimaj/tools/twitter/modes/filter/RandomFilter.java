@@ -38,14 +38,14 @@ import org.openimaj.twitter.USMFStatus;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class RandomFilter extends TwitterPreprocessingFilter {
+public class RandomFilter extends TwitterPreprocessingPredicate {
 
 	@Option(name="--random-filter-chance", aliases="-rfc", required=false, usage="The chance that a tweet will be emitted")
 	float chance = 0.01f;
 	
 	Random r = new Random();
 	@Override
-	public boolean filter(USMFStatus twitterStatus) {
+	public boolean test(USMFStatus twitterStatus) {
 		return r.nextDouble() < chance;
 	}
 

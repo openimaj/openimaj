@@ -43,7 +43,7 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 	 */
 	GEO {
 		@Override
-		public TwitterPreprocessingFilter getOptions() {
+		public TwitterPreprocessingPredicate getOptions() {
 			return new GeoFilter();
 		}
 	},
@@ -52,7 +52,7 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 	 */
 	LANG {
 		@Override
-		public TwitterPreprocessingFilter getOptions() {
+		public TwitterPreprocessingPredicate getOptions() {
 			return new LanguageFilter();
 		}
 	},
@@ -61,7 +61,7 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 	 */
 	GREP {
 		@Override
-		public TwitterPreprocessingFilter getOptions() {
+		public TwitterPreprocessingPredicate getOptions() {
 			return new GrepFilter();
 		}
 	},
@@ -70,7 +70,7 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 	 */
 	DATE {
 		@Override
-		public TwitterPreprocessingFilter getOptions() {
+		public TwitterPreprocessingPredicate getOptions() {
 			return new DateFilter();
 		}
 	},
@@ -79,7 +79,7 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 	 */
 	RANDOM {
 		@Override
-		public TwitterPreprocessingFilter getOptions() {
+		public TwitterPreprocessingPredicate getOptions() {
 			return new RandomFilter();
 		}
 	},
@@ -88,7 +88,7 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 	 */
 	IN_REPLY_TO{
 		@Override
-		public TwitterPreprocessingFilter getOptions() {
+		public TwitterPreprocessingPredicate getOptions() {
 			return new IsReplyFilter();
 		}
 	}
@@ -99,7 +99,7 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 	 * @return An instance (initialising any heavyweight analysis objects) of the mode
 	 */
 	@Override
-	public abstract TwitterPreprocessingFilter getOptions() ;
+	public abstract TwitterPreprocessingPredicate getOptions() ;
 
 }
 

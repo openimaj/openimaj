@@ -42,7 +42,7 @@ import org.openimaj.twitter.USMFStatus;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class GrepFilter extends TwitterPreprocessingFilter {
+public class GrepFilter extends TwitterPreprocessingPredicate {
 
 	@Option(name="--string-match", aliases="-sm", required=false, usage="Match these strings exactly, uses aho-corasick", metaVar="STRING", multiValued=true)
 	List<String> stringMatch = new ArrayList<String>();
@@ -56,7 +56,7 @@ public class GrepFilter extends TwitterPreprocessingFilter {
 	RegexEngine regexEngineOp = RegexEngineMode.JAVA.getOptions();
 
 	@Override
-	public boolean filter(USMFStatus twitterStatus) {
+	public boolean test(USMFStatus twitterStatus) {
 		String text = twitterStatus.text;
 		boolean match = searcher.search(text.getBytes()).hasNext();
 		if(match) return match;

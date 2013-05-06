@@ -52,6 +52,7 @@ import org.openimaj.io.FileUtils;
 import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StemmingMode;
+import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
@@ -164,6 +165,8 @@ public class TwitterPreprocessingToolTests {
 		assertTrue(checkSameAnalysis(jsonTwitterInputFile,tokenOutJSON,m,GeneralJSONTwitter.class));
 		tokenOutJSON.delete();
 	}
+	
+	
 
 	/**
 	 * Tokenise using json input
@@ -209,6 +212,23 @@ public class TwitterPreprocessingToolTests {
 		String[] commandArgsArr = commandArgs.split(" ");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		TokeniseMode m = new TokeniseMode();
+		assertTrue(checkSameAnalysis(jsonTwitterInputFile,tokenOutJSON,m));
+		tokenOutJSON.delete();
+	}
+	
+	/**
+	 * tokenise a json tweet stream
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetStopwordsJSONStream() throws IOException{
+		String tokMode = "REMOVE_STOPWORDS";
+		File tokenOutJSON = folder.newFile("tokens-testTweetTokeniseJSON.json");
+		String commandArgs = String.format(commandFormat,"-",tokenOutJSON,tokMode,"APPEND");
+		TwitterPreprocessingToolOptions.sysin = new FileInputStream(jsonTwitterInputFile);
+		String[] commandArgsArr = commandArgs.split(" ");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		StopwordMode m = new StopwordMode();
 		assertTrue(checkSameAnalysis(jsonTwitterInputFile,tokenOutJSON,m));
 		tokenOutJSON.delete();
 	}

@@ -36,10 +36,10 @@ import org.openimaj.twitter.USMFStatus;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class IsReplyFilter extends TwitterPreprocessingFilter {
+public class IsReplyFilter extends TwitterPreprocessingPredicate {
 
 	@Override
-	public boolean filter(USMFStatus twitterStatus) {
+	public boolean test(USMFStatus twitterStatus) {
 		return twitterStatus.reply_to!=null && twitterStatus.reply_to.name!=null;
 	}
 
