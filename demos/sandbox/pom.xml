@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>openimaj-demos</artifactId>
@@ -25,7 +26,7 @@
     </dependency>
 		<dependency>
 			<groupId>org.openimaj.hardware</groupId>
-		  <artifactId>serial-driver</artifactId>
+			<artifactId>serial-driver</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -195,16 +196,10 @@
 			<version>1.1.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.imageterrier</groupId>
-			<artifactId>ImageTerrier</artifactId>
-			<version>3.5-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.imageterrier</groupId>
-			<artifactId>ImageTerrierTools</artifactId>
-			<version>3.5-SNAPSHOT</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.imageterrier</groupId> <artifactId>ImageTerrier</artifactId> 
+			<version>3.5-SNAPSHOT</version> </dependency> <dependency> <groupId>org.imageterrier</groupId> 
+			<artifactId>ImageTerrierTools</artifactId> <version>3.5-SNAPSHOT</version> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.encog</groupId>
 			<artifactId>encog-core</artifactId>
@@ -261,6 +256,11 @@
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-stream</artifactId>
 			<version>3.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>tw.edu.ntu.csie</groupId>
+			<artifactId>libsvm</artifactId>
+			<version>3.1</version>
 		</dependency>
 	</dependencies>
 	<build>
