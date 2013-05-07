@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.video.xuggle;
 
@@ -64,7 +64,7 @@ import com.xuggle.xuggler.IStreamCoder;
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	
+ *
  */
 public class XuggleAudio extends AudioStream
 {
@@ -92,12 +92,15 @@ public class XuggleAudio extends AudioStream
 	/** Whether to loop the file */
 	private final boolean loop;
 
+	/** Whether this class was constructed from a stream. Some functions are unavailable */
+	private boolean constructedFromStream = false;
+
 	/**
-	 *	
+	 *
 	 *
 	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 8 Jun 2011
-	 *	
+	 *
 	 */
 	protected class ChunkGetter extends MediaToolAdapter
 	{
@@ -131,7 +134,7 @@ public class XuggleAudio extends AudioStream
 
 	/**
 	 * 	Default constructor that takes the file to read.
-	 * 
+	 *
 	 *  @param file The file to read.
 	 */
 	public XuggleAudio( final File file )
@@ -141,7 +144,7 @@ public class XuggleAudio extends AudioStream
 
 	/**
 	 * 	Default constructor that takes the file to read.
-	 * 
+	 *
 	 *  @param file The file to read.
 	 *  @param loop Whether to loop indefinitely
 	 */
@@ -153,7 +156,7 @@ public class XuggleAudio extends AudioStream
 	/**
 	 * 	Default constructor that takes the location of a file
 	 * 	to read. This can either be a filename or a URL.
-	 * 
+	 *
 	 *  @param u The URL of the file to read
 	 */
 	public XuggleAudio( final URL u )
@@ -164,7 +167,7 @@ public class XuggleAudio extends AudioStream
 	/**
 	 * 	Default constructor that takes the location of a file
 	 * 	to read. This can either be a filename or a URL.
-	 * 
+	 *
 	 *  @param u The URL of the file to read
 	 *  @param loop Whether to loop indefinitely
 	 */
@@ -176,7 +179,7 @@ public class XuggleAudio extends AudioStream
 	/**
 	 * 	Default constructor that takes the location of a file
 	 * 	to read. This can either be a filename or a URL.
-	 * 
+	 *
 	 *  @param url The URL of the file to read
 	 */
 	public XuggleAudio( final String url )
@@ -190,7 +193,7 @@ public class XuggleAudio extends AudioStream
 	 * 	parameter determines whether the file will loop indefinitely.
 	 * 	If so, {@link #nextSampleChunk()} will never return null; otherwise
 	 * 	this method will return null at the end of the video.
-	 * 
+	 *
 	 *  @param u The URL of the file to read
 	 *  @param loop Whether to loop indefinitely
 	 */
@@ -198,13 +201,27 @@ public class XuggleAudio extends AudioStream
 	{
 		this.url = u;
 		this.loop = loop;
-		this.create();
+		this.create( null );
+	}
+
+	/**
+	 * 	Construct a xuggle audio object from the stream.
+	 *	@param stream The stream
+	 */
+	public XuggleAudio( final InputStream stream )
+	{
+		this.url = "stream://local";
+		this.loop = false;
+		this.constructedFromStream = true;
+		this.create( stream );
 	}
 
 	/**
 	 * 	Create the Xuggler reader
+	 *
+	 * 	@param stream Can be NULL; else the stream to create from.
 	 */
-	private void create()
+	private void create( final InputStream stream )
 	{
 		// If the reader is already open, we'll close it first and
 		// reinstantiate it.
@@ -219,28 +236,42 @@ public class XuggleAudio extends AudioStream
 		int openResult = 0;
 		try
 		{
-			final URI uri = new URI( this.url );
-
-			// If it's a valid URI, we'll try to open the container using the URI string.
+			// Create the container to read our audio file
 			container = IContainer.make();
-			openResult = container.open( uri.toString(), 
-					IContainer.Type.READ, null, true, true );
-			
-			// If there was an error trying to open the container in this way,
-			// it may be that we have a resource URL (which ffmpeg doesn't
-			// understand), so we'll try opening an InputStream to the resource.
-			if( openResult < 0 )
+
+			// If we have a stream, we'll create from the stream...
+			if( stream != null )
 			{
-				System.out.println( "URL "+this.url+" could not be opened by ffmpeg. "+
-						"Trying to open a stream to the URL instead." );
-				final InputStream is = uri.toURL().openStream();
-				openResult = container.open( is, null, true, true );
-				
+				openResult = container.open( stream, null, true, true);
+
+				if( openResult < 0 )
+					System.out.println( "XuggleAudio could not open InputStream to audio.");
+			}
+			// otherwise we'll use the URL in the class
+			else
+			{
+				final URI uri = new URI( this.url );
+
+				// If it's a valid URI, we'll try to open the container using the URI string.
+				openResult = container.open( uri.toString(),
+						IContainer.Type.READ, null, true, true );
+
+				// If there was an error trying to open the container in this way,
+				// it may be that we have a resource URL (which ffmpeg doesn't
+				// understand), so we'll try opening an InputStream to the resource.
 				if( openResult < 0 )
 				{
-					System.out.println( "Error opening container. Error "+openResult+
-							" ("+IError.errorNumberToType( openResult ).toString()+")" );
-					return;					
+					System.out.println( "URL "+this.url+" could not be opened by ffmpeg. "+
+							"Trying to open a stream to the URL instead." );
+					final InputStream is = uri.toURL().openStream();
+					openResult = container.open( is, null, true, true );
+
+					if( openResult < 0 )
+					{
+						System.out.println( "Error opening container. Error "+openResult+
+								" ("+IError.errorNumberToType( openResult ).toString()+")" );
+						return;
+					}
 				}
 			}
 		}
@@ -345,8 +376,14 @@ public class XuggleAudio extends AudioStream
 	@Override
 	public void reset()
 	{
+		if( this.constructedFromStream )
+		{
+			System.out.println( "Cannot reset a stream of audio." );
+			return;
+		}
+
 		if( this.reader == null || this.reader.getContainer() == null )
-			this.create();
+			this.create( null );
 		this.seek(0);
 	}
 
@@ -367,8 +404,14 @@ public class XuggleAudio extends AudioStream
 	@Override
 	public void seek( final long timestamp )
 	{
+		if( this.constructedFromStream )
+		{
+			System.out.println( "Cannot seek within a stream of audio." );
+			return;
+		}
+
 		if( this.reader == null || this.reader.getContainer() == null )
-			this.create();
+			this.create( null );
 
 		// Convert from milliseconds to stream timestamps
 		final double timebase = this.reader.getContainer().getStream(
