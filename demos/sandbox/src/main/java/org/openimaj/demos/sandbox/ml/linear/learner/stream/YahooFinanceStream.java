@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.lang.StringUtils;
@@ -23,7 +25,7 @@ import com.Ostermiller.util.CSVParser;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class YahooFinanceStream extends AbstractStream<List<Double>>{
+public class YahooFinanceStream extends AbstractStream<Map<String,Double>>{
 	Logger logger = Logger.getLogger(YahooFinanceStream.class);
 	private static final String YAHOO_URI = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snl1";
 	private static final int CONNECT_TIMEOUT = 1000;
@@ -58,12 +60,12 @@ public class YahooFinanceStream extends AbstractStream<List<Double>>{
 	}
 
 	@Override
-	public List<Double> next() {
+	public Map<String,Double> next() {
 		List<FeedItem> items = readItems();
 
-		List<Double> ret = new ArrayList<Double>();
+		Map<String, Double> ret = new HashMap<String, Double>();
 		for (FeedItem feedItem : items) {
-			ret.add(feedItem.value);
+			ret.put(feedItem.name,feedItem.value);
 		}
 		return ret ;
 	}

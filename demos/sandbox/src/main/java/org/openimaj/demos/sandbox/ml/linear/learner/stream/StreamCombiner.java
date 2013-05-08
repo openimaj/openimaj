@@ -68,10 +68,16 @@ public class StreamCombiner<A,B> extends AbstractStream<IndependentPair<A, B>>{
 			B b = futureb.get();
 			return IndependentPair.pair(a, b);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 
 	}
+	/**
+	 * @param a
+	 * @param b
+	 * @return
+	 */
 	public static <A,B> StreamCombiner<A, B> combine(Stream<A> a, Stream<B> b) {
 		return new StreamCombiner<A, B>(a, b);
 	}

@@ -14,10 +14,10 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	static class IncrementalBilinearSparseOnlineLearnerParams extends BilinearLearnerParameters{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -1847045895118918210L;
-		
+
 	}
 	private HashMap<String, Integer> vocabulary;
 	private HashMap<String, Integer> users;
@@ -28,14 +28,14 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	public IncrementalBilinearSparseOnlineLearner() {
 		init(new IncrementalBilinearSparseOnlineLearnerParams());
 	}
-	
+
 	public IncrementalBilinearSparseOnlineLearner(BilinearLearnerParameters params){
 		init(params);
 	}
-	
+
 	public void reinitParams() {
 		init(this.params);
-		
+
 	}
 
 	private void init(BilinearLearnerParameters params) {
@@ -45,18 +45,18 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		this.params = params;
 		bilinearLearner = new BilinearSparseOnlineLearner(params);
 	}
-	
+
 	public BilinearLearnerParameters getParams(){
 		return this.params;
 	}
-	
+
 	@Override
 	public void process(Map<String, Map<String, Double>> x, Map<String, Double> y) {
 		updateUserWords(x);
 		updateValues(y);
 		Matrix yMat = constructYMatrix(y);
 		Matrix xMat = constructXMatrix(x);
-		
+
 		this.bilinearLearner.process(xMat, yMat);
 	}
 
@@ -75,7 +75,7 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		}
 		return mat;
 	}
-	
+
 	private Map<String,Double> constructYMap(Matrix y){
 	 	Map<String, Double> ret = new HashMap<String, Double>();
 		for (String key : values.keySet()) {
@@ -85,12 +85,12 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		}
 		return ret;
 	}
-	
+
 	private Matrix constructXMatrix(Map<String,Map<String, Double>> x) {
 		Matrix mat = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(vocabulary.size(), users.size());
 		for (Entry<String, Map<String, Double>> userwords : x.entrySet()) {
 			int userindex = this.users.get(userwords.getKey());
-			for (Entry<String, Double> ent : userwords.getValue().entrySet()) {				
+			for (Entry<String, Double> ent : userwords.getValue().entrySet()) {
 				mat.setElement(vocabulary.get(ent.getKey()), userindex, ent.getValue());
 			}
 		}
@@ -108,7 +108,7 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 			}
 			newWords += updateWords(userWords.getValue());
 		}
-		
+
 		this.bilinearLearner.addU(newUsers);
 		this.bilinearLearner.addW(newWords);
 	}
@@ -126,15 +126,15 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 
 	public BilinearSparseOnlineLearner getBilinearLearner(int nusers, int nwords) {
 		BilinearSparseOnlineLearner ret = this.bilinearLearner.clone();
-		
+
 		Matrix u = ret.getU();
 		Matrix w = ret.getW();
 		Matrix newu = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(nusers, u.getNumColumns());
 		Matrix neww = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(nwords, w.getNumColumns());
-		
+
 		newu.setSubMatrix(0, 0, u);
 		neww.setSubMatrix(0, 0, w);
-		
+
 		ret.setU(newu);
 		ret.setW(neww);
 		return ret;
@@ -166,6 +166,12 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		return this.constructYMap(yMat);
 	}
 
-	
-	
+	/**
+	 * @return the vocabulary
+	 */
+	public HashMap<String, Integer> getVocabulary() {
+		return vocabulary;
+	}
+
+
 }
