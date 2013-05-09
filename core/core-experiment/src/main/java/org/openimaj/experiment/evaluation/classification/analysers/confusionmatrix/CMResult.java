@@ -38,22 +38,26 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * Results of a confusion matrix analysis using the {@link CMAnalyser}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <CLASS> Type of classes in the confusion matrix
+ * 
+ * @param <CLASS>
+ *            Type of classes in the confusion matrix
  */
 public class CMResult<CLASS> implements AnalysisResult {
 	ConfusionMatrix<CLASS> matrix;
-	
+
 	/**
 	 * Construct with a {@link ConfusionMatrix}.
-	 * @param matrix the matrix
+	 * 
+	 * @param matrix
+	 *            the matrix
 	 */
 	public CMResult(ConfusionMatrix<CLASS> matrix) {
 		this.matrix = matrix;
 	}
-	
+
 	/**
 	 * Get the internal {@link ConfusionMatrix}.
+	 * 
 	 * @return the confusion matrix
 	 */
 	public ConfusionMatrix<CLASS> getMatrix() {
@@ -67,30 +71,30 @@ public class CMResult<CLASS> implements AnalysisResult {
 
 	@Override
 	public JasperPrint getSummaryReport(String title, String info) {
-		//FIXME:
+		// FIXME:
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public JasperPrint getDetailReport(String title, String info) {
-		//FIXME:
+		// FIXME:
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getSummaryReport() {
-		StringBuilder sb = new StringBuilder();
-		
+		final StringBuilder sb = new StringBuilder();
+
 		sb.append(String.format("%10s: %2.3f\n", "Accuracy", matrix.getAccuracy()));
 		sb.append(String.format("%10s: %2.3f\n", "Error Rate", matrix.getErrorRate()));
-		
+
 		return sb.toString();
 	}
 
 	@Override
 	public String getDetailReport() {
-		StringBuilder sb = new StringBuilder();
-		
+		final StringBuilder sb = new StringBuilder();
+
 		sb.append("*********************** Overall Results ***********************\n");
 		sb.append(String.format("%25s: %2.3f\n", "Total instances", matrix.getTotalCount()));
 		sb.append(String.format("%25s: %2.3f\n", "Total correct", matrix.getTotalCorrectCount()));
@@ -101,12 +105,19 @@ public class CMResult<CLASS> implements AnalysisResult {
 		sb.append(String.format("%25s: %2.3f\n", "Average Class Error Rate", matrix.getAverageCategoryErrorRate()));
 		sb.append("\n");
 		sb.append("********************** Per Class Results **********************\n");
-		for (CLASS c : matrix.getActualCategories()) {
-			sb.append(String.format("%s: %4s,\t", "Class", c));
-			sb.append(String.format("%s: %2.3f,\t", "Class Accuracy", matrix.getCategoryAccuracy(c)));
-			sb.append(String.format("%s: %2.3f\n", "Class Error Rate", matrix.getCategoryErrorRate(c)));
+		sb.append(String.format("%s\t", "Class"));
+		sb.append(String.format("%s\t", "Class Accuracy"));
+		sb.append(String.format("%s\t", "Class Error Rate"));
+		sb.append(String.format("%s\t", "Actual Count"));
+		sb.append(String.format("%s\n", "Predicted Count"));
+		for (final CLASS c : matrix.getActualCategories()) {
+			sb.append(String.format("%10s\t", c));
+			sb.append(String.format("%2.3f\t", matrix.getCategoryAccuracy(c)));
+			sb.append(String.format("%2.3f\t", matrix.getCategoryErrorRate(c)));
+			sb.append(String.format("%6f\t", matrix.getActualCount(c)));
+			sb.append(String.format("%6f\n", matrix.getPredictedCount(c)));
 		}
-		
+
 		return sb.toString();
 	}
 }

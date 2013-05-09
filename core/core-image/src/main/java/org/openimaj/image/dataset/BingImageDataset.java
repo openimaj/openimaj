@@ -14,7 +14,7 @@ import org.openimaj.data.dataset.ReadableListDataset;
 import org.openimaj.data.identity.Identifiable;
 import org.openimaj.image.Image;
 import org.openimaj.io.HttpUtils;
-import org.openimaj.io.ObjectReader;
+import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.util.api.auth.common.BingAPIToken;
 
 /**
@@ -25,11 +25,14 @@ import org.openimaj.util.api.auth.common.BingAPIToken;
  * @param <IMAGE>
  *            The type of {@link Image} instance held by the dataset.
  */
-public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableListDataset<IMAGE> implements Identifiable {
+public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableListDataset<IMAGE, InputStream>
+		implements
+			Identifiable
+{
 	List<AzureSearchImageResult> images;
 	AzureSearchImageQuery query;
 
-	protected BingImageDataset(ObjectReader<IMAGE> reader, List<AzureSearchImageResult> results,
+	protected BingImageDataset(InputStreamObjectReader<IMAGE> reader, List<AzureSearchImageResult> results,
 			AzureSearchImageQuery query)
 	{
 		super(reader);
@@ -139,7 +142,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 	 *            contain fewer images than specified.
 	 * @return a new {@link BingImageDataset} created from the query.
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(InputStreamObjectReader<IMAGE> reader,
 			AzureSearchImageQuery query, int number)
 	{
 		return new BingImageDataset<IMAGE>(reader, performQuery(query, number), query);
@@ -160,7 +163,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 	 *            contain fewer images than specified.
 	 * @return a new {@link BingImageDataset} created from the query.
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(InputStreamObjectReader<IMAGE> reader,
 			BingAPIToken token, AzureSearchImageQuery query, int number)
 	{
 		query.setAppid(token.accountKey);
@@ -183,7 +186,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 	 *            contain fewer images than specified.
 	 * @return a new {@link BingImageDataset} created from the query.
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(InputStreamObjectReader<IMAGE> reader,
 			BingAPIToken token, String query, String imageFilters, int number)
 	{
 		final AzureSearchImageQuery aq = new AzureSearchImageQuery();
@@ -209,7 +212,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 	 *            contain fewer images than specified.
 	 * @return a new {@link BingImageDataset} created from the query.
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> BingImageDataset<IMAGE> create(InputStreamObjectReader<IMAGE> reader,
 			BingAPIToken token, String query, int number)
 	{
 		final AzureSearchImageQuery aq = new AzureSearchImageQuery();

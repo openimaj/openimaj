@@ -29,45 +29,37 @@
  */
 package org.openimaj.io;
 
-import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Interface for classes capable of reading objects.
+ * Interface for classes capable of reading objects from a {@link InputStream}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <T>
  *            Type of object being read.
- * @param <SOURCE>
- *            The type of the source of data for the object being read
  */
-public interface ObjectReader<T, SOURCE> {
-	/**
-	 * Read an object from the source
-	 * 
-	 * @param source
-	 *            the source
-	 * @return the object
-	 * @throws IOException
-	 *             if an error occurs
-	 */
-	public T read(SOURCE source) throws IOException;
-
+public interface InputStreamObjectReader<T> extends ObjectReader<T, InputStream> {
 	/**
 	 * Returns true if the stream can be read, or false otherwise.
 	 * <p>
-	 * This method is not normally called directly; rather,
-	 * {@link IOUtils#canRead(ObjectReader, Object, String)} should be used
-	 * instead.
+	 * Typically implementations will read just the first few bytes from the
+	 * stream to determine if the data can be read. This method is not normally
+	 * called directly; rather,
+	 * {@link IOUtils#canRead(InputStreamObjectReader, java.io.BufferedInputStream, String)}
+	 * should be used instead as it is capable of resetting the stream to its
+	 * initial condition.
 	 * 
-	 * @see IOUtils#canRead(ObjectReader, Object, String)
+	 * @see IOUtils#canRead(InputStreamObjectReader,
+	 *      java.io.BufferedInputStream, String)
 	 * 
-	 * @param source
-	 *            the data source
+	 * @param stream
+	 *            the input stream
 	 * @param name
 	 *            the name of the file behind the stream (can be null).
-	 * @return true if this {@link ObjectReader} can read the stream; false
-	 *         otherwise.
+	 * @return true if this {@link InputStreamObjectReader} can read the stream;
+	 *         false otherwise.
 	 */
-	public boolean canRead(SOURCE source, String name);
+	@Override
+	public boolean canRead(InputStream stream, String name);
 }

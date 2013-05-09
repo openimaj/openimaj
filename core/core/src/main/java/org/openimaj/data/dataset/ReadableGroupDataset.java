@@ -4,12 +4,13 @@ import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.io.ObjectReader;
 import org.openimaj.util.iterator.ConcatenatedIterable;
 
 /**
  * Base class for {@link GroupedDataset}s in which each instance is read with an
- * {@link ObjectReader}.
+ * {@link InputStreamObjectReader}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
@@ -19,20 +20,22 @@ import org.openimaj.util.iterator.ConcatenatedIterable;
  *            Type of sub-datasets.
  * @param <INSTANCE>
  *            Type of instances in the dataset
+ * @param <SOURCE>
+ *            the type of object that provides the data to create the instance
  */
-public abstract class ReadableGroupDataset<KEY, DATASET extends Dataset<INSTANCE>, INSTANCE>
+public abstract class ReadableGroupDataset<KEY, DATASET extends Dataset<INSTANCE>, INSTANCE, SOURCE>
 		extends AbstractMap<KEY, DATASET>
 		implements GroupedDataset<KEY, DATASET, INSTANCE>
 {
-	protected ObjectReader<INSTANCE> reader;
+	protected ObjectReader<INSTANCE, SOURCE> reader;
 
 	/**
-	 * Construct with the given {@link ObjectReader}.
+	 * Construct with the given {@link InputStreamObjectReader}.
 	 * 
 	 * @param reader
-	 *            the {@link ObjectReader}.
+	 *            the {@link InputStreamObjectReader}.
 	 */
-	public ReadableGroupDataset(ObjectReader<INSTANCE> reader) {
+	public ReadableGroupDataset(ObjectReader<INSTANCE, SOURCE> reader) {
 		this.reader = reader;
 	}
 
@@ -79,7 +82,7 @@ public abstract class ReadableGroupDataset<KEY, DATASET extends Dataset<INSTANCE
 	}
 
 	@Override
-	public INSTANCE getRandomInstances(KEY key) {
+	public INSTANCE getRandomInstance(KEY key) {
 		return get(key).getRandomInstance();
 	}
 }

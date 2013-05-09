@@ -32,6 +32,9 @@ package org.openimaj.feature.local.matcher;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.citation.annotation.References;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.util.pair.Pair;
@@ -44,6 +47,26 @@ import org.openimaj.util.pair.Pair;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T>
  */
+@References(references = {
+		@Reference(
+				type = ReferenceType.Article,
+				author = { "David Lowe" },
+				title = "Distinctive image features from scale-invariant keypoints",
+				year = "2004",
+				journal = "IJCV",
+				pages = { "91", "110" },
+				month = "January",
+				number = "2",
+				volume = "60"),
+		@Reference(
+				type = ReferenceType.Inproceedings,
+				author = { "David Lowe" },
+				title = "Object recognition from local scale-invariant features",
+				year = "1999",
+				booktitle = "Proc. of the International Conference on Computer Vision {ICCV}",
+				pages = { "1150", "1157" }
+		)
+})
 public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureMatcher<T> {
 	protected List<T> modelKeypoints;
 	protected List<Pair<T>> matches;
@@ -70,11 +93,6 @@ public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureM
 		return matches;
 	}
 
-	/**
-	 * Given a pair of images and their keypoints, pick the first keypoint from
-	 * one image and find its closest match in the second set of keypoints. Then
-	 * write the result to a file.
-	 */
 	@Override
 	public boolean findMatches(List<T> keys1)
 	{
@@ -96,8 +114,8 @@ public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureM
 
 	/**
 	 * This searches through the keypoints in klist for the two closest matches
-	 * to key. If the closest is less than 0.6 times distance to second closest,
-	 * then return the closest match. Otherwise, return NULL.
+	 * to key. If the closest is less than <code>threshold</code> times distance
+	 * to second closest, then return the closest match. Otherwise, return NULL.
 	 */
 	protected T checkForMatch(T query, List<T> features)
 	{

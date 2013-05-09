@@ -22,15 +22,15 @@ import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.io.ObjectReader;
+import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.video.xuggle.XuggleAudio;
 
 /**
- *
- *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 7 May 2013
- *	@version $Author$, $Revision$, $Date$
+ * 
+ * 
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 7 May 2013
+ * @version $Author$, $Revision$, $Date$
  */
 public class AudioClassifier
 {
@@ -45,46 +45,49 @@ public class AudioClassifier
 	private static final String SVM_MODEL_FILE_NAME = "svm.model.dat";
 
 	/**
-	 *	Returns a set of one second of samples from the input stream.
-	 *
-	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *  @created 7 May 2013
-	 *	@version $Author$, $Revision$, $Date$
+	 * Returns a set of one second of samples from the input stream.
+	 * 
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * @created 7 May 2013
+	 * @version $Author$, $Revision$, $Date$
 	 */
-	public static class OneSecondClipReader implements ObjectReader<List<SampleBuffer>>
+	public static class OneSecondClipReader implements InputStreamObjectReader<List<SampleBuffer>>
 	{
 
 		/**
-		 *	{@inheritDoc}
-		 * 	@see org.openimaj.io.ObjectReader#read(java.io.InputStream)
+		 * {@inheritDoc}
+		 * 
+		 * @see org.openimaj.io.InputStreamObjectReader#read(Object)
 		 */
 		@Override
-		public List<SampleBuffer> read( final InputStream stream ) throws IOException
+		public List<SampleBuffer> read(final InputStream stream) throws IOException
 		{
 			// Open the stream.
-			final XuggleAudio xa = new XuggleAudio( stream );
+			final XuggleAudio xa = new XuggleAudio(stream);
 
 			// Setup a chunker that will get samples in one second chunks.
-			final int nSamplesInOneSecond = (int)(xa.getFormat().getSampleRateKHz() * 1000);
-			final FixedSizeSampleAudioProcessor f = new FixedSizeSampleAudioProcessor( xa, nSamplesInOneSecond );
+			final int nSamplesInOneSecond = (int) (xa.getFormat().getSampleRateKHz() * 1000);
+			final FixedSizeSampleAudioProcessor f = new FixedSizeSampleAudioProcessor(xa, nSamplesInOneSecond);
 
 			// Setup our output list
 			final List<SampleBuffer> buffers = new ArrayList<SampleBuffer>();
 
 			// Now read the audio until we're done
 			SampleChunk sc = null;
-			while( (sc = xa.nextSampleChunk()) != null )
-				buffers.add( sc.getSampleBuffer() );
+			while ((sc = xa.nextSampleChunk()) != null)
+				buffers.add(sc.getSampleBuffer());
 
 			return buffers;
 		}
 
 		/**
-		 *	{@inheritDoc}
-		 * 	@see org.openimaj.io.ObjectReader#canRead(java.io.InputStream, java.lang.String)
+		 * {@inheritDoc}
+		 * 
+		 * @see org.openimaj.io.InputStreamObjectReader#canRead(java.io.InputStream,
+		 *      java.lang.String)
 		 */
 		@Override
-		public boolean canRead( final InputStream stream, final String name )
+		public boolean canRead(final InputStream stream, final String name)
 		{
 			return true;
 		}
@@ -94,60 +97,64 @@ public class AudioClassifier
 	private final MFCCJAudio mfcc = new MFCCJAudio();
 
 	/**
-	 *
-	 *	@param location
+	 * 
+	 * @param location
 	 */
 	public AudioClassifier()
 	{
 	}
 
 	/**
-	 * 	Train the classifier on the given corpus
-	 *	@param musicSpeechCorpus The corpus to train on
+	 * Train the classifier on the given corpus
+	 * 
+	 * @param musicSpeechCorpus
+	 *            The corpus to train on
 	 */
-	public void train( final GroupedDataset<String, ? extends ListDataset<List<SampleBuffer>>,
-			List<SampleBuffer>> musicSpeechCorpus )
+	public void train(final GroupedDataset<String, ? extends ListDataset<List<SampleBuffer>>,
+			List<SampleBuffer>> musicSpeechCorpus)
 	{
-		System.out.println( musicSpeechCorpus.getGroups() );
+		System.out.println(musicSpeechCorpus.getGroups());
 
 		// Setup the SVM problem
-		final svm_problem prob = this.getSVMProblem( musicSpeechCorpus );
+		final svm_problem prob = this.getSVMProblem(musicSpeechCorpus);
 		final svm_parameter param = this.getSVMParameters();
 
 		// Train the SVM
-		final svm_model model = libsvm.svm.svm_train( prob, param );
+		final svm_model model = svm.svm_train(prob, param);
 
 		// Save the model if we're going to do that.
-		if( AudioClassifier.SVM_MODEL_FILE_NAME != null ) try
-		{
-			svm.svm_save_model( AudioClassifier.SVM_MODEL_FILE_NAME, model );
-		}
-		catch( final IOException e )
-		{
-			e.printStackTrace();
-		}
+		if (AudioClassifier.SVM_MODEL_FILE_NAME != null)
+			try
+			{
+				svm.svm_save_model(AudioClassifier.SVM_MODEL_FILE_NAME, model);
+			} catch (final IOException e)
+			{
+				e.printStackTrace();
+			}
 	}
 
 	/**
-	 * 	Returns the calculated feature vector for the given sample buffer.
-	 *	@param buffer The sample buffer to process
-	 *	@return A {@link DoubleFV} containing the feature vector for this buffer
+	 * Returns the calculated feature vector for the given sample buffer.
+	 * 
+	 * @param buffer
+	 *            The sample buffer to process
+	 * @return A {@link DoubleFV} containing the feature vector for this buffer
 	 */
-	public DoubleFV getFeatures( final SampleBuffer buffer )
+	public DoubleFV getFeatures(final SampleBuffer buffer)
 	{
 		// Calculate the MFCCs
-		final double[][] mfccs = this.mfcc.calculateMFCC( buffer );
+		final double[][] mfccs = this.mfcc.calculateMFCC(buffer);
 
 		// The output vector
 		final double[] values = new double[mfccs[0].length];
 
-		if( mfccs.length > 1 )
+		if (mfccs.length > 1)
 		{
 			// Average across the channels
-			for( int i = 0; i < mfccs[0].length; i++ )
+			for (int i = 0; i < mfccs[0].length; i++)
 			{
 				double acc = 0;
-				for( int j = 0; j < mfccs.length; j++ )
+				for (int j = 0; j < mfccs.length; j++)
 					acc += mfccs[j][i];
 				acc /= mfccs.length;
 				values[i] = acc;
@@ -155,15 +162,16 @@ public class AudioClassifier
 		}
 		else
 			// Copy the mfccs
-			System.arraycopy( mfccs[0], 0, values, 0, values.length );
+			System.arraycopy(mfccs[0], 0, values, 0, values.length);
 
 		// Return the new DoubleFV
-		return new DoubleFV( values );
+		return new DoubleFV(values);
 	}
 
 	/**
-	 * 	Returns the default set of SVM parameters.
-	 *	@return The default set of SVM parameters
+	 * Returns the default set of SVM parameters.
+	 * 
+	 * @return The default set of SVM parameters
 	 */
 	private svm_parameter getSVMParameters()
 	{
@@ -174,7 +182,7 @@ public class AudioClassifier
 		param.svm_type = svm_parameter.C_SVC;
 		param.kernel_type = svm_parameter.RBF;
 		param.degree = 3;
-		param.gamma = 0;	// 1/num_features
+		param.gamma = 0; // 1/num_features
 		param.coef0 = 0;
 		param.nu = 0.5;
 		param.cache_size = 100;
@@ -191,20 +199,22 @@ public class AudioClassifier
 	}
 
 	/**
-	 * 	Returns an svm_problem for the given dataset.
-	 * 	@param musicSpeechCorpus The corpus
-	 *	@return
+	 * Returns an svm_problem for the given dataset.
+	 * 
+	 * @param musicSpeechCorpus
+	 *            The corpus
+	 * @return
 	 */
-	private svm_problem getSVMProblem( final GroupedDataset<String,
-			? extends ListDataset<List<SampleBuffer>>, List<SampleBuffer>> musicSpeechCorpus )
+	private svm_problem getSVMProblem(final GroupedDataset<String,
+			? extends ListDataset<List<SampleBuffer>>, List<SampleBuffer>> musicSpeechCorpus)
 	{
 		final svm_problem prob = new svm_problem();
 
-		for( final List<SampleBuffer> samples : musicSpeechCorpus.getInstances( "speech" ) )
+		for (final List<SampleBuffer> samples : musicSpeechCorpus.getInstances("speech"))
 		{
-			for( final SampleBuffer sample : samples )
+			for (final SampleBuffer sample : samples)
 			{
-				final DoubleFV fv = this.getFeatures( sample );
+				final DoubleFV fv = this.getFeatures(sample);
 			}
 		}
 
@@ -212,23 +222,23 @@ public class AudioClassifier
 	}
 
 	/**
-	 * 	Main method.
-	 *	@param args Command-line args
+	 * Main method.
+	 * 
+	 * @param args
+	 *            Command-line args
 	 */
-	public static void main( final String[] args )
+	public static void main(final String[] args)
 	{
 		try
 		{
 			// Virtual file system for music speech corpus
-			final GroupedDataset<String, ? extends ListDataset<List<SampleBuffer>>, List<SampleBuffer>>
-				musicSpeechCorpus = new	VFSGroupDataset<List<SampleBuffer>>(
-							AudioClassifier.MUSIC_SPEECH_CORPUS_TRAINING_LOCATION,
-							new OneSecondClipReader() );
+			final GroupedDataset<String, ? extends ListDataset<List<SampleBuffer>>, List<SampleBuffer>> musicSpeechCorpus = new VFSGroupDataset<List<SampleBuffer>>(
+					AudioClassifier.MUSIC_SPEECH_CORPUS_TRAINING_LOCATION,
+					new OneSecondClipReader());
 
 			final AudioClassifier ac = new AudioClassifier();
-			ac.train( musicSpeechCorpus );
-		}
-		catch( final FileSystemException e )
+			ac.train(musicSpeechCorpus);
+		} catch (final FileSystemException e)
 		{
 			e.printStackTrace();
 		}

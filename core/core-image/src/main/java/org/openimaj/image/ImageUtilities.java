@@ -57,7 +57,7 @@ import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.byteSources.ByteSource;
 import org.apache.sanselan.common.byteSources.ByteSourceInputStream;
 import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.io.ObjectReader;
+import org.openimaj.io.InputStreamObjectReader;
 
 /**
  * A static utility class with methods for dealing with images.
@@ -66,9 +66,9 @@ import org.openimaj.io.ObjectReader;
  */
 public class ImageUtilities {
 	/**
-	 * An {@link ObjectReader} for reading {@link FImage}s.
+	 * An {@link InputStreamObjectReader} for reading {@link FImage}s.
 	 */
-	public static final ObjectReader<FImage> FIMAGE_READER = new ObjectReader<FImage>() {
+	public static final InputStreamObjectReader<FImage> FIMAGE_READER = new InputStreamObjectReader<FImage>() {
 		@Override
 		public FImage read(InputStream stream) throws IOException {
 			return ImageUtilities.readF(stream);
@@ -87,9 +87,9 @@ public class ImageUtilities {
 	};
 
 	/**
-	 * An {@link ObjectReader} for reading {@link MBFImage}s.
+	 * An {@link InputStreamObjectReader} for reading {@link MBFImage}s.
 	 */
-	public static final ObjectReader<MBFImage> MBFIMAGE_READER = new ObjectReader<MBFImage>() {
+	public static final InputStreamObjectReader<MBFImage> MBFIMAGE_READER = new InputStreamObjectReader<MBFImage>() {
 		@Override
 		public MBFImage read(InputStream stream) throws IOException {
 			return ImageUtilities.readMBF(stream);

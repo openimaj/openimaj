@@ -67,7 +67,7 @@ import Jama.Matrix;
  * @param <I>
  *            the actual image of the concrete subclass
  */
-public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Serializable {
+public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Serializable, ImageProvider<I> {
 	/**
 	 * Enumerator for representing the type of field interlacing operations.
 	 * 
@@ -2031,4 +2031,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return Returns this image
 	 */
 	public abstract I overlayInplace(I image, int x, int y);
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public I getImage() {
+		return (I) this;
+	}
 }

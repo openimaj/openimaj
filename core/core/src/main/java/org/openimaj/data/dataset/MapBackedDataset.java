@@ -95,7 +95,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	}
 
 	@Override
-	public INSTANCE getRandomInstances(KEY key) {
+	public INSTANCE getRandomInstance(KEY key) {
 		return map.get(key).getRandomInstance();
 	}
 

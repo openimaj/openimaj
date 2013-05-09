@@ -76,5 +76,5 @@ public interface GroupedDataset<KEY extends Object, DATASET extends Dataset<INST
 	 *            the group key
 	 * @return a random item from the group.
 	 */
-	public INSTANCE getRandomInstances(KEY key);
+	public INSTANCE getRandomInstance(KEY key);
 }

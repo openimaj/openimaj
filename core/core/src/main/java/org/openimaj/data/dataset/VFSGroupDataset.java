@@ -11,6 +11,7 @@ import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.FileTypeSelector;
 import org.apache.commons.vfs2.VFS;
 import org.openimaj.data.identity.Identifiable;
+import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.io.ObjectReader;
 
 /**
@@ -50,7 +51,9 @@ import org.openimaj.io.ObjectReader;
  * @param <INSTANCE>
  *            The type of instance in the dataset
  */
-public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSListDataset<INSTANCE>, INSTANCE>
+public class VFSGroupDataset<INSTANCE>
+		extends
+			ReadableGroupDataset<String, VFSListDataset<INSTANCE>, INSTANCE, FileObject>
 		implements
 		Identifiable
 {
@@ -70,11 +73,34 @@ public class VFSGroupDataset<INSTANCE> extends ReadableGroupDataset<String, VFSL
 	 *            the file system path or uri. See the Apache Commons VFS2
 	 *            documentation for all the details.
 	 * @param reader
-	 *            the {@link ObjectReader} that reads the data from the VFS
+	 *            the {@link InputStreamObjectReader} that reads the data from
+	 *            the VFS
 	 * @throws FileSystemException
 	 *             if an error occurs accessing the VFS
 	 */
-	public VFSGroupDataset(final String path, final ObjectReader<INSTANCE> reader) throws FileSystemException {
+	public VFSGroupDataset(final String path, final InputStreamObjectReader<INSTANCE> reader) throws FileSystemException {
+		this(path, new VFSListDataset.FileObjectISReader<INSTANCE>(reader));
+	}
+
+	/**
+	 * Construct a grouped dataset from any virtual file system source (local
+	 * directory, remote zip file, etc). Only the child directories under the
+	 * given path will be used to create groups; the contents of any
+	 * sub-directories will be merged automatically. Only directories with
+	 * readable items as children will be included in the resultant dataset.
+	 * 
+	 * @see "http://commons.apache.org/proper/commons-vfs/filesystems.html"
+	 * @param path
+	 *            the file system path or uri. See the Apache Commons VFS2
+	 *            documentation for all the details.
+	 * @param reader
+	 *            the {@link InputStreamObjectReader} that reads the data from
+	 *            the VFS
+	 * @throws FileSystemException
+	 *             if an error occurs accessing the VFS
+	 */
+	public VFSGroupDataset(final String path, final ObjectReader<INSTANCE, FileObject> reader) throws FileSystemException
+	{
 		super(reader);
 
 		final FileSystemManager fsManager = VFS.getManager();

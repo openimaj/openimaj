@@ -160,7 +160,7 @@ public class IndependentPair<A, B> {
 	 *            the data
 	 * @return extracted first objects
 	 */
-	public static <T, Q> List<T> getFirst(final Iterable<IndependentPair<T, Q>> data) {
+	public static <T, Q> List<T> getFirst(final Iterable<? extends IndependentPair<T, Q>> data) {
 		final List<T> extracted = new ArrayList<T>();
 
 		for (final IndependentPair<T, Q> item : data)
@@ -180,7 +180,7 @@ public class IndependentPair<A, B> {
 	 *            the data
 	 * @return extracted second objects
 	 */
-	public static <T, Q> List<Q> getSecond(final Iterable<IndependentPair<T, Q>> data) {
+	public static <T, Q> List<Q> getSecond(final Iterable<? extends IndependentPair<T, Q>> data) {
 		final List<Q> extracted = new ArrayList<Q>();
 
 		for (final IndependentPair<T, Q> item : data)

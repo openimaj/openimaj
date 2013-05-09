@@ -1086,13 +1086,39 @@ public class IOUtils {
 
 	/**
 	 * Test whether the data in the given {@link InputStream} can be read by the
-	 * given {@link ObjectReader}. This method tries to ensure that the stream
-	 * is reset to its initial condition.
+	 * given {@link InputStreamObjectReader}. This method tries to ensure that
+	 * the stream is reset to its initial condition.
+	 * 
+	 * @param reader
+	 *            the {@link InputStreamObjectReader}.
+	 * @param is
+	 *            the stream
+	 * @param name
+	 *            the name of the file/object behind the stream (can be null)
+	 * @return true if the {@link InputStreamObjectReader} can read from this
+	 *         stream; false otherwise.
+	 * @throws IOException
+	 *             if an error occurs resetting the stream.
+	 */
+	public static boolean canRead(InputStreamObjectReader<?> reader, BufferedInputStream is, String name)
+			throws IOException
+	{
+		try {
+			is.mark(1024 * 1024);
+			return reader.canRead(is, name);
+		} finally {
+			is.reset();
+		}
+	}
+
+	/**
+	 * Test whether the data in the given source can be read by the given
+	 * {@link ObjectReader}.
 	 * 
 	 * @param reader
 	 *            the {@link ObjectReader}.
-	 * @param is
-	 *            the stream
+	 * @param source
+	 *            the source
 	 * @param name
 	 *            the name of the file/object behind the stream (can be null)
 	 * @return true if the {@link ObjectReader} can read from this stream; false
@@ -1100,12 +1126,7 @@ public class IOUtils {
 	 * @throws IOException
 	 *             if an error occurs resetting the stream.
 	 */
-	public static boolean canRead(ObjectReader<?> reader, BufferedInputStream is, String name) throws IOException {
-		try {
-			is.mark(1024 * 1024);
-			return reader.canRead(is, name);
-		} finally {
-			is.reset();
-		}
+	public static <SRC> boolean canRead(ObjectReader<?, SRC> reader, SRC source, String name) throws IOException {
+		return reader.canRead(source, name);
 	}
 }

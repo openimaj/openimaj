@@ -4,27 +4,33 @@ import java.util.AbstractList;
 
 import org.openimaj.data.identity.Identifiable;
 import org.openimaj.data.identity.IdentifiableObject;
+import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.io.ObjectReader;
 
 /**
  * Base class for {@link ListDataset}s in which each instance is read with an
- * {@link ObjectReader}.
+ * {@link InputStreamObjectReader}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <INSTANCE>
  *            the type of instances in the dataset
+ * @param <SOURCE>
+ *            the type of object that provides the data to create the instance
  */
-public abstract class ReadableListDataset<INSTANCE> extends AbstractList<INSTANCE> implements ListDataset<INSTANCE> {
-	protected ObjectReader<INSTANCE> reader;
+public abstract class ReadableListDataset<INSTANCE, SOURCE> extends AbstractList<INSTANCE>
+		implements
+		ListDataset<INSTANCE>
+{
+	protected ObjectReader<INSTANCE, SOURCE> reader;
 
 	/**
 	 * Construct with the given {@link ObjectReader}.
 	 * 
 	 * @param reader
-	 *            the {@link ObjectReader}.
+	 *            the {@link InputStreamObjectReader}.
 	 */
-	public ReadableListDataset(ObjectReader<INSTANCE> reader) {
+	public ReadableListDataset(ObjectReader<INSTANCE, SOURCE> reader) {
 		this.reader = reader;
 	}
 
@@ -76,9 +82,9 @@ public abstract class ReadableListDataset<INSTANCE> extends AbstractList<INSTANC
 			implements
 			ListDataset<IdentifiableObject<INSTANCE>>
 	{
-		private final ReadableListDataset<INSTANCE> internal;
+		private final ReadableListDataset<INSTANCE, SOURCE> internal;
 
-		WrappedListDataset(ReadableListDataset<INSTANCE> internal) {
+		WrappedListDataset(ReadableListDataset<INSTANCE, SOURCE> internal) {
 			this.internal = internal;
 		}
 

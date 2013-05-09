@@ -493,7 +493,7 @@ public class HttpUtils {
 	 * @throws IllegalArgumentException
 	 *             if the URL is not an HTTP(s) URL
 	 */
-	public static <T, Q extends ObjectReader<T>> T readURL(URL url, Q reader) throws IOException {
+	public static <T, Q extends InputStreamObjectReader<T>> T readURL(URL url, Q reader) throws IOException {
 		InputStream stream = readURLAsStream(url);
 
 		try {

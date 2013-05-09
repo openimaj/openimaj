@@ -13,6 +13,7 @@ import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.VFS;
 import org.openimaj.data.identity.Identifiable;
 import org.openimaj.io.IOUtils;
+import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.io.ObjectReader;
 import org.openimaj.util.array.ArrayIterator;
 
@@ -47,9 +48,79 @@ import org.openimaj.util.array.ArrayIterator;
  * @param <INSTANCE>
  *            The type of instance in the dataset
  */
-public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> implements Identifiable {
+public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE, FileObject> implements Identifiable {
+	/**
+	 * An adaptor that lets {@link InputStreamObjectReader}s be used as a
+	 * {@link ObjectReader} with a {@link FileObject} source type.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 * @param <INSTANCE>
+	 *            The type of instance that the {@link InputStreamObjectReader}
+	 *            produces
+	 */
+	public static class FileObjectISReader<INSTANCE> implements ObjectReader<INSTANCE, FileObject> {
+		private InputStreamObjectReader<INSTANCE> streamReader;
+
+		/**
+		 * Construct with the given {@link InputStreamObjectReader}
+		 * 
+		 * @param reader
+		 *            the {@link InputStreamObjectReader}
+		 */
+		public FileObjectISReader(InputStreamObjectReader<INSTANCE> reader) {
+			this.streamReader = reader;
+		}
+
+		@Override
+		public INSTANCE read(FileObject source) throws IOException {
+			return streamReader.read(source.getContent().getInputStream());
+		}
+
+		@Override
+		public boolean canRead(FileObject source, String name) {
+			BufferedInputStream stream = null;
+			try {
+				stream = new BufferedInputStream(source.getContent().getInputStream());
+
+				return IOUtils.canRead(streamReader, stream, source.getName().getBaseName());
+			} catch (final IOException e) {
+				// ignore
+			} finally {
+				if (stream != null) {
+					try {
+						stream.close();
+					} catch (final IOException e) {
+						// ignore
+					}
+				}
+			}
+
+			return false;
+		}
+
+	}
+
 	private FileObject[] files;
 	private FileObject base;
+
+	/**
+	 * Construct a list dataset from any virtual file system source (local
+	 * directory, remote zip file, etc).
+	 * 
+	 * @see "http://commons.apache.org/proper/commons-vfs/filesystems.html"
+	 * @param path
+	 *            the file system path or uri. See the Apache Commons VFS2
+	 *            documentation for all the details.
+	 * @param reader
+	 *            the {@link InputStreamObjectReader} that reads the data from
+	 *            the VFS
+	 * @throws FileSystemException
+	 *             if an error occurs accessing the VFS
+	 */
+	public VFSListDataset(final String path, final InputStreamObjectReader<INSTANCE> reader) throws FileSystemException {
+		this(path, new FileObjectISReader<INSTANCE>(reader));
+	}
 
 	/**
 	 * Construct a list dataset from any virtual file system source (local
@@ -64,7 +135,7 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> impl
 	 * @throws FileSystemException
 	 *             if an error occurs accessing the VFS
 	 */
-	public VFSListDataset(final String path, final ObjectReader<INSTANCE> reader) throws FileSystemException {
+	public VFSListDataset(final String path, final ObjectReader<INSTANCE, FileObject> reader) throws FileSystemException {
 		super(reader);
 
 		final FileSystemManager fsManager = VFS.getManager();
@@ -80,15 +151,7 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> impl
 			@Override
 			public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
 				if (fileInfo.getFile().getType() == FileType.FILE) {
-					final BufferedInputStream stream = new BufferedInputStream(fileInfo.getFile().getContent()
-							.getInputStream());
-
-					try {
-						return IOUtils.canRead(reader, stream, fileInfo.getFile().getName().getBaseName());
-					} finally {
-						if (stream != null)
-							stream.close();
-					}
+					return IOUtils.canRead(reader, fileInfo.getFile(), fileInfo.getFile().getName().getBaseName());
 				}
 
 				return false;
@@ -133,7 +196,7 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE> impl
 	}
 
 	private INSTANCE read(FileObject file) throws IOException {
-		return reader.read(file.getContent().getInputStream());
+		return reader.read(file);
 	}
 
 	@Override

@@ -20,9 +20,9 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>jmatio</groupId>
+      <groupId>net.sourceforge.jmatio</groupId>
       <artifactId>jmatio</artifactId>
-      <version>0.2.3</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

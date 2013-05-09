@@ -14,7 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.openimaj.data.dataset.ReadableListDataset;
 import org.openimaj.image.Image;
 import org.openimaj.io.HttpUtils;
-import org.openimaj.io.ObjectReader;
+import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.util.api.auth.common.FlickrAPIToken;
 
 import com.aetrion.flickr.Flickr;
@@ -35,7 +35,7 @@ import com.aetrion.flickr.photosets.PhotosetsInterface;
  * @param <IMAGE>
  *            The type of {@link Image} instance held by the dataset.
  */
-public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableListDataset<IMAGE> {
+public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableListDataset<IMAGE, InputStream> {
 	/**
 	 * Possible sizes of image from flickr.
 	 * 
@@ -131,7 +131,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	protected List<Photo> photos;
 	protected Size targetSize = Size.Medium;
 
-	protected FlickrImageDataset(ObjectReader<IMAGE> reader, List<Photo> photos) {
+	protected FlickrImageDataset(InputStreamObjectReader<IMAGE> reader, List<Photo> photos) {
 		super(reader);
 
 		this.photos = photos;
@@ -256,7 +256,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * @throws Exception
 	 *             if an error occurs
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			URL url) throws Exception
 	{
@@ -277,7 +277,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * @throws Exception
 	 *             if an error occurs
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token, String searchTerms) throws Exception
 	{
 		return create(reader, token, searchTerms, 0);
@@ -301,7 +301,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * @throws Exception
 	 *             if an error occurs
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			String searchTerms, int number) throws Exception
 	{
@@ -328,7 +328,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * @throws Exception
 	 *             if an error occurs
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> create(InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			URL url, int number) throws Exception
 	{
@@ -345,7 +345,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 		throw new IllegalArgumentException("Unknown URL type " + urlString);
 	}
 
-	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromGallery(ObjectReader<IMAGE> reader,
+	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromGallery(
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			String urlString, int number) throws Exception
 	{
@@ -359,7 +360,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 		return createFromGallery(reader, token, params, number);
 	}
 
-	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromPhotoset(ObjectReader<IMAGE> reader,
+	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromPhotoset(
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			String urlString, int number) throws Exception
 	{
@@ -370,7 +372,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 		return createFromPhotoset(reader, token, setId, number);
 	}
 
-	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromCollection(ObjectReader<IMAGE> reader,
+	private static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> fromCollection(
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			String urlString, int number) throws Exception
 	{
@@ -404,7 +407,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * @throws Exception
 	 *             if an error occurs
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromGallery(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromGallery(
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			com.aetrion.flickr.galleries.SearchParameters params) throws Exception
 	{
@@ -431,7 +435,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	@SuppressWarnings("unchecked")
-	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromGallery(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromGallery(
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			com.aetrion.flickr.galleries.SearchParameters params, int number) throws Exception
 	{
@@ -473,7 +478,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromPhotoset(
-			ObjectReader<IMAGE> reader, FlickrAPIToken token, String setId) throws Exception
+			InputStreamObjectReader<IMAGE> reader, FlickrAPIToken token, String setId) throws Exception
 	{
 		return createFromPhotoset(reader, token, setId, 0);
 	}
@@ -498,7 +503,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 */
 	@SuppressWarnings("unchecked")
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromPhotoset(
-			ObjectReader<IMAGE> reader,
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			String setId, int number) throws Exception
 	{
@@ -542,7 +547,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromCollection(
-			ObjectReader<IMAGE> reader,
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			com.aetrion.flickr.collections.CollectionsSearchParameters params) throws Exception
 	{
@@ -570,7 +575,7 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 */
 	@SuppressWarnings("unchecked")
 	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromCollection(
-			ObjectReader<IMAGE> reader,
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			com.aetrion.flickr.collections.CollectionsSearchParameters params, int number) throws Exception
 	{
@@ -605,7 +610,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 * @throws Exception
 	 *             if an error occurs
 	 */
-	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromSearch(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromSearch(
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			com.aetrion.flickr.photos.SearchParameters params) throws Exception
 	{
@@ -632,7 +638,8 @@ public class FlickrImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableL
 	 *             if an error occurs
 	 */
 	@SuppressWarnings("unchecked")
-	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromSearch(ObjectReader<IMAGE> reader,
+	public static <IMAGE extends Image<?, IMAGE>> FlickrImageDataset<IMAGE> createFromSearch(
+			InputStreamObjectReader<IMAGE> reader,
 			FlickrAPIToken token,
 			com.aetrion.flickr.photos.SearchParameters params, int number) throws Exception
 	{

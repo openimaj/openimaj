@@ -189,4 +189,13 @@ public class ClassificationEvaluator<RESULT extends AnalysisResult, CLASS, OBJEC
 	public RESULT analyse(Map<OBJECT, ClassificationResult<CLASS>> predicted) {
 		return analyser.analyse(predicted, actual);
 	}
+
+	/**
+	 * Get the expected classes for each instance
+	 * 
+	 * @return the map of instances to expected classes
+	 */
+	public Map<OBJECT, Set<CLASS>> getExpected() {
+		return actual;
+	}
 }

@@ -1,17 +1,42 @@
 package org.openimaj.demos.classification;
 
 import java.io.IOException;
+import java.util.Map;
 
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.VFSGroupDataset;
+import org.openimaj.demos.classification.Caltech101.Record;
+import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
+import org.openimaj.experiment.evaluation.classification.ClassificationResult;
+import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
+import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
+import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.feature.DoubleFV;
+import org.openimaj.feature.DoubleFVComparison;
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 public class CT101Tests {
-	public static void main(String[] args) throws IOException {
-		final Caltech101<MBFImage> data = new Caltech101<MBFImage>(ImageUtilities.MBFIMAGE_READER);
+	private static final class FeatureExtractorImplementation implements FeatureExtractor<DoubleFV, Record<MBFImage>> {
+		@Override
+		public DoubleFV extractFeature(Record<MBFImage> object) {
+			final BlockHistogramModel hm = new BlockHistogramModel(8, 8, 6, 6, 6);
+			hm.estimateModel(object.getImage());
+
+			return hm.toSingleHistogram();
+		}
+	}
+
+	public static void displayAverages() throws IOException {
+		final VFSGroupDataset<MBFImage> data = Caltech101.getImages(ImageUtilities.MBFIMAGE_READER);
 
 		final ResizeProcessor rp = new ResizeProcessor(200, 200, true);
 
@@ -39,19 +64,43 @@ public class CT101Tests {
 
 			DisplayUtilities.display(avg);
 		}
+	}
 
-		// final GroupedRandomSplits<String, FImage> splits = new
-		// GroupedRandomSplits<String, FImage>(data, 1, 1);
+	public static void classification() throws IOException {
+		final VFSGroupDataset<Record<MBFImage>> data = Caltech101.getData(ImageUtilities.MBFIMAGE_READER);
 
-		// for (final String key : data.keySet()) {
-		// DisplayUtilities.display(key,
-		// splits.getTestDataset().get(key).get(0),
-		// splits.getTrainingDataset().get(key).get(0));
-		// }
+		final GroupedRandomSplits<String, Record<MBFImage>> splits = new GroupedRandomSplits<String, Record<MBFImage>>(
+				data, 30, 10);
 
-		// for (final ValidationData<GroupedDataset<String, ListDataset<FImage>,
-		// FImage>> vd : splits.createIterable(5)) {
-		// DisplayUtilities.display(vd.getTrainingDataset().get("accordion").get(0));
-		// }
+		for (final ValidationData<GroupedDataset<String, ListDataset<Record<MBFImage>>, Record<MBFImage>>> vd : splits
+				.createIterable(1))
+		{
+			final KNNAnnotator<Record<MBFImage>, String, DoubleFV> knn = KNNAnnotator.create(
+					new FeatureExtractorImplementation(), DoubleFVComparison.EUCLIDEAN);
+			knn.train(vd.getTrainingDataset());
+
+			final ClassificationEvaluator<CMResult<String>, String, Record<MBFImage>> eval = new ClassificationEvaluator<CMResult<String>, String, Record<MBFImage>>(
+					knn, vd.getValidationDataset(), new CMAnalyser<Record<MBFImage>, String>(CMAnalyser.Strategy.SINGLE));
+
+			final Map<Record<MBFImage>, ClassificationResult<String>> guesses = eval.evaluate();
+			final CMResult<String> result = eval.analyse(guesses);
+
+			System.out.println(result.getDetailReport());
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		final VFSGroupDataset<Record<MBFImage>> data = Caltech101.getData(ImageUtilities.MBFIMAGE_READER);
+
+		final Record<MBFImage> r = data.getRandomInstance();
+
+		final MBFImage image = r.getImage();
+
+		if (r.getBounds() != null) {
+			image.drawShape(r.getContour(), 3, RGBColour.RED);
+			image.drawShape(r.getBounds(), 3, RGBColour.BLUE);
+
+			DisplayUtilities.display(image);
+		}
 	}
 }

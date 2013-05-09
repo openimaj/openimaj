@@ -75,8 +75,10 @@ public abstract class AbstractStream<T> implements Stream<T> {
 			if (!hasNext()) {
 				throw new NoSuchElementException("iteration has no more elements");
 			}
-			T toRet = obj;
+
+			final T toRet = obj;
 			obj = null;
+
 			return toRet;
 		}
 	}

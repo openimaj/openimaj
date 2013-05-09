@@ -85,7 +85,7 @@ public class MatchingUtilities {
 								(int)p.firstObject().getY(),
 								(int)p.secondObject().getX(),
 								(int)p.secondObject().getY(),
-								3,col);
+								1,col);
 			}
 		}
 
