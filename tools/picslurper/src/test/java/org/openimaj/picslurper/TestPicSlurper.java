@@ -15,7 +15,6 @@ import org.openimaj.web.scraping.images.CommonHTMLConsumers;
 import org.openimaj.web.scraping.images.FacebookConsumer;
 import org.openimaj.web.scraping.images.ImgurConsumer;
 import org.openimaj.web.scraping.images.InstagramConsumer;
-import org.openimaj.web.scraping.images.TmblrPhotoConsumer;
 import org.openimaj.web.scraping.images.TwipleConsumer;
 import org.openimaj.web.scraping.images.TwitPicConsumer;
 import org.openimaj.web.scraping.images.TwitterPhotoConsumer;
@@ -35,18 +34,6 @@ public class TestPicSlurper {
 	@Before
 	public void before() {
 		System.setProperty(PicSlurper.ALLOW_CONSOLE_LOGIN, Boolean.toString(false));
-
-		// remove the Tumblr consumer as it might require user input to get the
-		// token!!
-		TmblrPhotoConsumer con = null;
-		for (final SiteSpecificConsumer c : StatusConsumer.siteSpecific) {
-			if (c instanceof TmblrPhotoConsumer) {
-				con = (TmblrPhotoConsumer) c;
-			}
-		}
-
-		if (con != null)
-			StatusConsumer.siteSpecific.remove(con);
 	}
 
 	/**

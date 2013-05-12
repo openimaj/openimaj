@@ -35,7 +35,6 @@ import org.openimaj.web.scraping.images.FacebookConsumer;
 import org.openimaj.web.scraping.images.ImgurConsumer;
 import org.openimaj.web.scraping.images.InstagramConsumer;
 import org.openimaj.web.scraping.images.OwlyImageConsumer;
-import org.openimaj.web.scraping.images.TmblrPhotoConsumer;
 import org.openimaj.web.scraping.images.TwipleConsumer;
 import org.openimaj.web.scraping.images.TwitPicConsumer;
 import org.openimaj.web.scraping.images.TwitterPhotoConsumer;
@@ -69,7 +68,7 @@ public class StatusConsumer {
 	static {
 		siteSpecific.add(new InstagramConsumer());
 		siteSpecific.add(new TwitterPhotoConsumer());
-		siteSpecific.add(new TmblrPhotoConsumer());
+		// siteSpecific.add(new TmblrPhotoConsumer());
 		siteSpecific.add(new TwitPicConsumer());
 		siteSpecific.add(new ImgurConsumer());
 		siteSpecific.add(new FacebookConsumer());
