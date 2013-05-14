@@ -10,6 +10,10 @@ import java.util.Map.Entry;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
+/**
+ * @author Jonathan Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Duplaw (dpd@ecs.soton.ac.uk)
+ *
+ */
 public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map<String, Map<String, Double>>,Map<String,Double>>{
 	static class IncrementalBilinearSparseOnlineLearnerParams extends BilinearLearnerParameters{
 
@@ -52,12 +56,22 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 
 	@Override
 	public void process(Map<String, Map<String, Double>> x, Map<String, Double> y) {
-		updateUserWords(x);
-		updateValues(y);
+		updateUserValues(x,y);
 		Matrix yMat = constructYMatrix(y);
 		Matrix xMat = constructXMatrix(x);
 
 		this.bilinearLearner.process(xMat, yMat);
+	}
+
+	/**
+	 * Update the incremental learner and underlying weight matricies to reflect potentially novel
+	 * users, words and values to learn against
+	 * @param x
+	 * @param y
+	 */
+	public void updateUserValues(Map<String, Map<String, Double>> x,Map<String, Double> y) {
+		updateUserWords(x);
+		updateValues(y);
 	}
 
 	private void updateValues(Map<String, Double> y) {
@@ -139,7 +153,11 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		ret.setW(neww);
 		return ret;
 	}
-
+	
+	public BilinearSparseOnlineLearner getBilinearLearner() {
+		return this.bilinearLearner.clone();
+	}
+	
 	public Pair<Matrix> asMatrixPair(
 			IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> xy,
 			int nfeatures, int nusers, int ntasks) {
@@ -172,6 +190,16 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	public HashMap<String, Integer> getVocabulary() {
 		return vocabulary;
 	}
+
+	/**
+	 * @param in
+	 * @return
+	 */
+	public Pair<Matrix> asMatrixPair(IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> in) {
+		return this.asMatrixPair(in, this.vocabulary.size(), this.users.size(), this.values.size());
+	}
+
+	
 
 
 }

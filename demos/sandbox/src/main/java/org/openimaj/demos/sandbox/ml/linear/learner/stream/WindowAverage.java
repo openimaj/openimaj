@@ -7,6 +7,12 @@ import java.util.Map.Entry;
 
 import org.openimaj.util.function.Function;
 
+/**
+ * Given a window of key,value map instances, this function gets the average of the
+ * window
+ * @author Jonathan Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Duplaw (dpd@ecs.soton.ac.uk)
+ *
+ */
 public class WindowAverage implements Function<List<Map<String,Double>>,Map<String,Double>> {
 
 	@Override

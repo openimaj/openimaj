@@ -2,9 +2,12 @@ package org.openimaj.demos.sandbox.ml.linear.learner.stream;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Map;
 
 import org.openimaj.demos.twitter.TwitterStreamingDataset;
+import org.openimaj.ml.linear.evaluation.SumLossEvaluator;
+import org.openimaj.ml.linear.learner.BilinearLearnerParameters;
 import org.openimaj.tools.twitter.modes.filter.LanguageFilter;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;
@@ -15,6 +18,8 @@ import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
 import org.openimaj.util.function.ListFilter;
 import org.openimaj.util.function.ListFunction;
+import org.openimaj.util.function.Operation;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.Stream;
 
 import twitter4j.Status;
@@ -54,26 +59,18 @@ public class FinancialStreamLearningExperiment {
 		;
 
 
+		BilinearLearnerParameters params = new BilinearLearnerParameters();
 		// The combined stream
-		StreamCombiner.combine(yahooAveragePriceStream, twitterUserWordCountStream)
-//		.map(new IncrementalLearnerWorldSelectingEvaluator())
-		;
-//		{
-//
-//			@Override
-//			public void perform(IndependentPair<List<List<Double>>, List<USMFStatus>> pair) {
-//				List<List<Double>> yahoo = pair.firstObject();
-//				List<USMFStatus> twitter = pair.secondObject();
-//				System.out.println(String.format("I've seen: %d yahoo ticks and %d tweets",yahoo.size(),twitter.size()));
-//				System.out.format("Buffer dropped: %d seen %d\n", buffer.dropCount(),buffer.insertCount());
-//				for (USMFStatus tweet : twitter) {
-//					try {
-//						List<String> nostopwords = TwitterPreprocessingMode.results(tweet, stopwordMode);
-//					} catch (Exception e) {
-//					}
-//				}
-//			}
-//		});
+		StreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
+		.map(new IncrementalLearnerWorldSelectingEvaluator(new SumLossEvaluator(), new IncrementalLearnerFunction(params)))
+		.forEach(new Operation<IndependentPair<List<String>,Double>>() {
+			
+			@Override
+			public void perform(IndependentPair<List<String>, Double> object) {
+				System.out.println("Loss: " + object.secondObject());
+				System.out.println("Important words: " + object.firstObject());
+			}
+		});
 
 
 	}

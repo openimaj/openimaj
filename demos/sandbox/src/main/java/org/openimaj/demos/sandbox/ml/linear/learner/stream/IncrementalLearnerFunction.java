@@ -13,7 +13,12 @@ import org.openimaj.util.pair.IndependentPair;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class IncrementalLearnerFunction implements Function<IndependentPair<Map<String,Double>,Map<String,Map<String,Double>>>,IncrementalBilinearSparseOnlineLearner> {
+public class IncrementalLearnerFunction implements Function<
+		IndependentPair<
+			Map<String,Map<String,Double>>,	
+			Map<String,Double>
+		>,
+		IncrementalBilinearSparseOnlineLearner> {
 
 	final IncrementalBilinearSparseOnlineLearner learner;
 
@@ -42,20 +47,12 @@ public class IncrementalLearnerFunction implements Function<IndependentPair<Map<
 
 
 	@Override
-	public IncrementalBilinearSparseOnlineLearner apply(IndependentPair<Map<String, Double>, Map<String, Map<String, Double>>> in)
+	public IncrementalBilinearSparseOnlineLearner apply(IndependentPair<Map<String, Map<String, Double>>,Map<String, Double>> in)
 	{
-		learner.process(in.getSecondObject(), in.getFirstObject());
+		learner.process(in.getFirstObject(),in.getSecondObject());
 		System.out.printf("Learner has learnt %d words\n",learner.getVocabulary().size());
 		return this.learner;
 	}
 
 }
-//new Operation<IndependentPair<Map<String,Double>,Map<String,Map<String,Double>>>>() {
-//
-//	final IncrementalBilinearSparseOnlineLearner learner = new IncrementalBilinearSparseOnlineLearner();
-//	@Override
-//	public void perform(IndependentPair<Map<String, Double>, Map<String, Map<String, Double>>> financeTwitter) {
-//		learner.process(financeTwitter.getSecondObject(), financeTwitter.getFirstObject());
-//		System.out.printf("Learner has learnt %d words\n",learner.getVocabulary().size());
-//	}
-//}
+

@@ -1,5 +1,8 @@
 package org.openimaj.demos.sandbox.ml.linear.learner.stream;
 
+import gov.sandia.cognition.math.matrix.Matrix;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +10,7 @@ import org.openimaj.ml.linear.evaluation.BilinearEvaluator;
 import org.openimaj.ml.linear.learner.IncrementalBilinearSparseOnlineLearner;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 
 /**
  * Given a new state from which to train an {@link IncrementalBilinearSparseOnlineLearner},
@@ -20,27 +24,42 @@ import org.openimaj.util.pair.IndependentPair;
 public final class IncrementalLearnerWorldSelectingEvaluator
 		implements
 			Function<
-				IndependentPair<Map<String, Double>, Map<String, Map<String, Double>>>,
+				IndependentPair<Map<String, Map<String, Double>>,Map<String, Double>>,
 				IndependentPair<List<String>, Double>
 		>
 {
 
 	BilinearEvaluator eval;
 	private IncrementalLearnerFunction func;
-	private IncrementalBilinearSparseOnlineLearner oldLearner;
+	private IncrementalBilinearSparseOnlineLearner learner ;
 
 
+	/**
+	 * The evaluation to apply before learning, the function to feed examples for learning
+	 * @param eval
+	 * @param func
+	 */
 	public IncrementalLearnerWorldSelectingEvaluator(BilinearEvaluator eval, IncrementalLearnerFunction func) {
 		this.eval = eval;
 		this.func = func;
-		this.oldLearner = null;
+		this.learner = null;
 	}
 	@Override
-	public IndependentPair<List<String>, Double> apply(IndependentPair<Map<String, Double>, Map<String, Map<String, Double>>> in)
+	public IndependentPair<List<String>, Double> apply(IndependentPair<Map<String, Map<String, Double>>,Map<String, Double>> in)
 	{
-//		if(oldLearner!=null){
-//			this.oldLearner.asMatrixPair(xy, nfeatures, nusers, ntasks)
-//		}
-		return null;
+		double score = 0;
+		if(learner!=null){
+			learner.updateUserValues(in.firstObject(), in.secondObject());
+			eval.setLearner(this.learner.getBilinearLearner());
+			List<Pair<Matrix>> testList = new ArrayList<Pair<Matrix>>();
+			testList.add(this.learner.asMatrixPair(in));
+			score = eval.evaluate(testList);			
+		}
+		learner = func.apply(in);
+		
+		return IndependentPair.pair(importantWords(), score);
+	}
+	private List<String> importantWords() {
+		return new ArrayList<String>();
 	}
 }
