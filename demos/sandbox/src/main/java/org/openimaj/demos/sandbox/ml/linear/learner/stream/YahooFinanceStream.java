@@ -73,7 +73,7 @@ public class YahooFinanceStream extends AbstractStream<Map<String,Double>>{
 		CSVParser parser;
 		List<FeedItem> ret = new ArrayList<YahooFinanceStream.FeedItem>();
 		if(System.currentTimeMillis() - this.lastRead < ENFORCED_WAIT){
-			logger.info(String.format("Haven't waited %d, waiting %d, sending old results",ENFORCED_WAIT,System.currentTimeMillis() - this.lastRead));
+			logger.debug(String.format("Haven't waited %d, waiting %d, sending old results",ENFORCED_WAIT,System.currentTimeMillis() - this.lastRead));
 			try {
 				Thread.sleep(ENFORCED_WAIT - (System.currentTimeMillis() - this.lastRead));
 			} catch (InterruptedException e) {
@@ -91,15 +91,15 @@ public class YahooFinanceStream extends AbstractStream<Map<String,Double>>{
 				feedItem.value = Double.parseDouble(strings[2]);
 				ret.add(feedItem);
 			}
-			logger.info(String.format("Read succesfully!"));
+			logger.debug(String.format("Read succesfully!"));
 			this.lastRead = System.currentTimeMillis();
 		}
 		catch (ConnectTimeoutException e){
-			logger.info("Connection timeout, sending old results");
+			logger.debug("Connection timeout, sending old results");
 			return this.readItems();
 		}
 		catch (ReadTimeoutException e){
-			logger.info("Read timeout!, sending old results");
+			logger.debug("Read timeout!, sending old results");
 			return this.readItems();
 		}
 		catch (IOException e) {

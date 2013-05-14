@@ -56,7 +56,7 @@ import com.google.gson.Gson;
  *         (ss@ecs.soton.ac.uk), Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  *
  */
-public class USMFStatus extends GeneralJSON implements Cloneable {
+public class USMFStatus extends GeneralJSON implements Cloneable{
 	private static final Logger logger = Logger.getLogger(USMFStatus.class);
 	private transient Class<? extends GeneralJSON> generalJSONclass; // class of
 																		// the
