@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.audio.processor;
 
@@ -43,13 +43,13 @@ import org.openimaj.audio.SampleChunk;
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	
+ *
  */
 public abstract class AudioProcessor extends AudioStream
 {
 	/** The audio stream to process in a chain */
 	private AudioStream stream = null;
-	
+
 	/**
 	 * 	A default constructor for processing sample chunks or files
 	 * 	in an ad-hoc manner.
@@ -57,38 +57,38 @@ public abstract class AudioProcessor extends AudioStream
 	public AudioProcessor()
 	{
 	}
-	
+
 	/**
 	 * 	Construct a new processor based on the given stream. This
 	 * 	processor can then be used as a stream itself in a chain.
-	 * 
+	 *
 	 *	@param a The audio stream to process.
 	 */
-	public AudioProcessor( AudioStream a )
+	public AudioProcessor( final AudioStream a )
 	{
 		this.stream = a;
 		if( a != null )
 			this.format = a.getFormat().clone();
 	}
-	
+
 	/**
 	 * 	Function to process a whole audio stream. If the process returns
 	 * 	null, it will stop the processing of the audio stream. Note that the
 	 * 	output of the audio stream processing is not stored (it may be a live
-	 * 	stream and so would be too large to store), so the caller must interact 
+	 * 	stream and so would be too large to store), so the caller must interact
 	 * 	with the audio processor themselves to retrieve any useful information
 	 * 	from the processing.
-	 * 
+	 *
 	 *  @param a The audio stream to process.
-	 * 	@throws Exception If the processing failed 
+	 * 	@throws Exception If the processing failed
 	 */
-	public void process( AudioStream a ) throws Exception
+	public void process( final AudioStream a ) throws Exception
 	{
 		this.stream = a;
-		while( nextSampleChunk() != null );
-		processingComplete( a );
+		while( this.nextSampleChunk() != null );
+		this.processingComplete( a );
 	}
-	
+
 	/**
 	 * 	Function that takes a sample chunk and processes the chunk.
 	 * 	It should also return a sample chunk containing the processed data.
@@ -99,10 +99,10 @@ public abstract class AudioProcessor extends AudioStream
 	 * 	rest of the audio stream is not required to be processed by this
 	 * 	processing function. Whether the rest of the sample chunks are copied or
 	 * 	ignored is up to the caller.
-	 * 
+	 *
 	 *	@param sample The sample chunk to process.
 	 *	@return A sample chunk containing processed data.
-	 * 	@throws Exception If the processing could not take place 
+	 * 	@throws Exception If the processing could not take place
 	 */
 	public abstract SampleChunk process( SampleChunk sample ) throws Exception;
 
@@ -110,14 +110,14 @@ public abstract class AudioProcessor extends AudioStream
 	 * 	Called when the processing of a given audio stream
 	 * 	has been completed. This can be used to alter the audio
 	 * 	stream's properties.
-	 * 
+	 *
 	 *	@param a The audio stream that has finished processing.
 	 */
-	public void processingComplete( AudioStream a )
+	public void processingComplete( final AudioStream a )
 	{
 		// Default is no implementation. Override this if necessary.
 	}
-	
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#nextSampleChunk()
@@ -127,10 +127,10 @@ public abstract class AudioProcessor extends AudioStream
 	{
 		try
 		{
-			SampleChunk s = this.stream.nextSampleChunk();
+			final SampleChunk s = this.stream.nextSampleChunk();
 			return (s != null ? this.process( s ) : null );
 		}
-		catch( Exception e )
+		catch( final Exception e )
 		{
 			e.printStackTrace();
 			return null;
@@ -140,14 +140,25 @@ public abstract class AudioProcessor extends AudioStream
 	/**
 	 * 	Get the underlying stream. Will return null for non-chained
 	 * 	audio processors.
-	 * 	
+	 *
 	 * 	@return The underlying stream on chained processors.
 	 */
 	public AudioStream getUnderlyingStream()
 	{
 		return this.stream;
 	}
-	
+
+	/**
+	 * 	Sets the underlying stream, allowing it to be changed.
+	 *	@param stream The stream
+	 */
+	public void setUnderlyingStream( final AudioStream stream )
+	{
+		this.stream = stream;
+		if( stream != null )
+			this.format = stream.getFormat().clone();
+	}
+
 	/**
 	 *	{@inheritDoc}
 	 *
