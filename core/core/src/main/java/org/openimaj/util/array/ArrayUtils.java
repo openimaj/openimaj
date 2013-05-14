@@ -1775,6 +1775,22 @@ public class ArrayUtils {
 	}
 
 	/**
+	 * 	Fill the array with the value from the start index for the length given
+	 *
+	 *	@param a1 The array to fill
+	 *	@param i The value to fill with
+	 *	@param s The start index
+	 *	@param l The length of the fill
+	 *	@return The array
+	 */
+	public static double[] fill( final double[] a1, final double i, final int s, final int l )
+	{
+		for( int j = s; j < s+l; j++ )
+			a1[j] = i;
+		return a1;
+	}
+
+	/**
 	 * 	Fill the array with the value
 	 *	@param a1 The array
 	 *	@param i The value
