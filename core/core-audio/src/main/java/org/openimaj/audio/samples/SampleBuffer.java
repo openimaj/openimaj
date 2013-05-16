@@ -34,6 +34,7 @@ package org.openimaj.audio.samples;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
+import org.openimaj.audio.timecode.AudioTimecode;
 
 /**
  * 	This class provides a consistent API for access samples of different
@@ -138,4 +139,11 @@ public interface SampleBuffer extends Iterable<Float>
 	 *  @return The value unscaled
 	 */
 	public float getUnscaled( int index );
+
+	/**
+	 * 	Returns the timecode of the start of this sample buffer. May return null if
+	 * 	the timecode is unknown or has no meaning in this context.
+	 *	@return The timecode a the start of this buffer.
+	 */
+	public AudioTimecode getStartTimecode();
 }
