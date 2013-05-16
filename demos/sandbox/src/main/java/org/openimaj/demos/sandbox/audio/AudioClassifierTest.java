@@ -14,13 +14,14 @@ import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
-import org.openimaj.demos.classification.GroupedRandomSplits;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
+import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAggregator;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
 import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.experiment.validation.cross.StratifiedGroupedKFold;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.annotation.AnnotatedObject;
@@ -86,15 +87,18 @@ public class AudioClassifierTest
 	{
 		// Flatten the dataset, and create a random group split operation we can use
 		// to get the validation/training data.
-		final GroupedRandomSplits<String, SampleBuffer> splits =
-				new GroupedRandomSplits<String,SampleBuffer>(
-						DatasetAdaptors.flattenListGroupedDataset( data ),
-						data.numInstances()/2, data.numInstances()/2 );
+		final StratifiedGroupedKFold<String, SampleBuffer> splits =
+				new StratifiedGroupedKFold<String, SampleBuffer>( 5 );
+//		final GroupedRandomSplits<String, SampleBuffer> splits =
+//				new GroupedRandomSplits<String,SampleBuffer>(
+//						DatasetAdaptors.flattenListGroupedDataset( data ),
+//						data.numInstances()/2, data.numInstances()/2 );
+
+		final CMAggregator<String> cma = new CMAggregator<String>();
 
 		// Loop over the validation data.
-		final int nFolds = 1;
 		for( final ValidationData<GroupedDataset<String, ListDataset<SampleBuffer>, SampleBuffer>> vd :
-				splits.createIterable( nFolds ) )
+				splits.createIterable( DatasetAdaptors.flattenListGroupedDataset( data ) ) )
 		{
 			// For this validation, create the annotator with the feature extractor and train it.
 			final SVMAnnotator<SampleBuffer,String> ann = new SVMAnnotator<SampleBuffer,String>(
@@ -110,9 +114,12 @@ public class AudioClassifierTest
 
 			final Map<SampleBuffer, ClassificationResult<String>> guesses = eval.evaluate();
 			final CMResult<String> result = eval.analyse(guesses);
+			cma.add( result );
 
 			System.out.println( result.getDetailReport() );
 		}
+
+		System.out.println( cma.getAggregatedResult().getDetailReport() );
 	}
 
 	/**
