@@ -134,7 +134,9 @@ public class SVMAnnotator<OBJECT,ANNOTATION> extends BatchAnnotator<OBJECT,ANNOT
 
 		// If the data didn't contain 2 classes (i.e. positive and negative) we cannot go on
 		if( this.classMap.keySet().size() != 2 )
-			throw new IllegalArgumentException( "Data did not contain exactly 2 classes.");
+		{
+			throw new IllegalArgumentException( "Data did not contain exactly 2 classes. It had "+this.classMap.keySet().size()+". They were "+this.classMap );
+		}
 
 		return true;
 	}
