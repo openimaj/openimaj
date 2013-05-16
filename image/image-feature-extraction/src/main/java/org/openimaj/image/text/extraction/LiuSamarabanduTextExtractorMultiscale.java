@@ -192,9 +192,6 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		// Store the regions
 		this.extractedRegions = this.basicTextExtractor.getTextRegions();
 
-		if( LiuSamarabanduTextExtractorMultiscale.DEBUG )
-			this.forceWait();
-
 		// The output of the processor is the feature map
 		image.internalAssign( fmap );
 	}
