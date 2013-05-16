@@ -77,7 +77,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 	)
 public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	/** The basic text extractor implementation */
 	private final LiuSamarabanduTextExtractorBasic basicTextExtractor =
@@ -85,6 +85,9 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 
 	/** The extracted regions from the processing */
 	private Map<Rectangle, FImage> extractedRegions;
+
+	/** Whether to double the size of the initial image in the pyramid */
+	private boolean doubleSizePyramid = true;
 
 	/**
 	 *	This is the main processor for this text extractor. For each of the
@@ -165,7 +168,7 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		gpo.setScales( 1 );
 		gpo.setExtraScaleSteps( 1 );
 		gpo.setPyramidProcessor( ped );
-		gpo.setDoubleInitialImage( false );
+		gpo.setDoubleInitialImage( this.doubleSizePyramid );
 
 		// Create and process the pyramid
 		final GaussianPyramid<FImage> gp = new GaussianPyramid<FImage>( gpo );
@@ -177,7 +180,11 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		FImage msFMap = ped.getFeatureMap();
 
 		// Single scale feature map
-		final FImage fmap = this.basicTextExtractor.textRegionDetection( image );
+		FImage fmap = this.basicTextExtractor.textRegionDetection( image );
+
+		// Need to make it match the multiscale feature map
+		if( this.doubleSizePyramid )
+			fmap = ResizeProcessor.doubleSize( fmap );
 
 		// Combine the two.
 		msFMap = fmap.add( msFMap );
@@ -192,6 +199,11 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		// Store the regions
 		this.extractedRegions = this.basicTextExtractor.getTextRegions();
 
+		// If we doubled the feature map, we'll have to half the size of the bounding boxes.
+		if( this.doubleSizePyramid )
+			for( final Rectangle r : this.extractedRegions.keySet() )
+				r.scale( 0.5f );
+
 		// The output of the processor is the feature map
 		image.internalAssign( fmap );
 	}
@@ -204,5 +216,23 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 	public Map<Rectangle, FImage> getTextRegions()
 	{
 		return this.extractedRegions;
+	}
+
+	/**
+	 * 	Whether the initial image in the pyramid is being double sized.
+	 *	@return TRUE if the initial image is double sized.
+	 */
+	public boolean isDoubleSizePyramid()
+	{
+		return this.doubleSizePyramid;
+	}
+
+	/**
+	 * 	Set whether to double the size of the pyramid
+	 *	@param doubleSizePyramid TRUE to double the size of the initial image.
+	 */
+	public void setDoubleSizePyramid( final boolean doubleSizePyramid )
+	{
+		this.doubleSizePyramid = doubleSizePyramid;
 	}
 }
