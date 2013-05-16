@@ -29,14 +29,23 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	private BilinearSparseOnlineLearner bilinearLearner;
 	private BilinearLearnerParameters params;
 
+	/**
+	 * Instantiates with the default params
+	 */
 	public IncrementalBilinearSparseOnlineLearner() {
 		init(new IncrementalBilinearSparseOnlineLearnerParams());
 	}
 
+	/**
+	 * @param params
+	 */
 	public IncrementalBilinearSparseOnlineLearner(BilinearLearnerParameters params){
 		init(params);
 	}
 
+	/**
+	 *
+	 */
 	public void reinitParams() {
 		init(this.params);
 
@@ -50,6 +59,9 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		bilinearLearner = new BilinearSparseOnlineLearner(params);
 	}
 
+	/**
+	 * @return the current parameters
+	 */
 	public BilinearLearnerParameters getParams(){
 		return this.params;
 	}
@@ -138,6 +150,14 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		return newWords;
 	}
 
+	/**
+	 * Construct a learner with the desired number of users and words.
+	 * If users and words beyond those in the current model are asked for their parameters
+	 * are set to 0
+	 * @param nusers
+	 * @param nwords
+	 * @return a new {@link BilinearSparseOnlineLearner}
+	 */
 	public BilinearSparseOnlineLearner getBilinearLearner(int nusers, int nwords) {
 		BilinearSparseOnlineLearner ret = this.bilinearLearner.clone();
 
@@ -153,11 +173,25 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 		ret.setW(neww);
 		return ret;
 	}
-	
+
+	/**
+	 * @return the underlying {@link BilinearSparseOnlineLearner} with the current number of users and words
+	 */
 	public BilinearSparseOnlineLearner getBilinearLearner() {
 		return this.bilinearLearner.clone();
 	}
-	
+
+	/**
+	 * Given a sparse pair of user/words and value construct a pair of matricies
+	 * using the current mappings of words and users to matrix rows.
+	 *
+	 * Note: if users or words which have not yet be
+	 * @param xy
+	 * @param nfeatures the number of words total in the returned X matrix
+	 * @param nusers the number of users total in the returned X matrix
+	 * @param ntasks the number of tasks in the returned Y matrix
+	 * @return the matrix pair representing the X and Y input
+	 */
 	public Pair<Matrix> asMatrixPair(
 			IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> xy,
 			int nfeatures, int nusers, int ntasks) {
@@ -193,13 +227,13 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 
 	/**
 	 * @param in
-	 * @return
+	 * @return calls {@link #asMatrixPair(IndependentPair, int, int, int)} with the current number of words, users and value
 	 */
 	public Pair<Matrix> asMatrixPair(IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> in) {
 		return this.asMatrixPair(in, this.vocabulary.size(), this.users.size(), this.values.size());
 	}
 
-	
+
 
 
 }

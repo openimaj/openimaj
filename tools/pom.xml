@@ -30,5 +30,6 @@
     <module>RedditHarvester</module>
     <module>picslurper</module>
     <module>ReferencesTool</module>
+    <module>openimaj-processing</module>
   </modules>
 </project>

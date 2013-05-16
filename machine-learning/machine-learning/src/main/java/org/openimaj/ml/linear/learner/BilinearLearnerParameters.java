@@ -9,13 +9,20 @@ import java.util.Random;
 import java.util.Set;
 
 import org.openimaj.io.WriteableASCII;
+import org.openimaj.ml.linear.learner.init.CurrentUMean;
+import org.openimaj.ml.linear.learner.init.CurrentWMean;
 import org.openimaj.ml.linear.learner.init.SparseRandomInitStrategy;
 import org.openimaj.ml.linear.learner.init.SparseZerosInitStrategy;
 import org.openimaj.ml.linear.learner.loss.SquareMissingLossFunction;
 import org.openimaj.ml.linear.learner.regul.L1L2Regulariser;
 
+/**
+ * Parameters used to control a {@link BilinearSparseOnlineLearner}
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class BilinearLearnerParameters extends LearningParameters implements WriteableASCII{
-	
+
 	/**
 	 * whether a bias component is added to w and u. Default is false.
 	 */
@@ -32,6 +39,16 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	 * The initialisation strategy for U. Defaults to a {@link SparseRandomInitStrategy} with sparcity set to 0.5
 	 */
 	public static final String UINITSTRAT = "uinitstrat";
+	/**
+	 * The initialisation strategy for W when it is expanded.
+	 * Defaults to the context aware {@link CurrentWMean}
+	 */
+	public static final String EXPANDEDWINITSTRAT = "expandedwinitstrat";
+	/**
+	 * The initialisation strategy for U when it is expanded.
+	 * Defaults to the context aware {@link CurrentUMean}
+	 */
+	public static final String EXPANDEDUINITSTRAT = "expandeduinitstrat";
 	/**
 	 * The initialisation strategy for BIAS. Defaults to a {@link SparseZerosInitStrategy}
 	 */
@@ -77,7 +94,7 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	 * The regularisation function, defaults to {@link L1L2Regulariser}
 	 */
 	public static final String REGUL = "regul";
-	
+
 	/**
 	 * The steps at which point the eta parameter is reduced, defaults to 3
 	 */
@@ -91,10 +108,13 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	 */
 	public static final String DAMPENING = "dampening";
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -2059819246888686435L;
-	
+
+	/**
+	 * sets up the defaults
+	 */
 	public BilinearLearnerParameters() {
 		this.defaults.put(REGUL, new L1L2Regulariser());
 		this.defaults.put(LOSS, new SquareMissingLossFunction());
@@ -108,6 +128,8 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 		this.defaults.put(SEED, -1);
 		this.defaults.put(WINITSTRAT, new SparseRandomInitStrategy(0,1,0.5,new Random()));
 		this.defaults.put(UINITSTRAT, new SparseRandomInitStrategy(0,1,0.5,new Random()));
+		this.defaults.put(EXPANDEDWINITSTRAT, new CurrentWMean());
+		this.defaults.put(EXPANDEDUINITSTRAT, new CurrentUMean());
 		this.defaults.put(BIAS, false);
 		this.defaults.put(BIASINITSTRAT, new SparseZerosInitStrategy());
 		this.defaults.put(ETA0_BIAS, 0.05);
@@ -129,5 +151,5 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	public String asciiHeader() {
 		return "Bilinear Learner Params";
 	}
-	
+
 }

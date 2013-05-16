@@ -21,6 +21,7 @@ import org.openimaj.util.concurrent.BlockingDroppingQueue;
  */
 public abstract class BlockingDroppingBufferedStream<T> extends AbstractStream<T> {
 	BlockingDroppingQueue<T> buffer;
+	private boolean isClosed = false;
 
 	protected BlockingDroppingBufferedStream(BlockingDroppingQueue<T> buffer) {
 		this.buffer = buffer;
@@ -32,7 +33,14 @@ public abstract class BlockingDroppingBufferedStream<T> extends AbstractStream<T
 
 	@Override
 	public boolean hasNext() {
-		return true;
+		return !isClosed;
+	}
+
+	/**
+	 * Close the stream (make hasNext return false)
+	 */
+	public void close(){
+		this.isClosed = true;
 	}
 
 	@Override

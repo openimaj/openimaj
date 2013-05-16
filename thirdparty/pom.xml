@@ -24,5 +24,6 @@
     <module>ImprovedArgs4J</module>
     <module>IREval</module>
     <module>FaceTracker</module>
+    <module>processing-core</module>
   </modules>
 </project>
