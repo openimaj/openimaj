@@ -31,13 +31,17 @@ package org.openimaj.experiment.dataset.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.openimaj.data.dataset.Dataset;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
 import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.MapBackedDataset;
 
 /**
  * Helper methods to provide different types of view on a dataset.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class DatasetAdaptors {
@@ -46,7 +50,7 @@ public class DatasetAdaptors {
 	 * {@link ListDataset} it is returned, otherwise this method creates a new
 	 * {@link List} containing all the instances in the dataset. The list is
 	 * populated by iterating through the dataset.
-	 * 
+	 *
 	 * @param <INSTANCE>
 	 *            The type of instances in the dataset
 	 * @param dataset
@@ -63,5 +67,125 @@ public class DatasetAdaptors {
 			list.add(instance);
 
 		return list;
+	}
+
+	/**
+	 * 	if you have a grouped dataset where the groups contains lists of feature objects
+	 * 	(i.e. GroupedDataset<KEY,ListDataset<List<INSTANCE>>,INSTANCE>) then this will flatten
+	 * 	those internal list, so that all the instances from those lists are directly associated
+	 * 	with the key.  This type of thing might occur if your dataset element reader can extract
+	 * 	multiple media parts from a single dataset item, that will all end up with the same key.
+	 *
+	 *	@param dataset The dataset
+	 *	@return The new dataset
+	 */
+	public static <ANN,INSTANCE> GroupedDataset<ANN,ListDataset<INSTANCE>,INSTANCE>
+		flattenListGroupedDataset(
+				final GroupedDataset<ANN,? extends ListDataset<List<INSTANCE>>, ? extends List<INSTANCE>> dataset )
+	{
+		// Create a grouped dataset without the lists
+		final MapBackedDataset<ANN, ListDataset<INSTANCE>, INSTANCE> g =
+				new MapBackedDataset<ANN, ListDataset<INSTANCE>, INSTANCE>();
+
+		// Go through each of the groups...
+		for( final ANN a : dataset.getGroups() )
+		{
+			// Get the group
+			final ListDataset<? extends List<INSTANCE>> l = dataset.getInstances( a );
+
+			// Add each of the instances in that dataset to a new list dataset
+			final ListBackedDataset<INSTANCE> newListDataset = new ListBackedDataset<INSTANCE>();
+			for( final List<INSTANCE> le : l )
+				for( final INSTANCE ll : le )
+					newListDataset.add( ll );
+
+			// Put that list dataset straight into the new grouped dataset.
+			g.add( a, newListDataset );
+		}
+
+		return g;
+	}
+
+	/**
+	 * 	Takes a grouped dataset and returns a new dataset that contains only those groups specified. If
+	 * 	the given groups do not exist in the provided dataset, then they will be ignored.
+	 *
+	 *	@param data The dataset to take the groups from
+	 * 	@param groups The groups to take
+	 *	@return the new dataset containing only those groups.
+	 */
+	public static <ANN,DATASET extends Dataset<INSTANCE>,INSTANCE> GroupedDataset<ANN,DATASET,INSTANCE>
+		getGroupedDatasetSubset( final GroupedDataset<ANN,DATASET,INSTANCE> data, final ANN ... groups )
+	{
+		// New dataset
+		final MapBackedDataset<ANN,DATASET,INSTANCE> newDataset = new MapBackedDataset<ANN, DATASET, INSTANCE>();
+
+		// Loop through each of the groups specified...
+		for( final ANN group: groups )
+		{
+			// Copy the dataset into the new dataset (if it's not null)
+			final DATASET ds = data.getInstances( group );
+			if( ds != null )
+				newDataset.put( group, ds );
+		}
+
+		return newDataset;
+	}
+
+	/**
+	 * 	Takes a grouped dataset and returns a new dataset with the groups re-shuffled as specified
+	 * 	in the regrouping criteria.
+	 *
+	 * 	The regrouping criteria is a map from new group name to old group name. Instances in the
+	 * 	old group names will be mapped to the new group names.
+	 *
+	 * 	Where many old groups map to a single new group, the groups will be merged.
+	 *
+	 * 	For example:
+	 *
+	 * 	<pre><code>
+	 *		old == GroupedDataset: {G1=[1,2,3],G2=[4,5,6],G3=[7,8,9]}
+	 *
+	 * 		new = getGroupedDatasetSubset( old, {A->[G1,G3],B->[G2]} )
+	 *
+	 * 		new == GroupedDataset: {A=[1,2,3,7,8,9],B=[4,5,6]}
+	 * 	</code></pre>
+	 *
+	 * 	If the given groups do not exist in the provided dataset, then they will be ignored.
+	 *
+	 *	@param data The dataset to take the groups from
+	 * 	@param regroupCriteria The regrouping criteria
+	 *	@return the new dataset containing the new regrouping.
+	 */
+	public static <ANN,DATASET extends ListDataset<INSTANCE>,INSTANCE>
+		GroupedDataset<ANN,ListBackedDataset<INSTANCE>,INSTANCE>
+			getRegroupedDataset( final GroupedDataset<ANN,DATASET,INSTANCE> data, final Map<ANN,ANN[]> regroupCriteria )
+	{
+		// New dataset
+		final MapBackedDataset<ANN,ListBackedDataset<INSTANCE>,INSTANCE> newDataset =
+				new MapBackedDataset<ANN, ListBackedDataset<INSTANCE>, INSTANCE>();
+
+		// Loop through each of the new groups specified...
+		for( final ANN newGroup: regroupCriteria.keySet() )
+		{
+			for( final ANN oldGroup : regroupCriteria.get( newGroup ) )
+			{
+				// Copy the dataset into the new dataset (if it's not null)
+				final DATASET ds = data.getInstances( oldGroup );
+				if( ds != null )
+				{
+					// Create a new list backed dataset (which we know we can write to)...
+					final ListBackedDataset<INSTANCE> lbd = new ListBackedDataset<INSTANCE>();
+					lbd.addAll( ds );
+
+					// We merge the groups if there's already one in our new dataset
+					if( newDataset.get(newGroup) != null )
+							newDataset.get( newGroup ).addAll( lbd );
+					else	newDataset.put( newGroup, lbd );
+				}
+			}
+		}
+
+		return newDataset;
 	}
 }
