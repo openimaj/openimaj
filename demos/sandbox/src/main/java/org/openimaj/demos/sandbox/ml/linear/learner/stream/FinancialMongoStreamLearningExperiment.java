@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 
 import com.mongodb.DBObject;
 import com.mongodb.ServerAddress;
@@ -88,20 +90,50 @@ public class FinancialMongoStreamLearningExperiment {
 						new WindowAverage()
 				)
 		)
+		.transform(new SequentialStreamAggregator<
+				IndependentPair<Map<String,Map<String,Double>>,
+				Map<String,Double>>>
+		(new Comparator<IndependentPair<Map<String,Map<String,Double>>,Map<String,Double>>>() {
+
+			@Override
+			public int compare(
+					IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> o1,
+					IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> o2)
+			{
+
+				return 0;
+			}
+		}) {
+
+			@Override
+			public IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> combine(
+					IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> current,
+					IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> next)
+			{
+				// TODO Auto-generated method stub
+				return null;
+			}
+		})
 		.map(
 				new IncrementalLearnerWorldSelectingEvaluator(
 					new SumLossEvaluator(),
 					new IncrementalLearnerFunction(params)
 				)
 		)
-		.forEach(new Operation<IndependentPair<Map<String,SortedImportantWords>,Double>>() {
+		.forEach(new Operation<ModelStats>() {
 
 			@Override
-			public void perform(IndependentPair<Map<String,SortedImportantWords>, Double> object) {
-				System.out.println("Loss: " + object.secondObject());
+			public void perform(ModelStats object) {
+				System.out.println("Loss: " + object.score);
 				System.out.println("Important words: " );
-				for (String task: object.firstObject().keySet()) {
-					System.out.printf("... %s %s\n",task,object.firstObject().get(task));
+				for (String task: object.importantWords.keySet()) {
+					Pair<Double> minmax = object.taskMinMax.get(task);
+					System.out.printf("... %s (%1.4f->%1.4f) %s\n",
+							task,
+							minmax.firstObject(),
+							minmax.secondObject(),
+							object.importantWords.get(task)
+					);
 				}
 			}
 		});

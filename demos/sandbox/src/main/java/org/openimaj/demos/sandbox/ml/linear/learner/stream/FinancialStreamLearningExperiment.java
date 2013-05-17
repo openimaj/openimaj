@@ -21,7 +21,7 @@ import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
 import org.openimaj.util.function.ListFilter;
 import org.openimaj.util.function.ListFunction;
 import org.openimaj.util.function.Operation;
-import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 import org.openimaj.util.stream.Stream;
 
 import twitter4j.Status;
@@ -76,14 +76,20 @@ public class FinancialStreamLearningExperiment {
 		// The combined stream
 		StreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
 		.map(new IncrementalLearnerWorldSelectingEvaluator(new SumLossEvaluator(), new IncrementalLearnerFunction(params)))
-		.forEach(new Operation<IndependentPair<Map<String,SortedImportantWords>,Double>>() {
+		.forEach(new Operation<ModelStats>() {
 
 			@Override
-			public void perform(IndependentPair<Map<String,SortedImportantWords>, Double> object) {
-				System.out.println("Loss: " + object.secondObject());
+			public void perform(ModelStats object) {
+				System.out.println("Loss: " + object.score);
 				System.out.println("Important words: " );
-				for (String task: object.firstObject().keySet()) {
-					System.out.printf("... %s %s\n",task,object.firstObject().get(task));
+				for (String task: object.importantWords.keySet()) {
+					Pair<Double> minmax = object.taskMinMax.get(task);
+					System.out.printf("... %s (%1.4f->%1.4f) %s\n",
+							task,
+							minmax.firstObject(),
+							minmax.secondObject(),
+							object.importantWords.get(task)
+					);
 				}
 			}
 		});
