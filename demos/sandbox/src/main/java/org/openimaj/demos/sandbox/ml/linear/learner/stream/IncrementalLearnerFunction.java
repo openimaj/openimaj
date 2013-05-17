@@ -15,7 +15,7 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public class IncrementalLearnerFunction implements Function<
 		IndependentPair<
-			Map<String,Map<String,Double>>,	
+			Map<String,Map<String,Double>>,
 			Map<String,Double>
 		>,
 		IncrementalBilinearSparseOnlineLearner> {
@@ -51,6 +51,7 @@ public class IncrementalLearnerFunction implements Function<
 	{
 		learner.process(in.getFirstObject(),in.getSecondObject());
 		System.out.printf("Learner has learnt %d words\n",learner.getVocabulary().size());
+		System.out.printf("Learner has learnt %d users\n",learner.getUsers().size());
 		return this.learner;
 	}
 

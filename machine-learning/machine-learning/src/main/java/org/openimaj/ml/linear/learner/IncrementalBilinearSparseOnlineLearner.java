@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 /**
  * @author Jonathan Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Duplaw (dpd@ecs.soton.ac.uk)
  *
@@ -23,9 +26,9 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	private static final long serialVersionUID = -1847045895118918210L;
 
 	}
-	private HashMap<String, Integer> vocabulary;
-	private HashMap<String, Integer> users;
-	private HashMap<String, Integer> values;
+	private BiMap<String, Integer> vocabulary;
+	private BiMap<String, Integer> users;
+	private BiMap<String, Integer> values;
 	private BilinearSparseOnlineLearner bilinearLearner;
 	private BilinearLearnerParameters params;
 
@@ -52,9 +55,9 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	}
 
 	private void init(BilinearLearnerParameters params) {
-		vocabulary = new HashMap<String,Integer>();
-		users = new HashMap<String, Integer>();
-		values = new HashMap<String, Integer>();
+		vocabulary = HashBiMap.create();
+		users = HashBiMap.create();
+		values = HashBiMap.create();
 		this.params = params;
 		bilinearLearner = new BilinearSparseOnlineLearner(params);
 	}
@@ -221,7 +224,7 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	/**
 	 * @return the vocabulary
 	 */
-	public HashMap<String, Integer> getVocabulary() {
+	public BiMap<String, Integer> getVocabulary() {
 		return vocabulary;
 	}
 
@@ -231,6 +234,17 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	 */
 	public Pair<Matrix> asMatrixPair(IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> in) {
 		return this.asMatrixPair(in, this.vocabulary.size(), this.users.size(), this.values.size());
+	}
+
+	/**
+	 * @return the current map of dependant values to indexes
+	 */
+	public BiMap<String, Integer> getDependantValues() {
+		return this.values;
+	}
+
+	public BiMap<String,Integer> getUsers() {
+		return this.users;
 	}
 
 

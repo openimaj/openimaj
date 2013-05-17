@@ -7,7 +7,9 @@ import java.util.Map.Entry;
 
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.USMFStatus;
+import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.function.Function;
+import org.openimaj.util.function.Predicate;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -16,9 +18,29 @@ import org.openimaj.util.function.Function;
 public class USMFStatusUserWordScore implements Function<List<USMFStatus>,Map<String,Map<String,Double>>> {
 
 	private TwitterPreprocessingMode<List<String>> mode;
+	private Predicate<String> junkWords;
 
+	/**
+	 * @param mode the mode from which to grab words
+	 */
 	public USMFStatusUserWordScore(TwitterPreprocessingMode<List<String>> mode) {
 		this.mode = mode;
+		this.junkWords = new Predicate<String>() {
+
+			@Override
+			public boolean test(String object) {
+				String lowerCase = object.toLowerCase();
+				if(
+					lowerCase.length()<=2 ||
+					lowerCase.contains("http") ||
+					lowerCase.startsWith("@") ||
+					lowerCase.startsWith("#") ||
+					lowerCase.startsWith("$")
+
+				)return false;
+				return true;
+			}
+		};
 	}
 
 	@Override
@@ -31,6 +53,7 @@ public class USMFStatusUserWordScore implements Function<List<USMFStatus>,Map<St
 
 			try {
 				List<String> words = TwitterPreprocessingMode.results(usmfStatus, mode);
+				words = FilterUtils.filter(words, junkWords);
 				userTotals.put(userName, userTotals.get(userName) + words.size());
 				for (String word : words) {
 					Double currentWordCount = userWordCounts.get(word);

@@ -1,0 +1,3 @@
+# only export the jar file for applets..
+# application needs everything
+application=sonia.jar,JSynClasses.jar,JSynV142.dll,libJSynV142.jnilib

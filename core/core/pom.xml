@@ -34,6 +34,11 @@
       <version>3.0.2</version>
     </dependency>
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>14.0.1</version>
+    </dependency>
+    <dependency>
       <groupId>colt</groupId>
       <artifactId>colt</artifactId>
       <version>1.2.0</version>

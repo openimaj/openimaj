@@ -2,7 +2,6 @@ package org.openimaj.demos.sandbox.ml.linear.learner.stream;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
 import java.util.Map;
 
 import org.openimaj.demos.twitter.TwitterStreamingDataset;
@@ -77,12 +76,15 @@ public class FinancialStreamLearningExperiment {
 		// The combined stream
 		StreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
 		.map(new IncrementalLearnerWorldSelectingEvaluator(new SumLossEvaluator(), new IncrementalLearnerFunction(params)))
-		.forEach(new Operation<IndependentPair<List<String>,Double>>() {
-			
+		.forEach(new Operation<IndependentPair<Map<String,SortedImportantWords>,Double>>() {
+
 			@Override
-			public void perform(IndependentPair<List<String>, Double> object) {
+			public void perform(IndependentPair<Map<String,SortedImportantWords>, Double> object) {
 				System.out.println("Loss: " + object.secondObject());
-				System.out.println("Important words: " + object.firstObject());
+				System.out.println("Important words: " );
+				for (String task: object.firstObject().keySet()) {
+					System.out.printf("... %s %s\n",task,object.firstObject().get(task));
+				}
 			}
 		});
 

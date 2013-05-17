@@ -94,12 +94,15 @@ public class FinancialMongoStreamLearningExperiment {
 					new IncrementalLearnerFunction(params)
 				)
 		)
-		.forEach(new Operation<IndependentPair<List<String>,Double>>() {
+		.forEach(new Operation<IndependentPair<Map<String,SortedImportantWords>,Double>>() {
 
 			@Override
-			public void perform(IndependentPair<List<String>, Double> object) {
+			public void perform(IndependentPair<Map<String,SortedImportantWords>, Double> object) {
 				System.out.println("Loss: " + object.secondObject());
-				System.out.println("Important words: " + object.firstObject());
+				System.out.println("Important words: " );
+				for (String task: object.firstObject().keySet()) {
+					System.out.printf("... %s %s\n",task,object.firstObject().get(task));
+				}
 			}
 		});
 
