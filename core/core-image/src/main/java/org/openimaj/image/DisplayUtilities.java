@@ -1068,8 +1068,8 @@ public class DisplayUtilities
 				{
 					// If we're outside of the original image's coordinates,
 					// we don't need to do anything else..
-					if (this.pixelX < this.originalImage.getWidth() || this.pixelX >= 0 ||
-							this.pixelY < this.originalImage.getHeight() || this.pixelY >= 0)
+					if (this.pixelX >= this.originalImage.getWidth() || this.pixelX < 0 ||
+							this.pixelY >= this.originalImage.getHeight() || this.pixelY < 0)
 						return;
 
 					// If we have the original image we get each of the bands
