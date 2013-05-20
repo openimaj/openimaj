@@ -47,10 +47,14 @@ public class FinancialMongoStreamLearningExperiment {
 		FirstValueInitStrat biasInitStrat = new FirstValueInitStrat();
 		params.put(BilinearLearnerParameters.BIASINITSTRAT, biasInitStrat);
 
+//		List<ServerAddress> serverList = Arrays.asList(
+//				new ServerAddress("rumi",27017),
+//				new ServerAddress("hafez",27017)
+//			);
 		List<ServerAddress> serverList = Arrays.asList(
-				new ServerAddress("rumi",27017),
-				new ServerAddress("hafez",27017)
+				new ServerAddress("localhost",27017)
 			);
+		
 		// The combined stream
 		new MongoDBQueryStream<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>>(serverList) {
 

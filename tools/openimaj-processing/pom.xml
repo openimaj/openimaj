@@ -77,7 +77,7 @@
           <groupId>org.codehaus.gmaven</groupId>
           <artifactId>gmaven-plugin</artifactId>
           <inherited>false</inherited>
-          <executions>
+          <!-- <executions>
               <execution>
                   <phase>verify</phase>
                   <goals>
@@ -87,7 +87,7 @@
                       <source>${basedir}/src/script/createProcessingLibrary.groovy</source>
                   </configuration>
               </execution>
-          </executions>
+          </executions> -->
       </plugin>
     </plugins>
   </build>
