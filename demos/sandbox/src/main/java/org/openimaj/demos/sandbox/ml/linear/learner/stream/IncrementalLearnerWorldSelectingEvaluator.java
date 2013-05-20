@@ -1,16 +1,12 @@
 package org.openimaj.demos.sandbox.ml.linear.learner.stream;
 
-import gov.sandia.cognition.math.matrix.Matrix;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.openimaj.ml.linear.evaluation.BilinearEvaluator;
 import org.openimaj.ml.linear.learner.IncrementalBilinearSparseOnlineLearner;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.util.pair.Pair;
+import org.openimaj.util.stream.window.Aggregation;
 
 /**
  * Given a new state from which to train an {@link IncrementalBilinearSparseOnlineLearner},
@@ -24,9 +20,11 @@ import org.openimaj.util.pair.Pair;
 public final class IncrementalLearnerWorldSelectingEvaluator
 		implements
 			Function<
-				IndependentPair<Map<String, Map<String, Double>>,Map<String, Double>>,
+				Aggregation<
+					IndependentPair<Map<String, Map<String, Double>>,Map<String, Double>>,
+					IndependentPair<Long,Long>
+				>,
 				ModelStats
-//				IndependentPair<Map<String, SortedImportantWords>, Double>
 		>
 {
 
@@ -46,18 +44,15 @@ public final class IncrementalLearnerWorldSelectingEvaluator
 		this.learner = null;
 	}
 	@Override
-	public ModelStats apply(IndependentPair<Map<String, Map<String, Double>>,Map<String, Double>> in)
+	public ModelStats apply(Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>, IndependentPair<Long, Long>> in)
 	{
-		double score = 0;
+		ModelStats modelStats = null;
 		if(learner!=null){
-			learner.updateUserValues(in.firstObject(), in.secondObject());
-			eval.setLearner(this.learner.getBilinearLearner());
-			List<Pair<Matrix>> testList = new ArrayList<Pair<Matrix>>();
-			testList.add(this.learner.asMatrixPair(in));
-			score = eval.evaluate(testList);
+			modelStats = new ModelStats(eval, learner, in);
 		}
-		learner = func.apply(in);
-		return new ModelStats(learner,score);
+		learner = func.apply(in.getPayload());
+		if(modelStats == null) return new ModelStats();
+		else return modelStats;
 	}
 
 }

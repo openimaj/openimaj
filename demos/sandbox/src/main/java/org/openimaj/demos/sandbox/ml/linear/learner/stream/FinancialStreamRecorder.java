@@ -18,10 +18,14 @@ import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
-import org.openimaj.util.function.ListFilter;
-import org.openimaj.util.function.ListFunction;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.Stream;
+import org.openimaj.util.stream.window.Aggregation;
+import org.openimaj.util.stream.window.AggregationStreamCombiner;
+import org.openimaj.util.stream.window.RealTimeWindowFunction;
+import org.openimaj.util.stream.window.Window;
+import org.openimaj.util.stream.window.WindowFilter;
+import org.openimaj.util.stream.window.WindowFunction;
 
 import twitter4j.Status;
 
@@ -44,7 +48,7 @@ public class FinancialStreamRecorder {
 
 		// The financial stream
 		RealTimeWindowFunction<Map<String,Double>> yahooWindow = new RealTimeWindowFunction<Map<String,Double>>(5000);
-		Stream<List<Map<String, Double>>> yahooAveragePriceStream = new YahooFinanceStream("AAPL","GOOG","GE","GM","TWX")
+		Stream<Window<Map<String, Double>, Long>> yahooAveragePriceStream = new YahooFinanceStream("AAPL","GOOG","GE","GM","TWX")
 		.transform(yahooWindow);
 
 		// The Twitter Stream
@@ -53,25 +57,23 @@ public class FinancialStreamRecorder {
 		final StopwordMode stopwordMode = new StopwordMode();
 		final TokeniseMode tokeniseMode = new TokeniseMode();
 
-		Stream<List<USMFStatus>> twitterUserWordCountStream = new TwitterStreamingDataset(
+		Stream<Window<USMFStatus, Long>> twitterUserWordCountStream = new TwitterStreamingDataset(
 			DefaultTokenFactory.get(TwitterAPIToken.class),buffer
 		)
 		.transform(new RealTimeWindowFunction<Status>(5000))
-		.map(new ListFunction<Status,USMFStatus>(new TwitterStatusAsUSMFStatus()))
-		.map(new ListFunction<USMFStatus,USMFStatus>(new TwitterPreprocessingFunction(languageDetectionMode,tokeniseMode,stopwordMode)))
-		.map(new ListFilter<USMFStatus>(new TwitterPredicateFunction(new LanguageFilter("en"))));
+		.map(new WindowFunction<Status,USMFStatus,Long>(new TwitterStatusAsUSMFStatus()))
+		.map(new WindowFunction<USMFStatus,USMFStatus,Long>(new TwitterPreprocessingFunction(languageDetectionMode,tokeniseMode,stopwordMode)))
+		.map(new WindowFilter<USMFStatus,Long>(new TwitterPredicateFunction(new LanguageFilter("en"))));
 
 		List<ServerAddress> serverList = Arrays.asList(
 			new ServerAddress("rumi",27017),
 			new ServerAddress("hafez",27017)
 		);
-		StreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
+		AggregationStreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
 		.forEach(
 			new MongoDBOutputOp<
-				IndependentPair<
-					List<USMFStatus>,
-					List<Map<String,Double>>
-			>>
+				Aggregation<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>,IndependentPair<Long,Long>>
+			>
 			(serverList) {
 
 				@Override
@@ -80,8 +82,10 @@ public class FinancialStreamRecorder {
 				}
 
 				@Override
-				public DBObject asDBObject(IndependentPair<List<USMFStatus>,List<Map<String,Double>>> obj) {
+				public DBObject asDBObject(Aggregation<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>,IndependentPair<Long,Long>> aggr) {
 					BasicDBObject dbobj = new BasicDBObject();
+					IndependentPair<List<USMFStatus>, List<Map<String, Double>>> obj = aggr.getPayload();
+					IndependentPair<Long, Long> times = aggr.getMeta();
 					List<USMFStatus> tweets = obj.firstObject();
 					List<Object> dbtweets = new ArrayList<Object>();
 					for (USMFStatus usmfStatus : tweets) {
@@ -89,7 +93,7 @@ public class FinancialStreamRecorder {
 					}
 					dbobj.append("tweets", dbtweets);
 					dbobj.append("tickers", obj.secondObject());
-					long timestamp = System.currentTimeMillis();
+					long timestamp = times.firstObject();
 					dbobj.append("timestamp", timestamp);
 					logger.debug(String.format("Dumping %d tweets and %d stock-ticks at %d",dbtweets.size(),obj.secondObject().size(),timestamp));
 					return dbobj;

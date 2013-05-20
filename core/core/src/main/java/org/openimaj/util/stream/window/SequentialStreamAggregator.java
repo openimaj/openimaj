@@ -1,6 +1,8 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.util.stream.window;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import org.openimaj.util.function.Function;
 import org.openimaj.util.stream.AbstractStream;
@@ -29,33 +31,30 @@ public abstract class SequentialStreamAggregator<T>
 	public Stream<T> apply(final Stream<T> inner) {
 		return new AbstractStream<T>() {
 
-			T currentAgg = null;
+			List<T> currentList = new ArrayList<T>();
 			@Override
 			public boolean hasNext() {
-				return inner.hasNext();
+				return inner.hasNext() || currentList.size() != 0;
 			}
 			@Override
 			public T next() {
 				while(inner.hasNext()){
 					T next = inner.next();
-					if(currentAgg == null)
-					{
-						currentAgg = next;
+					if(currentList.size() == 0 || comp.compare(currentList.get(0), next) == 0){
+						currentList.add(next);
 					}
 					else{
-						if(comp.compare(currentAgg, next) == 0){
-							currentAgg = combine(currentAgg,next);
-						}
-						else{
-							T toRet = currentAgg;
-							currentAgg = next;
-							return toRet;
-						}
+						T toRet = combine(currentList);
+						currentList.clear();
+						currentList.add(next);
+						return toRet;
 					}
 				}
 				// The end of the stream is reached
-				if(currentAgg!=null){
-					return currentAgg;
+				if(currentList.size()!=0){
+					T toRet = combine(currentList);
+					currentList.clear();
+					return toRet;
 				}
 				else{
 					throw new UnsupportedOperationException("The sequential combiner failed");
@@ -65,13 +64,12 @@ public abstract class SequentialStreamAggregator<T>
 	}
 
 	/**
-	 * Called when two sequential items are identical and must therefore be combined
+	 * Called when a window of identical items needs to be combined
+	 * @param window
 	 *
-	 * @param current
-	 * @param next
 	 * @return the combination of the current and next values
 	 */
-	public abstract T combine(T current, T next) ;
+	public abstract T combine(List<T> window) ;
 
 
 }

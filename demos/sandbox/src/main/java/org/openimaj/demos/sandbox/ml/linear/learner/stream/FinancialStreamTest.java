@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.util.Map;
 
 import org.openimaj.util.function.Operation;
+import org.openimaj.util.stream.window.RealTimeWindowFunction;
+import org.openimaj.util.stream.window.WindowAverage;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)

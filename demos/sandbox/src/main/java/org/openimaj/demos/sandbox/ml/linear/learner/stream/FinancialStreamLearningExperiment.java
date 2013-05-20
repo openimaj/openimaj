@@ -18,11 +18,16 @@ import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
-import org.openimaj.util.function.ListFilter;
-import org.openimaj.util.function.ListFunction;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.Pair;
 import org.openimaj.util.stream.Stream;
+import org.openimaj.util.stream.window.Aggregation;
+import org.openimaj.util.stream.window.AggregationStreamCombiner;
+import org.openimaj.util.stream.window.RealTimeWindowFunction;
+import org.openimaj.util.stream.window.Window;
+import org.openimaj.util.stream.window.WindowAverage;
+import org.openimaj.util.stream.window.WindowFilter;
+import org.openimaj.util.stream.window.WindowFunction;
 
 import twitter4j.Status;
 
@@ -40,9 +45,9 @@ public class FinancialStreamLearningExperiment {
 
 		// The financial stream
 		RealTimeWindowFunction<Map<String,Double>> yahooWindow = new RealTimeWindowFunction<Map<String,Double>>(5000);
-		Stream<Map<String, Double>> yahooAveragePriceStream = new YahooFinanceStream("AAPL","GOOG")
+		Stream<Aggregation<Map<String, Double>,Long>> yahooAveragePriceStream = new YahooFinanceStream("AAPL","GOOG")
 		.transform(yahooWindow)
-		.map(new WindowAverage());
+		.map(new WindowAverage<Window<Map<String,Double>,Long>,Long>());
 
 		// The Twitter Stream
 		final ArrayBlockingDroppingQueue<Status> buffer = new ArrayBlockingDroppingQueue<Status>(1);
@@ -50,14 +55,14 @@ public class FinancialStreamLearningExperiment {
 		final StopwordMode stopwordMode = new StopwordMode();
 		final TokeniseMode tokeniseMode = new TokeniseMode();
 
-		Stream<Map<String, Map<String, Double>>> twitterUserWordCountStream = new TwitterStreamingDataset(
+		Stream<Aggregation<Map<String, Map<String, Double>>, Long>> twitterUserWordCountStream = new TwitterStreamingDataset(
 			DefaultTokenFactory.get(TwitterAPIToken.class),buffer
 		)
 		.transform(new RealTimeWindowFunction<Status>(5000))
-		.map(new ListFunction<Status,USMFStatus>(new TwitterStatusAsUSMFStatus()))
-		.map(new ListFunction<USMFStatus,USMFStatus>(new TwitterPreprocessingFunction(languageDetectionMode,tokeniseMode,stopwordMode)))
-		.map(new ListFilter<USMFStatus>(new TwitterPredicateFunction(new LanguageFilter("en"))))
-		.map(new USMFStatusUserWordScore(stopwordMode))
+		.map(new WindowFunction<Status,USMFStatus,Long>(new TwitterStatusAsUSMFStatus()))
+		.map(new WindowFunction<USMFStatus,USMFStatus,Long>(new TwitterPreprocessingFunction(languageDetectionMode,tokeniseMode,stopwordMode)))
+		.map(new WindowFilter<USMFStatus,Long>(new TwitterPredicateFunction(new LanguageFilter("en"))))
+		.map(new USMFStatusUserWordScore<Window<USMFStatus,Long>>(stopwordMode))
 		;
 
 
@@ -74,7 +79,7 @@ public class FinancialStreamLearningExperiment {
 		HardCodedInitStrat biasInitStrat = new HardCodedInitStrat();
 		params.put(BilinearLearnerParameters.BIASINITSTRAT, biasInitStrat);
 		// The combined stream
-		StreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
+		AggregationStreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
 		.map(new IncrementalLearnerWorldSelectingEvaluator(new SumLossEvaluator(), new IncrementalLearnerFunction(params)))
 		.forEach(new Operation<ModelStats>() {
 

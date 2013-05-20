@@ -10,12 +10,14 @@ import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Predicate;
+import org.openimaj.util.stream.window.Aggregation;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @param <T>
  *
  */
-public class USMFStatusUserWordScore implements Function<List<USMFStatus>,Map<String,Map<String,Double>>> {
+public class USMFStatusUserWordScore<T extends Aggregation<List<USMFStatus>,Long>> implements Function<T,Aggregation<Map<String,Map<String,Double>>,Long>> {
 
 	private TwitterPreprocessingMode<List<String>> mode;
 	private Predicate<String> junkWords;
@@ -44,10 +46,10 @@ public class USMFStatusUserWordScore implements Function<List<USMFStatus>,Map<St
 	}
 
 	@Override
-	public Map<String,Map<String,Double>> apply(List<USMFStatus> in) {
+	public Aggregation<Map<String,Map<String,Double>>,Long> apply(T in) {
 		Map<String, Map<String, Double>> ret = new HashMap<String, Map<String,Double>>();
 		Map<String,Double> userTotals = new HashMap<String, Double>();
-		for (USMFStatus usmfStatus : in) {
+		for (USMFStatus usmfStatus : in.getPayload()) {
 			String userName = usmfStatus.user.name;
 			Map<String, Double> userWordCounts = userWordCounts(ret, userTotals,userName);
 
@@ -73,7 +75,7 @@ public class USMFStatusUserWordScore implements Function<List<USMFStatus>,Map<St
 			}
 		}
 
-		return ret ;
+		return new Aggregation<Map<String,Map<String,Double>>, Long>(ret, in.getMeta()) ;
 	}
 
 	private Map<String, Double> userWordCounts(Map<String, Map<String, Double>> ret, Map<String,Double> totals, String userName) {

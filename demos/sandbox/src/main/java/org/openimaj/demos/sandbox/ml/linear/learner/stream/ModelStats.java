@@ -1,12 +1,19 @@
 package org.openimaj.demos.sandbox.ml.linear.learner.stream;
 
+import gov.sandia.cognition.math.matrix.Matrix;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openimaj.math.matrix.SandiaMatrixUtils;
+import org.openimaj.ml.linear.evaluation.BilinearEvaluator;
 import org.openimaj.ml.linear.learner.BilinearSparseOnlineLearner;
 import org.openimaj.ml.linear.learner.IncrementalBilinearSparseOnlineLearner;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
+import org.openimaj.util.stream.window.Aggregation;
 
 import com.google.common.collect.BiMap;
 
@@ -34,17 +41,46 @@ public class ModelStats {
 	 * the min/max params of each task
 	 */
 	public Map<String,Pair<Double>> taskMinMax;
+	/**
+	 * The value of Y for this round of the model
+	 */
+	public Matrix correctY;
+	/**
+	 * The estimated value of Y for this round of the model
+	 */
+	public Matrix estimatedY;
+
+	/**
+	 * A new learner, no meaningful important words and a loss of 0
+	 */
+	public ModelStats() {
+		this.score = 0;
+		this.learner = null;
+		this.importantWords = new HashMap<String, SortedImportantWords>();
+		this.taskMinMax = new HashMap<String, Pair<Double>>();
+	}
 
 	/**
 	 * The model and its associated loss
+	 * @param eval
 	 * @param learner
-	 * @param score
+	 * @param in
 	 */
-	public ModelStats(IncrementalBilinearSparseOnlineLearner learner, double score) {
-		this.score = score;
+	public ModelStats(BilinearEvaluator eval, IncrementalBilinearSparseOnlineLearner learner, Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>, IndependentPair<Long, Long>> inaggr) {
+
 		this.learner = learner;
+		IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> in = inaggr.getPayload();
+		this.learner.updateUserValues(in.firstObject(), in.secondObject());
+		BilinearSparseOnlineLearner bilinearLearner = this.learner.getBilinearLearner();
+		eval.setLearner(bilinearLearner);
+		List<Pair<Matrix>> testList = new ArrayList<Pair<Matrix>>();
+		Pair<Matrix> xy = this.learner.asMatrixPair(in);
+		testList.add(xy);
+		this.score = eval.evaluate(testList);
 		this.importantWords = importantWords();
 		this.taskMinMax = minMaxWords();
+		this.correctY = xy.secondObject();
+		this.estimatedY = bilinearLearner.predict(xy.firstObject());
 	}
 
 	private Map<String, Pair<Double>> minMaxWords() {

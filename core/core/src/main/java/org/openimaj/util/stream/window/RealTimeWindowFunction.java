@@ -1,7 +1,6 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.util.stream.window;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.openimaj.util.function.Function;
 import org.openimaj.util.stream.AbstractStream;
@@ -14,7 +13,8 @@ import org.openimaj.util.stream.Stream;
  *
  * @param <IN>
  */
-public class RealTimeWindowFunction<IN> implements Function<Stream<IN>,Stream<List<IN>>>{
+public class RealTimeWindowFunction<IN> implements Function<Stream<IN>,Stream<Window<IN,Long>>>{
+
 	private long waitTime;
 
 	private long currentWindowStartTime;
@@ -27,18 +27,18 @@ public class RealTimeWindowFunction<IN> implements Function<Stream<IN>,Stream<Li
 	}
 
 	@Override
-	public Stream<List<IN>> apply(final Stream<IN> inner) {
+	public Stream<Window<IN,Long>> apply(final Stream<IN> inner) {
 
-		return new AbstractStream<List<IN>>() {
+		return new AbstractStream<Window<IN,Long>>() {
 
 			@Override
 			public boolean hasNext() {
 				return inner.hasNext();
 			}
 			@Override
-			public List<IN> next() {
+			public Window<IN,Long> next() {
 				currentWindowStartTime = System.currentTimeMillis();
-				ArrayList<IN> currentWindow = new ArrayList<IN>();
+				final ArrayList<IN> currentWindow = new ArrayList<IN>();
 				while(inner.hasNext()){
 					if(System.currentTimeMillis() - currentWindowStartTime >= RealTimeWindowFunction.this.waitTime ){
 						break;
@@ -48,7 +48,7 @@ public class RealTimeWindowFunction<IN> implements Function<Stream<IN>,Stream<Li
 				}
 
 //				RealTimeWindowFunction.this.currentWindowStartTime = System.currentTimeMillis();
-				return currentWindow;
+				return new Window<IN,Long>(currentWindowStartTime, currentWindow);
 			}
 		};
 	}

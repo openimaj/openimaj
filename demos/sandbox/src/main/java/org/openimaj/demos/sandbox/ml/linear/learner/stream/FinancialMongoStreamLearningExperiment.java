@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +17,9 @@ import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
+import org.openimaj.util.stream.window.Aggregation;
+import org.openimaj.util.stream.window.CombinedAggregationFunction;
+import org.openimaj.util.stream.window.WindowAverage;
 
 import com.mongodb.DBObject;
 import com.mongodb.ServerAddress;
@@ -47,16 +49,13 @@ public class FinancialMongoStreamLearningExperiment {
 		FirstValueInitStrat biasInitStrat = new FirstValueInitStrat();
 		params.put(BilinearLearnerParameters.BIASINITSTRAT, biasInitStrat);
 
-//		List<ServerAddress> serverList = Arrays.asList(
-//				new ServerAddress("rumi",27017),
-//				new ServerAddress("hafez",27017)
-//			);
 		List<ServerAddress> serverList = Arrays.asList(
-				new ServerAddress("localhost",27017)
-			);
-		
+				new ServerAddress("rumi", 27017),
+				new ServerAddress("hafez", 27017)
+				);
+
 		// The combined stream
-		new MongoDBQueryStream<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>>(serverList) {
+		new MongoDBQueryStream<Aggregation<IndependentPair<List<USMFStatus>, List<Map<String, Double>>>,IndependentPair<Long,Long>>>(serverList) {
 
 			@Override
 			public String getCollectionName() {
@@ -70,7 +69,7 @@ public class FinancialMongoStreamLearningExperiment {
 
 			@Override
 			@SuppressWarnings("unchecked")
-			public IndependentPair<List<USMFStatus>,List<Map<String,Double>>> constructObjects(DBObject next) {
+			public Aggregation<IndependentPair<List<USMFStatus>, List<Map<String, Double>>>,IndependentPair<Long,Long>> constructObjects(DBObject next) {
 				List<Map<String, Double>> ticks = (List<Map<String, Double>>) next.get("tickers");
 				List<USMFStatus> tweets = new ArrayList<USMFStatus>();
 				List<Object> objl = (List<Object>) next.get("tweets");
@@ -79,69 +78,46 @@ public class FinancialMongoStreamLearningExperiment {
 					status.fillFromString(JSON.serialize(object));
 					tweets.add(status);
 				}
-				IndependentPair<List<USMFStatus>, List<Map<String, Double>>> ret =
-						IndependentPair.pair(tweets, ticks);
-				return ret ;
+				Long timestamp = (Long) next.get("timestamp");
+				IndependentPair<List<USMFStatus>, List<Map<String, Double>>> ret = IndependentPair.pair(tweets, ticks);
+				return new Aggregation<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>, IndependentPair<Long,Long>>(ret, IndependentPair.pair(timestamp,timestamp));
 			}
 		}
-		.map(
-				new CombinedStreamFunction<
-					List<USMFStatus>,
-					Map<String, Map<String, Double>>,
-					List<Map<String,Double>>,
-					Map<String, Double>>(
-						new USMFStatusUserWordScore(new StopwordMode()),
-						new WindowAverage()
+				.map(
+					new CombinedAggregationFunction<
+						List<USMFStatus>, Map<String,Map<String,Double>>,
+						List<Map<String,Double>>, Map<String,Double>,
+						Long, Long>(
+							new USMFStatusUserWordScore<Aggregation<List<USMFStatus>,Long>>(new StopwordMode()),
+							new WindowAverage<Aggregation<List<Map<String,Double>>,Long>, Long>()
+					)
 				)
-		)
-		.transform(new SequentialStreamAggregator<
-				IndependentPair<Map<String,Map<String,Double>>,
-				Map<String,Double>>>
-		(new Comparator<IndependentPair<Map<String,Map<String,Double>>,Map<String,Double>>>() {
-
-			@Override
-			public int compare(
-					IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> o1,
-					IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> o2)
-			{
-
-				return 0;
-			}
-		}) {
-
-			@Override
-			public IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> combine(
-					IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> current,
-					IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> next)
-			{
-				// TODO Auto-generated method stub
-				return null;
-			}
-		})
-		.map(
-				new IncrementalLearnerWorldSelectingEvaluator(
-					new SumLossEvaluator(),
-					new IncrementalLearnerFunction(params)
+				.transform(new StockPriceAggregator(0.0001))
+				.map(
+						new IncrementalLearnerWorldSelectingEvaluator(
+								new SumLossEvaluator(),
+								new IncrementalLearnerFunction(params)
+						)
 				)
-		)
-		.forEach(new Operation<ModelStats>() {
+				.forEach(new Operation<ModelStats>() {
 
-			@Override
-			public void perform(ModelStats object) {
-				System.out.println("Loss: " + object.score);
-				System.out.println("Important words: " );
-				for (String task: object.importantWords.keySet()) {
-					Pair<Double> minmax = object.taskMinMax.get(task);
-					System.out.printf("... %s (%1.4f->%1.4f) %s\n",
-							task,
-							minmax.firstObject(),
-							minmax.secondObject(),
-							object.importantWords.get(task)
-					);
-				}
-			}
-		});
-
+					@Override
+					public void perform(ModelStats object) {
+						System.out.println("Loss: " + object.score);
+						System.out.println("Important words: ");
+						for (String task : object.importantWords.keySet()) {
+							Pair<Double> minmax = object.taskMinMax.get(task);
+							System.out.printf("... %s (%1.4f->%1.4f) %s\n",
+									task,
+									minmax.firstObject(),
+									minmax.secondObject(),
+									object.importantWords.get(task)
+									);
+						}
+						System.out.println("Correct Y: \n" + object.correctY);
+						System.out.println("Estimated Y: \n" + object.estimatedY);
+					}
+				});
 
 	}
 }

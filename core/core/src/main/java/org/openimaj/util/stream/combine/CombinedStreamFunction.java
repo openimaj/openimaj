@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.util.stream.combine;
 
 import org.openimaj.util.function.Function;
 import org.openimaj.util.pair.IndependentPair;

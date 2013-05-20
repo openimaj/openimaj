@@ -1,6 +1,7 @@
 package org.openimaj.ml.linear.learner;
 
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
@@ -431,6 +432,11 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 
 	@Override
 	public Matrix predict(Matrix x) {
-		return null;
+		Matrix mult = this.u.transpose().times(x.transpose()).times(this.w);
+		if(this.biasMode)mult.plusEquals(this.bias);
+		Vector ydiag = SandiaMatrixUtils.diag(mult);
+		Matrix createIdentity = SparseMatrixFactoryMTJ.INSTANCE.createIdentity(1, ydiag.getDimensionality());
+		createIdentity.setRow(0, ydiag);
+		return createIdentity;
 	}
 }

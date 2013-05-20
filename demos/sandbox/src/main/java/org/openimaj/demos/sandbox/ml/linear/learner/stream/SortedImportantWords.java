@@ -20,7 +20,6 @@ public class SortedImportantWords implements Iterable<String>{
 	BiMap<String,Integer> words;
 	int[] indexes;
 	private int taskIndex;
-	private BilinearSparseOnlineLearner bilearner;
 	private Vector wordWeights;
 
 

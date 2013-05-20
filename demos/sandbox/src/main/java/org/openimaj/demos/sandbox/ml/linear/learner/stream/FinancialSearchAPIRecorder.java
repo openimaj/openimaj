@@ -18,10 +18,13 @@ import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
-import org.openimaj.util.function.ListFilter;
-import org.openimaj.util.function.ListFunction;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.Stream;
+import org.openimaj.util.stream.combine.StreamCombiner;
+import org.openimaj.util.stream.window.RealTimeWindowFunction;
+import org.openimaj.util.stream.window.Window;
+import org.openimaj.util.stream.window.WindowFilter;
+import org.openimaj.util.stream.window.WindowFunction;
 
 import twitter4j.Query;
 import twitter4j.Status;
@@ -49,8 +52,7 @@ public class FinancialSearchAPIRecorder {
 			"AAPL","GOOG","GE","GM","TWX"
 		};
 		RealTimeWindowFunction<Map<String,Double>> yahooWindow = new RealTimeWindowFunction<Map<String,Double>>(5000);
-		Stream<List<Map<String, Double>>> yahooAveragePriceStream = new YahooFinanceStream(tickers)
-		.transform(yahooWindow);
+		Stream<Window<Map<String, Double>,Long>> yahooAveragePriceStream = new YahooFinanceStream(tickers).transform(yahooWindow);
 
 		// The Twitter Stream
 		final ArrayBlockingDroppingQueue<Status> buffer = new ArrayBlockingDroppingQueue<Status>(1);
@@ -59,13 +61,13 @@ public class FinancialSearchAPIRecorder {
 		final TokeniseMode tokeniseMode = new TokeniseMode();
 
 		final String queryStr = StringUtils.join(dollar(tickers), " OR ");
-		Stream<List<USMFStatus>> twitterUserWordCountStream = new TwitterSearchAPIDataset(
+		Stream<Window<USMFStatus,Long>> twitterUserWordCountStream = new TwitterSearchAPIDataset(
 			new Query(queryStr),DefaultTokenFactory.get(TwitterAPIToken.class),buffer
 		)
 		.transform(new RealTimeWindowFunction<Status>(10000))
-		.map(new ListFunction<Status,USMFStatus>(new TwitterStatusAsUSMFStatus()))
-		.map(new ListFunction<USMFStatus,USMFStatus>(new TwitterPreprocessingFunction(languageDetectionMode,tokeniseMode,stopwordMode)))
-		.map(new ListFilter<USMFStatus>(new TwitterPredicateFunction(new LanguageFilter("en"))));
+		.map(new WindowFunction<Status,USMFStatus,Long>(new TwitterStatusAsUSMFStatus()))
+		.map(new WindowFunction<USMFStatus,USMFStatus,Long>(new TwitterPreprocessingFunction(languageDetectionMode,tokeniseMode,stopwordMode)))
+		.map(new WindowFilter<USMFStatus,Long>(new TwitterPredicateFunction(new LanguageFilter("en"))));
 
 //		twitterUserWordCountStream.forEach(new Operation<List<USMFStatus>>() {
 //
@@ -84,8 +86,8 @@ public class FinancialSearchAPIRecorder {
 		.forEach(
 			new MongoDBOutputOp<
 				IndependentPair<
-					List<USMFStatus>,
-					List<Map<String,Double>>
+					Window<USMFStatus,Long>,
+					Window<Map<String,Double>,Long>
 			>>
 			(serverList) {
 
@@ -95,19 +97,19 @@ public class FinancialSearchAPIRecorder {
 				}
 
 				@Override
-				public DBObject asDBObject(IndependentPair<List<USMFStatus>,List<Map<String,Double>>> obj) {
+				public DBObject asDBObject(IndependentPair<Window<USMFStatus,Long>,Window<Map<String,Double>,Long>> obj) {
 					BasicDBObject dbobj = new BasicDBObject();
-					List<USMFStatus> tweets = obj.firstObject();
+					List<USMFStatus> tweets = obj.firstObject().getPayload();
 					List<Object> dbtweets = new ArrayList<Object>();
 					for (USMFStatus usmfStatus : tweets) {
 						dbtweets.add(JSON.parse(usmfStatus.toJson()));
 					}
 					dbobj.append("tweets", dbtweets);
 					dbobj.append("search", queryStr);
-					dbobj.append("tickers", obj.secondObject());
-					long timestamp = System.currentTimeMillis();
+					dbobj.append("tickers", obj.secondObject().getPayload());
+					long timestamp = obj.secondObject().getMeta();
 					dbobj.append("timestamp", timestamp);
-					logger.debug(String.format("Dumping %d tweets and %d stock-ticks at %d",dbtweets.size(),obj.secondObject().size(),timestamp));
+					logger.debug(String.format("Dumping %d tweets and %d stock-ticks at %d",dbtweets.size(),obj.secondObject().getPayload().size(),timestamp));
 					return dbobj;
 				}
 
