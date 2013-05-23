@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.audio.features.MFCCJAudio;
+import org.openimaj.audio.features.MFCC;
 import org.openimaj.audio.reader.OneSecondClipReader;
 import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.data.dataset.GroupedDataset;
@@ -45,13 +45,14 @@ public class AudioClassifierTest
 	public static class SamplesFeatureProvider implements FeatureExtractor<DoubleFV,SampleBuffer>
 	{
 		/** The MFCC processor */
-		private final MFCCJAudio mfcc = new MFCCJAudio();
+		private final MFCC mfcc = new MFCC();
 
 		@Override
 		public DoubleFV extractFeature( final SampleBuffer buffer )
 		{
 			// Calculate the MFCCs
-			final double[][] mfccs = this.mfcc.calculateMFCC( buffer );
+			this.mfcc.process( buffer );
+			final double[][] mfccs = this.mfcc.getLastCalculatedFeature();
 
 			// The output vector
 			final double[] values = new double[mfccs[0].length];

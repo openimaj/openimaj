@@ -22,7 +22,7 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.audio.AudioAnnotator.AudioAnnotatorType;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
-import org.openimaj.audio.features.MFCCJAudio;
+import org.openimaj.audio.features.MFCC;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.io.IOUtils;
@@ -51,7 +51,7 @@ public class SpeechDetectorTrainer
 	protected static class MFCCFeatureExtractor
 		implements FeatureExtractor<DoubleFV,SampleChunk>
 	{
-		private final MFCCJAudio mfcc = new MFCCJAudio();
+		private final MFCC mfcc = new MFCC();
 
 		@Override
 		public DoubleFV extractFeature( final SampleChunk object )
@@ -108,7 +108,7 @@ public class SpeechDetectorTrainer
 	private int numProcessed;
 
 	/** MFCC Calculator */
-	private final MFCCJAudio mfcc = new MFCCJAudio();
+	private final MFCC mfcc = new MFCC();
 
 	/**
 	 * 	Constructor for the trainer tool

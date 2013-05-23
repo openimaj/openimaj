@@ -19,7 +19,7 @@ import org.openimaj.audio.AudioAnnotator;
 import org.openimaj.audio.AudioAnnotator.AudioAnnotatorType;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
-import org.openimaj.audio.features.MFCCJAudio;
+import org.openimaj.audio.features.MFCC;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListBackedDataset;
 import org.openimaj.data.dataset.ListDataset;
@@ -94,9 +94,9 @@ public class SpeechDetector
 	 */
 	public AudioAnnotator getNewAnnotator()
 	{
-		final MFCCJAudio a = new MFCCJAudio();
-		a.setAnnotator( this.options.audioAnnotatorType );
-		return a;
+		final MFCC a = new MFCC();
+//		a.setAnnotator( this.options.audioAnnotatorType );
+		return null;
 	}
 
 	/**

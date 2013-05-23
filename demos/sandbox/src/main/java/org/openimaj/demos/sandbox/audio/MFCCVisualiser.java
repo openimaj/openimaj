@@ -36,7 +36,7 @@ import java.io.File;
 
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
-import org.openimaj.audio.features.MFCCJAudio;
+import org.openimaj.audio.features.MFCC;
 import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.vis.general.BarVisualisation;
 
@@ -72,7 +72,7 @@ public class MFCCVisualiser
 		bv.showWindow("MFCCs");
 
 		// Setup an MFCC processor
-		final MFCCJAudio mfcc = new MFCCJAudio();
+		final MFCC mfcc = new MFCC();
 
 		// Read sample chunks
 		SampleChunk sc = null;
