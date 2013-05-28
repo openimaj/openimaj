@@ -1328,4 +1328,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 		return true;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public I replace(T[] target, T[] replacement) {
+		for (int b = 0; b < bands.size(); b++)
+			bands.get(b).replace(target[b], replacement[b]);
+		return (I) this;
+	}
 }

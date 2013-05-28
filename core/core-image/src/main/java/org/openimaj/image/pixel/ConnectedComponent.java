@@ -508,7 +508,29 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 				betaMin = beta;
 		}
 
-		return new double[] { betaMax - betaMin, alphaMax - alphaMin };
+		return new double[] { betaMax - betaMin + 1, alphaMax - alphaMin + 1 };
+	}
+
+	/**
+	 * Compute the aspect ratio of the oriented bounding box.
+	 * 
+	 * @return the aspect ratio of the oriented bounding box.
+	 */
+	public double calculateOrientatedBoundingBoxAspectRatio() {
+		final double[] bbhw = calculateOrientatedBoundingBoxHeightWidth();
+
+		return bbhw[1] / bbhw[0];
+	}
+
+	/**
+	 * Compute the aspect ratio of the regular bounding box.
+	 * 
+	 * @return the aspect ratio of the regular bounding box.
+	 */
+	public double calculateRegularBoundingBoxAspectRatio() {
+		final Rectangle bb = calculateRegularBoundingBox();
+
+		return bb.width / bb.height;
 	}
 
 	/**

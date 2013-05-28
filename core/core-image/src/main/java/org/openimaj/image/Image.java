@@ -2037,4 +2037,16 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public I getImage() {
 		return (I) this;
 	}
+
+	/**
+	 * Replace pixels of a certain colour with another colour. Side-affects this
+	 * image.
+	 * 
+	 * @param target
+	 *            the colour to fill the image with
+	 * @param replacement
+	 *            the colour to fill the image with
+	 * @return A reference to this image.
+	 */
+	public abstract I replace(Q target, Q replacement);
 }
