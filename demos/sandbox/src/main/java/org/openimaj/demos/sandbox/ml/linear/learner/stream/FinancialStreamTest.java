@@ -5,7 +5,9 @@ import java.net.MalformedURLException;
 import java.util.Map;
 
 import org.openimaj.util.function.Operation;
-import org.openimaj.util.stream.window.RealTimeWindowFunction;
+import org.openimaj.util.function.context.ContextFunction;
+import org.openimaj.util.function.context.ContextOperation;
+import org.openimaj.util.stream.window.ContextRealTimeWindowFunction;
 import org.openimaj.util.stream.window.WindowAverage;
 
 /**
@@ -21,17 +23,19 @@ public class FinancialStreamTest {
 	public static void main(String[] args) throws MalformedURLException, IOException {
 
 		// The financial stream
-		RealTimeWindowFunction<Map<String,Double>> yahooWindow = new RealTimeWindowFunction<Map<String,Double>>(1000);
-		new YahooFinanceStream("AAPL","GOOG")
+		ContextRealTimeWindowFunction<Map<String,Double>> yahooWindow = new ContextRealTimeWindowFunction<Map<String,Double>>(1000);
+		new YahooFinanceStream(true,"apple","google")
 		.transform(yahooWindow)
-		.map(new WindowAverage())
-		.forEach(new Operation<Map<String,Double>>() {
-
-			@Override
-			public void perform(Map<String, Double> object) {
-				System.out.println(object);
-			}
-		});
+		.map(ContextFunction.func("item", "averageticks", new WindowAverage()))
+		.forEach(ContextOperation.op("averageticks",
+				new Operation<Map<String,Double>>() {
+					@Override
+					public void perform(Map<String, Double> object) {
+						System.out.println(object);
+					}
+				}
+			)
+		);
 
 
 	}

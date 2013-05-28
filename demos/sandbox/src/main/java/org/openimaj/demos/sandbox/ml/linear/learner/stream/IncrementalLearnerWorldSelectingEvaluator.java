@@ -4,9 +4,9 @@ import java.util.Map;
 
 import org.openimaj.ml.linear.evaluation.BilinearEvaluator;
 import org.openimaj.ml.linear.learner.IncrementalBilinearSparseOnlineLearner;
+import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.util.stream.window.Aggregation;
 
 /**
  * Given a new state from which to train an {@link IncrementalBilinearSparseOnlineLearner},
@@ -19,13 +19,7 @@ import org.openimaj.util.stream.window.Aggregation;
  */
 public final class IncrementalLearnerWorldSelectingEvaluator
 		implements
-			Function<
-				Aggregation<
-					IndependentPair<Map<String, Map<String, Double>>,Map<String, Double>>,
-					IndependentPair<Long,Long>
-				>,
-				ModelStats
-		>
+			Function<Context,Context>
 {
 
 	BilinearEvaluator eval;
@@ -44,15 +38,19 @@ public final class IncrementalLearnerWorldSelectingEvaluator
 		this.learner = null;
 	}
 	@Override
-	public ModelStats apply(Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>, IndependentPair<Long, Long>> in)
+	public Context apply(Context in)
 	{
 		ModelStats modelStats = null;
 		if(learner!=null){
 			modelStats = new ModelStats(eval, learner, in);
 		}
-		learner = func.apply(in.getPayload());
-		if(modelStats == null) return new ModelStats();
-		else return modelStats;
+		Map<String,Map<String,Double>> x = in.getTyped("bagofwords");
+		Map<String,Double> y = in.getTyped("averageticks");
+		learner = func.apply(IndependentPair.pair(x, y));
+		if(modelStats == null) modelStats = new ModelStats();
+
+		in.put("modelstats",modelStats);
+		return in;
 	}
 
 }

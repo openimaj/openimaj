@@ -1,13 +1,10 @@
 package org.openimaj.demos.sandbox.ml.linear.learner.stream;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.USMFStatus;
@@ -16,6 +13,7 @@ import org.openimaj.twitter.USMFStatus.User;
 import twitter4j.GeoLocation;
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;
+import twitter4j.Place;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.UserMentionEntity;
@@ -28,7 +26,7 @@ import twitter4j.UserMentionEntity;
  *
  */
 public class GeneralJSONTweet4jStatus extends GeneralJSON{
-	
+
 	private Status status;
 
 	/**
@@ -37,7 +35,7 @@ public class GeneralJSONTweet4jStatus extends GeneralJSON{
 	public GeneralJSONTweet4jStatus(Status status) {
 		this.status = status;
 	}
-	
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		USMFStatus status = new USMFStatus(this.getClass());
@@ -54,10 +52,14 @@ public class GeneralJSONTweet4jStatus extends GeneralJSON{
 		if (this.status.getGeoLocation() != null) {
 			GeoLocation geloc = this.status.getGeoLocation();
 			double[] coords = new double[2];
-			
+
 			coords[0] = geloc.getLatitude();
 			coords[1] = geloc.getLongitude();
 			status.geo = coords;
+		}
+		Place place = this.status.getPlace();
+		if(place!=null){
+			status.location = place.getName();
 		}
 		status.id = this.status.getId();
 		status.text = this.status.getText();
@@ -68,10 +70,11 @@ public class GeneralJSONTweet4jStatus extends GeneralJSON{
 		{
 			twitter4j.User user = this.status.getUser();
 			// Populate the User
-			
+
 			status.user.avatar = user.getBiggerProfileImageURL();
 			status.user.description = user.getDescription();
 			status.user.id = user.getId();
+			status.user.location = user.getLocation();
 			status.user.language = user.getLang();
 			status.user.postings = user.getStatusesCount();
 			status.user.real_name = user.getName();
@@ -84,8 +87,8 @@ public class GeneralJSONTweet4jStatus extends GeneralJSON{
 
 
 		// Populate the links
-		
-			
+
+
 		MediaEntity[] ents = this.status.getMediaEntities();
 		for (URLEntity link : this.status.getURLEntities()) {
 			USMFStatus.Link l = new USMFStatus.Link();
@@ -100,8 +103,8 @@ public class GeneralJSONTweet4jStatus extends GeneralJSON{
 		// Populate the to users from user mentions
 		for (UserMentionEntity user : this.status.getUserMentionEntities()) {
 			USMFStatus.User u = new USMFStatus.User();
-			u.name = (String) user.getScreenName();
-			u.real_name = (String) user.getName();
+			u.name = user.getScreenName();
+			u.real_name = user.getName();
 			u.id = user.getId();
 			status.to_users.add(u);
 		}
@@ -117,7 +120,7 @@ public class GeneralJSONTweet4jStatus extends GeneralJSON{
 	@Override
 	public void fromUSMF(USMFStatus status) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

@@ -20,8 +20,8 @@ import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.Stream;
-import org.openimaj.util.stream.window.Aggregation;
-import org.openimaj.util.stream.window.AggregationStreamCombiner;
+import org.openimaj.util.stream.window.MetaPayload;
+import org.openimaj.util.stream.window.MetaPayloadStreamCombiner;
 import org.openimaj.util.stream.window.RealTimeWindowFunction;
 import org.openimaj.util.stream.window.Window;
 import org.openimaj.util.stream.window.WindowFilter;
@@ -69,10 +69,10 @@ public class FinancialStreamRecorder {
 			new ServerAddress("rumi",27017),
 			new ServerAddress("hafez",27017)
 		);
-		AggregationStreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
+		MetaPayloadStreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
 		.forEach(
 			new MongoDBOutputOp<
-				Aggregation<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>,IndependentPair<Long,Long>>
+				MetaPayload<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>,IndependentPair<Long,Long>>
 			>
 			(serverList) {
 
@@ -82,7 +82,7 @@ public class FinancialStreamRecorder {
 				}
 
 				@Override
-				public DBObject asDBObject(Aggregation<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>,IndependentPair<Long,Long>> aggr) {
+				public DBObject asDBObject(MetaPayload<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>,IndependentPair<Long,Long>> aggr) {
 					BasicDBObject dbobj = new BasicDBObject();
 					IndependentPair<List<USMFStatus>, List<Map<String, Double>>> obj = aggr.getPayload();
 					IndependentPair<Long, Long> times = aggr.getMeta();

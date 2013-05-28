@@ -22,12 +22,12 @@ import org.openimaj.util.stream.Stream;
  * @param <BM>
  *
  */
-public class AggregationStreamCombiner<AP,AM,BP,BM> extends AbstractStream<Aggregation<IndependentPair<AP, BP>,IndependentPair<AM,BM>>>{
+public class MetaPayloadStreamCombiner<AP,AM,BP,BM> extends AbstractStream<MetaPayload<IndependentPair<AP, BP>,IndependentPair<AM,BM>>>{
 
-	private Stream<? extends Aggregation<BP,BM>> b;
-	private Stream<? extends Aggregation<AP,AM>> a;
-	private Starter<Aggregation<AP, AM>> astart;
-	private Starter<Aggregation<BP, BM>> bstart;
+	private Stream<? extends MetaPayload<BP,BM>> b;
+	private Stream<? extends MetaPayload<AP,AM>> a;
+	private Starter<MetaPayload<AP, AM>> astart;
+	private Starter<MetaPayload<BP, BM>> bstart;
 	private ThreadPoolExecutor service;
 
 	class Starter<T> implements Callable<T>{
@@ -48,12 +48,12 @@ public class AggregationStreamCombiner<AP,AM,BP,BM> extends AbstractStream<Aggre
 	 * @param a
 	 * @param b
 	 */
-	public <A extends Aggregation<AP,AM>> AggregationStreamCombiner( Stream<A> a, Stream<? extends Aggregation<BP,BM>> b) {
+	public <A extends MetaPayload<AP,AM>> MetaPayloadStreamCombiner( Stream<A> a, Stream<? extends MetaPayload<BP,BM>> b) {
 
 		this.a = a;
 		this.b = b;
-		this.astart = new Starter<Aggregation<AP, AM>>(this.a);
-		this.bstart = new Starter<Aggregation<BP, BM>>(this.b);
+		this.astart = new Starter<MetaPayload<AP, AM>>(this.a);
+		this.bstart = new Starter<MetaPayload<BP, BM>>(this.b);
 		this.service = GlobalExecutorPool.getPool();
 
 	}
@@ -63,15 +63,15 @@ public class AggregationStreamCombiner<AP,AM,BP,BM> extends AbstractStream<Aggre
 	}
 
 	@Override
-	public Aggregation<IndependentPair<AP, BP>,IndependentPair<AM,BM>> next() {
-		Future<Aggregation<AP, AM>> futurea = this.service.submit(astart);
-		Future<Aggregation<BP, BM>> futureb = this.service.submit(bstart);
+	public MetaPayload<IndependentPair<AP, BP>,IndependentPair<AM,BM>> next() {
+		Future<MetaPayload<AP, AM>> futurea = this.service.submit(astart);
+		Future<MetaPayload<BP, BM>> futureb = this.service.submit(bstart);
 		try {
-			Aggregation<AP, AM> ai = futurea.get();
-			Aggregation<BP, BM> bi = futureb.get();
+			MetaPayload<AP, AM> ai = futurea.get();
+			MetaPayload<BP, BM> bi = futureb.get();
 			IndependentPair<AP, BP> payloads = IndependentPair.pair(ai.getPayload(), bi.getPayload());
 			IndependentPair<AM, BM> metas = IndependentPair.pair(ai.getMeta(), bi.getMeta());
-			return new Aggregation<IndependentPair<AP,BP>, IndependentPair<AM,BM>>(payloads, metas);
+			return new MetaPayload<IndependentPair<AP,BP>, IndependentPair<AM,BM>>(payloads, metas);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -83,8 +83,8 @@ public class AggregationStreamCombiner<AP,AM,BP,BM> extends AbstractStream<Aggre
 	 * @param b
 	 * @return an aggregation of the two streams
 	 */
-	public static <AP,AM,BP,BM> AggregationStreamCombiner<AP,AM, BP,BM> combine(Stream<? extends Aggregation<AP,AM>> a, Stream<? extends Aggregation<BP,BM>> b) {
-		return new AggregationStreamCombiner<AP,AM,BP,BM>(a, b);
+	public static <AP,AM,BP,BM> MetaPayloadStreamCombiner<AP,AM, BP,BM> combine(Stream<? extends MetaPayload<AP,AM>> a, Stream<? extends MetaPayload<BP,BM>> b) {
+		return new MetaPayloadStreamCombiner<AP,AM,BP,BM>(a, b);
 	}
 
 }

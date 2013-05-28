@@ -237,6 +237,14 @@ public class IncrementalBilinearSparseOnlineLearner implements OnlineLearner<Map
 	}
 
 	/**
+	 * @param in
+	 * @return calls {@link #asMatrixPair(IndependentPair, int, int, int)} with the current number of words, users and value
+	 */
+	public Pair<Matrix> asMatrixPair(Map<String, Map<String, Double>> x, Map<String, Double> y) {
+		return this.asMatrixPair(IndependentPair.pair(x, y), this.vocabulary.size(), this.users.size(), this.values.size());
+	}
+
+	/**
 	 * @return the current map of dependant values to indexes
 	 */
 	public BiMap<String, Integer> getDependantValues() {

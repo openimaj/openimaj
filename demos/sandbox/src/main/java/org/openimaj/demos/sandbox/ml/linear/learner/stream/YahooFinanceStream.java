@@ -6,20 +6,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.log4j.Logger;
 import org.jboss.netty.handler.timeout.ReadTimeoutException;
 import org.openimaj.io.HttpUtils;
 import org.openimaj.io.HttpUtils.MetaRefreshRedirectStrategy;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.AbstractStream;
 
 import com.Ostermiller.util.CSVParser;
+import com.google.gson.Gson;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -28,16 +34,47 @@ import com.Ostermiller.util.CSVParser;
 public class YahooFinanceStream extends AbstractStream<Map<String,Double>>{
 	Logger logger = Logger.getLogger(YahooFinanceStream.class);
 	private static final String YAHOO_URI = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snl1";
+	private static final String YAHOO_SUGGEST_URI = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=%s&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
 	private static final int CONNECT_TIMEOUT = 1000;
 	private static final int READ_TIMEOUT = 2000;
 	private static final int ENFORCED_WAIT = 1000;
 	private URL yahooURL;
 	private long lastRead;
+	private boolean expandTickers;
 
 	private class FeedItem {
 		String name;
 		String longname;
 		double value;
+	}
+
+	/**
+	 * The tickers you want
+	 * @param expand whether an attempt should be made to expand the tickers using #querySymbols
+	 * @param tickers
+	 * @throws IOException
+	 * @throws MalformedURLException
+	 */
+	public YahooFinanceStream(boolean expand, String ... tickers) throws MalformedURLException, IOException {
+		if(expand) tickers = expandTickers(tickers);
+		constructYahooURI(tickers);
+		this.lastRead = 0;
+	}
+
+	private String[] expandTickers(String[] tickers) {
+		Set<String> expanded = new HashSet<String>();
+		for (String ticker : tickers) {
+			try {
+				List<Map<String, String>> queried = querySymbols(ticker);
+				for (Map<String, String> query : queried) {
+					if(query.containsKey("symbol")) expanded.add(query.get("symbol"));
+				}
+			} catch (IOException e) {
+				// Just add the ticker back
+				expanded.add(ticker);
+			}
+		}
+		return expanded.toArray(new String[expanded.size()]);
 	}
 
 	/**
@@ -50,6 +87,7 @@ public class YahooFinanceStream extends AbstractStream<Map<String,Double>>{
 		constructYahooURI(tickers);
 		this.lastRead = 0;
 	}
+
 	private void constructYahooURI(String[] tickers) throws MalformedURLException {
 		String feeds = StringUtils.join(tickers, "+");
 		this.yahooURL = new URL(String.format(YAHOO_URI,feeds));
@@ -106,6 +144,53 @@ public class YahooFinanceStream extends AbstractStream<Map<String,Double>>{
 			return this.readItems();
 		}
 		return ret;
+	}
+
+	/**
+	 * Access to the Yahoo! stock symbol suggestion API. For a plain text query returns possible stock ticker
+	 * names in the format:
+	 * [
+	 * 	{symbol:, name:, exch:, type:, exchDisp:, typeDisp:},
+	 *	...,
+	 * ]
+	 *
+	 * @param query
+	 * @return list of maps described above
+	 * @throws IOException
+	 */
+	public static List<Map<String,String>> querySymbols(String query) throws IOException{
+		Gson g = new Gson();
+		URL queryURL = new URL(String.format(YAHOO_SUGGEST_URI,query));
+		IndependentPair<HttpEntity, ByteArrayInputStream> readURL = HttpUtils.readURLAsByteArrayInputStream(queryURL, CONNECT_TIMEOUT, READ_TIMEOUT, new MetaRefreshRedirectStrategy() ,HttpUtils.DEFAULT_USERAGENT);
+
+		String jsonp = IOUtils.toString(readURL.secondObject());
+		String json = jsonp.substring(jsonp.indexOf("(") + 1, jsonp.lastIndexOf(")"));
+		Map<?,?> parsed = g.fromJson(json, Map.class);
+
+		try{
+			@SuppressWarnings("unchecked")
+			List<Map<String,String>> ret = (List<Map<String, String>>) ((Map<?,?>)parsed.get("ResultSet")).get("Result");
+			return ret;
+		}catch(Throwable c){
+			throw new IOException(c);
+		}
+	}
+
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException {
+		YahooFinanceStream yfs = new YahooFinanceStream(true,"google", "microsoft","yahoo");
+		yfs.forEach(new Operation<Map<String,Double>>() {
+
+			@Override
+			public void perform(Map<String, Double> object) {
+				for (Entry<String, Double> map : object.entrySet()) {
+					System.out.println(map.getKey() + ": " + map.getValue());
+				}
+			}
+		});
 	}
 
 }

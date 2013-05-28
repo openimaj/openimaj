@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.data.Context;
+import org.openimaj.util.function.Operation;
+import org.openimaj.util.stream.CollectionStream;
 import org.openimaj.util.stream.Stream;
-import org.openimaj.util.stream.combine.CollectionStream;
-import org.openimaj.util.stream.window.Aggregation;
 import org.openimaj.util.stream.window.SequentialStreamAggregator;
 
 /**
@@ -23,13 +23,11 @@ import org.openimaj.util.stream.window.SequentialStreamAggregator;
  */
 public final class StockPriceAggregator
 		extends
-		SequentialStreamAggregator<
-			Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>,IndependentPair<Long,Long>>
-		>
+		SequentialStreamAggregator<Context>
 {
 	private static final class StockPriceComparator
 			implements
-			Comparator<Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>,IndependentPair<Long,Long>>>
+			Comparator<Context>
 	{
 		private double thresh;
 
@@ -38,12 +36,10 @@ public final class StockPriceAggregator
 		}
 
 		@Override
-		public int compare(
-				Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>,IndependentPair<Long,Long>> o1,
-				Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>,IndependentPair<Long,Long>> o2)
+		public int compare(Context o1,Context o2)
 		{
-			Map<String, Double> a = o1.getPayload().secondObject();
-			Map<String, Double> b = o2.getPayload().secondObject();
+			Map<String, Double> a = o1.getTyped("averageticks");
+			Map<String, Double> b = o2.getTyped("averageticks");
 
 			Set<String> sharedKeys = new HashSet<String>(a.keySet());
 			sharedKeys.addAll(b.keySet());
@@ -58,32 +54,31 @@ public final class StockPriceAggregator
 		}
 	}
 
-	private double thresh;
 
 	StockPriceAggregator(double thresh)
 	{
 		super(new StockPriceComparator(thresh));
-		this.thresh = thresh;
 	}
 
 	@Override
-	public Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>,IndependentPair<Long,Long>> combine(
-			List<Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>,IndependentPair<Long,Long>>> window)
+	public Context combine(List<Context> window)
 	{
 		Map<String, Map<String, Double>> combinedUserWords = new HashMap<String, Map<String,Double>>();
 		int nItems = window.size();
 		Map<String, Double> stocks = null;
-		long timestamp = window.get(0).getMeta().firstObject();
-		for (Aggregation<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>, IndependentPair<Long, Long>> itemAggr : window) {
-			IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> item = itemAggr.getPayload();
-			for (Entry<String, Map<String, Double>> es : item.firstObject().entrySet()) {
+		long timestamp = window.get(0).getTyped("timestamp");
+		for (Context itemAggr : window) {
+			Map<String, Map<String, Double>> bagofwords = itemAggr.getTyped("bagofwords");
+			stocks = itemAggr.getTyped("averageticks"); // They should all be the same
+			for (Entry<String, Map<String, Double>> es : bagofwords.entrySet()) {
 				addUsers(combinedUserWords,es,nItems);
 			}
-			stocks = item.secondObject();
 		}
-		IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> payload = IndependentPair.pair(combinedUserWords,stocks);
-		IndependentPair<Long, Long> meta = IndependentPair.pair(timestamp,timestamp);
-		return new Aggregation<IndependentPair<Map<String,Map<String,Double>>,Map<String,Double>>, IndependentPair<Long,Long>>(payload, meta);
+		Context newC = window.get(0).clone();
+		newC.put("timestamp", timestamp);
+		newC.put("bagofwords", combinedUserWords);
+		newC.put("averageticks", stocks);
+		return newC;
 	}
 
 	private void addUsers(Map<String, Map<String, Double>> combinedUserWords, Entry<String, Map<String, Double>> es, int nItems) {
@@ -106,7 +101,7 @@ public final class StockPriceAggregator
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		List<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>> coll = new ArrayList<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>>();
+		List<Context> coll = new ArrayList<Context>();
 
 		Map<String,Map<String,Double>> t1 = sparcify("u1: this is cheese","u2: cheese is good","u3: i like cheese");
 		Map<String,Map<String,Double>> t2 = sparcify("u1: it is still cheese","u3: cheese is good","u4: i like cheese");
@@ -115,20 +110,30 @@ public final class StockPriceAggregator
 		Map<String,Double> price1 = sparcifyPrice("p1: 100","p2: 200");
 		Map<String,Double> price2 = sparcifyPrice("p1: 100","p2: 201");
 
-		coll.add(IndependentPair.pair(t1, price1));
-		coll.add(IndependentPair.pair(t2, price1));
-		coll.add(IndependentPair.pair(t3, price2));
-		coll.add(IndependentPair.pair(t4, price1));
-		Stream<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>> stream =
-				new CollectionStream<IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>>>(coll);
-//		stream.transform(new StockPriceAggregator(0.0001)).forEach(new Operation<IndependentPair<Map<String,Map<String,Double>>,Map<String,Double>>>() {
-//
-//			@Override
-//			public void perform(IndependentPair<Map<String, Map<String, Double>>, Map<String, Double>> object) {
-//				System.out.println(object.firstObject());
-//				System.out.println(object.secondObject());
-//			}
-//		});
+
+		Context c = new Context();
+		c.put("timestamp", 0l); c.put("bagofwords", t1); c.put("averageticks", price1);
+		coll.add(c);
+		c = new Context();
+		c.put("timestamp", 1l); c.put("bagofwords", t2); c.put("averageticks", price1);
+		coll.add(c);
+		c = new Context();
+		c.put("timestamp", 2l); c.put("bagofwords", t3); c.put("averageticks", price2);
+		coll.add(c);
+		c = new Context();
+		c.put("timestamp", 3l); c.put("bagofwords", t4); c.put("averageticks", price1);
+		coll.add(c);
+		Stream<Context> stream = new CollectionStream<Context>(coll);
+		stream.transform(new StockPriceAggregator(0.0001)).forEach(
+			new Operation<Context>() {
+
+			@Override
+			public void perform(Context object) {
+				System.out.println(object.getTyped("timestamp"));
+				System.out.println(object.getTyped("bagofwords"));
+				System.out.println(object.getTyped("averageticks"));
+			}
+		});
 
 	}
 

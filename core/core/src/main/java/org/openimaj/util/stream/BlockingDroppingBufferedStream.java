@@ -28,7 +28,7 @@ public abstract class BlockingDroppingBufferedStream<T> extends AbstractStream<T
 	}
 
 	protected void register(T obj) throws InterruptedException {
-		buffer.put(obj);
+		buffer.offer(obj);
 	}
 
 	@Override

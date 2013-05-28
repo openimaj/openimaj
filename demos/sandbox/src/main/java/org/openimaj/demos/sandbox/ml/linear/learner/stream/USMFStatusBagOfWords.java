@@ -10,14 +10,12 @@ import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Predicate;
-import org.openimaj.util.stream.window.Aggregation;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <T>
  *
  */
-public class USMFStatusUserWordScore<T extends Aggregation<List<USMFStatus>,Long>> implements Function<T,Aggregation<Map<String,Map<String,Double>>,Long>> {
+public class USMFStatusBagOfWords implements Function<List<USMFStatus>,Map<String,Map<String,Double>>> {
 
 	private TwitterPreprocessingMode<List<String>> mode;
 	private Predicate<String> junkWords;
@@ -25,7 +23,7 @@ public class USMFStatusUserWordScore<T extends Aggregation<List<USMFStatus>,Long
 	/**
 	 * @param mode the mode from which to grab words
 	 */
-	public USMFStatusUserWordScore(TwitterPreprocessingMode<List<String>> mode) {
+	public USMFStatusBagOfWords(TwitterPreprocessingMode<List<String>> mode) {
 		this.mode = mode;
 		this.junkWords = new Predicate<String>() {
 
@@ -46,10 +44,10 @@ public class USMFStatusUserWordScore<T extends Aggregation<List<USMFStatus>,Long
 	}
 
 	@Override
-	public Aggregation<Map<String,Map<String,Double>>,Long> apply(T in) {
+	public Map<String,Map<String,Double>> apply(List<USMFStatus> in) {
 		Map<String, Map<String, Double>> ret = new HashMap<String, Map<String,Double>>();
 		Map<String,Double> userTotals = new HashMap<String, Double>();
-		for (USMFStatus usmfStatus : in.getPayload()) {
+		for (USMFStatus usmfStatus : in) {
 			String userName = usmfStatus.user.name;
 			Map<String, Double> userWordCounts = userWordCounts(ret, userTotals,userName);
 
@@ -75,7 +73,7 @@ public class USMFStatusUserWordScore<T extends Aggregation<List<USMFStatus>,Long
 			}
 		}
 
-		return new Aggregation<Map<String,Map<String,Double>>, Long>(ret, in.getMeta()) ;
+		return ret;
 	}
 
 	private Map<String, Double> userWordCounts(Map<String, Map<String, Double>> ret, Map<String,Double> totals, String userName) {

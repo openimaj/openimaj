@@ -8,7 +8,7 @@ import java.util.List;
  * @param <META> information about the window
  *
  */
-public final class Window<PAYLOAD,META> extends Aggregation<List<PAYLOAD>,META>{
+public final class Window<PAYLOAD,META> extends MetaPayload<List<PAYLOAD>,META>{
 
 
 

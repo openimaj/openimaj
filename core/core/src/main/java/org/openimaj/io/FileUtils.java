@@ -430,4 +430,21 @@ public class FileUtils {
 
 		return allLines.toArray(new String[allLines.size()]);
 	}
+
+	/**
+	 * @param stream the file to read from
+	 * @param encoding the inputstream encoding
+	 * @return the lines in the file
+	 * @throws IOException
+	 */
+	public static String[] readlines(final InputStream stream, String encoding) throws IOException {
+		final BufferedReader br = new BufferedReader(new InputStreamReader(stream,encoding));
+		String line = null;
+		final List<String> allLines = new ArrayList<String>();
+		while((line = br.readLine()) != null){
+			allLines.add(line);
+		}
+
+		return allLines.toArray(new String[allLines.size()]);
+	}
 }

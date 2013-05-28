@@ -15,15 +15,15 @@ import org.openimaj.util.function.Function;
  * @param <T>
  *
  */
-public class WindowAverage<W extends Aggregation<List<Map<String,Double>>,T>,T> implements Function<W,Aggregation<Map<String,Double>,T>> {
+public class WindowAverage implements Function<List<Map<String,Double>>,Map<String,Double>> {
 
 	@Override
-	public Aggregation<Map<String, Double>,T> apply(W in) {
+	public Map<String, Double> apply(List<Map<String,Double>> in) {
 
 		Map<String, Double> ret = new HashMap<String, Double>();
 		Map<String, Long> count = new HashMap<String, Long>();
 
-		for (Map<String, Double> map : in.getPayload()) {
+		for (Map<String, Double> map : in) {
 			for (Entry<String, Double> item : map.entrySet()) {
 				String key = item.getKey();
 				if(!count.containsKey(key)){
@@ -40,7 +40,7 @@ public class WindowAverage<W extends Aggregation<List<Map<String,Double>>,T>,T> 
 			String key = map.getKey();
 			ret.put(key, map.getValue()/count.get(key));
 		}
-		return new Aggregation<Map<String,Double>, T>(ret, in.getMeta()) ;
+		return ret ;
 	}
 
 }

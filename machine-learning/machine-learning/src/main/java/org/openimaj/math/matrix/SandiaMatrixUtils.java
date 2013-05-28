@@ -4,6 +4,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.VectorEntry;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
@@ -51,9 +52,9 @@ public class SandiaMatrixUtils {
 		MLDouble mlArrayDbl = (MLDouble) mlArray;
 		int rows = mlArray.getM();
 		int cols = mlArray.getN();
-		
+
 		Matrix mat = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(rows, cols);
-		
+
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < cols; c++) {
 				mat.setElement(r, c, mlArrayDbl.get(r, c));
@@ -72,7 +73,7 @@ public class SandiaMatrixUtils {
 		}
 		return nsparse/nrows;
 	}
-	
+
 	public static double colSparcity(Matrix mat) {
 		double ncols = mat.getNumColumns();
 		double nsparse = 0;
@@ -97,7 +98,7 @@ public class SandiaMatrixUtils {
 
 	public static Vector diag(Matrix mat) {
 		Vector ret;
-		
+
 		if(mat.getNumColumns() > mat.getNumRows()){
 			ret = mat.getRow(0);
 		}
@@ -131,7 +132,7 @@ public class SandiaMatrixUtils {
 		return vstack(MatrixFactory.getDefault(), matricies);
 	}
 
-	public static double[] getData(Matrix w) {		
+	public static double[] getData(Matrix w) {
 		return ((no.uib.cipr.matrix.DenseMatrix)DenseMatrixFactoryMTJ.INSTANCE.copyMatrix(w).getInternalMatrix()).getData();
 	}
 
@@ -142,11 +143,27 @@ public class SandiaMatrixUtils {
 		}
 		return min;
 	}
-	
+
 	public static double max(Matrix u) {
 		double max = -Double.MAX_VALUE;
 		for (MatrixEntry matrixEntry : u) {
 			max = Math.max(max, matrixEntry.getValue());
+		}
+		return max;
+	}
+
+	public static double min(Vector column) {
+		double min = Double.MAX_VALUE;
+		for (VectorEntry vectorEntry : column) {
+			min = Math.min(min, vectorEntry.getValue());
+		}
+		return min;
+	}
+
+	public static double max(Vector column) {
+		double max = -Double.MAX_VALUE;
+		for (VectorEntry vectorEntry : column) {
+			max = Math.max(max, vectorEntry.getValue());
 		}
 		return max;
 	}

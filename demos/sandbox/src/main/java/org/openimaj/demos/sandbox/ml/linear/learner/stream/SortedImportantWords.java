@@ -42,7 +42,9 @@ public class SortedImportantWords implements Iterable<String>{
 
 			@Override
 			public int compare(Integer o1, Integer o2) {
-				return ((Double)(wordWeights.getElement(o1))).compareTo(wordWeights.getElement(o2));
+				Double weighto1 = wordWeights.getElement(o1);
+				Double weighto2 = wordWeights.getElement(o2);
+				return -weighto1.compareTo(weighto2);
 			}
 		});
 		for (int i = 0; i < wordWeights.getDimensionality(); i++) {
@@ -67,7 +69,7 @@ public class SortedImportantWords implements Iterable<String>{
 
 			@Override
 			public String next() {
-				return words.inverse().get(index++);
+				return words.inverse().get(indexes[index++]);
 			}
 
 			@Override

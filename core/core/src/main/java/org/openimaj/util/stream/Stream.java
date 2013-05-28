@@ -19,9 +19,9 @@ import org.openimaj.util.parallel.Parallel;
  * Streams may be either bounded or infinite in length. Once an item has been
  * extracted from a stream, it is said to be consumed and is no longer available
  * for operations on the stream.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            The type of data item in the stream
  */
@@ -34,7 +34,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 * <p>
 	 * Note: for an unbounded stream, this method will never return unless some
 	 * form of exception is raised.
-	 * 
+	 *
 	 * @param op
 	 *            the {@link Operation} to apply
 	 */
@@ -49,7 +49,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 * Note: for an unbounded stream, this method will never return unless some
 	 * form of exception is raised or the condition of the
 	 * <tt>stopPredicate</tt> is met.
-	 * 
+	 *
 	 * @param operation
 	 *            the {@link Operation} to apply
 	 * @param stopPredicate
@@ -68,7 +68,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 * <p>
 	 * Note: for an unbounded stream, this method will never return unless some
 	 * form of exception is raised.
-	 * 
+	 *
 	 * @param op
 	 *            the {@link Operation} to apply
 	 */
@@ -84,7 +84,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 * <p>
 	 * Note: for an unbounded stream, this method will never return unless some
 	 * form of exception is raised.
-	 * 
+	 *
 	 * @param op
 	 *            the {@link Operation} to apply
 	 * @param pool
@@ -95,7 +95,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	/**
 	 * Transform the stream by creating a view that consists of only the items
 	 * that match the given {@link Predicate}.
-	 * 
+	 *
 	 * @param filter
 	 *            the predicate
 	 * @return a new stream consisting of the matched items from this stream
@@ -105,7 +105,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	/**
 	 * Transform the stream by creating a new stream that transforms the items
 	 * in this stream with the given {@link Function}.
-	 * 
+	 *
 	 * @param mapper
 	 *            the function to apply
 	 * @return a new stream with transformed items from this stream
@@ -115,7 +115,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	/**
 	 * Transform the stream by creating a new stream that transforms the items
 	 * in this stream with the given {@link Function}.
-	 * 
+	 *
 	 * @param mapper
 	 *            the function to apply
 	 * @return a new stream with transformed items from this stream
@@ -125,7 +125,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	/**
 	 * Transform the stream using the given function to transform the items in
 	 * this stream.
-	 * 
+	 *
 	 * @param transform
 	 *            the transform function
 	 * @return a new stream with transformed items from this stream
