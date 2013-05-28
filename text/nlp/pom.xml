@@ -134,6 +134,11 @@
 			<artifactId>utils</artifactId>
 			<version>1.07.00</version>
 		</dependency>
+		<dependency>
+			<groupId>org.geonames</groupId>
+			<artifactId>geonames</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

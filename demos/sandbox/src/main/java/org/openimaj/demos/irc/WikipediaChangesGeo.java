@@ -3,6 +3,12 @@ package org.openimaj.demos.irc;
 import java.io.IOException;
 
 import org.openimaj.demos.irc.WikipediaEditStreamingDataset.WikipediaEdit;
+import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.text.geo.WorldPlace;
+import org.openimaj.text.geo.WorldPolygons;
 import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
@@ -10,6 +16,7 @@ import org.openimaj.util.function.context.ContextExtractionStrategy;
 import org.openimaj.util.function.context.ContextFunction;
 import org.openimaj.util.function.context.ContextGenerator;
 import org.openimaj.util.function.context.ContextPredicate;
+import org.openimaj.video.VideoDisplay;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -24,6 +31,9 @@ public class WikipediaChangesGeo {
 	}
 
 	public static void main(String[] args) throws IOException {
+		WorldVis wordVis = new WorldVis(1800,600);
+		VideoDisplay.createVideoDisplay(wordVis);
+		
 		new WikipediaEditStreamingDataset("en")
 		.map(new ContextGenerator<WikipediaEdit>("wikiedit"))
 		.map(
@@ -46,7 +56,7 @@ public class WikipediaChangesGeo {
 			@Override
 			public void perform(Context object) {
 				FreeGeoIPLocation geoip = object.getTyped("geolocation");
-				System.out.println(geoip.country_name);
+				System.out.println(geoip.country_code);
 			}
 		});
 	}
