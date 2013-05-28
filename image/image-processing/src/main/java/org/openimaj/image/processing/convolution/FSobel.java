@@ -29,19 +29,51 @@
  */
 package org.openimaj.image.processing.convolution;
 
+import org.openimaj.image.FImage;
+import org.openimaj.image.analyser.ImageAnalyser;
+
 /**
- * Returns a kernel which is the y derivative of a gaussian of sigma 1
+ * Helper {@link ImageAnalyser} that computes the X and Y image gradients using
+ * Sobel filters. Optionally, the input image can be blurred first using a
+ * Gaussian.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class FSobelY extends FConvolution {
+public class FSobel implements ImageAnalyser<FImage> {
+	private float sigma;
 
 	/**
-	 * Returns a kernel which is the y derivative of a gaussian of sigma 1
+	 * The X gradients
 	 */
-	public FSobelY() {
-		super(FSobelMagnitude.KERNEL_Y);
+	public FImage dx;
+
+	/**
+	 * The Y gradients
+	 */
+	public FImage dy;
+
+	/**
+	 * Construct with no Gaussian blurring
+	 */
+	public FSobel() {
+		this(0);
 	}
 
+	/**
+	 * Construct with an initial Gaussian blurring of the given standard
+	 * deviation.
+	 * 
+	 * @param sigma
+	 *            the standard deviation of the Gaussian blur
+	 */
+	public FSobel(float sigma) {
+		this.sigma = sigma;
+	}
+
+	@Override
+	public void analyseImage(FImage image) {
+		final FImage tmp = sigma == 0 ? image : image.process(new FGaussianConvolve(sigma));
+		dx = tmp.process(new FSobelX());
+		dy = tmp.process(new FSobelY());
+	}
 }

@@ -31,9 +31,7 @@ package org.openimaj.image.processing.edges;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.HistogramAnalyser;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.processing.convolution.FSobelX;
-import org.openimaj.image.processing.convolution.FSobelY;
+import org.openimaj.image.processing.convolution.FSobel;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.statistics.distribution.Histogram;
 
@@ -118,10 +116,37 @@ public class CannyEdgeDetector implements SinglebandImageProcessor<Float, FImage
 
 	@Override
 	public void processImage(FImage image) {
-		final FImage tmp = image.process(new FGaussianConvolve(sigma));
-		final FImage dx = tmp.process(new FSobelX());
-		final FImage dy = tmp.process(new FSobelY());
+		processImage(image, new FSobel(sigma));
+	}
 
+	/**
+	 * Apply non-max suppression and hysteresis thresholding based using the
+	 * given {@link FSobel} analyser to generate the gradients. The gradient
+	 * maps held by the {@link FSobel} object will be set to the gradients of
+	 * the input image after this method returns.
+	 * 
+	 * @param image
+	 *            the image to process (and write the result to)
+	 * @param sobel
+	 *            the computed gradients
+	 */
+	public void processImage(FImage image, FSobel sobel) {
+		image.analyseWith(sobel);
+		processImage(image, sobel.dx, sobel.dy);
+	}
+
+	/**
+	 * Apply non-max suppression and hysteresis thresholding based on the given
+	 * (Sobel) gradient maps and write the result to the given output image.
+	 * 
+	 * @param output
+	 *            the output image
+	 * @param dx
+	 *            the x gradients
+	 * @param dy
+	 *            the y gradients
+	 */
+	public void processImage(FImage output, FImage dx, FImage dy) {
 		// tmpMags will hold the magnitudes BEFORE suppression
 		final FImage tmpMags = new FImage(dx.width, dx.height);
 		// magnitudes holds the suppressed magnitude image
@@ -137,7 +162,7 @@ public class CannyEdgeDetector implements SinglebandImageProcessor<Float, FImage
 			low = threshRatio * high;
 		}
 
-		thresholdingTracker(magnitudes, image, low, high);
+		thresholdingTracker(magnitudes, output, low, high);
 	}
 
 	private void thresholdingTracker(FImage magnitude, FImage output, float low, float high) {
