@@ -259,4 +259,24 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 		}
 		return output;
 	}
+
+	/**
+	 * Get the direction of the SWT; true for dark on light, false for light
+	 * 
+	 * @return the direction
+	 */
+	public boolean isDirection() {
+		return direction;
+	}
+
+	/**
+	 * Set the direction of the SWT; true for dark on light, false for light
+	 * 
+	 * @param direction
+	 *            the direction to set
+	 */
+	public void setDirection(boolean direction) {
+		this.direction = direction;
+	}
+
 }
