@@ -52,20 +52,29 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 			{ 0, 0 }, { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } };
 
 	private final CannyEdgeDetector canny;
+	private boolean direction;
 
 	/**
 	 * Construct the SWT with the given sigma for smoothing in the Canny phase
 	 * The Canny thresholds are chosen automatically.
 	 * 
+	 * @param direction
+	 *            direction of the SWT; true for dark on light, false for light
+	 *            on dark.
 	 * @param sigma
 	 *            the amount of initial blurring
 	 */
-	public StrokeWidthTransform(float sigma) {
+	public StrokeWidthTransform(boolean direction, float sigma) {
+		this.direction = direction;
 		this.canny = new CannyEdgeDetector(sigma);
 	}
 
 	/**
 	 * Construct with all Canny parameters set manually.
+	 * 
+	 * @param direction
+	 *            direction of the SWT; true for dark on light, false for light
+	 *            on dark.
 	 * 
 	 * @param lowThresh
 	 *            lower hysteresis threshold.
@@ -74,7 +83,8 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 	 * @param sigma
 	 *            the amount of initial blurring.
 	 */
-	public StrokeWidthTransform(float lowThresh, float highThresh, float sigma) {
+	public StrokeWidthTransform(boolean direction, float lowThresh, float highThresh, float sigma) {
+		this.direction = direction;
 		this.canny = new CannyEdgeDetector(lowThresh, highThresh, sigma);
 	}
 
@@ -87,7 +97,7 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 
 		image.fill(Float.POSITIVE_INFINITY);
 
-		final List<List<Pixel>> rays = generateRays(edges, grads.dx, grads.dy, true, image);
+		final List<List<Pixel>> rays = generateRays(edges, grads.dx, grads.dy, direction, image);
 		medianFilter(image, rays);
 	}
 
