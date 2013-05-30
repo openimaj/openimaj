@@ -55,7 +55,7 @@ public final class StockPriceAggregator
 	}
 
 
-	StockPriceAggregator(double thresh)
+	public StockPriceAggregator(double thresh)
 	{
 		super(new StockPriceComparator(thresh));
 	}

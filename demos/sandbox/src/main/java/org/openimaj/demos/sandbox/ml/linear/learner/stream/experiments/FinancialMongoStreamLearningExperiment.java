@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.demos.sandbox.ml.linear.learner.stream.experiments;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -6,6 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.IncrementalLearnerFunction;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.IncrementalLearnerWorldSelectingEvaluator;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.ModelStats;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.StockPriceAggregator;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.USMFStatusBagOfWords;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.USMFTickMongoDBQueryStream;
 import org.openimaj.ml.linear.evaluation.SumLossEvaluator;
 import org.openimaj.ml.linear.learner.BilinearLearnerParameters;
 import org.openimaj.ml.linear.learner.init.FirstValueInitStrat;

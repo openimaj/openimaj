@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -60,6 +60,7 @@ public class GeneralJSONTweet4jStatus extends GeneralJSON{
 		Place place = this.status.getPlace();
 		if(place!=null){
 			status.location = place.getName();
+			status.country_code = place.getCountryCode();
 		}
 		status.id = this.status.getId();
 		status.text = this.status.getText();

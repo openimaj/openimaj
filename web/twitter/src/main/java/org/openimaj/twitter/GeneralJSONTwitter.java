@@ -153,6 +153,10 @@ public class GeneralJSONTwitter extends GeneralJSON {
 			coords[1] = coordList.get(1);
 			status.geo = coords;
 		}
+		if(this.place != null && place.containsKey("name") && place.containsKey("country_code")){
+			status.location = (String) place.get("name");
+			status.country_code = (String) place.get("country_code");
+		}
 		status.id = this.id;
 		status.text = this.text;
 		status.service = "Twitter";

@@ -2,8 +2,10 @@ package org.openimaj.demos.sandbox.ml.linear.learner.stream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,8 +91,18 @@ public class YahooFinanceStream extends AbstractStream<Map<String,Double>>{
 	}
 
 	private void constructYahooURI(String[] tickers) throws MalformedURLException {
+		for (int i = 0; i < tickers.length; i++) {
+			try {
+				tickers[i] = URLEncoder.encode(tickers[i], "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		String feeds = StringUtils.join(tickers, "+");
-		this.yahooURL = new URL(String.format(YAHOO_URI,feeds));
+		String urlString = String.format(YAHOO_URI,feeds);
+		this.yahooURL = new URL(urlString);
+
 	}
 	@Override
 	public boolean hasNext() {

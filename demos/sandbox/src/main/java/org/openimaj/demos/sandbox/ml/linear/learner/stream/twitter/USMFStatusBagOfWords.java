@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,26 +19,46 @@ public class USMFStatusBagOfWords implements Function<List<USMFStatus>,Map<Strin
 
 	private TwitterPreprocessingMode<List<String>> mode;
 	private Predicate<String> junkWords;
+	private NameStrategy userStrat;
 
 	/**
 	 * @param mode the mode from which to grab words
 	 */
 	public USMFStatusBagOfWords(TwitterPreprocessingMode<List<String>> mode) {
 		this.mode = mode;
+		this.userStrat = new UserNameStrategy();
+		initJunkWords();
+	}
+
+	/**
+	 * @param mode the mode from which to grab words
+	 * @param userNameStrategy
+	 */
+	public USMFStatusBagOfWords(TwitterPreprocessingMode<List<String>> mode, NameStrategy userNameStrategy) {
+		this.mode = mode;
+		this.userStrat = userNameStrategy;
+		initJunkWords();
+	}
+
+
+
+	private void initJunkWords() {
 		this.junkWords = new Predicate<String>() {
 
 			@Override
 			public boolean test(String object) {
 				String lowerCase = object.toLowerCase();
-				if(
-					lowerCase.length()<=2 ||
+				if( lowerCase.length()<=2 ||
 					lowerCase.contains("http") ||
 					lowerCase.startsWith("@") ||
 					lowerCase.startsWith("#") ||
 					lowerCase.startsWith("$")
-
-				)return false;
-				return true;
+				) {
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
 		};
 	}
@@ -48,7 +68,7 @@ public class USMFStatusBagOfWords implements Function<List<USMFStatus>,Map<Strin
 		Map<String, Map<String, Double>> ret = new HashMap<String, Map<String,Double>>();
 		Map<String,Double> userTotals = new HashMap<String, Double>();
 		for (USMFStatus usmfStatus : in) {
-			String userName = usmfStatus.user.name;
+			String userName = this.userStrat.createName(usmfStatus);
 			Map<String, Double> userWordCounts = userWordCounts(ret, userTotals,userName);
 
 			try {

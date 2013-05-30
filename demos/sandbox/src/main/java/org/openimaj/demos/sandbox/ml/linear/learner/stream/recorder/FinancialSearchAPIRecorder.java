@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.demos.sandbox.ml.linear.learner.stream.recorder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -9,6 +9,11 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.MongoDBOutputOp;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.YahooFinanceStream;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPredicateFunction;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPreprocessingFunction;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterStatusAsUSMFStatus;
 import org.openimaj.demos.twitter.TwitterSearchAPIDataset;
 import org.openimaj.tools.twitter.modes.filter.LanguageFilter;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;

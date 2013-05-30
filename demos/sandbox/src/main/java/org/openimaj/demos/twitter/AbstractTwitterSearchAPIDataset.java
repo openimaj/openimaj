@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.openimaj.data.dataset.StreamingDataset;
+import org.openimaj.twitter.utils.Twitter4jUtil;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.BlockingDroppingQueue;
 import org.openimaj.util.parallel.GlobalExecutorPool;
@@ -92,25 +93,10 @@ public abstract class AbstractTwitterSearchAPIDataset<T> extends BlockingDroppin
 					logger.error("Thread interuppted!",e);
 					close();
 				} catch (TwitterException e) {
-					if(e.exceededRateLimitation()){
-						long retryAfter = e.getRetryAfter() * 1000;
-						logger.debug(String.format("Rate limit exceeded, waiting %dms",retryAfter));
-						try {
-							if(retryAfter < 0){
-								retryAfter = DEFAULT_ERROR_BUT_NO_WAIT_TIME * 5;
-							}
-							Thread.sleep(retryAfter);
-						} catch (InterruptedException e1) {
-							logger.error("Thread interuppted!",e1);
-						}
-
-					}else{
-						logger.error("Twitter Exception!",e);
-						logger.error("Waiting a short period of time");
-						try {
-							Thread.sleep(DEFAULT_ERROR_BUT_NO_WAIT_TIME);
-						} catch (InterruptedException e1) {
-						}
+					long waitTime = Twitter4jUtil.handleTwitterException(e,DEFAULT_ERROR_BUT_NO_WAIT_TIME);
+					try {
+						Thread.sleep(waitTime);
+					} catch (InterruptedException e1) {
 					}
 				}
 			}

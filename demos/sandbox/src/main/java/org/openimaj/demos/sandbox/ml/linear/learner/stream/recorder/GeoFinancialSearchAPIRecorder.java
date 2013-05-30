@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.demos.sandbox.ml.linear.learner.stream.recorder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,7 +11,12 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.MongoDBOutputOp;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.YahooFinanceStream;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.ContextTwitterStatusAsUSMFStatus;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPreprocessingFunction;
 import org.openimaj.demos.twitter.ContextRoundRobinTwitterSearchAPIDataset;
+import org.openimaj.tools.twitter.modes.preprocessing.CountryCodeMode;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
@@ -55,13 +60,14 @@ public class GeoFinancialSearchAPIRecorder {
 		ContextRealTimeWindowFunction<Map<String, Double>> yahooWindow = new ContextRealTimeWindowFunction<Map<String,Double>>(5000);
 		Stream<Context> yahooAveragePriceStream = new YahooFinanceStream(true,tickers).transform(yahooWindow);
 
-		List<Map<String,String>> geoLocs = loadGeoLocs("locations_input_srv_II.txt");
+		List<Map<String,String>> geoLocs = loadGeoLocs("/org/openimaj/demos/sandbox/ml/linear/learner/stream/locations_input_srv_II.txt");
 
 		// The Twitter Stream
 		final ArrayBlockingDroppingQueue<Context> buffer = new ArrayBlockingDroppingQueue<Context>(1000);
 		final LanguageDetectionMode languageDetectionMode = new LanguageDetectionMode();
 		final StopwordMode stopwordMode = new StopwordMode();
 		final TokeniseMode tokeniseMode = new TokeniseMode();
+		final CountryCodeMode ccm = new CountryCodeMode();
 
 		Stream<Context> twitterUserWordCountStream =
 			new ContextRoundRobinTwitterSearchAPIDataset(

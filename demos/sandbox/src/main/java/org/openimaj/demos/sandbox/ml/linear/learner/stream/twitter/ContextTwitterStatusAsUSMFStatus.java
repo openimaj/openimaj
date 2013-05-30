@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter;
 
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.data.Context;

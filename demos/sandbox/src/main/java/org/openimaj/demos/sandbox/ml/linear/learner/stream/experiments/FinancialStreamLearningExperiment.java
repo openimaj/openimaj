@@ -1,10 +1,18 @@
-package org.openimaj.demos.sandbox.ml.linear.learner.stream;
+package org.openimaj.demos.sandbox.ml.linear.learner.stream.experiments;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.IncrementalLearnerFunction;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.IncrementalLearnerWorldSelectingEvaluator;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.ModelStats;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.YahooFinanceStream;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPredicateFunction;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPreprocessingFunction;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterStatusAsUSMFStatus;
+import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.USMFStatusBagOfWords;
 import org.openimaj.demos.twitter.TwitterStreamingDataset;
 import org.openimaj.ml.linear.evaluation.SumLossEvaluator;
 import org.openimaj.ml.linear.learner.BilinearLearnerParameters;

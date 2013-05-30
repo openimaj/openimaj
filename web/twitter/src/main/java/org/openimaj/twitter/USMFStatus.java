@@ -160,6 +160,11 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	 */
 	public ArrayList<Link> links;
 
+	/**
+	 * the ISO A2 country code
+	 */
+	public String country_code;
+
 	private boolean invalid = false;
 
 	/**
