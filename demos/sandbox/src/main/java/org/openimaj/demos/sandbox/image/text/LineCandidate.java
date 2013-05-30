@@ -1,19 +1,87 @@
 package org.openimaj.demos.sandbox.image.text;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.image.pixel.Pixel;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.Pair;
+import org.openimaj.util.set.DisjointSetForest;
 
 public class LineCandidate {
-	List<LetterCandidate> letters;
+	List<LetterCandidate> letters = new ArrayList<LetterCandidate>();
 	Rectangle regularBoundingBox;
 
-	public static List<LineCandidate> extractLines(List<LetterCandidate> letters) {
+	LineCandidate() {
+	}
 
-		return null;
+	public static List<LineCandidate> extractLines(List<LetterCandidate> letters) {
+		final List<Pair<LetterCandidate>> pairs = createLetterPairs(letters);
+
+		final Set<Set<Pair<LetterCandidate>>> sets = DisjointSetForest.partitionSubsets(pairs,
+				new Comparator<Pair<LetterCandidate>>() {
+					@Override
+					public int compare(Pair<LetterCandidate> pair1, Pair<LetterCandidate> pair2) {
+						final Pixel pair1d = computeDelta(pair1.firstObject(), pair1.secondObject());
+						final Pixel pair2d = computeDelta(pair2.firstObject(), pair2.secondObject());
+
+						if (pair1.firstObject() == pair2.firstObject() || pair1.secondObject() == pair2.secondObject())
+						{
+							final int tn = pair1d.y * pair2d.x - pair1d.x * pair2d.y;
+							final int td = pair1d.x * pair2d.x + pair1d.y * pair2d.y;
+							// share the same end, opposite direction
+							if (tn * 7 < -td * 4 && tn * 7 > td * 4)
+								return 0;
+						} else if (pair1.firstObject() == pair2.secondObject()
+								|| pair1.secondObject() == pair2.firstObject())
+						{
+							final int tn = pair1d.y * pair2d.x - pair1d.x * pair2d.y;
+							final int td = pair1d.x * pair2d.x + pair1d.y * pair2d.y;
+							// share the other end, same direction
+							if (tn * 7 < td * 4 && tn * 7 > -td * 4)
+								return 0;
+						}
+
+						return 1;
+					}
+
+					private Pixel computeDelta(LetterCandidate firstObject, LetterCandidate secondObject) {
+						final Rectangle frect = firstObject.regularBoundingBox;
+						final Rectangle srect = secondObject.regularBoundingBox;
+
+						final int dx = (int) (frect.x - srect.x + (frect.width - srect.width) / 2);
+						final int dy = (int) (frect.y - srect.y + (frect.height - srect.height) / 2);
+						return new Pixel(dx, dy);
+					}
+				});
+
+		final List<LineCandidate> chains = new ArrayList<LineCandidate>();
+		for (final Set<Pair<LetterCandidate>> line : sets) {
+			final Set<LetterCandidate> lcs = new HashSet<LetterCandidate>();
+
+			for (final Pair<LetterCandidate> p : line) {
+				lcs.add(p.firstObject());
+				lcs.add(p.secondObject());
+			}
+
+			final LineCandidate lc = new LineCandidate();
+			lc.letters = new ArrayList<LetterCandidate>(lcs);
+			lc.regularBoundingBox = LetterCandidate.computeBounds(lc.letters);
+			chains.add(lc);
+		}
+		System.out.println(sets.size());
+
+		return chains;// chainPairs(pairs);
+	}
+
+	private static void computeBounds(List<LineCandidate> lines) {
+		for (final LineCandidate line : lines) {
+			line.regularBoundingBox = LetterCandidate.computeBounds(line.letters);
+		}
 	}
 
 	private static List<Pair<LetterCandidate>> createLetterPairs(List<LetterCandidate> letters) {
@@ -22,8 +90,9 @@ public class LineCandidate {
 		final int numLetters = letters.size();
 
 		for (int j = 0; j < numLetters; j++) {
+			final LetterCandidate l1 = letters.get(j);
+
 			for (int i = j + 1; i < numLetters; i++) {
-				final LetterCandidate l1 = letters.get(j);
 				final LetterCandidate l2 = letters.get(i);
 
 				// similar stroke width (median ratio < 2)
@@ -32,18 +101,25 @@ public class LineCandidate {
 					continue;
 
 				// similar height
-				if (Math.max(l1.height, l2.height) / Math.min(l1.height, l2.height) > 2.0)
-					continue;
-
-				// small distance between
-				final double distance = Line2d.distance(l1.centroid, l2.centroid);
-				if (distance > 3 * Math.max(l1.width, l2.width))
+				if (Math.max(l1.regularBoundingBox.height, l2.regularBoundingBox.height)
+						/ Math.min(l1.regularBoundingBox.height, l2.regularBoundingBox.height) > 2.0)
 					continue;
 
 				// similar color
-				// if (FloatFVComparison.EUCLIDEAN.compare(l1.averageColour,
-				// l2.averageColour) > 1)
-				// continue;
+				if (Math.abs(l1.averageBrightness - l2.averageBrightness) > 0.12f)
+					continue;
+
+				// small distance between
+				final double distance = l1.centroid.x - l2.centroid.x;
+				if (Math.abs(distance) > 3 * Math.max(l1.regularBoundingBox.width, l2.regularBoundingBox.width))
+					continue;
+
+				// approximately level
+				final int oy = (int) (Math.min(l1.regularBoundingBox.y + l1.regularBoundingBox.height,
+						l2.regularBoundingBox.y + l2.regularBoundingBox.height) - Math.max(l1.regularBoundingBox.y,
+						l2.regularBoundingBox.y));
+				if (oy * 1.3f < Math.min(l1.regularBoundingBox.height, l2.regularBoundingBox.height))
+					continue;
 
 				// tests passed... merge
 				pairs.add(new Pair<LetterCandidate>(l1, l2));
@@ -53,47 +129,7 @@ public class LineCandidate {
 		return pairs;
 	}
 
-	private static List<LineCandidate> chainPairs(List<Pair<LetterCandidate>> pairs) {
-		final List<LineCandidate> lines = new ArrayList<LineCandidate>();
-
-		boolean didMerge = true;
-		while (didMerge) {
-			didMerge = false;
-			for (int j = 0; j < lines.size(); j++) {
-				final LineCandidate chain1 = lines.get(j);
-
-				for (int i = 0; i < lines.size(); i++) {
-					final LineCandidate chain2 = lines.get(i);
-
-					final List<LetterCandidate> merged = merge(chain1.letters, chain2.letters);
-					if (merged != null) {
-						chain1.letters = merged;
-						lines.remove(chain2);
-						didMerge = true;
-						break;
-					}
-				}
-			}
-		}
-
-		return lines;
-	}
-
-	private static List<LetterCandidate> merge(List<LetterCandidate> chain1, List<LetterCandidate> chain2) {
-		if (chain1.get(0) == chain2.get(chain2.size() - 1)) {
-			// TODO check direction
-
-			chain2.addAll(chain1);
-			return chain2;
-		}
-
-		if (chain1.get(chain1.size() - 1) == chain2.get(0)) {
-			// TODO check direction
-
-			chain1.addAll(chain2);
-			return chain1;
-		}
-
-		return null;
+	private static double angle(Point2d centroid, Point2d centroid2) {
+		return Math.atan2(centroid.getY() - centroid2.getY(), centroid.getX() - centroid2.getX());
 	}
 }
