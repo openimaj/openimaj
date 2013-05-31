@@ -140,7 +140,7 @@ public class DisjointSetForest<T> implements Set<T> {
 	 * @param y
 	 *            the y object.
 	 * @return the new root, or null if x or y are not in the disjoint set
-	 *         forest, or neither x and y are already in the same set.
+	 *         forest, or x and y are already in the same set.
 	 */
 	public T union(T x, T y) {
 		final T xRoot = find(x);
