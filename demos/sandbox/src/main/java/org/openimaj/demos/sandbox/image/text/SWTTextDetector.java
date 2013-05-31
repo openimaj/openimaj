@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.pixel.Pixel;
@@ -205,22 +204,28 @@ public class SWTTextDetector {
 				if (frame == null)
 					return;
 
-				final FImage image = frame.flatten();
+				final FImage image = frame.flatten().normalise();
+				final long t1 = System.currentTimeMillis();
 				final FImage swt = image.process(new StrokeWidthTransform(true, 2));
+				final long t2 = System.currentTimeMillis();
 
-				final List<ConnectedComponent> comps = findComponents(swt, ConnectMode.CONNECT_4);
-				final List<LetterCandidate> letters = filterComponents(comps, swt, image);
+				System.out.println(t2 - t1);
 
-				final List<LineCandidate> lines =
-						LineCandidate.extractLines(letters);
-				for (final LineCandidate line : lines) {
-					frame.drawShape(line.regularBoundingBox, RGBColour.RED);
-
-					// final List<WordCandidate> words =
-					// WordCandidate.extractWords(line);
-					// for (final WordCandidate wc : words)
-					// frame.drawShape(wc.regularBoundingBox, RGBColour.BLUE);
-				}
+				// final List<ConnectedComponent> comps = findComponents(swt,
+				// ConnectMode.CONNECT_4);
+				// final List<LetterCandidate> letters = filterComponents(comps,
+				// swt, image);
+				//
+				// final List<LineCandidate> lines =
+				// LineCandidate.extractLines(letters);
+				// for (final LineCandidate line : lines) {
+				// frame.drawShape(line.regularBoundingBox, RGBColour.RED);
+				//
+				// // final List<WordCandidate> words =
+				// // WordCandidate.extractWords(line);
+				// // for (final WordCandidate wc : words)
+				// // frame.drawShape(wc.regularBoundingBox, RGBColour.BLUE);
+				// }
 			}
 
 			@Override

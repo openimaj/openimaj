@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
@@ -15,6 +14,7 @@ import org.openimaj.image.pixel.util.LineIterators;
 import org.openimaj.image.processing.convolution.FSobel;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.util.FloatArrayStatsUtils;
 
 /**
  * Implementation of the Stroke Width Transform.
@@ -53,6 +53,7 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 
 	private final CannyEdgeDetector canny;
 	private boolean direction;
+	private int maxStrokeWidth = 70;
 
 	/**
 	 * Construct the SWT with the given sigma for smoothing in the Canny phase
@@ -133,7 +134,7 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 		final Iterator<Pixel> iterator = LineIterators.bresenham(x, y, gradX, gradY);
 		final Pixel start = iterator.next().clone(); // start of ray
 
-		while (true) {
+		for (int j = 0; j < maxStrokeWidth; j++) {
 			final Pixel current = iterator.next();
 
 			// check bounds
@@ -141,10 +142,10 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 				break;
 			}
 
-			Pixel end = null;
-
 			if (Math.abs(current.x - start.x) < 2 && Math.abs(current.y - start.y) < 2)
 				continue;
+
+			Pixel end = null;
 
 			// search over the around the current pixel region for an edge
 			for (int i = 0; i < edgeSearchRegion.length; i++) {
@@ -165,16 +166,26 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 					final int currentX = end.x + gradSearchRegion[i][0];
 					final int currentY = end.y + gradSearchRegion[i][1];
 
-					float currentGradX = dx.pixels[currentY][currentX];
-					float currentGradY = dy.pixels[currentY][currentX];
-					final float currentMag = (float) Math.sqrt(
-							(currentGradX * currentGradX) + (currentGradY * currentGradY)) *
-							gradDirection;
+					final float currentGradX = dx.pixels[currentY][currentX];
+					final float currentGradY = dy.pixels[currentY][currentX];
+					// final float currentMag = (float) Math.sqrt(
+					// (currentGradX * currentGradX) + (currentGradY *
+					// currentGradY)) *
+					// gradDirection;
+					//
+					// currentGradX = currentGradX / currentMag;
+					// currentGradY = currentGradY / currentMag;
+					//
+					// if (Math.acos(gradX * -currentGradX + gradY *
+					// -currentGradY) < Math.PI / 6.0) {
+					// found = true;
+					// break;
+					// }
 
-					currentGradX = currentGradX / currentMag;
-					currentGradY = currentGradY / currentMag;
-
-					if (Math.acos(gradX * -currentGradX + gradY * -currentGradY) < Math.PI / 6.0) {
+					final float tn = gradY * currentGradX - gradX * currentGradY;
+					final float td = gradX * currentGradX + gradY * currentGradY;
+					if (tn * 7 < -td * 4 && tn * 7 > td * 4)
+					{
 						found = true;
 						break;
 					}
@@ -205,16 +216,19 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 			}
 		});
 
-		final DescriptiveStatistics ds = new DescriptiveStatistics();
-		for (final List<Pixel> ray : rays) {
-			ds.clear();
+		final float[] working = new float[rays.get(rays.size() - 1).size()];
 
-			for (final Pixel pixel : ray) {
-				ds.addValue(output.pixels[pixel.y][pixel.x]);
+		for (final List<Pixel> ray : rays) {
+			final int length = ray.size();
+			for (int i = 0; i < length; i++) {
+				final Pixel pixel = ray.get(i);
+				working[i] = output.pixels[pixel.y][pixel.x];
 			}
 
-			final float median = (float) ds.getPercentile(50);
-			for (final Pixel pixel : ray) {
+			final float median = FloatArrayStatsUtils.median(working, 0, length);
+			for (int i = 0; i < length; i++) {
+				final Pixel pixel = ray.get(i);
+
 				if (output.pixels[pixel.y][pixel.x] > median)
 					output.pixels[pixel.y][pixel.x] = median;
 			}

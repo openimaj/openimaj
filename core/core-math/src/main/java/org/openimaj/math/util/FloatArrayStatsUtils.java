@@ -29,205 +29,271 @@
  */
 package org.openimaj.math.util;
 
+import org.openimaj.util.array.ArrayUtils;
+
 /**
  * 
  * Some basic statistical operations on float arrays
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class FloatArrayStatsUtils {
 	/**
-	 * Find the mean of a single dimensional float array. returns 0 if the array is empty.
+	 * Find the mean of a single dimensional float array. returns 0 if the array
+	 * is empty.
+	 * 
 	 * @param arr
 	 * @return the mean
 	 */
 	public static float mean(float[] arr) {
-		if(arr.length == 0){
+		if (arr.length == 0) {
 			return 0;
 		}
 		int count = 1;
 		float mean = arr[0];
 		for (int i = 1; i < arr.length; i++) {
 			count++;
-			mean = mean + (arr[i] - mean)/count;
+			mean = mean + (arr[i] - mean) / count;
 		}
 		return mean;
 	}
-	
+
 	/**
-	 * Calculate the mean of a two dimensional float array. returns 0 if the array is empty.
+	 * Calculate the mean of a two dimensional float array. returns 0 if the
+	 * array is empty.
+	 * 
 	 * @param arr
 	 * @return the mean
 	 */
 	public static float mean(float[][] arr) {
-		if(arr.length == 0){
+		if (arr.length == 0) {
 			return 0;
 		}
 		int firstRowIndex = 0;
-		while(arr[firstRowIndex].length == 0)firstRowIndex++;
+		while (arr[firstRowIndex].length == 0)
+			firstRowIndex++;
 		int firstColIndex = 1;
-		
+
 		int count = 1;
 		float mean = arr[firstRowIndex][0];
-		
+
 		for (int i = firstRowIndex; i < arr.length; i++) {
-			for(int j = firstColIndex; j < arr[i].length; j++){
+			for (int j = firstColIndex; j < arr[i].length; j++) {
 				count++;
-				mean = mean + (arr[i][j] - mean)/count;
+				mean = mean + (arr[i][j] - mean) / count;
 			}
 			firstColIndex = 0;
 		}
-		
+
 		return mean;
 	}
-	
+
 	/**
-	 * Calculate the variance of a one dimensional float array. If the length of the array is less than 2, variance is 0.
+	 * Calculate the variance of a one dimensional float array. If the length of
+	 * the array is less than 2, variance is 0.
+	 * 
 	 * @param arr
 	 * @return the variance
 	 */
 	public static float var(float[] arr) {
-		if(arr.length < 2){
+		if (arr.length < 2) {
 			return 0;
 		}
-		
+
 		int count = 1;
 		float oldMean = arr[0];
 		float newMean = arr[0];
 		float var = 0;
-		
+
 		for (int i = 1; i < arr.length; i++) {
-			count ++;
-			float x = arr[i];
-			newMean = oldMean + (x - oldMean)/count;
+			count++;
+			final float x = arr[i];
+			newMean = oldMean + (x - oldMean) / count;
 			var = var + (x - oldMean) * (x - newMean);
 			oldMean = newMean;
 		}
-		
+
 		return var / (count - 1);
 	}
-	
+
 	/**
-	 * Calculate the variance of a one dimensional float array. If the length of the array is less than 2, variance is 0.
+	 * Calculate the variance of a one dimensional float array. If the length of
+	 * the array is less than 2, variance is 0.
+	 * 
 	 * @param arr
 	 * @return the variance
 	 */
 	public static float var(float[][] arr) {
-		if(arr.length == 0){
+		if (arr.length == 0) {
 			return 0;
 		}
-		
+
 		int firstRowIndex = 0;
-		while(arr[firstRowIndex].length == 0)firstRowIndex++;
+		while (arr[firstRowIndex].length == 0)
+			firstRowIndex++;
 		int firstColIndex = 1;
-		
+
 		int count = 1;
 		float oldMean = arr[firstRowIndex][0];
 		float newMean = arr[firstRowIndex][0];
 		float var = 0;
-		
+
 		for (int i = firstRowIndex; i < arr.length; i++) {
-			for (int j = firstColIndex ; j < arr[i].length; j++) {
-				count ++;
-				float x = arr[i][j];
-				newMean = oldMean + (x - oldMean)/count;
+			for (int j = firstColIndex; j < arr[i].length; j++) {
+				count++;
+				final float x = arr[i][j];
+				newMean = oldMean + (x - oldMean) / count;
 				var = var + (x - oldMean) * (x - newMean);
 				oldMean = newMean;
 			}
 			firstColIndex = 0;
 		}
-		
+
 		return count > 1 ? var / (count - 1) : 0;
 	}
-	
+
 	/**
-	 * Calculate the standard deviation of a 2D array. Calls {@link FloatArrayStatsUtils#var(float[][])} and does a Math.sqrt.
+	 * Calculate the standard deviation of a 2D array. Calls
+	 * {@link FloatArrayStatsUtils#var(float[][])} and does a Math.sqrt.
+	 * 
 	 * @param arr
 	 * @return the standard deviation
 	 */
 	public static float std(float[][] arr) {
 		return (float) Math.sqrt(var(arr));
 	}
-	
+
 	/**
-	 * Calculate the standard deviation of a 1D array. Calls {@link FloatArrayStatsUtils#var(float[])} and does a Math.sqrt.
+	 * Calculate the standard deviation of a 1D array. Calls
+	 * {@link FloatArrayStatsUtils#var(float[])} and does a Math.sqrt.
+	 * 
 	 * @param arr
 	 * @return the standard deviation
 	 */
 	public static float std(float[] arr) {
 		return (float) Math.sqrt(var(arr));
 	}
-	
+
 	/**
 	 * Calculate the sum of a 2D array.
+	 * 
 	 * @param arr
 	 * @return the sum
 	 */
 	public static float sum(float[][] arr) {
 		float sum = 0;
-		for (int i=0; i<arr.length; i++)
+		for (int i = 0; i < arr.length; i++)
 			sum += sum(arr[i]);
 		return sum;
 	}
-	
+
 	/**
-	 * Calculate the sum of a 1D array. 
+	 * Calculate the sum of a 1D array.
+	 * 
 	 * @param arr
 	 * @return the sum
 	 */
 	public static float sum(float[] arr) {
 		float sum = 0;
-		for (int i=0; i<arr.length; i++)
+		for (int i = 0; i < arr.length; i++)
 			sum += arr[i];
 		return sum;
 	}
-	
+
 	/**
 	 * Calculate the sum of the squared values of a 2D array.
+	 * 
 	 * @param arr
 	 * @return sum of squares
 	 */
 	public static float sumSq(float[][] arr) {
 		float sum = 0;
-		for (int i=0; i<arr.length; i++)
+		for (int i = 0; i < arr.length; i++)
 			sum += sumSq(arr[i]);
 		return sum;
 	}
-	
+
 	/**
-	 * Calculate the sum the squared values of a 1D array. 
+	 * Calculate the sum the squared values of a 1D array.
+	 * 
 	 * @param arr
 	 * @return sum of squares
 	 */
 	public static float sumSq(float[] arr) {
 		float sum = 0;
-		for (int i=0; i<arr.length; i++)
-			sum += arr[i]*arr[i];
+		for (int i = 0; i < arr.length; i++)
+			sum += arr[i] * arr[i];
 		return sum;
 	}
-	
+
 	/**
 	 * Calculate the sum of the absolute values of a 2D array.
+	 * 
 	 * @param arr
-	 * @return the sum absolute values 
+	 * @return the sum absolute values
 	 */
 	public static float sumAbs(float[][] arr) {
 		float sum = 0;
-		for (int i=0; i<arr.length; i++)
+		for (int i = 0; i < arr.length; i++)
 			sum += sumAbs(arr[i]);
 		return sum;
 	}
-	
+
 	/**
-	 * Calculate the sum the absolute values of a 1D array. 
+	 * Calculate the sum the absolute values of a 1D array.
+	 * 
 	 * @param arr
 	 * @return the sum absolute values
 	 */
 	public static float sumAbs(float[] arr) {
 		float sum = 0;
-		for (int i=0; i<arr.length; i++)
+		for (int i = 0; i < arr.length; i++)
 			sum += Math.abs(arr[i]);
 		return sum;
+	}
+
+	/**
+	 * Calculate the median of the given array. Uses the quick select algorithm
+	 * ({@link ArrayUtils#quickSelect(float[], int)}).
+	 * 
+	 * @param arr
+	 *            the array
+	 * @return the median value
+	 */
+	public static float median(float[] arr) {
+		final int median = arr.length / 2;
+
+		if (arr.length % 2 == 0) {
+			final float a = ArrayUtils.quickSelect(arr, median);
+			final float b = ArrayUtils.quickSelect(arr, median - 1);
+
+			return (a + b) / 2f;
+		}
+		return ArrayUtils.quickSelect(arr, median);
+	}
+
+	/**
+	 * Calculate the median of the given sub-array. Uses the quick select
+	 * algorithm ({@link ArrayUtils#quickSelect(float[], int, int, int)}).
+	 * 
+	 * @param arr
+	 *            the array
+	 * @param start
+	 *            starting point in the array (inclusive)
+	 * @param stop
+	 *            stopping point in the array (exclusive)
+	 * @return the median value
+	 */
+	public static float median(float[] arr, int start, int stop) {
+		final int median = arr.length / 2;
+
+		if (arr.length % 2 == 0) {
+			final float a = ArrayUtils.quickSelect(arr, median, start, stop);
+			final float b = ArrayUtils.quickSelect(arr, median - 1, start, stop);
+
+			return (a + b) / 2f;
+		}
+		return ArrayUtils.quickSelect(arr, median, start, stop);
 	}
 }

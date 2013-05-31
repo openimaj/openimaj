@@ -33,16 +33,16 @@ import java.lang.reflect.Array;
 
 /**
  * Collection of utilities for primitive arrays.
- *
+ * 
  * @author Jonathan Hare
  * @author Sina Samangooei
- *
+ * 
  */
 public class ArrayUtils {
 
 	/**
 	 * Returns the largest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of floats
 	 * @return the value
@@ -63,7 +63,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the largest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of double
 	 * @return the value
@@ -84,7 +84,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the largest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of bytes
 	 * @return the value
@@ -105,7 +105,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the largest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of shorts
 	 * @return the value
@@ -126,7 +126,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the largest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of ints
 	 * @return the value
@@ -147,7 +147,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the largest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of longs
 	 * @return the value
@@ -168,7 +168,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of floats
 	 * @return the value
@@ -189,7 +189,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of doubles
 	 * @return the value
@@ -210,7 +210,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of bytes
 	 * @return the value
@@ -231,7 +231,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of shorts
 	 * @return the value
@@ -252,7 +252,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of ints
 	 * @return the value
@@ -273,7 +273,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of longs
 	 * @return the value
@@ -294,7 +294,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of floats
 	 * @return the index
@@ -314,7 +314,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of floats
 	 * @return the index
@@ -334,7 +334,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param dsqout
 	 *            array of ints
 	 * @return the index
@@ -354,7 +354,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of ints
 	 * @return the index
@@ -374,7 +374,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param dsqout
 	 *            array of longs
 	 * @return the index
@@ -394,7 +394,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of longs
 	 * @return the index
@@ -414,7 +414,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param dsqout
 	 *            array of byte
 	 * @return the index
@@ -434,7 +434,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of bytes
 	 * @return the index
@@ -454,7 +454,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param dsqout
 	 *            array of short
 	 * @return the index
@@ -474,7 +474,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of shorts
 	 * @return the index
@@ -494,7 +494,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param dsqout
 	 *            array of double
 	 * @return the index
@@ -514,7 +514,7 @@ public class ArrayUtils {
 
 	/**
 	 * Returns the index to the smallest value in the array
-	 *
+	 * 
 	 * @param arr
 	 *            array of doubles
 	 * @return the index
@@ -534,7 +534,7 @@ public class ArrayUtils {
 
 	/**
 	 * Element-wise summation of two arrays, output writes over first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -548,7 +548,7 @@ public class ArrayUtils {
 
 	/**
 	 * Element-wise summation of two arrays, output writes over first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -562,7 +562,7 @@ public class ArrayUtils {
 
 	/**
 	 * Element-wise summation of two arrays, output writes over first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -576,7 +576,7 @@ public class ArrayUtils {
 
 	/**
 	 * Element-wise summation of two arrays, output writes over first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -590,7 +590,7 @@ public class ArrayUtils {
 
 	/**
 	 * Element-wise summation of two arrays, output writes over first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -604,7 +604,7 @@ public class ArrayUtils {
 
 	/**
 	 * Element-wise summation of two arrays, output writes over first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -619,7 +619,7 @@ public class ArrayUtils {
 	/**
 	 * Element-wise subtraction of two arrays. Second array is subtracted from
 	 * first, overwriting the first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -634,7 +634,7 @@ public class ArrayUtils {
 	/**
 	 * Element-wise subtraction of two arrays. Second array is subtracted from
 	 * first, overwriting the first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -649,7 +649,7 @@ public class ArrayUtils {
 	/**
 	 * Element-wise subtraction of two arrays. Second array is subtracted from
 	 * first, overwriting the first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -664,7 +664,7 @@ public class ArrayUtils {
 	/**
 	 * Element-wise subtraction of two arrays. Second array is subtracted from
 	 * first, overwriting the first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -679,7 +679,7 @@ public class ArrayUtils {
 	/**
 	 * Element-wise subtraction of two arrays. Second array is subtracted from
 	 * first, overwriting the first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -694,7 +694,7 @@ public class ArrayUtils {
 	/**
 	 * Element-wise subtraction of two arrays. Second array is subtracted from
 	 * first, overwriting the first array
-	 *
+	 * 
 	 * @param a1
 	 *            first array
 	 * @param a2
@@ -707,21 +707,23 @@ public class ArrayUtils {
 	}
 
 	/**
-	 * 	Subtracts <code>s</code> from all elements in <code>a1</code>
-	 * 	overwriting the array. This is a syntactic sugar for
-	 * 	<code>ArrayUtils.add( a1, -s )</code>;
-	 *
-	 *	@param a1 The array
-	 *	@param s The scalar
+	 * Subtracts <code>s</code> from all elements in <code>a1</code> overwriting
+	 * the array. This is a syntactic sugar for
+	 * <code>ArrayUtils.add( a1, -s )</code>;
+	 * 
+	 * @param a1
+	 *            The array
+	 * @param s
+	 *            The scalar
 	 */
-	public static void subtract( final double[] a1, final double s )
+	public static void subtract(final double[] a1, final double s)
 	{
-		ArrayUtils.add( a1, -s );
+		ArrayUtils.add(a1, -s);
 	}
 
 	/**
 	 * Normalise length of array to 1.0. Writes over array
-	 *
+	 * 
 	 * @param array
 	 *            the array
 	 * @return the array
@@ -739,7 +741,7 @@ public class ArrayUtils {
 
 	/**
 	 * Normalise length of array to 1.0. Writes over array
-	 *
+	 * 
 	 * @param array
 	 *            the array
 	 * @return the array
@@ -757,7 +759,7 @@ public class ArrayUtils {
 
 	/**
 	 * Add a constant to all elements and return the input
-	 *
+	 * 
 	 * @param ds
 	 *            input array
 	 * @param x
@@ -773,30 +775,30 @@ public class ArrayUtils {
 
 	/**
 	 * Multiply by a constant all elements and return the input
-	 *
+	 * 
 	 * @param ds
 	 *            input array
 	 * @param x
 	 *            constant to multiply by
 	 * @return input
 	 */
-	public static double[][] multiply(final double[][] ds, final double x ) {
+	public static double[][] multiply(final double[][] ds, final double x) {
 		for (int i = 0; i < ds.length; i++) {
-			ArrayUtils.multiply( ds[i], x );
+			ArrayUtils.multiply(ds[i], x);
 		}
 		return ds;
 	}
 
 	/**
 	 * Multiply by a constant all elements and return the input
-	 *
+	 * 
 	 * @param ds
 	 *            input array
 	 * @param x
 	 *            constant to multiply by
 	 * @return input
 	 */
-	public static double[] multiply(final double[] ds, final double x ) {
+	public static double[] multiply(final double[] ds, final double x) {
 		for (int i = 0; i < ds.length; i++) {
 			ds[i] *= x;
 		}
@@ -804,41 +806,47 @@ public class ArrayUtils {
 	}
 
 	/**
-	 * 	Element-wise multiplication, overwriting a1
-	 *	@param a1 The first array
-	 *	@param a2 the second array
-	 *	@return The first array
+	 * Element-wise multiplication, overwriting a1
+	 * 
+	 * @param a1
+	 *            The first array
+	 * @param a2
+	 *            the second array
+	 * @return The first array
 	 */
-	public static double[] multiply( final double[] a1, final double[] a2 )
+	public static double[] multiply(final double[] a1, final double[] a2)
 	{
-		for( int j = 0; j < a1.length; j++ )
+		for (int j = 0; j < a1.length; j++)
 			a1[j] *= a2[j];
 		return a1;
 	}
 
 	/**
-	 * 	Element-wise multiplication, overwriting a1.
-	 *	@param a1 First array
-	 *	@param a2 second array
-	 *	@return Updated first array
+	 * Element-wise multiplication, overwriting a1.
+	 * 
+	 * @param a1
+	 *            First array
+	 * @param a2
+	 *            second array
+	 * @return Updated first array
 	 */
-	public static double[][] multiply( final double[][] a1, final double[][] a2 )
+	public static double[][] multiply(final double[][] a1, final double[][] a2)
 	{
 		for (int j = 0; j < a1.length; j++)
-			ArrayUtils.multiply( a1[j], a2[j] );
+			ArrayUtils.multiply(a1[j], a2[j]);
 		return a1;
 	}
 
 	/**
 	 * Divide by a constant all elements and return the input
-	 *
+	 * 
 	 * @param ds
 	 *            input array
 	 * @param x
 	 *            constant to divide by
 	 * @return input
 	 */
-	public static double[] divide(final double[] ds, final double x ) {
+	public static double[] divide(final double[] ds, final double x) {
 		for (int i = 0; i < ds.length; i++) {
 			ds[i] /= x;
 		}
@@ -846,21 +854,24 @@ public class ArrayUtils {
 	}
 
 	/**
-	 * 	Divide by a constant, all elements and return the input
-	 *	@param fs The input array
-	 *	@param x the constant to divide by
-	 *	@return THe input
+	 * Divide by a constant, all elements and return the input
+	 * 
+	 * @param fs
+	 *            The input array
+	 * @param x
+	 *            the constant to divide by
+	 * @return THe input
 	 */
-	public static float[] divide( final float[] fs, final float x )
+	public static float[] divide(final float[] fs, final float x)
 	{
-		for( int i = 0; i < fs.length; i++ )
+		for (int i = 0; i < fs.length; i++)
 			fs[i] /= x;
 		return fs;
 	}
 
 	/**
 	 * Reverse the elements in the input and return the input
-	 *
+	 * 
 	 * @param ds
 	 *            input array
 	 * @return input
@@ -879,7 +890,7 @@ public class ArrayUtils {
 
 	/**
 	 * Reverse the elements in the input and return the input
-	 *
+	 * 
 	 * @param ds
 	 *            input array
 	 * @return input
@@ -898,7 +909,7 @@ public class ArrayUtils {
 
 	/**
 	 * Convert a float array to a double array.
-	 *
+	 * 
 	 * @param array
 	 *            array of floats to convert
 	 * @return array of doubles
@@ -914,22 +925,22 @@ public class ArrayUtils {
 
 	/**
 	 * Convert a float array to a double array.
-	 *
+	 * 
 	 * @param array
 	 *            array of floats to convert
 	 * @return array of doubles
 	 */
-	public static double[][] floatToDouble( final float[][] array )
+	public static double[][] floatToDouble(final float[][] array)
 	{
 		final double[][] darr = new double[array.length][];
-		for( int i = 0; i < array.length; i++ )
-			darr[i] = ArrayUtils.floatToDouble( array[i] );
+		for (int i = 0; i < array.length; i++)
+			darr[i] = ArrayUtils.floatToDouble(array[i]);
 		return darr;
 	}
 
 	/**
 	 * Convert a long array to a double array.
-	 *
+	 * 
 	 * @param array
 	 *            array of floats to convert
 	 * @return array of doubles
@@ -945,7 +956,7 @@ public class ArrayUtils {
 
 	/**
 	 * Convert a double array to a float array.
-	 *
+	 * 
 	 * @param array
 	 *            array of doubles to convert
 	 * @return array of floats
@@ -961,7 +972,7 @@ public class ArrayUtils {
 
 	/**
 	 * Return the first non-null item from an array.
-	 *
+	 * 
 	 * @param <T>
 	 *            the type of the elements in the array
 	 * @param array
@@ -983,7 +994,7 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenate multiple arrays into a single new array.
-	 *
+	 * 
 	 * @param <T>
 	 *            Type of elements in the array.
 	 * @param arrays
@@ -1018,7 +1029,7 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenate multiple arrays into a single new array.
-	 *
+	 * 
 	 * @param arrays
 	 *            the arrays to concatenate.
 	 * @return the new concatenated array
@@ -1042,7 +1053,7 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenate multiple arrays into a single new array.
-	 *
+	 * 
 	 * @param arrays
 	 *            the arrays to concatenate.
 	 * @return the new concatenated array
@@ -1066,7 +1077,7 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenate multiple arrays into a single new array.
-	 *
+	 * 
 	 * @param arrays
 	 *            the arrays to concatenate.
 	 * @return the new concatenated array
@@ -1090,7 +1101,7 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenate multiple arrays into a single new array.
-	 *
+	 * 
 	 * @param arrays
 	 *            the arrays to concatenate.
 	 * @return the new concatenated array
@@ -1114,7 +1125,7 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenate multiple arrays into a single new array.
-	 *
+	 * 
 	 * @param arrays
 	 *            the arrays to concatenate.
 	 * @return the new concatenated array
@@ -1138,7 +1149,7 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenate multiple arrays into a single new array.
-	 *
+	 * 
 	 * @param arrays
 	 *            the arrays to concatenate.
 	 * @return the new concatenated array
@@ -1162,7 +1173,7 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenate multiple arrays into a single new array.
-	 *
+	 * 
 	 * @param arrays
 	 *            the arrays to concatenate.
 	 * @return the new concatenated array
@@ -1186,7 +1197,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1201,7 +1212,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1216,7 +1227,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1231,7 +1242,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1246,7 +1257,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1261,7 +1272,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1276,7 +1287,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values squared in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1291,7 +1302,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values squared in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1306,7 +1317,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values squared in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1321,7 +1332,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values squared in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1336,7 +1347,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values squared in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1351,7 +1362,7 @@ public class ArrayUtils {
 
 	/**
 	 * Compute the sum of values squared in an array
-	 *
+	 * 
 	 * @param vector
 	 * @return the sum of all values
 	 */
@@ -1366,7 +1377,7 @@ public class ArrayUtils {
 
 	/**
 	 * Extract a range
-	 *
+	 * 
 	 * @param start
 	 * @param length
 	 * @return [start...length] (inclusive)
@@ -1381,7 +1392,7 @@ public class ArrayUtils {
 
 	/**
 	 * Reshape a 2D array into a 1D array
-	 *
+	 * 
 	 * @param a
 	 *            array to reshape
 	 * @return the reshaped array
@@ -1398,12 +1409,12 @@ public class ArrayUtils {
 
 	/**
 	 * Reshape a 2D array into a 1D array
-	 *
+	 * 
 	 * @param a
 	 *            array to reshape
 	 * @return the reshaped array
 	 */
-	public static double[] reshape( final double[][] a )
+	public static double[] reshape(final double[][] a)
 	{
 		final double[] ret = new double[a.length * a[0].length];
 
@@ -1416,7 +1427,7 @@ public class ArrayUtils {
 
 	/**
 	 * Reshape a 2D array into a 1D array
-	 *
+	 * 
 	 * @param a
 	 *            array to reshape
 	 * @return the reshaped array
@@ -1433,7 +1444,7 @@ public class ArrayUtils {
 
 	/**
 	 * Reshape a 1D array into a 2D array
-	 *
+	 * 
 	 * @param a
 	 *            array to reshape
 	 * @param out
@@ -1450,7 +1461,7 @@ public class ArrayUtils {
 
 	/**
 	 * Reshape a 1D array into a 2D array
-	 *
+	 * 
 	 * @param a
 	 *            array to reshape
 	 * @param width
@@ -1466,7 +1477,7 @@ public class ArrayUtils {
 
 	/**
 	 * Reshape a 1D array into a 2D array
-	 *
+	 * 
 	 * @param a
 	 *            array to reshape
 	 * @param out
@@ -1483,7 +1494,7 @@ public class ArrayUtils {
 
 	/**
 	 * Reshape a 1D array into a 2D array
-	 *
+	 * 
 	 * @param a
 	 *            array to reshape
 	 * @param width
@@ -1505,7 +1516,7 @@ public class ArrayUtils {
 	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
 	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
 	 * get-a-sorted-list-of-indices-of-an-array </a>
-	 *
+	 * 
 	 * @param main
 	 *            the values to use for determining the order
 	 * @param indices
@@ -1523,7 +1534,7 @@ public class ArrayUtils {
 	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
 	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
 	 * get-a-sorted-list-of-indices-of-an-array </a>
-	 *
+	 * 
 	 * @param main
 	 *            the values to use for determining the order
 	 * @param indices
@@ -1541,7 +1552,7 @@ public class ArrayUtils {
 	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
 	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
 	 * get-a-sorted-list-of-indices-of-an-array </a>
-	 *
+	 * 
 	 * @param main
 	 *            the values to use for determining the order
 	 * @param indices
@@ -1551,7 +1562,9 @@ public class ArrayUtils {
 	 * @param right
 	 *            the ending index
 	 */
-	public static void parallelQuicksortAscending(final long[] main, final long[] indices, final int left, final int right) {
+	public static void
+			parallelQuicksortAscending(final long[] main, final long[] indices, final int left, final int right)
+	{
 		if (right <= left)
 			return;
 
@@ -1569,7 +1582,7 @@ public class ArrayUtils {
 	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
 	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
 	 * get-a-sorted-list-of-indices-of-an-array </a>
-	 *
+	 * 
 	 * @param main
 	 *            the values to use for determining the order
 	 * @param indices
@@ -1579,7 +1592,9 @@ public class ArrayUtils {
 	 * @param right
 	 *            the ending index
 	 */
-	public static void parallelQuicksortDescending(final double[] main, final int[] indices, final int left, final int right) {
+	public static void parallelQuicksortDescending(final double[] main, final int[] indices, final int left,
+			final int right)
+	{
 		if (right <= left)
 			return;
 
@@ -1653,7 +1668,7 @@ public class ArrayUtils {
 	/**
 	 * Determine the indices of the given array if it were to be sorted into
 	 * ascending order.
-	 *
+	 * 
 	 * @param arr
 	 *            the array
 	 * @return the sorted indices
@@ -1710,7 +1725,7 @@ public class ArrayUtils {
 	/**
 	 * Normalise and scale the values so that the maximum value in the array is
 	 * 1.
-	 *
+	 * 
 	 * @param array
 	 *            The array to normalise
 	 * @return The array
@@ -1722,7 +1737,7 @@ public class ArrayUtils {
 	/**
 	 * Normalise and scale the values so that the maximum value in the array is
 	 * max
-	 *
+	 * 
 	 * @param array
 	 *            The array to normalise
 	 * @param max
@@ -1739,7 +1754,7 @@ public class ArrayUtils {
 	/**
 	 * Convert the array to a {@link String} by joining the elements with the
 	 * given glue.
-	 *
+	 * 
 	 * @param s
 	 *            the array
 	 * @param glue
@@ -1762,83 +1777,213 @@ public class ArrayUtils {
 	}
 
 	/**
-	 * 	Fill the array with the value
-	 *	@param a1 The array
-	 *	@param i The value
-	 * 	@return The array
+	 * Fill the array with the value
+	 * 
+	 * @param a1
+	 *            The array
+	 * @param i
+	 *            The value
+	 * @return The array
 	 */
-	public static double[][] fill( final double[][] a1, final int i )
+	public static double[][] fill(final double[][] a1, final int i)
 	{
-		for( int j = 0; j < a1.length; j++ )
-			ArrayUtils.fill( a1[j], j );
+		for (int j = 0; j < a1.length; j++)
+			ArrayUtils.fill(a1[j], j);
 		return a1;
 	}
 
 	/**
-	 * 	Fill the array with the value from the start index for the length given
-	 *
-	 *	@param a1 The array to fill
-	 *	@param i The value to fill with
-	 *	@param s The start index
-	 *	@param l The length of the fill
-	 *	@return The array
+	 * Fill the array with the value from the start index for the length given
+	 * 
+	 * @param a1
+	 *            The array to fill
+	 * @param i
+	 *            The value to fill with
+	 * @param s
+	 *            The start index
+	 * @param l
+	 *            The length of the fill
+	 * @return The array
 	 */
-	public static double[] fill( final double[] a1, final double i, final int s, final int l )
+	public static double[] fill(final double[] a1, final double i, final int s, final int l)
 	{
-		for( int j = s; j < s+l; j++ )
+		for (int j = s; j < s + l; j++)
 			a1[j] = i;
 		return a1;
 	}
 
 	/**
-	 * 	Fill the array with the value
-	 *	@param a1 The array
-	 *	@param i The value
-	 * 	@return The array
+	 * Fill the array with the value
+	 * 
+	 * @param a1
+	 *            The array
+	 * @param i
+	 *            The value
+	 * @return The array
 	 */
-	public static double[] fill( final double[] a1, final int i )
+	public static double[] fill(final double[] a1, final int i)
 	{
-		for( int j = 0; j < a1.length; j++ )
+		for (int j = 0; j < a1.length; j++)
 			a1[j] = i;
 		return a1;
 	}
 
 	/**
-	 * 	Fills the array with ordinal values
-	 *	@param array The array to fill
-	 *	@return the array
+	 * Fills the array with ordinal values
+	 * 
+	 * @param array
+	 *            The array to fill
+	 * @return the array
 	 */
-	public static int[] fill( final int[] array )
+	public static int[] fill(final int[] array)
 	{
-		for( int i = 0; i < array.length; i++ )
+		for (int i = 0; i < array.length; i++)
 			array[i] = i;
 		return array;
 	}
 
 	/**
-	 * 	Truncates the given array to the given size.
-	 *	@param array The array to truncate
-	 *	@param index The size to truncate it to
-	 *	@return The truncated array
+	 * Truncates the given array to the given size.
+	 * 
+	 * @param array
+	 *            The array to truncate
+	 * @param index
+	 *            The size to truncate it to
+	 * @return The truncated array
 	 */
-	public static double[] truncate( final double[] array, final int index )
+	public static double[] truncate(final double[] array, final int index)
 	{
 		final double[] d = new double[index];
-		System.arraycopy( array, 0, d, 0, index );
+		System.arraycopy(array, 0, d, 0, index);
 		return d;
 	}
 
 	/**
-	 * 	Truncates every element in the given array to the given size.
-	 *	@param array The array to truncate
-	 *	@param index The size to truncate it to
-	 *	@return The truncated array
+	 * Truncates every element in the given array to the given size.
+	 * 
+	 * @param array
+	 *            The array to truncate
+	 * @param index
+	 *            The size to truncate it to
+	 * @return The truncated array
 	 */
-	public static double[][] truncate( final double[][] array, final int index )
+	public static double[][] truncate(final double[][] array, final int index)
 	{
 		final double[][] d = new double[array.length][index];
-		for( int i = 0; i < array.length; i++ )
-			d[i] = ArrayUtils.truncate( array[i], index );
+		for (int i = 0; i < array.length; i++)
+			d[i] = ArrayUtils.truncate(array[i], index);
 		return d;
+	}
+
+	/**
+	 * Quick Select algorithm for getting the nth item from the array as if it
+	 * were sorted. Expected complexity is O(N); worst case is O(N^2). The input
+	 * array will be reordered; clone it first if this is a problem.
+	 * Implementation based on public domain code from Nicolas Devillard.
+	 * 
+	 * @see "http://ndevilla.free.fr/median/median/src/quickselect.c"
+	 * 
+	 * @param arr
+	 *            the array to select from
+	 * @param n
+	 *            the item to select
+	 * @return the selected item
+	 */
+	public static float quickSelect(float arr[], int n) {
+		return quickSelect(arr, n, 0, arr.length - 1);
+	}
+
+	/**
+	 * Quick Select algorithm for getting the nth item from a sub-array as if it
+	 * were sorted. Expected complexity is O(N); worst case is O(N^2). The input
+	 * array will be reordered; clone it first if this is a problem.
+	 * Implementation based on public domain code from Nicolas Devillard.
+	 * 
+	 * @see "http://ndevilla.free.fr/median/median/src/quickselect.c"
+	 * 
+	 * @param arr
+	 *            the array to select from
+	 * @param n
+	 *            the item to select
+	 * @param low
+	 *            the starting position in the array (inclusive)
+	 * @param high
+	 *            the ending position in the array (exclusive)
+	 * @return the selected item
+	 */
+	public static float quickSelect(float arr[], int n, int low, int high) {
+		high--; // make high inclusive
+
+		int middle, ll, hh;
+		float tmp = 0;
+		final int median = (low + high) / 2;
+
+		while (true) {
+			if (high <= low) /* One element only */
+				return arr[median];
+
+			if (high == low + 1) { /* Two elements only */
+				if (arr[low] > arr[high]) {
+					tmp = arr[low];
+					arr[low] = arr[high];
+					arr[high] = tmp;
+				}
+				return arr[median];
+			}
+
+			/* Find median of low, middle and high items; swap into position low */
+			middle = (low + high) / 2;
+			if (arr[middle] > arr[high]) {
+				tmp = arr[middle];
+				arr[middle] = arr[high];
+				arr[high] = tmp;
+				;
+			}
+			if (arr[low] > arr[high]) {
+				tmp = arr[low];
+				arr[low] = arr[high];
+				arr[high] = tmp;
+			}
+			if (arr[middle] > arr[low]) {
+				tmp = arr[low];
+				arr[low] = arr[middle];
+				arr[middle] = tmp;
+			}
+
+			/* Swap low item (now in position middle) into position (low+1) */
+			tmp = arr[middle];
+			arr[middle] = arr[low + 1];
+			arr[low + 1] = tmp;
+
+			/* Nibble from each end towards middle, swapping items when stuck */
+			ll = low + 1;
+			hh = high;
+			for (;;) {
+				do
+					ll++;
+				while (arr[low] > arr[ll]);
+				do
+					hh--;
+				while (arr[hh] > arr[low]);
+
+				if (hh < ll)
+					break;
+
+				tmp = arr[ll];
+				arr[ll] = arr[hh];
+				arr[hh] = tmp;
+			}
+
+			/* Swap middle item (in position low) back into correct position */
+			tmp = arr[low];
+			arr[low] = arr[hh];
+			arr[hh] = tmp;
+
+			/* Re-set active partition */
+			if (hh <= median)
+				low = ll;
+			if (hh >= median)
+				high = hh - 1;
+		}
 	}
 }
