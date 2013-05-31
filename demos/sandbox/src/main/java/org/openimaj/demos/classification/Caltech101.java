@@ -140,13 +140,6 @@ public class Caltech101 {
 		}
 
 		/**
-		 * @return the id
-		 */
-		public String getId() {
-			return id;
-		}
-
-		/**
 		 * @return the class
 		 */
 		public String getObjectClass() {

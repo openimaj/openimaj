@@ -1,5 +1,6 @@
 package org.openimaj.demos.classification;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
 import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.feature.DiskCachingFeatureExtractor;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
@@ -20,18 +22,40 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.feature.local.aggregate.BagOfVisualWords;
+import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.io.IOUtils;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
+import org.openimaj.ml.clustering.ByteCentroidsResult;
 
 public class CT101Tests {
-	private static final class FeatureExtractorImplementation implements FeatureExtractor<DoubleFV, Record<MBFImage>> {
+	private static final class HistogramExtractorImplementation implements FeatureExtractor<DoubleFV, Record<MBFImage>> {
 		@Override
 		public DoubleFV extractFeature(Record<MBFImage> object) {
 			final BlockHistogramModel hm = new BlockHistogramModel(8, 8, 6, 6, 6);
 			hm.estimateModel(object.getImage());
 
 			return hm.toSingleHistogram();
+		}
+	}
+
+	private static final class BoVWExtractorImplementation implements FeatureExtractor<DoubleFV, Record<MBFImage>> {
+		private DoGSIFTEngine engine;
+		private BagOfVisualWords<byte[]> bovw;
+
+		public BoVWExtractorImplementation() throws IOException {
+			engine = new DoGSIFTEngine();
+			bovw = new BagOfVisualWords<byte[]>(IOUtils.read(
+					new File("/Users/jsh2/quantisers/mirflickr-oi-sift2x-akm1000.voc"), ByteCentroidsResult.class)
+					.defaultHardAssigner());
+		}
+
+		@Override
+		public DoubleFV extractFeature(Record<MBFImage> object) {
+			System.out.println("Extracting " + object.getID());
+			return bovw.aggregate(engine.findFeatures(object.getImage().flatten())).asDoubleFV();
 		}
 	}
 
@@ -76,7 +100,9 @@ public class CT101Tests {
 				.createIterable(1))
 		{
 			final KNNAnnotator<Record<MBFImage>, String, DoubleFV> knn = KNNAnnotator.create(
-					new FeatureExtractorImplementation(), DoubleFVComparison.EUCLIDEAN);
+					new DiskCachingFeatureExtractor<DoubleFV, Record<MBFImage>>(new File(
+							"/Users/jsh2/feature-cache/caltech101/bowv-1000"), new BoVWExtractorImplementation()),
+					DoubleFVComparison.EUCLIDEAN);
 			knn.train(vd.getTrainingDataset());
 
 			final ClassificationEvaluator<CMResult<String>, String, Record<MBFImage>> eval = new ClassificationEvaluator<CMResult<String>, String, Record<MBFImage>>(
@@ -90,17 +116,20 @@ public class CT101Tests {
 	}
 
 	public static void main(String[] args) throws IOException {
-		final VFSGroupDataset<Record<MBFImage>> data = Caltech101.getData(ImageUtilities.MBFIMAGE_READER);
+		// final VFSGroupDataset<Record<MBFImage>> data =
+		// Caltech101.getData(ImageUtilities.MBFIMAGE_READER);
+		//
+		// final Record<MBFImage> r = data.getRandomInstance();
+		//
+		// final MBFImage image = r.getImage();
+		//
+		// if (r.getBounds() != null) {
+		// image.drawShape(r.getContour(), 3, RGBColour.RED);
+		// image.drawShape(r.getBounds(), 3, RGBColour.BLUE);
+		//
+		// DisplayUtilities.display(image);
+		// }
 
-		final Record<MBFImage> r = data.getRandomInstance();
-
-		final MBFImage image = r.getImage();
-
-		if (r.getBounds() != null) {
-			image.drawShape(r.getContour(), 3, RGBColour.RED);
-			image.drawShape(r.getBounds(), 3, RGBColour.BLUE);
-
-			DisplayUtilities.display(image);
-		}
+		classification();
 	}
 }
