@@ -2,100 +2,72 @@ package org.openimaj.demos.sandbox.image.text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
-import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.edges.StrokeWidthTransform;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.util.set.DisjointSetForest;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.capture.VideoCaptureException;
 
 public class SWTTextDetector {
-	static List<ConnectedComponent> findComponents(FImage image, ConnectMode mode) {
-		final List<ConnectedComponent> components = new ArrayList<ConnectedComponent>();
+	private final static int[][] connect8 = {
+			{ -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } };
 
-		// Single pass method inspired by the wikipedia two-pass technique
-		// http://en.wikipedia.org/wiki/Connected_component_labeling
+	static List<ConnectedComponent> findComponents(FImage image) {
+		final DisjointSetForest<Pixel> forest = new DisjointSetForest<Pixel>();
+
+		Pixel current = new Pixel();
+		Pixel next = new Pixel();
 		for (int y = 0; y < image.height; y++) {
 			for (int x = 0; x < image.width; x++) {
-				final float element = image.pixels[y][x];
+				final float currentValue = image.pixels[y][x];
 
-				if (element > 0 && element != Float.POSITIVE_INFINITY) {
-					final List<Pixel> neighbours = getNeighbours(image, x, y, mode);
+				if (currentValue > 0 && currentValue != Float.POSITIVE_INFINITY) {
+					current.x = x;
+					current.y = y;
 
-					ConnectedComponent currentComponent = null;
-					for (final Pixel p : neighbours) {
-						final ConnectedComponent cc = searchPixel(p, components);
-						if (cc != null) {
-							if (currentComponent == null) {
-								currentComponent = cc;
-							} else if (currentComponent != cc) {
-								currentComponent.merge(cc);
-								components.remove(cc);
+					if (forest.makeSet(current) != null)
+						current = current.clone();
+
+					for (int i = 0; i < connect8.length; i++) {
+						final int xx = x + connect8[i][0];
+						final int yy = y + connect8[i][1];
+
+						if (xx >= 0 && xx < image.width - 1 && yy >= 0 && yy < image.height - 1) {
+							final float value = image.pixels[yy][xx];
+
+							if (value > 0 && value != Float.POSITIVE_INFINITY) {
+								next.x = xx;
+								next.y = yy;
+
+								if (forest.makeSet(next) != null)
+									next = next.clone();
+
+								// if (Math.max(currentValue, value) /
+								// Math.min(currentValue, value) < 3)
+								forest.union(current, next);
 							}
 						}
 					}
-
-					if (currentComponent == null) {
-						currentComponent = new ConnectedComponent();
-						components.add(currentComponent);
-					}
-
-					currentComponent.addPixel(x, y);
 				}
 			}
 		}
 
+		final List<ConnectedComponent> components = new ArrayList<ConnectedComponent>();
+		for (final Set<Pixel> pixels : forest.getSubsets()) {
+			components.add(new ConnectedComponent(pixels));
+		}
+
 		return components;
-	}
-
-	private static List<Pixel> getNeighbours(FImage image, int x, int y, ConnectMode mode) {
-		final List<Pixel> neighbours = new ArrayList<Pixel>();
-
-		switch (mode) {
-		case CONNECT_8:
-			if (x - 1 > 0 && y - 1 > 0 && testNeighbour(image.pixels[y][x], image.pixels[y - 1][x - 1]))
-				neighbours.add(new Pixel(x - 1, y - 1));
-			if (x + 1 < image.getWidth() && y - 1 > 0 && testNeighbour(image.pixels[y][x], image.pixels[y - 1][x + 1]))
-				neighbours.add(new Pixel(x + 1, y - 1));
-			if (x - 1 > 0 && y + 1 < image.getHeight() && testNeighbour(image.pixels[y][x], image.pixels[y + 1][x - 1]))
-				neighbours.add(new Pixel(x - 1, y + 1));
-			if (x + 1 < image.getWidth() && y + 1 < image.getHeight()
-					&& testNeighbour(image.pixels[y][x], image.pixels[y + 1][x + 1]))
-				neighbours.add(new Pixel(x + 1, y + 1));
-			// Note : no break, so we fall through...
-		case CONNECT_4:
-			if (x - 1 > 0 && testNeighbour(image.pixels[y][x], image.pixels[y][x - 1]))
-				neighbours.add(new Pixel(x - 1, y));
-			if (x + 1 < image.getWidth() && testNeighbour(image.pixels[y][x], image.pixels[y][x + 1]))
-				neighbours.add(new Pixel(x + 1, y));
-			if (y - 1 > 0 && testNeighbour(image.pixels[y][x], image.pixels[y - 1][x]))
-				neighbours.add(new Pixel(x, y - 1));
-			if (y + 1 < image.getHeight() && testNeighbour(image.pixels[y][x], image.pixels[y + 1][x]))
-				neighbours.add(new Pixel(x, y + 1));
-			break;
-		}
-
-		return neighbours;
-	}
-
-	private static boolean testNeighbour(float centre, float neighbour) {
-		return neighbour > 0 && neighbour != Float.POSITIVE_INFINITY
-				&& (neighbour / centre <= 3 || centre / neighbour <= 3);
-	}
-
-	private static ConnectedComponent searchPixel(Pixel p, List<ConnectedComponent> components) {
-		for (final ConnectedComponent c : components) {
-			if (c.find(p))
-				return c;
-		}
-		return null;
 	}
 
 	static List<LetterCandidate> filterComponents(List<ConnectedComponent> components, FImage swt, FImage image) {
@@ -208,11 +180,12 @@ public class SWTTextDetector {
 				final long t1 = System.currentTimeMillis();
 				final FImage swt = image.process(new StrokeWidthTransform(true, 2));
 				final long t2 = System.currentTimeMillis();
+				// final List<ConnectedComponent> comps = findComponents(swt);
+				final long t3 = System.currentTimeMillis();
+				System.out.println((t2 - t1) + "\t" + (t3 - t2));
 
-				System.out.println(t2 - t1);
+				DisplayUtilities.displayName(StrokeWidthTransform.normaliseImage(swt), "SWT");
 
-				// final List<ConnectedComponent> comps = findComponents(swt,
-				// ConnectMode.CONNECT_4);
 				// final List<LetterCandidate> letters = filterComponents(comps,
 				// swt, image);
 				//

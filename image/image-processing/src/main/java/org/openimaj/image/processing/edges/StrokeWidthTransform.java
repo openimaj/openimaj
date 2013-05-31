@@ -123,13 +123,8 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 			detectDark, FImage output, float gradDirection,
 			int x, int y, List<List<Pixel>> rays, int xx, int xy, int yx, int yy)
 	{
-		float gradX = xx * dx.pixels[y][x] + xy * dy.pixels[y][x];
-		float gradY = yy * dy.pixels[y][x] + yx * dx.pixels[y][x];
-		final float mag = (float) Math.sqrt((gradX * gradX) + (gradY * gradY)) *
-				gradDirection;
-
-		gradX = gradX / mag;
-		gradY = gradY / mag;
+		final float gradX = (xx * dx.pixels[y][x] + xy * dy.pixels[y][x]) * gradDirection;
+		final float gradY = (yy * dy.pixels[y][x] + yx * dx.pixels[y][x]) * gradDirection;
 
 		final Iterator<Pixel> iterator = LineIterators.bresenham(x, y, gradX, gradY);
 		final Pixel start = iterator.next().clone(); // start of ray
@@ -162,16 +157,20 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 				// edge found; now search for matching gradient in surrounding
 				// area
 				boolean found = false;
+
+				final float startGradX = dx.pixels[start.y][start.x];
+				final float startGradY = dy.pixels[start.y][start.x];
+
 				for (int i = 0; i < gradSearchRegion.length; i++) {
 					final int currentX = end.x + gradSearchRegion[i][0];
 					final int currentY = end.y + gradSearchRegion[i][1];
 
 					final float currentGradX = dx.pixels[currentY][currentX];
 					final float currentGradY = dy.pixels[currentY][currentX];
-					// final float currentMag = (float) Math.sqrt(
-					// (currentGradX * currentGradX) + (currentGradY *
-					// currentGradY)) *
-					// gradDirection;
+					// final float currentMag = (float) Math.sqrt((currentGradX
+					// * currentGradX)
+					// + (currentGradY * currentGradY))
+					// * gradDirection;
 					//
 					// currentGradX = currentGradX / currentMag;
 					// currentGradY = currentGradY / currentMag;
@@ -182,8 +181,8 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 					// break;
 					// }
 
-					final float tn = gradY * currentGradX - gradX * currentGradY;
-					final float td = gradX * currentGradX + gradY * currentGradY;
+					final float tn = startGradY * currentGradX - startGradX * currentGradY;
+					final float td = startGradX * currentGradX + startGradY * currentGradY;
 					if (tn * 7 < -td * 4 && tn * 7 > td * 4)
 					{
 						found = true;
