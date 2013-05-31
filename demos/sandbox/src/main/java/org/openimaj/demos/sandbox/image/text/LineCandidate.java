@@ -73,7 +73,6 @@ public class LineCandidate {
 			lc.regularBoundingBox = LetterCandidate.computeBounds(lc.letters);
 			chains.add(lc);
 		}
-		System.out.println(sets.size());
 
 		return chains;// chainPairs(pairs);
 	}
