@@ -32,6 +32,20 @@ package org.openimaj.image.analysis.algorithm;
 import org.openimaj.image.FImage;
 import org.openimaj.math.statistics.distribution.Histogram;
 
+/**
+ * The {@link InterpolatingBinnedImageHistogramAnalyser} is an extension to a
+ * {@link BinnedImageHistogramAnalyser} that performs soft assignment to the
+ * histogram bins through linear interpolation. If a point being histogrammed
+ * lies directly between two bins, half of its weight will be added to both
+ * bins. If a point is directly in the centre of a bin, then its full weight
+ * will be added to both bins. All other cases use linear interpolation to
+ * distribute the weight across the two nearest bins.
+ * <p>
+ * Cyclic histograms are also supported (i.e. for angles).
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
 public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistogramAnalyser {
 	/**
 	 * The weight to apply to the left bin (i.e. the one that was stored). The

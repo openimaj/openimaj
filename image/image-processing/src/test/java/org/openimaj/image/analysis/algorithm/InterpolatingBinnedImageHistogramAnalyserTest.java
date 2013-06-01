@@ -62,6 +62,9 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		image.analyseWith(analyser);
 	}
 
+	/**
+	 * Test with a single pixel falling into a single bin
+	 */
 	@Test
 	public void testSinglePixel1() {
 		final FImage i = new FImage(new float[][] { { 0.5f } });
@@ -73,6 +76,9 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		assertArrayEquals(new double[] { 0, 0, 1, 0, 0 }, h.values, 0.001);
 	}
 
+	/**
+	 * Test with a single pixel falling into two bins equally
+	 */
 	@Test
 	public void testSinglePixel2() {
 		final FImage i = new FImage(new float[][] { { 0.5f } });
@@ -84,6 +90,9 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		assertArrayEquals(new double[] { 0, 0.5, 0.5, 0 }, h.values, 0.001);
 	}
 
+	/**
+	 * Test with a single pixel falling into a single bin at the beginning
+	 */
 	@Test
 	public void testSinglePixel3() {
 		final FImage i = new FImage(new float[][] { { 0.0f } });
@@ -95,6 +104,9 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		assertArrayEquals(new double[] { 1, 0, 0, 0 }, h.values, 0.001);
 	}
 
+	/**
+	 * Test with a single pixel falling into a single bin at the end
+	 */
 	@Test
 	public void testSinglePixel4() {
 		final FImage i = new FImage(new float[][] { { 1.0f } });
@@ -106,6 +118,10 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		assertArrayEquals(new double[] { 0, 0, 0, 1 }, h.values, 0.001);
 	}
 
+	/**
+	 * Test with a single pixel falling between the end and beginning of a
+	 * cyclic histogram
+	 */
 	@Test
 	public void testSinglePixelWrap() {
 		final FImage i = new FImage(new float[][] { { 1.0f } });
@@ -118,6 +134,9 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		assertArrayEquals(new double[] { 0.5, 0, 0, 0.5 }, h.values, 0.001);
 	}
 
+	/**
+	 * Test with a single pixel falling into a single bin of a cyclic histogram
+	 */
 	@Test
 	public void testSinglePixelWrap2() {
 		final FImage i = new FImage(new float[][] { { 0.9f } });
@@ -130,6 +149,10 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		assertArrayEquals(new double[] { 0, 0, 0, 0, 1 }, h.values, 0.001);
 	}
 
+	/**
+	 * Test with a single pixel falling between the end and beginning of a
+	 * cyclic histogram
+	 */
 	@Test
 	public void testSinglePixelWrap3() {
 		final FImage i = new FImage(new float[][] { { 0.95f } });

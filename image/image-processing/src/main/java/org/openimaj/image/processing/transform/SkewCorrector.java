@@ -39,7 +39,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.algorithm.HoughLines;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.edges.CannyEdgeDetector2;
+import org.openimaj.image.processing.edges.CannyEdgeDetector;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
@@ -48,43 +48,44 @@ import org.openimaj.math.geometry.line.Line2d;
 import Jama.Matrix;
 
 /**
- * 	Uses the Hough transform (for lines) to attempt to find the skew of the
- * 	image and unskews it using a basic skew transform.
- *
- *	@see "http://javaanpr.sourceforge.net/anpr.pdf"
- *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 12 Aug 2011
- *
+ * Uses the Hough transform (for lines) to attempt to find the skew of the image
+ * and unskews it using a basic skew transform.
+ * 
+ * @see "http://javaanpr.sourceforge.net/anpr.pdf"
+ * 
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 12 Aug 2011
+ * 
  */
 public class SkewCorrector implements ImageProcessor<FImage>
 {
 	private static final boolean DEBUG = false;
 
 	/**
-	 * 	Accuracy is a multiplier for the number of degrees in one bin of the
-	 * 	HoughLines transform
+	 * Accuracy is a multiplier for the number of degrees in one bin of the
+	 * HoughLines transform
 	 */
 	private int accuracy = 1;
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage( final FImage image)
+	public void processImage(final FImage image)
 	{
-		final CannyEdgeDetector2 cad = new CannyEdgeDetector2();
+		final CannyEdgeDetector cad = new CannyEdgeDetector();
 		final FImage edgeImage = image.process(cad).inverse();
 
 		// Detect Lines in the image
-		final HoughLines hl = new HoughLines( 360*this.accuracy );
-		edgeImage.analyseWith( hl );
+		final HoughLines hl = new HoughLines(360 * this.accuracy);
+		edgeImage.analyseWith(hl);
 
-		if( SkewCorrector.DEBUG )
-			this.debugLines( edgeImage, Matrix.identity(3,3),
+		if (SkewCorrector.DEBUG)
+			this.debugLines(edgeImage, Matrix.identity(3, 3),
 					"Detection of Horizontal Lines",
-					hl.getBestLines(2) );
+					hl.getBestLines(2));
 
 		// ---------------------------------------------------------------
 		// First rotate the image such that the prevailing lines
@@ -95,9 +96,9 @@ public class SkewCorrector implements ImageProcessor<FImage>
 
 		FImage rotImg = null;
 		FImage outImg = null;
-		if( rotationAngle == Double.MIN_VALUE )
+		if (rotationAngle == Double.MIN_VALUE)
 		{
-			System.out.println( "WARNING: Detection of rotation angle failed.");
+			System.out.println("WARNING: Detection of rotation angle failed.");
 			rotImg = edgeImage.clone();
 			outImg = image.clone();
 		}
@@ -106,119 +107,122 @@ public class SkewCorrector implements ImageProcessor<FImage>
 			rotationAngle -= 90;
 			rotationAngle %= 360;
 
-			if( SkewCorrector.DEBUG )
-				System.out.println( "Rotational angle: "+rotationAngle );
+			if (SkewCorrector.DEBUG)
+				System.out.println("Rotational angle: " + rotationAngle);
 
-			rotationAngle *= 0.0174532925 ;
+			rotationAngle *= 0.0174532925;
 
 			// Rotate so that horizontal lines are horizontal
-			final Matrix rotationMatrix = new Matrix( new double[][] {
-					{Math.cos(-rotationAngle), -Math.sin(-rotationAngle), 0},
-					{Math.sin(-rotationAngle), Math.cos(-rotationAngle), 0},
-					{0,0,1}
+			final Matrix rotationMatrix = new Matrix(new double[][] {
+					{ Math.cos(-rotationAngle), -Math.sin(-rotationAngle), 0 },
+					{ Math.sin(-rotationAngle), Math.cos(-rotationAngle), 0 },
+					{ 0, 0, 1 }
 			});
 
 			// We use a projection processor as we need our
 			// background pixels to be white.
-			rotImg = ProjectionProcessor.project( edgeImage, rotationMatrix, 1f ).
-				process( new OtsuThreshold() );
+			rotImg = ProjectionProcessor.project(edgeImage, rotationMatrix, 1f).
+					process(new OtsuThreshold());
 
 			// We need to return a proper image (not the edge image), so we
 			// process that here too.
-			outImg = ProjectionProcessor.project( image, rotationMatrix, 0f );
+			outImg = ProjectionProcessor.project(image, rotationMatrix, 0f);
 		}
 
-		if( SkewCorrector.DEBUG )
-			DisplayUtilities.display( outImg, "Rotated Image" );
+		if (SkewCorrector.DEBUG)
+			DisplayUtilities.display(outImg, "Rotated Image");
 
 		// ---------------------------------------------------------------
 		// Now attempt to make the verticals vertical by shearing
 		// ---------------------------------------------------------------
 		// Re-process with the Hough lines
-		rotImg.analyseWith( hl );
+		rotImg.analyseWith(hl);
 
 		final float shearAngleRange = 20;
 
-		if( SkewCorrector.DEBUG )
-			this.debugLines( rotImg, Matrix.identity(3,3), "Detection of Vertical Lines",
-					hl.getBestLines(2,-shearAngleRange,shearAngleRange) );
+		if (SkewCorrector.DEBUG)
+			this.debugLines(rotImg, Matrix.identity(3, 3), "Detection of Vertical Lines",
+					hl.getBestLines(2, -shearAngleRange, shearAngleRange));
 
 		// Get the prevailing angle around vertical
-		double shearAngle = hl.calculatePrevailingAngle( -shearAngleRange,shearAngleRange );
+		double shearAngle = hl.calculatePrevailingAngle(-shearAngleRange, shearAngleRange);
 
-		if( shearAngle == Double.MIN_VALUE )
+		if (shearAngle == Double.MIN_VALUE)
 		{
-			System.out.println( "WARNING: Detection of shear angle failed.");
+			System.out.println("WARNING: Detection of shear angle failed.");
 		}
 		else
 		{
 			shearAngle %= 360;
 
-			if( SkewCorrector.DEBUG )
-				System.out.println( "Shear angle = "+shearAngle );
+			if (SkewCorrector.DEBUG)
+				System.out.println("Shear angle = " + shearAngle);
 
-			shearAngle *= 0.0174532925 ;
+			shearAngle *= 0.0174532925;
 
 			// Create a shear matrix
-			final Matrix shearMatrix = new Matrix( new double[][] {
-					{1, Math.tan( shearAngle ), 0},
-					{0,1,0},
-					{0,0,1}
+			final Matrix shearMatrix = new Matrix(new double[][] {
+					{ 1, Math.tan(shearAngle), 0 },
+					{ 0, 1, 0 },
+					{ 0, 0, 1 }
 			});
 
 			// Process the image to unshear it.
 			// FImage unshearedImage = rotImg.transform( shearMatrix );
-			outImg = outImg.transform( shearMatrix );
+			outImg = outImg.transform(shearMatrix);
 		}
 
-		if( SkewCorrector.DEBUG )
-			DisplayUtilities.display( outImg, "Final Image" );
+		if (SkewCorrector.DEBUG)
+			DisplayUtilities.display(outImg, "Final Image");
 
-		image.internalAssign( outImg );
+		image.internalAssign(outImg);
 	}
 
 	/**
-	 * 	Helper function to display the image with lines
-	 *  @param i
-	 *  @param hl
-	 *  @param tf
-	 *  @param title
-	 *  @param lines
+	 * Helper function to display the image with lines
+	 * 
+	 * @param i
+	 * @param hl
+	 * @param tf
+	 * @param title
+	 * @param lines
 	 */
-	private void debugLines( final FImage i, final Matrix tf, final String title,
-			final Collection<Line2d> lines )
+	private void debugLines(final FImage i, final Matrix tf, final String title,
+			final Collection<Line2d> lines)
 	{
 		// Create an image showing where the lines are
-		final MBFImage output = new MBFImage( i.getWidth(),
-				i.getHeight(), 3 );
-		final MBFImageRenderer r = output.createRenderer(); // RenderHints.ANTI_ALIASED );
-		r.drawImage( i, 0, 0 );
+		final MBFImage output = new MBFImage(i.getWidth(),
+				i.getHeight(), 3);
+		final MBFImageRenderer r = output.createRenderer(); // RenderHints.ANTI_ALIASED
+															// );
+		r.drawImage(i, 0, 0);
 
-		for( final Line2d l : lines )
+		for (final Line2d l : lines)
 		{
-			final Line2d l2 = l.transform(tf).lineWithinSquare( output.getBounds() );
+			final Line2d l2 = l.transform(tf).lineWithinSquare(output.getBounds());
 
 			// l2 can be null if it doesn't intersect with the image
-			if( l2 != null )
+			if (l2 != null)
 			{
-				System.out.println( l2 );
-				r.drawLine( l2, 2, RGBColour.RED );
+				System.out.println(l2);
+				r.drawLine(l2, 2, RGBColour.RED);
 			}
 		}
 
-		DisplayUtilities.display( output, title );
+		DisplayUtilities.display(output, title);
 	}
 
 	/**
-	 * 	Set the accuracy of the skew corrector. The value here is a multiplier
-	 * 	for the number of degrees that are in a single bin of the Hough Transform
-	 * 	for lines. The default is 1 which means that the Hough Transform can
-	 * 	detect 360 degrees. If the accuracy is set to 2, the Hough Transform can
-	 * 	detect 720 distinct directional angles (accuracy is half a degree).
-	 *
-	 *	@param accuracy The accuracy of the skew corrector
+	 * Set the accuracy of the skew corrector. The value here is a multiplier
+	 * for the number of degrees that are in a single bin of the Hough Transform
+	 * for lines. The default is 1 which means that the Hough Transform can
+	 * detect 360 degrees. If the accuracy is set to 2, the Hough Transform can
+	 * detect 720 distinct directional angles (accuracy is half a degree).
+	 * 
+	 * @param accuracy
+	 *            The accuracy of the skew corrector
 	 */
-	public void setAccuracy( final int accuracy )
+	public void setAccuracy(final int accuracy)
 	{
 		this.accuracy = accuracy;
 	}
