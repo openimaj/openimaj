@@ -98,12 +98,13 @@ public class DiskCachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 		return feature;
 	}
 
+	@SuppressWarnings("unchecked")
 	private FEATURE load(File cachedFeature) {
 		try {
-			return IOUtils.read(cachedFeature);
+			return (FEATURE) IOUtils.read(cachedFeature);
 		} catch (final IOException e) {
 			try {
-				return IOUtils.readFromFile(cachedFeature);
+				return (FEATURE) IOUtils.readFromFile(cachedFeature);
 			} catch (final IOException e1) {
 				logger.warn("Error reading from cache. Feature will be regenerated.");
 			}
