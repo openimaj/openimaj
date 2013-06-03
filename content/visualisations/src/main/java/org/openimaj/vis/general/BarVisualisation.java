@@ -35,6 +35,8 @@ package org.openimaj.vis.general;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.typography.hershey.HersheyFont;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.vis.Visualisation;
@@ -77,13 +79,13 @@ public class BarVisualisation extends Visualisation<double[]>
 	private final int textBasePad = 4;
 
 	/** Whether to auto scale the vertical axis */
-	private final boolean autoScale = true;
+	private boolean autoScale = true;
 
 	/** The maximum value of the scale (if autoScale is false) */
-	private final double maxValue = 1d;
+	private double maxValue = 1d;
 
 	/** The minimum value of the scale (if autoScale if false) */
-	private final double minValue = 0d;
+	private double minValue = 0d;
 
 	/** Whether to draw the value of the bar in each bar */
 	private boolean drawValue = false;
@@ -103,6 +105,9 @@ public class BarVisualisation extends Visualisation<double[]>
 	/** The location of the fixed axis, if it is to be fixed */
 	private double axisLocation = 100;
 
+	/** If the minimum value > 0 (or the max < 0), then whether the make the axis visible */
+	private boolean axisAlwaysVisible = true;
+
 	/** Whether to outline the text used to draw the values */
 	private boolean outlineText = false;
 
@@ -114,6 +119,14 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/** The colour map to use if useColourMap == true */
 	private ColourMap colourMap = ColourMap.Autumn;
+
+	/** The scalar being used to plot the data */
+	private double yscale = 0;
+
+	/** The range of the data being viewed */
+	private double axisRangeY = 0;
+
+	private double dataRange;
 
 	/**
 	 * 	Create a bar visualisation of the given size
@@ -189,30 +202,54 @@ public class BarVisualisation extends Visualisation<double[]>
 
 		// Find the maximum value that occurs on one or t'other
 		// side of the main axis
-		final double largestAxisValue = Math.max( Math.abs(max), Math.abs( min ) );
+		final double largestAxisValue = Math.max( Math.abs(max), Math.abs(min) );
 
-		// Work out the scalars for the values to fit within the window
-		double yscale = (largestAxisValue == max ? this.axisLocation :
-				(h-this.axisLocation) )/largestAxisValue;
+		// The range displayed on the axis.
+		this.dataRange = max - min;
+
+		// Work out the scalars for the values to fit within the window - in pixels per unit
+		this.yscale = h / this.dataRange;
+		if( this.fixAxis )
+		{
+			// Recalculate the yscale to fit the fixed axis
+			this.yscale = Math.min( (h-this.axisLocation)/Math.abs(min),
+					this.axisLocation/Math.abs( max ) );
+		}
+		// Position of the axis - if it's fixed we need to alter
+		// the yscale or we calculate where it fits.
+		else
+		{
+			this.axisLocation = h + min * this.yscale;
+
+			if( this.axisAlwaysVisible && this.axisLocation < 0 )
+			{
+				this.axisLocation = 0;
+				this.yscale = h/Math.abs(min);
+			}
+			else
+			if( this.axisAlwaysVisible && this.axisLocation > h )
+			{
+				this.axisLocation = h;
+				this.yscale = h/max;
+			}
+		}
+
+		// Calculate the visible axis range
+		this.axisRangeY = this.getValueAt(0,0).getY() - this.getValueAt(0,h).getY();
 
 		// The width of each of the bars
-		final double xscale = w/(double)data.length;
-
-		// Position of the axis - either fixed or moving to fit best
-		if( !this.fixAxis )
-				this.axisLocation = min * yscale;
-		else	yscale = Math.min( (h-this.axisLocation)/min, (h-this.axisLocation)/max );
+		final double barWidth = w/(double)data.length;
 
 		// Now draw the bars
 		for( int i = 0; i < data.length; i++ )
 		{
 			// Position on the x-axis
-			final int x = (int)(i*xscale);
+			final int x = (int)(i*barWidth);
 
-			// The value (negative as we're drawing from the bottom of the window)
-			double s = -data[i] * yscale;
+			// The size of the bar (negative as we're drawing from the bottom of the window)
+			double barHeight = -data[i] * this.yscale;
 
-			// This is used to ensure we draw the rectangle from the top-left each time.
+			// This is used to ensure we draw the rectangle from its top-left each time.
 			double offset = 0;
 
 			// Get the bar colour. We'll get the colour map colour if we're doing that,
@@ -223,19 +260,20 @@ public class BarVisualisation extends Visualisation<double[]>
 			if( this.useIndividualBarColours )
 				c = this.barColours[i%this.barColours.length];
 
-			// If we need to draw the rectangle below the axis, we need to draw
-			// from a different position, so we update the offset and height of bar
-			if( s < 0 )
-			{
-				offset = -s;
-				s = -s;
-			}
+			// If we need to draw the rectangle above the axis (a positive value
+			// makes barHeight negative), we need to draw from above the axis,
+			// down to the axis.
+			if( barHeight < 0 )
+				barHeight = offset = -barHeight;
+
+			// Create the shape for the bar
+			final int rectPosition = (int)(this.axisLocation - offset);
+			final Rectangle barRect = new Rectangle(
+					x, rectPosition, (int)barWidth, (int)barHeight );
 
 			// Draw the filled rectangle, and then stroke it.
-			this.visImage.drawShapeFilled( new Rectangle( x, (int)(h-s+this.axisLocation+offset),
-					(int)xscale, (int)s ), c );
-			this.visImage.drawShape( new Rectangle( x, (int)(h-s+this.axisLocation+offset),
-					(int)xscale, (int)s ), this.getStrokeColour() );
+			this.visImage.drawShapeFilled( barRect, c );
+			this.visImage.drawShape( barRect, this.getStrokeColour() );
 
 			// If we're to draw the bar's value, do that here.
 			if( this.drawValue )
@@ -250,8 +288,8 @@ public class BarVisualisation extends Visualisation<double[]>
 					.getBounds( text, f.createStyle( this.visImage.createRenderer() ) );
 
 				// Work out where to put the text
-				int tx = (int)(x+xscale/2-r.width/2);
-				final int ty = (int)(h-s+this.axisLocation+offset)-this.textBasePad;
+				int tx = (int)(x+barWidth/2-r.width/2);
+				final int ty = (int)(this.axisLocation-offset)-this.textBasePad;
 
 				// Make sure the text will be drawn within the bounds of the image.
 				if( tx < 0 )
@@ -514,5 +552,152 @@ public class BarVisualisation extends Visualisation<double[]>
 	public void setAxisWidth( final int axisWidth )
 	{
 		this.axisWidth = axisWidth;
+	}
+
+	/**
+	 * 	Returns whether the bars are auto scaling
+	 *	@return TRUE if auto scaling
+	 */
+	public boolean isAutoScale()
+	{
+		return this.autoScale;
+	}
+
+	/**
+	 * 	Set whether the bars should auto scale to fit all values within the vis.
+	 *	@param autoScale TRUE to auto scale the values
+	 */
+	public void setAutoScale( final boolean autoScale )
+	{
+		this.autoScale = autoScale;
+	}
+
+	/**
+	 * 	Get the maximum value for the scaling
+	 *	@return The maximum value
+	 */
+	public double getMaxValue()
+	{
+		return this.maxValue;
+	}
+
+	/**
+	 * 	Set the maximum value (in units) for the bars. Automatically sets the
+	 * 	autoScaling to FALSE.
+	 *	@param maxValue Set the maximum value to use
+	 */
+	public void setMaxValue( final double maxValue )
+	{
+		this.maxValue = maxValue;
+		this.autoScale = false;
+	}
+
+	/**
+	 * 	Get the minimum value in use.
+	 *	@return The minimum value
+	 */
+	public double getMinValue()
+	{
+		return this.minValue;
+	}
+
+	/**
+	 * 	Set the minimum value (in units) to use to plot the bars. Automatically
+	 * 	sets the auto scaling to FALSE.
+	 *	@param minValue the minimum value
+	 */
+	public void setMinValue( final double minValue )
+	{
+		this.minValue = minValue;
+		this.autoScale = false;
+	}
+
+	/**
+	 * 	Whether the axis is always visible
+	 *	@return TRUE if the axis is always visible
+	 */
+	public boolean isAxisAlwaysVisible()
+	{
+		return this.axisAlwaysVisible;
+	}
+
+	/**
+	 * 	Set whether the axis should always be visible. If the minimum value is > 0
+	 * 	or maximum value < 0, then the axis will be made visible (either at the bottom
+	 * 	or the top of the viewport respectively) if this is TRUE. This has no effect
+	 * 	if the axis is fixed and set to a point outside the viewport.
+	 *
+	 *	@param axisAlwaysVisible TRUE to make the axis always visible
+	 */
+	public void setAxisAlwaysVisible( final boolean axisAlwaysVisible )
+	{
+		this.axisAlwaysVisible = axisAlwaysVisible;
+	}
+
+	/**
+	 * 	Returns the last calculated axis location
+	 *	@return the axisLocation The axis location
+	 */
+	public double getAxisLocation()
+	{
+		return this.axisLocation;
+	}
+
+	/**
+	 * 	Set the axis location. Automatically fixes the axis location
+	 *	@param axisLocation the axisLocation to set
+	 */
+	public void setAxisLocation( final double axisLocation )
+	{
+		this.axisLocation = axisLocation;
+		this.fixAxis = true;
+	}
+
+	/**
+	 * 	Returns whether the axis is fixed or not.
+	 *	@return the fixAxis TRUE if the axis is fixed; FALSE otherwise
+	 */
+	public boolean isFixAxis()
+	{
+		return this.fixAxis;
+	}
+
+	/**
+	 * 	Set whether the axis should be fixed.
+	 *	@param fixAxis TRUE to fix the axis; FALSE to allow it to float
+	 */
+	public void setFixAxis( final boolean fixAxis )
+	{
+		this.fixAxis = fixAxis;
+	}
+
+	/**
+	 * 	The y-scale being used to plot the data.
+	 *	@return the yscale The y-scale
+	 */
+	public double getYscale()
+	{
+		return this.yscale;
+	}
+
+	/**
+	 * 	The data range being displayed.
+	 *	@return the axisRangeY
+	 */
+	public double getAxisRangeY()
+	{
+		return this.axisRangeY;
+	}
+
+	/**
+	 * 	Returns the units value at the given pixel coordinate.
+	 *	@param x The x pixel coordinate
+	 *	@param y The y pixel coordinate
+	 *	@return The cartesian unit coordinate
+	 */
+	public Point2d getValueAt( final int x, final int y )
+	{
+		return new Point2dImpl( x * this.data.length/this.getWidth(),
+				(float)((this.axisLocation - y) / this.yscale) );
 	}
 }

@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.vis;
 
@@ -74,7 +74,7 @@ import org.openimaj.image.MBFImage;
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 27 Jul 2012
  *	@version $Author$, $Revision$, $Date$
- * 	@param <T> The type of the data to be visualised 
+ * 	@param <T> The type of the data to be visualised
  */
 public abstract class Visualisation<T> extends JPanel implements ComponentListener
 {
@@ -83,33 +83,33 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 
 	/** The visualisation image */
 	protected MBFImage visImage = null;
-	
+
 	/** The data to be visualised */
 	protected T data = null;
-	
+
 	/** Whether to allow resizing of the visualisation */
 	private boolean allowResize = true;
-	
+
 	/** The overlay image */
 	private MBFImage overlayImage = null;
-	
+
 	/** The list of visualisations that wish to overlay on this vis */
 	private final List<Visualisation<?>> overlays = new ArrayList<Visualisation<?>>();
-	
+
 	/** Whether to clear the image before redrawing */
 	protected boolean clearBeforeDraw = true;
-	
+
 	/** The background colour to clear the image to */
 	private final Float[] backgroundColour = new Float[]{0f,0f,0f,1f};
-	
+
 	/** The visualisation that this vis is being overlaid on */
 	private Visualisation<?> overlaidOn = null;
-	
+
 	/**
 	 * 	Default constructor
 	 */
 	protected Visualisation() {}
-	
+
 	/**
 	 * 	Create a new visualisation with the given width and height
 	 *	@param width The width
@@ -130,19 +130,19 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	public Visualisation( final Visualisation<?> overlayOn )
 	{
 		this.overlaidOn = overlayOn;
-		
+
 		// Create an image the same size as the overlay vis
 		final MBFImage vi = overlayOn.getVisualisationImage();
 		this.visImage = new MBFImage( vi.getWidth(), vi.getHeight(), 4 );
 		this.setPreferredSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
 		this.setSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
-		
+
 		// Add this as an overlay on the other vis. This also forces
 		// an update so that we get their visualisation to overlay on
 		overlayOn.addOverlay( this );
 		this.addComponentListener( this );
 	}
-	
+
 	/**
 	 * 	Add an overlay to this visualisation
 	 *	@param v The visualisation to overlay on this visualisation
@@ -152,7 +152,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		this.overlays.add( v );
 		v.updateVis( this.visImage );
 	}
-	
+
 	/**
 	 * 	Remove the given overlay from this visualisation
 	 *	@param v The visualisation to remove
@@ -161,15 +161,17 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	{
 		this.overlays.remove( v );
 	}
-	
+
 	/**
-	 * 	Called to update the visualisation with the data stored in the
-	 * 	data variable. Update is called from the paint() method so should
+	 * 	Called to update the visualisation. This method can expect the
+	 * 	<code>visImage</code> member to be available and of the correct size.
+	 * 	The method simply needs to draw the visualisation to this {@link MBFImage}.
+	 *  Update is called from the paint() method so should
 	 * 	ideally not force a repaint() as this will call a continuous repaint
 	 * 	loop.
 	 */
 	public abstract void update();
-	
+
 	/**
 	 * 	Call to force and update of the visualisation
 	 */
@@ -181,24 +183,24 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 					this.visImage.getWidth() != this.getWidth() ||
 					 this.visImage.getHeight() != this.getHeight()) )
 				this.visImage = new MBFImage( this.getWidth(), this.getHeight(), 4 );
-			
+
 			if( this.clearBeforeDraw )
 				this.visImage.fill( this.backgroundColour );
-			
+
 			if( this.overlayImage != null )
 				this.visImage.drawImage( this.overlayImage
 	//				.process( new ResizeProcessor( getWidth(), getHeight(), false ) )
 					, 0, 0 );
 		}
-		
-		System.out.println( "Update "+this );
+
+//		System.out.println( "Update "+this );
 		this.update();
 		this.repaint();
-		
+
 		for( final Visualisation<?> v : this.overlays )
 			v.updateVis( this.visImage );
 	}
-	
+
 	/**
 	 * 	Update the visualisation using the given image as the base image
 	 * 	on which to overlay.
@@ -211,7 +213,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		else	this.overlayImage = null;
 		this.updateVis();
 	}
-	
+
 	/**
 	 * 	Set the data to be visualised.
 	 *	@param data The data to be visualised
@@ -221,7 +223,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		this.data = data;
 		this.updateVis();
 	}
-	
+
 	/**
 	 * 	Returns the image to which the bars will be drawn.
 	 *	@return The image
@@ -230,7 +232,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	{
 		return this.visImage;
 	}
-	
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
@@ -238,14 +240,14 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	@Override
 	public void paint( final Graphics g )
 	{
-		g.drawImage( ImageUtilities.createBufferedImageForDisplay( this.visImage ), 
+		g.drawImage( ImageUtilities.createBufferedImageForDisplay( this.visImage ),
 			0, 0, null );
 	}
-	
+
 	/**
-	 *	Show a window containing this visualisation 
-	 * 	@param title The title of the window 
-	 * 	@return The window that was created 
+	 *	Show a window containing this visualisation
+	 * 	@param title The title of the window
+	 * 	@return The window that was created
 	 */
 	public JFrame showWindow( final String title )
 	{
@@ -290,7 +292,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	public void componentHidden( final ComponentEvent e )
 	{
 	}
-	
+
 	@Override
 	public void componentMoved( final ComponentEvent e )
 	{
@@ -300,7 +302,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	public void componentShown( final ComponentEvent e )
 	{
 	}
-	
+
 	@Override
 	public void componentResized( final ComponentEvent e )
 	{

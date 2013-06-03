@@ -61,7 +61,7 @@ import org.openimaj.vis.timeline.TimelineObject;
  *	
  *	@created 9 Jun 2011
  */
-public class AudioWaveformPlotter extends TimelineObject<AudioStream>
+public class AudioOverviewVisualisation extends TimelineObject<AudioStream>
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -261,7 +261,7 @@ public class AudioWaveformPlotter extends TimelineObject<AudioStream>
 	 * 	Default constructor
 	 * 	@param as The audio data to plot 
 	 */
-	public AudioWaveformPlotter( final AudioStream as )
+	public AudioOverviewVisualisation( final AudioStream as )
 	{
 		this.data  = as;
 		this.length = this.data.getLength();
@@ -316,7 +316,7 @@ public class AudioWaveformPlotter extends TimelineObject<AudioStream>
 			final int w, final int h, final Float[] backgroundColour,
 			final Float[] colour  )
     {
-		return new AudioWaveformPlotter(a).plotAudioWaveformImage( 
+		return new AudioOverviewVisualisation(a).plotAudioWaveformImage( 
 				w, h, backgroundColour, colour );
     }
 	

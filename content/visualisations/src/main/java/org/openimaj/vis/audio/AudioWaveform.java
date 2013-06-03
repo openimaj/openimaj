@@ -48,7 +48,7 @@ import org.openimaj.vis.Visualisation;
  *	of audio waveform can be displayed.  
  *	<p>
  *	If you prefer to display an overview of the complete audio of a resource, 
- *	use the {@link AudioWaveformPlotter}.
+ *	use the {@link AudioOverviewVisualisation}.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 13 Jul 2012
