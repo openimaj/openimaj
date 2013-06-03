@@ -19,6 +19,12 @@
 			<groupId>org.openimaj</groupId>
 			<version>1.1.1-SNAPSHOT</version>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpcore</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.opennlp</groupId>
@@ -31,10 +37,10 @@
 			<version>1.5.2-incubating</version>
 		</dependency>
 		<dependency>
-      <groupId>gov.sandia.foundry</groupId>
-      <artifactId>gov-sandia-cognition-text-core</artifactId>
-      <version>3.3.0</version>
-    </dependency>
+			<groupId>gov.sandia.foundry</groupId>
+			<artifactId>gov-sandia-cognition-text-core</artifactId>
+			<version>3.3.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.opennlp</groupId>
 			<artifactId>opennlp-maxent</artifactId>
@@ -118,6 +124,32 @@
 			<version>4.0.0-ALPHA</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-core</artifactId>
+			<version>4.0.0-ALPHA</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-jdk14</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>4.0.0-ALPHA</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
@@ -138,6 +170,11 @@
 			<groupId>org.geonames</groupId>
 			<artifactId>geonames</artifactId>
 			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
 		</dependency>
 	</dependencies>
 	<properties>

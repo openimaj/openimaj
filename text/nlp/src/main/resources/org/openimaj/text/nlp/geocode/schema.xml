@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="geonames" version="1.2">
+  <types>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="date" class="solr.TrieDateField" omitNorms="true" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="slong" class="solr.SortableLongField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="sfloat" class="solr.SortableFloatField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.LetterTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.LetterTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+  </types>
+
+  <fields>
+    <field name="id"            type="string" indexed="true" stored="true" required="true" />
+    <field name="basic_name"    type="text"   indexed="true" stored="true" required="true" omitNorms="false" />
+    <field name="utf8_name"     type="text"   indexed="true" stored="true" />
+    <field name="latitude"      type="sfloat" indexed="true" stored="true" />
+    <field name="longitude"     type="sfloat" indexed="true" stored="true" />
+    <field name="feature_class" type="string" indexed="true" stored="true" />
+    <field name="feature_code"  type="string" indexed="true" stored="true" />
+    <field name="country_code"  type="text" indexed="true" stored="true" />
+    <field name="population"    type="slong"  indexed="true" stored="true" />
+    <field name="elevation"     type="sint"   indexed="true" stored="true" />
+    <field name="gtopo30"       type="sint"   indexed="true" stored="true" />
+    <field name="timezone"      type="string" indexed="true" stored="true" />
+    <field name="date_modified" type="date"   indexed="true" stored="true" />
+    <field name="alternames" type="text"   indexed="true" stored="true" multiValued="true"/>
+
+    <!-- Used for anchored matches -->
+    <field name="basic_name_str" type="string" indexed="true" stored="false" required="true" />
+    <field name="basic_name_rev" type="string" indexed="true" stored="false" required="true" />
+
+    <!-- Used instead of document boosts so wildcards can be used
+        as per: http://lucene.472066.n3.nabble.com/Boost-with-wildcard-td486327.html -->
+    <field name="boost" type="string" indexed="true" stored="false" omitNorms="false" />
+  </fields>
+
+  <uniqueKey>id</uniqueKey>
+  <defaultSearchField>basic_name</defaultSearchField>
+  <solrQueryParser defaultOperator="AND"/>
+</schema>

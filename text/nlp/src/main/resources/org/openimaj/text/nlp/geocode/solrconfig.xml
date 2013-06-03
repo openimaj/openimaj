@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+  <luceneMatchVersion>LUCENE_CURRENT</luceneMatchVersion>
+  <abortOnConfigurationError>true</abortOnConfigurationError>
+  <dataDir>${geonames.solr.home:./solr}/data</dataDir>
+
+  <!-- This index shouldn't receive updates... so these settings don't matter -->
+
+  <query>
+    <maxBooleanClauses>1024</maxBooleanClauses>
+
+    <filterCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="128"/>
+    <queryResultCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="32"/>
+    <documentCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0"/>
+
+    <enableLazyFieldLoading>true</enableLazyFieldLoading>
+    <queryResultWindowSize>50</queryResultWindowSize>
+    <queryResultMaxDocsCached>200</queryResultMaxDocsCached>
+    <HashDocSet maxSize="3000" loadFactor="0.75"/>
+    <listener event="newSearcher" class="solr.QuerySenderListener">
+      <arr name="queries">
+        <lst><str name="q">newcastle</str> <str name="start">0</str><str name="rows">10</str></lst>
+      </arr>
+    </listener>
+
+    <listener event="firstSearcher" class="solr.QuerySenderListener">
+      <arr name="queries">
+        <lst><str name="q">newcastle</str><str name="start">0</str><str name="rows">10</str></lst>
+      </arr>
+    </listener>
+
+    <useColdSearcher>false</useColdSearcher>
+    <maxWarmingSearchers>2</maxWarmingSearchers>
+  </query>
+
+  <requestDispatcher handleSelect="true" >
+    <requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="2048" />
+    <httpCaching lastModifiedFrom="openTime" etagSeed="Solr"></httpCaching>
+  </requestDispatcher>
+
+  <requestHandler name="standard" class="solr.SearchHandler" default="true">
+     <lst name="defaults">
+       <str name="echoParams">all</str>
+       <int name="rows">20</int>
+       <str name="fl">basic_name,country_code,display</str>
+     </lst>
+  </requestHandler>
+  <requestHandler name="/update" class="solr.XmlUpdateRequestHandler"> </requestHandler>
+
+</config>
