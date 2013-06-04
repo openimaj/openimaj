@@ -31,13 +31,8 @@ package org.openimaj.image.analysis.algorithm;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.io.IOException;
-
-import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.OpenIMAJ;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
@@ -47,21 +42,6 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 
  */
 public class InterpolatingBinnedImageHistogramAnalyserTest {
-	FImage image;
-	InterpolatingBinnedImageHistogramAnalyser analyser;
-
-	/**
-	 * Setup tests
-	 * 
-	 * @throws IOException
-	 */
-	@Before
-	public void setup() throws IOException {
-		image = ImageUtilities.readF(OpenIMAJ.getLogoAsStream());
-		analyser = new InterpolatingBinnedImageHistogramAnalyser(64);
-		image.analyseWith(analyser);
-	}
-
 	/**
 	 * Test with a single pixel falling into a single bin
 	 */
@@ -131,7 +111,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		a.analyseImage(i);
 
 		final Histogram h = a.computeHistogram(0, 0, 1, 1);
-		assertArrayEquals(new double[] { 0.5, 0, 0, 0.5 }, h.values, 0.001);
+		assertArrayEquals(new double[] { 1.0, 0, 0, 0 }, h.values, 0.001);
 	}
 
 	/**
@@ -146,7 +126,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		a.analyseImage(i);
 
 		final Histogram h = a.computeHistogram(0, 0, 1, 1);
-		assertArrayEquals(new double[] { 0, 0, 0, 0, 1 }, h.values, 0.001);
+		assertArrayEquals(new double[] { 0.5, 0, 0, 0, 0.5 }, h.values, 0.001);
 	}
 
 	/**
@@ -162,6 +142,6 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 		a.analyseImage(i);
 
 		final Histogram h = a.computeHistogram(0, 0, 1, 1);
-		assertArrayEquals(new double[] { 0.25, 0, 0, 0, 0.75 }, h.values, 0.001);
+		assertArrayEquals(new double[] { 0.75, 0, 0, 0, 0.25 }, h.values, 0.001);
 	}
 }

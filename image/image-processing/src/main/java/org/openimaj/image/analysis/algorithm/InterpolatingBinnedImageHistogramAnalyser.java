@@ -42,9 +42,16 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * distribute the weight across the two nearest bins.
  * <p>
  * Cyclic histograms are also supported (i.e. for angles).
+ * <p>
+ * For non cyclic histograms, the bin centres are at <code>min + binWidth/2 +
+ * n*binWidth</code> for <code>n=0..<nbins</code>. Any point less than
+ * <code>binWidth/2</code> from the end of a non-cyclic histogram counts fully
+ * to the respective end bin.
+ * <p>
+ * For cyclic histograms, the bin centres are at <code>min + n*binWidth</code>
+ * for <code>n=0..<nbins</code>.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
  */
 public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistogramAnalyser {
 	/**
@@ -94,42 +101,50 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 		binMap = new int[height][width];
 		weights = new float[height][width];
 
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				final float val = ((image.pixels[y][x] - min) / max) * nbins;
-				final int bin = (int) Math.floor(val);
+		if (wrap) {
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					final float val = ((image.pixels[y][x] - min) / max) * nbins;
+					final int bin = (int) Math.floor(val);
+					final float delta = val - bin;
 
-				int lbin;
-				float lweight;
-				if (val - bin < 0.5) {
-					// right bin
-					lbin = bin - 1;
-					lweight = 0.5f + (val - bin);
-				} else {
-					// left bin
-					lbin = bin;
-					lweight = 1.5f - (val - bin);
+					final int lbin = bin % nbins;
+					final float lweight = 1f - delta;
+
+					binMap[y][x] = lbin;
+					weights[y][x] = lweight;
 				}
+			}
+		} else {
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					final float val = ((image.pixels[y][x] - min) / max) * nbins;
+					final int bin = (int) Math.floor(val);
+					final float delta = val - bin;
 
-				if (wrap) {
-					if (lbin < 0)
-						lbin = nbins - 1;
-					else if (lbin >= nbins)
-						lbin = 0;
-				} else {
+					int lbin;
+					float lweight;
+					if (delta < 0.5) {
+						// right bin
+						lbin = bin - 1;
+						lweight = 0.5f + (delta);
+					} else {
+						// left bin
+						lbin = bin;
+						lweight = 1.5f - (delta);
+					}
+
 					if (lbin < 0) {
 						lbin = 0;
 						lweight = 1;
-					}
-					else if (bin >= nbins) {
+					} else if (bin >= nbins) {
 						lbin = nbins - 1;
 						lweight = 1;
 					}
+
+					binMap[y][x] = lbin;
+					weights[y][x] = lweight;
 				}
-
-				binMap[y][x] = lbin;
-
-				weights[y][x] = lweight;
 			}
 		}
 	}
