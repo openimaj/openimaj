@@ -51,6 +51,21 @@ public class Histogram extends DoubleFV {
 		super(nbins);
 	}
 
+	/**
+	 * Construct a histogram by concatenating the given histograms
+	 * 
+	 * @param hs
+	 *            histograms to concatenate
+	 */
+	public Histogram(Histogram... hs) {
+		final double[][] hists = new double[hs.length][];
+		for (int i = 0; i < hs.length; i++) {
+			hists[i] = hs[i].values;
+		}
+
+		this.values = ArrayUtils.concatenate(hists);
+	}
+
 	protected Histogram(double[] data) {
 		super(data);
 	}
