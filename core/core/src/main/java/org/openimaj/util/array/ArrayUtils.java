@@ -740,7 +740,8 @@ public class ArrayUtils {
 	}
 
 	/**
-	 * Normalise length of array to 1.0. Writes over array
+	 * Normalise length of array to 1.0. Writes over array. If the array is all
+	 * zeros, it will be unchanged.
 	 * 
 	 * @param array
 	 *            the array
@@ -750,6 +751,9 @@ public class ArrayUtils {
 		double sumsq = 0.0f;
 		for (int i = 0; i < array.length; i++)
 			sumsq += array[i] * array[i];
+
+		if (sumsq == 0)
+			return array;
 
 		final double weight = 1.0f / Math.sqrt(sumsq);
 		for (int i = 0; i < array.length; i++)
