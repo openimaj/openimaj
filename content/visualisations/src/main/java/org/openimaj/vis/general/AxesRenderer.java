@@ -105,8 +105,14 @@ public class AxesRenderer<Q>
 	/** The thickness of the minor tick marks on the axes */
 	private int minorTickThickenss = 1;
 
+	/** Whether to draw the X ticks */
+	private boolean drawXTicks = true;
+
 	/** Whether to draw labels on the x axis */
 	private boolean drawXTickLabels = true;
+
+	/** whether to draw the Y ticks */
+	private boolean drawYTicks = true;
 
 	/** Whether to draw labels on the y axis */
 	private boolean drawYTickLabels = true;
@@ -237,7 +243,7 @@ public class AxesRenderer<Q>
 		this.xAxisPosition = h - this.axisPaddingBottom + this.minYValue*this.yUnitSizePx;
 
 		// Draw the x-axis minor ticks
-		if( this.drawXAxis )
+		if( this.drawXAxis && this.drawXTicks )
 			for( double v = this.minXValue; v <= this.maxXValue; v += this.xMinorTickSpacing )
 				ir.drawLine(
 					(int)(this.yAxisPosition + v * this.xUnitSizePx),
@@ -248,7 +254,7 @@ public class AxesRenderer<Q>
 					this.minorTickColour );
 
 		// Draw the x-axis major ticks
-		if( this.drawXAxis )
+		if( this.drawXAxis && this.drawXTicks )
 			for( double v = this.minXValue; v <= this.maxXValue; v += this.xMajorTickSpacing )
 				ir.drawLine(
 					(int)(this.yAxisPosition + v * this.xUnitSizePx),
@@ -284,7 +290,7 @@ public class AxesRenderer<Q>
 		}
 
 		// Draw the y-axis ticks
-		if( this.drawYAxis )
+		if( this.drawYAxis && this.drawYTicks )
 			for( double v = this.minYValue; v <= this.maxYValue; v += this.yMinorTickSpacing )
 				ir.drawLine(
 					(int)(this.yAxisPosition-this.minorTickLength),
@@ -295,7 +301,7 @@ public class AxesRenderer<Q>
 					this.minorTickColour );
 
 		// Draw the y-axis ticks
-		if( this.drawYAxis )
+		if( this.drawYAxis && this.drawYTicks )
 			for( double v = this.minYValue; v <= this.maxYValue; v += this.yMajorTickSpacing )
 				ir.drawLine(
 					(int)(this.yAxisPosition-this.majorTickLength),
@@ -1210,6 +1216,38 @@ public class AxesRenderer<Q>
 	public double getyUnitSizePx()
 	{
 		return this.yUnitSizePx;
+	}
+
+	/**
+	 *	@return the drawXTicks
+	 */
+	public boolean isDrawXTicks()
+	{
+		return this.drawXTicks;
+	}
+
+	/**
+	 *	@return the drawYTicks
+	 */
+	public boolean isDrawYTicks()
+	{
+		return this.drawYTicks;
+	}
+
+	/**
+	 *	@param drawXTicks the drawXTicks to set
+	 */
+	public void setDrawXTicks( final boolean drawXTicks )
+	{
+		this.drawXTicks = drawXTicks;
+	}
+
+	/**
+	 *	@param drawYTicks the drawYTicks to set
+	 */
+	public void setDrawYTicks( final boolean drawYTicks )
+	{
+		this.drawYTicks = drawYTicks;
 	}
 
 	/**

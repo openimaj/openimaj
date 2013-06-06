@@ -7,10 +7,10 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- *
+ *	An axis on which items can be plotted and groups into bands.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- * 	@param <O>
+ * 	@param <O> The type of item to plot on the axis
  *  @created 3 Jun 2013
  */
 public class DiversityAxis<O> extends XYPlotVisualisation<O>
@@ -19,7 +19,8 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @param plotter
+	 * 	Default constructor
+	 * 	@param plotter The plotter to use for items
 	 */
 	public DiversityAxis( final ItemPlotter<O,Float[]> plotter )
 	{
@@ -28,9 +29,11 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 	}
 
 	/**
-	 *	@param w
-	 *	@param h
-	 * 	@param plotter
+	 * 	Default constructor
+	 *
+	 *	@param w The width of the axis visualisation
+	 *	@param h The height of the axis visualisation
+	 * 	@param plotter The plotter to use for items
 	 */
 	public DiversityAxis( final int w, final int h, final ItemPlotter<O,Float[]> plotter )
 	{
@@ -43,15 +46,28 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 	 */
 	private void init()
 	{
-//		this.axesRenderer.setDrawYAxis( false );
+		this.axesRenderer.setDrawYTicks( false );
+		this.axesRenderer.setDrawYTickLabels( false );
 		this.axesRenderer.setyLabelSpacing( 1 );
 		this.axesRenderer.setMinYValue( 0 );
 		this.axesRenderer.setAxisPaddingBottom( 50 );
+		this.axesRenderer.setyAxisName( "" );
 	}
 
 	/**
+	 * 	Set the name of the diversity axis.
+	 *	@param name The name of the diversity axis
+	 */
+	public void setDiversityAxisName( final String name )
+	{
+		this.axesRenderer.setxAxisName( name );
+	}
+
+	/**
+	 *	Add an object to the axis at the given position in the given band.
+	 *	Note that the band is 1-based.
 	 *
-	 *	@param band The band in which the object is to be put
+	 *	@param band The band in which the object is to be put (1-based)
 	 * 	@param position The position of the object on the axis
 	 *	@param object The object
 	 */
@@ -99,5 +115,6 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 	public void bandSizeKnown( final int bandSize )
 	{
 		// Can be overridden if you need to know this
+		// - for example, to let the item plotter know the size of the bands
 	}
 }
