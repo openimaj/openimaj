@@ -34,11 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.util.iterator.IterableIterator;
 
 /**
  * A {@link RectangleSampler} provides an easy way to generate a sliding window
@@ -57,6 +54,26 @@ public class RectangleSampler implements Iterable<Rectangle> {
 	float width;
 	float height;
 
+	/**
+	 * Construct the sampler with the given parameters
+	 * 
+	 * @param minx
+	 *            starting x-ordinate
+	 * @param maxx
+	 *            finishing x-ordinate
+	 * @param miny
+	 *            starting y-ordinate
+	 * @param maxy
+	 *            finishing y-ordinate
+	 * @param stepx
+	 *            step size in x direction
+	 * @param stepy
+	 *            step size in y direction
+	 * @param width
+	 *            width of sample window
+	 * @param height
+	 *            height of sample window
+	 */
 	public RectangleSampler(float minx, float maxx, float miny, float maxy, float stepx, float stepy, float width,
 			float height)
 	{
@@ -67,6 +84,21 @@ public class RectangleSampler implements Iterable<Rectangle> {
 		this.height = height;
 	}
 
+	/**
+	 * Construct the sampler with the given parameters
+	 * 
+	 * @param bounds
+	 *            the bounds in which the window must remain; it will start in
+	 *            the top-left corner
+	 * @param stepx
+	 *            step size in x direction
+	 * @param stepy
+	 *            step size in y direction
+	 * @param width
+	 *            width of sample window
+	 * @param height
+	 *            height of sample window
+	 */
 	public RectangleSampler(Rectangle bounds, float stepx, float stepy, float width, float height)
 	{
 		setBounds(bounds);
@@ -76,6 +108,21 @@ public class RectangleSampler implements Iterable<Rectangle> {
 		this.height = height;
 	}
 
+	/**
+	 * Construct the sampler with the given parameters
+	 * 
+	 * @param img
+	 *            the image from which to set the sampler bounds (will be set to
+	 *            the complete image)
+	 * @param stepx
+	 *            step size in x direction
+	 * @param stepy
+	 *            step size in y direction
+	 * @param width
+	 *            width of sample window
+	 * @param height
+	 *            height of sample window
+	 */
 	public RectangleSampler(Image<?, ?> img, float stepx, float stepy, float width, float height)
 	{
 		setBounds(img);
@@ -85,6 +132,18 @@ public class RectangleSampler implements Iterable<Rectangle> {
 		this.height = height;
 	}
 
+	/**
+	 * Adjust the bounds of the sampler
+	 * 
+	 * @param minx
+	 *            starting x-ordinate
+	 * @param maxx
+	 *            finishing x-ordinate
+	 * @param miny
+	 *            starting y-ordinate
+	 * @param maxy
+	 *            finishing y-ordinate
+	 */
 	public void setBounds(float minx, float maxx, float miny, float maxy) {
 		this.minx = minx;
 		this.maxx = maxx;
@@ -92,6 +151,12 @@ public class RectangleSampler implements Iterable<Rectangle> {
 		this.maxy = maxy;
 	}
 
+	/**
+	 * Adjust the bounds of the sampler
+	 * 
+	 * @param r
+	 *            the new bounds rectangle
+	 */
 	public void setBounds(Rectangle r) {
 		if (r == null)
 			return;
@@ -102,6 +167,12 @@ public class RectangleSampler implements Iterable<Rectangle> {
 		this.maxy = r.y + r.height;
 	}
 
+	/**
+	 * Adjust the bounds of the sampler
+	 * 
+	 * @param img
+	 *            the image to determine the bounds from
+	 */
 	public void setBounds(Image<?, ?> img) {
 		if (img == null)
 			return;
@@ -193,20 +264,5 @@ public class RectangleSampler implements Iterable<Rectangle> {
 				throw new UnsupportedOperationException("Removal is not supported!");
 			}
 		};
-	}
-
-	public static void main(String[] args) {
-		final FImage img = new FImage(300, 300);
-
-		final RectangleSampler s = new RectangleSampler(img, 100, 100, 100, 100);
-		for (final Rectangle r : s) {
-			System.out.println(r);
-			img.drawShape(r, 1f);
-		}
-
-		for (final FImage i : IterableIterator.in(s.subImageIterator(img)))
-			System.out.println(i.width);
-
-		DisplayUtilities.display(img);
 	}
 }

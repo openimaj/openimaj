@@ -37,16 +37,38 @@ import java.util.NoSuchElementException;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.iterator.IterableIterator;
 
-public class RectanglePyramidSampler implements Iterable<Rectangle> {
+/**
+ * A {@link QuadtreeSampler} provides an easy way of extracting sample patches
+ * from an image or other domain in both spatial and scale directions. The
+ * sampling regions returned by the sampler form a quadtree. At the first level
+ * there is a single sample region covering the entire region; at the second
+ * level, there are 4 non-overapping sample regions, and so on.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class QuadtreeSampler implements Iterable<Rectangle> {
 	Rectangle base;
 	int nLevels;
 
-	public RectanglePyramidSampler(Rectangle r, int nLevels)
+	/**
+	 * Construct the sampler with the given parameters
+	 * 
+	 * @param r
+	 *            the size of the initial sample region on the first level
+	 * @param nLevels
+	 *            the number of levels to sample over
+	 */
+	public QuadtreeSampler(Rectangle r, int nLevels)
 	{
 		this.base = r;
 		this.nLevels = nLevels;
 	}
 
+	/**
+	 * Get all the sampling regions grouped by level
+	 * 
+	 * @return the sampling regions grouped by level
+	 */
 	public List<List<Rectangle>> levelRectangles() {
 		final List<List<Rectangle>> rects = new ArrayList<List<Rectangle>>();
 
@@ -56,6 +78,11 @@ public class RectanglePyramidSampler implements Iterable<Rectangle> {
 		return rects;
 	}
 
+	/**
+	 * Get all the sampling regions
+	 * 
+	 * @return all the sampling regions
+	 */
 	public List<Rectangle> allRectangles() {
 		final List<Rectangle> list = new ArrayList<Rectangle>();
 
@@ -132,21 +159,5 @@ public class RectanglePyramidSampler implements Iterable<Rectangle> {
 				throw new UnsupportedOperationException("Removal is not supported!");
 			}
 		};
-	}
-
-	public static void main(String[] args) {
-		final Rectangle r = new Rectangle(0, 0, 4, 4);
-		final RectanglePyramidSampler s = new RectanglePyramidSampler(r, 3);
-
-		// for (final RectangleSampler rs :
-		// IterableIterator.in(s.levelIterator())) {
-		// for (final Rectangle rr : rs) {
-		// System.out.println(rr);
-		// }
-		// }
-
-		for (final Rectangle rr : s) {
-			System.out.println(rr);
-		}
 	}
 }
