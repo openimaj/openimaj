@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos.audio;
 
@@ -43,51 +43,51 @@ import org.openimaj.video.xuggle.XuggleAudio;
 
 /**
  * 	Utilises an audio processor to plot the audio waveform.
- * 
+ *
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
+ *
  *	@created 9 Jun 2011
  */
 @Demo(
-	author = "David Dupplaw", 
+	author = "David Dupplaw",
 	description = "Demonstrates reading an audio file and plotting the waveform" +
-			" into an image.", 
-	keywords = { "audio", "image", "waveform" }, 
+			" into an image.",
+	keywords = { "audio", "image", "waveform" },
 	title = "Audio Waveform Plotter",
 	icon = "/org/openimaj/demos/icons/audio/audio-waveform-icon.png"
 )
 public class AudioWaveformPlotter
-{	
+{
 	/**
 	 * 	Default main
 	 *  @param args Command-line arguments
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
     {
 		// Open the audio stream
 	    final XuggleAudio a = new XuggleAudio( AudioWaveformPlotter.class.
 	    		getResource( "/org/openimaj/demos/audio/140bpm_formware_psytech.mp3" ) );
-	    
+
 	    // This is how wide we're going to draw the display
 	    final int w = 1920;
-	    
+
 	    // This is how high we'll draw the display
 	    final int h = 200;
 
-	    MBFImage img = org.openimaj.vis.audio.AudioWaveformPlotter.
-	    		getAudioWaveformImage( a, w, h, new Float[]{0f,0f,0f,1f}, 
+	    final MBFImage img = org.openimaj.vis.audio.AudioOverviewVisualisation.
+	    		getAudioWaveformImage( a, w, h, new Float[]{0f,0f,0f,1f},
 	    				new Float[]{1f,0f,0f,0f} );
-	    
+
 	    // Write the image to a file.
 		try
 		{
 			ImageUtilities.write( img, "png", new File("audioWaveform.png") );
 		}
-		catch( IOException e )
+		catch( final IOException e )
 		{
 			e.printStackTrace();
 		}
-		
+
 		// Display the image
 		DisplayUtilities.display( img );
     }
