@@ -35,146 +35,303 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
- * Image processor for calculating gradients and orientations
- * using finite-differences.
+ * Image processor for calculating gradients and orientations using
+ * finite-differences. Both signed (+/- PI) orientations and unsigned (+/- PI/2)
+ * are computable.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class FImageGradients implements ImageAnalyser<FImage> {
+	/**
+	 * Modes of operation for signed and unsigned orientations
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public enum Mode {
+		/**
+		 * Unsigned orientations in +/- PI/2 computed using <code>atan</code>.
+		 */
+		Unsigned(-PI_OVER_TWO_FLOAT, PI_OVER_TWO_FLOAT) {
+			@Override
+			void gradientMagnitudesAndOrientations(FImage image, FImage magnitudes, FImage orientations) {
+				FImageGradients.gradientMagnitudesAndUnsignedOrientations(image, magnitudes, orientations);
+			}
+		},
+		/**
+		 * Signed orientations +/- PI computed using <code>atan2</code>.
+		 */
+		Signed(-PI_FLOAT, PI_FLOAT) {
+			@Override
+			void gradientMagnitudesAndOrientations(FImage image, FImage magnitudes, FImage orientations) {
+				FImageGradients.gradientMagnitudesAndOrientations(image, magnitudes, orientations);
+			}
+		};
+
+		private float min;
+		private float max;
+
+		private Mode(float min, float max) {
+			this.min = min;
+			this.max = max;
+		}
+
+		abstract void gradientMagnitudesAndOrientations(FImage image, FImage magnitudes, FImage orientations);
+
+		/**
+		 * Get the minimum angular value (in radians) computed by this mode.
+		 * 
+		 * @return the minimum angular value.
+		 */
+		public float minAngle() {
+			return min;
+		}
+
+		/**
+		 * Get the maximum angular value (in radians) computed by this mode.
+		 * 
+		 * @return the maximum angular value.
+		 */
+		public float maxAngle() {
+			return max;
+		}
+	}
+
+	private final static float PI_FLOAT = (float) Math.PI;
+	private final static float PI_OVER_TWO_FLOAT = (float) Math.PI / 2f;
 	private final static float TWO_PI_FLOAT = (float) (Math.PI * 2);
-	
+
 	/**
 	 * The gradient magnitudes
 	 */
 	public FImage magnitudes;
+
 	/**
 	 * The gradient orientations
 	 */
 	public FImage orientations;
-	
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
+
+	/**
+	 * The orientation mode
+	 */
+	public Mode mode;
+
+	/**
+	 * Default constructor using {@link Mode#Signed} mode.
+	 */
+	public FImageGradients() {
+		this.mode = Mode.Signed;
+	}
+
+	/**
+	 * Construct using the given {@link Mode}.
+	 * 
+	 * @param mode
+	 *            the mode
+	 */
+	public FImageGradients(Mode mode) {
+		this.mode = mode;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
+	 * .Image)
 	 */
 	@Override
 	public void analyseImage(FImage image) {
-		if (magnitudes == null || 
-				magnitudes.height != image.height || 
-				magnitudes.width != image.width) {
+		if (magnitudes == null ||
+				magnitudes.height != image.height ||
+				magnitudes.width != image.width)
+		{
 			magnitudes = new FImage(image.width, image.height);
 			orientations = new FImage(image.width, image.height);
 		}
 
-		gradientMagnitudesAndOrientations(image, magnitudes, orientations);
+		mode.gradientMagnitudesAndOrientations(image, magnitudes, orientations);
 	}
 
 	/**
-	 * Static function calling {@link #gradientMagnitudesAndOrientations} with an image.
-	 * @param image the image 
+	 * Static helper to create a new {@link FImageGradients} and call
+	 * {@link FImageGradients#analyseImage(FImage)} with the image.
+	 * 
+	 * @param image
+	 *            the image
 	 * @return a FImageGradients for the image
 	 */
 	public static FImageGradients getGradientMagnitudesAndOrientations(FImage image) {
-		FImageGradients go = new FImageGradients();
-
-		go.magnitudes = new FImage(image.width, image.height);
-		go.orientations = new FImage(image.width, image.height);
-
-		gradientMagnitudesAndOrientations(image, go.magnitudes, go.orientations);
+		final FImageGradients go = new FImageGradients();
+		go.analyseImage(image);
 
 		return go;
 	}
 
 	/**
-	 * Estimate gradients magnitudes and orientations by calculating pixel 
-	 * differences. Edges get special treatment. The resultant gradients 
-	 * and orientations are returned though the gradients and orientations 
-	 * parameters  respectively. The images represented by the gradients 
-	 * and orientations parameters are assumed to be initialized to the 
-	 * same size as the input image. 
+	 * Static helper to create a new {@link FImageGradients} and call
+	 * {@link FImageGradients#analyseImage(FImage)} with the image.
 	 * 
 	 * @param image
+	 *            the image
+	 * @param mode
+	 *            the orientation mode
+	 * @return a FImageGradients for the image
+	 */
+	public static FImageGradients getGradientMagnitudesAndOrientations(FImage image, Mode mode) {
+		final FImageGradients go = new FImageGradients(mode);
+		go.analyseImage(image);
+
+		return go;
+	}
+
+	/**
+	 * Estimate gradients magnitudes and orientations by calculating pixel
+	 * differences. Edges get special treatment. The resultant gradients and
+	 * orientations are returned though the gradients and orientations
+	 * parameters respectively. The images represented by the gradients and
+	 * orientations parameters are assumed to be initialized to the same size as
+	 * the input image. Gradients are computed using the <code>atan2</code>
+	 * function and will be in the range +/-PI.
+	 * 
+	 * @param image
+	 *            the input image
 	 * @param magnitudes
+	 *            the output gradient magnitudes
 	 * @param orientations
+	 *            the output gradient orientations
 	 */
 	public static void gradientMagnitudesAndOrientations(FImage image, FImage magnitudes, FImage orientations)
 	{
-		//Note: unrolling this loop to remove the if's doesn't
-		//actually seem to make it faster!
-		for (int r=0; r<image.height; r++) {
-			for (int c=0; c<image.width; c++) {
-				float xgrad, ygrad; 
+		// Note: unrolling this loop to remove the if's doesn't
+		// actually seem to make it faster!
+		for (int r = 0; r < image.height; r++) {
+			for (int c = 0; c < image.width; c++) {
+				float xgrad, ygrad;
 
-				if( c == 0 )
+				if (c == 0)
 					xgrad = 2.0f * (image.pixels[r][c + 1] - image.pixels[r][c]);
-				else if( c == image.width - 1 )
+				else if (c == image.width - 1)
 					xgrad = 2.0f * (image.pixels[r][c] - image.pixels[r][c - 1]);
 				else
 					xgrad = image.pixels[r][c + 1] - image.pixels[r][c - 1];
-				if( r == 0 )
+				if (r == 0)
 					ygrad = 2.0f * (image.pixels[r][c] - image.pixels[r + 1][c]);
-				else if( r == image.height - 1 )
+				else if (r == image.height - 1)
 					ygrad = 2.0f * (image.pixels[r - 1][c] - image.pixels[r][c]);
 				else
 					ygrad = image.pixels[r - 1][c] - image.pixels[r + 1][c];
-				
-				//magnitudes.pixels[r][c] = (float) Math.sqrt( xgrad * xgrad + ygrad * ygrad );
-				//orientations.pixels[r][c] = (float) Math.atan2( ygrad, xgrad );
-				
-				//JH - my benchmarking shows that (at least on OSX) Math.atan2 is really
-				//slow... FastMath provides an alternative that is much faster
-				magnitudes.pixels[r][c] = (float) Math.sqrt( xgrad * xgrad + ygrad * ygrad );
-				orientations.pixels[r][c] = (float) FastMath.atan2( ygrad, xgrad );
+
+				// magnitudes.pixels[r][c] = (float) Math.sqrt( xgrad * xgrad +
+				// ygrad * ygrad );
+				// orientations.pixels[r][c] = (float) Math.atan2( ygrad, xgrad
+				// );
+
+				// JH - my benchmarking shows that (at least on OSX) Math.atan2
+				// is really
+				// slow... FastMath provides an alternative that is much faster
+				magnitudes.pixels[r][c] = (float) Math.sqrt(xgrad * xgrad + ygrad * ygrad);
+				orientations.pixels[r][c] = (float) FastMath.atan2(ygrad, xgrad);
 			}
 		}
 	}
-	
+
 	/**
-	 * Estimate gradients magnitudes and orientations by calculating pixel 
-	 * differences. Edges get special treatment. 
+	 * Estimate gradients magnitudes and orientations by calculating pixel
+	 * differences. Edges get special treatment. The resultant gradients and
+	 * orientations are returned though the gradients and orientations
+	 * parameters respectively. The images represented by the gradients and
+	 * orientations parameters are assumed to be initialized to the same size as
+	 * the input image. Gradients are computed using the <code>atan</code>
+	 * function and will be in the range +/- PI/2.
 	 * 
-	 * The orientations are quantised into magnitudes.length bins and
-	 * the magnitudes are spread to the adjacent bin through linear
-	 * interpolation. The magnitudes parameter must be fully allocated
-	 * as an array of num orientation bin images, each of the same size
-	 * as the input image. 
+	 * @param image
+	 *            the input image
+	 * @param magnitudes
+	 *            the output gradient magnitudes
+	 * @param orientations
+	 *            the output gradient orientations
+	 */
+	public static void gradientMagnitudesAndUnsignedOrientations(FImage image, FImage magnitudes, FImage orientations)
+	{
+		// Note: unrolling this loop to remove the if's doesn't
+		// actually seem to make it faster!
+		for (int r = 0; r < image.height; r++) {
+			for (int c = 0; c < image.width; c++) {
+				float xgrad, ygrad;
+
+				if (c == 0)
+					xgrad = 2.0f * (image.pixels[r][c + 1] - image.pixels[r][c]);
+				else if (c == image.width - 1)
+					xgrad = 2.0f * (image.pixels[r][c] - image.pixels[r][c - 1]);
+				else
+					xgrad = image.pixels[r][c + 1] - image.pixels[r][c - 1];
+				if (r == 0)
+					ygrad = 2.0f * (image.pixels[r][c] - image.pixels[r + 1][c]);
+				else if (r == image.height - 1)
+					ygrad = 2.0f * (image.pixels[r - 1][c] - image.pixels[r][c]);
+				else
+					ygrad = image.pixels[r - 1][c] - image.pixels[r + 1][c];
+
+				magnitudes.pixels[r][c] = (float) Math.sqrt(xgrad * xgrad + ygrad * ygrad);
+				orientations.pixels[r][c] = (float) FastMath.atan(ygrad / xgrad);
+			}
+		}
+	}
+
+	/**
+	 * Estimate gradients magnitudes and orientations by calculating pixel
+	 * differences. Edges get special treatment.
+	 * <p>
+	 * The orientations are quantised into magnitudes.length bins and the
+	 * magnitudes are spread to the adjacent bin through linear interpolation.
+	 * The magnitudes parameter must be fully allocated as an array of num
+	 * orientation bin images, each of the same size as the input image.
 	 * 
 	 * @param image
 	 * @param magnitudes
 	 */
-	public static void gradientMagnitudesAndQuantisedOrientations(FImage image, FImage [] magnitudes)
+	public static void gradientMagnitudesAndQuantisedOrientations(FImage image, FImage[] magnitudes)
 	{
 		final int numOriBins = magnitudes.length;
-		
-		//Note: unrolling this loop to remove the if's doesn't
-		//actually seem to make it faster!
-		for (int r=0; r<image.height; r++) {
-			for (int c=0; c<image.width; c++) {
-				float xgrad, ygrad; 
 
-				if( c == 0 )
+		// Note: unrolling this loop to remove the if's doesn't
+		// actually seem to make it faster!
+		for (int r = 0; r < image.height; r++) {
+			for (int c = 0; c < image.width; c++) {
+				float xgrad, ygrad;
+
+				if (c == 0)
 					xgrad = 2.0f * (image.pixels[r][c + 1] - image.pixels[r][c]);
-				else if( c == image.width - 1 )
+				else if (c == image.width - 1)
 					xgrad = 2.0f * (image.pixels[r][c] - image.pixels[r][c - 1]);
 				else
 					xgrad = image.pixels[r][c + 1] - image.pixels[r][c - 1];
-				if( r == 0 )
+				if (r == 0)
 					ygrad = 2.0f * (image.pixels[r][c] - image.pixels[r + 1][c]);
-				else if( r == image.height - 1 )
+				else if (r == image.height - 1)
 					ygrad = 2.0f * (image.pixels[r - 1][c] - image.pixels[r][c]);
 				else
 					ygrad = image.pixels[r - 1][c] - image.pixels[r + 1][c];
-				
-				//JH - my benchmarking shows that (at least on OSX) Math.atan2 is really
-				//slow... FastMath provides an alternative that is much faster
-				final float mag = (float) Math.sqrt( xgrad * xgrad + ygrad * ygrad );
-				final float ori = (float) FastMath.atan2( ygrad, xgrad );
 
-				final float po = numOriBins * ori / TWO_PI_FLOAT; //po is now 0<=po<oriSize
+				// JH - my benchmarking shows that (at least on OSX) Math.atan2
+				// is really
+				// slow... FastMath provides an alternative that is much faster
+				final float mag = (float) Math.sqrt(xgrad * xgrad + ygrad * ygrad);
+				float ori = (float) FastMath.atan2(ygrad, xgrad);
+
+				// adjust range
+				ori = ((ori %= TWO_PI_FLOAT) >= 0 ? ori : (ori + TWO_PI_FLOAT));
+
+				final float po = numOriBins * ori / TWO_PI_FLOAT; // po is now
+																	// 0<=po<oriSize
+
 				final int oi = (int) Math.floor(po);
 				final float of = po - oi;
 
-				magnitudes[ oi   % numOriBins].pixels[r][c] = (1f - of) * mag;
-				magnitudes[(oi+1)% numOriBins].pixels[r][c] = of * mag;
+				magnitudes[oi % numOriBins].pixels[r][c] = (1f - of) * mag;
+				magnitudes[(oi + 1) % numOriBins].pixels[r][c] = of * mag;
 			}
 		}
 	}
