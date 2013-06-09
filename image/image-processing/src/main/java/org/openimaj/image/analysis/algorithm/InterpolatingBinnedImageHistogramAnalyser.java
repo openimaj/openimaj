@@ -66,8 +66,8 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 	boolean wrap = false;
 
 	/**
-	 * Construct with the given number of bins. The minimum expected value is
-	 * assumed to be 0 and the maximum 1.
+	 * Construct with the given number of bins. The histogram is not cyclic. The
+	 * minimum expected value is assumed to be 0 and the maximum 1.
 	 * 
 	 * @param nbins
 	 *            number of bins
@@ -77,7 +77,22 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 	}
 
 	/**
-	 * Construct with the given number of bins, and range.
+	 * Construct with the given number of bins. The histogram is optionally
+	 * cyclic. The minimum expected value is assumed to be 0 and the maximum 1.
+	 * 
+	 * @param nbins
+	 *            number of bins
+	 * @param wrap
+	 *            true if the histogram is cyclic; false otherwise
+	 */
+	public InterpolatingBinnedImageHistogramAnalyser(int nbins, boolean wrap) {
+		super(nbins);
+		this.wrap = true;
+	}
+
+	/**
+	 * Construct with the given number of bins, and range. The histogram is not
+	 * cyclic.
 	 * 
 	 * @param nbins
 	 *            number of bins
@@ -88,6 +103,24 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 	 */
 	public InterpolatingBinnedImageHistogramAnalyser(int nbins, float min, float max) {
 		super(nbins, min, max);
+	}
+
+	/**
+	 * Construct with the given number of bins, and range. The histogram is
+	 * optionally cyclic.
+	 * 
+	 * @param nbins
+	 *            number of bins
+	 * @param min
+	 *            minimum expected value
+	 * @param max
+	 *            maximum expected value
+	 * @param wrap
+	 *            true if the histogram is cyclic; false otherwise
+	 */
+	public InterpolatingBinnedImageHistogramAnalyser(int nbins, float min, float max, boolean wrap) {
+		super(nbins, min, max);
+		this.wrap = wrap;
 	}
 
 	/**
@@ -232,5 +265,14 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 		}
 
 		return hist;
+	}
+
+	/**
+	 * Get the weights map
+	 * 
+	 * @return the weights map
+	 */
+	public float[][] getWeightsMap() {
+		return weights;
 	}
 }
