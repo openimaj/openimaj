@@ -36,7 +36,7 @@ package org.openimaj.util.hash;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <OBJECT>
- *            Object being hashed
+ *            Type of object being hashed
  */
 public interface HashFunction<OBJECT> {
 	/**

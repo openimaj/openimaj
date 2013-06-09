@@ -42,6 +42,7 @@ import org.openimaj.util.hash.HashFunctionFactory;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <OBJECT>
+ *            Type of object being hashed
  */
 public class SimpleComposition<OBJECT> extends HashComposition<OBJECT> {
 	/**

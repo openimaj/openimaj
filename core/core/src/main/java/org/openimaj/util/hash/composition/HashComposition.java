@@ -43,7 +43,7 @@ import org.openimaj.util.hash.HashFunctionFactory;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <OBJECT>
- *            Object being hashed
+ *            Type of object being hashed
  */
 public abstract class HashComposition<OBJECT> implements HashFunction<OBJECT> {
 	protected List<HashFunction<OBJECT>> hashFunctions;
