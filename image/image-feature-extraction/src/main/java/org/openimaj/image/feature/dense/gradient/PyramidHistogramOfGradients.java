@@ -35,7 +35,7 @@ import java.util.List;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.analysis.algorithm.BinnedImageHistogramAnalyser;
-import org.openimaj.image.pixel.sampling.RectanglePyramidSampler;
+import org.openimaj.image.pixel.sampling.QuadtreeSampler;
 import org.openimaj.image.processing.convolution.FImageGradients;
 import org.openimaj.image.processing.edges.CannyEdgeDetector;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -56,7 +56,7 @@ public class PyramidHistogramOfGradients implements ImageAnalyser<FImage> {
 	}
 
 	public Histogram extractFeature(Rectangle rect) {
-		final RectanglePyramidSampler sampler = new RectanglePyramidSampler(rect, nlevels);
+		final QuadtreeSampler sampler = new QuadtreeSampler(rect, nlevels);
 		final List<float[]> parts = new ArrayList<float[]>();
 		final Histogram hist = new Histogram(0);
 
