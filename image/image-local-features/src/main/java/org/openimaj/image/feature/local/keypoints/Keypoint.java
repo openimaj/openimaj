@@ -53,7 +53,7 @@ import cern.jet.random.Normal;
  * A local interest point with a location, scale, orientation and associated
  * feature. The feature is stored as an array of bytes.
  * 
- * @author Jonathon Hare
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Keypoint
 		implements

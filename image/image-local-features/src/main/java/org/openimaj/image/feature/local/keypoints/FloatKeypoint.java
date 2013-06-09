@@ -52,7 +52,7 @@ import Jama.Matrix;
  * A local interest point with a location, scale, orientation and associated
  * feature. The feature is stored as an array of floats.
  * 
- * @author Jonathon Hare
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FloatKeypoint
 		implements
