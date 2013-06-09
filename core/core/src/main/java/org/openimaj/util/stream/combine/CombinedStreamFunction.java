@@ -3,32 +3,45 @@ package org.openimaj.util.stream.combine;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.pair.IndependentPair;
 
-
 /**
- * Given a combined stream (i.e. a stream of {@link IndependentPair} instances) apply
- * two functions (one to each compo
- *
+ * Given a combined stream (i.e. a stream of {@link IndependentPair} instances)
+ * apply two functions (one to each component of the pair) to produce a stream
+ * of output pairs.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
- * @param <AIN> The first part of the input pair
- * @param <BIN> The second part of the input pair
- *
- * @param <AOUT> The first part of the output pair
- * @param <BOUT> The second part of the output pair
- *
+ * 
+ * @param <AIN>
+ *            The first part of the input pair
+ * @param <BIN>
+ *            The second part of the input pair
+ * 
+ * @param <AOUT>
+ *            The first part of the output pair
+ * @param <BOUT>
+ *            The second part of the output pair
+ * 
  */
-public class CombinedStreamFunction<AIN,AOUT,BIN,BOUT> implements Function<IndependentPair<AIN,BIN>, IndependentPair<AOUT,BOUT>>{
-
+public class CombinedStreamFunction<AIN, AOUT, BIN, BOUT>
+		implements
+		Function<IndependentPair<AIN, BIN>, IndependentPair<AOUT, BOUT>>
+{
 	private Function<AIN, AOUT> fA;
 	private Function<BIN, BOUT> fB;
+
 	/**
+	 * Construct with the given functions to apply to the first and second
+	 * elements of the pairs in the input stream respectively.
+	 * 
 	 * @param fA
+	 *            function to apply to the first element
 	 * @param fB
+	 *            function to apply to the second element
 	 */
-	public CombinedStreamFunction(Function<AIN,AOUT> fA, Function<BIN,BOUT> fB) {
+	public CombinedStreamFunction(Function<AIN, AOUT> fA, Function<BIN, BOUT> fB) {
 		this.fA = fA;
 		this.fB = fB;
 	}
+
 	@Override
 	public IndependentPair<AOUT, BOUT> apply(IndependentPair<AIN, BIN> in) {
 		return IndependentPair.pair(fA.apply(in.firstObject()), fB.apply(in.secondObject()));

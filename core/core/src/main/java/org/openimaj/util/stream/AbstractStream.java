@@ -13,7 +13,7 @@ import org.openimaj.util.parallel.Parallel;
 
 /**
  * Abstract base implementation of a read-only (i.e. {@link #remove()} not
- * supported) {@link Stream}.
+ * supported) {@link Stream}s.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 

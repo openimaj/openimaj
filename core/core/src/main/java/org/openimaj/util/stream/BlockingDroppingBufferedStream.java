@@ -12,10 +12,10 @@ import org.openimaj.util.concurrent.BlockingDroppingQueue;
  * This class is intended to be used to build {@link Stream} implementations
  * that are connected to external, live data-sources that can potentially
  * produce data at a rate which exceeds the rate at which the stream can be
- * processed.
- *
+ * processed or consumed.
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  * @param <T>
  *            The type of data item in the stream
  */
@@ -39,7 +39,7 @@ public abstract class BlockingDroppingBufferedStream<T> extends AbstractStream<T
 	/**
 	 * Close the stream (make hasNext return false)
 	 */
-	public void close(){
+	public void close() {
 		this.isClosed = true;
 	}
 
