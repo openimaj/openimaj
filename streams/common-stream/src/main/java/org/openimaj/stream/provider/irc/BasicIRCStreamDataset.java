@@ -8,7 +8,8 @@ import org.openimaj.util.data.Context;
 
 /**
  * Basic streaming dataset from IRC messages. Messages are provided as
- * {@link Context} objects.
+ * {@link Context} objects. The contexts contain keys for channel, sender,
+ * login, hostname and message. All values are {@link String}s.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
