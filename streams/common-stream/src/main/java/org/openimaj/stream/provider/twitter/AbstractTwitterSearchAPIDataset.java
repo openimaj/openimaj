@@ -28,20 +28,24 @@ import twitter4j.json.DataObjectFactory;
  * and then attempts to retrieve results which occured after the latest tweet seen. Apart form this, this {@link Stream}
  * makes no special efforts to:
  *
- * 		- stop duplicate items,
- * 		- stop when a search returns nothing
- * 		- remove retweets or spam.
+ * <ul>
+ * <li>stop duplicate items
+ * <li>stop when a search returns nothing
+ * <li>remove retweets or spam.
+ * </ul>
  *
  * This must all be handled externally!
- *
+ * <p>
  * This class is abstract in terms of the object the stream consumes.
  * Instances of this class can construct the specific object they require for each twitter status using:
- * 	- the query that created it
- * 	- the status object
- * 	- the raw json of the status
+ * <ul>
+ * 	<li>the query that created it
+ * 	<li>the status object
+ * 	<li>the raw json of the status
+ * </ul>
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
- * @param <T>
+ * @param <T> Type of items in the stream
  */
 public abstract class AbstractTwitterSearchAPIDataset<T> extends BlockingDroppingBufferedStream<T> implements StreamingDataset<T> {
 
