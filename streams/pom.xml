@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj</groupId>
-  <artifactId>openimaj-storm</artifactId>
+  <artifactId>openimaj-streams</artifactId>
   <packaging>pom</packaging>
   <version>1.1.1-SNAPSHOT</version>
-  <name>OpenIMAJ Storm Subproject</name>
+  <name>OpenIMAJ Streams Subproject</name>
   <parent>
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
@@ -13,9 +13,9 @@
     <relativePath>../</relativePath>
   </parent>
   <inceptionYear>2011</inceptionYear>
-  <description>Sub-modules for integrating OpenIMAJ with Storm to allow distrbuted stream processing.</description>
+  <description>Sub-modules for stream provision, processing and analysis.</description>
   <modules>
-    <module>core-storm</module>
-    <module>tools</module>
+    <module>storm</module>
+    <module>common-stream</module>
   </modules>
 </project>

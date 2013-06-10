@@ -1,16 +1,15 @@
-package org.openimaj.demos.twitter;
+package org.openimaj.stream.provider.twitter;
 
 import java.util.List;
 
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.BlockingDroppingQueue;
-import org.openimaj.util.data.Context;
 
 import twitter4j.Query;
 import twitter4j.Status;
 
 /**
- * Extends the {@link TwitterSearchAPIDataset} to support multiple queries.
+ * Extends the {@link TwitterSearchDataset} to support multiple queries.
  * All attempts are made to access the Twitter API in a fair way. Each query is
  * handled in turn and backoffs, new results etc. are stored per query.
  *
@@ -24,7 +23,7 @@ import twitter4j.Status;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class ContextRoundRobinTwitterSearchAPIDataset extends AbstractTwitterSearchAPIDataset<Context>{
+public class RoundRobinTwitterSearchAPIDataset extends AbstractTwitterSearchAPIDataset<Status>{
 
 	private List<Query> queries;
 	private int currentQuery;
@@ -34,7 +33,7 @@ public class ContextRoundRobinTwitterSearchAPIDataset extends AbstractTwitterSea
 	 * @param token
 	 * @param buffer
 	 */
-	public ContextRoundRobinTwitterSearchAPIDataset(List<Query> queries, TwitterAPIToken token, BlockingDroppingQueue<Context> buffer) {
+	public RoundRobinTwitterSearchAPIDataset(List<Query> queries, TwitterAPIToken token, BlockingDroppingQueue<Status> buffer) {
 		super(token, buffer);
 		if(queries.size() == 0){
 			return;
@@ -58,11 +57,7 @@ public class ContextRoundRobinTwitterSearchAPIDataset extends AbstractTwitterSea
 
 	@Override
 	public void registerStatus(Query query, Status status, String json) throws InterruptedException {
-		Context c = new Context();
-		c.put("query", query);
-		c.put("status", status);
-		c.put("status_json", json);
-		register(c);
+		register(QueryHoldingStatus.create(status, json, query));
 	}
 
 }

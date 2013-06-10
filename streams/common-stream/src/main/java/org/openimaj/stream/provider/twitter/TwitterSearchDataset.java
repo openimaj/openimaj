@@ -1,4 +1,4 @@
-package org.openimaj.demos.twitter;
+package org.openimaj.stream.provider.twitter;
 
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.BlockingDroppingQueue;
@@ -7,20 +7,21 @@ import twitter4j.Query;
 import twitter4j.Status;
 
 /**
- * A version of the {@link AbstractTwitterSearchAPIDataset} which passes only the status along
+ * A version of the {@link AbstractTwitterSearchAPIDataset} which passes only
+ * the {@link Status} along
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
  */
-public class TwitterSearchAPIDataset extends AbstractTwitterSearchAPIDataset<Status> {
-
-
+public class TwitterSearchDataset extends AbstractTwitterSearchAPIDataset<Status> {
 	/**
+	 * 
+	 * 
 	 * @param query
 	 * @param token
 	 * @param buffer
 	 */
-	public TwitterSearchAPIDataset(Query query,final TwitterAPIToken token, BlockingDroppingQueue<Status> buffer) {
-		super(token,buffer);
+	public TwitterSearchDataset(Query query, final TwitterAPIToken token, BlockingDroppingQueue<Status> buffer) {
+		super(token, buffer);
 		this.query = query;
 		startSearch();
 	}
@@ -29,6 +30,7 @@ public class TwitterSearchAPIDataset extends AbstractTwitterSearchAPIDataset<Sta
 	public void registerStatus(Query query, Status status, String rawjson) throws InterruptedException {
 		register(status);
 	}
+
 	@Override
 	public Query getQuery() {
 		return this.query;

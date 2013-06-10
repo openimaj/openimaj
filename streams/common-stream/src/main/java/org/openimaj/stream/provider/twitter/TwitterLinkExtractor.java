@@ -1,4 +1,4 @@
-package org.openimaj.demos.twitter;
+package org.openimaj.stream.provider.twitter;
 
 import java.net.MalformedURLException;
 import java.net.URL;

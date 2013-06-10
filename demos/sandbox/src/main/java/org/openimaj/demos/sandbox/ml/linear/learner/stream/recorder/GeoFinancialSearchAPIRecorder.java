@@ -15,7 +15,7 @@ import org.openimaj.demos.sandbox.ml.linear.learner.stream.MongoDBOutputOp;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.YahooFinanceStream;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.ContextTwitterStatusAsUSMFStatus;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPreprocessingFunction;
-import org.openimaj.demos.twitter.ContextRoundRobinTwitterSearchAPIDataset;
+import org.openimaj.stream.provider.twitter.ContextRoundRobinTwitterSearchAPIDataset;
 import org.openimaj.tools.twitter.modes.preprocessing.CountryCodeMode;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;

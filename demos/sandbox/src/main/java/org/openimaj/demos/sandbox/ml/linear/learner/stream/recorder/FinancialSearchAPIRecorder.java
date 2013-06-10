@@ -14,7 +14,7 @@ import org.openimaj.demos.sandbox.ml.linear.learner.stream.YahooFinanceStream;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPredicateFunction;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPreprocessingFunction;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterStatusAsUSMFStatus;
-import org.openimaj.demos.twitter.TwitterSearchAPIDataset;
+import org.openimaj.stream.provider.twitter.TwitterSearchDataset;
 import org.openimaj.tools.twitter.modes.filter.LanguageFilter;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;
@@ -66,7 +66,7 @@ public class FinancialSearchAPIRecorder {
 		final TokeniseMode tokeniseMode = new TokeniseMode();
 
 		final String queryStr = StringUtils.join(dollar(tickers), " OR ");
-		Stream<Window<USMFStatus,Long>> twitterUserWordCountStream = new TwitterSearchAPIDataset(
+		Stream<Window<USMFStatus,Long>> twitterUserWordCountStream = new TwitterSearchDataset(
 			new Query(queryStr),DefaultTokenFactory.get(TwitterAPIToken.class),buffer
 		)
 		.transform(new RealTimeWindowFunction<Status>(10000))

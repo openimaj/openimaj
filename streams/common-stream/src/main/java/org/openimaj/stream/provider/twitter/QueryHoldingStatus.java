@@ -1,4 +1,4 @@
-package org.openimaj.demos.twitter;
+package org.openimaj.stream.provider.twitter;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

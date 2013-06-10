@@ -1,7 +1,8 @@
-package org.openimaj.demos.twitter;
+package org.openimaj.stream.provider.twitter;
 
 import org.openimaj.data.dataset.StreamingDataset;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
+import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
 import org.openimaj.util.concurrent.BlockingDroppingQueue;
 import org.openimaj.util.stream.BlockingDroppingBufferedStream;
 
@@ -13,6 +14,11 @@ import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterStreamingDataset extends BlockingDroppingBufferedStream<Status> implements StreamingDataset<Status> {
+
+	public TwitterStreamingDataset(TwitterAPIToken token, int bufferSize) {
+		this(token, new ArrayBlockingDroppingQueue<Status>(bufferSize));
+	}
+
 	public TwitterStreamingDataset(TwitterAPIToken token, BlockingDroppingQueue<Status> buffer) {
 		super(buffer);
 

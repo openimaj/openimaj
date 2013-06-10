@@ -31,7 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
-		  <artifactId>data-scraping</artifactId>
+		  <artifactId>common-stream</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -179,12 +179,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<artifactId>twitter</artifactId>
-			<groupId>org.openimaj</groupId>
-			<version>1.1.1-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<artifactId>ClusterQuantiserTool</artifactId>
 			<groupId>org.openimaj.tools</groupId>
 			<version>1.1.1-SNAPSHOT</version>
@@ -195,13 +189,7 @@
 			<groupId>org.openimaj.tools</groupId>
 			<version>1.1.1-SNAPSHOT</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>pircbot</groupId>
-			<artifactId>pircbot</artifactId>
-			<version>1.5.0</version>
-		</dependency>
-		            
+		</dependency>	            
 		<!-- <dependency> <groupId>org.imageterrier</groupId> <artifactId>ImageTerrier</artifactId> 
 			<version>3.5-SNAPSHOT</version> </dependency> <dependency> <groupId>org.imageterrier</groupId> 
 			<artifactId>ImageTerrierTools</artifactId> <version>3.5-SNAPSHOT</version> 

@@ -2,7 +2,8 @@ package org.openimaj.demos.irc;
 
 import java.io.IOException;
 
-import org.openimaj.demos.irc.WikipediaEditStreamingDataset.WikipediaEdit;
+import org.openimaj.stream.provider.WikipediaEditsDataset;
+import org.openimaj.stream.provider.WikipediaEditsDataset.WikipediaEdit;
 import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
@@ -14,44 +15,44 @@ import org.openimaj.video.VideoDisplay;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class WikipediaChangesGeo {
 	private static final class NotNull implements Predicate<Object> {
 		@Override
 		public boolean test(Object object) {
-			return object!=null;
+			return object != null;
 		}
 	}
 
 	public static void main(String[] args) throws IOException {
-		final WorldVis wordVis = new WorldVis(1800,600);
+		final WorldVis wordVis = new WorldVis(1800, 600);
 		VideoDisplay.createVideoDisplay(wordVis);
 
-		new WikipediaEditStreamingDataset("en")
-		.map(new ContextGenerator<WikipediaEdit>("wikiedit"))
-		.map(
-			new ContextFunction<String, FreeGeoIPLocation>(new ContextExtractionStrategy<String>() {
-				@Override
-				public String extract(Context c) {
-					WikipediaEdit edit = ((WikipediaEdit)c.get("wikiedit"));
-					if(edit.anon)
-						return edit.user;
-					else
-						return null;
-				}
-			},
-			"geolocation",
-			new IPAsGeolocation())
-		)
-		.filter(new ContextPredicate<Object>("geolocation", new NotNull()))
-		.forEach(new Operation<Context>() {
+		new WikipediaEditsDataset("en")
+				.map(new ContextGenerator<WikipediaEdit>("wikiedit"))
+				.map(
+						new ContextFunction<String, FreeGeoIPLocation>(new ContextExtractionStrategy<String>() {
+							@Override
+							public String extract(Context c) {
+								final WikipediaEdit edit = ((WikipediaEdit) c.get("wikiedit"));
+								if (edit.anon)
+									return edit.user;
+								else
+									return null;
+							}
+						},
+								"geolocation",
+								new IPAsGeolocation())
+				)
+				.filter(new ContextPredicate<Object>("geolocation", new NotNull()))
+				.forEach(new Operation<Context>() {
 
-			@Override
-			public void perform(Context object) {
-				FreeGeoIPLocation geoip = object.getTyped("geolocation");
-				wordVis.activate(geoip);
-			}
-		});
+					@Override
+					public void perform(Context object) {
+						final FreeGeoIPLocation geoip = object.getTyped("geolocation");
+						wordVis.activate(geoip);
+					}
+				});
 	}
 }

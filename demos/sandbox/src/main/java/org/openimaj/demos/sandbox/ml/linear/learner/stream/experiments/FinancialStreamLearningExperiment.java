@@ -13,12 +13,12 @@ import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPredic
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPreprocessingFunction;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterStatusAsUSMFStatus;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.USMFStatusBagOfWords;
-import org.openimaj.demos.twitter.TwitterStreamingDataset;
 import org.openimaj.ml.linear.evaluation.SumLossEvaluator;
 import org.openimaj.ml.linear.learner.BilinearLearnerParameters;
 import org.openimaj.ml.linear.learner.init.HardCodedInitStrat;
 import org.openimaj.ml.linear.learner.init.SingleValueInitStrat;
 import org.openimaj.ml.linear.learner.init.SparseZerosInitStrategy;
+import org.openimaj.stream.provider.twitter.TwitterStreamingDataset;
 import org.openimaj.tools.twitter.modes.filter.LanguageFilter;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;

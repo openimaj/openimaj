@@ -38,10 +38,10 @@ import java.util.Scanner;
 import org.openimaj.io.ReadWriteable;
 
 /**
- * Convenience class which holds all the components required to calculate DF-IDF 
+ * Convenience class which holds all the components required to calculate DF-IDF
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class WordDFIDF implements ReadWriteable, Comparable<WordDFIDF> {
 	/**
@@ -56,7 +56,7 @@ public class WordDFIDF implements ReadWriteable, Comparable<WordDFIDF> {
 	 * Number of tweets in this timeperiod
 	 */
 	public long tf;
-	
+
 	/**
 	 * Number of tweets containing this word in this time period
 	 */
@@ -65,21 +65,27 @@ public class WordDFIDF implements ReadWriteable, Comparable<WordDFIDF> {
 	 * the measurment time period
 	 */
 	public long timeperiod;
-	
+
 	/**
 	 * Helpful for reading
 	 */
-	public WordDFIDF(){
+	public WordDFIDF() {
 		Ttf = Twf = tf = wf = 0;
 	}
+
 	/**
-	 * @param timeperiod the timeperiod
-	 * @param wf Word count in this timeperiod
-	 * @param tf Tweet count in this timeperiod
-	 * @param twf Word count across all time
-	 * @param ttf Tweet count across all time
+	 * @param timeperiod
+	 *            the timeperiod
+	 * @param wf
+	 *            Word count in this timeperiod
+	 * @param tf
+	 *            Tweet count in this timeperiod
+	 * @param twf
+	 *            Word count across all time
+	 * @param ttf
+	 *            Tweet count across all time
 	 */
-	public WordDFIDF(long timeperiod,long wf,long tf,long twf,long ttf) {
+	public WordDFIDF(long timeperiod, long wf, long tf, long twf, long ttf) {
 		this.timeperiod = timeperiod;
 		this.wf = wf;
 		this.tf = tf;
@@ -109,43 +115,47 @@ public class WordDFIDF implements ReadWriteable, Comparable<WordDFIDF> {
 		Twf = in.readLong();
 		Ttf = in.readLong();
 	}
-	
+
 	/**
 	 * DF-IDF as defined by "Event Detection in Twitter by J. Weng et. al. 2011"
+	 * 
 	 * @return the DF-IDF score
 	 */
-	public double dfidf(){
-		double wf = this.wf;
-		double tf = this.tf;
-		double Twf = this.Twf;
-		double Ttf = this.Ttf;
-		if(tf == 0 || Ttf == 0) return 0;
-		
-		return (wf/tf) * Math.log(Ttf / Twf);
+	public double dfidf() {
+		final double wf = this.wf;
+		final double tf = this.tf;
+		final double Twf = this.Twf;
+		final double Ttf = this.Ttf;
+		if (tf == 0 || Ttf == 0)
+			return 0;
+
+		return (wf / tf) * Math.log(Ttf / Twf);
 	}
 
 	@Override
 	public int compareTo(WordDFIDF other) {
 		return new Long(timeperiod).compareTo(other.timeperiod);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof WordDFIDF)) return false;
-		WordDFIDF that = (WordDFIDF)obj;
+		if (!(obj instanceof WordDFIDF))
+			return false;
+		final WordDFIDF that = (WordDFIDF) obj;
 		return that.compareTo(this) == 0;
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return (int)(timeperiod ^ (timeperiod >>> 32));
+		return (int) (timeperiod ^ (timeperiod >>> 32));
 	}
-	
+
 	@Override
-	public String toString(){
-		String format = "(wf=%s, tf=%s, Twf=%s, Ttf=%s, DFIDF=%.5f)";
-		return String.format(format,wf,tf,Twf,Ttf,dfidf());
+	public String toString() {
+		final String format = "(wf=%s, tf=%s, Twf=%s, Ttf=%s, DFIDF=%.5f)";
+		return String.format(format, wf, tf, Twf, Ttf, dfidf());
 	}
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		this.timeperiod = in.nextLong();
@@ -154,12 +164,14 @@ public class WordDFIDF implements ReadWriteable, Comparable<WordDFIDF> {
 		this.Twf = in.nextLong();
 		this.Ttf = in.nextLong();
 	}
+
 	@Override
 	public String asciiHeader() {
 		return "";
 	}
+
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		out.printf("%s %s %s %s %s",this.timeperiod,this.wf,this.tf,this.Twf,this.Ttf);
+		out.printf("%s %s %s %s %s", this.timeperiod, this.wf, this.tf, this.Twf, this.Ttf);
 	}
 }

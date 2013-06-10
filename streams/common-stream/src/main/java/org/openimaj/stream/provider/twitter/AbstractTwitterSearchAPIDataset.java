@@ -1,4 +1,4 @@
-package org.openimaj.demos.twitter;
+package org.openimaj.stream.provider.twitter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +106,7 @@ public abstract class AbstractTwitterSearchAPIDataset<T> extends BlockingDroppin
 	protected static final long SLEEP_PER_SEARCH = (1000 * 60)/10l;
 	protected static final int ZERO_RESULT_BACKOFF = 2000;
 	protected Query query;
-	protected Logger logger = Logger.getLogger(TwitterSearchAPIDataset.class);
+	protected Logger logger = Logger.getLogger(TwitterSearchDataset.class);
 	protected Configuration config;
 	protected Twitter twitter;
 

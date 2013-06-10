@@ -42,12 +42,13 @@ import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A time series of WordDFIDF instances
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class WordDFIDFTimeSeries 
-	extends ConcreteTimeSeries<WordDFIDF, WordDFIDFTimeSeries>
-	implements 
+public class WordDFIDFTimeSeries
+		extends ConcreteTimeSeries<WordDFIDF, WordDFIDFTimeSeries>
+		implements
 		TimeSeriesArithmaticOperator<WordDFIDF, WordDFIDFTimeSeries>,
 		DoubleTimeSeriesProvider,
 		ReadWriteableASCII
@@ -63,17 +64,16 @@ public class WordDFIDFTimeSeries
 		return new WordDFIDF();
 	}
 
-	
 	/**
-	 * An explicit assumption is made that {@link WordDFIDF} instances all
-	 * come from the same period of time and therefore have the same total 
-	 * number of tweets and total number of word instances across time 
-	 * (i.e. {@link WordDFIDF#Ttf} and {@link WordDFIDF#Twf} remain untouched)
+	 * An explicit assumption is made that {@link WordDFIDF} instances all come
+	 * from the same period of time and therefore have the same total number of
+	 * tweets and total number of word instances across time (i.e.
+	 * {@link WordDFIDF#Ttf} and {@link WordDFIDF#Twf} remain untouched)
 	 */
 	@Override
 	public WordDFIDF sum() {
-		WordDFIDF ret = zero();
-		for (WordDFIDF time : this.getData()) {
+		final WordDFIDF ret = zero();
+		for (final WordDFIDF time : this.getData()) {
 			ret.tf += time.tf;
 			ret.wf += time.wf;
 			ret.Ttf = time.Ttf;
@@ -84,21 +84,21 @@ public class WordDFIDFTimeSeries
 
 	@Override
 	public DoubleTimeSeries doubleTimeSeries() {
-		long[] times = this.getTimes();
-		double[] values = new double[times.length];
-		WordDFIDF[] current = this.getData();
+		final long[] times = this.getTimes();
+		final double[] values = new double[times.length];
+		final WordDFIDF[] current = this.getData();
 		int i = 0;
-		for (WordDFIDF wordDFIDF : current) {
+		for (final WordDFIDF wordDFIDF : current) {
 			values[i++] = wordDFIDF.dfidf();
 		}
-		return new DoubleTimeSeries(times,values);
+		return new DoubleTimeSeries(times, values);
 	}
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		int count = in.nextInt();
+		final int count = in.nextInt();
 		for (int i = 0; i < count; i++) {
-			WordDFIDF instance = new WordDFIDF();
+			final WordDFIDF instance = new WordDFIDF();
 			instance.readASCII(in);
 			this.add(instance.timeperiod, instance);
 		}
@@ -112,7 +112,7 @@ public class WordDFIDFTimeSeries
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		out.print(this.size() + " ");
-		for (IndependentPair<Long, WordDFIDF> i : this) {
+		for (final IndependentPair<Long, WordDFIDF> i : this) {
 			i.secondObject().writeASCII(out);
 			out.print(" ");
 		}
