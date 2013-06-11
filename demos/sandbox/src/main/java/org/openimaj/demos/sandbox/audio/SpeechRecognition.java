@@ -57,7 +57,7 @@ import org.openimaj.image.typography.FontStyle;
 import org.openimaj.image.typography.general.GeneralFont;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.xuggle.XuggleAudio;
-import org.openimaj.vis.audio.AudioWaveformPlotter;
+import org.openimaj.vis.audio.AudioOverviewVisualisation;
 
 import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.result.Result;
@@ -141,7 +141,7 @@ public class SpeechRecognition
 
 			// Get a display of the audio waveform
 			final XuggleAudio xuggle = new XuggleAudio( audioFileURL );
-			final AudioWaveformPlotter awp = new AudioWaveformPlotter( SpeechRecognition.getStream( xuggle ) );
+			final AudioOverviewVisualisation awp = new AudioOverviewVisualisation( SpeechRecognition.getStream( xuggle ) );
 			final MBFImage awi = awp.plotAudioWaveformImage( 1000, 300,
 					new Float[]
 							{ 0f, 0f, 0f, 1f }, new Float[]
