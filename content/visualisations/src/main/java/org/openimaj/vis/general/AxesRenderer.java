@@ -2,7 +2,6 @@
  *
  */
 package org.openimaj.vis.general;
-
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
@@ -17,14 +16,14 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
- * 
- * 
- * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- * @param <Q>
- *            The pixel type of the image you'll be drawing the axes to
- * @created 3 Jun 2013
+ *
+ *
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	@param <Q> The pixel type of the image you'll be drawing the axes to
+ * 	@param <I> The type of image being drawn to
+ *  @created 3 Jun 2013
  */
-public class AxesRenderer<Q>
+public class AxesRenderer<Q,I extends Image<Q,I>>
 {
 	/** Whether to draw the x axis */
 	private boolean drawXAxis = true;
@@ -120,7 +119,7 @@ public class AxesRenderer<Q>
 	private boolean drawYTickLabels = true;
 
 	/** The font to use for the x tick labels */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings( "rawtypes" )
 	private Font xTickLabelFont = HersheyFont.ROMAN_DUPLEX;
 
 	/** The size of the x tick labels */
@@ -130,7 +129,7 @@ public class AxesRenderer<Q>
 	private Q xTickLabelColour;
 
 	/** The font to use for the y tick labels */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings( "rawtypes" )
 	private Font yTickLabelFont = HersheyFont.ROMAN_DUPLEX;
 
 	/** The size of the y tick labels */
@@ -167,7 +166,7 @@ public class AxesRenderer<Q>
 	private boolean drawXAxisName = true;
 
 	/** The font to use for the x axis name */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings( "rawtypes" )
 	private Font xAxisNameFont = HersheyFont.FUTURA_MEDIUM;
 
 	/** The size of the font to use for the x axis name */
@@ -177,7 +176,7 @@ public class AxesRenderer<Q>
 	private Q xAxisNameColour;
 
 	/** The font to use for the x axis name */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings( "rawtypes" )
 	private Font yAxisNameFont = HersheyFont.FUTURA_MEDIUM;
 
 	/** The size of the font to use for the x axis name */
@@ -193,19 +192,17 @@ public class AxesRenderer<Q>
 	private double yUnitSizePx;
 
 	/**
-	 * Default constructor
+	 * 	Default constructor
 	 */
 	public AxesRenderer()
 	{
 	}
 
 	/**
-	 * Can be called to force the precalculation of some of the variables.
-	 * 
-	 * @param image
-	 *            The image
+	 * 	Can be called to force the precalculation of some of the variables.
+	 * 	@param image The image
 	 */
-	public <I extends Image<Q, I>> void precalc(final I image)
+	public void precalc( final I image )
 	{
 		// Get the dimensions of the image to draw to
 		final int w = image.getWidth();
@@ -213,23 +210,21 @@ public class AxesRenderer<Q>
 
 		// Find the pixel spacing to use
 		final double xRange = this.maxXValue - this.minXValue;
-		this.xUnitSizePx = (w - this.axisPaddingLeft - this.axisPaddingRight) / xRange;
+		this.xUnitSizePx = (w-this.axisPaddingLeft-this.axisPaddingRight) / xRange;
 		final double yRange = this.maxYValue - this.minYValue;
-		this.yUnitSizePx = (h - this.axisPaddingBottom - this.axisPaddingTop) / yRange;
+		this.yUnitSizePx = (h-this.axisPaddingBottom-this.axisPaddingTop) / yRange;
 
 		// Pixel position of where the axes crossing happens
-		this.yAxisPosition = this.axisPaddingLeft - this.minXValue * this.xUnitSizePx;
-		this.xAxisPosition = h - this.axisPaddingBottom + this.minYValue * this.yUnitSizePx;
+		this.yAxisPosition = this.axisPaddingLeft - this.minXValue*this.xUnitSizePx;
+		this.xAxisPosition = h - this.axisPaddingBottom + this.minYValue*this.yUnitSizePx;
 	}
 
 	/**
-	 * Render the axis to the given image
-	 * 
-	 * @param image
-	 *            The image to draw the axes to
+	 * 	Render the axis to the given image
+	 *	@param image The image to draw the axes to
 	 */
-	@SuppressWarnings("unchecked")
-	public <I extends Image<Q, I>> void renderAxis(final I image)
+	@SuppressWarnings( "unchecked" )
+	public void renderAxis( final I image )
 	{
 		// Create the renderer to draw to the image
 		final ImageRenderer<Q, ? extends Image<Q, I>> ir = image.createRenderer();
@@ -240,175 +235,168 @@ public class AxesRenderer<Q>
 
 		// Find the pixel spacing to use
 		final double xRange = this.maxXValue - this.minXValue;
-		this.xUnitSizePx = (w - this.axisPaddingLeft - this.axisPaddingRight) / xRange;
+		this.xUnitSizePx = (w-this.axisPaddingLeft-this.axisPaddingRight) / xRange;
 		final double yRange = this.maxYValue - this.minYValue;
-		this.yUnitSizePx = (h - this.axisPaddingBottom - this.axisPaddingTop) / yRange;
+		this.yUnitSizePx = (h-this.axisPaddingBottom-this.axisPaddingTop) / yRange;
 
 		// Pixel position of where the axes crossing happens
-		this.yAxisPosition = this.axisPaddingLeft - this.minXValue * this.xUnitSizePx;
-		this.xAxisPosition = h - this.axisPaddingBottom + this.minYValue * this.yUnitSizePx;
+		this.yAxisPosition = this.axisPaddingLeft - this.minXValue*this.xUnitSizePx;
+		this.xAxisPosition = h - this.axisPaddingBottom + this.minYValue*this.yUnitSizePx;
 
 		// Draw the x-axis minor ticks
-		if (this.drawXAxis && this.drawXTicks)
-			for (double v = this.minXValue; v <= this.maxXValue; v += this.xMinorTickSpacing)
+		if( this.drawXAxis && this.drawXTicks )
+			for( double v = this.minXValue; v <= this.maxXValue; v += this.xMinorTickSpacing )
 				ir.drawLine(
-						(int) (this.yAxisPosition + v * this.xUnitSizePx),
-						(int) (this.xAxisPosition - this.minorTickLength),
-						(int) (this.yAxisPosition + v * this.xUnitSizePx),
-						(int) (this.xAxisPosition + this.minorTickLength),
-						this.minorTickThickenss,
-						this.minorTickColour);
+					(int)(this.yAxisPosition + v * this.xUnitSizePx),
+					(int)(this.xAxisPosition-this.minorTickLength),
+					(int)(this.yAxisPosition + v * this.xUnitSizePx),
+					(int)(this.xAxisPosition+this.minorTickLength),
+					this.minorTickThickenss,
+					this.minorTickColour );
 
 		// Draw the x-axis major ticks
-		if (this.drawXAxis && this.drawXTicks)
-			for (double v = this.minXValue; v <= this.maxXValue; v += this.xMajorTickSpacing)
+		if( this.drawXAxis && this.drawXTicks )
+			for( double v = this.minXValue; v <= this.maxXValue; v += this.xMajorTickSpacing )
 				ir.drawLine(
-						(int) (this.yAxisPosition + v * this.xUnitSizePx),
-						(int) (this.xAxisPosition - this.majorTickLength),
-						(int) (this.yAxisPosition + v * this.xUnitSizePx),
-						(int) (this.xAxisPosition + this.majorTickLength),
-						this.majorTickThickness,
-						this.majorTickColour);
+					(int)(this.yAxisPosition + v * this.xUnitSizePx),
+					(int)(this.xAxisPosition-this.majorTickLength),
+					(int)(this.yAxisPosition + v * this.xUnitSizePx),
+					(int)(this.xAxisPosition+this.majorTickLength),
+					this.majorTickThickness,
+					this.majorTickColour );
 
 		// Draw the x tick labels
 		double maxXLabelPosition = 0;
-		if (this.drawXAxis && this.drawXTickLabels)
+		if( this.drawXAxis && this.drawXTickLabels )
 		{
-			final int yPos = (int) (this.xAxisPosition + this.xTickLabelSize + this.majorTickLength
-					+ this.xTickLabelSize / 2);
+			final int yPos = (int)(this.xAxisPosition + this.xTickLabelSize + this.majorTickLength
+					+ this.xTickLabelSize/2 );
 
-			@SuppressWarnings("rawtypes")
-			final FontStyle s = this.xTickLabelFont.createStyle(ir);
-			s.setFontSize(this.xTickLabelSize);
+			@SuppressWarnings( "rawtypes" )
+			final FontStyle s = this.xTickLabelFont.createStyle( ir );
+			s.setFontSize( this.xTickLabelSize );
 
-			@SuppressWarnings("rawtypes")
-			final FontRenderer r = this.xTickLabelFont.getRenderer(ir);
+			@SuppressWarnings( "rawtypes" )
+			final FontRenderer r = this.xTickLabelFont.getRenderer( ir );
 
-			for (double v = this.minXValue; v <= this.maxXValue; v += this.xLabelSpacing)
+			for( double v = this.minXValue; v <= this.maxXValue; v += this.xLabelSpacing )
 			{
-				final String text = "" + v;
-				final float fw = r.getBounds(text, s).width;
-				final int xPos = (int) (this.yAxisPosition + v * this.xUnitSizePx - fw / 2);
-				ir.drawText(text, xPos, yPos, this.xTickLabelFont,
-						this.xTickLabelSize, this.xTickLabelColour);
+				final String text = ""+v;
+				final float fw = r.getBounds( text, s ).width;
+				final int xPos = (int)(this.yAxisPosition + v*this.xUnitSizePx - fw/2);
+				ir.drawText( text, xPos, yPos, this.xTickLabelFont,
+						this.xTickLabelSize, this.xTickLabelColour );
 			}
 			maxXLabelPosition = yPos;
 		}
 
 		// Draw the y-axis ticks
-		if (this.drawYAxis && this.drawYTicks)
-			for (double v = this.minYValue; v <= this.maxYValue; v += this.yMinorTickSpacing)
+		if( this.drawYAxis && this.drawYTicks )
+			for( double v = this.minYValue; v <= this.maxYValue; v += this.yMinorTickSpacing )
 				ir.drawLine(
-						(int) (this.yAxisPosition - this.minorTickLength),
-						(int) (this.xAxisPosition - v * this.yUnitSizePx),
-						(int) (this.yAxisPosition + this.minorTickLength),
-						(int) (this.xAxisPosition - v * this.yUnitSizePx),
-						this.minorTickThickenss,
-						this.minorTickColour);
+					(int)(this.yAxisPosition-this.minorTickLength),
+					(int)(this.xAxisPosition - v * this.yUnitSizePx),
+					(int)(this.yAxisPosition+this.minorTickLength),
+					(int)(this.xAxisPosition - v * this.yUnitSizePx),
+					this.minorTickThickenss,
+					this.minorTickColour );
 
 		// Draw the y-axis ticks
-		if (this.drawYAxis && this.drawYTicks)
-			for (double v = this.minYValue; v <= this.maxYValue; v += this.yMajorTickSpacing)
+		if( this.drawYAxis && this.drawYTicks )
+			for( double v = this.minYValue; v <= this.maxYValue; v += this.yMajorTickSpacing )
 				ir.drawLine(
-						(int) (this.yAxisPosition - this.majorTickLength),
-						(int) (this.xAxisPosition - v * this.yUnitSizePx),
-						(int) (this.yAxisPosition + this.majorTickLength),
-						(int) (this.xAxisPosition - v * this.yUnitSizePx),
-						this.majorTickThickness,
-						this.majorTickColour);
+					(int)(this.yAxisPosition-this.majorTickLength),
+					(int)(this.xAxisPosition - v * this.yUnitSizePx),
+					(int)(this.yAxisPosition+this.majorTickLength),
+					(int)(this.xAxisPosition - v * this.yUnitSizePx),
+					this.majorTickThickness,
+					this.majorTickColour );
 
 		// Draw the x tick labels
 		double minYLabelPosition = this.yAxisPosition;
-		if (this.drawYAxis && this.drawYTickLabels)
+		if( this.drawYAxis && this.drawYTickLabels )
 		{
-			@SuppressWarnings("rawtypes")
-			final FontStyle s = this.yTickLabelFont.createStyle(ir);
-			s.setFontSize(this.yTickLabelSize);
+			@SuppressWarnings( "rawtypes" )
+			final FontStyle s = this.yTickLabelFont.createStyle( ir );
+			s.setFontSize( this.yTickLabelSize );
 
-			@SuppressWarnings("rawtypes")
-			final FontRenderer r = this.yTickLabelFont.getRenderer(ir);
+			@SuppressWarnings( "rawtypes" )
+			final FontRenderer r = this.yTickLabelFont.getRenderer( ir );
 
-			for (double v = this.minYValue; v <= this.maxYValue; v += this.yLabelSpacing)
+			for( double v = this.minYValue; v <= this.maxYValue; v += this.yLabelSpacing )
 			{
-				final String text = "" + v;
-				final float fw = r.getBounds(text, s).width;
-				final int xPos = (int) (this.yAxisPosition - fw - this.majorTickLength
-						- this.yTickLabelSize / 2); // Last part is just a bit
-													// of padding
-				final int yPos = (int) (this.xAxisPosition - v * this.yUnitSizePx + this.yTickLabelSize / 2);
-				ir.drawText(text, xPos, yPos, this.yTickLabelFont,
-						this.yTickLabelSize, this.yTickLabelColour);
-				minYLabelPosition = Math.min(xPos, minYLabelPosition);
+				final String text = ""+v;
+				final float fw = r.getBounds( text, s ).width;
+				final int xPos = (int)(this.yAxisPosition - fw - this.majorTickLength
+						- this.yTickLabelSize/2 );	// Last part is just a bit of padding
+				final int yPos = (int)(this.xAxisPosition - v*this.yUnitSizePx + this.yTickLabelSize/2 );
+				ir.drawText( text, xPos, yPos, this.yTickLabelFont,
+						this.yTickLabelSize, this.yTickLabelColour );
+				minYLabelPosition = Math.min( xPos, minYLabelPosition );
 			}
 		}
 
 		// Draw the X-axis
-		if (this.drawXAxis)
-			ir.drawLine(this.axisPaddingLeft, (int) this.xAxisPosition, w - this.axisPaddingRight,
-					(int) this.xAxisPosition, this.xAxisThickness, this.xAxisColour);
+		if( this.drawXAxis )
+			ir.drawLine( this.axisPaddingLeft, (int)this.xAxisPosition, w-this.axisPaddingRight,
+				(int)this.xAxisPosition, this.xAxisThickness, this.xAxisColour );
 
 		// Draw the Y-axis
-		if (this.drawYAxis)
-			ir.drawLine((int) this.yAxisPosition, this.axisPaddingTop, (int) this.yAxisPosition,
-					h - this.axisPaddingBottom, this.yAxisThickness, this.yAxisColour);
+		if( this.drawYAxis )
+			ir.drawLine( (int)this.yAxisPosition, this.axisPaddingTop, (int)this.yAxisPosition,
+				h-this.axisPaddingBottom, this.yAxisThickness, this.yAxisColour );
 
 		// Draw the X-axis label
-		if (this.drawXAxis && this.drawXAxisName)
-			ir.drawText(this.xAxisName, this.axisPaddingLeft,
-					(int) (maxXLabelPosition + this.xAxisNameSize + this.majorTickLength),
+		if( this.drawXAxis && this.drawXAxisName )
+			ir.drawText( this.xAxisName, this.axisPaddingLeft,
+					(int)(maxXLabelPosition + this.xAxisNameSize + this.majorTickLength),
 					this.xAxisNameFont,
-					this.xAxisNameSize, this.xAxisNameColour);
+					this.xAxisNameSize, this.xAxisNameColour );
 
 		// Draw the Y-axis label
-		if (this.drawYAxis && this.drawYAxisName)
+		if( this.drawYAxis && this.drawYAxisName )
 		{
-			final float fw = this.yAxisNameFont.getRenderer(ir).getBounds(
-					this.yAxisName, this.yAxisNameFont.createStyle(ir)).width;
-			ir.drawText(this.yAxisName, (int) (minYLabelPosition - fw),
+			final float fw = this.yAxisNameFont.getRenderer( ir ).getBounds(
+					this.yAxisName, this.yAxisNameFont.createStyle( ir ) ).width;
+			ir.drawText( this.yAxisName, (int)(minYLabelPosition - fw),
 					this.yAxisNameSize + this.axisPaddingTop, this.yAxisNameFont,
-					this.yAxisNameSize, this.yAxisNameColour);
+					this.yAxisNameSize, this.yAxisNameColour );
 		}
 	}
 
 	/**
-	 * For a given coordinate in the units of the data, will calculate the pixel
-	 * position.
-	 * 
-	 * @param image
-	 *            The image in which the axes were drawn
-	 * @param x
-	 *            The x position
-	 * @param y
-	 *            The y position
-	 * @return The pixel position
+	 * 	For a given coordinate in the units of the data, will calculate
+	 * 	the pixel position.
+	 *
+	 * 	@param image The image in which the axes were drawn
+	 *	@param x The x position
+	 *	@param y The y position
+	 *	@return The pixel position
 	 */
-	public <I extends Image<Q, I>> Point2d calculatePosition(
-			final I image, final double x, final double y)
+	public Point2d calculatePosition(
+			final I image, final double x, final double y )
 	{
-		return new Point2dImpl((float) (this.yAxisPosition + x * this.xUnitSizePx),
-				(float) (this.xAxisPosition - y * this.yUnitSizePx));
+		return new Point2dImpl( (float)(this.yAxisPosition + x*this.xUnitSizePx),
+				(float)(this.xAxisPosition - y*this.yUnitSizePx) );
 	}
 
 	/**
-	 * Calculates the data unit coordinate at the given pixel position.
-	 * 
-	 * @param image
-	 *            The image in which the axes were drawn
-	 * @param x
-	 *            The x pixel position
-	 * @param y
-	 *            The y pixel position
-	 * @return the x and y unit coordinates in a double
+	 *	Calculates the data unit coordinate at the given pixel position.
+	 *
+	 *	@param image The image in which the axes were drawn
+	 *	@param x The x pixel position
+	 *	@param y The y pixel position
+	 *	@return the x and y unit coordinates in a double
 	 */
-	public <I extends Image<Q, I>> double[] calculateUnitsAt(
-			final I image, final int x, final int y)
+	public double[] calculateUnitsAt(
+			final I image, final int x, final int y )
 	{
-		return new double[] { (x - this.yAxisPosition) / this.xUnitSizePx,
-				(this.xAxisPosition - y) / this.yUnitSizePx };
+		return new double[] { (x-this.yAxisPosition)/this.xUnitSizePx,
+				(this.xAxisPosition-y)/this.yUnitSizePx };
 	}
 
 	/**
-	 * @return the drawXAxis
+	 *	@return the drawXAxis
 	 */
 	public boolean isDrawXAxis()
 	{
@@ -416,16 +404,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param drawXAxis
-	 *            the drawXAxis to set
+	 *	@param drawXAxis the drawXAxis to set
 	 */
-	public void setDrawXAxis(final boolean drawXAxis)
+	public void setDrawXAxis( final boolean drawXAxis )
 	{
 		this.drawXAxis = drawXAxis;
 	}
 
 	/**
-	 * @return the drawYAxis
+	 *	@return the drawYAxis
 	 */
 	public boolean isDrawYAxis()
 	{
@@ -433,16 +420,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param drawYAxis
-	 *            the drawYAxis to set
+	 *	@param drawYAxis the drawYAxis to set
 	 */
-	public void setDrawYAxis(final boolean drawYAxis)
+	public void setDrawYAxis( final boolean drawYAxis )
 	{
 		this.drawYAxis = drawYAxis;
 	}
 
 	/**
-	 * @return the axisPaddingLeft
+	 *	@return the axisPaddingLeft
 	 */
 	public int getAxisPaddingLeft()
 	{
@@ -450,16 +436,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param axisPaddingLeft
-	 *            the axisPaddingLeft to set
+	 *	@param axisPaddingLeft the axisPaddingLeft to set
 	 */
-	public void setAxisPaddingLeft(final int axisPaddingLeft)
+	public void setAxisPaddingLeft( final int axisPaddingLeft )
 	{
 		this.axisPaddingLeft = axisPaddingLeft;
 	}
 
 	/**
-	 * @return the axisPaddingRight
+	 *	@return the axisPaddingRight
 	 */
 	public int getAxisPaddingRight()
 	{
@@ -467,16 +452,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param axisPaddingRight
-	 *            the axisPaddingRight to set
+	 *	@param axisPaddingRight the axisPaddingRight to set
 	 */
-	public void setAxisPaddingRight(final int axisPaddingRight)
+	public void setAxisPaddingRight( final int axisPaddingRight )
 	{
 		this.axisPaddingRight = axisPaddingRight;
 	}
 
 	/**
-	 * @return the axisPaddingTop
+	 *	@return the axisPaddingTop
 	 */
 	public int getAxisPaddingTop()
 	{
@@ -484,16 +468,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param axisPaddingTop
-	 *            the axisPaddingTop to set
+	 *	@param axisPaddingTop the axisPaddingTop to set
 	 */
-	public void setAxisPaddingTop(final int axisPaddingTop)
+	public void setAxisPaddingTop( final int axisPaddingTop )
 	{
 		this.axisPaddingTop = axisPaddingTop;
 	}
 
 	/**
-	 * @return the axisPaddingBottom
+	 *	@return the axisPaddingBottom
 	 */
 	public int getAxisPaddingBottom()
 	{
@@ -501,16 +484,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param axisPaddingBottom
-	 *            the axisPaddingBottom to set
+	 *	@param axisPaddingBottom the axisPaddingBottom to set
 	 */
-	public void setAxisPaddingBottom(final int axisPaddingBottom)
+	public void setAxisPaddingBottom( final int axisPaddingBottom )
 	{
 		this.axisPaddingBottom = axisPaddingBottom;
 	}
 
 	/**
-	 * @return the yAxisPosition
+	 *	@return the yAxisPosition
 	 */
 	public double getyAxisPosition()
 	{
@@ -518,16 +500,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yAxisPosition
-	 *            the yAxisPosition to set
+	 *	@param yAxisPosition the yAxisPosition to set
 	 */
-	public void setyAxisPosition(final double yAxisPosition)
+	public void setyAxisPosition( final double yAxisPosition )
 	{
 		this.yAxisPosition = yAxisPosition;
 	}
 
 	/**
-	 * @return the xAxisPosition
+	 *	@return the xAxisPosition
 	 */
 	public double getxAxisPosition()
 	{
@@ -535,16 +516,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xAxisPosition
-	 *            the xAxisPosition to set
+	 *	@param xAxisPosition the xAxisPosition to set
 	 */
-	public void setxAxisPosition(final double xAxisPosition)
+	public void setxAxisPosition( final double xAxisPosition )
 	{
 		this.xAxisPosition = xAxisPosition;
 	}
 
 	/**
-	 * @return the autoScaleAxes
+	 *	@return the autoScaleAxes
 	 */
 	public boolean isAutoScaleAxes()
 	{
@@ -552,16 +532,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param autoScaleAxes
-	 *            the autoScaleAxes to set
+	 *	@param autoScaleAxes the autoScaleAxes to set
 	 */
-	public void setAutoScaleAxes(final boolean autoScaleAxes)
+	public void setAutoScaleAxes( final boolean autoScaleAxes )
 	{
 		this.autoScaleAxes = autoScaleAxes;
 	}
 
 	/**
-	 * @return the xAxisThickness
+	 *	@return the xAxisThickness
 	 */
 	public int getxAxisThickness()
 	{
@@ -569,16 +548,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xAxisThickness
-	 *            the xAxisThickness to set
+	 *	@param xAxisThickness the xAxisThickness to set
 	 */
-	public void setxAxisThickness(final int xAxisThickness)
+	public void setxAxisThickness( final int xAxisThickness )
 	{
 		this.xAxisThickness = xAxisThickness;
 	}
 
 	/**
-	 * @return the xAxisColour
+	 *	@return the xAxisColour
 	 */
 	public Q getxAxisColour()
 	{
@@ -586,16 +564,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xAxisColour
-	 *            the xAxisColour to set
+	 *	@param xAxisColour the xAxisColour to set
 	 */
-	public void setxAxisColour(final Q xAxisColour)
+	public void setxAxisColour( final Q xAxisColour )
 	{
 		this.xAxisColour = xAxisColour;
 	}
 
 	/**
-	 * @return the yAxisThickness
+	 *	@return the yAxisThickness
 	 */
 	public int getyAxisThickness()
 	{
@@ -603,16 +580,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yAxisThickness
-	 *            the yAxisThickness to set
+	 *	@param yAxisThickness the yAxisThickness to set
 	 */
-	public void setyAxisThickness(final int yAxisThickness)
+	public void setyAxisThickness( final int yAxisThickness )
 	{
 		this.yAxisThickness = yAxisThickness;
 	}
 
 	/**
-	 * @return the yAxisColour
+	 *	@return the yAxisColour
 	 */
 	public Q getyAxisColour()
 	{
@@ -620,16 +596,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yAxisColour
-	 *            the yAxisColour to set
+	 *	@param yAxisColour the yAxisColour to set
 	 */
-	public void setyAxisColour(final Q yAxisColour)
+	public void setyAxisColour( final Q yAxisColour )
 	{
 		this.yAxisColour = yAxisColour;
 	}
 
 	/**
-	 * @return the maxXValue
+	 *	@return the maxXValue
 	 */
 	public double getMaxXValue()
 	{
@@ -637,16 +612,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param maxXValue
-	 *            the maxXValue to set
+	 *	@param maxXValue the maxXValue to set
 	 */
-	public void setMaxXValue(final double maxXValue)
+	public void setMaxXValue( final double maxXValue )
 	{
 		this.maxXValue = maxXValue;
 	}
 
 	/**
-	 * @return the minXValue
+	 *	@return the minXValue
 	 */
 	public double getMinXValue()
 	{
@@ -654,16 +628,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param minXValue
-	 *            the minXValue to set
+	 *	@param minXValue the minXValue to set
 	 */
-	public void setMinXValue(final double minXValue)
+	public void setMinXValue( final double minXValue )
 	{
 		this.minXValue = minXValue;
 	}
 
 	/**
-	 * @return the maxYValue
+	 *	@return the maxYValue
 	 */
 	public double getMaxYValue()
 	{
@@ -671,16 +644,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param maxYValue
-	 *            the maxYValue to set
+	 *	@param maxYValue the maxYValue to set
 	 */
-	public void setMaxYValue(final double maxYValue)
+	public void setMaxYValue( final double maxYValue )
 	{
 		this.maxYValue = maxYValue;
 	}
 
 	/**
-	 * @return the minYValue
+	 *	@return the minYValue
 	 */
 	public double getMinYValue()
 	{
@@ -688,16 +660,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param minYValue
-	 *            the minYValue to set
+	 *	@param minYValue the minYValue to set
 	 */
-	public void setMinYValue(final double minYValue)
+	public void setMinYValue( final double minYValue )
 	{
 		this.minYValue = minYValue;
 	}
 
 	/**
-	 * @return the xMinorTickSpacing
+	 *	@return the xMinorTickSpacing
 	 */
 	public double getxMinorTickSpacing()
 	{
@@ -705,16 +676,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xMinorTickSpacing
-	 *            the xMinorTickSpacing to set
+	 *	@param xMinorTickSpacing the xMinorTickSpacing to set
 	 */
-	public void setxMinorTickSpacing(final double xMinorTickSpacing)
+	public void setxMinorTickSpacing( final double xMinorTickSpacing )
 	{
 		this.xMinorTickSpacing = xMinorTickSpacing;
 	}
 
 	/**
-	 * @return the yMinorTickSpacing
+	 *	@return the yMinorTickSpacing
 	 */
 	public double getyMinorTickSpacing()
 	{
@@ -722,16 +692,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yMinorTickSpacing
-	 *            the yMinorTickSpacing to set
+	 *	@param yMinorTickSpacing the yMinorTickSpacing to set
 	 */
-	public void setyMinorTickSpacing(final double yMinorTickSpacing)
+	public void setyMinorTickSpacing( final double yMinorTickSpacing )
 	{
 		this.yMinorTickSpacing = yMinorTickSpacing;
 	}
 
 	/**
-	 * @return the xMajorTickSpacing
+	 *	@return the xMajorTickSpacing
 	 */
 	public double getxMajorTickSpacing()
 	{
@@ -739,16 +708,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xMajorTickSpacing
-	 *            the xMajorTickSpacing to set
+	 *	@param xMajorTickSpacing the xMajorTickSpacing to set
 	 */
-	public void setxMajorTickSpacing(final double xMajorTickSpacing)
+	public void setxMajorTickSpacing( final double xMajorTickSpacing )
 	{
 		this.xMajorTickSpacing = xMajorTickSpacing;
 	}
 
 	/**
-	 * @return the yMajorTickSpacing
+	 *	@return the yMajorTickSpacing
 	 */
 	public double getyMajorTickSpacing()
 	{
@@ -756,16 +724,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yMajorTickSpacing
-	 *            the yMajorTickSpacing to set
+	 *	@param yMajorTickSpacing the yMajorTickSpacing to set
 	 */
-	public void setyMajorTickSpacing(final double yMajorTickSpacing)
+	public void setyMajorTickSpacing( final double yMajorTickSpacing )
 	{
 		this.yMajorTickSpacing = yMajorTickSpacing;
 	}
 
 	/**
-	 * @return the minorTickLength
+	 *	@return the minorTickLength
 	 */
 	public int getMinorTickLength()
 	{
@@ -773,16 +740,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param minorTickLength
-	 *            the minorTickLength to set
+	 *	@param minorTickLength the minorTickLength to set
 	 */
-	public void setMinorTickLength(final int minorTickLength)
+	public void setMinorTickLength( final int minorTickLength )
 	{
 		this.minorTickLength = minorTickLength;
 	}
 
 	/**
-	 * @return the majorTickLength
+	 *	@return the majorTickLength
 	 */
 	public int getMajorTickLength()
 	{
@@ -790,16 +756,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param majorTickLength
-	 *            the majorTickLength to set
+	 *	@param majorTickLength the majorTickLength to set
 	 */
-	public void setMajorTickLength(final int majorTickLength)
+	public void setMajorTickLength( final int majorTickLength )
 	{
 		this.majorTickLength = majorTickLength;
 	}
 
 	/**
-	 * @return the minorTickColour
+	 *	@return the minorTickColour
 	 */
 	public Q getMinorTickColour()
 	{
@@ -807,16 +772,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param minorTickColour
-	 *            the minorTickColour to set
+	 *	@param minorTickColour the minorTickColour to set
 	 */
-	public void setMinorTickColour(final Q minorTickColour)
+	public void setMinorTickColour( final Q minorTickColour )
 	{
 		this.minorTickColour = minorTickColour;
 	}
 
 	/**
-	 * @return the majorTickColour
+	 *	@return the majorTickColour
 	 */
 	public Q getMajorTickColour()
 	{
@@ -824,16 +788,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param majorTickColour
-	 *            the majorTickColour to set
+	 *	@param majorTickColour the majorTickColour to set
 	 */
-	public void setMajorTickColour(final Q majorTickColour)
+	public void setMajorTickColour( final Q majorTickColour )
 	{
 		this.majorTickColour = majorTickColour;
 	}
 
 	/**
-	 * @return the majorTickThickness
+	 *	@return the majorTickThickness
 	 */
 	public int getMajorTickThickness()
 	{
@@ -841,16 +804,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param majorTickThickness
-	 *            the majorTickThickness to set
+	 *	@param majorTickThickness the majorTickThickness to set
 	 */
-	public void setMajorTickThickness(final int majorTickThickness)
+	public void setMajorTickThickness( final int majorTickThickness )
 	{
 		this.majorTickThickness = majorTickThickness;
 	}
 
 	/**
-	 * @return the minorTickThickenss
+	 *	@return the minorTickThickenss
 	 */
 	public int getMinorTickThickenss()
 	{
@@ -858,16 +820,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param minorTickThickenss
-	 *            the minorTickThickenss to set
+	 *	@param minorTickThickenss the minorTickThickenss to set
 	 */
-	public void setMinorTickThickenss(final int minorTickThickenss)
+	public void setMinorTickThickenss( final int minorTickThickenss )
 	{
 		this.minorTickThickenss = minorTickThickenss;
 	}
 
 	/**
-	 * @return the drawXTickLabels
+	 *	@return the drawXTickLabels
 	 */
 	public boolean isDrawXTickLabels()
 	{
@@ -875,16 +836,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param drawXTickLabels
-	 *            the drawXTickLabels to set
+	 *	@param drawXTickLabels the drawXTickLabels to set
 	 */
-	public void setDrawXTickLabels(final boolean drawXTickLabels)
+	public void setDrawXTickLabels( final boolean drawXTickLabels )
 	{
 		this.drawXTickLabels = drawXTickLabels;
 	}
 
 	/**
-	 * @return the drawYTickLabels
+	 *	@return the drawYTickLabels
 	 */
 	public boolean isDrawYTickLabels()
 	{
@@ -892,35 +852,33 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param drawYTickLabels
-	 *            the drawYTickLabels to set
+	 *	@param drawYTickLabels the drawYTickLabels to set
 	 */
-	public void setDrawYTickLabels(final boolean drawYTickLabels)
+	public void setDrawYTickLabels( final boolean drawYTickLabels )
 	{
 		this.drawYTickLabels = drawYTickLabels;
 	}
 
 	/**
-	 * @return the xTickLabelFont
+	 *	@return the xTickLabelFont
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings( "rawtypes" )
 	public Font getxTickLabelFont()
 	{
 		return this.xTickLabelFont;
 	}
 
 	/**
-	 * @param xTickLabelFont
-	 *            the xTickLabelFont to set
+	 *	@param xTickLabelFont the xTickLabelFont to set
 	 */
-	@SuppressWarnings("rawtypes")
-	public void setxTickLabelFont(final Font xTickLabelFont)
+	@SuppressWarnings( "rawtypes" )
+	public void setxTickLabelFont( final Font xTickLabelFont )
 	{
 		this.xTickLabelFont = xTickLabelFont;
 	}
 
 	/**
-	 * @return the xTickLabelSize
+	 *	@return the xTickLabelSize
 	 */
 	public int getxTickLabelSize()
 	{
@@ -928,16 +886,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xTickLabelSize
-	 *            the xTickLabelSize to set
+	 *	@param xTickLabelSize the xTickLabelSize to set
 	 */
-	public void setxTickLabelSize(final int xTickLabelSize)
+	public void setxTickLabelSize( final int xTickLabelSize )
 	{
 		this.xTickLabelSize = xTickLabelSize;
 	}
 
 	/**
-	 * @return the xTickLabelColour
+	 *	@return the xTickLabelColour
 	 */
 	public Q getxTickLabelColour()
 	{
@@ -945,35 +902,33 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xTickLabelColour
-	 *            the xTickLabelColour to set
+	 *	@param xTickLabelColour the xTickLabelColour to set
 	 */
-	public void setxTickLabelColour(final Q xTickLabelColour)
+	public void setxTickLabelColour( final Q xTickLabelColour )
 	{
 		this.xTickLabelColour = xTickLabelColour;
 	}
 
 	/**
-	 * @return the yTickLabelFont
+	 *	@return the yTickLabelFont
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings( "rawtypes" )
 	public Font getyTickLabelFont()
 	{
 		return this.yTickLabelFont;
 	}
 
 	/**
-	 * @param yTickLabelFont
-	 *            the yTickLabelFont to set
+	 *	@param yTickLabelFont the yTickLabelFont to set
 	 */
-	@SuppressWarnings("rawtypes")
-	public void setyTickLabelFont(final Font yTickLabelFont)
+	@SuppressWarnings( "rawtypes" )
+	public void setyTickLabelFont( final Font yTickLabelFont )
 	{
 		this.yTickLabelFont = yTickLabelFont;
 	}
 
 	/**
-	 * @return the yTickLabelSize
+	 *	@return the yTickLabelSize
 	 */
 	public int getyTickLabelSize()
 	{
@@ -981,16 +936,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yTickLabelSize
-	 *            the yTickLabelSize to set
+	 *	@param yTickLabelSize the yTickLabelSize to set
 	 */
-	public void setyTickLabelSize(final int yTickLabelSize)
+	public void setyTickLabelSize( final int yTickLabelSize )
 	{
 		this.yTickLabelSize = yTickLabelSize;
 	}
 
 	/**
-	 * @return the yTickLabelColour
+	 *	@return the yTickLabelColour
 	 */
 	public Q getyTickLabelColour()
 	{
@@ -998,16 +952,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yTickLabelColour
-	 *            the yTickLabelColour to set
+	 *	@param yTickLabelColour the yTickLabelColour to set
 	 */
-	public void setyTickLabelColour(final Q yTickLabelColour)
+	public void setyTickLabelColour( final Q yTickLabelColour )
 	{
 		this.yTickLabelColour = yTickLabelColour;
 	}
 
 	/**
-	 * @return the autoSpaceLabels
+	 *	@return the autoSpaceLabels
 	 */
 	public boolean isAutoSpaceLabels()
 	{
@@ -1015,16 +968,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param autoSpaceLabels
-	 *            the autoSpaceLabels to set
+	 *	@param autoSpaceLabels the autoSpaceLabels to set
 	 */
-	public void setAutoSpaceLabels(final boolean autoSpaceLabels)
+	public void setAutoSpaceLabels( final boolean autoSpaceLabels )
 	{
 		this.autoSpaceLabels = autoSpaceLabels;
 	}
 
 	/**
-	 * @return the autoSpaceTicks
+	 *	@return the autoSpaceTicks
 	 */
 	public boolean isAutoSpaceTicks()
 	{
@@ -1032,16 +984,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param autoSpaceTicks
-	 *            the autoSpaceTicks to set
+	 *	@param autoSpaceTicks the autoSpaceTicks to set
 	 */
-	public void setAutoSpaceTicks(final boolean autoSpaceTicks)
+	public void setAutoSpaceTicks( final boolean autoSpaceTicks )
 	{
 		this.autoSpaceTicks = autoSpaceTicks;
 	}
 
 	/**
-	 * @return the minTickSpacing
+	 *	@return the minTickSpacing
 	 */
 	public int getMinTickSpacing()
 	{
@@ -1049,16 +1000,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param minTickSpacing
-	 *            the minTickSpacing to set
+	 *	@param minTickSpacing the minTickSpacing to set
 	 */
-	public void setMinTickSpacing(final int minTickSpacing)
+	public void setMinTickSpacing( final int minTickSpacing )
 	{
 		this.minTickSpacing = minTickSpacing;
 	}
 
 	/**
-	 * @return the xLabelSpacing
+	 *	@return the xLabelSpacing
 	 */
 	public double getxLabelSpacing()
 	{
@@ -1066,16 +1016,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xLabelSpacing
-	 *            the xLabelSpacing to set
+	 *	@param xLabelSpacing the xLabelSpacing to set
 	 */
-	public void setxLabelSpacing(final double xLabelSpacing)
+	public void setxLabelSpacing( final double xLabelSpacing )
 	{
 		this.xLabelSpacing = xLabelSpacing;
 	}
 
 	/**
-	 * @return the yLabelSpacing
+	 *	@return the yLabelSpacing
 	 */
 	public double getyLabelSpacing()
 	{
@@ -1083,16 +1032,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yLabelSpacing
-	 *            the yLabelSpacing to set
+	 *	@param yLabelSpacing the yLabelSpacing to set
 	 */
-	public void setyLabelSpacing(final double yLabelSpacing)
+	public void setyLabelSpacing( final double yLabelSpacing )
 	{
 		this.yLabelSpacing = yLabelSpacing;
 	}
 
 	/**
-	 * @return the xAxisName
+	 *	@return the xAxisName
 	 */
 	public String getxAxisName()
 	{
@@ -1100,16 +1048,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xAxisName
-	 *            the xAxisName to set
+	 *	@param xAxisName the xAxisName to set
 	 */
-	public void setxAxisName(final String xAxisName)
+	public void setxAxisName( final String xAxisName )
 	{
 		this.xAxisName = xAxisName;
 	}
 
 	/**
-	 * @return the yAxisName
+	 *	@return the yAxisName
 	 */
 	public String getyAxisName()
 	{
@@ -1117,16 +1064,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yAxisName
-	 *            the yAxisName to set
+	 *	@param yAxisName the yAxisName to set
 	 */
-	public void setyAxisName(final String yAxisName)
+	public void setyAxisName( final String yAxisName )
 	{
 		this.yAxisName = yAxisName;
 	}
 
 	/**
-	 * @return the drawYAxisName
+	 *	@return the drawYAxisName
 	 */
 	public boolean isDrawYAxisName()
 	{
@@ -1134,16 +1080,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param drawYAxisName
-	 *            the drawYAxisName to set
+	 *	@param drawYAxisName the drawYAxisName to set
 	 */
-	public void setDrawYAxisName(final boolean drawYAxisName)
+	public void setDrawYAxisName( final boolean drawYAxisName )
 	{
 		this.drawYAxisName = drawYAxisName;
 	}
 
 	/**
-	 * @return the drawXAxisName
+	 *	@return the drawXAxisName
 	 */
 	public boolean isDrawXAxisName()
 	{
@@ -1151,35 +1096,33 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param drawXAxisName
-	 *            the drawXAxisName to set
+	 *	@param drawXAxisName the drawXAxisName to set
 	 */
-	public void setDrawXAxisName(final boolean drawXAxisName)
+	public void setDrawXAxisName( final boolean drawXAxisName )
 	{
 		this.drawXAxisName = drawXAxisName;
 	}
 
 	/**
-	 * @return the xAxisNameFont
+	 *	@return the xAxisNameFont
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings( "rawtypes" )
 	public Font getxAxisNameFont()
 	{
 		return this.xAxisNameFont;
 	}
 
 	/**
-	 * @param xAxisNameFont
-	 *            the xAxisNameFont to set
+	 *	@param xAxisNameFont the xAxisNameFont to set
 	 */
-	@SuppressWarnings("rawtypes")
-	public void setxAxisNameFont(final Font xAxisNameFont)
+	@SuppressWarnings( "rawtypes" )
+	public void setxAxisNameFont( final Font xAxisNameFont )
 	{
 		this.xAxisNameFont = xAxisNameFont;
 	}
 
 	/**
-	 * @return the xAxisNameSize
+	 *	@return the xAxisNameSize
 	 */
 	public int getxAxisNameSize()
 	{
@@ -1187,16 +1130,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xAxisNameSize
-	 *            the xAxisNameSize to set
+	 *	@param xAxisNameSize the xAxisNameSize to set
 	 */
-	public void setxAxisNameSize(final int xAxisNameSize)
+	public void setxAxisNameSize( final int xAxisNameSize )
 	{
 		this.xAxisNameSize = xAxisNameSize;
 	}
 
 	/**
-	 * @return the xAxisNameColour
+	 *	@return the xAxisNameColour
 	 */
 	public Q getxAxisNameColour()
 	{
@@ -1204,35 +1146,33 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param xAxisNameColour
-	 *            the xAxisNameColour to set
+	 *	@param xAxisNameColour the xAxisNameColour to set
 	 */
-	public void setxAxisNameColour(final Q xAxisNameColour)
+	public void setxAxisNameColour( final Q xAxisNameColour )
 	{
 		this.xAxisNameColour = xAxisNameColour;
 	}
 
 	/**
-	 * @return the yAxisNameFont
+	 *	@return the yAxisNameFont
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings( "rawtypes" )
 	public Font getyAxisNameFont()
 	{
 		return this.yAxisNameFont;
 	}
 
 	/**
-	 * @param yAxisNameFont
-	 *            the yAxisNameFont to set
+	 *	@param yAxisNameFont the yAxisNameFont to set
 	 */
-	@SuppressWarnings("rawtypes")
-	public void setyAxisNameFont(final Font yAxisNameFont)
+	@SuppressWarnings( "rawtypes" )
+	public void setyAxisNameFont( final Font yAxisNameFont )
 	{
 		this.yAxisNameFont = yAxisNameFont;
 	}
 
 	/**
-	 * @return the yAxisNameSize
+	 *	@return the yAxisNameSize
 	 */
 	public int getyAxisNameSize()
 	{
@@ -1240,16 +1180,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yAxisNameSize
-	 *            the yAxisNameSize to set
+	 *	@param yAxisNameSize the yAxisNameSize to set
 	 */
-	public void setyAxisNameSize(final int yAxisNameSize)
+	public void setyAxisNameSize( final int yAxisNameSize )
 	{
 		this.yAxisNameSize = yAxisNameSize;
 	}
 
 	/**
-	 * @return the yAxisNameColour
+	 *	@return the yAxisNameColour
 	 */
 	public Q getyAxisNameColour()
 	{
@@ -1257,16 +1196,15 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param yAxisNameColour
-	 *            the yAxisNameColour to set
+	 *	@param yAxisNameColour the yAxisNameColour to set
 	 */
-	public void setyAxisNameColour(final Q yAxisNameColour)
+	public void setyAxisNameColour( final Q yAxisNameColour )
 	{
 		this.yAxisNameColour = yAxisNameColour;
 	}
 
 	/**
-	 * @return the xUnitSizePx
+	 *	@return the xUnitSizePx
 	 */
 	public double getxUnitSizePx()
 	{
@@ -1274,7 +1212,7 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @return the yUnitSizePx
+	 *	@return the yUnitSizePx
 	 */
 	public double getyUnitSizePx()
 	{
@@ -1282,7 +1220,7 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @return the drawXTicks
+	 *	@return the drawXTicks
 	 */
 	public boolean isDrawXTicks()
 	{
@@ -1290,7 +1228,7 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @return the drawYTicks
+	 *	@return the drawYTicks
 	 */
 	public boolean isDrawYTicks()
 	{
@@ -1298,30 +1236,28 @@ public class AxesRenderer<Q>
 	}
 
 	/**
-	 * @param drawXTicks
-	 *            the drawXTicks to set
+	 *	@param drawXTicks the drawXTicks to set
 	 */
-	public void setDrawXTicks(final boolean drawXTicks)
+	public void setDrawXTicks( final boolean drawXTicks )
 	{
 		this.drawXTicks = drawXTicks;
 	}
 
 	/**
-	 * @param drawYTicks
-	 *            the drawYTicks to set
+	 *	@param drawYTicks the drawYTicks to set
 	 */
-	public void setDrawYTicks(final boolean drawYTicks)
+	public void setDrawYTicks( final boolean drawYTicks )
 	{
 		this.drawYTicks = drawYTicks;
 	}
 
 	/**
-	 * @param args
+	 *	@param args
 	 */
-	public static void main(final String[] args)
+	public static void main( final String[] args )
 	{
-		final MBFImage visImage = new MBFImage(1000, 600, 3);
-		final AxesRenderer<Float[]> ar = new AxesRenderer<Float[]>();
+		final MBFImage visImage = new MBFImage( 1000, 600, 3 );
+		final AxesRenderer<Float[],MBFImage> ar = new AxesRenderer<Float[],MBFImage>();
 
 		ar.xAxisColour = RGBColour.WHITE;
 		ar.yAxisColour = RGBColour.WHITE;
@@ -1348,21 +1284,21 @@ public class AxesRenderer<Q>
 		ar.xMinorTickSpacing = 0.05;
 		ar.xMajorTickSpacing = 0.25;
 		ar.xLabelSpacing = 0.25;
-		ar.xTickLabelFont = new GeneralFont("Arial", java.awt.Font.PLAIN);
+		ar.xTickLabelFont = new GeneralFont( "Arial", java.awt.Font.PLAIN );
 		ar.xTickLabelSize = 14;
 		ar.yMinorTickSpacing = 0.25;
 		ar.yMajorTickSpacing = 0.5;
 		ar.yLabelSpacing = 0.5;
-		ar.yTickLabelFont = new GeneralFont("Arial", java.awt.Font.PLAIN);
+		ar.yTickLabelFont = new GeneralFont( "Arial", java.awt.Font.PLAIN );
 		ar.yTickLabelSize = 14;
 		ar.xAxisName = "Stuff";
-		ar.xAxisNameFont = new GeneralFont("Times New Roman", java.awt.Font.PLAIN);
+		ar.xAxisNameFont = new GeneralFont( "Times New Roman", java.awt.Font.PLAIN );
 		ar.xAxisNameSize = 25;
 		ar.yAxisName = "Things";
-		ar.yAxisNameFont = new GeneralFont("Times New Roman", java.awt.Font.PLAIN);
+		ar.yAxisNameFont = new GeneralFont( "Times New Roman", java.awt.Font.PLAIN );
 		ar.yAxisNameSize = 25;
 
-		ar.renderAxis(visImage);
-		DisplayUtilities.display(visImage);
+		ar.renderAxis( visImage );
+		DisplayUtilities.display( visImage );
 	}
 }

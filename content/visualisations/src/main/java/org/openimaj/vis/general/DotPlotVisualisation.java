@@ -16,13 +16,13 @@ import org.openimaj.math.geometry.shape.Circle;
  *  @created 3 Jun 2013
  */
 public class DotPlotVisualisation extends XYPlotVisualisation<Double>
-	implements ItemPlotter<Double,Float[]>
+	implements ItemPlotter<Double,Float[],MBFImage>
 {
 	/** */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 *
+	 *	Default construcotr
 	 */
 	public DotPlotVisualisation()
 	{
@@ -31,20 +31,25 @@ public class DotPlotVisualisation extends XYPlotVisualisation<Double>
 	}
 
 	/**
-	 *	@param i
-	 *	@param j
+	 * 	Constructor that takes the width and height of the visualisation
+	 *
+	 *	@param width The width of the visualisation in pixels
+	 *	@param height The height of the visualisation in pixels
 	 */
-	public DotPlotVisualisation( final int i, final int j )
+	public DotPlotVisualisation( final int width, final int height )
 	{
-		super( i, j, null );
+		super( width, height, null );
 		this.setItemPlotter( this );
 	}
 
-
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer)
+	 */
 	@Override
 	public void plotObject( final MBFImage visImage,
 			final XYPlotVisualisation.LocatedObject<Double> object,
-			final AxesRenderer<Float[]> renderer )
+			final AxesRenderer<Float[],MBFImage> renderer )
 	{
 		visImage.createRenderer().drawShapeFilled(
 				new Circle( renderer.calculatePosition( visImage,
@@ -54,7 +59,8 @@ public class DotPlotVisualisation extends XYPlotVisualisation<Double>
 	}
 
 	/**
-	 *	@param args
+	 * 	Main method to demonstrate the vis.
+	 *	@param args command-line args (not used)
 	 */
 	public static void main( final String[] args )
 	{

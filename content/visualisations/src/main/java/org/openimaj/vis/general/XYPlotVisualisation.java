@@ -12,7 +12,8 @@ import org.openimaj.vis.Visualisation;
 import org.openimaj.vis.general.XYPlotVisualisation.LocatedObject;
 
 /**
- *	Abstract visualisation for plotting X,Y items.
+ *	Abstract visualisation for plotting X,Y items. Uses the {@link AxesRenderer} to
+ *	determine the scale of the visualisation.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 	@param <O> The type of object to be visualised
@@ -56,31 +57,35 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	private static final long serialVersionUID = 1L;
 
 	/** The renderer for the axes */
-	protected final AxesRenderer<Float[]> axesRenderer = new AxesRenderer<Float[]>();
+	protected final AxesRenderer<Float[],MBFImage> axesRenderer =
+			new AxesRenderer<Float[],MBFImage>();
 
 	/** Whether to render the axes on top of the data rather than underneath */
 	private final boolean renderAxesLast = false;
 
 	/** The item plotter to use */
-	protected ItemPlotter<O, Float[]> plotter;
+	protected ItemPlotter<O, Float[],MBFImage> plotter;
 
 	/**
 	 *	Default constructor
+	 *
 	 * 	@param plotter The item plotter to use
 	 */
-	public XYPlotVisualisation( final ItemPlotter<O,Float[]> plotter )
+	public XYPlotVisualisation( final ItemPlotter<O,Float[],MBFImage> plotter )
 	{
 		this.plotter = plotter;
 		this.init();
 	}
 
 	/**
+	 * 	Constructor that provides the width and height of the visualisation.
+	 *
 	 *	@param width Width of the vis in pixels
 	 *	@param height Height of the vis in pixels
 	 * 	@param plotter The item plotter to use
 	 */
 	public XYPlotVisualisation( final int width, final int height,
-			final ItemPlotter<O,Float[]> plotter )
+			final ItemPlotter<O,Float[],MBFImage> plotter )
 	{
 		super( width, height );
 		this.plotter = plotter;
@@ -129,7 +134,8 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	 * 	@param visImage The image to draw to
 	 * 	@param renderer The axes renderer
 	 */
-	public void beforeAxesRender( final MBFImage visImage, final AxesRenderer<Float[]> renderer )
+	public void beforeAxesRender( final MBFImage visImage,
+			final AxesRenderer<Float[],MBFImage> renderer )
 	{
 		// No implementation by default
 	}
@@ -168,7 +174,7 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	 * 	Set the plotter
 	 *	@param plotter The plotter
 	 */
-	public void setItemPlotter( final ItemPlotter<O,Float[]> plotter )
+	public void setItemPlotter( final ItemPlotter<O,Float[],MBFImage> plotter )
 	{
 		this.plotter = plotter;
 	}

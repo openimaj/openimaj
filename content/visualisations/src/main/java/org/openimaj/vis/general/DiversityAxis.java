@@ -7,7 +7,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- *	An axis on which items can be plotted and groups into bands.
+ *	A horizontal axis on which items can be plotted and grouped into bands.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 	@param <O> The type of item to plot on the axis
@@ -22,20 +22,21 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 	 * 	Default constructor
 	 * 	@param plotter The plotter to use for items
 	 */
-	public DiversityAxis( final ItemPlotter<O,Float[]> plotter )
+	public DiversityAxis( final ItemPlotter<O,Float[],MBFImage> plotter )
 	{
 		super( plotter );
 		this.init();
 	}
 
 	/**
-	 * 	Default constructor
+	 * 	Default constructor that takes the width and height of the visualisation
 	 *
 	 *	@param w The width of the axis visualisation
 	 *	@param h The height of the axis visualisation
 	 * 	@param plotter The plotter to use for items
 	 */
-	public DiversityAxis( final int w, final int h, final ItemPlotter<O,Float[]> plotter )
+	public DiversityAxis( final int w, final int h,
+			final ItemPlotter<O,Float[],MBFImage> plotter )
 	{
 		super( w, h, plotter );
 		this.init();
@@ -81,14 +82,12 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 	 * 	@see org.openimaj.vis.general.XYPlotVisualisation#beforeAxesRender(org.openimaj.image.MBFImage, org.openimaj.vis.general.AxesRenderer)
 	 */
 	@Override
-	public void beforeAxesRender( final MBFImage visImage, final AxesRenderer<Float[]> renderer )
+	public void beforeAxesRender( final MBFImage visImage,
+			final AxesRenderer<Float[],MBFImage> renderer )
 	{
 		int maxBand = 1;
 		for( final XYPlotVisualisation.LocatedObject<O> s : this.data )
 			maxBand = Math.max( maxBand, (int)s.y );
-
-		System.out.println( "Size of data: "+this.data.size() );
-		System.out.println( "Number of bands: "+maxBand );
 
 		renderer.setMaxYValue( maxBand );
 		renderer.precalc( visImage );
@@ -98,7 +97,6 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 		{
 			final int topOfBand    = (int)renderer.calculatePosition( visImage, 0, b ).getY();
 			final int bottomOfBand = (int)renderer.calculatePosition( visImage, 0, b-1 ).getY();
-			System.out.println( "Band: "+b+" ("+(b%2)+"), top: "+topOfBand+", bottom: "+bottomOfBand );
 			visImage.createRenderer().drawShapeFilled(
 				new Rectangle( 0, topOfBand, visImage.getWidth(), bottomOfBand-topOfBand ),
 				cols[b%2] );
