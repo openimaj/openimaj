@@ -34,5 +34,4 @@ public interface ItemPlotter<O,Q,I extends Image<Q,I>>
 	 */
 	public abstract void plotObject( I visImage,
 			LocatedObject<O> object, AxesRenderer<Q,I> renderer );
-
 }

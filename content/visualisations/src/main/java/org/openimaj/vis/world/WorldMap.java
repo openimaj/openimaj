@@ -284,6 +284,14 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		return new Point2dImpl( wp.getLongitude(), wp.getLatitude() );
 	}
 
+	@Override
+	public void clearData()
+	{
+		this.activeCountries.clear();
+		this.countryHighlightColours.clear();
+		super.clearData();
+	}
+
 	/**
 	 * 	Demonstration method.
 	 *	@param args command-line args (unused)

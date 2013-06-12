@@ -12,21 +12,22 @@ import org.openimaj.vis.Visualisation;
 import org.openimaj.vis.general.XYPlotVisualisation.LocatedObject;
 
 /**
- *	Abstract visualisation for plotting X,Y items. Uses the {@link AxesRenderer} to
- *	determine the scale of the visualisation.
+ * Abstract visualisation for plotting X,Y items. Uses the {@link AxesRenderer}
+ * to determine the scale of the visualisation.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- * 	@param <O> The type of object to be visualised
- *  @created 3 Jun 2013
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @param <O> The type of object to be visualised
+ * @created 3 Jun 2013
  */
 public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>>
 {
 	/**
-	 * 	Class that locates an object.
-	 *	@param <O> The object type
+	 * Class that locates an object.
 	 *
-	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *  @created 3 Jun 2013
+	 * @param <O> The object type
+	 *
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * @created 3 Jun 2013
 	 */
 	protected static class LocatedObject<O>
 	{
@@ -40,10 +41,11 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 		public O object;
 
 		/**
-		 * 	Create a located object
-		 * 	@param x data point x location
-		 * 	@param y data point y location
-		 *	@param object The object
+		 * Create a located object
+		 *
+		 * @param x data point x location
+		 * @param y data point y location
+		 * @param object The object
 		 */
 		public LocatedObject( final double x, final double y, final O object )
 		{
@@ -57,35 +59,33 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	private static final long serialVersionUID = 1L;
 
 	/** The renderer for the axes */
-	protected final AxesRenderer<Float[],MBFImage> axesRenderer =
-			new AxesRenderer<Float[],MBFImage>();
+	protected final AxesRenderer<Float[], MBFImage> axesRenderer = new AxesRenderer<Float[], MBFImage>();
 
 	/** Whether to render the axes on top of the data rather than underneath */
 	private final boolean renderAxesLast = false;
 
 	/** The item plotter to use */
-	protected ItemPlotter<O, Float[],MBFImage> plotter;
+	protected ItemPlotter<O, Float[], MBFImage> plotter;
 
 	/**
-	 *	Default constructor
+	 * Default constructor
 	 *
-	 * 	@param plotter The item plotter to use
+	 * @param plotter The item plotter to use
 	 */
-	public XYPlotVisualisation( final ItemPlotter<O,Float[],MBFImage> plotter )
+	public XYPlotVisualisation( final ItemPlotter<O, Float[], MBFImage> plotter )
 	{
 		this.plotter = plotter;
 		this.init();
 	}
 
 	/**
-	 * 	Constructor that provides the width and height of the visualisation.
+	 * Constructor that provides the width and height of the visualisation.
 	 *
-	 *	@param width Width of the vis in pixels
-	 *	@param height Height of the vis in pixels
-	 * 	@param plotter The item plotter to use
+	 * @param width Width of the vis in pixels
+	 * @param height Height of the vis in pixels
+	 * @param plotter The item plotter to use
 	 */
-	public XYPlotVisualisation( final int width, final int height,
-			final ItemPlotter<O,Float[],MBFImage> plotter )
+	public XYPlotVisualisation( final int width, final int height, final ItemPlotter<O, Float[], MBFImage> plotter )
 	{
 		super( width, height );
 		this.plotter = plotter;
@@ -93,7 +93,7 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	}
 
 	/**
-	 * 	Initialise
+	 * Initialise
 	 */
 	private void init()
 	{
@@ -110,8 +110,9 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.Visualisation#update()
+	 * {@inheritDoc}
+	 *
+	 * @see org.openimaj.vis.Visualisation#update()
 	 */
 	@Override
 	public void update()
@@ -119,35 +120,39 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 		this.axesRenderer.precalc( this.visImage );
 		this.beforeAxesRender( this.visImage, this.axesRenderer );
 
-		if( !this.renderAxesLast )
-			this.axesRenderer.renderAxis( this.visImage );
+		if( !this.renderAxesLast ) this.axesRenderer.renderAxis( this.visImage );
 
 		// Tell the plotter we're about to start rendering items,
 		// then loop over the items plotting them
 		this.plotter.renderRestarting();
-		for( final LocatedObject<O> o : this.data )
-			this.plotter.plotObject( this.visImage, o, this.axesRenderer );
+		synchronized( this.data )
+		{
+			for( final LocatedObject<O> o : this.data )
+				this.plotter.plotObject( this.visImage, o, this.axesRenderer );
 
-		if( this.renderAxesLast )
-			this.axesRenderer.renderAxis( this.visImage );
+		}
+
+		if( this.renderAxesLast ) this.axesRenderer.renderAxis( this.visImage );
 	}
 
 	/**
-	 * 	A method that can be overridden to plot something prior to the axes being drawn.
-	 * 	@param visImage The image to draw to
-	 * 	@param renderer The axes renderer
+	 * A method that can be overridden to plot something prior to the axes being
+	 * drawn.
+	 *
+	 * @param visImage The image to draw to
+	 * @param renderer The axes renderer
 	 */
-	public void beforeAxesRender( final MBFImage visImage,
-			final AxesRenderer<Float[],MBFImage> renderer )
+	public void beforeAxesRender( final MBFImage visImage, final AxesRenderer<Float[], MBFImage> renderer )
 	{
 		// No implementation by default
 	}
 
 	/**
-	 * 	Add an object to the plot
-	 * 	@param x x location of data point
-	 * 	@param y y location of data point
-	 *	@param object The object
+	 * Add an object to the plot
+	 *
+	 * @param x x location of data point
+	 * @param y y location of data point
+	 * @param object The object
 	 */
 	public void addPoint( final double x, final double y, final O object )
 	{
@@ -155,8 +160,9 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	}
 
 	/**
-	 * 	Remove a specific object
-	 *	@param object The object
+	 * Remove a specific object
+	 *
+	 * @param object The object
 	 */
 	public void removePoint( final O object )
 	{
@@ -165,30 +171,43 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 		{
 			if( o.object.equals( object ) )
 			{
-				toRemove = o; break;
+				toRemove = o;
+				break;
 			}
 		}
 
-		if( toRemove != null )
-			this.data.remove( toRemove );
+		if( toRemove != null ) this.data.remove( toRemove );
 	}
 
 	/**
-	 * 	Set the plotter
-	 *	@param plotter The plotter
+	 * Set the plotter
+	 *
+	 * @param plotter The plotter
 	 */
-	public void setItemPlotter( final ItemPlotter<O,Float[],MBFImage> plotter )
+	public void setItemPlotter( final ItemPlotter<O, Float[], MBFImage> plotter )
 	{
 		this.plotter = plotter;
 	}
 
 	/**
-	 * 	Provides access to the underlying axes renderer so that various changes
-	 * 	can be made to the visualisation.
-	 *	@return The axes renderer.
+	 * Provides access to the underlying axes renderer so that various changes
+	 * can be made to the visualisation.
+	 *
+	 * @return The axes renderer.
 	 */
-	public AxesRenderer<Float[],MBFImage> getAxesRenderer()
+	public AxesRenderer<Float[], MBFImage> getAxesRenderer()
 	{
 		return this.axesRenderer;
+	}
+
+	/**
+	 * Clear the data list.
+	 */
+	public void clearData()
+	{
+		synchronized( this.data )
+		{
+			this.data.clear();
+		}
 	}
 }
