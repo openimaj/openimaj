@@ -7,6 +7,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.shape.Circle;
+import org.openimaj.vis.general.DotPlotVisualisation.ColouredDot;
 
 /**
  *	Plots blobs proportional to the size of the value. This can be used as a
@@ -15,9 +16,34 @@ import org.openimaj.math.geometry.shape.Circle;
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 3 Jun 2013
  */
-public class DotPlotVisualisation extends XYPlotVisualisation<Double>
-	implements ItemPlotter<Double,Float[],MBFImage>
+public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
+	implements ItemPlotter<ColouredDot,Float[],MBFImage>
 {
+	/**
+	 * 	A dot with a specific size and colour.
+	 *
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *  @created 11 Jun 2013
+	 */
+	public static class ColouredDot
+	{
+		/** The size of the dot */
+		public double size;
+
+		/** The colour of the dot */
+		public Float[] colour;
+
+		/**
+		 *	@param size
+		 *	@param colour
+		 */
+		public ColouredDot( final double size, final Float[] colour )
+		{
+			this.size = size;
+			this.colour = colour;
+		}
+	}
+
 	/** */
 	private static final long serialVersionUID = 1L;
 
@@ -43,19 +69,39 @@ public class DotPlotVisualisation extends XYPlotVisualisation<Double>
 	}
 
 	/**
+	 * 	Adds a default coloured dot with the given size (in red).
+	 *	@param x The x location
+	 *	@param y The y location
+	 *	@param d The size
+	 */
+	public void addPoint( final double x, final double y, final double d )
+	{
+		super.addPoint( x, y, new ColouredDot( d, RGBColour.RED ) );
+	}
+
+	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer)
 	 */
 	@Override
 	public void plotObject( final MBFImage visImage,
-			final XYPlotVisualisation.LocatedObject<Double> object,
+			final XYPlotVisualisation.LocatedObject<ColouredDot> object,
 			final AxesRenderer<Float[],MBFImage> renderer )
 	{
 		visImage.createRenderer().drawShapeFilled(
 				new Circle( renderer.calculatePosition( visImage,
 						object.x, object.y ),
-						(float)(object.object.doubleValue() * renderer.getxUnitSizePx()) ),
-				RGBColour.RED );
+						(float)(object.object.size * renderer.getxUnitSizePx()) ),
+				object.object.colour );
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.general.ItemPlotter#renderRestarting()
+	 */
+	@Override
+	public void renderRestarting()
+	{
 	}
 
 	/**

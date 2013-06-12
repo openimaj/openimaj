@@ -19,6 +19,12 @@ import org.openimaj.vis.general.XYPlotVisualisation.LocatedObject;
 public interface ItemPlotter<O,Q,I extends Image<Q,I>>
 {
 	/**
+	 * 	Called just before a render of the visualisation is about to start.
+	 * 	This can be used to prepare context objects for the plotObject method.
+	 */
+	public abstract void renderRestarting();
+
+	/**
 	 * 	Plots a specific object to the visualisation using the {@link AxesRenderer} to
 	 * 	provide the position of the object. Should side affect the given image.
 	 *

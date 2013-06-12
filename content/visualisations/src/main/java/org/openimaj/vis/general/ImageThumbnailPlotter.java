@@ -48,4 +48,13 @@ public class ImageThumbnailPlotter implements ItemPlotter<MBFImage,Float[],MBFIm
 		final Point2d p = renderer.calculatePosition( visImage, object.x, object.y );
 		visImage.createRenderer().drawImage( thumbnail, (int)p.getX(), (int)p.getY() );
 	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.general.ItemPlotter#renderRestarting()
+	 */
+	@Override
+	public void renderRestarting()
+	{
+	}
 }

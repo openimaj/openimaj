@@ -189,11 +189,9 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 
 			if( this.overlayImage != null )
 				this.visImage.drawImage( this.overlayImage
-	//				.process( new ResizeProcessor( getWidth(), getHeight(), false ) )
 					, 0, 0 );
 		}
 
-//		System.out.println( "Update "+this );
 		this.update();
 		this.repaint();
 
@@ -245,6 +243,18 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	}
 
 	/**
+	 *	{@inheritDoc}
+	 * 	@see javax.swing.JComponent#update(java.awt.Graphics)
+	 */
+	@Override
+	public void update( final Graphics g )
+	{
+		this.updateVis();
+		this.repaint();
+		super.update( g );
+	}
+
+	/**
 	 *	Show a window containing this visualisation
 	 * 	@param title The title of the window
 	 * 	@return The window that was created
@@ -257,6 +267,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		f.setResizable( this.allowResize );
 		f.pack();
 		f.setVisible( true );
+		this.updateVis();
 		return f;
 	}
 
@@ -306,6 +317,10 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	@Override
 	public void componentResized( final ComponentEvent e )
 	{
+		if( this.getSize().width == this.visImage.getWidth() &&
+			this.getSize().height == this.visImage.getHeight() )
+			return;
+
 		if( this.overlaidOn != null )
 				this.overlaidOn.setSize( this.getSize() );
 		else	this.updateVis();

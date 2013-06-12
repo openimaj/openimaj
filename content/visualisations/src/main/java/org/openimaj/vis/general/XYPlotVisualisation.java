@@ -122,6 +122,9 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 		if( !this.renderAxesLast )
 			this.axesRenderer.renderAxis( this.visImage );
 
+		// Tell the plotter we're about to start rendering items,
+		// then loop over the items plotting them
+		this.plotter.renderRestarting();
 		for( final LocatedObject<O> o : this.data )
 			this.plotter.plotObject( this.visImage, o, this.axesRenderer );
 
@@ -177,5 +180,15 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	public void setItemPlotter( final ItemPlotter<O,Float[],MBFImage> plotter )
 	{
 		this.plotter = plotter;
+	}
+
+	/**
+	 * 	Provides access to the underlying axes renderer so that various changes
+	 * 	can be made to the visualisation.
+	 *	@return The axes renderer.
+	 */
+	public AxesRenderer<Float[],MBFImage> getAxesRenderer()
+	{
+		return this.axesRenderer;
 	}
 }
