@@ -36,49 +36,49 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Renderer for the Hershey vector font set.
- * Based on HersheyFont.java by James P. Buzbee, which carried the 
+ * Based on HersheyFont.java by James P. Buzbee, which carried the
  * following copyright statement:
- * 
+ *
  * <pre>
  * Copyright (c) James P. Buzbee 1996
  * House Blend Software
- * 
+ *
  * jbuzbee@nyx.net
  * Version 1.1 Dec 11 1996
  * Version 1.2 Sep 18 1997
  * Version 1.3 Feb 28 1998
  * Version 1.4 Aug 13 2000 : J++ bug workaround by  Paul Emory Sullivan
- * 
+ *
  * Permission to use, copy, modify, and distribute this software
  * for any use is hereby granted provided
  * this notice is kept intact within the source file
  * This is freeware, use it as desired !
- * 
+ *
  * Very loosly based on code with authors listed as :
  * Alan Richardson, Pete Holzmann, James Hurt
  * </pre>
- *  
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> {
-	protected static HersheyFontRenderer<?> INSTANCE = new HersheyFontRenderer<Object>(); 
-	
+	protected static HersheyFontRenderer<?> INSTANCE = new HersheyFontRenderer<Object>();
+
 	private HersheyFontRenderer() {}
-	
+
 	@Override
-	public void renderText(ImageRenderer<T, ?> renderer, String text, int x, int y, HersheyFontStyle<T> style) {
-		drawText(text, style, x, y, true, new Rectangle(), renderer );
+	public void renderText(final ImageRenderer<T, ?> renderer, final String text, final int x, final int y, final HersheyFontStyle<T> style) {
+		this.drawText(text, style, x, y, true, new Rectangle(), renderer );
 	}
 
 	@Override
-	public Rectangle getBounds(String text, HersheyFontStyle<T> style) {
-		Rectangle r = new Rectangle();
-		drawText(text, style, 0, 0, false, r, null);
+	public Rectangle getBounds(final String text, final HersheyFontStyle<T> style) {
+		final Rectangle r = new Rectangle();
+		this.drawText(text, style, 0, 0, false, r, null);
 		return r;
 	}
-	
-	protected void drawText(String text, HersheyFontStyle<T> sty, int xc, int yc, boolean Draw, Rectangle r, ImageRenderer<T,?> renderer) {
-		HersheyFontData fnt = sty.getFont().data;
+
+	protected void drawText(final String text, final HersheyFontStyle<T> sty, final int xc, final int yc, final boolean Draw, final Rectangle r, final ImageRenderer<T,?> renderer) {
+		final HersheyFontData fnt = sty.getFont().data;
 		int character;
 		int len;
 		int rotpx = 0, rotpy = 0;
@@ -93,7 +93,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 		// if we are to do a rotation
 		if (rotate) {
 			// set up the rotation variables
-			float theta = -sty.getAngle();
+			final float theta = -sty.getAngle();
 			cosTheta = (float) Math.cos(theta);
 			sinTheta = (float) Math.sin(theta);
 
@@ -104,17 +104,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 
 		// starting position
 		xp = xc;
-
 		yp = yc;
-
-		// if we are not going to actually draw the string
-		if (!Draw) {
-			// set up to initialize the bounding rectangle
-			r.x = xp;
-			r.y = yp;
-			r.width = xp;
-			r.height = yp;
-		}
 
 		switch (sty.getVerticalAlignment()) {
 		case VERTICAL_TOP:
@@ -132,7 +122,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 		}
 
 		// move the y position based on the vertical alignment
-		yp = yp - (int) (verticalOffsetFactor * (sty.getActualHeightScale() * (fnt.characterSetMaxY - fnt.characterSetMinY)));
+		yp -= (int) (verticalOffsetFactor * (sty.getActualHeightScale() * (fnt.characterSetMaxY - fnt.characterSetMinY)));
 
 		// if we have a non-standard horizontal alignment
 		if ((sty.getHorizontalAlignment() != HorizontalAlignment.HORIZONTAL_LEFT)
@@ -158,29 +148,33 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 		}
 
 		// loop through each character in the string ...
+		r.x = r.y = Integer.MAX_VALUE;
 		for (int j = 0; j < text.length(); j++) {
 			// the character's number in the array ...
 			character = text.charAt(j) - ' ';
 
-			if (character < 0) 
+			if (character < 0)
 				character = ' ';
-			
+
 			// render this character
-			drawCharacter(xp, yp, rotpx, rotpy, sty.getActualWidthScale(), sty.getActualHeightScale(), rotate,
-					sinTheta, cosTheta, Draw, r, fnt.characterVectors[character],
+			this.drawCharacter(xp, yp, rotpx, rotpy, sty.getActualWidthScale(), sty.getActualHeightScale(), rotate,
+					sinTheta, cosTheta, Draw, fnt.characterVectors[character],
 					fnt.numberOfPoints[character], fnt.characterMinX[character],
 					fnt.characterSetMinY, sty.getStrokeWidth(), sty.isItalic(), sty.getItalicSlant(), renderer,
-					sty.getColour());
+					sty.getColour(), r);
 
 			// advance the starting coordinate
-			int actualWidth = (int) ((fnt.characterMaxX[character] - fnt.characterMinX[character]) * sty.getActualWidthScale());
+			final int actualWidth = (int) ((fnt.characterMaxX[character] - fnt.characterMinX[character]) * sty.getActualWidthScale());
 			xp += actualWidth;
-			
-			r.width = actualWidth;
+
+//			r.width += actualWidth;
 		} // end for each character
+
+//		r.height = sty.getActualHeightScale()*(fnt.characterSetMaxY-fnt.characterSetMinY);
+//		System.out.println( text+" : "+r+" -> "+fnt.characterSetMinY+","+fnt.characterSetMaxY );
 	}
 
-	protected int fontAdjustment(String fontname) {
+	protected int fontAdjustment(final String fontname) {
 		int xadjust = 0;
 
 		// if we do not have a script type font
@@ -196,16 +190,18 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 		return xadjust;
 	}
 
-	protected void drawCharacter(int xp, int yp, int rotpx, int rotpy,
-			float width, float height, boolean rotate, float sinTheta,
-			float cosTheta, boolean draw, Rectangle r, char vectors[][],
-			int numberOfPoints, int minX, int characterSetMinY, int lineWidth,
-			boolean italics, float slant, ImageRenderer<T,?> renderer, T colour) {
+	protected void drawCharacter(final int xp, final int yp, final int rotpx, final int rotpy,
+			final float width, final float height, final boolean rotate, final float sinTheta,
+			final float cosTheta, final boolean draw, final char vectors[][],
+			final int numberOfPoints, final int minX, final int characterSetMinY, final int lineWidth,
+			final boolean italics, final float slant, final ImageRenderer<T,?> renderer, final T colour,
+			final Rectangle bounds) {
 		float xd, yd, xd2, yd2;
 		int oldx = 0, oldy = 0, x, y, i;
 		boolean skip = true;
-		float finalSlant = height * (-slant);
-		
+		final float finalSlant = height * (-slant);
+		int maxX = 0, maxY = 0;
+
 		// loop through each vertex in the character
 		for (i = 1; i < numberOfPoints; i++) {
 			// if this is a "skip"
@@ -219,10 +215,10 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 						+
 						// add italics offset to the "normal" point
 						// transformation
-						transformX(xp, vectors[HersheyFontData.X][i], minX, width);
+						this.transformX(xp, vectors[HersheyFontData.X][i], minX, width);
 
 				// calculate the y coordinate
-				y = transformY(yp, vectors[HersheyFontData.Y][i], characterSetMinY, height);
+				y = this.transformY(yp, vectors[HersheyFontData.Y][i], characterSetMinY, height);
 
 				// if we are doing a rotation
 				if (rotate) {
@@ -241,44 +237,34 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 					y = (int) (yd2 + 0.5) + rotpy;
 				}
 
-				if (!draw) {
-					// we just want the bounding box of the string
-					if (x < r.x) {
-						r.x = x;
-					}
-					if (y < r.y) {
-						r.y = y;
-					}
-
-					if (x > r.width) {
-						r.width = x;
-					}
-					if (y > r.height) {
-						r.height = y;
-					}
-				}
-
 				if (!skip) {
 					// if we are to draw the string
 					if (draw) {
 						renderer.drawLine(oldx, oldy, x, y, lineWidth, colour);
 					}
+
+					bounds.x = Math.min( bounds.x, x );
+					bounds.y = Math.min( bounds.y, y );
+					maxX = Math.max( maxX, x );
+					maxY = Math.max( maxY, y );
 				} // end if not skip
 
 				skip = false;
 
 				oldx = x;
 				oldy = y;
-
 			} // end if skip
 		} // end for each vertex in the character
+
+		bounds.width  = Math.max( bounds.width, maxX - bounds.x );
+		bounds.height = Math.max( bounds.height, maxY - bounds.y );
 	}
 
-	protected final int transformX(int xoffset, int px, int minx, float mag) {
+	protected final int transformX(final int xoffset, final int px, final int minx, final float mag) {
 		return ((int) (xoffset + (px - minx) * mag));
 	}
 
-	protected final int transformY(int yoffset, int py, int miny, float mag) {
+	protected final int transformY(final int yoffset, final int py, final int miny, final float mag) {
 		return ((int) (yoffset + (py - miny) * mag));
 	}
 }
