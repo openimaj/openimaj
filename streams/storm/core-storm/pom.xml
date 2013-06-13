@@ -21,7 +21,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-    
     <dependency>
       <artifactId>core-rdf</artifactId>
       <groupId>org.openimaj</groupId>
@@ -54,11 +53,14 @@
     <dependency>
       <groupId>storm</groupId>
       <artifactId>storm</artifactId>
-      <!-- <version>0.7.2</version> -->
       <version>0.8.0</version>
-      <!-- keep storm out of the jar-with-dependencies -->
       <scope>compile</scope>
     </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.4</version>
+		</dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
