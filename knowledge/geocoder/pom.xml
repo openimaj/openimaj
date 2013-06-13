@@ -23,6 +23,18 @@
       <version>1.1.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-math</artifactId>
+      <version>1.1.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>nearest-neighbour</artifactId>
+      <version>1.1.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
 		<dependency>
 			<groupId>org.geonames</groupId>
 			<artifactId>geonames</artifactId>
@@ -59,11 +71,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency>
-			<groupId>gov.sandia.foundry</groupId>
-			<artifactId>gov-sandia-cognition-text-core</artifactId>
-			<version>3.3.0</version>
-		</dependency> -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

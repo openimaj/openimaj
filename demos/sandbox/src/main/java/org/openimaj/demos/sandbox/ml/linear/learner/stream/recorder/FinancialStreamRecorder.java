@@ -14,7 +14,7 @@ import org.openimaj.demos.sandbox.ml.linear.learner.stream.YahooFinanceStream;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPredicateFunction;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterPreprocessingFunction;
 import org.openimaj.demos.sandbox.ml.linear.learner.stream.twitter.TwitterStatusAsUSMFStatus;
-import org.openimaj.stream.provider.twitter.TwitterStreamingDataset;
+import org.openimaj.stream.provider.twitter.TwitterStreamDataset;
 import org.openimaj.tools.twitter.modes.filter.LanguageFilter;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;
@@ -40,10 +40,11 @@ import com.mongodb.ServerAddress;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class FinancialStreamRecorder {
 	static Logger logger = Logger.getLogger(FinancialStreamRecorder.class);
+
 	/**
 	 * @param args
 	 * @throws MalformedURLException
@@ -52,9 +53,11 @@ public class FinancialStreamRecorder {
 	public static void main(String[] args) throws MalformedURLException, IOException {
 
 		// The financial stream
-		RealTimeWindowFunction<Map<String,Double>> yahooWindow = new RealTimeWindowFunction<Map<String,Double>>(5000);
-		Stream<Window<Map<String, Double>, Long>> yahooAveragePriceStream = new YahooFinanceStream("AAPL","GOOG","GE","GM","TWX")
-		.transform(yahooWindow);
+		final RealTimeWindowFunction<Map<String, Double>> yahooWindow = new RealTimeWindowFunction<Map<String, Double>>(
+				5000);
+		final Stream<Window<Map<String, Double>, Long>> yahooAveragePriceStream = new YahooFinanceStream("AAPL", "GOOG",
+				"GE", "GM", "TWX")
+				.transform(yahooWindow);
 
 		// The Twitter Stream
 		final ArrayBlockingDroppingQueue<Status> buffer = new ArrayBlockingDroppingQueue<Status>(1);
@@ -62,53 +65,61 @@ public class FinancialStreamRecorder {
 		final StopwordMode stopwordMode = new StopwordMode();
 		final TokeniseMode tokeniseMode = new TokeniseMode();
 
-		Stream<Window<USMFStatus, Long>> twitterUserWordCountStream = new TwitterStreamingDataset(
-			DefaultTokenFactory.get(TwitterAPIToken.class),buffer
-		)
-		.transform(new RealTimeWindowFunction<Status>(5000))
-		.map(new WindowFunction<Status,USMFStatus,Long>(new TwitterStatusAsUSMFStatus()))
-		.map(new WindowFunction<USMFStatus,USMFStatus,Long>(new TwitterPreprocessingFunction(languageDetectionMode,tokeniseMode,stopwordMode)))
-		.map(new WindowFilter<USMFStatus,Long>(new TwitterPredicateFunction(new LanguageFilter("en"))));
+		final Stream<Window<USMFStatus, Long>> twitterUserWordCountStream = new TwitterStreamDataset(
+				DefaultTokenFactory.get(TwitterAPIToken.class), buffer
+				)
+						.transform(new RealTimeWindowFunction<Status>(5000))
+						.map(new WindowFunction<Status, USMFStatus, Long>(new TwitterStatusAsUSMFStatus()))
+						.map(new WindowFunction<USMFStatus, USMFStatus, Long>(new TwitterPreprocessingFunction(
+								languageDetectionMode, tokeniseMode, stopwordMode)))
+						.map(new WindowFilter<USMFStatus, Long>(new TwitterPredicateFunction(new LanguageFilter("en"))));
 
-		List<ServerAddress> serverList = Arrays.asList(
-			new ServerAddress("rumi",27017),
-			new ServerAddress("hafez",27017)
-		);
-		MetaPayloadStreamCombiner.combine(twitterUserWordCountStream,yahooAveragePriceStream)
-		.forEach(
-			new MongoDBOutputOp<
-				MetaPayload<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>,IndependentPair<Long,Long>>
-			>
-			(serverList) {
+		final List<ServerAddress> serverList = Arrays.asList(
+				new ServerAddress("rumi", 27017),
+				new ServerAddress("hafez", 27017)
+				);
+		MetaPayloadStreamCombiner
+				.combine(twitterUserWordCountStream, yahooAveragePriceStream)
+				.forEach(
+						new MongoDBOutputOp<
+						MetaPayload<IndependentPair<List<USMFStatus>, List<Map<String, Double>>>, IndependentPair<Long, Long>>
+						>
+						(serverList)
+						{
 
-				@Override
-				public String getCollectionName() {
-					return "streamapi_yahoo";
-				}
+							@Override
+							public String getCollectionName() {
+								return "streamapi_yahoo";
+							}
 
-				@Override
-				public DBObject asDBObject(MetaPayload<IndependentPair<List<USMFStatus>,List<Map<String,Double>>>,IndependentPair<Long,Long>> aggr) {
-					BasicDBObject dbobj = new BasicDBObject();
-					IndependentPair<List<USMFStatus>, List<Map<String, Double>>> obj = aggr.getPayload();
-					IndependentPair<Long, Long> times = aggr.getMeta();
-					List<USMFStatus> tweets = obj.firstObject();
-					List<Object> dbtweets = new ArrayList<Object>();
-					for (USMFStatus usmfStatus : tweets) {
-						dbtweets.add(JSON.parse(usmfStatus.toJson()));
-					}
-					dbobj.append("tweets", dbtweets);
-					dbobj.append("tickers", obj.secondObject());
-					long timestamp = times.firstObject();
-					dbobj.append("timestamp", timestamp);
-					logger.debug(String.format("Dumping %d tweets and %d stock-ticks at %d",dbtweets.size(),obj.secondObject().size(),timestamp));
-					return dbobj;
-				}
+							@Override
+							public DBObject
+									asDBObject(
+											MetaPayload<IndependentPair<List<USMFStatus>, List<Map<String, Double>>>, IndependentPair<Long, Long>> aggr)
+							{
+								final BasicDBObject dbobj = new BasicDBObject();
+								final IndependentPair<List<USMFStatus>, List<Map<String, Double>>> obj = aggr
+										.getPayload();
+								final IndependentPair<Long, Long> times = aggr.getMeta();
+								final List<USMFStatus> tweets = obj.firstObject();
+								final List<Object> dbtweets = new ArrayList<Object>();
+								for (final USMFStatus usmfStatus : tweets) {
+									dbtweets.add(JSON.parse(usmfStatus.toJson()));
+								}
+								dbobj.append("tweets", dbtweets);
+								dbobj.append("tickers", obj.secondObject());
+								final long timestamp = times.firstObject();
+								dbobj.append("timestamp", timestamp);
+								logger.debug(String.format("Dumping %d tweets and %d stock-ticks at %d", dbtweets.size(),
+										obj.secondObject().size(), timestamp));
+								return dbobj;
+							}
 
-				@Override
-				public String getDBName() {
-					return "twitterticker";
-				}
-			}
-		);
+							@Override
+							public String getDBName() {
+								return "twitterticker";
+							}
+						}
+				);
 	}
 }

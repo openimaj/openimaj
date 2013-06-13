@@ -19,5 +19,6 @@
   <modules>
     <module>core-rdf</module>
     <module>ontologies</module>
+    <module>geocoder</module>
   </modules>
 </project>
