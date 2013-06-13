@@ -43,8 +43,9 @@ import org.openimaj.text.nlp.textpipe.annotations.SentenceAnnotation;
 
 /**
  * Uses a {@link POSTaggerME} backed by a {@link POSModel}
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class OpenNLPPOSAnnotator extends AbstractPOSAnnotator {
 
@@ -52,26 +53,25 @@ public class OpenNLPPOSAnnotator extends AbstractPOSAnnotator {
 	 * Name of system property pointing to the POS model
 	 */
 	public static final String POS_MODEL_PROP = "org.openimaj.text.opennlp.models.pos";
+	public static final String POS_MODEL_DEFAULT = "/org/openimaj/text/opennlp/models/en-pos-maxent.bin";
 	POSTaggerME tagger;
 
-	/**
-	 *
-	 */
 	public OpenNLPPOSAnnotator() {
 		super();
 		InputStream modelIn = null;
 		POSModel model = null;
 		try {
-			modelIn = OpenNLPPOSAnnotator.class.getResourceAsStream(System.getProperty(POS_MODEL_PROP));
+			modelIn = OpenNLPPOSAnnotator.class
+					.getResourceAsStream(System.getProperty(POS_MODEL_PROP, POS_MODEL_DEFAULT));
 			model = new POSModel(modelIn);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// Model loading failed, handle the error
 			e.printStackTrace();
 		} finally {
 			if (modelIn != null) {
 				try {
 					modelIn.close();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 				}
 			}
 		}
@@ -80,7 +80,8 @@ public class OpenNLPPOSAnnotator extends AbstractPOSAnnotator {
 
 	@Override
 	public void annotate(RawTextAnnotation annotation)
-			throws MissingRequiredAnnotationException {
+			throws MissingRequiredAnnotationException
+	{
 		if (!annotation.getAnnotationKeyList().contains(
 				SentenceAnnotation.class))
 			throw new MissingRequiredAnnotationException(
@@ -90,15 +91,16 @@ public class OpenNLPPOSAnnotator extends AbstractPOSAnnotator {
 
 	@Override
 	protected List<PartOfSpeech> pos(List<String> tokenList) {
-		List<PartOfSpeech> result = new ArrayList<PartOfSpeech>();
+		final List<PartOfSpeech> result = new ArrayList<PartOfSpeech>();
 		String[] p = null;
-		String[] sentence = new String[tokenList.size()];
+		final String[] sentence = new String[tokenList.size()];
 		for (int i = 0; i < sentence.length; i++) {
-			sentence[i]=tokenList.get(i);
+			sentence[i] = tokenList.get(i);
 		}
 		p = tagger.tag(sentence);
-		for(String pos:p){
-			if(PartOfSpeech.getPOSfromString(pos)==null)System.out.println("no matching pos "+pos);
+		for (final String pos : p) {
+			if (PartOfSpeech.getPOSfromString(pos) == null)
+				System.out.println("no matching pos " + pos);
 			result.add(PartOfSpeech.getPOSfromString(pos));
 		}
 		return result;
@@ -106,7 +108,8 @@ public class OpenNLPPOSAnnotator extends AbstractPOSAnnotator {
 
 	@Override
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)
-			throws MissingRequiredAnnotationException {
+			throws MissingRequiredAnnotationException
+	{
 		// TODO Auto-generated method stub
 
 	}

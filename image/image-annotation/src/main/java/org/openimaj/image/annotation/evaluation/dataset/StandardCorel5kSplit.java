@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, The University of Southampton and the individual contributors.
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,15 +27,51 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.twitter.utils;
+package org.openimaj.image.annotation.evaluation.dataset;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
-import org.openimaj.twitter.collection.TwitterStatusList;
+import org.apache.commons.io.FileUtils;
+import org.openimaj.data.dataset.ListBackedDataset;
+import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.experiment.dataset.split.TestSplitProvider;
+import org.openimaj.experiment.dataset.split.TrainSplitProvider;
 
-public class TwitterUtils {
-	public TwitterStatusList load(File f){
-		return null;
+public class StandardCorel5kSplit 
+	implements 
+		TrainSplitProvider<ListDataset<CorelAnnotatedImage>>,
+		TestSplitProvider<ListDataset<CorelAnnotatedImage>>
+{
+	List<String> testIds;
+	ListBackedDataset<CorelAnnotatedImage> training;
+	ListBackedDataset<CorelAnnotatedImage> test;
+	
+	public StandardCorel5kSplit() throws IOException {
+		testIds = FileUtils.readLines(new File("/Users/jsh2/Data/corel-5k/test_1_image_nums.txt"));
+	}
+	
+	public void split(Corel5kDataset dataset) {
+		training = new ListBackedDataset<CorelAnnotatedImage>();
+		test = new ListBackedDataset<CorelAnnotatedImage>();
 		
+		for (CorelAnnotatedImage img : dataset) {
+			if (testIds.contains(img.getID())) {
+				test.getList().add(img);
+			} else {
+				training.getList().add(img);
+			}
+		}
+	}
+
+	@Override
+	public ListDataset<CorelAnnotatedImage> getTrainingDataset() {
+		return training;
+	}
+
+	@Override
+	public ListDataset<CorelAnnotatedImage> getTestDataset() {
+		return test;
 	}
 }

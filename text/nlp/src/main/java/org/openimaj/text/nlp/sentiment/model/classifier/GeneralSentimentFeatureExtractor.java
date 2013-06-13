@@ -44,40 +44,45 @@ import org.openimaj.ml.annotation.bayes.NaiveBayesAnnotator;
  * Should be initialized with training corpus of the machine learning
  * {@link AbstractAnnotator} you are using.
  * 
- * @author laurence
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * 
  */
 public class GeneralSentimentFeatureExtractor implements
-		FeatureExtractor<DoubleFV, List<String>> {
+		FeatureExtractor<DoubleFV, List<String>>
+{
 
 	private ArrayList<String> vocabList;
 	private int wordOccuranceThresh = 50;
 
 	/**
 	 * Construct with the training set. This is required to build a vocabulary.
-	 * @param list of tokenised corpus documents.
+	 * 
+	 * @param domainVocabularyCorpus
+	 *            list of tokenised corpus documents.
 	 */
 	public GeneralSentimentFeatureExtractor(
-			List<List<String>> domainVocabularyCorpus) {
+			List<List<String>> domainVocabularyCorpus)
+	{
 		initialize(domainVocabularyCorpus);
 	}
-	
-	
+
 	/**
 	 * Blank constructor. Will require initialize to be called at a later stage.
 	 */
-	public GeneralSentimentFeatureExtractor(){
-		
+	public GeneralSentimentFeatureExtractor() {
+
 	}
 
 	/**
 	 * Allows a new vocabulary to be constructed from a new corpus.
-	 * @param list of tokenised corpus documents.
+	 * 
+	 * @param domainVocabularyCorpus
+	 *            list of tokenised corpus documents.
 	 */
 	public void initialize(List<List<String>> domainVocabularyCorpus) {
-		HashMap<String, Integer> vocab = new HashMap<String, Integer>();
-		for (List<String> doc : domainVocabularyCorpus) {
-			for (String s : doc) {
+		final HashMap<String, Integer> vocab = new HashMap<String, Integer>();
+		for (final List<String> doc : domainVocabularyCorpus) {
+			for (final String s : doc) {
 				Integer current = vocab.get(s);
 				if (current == null)
 					current = 0;
@@ -86,7 +91,7 @@ public class GeneralSentimentFeatureExtractor implements
 			}
 		}
 		this.vocabList = new ArrayList<String>();
-		for (Entry<String, Integer> entry : vocab.entrySet()) {
+		for (final Entry<String, Integer> entry : vocab.entrySet()) {
 			if (entry.getValue() > wordOccuranceThresh) {
 				vocabList.add(entry.getKey());
 			}
@@ -95,18 +100,18 @@ public class GeneralSentimentFeatureExtractor implements
 
 	@Override
 	public DoubleFV extractFeature(List<String> tokens) {
-		double[] vect = new double[vocabList.size()];
+		final double[] vect = new double[vocabList.size()];
 		for (int i = 0; i < vect.length; i++) {
 			vect[i] += 0.00001;
 		}
-		for (String s : tokens) {
-			int ind = vocabList.indexOf(s);
+		for (final String s : tokens) {
+			final int ind = vocabList.indexOf(s);
 			if (ind >= 0)
 				vect[ind] += 1;
 		}
-		double[] vectNorm = new double[vocabList.size()];
+		final double[] vectNorm = new double[vocabList.size()];
 		for (int i = 0; i < vect.length; i++) {
-			vectNorm[i]=vect[i]/tokens.size();			
+			vectNorm[i] = vect[i] / tokens.size();
 		}
 		return new DoubleFV(vect);
 	}

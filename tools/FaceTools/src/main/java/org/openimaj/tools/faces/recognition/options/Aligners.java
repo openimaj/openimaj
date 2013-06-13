@@ -156,7 +156,6 @@ public class Aligners {
 	}
 
 	private static class Identity implements AlignerDetectorProvider<DetectedFace> {
-		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
 		AnyBasicFImageDetector detector;
 		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
@@ -173,7 +172,6 @@ public class Aligners {
 	}
 
 	private static class Scaling implements AlignerDetectorProvider<DetectedFace> {
-		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
 		AnyBasicFImageDetector detector;
 		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
@@ -196,7 +194,6 @@ public class Aligners {
 	}
 
 	private static class Affine implements AlignerDetectorProvider<KEDetectedFace> {
-		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
 		AnyBasicFImageDetector detector;
 		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
@@ -213,7 +210,6 @@ public class Aligners {
 	}
 
 	private static class MeshWarp implements AlignerDetectorProvider<KEDetectedFace> {
-		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
 		AnyBasicFImageDetector detector;
 		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
@@ -230,7 +226,6 @@ public class Aligners {
 	}
 
 	private static class RotateScale implements AlignerDetectorProvider<KEDetectedFace> {
-		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
 		AnyBasicFImageDetector detector;
 		FaceDetectorProvider<DetectedFace, FImage> detectorOp;

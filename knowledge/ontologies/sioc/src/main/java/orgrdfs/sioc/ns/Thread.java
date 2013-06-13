@@ -7,6 +7,7 @@ package orgrdfs.sioc.ns;
 public interface Thread 
 	extends Container
 {
+	@Override
 	public String getURI();
 
 }

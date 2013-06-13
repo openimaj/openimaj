@@ -79,6 +79,7 @@ public class MultipleLinearRegressionPlayground {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void linearRegressStocks(String start, String end, String learns, String learne, String... stocks)
 			throws IncompatibleTimeSeriesException, IOException
 	{
@@ -87,7 +88,6 @@ public class MultipleLinearRegressionPlayground {
 			YahooFinanceData data = new YahooFinanceData(stock, start, end, "YYYY-MM-dd");
 			data = Cache.load(data);
 			final DoubleTimeSeries highseries = data.seriesMap().get("High");
-			final DateTimeFormatter parser = DateTimeFormat.forPattern("YYYY-MM-dd");
 			dstsc.addTimeSeries(stock, highseries);
 		}
 		TSCollection dataset = new TSCollection();

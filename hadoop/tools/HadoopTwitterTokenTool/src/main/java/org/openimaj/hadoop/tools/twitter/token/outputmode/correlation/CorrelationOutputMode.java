@@ -29,15 +29,13 @@
  */
 package org.openimaj.hadoop.tools.twitter.token.outputmode.correlation;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.apache.hadoop.conf.Configuration;
+
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.SequenceFile.Reader;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
@@ -53,55 +51,53 @@ import org.openimaj.twitter.finance.YahooFinanceData;
 import org.openimaj.util.pair.IndependentPair;
 
 public class CorrelationOutputMode extends TwitterTokenOutputMode {
-	
-	@Option(name="--max-p-value", aliases="-maxp", required=false, usage="The maximum P-Value")
+
+	@Option(name = "--max-p-value", aliases = "-maxp", required = false, usage = "The maximum P-Value")
 	double maxp = -1;
 
 	@Override
-	public void write(HadoopTwitterTokenToolOptions opts,TwitterTokenMode completedMode) throws Exception {
+	public void write(HadoopTwitterTokenToolOptions opts, TwitterTokenMode completedMode) throws Exception {
 		// Get time period
-		Path[] paths = HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountTweetsInTimeperiod.TIMECOUNT_DIR);
-		IndependentPair<Long, Long> startend = readBegginingEndTime(paths,opts);
+		final Path[] paths = HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts),
+				CountTweetsInTimeperiod.TIMECOUNT_DIR);
+		final IndependentPair<Long, Long> startend = readBegginingEndTime(paths, opts);
 		// Get yahoo finance data for this time period
-		YahooFinanceData finance = new YahooFinanceData("AAPL", new DateTime(startend.firstObject()), new DateTime(startend.secondObject()));
-		Map<String, double[]> timeperiodFinance = finance.results();
-		String financeOut = outputPath + "/financedata";
-		Path p = HadoopToolsUtil.getOutputPath(financeOut);
-		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
-		FSDataOutputStream os = fs.create(p);
+		final YahooFinanceData finance = new YahooFinanceData("AAPL", new DateTime(startend.firstObject()), new DateTime(
+				startend.secondObject()));
+		final Map<String, double[]> timeperiodFinance = finance.results();
+		final String financeOut = outputPath + "/financedata";
+		final Path p = HadoopToolsUtil.getOutputPath(financeOut);
+		final FileSystem fs = HadoopToolsUtil.getFileSystem(p);
+		final FSDataOutputStream os = fs.create(p);
 		IOUtils.writeASCII(os, finance);
-		// Correlate words with this time period's finance data		
-		MultiStagedJob stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
+		// Correlate words with this time period's finance data
+		final MultiStagedJob stages = new MultiStagedJob(
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts), CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
-		);
-		stages.queueStage(new CorrelateWordTimeSeries(financeOut,startend));
+				);
+		stages.queueStage(new CorrelateWordTimeSeries(financeOut, startend));
 		stages.queueStage(new CorrelateWordSort(maxp));
 		stages.runAll();
 	}
 
-	private IndependentPair<Long, Long> readBegginingEndTime(Path[] paths, HadoopTwitterTokenToolOptions opts) throws Exception {
-		MultiStagedJob stages = new MultiStagedJob(
+	private IndependentPair<Long, Long> readBegginingEndTime(Path[] paths, HadoopTwitterTokenToolOptions opts)
+			throws Exception
+	{
+		final MultiStagedJob stages = new MultiStagedJob(
 				paths,
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
-		);
+				);
 		stages.queueStage(new TimeIndex().stage());
 		stages.runAll();
-		LinkedHashMap<Long, IndependentPair<Long, Long>> tindex = TimeIndex.readTimeCountLines(outputPath);
-		Iterator<Long> ks = tindex.keySet().iterator();
-		long first = ks.next();
+		final LinkedHashMap<Long, IndependentPair<Long, Long>> tindex = TimeIndex.readTimeCountLines(outputPath);
+		final Iterator<Long> ks = tindex.keySet().iterator();
+		final long first = ks.next();
 		long last = first;
 		for (; ks.hasNext();) {
-			last=ks.next();
+			last = ks.next();
 		}
 		return IndependentPair.pair(first, last);
 	}
-
-	private Reader createReader(Path p) throws IOException {
-		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
-		return new Reader(fs, p, new Configuration()); 
-	}
-
 }

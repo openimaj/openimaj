@@ -38,9 +38,8 @@ import java.io.IOException;
 public abstract class FileLooper {
 	BufferedReader reader;
 
-	@SuppressWarnings("javadoc")
 	public FileLooper(File file) throws FileNotFoundException {
-		FileReader fr = new FileReader(file);
+		final FileReader fr = new FileReader(file);
 		this.reader = new BufferedReader(fr);
 	}
 
@@ -54,7 +53,7 @@ public abstract class FileLooper {
 				doWork(s);
 			}
 			reader.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}

@@ -191,7 +191,6 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	private ArrayList<ANNOTATION> annotationsList;
 	private FeatureExtractor<? extends FeatureVector, OBJECT> extractor;
 
-	@SuppressWarnings("unchecked")
 	public LiblinearAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, Mode mode, SolverType solver,
 			double C, double eps)
 	{

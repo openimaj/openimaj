@@ -40,71 +40,76 @@ import java.util.Random;
 import Jama.Matrix;
 
 /**
- * Code to train, classify and generate language specific text by building a first order markov chain.
+ * Code to train, classify and generate language specific text by building a
+ * first order Markov chain.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class MarkovChainLanguageModel {
-	
-	private Map<Locale,Matrix> chains = new HashMap<Locale,Matrix>();
-	private Map<Locale,long[]> chainCounts = new HashMap<Locale,long[]>();
-	
+
+	private Map<Locale, Matrix> chains = new HashMap<Locale, Matrix>();
+	private Map<Locale, long[]> chainCounts = new HashMap<Locale, long[]>();
+
 	/**
 	 * Generate a new empty markov chain language model
 	 */
-	public MarkovChainLanguageModel(){
-		chains = new HashMap<Locale,Matrix>();
-		chainCounts = new HashMap<Locale,long[]>();
+	public MarkovChainLanguageModel() {
+		chains = new HashMap<Locale, Matrix>();
+		chainCounts = new HashMap<Locale, long[]>();
 	}
-	
+
 	/**
 	 * 
 	 * Add an example to a language's markov chain
 	 * 
-	 * @param language the language the example is being added to
-	 * @param example the new example to learn from
-	 * @param encoding the encoding of the example
-	 * @throws UnsupportedEncodingException 
+	 * @param language
+	 *            the language the example is being added to
+	 * @param example
+	 *            the new example to learn from
+	 * @param encoding
+	 *            the encoding of the example
+	 * @throws UnsupportedEncodingException
 	 */
-	public void train(Locale language, String example, String encoding) throws UnsupportedEncodingException{
-		if(!chains.containsKey(language)){
-			chains.put(language, new Matrix(256+1,256+1));
-			chainCounts.put(language,new long[256+1]);
+	public void train(Locale language, String example, String encoding) throws UnsupportedEncodingException {
+		if (!chains.containsKey(language)) {
+			chains.put(language, new Matrix(256 + 1, 256 + 1));
+			chainCounts.put(language, new long[256 + 1]);
 		}
-		
-		Matrix chain = chains.get(language);
-		long[] chainCount = chainCounts.get(language);
-		byte[] data = example.getBytes(encoding);
-		
+
+		final Matrix chain = chains.get(language);
+		final long[] chainCount = chainCounts.get(language);
+		final byte[] data = example.getBytes(encoding);
+
 		int currentIndex = 0;
-		double[][] chainData = chain.getArray();
-		for (byte b : data) {
-			int newIndex = (b & 0xff) + 1;
+		final double[][] chainData = chain.getArray();
+		for (final byte b : data) {
+			final int newIndex = (b & 0xff) + 1;
 			chainData[currentIndex][newIndex] = chainData[currentIndex][newIndex] + 1;
 			chainCount[currentIndex] += 1;
 			currentIndex = newIndex;
 		}
-		
+
 	}
-	
+
 	/**
-	 * Train a given ;anguage on a stream of text
+	 * Train a given language on a stream of text
+	 * 
 	 * @param language
 	 * @param stream
 	 * @throws IOException
 	 */
 	public void train(Locale language, InputStream stream) throws IOException {
-		if(!chains.containsKey(language)){
-			chains.put(language, new Matrix(256+1,256+1));
-			chainCounts.put(language,new long[256+1]);
+		if (!chains.containsKey(language)) {
+			chains.put(language, new Matrix(256 + 1, 256 + 1));
+			chainCounts.put(language, new long[256 + 1]);
 		}
-		
-		Matrix chain = chains.get(language);
-		long[] chainCount = chainCounts.get(language);
-		
+
+		final Matrix chain = chains.get(language);
+		final long[] chainCount = chainCounts.get(language);
+
 		int currentIndex = 0;
-		double[][] chainData = chain.getArray();
+		final double[][] chainData = chain.getArray();
 		int newIndex = -1;
 		while ((newIndex = stream.read()) != -1) {
 			newIndex += 1;
@@ -113,47 +118,49 @@ public class MarkovChainLanguageModel {
 			currentIndex = newIndex;
 		}
 	}
-	
+
 	/**
 	 * Generate a string using this model of the desired length
-	 * @param language 
+	 * 
+	 * @param language
 	 * 
 	 * @param length
-	 * @param encoding 
+	 * @param encoding
 	 * @return the generated string
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
-	public String generate(Locale language, int length, String encoding) throws UnsupportedEncodingException{
-		
-		Matrix chain = this.chains.get(language);
-		if(chain == null) return null;
-		double[][] chainData = chain.getArray();
-		long[] chainCount = this.chainCounts.get(language);
-		
+	public String generate(Locale language, int length, String encoding) throws UnsupportedEncodingException {
+
+		final Matrix chain = this.chains.get(language);
+		if (chain == null)
+			return null;
+		final double[][] chainData = chain.getArray();
+		final long[] chainCount = this.chainCounts.get(language);
+
 		int currentIndex = 0;
-		byte[] newString = new byte[length];
-		Random r = new Random();
+		final byte[] newString = new byte[length];
+		final Random r = new Random();
 		for (int i = 0; i < length; i++) {
-			double prob = r.nextDouble();
-			double[] currentLine = chainData[currentIndex];
+			final double prob = r.nextDouble();
+			final double[] currentLine = chainData[currentIndex];
 			double probSum = 0.0;
 			int newIndex = 0;
-//			System.out.println("CURRENT STATE:" + (char)(currentIndex-1));
-			while(probSum+(currentLine[newIndex]/ chainCount[currentIndex]) < prob){
-				double probForIndex = (currentLine[newIndex++] / chainCount[currentIndex]);
-//				System.out.println(probForIndex);
-//				if(probForIndex > 0){
-//					System.out.println("Prob to go to:" + (char)(newIndex-2) + " = " + probForIndex);
-//				}
+			// System.out.println("CURRENT STATE:" + (char)(currentIndex-1));
+			while (probSum + (currentLine[newIndex] / chainCount[currentIndex]) < prob) {
+				final double probForIndex = (currentLine[newIndex++] / chainCount[currentIndex]);
+				// System.out.println(probForIndex);
+				// if(probForIndex > 0){
+				// System.out.println("Prob to go to:" + (char)(newIndex-2) +
+				// " = " + probForIndex);
+				// }
 				probSum += probForIndex;
 			}
-//			System.out.println("NEW STATE:" + (char)(newIndex-1));
+			// System.out.println("NEW STATE:" + (char)(newIndex-1));
 			newString[i] = (byte) (newIndex - 1);
 			currentIndex = newIndex;
 		}
-		
-		return new String(newString,encoding);
+
+		return new String(newString, encoding);
 	}
 
-	
 }

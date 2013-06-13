@@ -38,37 +38,36 @@ import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 public class TimeSeriesCollectionTest {
-	
+
 	/**
 	 * Tests a collection of time series
+	 * 
 	 * @throws TimeSeriesSetException
 	 * @throws IncompatibleTimeSeriesException
 	 */
 	@Test
-	public void testDoubleTimeSeries() throws TimeSeriesSetException, IncompatibleTimeSeriesException{
-		DoubleTimeSeries ts = new DoubleTimeSeries();
-		long[] times = new long[]{1,2,5,9,10};
-		double[] values1 = new double[]{1,2,5,9,10};
-		double[] values2 = new double[]{2,4,10,18,20};
-		
-		DoubleTimeSeries series1 = new DoubleTimeSeries(times,values1);
-		DoubleTimeSeries series2 = new DoubleTimeSeries(times,values2);
-		
-		DoubleSynchronisedTimeSeriesCollection dtsc = new DoubleSynchronisedTimeSeriesCollection();
-		dtsc.addTimeSeries("normal",series1);
-		dtsc.addTimeSeries("double",series2);
-		
-		DoubleSynchronisedTimeSeriesCollection one = dtsc.get(1);
+	public void testDoubleTimeSeries() throws TimeSeriesSetException, IncompatibleTimeSeriesException {
+		final long[] times = new long[] { 1, 2, 5, 9, 10 };
+		final double[] values1 = new double[] { 1, 2, 5, 9, 10 };
+		final double[] values2 = new double[] { 2, 4, 10, 18, 20 };
+
+		final DoubleTimeSeries series1 = new DoubleTimeSeries(times, values1);
+		final DoubleTimeSeries series2 = new DoubleTimeSeries(times, values2);
+
+		final DoubleSynchronisedTimeSeriesCollection dtsc = new DoubleSynchronisedTimeSeriesCollection();
+		dtsc.addTimeSeries("normal", series1);
+		dtsc.addTimeSeries("double", series2);
+
+		final DoubleSynchronisedTimeSeriesCollection one = dtsc.get(1);
 		assertTrue(one.flatten().length == 2);
-		assertTrue(Arrays.equals(new double[]{1,2},one.flatten()));
-		
-		DoubleSynchronisedTimeSeriesCollection two = dtsc.get(3, 1, 1);
+		assertTrue(Arrays.equals(new double[] { 1, 2 }, one.flatten()));
+
+		final DoubleSynchronisedTimeSeriesCollection two = dtsc.get(3, 1, 1);
 		assertTrue(two.flatten().length == 4);
-		assertTrue(Arrays.equals(new double[]{2,4,5,10},two.flatten()));
-		
-		DoubleSynchronisedTimeSeriesCollection three = dtsc.get(5l, 3l, 4l);
+		assertTrue(Arrays.equals(new double[] { 2, 4, 5, 10 }, two.flatten()));
+
+		final DoubleSynchronisedTimeSeriesCollection three = dtsc.get(5l, 3l, 4l);
 		assertTrue(three.flatten().length == 6);
-		assertTrue(Arrays.equals(new double[]{2,4,5,10,9,18},three.flatten()));
+		assertTrue(Arrays.equals(new double[] { 2, 4, 5, 10, 9, 18 }, three.flatten()));
 	}
-	
 }

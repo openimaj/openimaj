@@ -27,28 +27,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.annotation.evalutation.dataset;
+package org.openimaj.image.annotation.evaluation.dataset;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.openimaj.data.dataset.ListBackedDataset;
 import org.openimaj.data.dataset.ListDataset;
@@ -153,16 +143,22 @@ public class Corel5kDataset extends ListBackedDataset<CorelAnnotatedImage> {
 		final IREvalResult retAnalysis = retEval.analyse(retRes);
 		System.out.println(retAnalysis);
 
-		final InputStream inputStream = IREvalResult.class.getResourceAsStream("IREvalSummaryReport.jrxml");
-		final ArrayList<IREvalResult> list = new ArrayList<IREvalResult>();
-		list.add(retAnalysis);
-		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(list);
-
-		final Map parameters = new HashMap();
-
-		final JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
-		final JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-		final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, beanColDataSource);
-		JasperExportManager.exportReportToPdfFile(jasperPrint, "test_jasper.pdf");
+		// final InputStream inputStream =
+		// IREvalResult.class.getResourceAsStream("IREvalSummaryReport.jrxml");
+		// final ArrayList<IREvalResult> list = new ArrayList<IREvalResult>();
+		// list.add(retAnalysis);
+		// final JRBeanCollectionDataSource beanColDataSource = new
+		// JRBeanCollectionDataSource(list);
+		//
+		// final Map parameters = new HashMap();
+		//
+		// final JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
+		// final JasperReport jasperReport =
+		// JasperCompileManager.compileReport(jasperDesign);
+		// final JasperPrint jasperPrint =
+		// JasperFillManager.fillReport(jasperReport, parameters,
+		// beanColDataSource);
+		// JasperExportManager.exportReportToPdfFile(jasperPrint,
+		// "test_jasper.pdf");
 	}
 }

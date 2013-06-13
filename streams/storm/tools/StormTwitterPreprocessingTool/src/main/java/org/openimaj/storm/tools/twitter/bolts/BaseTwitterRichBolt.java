@@ -42,9 +42,12 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 
 public abstract class BaseTwitterRichBolt extends BaseRichBolt {
+	private static final long serialVersionUID = 1L;
+
 	private OutputCollector collector;
 	Logger logger = LoggerFactory.getLogger(BaseRichBolt.class);
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
@@ -59,9 +62,9 @@ public abstract class BaseTwitterRichBolt extends BaseRichBolt {
 	@Override
 	public void execute(Tuple input) {
 		try {
-			String t = (String) input.getValueByField("tweet");
+			final String t = (String) input.getValueByField("tweet");
 			processTweet(t);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			logger.error("Failed to read tweet from tuple: ", e);
 		}
 		collector.ack(input);

@@ -26,8 +26,7 @@ import com.google.gson.Gson;
  */
 public class ImgurClient {
 	/**
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
-	 *         (ss@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * 
 	 */
 	public static enum ImgurType {
@@ -49,8 +48,7 @@ public class ImgurClient {
 	 * The type and hash usually returned from
 	 * {@link ImgurClient#imgurURLtoHash(URL)}
 	 * 
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
-	 *         (ss@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * 
 	 */
 	public static class ImgurTypeHash {
@@ -76,8 +74,7 @@ public class ImgurClient {
 	}
 
 	/**
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
-	 *         (ss@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * 
 	 */
 	private static class ImgurResponse {
@@ -86,8 +83,7 @@ public class ImgurClient {
 	}
 
 	/**
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
-	 *         (ss@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * 
 	 */
 	private static class AlbumImgurResponse {
@@ -98,8 +94,7 @@ public class ImgurClient {
 	 * An image response is composed of two Maps, one describing the image and
 	 * another describing its links
 	 * 
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
-	 *         (ss@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * 
 	 */
 	public static class ImageResponse {

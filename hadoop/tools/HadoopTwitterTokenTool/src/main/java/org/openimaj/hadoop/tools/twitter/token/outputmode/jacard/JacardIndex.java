@@ -41,13 +41,15 @@ import com.Ostermiller.util.CSVPrinter;
 
 /**
  * An index encoding the difference between two sets
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class JacardIndex implements ReadWriteableASCII{
+public class JacardIndex implements ReadWriteableASCII {
 
 	/**
-	 * The number of words forming the intersection between now and historic words
+	 * The number of words forming the intersection between now and historic
+	 * words
 	 */
 	public long intersection;
 	/**
@@ -59,22 +61,21 @@ public class JacardIndex implements ReadWriteableASCII{
 	 */
 	public long time;
 	/**
-	 * The jacard index is: J(A,B) = |intersection(A,B)| / |union(A,B)| for this time period
+	 * The jacard index is: J(A,B) = |intersection(A,B)| / |union(A,B)| for this
+	 * time period
 	 */
 	public double jacardIndex;
 
 	/**
 	 * @param time
-	 * @param timePeriodWords
-	 * @param historicWords
 	 * @param intersection
 	 * @param union
 	 */
-	public JacardIndex(long time, long intersection,long union) {
+	public JacardIndex(long time, long intersection, long union) {
 		this.time = time;
 		this.intersection = intersection;
 		this.union = union;
-		this.jacardIndex = (double)intersection/(double)union;
+		this.jacardIndex = (double) intersection / (double) union;
 	}
 
 	private JacardIndex() {
@@ -82,18 +83,18 @@ public class JacardIndex implements ReadWriteableASCII{
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		fromString(in.nextLine(),this);
+		fromString(in.nextLine(), this);
 	}
 
 	private static void fromString(String nextLine, JacardIndex i) throws IOException {
-		StringReader reader = new StringReader(nextLine);
-		CSVParser csvreader = new CSVParser(reader);
-		String[] line = csvreader.getLine();
+		final StringReader reader = new StringReader(nextLine);
+		final CSVParser csvreader = new CSVParser(reader);
+		final String[] line = csvreader.getLine();
 		i.time = Long.parseLong(line[0]);
 		i.intersection = Long.parseLong(line[1]);
 		i.union = Long.parseLong(line[2]);
-		i.jacardIndex = (double)i.intersection/(double)i.union;
-		
+		i.jacardIndex = (double) i.intersection / (double) i.union;
+
 	}
 
 	@Override
@@ -103,8 +104,8 @@ public class JacardIndex implements ReadWriteableASCII{
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		CSVPrinter writer = new CSVPrinter(out);
-		writer.write(new String[]{
+		final CSVPrinter writer = new CSVPrinter(out);
+		writer.write(new String[] {
 				"" + this.time,
 				"" + intersection,
 				"" + union
@@ -113,20 +114,22 @@ public class JacardIndex implements ReadWriteableASCII{
 
 	/**
 	 * Read a new jacard index from a comma separated line
+	 * 
 	 * @param next
 	 * @return new JacardIndex
 	 * @throws IOException
 	 */
 	public static JacardIndex fromString(String next) throws IOException {
-		JacardIndex ind = new JacardIndex();
-		fromString(next,ind);
+		final JacardIndex ind = new JacardIndex();
+		fromString(next, ind);
 		return ind;
 	}
-	
+
 	@Override
-	public boolean equals(Object other){
-		if(!(other instanceof JacardIndex)) return false;
-		JacardIndex that = (JacardIndex)other;
+	public boolean equals(Object other) {
+		if (!(other instanceof JacardIndex))
+			return false;
+		final JacardIndex that = (JacardIndex) other;
 		return that.intersection == this.intersection && that.union == this.union;
 	}
 

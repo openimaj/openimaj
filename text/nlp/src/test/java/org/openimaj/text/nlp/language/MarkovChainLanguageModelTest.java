@@ -39,32 +39,32 @@ import org.junit.Test;
  * Test the markov chain language model
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class MarkovChainLanguageModelTest {
-	
+
 	/**
 	 * Test to see if an english sentense is generated
+	 * 
 	 * @throws UnsupportedEncodingException
 	 */
 	@Test
-	public void testGenerate() throws UnsupportedEncodingException{
-		MarkovChainLanguageModel model = new MarkovChainLanguageModel();
+	public void testGenerate() throws UnsupportedEncodingException {
+		final MarkovChainLanguageModel model = new MarkovChainLanguageModel();
 		model.train(Locale.ENGLISH, "This is an english sentence", "UTF-8");
-		System.out.println(model.generate(Locale.ENGLISH, 100, "UTF-8"));
 	}
-	
+
 	/**
 	 * Test to see if an english sentence is generated using war and peace
+	 * 
 	 * @throws IOException
 	 */
 	@Test
-	public void testGenerateWarAndPeace() throws IOException{
-		MarkovChainLanguageModel model = new MarkovChainLanguageModel();
-		model.train(Locale.ENGLISH, MarkovChainLanguageModel.class.getResourceAsStream("/org/openimaj/text/nlp/warandpeace.txt"));
-		model.train(Locale.CHINESE, MarkovChainLanguageModel.class.getResourceAsStream("/org/openimaj/text/nlp/TouPengHsienHua.txt"));
-		System.out.println(model.generate(Locale.ENGLISH, 1000, "UTF-8"));
-		System.out.println(model.generate(Locale.CHINESE, 10000, "UTF-8"));
-		
+	public void testGenerateWarAndPeace() throws IOException {
+		final MarkovChainLanguageModel model = new MarkovChainLanguageModel();
+		model.train(Locale.ENGLISH,
+				MarkovChainLanguageModel.class.getResourceAsStream("/org/openimaj/text/nlp/warandpeace.txt"));
+		model.train(Locale.CHINESE,
+				MarkovChainLanguageModel.class.getResourceAsStream("/org/openimaj/text/nlp/TouPengHsienHua.txt"));
 	}
 }

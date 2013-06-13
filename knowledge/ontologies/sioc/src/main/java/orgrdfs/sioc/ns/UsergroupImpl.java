@@ -30,11 +30,13 @@ public class UsergroupImpl extends Something implements Usergroup
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.UserAccount> getHas_member()
 	{
 		return this.has_member;
 	}
 	
+	@Override
 	public void setHas_member( final List<orgrdfs.sioc.ns.UserAccount> has_member )
 	{
 		this.has_member = has_member;
@@ -44,11 +46,13 @@ public class UsergroupImpl extends Something implements Usergroup
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Space> getUsergroup_of()
 	{
 		return this.usergroup_of;
 	}
 	
+	@Override
 	public void setUsergroup_of( final List<orgrdfs.sioc.ns.Space> usergroup_of )
 	{
 		this.usergroup_of = usergroup_of;

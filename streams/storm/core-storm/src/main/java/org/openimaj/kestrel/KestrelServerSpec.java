@@ -167,7 +167,9 @@ public class KestrelServerSpec {
 	}
 
 	/**
-	 * @return
+	 * Get a valid Kestrel client, reconnecting if necessary
+	 * 
+	 * @return a valid client
 	 * @throws TException
 	 */
 	public KestrelThriftClient getValidClient() throws TException {
@@ -184,7 +186,7 @@ public class KestrelServerSpec {
 	 * are {@link KestrelServerSpec} in the provided list.
 	 * 
 	 * @param kestrelSpecList
-	 * @return
+	 * @return the iterator
 	 */
 	public static Iterator<KestrelThriftClient> thriftClientIterator(final List<KestrelServerSpec> kestrelSpecList) {
 		return new Iterator<KestrelThriftClient>() {

@@ -99,6 +99,7 @@ public class PolyphonicSynthesizer extends AudioMixer implements Instrument
 	 * 	Turn the given note off
 	 *	@param noteNumber
 	 */
+	@Override
 	public void noteOff( final int noteNumber )
 	{
 		final Synthesizer s = this.playingSynths.get( noteNumber );

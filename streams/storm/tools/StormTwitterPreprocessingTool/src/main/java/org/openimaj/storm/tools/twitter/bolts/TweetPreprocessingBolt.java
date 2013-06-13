@@ -74,6 +74,7 @@ public class TweetPreprocessingBolt extends BaseTwitterRichBolt {
 		this.outputQueue = outputQueue;
 	}
 
+	@Override
 	public void prepare() {
 		this.options = new AbstractTwitterPreprocessingToolOptions(args) {
 

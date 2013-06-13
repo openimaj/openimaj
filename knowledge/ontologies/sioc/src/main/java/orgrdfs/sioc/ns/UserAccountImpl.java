@@ -91,11 +91,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<java.lang.String> getFirst_name()
 	{
 		return this.first_name;
 	}
 	
+	@Override
 	public void setFirst_name( final List<java.lang.String> first_name )
 	{
 		this.first_name = first_name;
@@ -105,11 +107,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<String> getCreator_of()
 	{
 		return this.creator_of;
 	}
 	
+	@Override
 	public void setCreator_of( final List<String> creator_of )
 	{
 		this.creator_of = creator_of;
@@ -119,11 +123,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Item> getModifier_of()
 	{
 		return this.modifier_of;
 	}
 	
+	@Override
 	public void setModifier_of( final List<orgrdfs.sioc.ns.Item> modifier_of )
 	{
 		this.modifier_of = modifier_of;
@@ -133,11 +139,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<java.lang.String> getLast_name()
 	{
 		return this.last_name;
 	}
 	
+	@Override
 	public void setLast_name( final List<java.lang.String> last_name )
 	{
 		this.last_name = last_name;
@@ -147,11 +155,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Site> getAdministrator_of()
 	{
 		return this.administrator_of;
 	}
 	
+	@Override
 	public void setAdministrator_of( final List<orgrdfs.sioc.ns.Site> administrator_of )
 	{
 		this.administrator_of = administrator_of;
@@ -161,11 +171,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<java.lang.String> getEmail_sha1()
 	{
 		return this.email_sha1;
 	}
 	
+	@Override
 	public void setEmail_sha1( final List<java.lang.String> email_sha1 )
 	{
 		this.email_sha1 = email_sha1;
@@ -175,11 +187,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<comxmlns.foaf._0.Agent> getAccount_of()
 	{
 		return this.account_of;
 	}
 	
+	@Override
 	public void setAccount_of( final List<comxmlns.foaf._0.Agent> account_of )
 	{
 		this.account_of = account_of;
@@ -189,11 +203,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.UserAccount> getFollows()
 	{
 		return this.follows;
 	}
 	
+	@Override
 	public void setFollows( final List<orgrdfs.sioc.ns.UserAccount> follows )
 	{
 		this.follows = follows;
@@ -203,11 +219,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<String> getOwner_of()
 	{
 		return this.owner_of;
 	}
 	
+	@Override
 	public void setOwner_of( final List<String> owner_of )
 	{
 		this.owner_of = owner_of;
@@ -217,11 +235,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Container> getSubscriber_of()
 	{
 		return this.subscriber_of;
 	}
 	
+	@Override
 	public void setSubscriber_of( final List<orgrdfs.sioc.ns.Container> subscriber_of )
 	{
 		this.subscriber_of = subscriber_of;
@@ -231,11 +251,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Usergroup> getMember_of()
 	{
 		return this.member_of;
 	}
 	
+	@Override
 	public void setMember_of( final List<orgrdfs.sioc.ns.Usergroup> member_of )
 	{
 		this.member_of = member_of;
@@ -245,11 +267,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Forum> getModerator_of()
 	{
 		return this.moderator_of;
 	}
 	
+	@Override
 	public void setModerator_of( final List<orgrdfs.sioc.ns.Forum> moderator_of )
 	{
 		this.moderator_of = moderator_of;
@@ -259,11 +283,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<String> getEmail()
 	{
 		return this.email;
 	}
 	
+	@Override
 	public void setEmail( final List<String> email )
 	{
 		this.email = email;
@@ -273,11 +299,13 @@ public class UserAccountImpl extends Something implements UserAccount
 	// From class this
 
 
+	@Override
 	public List<String> getAvatar()
 	{
 		return this.avatar;
 	}
 	
+	@Override
 	public void setAvatar( final List<String> avatar )
 	{
 		this.avatar = avatar;

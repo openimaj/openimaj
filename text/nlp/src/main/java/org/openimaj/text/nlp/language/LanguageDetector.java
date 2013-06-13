@@ -29,7 +29,6 @@
  */
 package org.openimaj.text.nlp.language;
 
-
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.procedure.TIntIntProcedure;
@@ -53,28 +52,27 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Short text language detection ported from langid: https://github.com/saffsd/langid.py
+ * Short text language detection ported from langid:
+ * https://github.com/saffsd/langid.py
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 @Reference(
 		type = ReferenceType.Article,
-		author = { "Lui, Marco","Baldwin, Timothy" },
+		author = { "Lui, Marco", "Baldwin, Timothy" },
 		title = "Cross-domain Feature Selection for Language Identification",
 		year = "2011",
-		booktitle = "in Proceedings of 5th International Joint Conference on Natural Language Processing"
-)
-@SuppressWarnings("unused")
+		booktitle = "in Proceedings of 5th International Joint Conference on Natural Language Processing")
 public class LanguageDetector {
 
 	private static Gson gson;
 
-	static{
+	static {
 		gson = new GsonBuilder().
-			serializeNulls().
-			create();
+				serializeNulls().
+				create();
 	}
-
 
 	/**
 	 * default location of the compressed json version language model
@@ -89,6 +87,7 @@ public class LanguageDetector {
 
 	/**
 	 * Load a language model from {@value #LANGUAGE_MODEL_BINARY}
+	 * 
 	 * @throws IOException
 	 */
 
@@ -98,8 +97,8 @@ public class LanguageDetector {
 
 	@SuppressWarnings("unchecked")
 	private void loadFromJSON() throws IOException {
-		Map<String,Object> languageModelRaw;
-		InputStream is = new GZIPInputStream(LanguageDetector.class.getResourceAsStream(LANGUAGE_MODEL_JSON));
+		Map<String, Object> languageModelRaw;
+		final InputStream is = new GZIPInputStream(LanguageDetector.class.getResourceAsStream(LANGUAGE_MODEL_JSON));
 		languageModelRaw = gson.fromJson(new InputStreamReader(is), Map.class);
 		languageModel = new LanguageModel(languageModelRaw);
 	}
@@ -108,12 +107,12 @@ public class LanguageDetector {
 		this.languageModel = IOUtils.read(
 				new GZIPInputStream(LanguageDetector.class.getResourceAsStream(LANGUAGE_MODEL_BINARY)),
 				LanguageModel.class
-		);
+				);
 	}
 
 	/**
 	 * Create a language detector with a provided language model
-	 *
+	 * 
 	 * @param model
 	 */
 	public LanguageDetector(LanguageModel model) {
@@ -121,23 +120,25 @@ public class LanguageDetector {
 	}
 
 	LanguageDetector(boolean fromJSON) throws IOException {
-		if(fromJSON){
+		if (fromJSON) {
 			loadFromJSON();
 		}
-		else{
+		else {
 			loadFromBinary();
 		}
 	}
 
 	/**
-	 *
+	 * 
 	 * A langauge with an associated confidence
+	 * 
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
-	public static class WeightedLocale{
+	public static class WeightedLocale {
 		/**
 		 * Default constructor
+		 * 
 		 * @param language
 		 * @param best
 		 */
@@ -147,22 +148,22 @@ public class LanguageDetector {
 		}
 
 		@Override
-		public String toString(){
-			return String.format("%s: %f",this.language.toString(), this.confidence);
+		public String toString() {
+			return String.format("%s: %f", this.language.toString(), this.confidence);
 		}
 
 		/**
 		 * @return the locale based on the language
 		 */
-		public Locale getLocale(){
+		public Locale getLocale() {
 			return new Locale(language);
 		}
 
 		/**
 		 * @return this weighted locale as a map
 		 */
-		public Map<String, Object> asMap(){
-			Map<String,Object> map = new HashMap<String,Object>();
+		public Map<String, Object> asMap() {
+			final Map<String, Object> map = new HashMap<String, Object>();
 			map.put("language", language);
 			map.put("confidence", confidence);
 			return map;
@@ -172,8 +173,8 @@ public class LanguageDetector {
 		 * @param map
 		 * @return Construct a weighted locale from a map
 		 */
-		public static WeightedLocale fromMap(Map<String,Object> map){
-			return new WeightedLocale((String)map.get("language"),(Double)map.get("confidence"));
+		public static WeightedLocale fromMap(Map<String, Object> map) {
+			return new WeightedLocale((String) map.get("language"), (Double) map.get("confidence"));
 		}
 
 		/**
@@ -189,57 +190,60 @@ public class LanguageDetector {
 
 	/**
 	 * Classify the language using a naive-bayes model
-	 *
+	 * 
 	 * @param text
 	 * @return the detected language
 	 */
-	public WeightedLocale classify(String text){
-		DenseMatrix fv = tokenize(text);
-		WeightedLocale locale = naiveBayesClassify(fv);
+	public WeightedLocale classify(String text) {
+		final DenseMatrix fv = tokenize(text);
+		final WeightedLocale locale = naiveBayesClassify(fv);
 		return locale;
 	}
+
 	DenseMatrix nbWorkspace = null;
+
 	private WeightedLocale naiveBayesClassify(DenseMatrix fv) {
-		if(nbWorkspace == null){
+		if (nbWorkspace == null) {
 			nbWorkspace = new DenseMatrix(1, this.languageModel.naiveBayesPTC.numColumns());
 		}
-		double logFVSum = sumLogFactorial(fv);
+		final double logFVSum = sumLogFactorial(fv);
 		fv.mult(this.languageModel.naiveBayesPTC, nbWorkspace);// times(this.languageModel.naiveBayesPTC);
-		DenseMatrix pdc = nbWorkspace;
-//		multiplied.print(5, 5);
-//		this.languageModel.naiveBayesPTC.print(5, 5);
+		final DenseMatrix pdc = nbWorkspace;
+		// multiplied.print(5, 5);
+		// this.languageModel.naiveBayesPTC.print(5, 5);
 		pdc.add(this.languageModel.naiveBayesPC);
-		double[] pdData = pdc.getData();
+		final double[] pdData = pdc.getData();
 		int bestIndex = -1;
 		double best = 0;
 		double sum = 0;
 		for (int i = 0; i < pdc.numColumns(); i++) {
-			double correctedScore = pdData[i] - logFVSum ;
-//			System.out.format("%s scores %f \n",this.languageModel.naiveBayesClasses[i],correctedScore);
-			sum +=correctedScore;
-			if(bestIndex == -1 || correctedScore > best)
+			final double correctedScore = pdData[i] - logFVSum;
+			// System.out.format("%s scores %f \n",this.languageModel.naiveBayesClasses[i],correctedScore);
+			sum += correctedScore;
+			if (bestIndex == -1 || correctedScore > best)
 			{
 				bestIndex = i;
 				best = correctedScore;
 			}
 		}
 
-		return new WeightedLocale(this.languageModel.naiveBayesClasses[bestIndex],best/sum);
+		return new WeightedLocale(this.languageModel.naiveBayesClasses[bestIndex], best / sum);
 	}
 
 	// an element wise log-factorial
 	TIntDoubleHashMap logFacCache = new TIntDoubleHashMap();
+
 	private double sumLogFactorial(DenseMatrix fv) {
 		double sum = 0;
-		double[] data = fv.getData();
-		for (int i = 0; i < fv.numColumns(); i ++) {
-			int fvi = (int) data[i];
-			if(logFacCache.contains(fvi))
+		final double[] data = fv.getData();
+		for (int i = 0; i < fv.numColumns(); i++) {
+			final int fvi = (int) data[i];
+			if (logFacCache.contains(fvi))
 			{
 				sum += logFacCache.get(fvi);
 			}
-			else{
-				for(int j = 1; j < fvi+1; j++){
+			else {
+				for (int j = 1; j < fvi + 1; j++) {
 					sum += Math.log(j);
 				}
 			}
@@ -251,11 +255,11 @@ public class LanguageDetector {
 		byte[] ords = null;
 		try {
 			ords = text.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 		}
 		int state = 0;
-		TIntIntHashMap statecount = new TIntIntHashMap();
-		for (byte letter : ords) {
+		final TIntIntHashMap statecount = new TIntIntHashMap();
+		for (final byte letter : ords) {
 			state = this.languageModel.tk_nextmove[(state << 8) + (letter & 0xff)];
 			statecount.adjustOrPutValue(state, 1, 1);
 		}
@@ -263,9 +267,10 @@ public class LanguageDetector {
 		statecount.forEachEntry(new TIntIntProcedure() {
 			@Override
 			public boolean execute(int state, final int statecount) {
-				int[] indexes = LanguageDetector.this.languageModel.tk_output.get(state);
-				if(indexes == null) return true;
-				for (int i : indexes) {
+				final int[] indexes = LanguageDetector.this.languageModel.tk_output.get(state);
+				if (indexes == null)
+					return true;
+				for (final int i : indexes) {
 
 					fv[0][i] += statecount;
 				}
@@ -284,13 +289,14 @@ public class LanguageDetector {
 
 	/**
 	 * prints available languages
+	 * 
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		LanguageDetector lm = new LanguageDetector();
+		final LanguageDetector lm = new LanguageDetector();
 		System.out.println("Available languages: ");
-		for (String string : lm.languageModel.naiveBayesClasses) {
+		for (final String string : lm.languageModel.naiveBayesClasses) {
 			System.out.println(string + ": " + new Locale(string).getDisplayLanguage());
 		}
 	}

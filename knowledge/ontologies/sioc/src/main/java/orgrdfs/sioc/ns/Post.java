@@ -37,6 +37,7 @@ public interface Post
 	
 	public void setModified_at( final List<java.lang.String> modified_at );
 
+	@Override
 	public String getURI();
 
 }

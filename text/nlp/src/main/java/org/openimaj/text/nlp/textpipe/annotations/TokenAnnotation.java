@@ -40,7 +40,7 @@ import org.openimaj.text.nlp.tokenisation.ReversableToken;
  * It can be further annotated. It is aware of its off-sets in the
  * RawStringAnnotation that generated it.
  * 
- * @author laurence
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * 
  */
 public class TokenAnnotation extends TextPipeAnnotation implements ReversableToken {

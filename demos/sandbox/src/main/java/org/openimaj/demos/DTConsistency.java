@@ -91,10 +91,12 @@ public class DTConsistency {
 		return info;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Triangle> triangulateFirst(List<? extends Pair<? extends Point2d>> matches) {
 		return DelaunayTriangulator.triangulate(Pair.getFirst((Iterable<Pair<Point2d>>) matches));
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Triangle> triangulateSecond(List<? extends Pair<? extends Point2d>> matches) {
 		return DelaunayTriangulator.triangulate(Pair.getSecond((Iterable<Pair<Point2d>>) matches));
 	}

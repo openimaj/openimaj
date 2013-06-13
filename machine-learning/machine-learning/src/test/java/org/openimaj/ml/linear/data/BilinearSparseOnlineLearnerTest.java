@@ -16,7 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.math.matrix.SandiaMatrixUtils;
+import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.ml.linear.evaluation.BilinearEvaluator;
 import org.openimaj.ml.linear.evaluation.SumLossEvaluator;
 import org.openimaj.ml.linear.learner.BilinearSparseOnlineLearner;
@@ -79,8 +79,8 @@ public class BilinearSparseOnlineLearnerTest {
 		}
 		logger.info("First half:" + first / dataitems);
 		logger.info("Second half:" + second / dataitems);
-		logger.info("W sparcity:" + SandiaMatrixUtils.rowSparcity(learner.getW()));
-		logger.info("U sparcity:" + SandiaMatrixUtils.rowSparcity(learner.getU()));
+		logger.info("W sparcity:" + CFMatrixUtils.rowSparcity(learner.getW()));
+		logger.info("U sparcity:" + CFMatrixUtils.rowSparcity(learner.getU()));
 		assertTrue(first > second);
 	}
 

@@ -59,107 +59,143 @@ import com.jayway.jsonpath.JsonPath;
  * Hadoop specific options for twitter preprocessing
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
-	@Option(name="--mode", aliases="-m", required=false, usage="How should the tweet tokens should be counted and processed.", handler=ProxyOptionHandler.class, multiValued=true)
+public class HadoopTwitterTokenToolOptions extends InOutToolOptions {
+	@Option(
+			name = "--mode",
+			aliases = "-m",
+			required = false,
+			usage = "How should the tweet tokens should be counted and processed.",
+			handler = ProxyOptionHandler.class,
+			multiValued = true)
 	TwitterTokenModeOption modeOptions = TwitterTokenModeOption.JUST_OUTPUT;
 	TwitterTokenMode modeOptionsOp = TwitterTokenModeOption.JUST_OUTPUT.getOptions();
-	
-	@SuppressWarnings("unused")
-	@Option(name="--output-mode", aliases="-om", required=false, usage="How should tokens be outputted.", handler=ProxyOptionHandler.class)
+
+	@Option(
+			name = "--output-mode",
+			aliases = "-om",
+			required = false,
+			usage = "How should tokens be outputted.",
+			handler = ProxyOptionHandler.class)
 	private TwitterTokenOutputModeOption outputModeOptions = TwitterTokenOutputModeOption.NONE;
 	TwitterTokenOutputMode outputModeOptionsOp = TwitterTokenOutputModeOption.NONE.getOptions();
-	
-	@Option(name="--json-path", aliases="-j", required=false, usage="A JSONPath query defining the field to find tokens to count", metaVar="STRING")
+
+	@Option(
+			name = "--json-path",
+			aliases = "-j",
+			required = false,
+			usage = "A JSONPath query defining the field to find tokens to count",
+			metaVar = "STRING")
 	String tokensJSONPath = "analysis.stemmed";
-	
-	@Option(name="--json-path-filter", aliases="-jf", required=false, usage="Add jsonpath filters, if a given entry passes the filters it is used", multiValued = true)
+
+	@Option(
+			name = "--json-path-filter",
+			aliases = "-jf",
+			required = false,
+			usage = "Add jsonpath filters, if a given entry passes the filters it is used",
+			multiValued = true)
 	List<String> jsonPathFilters;
 	private JsonPathFilterSet filters;
-	
-	@Option(name="--preprocessing-tool", aliases="-pp", required=false, usage="Launch an initial stage where the preprocessing tool is used. The input and output values may be ignored", metaVar="STRING")
+
+	@Option(
+			name = "--preprocessing-tool",
+			aliases = "-pp",
+			required = false,
+			usage = "Launch an initial stage where the preprocessing tool is used. The input and output values may be ignored",
+			metaVar = "STRING")
 	private String preprocessingOptions = null;
-	
-	@Option(name="--status-input-type", aliases="-sit", required=false, usage="The type of social media message being consumed")
+
+	@Option(
+			name = "--status-input-type",
+			aliases = "-sit",
+			required = false,
+			usage = "The type of social media message being consumed")
 	StatusType statusType = StatusType.TWITTER;
-	
 
 	private String[] args;
-	
-	private boolean  beforeMaps;
+
+	private boolean beforeMaps;
 
 	private String[] originalArgs;
 	private JsonPath jsonPath;
-	
-	
+
 	/**
-	 * The key in which command line arguments are held for each mapper to read the options instance
+	 * The key in which command line arguments are held for each mapper to read
+	 * the options instance
 	 */
 	public static final String ARGS_KEY = "TOKEN_ARGS";
-	
-	
+
 	/**
 	 * Initialise the options
-	 * @param args the arguments after going through the hadoop tool (i.e. minus the -D hadoop arguments)
-	 * @param originalArgs the original arguments as typed into the command line (useful for subhadoop tasks launched)
-	 * @param beforeMaps whether this job is occuring before the maps
+	 * 
+	 * @param args
+	 *            the arguments after going through the hadoop tool (i.e. minus
+	 *            the -D hadoop arguments)
+	 * @param originalArgs
+	 *            the original arguments as typed into the command line (useful
+	 *            for subhadoop tasks launched)
+	 * @param beforeMaps
+	 *            whether this job is occuring before the maps
 	 * @throws CmdLineException
 	 */
-	public HadoopTwitterTokenToolOptions(String[] args, String[] originalArgs, boolean beforeMaps) throws CmdLineException {
+	public HadoopTwitterTokenToolOptions(String[] args, String[] originalArgs, boolean beforeMaps)
+			throws CmdLineException
+	{
 		this.args = args;
 		this.originalArgs = originalArgs;
 		this.beforeMaps = beforeMaps;
-		if(this.beforeMaps)
+		if (this.beforeMaps)
 			this.prepareCL();
 		else
 			this.prepare();
 	}
-	
+
 	/**
-	 * @param args Just the arguments (hadoop arguments assumed to be the same)
+	 * @param args
+	 *            Just the arguments (hadoop arguments assumed to be the same)
 	 * @throws CmdLineException
 	 */
 	public HadoopTwitterTokenToolOptions(String[] args) throws CmdLineException {
-		this(args,args,false);
+		this(args, args, false);
 	}
-	
+
 	/**
 	 * prepare the tool for running (command line version)
 	 */
-	public void prepareCL(){
-		CmdLineParser parser = new CmdLineParser(this);
+	public void prepareCL() {
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
-//			prepareMultivaluedArgument(modeOptions,TwitterTokenModeOption.JUST_OUTPUT);
-//			prepareMultivaluedArgument(modeOptionsOp,TwitterTokenModeOption.JUST_OUTPUT.getOptions());
+			// prepareMultivaluedArgument(modeOptions,TwitterTokenModeOption.JUST_OUTPUT);
+			// prepareMultivaluedArgument(modeOptionsOp,TwitterTokenModeOption.JUST_OUTPUT.getOptions());
 			this.validate();
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
 			parser.printUsage(System.err);
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * @throws CmdLineException
 	 */
-	public void prepare() throws CmdLineException{
-		CmdLineParser parser = new CmdLineParser(this);
+	public void prepare() throws CmdLineException {
+		final CmdLineParser parser = new CmdLineParser(this);
 		parser.parseArgument(args);
-//		prepareMultivaluedArgument(modeOptions,TwitterTokenModeOption.JUST_OUTPUT);
-//		prepareMultivaluedArgument(modeOptionsOp,TwitterTokenModeOption.JUST_OUTPUT.getOptions());
-//			System.out.println(Arrays.toString(args));
-//		System.out.println("Number of mode options: " + modeOptions.size());
+		// prepareMultivaluedArgument(modeOptions,TwitterTokenModeOption.JUST_OUTPUT);
+		// prepareMultivaluedArgument(modeOptionsOp,TwitterTokenModeOption.JUST_OUTPUT.getOptions());
+		// System.out.println(Arrays.toString(args));
+		// System.out.println("Number of mode options: " + modeOptions.size());
 		this.validate();
 	}
 
 	private void validate() throws CmdLineException {
-		if(this.beforeMaps)
+		if (this.beforeMaps)
 		{
 			HadoopToolsUtil.validateInput(this);
-			if(!noOutput())
+			if (!noOutput())
 				HadoopToolsUtil.validateOutput(this);
 		}
 		jsonPath = JsonPath.compile(getJsonPath());
@@ -169,19 +205,16 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	 * @return is there any actual output this phase
 	 */
 	public boolean noOutput() {
-		
-		return 
-			(		 
-					this.modeOptions == TwitterTokenModeOption.JUST_OUTPUT
-			);
+
+		return (this.modeOptions == TwitterTokenModeOption.JUST_OUTPUT);
 	}
 
-//	/**
-//	 * @return the delta between time windows in minutes
-//	 */
-//	public long getTimeDelta() {
-//		return this.timeDelta;
-//	}
+	// /**
+	// * @return the delta between time windows in minutes
+	// */
+	// public long getTimeDelta() {
+	// return this.timeDelta;
+	// }
 
 	/**
 	 * @return the JSONPath query used to extract tokens
@@ -196,104 +229,115 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	public String[] getArgs() {
 		return this.originalArgs;
 	}
-	
+
 	/**
 	 * @return the arguments minus the hadoop arguments
 	 */
 	public String[] getNonHadoopArgs() {
-//		return this.args;
+		// return this.args;
 		try {
 			return ArgsUtil.extractArguments(this);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return new String[0];
 		}
 	}
 
 	/**
-	 * @param mode output a completed token mode
+	 * @param mode
+	 *            output a completed token mode
 	 * @throws Exception
 	 */
 	public void output(TwitterTokenMode mode) throws Exception {
-		this.outputModeOptionsOp.write(this,mode);
+		this.outputModeOptionsOp.write(this, mode);
 	}
-	
+
 	/**
-	 * If there were any preprocessing arguments, perform the preprocessing and use the preprocessing output as the input
-	 * to the rest of the process.
+	 * If there were any preprocessing arguments, perform the preprocessing and
+	 * use the preprocessing output as the input to the rest of the process.
+	 * 
 	 * @throws Exception
 	 */
-	public void performPreprocessing() throws Exception{
-		if(noOutput()) return;
-		if(this.preprocessingOptions==null)return;
-		
-		String output = this.getOutput() + "/preprocessing";
-		boolean outExists = HadoopToolsUtil.fileExists(output);
-		if(
-			!outExists || // if the file doesn't exist
-			SequenceFileUtility.getFilePaths(output, "part").length == 0 // or no part file was found
-		){
+	public void performPreprocessing() throws Exception {
+		if (noOutput())
+			return;
+		if (this.preprocessingOptions == null)
+			return;
+
+		final String output = this.getOutput() + "/preprocessing";
+		final boolean outExists = HadoopToolsUtil.fileExists(output);
+		if (!outExists || // if the file doesn't exist
+				SequenceFileUtility.getFilePaths(output, "part").length == 0 // or
+																				// no
+																				// part
+																				// file
+																				// was
+																				// found
+		)
+		{
 			// if the file exists, the part file was not found, remove the file!
-			if(outExists){
+			if (outExists) {
 				HadoopToolsUtil.removeFile(output);
 			}
 			String inputPart = "";
-			if(this.getInputFile() != null){
+			if (this.getInputFile() != null) {
 				inputPart = "-if " + this.getInputFile();
 			}
-			else{
+			else {
 				inputPart = "-i " + this.getInput();
 			}
 			this.preprocessingOptions = inputPart + " -o " + output + " " + preprocessingOptions;
-			String[] hadoopArgs = Arrays.copyOf(this.originalArgs, this.originalArgs.length - this.args.length);
-			if(this.isForce())
-				this.preprocessingOptions  += " -rm";
+			final String[] hadoopArgs = Arrays.copyOf(this.originalArgs, this.originalArgs.length - this.args.length);
+			if (this.isForce())
+				this.preprocessingOptions += " -rm";
 			String[] preprocessingArgs = this.preprocessingOptions.split(" ");
 			preprocessingArgs = (String[]) ArrayUtils.addAll(hadoopArgs, preprocessingArgs);
 			ToolRunner.run(new HadoopTwitterPreprocessingTool(), preprocessingArgs);
 		}
-		else{
+		else {
 			System.out.println("Preprocessing exists, using...");
 		}
 		this.setInput(output);
-		this.statusType = StatusType.USMF; 
+		this.statusType = StatusType.USMF;
 		return;
-		
+
 	}
 
 	public JsonPathFilterSet getFilters() {
-		if(this.filters == null){
+		if (this.filters == null) {
 			this.filters = new JsonPathFilterSet(jsonPathFilters);
 		}
 		return this.filters;
 	}
-	
-	public USMFStatus readStatus(String svalue) throws IOException{
-		USMFStatus status = IOUtils.read(new StringReader(svalue), new USMFStatus(GeneralJSONTwitter.class));
-//		TwitterStatus status = TwitterStatus.fromString(svalue);
-		if(status.isInvalid()) throw new IOException("Invalid tweet");
+
+	public USMFStatus readStatus(String svalue) throws IOException {
+		final USMFStatus status = IOUtils.read(new StringReader(svalue), new USMFStatus(GeneralJSONTwitter.class));
+		// TwitterStatus status = TwitterStatus.fromString(svalue);
+		if (status.isInvalid())
+			throw new IOException("Invalid tweet");
 		return status;
 	}
-	
+
 	/**
 	 * Read json from text and try to extract the part to the type required
+	 * 
 	 * @param <T>
 	 * @param svalue
 	 * @return a part of type T
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T readStatusPart(String svalue) throws IOException {
-		
-		if(this.filters!=null && !this.filters.filter(svalue)) return null;
-		Object tokens = this.jsonPath.read(svalue);
-		if(tokens == null) {
+
+		if (this.filters != null && !this.filters.filter(svalue))
+			return null;
+		final Object tokens = this.jsonPath.read(svalue);
+		if (tokens == null) {
 			return null;
 		}
-		try{			
+		try {
 			return (T) tokens;
-		}
-		catch(Throwable e){
+		} catch (final Throwable e) {
 			throw new IOException("Couldn't cast to type");
 		}
 	}

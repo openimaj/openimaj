@@ -36,8 +36,9 @@ import org.openimaj.text.nlp.namedentity.NamedEntity;
 
 /**
  * A Nameed Entity Annotation.
- * @author laurence
- *
+ * 
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * 
  */
 public class NamedEntityAnnotation extends TextPipeAnnotation {
 	/**
@@ -49,15 +50,14 @@ public class NamedEntityAnnotation extends TextPipeAnnotation {
 	 */
 	public NamedEntity namedEntity;
 
-	@SuppressWarnings("javadoc")
 	public NamedEntityAnnotation() {
 		super();
 		tokensMatched = new ArrayList<TokenAnnotation>();
-	}	
-	
-	@SuppressWarnings("javadoc")
+	}
+
 	public NamedEntityAnnotation(ArrayList<TokenAnnotation> tokensMatched,
-			NamedEntity namedEntity) {
+			NamedEntity namedEntity)
+	{
 		super();
 		this.tokensMatched = tokensMatched;
 		this.namedEntity = namedEntity;
@@ -65,27 +65,35 @@ public class NamedEntityAnnotation extends TextPipeAnnotation {
 
 	/**
 	 * Get the start char the matching substring for this Named Entity.
+	 * 
 	 * @return integer of start char
 	 */
-	public int getStart(){
-		if(tokensMatched.size()>0)return tokensMatched.get(0).start;
-		else return -1;
+	public int getStart() {
+		if (tokensMatched.size() > 0)
+			return tokensMatched.get(0).start;
+		else
+			return -1;
 	}
-	
+
 	/**
 	 * Get the end char the matching substring for this Named Entity.
+	 * 
 	 * @return integer of start char
 	 */
-	public int getEnd(){
-		if(tokensMatched.size()>0)return tokensMatched.get(tokensMatched.size()-1).stop;
-		else return -1;
+	public int getEnd() {
+		if (tokensMatched.size() > 0)
+			return tokensMatched.get(tokensMatched.size() - 1).stop;
+		else
+			return -1;
 	}
-	
+
 	/**
-	 * Set the {@link TokenAnnotation}s matched by this {@link NamedEntityAnnotation}
+	 * Set the {@link TokenAnnotation}s matched by this
+	 * {@link NamedEntityAnnotation}
+	 * 
 	 * @param tokens
 	 */
-	public void addAllTokensMatched(Collection<TokenAnnotation> tokens){
+	public void addAllTokensMatched(Collection<TokenAnnotation> tokens) {
 		tokensMatched.addAll(tokens);
 	}
 

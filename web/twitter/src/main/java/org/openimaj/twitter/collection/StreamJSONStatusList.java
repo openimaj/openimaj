@@ -48,14 +48,14 @@ import com.google.gson.Gson;
 
 /**
  * A list of json maps
- * @author Jonathan Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Duplaw (dpd@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class StreamJSONStatusList extends AbstractStreamBackedList<ReadableWritableJSON> {
 
 	/**
 	 * a readable json hashmap
-	 * @author Jonathan Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Duplaw (dpd@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class ReadableWritableJSON extends HashMap<String,Object> implements ReadWriteable{

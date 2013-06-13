@@ -30,11 +30,13 @@ public class RoleImpl extends Something implements Role
 	// From class this
 
 
+	@Override
 	public List<String> getFunction_of()
 	{
 		return this.function_of;
 	}
 	
+	@Override
 	public void setFunction_of( final List<String> function_of )
 	{
 		this.function_of = function_of;
@@ -44,11 +46,13 @@ public class RoleImpl extends Something implements Role
 	// From class this
 
 
+	@Override
 	public List<String> getHas_scope()
 	{
 		return this.has_scope;
 	}
 	
+	@Override
 	public void setHas_scope( final List<String> has_scope )
 	{
 		this.has_scope = has_scope;

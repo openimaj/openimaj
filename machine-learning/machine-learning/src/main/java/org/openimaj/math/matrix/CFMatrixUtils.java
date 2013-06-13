@@ -11,7 +11,7 @@ import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLDouble;
 
-public class SandiaMatrixUtils {
+public class CFMatrixUtils {
 
 	public static Matrix abs(Matrix mat) {
 		Matrix ret = mat.clone();

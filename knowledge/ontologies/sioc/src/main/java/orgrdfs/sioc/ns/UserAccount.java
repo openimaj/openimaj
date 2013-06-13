@@ -65,6 +65,7 @@ public interface UserAccount
 	
 	public void setAvatar( final List<String> avatar );
 
+	@Override
 	public String getURI();
 
 }

@@ -29,29 +29,35 @@
  */
 package org.openimaj.util.pair;
 
+
 /**
  * Pair represents a generic pair of objects.
  * 
  * @author Jonathon Hare
  * 
- * @param <T>	the class of objects in the pair
+ * @param <T>
+ *            the class of objects in the pair
  */
-public class Pair <T> extends IndependentPair<T, T> {
+public class Pair<T> extends IndependentPair<T, T> {
 	/**
 	 * Constructs a Pair object with two objects obj1 and obj2
-	 * @param obj1	first object in pair
-	 * @param obj2	second objec in pair
+	 * 
+	 * @param obj1
+	 *            first object in pair
+	 * @param obj2
+	 *            second objec in pair
 	 */
 	public Pair(T obj1, T obj2) {
 		super(obj1, obj2);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return o1 + " -> " + o2;
 	}
-	
 }

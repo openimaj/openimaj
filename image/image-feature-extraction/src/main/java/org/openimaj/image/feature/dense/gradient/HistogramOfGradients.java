@@ -32,6 +32,8 @@ package org.openimaj.image.feature.dense.gradient;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.analysis.algorithm.BinnedImageHistogramAnalyser;
+import org.openimaj.image.analysis.algorithm.InterpolatingBinnedImageHistogramAnalyser;
+import org.openimaj.image.feature.dense.gradient.binning.SpatialBinningStrategy;
 import org.openimaj.image.processing.convolution.FImageGradients;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.statistics.distribution.Histogram;
@@ -49,7 +51,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * HOG-like descriptors in a spatial pyramid; however it only counts gradients
  * belonging to strong edges (hence it why describes shape rather than texture).
  * Both these descriptors obviously have their merits, but it is also likely
- * that a SHAPE variant of the HOG and a FEATURE variant of the PHOG could also
+ * that a SHAPE variant of the HOG and a TEXTURE variant of the PHOG could also
  * be useful. With this in mind, this class can optionally be used to compute a
  * modified HOG feature which suppresses gradients at certain spatial locations
  * (i.e. those not on edges).
@@ -57,27 +59,38 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HistogramOfGradients implements ImageAnalyser<FImage> {
-	public interface Strategy {
-		public Histogram extract(BinnedImageHistogramAnalyser binData, FImage magnitudes, Rectangle region);
+	protected BinnedImageHistogramAnalyser histExtractor;
+	protected SpatialBinningStrategy strategy;
+	protected FImage magnitudes;
+	private FImageGradients.Mode orientationMode;
+
+	public HistogramOfGradients(int nbins, boolean histogramInterpolation, FImageGradients.Mode orientationMode,
+			SpatialBinningStrategy strategy)
+	{
+		this(histogramInterpolation ? new InterpolatingBinnedImageHistogramAnalyser(nbins, true)
+				: new BinnedImageHistogramAnalyser(nbins), orientationMode, strategy);
+
+		// set the min/max angles on the extractor
+		histExtractor.setMin(orientationMode.minAngle());
+		histExtractor.setMax(orientationMode.maxAngle());
 	}
 
-	BinnedImageHistogramAnalyser histExtractor;
-	Strategy strategy;
-	FImage magnitudes;
-
-	public HistogramOfGradients(BinnedImageHistogramAnalyser histExtractor, Strategy strategy) {
+	public HistogramOfGradients(BinnedImageHistogramAnalyser histExtractor, FImageGradients.Mode orientationMode,
+			SpatialBinningStrategy strategy)
+	{
 		this.histExtractor = histExtractor;
+		this.orientationMode = orientationMode;
 		this.strategy = strategy;
 	}
 
 	@Override
 	public void analyseImage(FImage image) {
-		final FImageGradients gm = FImageGradients.getGradientMagnitudesAndOrientations(image);
+		final FImageGradients gm = FImageGradients.getGradientMagnitudesAndOrientations(image, orientationMode);
 		this.analyse(gm.magnitudes, gm.orientations);
 	}
 
 	public void analyseImage(FImage image, FImage edges) {
-		final FImageGradients gm = FImageGradients.getGradientMagnitudesAndOrientations(image);
+		final FImageGradients gm = FImageGradients.getGradientMagnitudesAndOrientations(image, orientationMode);
 		this.analyse(gm.magnitudes.multiplyInplace(edges), gm.orientations);
 	}
 

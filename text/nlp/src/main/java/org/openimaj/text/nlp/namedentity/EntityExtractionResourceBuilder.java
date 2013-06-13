@@ -58,12 +58,12 @@ import org.xml.sax.SAXException;
 /**
  * This class has various methods that can be used to build the resources
  * required by {@link YagoEntityCandidateFinder},
- * {@link YagoEntityContextScorer} and {@link YagoEntityExactMatcher}.
- * These resources are a text File of entity aliases, and a lucene index of
- * contextual data. 
+ * {@link YagoEntityContextScorer} and {@link YagoEntityExactMatcher}. These
+ * resources are a text File of entity aliases, and a lucene index of contextual
+ * data.
  * 
- * The directory of the stripped down Yago tsv files is
- * required. This directory can be built with {@link SeedBuilder}.
+ * The directory of the stripped down Yago tsv files is required. This directory
+ * can be built with {@link SeedBuilder}.
  * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -108,7 +108,8 @@ public class EntityExtractionResourceBuilder {
 	 *            = path to build the alias text file.
 	 */
 	public void buildCandidateAliasFile(String seedDirectoryPath,
-			String destinationPath) {
+			String destinationPath)
+	{
 		writeAliasFile(getEntities(seedDirectoryPath), destinationPath,
 				seedDirectoryPath);
 	}
@@ -131,11 +132,12 @@ public class EntityExtractionResourceBuilder {
 	 * @param destinationPath
 	 */
 	public void buildContextLuceneIndex(String seedDirectoryPath,
-			String destinationPath) {
+			String destinationPath)
+	{
 		try {
 			buildIndex(getEntities(seedDirectoryPath), destinationPath,
 					seedDirectoryPath);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -153,7 +155,7 @@ public class EntityExtractionResourceBuilder {
 		try {
 			logOut.flush();
 			logOut.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -168,13 +170,13 @@ public class EntityExtractionResourceBuilder {
 	public void buildAll(String seedDirectoryPath, String destinationPath) {
 		// Get the entities as people and organisations
 		print("Building All...");
-		HashMap<String, YagoNamedEntity> entities = getEntities(seedDirectoryPath);
+		final HashMap<String, YagoNamedEntity> entities = getEntities(seedDirectoryPath);
 		writeAliasFile(entities, destinationPath + File.separator
 				+ DEFAULT_ALIAS_NAME, seedDirectoryPath);
 		try {
 			buildIndex(entities, destinationPath + File.separator
 					+ DEFAULT_CONTEXT_NAME, seedDirectoryPath);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 		print("Done");
@@ -202,7 +204,6 @@ public class EntityExtractionResourceBuilder {
 		return getDefaultRootPath() + File.separator + DEFAULT_CONTEXT_NAME;
 	}
 
-	@SuppressWarnings("javadoc")
 	public static String getAliasFrom(String rootName) {
 		String result;
 		String noGeo = null;
@@ -211,7 +212,7 @@ public class EntityExtractionResourceBuilder {
 					rootName.lastIndexOf('_'));
 		} else
 			noGeo = rootName;
-		String spaces = noGeo.replaceAll("_", " ");
+		final String spaces = noGeo.replaceAll("_", " ");
 		String noParen;
 		if (spaces.contains("("))
 			noParen = spaces.substring(0, spaces.indexOf("("));
@@ -227,26 +228,26 @@ public class EntityExtractionResourceBuilder {
 	}
 
 	private void validateFileStructure() {
-		File rootDir = new File(getDefaultRootPath());
+		final File rootDir = new File(getDefaultRootPath());
 		if (!rootDir.isDirectory()) {
 			rootDir.mkdir();
 		}
-		File indexDir = new File(getDefaultRootPath() + File.separator
+		final File indexDir = new File(getDefaultRootPath() + File.separator
 				+ DEFAULT_CONTEXT_NAME);
 		if (!indexDir.isDirectory()) {
 			indexDir.mkdir();
 		} else {
-			for (File f : indexDir.listFiles())
+			for (final File f : indexDir.listFiles())
 				f.delete();
 		}
 	}
 
 	private static void createLogging(String logFilePath) {
-		File f = new File(logFilePath);
+		final File f = new File(logFilePath);
 		if (!f.isFile()) {
 			try {
 				f.createNewFile();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		} else {
@@ -256,7 +257,7 @@ public class EntityExtractionResourceBuilder {
 			fstream = new FileWriter(logFilePath);
 			logOut = new BufferedWriter(fstream);
 			logOut.write("");
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -265,73 +266,74 @@ public class EntityExtractionResourceBuilder {
 
 	private void buildIndex(HashMap<String, YagoNamedEntity> entities,
 			String destinationPath, String seedDirectoryPath)
-			throws IOException {
+			throws IOException
+	{
 		print("Building Index...");
 		setEntityContextValues(entities, seedDirectoryPath);
 		print("Initializing Lucene objects...");
 
 		// initialize lucene objects
-		String[] names = { "uri", "context", "type" };
+		final String[] names = { "uri", "context", "type" };
 		FieldType[] types;
-		FieldType ti = new FieldType();
+		final FieldType ti = new FieldType();
 		ti.setIndexed(true);
 		ti.setTokenized(true);
 		ti.setStored(true);
-		FieldType n = new FieldType();
+		final FieldType n = new FieldType();
 		n.setStored(true);
 		n.setIndexed(true);
 		types = new FieldType[3];
 		types[0] = n;
 		types[1] = ti;
 		types[2] = n;
-		File f = new File(destinationPath);
-		QuickIndexer qi = new QuickIndexer(new SimpleFSDirectory(f));
+		final File f = new File(destinationPath);
+		final QuickIndexer qi = new QuickIndexer(new SimpleFSDirectory(f));
 
 		// Initialize wiki objects
-		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
+		final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
 				.newInstance();
 		DocumentBuilder docBuilder = null;
 		Document doc;
 		try {
 			docBuilder = docBuilderFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
+		} catch (final ParserConfigurationException e) {
 			e.printStackTrace();
 		}
 		doc = null;
-		WikiModel wikiModel = new WikiModel(
+		final WikiModel wikiModel = new WikiModel(
 				"http://www.mywiki.com/wiki/${image}",
 				"http://www.mywiki.com/wiki/${title}");
 		int count = 0;
 		print("Building Lucene Index...");
-		for (YagoNamedEntity entity : entities.values()) {
+		for (final YagoNamedEntity entity : entities.values()) {
 			count++;
 			if (count % 5000 == 0)
 				print("Processed " + count);
 			// if wikiURL, add wiki to context
 			if (entity.wikiURL != null) {
-				String title = entity.wikiURL.substring(entity.wikiURL
+				final String title = entity.wikiURL.substring(entity.wikiURL
 						.lastIndexOf("/") + 1);
 				try {
 					doc = docBuilder.parse(wikiApiPrefix + title
 							+ wikiApiSuffix);
-				} catch (SAXException e) {
+				} catch (final SAXException e) {
 					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					e.printStackTrace();
 				}
 				doc.getDocumentElement().normalize();
-				NodeList revisions = doc.getElementsByTagName("rev");
+				final NodeList revisions = doc.getElementsByTagName("rev");
 				if (revisions.getLength() > 0) {
-					String markup = revisions.item(0).getTextContent();
+					final String markup = revisions.item(0).getTextContent();
 
 					// convert markup dump to plaintext.
-					String plainStr = wikiModel.render(
+					final String plainStr = wikiModel.render(
 							new PlainTextConverter(), markup);
 					// add it to the context.
 					entity.addContext(plainStr);
 				}
 			}
-			String[] values = { entity.rootName, entity.getContext(),
+			final String[] values = { entity.rootName, entity.getContext(),
 					entity.type.toString() };
 			qi.addDocumentFromFields(names, values, types);
 		}
@@ -340,22 +342,23 @@ public class EntityExtractionResourceBuilder {
 
 	private void setEntityContextValues(
 			final HashMap<String, YagoNamedEntity> entities,
-			String seedDirectoryPath) {
+			String seedDirectoryPath)
+	{
 		print("Setting Context Values...");
 		BufferedReader in = null;
 		// Created
 		try {
 			in = openFileAsReadStream(seedDirectoryPath + File.separator
 					+ "created_stripped.tsv");
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		StreamLooper sl = new StreamLooper(in) {
 			@Override
 			protected void doWork(String s) {
-				String[] values = s.split("\\s+");
-				String rootName = values[1];
-				String context = convertResource(values[2]);
+				final String[] values = s.split("\\s+");
+				final String rootName = values[1];
+				final String context = convertResource(values[2]);
 				if (entities.keySet().contains(rootName)) {
 					entities.get(rootName).addContext(context);
 				}
@@ -367,15 +370,15 @@ public class EntityExtractionResourceBuilder {
 		try {
 			in = openFileAsReadStream(seedDirectoryPath + File.separator
 					+ "hasWikipediaAnchorText_stripped.tsv");
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		sl = new StreamLooper(in) {
 			@Override
 			protected void doWork(String s) {
-				String[] values = s.split("\\s+");
-				String rootName = values[1];
-				String context = convertLiteral(values[2]);
+				final String[] values = s.split("\\s+");
+				final String rootName = values[1];
+				final String context = convertLiteral(values[2]);
 				if (entities.keySet().contains(rootName)) {
 					entities.get(rootName).addContext(context);
 				}
@@ -388,14 +391,14 @@ public class EntityExtractionResourceBuilder {
 		try {
 			in = openFileAsReadStream(seedDirectoryPath + File.separator
 					+ "hasWikipediaUrl_stripped.tsv");
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		sl = new StreamLooper(in) {
 			@Override
 			protected void doWork(String s) {
-				String[] values = s.split("\\s+");
-				String rootName = values[1];
+				final String[] values = s.split("\\s+");
+				final String rootName = values[1];
 				if (entities.keySet().contains(rootName)) {
 					entities.get(rootName).wikiURL = values[2].replaceAll("\"",
 							"");
@@ -406,12 +409,13 @@ public class EntityExtractionResourceBuilder {
 		// validate
 		print("Validating Context...");
 		int noContext = 0;
-		for (YagoNamedEntity ne : entities.values()) {
-			for (String alias : ne.aliasList) {
+		for (final YagoNamedEntity ne : entities.values()) {
+			for (final String alias : ne.aliasList) {
 				ne.addContext(alias);
 			}
 			if ((ne.getContext() == null || ne.getContext().equals(""))
-					&& ne.wikiURL == null) {
+					&& ne.wikiURL == null)
+			{
 				noContext++;
 			}
 		}
@@ -420,22 +424,23 @@ public class EntityExtractionResourceBuilder {
 
 	private void setEntityAliasValues(
 			final HashMap<String, YagoNamedEntity> entities,
-			String seedDirectoryPath) {
+			String seedDirectoryPath)
+	{
 		print("Setting Alias Values...");
 		// Populate 'isCalled'
 		BufferedReader in = null;
 		try {
 			in = openFileAsReadStream(seedDirectoryPath + File.separator
 					+ "isCalled_stripped.tsv");
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		StreamLooper sl = new StreamLooper(in) {
 			@Override
 			protected void doWork(String s) {
-				String[] values = s.split("\\s+");
-				String rootName = values[1];
-				String alias = convertLiteral(values[2]);
+				final String[] values = s.split("\\s+");
+				final String rootName = values[1];
+				final String alias = convertLiteral(values[2]);
 				if (entities.keySet().contains(rootName)) {
 					entities.get(rootName).addAlias(alias);
 				}
@@ -448,15 +453,15 @@ public class EntityExtractionResourceBuilder {
 		try {
 			in = openFileAsReadStream(seedDirectoryPath + File.separator
 					+ "means_stripped.tsv");
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		sl = new StreamLooper(in) {
 			@Override
 			protected void doWork(String s) {
-				String[] values = s.split("\\s+");
-				String rootName = values[2];
-				String alias = convertLiteral(values[1]);
+				final String[] values = s.split("\\s+");
+				final String rootName = values[2];
+				final String alias = convertLiteral(values[1]);
 				// System.out.println(alias);
 				if (entities.keySet().contains(rootName)) {
 					entities.get(rootName).addAlias(alias);
@@ -465,52 +470,54 @@ public class EntityExtractionResourceBuilder {
 		};
 		sl.loop();
 		print("Validating Aliases...");
-		for (YagoNamedEntity ne : entities.values()) {
-			String alias = getAliasFrom(ne.rootName);
+		for (final YagoNamedEntity ne : entities.values()) {
+			final String alias = getAliasFrom(ne.rootName);
 			ne.addAlias(alias);
 		}
 	}
 
 	private void writeAliasFile(HashMap<String, YagoNamedEntity> entities,
-			String destinationPath, String seedDirectoryPath) {
+			String destinationPath, String seedDirectoryPath)
+	{
 		setEntityAliasValues(entities, seedDirectoryPath);
 
 		BufferedWriter w;
 		try {
 			w = openFileAsWriteStream(destinationPath);
 			w.write("");
-			for (YagoNamedEntity ne : entities.values()) {
+			for (final YagoNamedEntity ne : entities.values()) {
 				if (ne.aliasList.size() > 0) {
 					w.append("+" + ne.rootName + "\n");
-					for (String alias : ne.aliasList) {
+					for (final String alias : ne.aliasList) {
 						w.append("." + alias + "\n");
 					}
 				}
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private HashMap<String, YagoNamedEntity> getEntities(
-			String seedDirectoryPath) {
+			String seedDirectoryPath)
+	{
 		print("Getting Entities...");
 		final HashMap<String, YagoNamedEntity> result = new HashMap<String, YagoNamedEntity>();
 		BufferedReader in = null;
 		try {
 			in = openFileAsReadStream(seedDirectoryPath + File.separator
 					+ "wordnet_person_100007846.txt");
-		} catch (FileNotFoundException e2) {
+		} catch (final FileNotFoundException e2) {
 			e2.printStackTrace();
 		}
 		// get People
 		StreamLooper sl = new StreamLooper(in) {
 			@Override
 			protected void doWork(String s) {
-				String[] values = s.split("\\s+");
-				String rootName = convertLiteral(values[1]);
+				final String[] values = s.split("\\s+");
+				final String rootName = convertLiteral(values[1]);
 				if (!rootName.startsWith("Category:")) {
-					YagoNamedEntity ne = new YagoNamedEntity(rootName,
+					final YagoNamedEntity ne = new YagoNamedEntity(rootName,
 							NamedEntity.Type.Person);
 					result.put(rootName, ne);
 				}
@@ -522,17 +529,18 @@ public class EntityExtractionResourceBuilder {
 		try {
 			in = openFileAsReadStream(seedDirectoryPath + File.separator
 					+ "wordnet_organization_108008335.txt");
-		} catch (FileNotFoundException e1) {
+		} catch (final FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
 		sl = new StreamLooper(in) {
 			@Override
 			protected void doWork(String s) {
-				String[] values = s.split("\\s+");
-				String rootName = convertLiteral(values[1]);
+				final String[] values = s.split("\\s+");
+				final String rootName = convertLiteral(values[1]);
 				if (!(rootName.startsWith("Category:") || rootName
-						.startsWith("geoent_"))) {
-					YagoNamedEntity ne = new YagoNamedEntity(rootName,
+						.startsWith("geoent_")))
+				{
+					final YagoNamedEntity ne = new YagoNamedEntity(rootName,
 							NamedEntity.Type.Organisation);
 					result.put(rootName, ne);
 				}
@@ -545,16 +553,16 @@ public class EntityExtractionResourceBuilder {
 			try {
 				in = openFileAsReadStream(seedDirectoryPath + File.separator
 						+ "wordnet_location_100027167.txt");
-			} catch (FileNotFoundException e1) {
+			} catch (final FileNotFoundException e1) {
 				e1.printStackTrace();
 			}
 			sl = new StreamLooper(in) {
 				@Override
 				protected void doWork(String s) {
-					String[] values = s.split("\\s+");
-					String rootName = convertLiteral(values[1]);
+					final String[] values = s.split("\\s+");
+					final String rootName = convertLiteral(values[1]);
 					if (!rootName.startsWith("Category:")) {
-						YagoNamedEntity ne = new YagoNamedEntity(rootName,
+						final YagoNamedEntity ne = new YagoNamedEntity(rootName,
 								NamedEntity.Type.Location);
 						result.put(rootName, ne);
 					}
@@ -566,26 +574,26 @@ public class EntityExtractionResourceBuilder {
 		return result;
 	}
 
-	@SuppressWarnings("javadoc")
 	public static BufferedReader openFileAsReadStream(String path)
-			throws FileNotFoundException {
+			throws FileNotFoundException
+	{
 		FileReader fr = null;
 		fr = new FileReader(path);
-		BufferedReader br = new BufferedReader(fr);
+		final BufferedReader br = new BufferedReader(fr);
 		return br;
 	}
 
-	@SuppressWarnings("javadoc")
 	public static BufferedWriter openFileAsWriteStream(String path)
-			throws IOException {
+			throws IOException
+	{
 		FileWriter fw = null;
 		fw = new FileWriter(path);
-		BufferedWriter bw = new BufferedWriter(fw);
+		final BufferedWriter bw = new BufferedWriter(fw);
 		return bw;
 	}
 
 	private static String convertLiteral(String literal) {
-		String escaped = StringEscapeUtils.unescapeJava(literal);
+		final String escaped = StringEscapeUtils.unescapeJava(literal);
 		String first = null;
 		if (escaped.startsWith("\""))
 			first = escaped.substring(1);
@@ -598,7 +606,7 @@ public class EntityExtractionResourceBuilder {
 	}
 
 	private static String convertResource(String literal) {
-		String escaped = StringEscapeUtils.unescapeJava(literal);
+		final String escaped = StringEscapeUtils.unescapeJava(literal);
 		return escaped.replaceAll("_", " ");
 	}
 
@@ -613,7 +621,7 @@ public class EntityExtractionResourceBuilder {
 	private void log(String message) {
 		try {
 			logOut.append(message + "\n");
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -632,13 +640,12 @@ public class EntityExtractionResourceBuilder {
 	 * Helper class to iterate through the lines of a Reader to do a bit of work
 	 * on each.
 	 * 
-	 * @author laurence
+	 * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
 	 * 
 	 */
 	public static abstract class StreamLooper {
 		BufferedReader reader;
 
-		@SuppressWarnings("javadoc")
 		public StreamLooper(BufferedReader reader) {
 			this.reader = reader;
 		}
@@ -653,7 +660,7 @@ public class EntityExtractionResourceBuilder {
 					doWork(s);
 				}
 				reader.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}

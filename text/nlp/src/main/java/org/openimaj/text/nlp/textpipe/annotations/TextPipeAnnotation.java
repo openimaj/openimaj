@@ -41,7 +41,7 @@ import java.util.Set;
  * adding a new annotation T extends {@link TextPipeAnnotation} will be added to
  * the the list of Annotations of that class already added.
  * 
- * @author laurence
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * 
  */
 public abstract class TextPipeAnnotation {
@@ -56,20 +56,22 @@ public abstract class TextPipeAnnotation {
 		if (annotations.containsKey(annotation.getClass())) {
 			annotations.get(annotation.getClass()).add(annotation);
 		} else {
-			ArrayList<TextPipeAnnotation> annos = new ArrayList<TextPipeAnnotation>();
+			final ArrayList<TextPipeAnnotation> annos = new ArrayList<TextPipeAnnotation>();
 			annos.add(annotation);
 			annotations.put(annotation.getClass(), annos);
 		}
 	}
 
 	public <T extends TextPipeAnnotation> void addAllAnnotations(
-			Collection<T> annotationCollection) {
+			Collection<T> annotationCollection)
+	{
 		if (annotationCollection != null && annotationCollection.size() > 0) {
-			Class key = annotationCollection.iterator().next().getClass();
+			final Class<? extends TextPipeAnnotation> key = annotationCollection.iterator().next().getClass();
+
 			if (annotations.containsKey(key)) {
 				annotations.get(key).addAll(annotationCollection);
 			} else {
-				ArrayList<TextPipeAnnotation> annos = new ArrayList<TextPipeAnnotation>();
+				final ArrayList<TextPipeAnnotation> annos = new ArrayList<TextPipeAnnotation>();
 				annos.addAll(annotationCollection);
 				annotations.put(key, annos);
 			}

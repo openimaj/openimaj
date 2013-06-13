@@ -31,25 +31,23 @@ package org.openimaj.text.nlp.namedentity;
 
 /**
  * Container Class for Named Entity values
+ * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class NamedEntity {
-	
+
 	/**
 	 * Type of Named Entity
 	 */
-	public enum Type{
-		@SuppressWarnings("javadoc")
+	public enum Type {
 		Organisation,
-		@SuppressWarnings("javadoc")
-		Person,		
-		@SuppressWarnings("javadoc")
+		Person,
 		Location
 	}
-	
+
 	/**
-	 *Type of Named Entity 
+	 * Type of Named Entity
 	 */
 	public Type type;
 	/**
@@ -76,21 +74,19 @@ public class NamedEntity {
 	 * Stop char of the match
 	 */
 	public int stopChar;
-	
+
 	@Override
 	public String toString() {
 		return "NamedEntity [type=" + type + ", rootName=" + rootName
 				+ ", startToken=" + startToken + ", stopToken=" + stopToken
 				+ "]";
 	}
-	
-	@SuppressWarnings("javadoc")
-	public NamedEntity(){
-		
+
+	public NamedEntity() {
+
 	}
-	
-	@SuppressWarnings("javadoc")
-	public NamedEntity(String rootName, Type type){
+
+	public NamedEntity(String rootName, Type type) {
 		this.rootName = rootName;
 		this.type = type;
 	}
@@ -112,7 +108,7 @@ public class NamedEntity {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		NamedEntity other = (NamedEntity) obj;
+		final NamedEntity other = (NamedEntity) obj;
 		if (rootName == null) {
 			if (other.rootName != null)
 				return false;

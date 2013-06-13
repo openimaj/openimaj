@@ -51,19 +51,20 @@ public class IgnoreTokenStripper {
 	 * Language to build stripper from.
 	 */
 	public enum Language {
-		@SuppressWarnings("javadoc")
 		English
 	};
-	 private String units = "one|two|three|four|five|six|seven|eight|nine";
-	 private String tens = "twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety";
-	 private String teens = "ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen";
-	 private String and = "\\s*-?\\s*and\\s*-?\\s*";
-	 private String toNN = "["+units+"|"+teens+"] | ["+tens+"]\\s*-?\\s*["+units+"]";
-	 private String toNNN = toNN+" | [["+units+"]\\s*-?\\s*hundred ["+and+"["+toNN+"]+]+]";
-	 /*
-	  * This currently recognizes written numbers up to nine hundred and ninety nine.
-	  */
-	 private Pattern writtenNumbers = Pattern.compile("["+toNNN+"]+");
+
+	private String units = "one|two|three|four|five|six|seven|eight|nine";
+	private String tens = "twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety";
+	private String teens = "ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen";
+	private String and = "\\s*-?\\s*and\\s*-?\\s*";
+	private String toNN = "[" + units + "|" + teens + "] | [" + tens + "]\\s*-?\\s*[" + units + "]";
+	private String toNNN = toNN + " | [[" + units + "]\\s*-?\\s*hundred [" + and + "[" + toNN + "]+]+]";
+	/*
+	 * This currently recognizes written numbers up to nine hundred and ninety
+	 * nine.
+	 */
+	private Pattern writtenNumbers = Pattern.compile("[" + toNNN + "]+");
 
 	private HashSet<String> ignoreTokens;
 
@@ -74,15 +75,15 @@ public class IgnoreTokenStripper {
 	 */
 	public IgnoreTokenStripper(Language language) {
 		this.ignoreTokens = new HashSet<String>();
-		for(InputStream fstream:getListStreams(language)){
+		for (final InputStream fstream : getListStreams(language)) {
 			addToIgnoreSet(fstream);
-		}		
+		}
 	}
 
 	private void addToIgnoreSet(InputStream fstream) {
 		try {
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			final DataInputStream in = new DataInputStream(fstream);
+			final BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 			// Read File Line By Line
 			while ((strLine = br.readLine()) != null) {
@@ -90,14 +91,14 @@ public class IgnoreTokenStripper {
 			}
 			// Close the input stream
 			in.close();
-		} catch (Exception e) {// Catch exception if any
+		} catch (final Exception e) {// Catch exception if any
 			System.err.println("Error: " + e.getMessage());
 		}
 	}
 
 	private List<InputStream> getListStreams(Language language) {
-		 ArrayList<InputStream> res = new ArrayList<InputStream>();
-		if (language.equals(Language.English)){
+		final ArrayList<InputStream> res = new ArrayList<InputStream>();
+		if (language.equals(Language.English)) {
 			res.add(this.getClass().getResourceAsStream(
 					"/org/openimaj/text/stopwords/en_stopwords.txt"));
 			res.add(this.getClass().getResourceAsStream(
@@ -117,8 +118,8 @@ public class IgnoreTokenStripper {
 	 * @return list of clean tokens.
 	 */
 	public ArrayList<String> getNonStopWords(List<String> intokens) {
-		ArrayList<String> result = new ArrayList<String>();
-		for (String string : intokens) {
+		final ArrayList<String> result = new ArrayList<String>();
+		for (final String string : intokens) {
 			if (!isIgnoreToken(string)) {
 				result.add(string);
 			}
@@ -133,18 +134,19 @@ public class IgnoreTokenStripper {
 	 * @return true if ignore Token
 	 */
 	public boolean isIgnoreToken(String token) {
-		//check if in ignore list
+		// check if in ignore list
 		if (ignoreTokens.contains(token))
 			return true;
-		//check if it is a number
-		try{
-		Double.parseDouble(token);
-		return true;
-		}catch (Exception e){			
+		// check if it is a number
+		try {
+			Double.parseDouble(token);
+			return true;
+		} catch (final Exception e) {
 		}
-		//check if it is a number written as a word
-		Matcher m = writtenNumbers.matcher(token.toLowerCase());
-		if(m.matches())return true;
+		// check if it is a number written as a word
+		final Matcher m = writtenNumbers.matcher(token.toLowerCase());
+		if (m.matches())
+			return true;
 		return false;
 	}
 }

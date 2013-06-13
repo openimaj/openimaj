@@ -44,7 +44,6 @@ public class Rationaliser {
 
 	ArrayList<Section> sections;
 
-	@SuppressWarnings("javadoc")
 	public Rationaliser() {
 	}
 
@@ -160,7 +159,6 @@ public class Rationaliser {
 		}
 	}
 
-	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {
 		final Rationaliser rc = new Rationaliser();
 		for (final String s : rc.getCombinations("BBBlaaaaddddiblah")) {

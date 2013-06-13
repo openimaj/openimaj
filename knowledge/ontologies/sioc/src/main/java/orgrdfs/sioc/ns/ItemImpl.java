@@ -103,11 +103,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<String> getAddressed_to()
 	{
 		return this.addressed_to;
 	}
 	
+	@Override
 	public void setAddressed_to( final List<String> addressed_to )
 	{
 		this.addressed_to = addressed_to;
@@ -117,11 +119,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<String> getAttachment()
 	{
 		return this.attachment;
 	}
 	
+	@Override
 	public void setAttachment( final List<String> attachment )
 	{
 		this.attachment = attachment;
@@ -131,11 +135,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Item> getNext_version()
 	{
 		return this.next_version;
 	}
 	
+	@Override
 	public void setNext_version( final List<orgrdfs.sioc.ns.Item> next_version )
 	{
 		this.next_version = next_version;
@@ -145,11 +151,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<String> getAbout()
 	{
 		return this.about;
 	}
 	
+	@Override
 	public void setAbout( final List<String> about )
 	{
 		this.about = about;
@@ -159,11 +167,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.UserAccount> getHas_modifier()
 	{
 		return this.has_modifier;
 	}
 	
+	@Override
 	public void setHas_modifier( final List<orgrdfs.sioc.ns.UserAccount> has_modifier )
 	{
 		this.has_modifier = has_modifier;
@@ -173,11 +183,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<java.lang.String> getIp_address()
 	{
 		return this.ip_address;
 	}
 	
+	@Override
 	public void setIp_address( final List<java.lang.String> ip_address )
 	{
 		this.ip_address = ip_address;
@@ -187,11 +199,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Container> getHas_container()
 	{
 		return this.has_container;
 	}
 	
+	@Override
 	public void setHas_container( final List<orgrdfs.sioc.ns.Container> has_container )
 	{
 		this.has_container = has_container;
@@ -201,11 +215,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Item> getNext_by_date()
 	{
 		return this.next_by_date;
 	}
 	
+	@Override
 	public void setNext_by_date( final List<orgrdfs.sioc.ns.Item> next_by_date )
 	{
 		this.next_by_date = next_by_date;
@@ -215,11 +231,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Item> getReply_of()
 	{
 		return this.reply_of;
 	}
 	
+	@Override
 	public void setReply_of( final List<orgrdfs.sioc.ns.Item> reply_of )
 	{
 		this.reply_of = reply_of;
@@ -229,11 +247,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Item> getPrevious_by_date()
 	{
 		return this.previous_by_date;
 	}
 	
+	@Override
 	public void setPrevious_by_date( final List<orgrdfs.sioc.ns.Item> previous_by_date )
 	{
 		this.previous_by_date = previous_by_date;
@@ -243,11 +263,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<org.w3._2004._03.trix.rdfg_1.Graph> getEmbeds_knowledge()
 	{
 		return this.embeds_knowledge;
 	}
 	
+	@Override
 	public void setEmbeds_knowledge( final List<org.w3._2004._03.trix.rdfg_1.Graph> embeds_knowledge )
 	{
 		this.embeds_knowledge = embeds_knowledge;
@@ -257,11 +279,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Item> getHas_reply()
 	{
 		return this.has_reply;
 	}
 	
+	@Override
 	public void setHas_reply( final List<orgrdfs.sioc.ns.Item> has_reply )
 	{
 		this.has_reply = has_reply;
@@ -271,11 +295,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Item> getLatest_version()
 	{
 		return this.latest_version;
 	}
 	
+	@Override
 	public void setLatest_version( final List<orgrdfs.sioc.ns.Item> latest_version )
 	{
 		this.latest_version = latest_version;
@@ -285,11 +311,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<java.lang.String> getContent()
 	{
 		return this.content;
 	}
 	
+	@Override
 	public void setContent( final List<java.lang.String> content )
 	{
 		this.content = content;
@@ -299,11 +327,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<String> getHas_discussion()
 	{
 		return this.has_discussion;
 	}
 	
+	@Override
 	public void setHas_discussion( final List<String> has_discussion )
 	{
 		this.has_discussion = has_discussion;
@@ -313,11 +343,13 @@ public class ItemImpl extends Something implements Item
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Item> getPrevious_version()
 	{
 		return this.previous_version;
 	}
 	
+	@Override
 	public void setPrevious_version( final List<orgrdfs.sioc.ns.Item> previous_version )
 	{
 		this.previous_version = previous_version;

@@ -20,6 +20,7 @@ public interface Forum
 	
 	public void setNum_threads( final List<java.lang.Integer> num_threads );
 
+	@Override
 	public String getURI();
 
 }

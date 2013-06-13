@@ -2,12 +2,11 @@ package org.openimaj.text.geo;
 
 import java.util.List;
 
-import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class WorldPlace {
 
@@ -31,14 +30,15 @@ public class WorldPlace {
 		this.lon = lon;
 		this.geoms = shape;
 	}
-	
-	public String toString(){
-		return String.format("{%s: (%2.2f,%2.2f), Area: %s}",name, lat, lon, calculateArea());
+
+	@Override
+	public String toString() {
+		return String.format("{%s: (%2.2f,%2.2f), Area: %s}", name, lat, lon, calculateArea());
 	}
 
 	public double calculateArea() {
 		double total = 0;
-		for (Shape geom : this.geoms) {
+		for (final Shape geom : this.geoms) {
 			total += geom.calculateArea();
 		}
 		return total;

@@ -65,6 +65,7 @@ public class Document extends SparseIntFV{
 	}
 	
 	
+	@Override
 	public int length(){
 		return this.length;
 	}

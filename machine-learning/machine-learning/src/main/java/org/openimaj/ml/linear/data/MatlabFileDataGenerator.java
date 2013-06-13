@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.openimaj.math.matrix.SandiaMatrixUtils;
+import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.util.pair.Pair;
 
 import com.jmatio.io.MatFileReader;
@@ -30,8 +30,8 @@ public class MatlabFileDataGenerator implements DataGenerator<Matrix>{
 	public Pair<Matrix> generate() {
 		if(index>=this.data.getM())return null;
 		Pair<Matrix> XY = new Pair<Matrix>(
-				SandiaMatrixUtils.asMat(this.data.get(index, 0)),
-				SandiaMatrixUtils.asMat(this.data.get(index, 1))
+				CFMatrixUtils.asMat(this.data.get(index, 0)),
+				CFMatrixUtils.asMat(this.data.get(index, 1))
 		);
 		index++;
 		return XY;

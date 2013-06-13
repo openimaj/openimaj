@@ -47,7 +47,7 @@ import org.openimaj.demos.faces.Mustache;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processing.edges.CannyEdgeDetector2;
+import org.openimaj.image.processing.edges.CannyEdgeDetector;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
@@ -60,12 +60,12 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 
 /**
- *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
- *	@created 28 Sep 2011
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 
+ * @created 28 Sep 2011
  */
 public class ProcessingPanel extends JPanel
-implements VideoDisplayListener<MBFImage>
+		implements VideoDisplayListener<MBFImage>
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -84,7 +84,7 @@ implements VideoDisplayListener<MBFImage>
 	 */
 	public ProcessingPanel()
 	{
-		this.d = new HaarCascadeDetector( 100 );
+		this.d = new HaarCascadeDetector(100);
 		this.fkp = new FKEFaceDetector(
 				HaarCascadeDetector.BuiltInCascade.frontalface_alt.load());
 		this.init();
@@ -95,94 +95,97 @@ implements VideoDisplayListener<MBFImage>
 	 */
 	private void init()
 	{
-		this.setLayout( new GridBagLayout() );
-		this.setBorder( BorderFactory.createTitledBorder( "Processing" ) );
+		this.setLayout(new GridBagLayout());
+		this.setBorder(BorderFactory.createTitledBorder("Processing"));
 
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = gbc.gridy = 0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1; gbc.weighty = 0;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
 		gbc.gridwidth = 1;
 
 		// -----------------------------------------------------
-		final JCheckBox edgeDetectButton = new JCheckBox( "Edge Detect", this.edgeDetect );
-		edgeDetectButton.addActionListener( new ActionListener()
+		final JCheckBox edgeDetectButton = new JCheckBox("Edge Detect", this.edgeDetect);
+		edgeDetectButton.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed( final ActionEvent e )
+			public void actionPerformed(final ActionEvent e)
 			{
 				ProcessingPanel.this.edgeDetect = edgeDetectButton.isSelected();
 			}
 		});
 		gbc.gridy++;
-		this.add( edgeDetectButton, gbc );
+		this.add(edgeDetectButton, gbc);
 
 		// -----------------------------------------------------
-		final JCheckBox faceDetectorButton = new JCheckBox( "Face Detection", this.faceDetect );
-		faceDetectorButton.addActionListener( new ActionListener()
+		final JCheckBox faceDetectorButton = new JCheckBox("Face Detection", this.faceDetect);
+		faceDetectorButton.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed( final ActionEvent e )
+			public void actionPerformed(final ActionEvent e)
 			{
 				ProcessingPanel.this.faceDetect = faceDetectorButton.isSelected();
 			}
 		});
 		gbc.gridy++;
-		this.add( faceDetectorButton, gbc );
+		this.add(faceDetectorButton, gbc);
 
 		// -----------------------------------------------------
-		final JCheckBox faceKPDetectorButton = new JCheckBox( "Facial Keypoint Detection", this.faceKPDetect );
-		faceKPDetectorButton.addActionListener( new ActionListener()
+		final JCheckBox faceKPDetectorButton = new JCheckBox("Facial Keypoint Detection", this.faceKPDetect);
+		faceKPDetectorButton.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed( final ActionEvent e )
+			public void actionPerformed(final ActionEvent e)
 			{
 				ProcessingPanel.this.faceKPDetect = faceKPDetectorButton.isSelected();
 			}
 		});
 		gbc.gridy++;
-		this.add( faceKPDetectorButton, gbc );
+		this.add(faceKPDetectorButton, gbc);
 
 		// -----------------------------------------------------
-		final JCheckBox moustacheButton = new JCheckBox( "Add Moustaches", this.moustache );
-		moustacheButton.addActionListener( new ActionListener()
+		final JCheckBox moustacheButton = new JCheckBox("Add Moustaches", this.moustache);
+		moustacheButton.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed( final ActionEvent e )
+			public void actionPerformed(final ActionEvent e)
 			{
 				ProcessingPanel.this.moustache = moustacheButton.isSelected();
 			}
 		});
 		gbc.gridy++;
-		this.add( moustacheButton, gbc );
+		this.add(moustacheButton, gbc);
 
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
-	public void afterUpdate( final VideoDisplay<MBFImage> display )
+	public void afterUpdate(final VideoDisplay<MBFImage> display)
 	{
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override
-	public void beforeUpdate( final MBFImage frame )
+	public void beforeUpdate(final MBFImage frame)
 	{
-		if( this.edgeDetect )
-			frame.processInplace( new CannyEdgeDetector2() );
+		if (this.edgeDetect)
+			frame.processInplace(new CannyEdgeDetector());
 
-		if( this.faceDetect )
+		if (this.faceDetect)
 		{
 			final List<DetectedFace> faces = this.d.detectFaces(
-					Transforms.calculateIntensityNTSC( frame ) );
+					Transforms.calculateIntensityNTSC(frame));
 
-			for( final DetectedFace face : faces )
+			for (final DetectedFace face : faces)
 			{
 				final Shape transBounds = face.getBounds();
 				final MBFImageRenderer renderer = frame.createRenderer();
@@ -190,29 +193,29 @@ implements VideoDisplayListener<MBFImage>
 			}
 		}
 
-		if( this.faceKPDetect )
+		if (this.faceKPDetect)
 		{
 			final List<KEDetectedFace> faces = this.fkp.detectFaces(
-					Transforms.calculateIntensityNTSC( frame ) );
+					Transforms.calculateIntensityNTSC(frame));
 
-			for(final KEDetectedFace face : faces)
+			for (final KEDetectedFace face : faces)
 			{
 				final Shape transBounds = face.getBounds();
 				final MBFImageRenderer renderer = frame.createRenderer();
 				renderer.drawPolygon(transBounds.asPolygon(), RGBColour.RED);
 
-				for(final FacialKeypoint kp: face.getKeypoints())
+				for (final FacialKeypoint kp : face.getKeypoints())
 				{
 					final Point2d pt = kp.position.clone();
-					pt.translate((float)transBounds.minX(), (float)transBounds.minY());
+					pt.translate((float) transBounds.minX(), (float) transBounds.minY());
 					renderer.drawPoint(pt, RGBColour.GREEN, 3);
 				}
 			}
 		}
 
-		if( this.moustache )
+		if (this.moustache)
 			try {
-				frame.internalAssign( new Mustache().addMustaches( frame ) );
+				frame.internalAssign(new Mustache().addMustaches(frame));
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}

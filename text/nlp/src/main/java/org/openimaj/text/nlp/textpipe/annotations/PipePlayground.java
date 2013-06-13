@@ -40,55 +40,55 @@ import org.openimaj.text.nlp.textpipe.annotators.YagoNEAnnotator;
 
 /**
  * Simple demo and play area.
- *
- * @author laurence
- *
+ * 
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * 
  */
 public class PipePlayground {
 
-	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {
-		RawTextAnnotation rta = new RawTextAnnotation(
+		final RawTextAnnotation rta = new RawTextAnnotation(
 				"The tall curtains");
 
 		// Set the properties
 		System.setProperty(OpenNLPTokenAnnotator.TOKEN_MODEL_PROP, "/org/openimaj/text/opennlp/models/en-token.bin");
 		System.setProperty(OpenNLPSentenceAnnotator.SENTENCE_MODEL_PROP, "/org/openimaj/text/opennlp/models/en-sent.bin");
 		System.setProperty(OpenNLPPOSAnnotator.POS_MODEL_PROP, "/org/openimaj/text/opennlp/models/en-pos-maxent.bin");
-		System.setProperty(OpenNLPPhraseChunkAnnotator.PHRASE_MODEL_PROP,"/org/openimaj/text/opennlp/models/en-chunker.bin");
-		OpenNLPTokenAnnotator ta = new OpenNLPTokenAnnotator();
-		OpenNLPSentenceAnnotator sa = new OpenNLPSentenceAnnotator();
-		OpenNLPPOSAnnotator pa = new OpenNLPPOSAnnotator();
-		OpenNLPPhraseChunkAnnotator pca = new OpenNLPPhraseChunkAnnotator();
-		YagoNEAnnotator yna = new YagoNEAnnotator();
+		System.setProperty(OpenNLPPhraseChunkAnnotator.PHRASE_MODEL_PROP,
+				"/org/openimaj/text/opennlp/models/en-chunker.bin");
+		final OpenNLPTokenAnnotator ta = new OpenNLPTokenAnnotator();
+		final OpenNLPSentenceAnnotator sa = new OpenNLPSentenceAnnotator();
+		final OpenNLPPOSAnnotator pa = new OpenNLPPOSAnnotator();
+		final OpenNLPPhraseChunkAnnotator pca = new OpenNLPPhraseChunkAnnotator();
+		final YagoNEAnnotator yna = new YagoNEAnnotator();
 		try {
 			sa.annotate(rta);
 			ta.annotate(rta);
 			pa.annotate(rta);
 			pca.annotate(rta);
 			yna.annotate(rta);
-		} catch (MissingRequiredAnnotationException e1) {
+		} catch (final MissingRequiredAnnotationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		for (SentenceAnnotation sentence : rta
+		for (final SentenceAnnotation sentence : rta
 				.getAnnotationsFor(SentenceAnnotation.class))
 		{
 			System.out.println(sentence.text);
 			if (sentence.getAnnotationKeyList().contains(NamedEntityAnnotation.class))
-				for (NamedEntityAnnotation ne : sentence.getAnnotationsFor(NamedEntityAnnotation.class)) {
+				for (final NamedEntityAnnotation ne : sentence.getAnnotationsFor(NamedEntityAnnotation.class)) {
 					System.out.println(ne.namedEntity.rootName);
 					System.out.println(ne.namedEntity.type);
 				}
-			for (TokenAnnotation token : sentence.getAnnotationsFor(TokenAnnotation.class)) {
-				PartOfSpeech pos = token.getAnnotationsFor(POSAnnotation.class).get(0).pos;
-				Phrase ph = token.getAnnotationsFor(PhraseAnnotation.class).get(0).phrase;
-				String phraseOrder = token.getAnnotationsFor(PhraseAnnotation.class).get(0).getOrder();
+			for (final TokenAnnotation token : sentence.getAnnotationsFor(TokenAnnotation.class)) {
+				final PartOfSpeech pos = token.getAnnotationsFor(POSAnnotation.class).get(0).pos;
+				final Phrase ph = token.getAnnotationsFor(PhraseAnnotation.class).get(0).phrase;
+				final String phraseOrder = token.getAnnotationsFor(PhraseAnnotation.class).get(0).getOrder();
 				System.out.println(token.stringToken + "  " + pos.toString() + "  " + pos.DESCRIPTION + "    "
 						+ ph.toString() + "-" + phraseOrder);
 				System.out.println(sentence.text.substring(token.start, token.stop));
 				System.out.println("|" + token.getRawString() + "|");
-				String fromRaw = rta.text.substring(sentence.start + token.start, sentence.start + token.stop);
+				final String fromRaw = rta.text.substring(sentence.start + token.start, sentence.start + token.stop);
 				System.out.print(fromRaw + "\n");
 			}
 		}

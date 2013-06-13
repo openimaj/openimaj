@@ -40,30 +40,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordTimeValue;
-import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
-import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
-import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class CorrelationModeTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
+
 	private String hadoopCommand;
 	private File dest;
 	private File output;
-	
+
 	/**
 	 * @throws IOException
 	 */
 	@Before
 	public void setup() throws IOException {
 		hadoopCommand = "-i %s -om %s -ro %s";
-		TarInputStream tin = new TarInputStream( new GZIPInputStream( CorrelationModeTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/dfidf.out.tar.gz") ));
+		final TarInputStream tin = new TarInputStream(new GZIPInputStream(
+				CorrelationModeTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/dfidf.out.tar.gz")));
 		TarEntry entry = null;
 		output = folder.newFile("results.out");
 		output.delete();
@@ -71,56 +68,60 @@ public class CorrelationModeTest {
 		dest = folder.newFile("DFIDF.out");
 		dest.delete();
 		dest.mkdir();
-		
-		while((entry = tin.getNextEntry()) != null){
-			File tdst = new File(dest.toString(),entry.getName());
-			if(entry.isDirectory()){
+
+		while ((entry = tin.getNextEntry()) != null) {
+			final File tdst = new File(dest.toString(), entry.getName());
+			if (entry.isDirectory()) {
 				tdst.mkdir();
 			}
-			else{
-				FileOutputStream fout = new FileOutputStream(tdst);
+			else {
+				final FileOutputStream fout = new FileOutputStream(tdst);
 				tin.copyEntryContents(fout);
 				fout.close();
 			}
 		}
 		tin.close();
 	}
-	
+
 	@Test
-	public void testWordIDFTimeSeries() throws Exception{
-//		String command = String.format(
-//				hadoopCommand,
-//				dest.getAbsolutePath(),
-//				"CSV",
-//				output
-//		);
-//		String[] args = command.split(" ");
-//		HadoopTwitterTokenTool.main(args);
-//		
-//		WordTimeValue wordTimeSeries = new WordTimeValue(output.getAbsolutePath());
-//		long[] timePeriods = new long[]{
-//				1285887600000l, // 1285974000000l, 1286060400000l, 
-//				1286146800000l, // 1286233200000l, 1286319600000l, 
-//				1286406000000l, // 1286492400000l, 1286578800000l
-//		};
-//		WordDFIDFTimeSeries wts = wordTimeSeries.values.get("#lol");
-//		System.out.println(wts);
-//		IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries> isp = new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(timePeriods);
-//		isp.process(wts);
-//		System.out.println(wts);
+	public void testWordIDFTimeSeries() throws Exception {
+		// String command = String.format(
+		// hadoopCommand,
+		// dest.getAbsolutePath(),
+		// "CSV",
+		// output
+		// );
+		// String[] args = command.split(" ");
+		// HadoopTwitterTokenTool.main(args);
+		//
+		// WordTimeValue wordTimeSeries = new
+		// WordTimeValue(output.getAbsolutePath());
+		// long[] timePeriods = new long[]{
+		// 1285887600000l, // 1285974000000l, 1286060400000l,
+		// 1286146800000l, // 1286233200000l, 1286319600000l,
+		// 1286406000000l, // 1286492400000l, 1286578800000l
+		// };
+		// WordDFIDFTimeSeries wts = wordTimeSeries.values.get("#lol");
+		// System.out.println(wts);
+		// IntervalSummationProcessor<WordDFIDF[],WordDFIDF,
+		// WordDFIDFTimeSeries> isp = new
+		// IntervalSummationProcessor<WordDFIDF[],WordDFIDF,
+		// WordDFIDFTimeSeries>(timePeriods);
+		// isp.process(wts);
+		// System.out.println(wts);
 	}
-	
+
 	@Test
-	public void testCorrelation() throws Exception{
+	public void testCorrelation() throws Exception {
 		System.out.println("Reading DFIDF from: " + dest.getAbsolutePath());
 		String command = String.format(
 				hadoopCommand,
 				dest.getAbsolutePath(),
 				"CORRELATION",
 				output
-		);
+				);
 		command += " -maxp 0.1";
-		String[] args = command.split(" ");
+		final String[] args = command.split(" ");
 		HadoopTwitterTokenTool.main(args);
 		System.out.println(output);
 	}

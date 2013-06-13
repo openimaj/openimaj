@@ -14,11 +14,11 @@ import Jama.Matrix;
 import com.jsaragih.IO;
 import com.jsaragih.Tracker;
 
-
 /**
- * Render the {@link CLMDetectedFace}
+ * Renderer for drawing {@link CLMDetectedFace}s
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetectedFace> {
 	private int[][] triangles;
@@ -43,23 +43,24 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 	}
 
 	@Override
-	public void drawDetectedFace(MBFImage image,int thickness,CLMDetectedFace f){
+	public void drawDetectedFace(MBFImage image, int thickness, CLMDetectedFace f) {
 		this.thickness = thickness;
-		drawFaceModel(image,f.getShapeMatrix(),f.getVisibility(),f.getBounds());
+		drawFaceModel(image, f.getShapeMatrix(), f.getVisibility(), f.getBounds());
 	}
 
 	/**
-	 * Helper function, does the same as {@link #drawDetectedFace(MBFImage,int, CLMDetectedFace)}
-	 * but with the insides of a {@link TrackedFace}.
+	 * Helper function, does the same as
+	 * {@link #drawDetectedFace(MBFImage,int, CLMDetectedFace)} but with the
+	 * insides of a {@link TrackedFace}.
+	 * 
 	 * @param image
 	 * @param f
 	 */
-	public void drawDetectedFace(MBFImage image,MultiTracker.TrackedFace f){
-		drawFaceModel(image,f.shape,f.clm._visi[f.clm.getViewIdx()],f.lastMatchBounds);
+	public void drawDetectedFace(MBFImage image, MultiTracker.TrackedFace f) {
+		drawFaceModel(image, f.shape, f.clm._visi[f.clm.getViewIdx()], f.lastMatchBounds);
 	}
 
-
-	private void drawFaceModel(MBFImage image,Matrix shape,Matrix visi,Rectangle bounds)
+	private void drawFaceModel(MBFImage image, Matrix shape, Matrix visi, Rectangle bounds)
 	{
 		final int n = shape.getRowDimension() / 2;
 
@@ -71,22 +72,22 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 			// Draw triangulation
 			for (int i = 0; i < triangles.length; i++) {
 				if (visi.get(triangles[i][0], 0) == 0 ||
-					visi.get(triangles[i][1], 0) == 0 ||
-					visi.get(triangles[i][2], 0) == 0
-				) continue;
+						visi.get(triangles[i][1], 0) == 0 ||
+						visi.get(triangles[i][2], 0) == 0)
+					continue;
 
 				final Triangle t = new Triangle(
-					new Point2dImpl(
-						(float) (shape.get(triangles[i][0], 0) + bounds.x)/ scale,
-						(float) (shape.get(triangles[i][0] + n, 0) + bounds.y)/ scale),
-					new Point2dImpl(
-						(float) (shape.get(triangles[i][1], 0) + bounds.x)/ scale,
-						(float) (shape.get(triangles[i][1] + n, 0) + bounds.y)/ scale),
-					new Point2dImpl(
-						(float) (shape.get(triangles[i][2], 0) + bounds.x)/ scale,
-						(float) (shape.get(triangles[i][2] + n, 0) + bounds.y)/ scale)
-				);
-				image.drawShape(t, thickness,meshColour);
+						new Point2dImpl(
+								(float) (shape.get(triangles[i][0], 0) + bounds.x) / scale,
+								(float) (shape.get(triangles[i][0] + n, 0) + bounds.y) / scale),
+						new Point2dImpl(
+								(float) (shape.get(triangles[i][1], 0) + bounds.x) / scale,
+								(float) (shape.get(triangles[i][1] + n, 0) + bounds.y) / scale),
+						new Point2dImpl(
+								(float) (shape.get(triangles[i][2], 0) + bounds.x) / scale,
+								(float) (shape.get(triangles[i][2] + n, 0) + bounds.y) / scale)
+						);
+				image.drawShape(t, thickness, meshColour);
 			}
 		}
 
@@ -100,11 +101,11 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 				image.drawLine(
 						new Point2dImpl(
 								(float) (shape.get(connections[0][i], 0) + bounds.x) / scale,
-								(float) (shape.get( connections[0][i] + n, 0) + bounds.y) / scale),
+								(float) (shape.get(connections[0][i] + n, 0) + bounds.y) / scale),
 						new Point2dImpl(
-								(float) (shape.get(connections[1][i],0) + bounds.x)/ scale,
-								(float) (shape.get(connections[1][i] + n, 0) + bounds.y)/ scale),
-						thickness,connectionColour);
+								(float) (shape.get(connections[1][i], 0) + bounds.x) / scale,
+								(float) (shape.get(connections[1][i] + n, 0) + bounds.y) / scale),
+						thickness, connectionColour);
 			}
 		}
 
@@ -116,8 +117,8 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 
 				image.drawPoint(
 						new Point2dImpl(
-								((float) shape.get(i, 0) + bounds.x)/ scale,
-								((float) shape.get(i + n, 0) + bounds.y)/ scale),
+								((float) shape.get(i, 0) + bounds.x) / scale,
+								((float) shape.get(i + n, 0) + bounds.y) / scale),
 						pointColour, thickness);
 			}
 		}
@@ -125,11 +126,16 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 
 	/**
 	 * Static helper function for quick and dirty rendering
+	 * 
 	 * @param mbf
+	 *            image to draw on to
+	 * @param thickness
+	 *            line thickness
 	 * @param face
+	 *            face to draw
 	 */
-	public static void render(MBFImage mbf, int thickness,CLMDetectedFace face) {
-		CLMDetectedFaceRenderer render = new CLMDetectedFaceRenderer();
+	public static void render(MBFImage mbf, int thickness, CLMDetectedFace face) {
+		final CLMDetectedFaceRenderer render = new CLMDetectedFaceRenderer();
 		render.drawDetectedFace(mbf, thickness, face);
 	}
 

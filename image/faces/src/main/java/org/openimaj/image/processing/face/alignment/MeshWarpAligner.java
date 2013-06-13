@@ -35,11 +35,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint.FacialKeypointType;
@@ -248,14 +245,5 @@ public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
 		}
 
 		ImageUtilities.write(mask, "png", out);
-	}
-
-	public static void main(String[] args) {
-		final MeshWarpAligner al = new MeshWarpAligner();
-		final MBFImage img = new MBFImage(200, 200, 3);
-		for (final Pair<Shape> sp : al.createMesh(al.loadCanonicalPoints())) {
-			img.drawShape(sp.firstObject().transform(TransformUtilities.scaleMatrix(2, 2)), RGBColour.RED);
-		}
-		DisplayUtilities.display(img);
 	}
 }

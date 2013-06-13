@@ -34,11 +34,11 @@ import java.io.IOException;
 import java.util.List;
 
 import org.openimaj.demos.sandbox.asm.ASFDataset;
-import org.openimaj.image.model.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.model.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.image.model.asm.MultiResolutionActiveShapeModel;
 import org.openimaj.image.model.landmark.FNormalLandmarkModel;
 import org.openimaj.image.pixel.sampling.FLineSampler;
@@ -59,42 +59,49 @@ public class ASMPlayground {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-//		File dir = new File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
-		File dir = new File("/Users/jsh2/Downloads/imm_face_db");
-		ASFDataset dataset = new ASFDataset(dir);
-		
+		// File dir = new
+		// File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
+		final File dir = new File("/Users/jsh2/Downloads/imm_face_db");
+		final ASFDataset dataset = new ASFDataset(dir);
+
 		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
 		final PointListConnections conns = dataset.getConnections();
-		
+
 		final float scale = 0.02f;
-		FNormalLandmarkModel.Factory factory = new FNormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
-		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(3, new NumberComponentSelector(19), data, new PointDistributionModel.BoxConstraint(3), factory);
-		
-		Matrix pose = TransformUtilities.translateMatrix(300, 300).times(TransformUtilities.scaleMatrix(70, 70));
+		final FNormalLandmarkModel.Factory factory = new FNormalLandmarkModel.Factory(conns,
+				FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		final MultiResolutionActiveShapeModel<FImage> asm = MultiResolutionActiveShapeModel.trainModel(3,
+				new NumberComponentSelector(19), data, new PointDistributionModel.BoxConstraint(3), factory);
+
+		final Matrix pose = TransformUtilities.translateMatrix(300, 300).times(TransformUtilities.scaleMatrix(70, 70));
 		PointList shape = asm.getPDM().getMean().transform(pose);
-//		PointList shape = ASFDataset.readASF(new File(dir, "01-1m.asf")).firstObject();
-		FImage img = ASFDataset.readASF(new File(dir, "01-1m.asf")).secondObject();
-//		PointList shape = ASFDataset.readASF(new File(dir, "16-6m.asf")).firstObject();
-//		FImage img = ASFDataset.readASF(new File(dir, "16-6m.asf")).secondObject();
-				
-		MBFImage image = img.toRGB(); 
+		// PointList shape = ASFDataset.readASF(new File(dir,
+		// "01-1m.asf")).firstObject();
+		final FImage img = ASFDataset.readASF(new File(dir, "01-1m.asf")).secondObject();
+		// PointList shape = ASFDataset.readASF(new File(dir,
+		// "16-6m.asf")).firstObject();
+		// FImage img = ASFDataset.readASF(new File(dir,
+		// "16-6m.asf")).secondObject();
+
+		final MBFImage image = img.toRGB();
 		image.drawLines(conns.getLines(shape), 1, RGBColour.RED);
-		
-		long t1 = System.currentTimeMillis();
-		IterationResult newData = asm.fit(img, shape);
-		long t2 = System.currentTimeMillis();
-		
+
+		final long t1 = System.currentTimeMillis();
+		final IterationResult newData = asm.fit(img, shape);
+		final long t2 = System.currentTimeMillis();
+
 		shape = newData.shape;
-		
+
 		System.out.println(newData.fit);
 		System.out.println(t2 - t1);
-		
+
 		image.drawLines(conns.getLines(shape), 1, RGBColour.GREEN);
 
-		float shapeScale = shape.computeIntrinsicScale();
-		for (Point2d pt : shape) {
-			Line2d normal = conns.calculateNormalLine(pt, shape, scale * shapeScale);
-			if (normal != null) image.drawLine(normal, 1, RGBColour.BLUE);
+		final float shapeScale = shape.computeIntrinsicScale();
+		for (final Point2d pt : shape) {
+			final Line2d normal = conns.calculateNormalLine(pt, shape, scale * shapeScale);
+			if (normal != null)
+				image.drawLine(normal, 1, RGBColour.BLUE);
 		}
 
 		DisplayUtilities.display(image);

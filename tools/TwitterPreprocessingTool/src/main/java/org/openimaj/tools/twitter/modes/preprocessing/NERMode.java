@@ -60,7 +60,7 @@ import org.openimaj.twitter.USMFStatus;
  * NB! - Requires the YagoEntityExtraction resource folder. See
  * {@link EntityExtractionResourceBuilder} for how to construct this folder.
  * 
- * @author laurence
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * 
  */
 public class NERMode extends

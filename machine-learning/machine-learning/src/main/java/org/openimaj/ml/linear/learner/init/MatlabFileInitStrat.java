@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.openimaj.math.matrix.SandiaMatrixUtils;
+import org.openimaj.math.matrix.CFMatrixUtils;
 
 import com.jmatio.io.MatFileReader;
 import com.jmatio.types.MLArray;
@@ -27,7 +27,7 @@ public class MatlabFileInitStrat implements InitStrategy{
 	public MatlabFileInitStrat(File matfile) throws IOException {
 		MatFileReader reader = new MatFileReader(matfile);
 		Map<String, MLArray> content = reader.getContent();
-		this.data= SandiaMatrixUtils.asMat(content.get("arr"));
+		this.data= CFMatrixUtils.asMat(content.get("arr"));
 	}
 
 	@Override

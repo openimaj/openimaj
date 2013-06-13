@@ -52,7 +52,7 @@ import org.openimaj.util.pair.IntDoublePair;
  * semisupervised method of building a bipolar sentiment lexicon. This is a one
  * pass version, in that the corpus to build from is fixed.
  * 
- * @author laurence
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * 
  */
 public class TotalLexBuilder {
@@ -70,10 +70,10 @@ public class TotalLexBuilder {
 	 * Constructor.
 	 * 
 	 * @param posConfirmation
-	 *            = list of positive adjectives used to orientate the
+	 *            = list of positive adjectives used to orient the
 	 *            classification.
 	 * @param negConfirmation
-	 *            = list of negative adjectives used to orientate the
+	 *            = list of negative adjectives used to orient the
 	 *            classification.
 	 */
 	public TotalLexBuilder(List<String> posConfirmation,
@@ -241,19 +241,16 @@ public class TotalLexBuilder {
 	/**
 	 * Easily incremented object for counting.
 	 * 
-	 * @author laurence
+	 * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
 	 * 
 	 */
 	public class Counter {
-		@SuppressWarnings("javadoc")
 		public double count;
 
-		@SuppressWarnings("javadoc")
 		public Counter() {
 			count = 1.0;
 		}
 
-		@SuppressWarnings("javadoc")
 		public void inc() {
 			count += 1;
 		}

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.math.matrix.SandiaMatrixUtils;
+import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.ml.linear.evaluation.BilinearEvaluator;
 import org.openimaj.ml.linear.learner.BilinearSparseOnlineLearner;
 import org.openimaj.ml.linear.learner.IncrementalBilinearSparseOnlineLearner;
@@ -109,8 +109,8 @@ public class ModelStats {
 			ret.put(
 				task,
 				new Pair<Double>(
-					SandiaMatrixUtils.min(bilearner.getU().getColumn(taskCol)),
-					SandiaMatrixUtils.max(bilearner.getU().getColumn(taskCol))
+					CFMatrixUtils.min(bilearner.getU().getColumn(taskCol)),
+					CFMatrixUtils.max(bilearner.getU().getColumn(taskCol))
 				)
 			);
 		}
@@ -128,8 +128,8 @@ public class ModelStats {
 			ret.put(
 				task,
 				new Pair<Double>(
-					SandiaMatrixUtils.min(bilearner.getW().getColumn(taskCol)),
-					SandiaMatrixUtils.max(bilearner.getW().getColumn(taskCol))
+					CFMatrixUtils.min(bilearner.getW().getColumn(taskCol)),
+					CFMatrixUtils.max(bilearner.getW().getColumn(taskCol))
 				)
 			);
 		}

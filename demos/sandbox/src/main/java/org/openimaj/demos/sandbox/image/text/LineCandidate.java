@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.Pair;
 import org.openimaj.util.set.DisjointSetForest;
@@ -74,6 +73,8 @@ public class LineCandidate {
 			chains.add(lc);
 		}
 
+		computeBounds(chains);
+
 		return chains;// chainPairs(pairs);
 	}
 
@@ -126,9 +127,5 @@ public class LineCandidate {
 		}
 
 		return pairs;
-	}
-
-	private static double angle(Point2d centroid, Point2d centroid2) {
-		return Math.atan2(centroid.getY() - centroid2.getY(), centroid.getX() - centroid2.getX());
 	}
 }

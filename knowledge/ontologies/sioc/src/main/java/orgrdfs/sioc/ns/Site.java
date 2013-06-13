@@ -18,6 +18,7 @@ public interface Site
 	
 	public void setHas_administrator( final List<orgrdfs.sioc.ns.UserAccount> has_administrator );
 
+	@Override
 	public String getURI();
 
 }

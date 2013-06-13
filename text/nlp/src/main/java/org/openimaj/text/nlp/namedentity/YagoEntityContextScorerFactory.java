@@ -77,7 +77,7 @@ public class YagoEntityContextScorerFactory {
 	 * Class that uses an underlying lucene index to match tokens to companies.
 	 * Use the enclosing factory class to instantiate.
 	 * 
-	 * @author laurence
+	 * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
 	 * 
 	 */
 	public static class YagoEntityContextScorer extends

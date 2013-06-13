@@ -4,15 +4,16 @@ import gov.sandia.cognition.math.matrix.Matrix;
 
 import org.openimaj.util.pair.Pair;
 
-
 /**
  * Generates instances of some system of the form:
  * 
- * Y = f(X)
+ * <code>Y = f(X)</code>
  * 
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * @param <T>
+ *            Matrix type
+ * 
  */
 public interface DataGenerator<T extends Matrix> {
 	/**

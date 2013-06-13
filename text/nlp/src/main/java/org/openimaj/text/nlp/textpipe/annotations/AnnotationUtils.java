@@ -38,7 +38,7 @@ import org.openimaj.text.nlp.textpipe.annotations.POSAnnotation.PartOfSpeech;
 /**
  * Currently a collection of static functions required by various parts of the TextPipe.
  * 
- * @author laurence
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  *
  */
 public class AnnotationUtils {

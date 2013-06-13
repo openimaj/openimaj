@@ -34,11 +34,13 @@ public class SiteImpl extends Something implements Site
 	// From class space
 
 
+	@Override
 	public List<String> getSpace_of()
 	{
 		return space.getSpace_of();
 	}
 	
+	@Override
 	public void setSpace_of( final List<String> space_of )
 	{
 		space.setSpace_of( space_of );
@@ -48,11 +50,13 @@ public class SiteImpl extends Something implements Site
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Forum> getHost_of()
 	{
 		return this.host_of;
 	}
 	
+	@Override
 	public void setHost_of( final List<orgrdfs.sioc.ns.Forum> host_of )
 	{
 		this.host_of = host_of;
@@ -62,11 +66,13 @@ public class SiteImpl extends Something implements Site
 	// From class space
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.Usergroup> getHas_usergroup()
 	{
 		return space.getHas_usergroup();
 	}
 	
+	@Override
 	public void setHas_usergroup( final List<orgrdfs.sioc.ns.Usergroup> has_usergroup )
 	{
 		space.setHas_usergroup( has_usergroup );
@@ -76,11 +82,13 @@ public class SiteImpl extends Something implements Site
 	// From class this
 
 
+	@Override
 	public List<orgrdfs.sioc.ns.UserAccount> getHas_administrator()
 	{
 		return this.has_administrator;
 	}
 	
+	@Override
 	public void setHas_administrator( final List<orgrdfs.sioc.ns.UserAccount> has_administrator )
 	{
 		this.has_administrator = has_administrator;

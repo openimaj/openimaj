@@ -46,10 +46,10 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
-	int[][] binMap;
-	int nbins;
-	float min = 0;
-	float max = 1;
+	protected int[][] binMap;
+	protected int nbins;
+	protected float min = 0;
+	protected float max = 1;
 
 	/**
 	 * Construct with the given number of bins. The minimum expected value is
@@ -75,6 +75,66 @@ public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
 	public BinnedImageHistogramAnalyser(int nbins, float min, float max) {
 		this.nbins = nbins;
 		this.min = min;
+		this.max = max;
+	}
+
+	/**
+	 * Get the number of bins
+	 * 
+	 * @return the number of bins
+	 */
+	public int getNumBins() {
+		return nbins;
+	}
+
+	/**
+	 * Set the number of bins. The new value will not take effect until
+	 * {@link #analyseImage(FImage)} is called.
+	 * 
+	 * @param nbins
+	 *            the number of bins to set
+	 */
+	public void setNbins(int nbins) {
+		this.nbins = nbins;
+	}
+
+	/**
+	 * Get the expected minimum value in the input image
+	 * 
+	 * @return the expected minimum value
+	 */
+	public float getMin() {
+		return min;
+	}
+
+	/**
+	 * Set the expected minimum value. The new value will not take effect until
+	 * {@link #analyseImage(FImage)} is called.
+	 * 
+	 * @param min
+	 *            the minimum to set
+	 */
+	public void setMin(float min) {
+		this.min = min;
+	}
+
+	/**
+	 * Get the expected maximum value in the input image.
+	 * 
+	 * @return the expected maximum value
+	 */
+	public float getMax() {
+		return max;
+	}
+
+	/**
+	 * Set the expected maximum value. The new value will not take effect until
+	 * {@link #analyseImage(FImage)} is called.
+	 * 
+	 * @param max
+	 *            the maximum to set
+	 */
+	public void setMax(float max) {
 		this.max = max;
 	}
 

@@ -3,7 +3,7 @@ package org.openimaj.picslurper;
 import java.io.IOException;
 
 /**
- * @author Jonathan Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Duplaw (dpd@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public interface StatusFeeder {

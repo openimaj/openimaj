@@ -42,61 +42,60 @@ import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.SentenceAnnotation;
 
 /**
- * {@link SentenceDetectorME} backed by a {@link SentenceModel} loaded from the resource located at: {@link OpenNLPSentenceAnnotator#SENTENCE_MODEL_PROP}
+ * {@link SentenceDetectorME} backed by a {@link SentenceModel} loaded from the
+ * resource located at: {@link OpenNLPSentenceAnnotator#SENTENCE_MODEL_PROP}
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class OpenNLPSentenceAnnotator extends AbstractSentenceAnnotator{
+public class OpenNLPSentenceAnnotator extends AbstractSentenceAnnotator {
 
 	/**
 	 * Property name pointing to the sentence model
 	 */
 	public static final String SENTENCE_MODEL_PROP = "org.openimaj.text.opennlp.models.sent";
+	public static final String SENTENCE_MODEL_DEFAULT = "/org/openimaj/text/opennlp/models/en-sent.bin";
 	SentenceDetectorME sentenceDetector;
 
-	/**
-	 *
-	 */
-	public OpenNLPSentenceAnnotator(){
+	public OpenNLPSentenceAnnotator() {
 		super();
 		InputStream modelIn = null;
-		modelIn = OpenNLPSentenceAnnotator.class.getResourceAsStream(System.getProperty(SENTENCE_MODEL_PROP));
-		SentenceModel model=null;
+		modelIn = OpenNLPSentenceAnnotator.class.getResourceAsStream(System.getProperty(SENTENCE_MODEL_PROP,
+				SENTENCE_MODEL_DEFAULT));
+		SentenceModel model = null;
 		try {
-		  model = new SentenceModel(modelIn);
-		}
-		catch (IOException e) {
-		  e.printStackTrace();
-		}
-		finally {
-		  if (modelIn != null) {
-		    try {
-		      modelIn.close();
-		    }
-		    catch (IOException e) {
-		    }
-		  }
+			model = new SentenceModel(modelIn);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (modelIn != null) {
+				try {
+					modelIn.close();
+				} catch (final IOException e) {
+				}
+			}
 		}
 		sentenceDetector = new SentenceDetectorME(model);
 	}
 
 	@Override
 	protected List<SentenceAnnotation> getSentenceAnnotations(String text) {
-		ArrayList<SentenceAnnotation> sents = new ArrayList<SentenceAnnotation>();
-		List<String> sentences = Arrays.asList(sentenceDetector.sentDetect(text));
-		int currentOff =0;
-		for(int i =0; i<sentences.size();i++){
-			String sentence = sentences.get(i);
-			int start=currentOff+(text.substring(currentOff).indexOf(sentence));
-			int stop=start+sentence.length();
-			sents.add(new SentenceAnnotation(sentence,start,stop));
+		final ArrayList<SentenceAnnotation> sents = new ArrayList<SentenceAnnotation>();
+		final List<String> sentences = Arrays.asList(sentenceDetector.sentDetect(text));
+		final int currentOff = 0;
+		for (int i = 0; i < sentences.size(); i++) {
+			final String sentence = sentences.get(i);
+			final int start = currentOff + (text.substring(currentOff).indexOf(sentence));
+			final int stop = start + sentence.length();
+			sents.add(new SentenceAnnotation(sentence, start, stop));
 		}
 		return sents;
 	}
 
 	@Override
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)
-			throws MissingRequiredAnnotationException {
+			throws MissingRequiredAnnotationException
+	{
 		// TODO Auto-generated method stub
 
 	}

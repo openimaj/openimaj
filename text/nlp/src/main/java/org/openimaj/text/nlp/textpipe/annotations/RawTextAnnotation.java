@@ -30,21 +30,22 @@
 package org.openimaj.text.nlp.textpipe.annotations;
 
 /**
- * Text encapsulated as an {@link TextPipeAnnotation} so that it may be annotated.
- * @author laurence
- *
+ * Text encapsulated as an {@link TextPipeAnnotation} so that it may be
+ * annotated.
+ * 
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * 
  */
-public class RawTextAnnotation extends TextPipeAnnotation{
-	
+public class RawTextAnnotation extends TextPipeAnnotation {
+
 	/**
 	 * The original text.
 	 */
 	public String text;
-	
-	@SuppressWarnings("javadoc")
-	public RawTextAnnotation (String rawText){
+
+	public RawTextAnnotation(String rawText) {
 		super();
-		text=rawText;
+		text = rawText;
 	}
 
 }

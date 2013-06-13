@@ -389,7 +389,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	/**
 	 * Container object to hold user information
 	 *
-	 * @author laurence
+	 * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class User {
@@ -481,7 +481,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	/**
 	 * Container object for holding link information
 	 *
-	 * @author laurence
+	 * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Link {

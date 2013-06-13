@@ -42,56 +42,56 @@ import org.openimaj.twitter.USMFStatus;
  * Use the twokeniser to tokenise tweets
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class TokeniseMode extends TwitterPreprocessingMode<Map<String,List<String>>> {
-	
+public class TokeniseMode extends TwitterPreprocessingMode<Map<String, List<String>>> {
+
 	final static String TOKENS = "tokens";
 	public static final String TOKENS_UNPROTECTED = "unprotected";
 	public static final String TOKENS_PROTECTED = "protected";
 	public static final String TOKENS_ALL = "all";
 	private LanguageDetectionMode langMode;
-	
+
 	/**
 	 * literally do nothing
-	 * @throws IOException 
 	 */
-	public TokeniseMode()  {
+	public TokeniseMode() {
 		try {
 			langMode = new LanguageDetectionMode();
-		} catch (IOException e) {
-			// The langauge detector was not instantiated, tokens will be of lower quality!
+		} catch (final IOException e) {
+			// The langauge detector was not instantiated, tokens will be of
+			// lower quality!
 		}
 	}
 
 	@Override
-	public Map<String,List<String>> process(USMFStatus twitterStatus)  {
+	public Map<String, List<String>> process(USMFStatus twitterStatus) {
 		TweetTokeniser tokeniser;
-		Map<String,List<String>> tokens = new HashMap<String,List<String>>();
-		twitterStatus.addAnalysis(TOKENS,tokens);
+		final Map<String, List<String>> tokens = new HashMap<String, List<String>>();
+		twitterStatus.addAnalysis(TOKENS, tokens);
 		try {
-			if(langMode!=null){
-				Map<String,Object> localeMap = TwitterPreprocessingMode.results(twitterStatus,langMode);
-				WeightedLocale locale = WeightedLocale.fromMap(localeMap);
-				if(!TweetTokeniser.isValid(locale.language)) {
+			if (langMode != null) {
+				final Map<String, Object> localeMap = TwitterPreprocessingMode.results(twitterStatus, langMode);
+				final WeightedLocale locale = WeightedLocale.fromMap(localeMap);
+				if (!TweetTokeniser.isValid(locale.language)) {
 					return tokens;
-				}				
+				}
 			}
-			
+
 			tokeniser = new TweetTokeniser(twitterStatus.text);
 			tokens.put(TOKENS_ALL, tokeniser.getStringTokens());
 			tokens.put(TOKENS_PROTECTED, tokeniser.getProtectedStringTokens());
 			tokens.put(TOKENS_UNPROTECTED, tokeniser.getUnprotectedStringTokens());
-			twitterStatus.addAnalysis(TOKENS,tokens);
-		} catch (Exception e) {
-		}	
-		
+			twitterStatus.addAnalysis(TOKENS, tokens);
+		} catch (final Exception e) {
+		}
+
 		return tokens;
-		
+
 	}
-	
+
 	@Override
-	public String getAnalysisKey(){
+	public String getAnalysisKey() {
 		return TokeniseMode.TOKENS;
 	}
 }

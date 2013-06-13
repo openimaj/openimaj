@@ -37,8 +37,8 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.tools.InOutToolOptions;
-import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingPredicate;
 import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingFilterOption;
+import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingPredicate;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
@@ -50,43 +50,75 @@ import org.openimaj.twitter.collection.TwitterStatusListUtils;
 
 /**
  * An abstract kind of twitter processing tool. Contains all the options generic
- * to this kind of tool, not dependant on
- * files or hadoop or whatever.
+ * to this kind of tool, not dependant on files or hadoop or whatever.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolOptions {
 
-	@Option(name = "--mode", aliases = "-m", required = false, usage = "How should the tweets be processed.", handler = ProxyOptionHandler.class, multiValued = true)
+	@Option(
+			name = "--mode",
+			aliases = "-m",
+			required = false,
+			usage = "How should the tweets be processed.",
+			handler = ProxyOptionHandler.class,
+			multiValued = true)
 	List<TwitterPreprocessingModeOption> modeOptions = new ArrayList<TwitterPreprocessingModeOption>();
 	/**
 	 * The preprocessing to perform
 	 */
 	public List<TwitterPreprocessingMode<?>> modeOptionsOp = new ArrayList<TwitterPreprocessingMode<?>>();
 
-	@Option(name = "--pre-filter", aliases = "-prf", required = false, usage = "Define filters. Applied before other processing.", handler = ProxyOptionHandler.class, multiValued = true)
+	@Option(
+			name = "--pre-filter",
+			aliases = "-prf",
+			required = false,
+			usage = "Define filters. Applied before other processing.",
+			handler = ProxyOptionHandler.class,
+			multiValued = true)
 	List<TwitterPreprocessingFilterOption> preFilterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
 	/**
 	 * The prefiltering to perform
 	 */
 	public List<TwitterPreprocessingPredicate> preFilterOptionsOp = new ArrayList<TwitterPreprocessingPredicate>();
 
-	@Option(name = "--post-filter", aliases = "-pof", required = false, usage = "Define filters. Applied after other processing", handler = ProxyOptionHandler.class, multiValued = true)
+	@Option(
+			name = "--post-filter",
+			aliases = "-pof",
+			required = false,
+			usage = "Define filters. Applied after other processing",
+			handler = ProxyOptionHandler.class,
+			multiValued = true)
 	List<TwitterPreprocessingFilterOption> postFilterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
 	/**
 	 * the postfiltering to perform
 	 */
 	public List<TwitterPreprocessingPredicate> postFilterOptionsOp = new ArrayList<TwitterPreprocessingPredicate>();
 	//
-	@Option(name = "--encoding", aliases = "-e", required = false, usage = "The outputstreamwriter's text encoding", metaVar = "STRING")
+	@Option(
+			name = "--encoding",
+			aliases = "-e",
+			required = false,
+			usage = "The outputstreamwriter's text encoding",
+			metaVar = "STRING")
 	String encoding = "UTF-8";
 
-	@Option(name = "--output-mode", aliases = "-om", required = false, usage = "How should the analysis be outputed.", handler = ProxyOptionHandler.class)
+	@Option(
+			name = "--output-mode",
+			aliases = "-om",
+			required = false,
+			usage = "How should the analysis be outputed.",
+			handler = ProxyOptionHandler.class)
 	TwitterOutputModeOption outputModeOption = TwitterOutputModeOption.APPEND;
 	TwitterOutputMode outputModeOptionOp = TwitterOutputModeOption.APPEND.getOptions();
 
-	@Option(name = "--n-tweets", aliases = "-n", required = false, usage = "How many tweets from the input should this be applied to.", handler = ProxyOptionHandler.class)
+	@Option(
+			name = "--n-tweets",
+			aliases = "-n",
+			required = false,
+			usage = "How many tweets from the input should this be applied to.",
+			handler = ProxyOptionHandler.class)
 	int nTweets = -1;
 
 	@Option(name = "--quiet", aliases = "-q", required = false, usage = "Control the progress messages.")
@@ -95,13 +127,21 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	@Option(name = "--verbose", aliases = "-v", required = false, usage = "Be very loud (overrides queit)")
 	boolean veryLoud = false;
 
-	@Option(name = "--time-before-skip", aliases = "-t", required = false, usage = "Time to wait before skipping an entry")
+	@Option(
+			name = "--time-before-skip",
+			aliases = "-t",
+			required = false,
+			usage = "Time to wait before skipping an entry")
 	long timeBeforeSkip = 0;
 
 	/**
 	 * the status type to take as input
 	 */
-	@Option(name = "--input-type", aliases = "-it", required = false, usage = "The type of social media message being consumed")
+	@Option(
+			name = "--input-type",
+			aliases = "-it",
+			required = false,
+			usage = "The type of social media message being consumed")
 	public StatusType statusType = StatusType.TWITTER;
 
 	/**
@@ -136,7 +176,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 * prepare the tool for running
 	 */
 	public void prepare() {
-		CmdLineParser parser = new CmdLineParser(this);
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			if (veryLoud && quiet) {
 				quiet = false;
@@ -147,7 +187,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 			validateFilters();
 			registerRDFAnalysis();
 			this.validate();
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
 			parser.printUsage(System.err);
@@ -159,17 +199,17 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 
 	private void registerRDFAnalysis() {
 		if (this.outputStatusType == StatusType.RDF) {
-			for (TwitterPreprocessingMode<?> modes : this.modeOptionsOp) {
+			for (final TwitterPreprocessingMode<?> modes : this.modeOptionsOp) {
 				GeneralJSONRDF.registerRDFAnalysisProvider(modes.getAnalysisKey(), modes.rdfAnalysisProvider());
 			}
 		}
 	}
 
 	private void validateFilters() {
-		for (TwitterPreprocessingPredicate filter : this.postFilterOptionsOp) {
+		for (final TwitterPreprocessingPredicate filter : this.postFilterOptionsOp) {
 			filter.validate();
 		}
-		for (TwitterPreprocessingPredicate filter : this.preFilterOptionsOp) {
+		for (final TwitterPreprocessingPredicate filter : this.preFilterOptionsOp) {
 			filter.validate();
 		}
 	}
@@ -186,8 +226,8 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 		if (veryLoud) {
 			System.out.println("Creating preprocessing modes");
 		}
-		ArrayList<TwitterPreprocessingMode<?>> modes = new ArrayList<TwitterPreprocessingMode<?>>();
-		for (TwitterPreprocessingModeOption modeOpt : this.modeOptions) {
+		final ArrayList<TwitterPreprocessingMode<?>> modes = new ArrayList<TwitterPreprocessingMode<?>>();
+		for (final TwitterPreprocessingModeOption modeOpt : this.modeOptions) {
 			modes.add(modeOpt.getOptions());
 		}
 		return modes;
@@ -249,7 +289,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 */
 	public boolean preProcessesSkip(USMFStatus twitterStatus) {
 		boolean skip = false;
-		for (TwitterPreprocessingPredicate f : preFilterOptionsOp) {
+		for (final TwitterPreprocessingPredicate f : preFilterOptionsOp) {
 			skip = !f.test(twitterStatus);
 			if (skip)
 				break;
@@ -266,7 +306,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 */
 	public boolean postProcessesSkip(USMFStatus twitterStatus) {
 		boolean skip = false;
-		for (TwitterPreprocessingPredicate f : postFilterOptionsOp) {
+		for (final TwitterPreprocessingPredicate f : postFilterOptionsOp) {
 			skip = !f.test(twitterStatus);
 			if (skip)
 				break;
@@ -275,14 +315,14 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	}
 
 	/**
-	 * provides the functionality to convert to the required output format as
+	 * Provides the functionality to convert to the required output format as
 	 * specified by -ot
 	 * 
 	 * @param twitterStatus
-	 * @return
+	 * @return the converted output
 	 */
 	public GeneralJSON convertToOutputFormat(USMFStatus twitterStatus) {
-		GeneralJSON outInstance = TwitterStatusListUtils.newInstance(this.outputStatusType.type());
+		final GeneralJSON outInstance = TwitterStatusListUtils.newInstance(this.outputStatusType.type());
 		outInstance.fromUSMF(twitterStatus);
 		return outInstance;
 	}

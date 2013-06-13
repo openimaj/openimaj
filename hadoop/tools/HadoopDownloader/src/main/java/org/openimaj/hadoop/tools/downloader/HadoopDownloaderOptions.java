@@ -50,35 +50,55 @@ import org.openimaj.hadoop.tools.downloader.InputMode.Parser;
 public class HadoopDownloaderOptions {
 	private String[] args;
 
-	@Option(name="--input", aliases="-i", required=true, usage="Input file or URL.", metaVar="STRING")
+	@Option(name = "--input", aliases = "-i", required = true, usage = "Input file or URL.", metaVar = "STRING")
 	private String input;
-	
-	@Option(name="--output", aliases="-o", required=true, usage="Output file or URL.", metaVar="STRING")
+
+	@Option(name = "--output", aliases = "-o", required = true, usage = "Output file or URL.", metaVar = "STRING")
 	private String output;
-	
-	@Option(name="--remove", aliases="-rm", required=false, usage="Remove the existing output location if it exists.", metaVar="BOOLEAN")
+
+	@Option(
+			name = "--remove",
+			aliases = "-rm",
+			required = false,
+			usage = "Remove the existing output location if it exists.",
+			metaVar = "BOOLEAN")
 	private boolean replace = false;
-	
-	@Option(name="--num-reducers", aliases="-nr", required=false, usage="Number of reducers. Controls the number of sequencefile parts created.")
+
+	@Option(
+			name = "--num-reducers",
+			aliases = "-nr",
+			required = false,
+			usage = "Number of reducers. Controls the number of sequencefile parts created.")
 	private int nreducers = 0;
-	
-	@SuppressWarnings("unused")
-	@Option(name="--input-mode", aliases="-m", required=false, usage="How should the URLs be processed to be downloaded.", handler=ProxyOptionHandler.class)
+
+	@Option(
+			name = "--input-mode",
+			aliases = "-m",
+			required = false,
+			usage = "How should the URLs be processed to be downloaded.",
+			handler = ProxyOptionHandler.class)
 	private InputMode inputMode = InputMode.PLAIN;
 	private Parser inputModeOp;
-	
-	@Option(name="--sleep", aliases="-s", required=false, usage="Time in milliseconds to sleep after downloading a file.", metaVar="LONG")
+
+	@Option(
+			name = "--sleep",
+			aliases = "-s",
+			required = false,
+			usage = "Time in milliseconds to sleep after downloading a file.",
+			metaVar = "LONG")
 	private long sleep = 0;
-	
+
 	@Option(name = "--follow-redirects", aliases = "-f", usage = "Follow URL redirections", required = false)
 	private boolean followRedirects = false;
-	
+
 	@Option(name = "--log-failures", aliases = "-l", usage = "Log failed records to a file", required = false)
 	private boolean writeFailures = false;
-	
+
 	/**
 	 * Construct with the given arguments
-	 * @param args the arguments
+	 * 
+	 * @param args
+	 *            the arguments
 	 */
 	public HadoopDownloaderOptions(String[] args) {
 		this.args = args;
@@ -86,38 +106,42 @@ public class HadoopDownloaderOptions {
 
 	/**
 	 * Prepare the options
-	 * @param initial true if initial setup is being performed; false if inside the mapper
+	 * 
+	 * @param initial
+	 *            true if initial setup is being performed; false if inside the
+	 *            mapper
 	 */
 	public void prepare(boolean initial) {
-		CmdLineParser parser = new CmdLineParser(this);
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
-			parser.parseArgument( args );
-			this.validate( initial );
-		} catch (CmdLineException e) {
+			parser.parseArgument(args);
+			this.validate(initial);
+		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: hadoop -jar HadoopImageDownloader [options...] [files...]");
 			parser.printUsage(System.err);
-			
+
 			System.exit(1);
 		}
 	}
 
 	private void validate(boolean initial) {
-		if(replace && initial) {
+		if (replace && initial) {
 			try {
-				URI outuri = SequenceFileUtility.convertToURI(output);
-				
-				FileSystem fs = SequenceFileUtility.getFileSystem(outuri, new Configuration());
-				
+				final URI outuri = SequenceFileUtility.convertToURI(output);
+
+				final FileSystem fs = SequenceFileUtility.getFileSystem(outuri, new Configuration());
+
 				fs.delete(new Path(outuri.toString()), true);
-			} catch (IOException e) {
-				
+			} catch (final IOException e) {
+
 			}
 		}
 	}
-	
+
 	/**
 	 * Get the input file(s) containing the URLs
+	 * 
 	 * @return the input paths
 	 * @throws IOException
 	 */
@@ -131,22 +155,21 @@ public class HadoopDownloaderOptions {
 	public Path getOutputPath() {
 		return new Path(SequenceFileUtility.convertToURI(output).toString());
 	}
-	
+
 	/**
 	 * @return the number of reducers
 	 */
 	public int getNumberOfReducers() {
 		return this.nreducers;
 	}
-		
+
 	/**
-	 * @return the {@link Parser} corresponding to the
-	 * selected mode.
+	 * @return the {@link Parser} corresponding to the selected mode.
 	 */
 	public Parser getInputParser() {
 		return inputModeOp;
 	}
-	
+
 	/**
 	 * @return the time in milliseconds to sleep after downloading a file
 	 */

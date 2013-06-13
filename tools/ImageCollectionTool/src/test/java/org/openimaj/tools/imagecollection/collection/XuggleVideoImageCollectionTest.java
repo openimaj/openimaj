@@ -38,10 +38,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
 import org.openimaj.video.xuggle.XuggleVideoWriter;
-
 
 public class XuggleVideoImageCollectionTest {
 	@Rule
@@ -49,74 +47,81 @@ public class XuggleVideoImageCollectionTest {
 
 	String aVideo = "/org/openimaj/video/data/a_video.avi";
 	private File videoFile;
-	private ImageCollectionConfig fileConfig;
-	private ImageCollectionConfig urlConfig;
+
+	// private ImageCollectionConfig fileConfig;
+	// private ImageCollectionConfig urlConfig;
 
 	@Before
-	public void setup() throws IOException{
-		InputStream s = XuggleVideoImageCollectionTest.class.getResourceAsStream(aVideo);
+	public void setup() throws IOException {
+		final InputStream s = XuggleVideoImageCollectionTest.class.getResourceAsStream(aVideo);
 		videoFile = folder.newFile("xuggle.avi");
 
-		FileOutputStream fos = new FileOutputStream(videoFile);
+		final FileOutputStream fos = new FileOutputStream(videoFile);
 		int read = 0;
-		byte[] buffer = new byte[1024];
-		while((read = s.read(buffer))!=-1){
+		final byte[] buffer = new byte[1024];
+		while ((read = s.read(buffer)) != -1) {
 			fos.write(buffer, 0, read);
 		}
 		fos.close();
-		String jsonVideoFile = String.format("{video:{file:\"%s\"}}",videoFile);
-		String jsonVideoURL = String.format("{video:{url:\"%s\"}}",videoFile);
+		// final String jsonVideoFile = String.format("{video:{file:\"%s\"}}",
+		// videoFile);
+		// final String jsonVideoURL = String.format("{video:{url:\"%s\"}}",
+		// videoFile);
 
-		fileConfig = new ImageCollectionConfig(jsonVideoFile);
-		urlConfig = new ImageCollectionConfig(jsonVideoURL);
+		// fileConfig = new ImageCollectionConfig(jsonVideoFile);
+		// urlConfig = new ImageCollectionConfig(jsonVideoURL);
 	}
 
 	@Test
-	public void testURLFileXuggleVideoImageCollection() throws ImageCollectionSetupException{
-//		try{
-//			FromFile fileVideo = new XuggleVideoImageCollection.FromFile();
-//			fileVideo.setup(fileConfig);
-//			List<ImageCollectionEntry<MBFImage>> fileFrames = fileVideo.getAll();
-//			FromURL urlVideo = new XuggleVideoImageCollection.FromURL();
-//			urlVideo.setup(urlConfig);
-//			List<ImageCollectionEntry<MBFImage>> urlFrames = urlVideo.getAll();
-//			assertTrue(urlFrames.size() > 0);
-//			assertEquals(urlFrames.size(),fileFrames.size());
-//		}
-//		catch(UnsatisfiedLinkError e){
-//
-//		}
+	public void testURLFileXuggleVideoImageCollection() throws ImageCollectionSetupException {
+		// try{
+		// FromFile fileVideo = new XuggleVideoImageCollection.FromFile();
+		// fileVideo.setup(fileConfig);
+		// List<ImageCollectionEntry<MBFImage>> fileFrames = fileVideo.getAll();
+		// FromURL urlVideo = new XuggleVideoImageCollection.FromURL();
+		// urlVideo.setup(urlConfig);
+		// List<ImageCollectionEntry<MBFImage>> urlFrames = urlVideo.getAll();
+		// assertTrue(urlFrames.size() > 0);
+		// assertEquals(urlFrames.size(),fileFrames.size());
+		// }
+		// catch(UnsatisfiedLinkError e){
+		//
+		// }
 
 	}
 
 	@Test
-	public void testYouTubeVideoImageCollection() throws ImageCollectionSetupException{
-//		try{
-//			String youtubeURLStr = "http://www.youtube.com/watch?v=QP9p_XkCR68";
-//			String youtubeJSON = String.format("{video:{url:\"%s\"}}",youtubeURLStr);
-//			ImageCollectionConfig youtubeConfig = new ImageCollectionConfig(youtubeJSON);
-//
-//			YouTubeVideoImageCollection col = new YouTubeVideoImageCollection();
-//			col.setup(youtubeConfig);
-//
-//			int i = 0;
-//			for(@SuppressWarnings("unused") ImageCollectionEntry<MBFImage> im : col){
-//				if(i++ > 10) return;
-//
-//			}
-//		}
-//		catch(UnsatisfiedLinkError e){
-//
-//		}
-//		catch(NoClassDefFoundError e){
-//
-//		}
+	public void testYouTubeVideoImageCollection() throws ImageCollectionSetupException {
+		// try{
+		// String youtubeURLStr = "http://www.youtube.com/watch?v=QP9p_XkCR68";
+		// String youtubeJSON =
+		// String.format("{video:{url:\"%s\"}}",youtubeURLStr);
+		// ImageCollectionConfig youtubeConfig = new
+		// ImageCollectionConfig(youtubeJSON);
+		//
+		// YouTubeVideoImageCollection col = new YouTubeVideoImageCollection();
+		// col.setup(youtubeConfig);
+		//
+		// int i = 0;
+		// for(@SuppressWarnings("unused") ImageCollectionEntry<MBFImage> im :
+		// col){
+		// if(i++ > 10) return;
+		//
+		// }
+		// }
+		// catch(UnsatisfiedLinkError e){
+		//
+		// }
+		// catch(NoClassDefFoundError e){
+		//
+		// }
 	}
 
 	public static void main(String[] args) throws ImageCollectionSetupException {
-		String youtubeURLStr = "http://www.youtube.com/watch?v=QP9p_XkCR68";
-		YouTubeVideoImageCollection col = new YouTubeVideoImageCollection(youtubeURLStr);
-		XuggleVideoWriter io = new XuggleVideoWriter("/Users/ss/Desktop/xuggleout.mpg", col.video.getWidth(), col.video.getHeight(), col.video.getFPS());
+		final String youtubeURLStr = "http://www.youtube.com/watch?v=QP9p_XkCR68";
+		final YouTubeVideoImageCollection col = new YouTubeVideoImageCollection(youtubeURLStr);
+		final XuggleVideoWriter io = new XuggleVideoWriter("/Users/ss/Desktop/xuggleout.mpg", col.video.getWidth(),
+				col.video.getHeight(), col.video.getFPS());
 		io.process(col.video);
 	}
 }

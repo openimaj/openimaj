@@ -70,6 +70,9 @@ public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 
 	/**
 	 * Default constructor with no mask.
+	 * 
+	 * @param targetSize
+	 *            target aligned image size
 	 */
 	public RotateScaleAligner(int targetSize) {
 		final int canonicalSize = 2 * eyePaddingLeftRight + eyeDist;

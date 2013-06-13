@@ -47,13 +47,12 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.tools.localfeature.Extractor;
 
 /**
  * Tests for the LocalFeaturesTool
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class LocalFeaturesToolTest {
 	/**
@@ -61,7 +60,7 @@ public class LocalFeaturesToolTest {
 	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
+
 	private File tmpImageFile;
 	private File tmpNormImageFile;
 	private MBFImage loaded;
@@ -73,63 +72,67 @@ public class LocalFeaturesToolTest {
 	 * @throws IOException
 	 */
 	@Before
-	public void setup() throws IOException{
-		InputStream is = this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg");
+	public void setup() throws IOException {
+		final InputStream is = this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg");
 		tmpImageFile = folder.newFile("cat.jpg");
 		tmpNormImageFile = folder.newFile("catIntensityNormalised.jpg");
-		
-		FileOutputStream fos = new FileOutputStream(tmpImageFile);
-		byte[] arr = new byte[1024];
-		int read = is.read(arr);
-		while(read != -1) {
-			try{
-				fos.write(arr, 0, read);
-				read = is.read(arr);
+
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(tmpImageFile);
+			final byte[] arr = new byte[1024];
+			int read = is.read(arr);
+			while (read != -1) {
+				try {
+					fos.write(arr, 0, read);
+					read = is.read(arr);
+				} catch (final Exception e) {
+					System.out.println(e);
+				}
 			}
-			catch(Exception e){
-				System.out.println(e);
-			}
+		} finally {
+			fos.close();
 		}
-		
+
 		loaded = ImageUtilities.readMBF(tmpImageFile);
 		normalised = Transforms.RGB_TO_RGB_NORMALISED(loaded);
-		
+
 		ImageUtilities.write(loaded, "jpg", tmpImageFile);
-		ImageUtilities.write(normalised.getBand(1) , "jpg", tmpNormImageFile);
-		System.out.println("Image out: " + tmpImageFile );
+		ImageUtilities.write(normalised.getBand(1), "jpg", tmpNormImageFile);
+		System.out.println("Image out: " + tmpImageFile);
 		System.out.println("Normalised Image out: " + tmpNormImageFile);
 	}
-	
+
 	/**
 	 * Test that DoG keypoints can be created
 	 * 
 	 * @throws IOException
 	 */
 	@Test
-	public void testKeypointGeneration() throws IOException{
-		File tmpKeypointFile = folder.newFile("keypoint-testKeypointGeneration.key");
-		File tmpASCIIKeypointFile = folder.newFile("keypoint-testKeypointGeneration2.key");
+	public void testKeypointGeneration() throws IOException {
+		final File tmpKeypointFile = folder.newFile("keypoint-testKeypointGeneration.key");
+		final File tmpASCIIKeypointFile = folder.newFile("keypoint-testKeypointGeneration2.key");
 		String[] args = null;
-		args = new String[]{
-			"-i",tmpImageFile.getAbsolutePath(),
-			"-o",tmpKeypointFile.getAbsolutePath()
+		args = new String[] {
+				"-i", tmpImageFile.getAbsolutePath(),
+				"-o", tmpKeypointFile.getAbsolutePath()
 		};
 		Extractor.main(args);
-		
-		args = new String[]{
-			"-a",
-			"-i",tmpImageFile.getAbsolutePath(),
-			"-o",tmpASCIIKeypointFile.getAbsolutePath()
+
+		args = new String[] {
+				"-a",
+				"-i", tmpImageFile.getAbsolutePath(),
+				"-o", tmpASCIIKeypointFile.getAbsolutePath()
 		};
 		Extractor.main(args);
-		
-		List<Keypoint> binary = MemoryLocalFeatureList.read(tmpKeypointFile, Keypoint.class);
-		List<Keypoint> ascii = MemoryLocalFeatureList.read(tmpASCIIKeypointFile, Keypoint.class);
-		for(int i = 0; i<binary.size();i++){
-			assertTrue(Arrays.equals(binary.get(i).ivec,ascii.get(i).ivec));
+
+		final List<Keypoint> binary = MemoryLocalFeatureList.read(tmpKeypointFile, Keypoint.class);
+		final List<Keypoint> ascii = MemoryLocalFeatureList.read(tmpASCIIKeypointFile, Keypoint.class);
+		for (int i = 0; i < binary.size(); i++) {
+			assertTrue(Arrays.equals(binary.get(i).ivec, ascii.get(i).ivec));
 		}
 	}
-	
+
 	/**
 	 * Test transform
 	 * 
@@ -137,27 +140,27 @@ public class LocalFeaturesToolTest {
 	 */
 	@Test
 	public void testKeypointImageTransform() throws IOException {
-		File tmpKeypointFile = folder.newFile("keypoint-testKeypointImageTransform.key");
-		File tmpResizedKeypointFile = folder.newFile("keypointResized-testKeypointImageTransform.key");
+		final File tmpKeypointFile = folder.newFile("keypoint-testKeypointImageTransform.key");
+		final File tmpResizedKeypointFile = folder.newFile("keypointResized-testKeypointImageTransform.key");
 		tmpResizedKeypointFile.delete();
-		
+
 		String[] args = null;
-		args = new String[]{
-			"-i",tmpImageFile.getAbsolutePath(),
-			"-o",tmpKeypointFile.getAbsolutePath()
+		args = new String[] {
+				"-i", tmpImageFile.getAbsolutePath(),
+				"-o", tmpKeypointFile.getAbsolutePath()
 		};
 		Extractor.main(args);
-		
-		args = new String[]{
-			"-i",tmpImageFile.getAbsolutePath(),
-			"-o",tmpResizedKeypointFile.getAbsolutePath(),
-			"-a",
-			"-m","SIFT",
-			"-it","RESIZE_MAX",
-			"-dmax","1024"
+
+		args = new String[] {
+				"-i", tmpImageFile.getAbsolutePath(),
+				"-o", tmpResizedKeypointFile.getAbsolutePath(),
+				"-a",
+				"-m", "SIFT",
+				"-it", "RESIZE_MAX",
+				"-dmax", "1024"
 		};
 		Extractor.main(args);
-		
+
 		assertTrue(tmpResizedKeypointFile.exists());
 	}
 }

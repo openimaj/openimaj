@@ -24,12 +24,7 @@ import org.w3c.dom.NodeList;
  * 
  */
 public class WorldPolygons {
-
 	private static Document doc;
-	private Map<String, WorldPlace> countryShapes;
-	private Map<String, WorldPlace> countryCodeShapes;
-	private Rectangle bounds;
-
 	static {
 		final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
@@ -41,6 +36,10 @@ public class WorldPolygons {
 			throw new RuntimeException();
 		}
 	}
+
+	private Map<String, WorldPlace> countryShapes;
+	private Map<String, WorldPlace> countryCodeShapes;
+	private Rectangle bounds;
 
 	public WorldPolygons() {
 		this.countryShapes = new HashMap<String, WorldPlace>();
@@ -98,9 +97,6 @@ public class WorldPolygons {
 		return ((Element) node).getElementsByTagName(nodeName).item(0);
 	}
 
-	/**
-	 * @return
-	 */
 	public Collection<WorldPlace> getShapes() {
 		return this.countryShapes.values();
 	}

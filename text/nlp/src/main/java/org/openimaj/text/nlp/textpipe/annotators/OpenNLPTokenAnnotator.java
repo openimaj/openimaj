@@ -42,7 +42,7 @@ import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator {
 
@@ -50,6 +50,7 @@ public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator {
 	 *
 	 */
 	public static final String TOKEN_MODEL_PROP = "org.openimaj.text.opennlp.models.token";
+	private static final String TOKEN_MODEL_DEFAULT = "/org/openimaj/text/opennlp/models/en-token.bin";
 	TokenizerME tokenizer;
 
 	/**
@@ -57,41 +58,40 @@ public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator {
 	 */
 	public OpenNLPTokenAnnotator() {
 		super();
-		InputStream modelIn=null;
-		modelIn = OpenNLPTokenAnnotator.class.getResourceAsStream(System.getProperty(TOKEN_MODEL_PROP));
+		InputStream modelIn = null;
+		modelIn = OpenNLPTokenAnnotator.class.getResourceAsStream(System.getProperty(TOKEN_MODEL_PROP,
+				TOKEN_MODEL_DEFAULT));
 		TokenizerModel model = null;
 		try {
 			model = new TokenizerModel(modelIn);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		} finally {
 			if (modelIn != null) {
 				try {
 					modelIn.close();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 				}
 			}
 		}
 		tokenizer = new TokenizerME(model);
 	}
 
-
-
 	@Override
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)
-			throws MissingRequiredAnnotationException {
+			throws MissingRequiredAnnotationException
+	{
 
 	}
 
-
 	@Override
 	public List<TokenAnnotation> tokenise(String text) {
-		List<TokenAnnotation> tla = new ArrayList<TokenAnnotation>();
-		int currentOff =0;
-		for(String token : tokenizer.tokenize(text)){
-			int start = currentOff+(text.substring(currentOff).indexOf(token));
-			int stop = start+token.length();
-			tla.add(new TokenAnnotation(token,text.substring(currentOff,stop), start, stop));
+		final List<TokenAnnotation> tla = new ArrayList<TokenAnnotation>();
+		int currentOff = 0;
+		for (final String token : tokenizer.tokenize(text)) {
+			final int start = currentOff + (text.substring(currentOff).indexOf(token));
+			final int stop = start + token.length();
+			tla.add(new TokenAnnotation(token, text.substring(currentOff, stop), start, stop));
 			currentOff = stop;
 		}
 		return tla;

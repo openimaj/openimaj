@@ -29,11 +29,10 @@
  */
 package org.openimaj.text.nlp.textpipe.annotators;
 
-public class MissingRequiredAnnotationException extends Exception{
+public class MissingRequiredAnnotationException extends Exception {
+	private static final long serialVersionUID = 1L;
 
 	public MissingRequiredAnnotationException(String message) {
 		super(message);
-	}	
-	
-
+	}
 }
