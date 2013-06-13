@@ -349,15 +349,20 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 		// Draw the X-axis label
 		if( this.drawXAxis && this.drawXAxisName )
 			ir.drawText( this.xAxisName, this.axisPaddingLeft,
-					(int)(maxXLabelPosition + this.xAxisNameSize + this.majorTickLength),
+					(int)(maxXLabelPosition + this.xAxisNameSize),
 					this.xAxisNameFont,
 					this.xAxisNameSize, this.xAxisNameColour );
 
 		// Draw the Y-axis label
 		if( this.drawYAxis && this.drawYAxisName )
 		{
+			@SuppressWarnings( "rawtypes" )
+			final FontStyle s = this.yAxisNameFont.createStyle( ir );
+			s.setFontSize( this.yAxisNameSize );
+
 			final float fw = this.yAxisNameFont.getRenderer( ir ).getBounds(
-					this.yAxisName, this.yAxisNameFont.createStyle( ir ) ).width;
+					this.yAxisName, s ).width;
+
 			ir.drawText( this.yAxisName, (int)(minYLabelPosition - fw),
 					this.yAxisNameSize + this.axisPaddingTop, this.yAxisNameFont,
 					this.yAxisNameSize, this.yAxisNameColour );

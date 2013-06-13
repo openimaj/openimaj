@@ -111,18 +111,30 @@ public class LabelledPointVisualisation extends XYPlotVisualisation<LabelledDot>
 			final XYPlotVisualisation.LocatedObject<LabelledDot> object,
 			final AxesRenderer<Float[],MBFImage> renderer )
 	{
+		// Get the position where we're going to place the dot
 		Point2d pos = renderer.calculatePosition( visImage, object.x, object.y );
+
+		// Draw the dot
 		visImage.createRenderer().drawShapeFilled(
 				new Circle( pos,(float)(object.object.size * renderer.getxUnitSizePx()) ),
 					object.object.colour );
 
-		pos = renderer.calculatePosition( visImage, object.x + (object.object.size*1.2), object.y );
+		// Get the position where we're going the place the text
+		pos = renderer.calculatePosition( visImage, object.x + object.object.size, object.y );
+
+		// Create the font and font style
 		final HersheyFont f = HersheyFont.TIMES_MEDIUM;
 		final HersheyFontStyle<Float[]> fs = f.createStyle( visImage.createRenderer() );
 		fs.setFontSize( 14 );
+
+		// Calculate the bounding box of the text we're going to draw.
 		final Rectangle b = fs.getRenderer( visImage.createRenderer() ).getBounds(
 				object.object.label, fs );
-		b.translate( pos.getX(), pos.getY() );
+
+		// Bounding box is 0,0,width,height, so move it into position.
+		b.translate( 0, b.height );
+		b.translate( pos.getX() + 4, pos.getY() );
+//		System.out.println( b );
 
 		boolean overlap = false;
 		for( final Rectangle bb : this.bounds ) {
@@ -135,8 +147,10 @@ public class LabelledPointVisualisation extends XYPlotVisualisation<LabelledDot>
 
 		if( !overlap )
 			visImage.createRenderer().drawText(
-					object.object.label, (int)pos.getX(), (int)pos.getY() + 7,
+					object.object.label, (int)b.x, (int)b.y + (int)b.height,
 					f, 14, object.object.colour );
+
+//		visImage.drawShape( b, RGBColour.GREEN );
 	}
 
 	/**
