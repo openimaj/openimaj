@@ -23,41 +23,49 @@ import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.DataObjectFactory;
 
 /**
- * Calls the {@link Twitter#search(Query)} function periodically and offers all discovered {@link Status} instances
- * with the underlying {@link BlockingDroppingBufferedStream}. This stream initially takes all search results available
- * and then attempts to retrieve results which occured after the latest tweet seen. Apart form this, this {@link Stream}
- * makes no special efforts to:
- *
+ * Calls the {@link Twitter#search(Query)} function periodically and offers all
+ * discovered {@link Status} instances with the underlying
+ * {@link BlockingDroppingBufferedStream}. This stream initially takes all
+ * search results available and then attempts to retrieve results which occurred
+ * after the latest Tweet seen. Apart form this, this {@link Stream} makes no
+ * special efforts to:
+ * 
  * <ul>
  * <li>stop duplicate items
  * <li>stop when a search returns nothing
  * <li>remove retweets or spam.
  * </ul>
- *
- * This must all be handled externally!
+ * These must all be handled externally!
  * <p>
- * This class is abstract in terms of the object the stream consumes.
- * Instances of this class can construct the specific object they require for each twitter status using:
+ * This class is abstract in terms of the object the stream consumes. Instances
+ * of this class can construct the specific object they require for each twitter
+ * status using:
  * <ul>
- * 	<li>the query that created it
- * 	<li>the status object
- * 	<li>the raw json of the status
+ * <li>the query that created it
+ * <li>the status object
+ * <li>the raw json of the status
  * </ul>
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
- * @param <T> Type of items in the stream
+ * 
+ * @param <T>
+ *            Type of items in the stream
  */
-public abstract class AbstractTwitterSearchAPIDataset<T> extends BlockingDroppingBufferedStream<T> implements StreamingDataset<T> {
+public abstract class AbstractTwitterSearchDataset<T> extends BlockingDroppingBufferedStream<T>
+		implements
+		StreamingDataset<T>
+{
 
 	final class TwitterAPIRunnable implements Runnable {
 		private final Twitter twitter;
-		private class QueryMetaInfo{
+
+		private class QueryMetaInfo {
 			private long newestID = -1;
 			private long newest = -1;
 			private int backoff = 0;
 		}
 
-		private Map<Query,QueryMetaInfo> metaInfoMap;
+		private Map<Query, QueryMetaInfo> metaInfoMap;
 
 		private TwitterAPIRunnable(Twitter twitter) {
 			this.twitter = twitter;
@@ -66,49 +74,58 @@ public abstract class AbstractTwitterSearchAPIDataset<T> extends BlockingDroppin
 
 		@Override
 		public void run() {
-			while(true){
+			while (true) {
 				try {
-					Query query = AbstractTwitterSearchAPIDataset.this.getQuery();
+					final Query query = AbstractTwitterSearchDataset.this.getQuery();
+
 					QueryMetaInfo metaInfo = metaInfoMap.get(query);
-					if(metaInfo == null) metaInfoMap.put(query, metaInfo = new QueryMetaInfo());
-					QueryResult res = twitter.search(query);
-					if(metaInfo.newest!=-1){
-						query.sinceId(metaInfo.newestID+1);
+					if (metaInfo == null)
+						metaInfoMap.put(query, metaInfo = new QueryMetaInfo());
+
+					final QueryResult res = twitter.search(query);
+					if (metaInfo.newest != -1) {
+						query.sinceId(metaInfo.newestID + 1);
 					}
-					if(res.getCount() == 0){
-						metaInfo.backoff ++;
-						Thread.sleep(ZERO_RESULT_BACKOFF*metaInfo.backoff);
-					}
-					else{
+
+					if (res.getCount() == 0) {
+						metaInfo.backoff++;
+						Thread.sleep(ZERO_RESULT_BACKOFF * metaInfo.backoff);
+					} else {
 						metaInfo.backoff = 0;
 					}
-					for (Status status : res.getTweets()) {
+
+					for (final Status status : res.getTweets()) {
 						String rawjson = DataObjectFactory.getRawJSON(status);
 						rawjson = DataObjectFactory.getRawJSON(status);
-						AbstractTwitterSearchAPIDataset.this.registerStatus(query,status,rawjson);
-						long tweetTime = status.getCreatedAt().getTime();
-						if(tweetTime > metaInfo.newest){
+
+						AbstractTwitterSearchDataset.this.registerStatus(query, status, rawjson);
+						final long tweetTime = status.getCreatedAt().getTime();
+
+						if (tweetTime > metaInfo.newest) {
 							metaInfo.newest = tweetTime;
 							metaInfo.newestID = status.getId();
 						}
 					}
+
 					Thread.sleep(SLEEP_PER_SEARCH);
-				} catch (InterruptedException e) {
-					logger.error("Thread interuppted!",e);
+				} catch (final InterruptedException e) {
+					logger.error("Thread interuppted!", e);
 					close();
-				} catch (TwitterException e) {
-					long waitTime = Twitter4jUtil.handleTwitterException(e,DEFAULT_ERROR_BUT_NO_WAIT_TIME);
+				} catch (final TwitterException e) {
+					final long waitTime = Twitter4jUtil.handleTwitterException(e, DEFAULT_ERROR_BUT_NO_WAIT_TIME);
 					try {
 						Thread.sleep(waitTime);
-					} catch (InterruptedException e1) {
+					} catch (final InterruptedException e1) {
 					}
 				}
 			}
 		}
 	}
+
 	private static final long DEFAULT_ERROR_BUT_NO_WAIT_TIME = 5000;
-	protected static final long SLEEP_PER_SEARCH = (1000 * 60)/10l;
-	protected static final int ZERO_RESULT_BACKOFF = 2000;
+	private static final long SLEEP_PER_SEARCH = (1000 * 60) / 10l;
+	private static final int ZERO_RESULT_BACKOFF = 2000;
+
 	protected Query query;
 	protected Logger logger = Logger.getLogger(TwitterSearchDataset.class);
 	protected Configuration config;
@@ -118,28 +135,40 @@ public abstract class AbstractTwitterSearchAPIDataset<T> extends BlockingDroppin
 	 * @param token
 	 * @param buffer
 	 */
-	protected AbstractTwitterSearchAPIDataset(TwitterAPIToken token, BlockingDroppingQueue<T> buffer) {
+	protected AbstractTwitterSearchDataset(TwitterAPIToken token, BlockingDroppingQueue<T> buffer, Query query) {
 		super(buffer);
+
 		this.config = makeConfiguration(token);
 		this.twitter = new TwitterFactory(config).getInstance();
+		this.query = query;
+
+		startSearch();
 	}
 
 	/**
+	 * Handle the given incoming status and optionally {@link #register(Object)}
+	 * it with the stream.
+	 * 
 	 * @param query
+	 *            the query
 	 * @param status
+	 *            the parsed {@link Status}
 	 * @param rawjson
+	 *            the raw json string
 	 * @throws InterruptedException
 	 */
-	public abstract void registerStatus(Query query, Status status, String rawjson) throws InterruptedException;
+	protected abstract void registerStatus(Query query, Status status, String rawjson) throws InterruptedException;
 
-	protected void startSearch() {
+	private void startSearch() {
 		GlobalExecutorPool.getPool().execute(new TwitterAPIRunnable(twitter));
 	}
 
 	/**
-	 * @return the query to work on
+	 * Get the current query
+	 * 
+	 * @return the query
 	 */
-	public abstract Query getQuery() ;
+	public abstract Query getQuery();
 
 	protected Configuration makeConfiguration(TwitterAPIToken token) {
 		final ConfigurationBuilder cb = new ConfigurationBuilder()
@@ -161,5 +190,4 @@ public abstract class AbstractTwitterSearchAPIDataset<T> extends BlockingDroppin
 	public int numInstances() {
 		return Integer.MAX_VALUE;
 	}
-
 }

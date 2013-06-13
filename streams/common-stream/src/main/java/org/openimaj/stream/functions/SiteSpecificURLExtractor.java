@@ -1,9 +1,10 @@
-package org.openimaj.stream.provider.twitter;
+package org.openimaj.stream.functions;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -18,40 +19,42 @@ import org.openimaj.io.HttpUtils.MetaRefreshRedirectStrategy;
 import org.openimaj.util.function.MultiFunction;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.web.scraping.SiteSpecificConsumer;
-import org.openimaj.web.scraping.images.CommonHTMLConsumers;
-import org.openimaj.web.scraping.images.FacebookConsumer;
-import org.openimaj.web.scraping.images.ImgurConsumer;
-import org.openimaj.web.scraping.images.InstagramConsumer;
-import org.openimaj.web.scraping.images.OwlyImageConsumer;
-import org.openimaj.web.scraping.images.TmblrPhotoConsumer;
-import org.openimaj.web.scraping.images.TwipleConsumer;
-import org.openimaj.web.scraping.images.TwitPicConsumer;
-import org.openimaj.web.scraping.images.TwitterPhotoConsumer;
-import org.openimaj.web.scraping.images.YfrogConsumer;
 
 import com.google.common.collect.Lists;
 
-public class ImageURLExtractor implements MultiFunction<URL, URL> {
-	private static final Logger logger = Logger.getLogger(ImageURLExtractor.class);
+/**
+ * This class implements a function that will given an input URL outputs a list
+ * of URLs based on applying a list of {@link SiteSpecificConsumer}s to the
+ * input.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class SiteSpecificURLExtractor implements MultiFunction<URL, URL> {
+	private static final Logger logger = Logger.getLogger(SiteSpecificURLExtractor.class);
 
 	/**
 	 * the site specific consumers
 	 */
-	private final static List<SiteSpecificConsumer> siteSpecific = new ArrayList<SiteSpecificConsumer>();
+	private List<SiteSpecificConsumer> siteSpecific = new ArrayList<SiteSpecificConsumer>();
 
-	static {
-		siteSpecific.add(new InstagramConsumer());
-		siteSpecific.add(new TwitterPhotoConsumer());
-		siteSpecific.add(new TmblrPhotoConsumer());
-		siteSpecific.add(new TwitPicConsumer());
-		siteSpecific.add(new ImgurConsumer());
-		siteSpecific.add(new FacebookConsumer());
-		siteSpecific.add(new YfrogConsumer());
-		siteSpecific.add(new OwlyImageConsumer());
-		siteSpecific.add(new TwipleConsumer());
-		siteSpecific.add(CommonHTMLConsumers.FOTOLOG);
-		siteSpecific.add(CommonHTMLConsumers.PHOTONUI);
-		siteSpecific.add(CommonHTMLConsumers.PICS_LOCKERZ);
+	/**
+	 * Construct with the given list of consumers.
+	 * 
+	 * @param consumers
+	 *            the consumers
+	 */
+	public SiteSpecificURLExtractor(List<SiteSpecificConsumer> consumers) {
+		this.siteSpecific = consumers;
+	}
+
+	/**
+	 * Construct with the given consumers.
+	 * 
+	 * @param consumers
+	 *            the consumers
+	 */
+	public SiteSpecificURLExtractor(SiteSpecificConsumer... consumers) {
+		this.siteSpecific = Arrays.asList(consumers);
 	}
 
 	@Override

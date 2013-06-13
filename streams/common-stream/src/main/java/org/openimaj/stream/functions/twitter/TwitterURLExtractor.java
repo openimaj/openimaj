@@ -1,4 +1,4 @@
-package org.openimaj.stream.provider.twitter;
+package org.openimaj.stream.functions.twitter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,8 +16,15 @@ import org.openimaj.util.function.MultiFunction;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 
-public class TwitterLinkExtractor implements MultiFunction<Status, URL> {
-	private final static Logger logger = Logger.getLogger(TwitterLinkExtractor.class);
+/**
+ * This class implements a function that processes Twitter {@link Status}
+ * objects to extract all the mentioned URLs. URLs are extracted from both the
+ * entities field and the Tweet message body (by applying a regular expression).
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class TwitterURLExtractor implements MultiFunction<Status, URL> {
+	private final static Logger logger = Logger.getLogger(TwitterURLExtractor.class);
 	private final static Pattern urlPattern = new URLPatternProvider().pattern();
 
 	@Override
