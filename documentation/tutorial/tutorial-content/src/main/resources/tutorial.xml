@@ -4,112 +4,117 @@
 <book id="openimaj-tutorial">
   <?dbhtml filename="index.html"?>
 
-  <title>${book.title}</title>
-		
-  <bookinfo>
+	<title>${book.title}</title>
+
+	<bookinfo>
 		<title>${book.title}</title>
-    <edition>${project.version}</edition>
+		<edition>${project.version}</edition>
 
-    <!-- <author>
-      <surname>Sonatype, Inc.</surname>
-    </author> -->
+		<!-- <author> <surname>Sonatype, Inc.</surname> </author> -->
 
-    <authorgroup>
-      <author>
+		<authorgroup>
+			<author>
 				<honorific>Dr</honorific>
-        <surname>Hare</surname>
-        <firstname>Jonathon</firstname>
-	      <affiliation>
+				<surname>Hare</surname>
+				<firstname>Jonathon</firstname>
+				<affiliation>
 					<orgdiv>Electronics and Computer Science</orgdiv>
-          <orgname>${project.organization.name}</orgname>
-					<authorblurb><para><ulink url="http://users.ecs.soton.ac.uk/jsh2">http://users.ecs.soton.ac.uk/jsh2</ulink></para></authorblurb>
-        </affiliation>
-      </author>
-      <author>
+					<orgname>${project.organization.name}</orgname>
+					<authorblurb>
+						<para>
+							<ulink url="http://users.ecs.soton.ac.uk/jsh2">http://users.ecs.soton.ac.uk/jsh2</ulink>
+						</para>
+					</authorblurb>
+				</affiliation>
+			</author>
+			<author>
 				<honorific>Dr</honorific>
-        <surname>Samangooei</surname>
-        <firstname>Sina</firstname>
-        <affiliation>
+				<surname>Samangooei</surname>
+				<firstname>Sina</firstname>
+				<affiliation>
 					<orgdiv>Electronics and Computer Science</orgdiv>
-          <orgname>${project.organization.name}</orgname>
-					<authorblurb><para><ulink url="http://users.ecs.soton.ac.uk/ss">http://users.ecs.soton.ac.uk/ss</ulink></para></authorblurb>
-        </affiliation>
-      </author>
-      <author>
+					<orgname>${project.organization.name}</orgname>
+					<authorblurb>
+						<para>
+							<ulink url="http://users.ecs.soton.ac.uk/ss">http://users.ecs.soton.ac.uk/ss</ulink>
+						</para>
+					</authorblurb>
+				</affiliation>
+			</author>
+			<author>
 				<honorific>Dr</honorific>
-        <surname>Dupplaw</surname>
-        <firstname>David</firstname>
-        <affiliation>
+				<surname>Dupplaw</surname>
+				<firstname>David</firstname>
+				<affiliation>
 					<orgdiv>Electronics and Computer Science</orgdiv>
-          <orgname>${project.organization.name}</orgname>
-					<authorblurb><para><ulink url="http://users.ecs.soton.ac.uk/dpd">http://users.ecs.soton.ac.uk/dpd</ulink></para></authorblurb>
-        </affiliation>
-      </author>
-    </authorgroup>
+					<orgname>${project.organization.name}</orgname>
+					<authorblurb>
+						<para>
+							<ulink url="http://users.ecs.soton.ac.uk/dpd">http://users.ecs.soton.ac.uk/dpd</ulink>
+						</para>
+					</authorblurb>
+				</affiliation>
+			</author>
+		</authorgroup>
 
-    <copyright>
-      <year>2012</year>
-      <holder>The University of Southampton and the individual authors.</holder>
-    </copyright>
+		<copyright>
+			<year>2012</year>
+			<holder>The University of Southampton and the individual authors.
+			</holder>
+		</copyright>
 
-    <date>2012-10-30</date>
+		<date>2012-10-30</date>
 
-    <publisher>
-      <publishername>The University of Southampton</publishername>
+		<publisher>
+			<publishername>The University of Southampton</publishername>
 
-      <address><street>Highfield</street><city>Southampton</city><state>Hampshire</state><postcode>SO17 1BJ</postcode></address>
-    </publisher>
+			<address><street>Highfield</street><city>Southampton</city><state>Hampshire</state><postcode>SO17 1BJ</postcode></address>
+		</publisher>
 
-    <mediaobject role="cover">
-      <imageobject remap="lrg" role="front-large">
-        <imagedata fileref="covers/cover.png" format="PNG" />
-      </imageobject>
+		<mediaobject role="cover">
+			<imageobject remap="lrg" role="front-large">
+				<imagedata fileref="covers/cover.png" format="PNG" />
+			</imageobject>
 		</mediaobject>
-  </bookinfo>
+	</bookinfo>
 
-  <xi:include href="foreword.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  <xi:include href="preface.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	<xi:include href="foreword.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	<xi:include href="preface.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	<xi:include href="modules.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 
 	<part>
 		<title>Getting Started</title>
-  	<xi:include href="getting-started-maven.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="getting-started-maven.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
-	
+
 	<part>
 		<title>Image Basics</title>
 		<xi:include href="image-basics-intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		
-  	<xi:include href="proc-first-image.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  	<xi:include href="clust-segm.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  	<xi:include href="image-hist-feats.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  	<xi:include href="sift-matching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+		<xi:include href="proc-first-image.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="clust-segm.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="image-hist-feats.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="sift-matching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="image-datasets.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
-	
+
 	<part>
 		<title>Video Basics</title>
-  	<xi:include href="video-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  	<xi:include href="face-finding.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="video-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="face-finding.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
-	<!-- 
 	<part>
-		<title>Audio</title>
-	</part> 
-	<part>
-		<title>Machine Learning</title>
+		<title>Audio Basics</title>
+		<xi:include href="audio-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
-	<part>
-		<title>Text analysis</title>
-	</part>
-	-->
+
+	<!-- <part> <title>Audio</title> </part> <part> <title>Machine Learning</title> 
+		</part> <part> <title>Text analysis</title> </part> -->
 	<part>
 		<title>Facial Analysis</title>
 	</part>
-		
-	<!-- <part>
-		<title>Advanced Features</title>
-	</part> -->
+
+	<!-- <part> <title>Advanced Features</title> </part> -->
 	<xi:include href="colophon.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

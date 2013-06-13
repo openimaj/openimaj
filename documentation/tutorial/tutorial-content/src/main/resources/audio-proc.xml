@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="processing-audio">
+	<title>Processing Audio</title>
+	<para>
+	OpenIMAJ started as a library for image processing, then expanded to video processing.
+	The natural extension to dealing with videos is audio processing and has an important
+	role in many applications of multimedia understanding.
+	</para>
+	
+	<para>
+	Let's dive straight in and get something going before we look at some audio theory.
+	Playing an audio file in OpenIMAJ is made as easy as possible. Simply create your audio source
+	and pass it to the audio player.
+	</para>
+	
+	<programlisting>
+		XuggleAudio xa = new XuggleAudio( new File( "myAudioFile.mp3" ) );
+		AudioPlayer.createAudioPlayer( xa ).run();
+	</programlisting>
+	<tip><para>
+		The <code>XuggleAudio</code> class also has constructors for reading audio from a URL or a stream.
+	</para></tip>
+	
+	<para>
+	If you run these 2 lines of code you should hear audio playing. The <code>XuggleAudio</code>
+	class uses the <emphasis role="strong">Xuggler</emphasis> library to read the audio from the file.
+	The audio player is constructed using a static method and returns an audio player instance which
+	we set running straight away.  
+	</para>
+	
+	<!--  TODO: Maybe some very basic digital audio intro here? -->
+	
+	<para>
+	The audio subsystem in OpenIMAJ has been designed to match the programming paradigm of the	
+	image and video subprojects. All classes providing audio extend the <code>Audio</code> class. Currently
+	all implementations also extend the <code>AudioStream</code> class which defines a method
+	for getting frames of audio which we call <code>SampleChunk</code>s in OpenIMAJ. A <code>SampleChunk</code>
+	is a wrapper around an array of bytes. Understanding what those bytes mean requires knowledge of
+	the format of the audio data and this is given by the <code>AudioFormat</code> class. 
+	</para>
+	
+	<para>
+	Audio data, like image data, can come in many formats.  Each digitised reading of the sound pressure (a sample)
+	can be represented by 8 bits (1 byte, signed or unsigned), 16 bits (2 bytes, little or big endian, 
+	signed or unsigned), or 24 bits or more. It can be read at any speed (or sample rate), although 22.05KHz or 
+	44.1KHz is common for audio (48KHz for video). It can also have one (mono), two (stereo) or more channels of audio.  
+	OpenIMAJ has a API that provides a means for accessing the sample data in a consistent way, and this class is called
+	a <code>SampleBuffer</code>. It has a <code>get(index)</code> method which returns a sample as a value between
+	<code>0..1</code>. It also provides a <code>set(index,val)</code> method which provides the opposite conversion.
+	Multichannel audio is interleaved.
+	An appropriate <code>SampleBuffer</code> for the specific audio format can be retrieved from a 
+	<code>SampleChunk</code> using <code>SampleChunk.getSampleBuffer()</code>. 
+	</para>
+	
+	<para>
+	Ok, enough theory for the moment.  Let's do something interesting with the audio we're getting in.
+	</para>
+</chapter>
