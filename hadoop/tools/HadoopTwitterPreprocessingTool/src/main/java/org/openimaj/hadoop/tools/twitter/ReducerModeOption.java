@@ -29,14 +29,14 @@
  */
 package org.openimaj.hadoop.tools.twitter;
 
-import org.kohsuke.args4j.CmdLineOptionsProvider;
 
 /**
  * A style of reducer
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public enum ReducerModeOption implements CmdLineOptionsProvider {
+public enum ReducerModeOption {
 	/**
 	 * The null single reducer
 	 */
@@ -46,11 +46,5 @@ public enum ReducerModeOption implements CmdLineOptionsProvider {
 	 * one output per day
 	 */
 	IDENTITY {
-	}
-	;
-
-	@Override
-	public Object getOptions(){
-		return this;
-	}
+	};
 }

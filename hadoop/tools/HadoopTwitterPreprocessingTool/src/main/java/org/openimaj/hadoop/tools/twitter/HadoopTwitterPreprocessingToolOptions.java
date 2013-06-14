@@ -43,52 +43,69 @@ import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOption
  * Hadoop specific options for twitter preprocessing
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPreprocessingToolOptions {
-	
-	private boolean  beforeMaps;
+
+	private boolean beforeMaps;
+
 	/**
 	 * The hadoop options, assume these are the options before mapping
+	 * 
 	 * @param args
 	 * @throws CmdLineException
 	 */
 	public HadoopTwitterPreprocessingToolOptions(String[] args) throws CmdLineException {
-		this(args,false);
+		this(args, false);
 	}
-	
+
 	/**
 	 * The hadoop twitter preprocessing options
 	 * 
-	 * @param args command line optios
-	 * @param beforeMaps if true, the output location is removed if the option to do so is set
+	 * @param args
+	 *            command line optios
+	 * @param beforeMaps
+	 *            if true, the output location is removed if the option to do so
+	 *            is set
 	 * @throws CmdLineException
 	 */
-	public HadoopTwitterPreprocessingToolOptions(String[] args,boolean beforeMaps) throws CmdLineException {
-		super(args,false); // don't prepare using the superclass
+	public HadoopTwitterPreprocessingToolOptions(String[] args, boolean beforeMaps) throws CmdLineException {
+		super(args, false); // don't prepare using the superclass
 		this.beforeMaps = beforeMaps;
 	}
 
 	/*
 	 * IO args
 	 */
-	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
+	@Option(
+			name = "--mapper-mode",
+			aliases = "-mm",
+			required = false,
+			usage = "Choose a mapper mode.",
+			handler = ProxyOptionHandler.class)
 	MapperMode mapperMode = MapperMode.STANDARD;
-	MapperMode mapperModeOp = MapperMode.STANDARD;
-	
-	@Option(name="--reudcer-mode", aliases="-redm", required=false, usage="Choose a reducer mode mode.", handler=ProxyOptionHandler.class ) 
+	MapperMode.Mode mapperModeOp;
+
+	@Option(name = "--reudcer-mode", aliases = "-redm", required = false, usage = "Choose a reducer mode mode.")
 	ReducerModeOption reducerMode = ReducerModeOption.NULL;
-	ReducerModeOption reducerModeOp = ReducerModeOption.NULL;
-	
-	@Option(name="--return-immediately", aliases="-ri", required=false, usage="If set, the job is submitted to the cluster and this returns immediately") 
+
+	@Option(
+			name = "--return-immediately",
+			aliases = "-ri",
+			required = false,
+			usage = "If set, the job is submitted to the cluster and this returns immediately")
 	boolean returnImmediately = false;
-	
-	@Option(name="--lzo-compress", aliases="-lzoc", required=false, usage="If set, compress the output of the preprocessing pipeline as LZO") 
+
+	@Option(
+			name = "--lzo-compress",
+			aliases = "-lzoc",
+			required = false,
+			usage = "If set, compress the output of the preprocessing pipeline as LZO")
 	boolean lzoCompress = false;
-	
+
 	@Override
 	public boolean validate() throws CmdLineException {
-		if(this.beforeMaps){
+		if (this.beforeMaps) {
 			HadoopToolsUtil.validateInput(this);
 			HadoopToolsUtil.validateOutput(this);
 		}
@@ -97,10 +114,10 @@ public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPrepro
 
 	/**
 	 * @return the list of input files
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public Path[] getInputPaths() throws IOException {
-		Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getAllInputs(), "part");
+		final Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getAllInputs(), "part");
 		return sequenceFiles;
 	}
 
@@ -111,5 +128,4 @@ public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPrepro
 		return new Path(this.getOutput());
 	}
 
-	
 }
