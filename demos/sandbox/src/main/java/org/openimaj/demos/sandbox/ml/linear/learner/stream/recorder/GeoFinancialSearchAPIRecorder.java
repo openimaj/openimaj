@@ -25,7 +25,7 @@ import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
 import org.openimaj.util.data.Context;
-import org.openimaj.util.function.context.ContextFunction;
+import org.openimaj.util.function.context.ContextFunctionAdaptor;
 import org.openimaj.util.function.context.ContextListFunction;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.Stream;
@@ -79,16 +79,16 @@ public class GeoFinancialSearchAPIRecorder {
 				)
 						.transform(new ContextRealTimeWindowFunction<Context>(10000))
 						.map(
-								new ContextListFunction<Context, Context>("item",
-										new ContextTwitterStatusAsUSMFStatus()
+								new ContextListFunction<Context, Context>(new ContextTwitterStatusAsUSMFStatus(),
+										"item"
 								)
 						)
 						.map(
-								new ContextListFunction<Context, Context>("item",
-										new ContextFunction<USMFStatus, USMFStatus>("usmfstatus",
-												new TwitterPreprocessingFunction(languageDetectionMode, tokeniseMode,
-														stopwordMode)
-										)
+								new ContextListFunction<Context, Context>(new ContextFunctionAdaptor<USMFStatus, USMFStatus>("usmfstatus",
+										new TwitterPreprocessingFunction(languageDetectionMode, tokeniseMode,
+												stopwordMode)
+								),
+										"item"
 								)
 						);
 		// twitterUserWordCountStream.forEach(new Operation<Context>() {

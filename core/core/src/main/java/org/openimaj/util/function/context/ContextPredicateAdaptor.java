@@ -1,25 +1,18 @@
 package org.openimaj.util.function.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openimaj.util.data.Context;
-import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Predicate;
 
 /**
- * Filter a list of items belonging to a single {@link Context} entry using a
- * predicate
+ * An adaptor that allows a {@link Predicate} to be applied to a {@link Context}
+ * , based on a single element of the {@link Context}.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
- * @param <IN>
- *            Type of items in the list
+ * @param <T>
+ *            Type processed by the predicate
  */
-public class ContextListFilter<IN> extends ContextAdaptor<Predicate<IN>, List<IN>, List<IN>>
-		implements
-		Function<Context, Context>
-{
+public class ContextPredicateAdaptor<T> extends ContextAdaptor<Predicate<T>, T, T> implements Predicate<Context> {
 	/**
 	 * Construct with the given options.
 	 * 
@@ -30,7 +23,7 @@ public class ContextListFilter<IN> extends ContextAdaptor<Predicate<IN>, List<IN
 	 * @param insert
 	 *            the insertor
 	 */
-	public ContextListFilter(Predicate<IN> inner, ContextExtractor<List<IN>> extract, ContextInsertor<List<IN>> insert)
+	public ContextPredicateAdaptor(Predicate<T> inner, ContextExtractor<T> extract, ContextInsertor<T> insert)
 	{
 		super(inner, extract, insert);
 	}
@@ -47,7 +40,7 @@ public class ContextListFilter<IN> extends ContextAdaptor<Predicate<IN>, List<IN
 	 * @param insert
 	 *            the key to insert with the the output for the object
 	 */
-	public ContextListFilter(Predicate<IN> inner, String extract, String insert)
+	public ContextPredicateAdaptor(Predicate<T> inner, String extract, String insert)
 	{
 		super(inner, extract, insert);
 	}
@@ -57,27 +50,17 @@ public class ContextListFilter<IN> extends ContextAdaptor<Predicate<IN>, List<IN
 	 * created from the same key, so the output will overwrite the input.
 	 * 
 	 * @param inner
-	 *            the predicate
+	 *            the object being adapted
 	 * @param both
 	 *            the key to extract/insert
 	 */
-	public ContextListFilter(Predicate<IN> inner, String both)
+	public ContextPredicateAdaptor(Predicate<T> inner, String both)
 	{
 		super(inner, both, both);
 	}
 
 	@Override
-	public Context apply(Context in) {
-		final List<IN> obj = extract.extract(in);
-		final List<IN> out = new ArrayList<IN>();
-
-		for (final IN inItem : obj) {
-			if (inner.test(inItem))
-				out.add(inItem);
-		}
-
-		insert.insert(out, in);
-
-		return in;
+	public boolean test(Context in) {
+		return inner.test(this.extract.extract(in));
 	}
 }

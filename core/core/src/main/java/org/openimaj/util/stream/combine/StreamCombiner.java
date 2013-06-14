@@ -9,18 +9,17 @@ import org.openimaj.util.parallel.GlobalExecutorPool;
 import org.openimaj.util.stream.AbstractStream;
 import org.openimaj.util.stream.Stream;
 
-
 /**
  * A stream combiner takes two streams and produces a new stream of syncrhonised
  * pairs of the stream values. The two streams are consumed in two threads which
  * the {@link #next()} method waits to complete before returning
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  * @param <A>
  * @param <B>
  */
-public class StreamCombiner<A,B> extends AbstractStream<IndependentPair<A, B>>{
+public class StreamCombiner<A, B> extends AbstractStream<IndependentPair<A, B>> {
 
 	private Stream<B> b;
 	private Stream<A> a;
@@ -28,7 +27,7 @@ public class StreamCombiner<A,B> extends AbstractStream<IndependentPair<A, B>>{
 	private Starter<A> astart;
 	private ThreadPoolExecutor service;
 
-	class Starter<T> implements Callable<T>{
+	class Starter<T> implements Callable<T> {
 
 		private Stream<T> stream;
 
@@ -40,8 +39,8 @@ public class StreamCombiner<A,B> extends AbstractStream<IndependentPair<A, B>>{
 		public T call() throws Exception {
 			return stream.next();
 		}
-
 	}
+
 	/**
 	 * @param a
 	 * @param b
@@ -54,31 +53,33 @@ public class StreamCombiner<A,B> extends AbstractStream<IndependentPair<A, B>>{
 		this.service = GlobalExecutorPool.getPool();
 
 	}
+
 	@Override
 	public boolean hasNext() {
 		return a.hasNext() && b.hasNext();
 	}
 
 	@Override
-	public IndependentPair<A,B> next() {
-		Future<A> futurea = this.service.submit(astart);
-		Future<B> futureb = this.service.submit(bstart);
+	public IndependentPair<A, B> next() {
+		final Future<A> futurea = this.service.submit(astart);
+		final Future<B> futureb = this.service.submit(bstart);
 		try {
-			A a = futurea.get();
-			B b = futureb.get();
+			final A a = futurea.get();
+			final B b = futureb.get();
 			return IndependentPair.pair(a, b);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 
 	}
+
 	/**
 	 * @param a
 	 * @param b
 	 * @return
 	 */
-	public static <A,B> StreamCombiner<A, B> combine(Stream<A> a, Stream<B> b) {
+	public static <A, B> StreamCombiner<A, B> combine(Stream<A> a, Stream<B> b) {
 		return new StreamCombiner<A, B>(a, b);
 	}
 

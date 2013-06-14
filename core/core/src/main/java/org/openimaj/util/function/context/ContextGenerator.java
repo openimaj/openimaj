@@ -4,35 +4,44 @@ import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Function;
 
 /**
- * Generate a context stream from a stream of other objects
+ * Generate a context stream from a stream of other objects.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  * @param <T>
+ *            Type of input objects
  */
-public class ContextGenerator<T> implements Function<T,Context> {
-
-
-	private ContextInsertionStrategy<T> insert;
+public class ContextGenerator<T> implements Function<T, Context> {
+	private ContextInsertor<T> insert;
 
 	/**
-	 * @param insert the insertion strategy
+	 * Construct with the given insertor.
+	 * 
+	 * @param insert
+	 *            the insertor
 	 */
-	public ContextGenerator(ContextInsertionStrategy<T> insert)
-	{
-		this.insert= insert;
+	public ContextGenerator(ContextInsertor<T> insert) {
+		this.insert = insert;
 	}
+
 	/**
-	 * @param key the key to extract (a {@link KeyContextExtractionStrategy} is used)
+	 * Construct with the given key, which is used to create a
+	 * {@link KeyContextInsertor}.
+	 * 
+	 * @param key
+	 *            the key to extract (a {@link KeyContextInsertor} is
+	 *            used)
 	 */
 	public ContextGenerator(String key) {
-		this.insert = new KeyContextInsertionStrategy<T>(key);
+		this.insert = new KeyContextInsertor<T>(key);
 	}
 
 	@Override
 	public Context apply(T in) {
-		Context c = new Context();
+		final Context c = new Context();
+
 		this.insert.insert(in, c);
+
 		return c;
 	}
-
 }

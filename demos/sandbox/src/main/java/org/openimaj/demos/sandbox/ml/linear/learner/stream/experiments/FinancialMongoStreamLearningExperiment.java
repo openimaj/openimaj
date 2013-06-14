@@ -21,7 +21,7 @@ import org.openimaj.tools.twitter.modes.preprocessing.StopwordMode;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Operation;
-import org.openimaj.util.function.context.ContextFunction;
+import org.openimaj.util.function.context.ContextFunctionAdaptor;
 import org.openimaj.util.stream.window.WindowAverage;
 
 import com.mongodb.ServerAddress;
@@ -60,14 +60,14 @@ public class FinancialMongoStreamLearningExperiment {
 		new USMFTickMongoDBQueryStream(serverList)
 		// Transform the usmf status instances to bags of words
 		.map(
-			new ContextFunction<List<USMFStatus>, Map<String,Map<String,Double>>>(
-				"usmfstatuses","bagofwords",
-				new USMFStatusBagOfWords(new StopwordMode())
+			new ContextFunctionAdaptor<List<USMFStatus>, Map<String,Map<String,Double>>>(
+				new USMFStatusBagOfWords(new StopwordMode()),"usmfstatuses",
+				"bagofwords"
 			)
 		)
 		// transform the financial ticks to the average tick
 		.map(
-			new ContextFunction<List<Map<String,Double>>,Map<String,Double>>("ticks","averageticks",new WindowAverage())
+			new ContextFunctionAdaptor<List<Map<String,Double>>,Map<String,Double>>(new WindowAverage(),"ticks","averageticks")
 		)
 		// Group together identical stock ticks
 		.transform(new StockPriceAggregator(0.0001))

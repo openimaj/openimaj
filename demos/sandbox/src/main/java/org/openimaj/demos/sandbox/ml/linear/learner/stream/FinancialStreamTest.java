@@ -5,8 +5,8 @@ import java.net.MalformedURLException;
 import java.util.Map;
 
 import org.openimaj.util.function.Operation;
-import org.openimaj.util.function.context.ContextFunction;
-import org.openimaj.util.function.context.ContextOperation;
+import org.openimaj.util.function.context.ContextFunctionAdaptor;
+import org.openimaj.util.function.context.ContextOperationAdaptor;
 import org.openimaj.util.stream.window.ContextRealTimeWindowFunction;
 import org.openimaj.util.stream.window.WindowAverage;
 
@@ -26,14 +26,14 @@ public class FinancialStreamTest {
 		ContextRealTimeWindowFunction<Map<String,Double>> yahooWindow = new ContextRealTimeWindowFunction<Map<String,Double>>(1000);
 		new YahooFinanceStream(true,"apple","google")
 		.transform(yahooWindow)
-		.map(ContextFunction.func("item", "averageticks", new WindowAverage()))
-		.forEach(ContextOperation.op("averageticks",
-				new Operation<Map<String,Double>>() {
-					@Override
-					public void perform(Map<String, Double> object) {
-						System.out.println(object);
-					}
-				}
+		.map(ContextFunctionAdaptor.create("item", "averageticks", new WindowAverage()))
+		.forEach(ContextOperationAdaptor.create(new Operation<Map<String,Double>>() {
+			@Override
+			public void perform(Map<String, Double> object) {
+				System.out.println(object);
+			}
+		},
+				"averageticks"
 			)
 		);
 

@@ -92,7 +92,7 @@ public class CountryCodeUSMFName {
 //				}
 //			}
 //		});
-		.map(new ContextListFunction<USMFStatus,USMFStatus>("usmfstatuses", new TwitterPreprocessingFunction(countryCodeMode)))
+		.map(new ContextListFunction<USMFStatus,USMFStatus>(new TwitterPreprocessingFunction(countryCodeMode), "usmfstatuses"))
 		.forEach(new Operation<Context>() {
 
 			@Override

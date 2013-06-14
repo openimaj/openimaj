@@ -7,10 +7,11 @@ import org.openimaj.stream.provider.WikipediaEditsDataset.WikipediaEdit;
 import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
-import org.openimaj.util.function.context.ContextExtractionStrategy;
-import org.openimaj.util.function.context.ContextFunction;
+import org.openimaj.util.function.context.ContextExtractor;
+import org.openimaj.util.function.context.ContextFunctionAdaptor;
 import org.openimaj.util.function.context.ContextGenerator;
-import org.openimaj.util.function.context.ContextPredicate;
+import org.openimaj.util.function.context.ContextPredicateAdaptor;
+import org.openimaj.util.function.context.KeyContextInsertor;
 import org.openimaj.video.VideoDisplay;
 
 /**
@@ -32,20 +33,21 @@ public class WikipediaChangesGeo {
 		new WikipediaEditsDataset("en")
 				.map(new ContextGenerator<WikipediaEdit>("wikiedit"))
 				.map(
-						new ContextFunction<String, FreeGeoIPLocation>(new ContextExtractionStrategy<String>() {
-							@Override
-							public String extract(Context c) {
-								final WikipediaEdit edit = ((WikipediaEdit) c.get("wikiedit"));
-								if (edit.anon)
-									return edit.user;
-								else
-									return null;
-							}
-						},
-								"geolocation",
-								new IPAsGeolocation())
+						new ContextFunctionAdaptor<String, FreeGeoIPLocation>(new IPAsGeolocation(),
+								new ContextExtractor<String>() {
+									@Override
+									public String extract(Context c) {
+										final WikipediaEdit edit = ((WikipediaEdit) c.get("wikiedit"));
+										if (edit.anon)
+											return edit.user;
+										else
+											return null;
+									}
+								},
+								new KeyContextInsertor<FreeGeoIPLocation>("geolocation")
+						)
 				)
-				.filter(new ContextPredicate<Object>("geolocation", new NotNull()))
+				.filter(new ContextPredicateAdaptor<Object>(new NotNull(), "geolocation"))
 				.forEach(new Operation<Context>() {
 
 					@Override

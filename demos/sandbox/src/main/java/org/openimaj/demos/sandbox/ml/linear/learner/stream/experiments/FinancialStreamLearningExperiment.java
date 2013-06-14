@@ -29,7 +29,7 @@ import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;
 import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Operation;
-import org.openimaj.util.function.context.ContextFunction;
+import org.openimaj.util.function.context.ContextFunctionAdaptor;
 import org.openimaj.util.function.context.ContextListFilter;
 import org.openimaj.util.function.context.ContextListFunction;
 import org.openimaj.util.pair.Pair;
@@ -58,9 +58,9 @@ public class FinancialStreamLearningExperiment {
 		final Stream<Context> yahooAveragePriceStream = new YahooFinanceStream("AAPL", "GOOG")
 				.transform(yahooWindow)
 				.map(
-						new ContextFunction<List<Map<String, Double>>, Map<String, Double>>(
-								"item", "averageticks",
-								new WindowAverage()
+						new ContextFunctionAdaptor<List<Map<String, Double>>, Map<String, Double>>(
+								new WindowAverage(), "item",
+								"averageticks"
 						)
 				);
 
@@ -75,24 +75,24 @@ public class FinancialStreamLearningExperiment {
 				)
 						.transform(new ContextRealTimeWindowFunction<Status>(5000))
 						.map(
-								new ContextListFunction<Status, USMFStatus>("item", "usmfstatuses",
-										new TwitterStatusAsUSMFStatus()
+								new ContextListFunction<Status, USMFStatus>(new TwitterStatusAsUSMFStatus(), "item",
+										"usmfstatuses"
 								)
 						)
 						.map(
-								new ContextListFunction<USMFStatus, USMFStatus>("usmfstatuses",
-										new TwitterPreprocessingFunction(languageDetectionMode, tokeniseMode,
-												stopwordMode)
+								new ContextListFunction<USMFStatus, USMFStatus>(new TwitterPreprocessingFunction(languageDetectionMode, tokeniseMode,
+										stopwordMode),
+										"usmfstatuses"
 								)
 						)
-						.map(new ContextListFilter<USMFStatus>("usmfstatuses",
-								new TwitterPredicateFunction(new LanguageFilter("en"))
+						.map(new ContextListFilter<USMFStatus>(new TwitterPredicateFunction(new LanguageFilter("en")),
+								"usmfstatuses"
 								)
 						)
 						.map(
-								new ContextFunction<List<USMFStatus>, Map<String, Map<String, Double>>>("usmfstatuses",
-										"bagofwords",
-										new USMFStatusBagOfWords(new StopwordMode())
+								new ContextFunctionAdaptor<List<USMFStatus>, Map<String, Map<String, Double>>>(new USMFStatusBagOfWords(new StopwordMode()),
+										"usmfstatuses",
+										"bagofwords"
 								)
 						);
 

@@ -46,5 +46,4 @@ public class CombinedStreamFunction<AIN, AOUT, BIN, BOUT>
 	public IndependentPair<AOUT, BOUT> apply(IndependentPair<AIN, BIN> in) {
 		return IndependentPair.pair(fA.apply(in.firstObject()), fB.apply(in.secondObject()));
 	}
-
 }
