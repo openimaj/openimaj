@@ -29,8 +29,12 @@
  */
 package org.openimaj.image.processing.edges;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.HistogramAnalyser;
+import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FSobel;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.statistics.distribution.Histogram;
@@ -165,29 +169,68 @@ public class CannyEdgeDetector implements SinglebandImageProcessor<Float, FImage
 		thresholdingTracker(magnitudes, output, low, high);
 	}
 
+	// private void thresholdingTracker(FImage magnitude, FImage output, float
+	// low, float high) {
+	// output.zero();
+	//
+	// for (int y = 0; y < magnitude.height; y++) {
+	// for (int x = 0; x < magnitude.width; x++) {
+	// if (magnitude.pixels[y][x] >= high) {
+	// follow(x, y, magnitude, output, low);
+	// }
+	// }
+	// }
+	// }
+	//
+	// private void follow(int x, int y, FImage magnitude, FImage output, float
+	// thresh) {
+	// final int xstart = Math.max(0, x - 1);
+	// final int xstop = Math.min(x + 2, magnitude.width);
+	// final int ystart = Math.max(0, y - 1);
+	// final int ystop = Math.min(y + 2, magnitude.height);
+	//
+	// for (int yy = ystart; yy < ystop; yy++) {
+	// for (int xx = xstart; xx < xstop; xx++) {
+	// if (magnitude.pixels[yy][xx] >= thresh && output.pixels[yy][xx] != 1) {
+	// output.pixels[yy][xx] = 1;
+	// follow(xx, yy, magnitude, output, thresh);
+	// }
+	// }
+	// }
+	// }
+
 	private void thresholdingTracker(FImage magnitude, FImage output, float low, float high) {
 		output.zero();
 
+		final Deque<Pixel> candidates = new ArrayDeque<Pixel>();
 		for (int y = 0; y < magnitude.height; y++) {
 			for (int x = 0; x < magnitude.width; x++) {
-				if (magnitude.pixels[y][x] >= high) {
-					follow(x, y, magnitude, output, low);
-				}
-			}
-		}
-	}
+				if (magnitude.pixels[y][x] >= high && output.pixels[y][x] != 1) {
+					candidates.add(new Pixel(x, y));
 
-	private void follow(int x, int y, FImage magnitude, FImage output, float thresh) {
-		final int xstart = Math.max(0, x - 1);
-		final int xstop = Math.min(x + 2, magnitude.width);
-		final int ystart = Math.max(0, y - 1);
-		final int ystop = Math.min(y + 2, magnitude.height);
+					while (!candidates.isEmpty()) {
+						final Pixel current = candidates.pollFirst();
 
-		for (int yy = ystart; yy < ystop; yy++) {
-			for (int xx = xstart; xx < xstop; xx++) {
-				if (magnitude.pixels[yy][xx] >= thresh && output.pixels[yy][xx] != 1) {
-					output.pixels[yy][xx] = 1;
-					follow(xx, yy, magnitude, output, thresh);
+						if (current.x < 0 || current.x > magnitude.width || current.y < 0 || current.y > magnitude.height)
+							continue;
+
+						if (output.pixels[current.y][current.x] == 1)
+							continue;
+
+						if (magnitude.pixels[current.y][current.x] < low)
+							continue;
+
+						output.pixels[current.y][current.x] = 1;
+
+						candidates.add(new Pixel(x - 1, y - 1));
+						candidates.add(new Pixel(x, y - 1));
+						candidates.add(new Pixel(x + 1, y - 1));
+						candidates.add(new Pixel(x - 1, y));
+						candidates.add(new Pixel(x + 1, y));
+						candidates.add(new Pixel(x - 1, y + 1));
+						candidates.add(new Pixel(x, y + 1));
+						candidates.add(new Pixel(x + 1, y + 1));
+					}
 				}
 			}
 		}
