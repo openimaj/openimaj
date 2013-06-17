@@ -152,4 +152,9 @@ public class FileLocalFeatureList<T extends LocalFeature<?, ?>> extends Abstract
 	protected T newElementInstance() {
 		return LocalFeatureListUtils.newInstance(clz, this.veclen);
 	}
+
+	@Override
+	public MemoryLocalFeatureList<T> subList(int fromIndex, int toIndex) {
+		return new MemoryLocalFeatureList<T>(super.subList(fromIndex, toIndex));
+	}
 }

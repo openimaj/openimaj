@@ -51,7 +51,7 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
  *            Primitive a type of the {@link ArrayFeatureVector}s used by the
  *            {@link LocalFeature}s that will be processed.
  */
-public class BagOfVisualWords<T> implements VectorAggregator<ArrayFeatureVector<T>> {
+public class BagOfVisualWords<T> implements VectorAggregator<ArrayFeatureVector<T>, SparseIntFV> {
 	private HardAssigner<T, ?, ?> assigner;
 
 	/**

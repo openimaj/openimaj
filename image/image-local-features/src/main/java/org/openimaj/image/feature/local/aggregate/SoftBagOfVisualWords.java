@@ -53,7 +53,10 @@ import org.openimaj.util.pair.IndependentPair;
  *            Primitive array datatype for recording distances between points
  *            and cluster centroids
  */
-public class SoftBagOfVisualWords<DATATYPE, DISTANCE> implements VectorAggregator<ArrayFeatureVector<DATATYPE>> {
+public class SoftBagOfVisualWords<DATATYPE, DISTANCE>
+		implements
+			VectorAggregator<ArrayFeatureVector<DATATYPE>, SparseDoubleFV>
+{
 	private SoftAssigner<DATATYPE, DISTANCE> assigner;
 
 	/**

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.openimaj.feature.ArrayFeatureVector;
 import org.openimaj.feature.local.LocalFeature;
+import org.openimaj.feature.local.SpatialLocation;
 import org.openimaj.io.VariableLength;
 
 /**
@@ -20,10 +21,10 @@ import org.openimaj.io.VariableLength;
  */
 abstract class AbstractDSIFTKeypoint<T extends ArrayFeatureVector<Q>, Q>
 		extends
-		DSIFTKeypointLocation
+		SpatialLocation
 		implements
 		Serializable,
-		LocalFeature<DSIFTKeypointLocation, T>,
+		LocalFeature<SpatialLocation, T>,
 		VariableLength,
 		Cloneable
 {
@@ -48,7 +49,7 @@ abstract class AbstractDSIFTKeypoint<T extends ArrayFeatureVector<Q>, Q>
 	public Q descriptor;
 
 	@Override
-	public DSIFTKeypointLocation getLocation() {
+	public SpatialLocation getLocation() {
 		return this;
 	}
 

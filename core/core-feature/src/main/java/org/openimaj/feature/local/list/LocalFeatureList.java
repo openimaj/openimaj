@@ -68,4 +68,7 @@ public interface LocalFeatureList<T extends LocalFeature<?, ?>> extends Randomis
 	 * @return the feature-vector length
 	 */
 	public int vecLength();
+
+	@Override
+	public LocalFeatureList<T> subList(int fromIndex, int toIndex);
 }

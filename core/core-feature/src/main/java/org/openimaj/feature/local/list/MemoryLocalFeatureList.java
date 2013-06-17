@@ -295,4 +295,9 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?, ?>> extends ArrayL
 		}
 		return newlist;
 	}
+
+	@Override
+	public MemoryLocalFeatureList<T> subList(int fromIndex, int toIndex) {
+		return new MemoryLocalFeatureList<T>(super.subList(fromIndex, toIndex));
+	}
 }

@@ -52,7 +52,7 @@ import org.openimaj.util.list.AbstractStreamBackedList;
  */
 public class StreamLocalFeatureList<T extends LocalFeature<?, ?>> extends AbstractStreamBackedList<T>
 		implements
-			LocalFeatureList<T>
+		LocalFeatureList<T>
 {
 	int veclen;
 
@@ -154,5 +154,10 @@ public class StreamLocalFeatureList<T extends LocalFeature<?, ?>> extends Abstra
 	@Override
 	protected T newElementInstance() {
 		return LocalFeatureListUtils.newInstance(clz, this.veclen);
+	}
+
+	@Override
+	public MemoryLocalFeatureList<T> subList(int fromIndex, int toIndex) {
+		return new MemoryLocalFeatureList<T>(super.subList(fromIndex, toIndex));
 	}
 }

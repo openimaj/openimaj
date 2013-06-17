@@ -28,6 +28,17 @@ public class LocalFeatureListDataSource<T extends LocalFeature<?, ? extends Arra
 		AbstractMultiListDataSource<F, T>
 {
 	/**
+	 * Construct with the given list of data
+	 * 
+	 * @param data
+	 *            the data
+	 */
+	@SuppressWarnings("unchecked")
+	public LocalFeatureListDataSource(LocalFeatureList<T> data) {
+		super(data);
+	}
+
+	/**
 	 * Construct with the given lists of data
 	 * 
 	 * @param data

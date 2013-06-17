@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import org.openimaj.feature.FloatFV;
+import org.openimaj.feature.local.SpatialLocation;
 
 /**
  * Dense SIFT keypoint with a location and float feature vector. Also includes
@@ -91,14 +92,14 @@ public class FloatDSIFTKeypoint
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		((DSIFTKeypointLocation) this).readBinary(in);
+		((SpatialLocation) this).readBinary(in);
 		for (int i = 0; i < descriptor.length; i++)
 			descriptor[i] = in.readFloat();
 	}
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		((DSIFTKeypointLocation) this).readASCII(in);
+		((SpatialLocation) this).readASCII(in);
 
 		int i = 0;
 		while (i < descriptor.length) {

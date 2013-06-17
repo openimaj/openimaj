@@ -38,22 +38,24 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 
 import org.openimaj.io.ReadWriteable;
+import org.openimaj.util.concatenate.Concatenatable;
 
 /**
- * A sparse array of double values. Includes some elementary
+ * A sparse array of #t# values. Includes some elementary
  * vector operations (add, subtract, scalar multiply, dot product).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public abstract class Sparse#T#Array implements ReadWriteable {
+public abstract class Sparse#T#Array implements ReadWriteable, Concatenatable<Sparse#T#Array, Sparse#T#Array> {
 	protected static final int DEFAULT_CAPACITY = 10;
 	
 	/**
-	 * An entry in a {@link SparseDoubleArray}, consisting of
+	 * An entry in a {@link Sparse#T#Array}, consisting of
 	 * an index and value.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -71,7 +73,7 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	}
 	
 	/**
-	 * An entry representing the values in two parallel {@link SparseDoubleArray}s
+	 * An entry representing the values in two parallel {@link Sparse#T#Array}s
 	 * at the same index.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -535,7 +537,7 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * @param arrays the arrays to concatenate.
 	 * @return the new concatenated array
 	 */
-	public static Sparse#T#Array concatenate(Sparse#T#Array... arrays) {
+	public static Sparse#T#Array concatenateArrays(Sparse#T#Array... arrays) {
 		Sparse#T#Array concat = arrays[0].copy();
 
 		for (int i=1; i<arrays.length; i++) {
@@ -619,5 +621,37 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 		}
 
 		return array;
+	}
+	
+	@Override
+	public Sparse#T#Array concatenate(Sparse#T#Array... ins) {
+		final Sparse#T#Array result = copy();
+		
+		for (int i=0; i<ins.length; i++) {
+			final int oldLength = result.length;
+			result.setLength(oldLength + ins[i].length);
+			
+			for (Entry e : ins[i].entries()) {
+				result.set(e.index + oldLength, e.value);
+			}
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public Sparse#T#Array concatenate(List<Sparse#T#Array> ins) {
+		final Sparse#T#Array result = copy();
+		
+		for (int i=0; i<ins.size(); i++) {
+			final int oldLength = result.length;
+			result.setLength(oldLength + ins.get(i).length);
+			
+			for (Entry e : ins.get(i).entries()) {
+				result.set(e.index + oldLength, e.value);
+			}
+		}
+		
+		return result;
 	}
 }

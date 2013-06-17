@@ -43,8 +43,10 @@ import org.openimaj.feature.local.LocalFeature;
  * @param <FEATURE>
  *            The type of {@link FeatureVector} of the {@link LocalFeature}s
  *            that can be processed.
+ * @param <AGGREGATE>
+ *            Type of the aggregate {@link FeatureVector} produced
  */
-public interface VectorAggregator<FEATURE extends FeatureVector> {
+public interface VectorAggregator<FEATURE extends FeatureVector, AGGREGATE extends FeatureVector> {
 	/**
 	 * Aggregate the given features into a vector.
 	 * 
@@ -52,5 +54,5 @@ public interface VectorAggregator<FEATURE extends FeatureVector> {
 	 *            the features to aggregate
 	 * @return the aggregated vector
 	 */
-	public FeatureVector aggregate(List<? extends LocalFeature<?, ? extends FEATURE>> features);
+	public AGGREGATE aggregate(List<? extends LocalFeature<?, ? extends FEATURE>> features);
 }

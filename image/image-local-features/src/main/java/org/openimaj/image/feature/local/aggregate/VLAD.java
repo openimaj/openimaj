@@ -75,7 +75,7 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
 				"doi", "10.1109/CVPR.2010.5540039",
 				"ISSN", "1063-6919"
 		})
-public class VLAD<T> implements VectorAggregator<ArrayFeatureVector<T>> {
+public class VLAD<T> implements VectorAggregator<ArrayFeatureVector<T>, MultidimensionalFloatFV> {
 	private HardAssigner<T, ?, ?> assigner;
 	private T[] centroids;
 	private boolean normalise;

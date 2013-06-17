@@ -33,11 +33,13 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Scanner;
 
 import org.openimaj.util.array.SparseBinSearch#T#Array;
 import org.openimaj.util.array.Sparse#T#Array;
 import org.openimaj.util.array.Sparse#T#Array.Entry;
+import org.openimaj.util.concatenate.Concatenatable;
 
 /**
  * A sparse one-dimensional feature vector of #t#-valued elements.
@@ -45,7 +47,7 @@ import org.openimaj.util.array.Sparse#T#Array.Entry;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class Sparse#T#FV implements FeatureVector {
+public class Sparse#T#FV implements FeatureVector, Concatenatable<Sparse#T#FV, Sparse#T#FV> {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -224,5 +226,29 @@ public class Sparse#T#FV implements FeatureVector {
 		}
 		
 		return d;
+	}
+	
+	@Override
+	public Sparse#T#FV concatenate(Sparse#T#FV... ins) {
+		Sparse#T#Array [] insValues = new Sparse#T#Array[ins.length];
+		
+		for (int i=0; i<ins.length; i++)
+			insValues[i] = ins[i].values;
+		
+		Sparse#T#Array vals = values.concatenate(insValues);
+		
+		return new Sparse#T#FV(vals);
+	}
+	
+	@Override
+	public Sparse#T#FV concatenate(List<Sparse#T#FV> ins) {
+		Sparse#T#Array [] insValues = new Sparse#T#Array[ins.size()];
+		
+		for (int i=0; i<ins.size(); i++)
+			insValues[i] = ins.get(i).values;
+		
+		Sparse#T#Array vals = values.concatenate(insValues);
+		
+		return new Sparse#T#FV(vals);
 	}
 }

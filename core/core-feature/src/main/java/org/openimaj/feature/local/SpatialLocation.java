@@ -38,26 +38,29 @@ import java.util.Scanner;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
- * SpatialLocation represents a {@link Location} in 2d-space.
- * SpatialLocations contain x and y ordinates.
+ * SpatialLocation represents a {@link Location} in 2d-space. SpatialLocations
+ * contain x and y ordinates.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class SpatialLocation extends Point2dImpl implements Location, Cloneable {
 	private static final long serialVersionUID = 1L;
-		
+
 	/**
-	 * Construct the ScaleSpaceLocation at 0, 0, 0.
+	 * Construct the ScaleSpaceLocation at 0, 0.
 	 */
 	public SpatialLocation() {
 		super(0, 0);
 	}
-	
+
 	/**
 	 * Construct the SpatialLocation with the given x and y coordinates.
-	 * @param x the x-coordinate
-	 * @param y the y-coordinate
+	 * 
+	 * @param x
+	 *            the x-coordinate
+	 * @param y
+	 *            the y-coordinate
 	 */
 	public SpatialLocation(float x, float y) {
 		super(x, y);
@@ -68,31 +71,31 @@ public class SpatialLocation extends Point2dImpl implements Location, Cloneable 
 		out.writeFloat(this.x);
 		out.writeFloat(this.y);
 	}
-	
+
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		//for legacy reasons ascii format writes y, x
+		// for legacy reasons ascii format writes y, x
 		out.format("%4.2f %4.2f", y, x);
 		out.println();
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		x = in.readFloat();
 		y = in.readFloat();
 	}
-	
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		y = Float.parseFloat(in.next());
 		x = Float.parseFloat(in.next());
 	}
-	
+
 	@Override
 	public byte[] binaryHeader() {
 		return "".getBytes();
 	}
-	
+
 	@Override
 	public String asciiHeader() {
 		return "";
@@ -100,18 +103,18 @@ public class SpatialLocation extends Point2dImpl implements Location, Cloneable 
 
 	@Override
 	public Float getOrdinate(int dimension) {
-		float [] pos = {x, y};
+		final float[] pos = { x, y };
 		return pos[dimension];
 	}
-	
+
 	@Override
 	public int getDimensions() {
 		return 3;
 	}
-	
+
 	@Override
-	public SpatialLocation clone(){
-		SpatialLocation c = (SpatialLocation) super.clone();
+	public SpatialLocation clone() {
+		final SpatialLocation c = (SpatialLocation) super.clone();
 		return c;
 	}
 }

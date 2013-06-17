@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import org.openimaj.feature.ByteFV;
+import org.openimaj.feature.local.SpatialLocation;
 
 /**
  * Dense SIFT keypoint with a location and byte feature vector. Also includes
@@ -115,13 +116,13 @@ public class ByteDSIFTKeypoint
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		((DSIFTKeypointLocation) this).readBinary(in);
+		((SpatialLocation) this).readBinary(in);
 		in.readFully(descriptor);
 	}
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		((DSIFTKeypointLocation) this).readASCII(in);
+		((SpatialLocation) this).readASCII(in);
 
 		int i = 0;
 		while (i < descriptor.length) {

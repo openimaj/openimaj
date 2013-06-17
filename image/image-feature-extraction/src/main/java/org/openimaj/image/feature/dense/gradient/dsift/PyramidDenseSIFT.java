@@ -77,25 +77,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 	public void analyseImage(FImage image) {
 		final Rectangle bounds = image.getBounds();
 
-		for (int i = 0; i < sizes.length; i++) {
-			final int size = sizes[i];
-			final int offset = (int) Math.floor(3f / 2f * (ArrayUtils.maxValue(sizes) - size));
-
-			final FImage smoothed;
-			if (magnificationFactor == 0) {
-				smoothed = image;
-			} else {
-				final float sigma = size / magnificationFactor;
-				smoothed = image.process(new FGaussianConvolve(sigma));
-			}
-
-			// extract DSIFT
-			bounds.x = offset;
-			bounds.y = offset;
-			dsift.data = workingData[i];
-			dsift.analyseImage(smoothed, bounds);
-			descriptors[i] = dsift.descriptors;
-		}
+		analyseImage(image, bounds);
 	}
 
 	/**
@@ -110,12 +92,19 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 	public void analyseImage(FImage image, Rectangle originalBounds) {
 		final Rectangle bounds = originalBounds;
 
+		descriptors = new float[sizes.length][][];
+
 		for (int i = 0; i < sizes.length; i++) {
 			final int size = sizes[i];
 			final int offset = (int) Math.floor(3f / 2f * (ArrayUtils.maxValue(sizes) - size));
 
-			final float sigma = size / magnificationFactor;
-			final FImage smoothed = image.process(new FGaussianConvolve(sigma));
+			final FImage smoothed;
+			if (magnificationFactor == 0) {
+				smoothed = image;
+			} else {
+				final float sigma = size / magnificationFactor;
+				smoothed = image.process(new FGaussianConvolve(sigma));
+			}
 
 			// extract DSIFT
 			bounds.x = originalBounds.x + offset;
