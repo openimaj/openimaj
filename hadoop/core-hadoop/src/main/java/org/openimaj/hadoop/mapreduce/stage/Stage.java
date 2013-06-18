@@ -35,6 +35,8 @@ import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -44,9 +46,6 @@ import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.util.reflection.ReflectionUtils;
-
-import com.hadoop.compression.lzo.LzopCodec;
-import com.hadoop.mapreduce.LzoTextInputFormat;
 
 /**
  * A stage in a multi step job. Each step is told where the jobs data will come
@@ -136,7 +135,8 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 		// A bit of a dirty hack, if any input file is an lzo file sneakily
 		// switch the input format class to LZOTextInput
 		if (inputFormatClass.equals(TextInputFormat.class) && containsLZO(inputs)) {
-			job.setInputFormatClass(LzoTextInputFormat.class);
+			job.setInputFormatClass((Class<? extends InputFormat>) Class
+					.forName("com.hadoop.compression.lzo.LzoTextInputFormat"));
 		}
 		else {
 			job.setInputFormatClass(inputFormatClass);
@@ -149,7 +149,8 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 		job.setOutputFormatClass(outputFormatClass);
 		if (outputFormatClass.equals(TextOutputFormat.class) && this.lzoCompress()) {
 			TextOutputFormat.setCompressOutput(job, true);
-			TextOutputFormat.setOutputCompressorClass(job, LzopCodec.class);
+			TextOutputFormat.setOutputCompressorClass(job,
+					(Class<? extends CompressionCodec>) Class.forName("com.hadoop.compression.lzo.LzopCodec"));
 		} else {
 			TextOutputFormat.setCompressOutput(job, false);
 		}
