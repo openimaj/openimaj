@@ -188,9 +188,14 @@ public class HadoopTwitterPreprocessingToolTest {
 	 */
 	@Test
 	public void testJSONRANDOMTokeniseLZOOutput() throws Exception {
-		final String mode = "TOKENISE";
-		final File outJSON = folder.newFile("tokens-testJSONTokenise.json");
-		perform(outJSON, jsonGeoTwitterInputFile, "-lzoc", mode);
+		try {
+			Class.forName("com.hadoop.compression.lzo.LzopCodec");
+			final String mode = "TOKENISE";
+			final File outJSON = folder.newFile("tokens-testJSONTokenise.json");
+			perform(outJSON, jsonGeoTwitterInputFile, "-lzoc", mode);
+		} catch (final ClassNotFoundException e) {
+			System.err.println("LZO not found on classpath; skipping test");
+		}
 	}
 
 	/**

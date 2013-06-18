@@ -32,7 +32,6 @@ package org.openimaj.hadoop.tools.localfeature;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +41,6 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -68,15 +66,6 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException,
 				InterruptedException
 		{
-			try {
-				final Field f = TaskInputOutputContext.class.getDeclaredField("output");
-				f.setAccessible(true);
-				System.out.println("output" + f.get(context));
-				System.out.println("outputClass" + f.get(context).getClass());
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-
 			final InputStream ios = null;
 			try {
 				options = new HadoopLocalFeaturesToolOptions(context.getConfiguration().getStrings(ARGS_KEY));
