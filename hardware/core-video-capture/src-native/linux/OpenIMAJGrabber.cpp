@@ -31,6 +31,8 @@
 #include "capture.h"
 #include <stdio.h>
 
+__asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
+
 #define NUM_DEVICES_SEARCH 16
 
 #define VG ((VideoGrabber*)this->data)
