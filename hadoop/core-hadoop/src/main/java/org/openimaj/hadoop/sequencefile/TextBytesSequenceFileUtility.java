@@ -137,6 +137,6 @@ public final class TextBytesSequenceFileUtility extends SequenceFileUtility<Text
 
 	@Override
 	protected void writeZipData(ZipOutputStream zos, BytesWritable value) throws IOException {
-		zos.write(value.getBytes());
+		zos.write(value.getBytes(), 0, value.getLength());
 	}
 }
