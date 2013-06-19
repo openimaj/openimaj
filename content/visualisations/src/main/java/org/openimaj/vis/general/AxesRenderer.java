@@ -7,6 +7,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.renderer.ImageRenderer;
+import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.Font;
 import org.openimaj.image.typography.FontRenderer;
 import org.openimaj.image.typography.FontStyle;
@@ -234,7 +235,7 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	public void renderAxis( final I image )
 	{
 		// Create the renderer to draw to the image
-		final ImageRenderer<Q, ? extends Image<Q, I>> ir = image.createRenderer();
+		final ImageRenderer<Q, ? extends Image<Q, I>> ir = image.createRenderer( RenderHints.ANTI_ALIASED );
 
 		// Get the dimensions of the image to draw to
 		final int w = image.getWidth();

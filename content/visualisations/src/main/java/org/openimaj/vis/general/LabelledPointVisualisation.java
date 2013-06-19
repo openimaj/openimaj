@@ -10,6 +10,8 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.image.typography.hershey.HersheyFontStyle;
 import org.openimaj.math.geometry.point.Point2d;
@@ -114,8 +116,10 @@ public class LabelledPointVisualisation extends XYPlotVisualisation<LabelledDot>
 		// Get the position where we're going to place the dot
 		Point2d pos = renderer.calculatePosition( visImage, object.x, object.y );
 
+		final MBFImageRenderer ir = visImage.createRenderer( RenderHints.ANTI_ALIASED );
+
 		// Draw the dot
-		visImage.createRenderer().drawShapeFilled(
+		ir.drawShapeFilled(
 				new Circle( pos,(float)(object.object.size * renderer.getxUnitSizePx()) ),
 					object.object.colour );
 
@@ -146,11 +150,10 @@ public class LabelledPointVisualisation extends XYPlotVisualisation<LabelledDot>
 		this.bounds.add( b );
 
 		if( !overlap )
-			visImage.createRenderer().drawText(
+			ir.drawText(
 					object.object.label, (int)b.x, (int)b.y + (int)b.height,
 					f, 14, object.object.colour );
 
-//		visImage.drawShape( b, RGBColour.GREEN );
 	}
 
 	/**

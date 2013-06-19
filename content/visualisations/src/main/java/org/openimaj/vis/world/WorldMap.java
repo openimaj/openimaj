@@ -10,6 +10,8 @@ import java.util.Set;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Shape;
@@ -175,6 +177,8 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 			// Each place may have more than one polygon.
 			final List<Shape> shapes = wp.getShapes();
 
+			final MBFImageRenderer ir = visImage.createRenderer( RenderHints.ANTI_ALIASED );
+
 			// For each of the polygons... draw them to the image.
 			for( Shape s : shapes )
 			{
@@ -183,15 +187,15 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 				if( this.activeCountries.contains( wp.getISOA2() ) )
 				{
 					final Float[] col = this.countryHighlightColours.get( wp.getISOA2() );
-					visImage.drawShapeFilled( s, col == null ? this.highlightCountryLandColour : col );
+					ir.drawShapeFilled( s, col == null ? this.highlightCountryLandColour : col );
 				}
 				else
 				{
-					this.visImage.drawShapeFilled( s, this.defaultCountryLandColour );
+					ir.drawShapeFilled( s, this.defaultCountryLandColour );
 				}
 
 				// Draw the outline shape of the country
-				this.visImage.drawShape( s, 1, this.defaultCountryOutlineColour );
+				ir.drawShape( s, 1, this.defaultCountryOutlineColour );
 			}
 		}
 	}
