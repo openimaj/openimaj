@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos.audio;
 
@@ -50,7 +50,7 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 
 /**
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- * 
+ *
  * @created 28 Oct 2011
  */
 @Demo(
@@ -76,45 +76,44 @@ public class AudioCaptureDemo {
 	private final double[] Hz = { 100, 500, 1000, 5000, 10000, 20000, 40000 };
 
 	/** Whether to mark the frequency bands on the spectragram */
-	private boolean drawFreqBands = true;
+	private final boolean drawFreqBands = true;
 
 	/** The Fourier transform processor we're going to use */
 	private FourierTransform fftp = null;
 
 	/**
-	 * 
+	 *
 	 */
 	public AudioCaptureDemo() {
-		img = new FImage(512, 400);
-		DisplayUtilities.displayName(img, "display");
+		this.img = new FImage(512, 400);
+		DisplayUtilities.displayName(this.img, "display");
 
-		fft = new FImage(img.getWidth(), 400);
-		DisplayUtilities.displayName(fft, "fft");
-		DisplayUtilities.positionNamed("fft", 0, img.getHeight());
+		this.fft = new FImage(this.img.getWidth(), 400);
+		DisplayUtilities.displayName(this.fft, "fft");
+		DisplayUtilities.positionNamed("fft", 0, this.img.getHeight());
 
-		fftp = new FourierTransform();
-		spectra = new FImage(800, sampleChunkSize / 2);
-		DisplayUtilities.displayName(spectra, "spectra", true);
-		DisplayUtilities.positionNamed("spectra", img.getWidth(), 0);
+		this.fftp = new FourierTransform();
+		this.spectra = new FImage(800, this.sampleChunkSize / 2);
+		DisplayUtilities.displayName(this.spectra, "spectra", true);
+		DisplayUtilities.positionNamed("spectra", this.img.getWidth(), 0);
 
 		// Uncomment the below to read from a file
 		// final XuggleAudio xa = new XuggleAudio( AudioCaptureDemo.class.
 		// getResource("/org/openimaj/demos/audio/140bpm-Arp.mp3" ) );
 
 		// Uncomment the below for grabbing audio live
-		final JavaSoundAudioGrabber xa = new JavaSoundAudioGrabber();
-		xa.setFormat(new AudioFormat(16, 44.1, 1));
-		xa.setMaxBufferSize(sampleChunkSize);
+		final JavaSoundAudioGrabber xa = new JavaSoundAudioGrabber(new AudioFormat(16, 44.1, 1));
+		xa.setMaxBufferSize(this.sampleChunkSize);
 		new Thread(xa).start();
 
 		// Hanning processor on top of the main audio stream
 		final HanningAudioProcessor g =
-				new HanningAudioProcessor(xa, img.getWidth() * xa.getFormat().getNumChannels())
+				new HanningAudioProcessor(xa, this.img.getWidth() * xa.getFormat().getNumChannels())
 			{
 				@Override
-				public SampleChunk processSamples(SampleChunk sample)
+				public SampleChunk processSamples(final SampleChunk sample)
 				{
-					updateDisplay(sample);
+					AudioCaptureDemo.this.updateDisplay(sample);
 					return sample;
 				}
 			};
@@ -125,7 +124,7 @@ public class AudioCaptureDemo {
 			Thread.sleep(500);
 			SampleChunk s = null;
 			while ((s = g.nextSampleChunk()) != null)
-				updateDisplay(s);
+				this.updateDisplay(s);
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -133,11 +132,11 @@ public class AudioCaptureDemo {
 
 	/**
 	 * Updates the visualisation each time a sample chunk comes in.
-	 * 
+	 *
 	 * @param s
 	 *            The sample chunk to display
 	 */
-	public void updateDisplay(SampleChunk s) {
+	public void updateDisplay(final SampleChunk s) {
 		ShortBuffer sb = null;
 		ByteBuffer bb = null;
 		if ((bb = s.getSamplesAsByteBuffer()) != null)
@@ -148,31 +147,31 @@ public class AudioCaptureDemo {
 		// -------------------------------------------------
 		// Draw waveform
 		// -------------------------------------------------
-		img.zero();
-		final int yOffset = img.getHeight() / 2;
+		this.img.zero();
+		final int yOffset = this.img.getHeight() / 2;
 		for (int i = 1; i < s.getNumberOfSamples() / s.getFormat().getNumChannels(); i++) {
-			img.drawLine(
+			this.img.drawLine(
 					i - 1, sb.get((i - 1) * s.getFormat().getNumChannels()) / 256 + yOffset,
 					i, sb.get(i * s.getFormat().getNumChannels()) / 256 + yOffset, 1f);
 		}
-		DisplayUtilities.displayName(img, "display");
+		DisplayUtilities.displayName(this.img, "display");
 
 		// -------------------------------------------------
 		// Draw FFT
 		// -------------------------------------------------
-		fft.zero();
-		fftp.process(s);
+		this.fft.zero();
+		this.fftp.process(s);
 
-		final float[] f = fftp.getLastFFT()[0];
+		final float[] f = this.fftp.getLastFFT()[0];
 		final double binSize = (s.getFormat().getSampleRateKHz() * 1000) / (f.length / 2);
 
 		for (int i = 0; i < f.length / 4; i++) {
 			final float re = f[i * 2];
 			final float im = f[i * 2 + 1];
 			final float mag = (float) Math.log(Math.sqrt(re * re + im * im) + 1) / 50f;
-			fft.drawLine(i * 2, fft.getHeight(), i * 2, fft.getHeight() - (int) (mag * fft.getHeight()), 2, 1f);
+			this.fft.drawLine(i * 2, this.fft.getHeight(), i * 2, this.fft.getHeight() - (int) (mag * this.fft.getHeight()), 2, 1f);
 		}
-		DisplayUtilities.displayName(fft, "fft");
+		DisplayUtilities.displayName(this.fft, "fft");
 
 		// -------------------------------------------------
 		// Draw Spectra
@@ -180,14 +179,14 @@ public class AudioCaptureDemo {
 		// System.out.println( "Sample chunk size: "+sampleChunkSize );
 		// System.out.println( "Number of samples: "+s.getNumberOfSamples() );
 		// System.out.println( "FFT size: "+f.length );
-		if (s.getNumberOfSamples() != sampleChunkSize) {
-			sampleChunkSize = s.getNumberOfSamples();
-			spectra = new FImage(800, sampleChunkSize / 2);
-			DisplayUtilities.displayName(spectra, "spectra");
-			DisplayUtilities.positionNamed("spectra", img.getWidth(), 0);
+		if (s.getNumberOfSamples() != this.sampleChunkSize) {
+			this.sampleChunkSize = s.getNumberOfSamples();
+			this.spectra = new FImage(800, this.sampleChunkSize / 2);
+			DisplayUtilities.displayName(this.spectra, "spectra");
+			DisplayUtilities.positionNamed("spectra", this.img.getWidth(), 0);
 		}
 
-		spectra.shiftLeftInplace();
+		this.spectra.shiftLeftInplace();
 
 		// Draw the spectra
 		for (int i = 0; i < f.length / 4; i++) {
@@ -197,17 +196,17 @@ public class AudioCaptureDemo {
 			if (mag > 1) {
 				mag = 1;
 			}
-			spectra.setPixel(spectra.getWidth() - 1, spectra.getHeight() - i, mag);
+			this.spectra.setPixel(this.spectra.getWidth() - 1, this.spectra.getHeight() - i, mag);
 		}
 
-		final MBFImage drawSpectra = ColourMap.Jet.apply(spectra);
-		if (drawFreqBands) {
+		final MBFImage drawSpectra = ColourMap.Jet.apply(this.spectra);
+		if (this.drawFreqBands) {
 			// drawSpectra = spectra.clone();
 
 			// Draw the frequency bands
-			for (final double freq : Hz) {
+			for (final double freq : this.Hz) {
 				final int y = drawSpectra.getHeight() - (int) (freq / binSize);
-				drawSpectra.drawLine(0, y, spectra.getWidth(), y, RGBColour.GREEN);
+				drawSpectra.drawLine(0, y, this.spectra.getWidth(), y, RGBColour.GREEN);
 				drawSpectra.drawText("" + freq + "Hz", 4, y, HersheyFont.TIMES_BOLD, 10, RGBColour.GREEN);
 			}
 		}
@@ -216,10 +215,10 @@ public class AudioCaptureDemo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		new AudioCaptureDemo();
 	}
 }
