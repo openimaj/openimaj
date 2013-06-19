@@ -27,6 +27,15 @@ public class App {
 	 */
 	public static void main(String[] args) throws Exception {
 		/**
+		 * Build a dataset from images on disk
+		 */
+		final VFSListDataset<FImage> images = new VFSListDataset<FImage>("/images",
+				ImageUtilities.FIMAGE_READER);
+		System.out.println(images.size());
+		DisplayUtilities.display(images.getRandomInstance(), "A random image from the dataset");
+		DisplayUtilities.display("My images", images);
+
+		/**
 		 * Build a dataset from images in a zip file
 		 */
 		final VFSListDataset<FImage> faces = new VFSListDataset<FImage>("zip:http://datasets.openimaj.org/att_faces.zip",

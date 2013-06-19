@@ -10,8 +10,6 @@
 		<title>${book.title}</title>
 		<edition>${project.version}</edition>
 
-		<!-- <author> <surname>Sonatype, Inc.</surname> </author> -->
-
 		<authorgroup>
 			<author>
 				<honorific>Dr</honorific>
@@ -58,12 +56,12 @@
 		</authorgroup>
 
 		<copyright>
-			<year>2012</year>
+			<year>2013</year>
 			<holder>The University of Southampton and the individual authors.
 			</holder>
 		</copyright>
 
-		<date>2012-10-30</date>
+		<date>2013-06-20</date>
 
 		<publisher>
 			<publishername>The University of Southampton</publishername>
@@ -83,38 +81,85 @@
 	<xi:include href="modules.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 
 	<part>
-		<title>Getting Started</title>
-		<xi:include href="getting-started-maven.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<title>OpenIMAJ Fundamentals</title>
+		<xi:include href="fundamentals/openimaj/getting-started-maven.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
 	<part>
-		<title>Image Basics</title>
-		<xi:include href="image-basics-intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<title>Image Fundamentals</title>
+		<xi:include href="fundamentals/image/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 
-		<xi:include href="proc-first-image.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		<xi:include href="clust-segm.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		<xi:include href="image-hist-feats.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		<xi:include href="sift-matching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		<xi:include href="image-datasets.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/image/proc-first-image.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/image/clust-segm.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/image/image-hist-feats.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/image/sift-matching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/image/image-datasets.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
 	<part>
-		<title>Video Basics</title>
-		<xi:include href="video-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		<xi:include href="face-finding.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<title>Video Fundamentals</title>
+		<xi:include href="fundamentals/video/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
+		<xi:include href="fundamentals/video/video-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/video/face-finding.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
 	<part>
-		<title>Audio Basics</title>
-		<xi:include href="audio-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<title>Audio Fundamentals</title>
+		<xi:include href="fundamentals/audio/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
+		<xi:include href="fundamentals/audio/audio-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	</part>
+	
+	<part>
+		<title>Text Fundamentals</title>
+		<xi:include href="fundamentals/text/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
+		<xi:include href="fundamentals/text/nlp-pos-entities.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	</part>
+	
+	<part>
+		<title>Web Fundamentals</title>
+		<xi:include href="fundamentals/web/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
+		<xi:include href="fundamentals/web/web-page-analysis.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	</part>
+	
+	<part>
+		<title>Streaming Data Fundamentals</title>
+		<xi:include href="fundamentals/streaming/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
+		<xi:include href="fundamentals/streaming/stream-basics.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/streaming/twitter-images.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
-	<!-- <part> <title>Audio</title> </part> <part> <title>Machine Learning</title> 
-		</part> <part> <title>Text analysis</title> </part> -->
+	<part>
+		<title>Machine Learning Fundamentals</title> 
+		<xi:include href="fundamentals/machine-learning/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
+		<xi:include href="fundamentals/machine-learning/classification101.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/machine-learning/image-annotation.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/machine-learning/feature-detector.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	</part>
+	
 	<part>
 		<title>Facial Analysis</title>
+		<xi:include href="advanced/faces/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
+		<xi:include href="advanced/faces/eigenfaces.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="advanced/faces/face-detection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="advanced/faces/face-alignment.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="advanced/faces/face-features.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="advanced/faces/face-annotation.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
-	<!-- <part> <title>Advanced Features</title> </part> -->
+	<part>
+		<title>Advanced Features</title>
+		<xi:include href="advanced/features/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
+		<xi:include href="advanced/features/parallel-processing.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="advanced/features/referencing-code.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	</part>
+	
 	<xi:include href="colophon.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

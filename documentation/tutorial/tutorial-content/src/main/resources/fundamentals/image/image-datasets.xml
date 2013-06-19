@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="image-datasets">
+  <title>Image Datasets</title>
+	<para>
+	<emphasis role="strong">Datasets</emphasis> are an important concept in OpenIMAJ. Fundamentally, a dataset is a collection of data items. OpenIMAJ supports two types of dataset: <code>ListDataset</code>s and <code>GroupedDataset</code>s. As the name suggests, a <code>ListDataset</code> is basically like a list of data items and indeed the <code>ListDataset</code> class extends the java <code>List</code> interface. A <code>GroupedDataset</code> is essentially a keyed map of <code>Dataset</code>s and is an extension of the Java <code>Map</code> interface. The datasets classes are designed to provide a useful way of manipulating collections of items, and are particularly useful for applying machine-learning techniques to data as we'll see in later in the tutorial.
+	</para>
+	<para>
+		This tutorial explores the use of datasets that contain images. OpenIMAJ contains a methods and classes to help you efficiently deal with the construction an manipulation of image datasets (and indeed datasets of other types). To get started, create a new project using the Maven archetype, or add a new class to an existing OpenIMAJ Maven project and add a main method.
+	</para>
+	<para>
+		We'll start by looking at how you can create a simple list dataset from a directory of images you have on your computer's disk. If you don't have a directory of images to hand, create an empty one somewhere on your computer and add a couple of images to it. Now, add some code to your main method to construct an instance of a <code>VFSListDataset</code> as follows:
+	</para>
+	<programlisting>VFSListDataset&lt;FImage&gt; images = 
+		new VFSListDataset&lt;FImage&gt;("/path/to/image_dir", ImageUtilities.FIMAGE_READER);</programlisting>
+	<para>
+		In your code you'll need to replace the <code>/path/to/image_dir</code> string with the path to your directory of images. Notice that the dataset we've created is typed on the <code>FImage</code> class, and in the constructor we've passed a reference to <code>ImageUtilities.FIMAGE_READER</code>. This means that this dataset will contain grey-scale versions of the images on the disk (irrespective of whether they are actually colour images). The <code>ImageUtilities.FIMAGE_READER</code> is a special object called an <code>ObjectReader</code>. If you wanted to load colour images in your dataset, you would just need to change the type to <code>MBFImage</code>, and use the <code>ImageUtilities.MBFIMAGE_READER</code> <code>ObjectReader</code> instead.
+	</para>
+	<para>
+		As we mentioned earlier, a <code>ListDataset</code> extends a normal Java <code>List</code>, so you can do standard things like getting the number of items in the dataset:
+	</para>
+	<programlisting>System.out.println(images.size());</programlisting>
+	<para>
+		The dataset interface also allows you to easily get a random item from the dataset. As we're dealing with images, we can display a random image as follows:
+	</para>
+	<programlisting>DisplayUtilities.display(images.getRandomInstance(), "A random image from the dataset");</programlisting>
+		<para>
+		Also, because we're dealing with a list of images, we can display them all in a window as follows:
+	</para>
+	<programlisting>DisplayUtilities.display("My images", images);</programlisting>
+	<para>
+		The <code>VFSListDataset</code> class is very powerful. It can be used to create datasets from any kinds of data given an appropriate <code>ObjectReader</code> implementation. Beyond this, it is also able to create datasets from other sources, such as compressed archives containing data items, and even from remote data that is not stored on the local disk. Try running the following code which creates an image dataset from images in a zip file which is hosted on a web-server:
+	</para>
+	<programlisting>VFSListDataset&lt;FImage&gt; faces = 
+		new VFSListDataset&lt;FImage&gt;("zip:http://datasets.openimaj.org/att_faces.zip", ImageUtilities.FIMAGE_READER);
+DisplayUtilities.display("ATT faces", faces);</programlisting>
+	<para>
+		As was mentioned in the introduction to this chapter, a grouped dataset maps a set of keys to sub-datasets. Grouped datasets are useful for things like machine-learning when you want to train classifiers to distinguish between groups. If you download and unzip the faces dataset that we used above (http://datasets.openimaj.org/att_faces.zip), you'll see that the images are actually grouped into directories, with all the images of a single individual stored in the same directory. When we loaded the list dataset from the zip file, we lost the associations between images of each individual. Using a <code>VFSGroupDataset</code> we can maintain the associations:
+	</para>		
+<programlisting>VFSGroupDataset&lt;FImage&gt; groupedFaces = 
+	new VFSGroupDataset&lt;FImage&gt;( "zip:http://datasets.openimaj.org/att_faces.zip", ImageUtilities.FIMAGE_READER);</programlisting>
+		<para>Using the grouped dataset, we can iterate through the keys, which are actually created from the names of the directories containing the images, and display all the images from each individual in a window:
+		</para>
+		<programlisting>for (final Entry&lt;String, VFSListDataset&lt;FImage&gt;&gt; entry : groupedFaces.entrySet()) {
+	DisplayUtilities.display(entry.getKey(), entry.getValue());
+}</programlisting>
+	<para>
+		Sometimes, it can be useful to be able to dynamically create a dataset of images from the web. In the image analysis community, Flickr is often used as a source of tagged images for performing activities such as training classifiers. The <code>FlickrImageDataset</code> class makes it easy to dynamically construct a dataset of images from a Flickr search:
+	</para>
+	<programlisting>FlickrAPIToken flickrToken = DefaultTokenFactory.get(FlickrAPIToken.class);
+FlickrImageDataset&lt;FImage&gt; cats = 
+		FlickrImageDataset.create(ImageUtilities.FIMAGE_READER, flickrToken, "cat", 10);
+DisplayUtilities.display("Cats", cats);</programlisting>
+	<para>
+		The Flickr website requires you authenticate to use its API. The first time you run the above code, you will see instructions on obtaining a Flickr API key and secret, which you then have to enter at the prompt. Once you've done this once, the key and secret will be stored and automatically retrieved in the future by the <code>DefaultTokenFactory</code>. It is also possible to for-go the <code>DefaultTokenFactory</code> and construct a <code>FlickrAPIToken</code> and fill in the api key and secret field manually.
+	</para>	
+	<sect1 id="image-datasets-exercises">
+    <title>Exercises</title>
+    <sect2 id="exercise-1-exploring-datasets">
+      <title>Exercise 1: Exploring Grouped Datasets</title>
+      <para>
+				Using the faces dataset available from <code>http://datasets.openimaj.org/att_faces.zip</code>, can you display an image that shows a randomly selected photo of each person in the dataset?
+      </para>
+    </sect2>
+    <sect2 id="exercise-2-exploring-VFS">
+      <title>Exercise 2: Find out more about VFS datasets</title>
+      <para>
+				<code>VFSListDataset</code>s and <code>VFSGroupDataset</code>s are based on a technology from the Apache Software Foundation called Commons Virtual File System (Commons VFS). Explore the documentation of the Commons VFS to see what other kinds of sources are supported for building datasets.
+      </para>
+    </sect2>
+    <sect2 id="exercise-3-bing">
+      <title>Exercise 3: Try the BingImageDataset dataset</title>
+      <para>
+				The <code>BingImageDataset</code> class allows you to create a dataset of images by performing a search using the Bing search engine. The <code>BingImageDataset</code> class works in a similar way to the <code>FlickrImageDataset</code> described above. Try it out!
+      </para>
+    </sect2>
+    <sect2 id="exercise-4-grouped-bing">
+      <title>Exercise 4: Using MapBackedDataset</title>
+      <para>
+				The <code>MapBackedDataset</code> class provides a concrete implementation of a <code>GroupedDataset</code>. See if you can use the static <code>MapBackedDataset.of</code> method to construct a grouped dataset of images of some famous people. Use a <code>BingImageDataset</code> to get the images of each person.
+      </para>
+    </sect2>
+  </sect1>
+</chapter>
