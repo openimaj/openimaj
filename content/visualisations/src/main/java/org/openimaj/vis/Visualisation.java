@@ -37,6 +37,7 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +85,8 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	/** The visualisation image */
 	protected MBFImage visImage = null;
 
+	private MBFImage dbImage = null;
+
 	/** The data to be visualised */
 	protected T data = null;
 
@@ -118,6 +121,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	public Visualisation( final int width, final int height )
 	{
 		this.visImage = new MBFImage( width, height, 4 );
+		this.dbImage = this.visImage.clone();
 		this.setPreferredSize( new Dimension( width, height ) );
 		this.setSize( new Dimension( width, height ) );
 		this.addComponentListener( this );
@@ -134,6 +138,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		// Create an image the same size as the overlay vis
 		final MBFImage vi = overlayOn.getVisualisationImage();
 		this.visImage = new MBFImage( vi.getWidth(), vi.getHeight(), 4 );
+		this.dbImage = this.visImage.clone();
 		this.setPreferredSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
 		this.setSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
 
@@ -166,6 +171,10 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	Called to update the visualisation. This method can expect the
 	 * 	<code>visImage</code> member to be available and of the correct size.
 	 * 	The method simply needs to draw the visualisation to this {@link MBFImage}.
+	 * 	You should wrap any drawing code in a synchronized block, synchronized on
+	 * 	the visImage - this stops the image being repainted to the screen half way
+	 * 	through drawing.
+	 * 	<p>
 	 *  Update is called from the paint() method so should
 	 * 	ideally not force a repaint() as this will call a continuous repaint
 	 * 	loop.
@@ -182,7 +191,10 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 			if( this.allowResize && (this.visImage == null ||
 					this.visImage.getWidth() != this.getWidth() ||
 					 this.visImage.getHeight() != this.getHeight()) )
+			{
 				this.visImage = new MBFImage( this.getWidth(), this.getHeight(), 4 );
+				this.dbImage = this.visImage.clone();
+			}
 
 			if( this.clearBeforeDraw )
 				this.visImage.fill( this.backgroundColour );
@@ -193,10 +205,17 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		}
 
 		this.update();
-		this.repaint();
 
-		for( final Visualisation<?> v : this.overlays )
-			v.updateVis( this.visImage );
+		synchronized( this.visImage ) {
+			for( final Visualisation<?> v : this.overlays )
+				v.updateVis( this.visImage );
+
+			final MBFImage t = this.dbImage;
+			this.dbImage = this.visImage;
+			this.visImage = t;
+		}
+
+		this.repaint();
 	}
 
 	/**
@@ -218,7 +237,11 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 */
 	public void setData( final T data )
 	{
-		this.data = data;
+		synchronized( data )
+		{
+			this.data = data;
+		}
+
 		this.updateVis();
 	}
 
@@ -238,8 +261,11 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	@Override
 	public void paint( final Graphics g )
 	{
-		g.drawImage( ImageUtilities.createBufferedImageForDisplay( this.visImage ),
-			0, 0, null );
+		synchronized( this.visImage )
+		{
+			final BufferedImage bi = ImageUtilities.createBufferedImageForDisplay( this.dbImage );
+			g.drawImage( bi, 0, 0, null );
+		}
 	}
 
 	/**
@@ -251,7 +277,6 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	{
 		this.updateVis();
 		this.repaint();
-		super.update( g );
 	}
 
 	/**

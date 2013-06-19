@@ -16,7 +16,14 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
- *
+ *	The axes renderer is a helper class that is able to draw axes into an image
+ *	with given scales, in both x and y axes, and with other given properties.
+ *	It is then able to convert between pixels and units (and vice versa) for the
+ *	given axes. There are loads of configurable options for the axes, check all
+ *	the setters and getters. If you want to plot something prior to drawing the
+ *	axes, you may need to call {@link #precalc(Image)} to ensure that the context
+ *	of the class is calculated and the {@link #calculatePosition(Image, double, double)}
+ *	will calculate the correct pixel positions.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 	@param <Q> The pixel type of the image you'll be drawing the axes to

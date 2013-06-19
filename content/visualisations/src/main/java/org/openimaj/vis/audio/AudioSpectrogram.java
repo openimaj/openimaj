@@ -1,317 +1,302 @@
 /**
- * Copyright (c) 2011, The University of Southampton and the individual contributors.
- * All rights reserved.
+ * Copyright (c) 2011, The University of Southampton and the individual
+ * contributors. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- *   * 	Redistributions of source code must retain the above copyright notice,
- * 	this list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
  *
- *   *	Redistributions in binary form must reproduce the above copyright notice,
- * 	this list of conditions and the following disclaimer in the documentation
- * 	and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- *   *	Neither the name of the University of Southampton nor the names of its
- * 	contributors may be used to endorse or promote products derived from this
- * 	software without specific prior written permission.
+ * * Neither the name of the University of Southampton nor the names of its
+ * contributors may be used to endorse or promote products derived from this
+ * software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.vis.audio;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.analysis.FourierTransform;
 import org.openimaj.audio.filters.HanningAudioProcessor;
-import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.typography.hershey.HersheyFont;
-import org.openimaj.vis.timeline.TimelineObject;
+import org.openimaj.vis.Visualisation;
 
 /**
- *	A spectrogram visualisation that scrolls the audio visualisation as the
- *	audio is processed. Vertical axis of the visualisation represents frequency,
- *	horizontal represents time (newest on the right), and pixel intensity 
- *	represents frequency amplitude.	
+ * A spectrogram visualisation that scrolls the audio visualisation as the audio
+ * is processed. Vertical axis of the visualisation represents frequency,
+ * horizontal represents time (newest on the right), and pixel intensity
+ * represents frequency amplitude.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 19 Jul 2012
- *	@version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 19 Jul 2012
+ * @version $Author$, $Revision$, $Date$
  */
-public class AudioSpectrogram extends TimelineObject<AudioStream>
+public class AudioSpectrogram extends Visualisation<float[]>
 {
 	/**
-	 * 	A listener for when the spectragram has completed processing.
+	 * A listener for when the spectragram has completed processing.
 	 *
-	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *  @created 19 Jul 2012
-	 *	@version $Author$, $Revision$, $Date$
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * @created 19 Jul 2012
+	 * @version $Author$, $Revision$, $Date$
 	 */
 	public static interface SpectragramCompleteListener
 	{
 		/**
-		 * 	Called when the spectragram is complete
-		 *	@param as The spectragram that completed.
+		 * Called when the spectragram is complete
+		 *
+		 * @param as The spectragram that completed.
 		 */
 		public void spectragramComplete( AudioSpectrogram as );
 	}
-	
+
 	/** */
 	private static final long serialVersionUID = 1L;
-	
-	/** The time of the start of the timeline object */
-	private long startTime = 0;
-	
-	/** The length of the audio data */
-	private long length = 0;
-	
-	/** Height of the generated view */
-	private int maxHeight = 1024;
-	
+
 	/** The Fourier transformer we'll use */
-	private FourierTransform fftp = new FourierTransform();
-	
+	private final FourierTransform fftp = new FourierTransform();
+
 	/** Whether to draw the frequency bands, or not */
-	private boolean drawFreqBands = true;
-	
+	private final boolean drawFreqBands = true;
+
 	/** The frequency bands to mark on the spectragram */
-	private final double[] Hz = {100,500,1000,5000,10000,20000,40000};
-	
+	private final double[] Hz =
+	{ 100, 500, 1000, 5000, 10000, 20000, 40000 };
+
 	/** Is the processing complete */
 	private boolean isComplete = false;
-	
+
 	/** The size of the FFT bins (in Hz) */
 	private double binSize = 0;
-	
+
 	/** The listeners */
-	private List<SpectragramCompleteListener> listeners = 
-			new ArrayList<AudioSpectrogram.SpectragramCompleteListener>();
-	
+	private final List<SpectragramCompleteListener> listeners = new ArrayList<AudioSpectrogram.SpectragramCompleteListener>();
+
+	/** The format of the audio being processed */
+	private AudioFormat audioFormat = null;
+
+	/** Whether to draw the line at the current position of drawing */
+	private final boolean drawCurrentPositionLine = true;
+
+	/** Colour of the line delineating the end of the current spectrogram */
+	private final Float[] currentPositionLineColour = new Float[]
+	{ 0.5f, 0.5f, 0.5f, 1f };
+
+	private int nFrames = 0;
+
+	private int currentDrawPosition;
+
+	/** The last spectrogram image */
+	private FImage previousSpecImage = null;
+
 	/**
-	 * 	Create a spectragram for the given data
-	 *	@param as The data
-	 */
-	public AudioSpectrogram( AudioStream as )
-	{
-		this.data  = as;
-		this.length  = this.data.getLength();
-	    setPreferredSize( new Dimension( -1, 100 ) );		
-	}
-	
-	/**
-	 * 	Create a spectragram that can be added to as and when it's necessary.
+	 * Create a spectrogram that can be added to as and when it's necessary.
 	 */
 	public AudioSpectrogram()
 	{
-	    setPreferredSize( new Dimension( -1, 100 ) );		
+		this.setPreferredSize( new Dimension( -1, 100 ) );
+		super.clearBeforeDraw = true;
 	}
 
 	/**
-	 * 	Add the given listener
-	 *	@param l The listener
+	 * Construct a visualisation of the given size
+	 *
+	 * @param w Width of the required visualisation
+	 * @param h Height of the required visualisation
 	 */
-	public void addListener( SpectragramCompleteListener l )
+	public AudioSpectrogram( final int w, final int h )
 	{
-		listeners.add( l );
+		super( w, h );
+		super.clearBeforeDraw = true;
+		this.setPreferredSize( new Dimension( w, h ) );
 	}
-	
+
 	/**
-	 * 	Process the given data.
-	 *	@param as The data to process
+	 * Add the given listener
+	 *
+	 * @param l The listener
 	 */
-	public void processStream( AudioStream as )
+	public void addListener( final SpectragramCompleteListener l )
 	{
-		this.data = as;
-		this.length = this.data.getLength();
-		this.processStream();
+		this.listeners.add( l );
 	}
-	
+
 	/**
-	 * 	Process the data in this spectragram processor
+	 * Process the entire stream (or as much data will fit into the
+	 * visualisation window) and will store all the processed
+	 * {@link SampleChunk} into the data member of the visualisation.
+	 *
+	 * @param as The stream to process
 	 */
-	public void processStream()
+	public void processStream( final AudioStream as )
 	{
-		if( this.data == null ) 
-			return;
-		
+		this.audioFormat = as.getFormat().clone();
 		new Thread( new Runnable()
-		{				
+		{
 			@Override
 			public void run()
 			{
-				HanningAudioProcessor h = new HanningAudioProcessor( maxHeight );
-				
-				// -------------------------------------------------
-				// Draw FFT
-				// -------------------------------------------------
+				/** The hanning processor */
+				final HanningAudioProcessor hanningProcessor = new HanningAudioProcessor(
+						as, AudioSpectrogram.this.visImage.getHeight()*8 );
 
 				SampleChunk s = null;
-				int c = 0;
-				while( (s = data.nextSampleChunk()) != null )
+				AudioSpectrogram.this.currentDrawPosition = 0;
+				while( (s = hanningProcessor.nextSampleChunk()) != null
+						&& AudioSpectrogram.this.currentDrawPosition < AudioSpectrogram.this.visImage.getWidth() )
 				{
-					// Process the FFT
-					fftp.process( h.process( s ) );
-					float[] f = fftp.getLastFFT()[0];
-					
-					// Work out where to plot the next spectra
-					binSize = (s.getFormat().getSampleRateKHz()*1000) / (f.length/2);				
-
-					// Setup the image to draw to
-					if( visImage == null )
-					{
-						int nFrames = (int)(s.getFormat().getSampleRateKHz() * length) /
-								(s.getNumberOfSamples()/s.getFormat().getNumChannels());
-						visImage = new MBFImage( nFrames, maxHeight, 3 );						
-					}
-					
-					// Draw spectra onto image
-					drawSpectra( f, c );
-					
-					// Counting the sample chunks
-					c++;
+					AudioSpectrogram.this.process( s );
 				}
-				
-				isComplete = true;
-				
-				for( SpectragramCompleteListener l : listeners )
+
+				AudioSpectrogram.this.isComplete = true;
+
+				for( final SpectragramCompleteListener l : AudioSpectrogram.this.listeners )
 					l.spectragramComplete( AudioSpectrogram.this );
 			}
 		} ).start();
 	}
-	
+
 	/**
-	 * 	Draw the given spectra into the image at the given x coordinate.
-	 *	@param freqs The FFT output
-	 *	@param x The x position to draw it at
+	 * @param s The sample chunk
 	 */
-	private void drawSpectra( float[] f, int x )
+	public void process( final SampleChunk s )
 	{
-		for( int i = 0; i < f.length/4; i++ )
-		{
-			float re = f[i*2];
-			float im = f[i*2+1];
-			
-			float mag = (float)Math.log(Math.sqrt( re*re + im*im )+1)/6f;
-			if( mag > 1 ) mag = 1;
-			
-			Float[] c = new Float[]{mag,mag,mag};	
-			visImage.setPixel( x, visImage.getHeight()-i, c );
-		}		
-	}
-	
-	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.timeline.TimelineObject#getStartTimeMilliseconds()
-	 */
-	@Override
-	public long getStartTimeMilliseconds()
-	{
-		return this.startTime;
+		// Process the FFT
+		this.fftp.process( s.getSampleBuffer() );
+		final float[] f = this.fftp.getNormalisedMagnitudes( 1f/Integer.MAX_VALUE )[0];
+
+		if( this.audioFormat == null )
+			this.audioFormat = s.getFormat().clone();
+
+		// Store this FFT into the data
+		this.setData( f );
+		this.nFrames++;
+
+		this.shiftData();
+		this.updateVis();
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.timeline.TimelineObject#getEndTimeMilliseconds()
+	 * 	Add the given sample chunk into the spectrogram.
+	 *	@param sc The sample chunk to add.
 	 */
-	@Override
-	public long getEndTimeMilliseconds()
+	public void setData( final SampleChunk sc )
 	{
-		return this.startTime + this.length;
+		this.process( sc );
 	}
-	
+
 	/**
-	 * 	Get the last generated image. Note that if the drawing thread is
-	 * 	still processing, the image may not be complete.
-	 *	@return The last generated image.
+	 * Draw the given spectra into the image at the given x coordinate.
+	 *
+	 * @param freqs The FFT output
+	 * @param x The x position to draw it at
 	 */
-	public MBFImage getLastGeneratedView()
+	private void drawSpectra( final FImage img, final float[] f, final int x )
 	{
-		MBFImage ii = this.visImage.clone();
-		if( drawFreqBands )
+		if( img == null || f == null ) return;
+
+//		final double ps = img.getHeight()/f.length;
+		for( int i = 0; i < f.length; i++ )
 		{
-			// Draw the frequency bands
-			for( double freq : Hz )
-			{
-				Float[] fbc = new Float[]{0.2f,0.2f,0.2f};
-				Float[] fbtc = fbc;
-				int y = ii.getHeight() - 
-						(int)(freq/binSize);
-				
-				ii.drawLine( 0, y, ii.getWidth(), y, fbc );
-				ii.drawText( ""+freq+"Hz", 4, y, HersheyFont.TIMES_BOLD, 10, fbtc );
-			}
+//			img.drawLine( x, img.getHeight()-i, x, (int)(img.getHeight()-i-ps), mag );
+			final int y = img.getHeight() - i -1;
+			img.setPixel( x, y, f[i] );
 		}
-		return ii;
 	}
-	
+
 	/**
-	 * 	Returns whether the spectragram image is complete.
-	 *	@return Whether the image is complete.
+	 * Returns whether the spectragram image is complete.
+	 *
+	 * @return Whether the image is complete.
 	 */
 	public boolean isComplete()
 	{
 		return this.isComplete;
 	}
-	
-	/**
-	 *	{@inheritDoc}
-	 * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
-	 */
-	@Override
-	public void paint( Graphics g )
+
+	private void shiftData()
 	{
-		if( this.visImage != null )
+		if( this.nFrames > this.visImage.getWidth() )
+			this.previousSpecImage = this.previousSpecImage.shiftLeft();
+		else
 		{
-			MBFImage ii = this.visImage.process(
-					new ResizeProcessor( getWidth(), getHeight() ) );
-
-			if( drawFreqBands )
+			if( this.nFrames > 0 )
 			{
-				// Draw the frequency bands
-				for( double freq : Hz )
-				{
-					Float[] fbc = new Float[]{0.2f,0.2f,0.2f};
-					Float[] fbtc = fbc;
-					int y = ii.getHeight() - 
-							(int)(freq/binSize);
-					
-					ii.drawLine( 0, y, ii.getWidth(), y, fbc );
-					ii.drawText( ""+freq+"Hz", 4, y, HersheyFont.TIMES_BOLD, 10, fbtc );
-				}
+				final FImage t = new FImage( this.nFrames, this.visImage.getHeight() );
+				if( this.previousSpecImage != null )
+					t.drawImage( this.previousSpecImage, 0, t.getHeight()-this.previousSpecImage.getHeight() );
+				this.previousSpecImage = t;
+				this.currentDrawPosition++;
 			}
-
-			// Copy the vis to the Swing UI
-			g.drawImage( ImageUtilities.createBufferedImage( ii ), 
-					0, 0, null );
+		}
+		synchronized( this.data )
+		{
+			// Draw spectra onto image
+			this.drawSpectra( this.previousSpecImage, this.data, this.currentDrawPosition-1 );
 		}
 	}
 
-	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.Visualisation#update()
-	 */
 	@Override
 	public void update()
 	{
-		repaint();
+		if( this.data != null )
+		{
+			synchronized( this.visImage )
+			{
+				if( this.previousSpecImage != null )
+				{
+					this.visImage.drawImage( MBFImage.createRGB(this.previousSpecImage), 0,
+						this.visImage.getHeight()-this.previousSpecImage.getHeight() );
+				}
+
+				if( this.drawFreqBands )
+				{
+					// Work out where to plot the next spectra
+					this.binSize = (this.audioFormat.getSampleRateKHz() * 500) / this.data.length;
+
+					// Draw the frequency bands
+					for( final double freq : this.Hz )
+					{
+						final Float[] fbc = new Float[] { 0.2f, 0.2f, 0.2f };
+						final Float[] fbtc = fbc;
+						final int y = (int)(this.visImage.getHeight() -
+								freq/this.binSize);
+
+						this.visImage.drawLine( 0, y, this.visImage.getWidth(), y, fbc );
+						this.visImage.drawText( "" + freq + "Hz", 4, y, HersheyFont.TIMES_BOLD, 10, fbtc );
+					}
+				}
+
+				if( this.drawCurrentPositionLine )
+					this.visImage.drawLine( this.currentDrawPosition + 1, 0, this.currentDrawPosition + 1, this.visImage.getHeight(),
+							this.currentPositionLineColour );
+			}
+		}
 	}
 }

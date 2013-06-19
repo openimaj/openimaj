@@ -43,7 +43,7 @@ import org.openimaj.video.timecode.FrameNumberVideoTimecode;
 import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 import org.openimaj.vis.timeline.Timeline.TimelineMarker;
 import org.openimaj.vis.timeline.Timeline.TimelineMarkerType;
-import org.openimaj.vis.timeline.TimelineObject;
+import org.openimaj.vis.timeline.TimelineObjectAdapter;
 
 /**
  * Displays a block, or bar, which represents the data. The block will be scaled
@@ -59,7 +59,7 @@ import org.openimaj.vis.timeline.TimelineObject;
  * @created 3 Jul 2012
  * @version $Author$, $Revision$, $Date$
  */
-public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImage>> {
+public abstract class VideoBarVisualisation extends TimelineObjectAdapter<Video<MBFImage>> {
 	/** */
 	private static final long serialVersionUID = 1L;
 
@@ -272,7 +272,7 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.openimaj.vis.timeline.TimelineObject#getStartTimeMilliseconds()
+	 * @see org.openimaj.vis.timeline.TimelineObjectAdapter#getStartTimeMilliseconds()
 	 */
 	@Override
 	public long getStartTimeMilliseconds() {
@@ -292,7 +292,7 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.openimaj.vis.timeline.TimelineObject#getEndTimeMilliseconds()
+	 * @see org.openimaj.vis.timeline.TimelineObjectAdapter#getEndTimeMilliseconds()
 	 */
 	@Override
 	public long getEndTimeMilliseconds() {
