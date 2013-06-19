@@ -56,5 +56,12 @@
 	
 	<para>
 	Ok, enough theory for the moment.  Let's do something interesting with the audio we're getting in.
+	Let's take some audio and generate some features. Mel-Frequncy Cepstrum Coefficients are a well-known
+	starting point for audio analysis. They give an overview of the shape (or envelope) of the
+	frequency components of the audio. 
 	</para>
+	
+	<programlisting>
+		
+	</programlisting>
 </chapter>
