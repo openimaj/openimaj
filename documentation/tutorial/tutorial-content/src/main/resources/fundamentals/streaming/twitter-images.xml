@@ -2,16 +2,15 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="twitter-images">
+	<title>Twitter Streams and Images</title>
 	<para>
 	  This tutorial will show you how to extract and analyse images posted
 	  on Twitter in real-time. To get started, create a new project using
 	  the OpenIMAJ archetype and in the main method, create a connection to
 	  the live Twitter sample stream as follows:
 	</para>
-	<programlisting>
-	TwitterAPIToken token = DefaultTokenFactory.get(TwitterAPIToken.class);
-	TwitterStreamDataset stream = new TwitterStreamDataset(token);
-	</programlisting>
+	<programlisting>TwitterAPIToken token = DefaultTokenFactory.get(TwitterAPIToken.class);
+TwitterStreamDataset stream = new TwitterStreamDataset(token);</programlisting>
 	<para>
 	  At this point, run the code. The first time you run it you will be
 	  instructed to register as a Twitter developer to get an API key, which
@@ -31,14 +30,12 @@
 	  <literal>stream</literal> object, add the following code to print the
 	  text content of each Tweet and run it again:
 	</para>
-	<programlisting>
-	stream.forEach(new Operation&lt;Status&gt;() {
-	    @Override
-	    public void perform(Status status) {
-	        System.out.println(status.getText());
-	    }
-	});
-	</programlisting>
+	<programlisting>stream.forEach(new Operation&lt;Status&gt;() {
+    @Override
+    public void perform(Status status) {
+        System.out.println(status.getText());
+    }
+});</programlisting>
 	<para>
 	  You should now see a large volume of Tweet messages being written to
 	  your console. Stop the program and remove the above
@@ -54,9 +51,7 @@
 	  of Twitter <literal>Status</literal> objects to <literal>URL</literal>
 	  objects:
 	</para>
-	<programlisting>
-	Stream&lt;URL&gt; urlStream = stream.map(new TwitterURLExtractor());  
-	</programlisting>
+	<programlisting>Stream&lt;URL&gt; urlStream = stream.map(new TwitterURLExtractor());</programlisting>
 	<para>
 	  The <literal>ImageSiteURLExtractor</literal> class can be used to
 	  process the URLs and return just those that correspond to images. The
@@ -66,9 +61,7 @@
 	  <literal>ImageSiteURLExtractor</literal> is just another
 	  <literal>Function</literal> so can be applied as another map:
 	</para>
-	<programlisting>
-	Stream&lt;URL&gt; imageUrlStream = urlStream.map(new ImageSiteURLExtractor(false));
-	</programlisting>
+	<programlisting>Stream&lt;URL&gt; imageUrlStream = urlStream.map(new ImageSiteURLExtractor(false));</programlisting>
 	<para>
 	  The boolean in the <literal>ImageSiteURLExtractor</literal>
 	  constructor disables support for the Tumblr hosting site; you can
@@ -77,20 +70,16 @@
 	  instance of function class called <literal>ImageFromURL</literal>
 	  which has been configured to read <literal>MBFImages</literal>:
 	</para>
-	<programlisting>
-	Stream&lt;MBFImage&gt; imageStream = imageUrlStream.map(ImageFromURL.MBFIMAGE_EXTRACTOR);
-	</programlisting>
+	<programlisting>Stream&lt;MBFImage&gt; imageStream = imageUrlStream.map(ImageFromURL.MBFIMAGE_EXTRACTOR);</programlisting>
 	<para>
 	  Now let’s display the images in the stream as they arrive:
 	</para>
-	<programlisting>
-	imageStream.forEach(new Operation&lt;MBFImage&gt;() {
-	    @Override
-	    public void perform(MBFImage image) {
-	        DisplayUtilities.displayName(image, &quot;image&quot;);
-	    }
-	});
-	</programlisting>
+	<programlisting>imageStream.forEach(new Operation&lt;MBFImage&gt;() {
+    @Override
+    public void perform(MBFImage image) {
+        DisplayUtilities.displayName(image, &quot;image&quot;);
+    }
+});</programlisting>
 	<para>
 	  If at this point you run the program, you should see be able to see
 	  the images that are currently being shared on Twitter.
@@ -101,31 +90,27 @@
 	  map function before the previous <literal>forEach</literal> loop, so
 	  that the code looks like this:
 	</para>
-	<programlisting>
-	imageStream.map(new MultiFunction&lt;MBFImage, MBFImage&gt;() {
-	    @Override
-	    public List&lt;MBFImage&gt; apply(MBFImage in) {
+	<programlisting>imageStream.map(new MultiFunction&lt;MBFImage, MBFImage&gt;() {
+    @Override
+    public List&lt;MBFImage&gt; apply(MBFImage in) {
 
-	    }
-	}).forEach(new Operation&lt;MBFImage&gt;() {
-	    @Override
-	    public void perform(MBFImage image) {
-	        DisplayUtilities.displayName(image, &quot;image&quot;);
-	    }
-	});
-	</programlisting>
+    }
+}).forEach(new Operation&lt;MBFImage&gt;() {
+    @Override
+    public void perform(MBFImage image) {
+        DisplayUtilities.displayName(image, &quot;image&quot;);
+    }
+});</programlisting>
 	<para>
 	  and add the following to the apply method:
 	</para>
-	<programlisting>
-	List&lt;DetectedFace&gt; detected = detector.detectFaces(in.flatten());
+	<programlisting>List&lt;DetectedFace&gt; detected = detector.detectFaces(in.flatten());
 	
-	List&lt;MBFImage&gt; faces = new ArrayList&lt;MBFImage&gt;();
-	for (DetectedFace face : detected)
-	    faces.add(in.extractROI(face.getBounds()));
+List&lt;MBFImage&gt; faces = new ArrayList&lt;MBFImage&gt;();
+for (DetectedFace face : detected)
+    faces.add(in.extractROI(face.getBounds()));
 
-	return faces;
-	</programlisting>
+return faces;</programlisting>
 	<para>
 	  and finally add the following just before the apply method:
 	</para>
@@ -138,15 +123,21 @@
 	</para>
 	<sect1 id="twitter-images-exercises">
 	  <title>Exercises</title>
-	  <sect2 id="exercise-1-the-colour-of-twitter">
-	    <title>Exercise 1: The colour of Twitter</title>
+	  <sect2 id="exercise-1-search-streams">
+	    <title>Exercise 1: The TwitterSearchStream</title>
+	    <para>
+	      The <code>TwitterSearchStream</code> class repeatedly calls the Twitter search API with a specific query in order to produce a stream of Tweets related to a specific subject. Try using the <code>TwitterSearchStream</code> to find and display tweeted images of your favourite animal.
+	    </para>
+	  </sect2>
+	  <sect2 id="exercise-2-the-colour-of-twitter">
+	    <title>Exercise 2: The colour of Twitter</title>
 	    <para>
 	      Can you make a program that continuously shows the average colour
 	      of the last 100 tweeted images?
 	    </para>
 	  </sect2>
-	  <sect2 id="exercise-2-trending-images">
-	    <title>Exercise 2: Trending images</title>
+	  <sect2 id="exercise-3-trending-images">
+	    <title>Exercise 3: Trending images</title>
 	    <para>
 	      Images are often (re)-tweeted or shared. Using the histogram
 	      features and similarity measures you learned about in the Global

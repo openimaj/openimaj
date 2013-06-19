@@ -38,33 +38,32 @@ import org.openimaj.video.xuggle.XuggleVideo;
 import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
 
 /**
- *
- *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 3 Jul 2012
- *	@version $Author$, $Revision$, $Date$
+ * 
+ * 
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 3 Jul 2012
+ * @version $Author$, $Revision$, $Date$
  */
 public class ShotBoundaryVis
 {
 	/**
-	 *
-	 *	@param args
+	 * 
+	 * @param args
 	 */
-	public static void main( final String[] args )
+	public static void main(final String[] args)
 	{
-		final XuggleVideo x = new XuggleVideo( new File("heads2.mpeg") );
+		final XuggleVideo x = new XuggleVideo(new File("heads2.mpeg"));
 
-		System.out.println( "HERRE" );
+		System.out.println("HERRE");
 		final ShotBoundaryVideoBarVisualisation sbvbv =
-				new ShotBoundaryVideoBarVisualisation( x );
-		sbvbv.setViewSize( new Dimension(1000,300), 0 );
+				new ShotBoundaryVideoBarVisualisation(x);
+		sbvbv.setViewSize(new Dimension(1000, 300), 0, 1000);
 		final JFrame f = new JFrame();
-		f.getContentPane().add( sbvbv );
-		f.setSize( 1000, 300 );
-		f.setVisible( true );
+		f.getContentPane().add(sbvbv);
+		f.setSize(1000, 300);
+		f.setVisible(true);
 
 		sbvbv.processVideo();
 	}
 
 }
-
