@@ -1,4 +1,4 @@
-package org.openimaj.docs.tutorial.images.faces.eigen;
+package org.openimaj.docs.tutorial.adv.faces.eigen;
 
 import java.io.IOException;
 import java.net.URL;
@@ -12,7 +12,17 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.model.EigenImages;
 
+/**
+ * OpenIMAJ Hello world!
+ * 
+ */
 public class App {
+	/**
+	 * Main method
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		final List<FImage> basisImages = Arrays.asList(new FImage[] {
 				ImageUtilities.readF(new URL("")),

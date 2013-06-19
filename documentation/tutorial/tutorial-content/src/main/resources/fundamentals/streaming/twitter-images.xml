@@ -2,5 +2,159 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="twitter-images">
-	
+	<para>
+	  This tutorial will show you how to extract and analyse images posted
+	  on Twitter in real-time. To get started, create a new project using
+	  the OpenIMAJ archetype and in the main method, create a connection to
+	  the live Twitter sample stream as follows:
+	</para>
+	<programlisting>
+	TwitterAPIToken token = DefaultTokenFactory.get(TwitterAPIToken.class);
+	TwitterStreamDataset stream = new TwitterStreamDataset(token);
+	</programlisting>
+	<para>
+	  At this point, run the code. The first time you run it you will be
+	  instructed to register as a Twitter developer to get an API key, which
+	  you will then need to enter at the prompt. If you’ve followed the
+	  Image Datasets tutorial you should be familiar with this process from
+	  using the <literal>FlickrImageDataset</literal> and
+	  <literal>BingImageDataset</literal> classes; as with those classes you
+	  could also construct a <literal>TwitterAPIToken</literal> and set its
+	  fields manually. You’ll notice that not much happens other than a few
+	  debug messages. Also, notice that the program doesn’t end; this is
+	  because there is a thread running in the background reading tweets
+	  into your <literal>stream</literal> object. Manually stop the program
+	  running.
+	</para>
+	<para>
+	  To demonstrate that Tweets are really being added into your
+	  <literal>stream</literal> object, add the following code to print the
+	  text content of each Tweet and run it again:
+	</para>
+	<programlisting>
+	stream.forEach(new Operation&lt;Status&gt;() {
+	    @Override
+	    public void perform(Status status) {
+	        System.out.println(status.getText());
+	    }
+	});
+	</programlisting>
+	<para>
+	  You should now see a large volume of Tweet messages being written to
+	  your console. Stop the program and remove the above
+	  <literal>forEach</literal> loop. We’ll now look at how we can get
+	  images out of the Tweets.
+	</para>
+	<para>
+	  Tweets themselves do not contain images; rather tweets might contain
+	  URLs, which might correspond to images, or web-sites where an image is
+	  hosted. URLs can be might be in the textual body of the Tweets and/or
+	  in special fields that form part of the status objects. OpenIMAJ makes
+	  it easy to extract the URLs by <emphasis>mapping</emphasis> a stream
+	  of Twitter <literal>Status</literal> objects to <literal>URL</literal>
+	  objects:
+	</para>
+	<programlisting>
+	Stream&lt;URL&gt; urlStream = stream.map(new TwitterURLExtractor());  
+	</programlisting>
+	<para>
+	  The <literal>ImageSiteURLExtractor</literal> class can be used to
+	  process the URLs and return just those that correspond to images. The
+	  <literal>ImageSiteURLExtractor</literal> is also aware of a number of
+	  standard image hosting sites, and is able to resolve the actual image
+	  URL from the web-page URL that would normally appear in a Tweet. The
+	  <literal>ImageSiteURLExtractor</literal> is just another
+	  <literal>Function</literal> so can be applied as another map:
+	</para>
+	<programlisting>
+	Stream&lt;URL&gt; imageUrlStream = urlStream.map(new ImageSiteURLExtractor(false));
+	</programlisting>
+	<para>
+	  The boolean in the <literal>ImageSiteURLExtractor</literal>
+	  constructor disables support for the Tumblr hosting site; you can
+	  enable it, but you’ll need to create a Tumblr API key (which you will
+	  be prompted for). Now to get the images, we can apply a static
+	  instance of function class called <literal>ImageFromURL</literal>
+	  which has been configured to read <literal>MBFImages</literal>:
+	</para>
+	<programlisting>
+	Stream&lt;MBFImage&gt; imageStream = imageUrlStream.map(ImageFromURL.MBFIMAGE_EXTRACTOR);
+	</programlisting>
+	<para>
+	  Now let’s display the images in the stream as they arrive:
+	</para>
+	<programlisting>
+	imageStream.forEach(new Operation&lt;MBFImage&gt;() {
+	    @Override
+	    public void perform(MBFImage image) {
+	        DisplayUtilities.displayName(image, &quot;image&quot;);
+	    }
+	});
+	</programlisting>
+	<para>
+	  If at this point you run the program, you should see be able to see
+	  the images that are currently being shared on Twitter.
+	</para>
+	<para>
+	  Now let’s modify the code so we can generate a visualisation of the
+	  <emphasis>faces</emphasis> that appear on Twitter. Add an extra inline
+	  map function before the previous <literal>forEach</literal> loop, so
+	  that the code looks like this:
+	</para>
+	<programlisting>
+	imageStream.map(new MultiFunction&lt;MBFImage, MBFImage&gt;() {
+	    @Override
+	    public List&lt;MBFImage&gt; apply(MBFImage in) {
+
+	    }
+	}).forEach(new Operation&lt;MBFImage&gt;() {
+	    @Override
+	    public void perform(MBFImage image) {
+	        DisplayUtilities.displayName(image, &quot;image&quot;);
+	    }
+	});
+	</programlisting>
+	<para>
+	  and add the following to the apply method:
+	</para>
+	<para>
+	  List<DetectedFace> detected = detector.detectFaces(in.flatten());
+	</para>
+	<programlisting>
+	List&lt;MBFImage&gt; faces = new ArrayList&lt;MBFImage&gt;();
+	for (DetectedFace face : detected)
+	    faces.add(in.extractROI(face.getBounds()));
+
+	return faces;
+	</programlisting>
+	<para>
+	  and finally add the following just before the apply method:
+	</para>
+	<programlisting>
+	HaarCascadeDetector detector = HaarCascadeDetector.BuiltInCascade.frontalface_default.load();
+	</programlisting>
+	<para>
+	  Now, if you run the software, you should be able to to see the faces
+	  of people who are being tweeted at the current time.
+	</para>
+	<sect1 id="exercises">
+	  <title>Exercises</title>
+	  <sect2 id="exercise-1-the-colour-of-twitter">
+	    <title>Exercise 1: The colour of Twitter</title>
+	    <para>
+	      Can you make a program that continuously shows the average colour
+	      of the last 100 tweeted images?
+	    </para>
+	  </sect2>
+	  <sect2 id="exercise-2-trending-images">
+	    <title>Exercise 2: Trending images</title>
+	    <para>
+	      Images are often (re)-tweeted or shared. Using the histogram
+	      features and similarity measures you learned about in the Global
+	      image features tutorial, can you make a program that computes
+	      which images have been re-tweeted the most over a fixed number of
+	      tweets?
+	    </para>
+	  </sect2>
+	</sect1>
 </chapter>
