@@ -79,7 +79,10 @@ void process(MavenProject p, File baseDir, MarkupBuilder builder) {
 		}
 		listitem() {
 		    if (p.getDescription() != null) {
-				para( p.getDescription().replaceAll("\\s+", " ") )
+				def descr = p.getDescription().replaceAll("\\s+", " ").trim();
+				if (!descr.endsWith("."))
+					descr+=".";
+				para( descr )
 			}
 
 		    def modules = p.getModules();
