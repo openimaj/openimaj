@@ -23,17 +23,17 @@ import org.openimaj.util.stream.Stream;
  * @param <I>
  *            The type of {@link Image}
  */
-public class ImageFomURL<I extends Image<?, I>> implements MultiFunction<URL, I> {
+public class ImageFromURL<I extends Image<?, I>> implements MultiFunction<URL, I> {
 	/**
-	 * Static instance of the {@link ImageFomURL} for extracting {@link FImage}s
+	 * Static instance of the {@link ImageFromURL} for extracting {@link FImage}s
 	 */
-	public static ImageFomURL<FImage> FIMAGE_EXTRACTOR = new ImageFomURL<FImage>(ImageUtilities.FIMAGE_READER);
+	public static ImageFromURL<FImage> FIMAGE_EXTRACTOR = new ImageFromURL<FImage>(ImageUtilities.FIMAGE_READER);
 
 	/**
-	 * Static instance of the {@link ImageFomURL} for extracting
+	 * Static instance of the {@link ImageFromURL} for extracting
 	 * {@link MBFImage}s
 	 */
-	public static ImageFomURL<MBFImage> MBFIMAGE_EXTRACTOR = new ImageFomURL<MBFImage>(ImageUtilities.MBFIMAGE_READER);
+	public static ImageFromURL<MBFImage> MBFIMAGE_EXTRACTOR = new ImageFromURL<MBFImage>(ImageUtilities.MBFIMAGE_READER);
 
 	private ObjectReader<I, InputStream> reader;
 
@@ -42,7 +42,7 @@ public class ImageFomURL<I extends Image<?, I>> implements MultiFunction<URL, I>
 	 * 
 	 * @param reader
 	 */
-	public ImageFomURL(ObjectReader<I, InputStream> reader) {
+	public ImageFromURL(ObjectReader<I, InputStream> reader) {
 		this.reader = reader;
 	}
 

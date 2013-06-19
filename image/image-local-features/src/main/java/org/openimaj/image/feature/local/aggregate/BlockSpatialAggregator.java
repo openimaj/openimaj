@@ -27,7 +27,7 @@ public class BlockSpatialAggregator<T, AGGREGATE extends FeatureVector & Concate
 	}
 
 	@Override
-	public FeatureVector aggregate(
+	public AGGREGATE aggregate(
 			List<? extends LocalFeature<? extends SpatialLocation, ? extends ArrayFeatureVector<T>>> features,
 			Rectangle bounds)
 	{

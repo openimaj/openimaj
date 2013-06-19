@@ -117,10 +117,9 @@
 	<para>
 	  and add the following to the apply method:
 	</para>
-	<para>
-	  List<DetectedFace> detected = detector.detectFaces(in.flatten());
-	</para>
 	<programlisting>
+	List&lt;DetectedFace&gt; detected = detector.detectFaces(in.flatten());
+	
 	List&lt;MBFImage&gt; faces = new ArrayList&lt;MBFImage&gt;();
 	for (DetectedFace face : detected)
 	    faces.add(in.extractROI(face.getBounds()));
@@ -137,7 +136,7 @@
 	  Now, if you run the software, you should be able to to see the faces
 	  of people who are being tweeted at the current time.
 	</para>
-	<sect1 id="exercises">
+	<sect1 id="twitter-images-exercises">
 	  <title>Exercises</title>
 	  <sect2 id="exercise-1-the-colour-of-twitter">
 	    <title>Exercise 1: The colour of Twitter</title>

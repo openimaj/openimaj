@@ -13,7 +13,7 @@
   <name>OpenIMAJ Demos</name>
   <inceptionYear>2011</inceptionYear>
   <description>
-	Demos showing the use of OpenIMAJ!
+	Demos showing the use of OpenIMAJ
   </description>
   <dependencies>
     <dependency>

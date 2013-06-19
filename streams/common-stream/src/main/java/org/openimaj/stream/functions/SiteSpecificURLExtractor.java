@@ -1,26 +1,14 @@
 package org.openimaj.stream.functions;
 
-import java.io.ByteArrayInputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolException;
-import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.io.HttpUtils;
-import org.openimaj.io.HttpUtils.MetaRefreshRedirectStrategy;
 import org.openimaj.util.function.MultiFunction;
-import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.web.scraping.SiteSpecificConsumer;
-
-import com.google.common.collect.Lists;
 
 /**
  * This class implements a function that will given an input URL outputs a list
@@ -35,7 +23,7 @@ public class SiteSpecificURLExtractor implements MultiFunction<URL, URL> {
 	/**
 	 * the site specific consumers
 	 */
-	private List<SiteSpecificConsumer> siteSpecific = new ArrayList<SiteSpecificConsumer>();
+	protected List<SiteSpecificConsumer> siteSpecific = new ArrayList<SiteSpecificConsumer>();
 
 	/**
 	 * Construct with the given list of consumers.
@@ -57,57 +45,21 @@ public class SiteSpecificURLExtractor implements MultiFunction<URL, URL> {
 		this.siteSpecific = Arrays.asList(consumers);
 	}
 
+	/**
+	 * Construct with empty list of consumers.
+	 */
+	protected SiteSpecificURLExtractor() {
+		this.siteSpecific = new ArrayList<SiteSpecificConsumer>();
+	}
+
 	@Override
 	public List<URL> apply(URL in) {
-		System.out.println(in);
-
-		final List<URL> imageUrls = urlToImage(in);
+		final List<URL> imageUrls = processURLs(in);
 
 		if (imageUrls == null)
 			return new ArrayList<URL>();
 
 		return imageUrls;
-	}
-
-	/**
-	 * An extension of the {@link MetaRefreshRedirectStrategy} which disallows
-	 * all redirects and instead remembers a redirect for use later on.
-	 * 
-	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 */
-	private static class StatusConsumerRedirectStrategy extends MetaRefreshRedirectStrategy {
-		private boolean wasRedirected = false;
-		private URL redirection;
-
-		@Override
-		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
-				throws ProtocolException
-		{
-			wasRedirected = super.isRedirected(request, response, context);
-
-			if (wasRedirected) {
-				try {
-					this.redirection = this.getRedirect(request, response, context).getURI().toURL();
-				} catch (final MalformedURLException e) {
-					this.wasRedirected = false;
-				}
-			}
-			return false;
-		}
-
-		/**
-		 * @return whether a redirect was found
-		 */
-		public boolean wasRedirected() {
-			return wasRedirected;
-		}
-
-		/**
-		 * @return the redirection
-		 */
-		public URL redirection() {
-			return redirection;
-		}
 	}
 
 	/**
@@ -124,7 +76,7 @@ public class SiteSpecificURLExtractor implements MultiFunction<URL, URL> {
 	 * @param url
 	 * @return a list of images or null
 	 */
-	private List<URL> urlToImage(URL url) {
+	protected List<URL> processURLs(URL url) {
 		logger.debug("Resolving URL: " + url);
 		logger.debug("Attempting site specific consumers");
 
@@ -140,50 +92,6 @@ public class SiteSpecificURLExtractor implements MultiFunction<URL, URL> {
 				}
 			}
 		}
-
-		try {
-			logger.debug("Site specific consumers failed, trying the raw link");
-
-			final StatusConsumerRedirectStrategy redirector = new StatusConsumerRedirectStrategy();
-			final IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils
-					.readURLAsByteArrayInputStream(url, 1000, 1000, redirector, HttpUtils.DEFAULT_USERAGENT);
-
-			if (redirector.wasRedirected()) {
-				logger.debug("Redirect intercepted, adding redirection to list");
-
-				final URL redirect = redirector.redirection();
-				if (!redirect.toString().equals(url.toString()))
-					return urlToImage(redirect);
-			}
-
-			// at this point any redirects have been resolved and the content
-			// can't be handled by any of the SSCs
-			// we now check to see if it's image data
-
-			final HttpEntity headers = headersBais.firstObject();
-			final ByteArrayInputStream bais = headersBais.getSecondObject();
-
-			final String typeValue = headers.getContentType().getValue();
-			if (typeValue.contains("text")) {
-				logger.debug(url + " ignored -- text content");
-				return null;
-			} else {
-				// Not text? try reading it as an image!
-				if (typeValue.contains("gif")) {
-					// It is a gif! just download it normally (i.e. null image
-					// but not null URL)
-					return Lists.newArrayList(url);
-				} else {
-					// otherwise just try to read the damn image
-					ImageUtilities.readMBF(bais);
-					return Lists.newArrayList(url);
-				}
-			}
-		} catch (final Throwable e) {
-			// This input is probably not an image!
-			logger.debug(url + " ignored -- exception", e);
-
-			return null;
-		}
+		return null;
 	}
 }

@@ -51,4 +51,14 @@ public abstract class BlockingDroppingBufferedStream<T> extends AbstractStream<T
 			return next();
 		}
 	}
+
+	/**
+	 * Get the underlying {@link BlockingDroppingQueue} that is used as the
+	 * internal buffer.
+	 * 
+	 * @return the buffer
+	 */
+	public BlockingDroppingQueue<T> getBuffer() {
+		return buffer;
+	}
 }

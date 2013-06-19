@@ -23,11 +23,12 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.feature.dense.gradient.dsift.ApproximateDenseSIFT;
 import org.openimaj.image.feature.dense.gradient.dsift.ByteDSIFTKeypoint;
 import org.openimaj.image.feature.dense.gradient.dsift.DenseSIFT;
 import org.openimaj.image.feature.dense.gradient.dsift.PyramidDenseSIFT;
 import org.openimaj.image.feature.local.aggregate.BagOfVisualWords;
-import org.openimaj.image.feature.local.aggregate.BlockSpatialAggregator;
+import org.openimaj.image.feature.local.aggregate.PyramidSpatialAggregator;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.annotation.linear.LiblinearAnnotator;
@@ -38,11 +39,15 @@ import org.openimaj.ml.clustering.kmeans.ByteKMeans;
 import org.openimaj.ml.kernel.HomogeneousKernelMap;
 import org.openimaj.ml.kernel.HomogeneousKernelMap.KernelType;
 import org.openimaj.ml.kernel.HomogeneousKernelMap.WindowType;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IntFloatPair;
+import org.openimaj.util.parallel.Parallel;
 
 import de.bwaldvogel.liblinear.SolverType;
 
 public class CT101PHOW {
+	private static final File CACHE_DIR = new File("/Users/jsh2/feature-cache/caltech101/sppyr-2-4-fastphog-300");
+
 	public static void main(String[] args) throws IOException {
 		System.out.println("Loading dataset");
 		final GroupedDataset<String, VFSListDataset<Record<FImage>>, Record<FImage>> data = Caltech101
@@ -52,7 +57,7 @@ public class CT101PHOW {
 		final GroupedRandomSplits<String, Record<FImage>> splits = new GroupedRandomSplits<String, Record<FImage>>(data,
 				15, 15);
 
-		final File voc = new File("/Users/jsh2/feature-cache/caltech101/sp-phog-300.voc");
+		final File voc = new File("/Users/jsh2/feature-cache/caltech101/sppyr-2-4-fastphog-300.voc");
 		final HardAssigner<byte[], float[], IntFloatPair> assigner;
 		if (!voc.exists()) {
 			System.out.println("Learning vocabulary");
@@ -65,25 +70,23 @@ public class CT101PHOW {
 			assigner = IOUtils.readFromFile(voc);
 		}
 
-		// Parallel.forEach(data, new Operation<Record<FImage>>() {
-		// DiskCachingFeatureExtractor<DoubleFV, Record<FImage>> extr = new
-		// DiskCachingFeatureExtractor<DoubleFV, Record<FImage>>(
-		// new File(
-		// "/Users/jsh2/feature-cache/caltech101/sp-phog-300"), new
-		// SpPHOWExtractorImplementation(
-		// assigner));
-		//
-		// @Override
-		// public void perform(Record<FImage> object) {
-		// System.out.println(object.getID());
-		// extr.extractFeature(object);
-		// }
-		// });
+		Parallel.forEach(data, new Operation<Record<FImage>>() {
+			DiskCachingFeatureExtractor<DoubleFV, Record<FImage>> extr = new
+					DiskCachingFeatureExtractor<DoubleFV, Record<FImage>>(
+							CACHE_DIR, new
+							SpPHOWExtractorImplementation(
+									assigner));
+
+			@Override
+			public void perform(Record<FImage> object) {
+				System.out.println(object.getID());
+				extr.extractFeature(object);
+			}
+		});
 
 		System.out.println("Training classifier");
 		final DiskCachingFeatureExtractor<DoubleFV, Record<FImage>> extractor = new DiskCachingFeatureExtractor<DoubleFV, Record<FImage>>(
-				new File(
-						"/Users/jsh2/feature-cache/caltech101/sp-phog-300"), new SpPHOWExtractorImplementation(
+				CACHE_DIR, new SpPHOWExtractorImplementation(
 						assigner));
 
 		final FeatureExtractor<DoubleFV, Record<FImage>> extractor2 = new FeatureExtractor<DoubleFV, Record<FImage>>() {
@@ -128,13 +131,16 @@ public class CT101PHOW {
 	private static DoubleFV getSpatialPHOW(FImage image, HardAssigner<byte[], float[], IntFloatPair> assigner) {
 		image = standardiseImage(image);
 
-		final DenseSIFT dsift = new DenseSIFT(3, 3, 4, 4, 4, 4, 8, 1.5f);
+		final DenseSIFT dsift = new ApproximateDenseSIFT(3, 3, 4, 4, 4, 4, 8, 1.5f);
 		final PyramidDenseSIFT pdsift = new PyramidDenseSIFT(dsift, 6, 4, 6, 8, 10);
 		pdsift.analyseImage(image);
 
 		final BagOfVisualWords<byte[]> bovw = new BagOfVisualWords<byte[]>(assigner);
-		final BlockSpatialAggregator<byte[], SparseIntFV> spatial =
-				new BlockSpatialAggregator<byte[], SparseIntFV>(bovw, 2, 2);
+		// final BlockSpatialAggregator<byte[], SparseIntFV> spatial =
+		// new BlockSpatialAggregator<byte[], SparseIntFV>(bovw, 2, 2);
+
+		final PyramidSpatialAggregator<byte[], SparseIntFV> spatial =
+				new PyramidSpatialAggregator<byte[], SparseIntFV>(bovw, 2, 4);
 
 		return spatial.aggregate(pdsift.getByteKeypoints(0.015f), image.getBounds()).normaliseFV();
 	}

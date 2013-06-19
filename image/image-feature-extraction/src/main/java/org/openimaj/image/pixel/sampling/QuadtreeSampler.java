@@ -42,7 +42,7 @@ import org.openimaj.util.iterator.IterableIterator;
  * from an image or other domain in both spatial and scale directions. The
  * sampling regions returned by the sampler form a quadtree. At the first level
  * there is a single sample region covering the entire region; at the second
- * level, there are 4 non-overapping sample regions, and so on.
+ * level, there are 4 non-overlapping sample regions, and so on.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */

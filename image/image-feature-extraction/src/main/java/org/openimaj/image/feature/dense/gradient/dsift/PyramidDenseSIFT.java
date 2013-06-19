@@ -13,9 +13,9 @@ import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.IntObjectPair;
 
 /**
- * A pyramid of dense SIFT. Dense sift features are extracted for the given bin
- * sizes (scales). The image is optionally smoothed with a Gaussian before each
- * scale.
+ * A scale-space pyramid of dense SIFT. Dense sift features are extracted for
+ * the given bin sizes (scales). The image is optionally smoothed with a
+ * Gaussian before each scale.
  * <p>
  * The {@link PyramidDenseSIFT} is not thread safe, but is reusable like the
  * {@link DenseSIFT} analyser.
