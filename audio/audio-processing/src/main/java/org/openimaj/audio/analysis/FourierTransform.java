@@ -32,8 +32,6 @@
  */
 package org.openimaj.audio.analysis;
 
-import java.util.Arrays;
-
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
@@ -112,8 +110,8 @@ public class FourierTransform extends AudioProcessor
 			for( int x = 0; x < nSamplesPerChannel; x++ )
 				this.lastFFT[c][x*2] = sb.get( x*nChannels+c ) * this.scalingFactor;
 
-			System.out.println( "FFT Input (channel "+c+"), length "+this.lastFFT[c].length+": " );
-			System.out.println( Arrays.toString( this.lastFFT[c] ));
+//			System.out.println( "FFT Input (channel "+c+"), length "+this.lastFFT[c].length+": " );
+//			System.out.println( Arrays.toString( this.lastFFT[c] ));
 
 			// Perform the FFT (using jTransforms)
 			fft.complexForward( this.lastFFT[c] );
@@ -121,8 +119,8 @@ public class FourierTransform extends AudioProcessor
 			if( this.normalise )
 				this.normaliseReals( sizeOfFFT );
 
-			System.out.println( "FFT Output (channel "+c+"): " );
-			System.out.println( Arrays.toString( this.lastFFT[c] ));
+//			System.out.println( "FFT Output (channel "+c+"): " );
+//			System.out.println( Arrays.toString( this.lastFFT[c] ));
 		}
 
 	    return sb;
@@ -242,8 +240,8 @@ public class FourierTransform extends AudioProcessor
 		final float[][] mags = new float[this.lastFFT.length][];
 		for( int c = 0; c < this.lastFFT.length; c++ )
 		{
-			mags[c] = new float[ this.lastFFT[c].length/2 ];
-			for( int i = 0; i < this.lastFFT[c].length/2; i++ )
+			mags[c] = new float[ this.lastFFT[c].length/4 ];
+			for( int i = 0; i < this.lastFFT[c].length/4; i++ )
 			{
 				final float re = this.lastFFT[c][i*2];
 				final float im = this.lastFFT[c][i*2+1];
@@ -257,6 +255,7 @@ public class FourierTransform extends AudioProcessor
 	/**
 	 * 	Scales the real and imaginary parts by the scalar prior to
 	 * 	calculating the (square) magnitude for normalising the outputs.
+	 * 	Returns only those values up to the Nyquist frequency.
 	 *
 	 *	@param scalar The scalar
 	 *	@return Normalised magnitudes.
@@ -266,8 +265,8 @@ public class FourierTransform extends AudioProcessor
 		final float[][] mags = new float[this.lastFFT.length][];
 		for( int c = 0; c < this.lastFFT.length; c++ )
 		{
-			mags[c] = new float[ this.lastFFT[c].length/2 ];
-			for( int i = 0; i < this.lastFFT[c].length/2; i++ )
+			mags[c] = new float[ this.lastFFT[c].length/4 ];
+			for( int i = 0; i < this.lastFFT[c].length/4; i++ )
 			{
 				final float re = this.lastFFT[c][i*2] * scalar;
 				final float im = this.lastFFT[c][i*2+1] * scalar;
