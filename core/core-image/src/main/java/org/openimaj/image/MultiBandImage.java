@@ -42,9 +42,9 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * A base class for multi-band images.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            The pixel type
  * @param <I>
@@ -73,16 +73,16 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	 * Default constructor for a multiband image.
 	 */
 	public MultiBandImage() {
-		bands = new ArrayList<S>();
+		this.bands = new ArrayList<S>();
 	}
 
 	/**
 	 * Default constructor for a multiband image.
-	 * 
+	 *
 	 * @param colourSpace
 	 *            the colour space
 	 */
-	public MultiBandImage(ColourSpace colourSpace) {
+	public MultiBandImage(final ColourSpace colourSpace) {
 		this();
 		this.colourSpace = colourSpace;
 	}
@@ -90,31 +90,31 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Construct a multiband image using each of the given images as the bands
 	 * (in order).
-	 * 
+	 *
 	 * @param colourSpace
 	 *            the colour space
 	 * @param images
 	 *            A set of images to use as the bands in the image.
 	 */
-	public MultiBandImage(ColourSpace colourSpace, S... images) {
+	public MultiBandImage(final ColourSpace colourSpace, final S... images) {
 		this(colourSpace);
 
 		if (!ImageUtilities.checkSameSize(images)) {
 			throw new IllegalArgumentException("images are not the same size");
 		}
 
-		bands.addAll(Arrays.asList(images));
+		this.bands.addAll(Arrays.asList(images));
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#abs()
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public I abs() {
-		for (final S i : bands)
+		for (final S i : this.bands)
 			i.abs();
 		return (I) this;
 	}
@@ -122,12 +122,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Add the given scalar to each pixel of each band and return result as a
 	 * new image.
-	 * 
+	 *
 	 * @param num
 	 *            The value to add to each pixel in every band.
 	 * @return A new image containing the result.
 	 */
-	public I add(T num) {
+	public I add(final T num) {
 		final I newImage = this.clone();
 		newImage.add(num);
 		return newImage;
@@ -136,34 +136,34 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Adds a new band image to the multiband image. The given image must be the
 	 * same size as the images already in this image.
-	 * 
+	 *
 	 * @param img
 	 *            The image to add as a new band.
 	 */
-	public void addBand(S img) {
-		if (bands.size() > 0) {
-			if (!ImageUtilities.checkSize(getHeight(), getWidth(), img)) {
+	public void addBand(final S img) {
+		if (this.bands.size() > 0) {
+			if (!ImageUtilities.checkSize(this.getHeight(), this.getWidth(), img)) {
 				throw new IllegalArgumentException("images are not the same size");
 			}
 		}
-		bands.add(img);
+		this.bands.add(img);
 	}
 
 	/**
 	 * {@inheritDoc} The input image must be a {@link MultiBandImage} or a
 	 * {@link SingleBandImage}.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#addInplace(org.openimaj.image.Image)
 	 * @throws UnsupportedOperationException
 	 *             if the given image is neither a {@link MultiBandImage} nor a
 	 *             {@link SingleBandImage}.
 	 */
 	@Override
-	public I addInplace(Image<?, ?> im) {
+	public I addInplace(final Image<?, ?> im) {
 		if (im instanceof MultiBandImage<?, ?, ?>) {
-			return addInplace((MultiBandImage<?, ?, ?>) im);
+			return this.addInplace((MultiBandImage<?, ?, ?>) im);
 		} else if (im instanceof SingleBandImage<?, ?>) {
-			return addInplace((SingleBandImage<?, ?>) im);
+			return this.addInplace((SingleBandImage<?, ?>) im);
 		} else {
 			throw new UnsupportedOperationException("Unsupported Type");
 		}
@@ -172,19 +172,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Adds to each pixel the value of the corresponding pixel in the
 	 * corresponding band in the given image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to add to this image.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I addInplace(MultiBandImage<?, ?, ?> im) {
+	public I addInplace(final MultiBandImage<?, ?, ?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
-		final int np = bands.size();
+		final int np = this.bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).addInplace(((MultiBandImage<?, ?, ?>) im).bands.get(i));
+			this.bands.get(i).addInplace(((MultiBandImage<?, ?, ?>) im).bands.get(i));
 
 		return (I) this;
 	}
@@ -192,32 +192,32 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Adds to each pixel (in all bandS) the value of corresponding pixel in the
 	 * given image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to add to this image.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I addInplace(SingleBandImage<?, ?> im) {
+	public I addInplace(final SingleBandImage<?, ?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
-		final int np = bands.size();
+		final int np = this.bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).addInplace(im);
+			this.bands.get(i).addInplace(im);
 
 		return (I) this;
 	}
 
 	/**
 	 * Add the given value to each pixel in every band. Side-affects this image.
-	 * 
+	 *
 	 * @param num
 	 *            The value to add to each pixel
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I addInplace(T num) {
+	public I addInplace(final T num) {
 		for (final S sbi : this) {
 			sbi.addInplace(num);
 		}
@@ -227,18 +227,18 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#addInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I addInplace(T[] num) {
-		final int np = bands.size();
+	public I addInplace(final T[] num) {
+		final int np = this.bands.size();
 
 		assert (num.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).addInplace(num[i]);
+			this.bands.get(i).addInplace(num[i]);
 
 		return (I) this;
 	}
@@ -246,7 +246,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Clips each band in this image to the same range. Values outside of the
 	 * range are set to zero. Side-affects this image.
-	 * 
+	 *
 	 * @param min
 	 *            The minimum value to clip to
 	 * @param max
@@ -255,7 +255,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	 * @see Image#clip(Object, Object)
 	 */
 	@SuppressWarnings("unchecked")
-	public I clip(T min, T max) {
+	public I clip(final T min, final T max) {
 		for (final S sbi : this) {
 			sbi.clip(min, max);
 		}
@@ -265,19 +265,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#clip(java.lang.Object, java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I clip(T[] min, T[] max) {
-		final int np = bands.size();
+	public I clip(final T[] min, final T[] max) {
+		final int np = this.bands.size();
 
 		assert (min.length == np);
 		assert (max.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).clip(min[i], max[i]);
+			this.bands.get(i).clip(min[i], max[i]);
 
 		return (I) this;
 	}
@@ -285,13 +285,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * For all bands, sets any values above the given threshold to zero.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * @param thresh
 	 *            The threshold above which values are clipped
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I clipMax(T thresh) {
+	public I clipMax(final T thresh) {
 		for (final S sbm : this)
 			sbm.clipMax(thresh);
 
@@ -300,18 +300,18 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#clipMax(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I clipMax(T[] thresh) {
-		final int np = bands.size();
+	public I clipMax(final T[] thresh) {
+		final int np = this.bands.size();
 
 		assert (thresh.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).clipMax(thresh[i]);
+			this.bands.get(i).clipMax(thresh[i]);
 
 		return (I) this;
 	}
@@ -319,13 +319,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Sets all pixels in all bands that have a value below the given threshold
 	 * to zero. Side-affects this image.
-	 * 
+	 *
 	 * @param thresh
 	 *            The threshold below which pixels will be set to zero.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I clipMin(T thresh) {
+	public I clipMin(final T thresh) {
 		for (final S sbm : this)
 			sbm.clipMin(thresh);
 
@@ -334,57 +334,58 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#clipMin(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I clipMin(T[] thresh) {
-		final int np = bands.size();
+	public I clipMin(final T[] thresh) {
+		final int np = this.bands.size();
 
 		assert (thresh.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).clipMin(thresh[i]);
+			this.bands.get(i).clipMin(thresh[i]);
 
 		return (I) this;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#clone()
 	 */
 	@Override
 	public I clone() {
-		final I newImage = newInstance();
+		final I newImage = this.newInstance();
 
 		for (final S sbi : this) {
 			newImage.bands.add(sbi.clone());
 		}
+		newImage.colourSpace = this.colourSpace;
 
 		return newImage;
 	}
 
 	/**
 	 * Delete the band at the given index.
-	 * 
+	 *
 	 * @param index
 	 *            The index of the band to remove.
 	 */
-	public void deleteBand(int index) {
-		bands.remove(index);
+	public void deleteBand(final int index) {
+		this.bands.remove(index);
 	}
 
 	/**
 	 * Divides all pixels of each band by the given value and returns result as
 	 * a new image.
-	 * 
+	 *
 	 * @param val
 	 *            The value to divide every pixel by.
 	 * @return A new image containing the result.
 	 */
-	public I divide(T val) {
+	public I divide(final T val) {
 		final I newImage = this.clone();
 		newImage.divide(val);
 		return newImage;
@@ -392,15 +393,15 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#divideInplace(org.openimaj.image.Image)
 	 */
 	@Override
-	public I divideInplace(Image<?, ?> im) {
+	public I divideInplace(final Image<?, ?> im) {
 		if (im instanceof MultiBandImage<?, ?, ?>) {
-			return divideInplace((MultiBandImage<?, ?, ?>) im);
+			return this.divideInplace((MultiBandImage<?, ?, ?>) im);
 		} else if (im instanceof SingleBandImage<?, ?>) {
-			return divideInplace((SingleBandImage<?, ?>) im);
+			return this.divideInplace((SingleBandImage<?, ?>) im);
 		} else {
 			throw new UnsupportedOperationException("Unsupported Type");
 		}
@@ -409,19 +410,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Divides the pixels in every band of this image by the corresponding pixel
 	 * in the corresponding band of the given image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to divide into this image.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I divideInplace(MultiBandImage<?, ?, ?> im) {
+	public I divideInplace(final MultiBandImage<?, ?, ?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
-		final int np = bands.size();
+		final int np = this.bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).divideInplace(((MultiBandImage<?, ?, ?>) im).bands.get(i));
+			this.bands.get(i).divideInplace(((MultiBandImage<?, ?, ?>) im).bands.get(i));
 
 		return (I) this;
 	}
@@ -429,19 +430,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Divides the pixels in every band of this image by the corresponding pixel
 	 * in the given image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to divide into this image.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I divideInplace(SingleBandImage<?, ?> im) {
+	public I divideInplace(final SingleBandImage<?, ?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
-		final int np = bands.size();
+		final int np = this.bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).divideInplace(im);
+			this.bands.get(i).divideInplace(im);
 
 		return (I) this;
 	}
@@ -449,13 +450,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Divide all pixels of every band by the given value. Side-affects this
 	 * image.
-	 * 
+	 *
 	 * @param val
 	 *            The value to divide by
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I divideInplace(T val) {
+	public I divideInplace(final T val) {
 		for (final S sbm : this) {
 			sbm.divideInplace(val);
 		}
@@ -464,32 +465,32 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#divideInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I divideInplace(T[] val) {
-		final int np = bands.size();
+	public I divideInplace(final T[] val) {
+		final int np = this.bands.size();
 
 		assert (val.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).divideInplace(val[i]);
+			this.bands.get(i).divideInplace(val[i]);
 
 		return (I) this;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#extractROI(int, int,
 	 *      org.openimaj.image.Image)
 	 */
 	@Override
-	public I extractROI(int x, int y, I out) {
-		for (int i = 0; i < bands.size(); i++) {
-			final S img = bands.get(i);
+	public I extractROI(final int x, final int y, final I out) {
+		for (int i = 0; i < this.bands.size(); i++) {
+			final S img = this.bands.get(i);
 			img.extractROI(x, y, out.bands.get(i));
 		}
 
@@ -498,12 +499,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#extractROI(int, int, int, int)
 	 */
 	@Override
-	public I extractROI(int x, int y, int w, int h) {
-		final I newImage = newInstance();
+	public I extractROI(final int x, final int y, final int w, final int h) {
+		final I newImage = this.newInstance();
 
 		for (final S sbm : this) {
 			newImage.addBand(sbm.extractROI(x, y, w, h));
@@ -513,63 +514,63 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#fill(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I fill(T[] colour) {
-		for (int b = 0; b < bands.size(); b++)
-			bands.get(b).fill(colour[b]);
+	public I fill(final T[] colour) {
+		for (int b = 0; b < this.bands.size(); b++)
+			this.bands.get(b).fill(colour[b]);
 		return (I) this;
 	}
 
 	/**
 	 * Flatten the bands into a single band using the average value of the
 	 * pixels at each location.
-	 * 
+	 *
 	 * @return A new single-band image containing the result.
 	 */
 	public S flatten() {
-		final S out = newBandInstance(getWidth(), getHeight());
+		final S out = this.newBandInstance(this.getWidth(), this.getHeight());
 
 		for (final S sbm : this)
 			out.addInplace(sbm);
 
-		return out.divideInplace(intToT(numBands()));
+		return out.divideInplace(this.intToT(this.numBands()));
 	}
 
 	/**
 	 * Flatten the bands into a single band by selecting the maximum value pixel
 	 * from each band.
-	 * 
+	 *
 	 * @return A new flattened image
 	 */
 	public abstract S flattenMax();
 
 	/**
 	 * Get the band at index i.
-	 * 
+	 *
 	 * @param i
 	 *            the index
 	 * @return the specified colour band
 	 */
-	public S getBand(int i) {
-		return bands.get(i);
+	public S getBand(final int i) {
+		return this.bands.get(i);
 	}
 
 	/**
 	 * Get the colour space of this image
-	 * 
+	 *
 	 * @return the colour space
 	 */
 	public ColourSpace getColourSpace() {
-		return colourSpace;
+		return this.colourSpace;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getContentArea()
 	 */
 	@Override
@@ -592,12 +593,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getField(org.openimaj.image.Image.Field)
 	 */
 	@Override
-	public I getField(Field f) {
-		final I newImage = newInstance();
+	public I getField(final Field f) {
+		final I newImage = this.newInstance();
 
 		for (final S sbm : this) {
 			newImage.bands.add(sbm.getField(f));
@@ -607,12 +608,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getFieldCopy(org.openimaj.image.Image.Field)
 	 */
 	@Override
-	public I getFieldCopy(Field f) {
-		final I newImage = newInstance();
+	public I getFieldCopy(final Field f) {
+		final I newImage = this.newInstance();
 
 		for (final S sbm : this) {
 			newImage.bands.add(sbm.getFieldCopy(f));
@@ -622,12 +623,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getFieldInterpolate(org.openimaj.image.Image.Field)
 	 */
 	@Override
-	public I getFieldInterpolate(Field f) {
-		final I newImage = newInstance();
+	public I getFieldInterpolate(final Field f) {
+		final I newImage = this.newInstance();
 
 		for (final S sbm : this) {
 			newImage.bands.add(sbm.getFieldInterpolate(f));
@@ -638,38 +639,38 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getHeight()
 	 */
 	@Override
 	public int getHeight() {
-		if (bands.size() > 0)
-			return bands.get(0).getHeight();
+		if (this.bands.size() > 0)
+			return this.bands.get(0).getHeight();
 		return 0;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getWidth()
 	 */
 	@Override
 	public int getWidth() {
-		if (bands.size() > 0)
-			return bands.get(0).getWidth();
+		if (this.bands.size() > 0)
+			return this.bands.get(0).getWidth();
 		return 0;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I internalCopy(I im)
+	public I internalCopy(final I im)
 	{
-		final int nb = bands.size();
+		final int nb = this.bands.size();
 		for (int i = 0; i < nb; i++)
 			this.bands.get(i).internalCopy(im.getBand(i));
 
@@ -678,19 +679,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I internalAssign(I im) {
-		bands = im.bands;
+	public I internalAssign(final I im) {
+		this.bands = im.bands;
 		return (I) this;
 	}
 
 	/**
 	 * Converts the given integer to a value that can be used as a pixel value.
-	 * 
+	 *
 	 * @param n
 	 *            The integer to convert.
 	 * @return A value that can be used as a pixel value.
@@ -699,7 +700,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#inverse()
 	 */
 	@SuppressWarnings("unchecked")
@@ -713,17 +714,17 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Iterable#iterator()
 	 */
 	@Override
 	public Iterator<S> iterator() {
-		return bands.iterator();
+		return this.bands.iterator();
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#max()
 	 */
 	@SuppressWarnings("unchecked")
@@ -740,7 +741,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#min()
 	 */
 	@SuppressWarnings("unchecked")
@@ -758,12 +759,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Multiplies each pixel of every band by the given value and returns the
 	 * result as a new image.
-	 * 
+	 *
 	 * @param num
 	 *            The value to multiply by.
 	 * @return A new image containing the result.
 	 */
-	public I multiply(T num) {
+	public I multiply(final T num) {
 		final I newImage = this.clone();
 		newImage.multiplyInplace(num);
 		return newImage;
@@ -771,15 +772,15 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#multiplyInplace(org.openimaj.image.Image)
 	 */
 	@Override
-	public I multiplyInplace(Image<?, ?> im) {
+	public I multiplyInplace(final Image<?, ?> im) {
 		if (im instanceof MultiBandImage<?, ?, ?>) {
-			return multiplyInplace((MultiBandImage<?, ?, ?>) im);
+			return this.multiplyInplace((MultiBandImage<?, ?, ?>) im);
 		} else if (im instanceof SingleBandImage<?, ?>) {
-			return multiplyInplace((SingleBandImage<?, ?>) im);
+			return this.multiplyInplace((SingleBandImage<?, ?>) im);
 		} else {
 			throw new UnsupportedOperationException("Unsupported Type");
 		}
@@ -788,19 +789,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Multiplies every pixel in this image by the corresponding pixel in the
 	 * corresponding band in the given image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to multiply with this image.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I multiplyInplace(MultiBandImage<?, ?, ?> im) {
+	public I multiplyInplace(final MultiBandImage<?, ?, ?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
-		final int np = bands.size();
+		final int np = this.bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).multiplyInplace(((MultiBandImage<?, ?, ?>) im).bands.get(i));
+			this.bands.get(i).multiplyInplace(((MultiBandImage<?, ?, ?>) im).bands.get(i));
 
 		return (I) this;
 	}
@@ -808,19 +809,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Multiplies every pixel in this image by the corresponding pixel in the
 	 * given image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to multiply with this image.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I multiplyInplace(SingleBandImage<?, ?> im) {
+	public I multiplyInplace(final SingleBandImage<?, ?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
-		final int np = bands.size();
+		final int np = this.bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).multiplyInplace(im);
+			this.bands.get(i).multiplyInplace(im);
 
 		return (I) this;
 	}
@@ -828,13 +829,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Multiplies each pixel of every band by the given value. Side-affects this
 	 * image.
-	 * 
+	 *
 	 * @param num
 	 *            The value to multiply this image by
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I multiplyInplace(T num) {
+	public I multiplyInplace(final T num) {
 		for (final S sbm : this)
 			sbm.multiplyInplace(num);
 
@@ -843,25 +844,25 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#multiplyInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I multiplyInplace(T[] num) {
-		final int np = bands.size();
+	public I multiplyInplace(final T[] num) {
+		final int np = this.bands.size();
 
 		assert (num.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).multiplyInplace(num[i]);
+			this.bands.get(i).multiplyInplace(num[i]);
 
 		return (I) this;
 	}
 
 	/**
 	 * Returns a new instance of an image that represents each band.
-	 * 
+	 *
 	 * @param width
 	 *            The width of the image
 	 * @param height
@@ -872,14 +873,14 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Returns a new instance of a this image type.
-	 * 
+	 *
 	 * @return A new {@link MBFImage} subclass type.
 	 */
 	public abstract I newInstance();
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#newInstance(int, int)
 	 */
 	@Override
@@ -887,7 +888,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#normalise()
 	 */
 	@SuppressWarnings("unchecked")
@@ -901,21 +902,21 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Returns the number of bands in this image.
-	 * 
+	 *
 	 * @return the number of bands in this image.
 	 */
 	public int numBands() {
-		return bands.size();
+		return this.bands.size();
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor)
 	 */
 	@Override
-	public I process(SinglebandImageProcessor<T, S> p) {
-		final I out = newInstance();
+	public I process(final SinglebandImageProcessor<T, S> p) {
+		final I out = this.newInstance();
 		for (final S sbm : this)
 			out.bands.add(sbm.process(p));
 
@@ -924,23 +925,23 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
-	public I process(SinglebandKernelProcessor<T, S> kernel) {
-		return process(kernel, false);
+	public I process(final SinglebandKernelProcessor<T, S> kernel) {
+		return this.process(kernel, false);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor,
 	 *      boolean)
 	 */
 	@Override
-	public I process(SinglebandKernelProcessor<T, S> kernel, boolean pad) {
-		final I out = newInstance();
+	public I process(final SinglebandKernelProcessor<T, S> kernel, final boolean pad) {
+		final I out = this.newInstance();
 		for (final S sbm : this)
 			out.bands.add(sbm.process(kernel, pad));
 
@@ -950,13 +951,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Processes this image with the given {@link SinglebandImageProcessor} for
 	 * every band.
-	 * 
+	 *
 	 * @param pp
 	 *            The pixel process to apply to each band in turn.
 	 * @return A new image containing the result.
 	 */
-	public I process(SinglebandPixelProcessor<T> pp) {
-		final I out = newInstance();
+	public I process(final SinglebandPixelProcessor<T> pp) {
+		final I out = this.newInstance();
 		for (final S sbm : this)
 			out.bands.add(sbm.process(pp));
 
@@ -965,12 +966,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandImageProcessor)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public I processInplace(SinglebandImageProcessor<T, S> p) {
+	public I processInplace(final SinglebandImageProcessor<T, S> p) {
 		for (final S sbm : this)
 			sbm.processInplace(p);
 
@@ -979,23 +980,23 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
-	public I processInplace(SinglebandKernelProcessor<T, S> kernel) {
-		return processInplace(kernel, false);
+	public I processInplace(final SinglebandKernelProcessor<T, S> kernel) {
+		return this.processInplace(kernel, false);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor,
 	 *      boolean)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public I processInplace(SinglebandKernelProcessor<T, S> kernel, boolean pad) {
+	public I processInplace(final SinglebandKernelProcessor<T, S> kernel, final boolean pad) {
 		for (final S sbm : this)
 			sbm.processInplace(kernel, pad);
 
@@ -1005,13 +1006,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Process this image with the given {@link SinglebandImageProcessor} for
 	 * every band. Side-affects this image.
-	 * 
+	 *
 	 * @param pp
 	 *            The pixel processor to apply to each band in turn.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I processInplace(SinglebandPixelProcessor<T> pp) {
+	public I processInplace(final SinglebandPixelProcessor<T> pp) {
 		for (final S sbm : this)
 			sbm.processInplace(pp);
 
@@ -1020,32 +1021,32 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#setPixel(int, int, java.lang.Object)
 	 */
 	@Override
-	public void setPixel(int x, int y, T[] val) {
-		final int np = bands.size();
+	public void setPixel(final int x, final int y, final T[] val) {
+		final int np = this.bands.size();
 		if (np == val.length)
 			for (int i = 0; i < np; i++)
-				bands.get(i).setPixel(x, y, val[i]);
+				this.bands.get(i).setPixel(x, y, val[i]);
 		else {
 			final int offset = val.length - np;
 			for (int i = 0; i < np; i++)
 				if (i + offset >= 0)
-					bands.get(i).setPixel(x, y, val[i + offset]);
+					this.bands.get(i).setPixel(x, y, val[i + offset]);
 		}
 	}
 
 	/**
 	 * Subtracts the given value from every pixel in every band and returns the
 	 * result as a new image.
-	 * 
+	 *
 	 * @param num
 	 *            The value to subtract from this image.
 	 * @return A new image containing the result.
 	 */
-	public I subtract(T num) {
+	public I subtract(final T num) {
 		final I newImage = this.clone();
 		newImage.subtract(num);
 		return newImage;
@@ -1053,15 +1054,15 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#subtractInplace(org.openimaj.image.Image)
 	 */
 	@Override
-	public I subtractInplace(Image<?, ?> im) {
+	public I subtractInplace(final Image<?, ?> im) {
 		if (im instanceof MultiBandImage<?, ?, ?>) {
-			return subtractInplace((MultiBandImage<?, ?, ?>) im);
+			return this.subtractInplace((MultiBandImage<?, ?, ?>) im);
 		} else if (im instanceof SingleBandImage<?, ?>) {
-			return subtractInplace((SingleBandImage<?, ?>) im);
+			return this.subtractInplace((SingleBandImage<?, ?>) im);
 		} else {
 			throw new UnsupportedOperationException("Unsupported Type");
 		}
@@ -1070,19 +1071,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Subtracts from every pixel in every band the corresponding pixel value in
 	 * the corresponding band of the given image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to subtract from this image
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I subtractInplace(MultiBandImage<?, ?, ?> im) {
+	public I subtractInplace(final MultiBandImage<?, ?, ?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
-		final int np = bands.size();
+		final int np = this.bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).subtractInplace(((MultiBandImage<?, ?, ?>) im).bands.get(i));
+			this.bands.get(i).subtractInplace(((MultiBandImage<?, ?, ?>) im).bands.get(i));
 
 		return (I) this;
 	}
@@ -1090,19 +1091,19 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Subtracts from every pixel in every band the corresponding pixel value in
 	 * the given image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to subtract from this image.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I subtractInplace(SingleBandImage<?, ?> im) {
+	public I subtractInplace(final SingleBandImage<?, ?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
-		final int np = bands.size();
+		final int np = this.bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).subtractInplace(im);
+			this.bands.get(i).subtractInplace(im);
 
 		return (I) this;
 	}
@@ -1110,13 +1111,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Subtracts the given value from every pixel in every band. Side-affects
 	 * this image.
-	 * 
+	 *
 	 * @param num
 	 *            The value to subtract from this image
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I subtractInplace(T num) {
+	public I subtractInplace(final T num) {
 		for (final S sbm : this)
 			sbm.subtractInplace(num);
 
@@ -1125,18 +1126,18 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#subtractInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I subtractInplace(T[] num) {
-		final int np = bands.size();
+	public I subtractInplace(final T[] num) {
+		final int np = this.bands.size();
 
 		assert (num.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).subtractInplace(num[i]);
+			this.bands.get(i).subtractInplace(num[i]);
 
 		return (I) this;
 	}
@@ -1144,13 +1145,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Sets the value of any pixel below the given threshold to zero and all
 	 * others to 1 for all bands. Side-affects this image.
-	 * 
+	 *
 	 * @param thresh
 	 *            The threshold above which pixels will be set to 1.
 	 * @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I threshold(T thresh) {
+	public I threshold(final T thresh) {
 		for (final S sbm : this)
 			sbm.threshold(thresh);
 
@@ -1159,37 +1160,37 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#threshold(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I threshold(T[] thresh) {
-		final int np = bands.size();
+	public I threshold(final T[] thresh) {
+		final int np = this.bands.size();
 
 		assert (thresh.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).threshold(thresh[i]);
+			this.bands.get(i).threshold(thresh[i]);
 
 		return (I) this;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#toByteImage()
 	 */
 	@Override
 	public byte[] toByteImage() {
-		final int width = getWidth();
-		final int height = getHeight();
-		final int nb = bands.size();
+		final int width = this.getWidth();
+		final int height = this.getHeight();
+		final int nb = this.bands.size();
 
 		final byte[] ppmData = new byte[nb * height * width];
 
 		for (int n = 0; n < nb; n++) {
-			final byte[] band = bands.get(n).toByteImage();
+			final byte[] band = this.bands.get(n).toByteImage();
 
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {
@@ -1202,21 +1203,21 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#toPackedARGBPixels()
 	 */
 	@Override
 	public int[] toPackedARGBPixels() {
 		// TODO: deal better with color spaces
-		if (bands.size() == 1) {
-			return bands.get(0).toPackedARGBPixels();
-		} else if (bands.size() == 3) {
-			final int width = getWidth();
-			final int height = getHeight();
+		if (this.bands.size() == 1) {
+			return this.bands.get(0).toPackedARGBPixels();
+		} else if (this.bands.size() == 3) {
+			final int width = this.getWidth();
+			final int height = this.getHeight();
 
-			final byte[] rp = bands.get(0).toByteImage();
-			final byte[] gp = bands.get(1).toByteImage();
-			final byte[] bp = bands.get(2).toByteImage();
+			final byte[] rp = this.bands.get(0).toByteImage();
+			final byte[] gp = this.bands.get(1).toByteImage();
+			final byte[] bp = this.bands.get(2).toByteImage();
 
 			final int[] data = new int[height * width];
 
@@ -1232,14 +1233,14 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 			}
 
 			return data;
-		} else if (bands.size() == 4) {
-			final int width = getWidth();
-			final int height = getHeight();
+		} else if (this.bands.size() == 4) {
+			final int width = this.getWidth();
+			final int height = this.getHeight();
 
-			final byte[] ap = bands.get(3).toByteImage();
-			final byte[] rp = bands.get(0).toByteImage();
-			final byte[] gp = bands.get(1).toByteImage();
-			final byte[] bp = bands.get(2).toByteImage();
+			final byte[] ap = this.bands.get(3).toByteImage();
+			final byte[] rp = this.bands.get(0).toByteImage();
+			final byte[] gp = this.bands.get(1).toByteImage();
+			final byte[] bp = this.bands.get(2).toByteImage();
 
 			final int[] data = new int[height * width];
 
@@ -1258,13 +1259,13 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 			return data;
 		} else {
 			throw new UnsupportedOperationException(
-					"Unable to create bufferedImage with " + numBands() + " bands");
+					"Unable to create bufferedImage with " + this.numBands() + " bands");
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#zero()
 	 */
 	@SuppressWarnings("unchecked")
@@ -1278,16 +1279,16 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public I shiftLeftInplace(int count) {
-		for (final S b : bands)
+	public I shiftLeftInplace(final int count) {
+		for (final S b : this.bands)
 			b.shiftLeftInplace(count);
 		return (I) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public I shiftRightInplace(int count) {
-		for (final S b : bands)
+	public I shiftRightInplace(final int count) {
+		for (final S b : this.bands)
 			b.shiftRightInplace(count);
 		return (I) this;
 	}
@@ -1295,7 +1296,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	@SuppressWarnings("unchecked")
 	@Override
 	public I flipX() {
-		for (final S b : bands)
+		for (final S b : this.bands)
 			b.flipX();
 
 		return (I) this;
@@ -1304,7 +1305,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	@SuppressWarnings("unchecked")
 	@Override
 	public I flipY() {
-		for (final S b : bands)
+		for (final S b : this.bands)
 			b.flipY();
 
 		return (I) this;
@@ -1312,12 +1313,12 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean equals(Object other) {
+	public boolean equals(final Object other) {
 		final I that = (I) other;
 		if (this.bands.size() != that.bands.size())
 			return false;
 		int i = 0;
-		for (final S b : bands)
+		for (final S b : this.bands)
 		{
 			final boolean fail = !b.equals(that.getBand(i));
 			if (fail)
@@ -1331,9 +1332,9 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public I replace(T[] target, T[] replacement) {
-		for (int b = 0; b < bands.size(); b++)
-			bands.get(b).replace(target[b], replacement[b]);
+	public I replace(final T[] target, final T[] replacement) {
+		for (int b = 0; b < this.bands.size(); b++)
+			this.bands.get(b).replace(target[b], replacement[b]);
 		return (I) this;
 	}
 }
