@@ -1265,7 +1265,7 @@ public class DisplayUtilities
 	 *	Displays an image in the given named window
 	 *	@param image The image
 	 *	@param name The name of the window
-	 *	@return
+	 *	@return The frame that was created.
 	 */
 	public static JFrame displayName( final BufferedImage image, final String name )
 	{
