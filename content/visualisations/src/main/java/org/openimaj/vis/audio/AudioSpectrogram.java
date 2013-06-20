@@ -196,6 +196,12 @@ public class AudioSpectrogram extends Visualisation<float[]>
 
 		// Store this FFT into the data
 		this.setData( f );
+	}
+
+	@Override
+	public void setData( final float[] data )
+	{
+		super.setData( data );
 		this.nFrames++;
 
 		this.shiftData();
@@ -275,7 +281,7 @@ public class AudioSpectrogram extends Visualisation<float[]>
 						this.visImage.getHeight()-this.previousSpecImage.getHeight() );
 				}
 
-				if( this.drawFreqBands )
+				if( this.drawFreqBands && this.audioFormat != null )
 				{
 					// Work out where to plot the next spectra
 					this.binSize = (this.audioFormat.getSampleRateKHz() * 500) / this.data.length;
