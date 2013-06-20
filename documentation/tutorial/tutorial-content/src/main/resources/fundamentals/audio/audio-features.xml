@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="features-from-audio">
+	<title>Feature Extraction from Audio</title>
+
+	<para>
+	Let's take some audio and generate some features. Mel-Frequncy Cepstrum Coefficients are a well-known
+	starting point for audio analysis. They give an overview of the shape (or envelope) of the
+	frequency components of the audio. 
+	</para>
+	
+	<para>
+	</para>
+
+</chapter>

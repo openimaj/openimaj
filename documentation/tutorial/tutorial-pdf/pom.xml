@@ -101,6 +101,7 @@
 					<monospaceFontFamily>Inconsolata LGC</monospaceFontFamily>
 					<titleFontFamily>OpenSans-CondBold</titleFontFamily>
 					<profileCondition>print</profileCondition>
+					<useSvg>true</useSvg>
 					<fonts>
 						<font>
 							<name>OpenSans-CondBold</name>

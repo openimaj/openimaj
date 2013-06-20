@@ -2,16 +2,12 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="processing-audio">
-	<title>Processing Audio</title>
-	<para>
-	OpenIMAJ started as a library for image processing, then expanded to video processing.
-	The natural extension to dealing with videos is audio processing and has an important
-	role in many applications of multimedia understanding.
-	</para>
+	<title>Getting Audio and Basic Processing</title>
 	
 	<para>
-	Let's dive straight in and get something going before we look at some audio theory.
-	Playing an audio file in OpenIMAJ is made as easy as possible. Simply create your audio source
+	Let's dive straight in and get something going before we look at some audio theory and more
+	complex audio processing. One of the most useful things to do with audio is to listen to it!
+	Playing an audio file in OpenIMAJ is very easy: simply create your audio source
 	and pass it to the audio player.
 	</para>
 	
@@ -19,49 +15,199 @@
 		XuggleAudio xa = new XuggleAudio( new File( "myAudioFile.mp3" ) );
 		AudioPlayer.createAudioPlayer( xa ).run();
 	</programlisting>
+	
+	<para>
+	If you run these 2 lines of code you should hear audio playing. The <code>XuggleAudio</code>
+	class uses the <emphasis role="strong">Xuggler</emphasis> library to decode the audio from the file.
+	The audio player ()that's constructed using a static method as with the video player) 
+	returns an audio player instance which we set running straight away.  
+	</para>
+
 	<tip><para>
 		The <code>XuggleAudio</code> class also has constructors for reading audio from a URL or a stream.
 	</para></tip>
 	
 	<para>
-	If you run these 2 lines of code you should hear audio playing. The <code>XuggleAudio</code>
-	class uses the <emphasis role="strong">Xuggler</emphasis> library to read the audio from the file.
-	The audio player is constructed using a static method and returns an audio player instance which
-	we set running straight away.  
+	What's happening underneath is that the Xuggler library decodes the audio stream into chunks of
+	audio (called <emphasis role="italic">frames</emphasis>) each of which has many 
+	<emphasis role="italic">samples</emphasis>. A sample represents a level of sound pressure and the more
+	of these there are within one second, the better the representation of the original continuous signal.
+	The number of samples in one second is called the sample rate and you may already know that
+	audio on CDs are encoded at 44,100 samples per second (or 44.1KHz). The maximum frequency
+	that can be encoded in a digital signal is half of the sample rate (e.g. an estimate of a 22.05KHz sine wave
+	with a 44.1KHz sampled signal will be {1,-1,1,-1...}). This is called the Nyquist frequency
+	(named after Swedish-American engineer Harry Nyquist).
 	</para>
-	
-	<!--  TODO: Maybe some very basic digital audio intro here? -->
-	
+
+	<mediaobject>
+	  <imageobject condition="">
+			<imagedata fileref="../../figs/audio-digital-sampling.svg" format="SVG" 
+				scale="100" align="center" contentwidth="10cm"/>
+	  </imageobject>
+	</mediaobject>
+
+	<para>
+	Let's have a look at the audio waveform. This is easy to do with OpenIMAJ as we have a subproject
+	that contains various visualisers for various data including audio data. 
+	The <code>AudioWaveform</code> visualisation acts as
+	a very basic oscilloscope for displaying the audio data. We'll use a file from 
+	<uri>http://audiocheck.net/</uri> as it's good for understanding some of the audio functions 
+	we're about to describe. We can link directly to the file by passing a URL to <code>XuggleAudio</code>
+	(as in the code snippet below) or you can download the 20Hz-20KHz sweep and 
+	use it by passing a <code>File</code> to the <code>XuggleAudio</code>.
+	</para>
+
+	<programlisting>
+		final AudioWaveform vis = new AudioWaveform( 400, 400 );
+		vis.showWindow( "Waveform" );
+
+		final XuggleAudio xa = new XuggleAudio( 
+		    new URL( "http://www.audiocheck.net/download.php?" +
+		        "filename=Audio/audiocheck.net_sweep20-20klin.wav" ) );
+
+		SampleChunk sc = null;
+		while( (sc = xa.nextSampleChunk()) != null )
+		    vis.setData( sc.getSampleBuffer() );
+	</programlisting>
+
+	<mediaobject>
+	  <imageobject condition="">
+			<imagedata fileref="../../figs/audio-waveform.png" format="PNG" 
+				scale="100" align="center" contentwidth="5cm"/>
+	  </imageobject>
+	</mediaobject>
+
+	<para>
+	So, the first two lines above create the visualisation. We open the file and then we iterate
+	through the audio stream (with <code>xa.nextSampleChunk()</code>) and send that data to the 
+	visualisation (we'll cover the <code>getSampleBuffer()</code> method later). 
+	</para>
+		
 	<para>
 	The audio subsystem in OpenIMAJ has been designed to match the programming paradigm of the	
-	image and video subprojects. All classes providing audio extend the <code>Audio</code> class. Currently
+	image and video subprojects. So, all classes providing audio extend the <code>Audio</code> class. Currently
 	all implementations also extend the <code>AudioStream</code> class which defines a method
-	for getting frames of audio which we call <code>SampleChunk</code>s in OpenIMAJ. A <code>SampleChunk</code>
+	for getting frames of audio from the stream which we call <code>SampleChunk</code>s in OpenIMAJ. 
+	A <code>SampleChunk</code>
 	is a wrapper around an array of bytes. Understanding what those bytes mean requires knowledge of
 	the format of the audio data and this is given by the <code>AudioFormat</code> class. 
 	</para>
 	
 	<para>
-	Audio data, like image data, can come in many formats.  Each digitised reading of the sound pressure (a sample)
+	Audio data, like image data, can come in many formats.  Each digitised reading of the sound pressure (the sample)
 	can be represented by 8 bits (1 byte, signed or unsigned), 16 bits (2 bytes, little or big endian, 
-	signed or unsigned), or 24 bits or more. It can be read at any speed (or sample rate), although 22.05KHz or 
-	44.1KHz is common for audio (48KHz for video). It can also have one (mono), two (stereo) or more channels of audio.  
-	OpenIMAJ has a API that provides a means for accessing the sample data in a consistent way, and this class is called
-	a <code>SampleBuffer</code>. It has a <code>get(index)</code> method which returns a sample as a value between
-	<code>0..1</code>. It also provides a <code>set(index,val)</code> method which provides the opposite conversion.
-	Multichannel audio is interleaved.
-	An appropriate <code>SampleBuffer</code> for the specific audio format can be retrieved from a 
-	<code>SampleChunk</code> using <code>SampleChunk.getSampleBuffer()</code>. 
+	signed or unsigned), or 24 bits or more. The sample rate can be anything, although 22.05KHz or 
+	44.1KHz is common for audio (48KHz for video). The audio data can also represent one (mono), 
+	two (stereo) or more channels of audio, which are interleaved in the sample chunk data. 
 	</para>
 	
 	<para>
-	Ok, enough theory for the moment.  Let's do something interesting with the audio we're getting in.
-	Let's take some audio and generate some features. Mel-Frequncy Cepstrum Coefficients are a well-known
-	starting point for audio analysis. They give an overview of the shape (or envelope) of the
-	frequency components of the audio. 
+	To make code agnostic to the audio format, OpenIMAJ has a API that provides 
+	a means for accessing the sample data in a consistent way.
+	This class is called a <code>SampleBuffer</code>. 
+	It has a <code>get(index)</code> method which returns a sample as a value between
+	<code>0..1</code> whatever the underlying size of the data. 
+	It also provides a <code>set(index,val)</code> method which provides the opposite conversion.
+	Multichannel audio is still interleaved in the <code>SampleBuffer</code>, however,
+	it does provide various accessors for getting data from specific channels.
+	An appropriate <code>SampleBuffer</code> for the audio data in a <code>SampleChunk</code> 
+	can be retrieved using <code>SampleChunk.getSampleBuffer()</code>. 
+	</para>
+	
+	<para>
+	Ok, enough theory for the moment. Let's do something interesting that will help us 
+	towards understanding what we're getting in.
+	</para>
+	
+	<para>
+	An algorithm called the Fourier Transform
+	converts a time-domain signal (i.e. the signal you're getting from the audio file) into a 
+	frequency-domain signal (describing what pitches or frequencies contribute towards the final signal).
+	We can see what frequencies are in our signal by applying the transform and visualising the results.
+	</para>
+	
+	<para>
+	Take the previous code and change the visualisation to be a <code>BarVisualisation</code>. Next, we'll
+	create a <code>FourierTransform</code> object and take our stream of data from there.
 	</para>
 	
 	<programlisting>
-		
+		FourierTransform fft = new FourierTransform( xa );
+		...
+		while( (sc = fft.nextSampleChunk()) != null )
+		{
+		    float[][] fftData = fft.getMagnitudes();
+		    vis.setData( fftData[0] );
+		}
 	</programlisting>
+	
+	<mediaobject>
+	  <imageobject condition="">
+			<imagedata fileref="../../figs/audio-fft.png" format="PNG" 
+				scale="100" align="center" contentwidth="7cm"/>
+	  </imageobject>
+	</mediaobject>
+
+	<para>
+	Run this demo on the audiocheck.net sine wave sweep and you'll see a peak in the graph
+	moving up through the frequencies. The lowest frequencies are on the left of the visualisation
+	and the highest frequencies on the right (the Nyquist frequency on the far right).
+	</para>
+	
+	<tip>
+		<para>
+			Try using the <code>AudioSpectrogram</code> visualisation which displays the FFT
+			in a slightly different way.  It plots the frequencies vertically, with the pixel
+			intensities as the amplitude of the frequency. You should see a nice line being drawn
+			through the frequencies.
+		</para>
+	</tip>
+	
+	<para>
+	This example also introduces us to the processor chaining in the OpenIMAJ audio system. Chaining
+	allows us to create a set of operations to apply to the audio data and to take the
+	final data stream from the end. In this case we have chained the <code>FourierTransform</code>
+	processor to the original audio stream and we're taking the data from the end of the stream,
+	as shown in the diagram below.
+	</para>  
+	
+	<mediaobject>
+	  <imageobject condition="">
+			<imagedata fileref="../../figs/audio-processing-chain-1.svg" format="SVG" 
+				scale="100" align="center" contentwidth="8cm"/>
+	  </imageobject>
+	</mediaobject>
+
+	<para>
+	When we call <code>nextSampleChunk()</code> on the <code>FourierTransform</code> object, it
+	goes and gets the sample chunk from the previous processor in the chain, processes the sample
+	chunk and returns a new sample chunk (in fact, the <code>FourierTransform</code> returns the
+	sample chunk unchanged).
+	</para>
+	
+	<para>
+	Let's put an EQ filter in the chain that will filter out frequencies from the original signal: 
+	</para>
+	
+	<programlisting>
+		EQFilter eq = new EQFilter( xa, EQType.LPF, 5000 );
+		FourierTransform fft = new FourierTransform( eq );
+	</programlisting>
+	
+	<para>
+	We have set the low-pass filter to 5KHz (5000Hz), so when you run the program again,
+	you will see the peak fall off some way along its trip up to the high frequencies.
+	This sort of filtering can be useful in some circumstances for directing processing
+	to specific parts of the audio spectrum.
+	</para>
+	<tip><para>
+		As the frequency peak falls off, the bar visualisation will rescale to fit and
+		it might not be too easy to see what's going on. Try disabling the automatic scaling
+		on the bar visualisation and set the maximum value to around 1E11:
+		<programlisting>
+			vis.setAutoScale( false );
+			vis.setMaximumValue( 1E11 );
+		</programlisting>
+	</para></tip>
+	
 </chapter>

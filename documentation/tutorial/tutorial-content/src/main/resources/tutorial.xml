@@ -109,6 +109,7 @@
 		<xi:include href="fundamentals/audio/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		
 		<xi:include href="fundamentals/audio/audio-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/audio/audio-features.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 	
 	<part>

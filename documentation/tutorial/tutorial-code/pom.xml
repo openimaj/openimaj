@@ -66,6 +66,18 @@
       <version>1.1.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.openimaj</groupId>
+    	<artifactId>audio-processing</artifactId>
+    	<version>1.1.1-SNAPSHOT</version>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.openimaj.content</groupId>
+    	<artifactId>visualisations</artifactId>
+    	<version>1.1.1-SNAPSHOT</version>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

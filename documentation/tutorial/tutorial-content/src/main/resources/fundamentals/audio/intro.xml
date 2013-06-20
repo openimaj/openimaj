@@ -3,9 +3,15 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <partintro>
 	<para>
-		
+	OpenIMAJ started as a library for image processing, then expanded to video processing.
+	The natural extension to dealing with videos is audio processing and has an important
+	role in many applications of multimedia understanding. In this chapter we'll go through
+	the basic audio subsystem in OpenIMAJ and show how to extract features from audio that
+	can then be used in the various other tools in OpenIMAJ.		
 	</para>
 	
-	<literallayout><xref linkend="processing-audio"/>
+	<literallayout>
+	<xref linkend="processing-audio"/>
+	<xref linkend="features-from-audio"/>
 	</literallayout>
 </partintro>
