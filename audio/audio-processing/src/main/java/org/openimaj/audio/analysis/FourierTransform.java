@@ -33,6 +33,7 @@
 package org.openimaj.audio.analysis;
 
 import org.openimaj.audio.AudioFormat;
+import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.audio.samples.SampleBuffer;
@@ -66,6 +67,22 @@ public class FourierTransform extends AudioProcessor
 
 	/** Whether to divide the real return parts by the size of the input */
 	private final boolean normalise = true;
+
+	/**
+	 * 	Default constructor for ad-hoc processing.
+	 */
+	public FourierTransform()
+	{
+	}
+
+	/**
+	 * 	Constructor for chaining.
+	 *	@param as The stream to chain to
+	 */
+	public FourierTransform( final AudioStream as )
+	{
+		super( as );
+	}
 
 	/**
 	 *	{@inheritDoc}
