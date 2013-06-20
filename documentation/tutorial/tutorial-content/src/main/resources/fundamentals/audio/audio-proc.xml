@@ -158,8 +158,10 @@
 		<para>
 			Try using the <code>AudioSpectrogram</code> visualisation which displays the FFT
 			in a slightly different way.  It plots the frequencies vertically, with the pixel
-			intensities as the amplitude of the frequency. You should see a nice line being drawn
-			through the frequencies.
+			intensities as the amplitude of the frequency. The spectrogram expects values between
+			0 and 1 so you will need to get normalised magnitudes from the Fourier processor:
+			using <code>fft.getNormalisedMagnitudes( 1f/Integer.MAX_VALUE )</code>.
+			You should see a nice line being drawn through the frequencies.
 		</para>
 	</tip>
 	
@@ -203,11 +205,18 @@
 	<tip><para>
 		As the frequency peak falls off, the bar visualisation will rescale to fit and
 		it might not be too easy to see what's going on. Try disabling the automatic scaling
-		on the bar visualisation and set the maximum value to around 1E11:
+		on the bar visualisation and set the maximum value to be fixed around 1E12:
 		<programlisting>
 			vis.setAutoScale( false );
-			vis.setMaximumValue( 1E11 );
+			vis.setMaximumValue( 1E12 );
 		</programlisting>
 	</para></tip>
+	
+	<para>
+	So, we've learned a bit about audio, seen the basics of the audio subsystem in OpenIMAJ
+	and even started looking into the audio.  In the next chapter, we'll start extracting features
+	and trying to do something interesting with it, bringing in other parts of the OpenIMAJ
+	system. 
+	</para>
 	
 </chapter>
