@@ -39,11 +39,11 @@ import org.openimaj.data.dataset.Dataset;
 import org.openimaj.experiment.ExperimentContext;
 
 /**
- * An annotation for marking up a specific {@link Dataset} subclass
- * with metadata about the dataset.
+ * An annotation for marking up a specific {@link Dataset} subclass with
+ * metadata about the dataset.
  * <p>
- * The {@link ExperimentContext} can use this metadata in any reports
- * that it generates.
+ * The {@link ExperimentContext} can use this metadata in any reports that it
+ * generates.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -52,27 +52,32 @@ import org.openimaj.experiment.ExperimentContext;
 @Target(value = ElementType.TYPE)
 public @interface DatasetDescription {
 	/**
-	 * @return the name of the dataset 
+	 * @return the name of the dataset
 	 */
 	String name();
-	
+
 	/**
 	 * @return a description of the dataset
 	 */
 	String description();
-	
+
 	/**
 	 * @return the creator of the dataset
 	 */
 	String creator() default "";
-	
+
 	/**
 	 * @return a URL to information about the dataset
 	 */
 	String url() default "";
-	
+
 	/**
 	 * @return a contact person/site for the dataset
 	 */
 	String contact() default "";
+
+	/**
+	 * @return list of download location(s) for the data
+	 */
+	String[] downloadUrls() default "";
 }

@@ -1,4 +1,4 @@
-package org.openimaj.demos.classification;
+package org.openimaj.image.annotation.evaluation.datasets;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import org.openimaj.data.DataUtils;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.data.identity.Identifiable;
+import org.openimaj.experiment.annotations.DatasetDescription;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageProvider;
 import org.openimaj.image.ImageUtilities;
@@ -26,6 +27,23 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import com.jmatio.io.MatFileReader;
 import com.jmatio.types.MLDouble;
 
+/**
+ * The CalTech101 image dataset. Contains 102 classes of image (101 objects +
+ * background), and (for most images) outlines and bounding boxes of the object.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+@DatasetDescription(
+		name = "CalTech101",
+		description = "Pictures of objects belonging to 101 categories. " +
+				"About 40 to 800 images per category. Most categories have about " +
+				"50 images. The size of each image is roughly 300 x 200 pixels.",
+		creator = "Fei-Fei Li, Marco Andreetto, and Marc 'Aurelio Ranzato",
+		url = "http://www.vision.caltech.edu/Image_Datasets/Caltech101/",
+		downloadUrls = {
+				"http://datasets.openimaj.org/Caltech101/101_ObjectCategories.zip",
+				"http://datasets.openimaj.org/Caltech101/Annotations.zip"
+		})
 public class Caltech101 {
 	private static final String IMAGES_ZIP = "Caltech101/101_ObjectCategories.zip";
 	private static final String IMAGES_DOWNLOAD_URL = "http://datasets.openimaj.org/Caltech101/101_ObjectCategories.zip";
