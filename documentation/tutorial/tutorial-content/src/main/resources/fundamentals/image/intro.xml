@@ -13,6 +13,5 @@ image analysis tasks.
 <xref linkend="introduction-to-clustering-segmentation-and-connected-components"/>
 <xref linkend="global-image-features"/>
 <xref linkend="sift-and-feature-matching"/>
-<xref linkend="image-datasets"/>
-</literallayout>
+<xref linkend="image-datasets"/></literallayout>
 </partintro>

@@ -6,7 +6,6 @@
 	Video analysis is a natural extension to image analysis. OpenIMAJ contains a number of classes and methods to help you work with video, covering everything from the application of image processing to individual frames to feature tracking across entire video sequences. Part III of the tutorial will provide you with the knowledge need to construct video objects from files and capture hardware, and demonstrate the basic foundations of applying processing and analysis algorithms to videos.
 	</para>
 
-	<literallayout><xref linkend="processing-video"/>
-	<xref linkend="finding-faces"/>
-	</literallayout>	
+<literallayout><xref linkend="processing-video"/>
+<xref linkend="finding-faces"/></literallayout>	
 </partintro>
