@@ -291,7 +291,9 @@ public class BarVisualisation extends Visualisation<double[]>
 
 					// Draw the filled rectangle, and then stroke it.
 					this.visImage.drawShapeFilled( barRect, c );
-					this.visImage.drawShape( barRect, this.getStrokeColour() );
+
+					if( barWidth > 3 )
+						this.visImage.drawShape( barRect, this.getStrokeColour() );
 
 					// If we're to draw the bar's value, do that here.
 					if( this.drawValue )

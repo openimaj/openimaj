@@ -74,7 +74,8 @@ public abstract class TimelineObjectAdapter<T> extends Visualisation<T>
 	 * @param startTimeMilliseconds Start time
 	 */
 	@Override
-	public void setViewSize( final Dimension d, final long startTimeMilliseconds, final long endTimeMilliseconds )
+	public void setViewSize( final Dimension d,
+			final long startTimeMilliseconds, final long endTimeMilliseconds )
 	{
 		this.viewport = d;
 		this.startTime = startTimeMilliseconds;
