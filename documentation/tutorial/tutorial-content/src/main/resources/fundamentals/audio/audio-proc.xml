@@ -219,4 +219,19 @@
 	system. 
 	</para>
 	
+	<sect1 id="basic-audio-exercises">
+    	<title>Exercises</title>
+    	<sect2 id="exercise-1-live-sound-fft">
+      		<title>Exercise 1: Spectrogram on Live Sound</title>
+      		<para>
+      		Make the application display the audio spectrogram of
+      		the live sound input from your computer. You can use
+      		the <code>JavaSoundAudioGrabber</code> class in a separate
+      		thread to grab audio from your computer.  
+      		When you talk or sing into the computer can you see the 
+      		pitches in your voice?	How does speech compare to other sounds?
+      		</para>
+    	</sect2>
+    </sect1>
+	
 </chapter>
