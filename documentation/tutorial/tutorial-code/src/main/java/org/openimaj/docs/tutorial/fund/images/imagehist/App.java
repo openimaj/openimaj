@@ -27,21 +27,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.docs.tutorial.video.faces;
+package org.openimaj.docs.tutorial.fund.images.imagehist;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.FImage;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.detection.FaceDetector;
-import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
-import org.openimaj.video.VideoDisplay;
-import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.capture.VideoCapture;
+import org.openimaj.feature.DoubleFVComparison;
+import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.pixel.statistics.HistogramModel;
+import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
  * OpenIMAJ Hello world!
@@ -55,23 +51,26 @@ public class App {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		final VideoCapture vc = new VideoCapture(320, 240);
-		final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(vc);
-		vd.addVideoListener(
-				new VideoDisplayListener<MBFImage>() {
-					@Override
-					public void beforeUpdate(MBFImage frame) {
-						final FaceDetector<DetectedFace, FImage> fd = new HaarCascadeDetector(40);
-						final List<DetectedFace> faces = fd.detectFaces(Transforms.calculateIntensity(frame));
+		// Load the image
+		final URL[] imageURLs = new URL[] {
+				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg"),
+				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist2.jpg"),
+				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist3.jpg")
+		};
 
-						for (final DetectedFace face : faces) {
-							frame.drawShape(face.getBounds(), RGBColour.RED);
-						}
-					}
+		final List<MultidimensionalHistogram> histograms = new ArrayList<MultidimensionalHistogram>();
+		final HistogramModel model = new HistogramModel(4, 4, 4);
 
-					@Override
-					public void afterUpdate(VideoDisplay<MBFImage> display) {
-					}
-				});
+		for (final URL u : imageURLs) {
+			model.estimateModel(ImageUtilities.readMBF(u));
+			histograms.add(model.histogram);
+		}
+
+		for (int i = 0; i < histograms.size(); i++) {
+			for (int j = i; j < histograms.size(); j++) {
+				final double distance = histograms.get(i).compare(histograms.get(j), DoubleFVComparison.EUCLIDEAN);
+				System.out.println(distance);
+			}
+		}
 	}
 }

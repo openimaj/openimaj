@@ -92,7 +92,7 @@ for( DetectedFace face : faces ) {
 
 <mediaobject>
   <imageobject>
-		<imagedata fileref="figs/face-bounds.png" format="PNG" align="center" contentwidth="5cm"/>
+		<imagedata fileref="../../figs/face-bounds.png" format="PNG" align="center" contentwidth="5cm"/>
   </imageobject>
 </mediaobject>
 
@@ -140,7 +140,7 @@ List&lt;KEDetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity
 
 			<mediaobject>
 			  <imageobject>
-					<imagedata fileref="figs/face-points.png" format="PNG" align="center" contentwidth="5cm"/>
+					<imagedata fileref="../../figs/face-points.png" format="PNG" align="center" contentwidth="5cm"/>
 			  </imageobject>
 			</mediaobject>
 
@@ -158,7 +158,7 @@ List&lt;KEDetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity
       </para>
 			<mediaobject>
 			  <imageobject>
-					<imagedata fileref="figs/face-awesome.png" format="PNG" align="center" contentwidth="5cm"/>
+					<imagedata fileref="../../figs/face-awesome.png" format="PNG" align="center" contentwidth="5cm"/>
 			  </imageobject>
 			</mediaobject>
     </sect2>

@@ -98,7 +98,7 @@
 	
 		<mediaobject>
 	    <imageobject>
-				<imagedata fileref="figs/hello-world.png" format="PNG" scale="100" align="center"/>
+				<imagedata fileref="../../figs/hello-world.png" format="PNG" scale="100" align="center"/>
       </imageobject>
       <textobject>
 				<phrase>OpenIMAJ Hello World</phrase>
@@ -149,7 +149,7 @@
 	    </para>
 			<mediaobject>
 		    <imageobject>
-					<imagedata fileref="figs/classpath.png" format="PNG" align="center" contentwidth="5cm"/>
+					<imagedata fileref="../../figs/classpath.png" format="PNG" align="center" contentwidth="5cm"/>
 	      </imageobject>
 	      <textobject>
 					<phrase>Eclipse classpath variables</phrase>
@@ -163,7 +163,7 @@
 	    </para>
 			<mediaobject>
 		    <imageobject>
-					<imagedata fileref="figs/runas.png" format="PNG" align="center" contentwidth="10cm"/>
+					<imagedata fileref="../../figs/runas.png" format="PNG" align="center" contentwidth="10cm"/>
 	      </imageobject>
 	      <textobject>
 					<phrase>Eclipse Run as...</phrase>

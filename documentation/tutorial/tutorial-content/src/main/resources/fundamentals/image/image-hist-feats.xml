@@ -75,19 +75,19 @@ for( URL u : imageURLs ) {
 <para role="centered">
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/hist1.jpg" format="JPG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/hist1.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/hist2.jpg" format="JPG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/hist2.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 	
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/hist3.jpg" format="JPG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/hist3.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 </para>

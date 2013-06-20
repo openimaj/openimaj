@@ -62,13 +62,13 @@ DisplayUtilities.display(image.getBand(0), &quot;Red Channel&quot;);</programlis
 	<para role="centered">
 		<inlinemediaobject>
 		  <imageobject>
-				<imagedata fileref="figs/sinaface.png" format="PNG" align="center" contentwidth="5cm"/>
+				<imagedata fileref="../../figs/sinaface.png" format="PNG" align="center" contentwidth="5cm"/>
 		  </imageobject>
 		</inlinemediaobject>
 	
 		<inlinemediaobject>
 		  <imageobject>
-				<imagedata fileref="figs/sinaface-rc.png" format="PNG" align="center" contentwidth="5cm"/>
+				<imagedata fileref="../../figs/sinaface-rc.png" format="PNG" align="center" contentwidth="5cm"/>
 		  </imageobject>
 		</inlinemediaobject>
 	</para>
@@ -91,7 +91,7 @@ DisplayUtilities.display(clone);</programlisting>
 
 <mediaobject>
   <imageobject condition="">
-		<imagedata fileref="figs//sinaface-red.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+		<imagedata fileref="../../figs//sinaface-red.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
   </imageobject>
 </mediaobject>
 
@@ -138,7 +138,7 @@ clone.getBand(2).fill(0f);</programlisting>
 
 	<mediaobject>
 	  <imageobject condition="">
-			<imagedata fileref="figs//sinaface-canny.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs//sinaface-canny.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</mediaobject>
 
@@ -163,7 +163,7 @@ DisplayUtilities.display(image);</programlisting>
 
 	<mediaobject>
 	  <imageobject condition="">
-			<imagedata fileref="figs//sinaface-awesome.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs//sinaface-awesome.png" format="PNG" scale="100" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</mediaobject>
 

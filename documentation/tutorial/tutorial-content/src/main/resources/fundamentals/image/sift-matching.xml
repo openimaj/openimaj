@@ -24,13 +24,13 @@ MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8
 <para role="centered">
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/query.jpg" format="JPG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/query.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 
 	<inlinemediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/target.jpg" format="JPG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/target.jpg" format="JPG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</inlinemediaobject>
 </para>
@@ -82,7 +82,7 @@ matcher.findMatches(targetKeypoints);</programlisting>
 DisplayUtilities.display(basicMatches);</programlisting>
 <mediaobject>
   <imageobject>
-		<imagedata fileref="figs/matches.png" format="PNG" align="center" contentwidth="5cm"/>
+		<imagedata fileref="../../figs/matches.png" format="PNG" align="center" contentwidth="5cm"/>
   </imageobject>
 </mediaobject>
   <para>
@@ -124,7 +124,7 @@ MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target,
 DisplayUtilities.display(consistentMatches);</programlisting>
 <mediaobject>
   <imageobject>
-		<imagedata fileref="figs/matches-affine.png" format="PNG" align="center" contentwidth="5cm"/>
+		<imagedata fileref="../../figs/matches-affine.png" format="PNG" align="center" contentwidth="5cm"/>
   </imageobject>
 </mediaobject>
   <para>
@@ -142,7 +142,7 @@ DisplayUtilities.display(consistentMatches);</programlisting>
 DisplayUtilities.display(target); </programlisting>
 <mediaobject>
   <imageobject>
-		<imagedata fileref="figs/fittedmodel.png" format="PNG" align="center" contentwidth="5cm"/>
+		<imagedata fileref="../../figs/fittedmodel.png" format="PNG" align="center" contentwidth="5cm"/>
   </imageobject>
 </mediaobject>
   <sect1 id="exercises-6">

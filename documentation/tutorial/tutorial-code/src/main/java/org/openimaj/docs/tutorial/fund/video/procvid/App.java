@@ -27,14 +27,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.docs.tutorial.gettingstarted.maven;
+package org.openimaj.docs.tutorial.fund.video.procvid;
 
-import org.openimaj.image.DisplayUtilities;
+import java.io.IOException;
+import java.net.URL;
+
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.typography.hershey.HersheyFont;
+import org.openimaj.image.processing.edges.CannyEdgeDetector;
+import org.openimaj.video.Video;
+import org.openimaj.video.VideoDisplay;
+import org.openimaj.video.VideoDisplayListener;
+import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
  * OpenIMAJ Hello world!
@@ -45,21 +48,31 @@ public class App {
 	 * Main method
 	 * 
 	 * @param args
+	 * @throws IOException
 	 */
-	public static void main(String[] args) {
-		// Create an image
-		final MBFImage image = new MBFImage(320, 70, ColourSpace.RGB);
+	public static void main(String[] args) throws IOException {
+		final Video<MBFImage> video;
+		video = new XuggleVideo(new URL("http://dl.dropbox.com/u/8705593/keyboardcat.flv"));
+		// video = new VideoCapture(320, 240);
 
-		// Fill the image with white
-		image.fill(RGBColour.WHITE);
+		// final VideoDisplay<MBFImage> display =
+		// VideoDisplay.createVideoDisplay(video);
+		// for (final MBFImage mbfImage : video) {
+		// DisplayUtilities.displayName(mbfImage.process(new
+		// CannyEdgeDetector()), "videoFrames");
+		// }
 
-		// Render some test into the image
-		image.drawText("Hello World", 10, 60, HersheyFont.CURSIVE, 50, RGBColour.BLACK);
+		final VideoDisplay<MBFImage> display = VideoDisplay.createVideoDisplay(video);
+		display.addVideoListener(
+				new VideoDisplayListener<MBFImage>() {
+					@Override
+					public void beforeUpdate(MBFImage frame) {
+						frame.processInplace(new CannyEdgeDetector());
+					}
 
-		// Apply a Gaussian blur
-		image.processInplace(new FGaussianConvolve(2f));
-
-		// Display the image
-		DisplayUtilities.display(image);
+					@Override
+					public void afterUpdate(VideoDisplay<MBFImage> display) {
+					}
+				});
 	}
 }

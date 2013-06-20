@@ -159,7 +159,7 @@ DisplayUtilities.display(input);</programlisting>
   </para>
 	<mediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/kmeans.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/kmeans.png" format="PNG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</mediaobject>
   <para>
@@ -209,7 +209,7 @@ for (ConnectedComponent comp : components) {
 
 	<mediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/segmented.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/segmented.png" format="PNG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</mediaobject>
 

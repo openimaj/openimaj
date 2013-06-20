@@ -58,7 +58,7 @@
 
 	<mediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/frame.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/frame.png" format="PNG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</mediaobject>
 
@@ -101,7 +101,7 @@ display.addVideoListener(
 
 	<mediaobject>
 	  <imageobject>
-			<imagedata fileref="figs/frame-canny.png" format="PNG" align="center" contentwidth="5cm"/>
+			<imagedata fileref="../../figs/frame-canny.png" format="PNG" align="center" contentwidth="5cm"/>
 	  </imageobject>
 	</mediaobject>
 	

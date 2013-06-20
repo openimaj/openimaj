@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.docs.tutorial.images.siftmatch;
+package org.openimaj.docs.tutorial.fund.images.siftmatch;
 
 import java.io.IOException;
 import java.net.URL;

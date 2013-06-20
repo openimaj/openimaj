@@ -1,4 +1,4 @@
-package org.openimaj.docs.tutorial.stream.twitterimages;
+package org.openimaj.docs.tutorial.fund.stream.twitterimages;
 
 import java.net.URL;
 import java.util.ArrayList;

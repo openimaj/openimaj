@@ -1,4 +1,4 @@
-package org.openimaj.docs.tutorial.images.datasets;
+package org.openimaj.docs.tutorial.fund.images.datasets;
 
 import java.util.Map.Entry;
 

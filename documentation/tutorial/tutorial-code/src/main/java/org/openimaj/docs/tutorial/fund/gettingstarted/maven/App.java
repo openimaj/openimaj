@@ -27,17 +27,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.docs.tutorial.images.imagehist;
+package org.openimaj.docs.tutorial.fund.gettingstarted.maven;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openimaj.feature.DoubleFVComparison;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.pixel.statistics.HistogramModel;
-import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
+import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.convolution.FGaussianConvolve;
+import org.openimaj.image.typography.hershey.HersheyFont;
 
 /**
  * OpenIMAJ Hello world!
@@ -48,29 +45,21 @@ public class App {
 	 * Main method
 	 * 
 	 * @param args
-	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
-		// Load the image
-		final URL[] imageURLs = new URL[] {
-				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg"),
-				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist2.jpg"),
-				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist3.jpg")
-		};
+	public static void main(String[] args) {
+		// Create an image
+		final MBFImage image = new MBFImage(320, 70, ColourSpace.RGB);
 
-		final List<MultidimensionalHistogram> histograms = new ArrayList<MultidimensionalHistogram>();
-		final HistogramModel model = new HistogramModel(4, 4, 4);
+		// Fill the image with white
+		image.fill(RGBColour.WHITE);
 
-		for (final URL u : imageURLs) {
-			model.estimateModel(ImageUtilities.readMBF(u));
-			histograms.add(model.histogram);
-		}
+		// Render some test into the image
+		image.drawText("Hello World", 10, 60, HersheyFont.CURSIVE, 50, RGBColour.BLACK);
 
-		for (int i = 0; i < histograms.size(); i++) {
-			for (int j = i; j < histograms.size(); j++) {
-				final double distance = histograms.get(i).compare(histograms.get(j), DoubleFVComparison.EUCLIDEAN);
-				System.out.println(distance);
-			}
-		}
+		// Apply a Gaussian blur
+		image.processInplace(new FGaussianConvolve(2f));
+
+		// Display the image
+		DisplayUtilities.display(image);
 	}
 }
