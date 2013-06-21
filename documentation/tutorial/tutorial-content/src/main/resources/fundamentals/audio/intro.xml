@@ -9,9 +9,4 @@
 	the basic audio subsystem in OpenIMAJ and show how to extract features from audio that
 	can then be used in the various other tools in OpenIMAJ.		
 	</para>
-	
-	<literallayout>
-	<xref linkend="processing-audio"/>
-	<xref linkend="features-from-audio"/>
-	</literallayout>
 </partintro>

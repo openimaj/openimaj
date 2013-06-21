@@ -9,6 +9,7 @@
 	<bookinfo>
 		<title>${book.title}</title>
 		<edition>${project.version}</edition>
+		<date>${timestamp}</date>
 
 		<authorgroup>
 			<author>

@@ -508,10 +508,17 @@
 				  <div class="clear"><hr /></div>
 				</div>
 
+				<xsl:variable name="Version">
+						<xsl:value-of select="//d:edition" />
+		    </xsl:variable>
+				<xsl:variable name="Date">
+						<xsl:value-of select="//d:date" />
+		    </xsl:variable>
+
 				<div id="breadcrumbs">
 				  <ul class="breadcrumb">
-				     <li id="publishDate" class="pull-right">Last Published: 2013-02-07</li> <li class="divider pull-right">|</li>
-				   <li id="projectVersion" class="pull-right">Version: 1.0.6-SNAPSHOT</li>
+				    <li id="publishDate" class="pull-right">Last Published: <xsl:value-of select="$Date"/></li> <li class="divider pull-right">|</li>
+				   	<li id="projectVersion" class="pull-right">Version: <xsl:value-of select="$Version"/></li>
 				  </ul>
 				</div>
 

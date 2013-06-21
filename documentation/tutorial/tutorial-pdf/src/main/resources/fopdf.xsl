@@ -459,6 +459,10 @@
   <xsl:param name="admon.graphics">'1'</xsl:param>
   <xsl:param name="admon.graphics.extension">.svg</xsl:param>
   <!--  <xsl:param name="admon.graphics.path">&admon_gfx_path;</xsl:param> -->
+	<xsl:template match="*" mode="admon.graphic.width">
+      <xsl:param name="node" select="."/>
+      <xsl:text>22px</xsl:text>
+  </xsl:template>
 
   <!--###################################################
       Misc

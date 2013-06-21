@@ -65,6 +65,10 @@
 					<chunkedOutput>true</chunkedOutput>
 					<chunkSectionDepth>1</chunkSectionDepth>
 					<useSvg>true</useSvg>
+					<keepRelativeImageUris>0</keepRelativeImageUris>
+					<admonGraphics>1</admonGraphics>
+					<admonGraphicsExtension>.png</admonGraphicsExtension>
+					<admonGraphicsPath>images/</admonGraphicsPath>
 					<htmlStylesheet>css/apache-maven-fluido-1.3.0.min.css css/stylesheet.css fonts/fonts.css</htmlStylesheet>
 					<postProcess>
 						<copy todir="${project.build.directory}/html/tutorial/images">
@@ -75,6 +79,9 @@
 						</copy>
 						<copy todir="${project.build.directory}/html/tutorial/covers/">
 							<fileset dir="target/docbook/covers/" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/images/">
+							<fileset dir="target/docbook/images/" />
 						</copy>
 						<copy todir="${project.build.directory}/html/tutorial/css">
 							<fileset dir="${basedir}/src/main/resources/css" />

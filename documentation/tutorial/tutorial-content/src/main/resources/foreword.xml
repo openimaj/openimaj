@@ -35,6 +35,7 @@
 	graciously funded by the <ulink url="http://www.provincia.tn.it">Autonomous Province of Trento</ulink>.
   </para>
 
-  <para>Edition: ${project.version}</para>
+	<para></para>
+  <para>Edition: ${project.version} (${timestamp})</para>
 
 </preface>
