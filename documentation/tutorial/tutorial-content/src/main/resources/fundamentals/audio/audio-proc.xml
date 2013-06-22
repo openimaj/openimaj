@@ -11,10 +11,8 @@
 	and pass it to the audio player.
 	</para>
 	
-	<programlisting>
-		XuggleAudio xa = new XuggleAudio( new File( "myAudioFile.mp3" ) );
-		AudioPlayer.createAudioPlayer( xa ).run();
-	</programlisting>
+<programlisting>XuggleAudio xa = new XuggleAudio( new File( "myAudioFile.mp3" ) );
+AudioPlayer.createAudioPlayer( xa ).run();</programlisting>
 	
 	<para>
 	If you run these 2 lines of code you should hear audio playing. The <code>XuggleAudio</code>
@@ -57,18 +55,16 @@
 	use it by passing a <code>File</code> to the <code>XuggleAudio</code>.
 	</para>
 
-	<programlisting>
-		final AudioWaveform vis = new AudioWaveform( 400, 400 );
-		vis.showWindow( "Waveform" );
+<programlisting>final AudioWaveform vis = new AudioWaveform( 400, 400 );
+vis.showWindow( "Waveform" );
 
-		final XuggleAudio xa = new XuggleAudio( 
-		    new URL( "http://www.audiocheck.net/download.php?" +
-		        "filename=Audio/audiocheck.net_sweep20-20klin.wav" ) );
+final XuggleAudio xa = new XuggleAudio( 
+    new URL( "http://www.audiocheck.net/download.php?" +
+        "filename=Audio/audiocheck.net_sweep20-20klin.wav" ) );
 
-		SampleChunk sc = null;
-		while( (sc = xa.nextSampleChunk()) != null )
-		    vis.setData( sc.getSampleBuffer() );
-	</programlisting>
+SampleChunk sc = null;
+while( (sc = xa.nextSampleChunk()) != null )
+    vis.setData( sc.getSampleBuffer() );</programlisting>
 
 	<mediaobject>
 	  <imageobject condition="">
@@ -131,15 +127,13 @@
 	create a <code>FourierTransform</code> object and take our stream of data from there.
 	</para>
 	
-	<programlisting>
-		FourierTransform fft = new FourierTransform( xa );
-		...
-		while( (sc = fft.nextSampleChunk()) != null )
-		{
-		    float[][] fftData = fft.getMagnitudes();
-		    vis.setData( fftData[0] );
-		}
-	</programlisting>
+<programlisting>FourierTransform fft = new FourierTransform( xa );
+...
+while( (sc = fft.nextSampleChunk()) != null )
+{
+    float[][] fftData = fft.getMagnitudes();
+    vis.setData( fftData[0] );
+}</programlisting>
 	
 	<mediaobject>
 	  <imageobject condition="">
@@ -191,10 +185,8 @@
 	Let's put an EQ filter in the chain that will filter out frequencies from the original signal: 
 	</para>
 	
-	<programlisting>
-		EQFilter eq = new EQFilter( xa, EQType.LPF, 5000 );
-		FourierTransform fft = new FourierTransform( eq );
-	</programlisting>
+<programlisting>EQFilter eq = new EQFilter( xa, EQType.LPF, 5000 );
+FourierTransform fft = new FourierTransform( eq );</programlisting>
 	
 	<para>
 	We have set the low-pass filter to 5KHz (5000Hz), so when you run the program again,
@@ -206,10 +198,8 @@
 		As the frequency peak falls off, the bar visualisation will rescale to fit and
 		it might not be too easy to see what's going on. Try disabling the automatic scaling
 		on the bar visualisation and set the maximum value to be fixed around 1E12:
-		<programlisting>
-			vis.setAutoScale( false );
-			vis.setMaximumValue( 1E12 );
-		</programlisting>
+<programlisting>vis.setAutoScale( false );
+vis.setMaximumValue( 1E12 );</programlisting>
 	</para></tip>
 	
 	<para>
