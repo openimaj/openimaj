@@ -2,5 +2,228 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="parallel-processing">
+	  <title>Parallel Processing</title>
+	  <para>
+	    Modern computers tend to have multiple processors. By making use of
+	    all the processing ability of your machine your programs can run
+	    much faster. Writing code that takes advantage of multiple
+	    processors in Java usually involves either manually creating and
+	    managing threads, or using a higher level concurrent programming
+	    abstraction library, such as the classes found in the excellent
+	    <literal>java.util.concurrent</literal> package.
+	  </para>
+	  <para>
+	    A common use-case for multithreading in multimedia analysis is the
+	    application of an operation to a collection of objects - for
+	    example, the extraction of features from a list of images. This kind
+	    of task can be effectively parallelised using Java’s concurrent
+	    classes, but requires a large amount of boiler-plate code to be
+	    written each time. To help reduce the programming overhead
+	    associated with this kind of parallel processing, OpenIMAJ includes
+	    a <literal>Parallel</literal> class that contains a number of
+	    methods that allow you to efficiently and effectively write
+	    multi-threaded loops.
+	  </para>
+	  <para>
+	    To get started playing with the <literal>Parallel</literal> class,
+	    create a new OpenIMAJ project using the archetype, or add a new
+	    class and main method to an existing project. Firstly, lets see how
+	    we can write the parallel equivalent of a
+	    <literal>for (int i=0; i&lt;10; i++)</literal> loop:
+	  </para>
+	  <programlisting>Parallel.forIndex(0, 10, 1, new Operation&lt;Integer&gt;() {
+	public void perform(Integer i) {
+	    System.out.println(i);
+	}
+});</programlisting>
+	  <para>
+	    Try running this code; you’ll see that all the numbers from 0 to 9
+	    are printed, although not necessarily in the correct order. If you
+	    run the code again, you’ll probably see the order change. It’s
+	    important to note that the when parallelising a loop that the order
+	    of operations is not deterministic.
+	  </para>
+	  <para>
+	    Now let’s explore a more realistic scenario in which we might want
+	    to apply parallelisation. We’ll build a program to compute the
+	    normalised average of the images in a dataset. Firstly, let’s write
+	    the non-parallel version of the code. We’ll start by loading a
+	    dataset of images; in this case we’ll use the CalTech 101 dataset we
+	    used in the Classification 101 tutorial, but rather than loading
+	    record object, we’ll load the images directly:
+	  </para>
+	  <programlisting>VFSGroupDataset&lt;MBFImage&gt; allImages = Caltech101.getImages(ImageUtilities.MBFIMAGE_READER);</programlisting>
+	  <para>
+	    We’ll also restrict ourselves to using a subset of the first 8
+	    groups (image categories) in the dataset:
+	  </para>
+	  <programlisting>GroupedDataset&lt;String, ListDataset&lt;MBFImage&gt;, MBFImage&gt; images = GroupSampler.sample(allImages, 8, false);</programlisting>
+	  <para>
+	    We now want to do the processing. For each group we want to build
+	    the average image. We do this by looping through the images in the
+	    group, resampling and normalising each image before drawing it in
+	    the centre of a white image, and then adding the result to an
+	    accumulator. At the end of the loop we divide the accumulated image
+	    by the number of samples used to create it. The code to perform
+	    these operations would look like this:
+	  </para>
+	  <programlisting>List&lt;MBFImage&gt; output = new ArrayList&lt;MBFImage&gt;();
+ResizeProcessor resize = new ResizeProcessor(200);
+for (ListDataset&lt;MBFImage&gt; clzImages : images.values()) {
+    MBFImage current = new MBFImage(200, 200, ColourSpace.RGB);
+
+    for (MBFImage i : clzImages) {
+        MBFImage tmp = new MBFImage(200, 200, ColourSpace.RGB);
+        tmp.fill(RGBColour.WHITE);
+
+        MBFImage small = i.process(resize).normalise();
+        int x = (200 - small.getWidth()) / 2;
+        int y = (200 - small.getHeight()) / 2;
+        tmp.drawImage(small, x, y);
+
+        current.addInplace(tmp);
+    }
+    current.divideInplace((float) clzImages.size());
+    output.add(current);
+}</programlisting>
+	  <para>
+	    We can use the <literal>DisplayUtilities</literal> class to display
+	    the results:
+	  </para>
+	  <programlisting>DisplayUtilities.display(&quot;Images&quot;, output);</programlisting>
+	  <para>
+	    Before we try running the program, we’ll also add some timing code
+	    to see how long it takes. Before the outer loop (the one over the
+	    groups provided by <literal>images.values()</literal>), add the
+	    following:
+	  </para>
+	  <programlisting>Timer t1 = Timer.timer();</programlisting>
+	  <para>
+	    and, after the outer loop (just before the display code) add the
+	    following:
+	  </para>
+	  <programlisting>System.out.println(&quot;Time: &quot; + t1.duration() + &quot;ms&quot;);</programlisting>
+	  <para>
+	    You can now run the code, and after a short while (on my laptop it
+	    takes about 7248 milliseconds (7.2 seconds)) the resultant averaged
+	    images will be displayed. An example is shown below. Can you tell
+	    what object is depicted by each average image? For many object types
+	    in the CalTech 101 dataset it is quite easy, and this is one of the
+	    reasons that the dataset has been criticised as being <emphasis>too
+	    easy</emphasis> for classification experiments in the literature.
+	  </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="../../figs/averages.png" scalefit="1" width="100%"/>
+      </imageobject>
+    </mediaobject>
+	  <para>
+	    Now we’ll look at parallelising this code. We essentially have three
+	    options for parallelisation; we could parallelise the outer loop,
+	    parallelise the inner one, or parallelise both. There are many
+	    tradeoffs that need to be considered including the amount of memory
+	    usage and the task granularity in deciding how to best parallelise
+	    code. For the purposes of this tutorial, we’ll work with the inner
+	    loop. Using the <literal>Parallel.for</literal> method, we can
+	    re-write the inner-loop as follows:
+	  </para>
+	  <programlisting>Parallel.forEach(clzImages, new Operation&lt;MBFImage&gt;() {
+    public void perform(MBFImage i) {
+        final MBFImage tmp = new MBFImage(200, 200, ColourSpace.RGB);
+        tmp.fill(RGBColour.WHITE);
+
+        final MBFImage small = i.process(resize).normalise();
+        final int x = (200 - small.getWidth()) / 2;
+        final int y = (200 - small.getHeight()) / 2;
+        tmp.drawImage(small, x, y);
+
+        synchronized (current) {
+            current.addInplace(tmp);
+        }
+    }
+});</programlisting>
+	  <para>
+	    For this to compile, you’ll also need to make the
+	    <literal>current</literal> image <literal>final</literal> by adding
+	    the <literal>final</literal> keyword to the line in which it is
+	    created:
+	  </para>
+	  <programlisting>final MBFImage current = new MBFImage(200, 200, ColourSpace.RGB);</programlisting>
+	  <para>
+	    Notice that in the parallel version of the loop we have to put a
+	    <literal>synchronized</literal> block around the part where we
+	    accumulate into the <literal>current</literal> image. This is to
+	    stop multiple threads trying to alter the image concurrently. If we
+	    now run the code, we should hopefully see an improvement in the time
+	    it takes to compute the averages. You might also need to increase
+	    the amount of memory available to Java for the program to run
+	    successfully.
+	  </para>
+	  <para>
+	    On my laptop, with 8 CPU cores the running time drops to ~3100
+	    milliseconds. You might be thinking that because we have gone from 1
+	    to 8 CPU cores that the speed-up would be greater; there are many
+	    reasons why that is not the case in practice, but the biggest is
+	    that the process that we’re running is rather I/O bound because the
+	    underlying dataset classes we’re using retrieve the images from disk
+	    each time they’re needed. A second issue is that there are a couple
+	    of slight bottlenecks in our code; in particular notice that we’re
+	    creating a temporary image for each image that we process, and that
+	    we also have to synchronise on the <literal>current</literal>
+	    accumulator image for each image. We can factor out these problems
+	    by modifying the code to use the <emphasis>partitioned</emphasis>
+	    variant of the for-each loop in the <literal>Parallel</literal>
+	    class. Instead of giving each thread a single image at a time, the
+	    partitioned variant will feed each thread a collection of images
+	    (provided as an <literal>Iterator</literal>) to process:
+	  </para>
+	  <programlisting>Parallel.forEachPartitioned(new RangePartitioner&lt;MBFImage&gt;(clzImages), new Operation&lt;Iterator&lt;MBFImage&gt;&gt;() {
+	public void perform(Iterator&lt;MBFImage&gt; it) {
+	    MBFImage tmpAccum = new MBFImage(200, 200, 3);
+	    MBFImage tmp = new MBFImage(200, 200, ColourSpace.RGB);
+
+	    while (it.hasNext()) {
+	        final MBFImage i = im.next();
+	        tmp.fill(RGBColour.WHITE);
+
+	        final MBFImage small = i.process(resize).normalise();
+	        final int x = (200 - small.getWidth()) / 2;
+	        final int y = (200 - small.getHeight()) / 2;
+	        tmp.drawImage(small, x, y);
+	        tmpAccum.addInplace(tmp);
+	    }
+	    synchronized (current) {
+	        current.addInplace(tmpAccum);
+	    }
+	}
+});</programlisting>
+	  <para>
+	    The <literal>RangePartitioner</literal> in the above code will break
+	    the images in <literal>clzImages</literal> into as many
+	    (approximately equally sized) chunks as there are available CPU
+	    cores. This means that the <literal>perform</literal> method will be
+	    called many fewer times, but will do more work - what we’ve done is
+	    called increasing the task granularity. Notice that we created an
+	    extra working image called <literal>tmpAccum</literal> to hold the
+	    intermediary results. This means memory usage will be increased,
+	    however, also notice that whilst we still have to synchronise on the
+	    current image, we do far fewer times (once per CPU core in fact).
+	    Try running the improved version of the code; on my laptop it
+	    reduces the total running time even further to ~2900 milliseconds.
+	  </para>
+	  <sect1 id="parallel-exercises">
+	    <title>Exercises</title>
+	    <sect2 id="exercise-1-parallelise-the-outer-loop">
+	      <title>Exercise 1: Parallelise the outer loop</title>
+	      <para>
+	        As we discussed earlier in the tutorial, there were three
+	        primary ways in which we could have approached the
+	        parallelisation of the image-averaging program. Instead of
+	        parallelising the inner loop, can you modify the code to
+	        parallelise the outer loop instead? Does this make the code
+	        faster? What are the pros and cons of doing this?
+	      </para>
+	    </sect2>
+	  </sect1>
 	
 </chapter>

@@ -42,12 +42,12 @@ public abstract class AbstractStream<T> implements Stream<T> {
 
 	@Override
 	public void parallelForEach(Operation<T> op) {
-		Parallel.forEachUnpartioned(this, op);
+		Parallel.forEachUnpartitioned(this, op);
 	}
 
 	@Override
 	public void parallelForEach(Operation<T> op, ThreadPoolExecutor pool) {
-		Parallel.forEachUnpartioned(this, op, pool);
+		Parallel.forEachUnpartitioned(this, op, pool);
 	}
 
 	class FilterStream extends AbstractStream<T> {

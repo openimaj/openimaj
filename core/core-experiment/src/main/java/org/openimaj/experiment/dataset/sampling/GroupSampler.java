@@ -51,7 +51,7 @@ import org.openimaj.data.dataset.MapBackedDataset;
  */
 public class GroupSampler<KEY, INSTANCE>
 		implements
-		Sampler<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>
+		Sampler<GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE>>
 {
 	int numGroups;
 	boolean random;
@@ -73,7 +73,7 @@ public class GroupSampler<KEY, INSTANCE>
 
 	@Override
 	public GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> sample(
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset)
+			GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset)
 	{
 		final MapBackedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> sample = new MapBackedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>();
 
@@ -104,7 +104,7 @@ public class GroupSampler<KEY, INSTANCE>
 	 * @return the sampled dataset
 	 */
 	public static <KEY, INSTANCE> GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> sample(
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset, int numGroups,
+			GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset, int numGroups,
 			boolean random)
 	{
 		return new GroupSampler<KEY, INSTANCE>(numGroups, random).sample(dataset);

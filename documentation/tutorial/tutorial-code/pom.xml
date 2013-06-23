@@ -44,6 +44,12 @@
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
+      <artifactId>image-annotation</artifactId>
+      <version>1.1.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+		<dependency>
+      <groupId>org.openimaj</groupId>
       <artifactId>xuggle-video</artifactId>
       <version>1.1.1-SNAPSHOT</version>
       <scope>compile</scope>

@@ -54,7 +54,7 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public class GroupedUniformRandomisedSampler<KEY, INSTANCE>
 		implements
-		Sampler<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>
+		Sampler<GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE>>
 {
 	private boolean withReplacement = false;
 
@@ -130,7 +130,7 @@ public class GroupedUniformRandomisedSampler<KEY, INSTANCE>
 
 	@Override
 	public GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> sample(
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset)
+			GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset)
 	{
 		final int N;
 		if (percentage >= 0) {
@@ -164,7 +164,7 @@ public class GroupedUniformRandomisedSampler<KEY, INSTANCE>
 	}
 
 	private IndependentPair<KEY, INSTANCE> select(int idx,
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset)
+			GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset)
 	{
 		for (final KEY k : dataset.getGroups()) {
 			final ListDataset<INSTANCE> instances = dataset.getInstances(k);
@@ -192,7 +192,7 @@ public class GroupedUniformRandomisedSampler<KEY, INSTANCE>
 	 * @return the sampled dataset
 	 */
 	public static <KEY, INSTANCE> GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> sample(
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset, double percentage)
+			GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset, double percentage)
 	{
 		return new GroupedUniformRandomisedSampler<KEY, INSTANCE>(percentage).sample(dataset);
 	}
@@ -211,7 +211,7 @@ public class GroupedUniformRandomisedSampler<KEY, INSTANCE>
 	 * @return the sampled dataset
 	 */
 	public static <KEY, INSTANCE> GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> sample(
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset, double percentage,
+			GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset, double percentage,
 			boolean withReplacement)
 	{
 		return new GroupedUniformRandomisedSampler<KEY, INSTANCE>(percentage, withReplacement).sample(dataset);
@@ -229,7 +229,7 @@ public class GroupedUniformRandomisedSampler<KEY, INSTANCE>
 	 * @return the sampled dataset
 	 */
 	public static <KEY, INSTANCE> GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> sample(
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset, int number)
+			GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset, int number)
 	{
 		return new GroupedUniformRandomisedSampler<KEY, INSTANCE>(number).sample(dataset);
 	}
@@ -248,7 +248,7 @@ public class GroupedUniformRandomisedSampler<KEY, INSTANCE>
 	 * @return the sampled dataset
 	 */
 	public static <KEY, INSTANCE> GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> sample(
-			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> dataset, int number,
+			GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset, int number,
 			boolean withReplacement)
 	{
 		return new GroupedUniformRandomisedSampler<KEY, INSTANCE>(number, withReplacement).sample(dataset);

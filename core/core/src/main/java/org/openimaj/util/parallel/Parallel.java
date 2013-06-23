@@ -409,9 +409,9 @@ public class Parallel {
 	 */
 	public static <T>
 			void
-			forEachUnpartioned(final Iterator<T> data, final Operation<T> op)
+			forEachUnpartitioned(final Iterator<T> data, final Operation<T> op)
 	{
-		forEachUnpartioned(data, op, GlobalExecutorPool.getPool());
+		forEachUnpartitioned(data, op, GlobalExecutorPool.getPool());
 	}
 
 	/**
@@ -439,7 +439,7 @@ public class Parallel {
 	 */
 	public static <T>
 			void
-			forEachUnpartioned(final Iterator<T> data, final Operation<T> op, final ThreadPoolExecutor pool)
+			forEachUnpartitioned(final Iterator<T> data, final Operation<T> op, final ThreadPoolExecutor pool)
 	{
 		final ExecutorCompletionService<Boolean> completion = new ExecutorCompletionService<Boolean>(pool);
 		long submitted = 0;

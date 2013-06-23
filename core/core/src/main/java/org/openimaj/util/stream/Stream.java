@@ -64,7 +64,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 * stream is not guaranteed.
 	 * <p>
 	 * This method is intended to be a shortcut to calling
-	 * {@link Parallel#forEachUnpartioned(Iterator, Operation)}.
+	 * {@link Parallel#forEachUnpartitioned(Iterator, Operation)}.
 	 * <p>
 	 * Note: for an unbounded stream, this method will never return unless some
 	 * form of exception is raised.
@@ -80,7 +80,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 * stream is not guaranteed.
 	 * <p>
 	 * This method is intended to be a shortcut to calling
-	 * {@link Parallel#forEachUnpartioned(Iterator, Operation, ThreadPoolExecutor)}.
+	 * {@link Parallel#forEachUnpartitioned(Iterator, Operation, ThreadPoolExecutor)}.
 	 * <p>
 	 * Note: for an unbounded stream, this method will never return unless some
 	 * form of exception is raised.
