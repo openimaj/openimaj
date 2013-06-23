@@ -2,5 +2,270 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="classification101">
-	
+		<title>Classification with Caltech 101</title>
+		<para>
+		  In this tutorial, we’ll go through the steps required to build and
+		  evaluate a near state-of-the-art image classifier. Although for the
+		  purposes of this tutorial we’re using features extracted from images,
+		  everything you’ll learn about using classifiers can be applied to
+		  features extracted from other forms of media.
+		</para>
+		<para>
+		  To get started you’ll need a new class in an existing OpenIMAJ
+		  project, or a new project created with the archetype. The first thing
+		  we need is a dataset of images with which we’ll work. For this
+		  tutorial we’ll use a well known set of labelled images called the
+		  <ulink url="http://www.vision.caltech.edu/Image_Datasets/Caltech101/">Caltech
+		  101 dataset</ulink>. The Caltech 101 dataset contains labelled images
+		  of 101 object classes together with a set of background images.
+		  OpenIMAJ has built in support for working with the Caltech 101
+		  dataset, and will even automatically download the dataset for you. To
+		  use it, enter the following code:
+		</para>
+		<programlisting>GroupedDataset&lt;String, VFSListDataset&lt;Record&lt;FImage&gt;&gt;, Record&lt;FImage&gt;&gt; allData = 
+			Caltech101.getData(ImageUtilities.FIMAGE_READER);</programlisting>
+		<para>
+		  You’ll remember from the image datasets tutorial that
+		  <literal>GroupedDataset</literal>s are Java <literal>Map</literal>s
+		  with a few extra features. In this case, our
+		  <literal>allData</literal> object is a
+		  <literal>GroupedDataset</literal> with <literal>String</literal> keys
+		  and the values are lists (actually <literal>VFSListDataset</literal>s)
+		  of <literal>Record</literal> objects which are themselves typed on
+		  <literal>FImage</literal>s. The <literal>Record</literal> class holds
+		  metadata about each Caltech 101 image. <literal>Record</literal>s have
+		  a method called <literal>getImage()</literal> that will return the
+		  actual image in the format specified by the generic type of the
+		  <literal>Record</literal> (i.e. <literal>FImage</literal>).
+		</para>
+		<para>
+		  For this tutorial we’ll work with a subset of the classes in the
+		  dataset to minimise the time it takes our program to run. We can
+		  create a subset of groups in a <literal>GroupedDataset</literal> using
+		  the <literal>GroupSampler</literal> class:
+		</para>
+		<programlisting>GroupedDataset&lt;String, ListDataset&lt;Record&lt;FImage&gt;&gt;, Record&lt;FImage&gt;&gt; data = 
+			GroupSampler.sample(allData, 5, false);</programlisting>
+		<para>
+		  This basically creates a new dataset called <literal>data</literal>
+		  from the first 5 classes in the <literal>allData</literal> dataset. To
+		  do an experimental evaluation with the dataset we need to create two
+		  sets of images: a <emphasis role="strong">training</emphasis> set
+		  which we’ll use to learn the classifier, and a
+		  <emphasis role="strong">testing</emphasis> set which we’ll evaluate
+		  the classifier with. The common approach with the Caltech 101 dataset
+		  is to choose a number of training and testing instances for each class
+		  of images. Programatically, this can be achieved using the
+		  <literal>GroupedRandomSplitter</literal> class:
+		</para>
+		<programlisting>GroupedRandomSplitter&lt;String, Record&lt;FImage&gt;&gt; splits = 
+			new GroupedRandomSplitter&lt;String, Record&lt;FImage&gt;&gt;(data, 15, 0, 15);</programlisting>
+		<para>
+		  In this case, we’ve created a training dataset with 15 images per
+		  group, and 15 testing images per group. The zero in the constructor is
+		  the number of validation images which we won’t use in this tutorial.
+		  If you take a look at the <literal>GroupedRandomSplitter</literal>
+		  class you’ll see there are methods to get the training, validation and
+		  test datasets.
+		</para>
+		<para>
+		  Our next step is to consider how we’re going to extract suitable image
+		  features. For this tutorial we’re going to use a technique commonly
+		  known as the Pyramid Histogram of Words
+		  (<emphasis role="strong">PHOW</emphasis>). PHOW is itself based on the
+		  idea of extracting <emphasis role="strong">Dense SIFT</emphasis>
+		  features, quantising the SIFT features into
+		  <emphasis role="strong">visual words</emphasis> and then building
+		  <emphasis role="strong">spatial histograms</emphasis> of the visual
+		  word occurrences.
+		</para>
+		<para>
+		  The Dense SIFT features are just like the features you used in the
+		  <quote>SIFT and feature matching</quote> tutorial, but rather than
+		  extracting the features at interest points detected using a
+		  difference-of-Gaussian, the features are extracted on a regular grid
+		  across the image. The idea of a visual word is quite simple: rather
+		  than representing each SIFT feature by a 128 dimension feature vector,
+		  we represent it by an identifier. Similar features (i.e. those that
+		  have similar, but not necessarily the same, feature vectors) are
+		  assigned to have the same identifier. A common approach to assigning
+		  identifiers to features is to train a <emphasis role="strong">vector
+		  quantiser</emphasis> (just another fancy name for a type of
+		  <emphasis>classifier</emphasis>) using k-means, just like we did in
+		  the <quote>Introduction to clustering</quote> tutorial. To build a
+		  histogram of visual words (often called a <emphasis role="strong">Bag
+		  of Visual Words</emphasis>), all we have to do is count up how many
+		  times each identifier appears in an image and store the values in a
+		  histogram. If we’re building spatial histograms, then the process is
+		  the same, but we effectively cut the image into blocks and compute the
+		  histogram for each block independently before concatenating the
+		  histograms from all the blocks into a larger histogram.
+		</para>
+		<para>
+		  To get started writing the code for the PHOW implementation, we first
+		  need to construct our Dense SIFT extractor - we’re actually going to
+		  construct two objects: a <literal>DenseSIFT</literal> object and a
+		  <literal>PyramidDenseSIFT</literal> object:
+		</para>
+		<programlisting>DenseSIFT dsift = new DenseSIFT(5, 7);
+PyramidDenseSIFT pdsift = new PyramidDenseSIFT(dsift, 6f, 7);</programlisting>
+		<para>
+		  The <literal>PyramidDenseSIFT</literal> class takes a normal
+		  <literal>DenseSIFT</literal> instance and applies it to different
+		  sized windows on the regular sampling grid, although in this
+		  particular case we’re only using a single window size of 7 pixels.
+		</para>
+		<para>
+		  The next stage is to write some code to perform
+		  <emphasis role="strong">K-Means</emphasis> clustering on a sample of
+		  SIFT features in order to build a <literal>HardAssigner</literal> that
+		  can assign features to identifiers. Let’s wrap up the code for this in
+		  a new method that takes as input a dataset and a
+		  <literal>PyramidDenseSIFT</literal> object:
+		</para>
+		<programlisting>static HardAssigner&lt;byte[], float[], IntFloatPair&gt; trainQuantiser(
+	            Dataset&lt;Record&lt;FImage&gt;&gt; sample, PyramidDenseSIFT pdsift)
+{
+    List&lt;LocalFeatureList&lt;ByteDSIFTKeypoint&gt;&gt; allkeys = new ArrayList&lt;LocalFeatureList&lt;ByteDSIFTKeypoint&gt;&gt;();
+
+    for (Record&lt;FImage&gt; rec : sample) {
+        FImage img = rec.getImage();
+
+        pdsift.analyseImage(img);
+        allkeys.add(pdsift.getByteKeypoints(0.005f));
+    }
+
+    if (allkeys.size() &gt; 10000)
+        allkeys = allkeys.subList(0, 10000);
+
+    ByteKMeans km = ByteKMeans.createKDTreeEnsemble(128, 300);
+    DataSource&lt;byte[]&gt; datasource = new LocalFeatureListDataSource&lt;ByteDSIFTKeypoint, byte[]&gt;(allkeys);
+    ByteCentroidsResult result = km.cluster(datasource);
+
+    return result.defaultHardAssigner();
+}</programlisting>
+		<para>
+		  The above method extracts the first 10000 dense SIFT features from the
+		  images in the dataset, and then clusters them into 300 separate
+		  classes. The method then returns a <literal>HardAssigner</literal>
+		  which can be used to assign SIFT features to identifiers. To use this
+		  method, add the following to your main method after the
+		  <literal>PyramidDenseSIFT</literal> construction:
+		</para>
+		<programlisting>HardAssigner&lt;byte[], float[], IntFloatPair&gt; assigner = 
+			trainQuantiser(GroupedUniformRandomisedSampler.sample(splits.getTrainingDataset(), 30), pdsift);</programlisting>
+		<para>
+		  Notice that we’ve used a
+		  <literal>GroupedUniformRandomisedSampler</literal> to get a random
+		  sample of 30 images across all the groups of the training set with
+		  which to train the quantiser. The next step is to write a
+		  <literal>FeatureExtractor</literal> implementation with which we can
+		  train our classifier:
+		</para>
+		<programlisting>static class PHOWExtractor implements FeatureExtractor&lt;DoubleFV, Record&lt;FImage&gt;&gt; {
+    PyramidDenseSIFT pdsift;
+    HardAssigner&lt;byte[], float[], IntFloatPair&gt; assigner;
+
+    public PHOWExtractor(PyramidDenseSIFT pdsift, HardAssigner&lt;byte[], float[], IntFloatPair&gt; assigner)
+    {
+        this.pdsift = pdsift;
+        this.assigner = assigner;
+    }
+
+    public DoubleFV extractFeature(Record&lt;FImage&gt; object) {
+        FImage image = object.getImage();
+        pdsift.analyseImage(image);
+
+        BagOfVisualWords&lt;byte[]&gt; bovw = new BagOfVisualWords&lt;byte[]&gt;(assigner);
+
+        BlockSpatialAggregator&lt;byte[], SparseIntFV&gt; spatial = new BlockSpatialAggregator&lt;byte[], SparseIntFV&gt;(
+                bovw, 2, 2);
+
+        return spatial.aggregate(pdsift.getByteKeypoints(0.015f), image.getBounds()).normaliseFV();
+    }
+}</programlisting>
+		<para>
+		  This class uses a <literal>BlockSpatialAggregator</literal> together
+		  with a <literal>BagOfVisualWords</literal> to compute 4 histograms
+		  across the image (by breaking the image into 2 both horizontally and
+		  vertically). The <literal>BagOfVisualWords</literal> uses the
+		  <literal>HardAssigner</literal> to assign each Dense SIFT feature to a
+		  visual word and the compute the histogram. The resultant spatial
+		  histograms are then appended together and normalised before being
+		  returned. Back in the main method of our code we can construct an
+		  instance of our PHOWExtractor:
+		</para>
+		<programlisting>FeatureExtractor&lt;DoubleFV, Record&lt;FImage&gt;&gt; extractor = new PHOWExtractor(pdsift, assigner);</programlisting>
+		<para>
+		  Now we’re ready to construct and train a classifier - we’ll use the
+		  linear classifier provided by the
+		  <literal>LiblinearAnnotator</literal> class:
+		</para>
+		<programlisting>LiblinearAnnotator&lt;Record&lt;FImage&gt;, String&gt; ann = new LiblinearAnnotator&lt;Record&lt;FImage&gt;, String&gt;(
+		            extractor, Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
+ann.train(splits.getTrainingDataset());</programlisting>
+		<para>
+		  Finally, we can use the OpenIMAJ evaluation framework to perform an
+		  automated evaluation of our classifier’s accuracy for us:
+		</para>
+		<programlisting>ClassificationEvaluator&lt;CMResult&lt;String&gt;, String, Record&lt;FImage&gt;&gt; eval = 
+			new ClassificationEvaluator&lt;CMResult&lt;String&gt;, String, Record&lt;FImage&gt;&gt;(
+				ann, splits.getTestDataset(), new CMAnalyser&lt;Record&lt;FImage&gt;, String&gt;(CMAnalyser.Strategy.SINGLE));
+				
+Map&lt;Record&lt;FImage&gt;, ClassificationResult&lt;String&gt;&gt; guesses = eval.evaluate();
+CMResult&lt;String&gt; result = eval.analyse(guesses);</programlisting>
+		<sect1 id="classification101-exercises">
+		  <title>Exercises</title>
+		  <sect2 id="exercise-1-apply-a-homogeneous-kernel-map">
+		    <title>Exercise 1: Apply a Homogeneous Kernel Map</title>
+		    <para>
+					A Homogeneous Kernel Map transforms data into a compact linear
+					representation such that applying a linear classifier approximates, 
+					to a high degree of accuracy, the application of a non-linear 
+					classifier over the original data. Try using the
+		      <literal>HomogeneousKernelMap</literal> class with a
+		      <literal>KernelType.Chi2</literal> kernel and
+		      <literal>WindowType.Rectangular</literal> window on top of the
+		      <literal>PHOWExtractor</literal> feature extractor. What effect
+		      does this have on performance?
+		    </para>
+				<tip>
+			    <para>
+			      Construct a <literal>HomogeneousKernelMap</literal> and use
+			      the <literal>createWrappedExtractor()</literal> method to create a
+			      new feature extractor around the <literal>PHOWExtractor</literal>
+			      that applies the map.
+			    </para>
+				</tip>
+		  </sect2>
+		  <sect2 id="exercise-2-feature-caching">
+		    <title>Exercise 2: Feature caching</title>
+		    <para>
+		      The <literal>DiskCachingFeatureExtractor</literal> class can be
+		      used to cache features extracted by a
+		      <literal>FeatureExtractor</literal> to disk. It will generate and
+		      save features if they don’t exist, or read from disk if they do.
+		      Try to incorporate the
+		      <literal>DiskCachingFeatureExtractor</literal> into your code.
+		      You’ll also need to save the <literal>HardAssigner</literal> using
+		      <literal>IOUtils.writeToFile</literal> and load it using
+		      <literal>IOUtils.readFromFile</literal> because the features must
+		      be kept with the same <literal>HardAssigner</literal> that created
+		      them.
+		    </para>
+		  </sect2>
+		  <sect2 id="exercise-3-the-whole-dataset">
+		    <title>Exercise 3: The whole dataset</title>
+		    <para>
+		      Try running the code over all the classes in the Caltech 101
+		      dataset. Also try increasing the number of visual words to 600,
+		      adding extra scales to the <literal>PyramidDenseSIFT</literal>
+		      (try [4, 6, 8, 10] and reduce the step-size of the DenseSIFT to
+		      3), and instead of using the
+		      <literal>BlockSpatialAggregator</literal>, try the
+		      <literal>PyramidSpatialAggregator</literal> with [2, 4] blocks.
+		      What level of classifier performance does this achieve?
+		    </para>
+		  </sect2>
+		</sect1>
 </chapter>

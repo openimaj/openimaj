@@ -2,5 +2,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <partintro>
-	
+	<para>
+	OpenIMAJ contains a number of advanced features that are not directly related to multimedia processing, analysis and generation. This part of the tutorial looks at some of those features. In particular there are tutorials looking at how to make use of multiple processors using OpenIMAJ's <literal>Parallel</literal> and how to reference your code using OpenIMAJ's <literal>Reference</literal> annotations.
+	</para>
 </partintro>

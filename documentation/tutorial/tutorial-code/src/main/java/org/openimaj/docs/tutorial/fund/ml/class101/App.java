@@ -1,4 +1,4 @@
-package org.openimaj.demos.classification;
+package org.openimaj.docs.tutorial.fund.ml.class101;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,14 +35,21 @@ import org.openimaj.ml.annotation.linear.LiblinearAnnotator.Mode;
 import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.ByteKMeans;
-import org.openimaj.ml.kernel.HomogeneousKernelMap;
-import org.openimaj.ml.kernel.HomogeneousKernelMap.KernelType;
-import org.openimaj.ml.kernel.HomogeneousKernelMap.WindowType;
 import org.openimaj.util.pair.IntFloatPair;
 
 import de.bwaldvogel.liblinear.SolverType;
 
-public class CT101PHOW {
+/**
+ * OpenIMAJ Hello world!
+ * 
+ */
+public class App {
+	/**
+	 * Main method
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		System.out.println("Load dataset and take a sample");
 		final GroupedDataset<String, VFSListDataset<Record<FImage>>, Record<FImage>> allData = Caltech101
@@ -63,13 +70,15 @@ public class CT101PHOW {
 				.sample(splits.getTrainingDataset(), 30), pdsift);
 
 		System.out.println("Define feature extractor");
-		final HomogeneousKernelMap map = new HomogeneousKernelMap(KernelType.Chi2, WindowType.Rectangular);
-		final FeatureExtractor<DoubleFV, Record<FImage>> extractor2 = map
-				.createWrappedExtractor(new SpPHOWExtractorImplementation(pdsift, assigner));
+		// final HomogeneousKernelMap map = new
+		// HomogeneousKernelMap(KernelType.Chi2, WindowType.Rectangular);
+		// final FeatureExtractor<DoubleFV, Record<FImage>> extractor = map
+		// .createWrappedExtractor(new PHOWExtractor(pdsift, assigner));
+		final FeatureExtractor<DoubleFV, Record<FImage>> extractor = new SpPHOWExtractorImplementation(pdsift, assigner);
 
 		System.out.println("Construct and train classifier");
 		final LiblinearAnnotator<Record<FImage>, String> ann = new LiblinearAnnotator<Record<FImage>, String>(
-				extractor2, Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
+				extractor, Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
 		ann.train(splits.getTrainingDataset());
 
 		System.out.println("Evaluate classifier");

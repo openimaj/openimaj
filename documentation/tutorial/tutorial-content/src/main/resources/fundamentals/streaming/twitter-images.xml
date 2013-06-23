@@ -31,7 +31,6 @@ TwitterStreamDataset stream = new TwitterStreamDataset(token);</programlisting>
 	  text content of each Tweet and run it again:
 	</para>
 	<programlisting>stream.forEach(new Operation&lt;Status&gt;() {
-    @Override
     public void perform(Status status) {
         System.out.println(status.getText());
     }
@@ -75,7 +74,6 @@ TwitterStreamDataset stream = new TwitterStreamDataset(token);</programlisting>
 	  Now let’s display the images in the stream as they arrive:
 	</para>
 	<programlisting>imageStream.forEach(new Operation&lt;MBFImage&gt;() {
-    @Override
     public void perform(MBFImage image) {
         DisplayUtilities.displayName(image, &quot;image&quot;);
     }
@@ -91,12 +89,10 @@ TwitterStreamDataset stream = new TwitterStreamDataset(token);</programlisting>
 	  that the code looks like this:
 	</para>
 	<programlisting>imageStream.map(new MultiFunction&lt;MBFImage, MBFImage&gt;() {
-    @Override
     public List&lt;MBFImage&gt; apply(MBFImage in) {
 
     }
 }).forEach(new Operation&lt;MBFImage&gt;() {
-    @Override
     public void perform(MBFImage image) {
         DisplayUtilities.displayName(image, &quot;image&quot;);
     }

@@ -3,6 +3,6 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <partintro>
 	<para>
-		The analysis of streaming multimedia data is becoming a hot research topic. In OpenIMAJ we've built a framework that aims to make it easy to work with streams of all kinds of data. This even includes some classes that connect to live data sources such as Twitter and the framework even provides a number of strategies to seamlessly deal with streams of data that arrive at a rate faster than they can be consumed. The tutorials in this section will get you up to speed using the OpenIMAJ stream classes and show you how to use them to build some practical applications.
+		The analysis of streaming multimedia data is becoming a hot research topic. In OpenIMAJ we've built a framework that aims to make it easy to work with streams of all kinds of data. This even includes some classes that connect to live data sources such as Twitter. The framework even provides a number of strategies to seamlessly deal with streams of data that arrive at a rate faster than they can be consumed. The tutorials in this section will get you up to speed using the OpenIMAJ stream classes and show you how to use them to build some practical applications.
 	</para>
 </partintro>

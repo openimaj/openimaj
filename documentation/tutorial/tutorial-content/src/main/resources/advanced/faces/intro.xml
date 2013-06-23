@@ -2,5 +2,362 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <partintro>
-	
+	<para>
+	  OpenIMAJ contains a number of tools for face detection, recognition
+	  and similarity comparison. In particular, OpenIMAJ implements a fairly
+	  standard recognition pipeline. The pipeline consists of four stages:
+	</para>
+	<orderedlist numeration="arabic">
+	  <listitem>
+	    <para>
+	      Face Detection
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Face Alignment
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Facial Feature Extraction
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Face Recognition/Classification
+	    </para>
+	  </listitem>
+	</orderedlist>
+	<para>
+	  Each stage of the pipeline is configurable, and OpenIMAJ contains a
+	  number of different options for each stage as well as offering the
+	  possibility to easily implement more. The pipeline is designed to
+	  allow researchers to focus on a specific area of the pipeline without
+	  having to worry about the other components. At the same time, it is
+	  fairly easy to modify and evaluate a complete pipeline.
+	</para>
+	<para>
+	  In addition to the parts of the recognition pipeline, OpenIMAJ also
+	  includes code for tracking faces in videos and comparing the
+	  similarity of faces.
+	</para>
+	<para>
+	  Bear in mind that as with all computer vision techniques, because of
+	  the variability of real-world images, each stage of the pipeline has
+	  the potential to fail.
+	</para>
+	<sect1 id="intro-face-detection">
+	  <title>Face Detection</title>
+	  <para>
+	    The first stage of the pipeline is face detection. Given an image, a
+	    face detector attempts to localise all the faces in the image. All
+	    OpenIMAJ face detectors are subclasses of
+	    <literal>FaceDetector</literal>, and they all produce subclasses of
+	    <literal>DetectedFace</literal> as their output. Currently, OpenIMAJ
+	    implements the following types of face detector:
+	  </para>
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.detection.SandeepFaceDetector</literal>:
+	        A face detector that searches the image for areas of skin-tone
+	        that have a height/width ratio similar to the golden ratio. The
+	        detector will only find faces that are upright in the image (or
+	        upside-down).
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.detection.HaarCascadeDetector</literal>:
+	        A face detector based on the classic Viola-Jones classifier
+	        cascade framework. The classifier comes with a number of
+	        pre-trained models for frontal and side face views. The
+	        classifier is only mildly invariant to rotation, and it won’t
+	        detect non-upright faces.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.keypoints.FKEFaceDetector</literal>:
+	        The Frontal Keypoint Enhanced (FKE) Face Detector is not
+	        actually a detector in it’s own right, but rather a wrapper
+	        around the <literal>HaarCascadeDetector</literal>. The FKE
+	        provides additional information about a face detection by
+	        finding facial keypoints on top of the face. The facial
+	        keypoints are located at stable points on the face (sides of the
+	        eyes, bottom of the nose, corners of the mouth). The facial
+	        keypoints can be used for alignment and feature extraction as
+	        described in the next section.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.detection.CLMFaceDetector</literal>:
+	        The Constrained Local Model (CLM) face detector uses an
+	        underlying <literal>HaarCascadeDetector</literal> to perform an
+	        initial face detection and then fits a statistical 3D face model
+	        to the detected region. The 3D face model can be used to locate
+	        facial keypoints within the image and also to determine the pose
+	        of the face. The model is a form of parameterised statistical
+	        shape model called a <quote>point distribution model</quote>;
+	        this means that the 3D model has an associated set of parameters
+	        which control elements of its shape (i.e. there are parameters
+	        that determine whether the mouth is open or closed, or how big
+	        the nose is). During the process of fitting the model to the
+	        image, these parameters are learned automatically, and are
+	        exposed through the detections
+	        (<literal>CLMDetectedFaces</literal>) returned by the
+	        <literal>CLMFaceDetector</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.detection.IdentityFaceDetector</literal>:
+	        The identity face detector just returns a single detection for
+	        each input image it is given. The detection covers the entire
+	        area of the input image. This is useful for working with face
+	        datasets that contain pre-extracted and cropped faces.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</sect1>
+	<sect1 id="intro-face-alignment">
+	  <title>Face Alignment</title>
+	  <para>
+	    Many forms of face recogniser work better if the facial image
+	    patches used for training and querying are aligned to a common view.
+	    This alignment allows for the recognition system to concentrate on
+	    the appearance of the face without having to explicitly deal with
+	    variations in the pose of the face. The
+	    <literal>FaceAligner</literal>s take in faces detected by a
+	    <literal>FaceDetector</literal> as input, and output an image with
+	    the aligned face rendered within it.
+	  </para>
+	  <para>
+	    OpenIMAJ contains a number of face alignment options. Currently,
+	    these include:
+	  </para>
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.alignment.AffineAligner</literal>:
+	        An aligner that can align faces detected by the
+	        <literal>FKEFaceDetector</literal> to a neutral pose by applying
+	        an rigid affine transformation estimated from the mapping of
+	        facial keypoints in the detected image to the points in a model
+	        with neutral pose.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.alignment.CLMAligner</literal>:
+	        An aligner that warps a face detected by the
+	        <literal>CLMFaceDetector</literal> to a neutral pose. The
+	        alignment is non-rigid and warps each corresponding triangle of
+	        the detected face to a model with neutral pose.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.alignment.IdentityAligner</literal>:
+	        The identity aligner does no alignment; it just returns the
+	        cropped face image from the detector. This is useful when
+	        working with face datasets that contain pre-aligned images.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.alignment.MeshWarpAligner</literal>:
+	        The mesh warp aligner performs a similar job to the
+	        <literal>CLMAligner</literal>, but for
+	        <literal>FKEDetectedFace</literal>s detected by the
+	        <literal>FKEFaceDetector</literal>. A mesh is constructed over
+	        the set of detected facial keypoints and a non-linear warp is
+	        applied to project each keypoint to a canonical position within
+	        a neutral pose.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.alignment.RotateScaleAligner</literal>:
+	        The rotate and scale aligner maps faces detected by the
+	        <literal>FKEFaceDetector</literal> to an aligned pose by
+	        performing a rotation followed by a scaling.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>org.openimaj.image.processing.face.alignment.ScalingAligner</literal>:
+	        The scaling aligner takes any type of
+	        <literal>DetectedFace</literal> and scales the cropped face
+	        image in the detection to a fixed size.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</sect1>
+	<sect1 id="intro-facial-feature-extraction">
+	  <title>Facial Feature Extraction</title>
+	  <para>
+	    Once you have detected a face (and possibly chosen an aligner for
+	    it), you need to extract a feature which you can then use for
+	    recognition or similarity comparison. As with the detection and
+	    alignment phases, OpenIMAJ contains a number of different
+	    implementations of <literal>FacialFeatureExtractor</literal>s which
+	    produce <literal>FacialFeature</literal>s together with methods for
+	    comparing pairs of <literal>FacialFeature</literal>s in order to get
+	    a similarity measurement. The currently implemented
+	    <literal>FacialFeature</literal>s are listed below:
+	  </para>
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+	        <literal>CLMPoseFeature</literal>: A feature that represents the
+	        pose of a face detected with the
+	        <literal>CLMFaceDetector</literal>. The pose consists of the
+	        pitch, roll and yaw of the face. The feature can expose itself
+	        as a <literal>DoubleFV</literal> and can be compared using a
+	        <literal>FaceFVComparator</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>CLMPoseShapeFeature</literal>: A feature that
+	        represents the shape parameters and pose of a face detected with
+	        the <literal>CLMFaceDetector</literal>. The shape vector
+	        describes the shape of the face as a small set of variables, and
+	        the pose consists of the pitch, roll and yaw of the face. The
+	        feature can expose itself as a <literal>DoubleFV</literal> and
+	        can be compared using a <literal>FaceFVComparator</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>CLMShapeFeature</literal>: A feature that represents
+	        the shape parameters of a face detected with the
+	        <literal>CLMFaceDetector</literal>. The shape vector describes
+	        the shape of the face as a small set of variables. The feature
+	        can expose itself as a <literal>DoubleFV</literal> and can be
+	        compared using a <literal>FaceFVComparator</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>DoGSIFTFeature</literal>: A feature built by detecting
+	        local interest points on the face using a Difference of Gaussian
+	        pyramid, and then describing these using SIFT features. The
+	        <literal>DoGSIFTFeatureComparator</literal> can be used to
+	        compare these features.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>EigenFaceFeature</literal>: A feature built by
+	        projecting the pixels of an aligned face into a
+	        lower-dimensional space learned through PCA. The feature
+	        extractor must be <quote>trained</quote> with a set of example
+	        aligned faces before it can be used. This forms the core of the
+	        classic Eigen Faces algorithm. The feature can expose itself as
+	        a <literal>DoubleFV</literal> and can be compared using a
+	        <literal>FaceFVComparator</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>FaceImageFeature</literal>: A feature built directly
+	        from the pixels of an aligned face. No normalisation is
+	        performed. The feature can expose itself as a
+	        <literal>FloatFV</literal> and can be compared using a
+	        <literal>FaceFVComparator</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>FacePatchFeature</literal>: A feature built by
+	        concatenating the pixels from each of the normalised circular
+	        patches around each facial keypoint from an
+	        <literal>FKEDetectedFace</literal>. The feature can expose
+	        itself as a <literal>FloatFV</literal> and can be compared using
+	        a <literal>FaceFVComparator</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>FisherFaceFeature</literal>: A feature built by
+	        projecting the pixels of an aligned face into a
+	        lower-dimensional space learned through Fisher’s Linear
+	        Discriminant Analysis. The feature extractor must be
+	        <quote>trained</quote> with a set of example aligned faces
+	        before it can be used. This forms the core of the classic Fisher
+	        Faces algorithm. The feature can expose itself as a
+	        <literal>DoubleFV</literal> and can be compared using a
+	        <literal>FaceFVComparator</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>LocalLBPHistogram</literal>: Feature constructed by
+	        breaking the image into blocks and computing histograms of Local
+	        Binary Patterns (LBPs) for each block. All histograms are
+	        concatenated to form the final feature. The feature can expose
+	        itself as a <literal>FloatFV</literal> and can be compared using
+	        a <literal>FaceFVComparator</literal>.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+	        <literal>LtpDtFeature</literal>: A feature built from Local
+	        Trinary Patterns (LTPs) within an aligned image. The features
+	        are constructed to be compared using a Euclidean Distance
+	        Transform with the <literal>LtpDtFeatureComparator</literal> or
+	        <literal>ReversedLtpDtFeatureComparator</literal> comparators.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</sect1>
+	<sect1 id="intro-face-recognitionclassification">
+	  <title>Face Recognition/Classification</title>
+	  <para>
+	    The final stage of the pipeline uses extracted
+	    <literal>FacialFeature</literal>s to perform face recognition
+	    (determining who’s face it is) or classification (determining some
+	    characteristic of the face; for example male/female,
+	    glasses/no-glasses, etc). All recognisers/classifiers are instances
+	    of <literal>FaceRecogniser</literal>. There are a couple of default
+	    implementations, but the most common is the
+	    <literal>AnnotatorFaceRecogniser</literal> which can use any form of
+	    <literal>IncrementalAnnotator</literal> to perform the actual
+	    classification. There are also specific recognisers for the Eigen
+	    Face and Fisher Faces algorithms that can be constructed with
+	    internal recognisers (usually a
+	    <literal>AnnotatorFaceRecogniser</literal>) that perform specific
+	    machine learning operations. All <literal>FaceRecogniser</literal>s
+	    are capable of serialising and deserialising their internal state to
+	    disk. All recognisers are also capable of incremental learning
+	    (i.e. new examples can be added at any point).
+	  </para>
+	  <para>
+	    Currently, there are implementations of
+	    <literal>IncrementalAnnotator</literal> that implement common
+	    machine-learning algorithms including k-nearest-neighbours and
+	    naive-bayes. Batch annotators (<literal>BatchAnnotator</literal>s),
+	    such as a Support Vector Machine annotator can also be used by using
+	    an adaptor to convert the <literal>BatchAnnotator</literal> into an
+	    <literal>IncrementalAnnotator</literal> (for example a
+	    <literal>InstanceCachingIncrementalBatchAnnotator</literal>).
+	  </para>
+	  <para>
+	    The face detection and recognition components can be managed
+	    separately, however, the <literal>FaceRecognitionEngine</literal>
+	    class can be used to simplify usage.
+	  </para>
+	</sect1>
+	<sect1 id="intro-face-similarity">
+	  <title>Face Similarity</title>
+	  <para>
+	    The <literal>FaceSimilarityEngine</literal> class provides methods
+	    for assessing the similarity of faces by comparing
+	    <literal>FacialFeature</literal>s using appropriate comparators.
+	  </para>
+	</sect1>
 </partintro>

@@ -81,12 +81,10 @@
   <programlisting>VideoDisplay&lt;MBFImage&gt; display = VideoDisplay.createVideoDisplay(video);
 display.addVideoListener(
   new VideoDisplayListener&lt;MBFImage&gt;() {
-    @Override
     public void beforeUpdate(MBFImage frame) {
         frame.processInplace(new CannyEdgeDetector());
     }
 
-    @Override
     public void afterUpdate(VideoDisplay&lt;MBFImage&gt; display) {
     }
   });</programlisting>

@@ -1,6 +1,8 @@
 package org.openimaj.data.dataset;
 
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,12 +55,12 @@ import org.openimaj.io.ObjectReader;
  */
 public class VFSGroupDataset<INSTANCE>
 		extends
-			ReadableGroupDataset<String, VFSListDataset<INSTANCE>, INSTANCE, FileObject>
+		ReadableGroupDataset<String, VFSListDataset<INSTANCE>, INSTANCE, FileObject>
 		implements
 		Identifiable
 {
-	private Map<String, VFSListDataset<INSTANCE>> files = new HashMap<String, VFSListDataset<INSTANCE>>();
-	private Map<String, FileObject> directoryInfo = new HashMap<String, FileObject>();
+	private Map<String, VFSListDataset<INSTANCE>> files = new LinkedHashMap<String, VFSListDataset<INSTANCE>>();
+	private Map<String, FileObject> directoryInfo = new LinkedHashMap<String, FileObject>();
 	private FileObject base;
 
 	/**
@@ -107,6 +109,13 @@ public class VFSGroupDataset<INSTANCE>
 		base = fsManager.resolveFile(path);
 
 		final FileObject[] folders = base.findFiles(new FileTypeSelector(FileType.FOLDER));
+
+		Arrays.sort(folders, new Comparator<FileObject>() {
+			@Override
+			public int compare(FileObject o1, FileObject o2) {
+				return o1.getName().toString().compareToIgnoreCase(o2.getName().toString());
+			}
+		});
 
 		for (final FileObject folder : folders) {
 			if (folder.equals(base))

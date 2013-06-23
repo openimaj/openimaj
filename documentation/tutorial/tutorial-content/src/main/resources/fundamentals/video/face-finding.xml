@@ -33,11 +33,9 @@
 VideoDisplay&lt;MBFImage&gt; vd = VideoDisplay.createVideoDisplay( vc );
 vd.addVideoListener( 
   new VideoDisplayListener&lt;MBFImage&gt;() {
-    @Override
     public void beforeUpdate( MBFImage frame ) {
     }
 
-    @Override
     public void afterUpdate( VideoDisplay&lt;MBFImage&gt; display ) {
     }
   });</programlisting>

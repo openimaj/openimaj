@@ -69,6 +69,7 @@ public class App {
 		}
 		System.out.println("time " + t1.duration() + "ms");
 
+		// first attempt at a parallel version
 		output.clear();
 		final Timer t2 = Timer.timer();
 		for (final ListDataset<MBFImage> clzImages : images.values()) {
@@ -95,6 +96,7 @@ public class App {
 		}
 		System.out.println("time " + t2.duration() + "ms");
 
+		// better parallel version
 		output.clear();
 		final Timer t3 = Timer.timer();
 		for (final ListDataset<MBFImage> clzImages : images.values()) {
