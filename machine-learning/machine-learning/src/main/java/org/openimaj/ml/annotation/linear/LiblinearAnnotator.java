@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.feature.DoubleFV;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FeatureVector;
-import org.openimaj.feature.IdentityFeatureExtractor;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.AnnotatedObject;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.utils.AnnotatedListHelper;
@@ -32,14 +31,49 @@ import de.bwaldvogel.liblinear.SolverType;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <OBJECT>
+ *            Type of object being annotated
  * @param <ANNOTATION>
+ *            Type of annotation
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Fan, Rong-En", "Chang, Kai-Wei", "Hsieh, Cho-Jui", "Wang, Xiang-Rui", "Lin, Chih-Jen" },
+		title = "LIBLINEAR: A Library for Large Linear Classification",
+		year = "2008",
+		journal = "J. Mach. Learn. Res.",
+		pages = { "1871", "", "1874" },
+		url = "http://dl.acm.org/citation.cfm?id=1390681.1442794",
+		month = "june",
+		publisher = "JMLR.org",
+		volume = "9",
+		customData = {
+				"date", "6/1/2008",
+				"issn", "1532-4435",
+				"numpages", "4",
+				"acmid", "1442794"
+		})
 public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		extends
 		BatchAnnotator<OBJECT, ANNOTATION>
 {
+	/**
+	 * The classifier mode; either multiclass or multilabel. Multiclass mode
+	 * will use liblinear's internal multiclass support, whereas multilabel mode
+	 * will create a set of one-versus-all (OvA) classifiers for each class.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
 	public enum Mode {
-		MULTICLASS, MULTILABEL;
+		/**
+		 * Multiclass mode using liblinear's internal multiclass support
+		 */
+		MULTICLASS,
+		/**
+		 * Multilabel mode, using an ensemble of one-versus-all binary
+		 * classifiers (class/not-class) which are used to determine the labels
+		 */
+		MULTILABEL;
 	}
 
 	interface InternalModel<OBJECT, ANNOTATION> {
@@ -191,6 +225,20 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	private ArrayList<ANNOTATION> annotationsList;
 	private FeatureExtractor<? extends FeatureVector, OBJECT> extractor;
 
+	/**
+	 * Default constructor.
+	 * 
+	 * @param extractor
+	 *            the feature extractor
+	 * @param mode
+	 *            the mode
+	 * @param solver
+	 *            the liblinear solver
+	 * @param C
+	 *            the C parameter (usually 1 or larger)
+	 * @param eps
+	 *            the epsilon value
+	 */
 	public LiblinearAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, Mode mode, SolverType solver,
 			double C, double eps)
 	{
@@ -227,17 +275,5 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	@Override
 	public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object) {
 		return internal.annotate(object);
-	}
-
-	public static void main(String[] args) {
-		final LiblinearAnnotator<DoubleFV, String> ann = new LiblinearAnnotator<DoubleFV, String>(
-				new IdentityFeatureExtractor<DoubleFV>(), Mode.MULTICLASS, SolverType.L2R_LR, 1.0, 0.01);
-
-		final List<Annotated<DoubleFV, String>> trainingData = new ArrayList<Annotated<DoubleFV, String>>();
-		trainingData.add(AnnotatedObject.create(new DoubleFV(new double[] { -1.0 }), "neg"));
-		trainingData.add(AnnotatedObject.create(new DoubleFV(new double[] { 1.0 }), "pos"));
-		ann.train(trainingData);
-
-		System.out.println(ann.annotate(new DoubleFV(new double[] { 10.0 })));
 	}
 }
