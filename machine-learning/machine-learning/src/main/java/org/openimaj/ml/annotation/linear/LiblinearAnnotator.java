@@ -14,6 +14,9 @@ import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.utils.AnnotatedListHelper;
 import org.openimaj.ml.annotation.utils.LiblinearHelper;
+import org.openimaj.util.function.Operation;
+import org.openimaj.util.parallel.Parallel;
+import org.openimaj.util.parallel.Parallel.IntRange;
 
 import de.bwaldvogel.liblinear.Feature;
 import de.bwaldvogel.liblinear.Linear;
@@ -57,7 +60,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		}
 
 		@Override
-		public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
+		public void train(final List<? extends Annotated<OBJECT, ANNOTATION>> data) {
 			final AnnotatedListHelper<OBJECT, ANNOTATION> helper = new AnnotatedListHelper<OBJECT, ANNOTATION>(data);
 			annotations = helper.getAnnotations();
 			annotationsList = new ArrayList<ANNOTATION>(annotations);
@@ -71,18 +74,25 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 			problem.x = new Feature[nItems][];
 			problem.y = new double[nItems];
 
-			for (int i = 0; i < nItems; i++) {
-				final Annotated<OBJECT, ANNOTATION> object = data.get(i);
+			Parallel.forRange(0, nItems, 1, new Operation<IntRange>() {
+				@Override
+				public void perform(IntRange range) {
+					// for (int i = 0; i < nItems; i++) {
+					for (int i = range.start; i < range.stop; i++) {
+						final Annotated<OBJECT, ANNOTATION> object = data.get(i);
 
-				if (object.getAnnotations().size() != 1)
-					throw new IllegalArgumentException(
-							"A multiclass problem cannot have more than one class per instance");
+						if (object.getAnnotations().size() != 1)
+							throw new IllegalArgumentException(
+									"A multiclass problem cannot have more than one class per instance");
 
-				final ANNOTATION annotation = object.getAnnotations().iterator().next();
+						final ANNOTATION annotation = object.getAnnotations().iterator().next();
 
-				problem.y[i] = annotationsList.indexOf(annotation) + 1;
-				problem.x[i] = computeFeature(object.getObject());
-			}
+						problem.y[i] = annotationsList.indexOf(annotation) + 1;
+						problem.x[i] = computeFeature(object.getObject());
+					}
+
+				}
+			});
 
 			model = Linear.train(problem, parameter);
 		}

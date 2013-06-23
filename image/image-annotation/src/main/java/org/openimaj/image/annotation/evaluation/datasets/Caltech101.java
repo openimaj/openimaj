@@ -30,6 +30,7 @@ import com.jmatio.types.MLDouble;
 /**
  * The CalTech101 image dataset. Contains 102 classes of image (101 objects +
  * background), and (for most images) outlines and bounding boxes of the object.
+ * Images are approximately 300x200 pixels in size.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -49,6 +50,9 @@ public class Caltech101 {
 	private static final String IMAGES_DOWNLOAD_URL = "http://datasets.openimaj.org/Caltech101/101_ObjectCategories.zip";
 	private static final String ANNOTATIONS_ZIP = "Caltech101/Annotations.zip";
 	private static final String ANNOTATIONS_DOWNLOAD_URL = "http://datasets.openimaj.org/Caltech101/Annotations.zip";
+
+	private Caltech101() {
+	}
 
 	/**
 	 * Get a dataset of the Caltech 101 images. If the dataset hasn't been
@@ -90,6 +94,16 @@ public class Caltech101 {
 		return "zip:file:" + dataset.toString() + "!Annotations/";
 	}
 
+	/**
+	 * A record in the Caltech 101 dataset. Contains the image together with
+	 * (optional) metadata on the bounds of the object in the image as well as
+	 * the class of object in the image.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 * @param <IMAGE>
+	 *            The type of image that is loaded
+	 */
 	public static abstract class Record<IMAGE extends Image<?, IMAGE>> implements Identifiable, ImageProvider<IMAGE> {
 		private Rectangle bounds;
 		private Polygon contour;
@@ -144,6 +158,8 @@ public class Caltech101 {
 		}
 
 		/**
+		 * Get the bounds rectangle if it is available
+		 * 
 		 * @return the bounds
 		 */
 		public Rectangle getBounds() {
@@ -151,6 +167,8 @@ public class Caltech101 {
 		}
 
 		/**
+		 * Get the object polygon if it is available.
+		 * 
 		 * @return the contour
 		 */
 		public Polygon getContour() {
@@ -158,6 +176,8 @@ public class Caltech101 {
 		}
 
 		/**
+		 * Get the class of the object depicted in the image.
+		 * 
 		 * @return the class
 		 */
 		public String getObjectClass() {
@@ -165,7 +185,15 @@ public class Caltech101 {
 		}
 	}
 
-	public static class RecordReader<IMAGE extends Image<?, IMAGE>> implements ObjectReader<Record<IMAGE>, FileObject> {
+	/**
+	 * An {@link ObjectReader} for {@link Record}s.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 * @param <IMAGE>
+	 *            Type of image being read
+	 */
+	private static class RecordReader<IMAGE extends Image<?, IMAGE>> implements ObjectReader<Record<IMAGE>, FileObject> {
 		private VFSListDataset.FileObjectISReader<IMAGE> imageReader;
 
 		public RecordReader(InputStreamObjectReader<IMAGE> reader) {
@@ -207,9 +235,24 @@ public class Caltech101 {
 		}
 	}
 
+	/**
+	 * Get a dataset of the Caltech 101 images and metadata. If the dataset
+	 * hasn't been downloaded, it will be fetched automatically and stored in
+	 * the OpenIMAJ data directory. The images in the dataset are grouped by
+	 * their class.
+	 * 
+	 * @see DataUtils#getDataDirectory()
+	 * 
+	 * @param reader
+	 *            a reader for reading images (usually a
+	 *            {@link ImageUtilities#FIMAGE_READER} or
+	 *            {@link ImageUtilities#MBFIMAGE_READER}).
+	 * @return a dataset of images and metadate
+	 * @throws IOException
+	 *             if a problem occurs loading the dataset
+	 */
 	public static <IMAGE extends Image<?, IMAGE>> VFSGroupDataset<Record<IMAGE>> getData(
-			InputStreamObjectReader<IMAGE> reader)
-			throws IOException
+			InputStreamObjectReader<IMAGE> reader) throws IOException
 	{
 		return new VFSGroupDataset<Record<IMAGE>>(downloadAndGetImagePath(), new RecordReader<IMAGE>(reader));
 	}

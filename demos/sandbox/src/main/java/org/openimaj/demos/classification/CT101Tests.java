@@ -7,11 +7,13 @@ import java.util.Map;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
+import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
 import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.experiment.validation.cross.CrossValidationIterable;
 import org.openimaj.feature.DiskCachingFeatureExtractor;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
@@ -94,11 +96,10 @@ public class CT101Tests {
 	public static void classification() throws IOException {
 		final VFSGroupDataset<Record<MBFImage>> data = Caltech101.getData(ImageUtilities.MBFIMAGE_READER);
 
-		final GroupedRandomSplits<String, Record<MBFImage>> splits = new GroupedRandomSplits<String, Record<MBFImage>>(
-				data, 30, 10);
+		final CrossValidationIterable<GroupedDataset<String, ListDataset<Record<MBFImage>>, Record<MBFImage>>> crossValData =
+				GroupedRandomSplitter.createCrossValidationData(data, 30, 10, 1);
 
-		for (final ValidationData<GroupedDataset<String, ListDataset<Record<MBFImage>>, Record<MBFImage>>> vd : splits
-				.createIterable(1))
+		for (final ValidationData<GroupedDataset<String, ListDataset<Record<MBFImage>>, Record<MBFImage>>> vd : crossValData)
 		{
 			final KNNAnnotator<Record<MBFImage>, String, DoubleFV> knn = KNNAnnotator.create(
 					new DiskCachingFeatureExtractor<DoubleFV, Record<MBFImage>>(new File(

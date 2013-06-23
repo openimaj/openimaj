@@ -172,7 +172,7 @@ public class HomogeneousKernelMap {
 	 * @param <T>
 	 *            Type of object that features can be extracted from
 	 */
-	public static class HKMFeatureExtractor<T> implements FeatureExtractor<DoubleFV, T> {
+	public static class ExtractorWrapper<T> implements FeatureExtractor<DoubleFV, T> {
 		private FeatureExtractor<? extends FeatureVector, T> inner;
 		private HomogeneousKernelMap map;
 
@@ -185,8 +185,9 @@ public class HomogeneousKernelMap {
 		 * @param map
 		 *            the homogeneous kernel map
 		 */
-		public HKMFeatureExtractor(FeatureExtractor<? extends FeatureVector, T> inner, HomogeneousKernelMap map) {
-
+		public ExtractorWrapper(FeatureExtractor<? extends FeatureVector, T> inner, HomogeneousKernelMap map) {
+			this.inner = inner;
+			this.map = map;
 		}
 
 		@Override
@@ -445,5 +446,19 @@ public class HomogeneousKernelMap {
 		}
 
 		return out;
+	}
+
+	/**
+	 * Construct a new {@link ExtractorWrapper} that applies the map to features
+	 * extracted by an internal extractor.
+	 * 
+	 * @param inner
+	 *            the internal extractor
+	 * @return the wrapped {@link FeatureExtractor}
+	 * @param <T>
+	 *            Type of object that features can be extracted from
+	 */
+	public <T> FeatureExtractor<DoubleFV, T> createWrappedExtractor(FeatureExtractor<? extends FeatureVector, T> inner) {
+		return new ExtractorWrapper<T>(inner, this);
 	}
 }
