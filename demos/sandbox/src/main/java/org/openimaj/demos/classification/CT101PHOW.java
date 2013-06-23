@@ -70,11 +70,11 @@ public class CT101PHOW {
 		System.out.println("Construct and train classifier");
 		final LiblinearAnnotator<Record<FImage>, String> ann = new LiblinearAnnotator<Record<FImage>, String>(
 				extractor2, Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
-		ann.train(splits.getTestDataset());
+		ann.train(splits.getTrainingDataset());
 
 		System.out.println("Evaluate classifier");
 		final ClassificationEvaluator<CMResult<String>, String, Record<FImage>> eval = new ClassificationEvaluator<CMResult<String>, String, Record<FImage>>(
-				ann, splits.getTrainingDataset(), new CMAnalyser<Record<FImage>, String>(CMAnalyser.Strategy.SINGLE));
+				ann, splits.getTestDataset(), new CMAnalyser<Record<FImage>, String>(CMAnalyser.Strategy.SINGLE));
 		final Map<Record<FImage>, ClassificationResult<String>> guesses = eval.evaluate();
 		final CMResult<String> result = eval.analyse(guesses);
 
