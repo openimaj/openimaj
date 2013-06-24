@@ -17,11 +17,14 @@ public class SpectralFlux extends JAudioFeatureExtractor
 	/** The mag spec processor */
 	private final MagnitudeSpectrum magSpec = null;
 
-	/** The last spectrum */
+	/** The last n spectral flux values */
 	private final Stack<double[]> lastSpec = new Stack<double[]>();
 
+	/** The number of previous spectral flux to store */
+	private int numberToStore = 2;
+
 	/**
-	 *
+	 *	Default constructor
 	 */
 	public SpectralFlux()
 	{
@@ -40,10 +43,28 @@ public class SpectralFlux extends JAudioFeatureExtractor
 		this.lastSpec.push( ms );
 
 		double[] ms1 = null;
-		if( this.lastSpec.size() == 2 )
+		if( this.lastSpec.size() == this.numberToStore )
 			ms1 = this.lastSpec.pop();
 
 		// If we don't have 2 spectra, we return empty otherwise we return both.
 		return ms1 == null ? new double[0][0] : new double[][] {ms, ms1};
+	}
+
+	/**
+	 * 	Get the number of spectral flux values to store in the feature
+	 *	@return the numberToStore The number to store
+	 */
+	public int getNumberToStore()
+	{
+		return this.numberToStore;
+	}
+
+	/**
+	 * 	Set the number of spectral flux values to store in the feature
+	 *	@param numberToStore The number of values to store
+	 */
+	public void setNumberToStore( final int numberToStore )
+	{
+		this.numberToStore = numberToStore;
 	}
 }

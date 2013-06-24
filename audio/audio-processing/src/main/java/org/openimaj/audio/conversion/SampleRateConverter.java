@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.audio.conversion;
 
@@ -43,23 +43,23 @@ import org.openimaj.math.util.Interpolation;
 /**
  * 	A sample rate conversion audio processing class. There is an enumerator
  * 	within the class that is publically available for determining the
- * 	algorithm for sample rate conversion. This defaults to 
+ * 	algorithm for sample rate conversion. This defaults to
  * 	{@link SampleRateConversionAlgorithm#LINEAR_INTERPOLATION}.
  * 	<p>
  * 	To use the class, instantiate using the default constructor or the
  * 	chainable constructor. Both of these constructors take the algorithm for
  * 	sample rate conversion as well as the output format. The output format
  * 	must have the same number of bits and same number of channels as the
- * 	expected input otherwise the {@link #process(SampleChunk)} method 
+ * 	expected input otherwise the {@link #process(SampleChunk)} method
  * 	will throw {@link IllegalArgumentException}. The input format for the samples
  * 	is expected to be provided as part of the {@link SampleChunk}.
  * 	<p>
  * 	The class itself checks whether the output format and the input format
  * 	are the same (in which case the sample does not need to be resampled).
  * 	That means the algorithm implementation does not need to do this.
- * 
+ *
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
+ *
  *	@created 18 Jun 2012
  */
 public class SampleRateConverter extends AudioProcessor
@@ -67,9 +67,9 @@ public class SampleRateConverter extends AudioProcessor
 	/**
 	 * 	An enumerator of the different sample rate conversion algorithms
 	 * 	available in this sample rate converter.
-	 * 
+	 *
 	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *	
+	 *
 	 *	@created 18 Jun 2012
 	 */
 	public enum SampleRateConversionAlgorithm
@@ -86,23 +86,23 @@ public class SampleRateConverter extends AudioProcessor
             public SampleChunk process( final SampleChunk s, final AudioFormat output)
             {
 				final AudioFormat input = s.getFormat();
-				
+
 				// Check to see if the input and output are the same
 				if( input.getSampleRateKHz() == output.getSampleRateKHz() )
 					return s;
-				
+
 				// Work out the size of the output sample chunk
 				final double scalar = input.getSampleRateKHz() / output.getSampleRateKHz();
 				final SampleBuffer sbin = s.getSampleBuffer();
 				final double size = sbin.size() / scalar;
-				
+
 				if( this.sbout == null || this.sbout.size() != (int)size )
 				{
-					this.sbout = SampleBufferFactory.createSampleBuffer( 
+					this.sbout = SampleBufferFactory.createSampleBuffer(
 						output, (int)size );
 					this.sbout.setFormat( output );
 				}
-				
+
 				// If the input format has a greater sample rate than the
 				// output format - down sampling (scalar > 1)
 				if( scalar > 1 )
@@ -119,39 +119,39 @@ public class SampleRateConverter extends AudioProcessor
 					for( int i = 0; i < this.sbout.size()-1; i++ )
 					{
 						final int inputSampleX = (int)(i * scalar);
-						this.sbout.set( i, Interpolation.lerp( (float)(i*scalar), 
-								inputSampleX, sbin.get(inputSampleX), 
+						this.sbout.set( i, Interpolation.lerp( (float)(i*scalar),
+								inputSampleX, sbin.get(inputSampleX),
 								inputSampleX+1, sbin.get(inputSampleX+1) ) );
 					}
 					this.sbout.set( this.sbout.size()-1, sbin.get(sbin.size()-1) );
 					return this.sbout.getSampleChunk();
 				}
-            }			
+            }
 		};
-		
+
 		protected SampleBuffer sbout = null;
-		
+
 		/**
 		 * 	Process a sample chunk and output a sample chunk in the given
 		 * 	output format.
-		 * 
+		 *
 		 *  @param s The input sample chunk
 		 *  @param output The output format
 		 *  @return A resampled sample chunk.
 		 */
 		public abstract SampleChunk process( SampleChunk s, AudioFormat output );
 	}
-	
-	/** 
-	 * Sample rate conversion defaults to 
+
+	/**
+	 * Sample rate conversion defaults to
 	 * {@link SampleRateConversionAlgorithm#LINEAR_INTERPOLATION}
 	 */
-	private SampleRateConversionAlgorithm sampleConverter = 
+	private SampleRateConversionAlgorithm sampleConverter =
 		SampleRateConversionAlgorithm.LINEAR_INTERPOLATION;
-	
+
 	/** The output format to which sample chunks will be converted */
 	private AudioFormat outputFormat = null;
-	
+
 	/**
 	 * 	Default constructor that takes the input conversion
 	 *  @param converter The converter to use
@@ -164,10 +164,10 @@ public class SampleRateConverter extends AudioProcessor
 		this.outputFormat = outputFormat;
 		this.setFormat( outputFormat );
     }
-	
+
 	/**
 	 * 	Chainable constructor.
-	 * 
+	 *
 	 *  @param as The audio stream to process
 	 *  @param converter The converter to use
 	 *  @param outputFormat The output format to convert to
@@ -180,8 +180,8 @@ public class SampleRateConverter extends AudioProcessor
 		this.outputFormat = outputFormat;
 		this.setFormat( outputFormat );
 	}
-	
-	/** 
+
+	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
@@ -199,10 +199,12 @@ public class SampleRateConverter extends AudioProcessor
 					"output format is not the same as the sample chunk. Use a " +
 					"channel converter first before using the sample-rate " +
 					"converter." );
-		
+
 		if( sample.getFormat().getSampleRateKHz() == this.outputFormat.getSampleRateKHz() )
 			return sample;
-		
-		return this.sampleConverter.process( sample, this.outputFormat );
+
+		final SampleChunk sc = this.sampleConverter.process( sample, this.outputFormat );
+		sc.setStartTimecode( sample.getStartTimecode() );
+		return sc;
 	}
 }

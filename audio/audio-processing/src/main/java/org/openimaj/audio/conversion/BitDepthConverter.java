@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.audio.conversion;
 
@@ -45,25 +45,25 @@ import org.openimaj.audio.samples.SampleBufferFactory;
  * 	the {@link BitDepthConversionAlgorithm} enum, a public inner class
  * 	within this class. The class supports chainable and direct processing,
  * 	like all audio processors should.
- * 	<p>	
+ * 	<p>
  * 	To use the class on an audio stream, use something like the following:
  * 	<p>
  * 	<code><pre>
  * 		BitDepthConverter bdc = new BitDepthConverter(
- * 			audioStream, 
+ * 			audioStream,
  * 			BitDepthConversionAlgorithm.NEAREST,
  * 			new AudioFormat( 8, 44.1, 1 ) );
  * 	</pre></code>
- * 	<p> 
+ * 	<p>
  * 	The constructors take an output format which must match the audio format
  * 	of the incoming stream in all respects other than the bit-depth. If the
- * 	input and output formats differ, an {@link IllegalArgumentException} will	
- * 	be thrown. If the input and output formats are identical in every respect, 
+ * 	input and output formats differ, an {@link IllegalArgumentException} will
+ * 	be thrown. If the input and output formats are identical in every respect,
  * 	the processor does nothing.
  * 	<p>
- * 	For the NEAREST algorithm, the conversion of the bit-depth is 
+ * 	For the NEAREST algorithm, the conversion of the bit-depth is
  * 	mainly provided through the {@link SampleBuffer} class.
- * 
+ *
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 18 Jun 2012
  */
@@ -72,7 +72,7 @@ public class BitDepthConverter extends AudioProcessor
 	/**
 	 * 	An enumerator of the different bit-depth conversion algorithms
 	 * 	available.
-	 * 
+	 *
 	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *	@created 18 Jun 2012
 	 */
@@ -88,39 +88,39 @@ public class BitDepthConverter extends AudioProcessor
             public SampleChunk process( final SampleChunk s, final AudioFormat output )
             {
 				final SampleBuffer sbin = s.getSampleBuffer();
-				final SampleBuffer sbout = SampleBufferFactory.createSampleBuffer( 
+				final SampleBuffer sbout = SampleBufferFactory.createSampleBuffer(
 						output, sbin.size() );
 				sbout.setFormat( output );
-				
+
 				// The sample buffer will do the conversion
 				for( int i = 0; i < sbin.size(); i++ )
 					sbout.set( i, sbin.get(i) );
-				
+
 				return sbout.getSampleChunk();
-            }			
+            }
 		};
-		
+
 		/**
 		 * 	Process a sample chunk and output a sample chunk in the given
 		 * 	output format.
-		 * 
+		 *
 		 *  @param s The input sample chunk
 		 *  @param output The output format
 		 *  @return A resampled sample chunk.
 		 */
 		public abstract SampleChunk process( SampleChunk s, AudioFormat output );
 	}
-	
-	/** 
-	 * Bit depth conversion defaults to 
+
+	/**
+	 * Bit depth conversion defaults to
 	 * {@link BitDepthConversionAlgorithm#NEAREST}
 	 */
-	private BitDepthConversionAlgorithm bitDepthConverter = 
+	private BitDepthConversionAlgorithm bitDepthConverter =
 		BitDepthConversionAlgorithm.NEAREST;
-	
+
 	/** The output format to which sample chunks will be converted */
 	private AudioFormat outputFormat = null;
-	
+
 	/**
 	 * 	Default constructor that takes the input conversion
 	 *  @param converter The converter to use
@@ -133,10 +133,10 @@ public class BitDepthConverter extends AudioProcessor
 		this.outputFormat = outputFormat;
 		this.setFormat( outputFormat );
     }
-	
+
 	/**
 	 * 	Chainable constructor.
-	 * 
+	 *
 	 *  @param as The audio stream to process
 	 *  @param converter The converter to use
 	 *  @param outputFormat The output format to convert to
@@ -149,8 +149,8 @@ public class BitDepthConverter extends AudioProcessor
 		this.outputFormat = outputFormat;
 		this.setFormat( outputFormat );
 	}
-	
-	/** 
+
+	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
@@ -168,10 +168,12 @@ public class BitDepthConverter extends AudioProcessor
 					"output format is not the same as the sample chunk. Use a " +
 					"channel converter first before using the bit-depth " +
 					"converter." );
-		
+
 		if( sample.getFormat().getNBits() == this.outputFormat.getNBits() )
 			return sample;
-		
-		return this.bitDepthConverter.process( sample, this.outputFormat );
+
+		final SampleChunk sc = this.bitDepthConverter.process( sample, this.outputFormat );
+		sc.setStartTimecode( sample.getStartTimecode() );
+		return sc;
 	}
 }
