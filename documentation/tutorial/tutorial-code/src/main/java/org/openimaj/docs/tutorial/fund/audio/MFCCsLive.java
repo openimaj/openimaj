@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.openimaj.docs.tutorial.audio;
+package org.openimaj.docs.tutorial.fund.audio;
 
 import java.net.MalformedURLException;
 
@@ -28,8 +28,7 @@ public class MFCCsLive
 	 */
 	public static void main( final String[] args ) throws MalformedURLException
 	{
-		// Open a URL to the sine wave sweep. If you have downloaded
-		// this file you should use a new File(<filename>) here.
+		// Open a sound grabber from your microphone
 		final JavaSoundAudioGrabber jsag = new JavaSoundAudioGrabber(
 				new AudioFormat( 16, 44.1, 1 ) );
 		new Thread( jsag ).start();

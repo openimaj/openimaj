@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.openimaj.docs.tutorial.audio;
+package org.openimaj.docs.tutorial.fund.audio;
 
 import java.net.MalformedURLException;
 import java.net.URL;
