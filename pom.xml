@@ -484,6 +484,10 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 			<id>openimaj-maven</id>
 			<url>http://maven.openimaj.org/</url>
 		</repository>
+		<repository>
+			<id>openimaj-snapshots-maven</id>
+			<url>http://snapshots.openimaj.org/</url>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
