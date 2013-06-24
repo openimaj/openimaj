@@ -129,7 +129,8 @@ public class ScanRasteriser {
 			Arrays.sort(scans, 0, nScans);
 
 			for (int i = 0; i < nScans; i += 2) {
-				listener.process((int) scans[i], (int) scans[i + 1], y);
+				if (i + 1 < nScans)
+					listener.process(Math.round(scans[i]), Math.round(scans[i + 1]), y);
 			}
 		}
 	}
