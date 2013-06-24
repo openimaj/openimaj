@@ -45,7 +45,7 @@
 	</programlisting>
 
 	<para>
-	You should see that when you speak into the computer, the MFCCs show a noticable change
+	You should see that when you speak into the computer, the MFCCs show a noticeable change
 	compared to the sine wave sweep.
 	</para>
 	
@@ -62,5 +62,16 @@
 				scale="100" align="center" contentwidth="7cm"/>
 	  </imageobject>
 	</mediaobject>
+
+	<sect1 id="audio-features-exercises">
+    	<title>Exercises</title>
+    	<sect2 id="exercise-1-spectral-flux">
+      		<title>Exercise 1: Spectral Flux</title>
+      		<para>
+      		Update the program to use the SpectralFlux feature.
+      		What do you think this feature is showing?
+      		</para>
+    	</sect2>
+    </sect1>
 	
 </chapter>
