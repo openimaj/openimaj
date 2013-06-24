@@ -27,7 +27,8 @@ public class OpinionDiversityAxisVisExample
 	public static void main( final String[] args ) throws FileSystemException
 	{
 		// Use some images from a directory on the disk
-		final VFSGroupDataset<MBFImage> i = new VFSGroupDataset<MBFImage>( "/data/faces/lfw", ImageUtilities.MBFIMAGE_READER );
+		final VFSGroupDataset<MBFImage> i = new VFSGroupDataset<MBFImage>(
+				"/data/faces/lfw", ImageUtilities.MBFIMAGE_READER );
 
 		// Set up the diversity axis to plot thumbnail images.
 		final ImageThumbnailPlotter itp = new ImageThumbnailPlotter();
