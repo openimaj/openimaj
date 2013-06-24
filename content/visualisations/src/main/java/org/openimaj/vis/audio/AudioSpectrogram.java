@@ -73,7 +73,7 @@ public class AudioSpectrogram extends Visualisation<float[]>
 		 *
 		 * @param as The spectragram that completed.
 		 */
-		public void spectragramComplete( AudioSpectrogram as );
+		public void spectrogramComplete( AudioSpectrogram as );
 	}
 
 	/** */
@@ -192,7 +192,7 @@ public class AudioSpectrogram extends Visualisation<float[]>
 
 				// So, fire the complete listener.
 				for( final SpectrogramCompleteListener l : AudioSpectrogram.this.listeners )
-					l.spectragramComplete( AudioSpectrogram.this );
+					l.spectrogramComplete( AudioSpectrogram.this );
 			}
 		} ).start();
 	}
