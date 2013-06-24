@@ -3,6 +3,7 @@
  */
 package org.openimaj.audio.features;
 
+import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.audio.samples.SampleBuffer;
@@ -27,6 +28,22 @@ public abstract class JAudioFeatureExtractor extends AudioProcessor
 
 	/** The feature that was last calculated */
 	private double[][] lastCalculatedFeature;
+
+	/**
+	 * 	Default constructor for ad-hoc processing.
+	 */
+	public JAudioFeatureExtractor()
+	{
+	}
+
+	/**
+	 * 	Chainable constructor
+	 *	@param as The audio stream to chain to.
+	 */
+	public JAudioFeatureExtractor( final AudioStream as )
+	{
+		super( as );
+	}
 
 	/**
 	 * 	Process the given sample buffer.
