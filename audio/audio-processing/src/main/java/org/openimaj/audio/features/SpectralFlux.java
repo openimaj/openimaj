@@ -5,6 +5,8 @@ package org.openimaj.audio.features;
 
 import java.util.Stack;
 
+import org.openimaj.audio.AudioStream;
+
 /**
  *	Wrapper around the jAudio implementation of Spectral flux.
  *
@@ -15,7 +17,7 @@ import java.util.Stack;
 public class SpectralFlux extends JAudioFeatureExtractor
 {
 	/** The mag spec processor */
-	private final MagnitudeSpectrum magSpec = null;
+	private MagnitudeSpectrum magSpec = null;
 
 	/** The last n spectral flux values */
 	private final Stack<double[]> lastSpec = new Stack<double[]>();
@@ -29,6 +31,18 @@ public class SpectralFlux extends JAudioFeatureExtractor
 	public SpectralFlux()
 	{
 		this.featureExtractor = new jAudioFeatureExtractor.AudioFeatures.SpectralFlux();
+		this.magSpec = new MagnitudeSpectrum();
+	}
+
+	/**
+	 * 	Constructor that's chainable.
+	 *	@param as The stream to chain to
+	 */
+	public SpectralFlux( final AudioStream as )
+	{
+		super( as );
+		this.featureExtractor = new jAudioFeatureExtractor.AudioFeatures.SpectralFlux();
+		this.magSpec = new MagnitudeSpectrum();
 	}
 
 	/**
@@ -40,14 +54,17 @@ public class SpectralFlux extends JAudioFeatureExtractor
 	{
 		// Calculate the mag spec for this sample array
 		final double[] ms = this.magSpec.process( samples, sampleRate );
-		this.lastSpec.push( ms );
 
 		double[] ms1 = null;
 		if( this.lastSpec.size() == this.numberToStore )
 			ms1 = this.lastSpec.pop();
+		this.lastSpec.push( ms );
+
+//		System.out.println( Arrays.toString(ms) );
+//		System.out.println( Arrays.toString(ms1) );
 
 		// If we don't have 2 spectra, we return empty otherwise we return both.
-		return ms1 == null ? new double[0][0] : new double[][] {ms, ms1};
+		return ms1 == null ? new double[][] {{0},{0}} : new double[][] {ms, ms1};
 	}
 
 	/**
