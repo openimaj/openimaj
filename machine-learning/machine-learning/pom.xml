@@ -109,7 +109,7 @@
 			<plugin>
 				<groupId>uk.ac.soton.ecs.jsh2</groupId>
 				<artifactId>jtemp-maven-plugin</artifactId>
-				<version>1.1</version>
+				<version>1.2</version>
 				<executions>
 					<execution>
 						<goals>
