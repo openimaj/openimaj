@@ -63,7 +63,7 @@ public class App {
 
 		for (final URL u : imageURLs) {
 			model.estimateModel(ImageUtilities.readMBF(u));
-			histograms.add(model.histogram);
+			histograms.add(model.histogram.clone());
 		}
 
 		for (int i = 0; i < histograms.size(); i++) {

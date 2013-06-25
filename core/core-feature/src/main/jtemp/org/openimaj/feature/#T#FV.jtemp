@@ -179,10 +179,13 @@ public class #T#FV extends ArrayFeatureVector<#t#[]> implements Concatenatable<#
 
 	@Override
 	public #T#FV clone() {
-		#T#FV model = new #T#FV();
-		model.values = values.clone();
-
-		return model;
+	    try {
+    		#T#FV model = (#T#FV) super.clone();
+    		model.values = values.clone();
+    		return model;
+		}catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
 	}
 
 	@Override

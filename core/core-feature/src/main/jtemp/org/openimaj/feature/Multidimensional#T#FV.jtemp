@@ -184,10 +184,8 @@ public class Multidimensional#T#FV extends #T#FV implements Serializable, Clonea
 	
 	@Override
 	public Multidimensional#T#FV clone() {
-		Multidimensional#T#FV model = new Multidimensional#T#FV();
+		Multidimensional#T#FV model = (Multidimensional#T#FV) super.clone();
 		model.nbins = nbins.clone();
-		model.values = values.clone();
-
 		return model;
 	}
 

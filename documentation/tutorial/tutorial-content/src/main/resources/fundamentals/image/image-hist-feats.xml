@@ -55,8 +55,11 @@ model.estimateModel( image );
 MultidimensionalHistogram histogram = model.histogram;</programlisting>
   <para>
     You can print out the histogram to see what sort of numbers you get
-    for different images. Let’s load in 3 images then generate and store
-    the histograms for them:
+    for different images. Note that the you can re-use the <code>HistogramModel</code> by applying it 
+		to different images. If you do reuse the <code>HistogramModel</code> the 
+		<code>model.histogram</code> will be the same object, so you'll need to <code>clone()</code> 
+		it if you need to keep hold of its values for multiple images. Let’s load in 3 
+		images then generate and store the histograms for them:
   </para>
   <programlisting>URL[] imageURLs = new URL[] {
    new URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg&quot; ),
@@ -69,7 +72,7 @@ HistogramModel model = new HistogramModel(4, 4, 4);
 
 for( URL u : imageURLs ) {
     model.estimateModel(ImageUtilities.readMBF(u));
-    histograms.add( model.histogram );
+    histograms.add( model.histogram.clone() );
 }</programlisting>
 
 <para role="centered">
