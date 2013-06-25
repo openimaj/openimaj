@@ -119,7 +119,7 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 
 	@Override
 	public FloatFV getFeatureVector() {
-		final FloatFV fv = new FloatFV(ArrayUtils.doubleToFloat(localFeature.getFeatureVector().asDoubleFV().values));
+		final FloatFV fv = new FloatFV(ArrayUtils.convertToFloat(localFeature.getFeatureVector().asDoubleFV().values));
 
 		if (normaliser != null)
 			normaliser.normalise(fv);

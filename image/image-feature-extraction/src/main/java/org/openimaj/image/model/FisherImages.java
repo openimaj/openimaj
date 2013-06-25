@@ -57,9 +57,8 @@ import org.openimaj.util.pair.IndependentPair;
 import Jama.Matrix;
 
 /**
- * Implementation of Fisher Images (aka "FisherFaces").
- * PCA is used to avoid the singular within-class scatter
- * matrix.
+ * Implementation of Fisher Images (aka "FisherFaces"). PCA is used to avoid the
+ * singular within-class scatter matrix.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -76,17 +75,16 @@ import Jama.Matrix;
 		publisher = "IEEE Computer Society",
 		volume = "19",
 		customData = {
-			"issn", "0162-8828",
-			"numpages", "10",
-			"doi", "10.1109/34.598228",
-			"acmid", "261512",
-			"address", "Washington, DC, USA",
-			"keywords", "Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
-		}
-	)
-public class FisherImages implements BatchTrainer<IndependentPair<?, FImage>>, 
-FeatureExtractor<DoubleFV, FImage>, 
-ReadWriteableBinary 
+				"issn", "0162-8828",
+				"numpages", "10",
+				"doi", "10.1109/34.598228",
+				"acmid", "261512",
+				"address", "Washington, DC, USA",
+				"keywords", "Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
+		})
+public class FisherImages implements BatchTrainer<IndependentPair<?, FImage>>,
+		FeatureExtractor<DoubleFV, FImage>,
+		ReadWriteableBinary
 {
 	private int numComponents;
 	private int width;
@@ -96,7 +94,9 @@ ReadWriteableBinary
 
 	/**
 	 * Construct with the given number of components.
-	 * @param numComponents the number of components
+	 * 
+	 * @param numComponents
+	 *            the number of components
 	 */
 	public FisherImages(int numComponents) {
 		this.numComponents = numComponents;
@@ -123,80 +123,86 @@ ReadWriteableBinary
 
 	/**
 	 * Train on a map of data.
-	 * @param data the data
+	 * 
+	 * @param data
+	 *            the data
 	 */
 	public void train(Map<?, ? extends List<FImage>> data) {
-		List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?,FImage>>();
-		
-		for (Entry<?, ? extends List<FImage>> e : data.entrySet()) {
-			for (FImage i : e.getValue()) {
+		final List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?, FImage>>();
+
+		for (final Entry<?, ? extends List<FImage>> e : data.entrySet()) {
+			for (final FImage i : e.getValue()) {
 				list.add(IndependentPair.pair(e.getKey(), i));
 			}
 		}
-		
+
 		train(list);
 	}
-	
+
 	/**
 	 * Train on a grouped dataset.
-	 * @param <KEY> The group type 
-	 * @param data the data
+	 * 
+	 * @param <KEY>
+	 *            The group type
+	 * @param data
+	 *            the data
 	 */
 	public <KEY> void train(GroupedDataset<KEY, ? extends ListDataset<FImage>, FImage> data) {
-		List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?,FImage>>();
-		
-		for (KEY e : data.getGroups()) {
-			for (FImage i : data.getInstances(e)) {
+		final List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?, FImage>>();
+
+		for (final KEY e : data.getGroups()) {
+			for (final FImage i : data.getInstances(e)) {
 				list.add(IndependentPair.pair(e, i));
 			}
 		}
-		
+
 		train(list);
 	}
-	
+
 	@Override
 	public void train(List<? extends IndependentPair<?, FImage>> data) {
 		width = data.get(0).secondObject().width;
 		height = data.get(0).secondObject().height;
-		
-		Map<Object, List<double[]>> mapData = new HashMap<Object, List<double[]>>();
-		List<double[]> listData = new ArrayList<double[]>();
-		for (IndependentPair<?, FImage> item : data) {
-			List<double[]> fvs = mapData.get(item.firstObject());
-			if (fvs == null) mapData.put(item.firstObject(), fvs = new ArrayList<double[]>());
 
-			double[] fv = FImage2DoubleFV.INSTANCE.extractFeature(item.getSecondObject()).values;
+		final Map<Object, List<double[]>> mapData = new HashMap<Object, List<double[]>>();
+		final List<double[]> listData = new ArrayList<double[]>();
+		for (final IndependentPair<?, FImage> item : data) {
+			List<double[]> fvs = mapData.get(item.firstObject());
+			if (fvs == null)
+				mapData.put(item.firstObject(), fvs = new ArrayList<double[]>());
+
+			final double[] fv = FImage2DoubleFV.INSTANCE.extractFeature(item.getSecondObject()).values;
 			fvs.add(fv);
 			listData.add(fv);
 		}
 
-		PrincipalComponentAnalysis pca = new ThinSvdPrincipalComponentAnalysis(numComponents);
+		final PrincipalComponentAnalysis pca = new ThinSvdPrincipalComponentAnalysis(numComponents);
 		pca.learnBasis(listData);
 
-		List<double[][]> ldaData = new ArrayList<double[][]>(mapData.size());
-		for (Entry<?, List<double[]>> e : mapData.entrySet()) {
-			List<double[]> vecs = e.getValue();
-			double[][] classData = new double[vecs.size()][];
+		final List<double[][]> ldaData = new ArrayList<double[][]>(mapData.size());
+		for (final Entry<?, List<double[]>> e : mapData.entrySet()) {
+			final List<double[]> vecs = e.getValue();
+			final double[][] classData = new double[vecs.size()][];
 
-			for (int i=0; i<classData.length; i++) {
+			for (int i = 0; i < classData.length; i++) {
 				classData[i] = pca.project(vecs.get(i));
 			}
 
 			ldaData.add(classData);
 		}
 
-		LinearDiscriminantAnalysis lda = new LinearDiscriminantAnalysis(numComponents);
+		final LinearDiscriminantAnalysis lda = new LinearDiscriminantAnalysis(numComponents);
 		lda.learnBasis(ldaData);
 
 		basis = pca.getBasis().times(lda.getBasis());
 		mean = pca.getMean();
 	}
 
-	private double[] project(double [] vector) {
-		Matrix vec = new Matrix(1, vector.length);
+	private double[] project(double[] vector) {
+		final Matrix vec = new Matrix(1, vector.length);
 		final double[][] vecarr = vec.getArray();
 
-		for (int i=0; i<vector.length; i++)
+		for (int i = 0; i < vector.length; i++)
 			vecarr[0][i] = vector[i] - mean[i];
 
 		return vec.times(basis).getColumnPackedCopy();
@@ -206,32 +212,34 @@ ReadWriteableBinary
 	public DoubleFV extractFeature(FImage object) {
 		return new DoubleFV(project(FImage2DoubleFV.INSTANCE.extractFeature(object).values));
 	}
-	
+
 	/**
-	 * Get a specific basis vector as
-	 * a double array. The returned array contains a
-	 * copy of the data.
+	 * Get a specific basis vector as a double array. The returned array
+	 * contains a copy of the data.
 	 * 
-	 * @param index the index of the vector
+	 * @param index
+	 *            the index of the vector
 	 * 
 	 * @return the eigenvector
 	 */
 	public double[] getBasisVector(int index) {
-		double[] pc = new double[basis.getRowDimension()];
-		double[][] data = basis.getArray();
-		
-		for (int r=0; r<pc.length; r++)
+		final double[] pc = new double[basis.getRowDimension()];
+		final double[][] data = basis.getArray();
+
+		for (int r = 0; r < pc.length; r++)
 			pc[r] = data[r][index];
-		
+
 		return pc;
 	}
-	
+
 	/**
 	 * Draw an eigenvector as an image
-	 * @param num the index of the eigenvector to draw.
+	 * 
+	 * @param num
+	 *            the index of the eigenvector to draw.
 	 * @return an image showing the eigenvector.
 	 */
 	public FImage visualise(int num) {
-		return new FImage(ArrayUtils.reshape(getBasisVector(num), width, height));
+		return new FImage(ArrayUtils.reshapeFloat(getBasisVector(num), width, height));
 	}
 }

@@ -72,7 +72,7 @@ public class VLADIndexer {
 			return null;
 
 		final DoubleFV subspaceVector = pca.project(keys).normaliseFV(2);
-		return ArrayUtils.doubleToFloat(subspaceVector.values);
+		return ArrayUtils.convertToFloat(subspaceVector.values);
 	}
 
 	public List<IntObjectPair<float[]>> index(List<FloatKeypoint> normalisedKeypoints, int id,

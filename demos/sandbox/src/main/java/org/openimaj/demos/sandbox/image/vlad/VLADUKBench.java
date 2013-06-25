@@ -81,7 +81,7 @@ public class VLADUKBench {
 					// : mfv.normaliseFV(2);
 
 					final DoubleFV fv = indexer.pca.project(mfv).normaliseFV(2);
-					vlads[i] = ArrayUtils.doubleToFloat(fv.values);
+					vlads[i] = ArrayUtils.convertToFloat(fv.values);
 				} catch (final Exception e) {
 					e.printStackTrace();
 				}

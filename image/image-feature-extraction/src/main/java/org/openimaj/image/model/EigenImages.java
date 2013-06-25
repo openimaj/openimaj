@@ -135,7 +135,7 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 	 * @return the reconstructed image
 	 */
 	public FImage reconstruct(double[] weights) {
-		return new FImage(ArrayUtils.reshape(pca.generate(weights), width, height));
+		return new FImage(ArrayUtils.reshapeFloat(pca.generate(weights), width, height));
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 	 * @return an image showing the PC.
 	 */
 	public FImage visualisePC(int pc) {
-		return new FImage(ArrayUtils.reshape(pca.getPrincipalComponent(pc), width, height));
+		return new FImage(ArrayUtils.reshapeFloat(pca.getPrincipalComponent(pc), width, height));
 	}
 
 	@Override

@@ -43,10 +43,10 @@ import org.openimaj.audio.timecode.AudioTimecode;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
- * 	An implementation of a sample buffer that maintains the floating point
- * 	precision values.  Note that this buffer has no timecode associated with it
- * 	and that {@link SampleChunk}s cannot be retrieved from it.
- *
+ * An implementation of a sample buffer that maintains the floating point
+ * precision values. Note that this buffer has no timecode associated with it
+ * and that {@link SampleChunk}s cannot be retrieved from it.
+ * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 27 Jul 2012
  * @version $Author$, $Revision$, $Date$
@@ -75,19 +75,19 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 	}
 
 	/**
-	 *
+	 * 
 	 * @param samples
 	 *            The samples to use
 	 * @param af
 	 *            The audio format
 	 */
 	public FloatSampleBuffer(final double[] samples, final AudioFormat af) {
-		this(ArrayUtils.doubleToFloat(samples), af);
+		this(ArrayUtils.convertToFloat(samples), af);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#get(int)
 	 */
 	@Override
@@ -97,7 +97,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#set(int, float)
 	 */
 	@Override
@@ -107,7 +107,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#size()
 	 */
 	@Override
@@ -117,7 +117,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#getFormat()
 	 */
 	@Override
@@ -127,7 +127,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#setFormat(org.openimaj.audio.AudioFormat)
 	 */
 	@Override
@@ -141,9 +141,9 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 	 * you must instantiate the appropriate sample chunk first and fill it. It
 	 * cannot be done from this class because this class no longer knows how
 	 * many bits you would like the sample chunk to be created as.
-	 *
+	 * 
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#getSampleChunk()
 	 */
 	@Override
@@ -156,9 +156,9 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 	 * you must instantiate the appropriate sample chunk first and fill it. It
 	 * cannot be done from this class because this class no longer knows how
 	 * many bits you would like the sample chunk to be created as.
-	 *
+	 * 
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#getSampleChunk(int)
 	 */
 	@Override
@@ -168,32 +168,33 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#asDoubleArray()
 	 */
 	@Override
 	public double[] asDoubleArray() {
-		return ArrayUtils.floatToDouble(this.samples);
+		return ArrayUtils.convertToDouble(this.samples);
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.audio.samples.SampleBuffer#asDoubleChannelArray()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.audio.samples.SampleBuffer#asDoubleChannelArray()
 	 */
 	@Override
 	public double[][] asDoubleChannelArray()
 	{
 		final int nc = this.format.getNumChannels();
-		final double[][] s = new double[nc][this.samples.length/nc];
-		for( int c = 0; c < nc; c++ )
-			for( int sa = 0; sa < this.samples.length/nc; sa++ )
-				s[c][sa] = this.samples[sa*nc+c];
+		final double[][] s = new double[nc][this.samples.length / nc];
+		for (int c = 0; c < nc; c++)
+			for (int sa = 0; sa < this.samples.length / nc; sa++)
+				s[c][sa] = this.samples[sa * nc + c];
 		return s;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.audio.samples.SampleBuffer#getUnscaled(int)
 	 */
 	@Override
@@ -203,7 +204,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * Multipy the samples by the given scalar
-	 *
+	 * 
 	 * @param scalar
 	 *            The scalar
 	 * @return this object
@@ -216,7 +217,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * Add the scalar to all the samples
-	 *
+	 * 
 	 * @param scalar
 	 *            The scalar
 	 * @return this object
@@ -229,7 +230,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see java.lang.Iterable#iterator()
 	 */
 	@Override
@@ -241,7 +242,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * Returns a trove float iterator
-	 *
+	 * 
 	 * @return a trove float iterator
 	 */
 	public TFloatIterator tf_iterator()
@@ -254,7 +255,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see java.util.Iterator#hasNext()
 	 */
 	@Override
@@ -265,7 +266,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see java.util.Iterator#next()
 	 */
 	@Override
@@ -276,7 +277,7 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see java.util.Iterator#remove()
 	 */
 	@Override
@@ -286,8 +287,9 @@ public class FloatSampleBuffer implements SampleBuffer, Iterator<Float>
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.audio.samples.SampleBuffer#getStartTimecode()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.audio.samples.SampleBuffer#getStartTimecode()
 	 */
 	@Override
 	public AudioTimecode getStartTimecode()

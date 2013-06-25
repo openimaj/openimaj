@@ -162,7 +162,7 @@ public class VLADPrep {
 			@Override
 			public void perform(MultidimensionalFloatFV vector) {
 				final DoubleFV result = pca.project(vector).normaliseFV(2);
-				final float[] fresult = ArrayUtils.doubleToFloat(result.values);
+				final float[] fresult = ArrayUtils.convertToFloat(result.values);
 
 				synchronized (pcaVlads) {
 					pcaVlads.add(fresult);

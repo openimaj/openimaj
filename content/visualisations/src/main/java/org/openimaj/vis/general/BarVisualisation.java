@@ -45,7 +45,7 @@ import org.openimaj.vis.Visualisation;
 /**
  * The {@link BarVisualisation} can be used to draw to an image a bar graph of
  * any data set to an RGBA MBFImage.
- *
+ * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 26 Jul 2012
  * @version $Author$, $Revision$, $Date$
@@ -140,83 +140,95 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Create a bar visualisation of the given size
-	 *
-	 * @param width The width of the image
-	 * @param height The height of the image
+	 * 
+	 * @param width
+	 *            The width of the image
+	 * @param height
+	 *            The height of the image
 	 */
-	public BarVisualisation( final int width, final int height )
+	public BarVisualisation(final int width, final int height)
 	{
-		super( width, height );
+		super(width, height);
 	}
 
 	/**
 	 * Create a bar visualisation that will draw to the given image.
-	 *
-	 * @param imageToDrawTo The image to draw to.
+	 * 
+	 * @param imageToDrawTo
+	 *            The image to draw to.
 	 */
-	public BarVisualisation( final MBFImage imageToDrawTo )
+	public BarVisualisation(final MBFImage imageToDrawTo)
 	{
 		this.visImage = imageToDrawTo;
 	}
 
 	/**
 	 * Overlay a bar visualisation on the given vis
-	 *
-	 * @param v The visualisation to overlay
+	 * 
+	 * @param v
+	 *            The visualisation to overlay
 	 */
-	public BarVisualisation( final Visualisation<?> v )
+	public BarVisualisation(final Visualisation<?> v)
 	{
-		super( v );
+		super(v);
 	}
 
 	/**
 	 * Creates the given visualisation with the given data
-	 *
-	 * @param width The width of the image
-	 * @param height The height of the image
-	 * @param data The data to visualise
+	 * 
+	 * @param width
+	 *            The width of the image
+	 * @param height
+	 *            The height of the image
+	 * @param data
+	 *            The data to visualise
 	 */
-	public BarVisualisation( final int width, final int height, final double[] data )
+	public BarVisualisation(final int width, final int height, final double[] data)
 	{
-		super( width, height );
-		this.setData( data );
+		super(width, height);
+		this.setData(data);
 	}
 
 	/**
 	 * Plot the given data to the given image.
-	 *
-	 * @param image The image to plot to
-	 * @param data The data to plot
+	 * 
+	 * @param image
+	 *            The image to plot to
+	 * @param data
+	 *            The data to plot
 	 */
-	public static void plotBars( final MBFImage image, final double[] data )
+	public static void plotBars(final MBFImage image, final double[] data)
 	{
-		new BarVisualisation( image ).plotBars( data );
+		new BarVisualisation(image).plotBars(data);
 	}
 
 	/**
 	 * Plot the given data to the bar image.
-	 *
-	 * @param data The data to plot.
+	 * 
+	 * @param data
+	 *            The data to plot.
 	 */
-	public void plotBars( final double[] data )
+	public void plotBars(final double[] data)
 	{
 		// Set the background
-		this.visImage.fill( this.getBackgroundColour() );
+		this.visImage.fill(this.getBackgroundColour());
 
 		final int w = this.visImage.getWidth();
 		final int h = this.visImage.getHeight();
 
-		synchronized( data )
+		synchronized (data)
 		{
 			// Find min and max values from the data
 			double max = this.maxValue;
-			if( this.autoScale ) max = ArrayUtils.maxValue( data );
+			if (this.autoScale)
+				max = ArrayUtils.maxValue(data);
 			double min = this.minValue;
-			if( this.autoScale ) min = ArrayUtils.minValue( data );
+			if (this.autoScale)
+				min = ArrayUtils.minValue(data);
 
 			// Find the maximum value that occurs on one or t'other
 			// side of the main axis
-			final double largestAxisValue = Math.max( Math.abs( max ), Math.abs( min ) );
+			final double largestAxisValue = Math.max(Math.abs(max), Math.abs(min));
 
 			// The range displayed on the axis.
 			this.dataRange = max - min;
@@ -224,10 +236,10 @@ public class BarVisualisation extends Visualisation<double[]>
 			// Work out the scalars for the values to fit within the window - in
 			// pixels per unit
 			this.yscale = h / this.dataRange;
-			if( this.fixAxis )
+			if (this.fixAxis)
 			{
 				// Recalculate the yscale to fit the fixed axis
-				this.yscale = Math.min( (h - this.axisLocation) / Math.abs( min ), this.axisLocation / Math.abs( max ) );
+				this.yscale = Math.min((h - this.axisLocation) / Math.abs(min), this.axisLocation / Math.abs(max));
 			}
 			// Position of the axis - if it's fixed we need to alter
 			// the yscale or we calculate where it fits.
@@ -235,12 +247,12 @@ public class BarVisualisation extends Visualisation<double[]>
 			{
 				this.axisLocation = h + min * this.yscale;
 
-				if( this.axisAlwaysVisible && this.axisLocation < 0 )
+				if (this.axisAlwaysVisible && this.axisLocation < 0)
 				{
 					this.axisLocation = 0;
-					this.yscale = h / Math.abs( min );
+					this.yscale = h / Math.abs(min);
 				}
-				else if( this.axisAlwaysVisible && this.axisLocation > h )
+				else if (this.axisAlwaysVisible && this.axisLocation > h)
 				{
 					this.axisLocation = h;
 					this.yscale = h / max;
@@ -248,15 +260,15 @@ public class BarVisualisation extends Visualisation<double[]>
 			}
 
 			// Calculate the visible axis range
-			this.axisRangeY = this.getValueAt( 0, 0 ).getY() - this.getValueAt( 0, h ).getY();
+			this.axisRangeY = this.getValueAt(0, 0).getY() - this.getValueAt(0, h).getY();
 
 			// The width of each of the bars
 			final double barWidth = w / (double) data.length;
 
 			// Now draw the bars
-			synchronized( this.visImage )
+			synchronized (this.visImage)
 			{
-				for( int i = 0; i < data.length; i++ )
+				for (int i = 0; i < data.length; i++)
 				{
 					// Position on the x-axis
 					final int x = (int) (i * barWidth);
@@ -269,72 +281,78 @@ public class BarVisualisation extends Visualisation<double[]>
 					// top-left each time.
 					double offset = 0;
 
-					// Get the bar colour. We'll get the colour map colour if we're
+					// Get the bar colour. We'll get the colour map colour if
+					// we're
 					// doing that,
 					// or if we've fixed bar colours use those.
 					Float[] c = this.getBarColour();
-					if( this.useColourMap )
-						c = this.colourMap.apply( (float) (Math.abs( data[i] ) / largestAxisValue) );
-					if( this.useIndividualBarColours )
+					if (this.useColourMap)
+						c = this.colourMap.apply((float) (Math.abs(data[i]) / largestAxisValue));
+					if (this.useIndividualBarColours)
 						c = this.barColours[i % this.barColours.length];
 
-					// If we need to draw the rectangle above the axis (a positive
+					// If we need to draw the rectangle above the axis (a
+					// positive
 					// value
 					// makes barHeight negative), we need to draw from above the
 					// axis,
 					// down to the axis.
-					if( barHeight < 0 ) barHeight = offset = -barHeight;
+					if (barHeight < 0)
+						barHeight = offset = -barHeight;
 
 					// Create the shape for the bar
 					final int rectPosition = (int) (this.axisLocation - offset);
-					final Rectangle barRect = new Rectangle( x, rectPosition, (int) barWidth, (int) barHeight );
+					final Rectangle barRect = new Rectangle(x, rectPosition, (int) barWidth, (int) barHeight);
 
 					// Draw the filled rectangle, and then stroke it.
-					this.visImage.drawShapeFilled( barRect, c );
+					this.visImage.drawShapeFilled(barRect, c);
 
-					if( barWidth > 3 )
-						this.visImage.drawShape( barRect, this.getStrokeColour() );
+					if (barWidth > 3)
+						this.visImage.drawShape(barRect, this.getStrokeColour());
 
 					// If we're to draw the bar's value, do that here.
-					if( this.drawValue )
+					if (this.drawValue)
 					{
 						// We'll draw the bar's value
 						final String text = "" + data[i];
 
 						// Find the width and height of the text to draw
 						final HersheyFont f = HersheyFont.TIMES_BOLD;
-						final Rectangle r = f.createStyle( this.visImage.createRenderer() ).getRenderer(
-								this.visImage.createRenderer() )
-								.getBounds( text, f.createStyle( this.visImage.createRenderer() ) );
+						final Rectangle r = f.createStyle(this.visImage.createRenderer()).getRenderer(
+								this.visImage.createRenderer())
+								.getBounds(text, f.createStyle(this.visImage.createRenderer()));
 
 						// Work out where to put the text
 						int tx = (int) (x + barWidth / 2 - r.width / 2);
 						final int ty = (int) (this.axisLocation - offset) - this.textBasePad;
 
-						// Make sure the text will be drawn within the bounds of the
+						// Make sure the text will be drawn within the bounds of
+						// the
 						// image.
-						if( tx < 0 ) tx = 0;
-						if( tx + r.width > this.getWidth() ) tx = this.getWidth() - (int) r.width;
+						if (tx < 0)
+							tx = 0;
+						if (tx + r.width > this.getWidth())
+							tx = this.getWidth() - (int) r.width;
 
 						// Stroke the text, if necessary
-						if( this.isOutlineText() )
+						if (this.isOutlineText())
 						{
-							this.visImage.drawText( text, tx - 1, ty - 1, f, this.textSize, this.getTextStrokeColour() );
-							this.visImage.drawText( text, tx + 1, ty - 1, f, this.textSize, this.getTextStrokeColour() );
-							this.visImage.drawText( text, tx - 1, ty + 1, f, this.textSize, this.getTextStrokeColour() );
-							this.visImage.drawText( text, tx + 1, ty + 1, f, this.textSize, this.getTextStrokeColour() );
+							this.visImage.drawText(text, tx - 1, ty - 1, f, this.textSize, this.getTextStrokeColour());
+							this.visImage.drawText(text, tx + 1, ty - 1, f, this.textSize, this.getTextStrokeColour());
+							this.visImage.drawText(text, tx - 1, ty + 1, f, this.textSize, this.getTextStrokeColour());
+							this.visImage.drawText(text, tx + 1, ty + 1, f, this.textSize, this.getTextStrokeColour());
 						}
 
 						// Fill the text
-						this.visImage.drawText( text, tx, ty, f, this.textSize, this.getTextColour() );
+						this.visImage.drawText(text, tx, ty, f, this.textSize, this.getTextColour());
 					}
 				}
 
 				// Finally, draw the axis on top of everything.
-				if( this.drawAxis )
+				if (this.drawAxis)
 				{
-					this.visImage.drawLine( 0, (int) (h + this.axisLocation), this.getWidth(),
-							(int) (h + this.axisLocation), this.axisWidth, this.getAxisColour() );
+					this.visImage.drawLine(0, (int) (h + this.axisLocation), this.getWidth(),
+							(int) (h + this.axisLocation), this.axisWidth, this.getAxisColour());
 				}
 			}
 		}
@@ -342,21 +360,23 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.vis.Visualisation#update()
 	 */
 	@Override
 	public void update()
 	{
-		if( this.data != null ) this.plotBars( this.data );
+		if (this.data != null)
+			this.plotBars(this.data);
 	}
 
 	/**
 	 * Set the colours to use for each bar.
-	 *
-	 * @param colours The colours to use.
+	 * 
+	 * @param colours
+	 *            The colours to use.
 	 */
-	public void setInvidiualBarColours( final Float[][] colours )
+	public void setInvidiualBarColours(final Float[][] colours)
 	{
 		this.barColours = colours;
 		this.useIndividualBarColours = true;
@@ -364,41 +384,45 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Sets whether values are drawn to the image.
-	 *
-	 * @param tf TRUE to draw values
+	 * 
+	 * @param tf
+	 *            TRUE to draw values
 	 */
-	public void setDrawValues( final boolean tf )
+	public void setDrawValues(final boolean tf)
 	{
 		this.drawValue = tf;
 	}
 
 	/**
 	 * Set the data from a float array.
-	 *
-	 * @param data The data to set
+	 * 
+	 * @param data
+	 *            The data to set
 	 */
-	public void setData( final float[] data )
+	public void setData(final float[] data)
 	{
-		super.setData( ArrayUtils.floatToDouble( data ) );
+		super.setData(ArrayUtils.convertToDouble(data));
 	}
 
 	/**
 	 * Set the data from a long array.
-	 *
-	 * @param data The data to set
+	 * 
+	 * @param data
+	 *            The data to set
 	 */
-	public void setData( final long[] data )
+	public void setData(final long[] data)
 	{
-		super.setData( ArrayUtils.longToDouble( data ) );
+		super.setData(ArrayUtils.convertToDouble(data));
 	}
 
 	/**
 	 * Fix the x-axis to the given position in pixels. Note that the position is
 	 * given from the bottom of the visualisation window.
-	 *
-	 * @param position The position in pixels
+	 * 
+	 * @param position
+	 *            The position in pixels
 	 */
-	public void fixAxis( final int position )
+	public void fixAxis(final int position)
 	{
 		this.axisLocation = -position;
 		this.fixAxis = true;
@@ -421,9 +445,10 @@ public class BarVisualisation extends Visualisation<double[]>
 	}
 
 	/**
-	 * @param outlineText the outlineText to set
+	 * @param outlineText
+	 *            the outlineText to set
 	 */
-	public void setOutlineText( final boolean outlineText )
+	public void setOutlineText(final boolean outlineText)
 	{
 		this.outlineText = outlineText;
 	}
@@ -437,19 +462,21 @@ public class BarVisualisation extends Visualisation<double[]>
 	}
 
 	/**
-	 * @param textSize the textSize to set
+	 * @param textSize
+	 *            the textSize to set
 	 */
-	public void setTextSize( final int textSize )
+	public void setTextSize(final int textSize)
 	{
 		this.textSize = textSize;
 	}
 
 	/**
 	 * Whether to use a colour map and which one.
-	 *
-	 * @param cp The colour map to use
+	 * 
+	 * @param cp
+	 *            The colour map to use
 	 */
-	public void useColourMap( final ColourMap cp )
+	public void useColourMap(final ColourMap cp)
 	{
 		this.colourMap = cp;
 		this.useColourMap = true;
@@ -504,42 +531,47 @@ public class BarVisualisation extends Visualisation<double[]>
 	}
 
 	/**
-	 * @param backgroundColour the backgroundColour to set
+	 * @param backgroundColour
+	 *            the backgroundColour to set
 	 */
-	public void setBackgroundColour( final Float[] backgroundColour )
+	public void setBackgroundColour(final Float[] backgroundColour)
 	{
 		this.backgroundColour = backgroundColour;
 	}
 
 	/**
-	 * @param barColour the barColour to set
+	 * @param barColour
+	 *            the barColour to set
 	 */
-	public void setBarColour( final Float[] barColour )
+	public void setBarColour(final Float[] barColour)
 	{
 		this.barColour = barColour;
 		this.useColourMap = false;
 	}
 
 	/**
-	 * @param strokeColour the strokeColour to set
+	 * @param strokeColour
+	 *            the strokeColour to set
 	 */
-	public void setStrokeColour( final Float[] strokeColour )
+	public void setStrokeColour(final Float[] strokeColour)
 	{
 		this.strokeColour = strokeColour;
 	}
 
 	/**
-	 * @param textColour the textColour to set
+	 * @param textColour
+	 *            the textColour to set
 	 */
-	public void setTextColour( final Float[] textColour )
+	public void setTextColour(final Float[] textColour)
 	{
 		this.textColour = textColour;
 	}
 
 	/**
-	 * @param textStrokeColour the textStrokeColour to set
+	 * @param textStrokeColour
+	 *            the textStrokeColour to set
 	 */
-	public void setTextStrokeColour( final Float[] textStrokeColour )
+	public void setTextStrokeColour(final Float[] textStrokeColour)
 	{
 		this.textStrokeColour = textStrokeColour;
 	}
@@ -553,16 +585,17 @@ public class BarVisualisation extends Visualisation<double[]>
 	}
 
 	/**
-	 * @param axisColour the axisColour to set
+	 * @param axisColour
+	 *            the axisColour to set
 	 */
-	public void setAxisColour( final Float[] axisColour )
+	public void setAxisColour(final Float[] axisColour)
 	{
 		this.axisColour = axisColour;
 	}
 
 	/**
 	 * Get the width of the axis being drawn
-	 *
+	 * 
 	 * @return The axis width
 	 */
 	public int getAxisWidth()
@@ -572,17 +605,18 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Set the axis width
-	 *
-	 * @param axisWidth The new axis width
+	 * 
+	 * @param axisWidth
+	 *            The new axis width
 	 */
-	public void setAxisWidth( final int axisWidth )
+	public void setAxisWidth(final int axisWidth)
 	{
 		this.axisWidth = axisWidth;
 	}
 
 	/**
 	 * Returns whether the bars are auto scaling
-	 *
+	 * 
 	 * @return TRUE if auto scaling
 	 */
 	public boolean isAutoScale()
@@ -592,17 +626,18 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Set whether the bars should auto scale to fit all values within the vis.
-	 *
-	 * @param autoScale TRUE to auto scale the values
+	 * 
+	 * @param autoScale
+	 *            TRUE to auto scale the values
 	 */
-	public void setAutoScale( final boolean autoScale )
+	public void setAutoScale(final boolean autoScale)
 	{
 		this.autoScale = autoScale;
 	}
 
 	/**
 	 * Get the maximum value for the scaling
-	 *
+	 * 
 	 * @return The maximum value
 	 */
 	public double getMaxValue()
@@ -613,10 +648,11 @@ public class BarVisualisation extends Visualisation<double[]>
 	/**
 	 * Set the maximum value (in units) for the bars. Automatically sets the
 	 * autoScaling to FALSE.
-	 *
-	 * @param maxValue Set the maximum value to use
+	 * 
+	 * @param maxValue
+	 *            Set the maximum value to use
 	 */
-	public void setMaxValue( final double maxValue )
+	public void setMaxValue(final double maxValue)
 	{
 		this.maxValue = maxValue;
 		this.autoScale = false;
@@ -624,7 +660,7 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Get the minimum value in use.
-	 *
+	 * 
 	 * @return The minimum value
 	 */
 	public double getMinValue()
@@ -635,10 +671,11 @@ public class BarVisualisation extends Visualisation<double[]>
 	/**
 	 * Set the minimum value (in units) to use to plot the bars. Automatically
 	 * sets the auto scaling to FALSE.
-	 *
-	 * @param minValue the minimum value
+	 * 
+	 * @param minValue
+	 *            the minimum value
 	 */
-	public void setMinValue( final double minValue )
+	public void setMinValue(final double minValue)
 	{
 		this.minValue = minValue;
 		this.autoScale = false;
@@ -646,7 +683,7 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Whether the axis is always visible
-	 *
+	 * 
 	 * @return TRUE if the axis is always visible
 	 */
 	public boolean isAxisAlwaysVisible()
@@ -659,17 +696,18 @@ public class BarVisualisation extends Visualisation<double[]>
 	 * 0 or maximum value < 0, then the axis will be made visible (either at the
 	 * bottom or the top of the viewport respectively) if this is TRUE. This has
 	 * no effect if the axis is fixed and set to a point outside the viewport.
-	 *
-	 * @param axisAlwaysVisible TRUE to make the axis always visible
+	 * 
+	 * @param axisAlwaysVisible
+	 *            TRUE to make the axis always visible
 	 */
-	public void setAxisAlwaysVisible( final boolean axisAlwaysVisible )
+	public void setAxisAlwaysVisible(final boolean axisAlwaysVisible)
 	{
 		this.axisAlwaysVisible = axisAlwaysVisible;
 	}
 
 	/**
 	 * Returns the last calculated axis location
-	 *
+	 * 
 	 * @return the axisLocation The axis location
 	 */
 	public double getAxisLocation()
@@ -679,10 +717,11 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Set the axis location. Automatically fixes the axis location
-	 *
-	 * @param axisLocation the axisLocation to set
+	 * 
+	 * @param axisLocation
+	 *            the axisLocation to set
 	 */
-	public void setAxisLocation( final double axisLocation )
+	public void setAxisLocation(final double axisLocation)
 	{
 		this.axisLocation = axisLocation;
 		this.fixAxis = true;
@@ -690,7 +729,7 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Returns whether the axis is fixed or not.
-	 *
+	 * 
 	 * @return the fixAxis TRUE if the axis is fixed; FALSE otherwise
 	 */
 	public boolean isFixAxis()
@@ -700,17 +739,18 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Set whether the axis should be fixed.
-	 *
-	 * @param fixAxis TRUE to fix the axis; FALSE to allow it to float
+	 * 
+	 * @param fixAxis
+	 *            TRUE to fix the axis; FALSE to allow it to float
 	 */
-	public void setFixAxis( final boolean fixAxis )
+	public void setFixAxis(final boolean fixAxis)
 	{
 		this.fixAxis = fixAxis;
 	}
 
 	/**
 	 * The y-scale being used to plot the data.
-	 *
+	 * 
 	 * @return the yscale The y-scale
 	 */
 	public double getYscale()
@@ -720,7 +760,7 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * The data range being displayed.
-	 *
+	 * 
 	 * @return the axisRangeY
 	 */
 	public double getAxisRangeY()
@@ -730,13 +770,15 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	/**
 	 * Returns the units value at the given pixel coordinate.
-	 *
-	 * @param x The x pixel coordinate
-	 * @param y The y pixel coordinate
+	 * 
+	 * @param x
+	 *            The x pixel coordinate
+	 * @param y
+	 *            The y pixel coordinate
 	 * @return The cartesian unit coordinate
 	 */
-	public Point2d getValueAt( final int x, final int y )
+	public Point2d getValueAt(final int x, final int y)
 	{
-		return new Point2dImpl( x * this.data.length / this.getWidth(), (float) ((this.axisLocation - y) / this.yscale) );
+		return new Point2dImpl(x * this.data.length / this.getWidth(), (float) ((this.axisLocation - y) / this.yscale));
 	}
 }

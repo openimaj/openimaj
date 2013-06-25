@@ -1,0 +1,1179 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.util.array;
+
+import java.lang.reflect.Array;
+
+/**
+ * Collection of utilities for primitive arrays.
+ * 
+ * @author Jonathan Hare
+ * @author Sina Samangooei
+ * 
+ */
+public class ArrayUtils {
+    private ArrayUtils () {
+        
+    }
+    
+    /*-- maxValue() --*/
+	/**
+	 * Returns the largest value in the array.
+	 * 
+	 * @param arr
+	 *            array of #t#
+	 * @return the value
+	 */
+	public static #t# maxValue(final #t#[] arr) {
+		if (arr.length < 0)
+			return 0;
+
+		#t# max = arr[0];
+		for (int i = 1; i < arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+			}
+		}
+
+		return max;
+	}
+
+    /*-- minValue() --*/
+	/**
+	 * Returns the smallest value in the array.
+	 * 
+	 * @param arr
+	 *            array of #t#
+	 * @return the value
+	 */
+	public static #t# minValue(final #t#[] arr) {
+		if (arr.length < 0)
+			return 0;
+
+		#t# min = arr[0];
+		for (int i = 1; i < arr.length; i++) {
+			if (arr[i] < min) {
+				min = arr[i];
+			}
+		}
+
+		return min;
+	}
+
+    /*-- maxIndex() --*/
+	/**
+	 * Returns the index to the biggest value in the array.
+	 * 
+	 * @param arr
+	 *            array of #t#
+	 * @return the index
+	 */
+	public static int maxIndex(final #t#[] arr) {
+		#t# max = #TT#.MIN_VALUE;
+		int index = 0;
+		for (int i = 0; i < arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+				index = i;
+			}
+		}
+
+		return index;
+	}
+
+    /*-- minIndex() --*/
+	/**
+	 * Returns the index to the smallest value in the array.
+	 * 
+	 * @param arr
+	 *            array of #t#
+	 * @return the index
+	 */
+	public static int minIndex(final #t#[] arr) {
+		#t# min = #TT#.MAX_VALUE;
+		int index = 0;
+		for (int i = 0; i < arr.length; i++) {
+			if (arr[i] < min) {
+				min = arr[i];
+				index = i;
+			}
+		}
+
+		return index;
+	}
+
+    /*-- sum() --*/
+	/**
+	 * Element-wise summation of two arrays, output writes over first array
+	 * 
+	 * @param a1
+	 *            first array
+	 * @param a2
+	 *            second array
+	 * @return the first array
+	 */
+	public static #t#[][] sum(final #t#[][] a1, final #t#[][] a2) {
+		for (int j = 0; j < a1.length; j++) {
+			sum(a1[j], a2[j]);
+		}
+		return a1;
+	}
+
+	/**
+	 * Element-wise summation of two arrays, output writes over first array
+	 * 
+	 * @param a1
+	 *            first array
+	 * @param a2
+	 *            second array
+	 * @return the first array
+	 */
+	public static #t#[] sum(final #t#[] a1, final #t#[] a2) {
+		for (int j = 0; j < a1.length; j++) {
+			a1[j] += a2[j];
+		}
+		return a1;
+	}
+
+    /*-- subtract() --*/
+	/**
+	 * Element-wise subtraction of two arrays. Second array is subtracted from
+	 * first, overwriting the first array
+	 * 
+	 * @param a1
+	 *            first array
+	 * @param a2
+	 *            second array
+	 * @return the first array
+	 */
+	public static #t#[][] subtract(final #t#[][] a1, final #t#[][] a2) {
+		for (int j = 0; j < a1.length; j++) {
+			subtract(a1[j], a2[j]);
+		}
+		return a1;
+	}
+
+	/**
+	 * Element-wise subtraction of two arrays. Second array is subtracted from
+	 * first, overwriting the first array
+	 * 
+	 * @param a1
+	 *            first array
+	 * @param a2
+	 *            second array
+	 * @return the first array
+	 */
+	public static #t#[] subtract(final #t#[] a1, final #t#[] a2) {
+		for (int j = 0; j < a1.length; j++) {
+			a1[j] -= a2[j];
+		}
+		return a1;
+	}
+
+	/*-- subtract() (scalar) --*/
+	/**
+	 * Subtracts <code>s</code> from all elements in <code>a1</code> overwriting
+	 * the array. This is syntactic sugar for <code>add( a1, -s )</code>.
+	 * 
+	 * @param a1
+	 *            The array
+	 * @param s
+	 *            The scalar
+	 * @return the array
+	 */
+	public static #t#[] subtract(final #t#[] a1, final #t# s)
+	{
+		return add(a1, (#t#)(-s));
+	}
+
+    /*-- add() (scalar) --*/
+	/**
+	 * Add a constant to all elements and return the input
+	 * 
+	 * @param ds
+	 *            input array
+	 * @param x
+	 *            constant to add
+	 * @return the input array
+	 */
+	public static #t#[] add(final #t#[] ds, final #t# x) {
+		for (int i = 0; i < ds.length; i++) {
+			ds[i] += x;
+		}
+		return ds;
+	}
+
+    /*-- multiply() (scalar) --*/
+    /**
+	 * Multiply by a constant all elements and return the input
+	 * 
+	 * @param ds
+	 *            input array
+	 * @param x
+	 *            constant to multiply by
+	 * @return input
+	 */
+	public static #t#[] multiply(final #t#[] ds, final #t# x) {
+		for (int i = 0; i < ds.length; i++) {
+			ds[i] *= x;
+		}
+		return ds;
+	}
+	
+	/**
+	 * Multiply by a constant all elements and return the input
+	 * 
+	 * @param ds
+	 *            input array
+	 * @param x
+	 *            constant to multiply by
+	 * @return input
+	 */
+	public static #t#[][] multiply(final #t#[][] ds, final #t# x) {
+		for (int i = 0; i < ds.length; i++) {
+			multiply(ds[i], x);
+		}
+		return ds;
+	}
+
+    /*-- multiply() --*/
+	/**
+	 * Element-wise multiplication, overwriting a1
+	 * 
+	 * @param a1
+	 *            The first array
+	 * @param a2
+	 *            the second array
+	 * @return The first array
+	 */
+	public static #t#[] multiply(final #t#[] a1, final #t#[] a2)
+	{
+		for (int j = 0; j < a1.length; j++)
+			a1[j] *= a2[j];
+		return a1;
+	}
+
+	/**
+	 * Element-wise multiplication, overwriting a1.
+	 * 
+	 * @param a1
+	 *            First array
+	 * @param a2
+	 *            second array
+	 * @return Updated first array
+	 */
+	public static #t#[][] multiply(final #t#[][] a1, final #t#[][] a2)
+	{
+		for (int j = 0; j < a1.length; j++)
+			multiply(a1[j], a2[j]);
+		return a1;
+	}
+
+    /*-- divide() (scalar) --*/
+	/**
+	 * Divide by a constant, all elements and return the input
+	 * 
+	 * @param fs
+	 *            The input array
+	 * @param x
+	 *            the constant to divide by
+	 * @return THe input
+	 */
+	public static #t#[] divide(final #t#[] fs, final #t# x)
+	{
+		for (int i = 0; i < fs.length; i++)
+			fs[i] /= x;
+		return fs;
+	}
+
+    /*-- normalise (not templated yet) --*/
+	/**
+	 * Normalise length of array to 1.0. Writes over array
+	 * 
+	 * @param array
+	 *            the array
+	 * @return the array
+	 */
+	public static float[] normalise(final float[] array) {
+		float sumsq = 0.0f;
+		for (int i = 0; i < array.length; i++)
+			sumsq += array[i] * array[i];
+
+		final float weight = 1.0f / (float) Math.sqrt(sumsq);
+		for (int i = 0; i < array.length; i++)
+			array[i] *= weight;
+		return array;
+	}
+
+	/**
+	 * Normalise length of array to 1.0. Writes over array. If the array is all
+	 * zeros, it will be unchanged.
+	 * 
+	 * @param array
+	 *            the array
+	 * @return the array
+	 */
+	public static double[] normalise(final double[] array) {
+		double sumsq = 0.0f;
+		for (int i = 0; i < array.length; i++)
+			sumsq += array[i] * array[i];
+
+		if (sumsq == 0)
+			return array;
+
+		final double weight = 1.0f / Math.sqrt(sumsq);
+		for (int i = 0; i < array.length; i++)
+			array[i] *= weight;
+		return array;
+	}
+
+    /*-- reverse() --*/
+	/**
+	 * Reverse the elements in the input and return the input.
+	 * 
+	 * @param ds
+	 *            input array
+	 * @return input
+	 */
+	public static #t#[] reverse(final #t#[] ds) {
+		final int len = ds.length;
+		final int hlen = len / 2;
+
+		for (int i = 0; i < hlen; i++) {
+			final #t# tmp = ds[i];
+			ds[i] = ds[len - i - 1];
+			ds[len - i - 1] = tmp;
+		}
+		return ds;
+	}
+
+    /*-- convertToDouble() --*/
+	/**
+	 * Convert a #t# array to a double array.
+	 * 
+	 * @param array
+	 *            array of #t#s to convert
+	 * @return array of doubles
+	 */
+	public static double[] convertToDouble(final #t#[] array) {
+		final double[] darr = new double[array.length];
+
+		for (int i = 0; i < array.length; i++) {
+			darr[i] = array[i];
+		}
+		return darr;
+	}
+
+	/**
+	 * Convert a #t# array to a double array.
+	 * 
+	 * @param array
+	 *            array of #t#s to convert
+	 * @return array of doubles
+	 */
+	public static double[][] convertToDouble(final #t#[][] array)
+	{
+		final double[][] darr = new double[array.length][];
+		for (int i = 0; i < array.length; i++)
+			darr[i] = convertToDouble(array[i]);
+		return darr;
+	}
+
+    /*-- convertToFloat() --*/
+	/**
+	 * Convert a #t# array to a float array.
+	 * 
+	 * @param array
+	 *            array of #t#s to convert
+	 * @return array of floats
+	 */
+	public static float[] convertToFloat(final #t#[] array) {
+		final float[] farr = new float[array.length];
+
+		for (int i = 0; i < array.length; i++) {
+			farr[i] = (float) array[i];
+		}
+		return farr;
+	}
+
+    /**
+	 * Convert a #t# array to a float array.
+	 * 
+	 * @param array
+	 *            array of #t#s to convert
+	 * @return array of doubles
+	 */
+	public static float[][] convertToFloat(final #t#[][] array)
+	{
+		final float[][] darr = new float[array.length][];
+		for (int i = 0; i < array.length; i++)
+			darr[i] = convertToFloat(array[i]);
+		return darr;
+	}
+
+    /*-- firstNonNull() (not templated) --*/
+	/**
+	 * Return the first non-null item from an array.
+	 * 
+	 * @param <T>
+	 *            the type of the elements in the array
+	 * @param array
+	 *            the array
+	 * @return the first non-null object, or null if not found.
+	 */
+	public static <T> T firstNonNull(final T[] array) {
+		if (array == null)
+			return null;
+
+		for (final T obj : array) {
+			if (obj != null) {
+				return obj;
+			}
+		}
+
+		return null;
+	}
+
+    /*-- concatenate() (object arrays... not templated) --*/
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param <T>
+	 *            Type of elements in the array.
+	 * @param arrays
+	 *            the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static <T> T[] concatenate(final T[]... arrays) {
+		int length = 0;
+		Class<?> type = null;
+
+		for (final T[] arr : arrays) {
+			if (arr != null) {
+				length += arr.length;
+
+				if (type == null) {
+					type = arr.getClass().getComponentType();
+				}
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		final T[] concat = (T[]) Array.newInstance(type, length);
+
+		int current = 0;
+		for (final T[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+
+		return concat;
+	}
+
+    /*-- concatenate() --*/
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays
+	 *            the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static #t#[] concatenate(final #t#[]... arrays) {
+		int length = 0;
+		for (final #t#[] arr : arrays) {
+			length += (arr == null ? 0 : arr.length);
+		}
+
+		final #t#[] concat = new #t#[length];
+
+		int current = 0;
+		for (final #t#[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+
+		return concat;
+	}
+
+	/*-- sumValues() --*/
+	/*** 
+    	{ m -> 
+    		if (m['T'] == DOUBLE) {
+    			return (m['R'] == DOUBLE); 		
+    		}
+    		if (m['T'] == LONG) {
+    			return (m['R'] == DOUBLE);
+    		}
+    		return (m['R'] == FLOAT);
+    	}
+    ***/
+	/**
+	 * Compute the sum of values in an array
+	 * 
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static #r# sumValues(final #t#[] vector) {
+		#r# sum = 0;
+
+		for (final #t# v : vector)
+			sum += v;
+
+		return sum;
+	}
+
+    /*-- sumValuesSquared() --*/
+	/*** 
+    	{ m -> 
+    		if (m['T'] == DOUBLE) {
+    			return (m['R'] == DOUBLE); 		
+    		}
+    		if (m['T'] == LONG) {
+    			return (m['R'] == DOUBLE);
+    		}
+    		return (m['R'] == FLOAT);
+    	}
+    ***/
+	/**
+	 * Compute the sum of values squared in an array
+	 * 
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static #r# sumValuesSquared(final #t#[] vector) {
+		#r# sum = 0;
+
+		for (final #t# v : vector)
+			sum += v * v;
+
+		return sum;
+	}
+
+    /*-- range() (not templated) --*/
+	/**
+	 * Extract a range
+	 * 
+	 * @param start
+	 * @param length
+	 * @return [start...length] (inclusive)
+	 */
+	public static int[] range(final int start, final int length) {
+		final int[] range = new int[length - start + 1];
+		for (int i = start; i <= length; i++) {
+			range[i - start] = i;
+		}
+		return range;
+	}
+
+    /*-- reshape() --*/
+	/**
+	 * Reshape a 2D array into a 1D array
+	 * 
+	 * @param a
+	 *            array to reshape
+	 * @return the reshaped array
+	 */
+	public static #t#[] reshape(final #t#[][] a) {
+		final #t#[] ret = new #t#[a.length * a[0].length];
+
+		for (int r = 0, i = 0; r < a.length; r++)
+			for (int c = 0; c < a[0].length; c++, i++)
+				ret[i] = a[r][c];
+
+		return ret;
+	}
+
+    /*-- reshapeDouble() --*/
+	/**
+	 * Reshape a 2D array into a 1D array of doubles
+	 * 
+	 * @param a
+	 *            array to reshape
+	 * @return the reshaped array
+	 */
+	public static double[] reshapeDouble(final #t#[][] a) {
+		final double[] ret = new double[a.length * a[0].length];
+
+		for (int r = 0, i = 0; r < a.length; r++)
+			for (int c = 0; c < a[0].length; c++, i++)
+				ret[i] = a[r][c];
+
+		return ret;
+	}
+
+    /*-- reshape() 1d->2d --*/
+	/**
+	 * Reshape a 1D array into a 2D array
+	 * 
+	 * @param a
+	 *            array to reshape
+	 * @param out
+	 *            the return array, correctly sized
+	 * @return the reshaped array
+	 */
+	public static #t#[][] reshape(final #t#[] a, final #t#[][] out) {
+		for (int r = 0, i = 0; r < out.length; r++)
+			for (int c = 0; c < out[0].length; c++, i++)
+				out[r][c] = a[i];
+
+		return out;
+	}
+
+	/**
+	 * Reshape a 1D array into a 2D array
+	 * 
+	 * @param a
+	 *            array to reshape
+	 * @param width
+	 *            the width of the return array
+	 * @param height
+	 *            the height of the return array
+	 * @return the reshaped array
+	 */
+	public static #t#[][] reshape(final #t#[] a, final int width, final int height) {
+		final #t#[][] ret = new #t#[height][width];
+		return reshape(a, ret);
+	}
+
+    /*-- reshape() doubles to floats (not templated) --*/
+	/**
+	 * Reshape a 1D array into a 2D array
+	 * 
+	 * @param a
+	 *            array to reshape
+	 * @param out
+	 *            the return array, correctly sized
+	 * @return the reshaped array
+	 */
+	public static float[][] reshapeFloat(final double[] a, final float[][] out) {
+		for (int r = 0, i = 0; r < out.length; r++)
+			for (int c = 0; c < out[0].length; c++, i++)
+				out[r][c] = (float) a[i];
+
+		return out;
+	}
+
+	/**
+	 * Reshape a 1D array into a 2D array
+	 * 
+	 * @param a
+	 *            array to reshape
+	 * @param width
+	 *            the width of the return array
+	 * @param height
+	 *            the height of the return array
+	 * @return the reshaped array
+	 */
+	public static float[][] reshapeFloat(final double[] a, final int width, final int height) {
+		final float[][] ret = new float[height][width];
+		return reshapeFloat(a, ret);
+	}
+
+    /*-- parallelQuicksortDescending() --*/
+	/**
+	 * Sort parallel arrays. Arrays are sorted in-place. The first array
+	 * determines the order, and is sorted into descending order.
+	 * <p>
+	 * Implementation inspired by this stackoverflow page: <a href=
+	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
+	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
+	 * get-a-sorted-list-of-indices-of-an-array </a>
+	 * 
+	 * @param main
+	 *            the values to use for determining the order
+	 * @param indices
+	 *            the second array
+	 */
+	public static void parallelQuicksortDescending(final #t#[] main, final #r#[] indices) {
+		parallelQuicksortDescending(main, indices, 0, indices.length - 1);
+	}
+
+	/**
+	 * Sort parallel arrays. Arrays are sorted in-place. The first array
+	 * determines the order, and is sorted into descending order.
+	 * <p>
+	 * Implementation inspired by this stackoverflow page: <a href=
+	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
+	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
+	 * get-a-sorted-list-of-indices-of-an-array </a>
+	 * 
+	 * @param main
+	 *            the values to use for determining the order
+	 * @param indices
+	 *            the second array
+	 * @param left
+	 *            the starting index
+	 * @param right
+	 *            the ending index
+	 */
+	public static void parallelQuicksortDescending(final #t#[] main, final #r#[] indices, final int left,
+			final int right)
+	{
+		if (right <= left)
+			return;
+
+		final int i = partitionDesc(main, indices, left, right);
+
+		parallelQuicksortDescending(main, indices, left, i - 1);
+		parallelQuicksortDescending(main, indices, i + 1, right);
+	}
+
+	// partition a[left] to a[right], assumes left < right
+	private static int partitionDesc(final #t#[] a, final #r#[] index, final int left, final int right) {
+		int i = left - 1;
+		int j = right;
+		while (true) {
+			while (a[++i] > a[right])
+				// find item on left to swap
+				; // a[right] acts as sentinel
+			while (a[right] > a[--j])
+				// find item on right to swap
+				if (j == left)
+					break; // don't go out-of-bounds
+			if (i >= j)
+				break; // check if pointers cross
+			exch(a, index, i, j); // swap two elements into place
+		}
+		exch(a, index, i, right); // swap with partition element
+		return i;
+	}
+	
+	/*-- parallelQuicksortAscending() --*/
+    /**
+	 * Sort parallel arrays. Arrays are sorted in-place. The first array
+	 * determines the order, and is sorted into ascending order.
+	 * <p>
+	 * Implementation inspired by this stackoverflow page: <a href=
+	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
+	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
+	 * get-a-sorted-list-of-indices-of-an-array </a>
+	 * 
+	 * @param main
+	 *            the values to use for determining the order
+	 * @param indices
+	 *            the second array
+	 */
+	public static void parallelQuicksortAscending(final #t#[] main, final #r#[] indices) {
+		ArrayUtils.parallelQuicksortAscending(main, indices, 0, indices.length - 1);
+	}
+	
+    /**
+	 * Sort parallel arrays. Arrays are sorted in-place. The first array
+	 * determines the order, and is sorted into ascending order.
+	 * <p>
+	 * Implementation inspired by this stackoverflow page: <a href=
+	 * "http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-get-a-sorted-list-of-indices-of-an-array"
+	 * > http://stackoverflow.com/questions/951848/java-array-sort-quick-way-to-
+	 * get-a-sorted-list-of-indices-of-an-array </a>
+	 * 
+	 * @param main
+	 *            the values to use for determining the order
+	 * @param indices
+	 *            the second array
+	 * @param left
+	 *            the starting index
+	 * @param right
+	 *            the ending index
+	 */
+	public static void
+			parallelQuicksortAscending(final #t#[] main, final #r#[] indices, final int left, final int right)
+	{
+		if (right <= left)
+			return;
+
+		final int i = partitionAsc(main, indices, left, right);
+
+		parallelQuicksortAscending(main, indices, left, i - 1);
+		parallelQuicksortAscending(main, indices, i + 1, right);
+	}
+
+	// partition a[left] to a[right], assumes left < right
+	private static int partitionAsc(final #t#[] a, final #r#[] index, final int left, final int right) {
+		int i = left - 1;
+		int j = right;
+		while (true) {
+			while (a[++i] < a[right])
+				// find item on left to swap
+				; // a[right] acts as sentinel
+			while (a[right] < a[--j])
+				// find item on right to swap
+				if (j == left)
+					break; // don't go out-of-bounds
+			if (i >= j)
+				break; // check if pointers cross
+			exch(a, index, i, j); // swap two elements into place
+		}
+		exch(a, index, i, right); // swap with partition element
+		return i;
+	}
+
+    /*-- exch() --*/
+    // exchange a[i] and a[j]
+	private static void exch(final #t#[] a, final #r#[] index, final int i, final int j) {
+		final #t# swap = a[i];
+		a[i] = a[j];
+		a[j] = swap;
+
+		final #r# b = index[i];
+		index[i] = index[j];
+		index[j] = b;
+	}
+
+    /*-- indexSort() --*/
+	/**
+	 * Determine the indices of the given array if it were to be sorted into
+	 * ascending order.
+	 * 
+	 * @param arr
+	 *            the array
+	 * @return the sorted indices
+	 */
+	public static int[] indexSort(final #t#[] arr) {
+		final int[] index = new int[arr.length];
+
+		for (int i = 0; i < index.length; i++)
+			index[i] = i;
+
+		quicksort(arr, index, 0, index.length - 1);
+
+		return index;
+	}
+
+	// quicksort a[left] to a[right]
+	private static void quicksort(final #t#[] a, final int[] index, final int left, final int right) {
+		if (right <= left)
+			return;
+		final int i = partition(a, index, left, right);
+		quicksort(a, index, left, i - 1);
+		quicksort(a, index, i + 1, right);
+	}
+
+	// partition a[left] to a[right], assumes left < right
+	private static int partition(final #t#[] a, final int[] index,
+			final int left, final int right)
+	{
+		int i = left - 1;
+		int j = right;
+		while (true) {
+			while (a[index[++i]] < a[index[right]])
+				// find item on left to swap
+				; // a[right] acts as sentinel
+			while (a[index[right]] < a[index[--j]])
+				// find item on right to swap
+				if (j == left)
+					break; // don't go out-of-bounds
+			if (i >= j)
+				break; // check if pointers cross
+			exch(index, i, j); // swap two elements into place
+		}
+		exch(index, i, right); // swap with partition element
+		return i;
+	}
+
+    /*-- exch() for the quicksort (not templated) --*/
+	// exchange a[i] and a[j]
+	static void exch(final int[] index, final int i, final int j) {
+		final int b = index[i];
+		index[i] = index[j];
+		index[j] = b;
+	}
+
+    /*-- normaliseMax() (not templated) --*/
+	/**
+	 * Normalise and scale the values so that the maximum value in the array is
+	 * 1.
+	 * 
+	 * @param array
+	 *            The array to normalise
+	 * @return The array
+	 */
+	public static double[] normaliseMax(final double[] array) {
+		return normaliseMax(array, 1d);
+	}
+
+	/**
+	 * Normalise and scale the values so that the maximum value in the array is
+	 * max
+	 * 
+	 * @param array
+	 *            The array to normalise
+	 * @param max
+	 *            The maximum value
+	 * @return The array
+	 */
+	public static double[] normaliseMax(final double[] array, final double max) {
+		final double m = maxValue(array);
+		for (int i = 0; i < array.length; i++)
+			array[i] /= m;
+		return array;
+	}
+
+    /*-- toString() (for Strings) (not templated) --*/
+	/**
+	 * Convert the array to a {@link String} by joining the elements with the
+	 * given glue.
+	 * 
+	 * @param s
+	 *            the array
+	 * @param glue
+	 *            the glue
+	 * @return the string
+	 */
+	public static String toString(final String[] s, final String glue) {
+		final int k = s.length;
+
+		if (k == 0)
+			return null;
+
+		final StringBuilder out = new StringBuilder();
+		out.append(s[0]);
+
+		for (int x = 1; x < k; ++x)
+			out.append(glue).append(s[x]);
+
+		return out.toString();
+	}
+
+    /*-- fill() --*/
+	/**
+	 * Fill the array with the value
+	 * 
+	 * @param a1
+	 *            The array
+	 * @param i
+	 *            The value
+	 * @return The array
+	 */
+	public static #t#[][] fill(final #t#[][] a1, final #t# i)
+	{
+		for (int j = 0; j < a1.length; j++)
+			fill(a1[j], i);
+		return a1;
+	}
+
+	/**
+	 * Fill the array with the value from the start index for the length given
+	 * 
+	 * @param a1
+	 *            The array to fill
+	 * @param i
+	 *            The value to fill with
+	 * @param s
+	 *            The start index
+	 * @param l
+	 *            The length of the fill
+	 * @return The array
+	 */
+	public static #t#[] fill(final #t#[] a1, final #t# i, final int s, final int l)
+	{
+		for (int j = s; j < s + l; j++)
+			a1[j] = i;
+		return a1;
+	}
+
+	/**
+	 * Fill the array with the value
+	 * 
+	 * @param a1
+	 *            The array
+	 * @param i
+	 *            The value
+	 * @return The array
+	 */
+	public static #t#[] fill(final #t#[] a1, final #t# i)
+	{
+		for (int j = 0; j < a1.length; j++)
+			a1[j] = i;
+		return a1;
+	}
+
+    /*-- fill() (with ordinals) (not templated) --*/
+	/**
+	 * Fills the array with ordinal values
+	 * 
+	 * @param array
+	 *            The array to fill
+	 * @return the array
+	 */
+	public static int[] fill(final int[] array)
+	{
+		for (int i = 0; i < array.length; i++)
+			array[i] = i;
+		return array;
+	}
+
+    /*-- truncate() --*/
+	/**
+	 * Truncates the given array to the given size.
+	 * 
+	 * @param array
+	 *            The array to truncate
+	 * @param index
+	 *            The size to truncate it to
+	 * @return The truncated array
+	 */
+	public static #t#[] truncate(final #t#[] array, final int index)
+	{
+		final #t#[] d = new #t#[index];
+		System.arraycopy(array, 0, d, 0, index);
+		return d;
+	}
+
+	/**
+	 * Truncates every element in the given array to the given size.
+	 * 
+	 * @param array
+	 *            The array to truncate
+	 * @param index
+	 *            The size to truncate it to
+	 * @return The truncated array
+	 */
+	public static #t#[][] truncate(final #t#[][] array, final int index)
+	{
+		final #t#[][] d = new #t#[Math.min(array.length, index)][index];
+		for (int i = 0; i < d.length; i++)
+			d[i] = truncate(array[i], index);
+		return d;
+	}
+
+    /*-- quickSelect() --*/
+	/**
+	 * Quick Select algorithm for getting the nth item from the array as if it
+	 * were sorted. Expected complexity is O(N); worst case is O(N^2). The input
+	 * array will be reordered; clone it first if this is a problem.
+	 * Implementation based on public domain code from Nicolas Devillard.
+	 * 
+	 * @see "http://ndevilla.free.fr/median/median/src/quickselect.c"
+	 * 
+	 * @param arr
+	 *            the array to select from
+	 * @param n
+	 *            the item to select
+	 * @return the selected item
+	 */
+	public static #t# quickSelect(#t# arr[], int n) {
+		return quickSelect(arr, n, 0, arr.length - 1);
+	}
+
+	/**
+	 * Quick Select algorithm for getting the nth item from a sub-array as if it
+	 * were sorted. Expected complexity is O(N); worst case is O(N^2). The input
+	 * array will be reordered; clone it first if this is a problem.
+	 * Implementation based on public domain code from Nicolas Devillard.
+	 * 
+	 * @see "http://ndevilla.free.fr/median/median/src/quickselect.c"
+	 * 
+	 * @param arr
+	 *            the array to select from
+	 * @param n
+	 *            the item to select
+	 * @param low
+	 *            the starting position in the array (inclusive)
+	 * @param high
+	 *            the ending position in the array (exclusive)
+	 * @return the selected item
+	 */
+	public static #t# quickSelect(#t# arr[], int n, int low, int high) {
+		high--; // make high inclusive
+
+		int middle, ll, hh;
+		#t# tmp = 0;
+		final int median = (low + high) / 2;
+
+		while (true) {
+			if (high <= low) /* One element only */
+				return arr[median];
+
+			if (high == low + 1) { /* Two elements only */
+				if (arr[low] > arr[high]) {
+					tmp = arr[low];
+					arr[low] = arr[high];
+					arr[high] = tmp;
+				}
+				return arr[median];
+			}
+
+			/* Find median of low, middle and high items; swap into position low */
+			middle = (low + high) / 2;
+			if (arr[middle] > arr[high]) {
+				tmp = arr[middle];
+				arr[middle] = arr[high];
+				arr[high] = tmp;
+				;
+			}
+			if (arr[low] > arr[high]) {
+				tmp = arr[low];
+				arr[low] = arr[high];
+				arr[high] = tmp;
+			}
+			if (arr[middle] > arr[low]) {
+				tmp = arr[low];
+				arr[low] = arr[middle];
+				arr[middle] = tmp;
+			}
+
+			/* Swap low item (now in position middle) into position (low+1) */
+			tmp = arr[middle];
+			arr[middle] = arr[low + 1];
+			arr[low + 1] = tmp;
+
+			/* Nibble from each end towards middle, swapping items when stuck */
+			ll = low + 1;
+			hh = high;
+			for (;;) {
+				do
+					ll++;
+				while (arr[low] > arr[ll]);
+				do
+					hh--;
+				while (arr[hh] > arr[low]);
+
+				if (hh < ll)
+					break;
+
+				tmp = arr[ll];
+				arr[ll] = arr[hh];
+				arr[hh] = tmp;
+			}
+
+			/* Swap middle item (in position low) back into correct position */
+			tmp = arr[low];
+			arr[low] = arr[hh];
+			arr[hh] = tmp;
+
+			/* Re-set active partition */
+			if (hh <= median)
+				low = ll;
+			if (hh >= median)
+				high = hh - 1;
+		}
+	}	
+	/*-- the end --*/
+}

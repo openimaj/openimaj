@@ -49,7 +49,7 @@ public class FVConverter {
 	 * @return the {@link FloatFV}
 	 */
 	public static FloatFV toFloatFV(DoubleFV fv) {
-		return new FloatFV(ArrayUtils.doubleToFloat(fv.values));
+		return new FloatFV(ArrayUtils.convertToFloat(fv.values));
 	}
 
 	/**
