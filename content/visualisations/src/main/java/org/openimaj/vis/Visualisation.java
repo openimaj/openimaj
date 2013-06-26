@@ -77,7 +77,8 @@ import org.openimaj.image.MBFImage;
  *	@version $Author$, $Revision$, $Date$
  * 	@param <T> The type of the data to be visualised
  */
-public abstract class Visualisation<T> extends JPanel implements ComponentListener
+public abstract class Visualisation<T> extends JPanel
+	implements ComponentListener, VisualisationImageProvider, AnimatedVisualisationListener
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -85,6 +86,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	/** The visualisation image */
 	protected MBFImage visImage = null;
 
+	/** The double buffer image */
 	private MBFImage dbImage = null;
 
 	/** The data to be visualised */
@@ -108,6 +110,9 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	/** The visualisation that this vis is being overlaid on */
 	private Visualisation<?> overlaidOn = null;
 
+	/** The required size of the vis */
+	private Dimension requiredSize = new Dimension( 400, 400 );
+
 	/**
 	 * 	Default constructor
 	 */
@@ -124,7 +129,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		this.dbImage = this.visImage.clone();
 		this.setPreferredSize( new Dimension( width, height ) );
 		this.setSize( new Dimension( width, height ) );
-		this.addComponentListener( this );
+		this.requiredSize = new Dimension( width, height );
 	}
 
 	/**
@@ -141,6 +146,7 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		this.dbImage = this.visImage.clone();
 		this.setPreferredSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
 		this.setSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
+		this.requiredSize = this.getSize();
 
 		// Add this as an overlay on the other vis. This also forces
 		// an update so that we get their visualisation to overlay on
@@ -184,24 +190,31 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	/**
 	 * 	Call to force and update of the visualisation
 	 */
+	@Override
 	public void updateVis()
 	{
+		if( this.visImage == null )
+		{
+			this.visImage = new MBFImage( (int)this.requiredSize.getWidth(), (int)this.requiredSize.getHeight(), 4 );
+			this.dbImage = this.visImage.clone();
+		}
+
+//		System.out.println( "Updating "+this );
 		synchronized( this.visImage )
 		{
-			if( this.allowResize && (this.visImage == null ||
-					this.visImage.getWidth() != this.getWidth() ||
-					 this.visImage.getHeight() != this.getHeight()) )
+			if( this.allowResize && (this.visImage.getWidth() != this.requiredSize.getWidth() ||
+					 this.visImage.getHeight() != this.requiredSize.getHeight()) )
 			{
-				this.visImage = new MBFImage( this.getWidth(), this.getHeight(), 4 );
+				this.visImage = new MBFImage( (int)this.requiredSize.getWidth(), (int)this.requiredSize.getHeight(), 4 );
 				this.dbImage = this.visImage.clone();
+				System.out.println( this.requiredSize );
 			}
 
 			if( this.clearBeforeDraw )
 				this.visImage.fill( this.backgroundColour );
 
 			if( this.overlayImage != null )
-				this.visImage.drawImage( this.overlayImage
-					, 0, 0 );
+				this.visImage.drawImage( this.overlayImage, 0, 0 );
 		}
 
 		this.update();
@@ -249,9 +262,16 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 	 * 	Returns the image to which the bars will be drawn.
 	 *	@return The image
 	 */
+	@Override
 	public MBFImage getVisualisationImage()
 	{
-		return this.visImage;
+		// The implementation of this appears to return our double
+		// buffered image. That's because at the end of the updateVis()
+		// method we swap the images over, so the last drawn image is
+		// only available in dbImage. (Any drawing that's occuring right
+		// now will be happening on visImage, so it's ok to access this
+		// here.)
+		return this.dbImage.clone();
 	}
 
 	/**
@@ -292,6 +312,8 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 		f.setResizable( this.allowResize );
 		f.pack();
 		f.setVisible( true );
+		this.addComponentListener( this );
+		this.requiredSize = f.getSize();
 		this.updateVis();
 		return f;
 	}
@@ -313,6 +335,25 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
     {
 	    this.allowResize = allowResize;
     }
+
+	/**
+	 * 	Set the required size of the vis
+	 *	@param d The required size
+	 */
+	@Override
+	public void setRequiredSize( final Dimension d )
+	{
+		this.requiredSize = d;
+	}
+
+	/**
+	 * 	Get the current required size of the vis
+	 *	@return The required size
+	 */
+	public Dimension getRequiredSize()
+	{
+		return this.requiredSize;
+	}
 
 	/**
 	 * 	Sets whether to clear the image before drawing. Has no effect if
@@ -346,8 +387,20 @@ public abstract class Visualisation<T> extends JPanel implements ComponentListen
 			this.getSize().height == this.visImage.getHeight() )
 			return;
 
+		this.requiredSize = this.getSize();
 		if( this.overlaidOn != null )
 				this.overlaidOn.setSize( this.getSize() );
 		else	this.updateVis();
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.AnimatedVisualisationListener#newVisualisationAvailable(org.openimaj.vis.AnimatedVisualisationProvider)
+	 */
+	@Override
+	public void newVisualisationAvailable( final AnimatedVisualisationProvider avp )
+	{
+//		avp.updateVis();
+		this.updateVis();
 	}
 }

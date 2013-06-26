@@ -36,13 +36,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openimaj.audio.AudioStream;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.typography.hershey.HersheyFont;
+import org.openimaj.image.typography.hershey.HersheyFontStyle;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.time.Timecode;
 import org.openimaj.video.Video;
 import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
@@ -57,6 +58,9 @@ import org.openimaj.video.processing.shotdetector.ShotBoundary;
  */
 public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 {
+	/** */
+	private static final long serialVersionUID = 1L;
+
 	/** Shot detector */
 	private HistogramVideoShotDetector shotDetector = null;
 
@@ -66,26 +70,15 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 	 */
 	private final HashMap<Integer, MBFImage> imageCache = new HashMap<Integer,MBFImage>();
 
-	/** */
-	private static final long serialVersionUID = 1L;
-
 	/**
-	 *
-	 *	@param video
+	 *	Default constructor that takes the video to visualise
+	 *	@param video The video to visualise
 	 */
 	public ShotBoundaryVideoBarVisualisation( final Video<MBFImage> video )
 	{
-		this( video, null );
-	}
-
-	/**
-	 *
-	 *	@param video
-	 *	@param audio
-	 */
-	public ShotBoundaryVideoBarVisualisation( final Video<MBFImage> video, final AudioStream audio )
-	{
 		super( video );
+
+		/// Use a HistogramVideoShotDetector and store the key frames
 		this.shotDetector = new HistogramVideoShotDetector( video );
 		this.shotDetector.setFindKeyframes( true );
 	}
@@ -97,37 +90,87 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 	@Override
 	public void processFrame( final MBFImage frame, final Timecode t )
 	{
+		// Look for shot boundaries
 		this.shotDetector.processFrame( frame );
 	}
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.video.VideoBarVisualisation#updateVis(org.openimaj.image.MBFImage)
+	 * 	@see org.openimaj.vis.video.VideoBarVisualisation#update()
 	 */
 	@Override
-	public void updateVis( final MBFImage vis )
+	public void update()
 	{
+		// Set the colour of the bar
+		this.visImage.fill( this.barColour );
+
+		// Get all the shot boundaries we currently have
 		final List<ShotBoundary<MBFImage>> sbs = new ArrayList<ShotBoundary<MBFImage>>(
 				this.shotDetector.getShotBoundaries() );
+
+		// Store the list of bounding boxes of labels
+		final List<Rectangle> timecodeLabelBounds = new ArrayList<Rectangle>();
+
+		// Now loop through the shot boundaries.
 		for( final ShotBoundary<MBFImage> sb : sbs )
 		{
+			// Try to get the resized image that's stored for a boundary image
 			final int hash = sb.getKeyframe().imageAtBoundary.hashCode();
 			MBFImage img = this.imageCache.get( hash );
+
+			// We'll cache the resized image if it's not already there
 			if( img == null )
 				this.imageCache.put( hash, img = sb.getKeyframe().imageAtBoundary
 					.process( new ResizeProcessor( 100, 100 ) ) );
 
+			// Now draw the image into the visualisation
 			if( img != null )
 			{
+				// Find the time position of a given timecode.
 				final int x = (int)this.getTimePosition( sb.getTimecode() );
-				System.out.println( sb.getTimecode()+" -> "+x );
+//				System.out.println( "Drawing image: "+sb.getTimecode()+" -> "+x );
 				try
 				{
-					final MBFImageRenderer r = vis.createRenderer();
+					// Draw the image and its timecode
+					final MBFImageRenderer r = this.visImage.createRenderer();
+					final HersheyFont f = HersheyFont.TIMES_BOLD;
+					final HersheyFontStyle<Float[]> fs = f.createStyle( r );
+					fs.setFontSize( 12 );
+					final String string = sb.getTimecode().toString();
+					final Rectangle bounds = f.getRenderer( r ).getBounds( string, fs );
+					bounds.translate( x, img.getHeight()+bounds.height );
+
+					// Move the bounds until the text isn't overlapping other text
+					boolean overlapping = true;
+					while( overlapping )
+					{
+						overlapping = false;
+						for( final Rectangle rect : timecodeLabelBounds )
+						{
+							if( bounds.isOverlapping( rect ) )
+							{
+								bounds.translate( 0, rect.height );
+								overlapping = true;
+								break;
+							}
+						}
+					}
+
+					// Store the bounds of the timecode label we're above to draw
+					bounds.width += 8;
+					timecodeLabelBounds.add( bounds );
+
+					// Draw the thumbnail image
 					r.drawImage( img, x, 0 );
-					r.drawLine( x, 0, x, this.getHeight(), 2, RGBColour.BLACK );
-					r.drawText( sb.getTimecode().toString(), x+4, img.getHeight() + 15,
-							HersheyFont.TIMES_BOLD, 12, RGBColour.BLACK );
+
+					// Draw the line at which the boundary occurred
+					r.drawLine( x, 0, x, this.visImage.getHeight(), 2, RGBColour.BLACK );
+
+					// Draw a box behind the text
+					r.drawShapeFilled( bounds, new Float[]{0f,0f,0f,0.3f} );
+
+					// Draw the text
+					r.drawText( string, (int)bounds.x+4, (int)(bounds.y+bounds.height), f, 12, RGBColour.WHITE );
 				}
 				catch( final Exception e )
 				{
@@ -135,13 +178,13 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 					System.out.println( "Image was: "+img );
 					System.out.println( "    - Size: "+img.getWidth()+"x"+img.getHeight() );
 					System.out.println( "    - Num Bands: "+img.numBands() );
-					System.out.println( "Being drawn to: "+vis );
-					System.out.println( "    - Size: "+vis.getWidth()+"x"+vis.getHeight() );
-					System.out.println( "    - Num Bands: "+vis.numBands() );
+					System.out.println( "Being drawn to: "+this.visImage );
+					System.out.println( "    - Size: "+this.visImage.getWidth()+"x"+this.visImage.getHeight() );
+					System.out.println( "    - Num Bands: "+this.visImage.numBands() );
 					System.out.println( "    - At Position: "+x+",0 ");
 
 					DisplayUtilities.display( img, "img" );
-					DisplayUtilities.display( vis, "Vis" );
+					DisplayUtilities.display( this.visImage, "Vis" );
 
 					try
 					{
@@ -149,12 +192,12 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 					}
 					catch( final InterruptedException e1 )
 					{
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
-	//			vis.drawLine( x, 0, x, vis.getHeight(), 2, RGBColour.BLACK );
 			}
 		}
+
+		super.update();
 	}
 }

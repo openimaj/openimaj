@@ -32,15 +32,13 @@
  */
 package org.openimaj.vis.timeline;
 
-import java.awt.Dimension;
-
+import org.openimaj.image.MBFImage;
+import org.openimaj.vis.DataPixelTransformer;
 import org.openimaj.vis.Visualisation;
 
 /**
  *	A timeline object is a temporal object and is able to drawn sections
- *	of temporal data into a given viewport.  The {@link #setViewSize(Dimension, long, long)}
- *	is called to tell the object the viewport size and the start and duration
- *	of the data to draw. As this class also extends {@link Visualisation}, the
+ *	of temporal data into a given viewport.  As this class also extends {@link Visualisation}, the
  *	implementation of {@link Visualisation#update()} should use those dimensions
  *	and time series to draw into the <code>visImage</code> member.
  *
@@ -55,57 +53,52 @@ public abstract class TimelineObjectAdapter<T> extends Visualisation<T>
 	/** */
 	private static final long serialVersionUID = 1L;
 
-	/** The viewport dimensions */
-	private Dimension viewport = null;
-
 	/** The start time */
-	private long startTime = 0;
+	protected long startTime = 0;
 
 	/** The end time */
-	private long endTime = 0;
+	protected long endTime = 0;
+
+	/** The pixel transformer to use */
+	protected DataPixelTransformer<MBFImage> pixelTransformer = null;
 
 	/**
-	 * 	Set the part of this timeline that is visible, allowing this timeline
-	 * 	object to draw only the part that is visible. The dimension should be
-	 * 	in pixels and give the viewport area. The start time gives the time
-	 * 	in milliseconds at which 0 coordinate is positioned in time.
-	 *
-	 *	@param d The dimension of the viewport.
-	 * @param startTimeMilliseconds Start time
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#getStartTimeMilliseconds()
 	 */
 	@Override
-	public void setViewSize( final Dimension d,
-			final long startTimeMilliseconds, final long endTimeMilliseconds )
-	{
-		this.viewport = d;
-		this.startTime = startTimeMilliseconds;
-		this.endTime = endTimeMilliseconds;
-	}
-
-	/**
-	 * 	Returns the viewport dimensions.
-	 *	@return the viewport The viewport dimensions
-	 */
-	public Dimension getViewSize()
-	{
-		return this.viewport;
-	}
-
-	/**
-	 * 	Returns the start time position in milliseconds
-	 *	@return the start time position.
-	 */
-	public long getStartTime()
+	public long getStartTimeMilliseconds()
 	{
 		return this.startTime;
 	}
 
 	/**
-	 * 	Returns the end time position in milliseconds
-	 *	@return The end time
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#setStartTimeMilliseconds(long)
 	 */
-	public long getEndTime()
+	@Override
+	public void setStartTimeMilliseconds( final long l )
+	{
+		this.startTime = l;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#getEndTimeMilliseconds()
+	 */
+	@Override
+	public long getEndTimeMilliseconds()
 	{
 		return this.endTime;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#setDataPixelTransformer(org.openimaj.vis.DataPixelTransformer)
+	 */
+	@Override
+	public void setDataPixelTransformer( final DataPixelTransformer<MBFImage> dpt )
+	{
+		this.pixelTransformer = dpt;
 	}
 }

@@ -6,7 +6,6 @@ package org.openimaj.vis.general;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.RGBColour;
@@ -188,6 +187,6 @@ public class LabelledPointVisualisation extends XYPlotVisualisation<LabelledDot>
 		}
 
 		dpv.updateVis();
-		DisplayUtilities.display( dpv.visImage );
+		dpv.showWindow("Labelled Point Vis" );
 	}
 }

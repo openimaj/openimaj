@@ -32,102 +32,130 @@
  */
 package org.openimaj.vis.timeline;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-
-import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.shape.Triangle;
+import org.openimaj.vis.AnimatedVisualisationProvider;
+import org.openimaj.vis.general.AxesRenderer;
+import org.openimaj.vis.general.DiversityAxis;
+import org.openimaj.vis.general.ItemPlotter;
+import org.openimaj.vis.general.LabelTransformer;
 
 /**
- * A Swing timeline object.
+ * 	A timeline visualisation. The timeline consists of a set of {@link TimelineTrack}s and you
+ * 	can add these with {@link #addTrack(TimelineTrack)} and add objects to those tracks using
+ * 	{@link #addTimelineObject(TimelineTrack, TimelineObject)}.
+ * 	<p>
+ * 	This class is an implementation of the {@link DiversityAxis} visualisation.
  *
- * 	TODO: This needs to be retested as lots has changed since this was written and it probably doesn't work.
- *
- * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- * @created 3 Jul 2012
- * @version $Author$, $Revision$, $Date$
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	@created 3 Jul 2012 / 25 Jun 2013
  */
-public class Timeline extends JPanel
+public class Timeline extends DiversityAxis<TimelineObject>
 {
 	/** */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Represents a track in the timeline. A track consists of a group of
-	 * timeline objects which will be drawn all within the same bounds.
+	 *	This is an item plotter for {@link TimelineObject}s. The size of each band needs
+	 *	to be updated here when the diversity axis band size changes.
+	 *
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *  @created 25 Jun 2013
+	 *	@version $Author$, $Revision$, $Date$
+	 */
+	protected static class TimelineObjectPlotter implements ItemPlotter<TimelineObject, Float[], MBFImage>
+	{
+		/** The size of the bands in the diversity axis */
+		private int bandSize = 100;
+
+		/**
+		 *	{@inheritDoc}
+		 * 	@see org.openimaj.vis.general.ItemPlotter#renderRestarting()
+		 */
+		@Override
+		public void renderRestarting()
+		{
+		}
+
+		/**
+		 *	{@inheritDoc}
+		 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer)
+		 */
+		@Override
+		public void plotObject( final MBFImage visImage,
+				final org.openimaj.vis.general.XYPlotVisualisation.LocatedObject<TimelineObject> object,
+				final AxesRenderer<Float[], MBFImage> renderer )
+		{
+			// Work out where we're going to plot this timeline object.
+			final Point2d p = renderer.calculatePosition( visImage, object.x, object.y );
+
+			// Reset its size, if we need to then update the visualisation
+			object.object.setRequiredSize( new Dimension(
+					object.object.getRequiredSize().width, this.bandSize ) );
+			object.object.updateVis();
+
+			// Now get the image and draw it in the correct place.
+			final MBFImage i = object.object.getVisualisationImage();
+			if( i != null )
+				visImage.drawImage( i, (int)p.getX(), (int)p.getY() );
+		}
+
+		/**
+		 *	Set the size of a band.
+		 *	@param bandSize The size of a band.
+		 */
+		public void setBandSize( final int bandSize )
+		{
+			this.bandSize = bandSize;
+		}
+	}
+
+	/**
+	 * Represents a track in the timeline. A track has a name and a number.
 	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 3 Jul 2012
 	 * @version $Author$, $Revision$, $Date$
 	 */
-	public class TimelineTrack extends JPanel implements ComponentListener
+	public static class TimelineTrack
 	{
-		/** */
-		private static final long serialVersionUID = 1L;
+		/** The number of this track */
+		private int number = 0;
 
 		/** The label */
 		private final String label;
 
-		/** List of objects in this track */
-		private final List<TimelineObject> objects = new ArrayList<TimelineObject>();
-
 		/** Markers for the track */
 		private final List<TimelineMarker> markers = new ArrayList<TimelineMarker>();
-
-		/** The preferred size of the track */
-		private int preferredTrackHeight = 0;
-
-		/** Used to avoid infinite loop of resizing */
-		private boolean fixingFlag = false;
 
 		/**
 		 * Instantiate a new track with the given label.
 		 *
 		 * @param label The label of the track
+		 * @param number The track number
 		 */
-		public TimelineTrack( final String label )
+		public TimelineTrack( final String label, final int number )
 		{
-			this.setBackground( new Color( 60, 60, 60 ) );
-
+			this.number = number;
 			this.label = label;
-
-			// We'll position the timeline objects absolutely
-			this.setLayout( null );
-
-			// Add a component listener for resize events
-			this.addComponentListener( this );
 		}
 
 		/**
-		 * Adds a timeline to the track. Because timeline objects store their
-		 * own start and end times, it's important that they are not reused on
-		 * different tracks.
-		 *
-		 * @param obj The object to add
+		 * 	Return the number of this track.
+		 *	@return The track number
 		 */
-		public void addTimelineObject( final TimelineObjectAdapter<?> obj )
+		public int getTrackNumber()
 		{
-			this.objects.add( obj );
-			this.add( obj );
-			obj.setViewSize( Timeline.this.getSize(), 0, 0 );
-			this.fixSizes();
+			return this.number;
 		}
 
 		/**
@@ -139,114 +167,28 @@ public class Timeline extends JPanel
 		{
 			final TimelineMarker tm = new TimelineMarker();
 			tm.time = time;
-			tm.colour = Color.yellow;
+			tm.colour = RGBColour.YELLOW;
 			this.markers.add( tm );
 		}
 
 		/**
-		 * {@inheritDoc}
-		 *
-		 * @see javax.swing.JComponent#paint(java.awt.Graphics)
+		 * 	Get the name of the track
+		 *	@return the label
 		 */
-		@Override
-		public void paint( final Graphics g )
+		public String getLabel()
 		{
-			super.paint( g );
-
-			for( final TimelineMarker m : this.markers )
-			{
-				final int x = Timeline.this.getTimePosition( m.time );
-				m.type.drawMarker( m, g, x, this.getHeight() );
-			}
-		}
-
-		/**
-		 * The sizes of all the timeline objects are determined by the time
-		 * scalar (see #getTimeScalar} and this method resets the sizes and
-		 * positions of all the objects on the timeline.
-		 */
-		private void fixSizes()
-		{
-			if( this.fixingFlag ) return;
-
-			this.fixingFlag = true;
-			int max = 0;
-			for( final TimelineObject o : this.objects )
-			{
-				final int s = (int)(o.getStartTimeMilliseconds() / Timeline.this.getTimeScalar());
-				final int w = (int)((o.getEndTimeMilliseconds() - o.getStartTimeMilliseconds())
-						/ Timeline.this.getTimeScalar() );
-				o.setViewSize( o.getPreferredSize(), s, 0 );
-				max = Math.max( max, s+w );
-			}
-			this.setPreferredSize( new Dimension( max, this.preferredTrackHeight ) );
-			this.setSize( max, this.preferredTrackHeight );
-			this.setBounds( 0, 0, max, this.preferredTrackHeight );
-			this.fixingFlag = false;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * @see java.awt.event.ComponentListener#componentResized(java.awt.event.ComponentEvent)
-		 */
-		@Override
-		public void componentResized( final ComponentEvent e )
-		{
-			this.fixSizes();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * @see java.awt.event.ComponentListener#componentMoved(java.awt.event.ComponentEvent)
-		 */
-		@Override
-		public void componentMoved( final ComponentEvent e )
-		{
-		}
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * @see java.awt.event.ComponentListener#componentShown(java.awt.event.ComponentEvent)
-		 */
-		@Override
-		public void componentShown( final ComponentEvent e )
-		{
-			System.out.println( "Show" );
-			this.fixSizes();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * @see java.awt.event.ComponentListener#componentHidden(java.awt.event.ComponentEvent)
-		 */
-		@Override
-		public void componentHidden( final ComponentEvent e )
-		{
-		}
-
-		/**
-		 * 	Set the preferred size of this track
-		 *	@param t The preferred size
-		 */
-		public void setPreferredTrackHeight( final int t )
-		{
-			this.preferredTrackHeight = t;
-			this.fixSizes();
+			return this.label;
 		}
 	}
 
 	/**
-	 * Markers are drawn directly onto the JPanel.
+	 * Timeline markers that are drawn onto a timeline
 	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 3 Jul 2012
 	 * @version $Author$, $Revision$, $Date$
 	 */
-	static public class TimelineMarker
+	public static class TimelineMarker
 	{
 		/** The marker type */
 		public TimelineMarkerType type = TimelineMarkerType.FLAG;
@@ -258,7 +200,7 @@ public class Timeline extends JPanel
 		public String label;
 
 		/** The colour of the marker */
-		public Color colour = Color.black;
+		public Float[] colour = RGBColour.BLACK;
 	}
 
 	/**
@@ -268,7 +210,7 @@ public class Timeline extends JPanel
 	 * @created 3 Jul 2012
 	 * @version $Author$, $Revision$, $Date$
 	 */
-	static public enum TimelineMarkerType
+	public static enum TimelineMarkerType
 	{
 		/**
 		 * Draws a marker with a little flag showing some text
@@ -276,19 +218,15 @@ public class Timeline extends JPanel
 		LABEL
 		{
 			@Override
-			public void drawMarker( final TimelineMarker m, final Graphics g, final int x, final int h )
+			public void drawMarker( final TimelineMarker m, final MBFImage image, final int x, final int h )
 			{
-				g.drawLine( x, 0, x, h );
+				image.drawLine( x, 0, x, h, m.colour );
 
-				final FontMetrics metrics = g.getFontMetrics();
-				final int fw = metrics.stringWidth( m.label );
-				final int fh = metrics.getHeight() + metrics.getDescent();
+				final int fw = 20;
+				final int fh = 10;
+				image.drawShapeFilled( new Rectangle( x, 4, fw+4, fh + 4 ), m.colour );
 
-				g.setColor( m.colour );
-				g.fillRect( x, 4, fw+4, fh + 4 );
-
-				g.setColor( TimelineMarkerType.getOpposingColour( m.colour ) );
-				g.drawString( m.label, x+2, metrics.getHeight() + 4 );
+				// TODO: Need to draw the label
 			}
 		},
 		/**
@@ -299,12 +237,15 @@ public class Timeline extends JPanel
 			private final int fs = 10;
 
 			@Override
-			public void drawMarker( final TimelineMarker m, final Graphics g, final int x, final int h )
+			public void drawMarker( final TimelineMarker m, final MBFImage image, final int x, final int h )
 			{
-				g.drawLine( x, 0, x, h );
-				g.fillPolygon( new int[]
-				{ x, x + this.fs * 2, x }, new int[]
-				{ 0, this.fs / 2, this.fs }, 3 );
+				image.drawLine( x, 0, x, h, m.colour );
+				image.drawShapeFilled(
+					new Triangle(
+							new Point2dImpl( x, 0 ),
+							new Point2dImpl( x+this.fs*2, this.fs/2 ),
+							new Point2dImpl( x, this.fs ) ),
+						m.colour );
 			}
 		};
 
@@ -313,11 +254,11 @@ public class Timeline extends JPanel
 		 * position and with the given length.
 		 *
 		 * @param m The marker
-		 * @param g The graphics context
+		 * @param image The image to draw to
 		 * @param xPos The position
 		 * @param height The length to draw the marker
 		 */
-		public abstract void drawMarker( TimelineMarker m, Graphics g,
+		public abstract void drawMarker( TimelineMarker m, MBFImage image,
 				int xPos, int height );
 
 		/**
@@ -326,289 +267,83 @@ public class Timeline extends JPanel
 		 * @param c The colour to oppose
 		 * @return An opposing colour
 		 */
-		static private Color getOpposingColour( final Color c )
+		static protected Float[] getOpposingColour( final Float[] c )
 		{
-			final float[] hsv = new float[3];
-			Color.RGBtoHSB( c.getRed(), 255 - c.getGreen(), c.getBlue(), hsv );
-			float H = (float)( hsv[0] + 0.5 );
-			if( H > 1 ) H -= 1;
-			return new Color( Color.HSBtoRGB( hsv[0], hsv[1], hsv[2] ) );
+			// TODO: This isn't really getting a good colour
+			return new Float[]{ 1-c[0], 1-c[1], 1-c[2], 1f };
 		}
-	}
-
-	/**
-	 *
-	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *  @created 9 Jul 2012
-	 *	@version $Author$, $Revision$, $Date$
-	 */
-	public class TimelineRuler extends JPanel
-	{
-		/** */
-        private static final long serialVersionUID = 1L;
-
-        /** The time scalar in milliseconds per pixel */
-		private double scalar = 100;
-
-		/** The number of frames per second */
-		private final double fps = 25;
-
-		/** The left margin */
-		private int leftMargin = 0;
-
-		/** The right margin amount */
-		private final int rightMargin = 0;
-
-		/** The offset of the main axis as a percentage of the total height */
-		private final double axisOffset = 0.25;
-
-		/** The height of the minute ticks as a percentage of panel height */
-		private final double minuteTickHeight = 1.5;
-
-		/** The height of the second ticks as a percentage of panel height */
-		private final double secondTickHeight = 0.2;
-
-		/** The height of the frame ticks as a percentage of panel height */
-		private final double frameTickHeight = 0.06;
-
-		/** Colour of the ruler's main axis */
-		private final Color rulerColour = Color.white;
-
-		/** The colour of the minute ticks */
-		private final Color minuteTickColour = Color.white;
-
-		/** The colour of the second ticks */
-		private final Color secondTickColour = new Color(200,200,200);
-
-		/** The colour of the frame ticks */
-		private final Color frameTickColour = new Color(160,160,160);
-
-		/**
-		 * 	Default constructor
-		 */
-		public TimelineRuler()
-        {
-			this.setPreferredSize( new Dimension( 1000, 25 ) );
-        }
-
-        /**
-         * 	The time scalar in use.
-         *	@param scalar The scalar to use
-         */
-        public void setScalar( final double scalar )
-        {
-        	this.scalar = scalar;
-        }
-
-        /**
-         * 	Set the left margin position in pixels
-         *	@param margin The left margin
-         */
-        public void setLeftMargin( final int margin )
-        {
-        	this.leftMargin = margin;
-        }
-
-        /**
-         *	{@inheritDoc}
-         * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
-         */
-        @Override
-        public void paint( final Graphics g )
-        {
-            super.paint( g );
-
-            // The mid (y) position
-            final int midPoint = this.getHeight() / 2;
-
-            // Where to draw the axis (y position)
-            final int axisPosition = (int)(midPoint + (this.getHeight()*this.axisOffset));
-
-            // If we should draw frames
-            if( this.scalar < (250/this.fps) )
-            {
-            	// Draw the ticks
-            	final double step = (1000/this.fps) / this.scalar; // pixels per second
-
-            	final int tickLength = (int)(this.getHeight() * this.frameTickHeight);
-            	g.setColor( this.frameTickColour );
-            	for( double x = this.leftMargin; x < this.getWidth()-this.rightMargin; x += step )
-            		g.drawLine( (int)x, axisPosition-tickLength,
-            					(int)x, axisPosition+tickLength );
-            }
-
-            // If we should draw seconds
-            if( this.scalar < 5000 )
-            {
-            	// Draw the ticks
-            	double step = 1000 / this.scalar; // pixels per second
-
-            	// Every 10 seconds if we're a bit small
-            	if( this.scalar >= 250 ) step *= 6;
-
-            	final int tickLength = (int)(this.getHeight() * this.secondTickHeight);
-            	g.setColor( this.secondTickColour );
-            	for( double x = this.leftMargin; x < this.getWidth()-this.rightMargin; x += step )
-            		g.drawLine( (int)x, axisPosition-tickLength,
-            					(int)x, axisPosition+tickLength );
-
-            	// We'll draw labels if we're very small
-            	if( this.scalar < 100 )
-            	{
-            		final HrsMinSecFrameTimecode tc = new HrsMinSecFrameTimecode( 0, this.fps );
-            		final int h = g.getFontMetrics().getHeight();
-            		for( double x = this.leftMargin; x < this.getWidth()-this.rightMargin; x += step )
-            		{
-            			tc.setTimecodeInMilliseconds( (long)(x*this.scalar) );
-            			g.drawString( tc.toString(), (int)x+2, h );
-            		}
-            	}
-            }
-
-            // If we should draw minutes
-            if( this.scalar < 15000 )
-            {
-            	// Draw the ticks
-            	final double step = 60000 / this.scalar; // pixels per minute
-
-            	final int tickLength = (int)(this.getHeight() * this.minuteTickHeight);
-            	g.setColor( this.minuteTickColour );
-            	for( double x = this.leftMargin; x < this.getWidth()-this.rightMargin; x+= step )
-            		g.drawLine( (int)x, axisPosition-tickLength,
-            					(int)x, axisPosition+tickLength );
-
-            	// We'll draw labels if we're very small
-            	if( this.scalar < 5000 )
-            	{
-            		final HrsMinSecFrameTimecode tc = new HrsMinSecFrameTimecode( 0, this.fps );
-            		final int h = g.getFontMetrics().getHeight();
-            		for( double x = this.leftMargin; x < this.getWidth()-this.rightMargin; x += step )
-            		{
-            			tc.setTimecodeInMilliseconds( (long)(x*this.scalar) );
-            			g.drawString( tc.toString(), (int)x+2, h );
-            		}
-            	}
-            }
-
-            // Draw the main axis
-            g.setColor( this.rulerColour  );
-            g.drawLine( this.leftMargin, axisPosition, this.getWidth()-this.rightMargin,
-            		axisPosition );
-
-        }
 	}
 
 	/** Width of the sidebar in pixels */
 	private final int sidebarWidth = 150;
 
-	/** List of tracks in this timeline */
-	private final List<TimelineTrack> tracks = new ArrayList<Timeline.TimelineTrack>();
-
 	/** List of markers on this timeline */
 	private final List<TimelineMarker> markers = new ArrayList<Timeline.TimelineMarker>();
 
-	/** The constraints to use for the tracks */
-	private final GridBagConstraints gbc = new GridBagConstraints();
-
-	/** Panel containing the ruler */
-	private TimelineRuler rulerPanel;
-
-	/** The panel containing the tracks */
-	private JPanel tracksPanel;
-
 	/** The sidebar panel */
-	private final JPanel sidebarPanel;
+	private MBFImage sidebarPanel = null;
 
-	/** The functions panel */
-	private final JPanel functionsPanel;
-
-	/** The default time scalar is 50 milliseconds per pixel */
+	/** The default time scalar is 100 milliseconds per pixel */
 	private double timeScalar = 100;
 
+	/** The number of tracks */
+	private int nTracks = 1;
+
+	/** The tracks */
+	private final HashMap<Integer,TimelineTrack> tracks = new HashMap<Integer, Timeline.TimelineTrack>();
+
+	/** The plotter used to plot timeline objects */
+	private final TimelineObjectPlotter plotter = new TimelineObjectPlotter();
+
 	/**
-	 * Default constructor
+	 * 	Default constructor
+	 * 	@param w Width of the visualisation
+	 * 	@param h Height of the visualisation
 	 */
-	public Timeline()
+	public Timeline( final int w, final int h )
 	{
-		this.setLayout( new GridBagLayout() );
-		this.setBackground( new Color( 80, 80, 80 ) );
+		super( w, h, null );
+		super.setItemPlotter( this.plotter );
+		this.init();
+	}
 
-		this.sidebarPanel = new JPanel( new GridBagLayout() );
-		this.sidebarPanel.setSize( this.sidebarWidth, this.getHeight() );
-		this.sidebarPanel.setPreferredSize( new Dimension( this.sidebarWidth, this.getHeight() ) );
-		this.sidebarPanel.setBounds( 0, 0, this.sidebarWidth, this.getHeight() );
+	/**
+	 *
+	 */
+	private void init()
+	{
+		this.sidebarPanel = new MBFImage( this.sidebarWidth,
+				this.visImage.getHeight(), 4 );
 
-		this.tracksPanel = new JPanel( new GridBagLayout() );
-
-		this.rulerPanel = new TimelineRuler();
-		this.rulerPanel.setBackground( Color.BLACK );
-		this.rulerPanel.setScalar( this.getTimeScalar() );
-		this.tracksPanel = new JPanel( new GridBagLayout() );
-		this.rulerPanel = new TimelineRuler();
-		this.rulerPanel.setBackground( Color.BLACK );
-		this.rulerPanel.setScalar( this.getTimeScalar() );
-		this.gbc.fill = GridBagConstraints.HORIZONTAL;
-		this.gbc.weightx = 1;
-		this.gbc.weighty = 0;
-		this.gbc.gridx = 0;
-		this.gbc.gridy = 0;
-		this.tracksPanel.add( this.rulerPanel, this.gbc );
-
-		// Add the sidebar
-		this.gbc.fill = GridBagConstraints.VERTICAL;
-		this.gbc.weightx = 0;
-		this.gbc.weighty = 1;
-		this.gbc.gridwidth = 1;
-		this.gbc.gridy++;
-		this.add( this.sidebarPanel, this.gbc );
-
-		// Add the tracks
-		this.gbc.fill = GridBagConstraints.BOTH;
-		this.gbc.gridx++;
-		this.gbc.weightx = 1;
-		this.add( new JScrollPane( this.tracksPanel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS ), this.gbc );
-
-		// Add the functions panel
-		this.functionsPanel = new JPanel( new GridBagLayout() );
-
-		final JButton ziButton = new JButton( "Zoom In" );
-		final JButton zoButton = new JButton( "Zoom Out" );
-
-		ziButton.addActionListener( new ActionListener()
+		// Setup the axis renderer (the timeline's ruler);
+		this.axesRenderer.setAxisPaddingLeft( this.sidebarWidth );
+		this.axesRenderer.setDrawYAxis( false );
+		this.axesRenderer.setDrawXAxisName( false );
+		this.axesRenderer.setMajorTickColour( RGBColour.WHITE );
+		this.axesRenderer.setMinorTickColour( RGBColour.WHITE );
+		this.axesRenderer.setMajorTickColour( RGBColour.WHITE );
+		this.axesRenderer.setMinorTickColour( RGBColour.WHITE );
+		this.axesRenderer.setxAxisNameColour( RGBColour.WHITE );
+		this.axesRenderer.setxTickLabelColour( RGBColour.WHITE );
+		this.axesRenderer.setxAxisColour( RGBColour.WHITE );
+		this.axesRenderer.setxMajorTickSpacing( 10000 );
+		this.axesRenderer.setxMinorTickSpacing( 1000 );
+		this.axesRenderer.setxLabelSpacing( 10000 );
+		this.axesRenderer.setxAxisLabelTransformer( new LabelTransformer()
 		{
 			@Override
-			public void actionPerformed( final ActionEvent e )
+			public String transform( final double value )
 			{
-				Timeline.this.setTimeScalar( Timeline.this.getTimeScalar()/2 );
-			}
-		} );
-		zoButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				Timeline.this.setTimeScalar( Timeline.this.getTimeScalar() *2 );
+				// Convert milliseconds to seconds
+				return ""+Math.round(value/1000d);
 			}
 		} );
 
-		final GridBagConstraints gbc2 = new GridBagConstraints();
-		gbc2.gridwidth = 1; gbc2.gridx = gbc2.gridy = 0;
-		this.functionsPanel.add( ziButton, gbc2 );
-		gbc2.gridx++;
-		this.functionsPanel.add( zoButton, gbc2 );
+		// Set the default time scalar
+		this.setTimeScalar( 50 );
 
-		this.gbc.gridwidth = 2; this.gbc.gridx = 0; this.gbc.gridy++;
-		this.gbc.weightx = 1; this.gbc.weighty = 0;
-		this.add( this.functionsPanel, this.gbc );
-
-		// Set up the grid bag constraints for the tracks
-		this.gbc.fill = GridBagConstraints.BOTH;
-		this.gbc.weightx = 1;
-		this.gbc.weighty = 0;
-		this.gbc.gridx = 0;
-		this.gbc.gridy = 2;
+		// Do the precalcs for the axes renderer
+		this.axesRenderer.precalc( this.visImage );
 	}
 
 	/**
@@ -619,7 +354,7 @@ public class Timeline extends JPanel
 	 */
 	public TimelineTrack addTrack()
 	{
-		return this.addTrack( "Track " + this.tracks.size() + 1 );
+		return this.addTrack( "Track " + this.data.size() + 1 );
 	}
 
 	/**
@@ -630,7 +365,7 @@ public class Timeline extends JPanel
 	 */
 	public TimelineTrack addTrack( final String label )
 	{
-		return this.addTrack( new TimelineTrack( label ) );
+		return this.addTrack( new TimelineTrack( label, this.nTracks++ ) );
 	}
 
 	/**
@@ -641,32 +376,29 @@ public class Timeline extends JPanel
 	 */
 	public TimelineTrack addTrack( final TimelineTrack tt )
 	{
-		// Create a side-bar for the new track
-		final JLabel sb = new JLabel( tt.label );
-		sb.setOpaque( true );
-		sb.setBackground( new Color( 60, 60, 60 ) );
-		sb.setForeground( Color.white );
-		sb.setSize( this.sidebarWidth, 30 );
-		sb.setPreferredSize( new Dimension( this.sidebarWidth, 30 ) );
-		sb.setHorizontalAlignment( SwingConstants.CENTER );
+		this.tracks.put( tt.getTrackNumber(), tt );
+		return tt;
+	}
 
-		// Add the sidebar
-		this.gbc.weightx = this.gbc.weighty = 1;
-		this.gbc.insets = new Insets( 1, 1, 1, 1 );
-		this.sidebarPanel.add( sb, this.gbc );
+	/**
+	 *	Add an object to a track.
+	 *
+	 *	@param tt The track to add the object to
+	 *	@param obj The timeline objec to add
+	 *	@return The timeline track
+	 */
+	public TimelineTrack addTimelineObject( final TimelineTrack tt, final TimelineObject obj )
+	{
+		super.addObject( tt.getTrackNumber(), obj.getStartTimeMilliseconds(), obj );
 
-		// Add the track
-		this.gbc.weightx = this.gbc.weighty = 1;
-		this.tracksPanel.add( tt, this.gbc );
-		this.tracks.add( tt );
+		if( obj instanceof AnimatedVisualisationProvider )
+			((AnimatedVisualisationProvider)obj).addAnimatedVisualisationListener( this );
 
-		for( final TimelineTrack ttt : this.tracks )
-			ttt.setPreferredTrackHeight( this.getHeight()/this.tracks.size() );
+		obj.setDataPixelTransformer( this.axesRenderer.getRelativePixelTransformer(
+				(int)this.axesRenderer.calculatePosition(
+						this.visImage, obj.getStartTimeMilliseconds(), 0 ).getX(),
+				tt.getTrackNumber() ) );
 
-		this.gbc.gridy++;
-		this.gbc.insets = new Insets( 0, 0, 0, 0 );
-
-		this.revalidate();
 		return tt;
 	}
 
@@ -709,7 +441,7 @@ public class Timeline extends JPanel
 	 * 1 then it would mean one pixel represented 1 millisecond; if this was to
 	 * return 1000 then it would mean one pixel represented one second.
 	 *
-	 * @return The time scalar
+	 * @return The time scalar (milliseconds per pixel)
 	 */
 	public double getTimeScalar()
 	{
@@ -725,8 +457,9 @@ public class Timeline extends JPanel
 	public void setTimeScalar( final double ts )
 	{
 		this.timeScalar = ts;
-		this.rulerPanel.setScalar( ts );
-		this.repaint();
+		this.axesRenderer.setMaxXValue( this.timeScalar * (this.visImage.getWidth()-this.sidebarWidth) );
+
+		this.updateVis();
 	}
 
 	/**
@@ -741,19 +474,43 @@ public class Timeline extends JPanel
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.Visualisation#update()
 	 */
 	@Override
-	public void paint( final Graphics g )
+	public void update()
 	{
-		super.paint( g );
+		// Draw the sidebar
+		this.visImage.drawImage( this.sidebarPanel, 0, 0 );
 
+		super.update();
+
+		// Draw all the timeline markers
 		for( final TimelineMarker m : this.markers )
 		{
 			final int x = this.getTimePosition( m.time );
-			m.type.drawMarker( m, g, x, this.getHeight() );
+			m.type.drawMarker( m, this.visImage, x, this.getHeight() );
 		}
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.general.DiversityAxis#bandSizeKnown(int)
+	 */
+	@Override
+	public void bandSizeKnown( final int bandSize )
+	{
+		this.plotter.setBandSize( bandSize );
+		super.bandSizeKnown( bandSize );
+	}
+
+	/**
+	 * 	Main method test for the timeline
+	 *	@param args The command-line args (unused)
+	 */
+	public static void main( final String[] args )
+	{
+		final Timeline t = new Timeline( 1200, 400 );
+		t.showWindow( "Timeline" );
 	}
 }

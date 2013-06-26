@@ -3,7 +3,6 @@
  */
 package org.openimaj.vis.general;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.shape.Circle;
@@ -117,7 +116,6 @@ public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
 					Math.random()/10 );
 
 		dpv.updateVis();
-
-		DisplayUtilities.display( dpv.visImage );
+		dpv.showWindow( "Dot plot" );
 	}
 }

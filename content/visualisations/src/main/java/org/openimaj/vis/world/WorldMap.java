@@ -3,11 +3,16 @@
  */
 package org.openimaj.vis.world;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.renderer.MBFImageRenderer;
@@ -16,6 +21,9 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.vis.AnimatedVisualisationListener;
+import org.openimaj.vis.AnimatedVisualisationProvider;
+import org.openimaj.vis.animators.ColourSpaceAnimator;
 import org.openimaj.vis.general.AxesRenderer;
 import org.openimaj.vis.general.ItemPlotter;
 import org.openimaj.vis.general.LabelledPointVisualisation;
@@ -34,6 +42,7 @@ import Jama.Matrix;
  *  @created 11 Jun 2013
  */
 public class WorldMap<T> extends XYPlotVisualisation<T>
+	implements AnimatedVisualisationProvider
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -42,13 +51,13 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 	private Float[] seaColour = new Float[]{0.4f,0.5f,1f,1f};
 
 	/** The colour to outline the countries with */
-	private Float[] defaultCountryOutlineColour = new Float[]{0f,0f,0f,1f};
+	private Float[] defaultCountryOutlineColour = new Float[]{0f,0f,0f};
 
 	/** The colour to fill the land with */
-	private Float[] defaultCountryLandColour = new Float[]{0f,1f,0f,1f};
+	private Float[] defaultCountryLandColour = new Float[]{0f,1f,0f};
 
 	/** The colour to fill the land when highlighted */
-	private Float[] highlightCountryLandColour = new Float[]{1f,0f,0f,1f};
+	private Float[] highlightCountryLandColour = new Float[]{1f,0f,0f};
 
 	/** The polygons that represent the countries in the world */
 	private WorldPolygons worldPolys;
@@ -59,6 +68,17 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 	/** These are overrides for the default country highglight colour */
 	private final HashMap<String,Float[]> countryHighlightColours = new HashMap<String,Float[]>();
 
+	/** Listeners for animations */
+	private final List<AnimatedVisualisationListener> listeners = new ArrayList<AnimatedVisualisationListener>();
+
+	/** The cached world image */
+	private MBFImage cachedWorldImage = null;
+
+	/** List of colour animations in progress */
+	private final Map<String,ValueAnimator<Float[]>> colourAnimators = new HashMap<String,ValueAnimator<Float[]>>();
+
+	/** Thread for animating colours */
+	private Thread animationThread = null;
 
 	/**
 	 *	@param width Width of the visualisation
@@ -97,7 +117,10 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		super.axesRenderer.setxTickLabelColour( RGBColour.WHITE );
 		super.axesRenderer.setDrawXAxisName( false );
 		super.axesRenderer.setDrawYAxisName( false );
+		super.axesRenderer.setDrawMajorTickGrid( false );
+		super.axesRenderer.setDrawMinorTickGrid( false );
 		this.worldPolys = new WorldPolygons();
+		this.addAnimatedVisualisationListener( this );
 	}
 
 	/**
@@ -140,22 +163,18 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		img.fill( this.seaColour );
 	}
 
-	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.general.XYPlotVisualisation#beforeAxesRender(org.openimaj.image.MBFImage, org.openimaj.vis.general.AxesRenderer)
-	 */
-	@Override
-	public void beforeAxesRender( final MBFImage visImage,
-			final AxesRenderer<Float[], MBFImage> axesRenderer )
+	private void drawCachedImage( final MBFImage img, final AxesRenderer<Float[], MBFImage> axesRenderer )
 	{
+		this.cachedWorldImage = new MBFImage( img.getWidth(), img.getHeight(), 4 );
+
 		// Fill the image with the sea colour.
 		// We'll draw the countries on top of this.
-		this.drawSea( this.visImage );
+		this.drawSea( this.cachedWorldImage );
 
 		// Make the image fit into the axes centred around 0,0 long/lat
-		final Point2d mid = axesRenderer.calculatePosition( visImage, 0, 0 );
-		final Point2d dateLine0 = axesRenderer.calculatePosition( visImage, 180, 0 );
-		final Point2d northPole = axesRenderer.calculatePosition( visImage, 0, -90 );
+		final Point2d mid = axesRenderer.calculatePosition( this.cachedWorldImage, 0, 0 );
+		final Point2d dateLine0 = axesRenderer.calculatePosition( this.cachedWorldImage, 180, 0 );
+		final Point2d northPole = axesRenderer.calculatePosition( this.cachedWorldImage, 0, -90 );
 		final double scaleX = (dateLine0.getX()-mid.getX()) / 180d;
 		final double scaleY = (northPole.getY()-mid.getY()) / 90d;
 		Matrix trans = Matrix.identity(3, 3);
@@ -177,25 +196,82 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 			// Each place may have more than one polygon.
 			final List<Shape> shapes = wp.getShapes();
 
-			final MBFImageRenderer ir = visImage.createRenderer( RenderHints.ANTI_ALIASED );
+			final MBFImageRenderer ir = this.cachedWorldImage.createRenderer( RenderHints.ANTI_ALIASED );
 
 			// For each of the polygons... draw them to the image.
 			for( Shape s : shapes )
 			{
 				s = s.transform(trans);
 
-				if( this.activeCountries.contains( wp.getISOA2() ) )
-				{
-					final Float[] col = this.countryHighlightColours.get( wp.getISOA2() );
-					ir.drawShapeFilled( s, col == null ? this.highlightCountryLandColour : col );
-				}
-				else
-				{
-					ir.drawShapeFilled( s, this.defaultCountryLandColour );
-				}
+				// Fill the country with the land colour
+				ir.drawShapeFilled( s, this.defaultCountryLandColour );
 
 				// Draw the outline shape of the country
 				ir.drawShape( s, 1, this.defaultCountryOutlineColour );
+			}
+		}
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.general.XYPlotVisualisation#beforeAxesRender(org.openimaj.image.MBFImage, org.openimaj.vis.general.AxesRenderer)
+	 */
+	@Override
+	public void beforeAxesRender( final MBFImage visImage,
+			final AxesRenderer<Float[], MBFImage> axesRenderer )
+	{
+		synchronized( visImage )
+		{
+			// Redraw the world if the image dimensions aren't the same.
+			if( this.cachedWorldImage == null ||
+				visImage.getWidth() != this.cachedWorldImage.getWidth() ||
+				visImage.getHeight() != this.cachedWorldImage.getHeight() )
+					this.drawCachedImage( visImage, axesRenderer );
+
+			// Blat the cached image
+			visImage.drawImage( this.cachedWorldImage, 0,0 );
+
+			// Make the image fit into the axes centred around 0,0 long/lat
+			final Point2d mid = axesRenderer.calculatePosition( visImage, 0, 0 );
+			final Point2d dateLine0 = axesRenderer.calculatePosition( visImage, 180, 0 );
+			final Point2d northPole = axesRenderer.calculatePosition( visImage, 0, -90 );
+			final double scaleX = (dateLine0.getX()-mid.getX()) / 180d;
+			final double scaleY = (northPole.getY()-mid.getY()) / 90d;
+			Matrix trans = Matrix.identity(3, 3);
+			trans = trans.times(
+				TransformUtilities.scaleMatrixAboutPoint(
+					scaleX, -scaleY, mid
+				)
+			);
+
+			// Translate to 0,0
+			trans = trans.times(
+				TransformUtilities.translateMatrix(mid.getX(), mid.getY())
+			);
+
+			// Now draw the countries onto the sea. We transform each of the shapes
+			// by the above transform matrix prior to plotting them to the image.
+			for( final String countryCode : this.activeCountries )
+			{
+				final WorldPlace wp = this.worldPolys.byCountryCode( countryCode );
+
+				// Each place may have more than one polygon.
+				final List<Shape> shapes = wp.getShapes();
+
+				final MBFImageRenderer ir = visImage.createRenderer( RenderHints.ANTI_ALIASED );
+
+				// For each of the polygons... draw them to the image.
+				for( Shape s : shapes )
+				{
+					s = s.transform(trans);
+
+					// Draw the country in the highlight colour
+					final Float[] col = this.countryHighlightColours.get( wp.getISOA2() );
+					ir.drawShapeFilled( s, col == null ? this.highlightCountryLandColour : col );
+
+					// Draw the outline shape of the country
+					ir.drawShape( s, 1, this.defaultCountryOutlineColour );
+				}
 			}
 		}
 	}
@@ -297,6 +373,84 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 	}
 
 	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.AnimatedVisualisationProvider#addAnimatedVisualisationListener(org.openimaj.vis.AnimatedVisualisationListener)
+	 */
+	@Override
+	public void addAnimatedVisualisationListener( final AnimatedVisualisationListener avl )
+	{
+		this.listeners.add( avl );
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.AnimatedVisualisationProvider#removeAnimatedVisualisationListener(org.openimaj.vis.AnimatedVisualisationListener)
+	 */
+	@Override
+	public void removeAnimatedVisualisationListener( final AnimatedVisualisationListener avl )
+	{
+		this.listeners.remove( avl );
+	}
+
+	/**
+	 * 	Fire the animation event
+	 */
+	protected void fireAnimationEvent()
+	{
+		for( final AnimatedVisualisationListener l : this.listeners )
+			l.newVisualisationAvailable( this );
+	}
+
+	/**
+	 *	Animate the colour of a country
+	 *	@param countryCode The country to animate
+	 *	@param colourAnimator The colour animator
+	 */
+	public void animateCountryColour( final String countryCode, final ValueAnimator<Float[]> colourAnimator )
+	{
+		this.colourAnimators.put( countryCode, colourAnimator );
+		this.activeCountries.add( countryCode );
+		if( this.animationThread == null )
+		{
+			this.animationThread = new Thread( new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					while( !WorldMap.this.colourAnimators.isEmpty() )
+					{
+						// Update the colour for each of the countries in our animators
+						final Iterator<String> caIt = WorldMap.this.colourAnimators.keySet().iterator();
+						while( caIt.hasNext() )
+						{
+							final String cc = caIt.next();
+
+							// Get the next colour for the country and update its highlight colour
+							final Float[] colour = WorldMap.this.colourAnimators.get(cc).nextValue();
+							WorldMap.this.countryHighlightColours.put( cc, colour );
+
+							// If the animator's finished. we'll remove it
+							if( WorldMap.this.colourAnimators.get( cc ).hasFinished() )
+							{
+								caIt.remove();
+
+								if( Arrays.equals( colour, WorldMap.this.getDefaultCountryLandColour() ) )
+									WorldMap.this.activeCountries.remove( cc );
+							}
+						}
+
+						// Fire the animation event
+						WorldMap.this.fireAnimationEvent();
+					}
+
+					WorldMap.this.animationThread = null;
+				}
+			});
+			this.animationThread.start();
+		}
+	}
+
+	/**
 	 * 	Demonstration method.
 	 *	@param args command-line args (unused)
 	 */
@@ -305,12 +459,28 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		final WorldMap<LabelledDot> wp = new WorldMap<LabelledDot>(
 				1200, 800, new LabelledPointVisualisation() );
 
+		// Show and highlight some stuff.
 		wp.addPoint( -67.271667, -55.979722, new LabelledDot( "Cape Horn", 1d, RGBColour.WHITE ) );
 		wp.addPoint( -0.1275, 51.507222, new LabelledDot( "London", 1d, RGBColour.WHITE ) );
 		wp.addPoint( 139.6917, 35.689506, new LabelledDot( "Tokyo", 1d, RGBColour.WHITE ) );
+		wp.addPoint( 37.616667, 55.75, new LabelledDot( "Moscow", 1d, RGBColour.WHITE ) );
 		wp.addHighlightCountry( "cn" );
 		wp.addHighlightCountry( "us", new Float[]{0f,0.2f,1f,1f} );
-
+		wp.getAxesRenderer().setDrawMajorTickGrid( true );
 		wp.showWindow( "World" );
+
+		// Wait 3 seconds ...
+		try { Thread.sleep( 3000 ); } catch( final InterruptedException e ) {}
+
+		// ... and flash Russia
+		wp.animateCountryColour( "ru", new ColourSpaceAnimator(
+				new Float[]{0.8f,1f,0.8f}, wp.getDefaultCountryLandColour(), 5000 ) );
+
+		// Wait another 2 seconds...
+		try { Thread.sleep( 2000 ); } catch( final InterruptedException e ) {}
+
+		// ... and flash Australia
+		wp.animateCountryColour( "au", new ColourSpaceAnimator(
+				new Float[]{1f,0.8f,0.8f}, wp.getHighlightCountryLandColour(), 5000 ) );
 	}
 }

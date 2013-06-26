@@ -15,6 +15,7 @@ import org.openimaj.image.typography.general.GeneralFont;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.vis.DataPixelTransformer;
 
 /**
  *	The axes renderer is a helper class that is able to draw axes into an image
@@ -31,7 +32,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * 	@param <I> The type of image being drawn to
  *  @created 3 Jun 2013
  */
-public class AxesRenderer<Q,I extends Image<Q,I>>
+public class AxesRenderer<Q,I extends Image<Q,I>> implements DataPixelTransformer<I>
 {
 	/** Whether to draw the x axis */
 	private boolean drawXAxis = true;
@@ -112,7 +113,7 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	private int majorTickThickness = 3;
 
 	/** The thickness of the minor tick marks on the axes */
-	private int minorTickThickenss = 1;
+	private int minorTickThickness = 1;
 
 	/** Whether to draw the X ticks */
 	private boolean drawXTicks = true;
@@ -199,6 +200,30 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	/** The calculated size of each unit in the y direction */
 	private double yUnitSizePx;
 
+	/** The label transformer to use for the x axis */
+	private LabelTransformer xAxisLabelTransformer = null;
+
+	/** The label transformer to use for the x axis */
+	private LabelTransformer yAxisLabelTransformer = null;
+
+	/** Whether the grid from minor ticks should be drawn */
+	private boolean drawMinorTickGrid = false;
+
+	/** Whether the grid from major ticks should be drawn */
+	private boolean drawMajorTickGrid = false;
+
+	/** Colour of the minor grid */
+	private Q minorGridColour;
+
+	/** Colour of the major grid */
+	private Q majorGridColour;
+
+	/** Thickness of the major grid lines */
+	private int majorGridThickness = 1;
+
+	/** Thickness of the minor grid lines */
+	private int minorGridThickness = 1;
+
 	/**
 	 * 	Default constructor
 	 */
@@ -210,6 +235,7 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	 * 	Can be called to force the precalculation of some of the variables.
 	 * 	@param image The image
 	 */
+	@Override
 	public void precalc( final I image )
 	{
 		// Get the dimensions of the image to draw to
@@ -253,18 +279,42 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 
 		// Draw the x-axis minor ticks
 		if( this.drawXAxis && this.drawXTicks )
+		{
 			for( double v = this.minXValue; v <= this.maxXValue; v += this.xMinorTickSpacing )
+			{
+				if( this.drawMinorTickGrid )
+					ir.drawLine(
+							(int)(this.yAxisPosition + v * this.xUnitSizePx),
+							0,
+							(int)(this.yAxisPosition + v * this.xUnitSizePx),
+							image.getHeight(),
+							this.minorGridThickness,
+							this.minorGridColour );
+
 				ir.drawLine(
 					(int)(this.yAxisPosition + v * this.xUnitSizePx),
 					(int)(this.xAxisPosition-this.minorTickLength),
 					(int)(this.yAxisPosition + v * this.xUnitSizePx),
 					(int)(this.xAxisPosition+this.minorTickLength),
-					this.minorTickThickenss,
+					this.minorTickThickness,
 					this.minorTickColour );
+			}
+		}
 
 		// Draw the x-axis major ticks
 		if( this.drawXAxis && this.drawXTicks )
+		{
 			for( double v = this.minXValue; v <= this.maxXValue; v += this.xMajorTickSpacing )
+			{
+				if( this.drawMajorTickGrid )
+					ir.drawLine(
+							(int)(this.yAxisPosition + v * this.xUnitSizePx),
+							0,
+							(int)(this.yAxisPosition + v * this.xUnitSizePx),
+							image.getHeight(),
+							this.majorGridThickness,
+							this.majorGridColour );
+
 				ir.drawLine(
 					(int)(this.yAxisPosition + v * this.xUnitSizePx),
 					(int)(this.xAxisPosition-this.majorTickLength),
@@ -272,6 +322,8 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 					(int)(this.xAxisPosition+this.majorTickLength),
 					this.majorTickThickness,
 					this.majorTickColour );
+			}
+		}
 
 		// Draw the x tick labels
 		double maxXLabelPosition = 0;
@@ -289,7 +341,10 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 
 			for( double v = this.minXValue; v <= this.maxXValue; v += this.xLabelSpacing )
 			{
-				final String text = ""+v;
+				String text = ""+v;
+				if( this.xAxisLabelTransformer != null )
+					text = this.xAxisLabelTransformer.transform( v );
+
 				final float fw = r.getBounds( text, s ).width;
 				final int xPos = (int)(this.yAxisPosition + v*this.xUnitSizePx - fw/2);
 				ir.drawText( text, xPos, yPos, this.xTickLabelFont,
@@ -300,18 +355,42 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 
 		// Draw the y-axis ticks
 		if( this.drawYAxis && this.drawYTicks )
+		{
 			for( double v = this.minYValue; v <= this.maxYValue; v += this.yMinorTickSpacing )
+			{
+				if( this.drawMinorTickGrid )
+					ir.drawLine(
+							0,
+							(int)(this.xAxisPosition - v * this.yUnitSizePx),
+							image.getWidth(),
+							(int)(this.xAxisPosition - v * this.yUnitSizePx),
+							this.minorGridThickness,
+							this.minorGridColour );
+
 				ir.drawLine(
 					(int)(this.yAxisPosition-this.minorTickLength),
 					(int)(this.xAxisPosition - v * this.yUnitSizePx),
 					(int)(this.yAxisPosition+this.minorTickLength),
 					(int)(this.xAxisPosition - v * this.yUnitSizePx),
-					this.minorTickThickenss,
+					this.minorTickThickness,
 					this.minorTickColour );
+			}
+		}
 
 		// Draw the y-axis ticks
 		if( this.drawYAxis && this.drawYTicks )
+		{
 			for( double v = this.minYValue; v <= this.maxYValue; v += this.yMajorTickSpacing )
+			{
+				if( this.drawMajorTickGrid )
+					ir.drawLine(
+							0,
+							(int)(this.xAxisPosition - v * this.yUnitSizePx),
+							image.getWidth(),
+							(int)(this.xAxisPosition - v * this.yUnitSizePx),
+							this.majorGridThickness,
+							this.majorGridColour );
+
 				ir.drawLine(
 					(int)(this.yAxisPosition-this.majorTickLength),
 					(int)(this.xAxisPosition - v * this.yUnitSizePx),
@@ -319,6 +398,8 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 					(int)(this.xAxisPosition - v * this.yUnitSizePx),
 					this.majorTickThickness,
 					this.majorTickColour );
+			}
+		}
 
 		// Draw the x tick labels
 		double minYLabelPosition = this.yAxisPosition;
@@ -333,7 +414,10 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 
 			for( double v = this.minYValue; v <= this.maxYValue; v += this.yLabelSpacing )
 			{
-				final String text = ""+v;
+				String text = ""+v;
+				if( this.yAxisLabelTransformer != null )
+					text = this.yAxisLabelTransformer.transform( v );
+
 				final float fw = r.getBounds( text, s ).width;
 				final int xPos = (int)(this.yAxisPosition - fw - this.majorTickLength
 						- this.yTickLabelSize/2 );	// Last part is just a bit of padding
@@ -386,6 +470,7 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	 *	@param y The y position
 	 *	@return The pixel position
 	 */
+	@Override
 	public Point2d calculatePosition(
 			final I image, final double x, final double y )
 	{
@@ -401,6 +486,7 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	 *	@param y The y pixel position
 	 *	@return the x and y unit coordinates in a double
 	 */
+	@Override
 	public double[] calculateUnitsAt(
 			final I image, final int x, final int y )
 	{
@@ -829,7 +915,7 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	 */
 	public int getMinorTickThickenss()
 	{
-		return this.minorTickThickenss;
+		return this.minorTickThickness;
 	}
 
 	/**
@@ -837,7 +923,7 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	 */
 	public void setMinorTickThickenss( final int minorTickThickenss )
 	{
-		this.minorTickThickenss = minorTickThickenss;
+		this.minorTickThickness = minorTickThickenss;
 	}
 
 	/**
@@ -1265,6 +1351,175 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 	}
 
 	/**
+	 *	@return the xAxisLabelTransformer
+	 */
+	public LabelTransformer getxAxisLabelTransformer()
+	{
+		return this.xAxisLabelTransformer;
+	}
+
+	/**
+	 *	@param xAxisLabelTransformer the xAxisLabelTransformer to set
+	 */
+	public void setxAxisLabelTransformer( final LabelTransformer xAxisLabelTransformer )
+	{
+		this.xAxisLabelTransformer = xAxisLabelTransformer;
+	}
+
+	/**
+	 *	@return the yAxisLabelTransformer
+	 */
+	public LabelTransformer getyAxisLabelTransformer()
+	{
+		return this.yAxisLabelTransformer;
+	}
+
+	/**
+	 *	@param yAxisLabelTransformer the yAxisLabelTransformer to set
+	 */
+	public void setyAxisLabelTransformer( final LabelTransformer yAxisLabelTransformer )
+	{
+		this.yAxisLabelTransformer = yAxisLabelTransformer;
+	}
+
+	/**
+	 *	@return the drawMinorTickGrid
+	 */
+	public boolean isDrawMinorTickGrid()
+	{
+		return this.drawMinorTickGrid;
+	}
+
+	/**
+	 *	@param drawMinorTickGrid the drawMinorTickGrid to set
+	 */
+	public void setDrawMinorTickGrid( final boolean drawMinorTickGrid )
+	{
+		this.drawMinorTickGrid = drawMinorTickGrid;
+	}
+
+	/**
+	 *	@return the drawMajorTickGrid
+	 */
+	public boolean isDrawMajorTickGrid()
+	{
+		return this.drawMajorTickGrid;
+	}
+
+	/**
+	 *	@param drawMajorTickGrid the drawMajorTickGrid to set
+	 */
+	public void setDrawMajorTickGrid( final boolean drawMajorTickGrid )
+	{
+		this.drawMajorTickGrid = drawMajorTickGrid;
+	}
+
+	/**
+	 *	@return the minorGridColour
+	 */
+	public Q getMinorGridColour()
+	{
+		return this.minorGridColour;
+	}
+
+	/**
+	 *	@param minorGridColour the minorGridColour to set
+	 */
+	public void setMinorGridColour( final Q minorGridColour )
+	{
+		this.minorGridColour = minorGridColour;
+	}
+
+	/**
+	 *	@return the majorGridColour
+	 */
+	public Q getMajorGridColour()
+	{
+		return this.majorGridColour;
+	}
+
+	/**
+	 *	@param majorGridColour the majorGridColour to set
+	 */
+	public void setMajorGridColour( final Q majorGridColour )
+	{
+		this.majorGridColour = majorGridColour;
+	}
+
+	/**
+	 *	@return the majorGridThickness
+	 */
+	public int getMajorGridThickness()
+	{
+		return this.majorGridThickness;
+	}
+
+	/**
+	 *	@param majorGridThickness the majorGridThickness to set
+	 */
+	public void setMajorGridThickness( final int majorGridThickness )
+	{
+		this.majorGridThickness = majorGridThickness;
+	}
+
+	/**
+	 *	@return the minorGridThickness
+	 */
+	public int getMinorGridThickness()
+	{
+		return this.minorGridThickness;
+	}
+
+	/**
+	 *	@param minorGridThickness the minorGridThickness to set
+	 */
+	public void setMinorGridThickness( final int minorGridThickness )
+	{
+		this.minorGridThickness = minorGridThickness;
+	}
+
+	/**
+	 * 	Returns a data pixel transformer that is based on this axes renderer but has its values
+	 * 	offset by the given number of pixels.
+	 *
+	 *	@param xOffset The x location
+	 *	@param yOffset The y location
+	 *	@return A new data pixel transformer
+	 */
+	public DataPixelTransformer<I> getRelativePixelTransformer( final int xOffset, final int yOffset )
+	{
+		return new DataPixelTransformer<I>()
+		{
+			@Override
+			public void precalc( final I image )
+			{
+				AxesRenderer.this.precalc( image );
+			}
+
+			@Override
+			public Point2d calculatePosition( final I image, final double x, final double y )
+			{
+				// Calculate the position of the data
+				final Point2d p = AxesRenderer.this.calculatePosition( image, x, y );
+
+				// Then translate it back by the offset
+				p.translate( -xOffset, -yOffset );
+				return p;
+			}
+
+			@Override
+			public double[] calculateUnitsAt( final I image, int x, int y )
+			{
+				// Translate the pixel to the original coordinates
+				x += xOffset;
+				y += yOffset;
+				// Now calculate the value
+				return AxesRenderer.this.calculateUnitsAt( image, x, y );
+			}
+		};
+	}
+
+	/**
 	 *	@param args
 	 */
 	public static void main( final String[] args )
@@ -1293,7 +1548,7 @@ public class AxesRenderer<Q,I extends Image<Q,I>>
 		ar.minorTickLength = 5;
 		ar.majorTickLength = 7;
 		ar.majorTickThickness = 3;
-		ar.minorTickThickenss = 1;
+		ar.minorTickThickness = 1;
 		ar.xMinorTickSpacing = 0.05;
 		ar.xMajorTickSpacing = 0.25;
 		ar.xLabelSpacing = 0.25;

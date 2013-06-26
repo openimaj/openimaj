@@ -107,6 +107,10 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 		this.axesRenderer.setyTickLabelColour( RGBColour.GRAY );
 		this.axesRenderer.setxAxisNameColour( RGBColour.WHITE );
 		this.axesRenderer.setyAxisNameColour( RGBColour.WHITE );
+		this.axesRenderer.setMajorGridColour( new Float[]{.5f,.5f,.5f,1f} );
+		this.axesRenderer.setMinorGridColour( new Float[]{.5f,.5f,.5f,1f} );
+		this.axesRenderer.setDrawMajorTickGrid( true );
+		this.axesRenderer.setDrawMinorTickGrid( true );
 	}
 
 	/**

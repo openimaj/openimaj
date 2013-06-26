@@ -32,20 +32,23 @@ package org.openimaj.vis.audio;
 import gnu.trove.list.array.TFloatArrayList;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.audio.samples.SampleBuffer;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.vis.DataPixelTransformer;
 import org.openimaj.vis.Visualisation;
 import org.openimaj.vis.timeline.TimelineObject;
 import org.openimaj.vis.timeline.TimelineObjectAdapter;
@@ -263,6 +266,12 @@ public class AudioOverviewVisualisation extends Visualisation<AudioStream>
 	/** Whether the generation is complete */
 	private boolean generationComplete = false;
 
+	/** Set of markers to display on the image and their colours */
+	private final Map<Long,Float[]> markers = new HashMap<Long,Float[]>();
+
+	/** The data pixel transformer */
+	private DataPixelTransformer<MBFImage> pixelTransformer;
+
 	/**
 	 * 	Default constructor
 	 * 	@param as The audio data to plot
@@ -347,7 +356,10 @@ public class AudioOverviewVisualisation extends Visualisation<AudioStream>
 	{
 		// Check if the overview's been generated, if not return empty image
 		if( this.aap == null )
-			return new MBFImage( w, h, 4 );
+		{
+			this.visImage.drawText( "Processing...", 20, 20, HersheyFont.TIMES_BOLD, 12, RGBColour.WHITE );
+			return this.visImage;
+		}
 
 		// If the generation isn't complete (and aap is not null) it means
 		// we're processing the overview. Wait until it's finished.
@@ -373,9 +385,9 @@ public class AudioOverviewVisualisation extends Visualisation<AudioStream>
 	    final double ampScalar = channelSize / Integer.MAX_VALUE;
 
 	    // Create the image we're going to draw on to - RGBA
-	    final MBFImage m = new MBFImage( w, h, 4 );
-	    final MBFImageRenderer renderer = m.createRenderer();
-	    m.fill( backgroundColour );
+//	    final MBFImage m = new MBFImage( w, h, 4 );
+	    final MBFImageRenderer renderer = this.visImage.createRenderer();
+	    this.visImage.fill( backgroundColour );
 
 	    try
         {
@@ -396,8 +408,7 @@ public class AudioOverviewVisualisation extends Visualisation<AudioStream>
 	        e.printStackTrace();
         }
 
-        this.visImage = m;
-		return m;
+		return this.visImage;
     }
 
 	/**
@@ -433,43 +444,34 @@ public class AudioOverviewVisualisation extends Visualisation<AudioStream>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
-	 */
-	@Override
-	public void paint( final Graphics g )
-	{
-		if( this.visImage == null ||
-			this.visImage.getWidth()  != this.getWidth() ||
-			this.visImage.getHeight() != this.getHeight() )
-				this.plotAudioWaveformImage( this.getWidth(), this.getHeight(),
-					new Float[]{1f,1f,0f,1f}, new Float[]{0f,0f,0f,1f} );
-
-		if( this.visImage != null )
-			// Copy the vis to the Swing UI
-			g.drawImage( ImageUtilities.createBufferedImage( this.visImage ),
-					0, 0, null );
-	}
-
-	/**
-	 *	{@inheritDoc}
 	 * 	@see org.openimaj.vis.Visualisation#update()
 	 */
 	@Override
 	public void update()
 	{
-		this.repaint();
+		if( this.visImage == null )
+				this.plotAudioWaveformImage(
+					this.visImage.getWidth(), this.visImage.getHeight(),
+					new Float[]{1f,1f,0f,1f}, new Float[]{0f,0f,0f,1f} );
 	}
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.timeline.TimelineObject#setViewSize(java.awt.Dimension, long, long)
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#setStartTimeMilliseconds(long)
 	 */
 	@Override
-	public void setViewSize( final Dimension d,
-			final long startTimeMilliseconds, final long endTimeMilliseconds )
+	public void setStartTimeMilliseconds( final long l )
 	{
-		this.length = endTimeMilliseconds - startTimeMilliseconds;
-		this.start = startTimeMilliseconds;
-		// The dimension is ignored as we use the visImage dimensions to draw our vis
+		this.start = l;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#setDataPixelTransformer(org.openimaj.vis.DataPixelTransformer)
+	 */
+	@Override
+	public void setDataPixelTransformer( final DataPixelTransformer<MBFImage> dpt )
+	{
+		this.pixelTransformer = dpt;
 	}
 }
