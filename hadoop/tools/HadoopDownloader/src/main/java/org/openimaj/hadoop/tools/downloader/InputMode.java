@@ -45,10 +45,10 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public enum InputMode implements CmdLineOptionsProvider {
 	/**
-	 * Plain list-of-urls file. One URL per line. 
+	 * Plain list-of-urls file. One URL per line.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	PLAIN {
 		@Option(name = "-hash-keys", usage = "use the MD5SUM of the URL as the key, rather than the URL itself.")
@@ -65,7 +65,7 @@ public enum InputMode implements CmdLineOptionsProvider {
 						key = MD5Hash.digest(key).toString();
 					}
 
-					ArrayList<URL> value = new ArrayList<URL>();
+					final ArrayList<URL> value = new ArrayList<URL>();
 					value.add(new URL(data));
 
 					return new IndependentPair<String, List<URL>>(key, value);
@@ -74,10 +74,11 @@ public enum InputMode implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-	 * List of URLs in the form provided by <a href="http://www.image-net.org">image-net</a>
+	 * List of URLs in the form provided by <a
+	 * href="http://www.image-net.org">image-net</a>
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	IMAGE_NET {
 		@Override
@@ -85,16 +86,17 @@ public enum InputMode implements CmdLineOptionsProvider {
 			return new Parser() {
 				@Override
 				public IndependentPair<String, List<URL>> parse(String data) throws Exception {
-					// we expect a format [id]\t[url] as with the image-net url set
-					String[] split = data.split("\t");
-					if(split.length != 2) {
+					// we expect a format [id]\t[url] as with the image-net url
+					// set
+					final String[] split = data.split("\t");
+					if (split.length != 2) {
 						throw new RuntimeException("Record is in the wrong format");
 					}
 
-					String id = split[0].trim();
-					String url = split[1].trim();
+					final String id = split[0].trim();
+					final String url = split[1].trim();
 
-					ArrayList<URL> value = new ArrayList<URL>();
+					final ArrayList<URL> value = new ArrayList<URL>();
 					value.add(new URL(url));
 
 					return new IndependentPair<String, List<URL>>(id, value);
@@ -106,13 +108,18 @@ public enum InputMode implements CmdLineOptionsProvider {
 	 * Wikipedia image URLs dump format
 	 * 
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	WIKIPEDIA_IMAGES_DUMP {
 		@Override
 		public Parser getOptions() {
 			return new Parser() {
-				@Option(name="--wikipedia-baseurl", aliases="-wbase", required=false, usage="wikipedia upload files base urls. add many urls to check different locations for each image. defaults to upload.wikimedia.org/wikipedia/commons and upload.wikimedia.org/wikipedia/en", multiValued=true)
+				@Option(
+						name = "--wikipedia-baseurl",
+						aliases = "-wbase",
+						required = false,
+						usage = "wikipedia upload files base urls. add many urls to check different locations for each image. defaults to upload.wikimedia.org/wikipedia/commons and upload.wikimedia.org/wikipedia/en",
+						multiValued = true)
 				private List<String> wikipediaBase;
 
 				@Override
@@ -123,17 +130,18 @@ public enum InputMode implements CmdLineOptionsProvider {
 						wikipediaBase.add("http://upload.wikimedia.org/wikipedia/en");
 					}
 
-					String[] split = data.split(":");
-					if(split.length != 2) {
+					final String[] split = data.split(":");
+					if (split.length != 2) {
 						throw new RuntimeException("Record is in the wrong format");
 					}
 
-					String hash = MD5Hash.digest(split[1]).toString();
-					String dirStructure = String.format("%s/%s", hash.substring(0, 1), hash.substring(0, 2));
+					final String hash = MD5Hash.digest(split[1]).toString();
+					final String dirStructure = String.format("%s/%s", hash.substring(0, 1), hash.substring(0, 2));
 
-					ArrayList<URL> value = new ArrayList<URL>();
-					for(String base : wikipediaBase) {
-						String completeURL = String.format("%s/%s/%s", base, dirStructure, split[1].replace(" ", "_"));
+					final ArrayList<URL> value = new ArrayList<URL>();
+					for (final String base : wikipediaBase) {
+						final String completeURL = String.format("%s/%s/%s", base, dirStructure,
+								split[1].replace(" ", "_"));
 						value.add(new URL(completeURL));
 					}
 
@@ -151,7 +159,9 @@ public enum InputMode implements CmdLineOptionsProvider {
 		@Override
 		public Parser getOptions() {
 			return new CsvParser() {
+				@Option(name = "--key-field")
 				int keyField;
+				@Option(name = "--url-field")
 				int urlField;
 
 				@Override
@@ -167,11 +177,10 @@ public enum InputMode implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-	 * Parse the FlickrCrawler csv file to get the 
-	 * medium url of the image.
+	 * Parse the FlickrCrawler csv file to get the medium url of the image.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	FLICKR_CSV_MEDIUM {
 		@Override
@@ -188,8 +197,7 @@ public enum InputMode implements CmdLineOptionsProvider {
 				}
 			};
 		}
-	}
-	;
+	};
 
 	@Override
 	public abstract Parser getOptions();
@@ -201,14 +209,16 @@ public enum InputMode implements CmdLineOptionsProvider {
 	 */
 	public static abstract class Parser {
 		/**
-		 * Parse a record into a key and list of potential URLs.
-		 * In most cases there will only be a single potential URL
-		 * in the list. The downloader will work through the list
-		 * until it finds a working URL, or exhausts its options.
+		 * Parse a record into a key and list of potential URLs. In most cases
+		 * there will only be a single potential URL in the list. The downloader
+		 * will work through the list until it finds a working URL, or exhausts
+		 * its options.
 		 * 
-		 * @param data the data record from the input file
+		 * @param data
+		 *            the data record from the input file
 		 * @return the key and potential URLs
-		 * @throws Exception if an error occurs
+		 * @throws Exception
+		 *             if an error occurs
 		 */
 		public abstract IndependentPair<String, List<URL>> parse(String data) throws Exception;
 	}
@@ -217,27 +227,31 @@ public enum InputMode implements CmdLineOptionsProvider {
 		final static String CVS_REGEX = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
 
 		public abstract int getKeyField();
+
 		public abstract int getUrlField();
 
 		@Override
 		public IndependentPair<String, List<URL>> parse(String data) throws Exception {
-			String[] parts = data.split(CVS_REGEX);
+			final String[] parts = data.split(CVS_REGEX);
 
-			String key = unescapeCSV(parts[getKeyField()]);
-			URL url = new URL(unescapeCSV(parts[getUrlField()]));
+			final String key = unescapeCSV(parts[getKeyField()]);
+			final URL url = new URL(unescapeCSV(parts[getUrlField()]));
 
-			ArrayList<URL> value = new ArrayList<URL>();
+			final ArrayList<URL> value = new ArrayList<URL>();
 			value.add(url);
 
 			return new IndependentPair<String, List<URL>>(key, value);
 		}
 
 		private String unescapeCSV(String input) {
-			if (input == null) return input;
-			else if (input.length() < 2) return input;
-			else if (input.charAt(0) != '"' || input.charAt(input.length()-1) != '"') return input;
+			if (input == null)
+				return input;
+			else if (input.length() < 2)
+				return input;
+			else if (input.charAt(0) != '"' || input.charAt(input.length() - 1) != '"')
+				return input;
 			else {
-				String quoteless = input.substring(1, input.length()-1);
+				String quoteless = input.substring(1, input.length() - 1);
 
 				if (quoteless.contains(",") || quoteless.contains("\n") || quoteless.contains("\"")) {
 					quoteless = quoteless.replace("\"\"", "\"");
