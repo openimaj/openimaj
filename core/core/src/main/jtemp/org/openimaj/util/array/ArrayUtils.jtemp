@@ -1175,5 +1175,37 @@ public class ArrayUtils {
 				high = hh - 1;
 		}
 	}	
+	/*-- conversions --*/
+	/**
+	 * Convert from #TT#[] to #t#[]. This will create a new array and copy the contents.
+	 *
+	 * @param array input array
+	 * @return the converted array
+	 */
+	public #t#[] convert(#TT#[] array) {
+		#t#[] out = new #t#[array.length];
+		
+		for (int i=0; i<array.length; i++) {
+			out[i] = array[i];
+		}
+		
+		return out;
+	}
+	
+	/**
+	 * Convert from #T#[] to #TT#[]. This will create a new array and copy the contents.
+	 *
+	 * @param array input array
+	 * @return the converted array
+	 */
+	public #TT#[] convert(#t#[] array) {
+		#TT#[] out = new #TT#[array.length];
+		
+		for (int i=0; i<array.length; i++) {
+			out[i] = array[i];
+		}
+		
+		return out;
+	}
 	/*-- the end --*/
 }
