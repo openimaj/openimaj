@@ -64,11 +64,11 @@ public class DoubleDBSCAN implements SpatialClusterer<DBSCANClusters<double[]>, 
 				clusterIndex++;
 			}
 		}
-		DBSCANClusters<double[]> dbscanClusters = new DBSCANClusters<double[]>();
-		state.clusters.forEach(new TIntObjectProcedure<TIntHash>() {
+		final DBSCANClusters<double[]> dbscanClusters = new DBSCANClusters<double[]>();
+		state.clusters.forEachEntry(new TIntObjectProcedure<TIntList>() {
 			@Override
-			public boolean execute(int cluster, TIntHash b) {
-				dbscanClusters.clusterMembers[cluster] = b.;
+			public boolean execute(int cluster, TIntList b) {
+				dbscanClusters.clusterMembers[cluster] = b.toArray();
 				return true;
 			}
 		});
