@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class WorldPolygons {
 	private static Document doc;
@@ -30,7 +30,7 @@ public class WorldPolygons {
 
 		try {
 			final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			doc = dBuilder.parse(WorldPolygons.class.getResourceAsStream("./countries_world.kml"));
+			doc = dBuilder.parse(WorldPolygons.class.getResourceAsStream("countries_world.kml"));
 
 		} catch (final Exception e) {
 			throw new RuntimeException();

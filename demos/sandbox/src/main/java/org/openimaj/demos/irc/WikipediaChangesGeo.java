@@ -16,7 +16,7 @@ import org.openimaj.video.VideoDisplay;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class WikipediaChangesGeo {
 	private static final class NotNull implements Predicate<Object> {
@@ -49,7 +49,6 @@ public class WikipediaChangesGeo {
 				)
 				.filter(new ContextPredicateAdaptor<Object>(new NotNull(), "geolocation"))
 				.forEach(new Operation<Context>() {
-
 					@Override
 					public void perform(Context object) {
 						final FreeGeoIPLocation geoip = object.getTyped("geolocation");

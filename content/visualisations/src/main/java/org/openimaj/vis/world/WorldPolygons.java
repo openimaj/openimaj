@@ -48,7 +48,7 @@ public class WorldPolygons
 			// Read in the document from the countries XML file
 			final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			WorldPolygons.doc = dBuilder.parse(
-				WorldPolygons.class.getResourceAsStream( "./countries_world.kml" ) );
+				WorldPolygons.class.getResourceAsStream( "countries_world.kml" ) );
 
 		}
 		catch( final Exception e )
