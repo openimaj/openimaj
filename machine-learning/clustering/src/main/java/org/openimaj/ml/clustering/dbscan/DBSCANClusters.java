@@ -4,8 +4,10 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Scanner;
 
+import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 
@@ -19,6 +21,14 @@ public class DBSCANClusters<T> implements SpatialClusters<T> {
 	 * The members of a cluster
 	 */
 	int[][] clusterMembers;
+	/**
+	 * Indexes of noise elements
+	 */
+	int[] noise;
+	/**
+	 * The configuration that created this DBSCAN cluster
+	 */
+	DBSCANConfiguration<DoubleNearestNeighbours, double[]> conf;
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
@@ -63,5 +73,17 @@ public class DBSCANClusters<T> implements SpatialClusters<T> {
 	@Override
 	public HardAssigner<T, ?, ?> defaultHardAssigner() {
 		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public String toString() {
+		int[][] clusters = clusterMembers;
+		int i = 0;
+		String str = "";
+		for (int[] member : clusters) {
+			str += String.format("%d %s\n",i++,Arrays.toString(member));
+		}
+		str+=String.format("%s", Arrays.toString(this.noise));
+		return str;
 	}
 }

@@ -1,9 +1,14 @@
 package org.openimaj.ml.clustering.dbscan;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.io.FileUtils;
@@ -18,7 +23,9 @@ import org.openimaj.knn.DoubleNearestNeighboursExact;
  *
  */
 public class TestDoubleDBSCAN {
-
+//	static{
+//		LoggerUtils.prepareConsoleLogger();
+//	}
 	class TestStats{
 		double eps;
 		int minpts;
@@ -29,6 +36,7 @@ public class TestDoubleDBSCAN {
 	private TestStats testStats;
 	private double[][] testData;
 	private int[][] testClusters;
+	private Logger logger = Logger.getLogger(TestDoubleDBSCAN.class);
 	private TestStats readTestStats(String[] data) {
 		TestStats ret = new TestStats();
 		int i = 0;
@@ -39,6 +47,9 @@ public class TestDoubleDBSCAN {
 		ret.mineps = Double.parseDouble(data[i++].split("=")[1].trim());
 		return ret;
 	}
+	/**
+	 * @throws IOException
+	 */
 	@Before
 	public void loadTest() throws IOException{
 		String[] data = FileUtils.readlines(TestDoubleDBSCAN.class.getResourceAsStream("/org/openimaj/ml/clustering/dbscan/dbscandata"));
@@ -51,18 +62,25 @@ public class TestDoubleDBSCAN {
 		for (;data[i].length()!=0; i++);
 		for (i=i+1;data[i].length()!=0; i++);
 		List<int[]> clusters = new ArrayList<int[]>();
+		int count = 0;
 		for (i=i+1;i<data.length; i++){
-			clusters.add(readIntDataLine(data[i]));
+			int[] readIntDataLine = readIntDataLine(data[i]);
+			clusters.add(readIntDataLine);
+			count += readIntDataLine.length;
 		}
+		logger .debug(String.format("Loading %d items in %d clusters\n",count,clusters.size()));
 		return clusters.toArray(new int[clusters.size()][]);
 	}
 	private int[] readIntDataLine(String string) {
 		String[] split = string.split(",");
-		int[] arr = new int[split.length];
+		int[] arr = new int[split.length-1];
 		int i = 0;
+		
 		for (String s : split) {
-			s = s.replace("<", "").replace(">", "").trim();
-			arr[i++] = Integer.parseInt(s);
+			if(s.contains("<"))continue; // skip the first, it is the cluster index 
+			s = s.replace(">", "").trim();
+			arr[i++] = Integer.parseInt(s)-1;
+			
 		}
 		return arr;
 	}
@@ -73,6 +91,7 @@ public class TestDoubleDBSCAN {
 		for (i=i+1;data[i].length()!=0; i++){
 			dataL.add(readDataLine(data[i]));
 		}
+		logger.debug(String.format("Loading %d data items\n",dataL.size()));
 		return dataL.toArray(new double[dataL.size()][]);
 	}
 	private double[] readDataLine(String string) {
@@ -84,6 +103,9 @@ public class TestDoubleDBSCAN {
 		return arr;
 	}
 
+	/**
+	 * 
+	 */
 	@Test
 	public void testDBSCAN(){
 		DoubleDBSCAN dbscan = new DoubleDBSCAN(
@@ -94,7 +116,21 @@ public class TestDoubleDBSCAN {
 				new DoubleNearestNeighboursExact.Factory()
 			)
 		);
-		dbscan.cluster(testData);
+		DBSCANClusters<double[]> res = dbscan.cluster(testData);
+		for (int i = 0; i < res.noise.length; i++) {
+			assertTrue(res.noise[i] < this.testStats.noutliers);
+		}
+		assertTrue(res.noise.length == this.testStats.noutliers);
+		for (int i = 0; i < this.testClusters.length; i++) {
+			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusterMembers[i])));
+		}
+	}
+	private Set<Integer> toSet(int[] is) {
+		Set<Integer> set = new HashSet<Integer>();
+		for (int i = 0; i < is.length; i++) {
+			set.add(is[i]);
+		}
+		return set;
 	}
 
 }

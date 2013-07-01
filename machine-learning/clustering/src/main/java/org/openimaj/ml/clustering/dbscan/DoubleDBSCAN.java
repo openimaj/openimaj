@@ -1,6 +1,5 @@
 package org.openimaj.ml.clustering.dbscan;
 
-import gnu.trove.impl.hash.TIntHash;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -65,6 +64,7 @@ public class DoubleDBSCAN implements SpatialClusterer<DBSCANClusters<double[]>, 
 			}
 		}
 		final DBSCANClusters<double[]> dbscanClusters = new DBSCANClusters<double[]>();
+		dbscanClusters.clusterMembers = new int[state.clusters.size()][];
 		state.clusters.forEachEntry(new TIntObjectProcedure<TIntList>() {
 			@Override
 			public boolean execute(int cluster, TIntList b) {
@@ -72,6 +72,8 @@ public class DoubleDBSCAN implements SpatialClusterer<DBSCANClusters<double[]>, 
 				return true;
 			}
 		});
+		dbscanClusters.conf = this.conf;
+		dbscanClusters.noise = state.noise.toArray();
 		return dbscanClusters;
 	}
 
