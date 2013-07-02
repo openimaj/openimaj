@@ -20,7 +20,7 @@ import org.openimaj.util.pair.IntDoublePair;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DoubleDBSCAN implements SpatialClusterer<DBSCANClusters<double[]>, double[]>{
+public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, double[]>{
 
 	private DBSCANConfiguration<DoubleNearestNeighbours, double[]> conf;
 
@@ -46,7 +46,7 @@ public class DoubleDBSCAN implements SpatialClusterer<DBSCANClusters<double[]>, 
 	}
 
 	@Override
-	public DBSCANClusters<double[]> cluster(double[][] data) {
+	public DoubleDBSCANClusters cluster(double[][] data) {
 		int clusterIndex = 0;
 		State state = new State(data);
 		for (int p = 0; p < data.length; p++) {
@@ -63,8 +63,9 @@ public class DoubleDBSCAN implements SpatialClusterer<DBSCANClusters<double[]>, 
 				clusterIndex++;
 			}
 		}
-		final DBSCANClusters<double[]> dbscanClusters = new DBSCANClusters<double[]>();
+		final DoubleDBSCANClusters dbscanClusters = new DoubleDBSCANClusters();
 		dbscanClusters.clusterMembers = new int[state.clusters.size()][];
+		dbscanClusters.data = data;
 		state.clusters.forEachEntry(new TIntObjectProcedure<TIntList>() {
 			@Override
 			public boolean execute(int cluster, TIntList b) {
@@ -109,7 +110,7 @@ public class DoubleDBSCAN implements SpatialClusterer<DBSCANClusters<double[]>, 
 	}
 
 	@Override
-	public DBSCANClusters<double[]> cluster(DataSource<double[]> data) {
+	public DoubleDBSCANClusters cluster(DataSource<double[]> data) {
 		double[][] allData = new double[data.numRows()][data.numDimensions()];
 		return this.cluster(allData);
 	}

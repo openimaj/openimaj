@@ -75,12 +75,12 @@ public class TestDoubleDBSCAN {
 		String[] split = string.split(",");
 		int[] arr = new int[split.length-1];
 		int i = 0;
-		
+
 		for (String s : split) {
-			if(s.contains("<"))continue; // skip the first, it is the cluster index 
+			if(s.contains("<"))continue; // skip the first, it is the cluster index
 			s = s.replace(">", "").trim();
 			arr[i++] = Integer.parseInt(s)-1;
-			
+
 		}
 		return arr;
 	}
@@ -104,7 +104,7 @@ public class TestDoubleDBSCAN {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Test
 	public void testDBSCAN(){
@@ -116,7 +116,7 @@ public class TestDoubleDBSCAN {
 				new DoubleNearestNeighboursExact.Factory()
 			)
 		);
-		DBSCANClusters<double[]> res = dbscan.cluster(testData);
+		DoubleDBSCANClusters res = dbscan.cluster(testData);
 		for (int i = 0; i < res.noise.length; i++) {
 			assertTrue(res.noise[i] < this.testStats.noutliers);
 		}
