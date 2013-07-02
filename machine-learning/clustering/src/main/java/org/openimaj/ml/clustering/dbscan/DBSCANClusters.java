@@ -33,4 +33,19 @@ public class DBSCANClusters {
 		str+=String.format("%s", Arrays.toString(this.noise));
 		return str;
 	}
+	
+	/**
+	 * @return the clusters and the indexes of data assigned
+	 */
+	public int[][] getClusterMembers(){
+		return this.clusterMembers;
+	}
+	
+	/**
+	 * @return the data indexes assigned to noise
+	 */
+	public int[] getNoise(){
+		return this.noise;
+	}
+	
 }
