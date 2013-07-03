@@ -29,17 +29,18 @@
  */
 package org.openimaj.demos.sandbox.video;
 
-import java.awt.Dimension;
 import java.io.File;
 
-import javax.swing.JFrame;
-
+import org.openimaj.image.MBFImage;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.video.xuggle.XuggleVideo;
+import org.openimaj.vis.DataPixelTransformer;
 import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
 
 /**
- * 
- * 
+ *
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 3 Jul 2012
  * @version $Author$, $Revision$, $Date$
@@ -47,22 +48,40 @@ import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
 public class ShotBoundaryVis
 {
 	/**
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(final String[] args)
 	{
-		final XuggleVideo x = new XuggleVideo(new File("heads2.mpeg"));
+		final XuggleVideo video = new XuggleVideo(new File("heads2.mpeg"));
 
 		System.out.println("HERRE");
 		final ShotBoundaryVideoBarVisualisation sbvbv =
-				new ShotBoundaryVideoBarVisualisation(x);
-		sbvbv.setViewSize(new Dimension(1000, 300), 0, 1000);
-		final JFrame f = new JFrame();
-		f.getContentPane().add(sbvbv);
-		f.setSize(1000, 300);
-		f.setVisible(true);
+				new ShotBoundaryVideoBarVisualisation(video);
+		sbvbv.setDataPixelTransformer( new DataPixelTransformer<MBFImage>()
+		{
+			private double videoLength = 0;
 
+			@Override
+			public void precalc( final MBFImage image )
+			{
+				this.videoLength = 1000d * video.countFrames() / video.getFPS();
+			}
+
+			@Override
+			public double[] calculateUnitsAt( final MBFImage image, final int x, final int y )
+			{
+				return new double[]
+				{  this.videoLength / image.getWidth() * x, y };
+			}
+
+			@Override
+			public Point2d calculatePosition( final MBFImage image, final double x, final double y )
+			{
+				return new Point2dImpl( (float)(this.videoLength / x * image.getWidth()), (float)y );
+			}
+		} );
+		sbvbv.showWindow( "Shot Boundaries" );
 		sbvbv.processVideo();
 	}
 

@@ -28,14 +28,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos.sandbox.video;
 
-import java.awt.BorderLayout;
 import java.io.File;
-
-import javax.swing.JFrame;
 
 import org.openimaj.video.xuggle.XuggleVideo;
 import org.openimaj.vis.timeline.Timeline;
@@ -44,7 +41,7 @@ import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
 
 /**
  * Visualisation example of a timeline showing video, audio and other stuff.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 3 Jul 2012
  * @version $Author$, $Revision$, $Date$
@@ -53,30 +50,27 @@ public class TimelineVis
 {
 	/**
 	 * Default main.
-	 * 
+	 *
 	 * @param args Command-line arguments
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
 	{
 		// Create a timeline
-		Timeline t = new Timeline();
+		final Timeline t = new Timeline( 1500, 300 );
 
 		// Create a frame and display the timeline
-		JFrame f = new JFrame();
-		f.getContentPane().add( t, BorderLayout.CENTER );
-		f.setSize( 1500, 300 );
-		f.setVisible( true );
+		t.showWindow( "Timeline" );
 
 		// Create a track with a video on it.
-		TimelineTrack tt = t.addTrack( "Video 1" );
-		ShotBoundaryVideoBarVisualisation sb = new ShotBoundaryVideoBarVisualisation(
-				new XuggleVideo( new File( "video.m4v" ) ) ); 
-		tt.addTimelineObject( sb );
+		final TimelineTrack tt = t.addTrack( "Video 1" );
+		final ShotBoundaryVideoBarVisualisation sb = new ShotBoundaryVideoBarVisualisation(
+				new XuggleVideo( new File( "video.m4v" ) ) );
+		t.addTimelineObject( tt, sb );
 		sb.setStartTimeMilliseconds( 2000 );
 		sb.processVideo();
-//		
+//
 //		TimelineTrack tt1a = t.addTrack( "Video 1 Audio" );
-//		AudioWaveformPlotter awp = new AudioWaveformPlotter( 
+//		AudioOverviewVisualisation awp = new AudioOverviewVisualisation(
 //				new XuggleAudio( new File( "video.m4v" ) ) );
 //		tt1a.addTimelineObject( awp );
 //
