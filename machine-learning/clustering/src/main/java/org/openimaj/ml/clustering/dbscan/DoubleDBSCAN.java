@@ -7,6 +7,7 @@ import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.data.DataSource;
@@ -111,7 +112,11 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 
 	@Override
 	public DoubleDBSCANClusters cluster(DataSource<double[]> data) {
-		double[][] allData = new double[data.numRows()][data.numDimensions()];
+		double[][] allData = new double[data.numRows()][];
+		Iterator<double[]> iterator = data.iterator();
+		for (int i = 0; i < allData.length; i++) {
+			allData[i] = iterator.next();
+		}
 		return this.cluster(allData);
 	}
 
