@@ -58,11 +58,13 @@ public class DBSCANConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 
 
 	/***
-	 * The
+	 * The threshold on the distance function which defines neighbours
 	 */
 	protected double eps;
 
-
+	/**
+	 * Minimum number of points such that a group of neighbours are considered a cluster (rather than noise)
+	 */
 	protected int minPts;
 
 
