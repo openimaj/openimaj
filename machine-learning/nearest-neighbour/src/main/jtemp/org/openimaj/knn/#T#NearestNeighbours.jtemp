@@ -40,7 +40,7 @@
 ***/
 package org.openimaj.knn;
 
-import org.openimaj.feature.#T#FVComparison;
+import org.openimaj.feature.#T#FVComparator;
 
 import org.openimaj.util.pair.Int#R#Pair;
 
@@ -100,7 +100,7 @@ public abstract class #T#NearestNeighbours implements NearestNeighbours<#t#[], #
 	 * @param pnt The point to compare against.
 	 * @return The resultant distance. 
 	 */
-	public static #r# distanceFunc(final #T#FVComparison distance, final #t# [] qu, final #t# [] pnt) {
+	public static #r# distanceFunc(final #T#FVComparator distance, final #t# [] qu, final #t# [] pnt) {
 		if (distance == null) {
 			return distanceFunc(qu, pnt);
 		}
@@ -122,7 +122,7 @@ public abstract class #T#NearestNeighbours implements NearestNeighbours<#t#[], #
 	 * @param pnts The points to compare against.
 	 * @param dsq_out The resultant distances. 
 	 */
-	public static void distanceFunc(final #T#FVComparison distance, final #t# [] qu, final #t# [][] pnts, #r# [] dsq_out) {
+	public static void distanceFunc(final #T#FVComparator distance, final #t# [] qu, final #t# [][] pnts, #r# [] dsq_out) {
 		if (distance == null) {
 			distanceFunc(qu, pnts, dsq_out);
 			return;

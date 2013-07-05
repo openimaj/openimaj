@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.feature.#T#FVComparison;
+import org.openimaj.feature.#T#FVComparator;
 import org.openimaj.util.pair.Int#R#Pair;
 import org.openimaj.util.queue.BoundedPriorityQueue;
 
@@ -61,7 +62,7 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
     public static final class Factory implements NearestNeighboursFactory<#T#NearestNeighboursExact, #t#[]> {
-        private final #T#FVComparison distance;
+        private final #T#FVComparator distance;
         
         /**
          * Construct the factory using Euclidean distance for the 
@@ -78,7 +79,7 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 		 * @param distance
 		 *            the distance function
          */
-        public Factory(#T#FVComparison distance) {
+        public Factory(#T#FVComparator distance) {
             this.distance = distance;
         }
         
@@ -89,7 +90,7 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
     }
     
 	protected final #t#[][] pnts;
-	protected final #T#FVComparison distance;
+	protected final #T#FVComparator distance;
 
 	/**
 	 * Construct the #T#NearestNeighboursExact over the provided
@@ -110,7 +111,7 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 	 * @param pnts the dataset
 	 * @param distance the distance function
 	 */
-	public #T#NearestNeighboursExact(final #t# [][] pnts, final #T#FVComparison distance) {
+	public #T#NearestNeighboursExact(final #t# [][] pnts, final #T#FVComparator distance) {
 		this.pnts = pnts;
 		this.distance = distance;
 	}

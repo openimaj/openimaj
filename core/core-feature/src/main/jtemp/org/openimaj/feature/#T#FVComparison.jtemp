@@ -38,7 +38,7 @@ import org.openimaj.math.util.distance.HammingUtils;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public enum #T#FVComparison implements FVComparator<#T#FV> {
+public enum #T#FVComparison implements #T#FVComparator {
 	/**
 	 * Euclidean distance
 	 * d(H1,H2) = Math.sqrt( sumI( (H1(I)-H2(I))^2 ) )
@@ -359,5 +359,6 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 * @param h2 the second feature array
 	 * @return a score or distance
 	 */	
+	@Override
 	public abstract double compare(#t#[] h1, #t#[] h2);
 }
