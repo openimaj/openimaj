@@ -243,6 +243,8 @@ public class Parallel {
 		}
 
 		final CountDownLatch latch = new CountDownLatch(loops);
+		final Thread thread = Thread.currentThread();
+		final Throwable[] exception = new Throwable[1];
 
 		for (int i = start; i < stop;) {
 			final int lo = i;
@@ -257,14 +259,25 @@ public class Parallel {
 			pool.submit(new Runnable() {
 				@Override
 				public void run() {
-					op.perform(new IntRange(lo, hi, incr));
-					latch.countDown();
+					try {
+						op.perform(new IntRange(lo, hi, incr));
+					} catch (final Throwable t) {
+						exception[0] = t;
+						thread.interrupt();
+					} finally {
+						latch.countDown();
+					}
 				}
 			});
 		}
 		try {
 			latch.await();
 		} catch (final InterruptedException e) {
+			if (exception[0] instanceof Error)
+				throw (Error) exception[0];
+			if (exception[0] instanceof RuntimeException)
+				throw (RuntimeException) exception[0];
+			throw new RuntimeException(exception[0]);
 		}
 	}
 
