@@ -49,13 +49,13 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.vis.DataPixelTransformer;
-import org.openimaj.vis.Visualisation;
+import org.openimaj.vis.VisualisationImpl;
 import org.openimaj.vis.timeline.TimelineObject;
 import org.openimaj.vis.timeline.TimelineObjectAdapter;
 
 /**
  * 	Utilises an audio processor to plot the audio waveform to an image. This class
- * 	is both a {@link Visualisation} and a {@link TimelineObject}. This means that
+ * 	is both a {@link VisualisationImpl} and a {@link TimelineObject}. This means that
  * 	it can be used to plot a complete visualisation of the overview of the data
  * 	or it can be used to plot temporal parts of the data into the visualisation window.
  * 	<p>
@@ -69,7 +69,7 @@ import org.openimaj.vis.timeline.TimelineObjectAdapter;
  *
  *	@created 9 Jun 2011
  */
-public class AudioOverviewVisualisation extends Visualisation<AudioStream>
+public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 	implements TimelineObject
 {
 	/** */
@@ -444,7 +444,7 @@ public class AudioOverviewVisualisation extends Visualisation<AudioStream>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.Visualisation#update()
+	 * 	@see org.openimaj.vis.VisualisationImpl#update()
 	 */
 	@Override
 	public void update()

@@ -13,25 +13,25 @@ import org.openimaj.vis.world.WorldMap;
 
 /**
  *	This class provides a means for generating a video representation of a
- *	visualisation. This has various advantages in that the visualisation
+ *	visualisationImpl. This has various advantages in that the visualisationImpl
  *	can be rendered easily to a video file or the {@link VideoDisplay}
- *	tools can be used to display the visualisation.
+ *	tools can be used to display the visualisationImpl.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 12 Jun 2013
  */
 public class VideoVisualisation extends AnimatedVideo<MBFImage>
 {
-	private final Visualisation<?> visualisation;
+	private final Visualisation<?> visualisationImpl;
 
 	/**
-	 *	Construct a video visualisation using the given visualisation.
-	 *	@param v The visualisation to make into a video.
+	 *	Construct a video visualisationImpl using the given visualisationImpl.
+	 *	@param v The visualisationImpl to make into a video.
 	 */
 	public VideoVisualisation( final Visualisation<?> v )
 	{
 		super( v.getVisualisationImage() );
-		this.visualisation = v;
+		this.visualisationImpl = v;
 	}
 
 	/**
@@ -41,8 +41,8 @@ public class VideoVisualisation extends AnimatedVideo<MBFImage>
 	@Override
 	protected void updateNextFrame( final MBFImage frame )
 	{
-		this.visualisation.updateVis();
-		frame.internalAssign( this.visualisation.getVisualisationImage() );
+		this.visualisationImpl.updateVis();
+		frame.internalAssign( this.visualisationImpl.getVisualisationImage() );
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class VideoVisualisation extends AnimatedVideo<MBFImage>
 	 */
 	public static void main( final String[] args )
 	{
-		// Create the visualisation
+		// Create the visualisationImpl
 		final DotPlotVisualisation dpv = new DotPlotVisualisation();
 		final WorldMap<ColouredDot> wm = new WorldMap<ColouredDot>( 1280, 720, dpv );
 

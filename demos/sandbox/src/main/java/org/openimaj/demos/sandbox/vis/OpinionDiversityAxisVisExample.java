@@ -74,6 +74,6 @@ public class OpinionDiversityAxisVisExample
 
 		// Show the vis.
 		dv.repaint();
-		dv.showWindow( "Opinion Visualisation" );
+		dv.showWindow( "Opinion VisualisationImpl" );
 	}
 }

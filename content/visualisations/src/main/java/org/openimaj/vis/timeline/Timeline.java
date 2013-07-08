@@ -475,7 +475,7 @@ public class Timeline extends DiversityAxis<TimelineObject>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.Visualisation#update()
+	 * 	@see org.openimaj.vis.VisualisationImpl#update()
 	 */
 	@Override
 	public void update()

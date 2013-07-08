@@ -76,7 +76,7 @@ public class AudioWaveformPlotter
 
 	    final MBFImage img = org.openimaj.vis.audio.AudioOverviewVisualisation.
 	    		getAudioWaveformImage( a, w, h, new Float[]{0f,0f,0f,1f},
-	    				new Float[]{1f,0f,0f,0f} );
+	    				new Float[]{1f,1f,1f,1f} );
 
 	    // Write the image to a file.
 		try

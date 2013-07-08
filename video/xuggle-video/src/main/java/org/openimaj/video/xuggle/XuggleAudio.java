@@ -122,12 +122,25 @@ public class XuggleAudio extends AudioStream
 			//				format.getSampleRateKHz();
 			final long timestampMillisecs = TimeUnit.MILLISECONDS.convert(
 					event.getTimeStamp().longValue(), event.getTimeUnit() );
-			XuggleAudio.this.currentTimecode.setTimecodeInMilliseconds( timestampMillisecs );
-			XuggleAudio.this.currentSamples.setStartTimecode( XuggleAudio.this.currentTimecode );
-			XuggleAudio.this.currentSamples.getFormat().setNumChannels( XuggleAudio.this.getFormat().getNumChannels() );
-			XuggleAudio.this.currentSamples.getFormat().setSigned( XuggleAudio.this.getFormat().isSigned() );
-			XuggleAudio.this.currentSamples.getFormat().setBigEndian( XuggleAudio.this.getFormat().isBigEndian() );
-			XuggleAudio.this.currentSamples.getFormat().setSampleRateKHz( XuggleAudio.this.getFormat().getSampleRateKHz() );
+			
+			XuggleAudio.this.currentTimecode.setTimecodeInMilliseconds( 
+					timestampMillisecs );
+			
+			XuggleAudio.this.currentSamples.setStartTimecode( 
+					XuggleAudio.this.currentTimecode );
+			
+			XuggleAudio.this.currentSamples.getFormat().setNumChannels( 
+					XuggleAudio.this.getFormat().getNumChannels() );
+			
+			XuggleAudio.this.currentSamples.getFormat().setSigned( 
+					XuggleAudio.this.getFormat().isSigned() );
+			
+			XuggleAudio.this.currentSamples.getFormat().setBigEndian( 
+					XuggleAudio.this.getFormat().isBigEndian() );
+			
+			XuggleAudio.this.currentSamples.getFormat().setSampleRateKHz( 
+					XuggleAudio.this.getFormat().getSampleRateKHz() );
+			
 			XuggleAudio.this.chunkAvailable = true;
 		}
 	}
@@ -139,7 +152,7 @@ public class XuggleAudio extends AudioStream
 	 */
 	public XuggleAudio( final File file )
 	{
-		this( file.getPath() );
+		this( file.toURI().toString(), false );
 	}
 
 	/**
@@ -150,7 +163,7 @@ public class XuggleAudio extends AudioStream
 	 */
 	public XuggleAudio( final File file, final boolean loop )
 	{
-		this( file.getPath(), loop );
+		this( file.toURI().toString(), loop );
 	}
 
 	/**

@@ -34,8 +34,8 @@ package org.openimaj.demos.audio;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioMixer;
-import org.openimaj.audio.AudioPlayer;
 import org.openimaj.audio.AudioMixer.MixEventListener;
+import org.openimaj.audio.AudioPlayer;
 import org.openimaj.audio.analysis.BeatDetector;
 import org.openimaj.audio.analysis.EffectiveSoundPressure;
 import org.openimaj.audio.samples.SampleBuffer;
@@ -86,13 +86,14 @@ public class AudioMixerDemo
 	public AudioMixerDemo() 
 	{
 		// The image will contain the VU meters
-		img = new MBFImage( 300, 400, 3 );
-		DisplayUtilities.displayName( img, "VU Meters" );
+		this.img = new MBFImage( 300, 400, 3 );
+		DisplayUtilities.displayName( this.img, "VU Meters" );
 		
 		// Create a new audio mixer than mixes audio streams
-		AudioFormat mixerFormat = new AudioFormat( 16, 44.1, 2 );
+		final AudioFormat mixerFormat = new AudioFormat( 16, 44.1, 2 );
 		final AudioMixer am = new AudioMixer( mixerFormat );
 		am.addMixEventListener( new VURenderer( mixerFormat ) );
+		am.setMixEvents( true );
 		
 		// Due to the way we sequence the loops, the size of this buffer will
 		// cause a lag in the sequenced loops, so the smaller it is the better.
@@ -115,13 +116,13 @@ public class AudioMixerDemo
 
 		// Set up the various events in the sequencer
 		// First we set up all the actions (which can be reused)
-		Sequencer.SequencedAction drums = getAction(
+		final Sequencer.SequencedAction drums = this.getAction(
 				"/org/openimaj/demos/audio/140bpm_formware_psytech.mp3", am );
-		Sequencer.SequencedAction bass = getAction(
+		final Sequencer.SequencedAction bass = this.getAction(
 						"/org/openimaj/demos/audio/140bpm-Arp.mp3", am );
-		Sequencer.SequencedAction tb303 = getAction(
+		final Sequencer.SequencedAction tb303 = this.getAction(
 				"/org/openimaj/demos/audio/140bpm-303.mp3", am );
-		Sequencer.SequencedAction tb2205 = getAction(
+		final Sequencer.SequencedAction tb2205 = this.getAction(
 				"/org/openimaj/demos/audio/140bpm-2205.mp3", am );
 
 		// Add the drums events
@@ -162,7 +163,7 @@ public class AudioMixerDemo
 			@Override
 			public boolean performAction()
 			{
-				XuggleAudio xa5 = new XuggleAudio(
+				final XuggleAudio xa5 = new XuggleAudio(
 					AudioMixer.class.getResource( soundFile ) );
 				am.addStream( xa5, 0.3f );
 				return true;
@@ -184,53 +185,53 @@ public class AudioMixerDemo
 	private class VURenderer implements MixEventListener
 	{
 		/** Processor to get RMS */
-		private EffectiveSoundPressure rms = new EffectiveSoundPressure();
+		private final EffectiveSoundPressure rms = new EffectiveSoundPressure();
 		
 		/** The beat detector processor */
 		private BeatDetector beatDetector = null;
 		
 		/** 0db in our RMS range */
-		private double ref = 82;
+		private final double ref = 82;
 		
 		/** db value where we go red on the VU */
-		private double redAbove = 0.8;
+		private final double redAbove = 0.8;
 		
 		/** Size of each VU block */
-		private int blockPadding = 4;
-		private int blockHeight = 6;
-		private int blockSize = blockHeight + blockPadding;
+		private final int blockPadding = 4;
+		private final int blockHeight = 6;
+		private final int blockSize = this.blockHeight + this.blockPadding;
 		
 		/** Width of the VU Display */
-		private int blockWidth = 30;
+		private final int blockWidth = 30;
 		
 		/** Space between each VU */
-		private int padding = 10;
+		private final int padding = 10;
 		
 		/** Gap between channel VUs */
-		private int intraChannelGap = 2;
+		private final int intraChannelGap = 2;
 		
 		/** Size of total VU meter */
-		private int vuSize = 300;
+		private final int vuSize = 300;
 		
 		/** Where we start drawing the VU meters */
-		private int yOffset = 350;
+		private final int yOffset = 350;
 		
 		/** Where we start drawing the VU Meters */
-		private int xOffset = 50;
+		private final int xOffset = 50;
 		
-		private Float[] colourAbove = RGBColour.RED;
-		private Float[] colourBelow = RGBColour.GREEN;
+		private final Float[] colourAbove = RGBColour.RED;
+		private final Float[] colourBelow = RGBColour.GREEN;
 
 		/** A hysteresis for the beat detector lights */
-		private int[] beatDetectorLightCount = new int[10];
+		private final int[] beatDetectorLightCount = new int[10];
 		
 		/**
 		 * 	Instantiate the VU renderer.
 		 *	@param af The audio format of the mixer
 		 */
-		public VURenderer( AudioFormat af )
+		public VURenderer( final AudioFormat af )
 		{
-			beatDetector = new BeatDetector( af );
+			this.beatDetector = new BeatDetector( af );
 		}
 		
 		/**
@@ -238,7 +239,7 @@ public class AudioMixerDemo
 		 * 	@see org.openimaj.audio.AudioMixer.MixEventListener#mix(org.openimaj.audio.samples.SampleBuffer[], org.openimaj.audio.samples.SampleBuffer)
 		 */
 		@Override
-		public void mix( SampleBuffer[] channels, SampleBuffer mix )
+		public void mix( final SampleBuffer[] channels, final SampleBuffer mix )
 		{
 			// Really, the drawing should be done in another thread and the
 			// samples which are being drawn buffered. However, that would
@@ -247,54 +248,54 @@ public class AudioMixerDemo
 			// the VUs will get a bit flickery and it's possible that if this
 			// process takes too long the mixer will start to stutter.
 			
-			img.zero();
+			AudioMixerDemo.this.img.zero();
 			
 			for( int i = 0; i < channels.length; i++ )
 			{
 				try
 				{
-					int redAboveY = (int)(yOffset - redAbove*vuSize);
-					int x = xOffset + i * (blockWidth+padding);
-					int nc = channels[i].getFormat().getNumChannels();
+					final int redAboveY = (int)(this.yOffset - this.redAbove*this.vuSize);
+					final int x = this.xOffset + i * (this.blockWidth+this.padding);
+					final int nc = channels[i].getFormat().getNumChannels();
 					for( int c = 0; c < nc; c++ )
 					{
 						// Convert the samples into a dB value
-						rms.process( channels[i].getSampleChunk(c) );
+						this.rms.process( channels[i].getSampleChunk(c) );
 						double d = 6/Math.log(2)*
-							Math.log(rms.getEffectiveSoundPressure())-ref;
+							Math.log(this.rms.getEffectiveSoundPressure())-this.ref;
 						d = Math.exp(Math.log(1.055)*d);
 	
 						// Draw the VU Meters
-						for( int y = yOffset; y > yOffset-(d*vuSize); y -= blockSize )
-							img.drawShapeFilled( 
-								new Rectangle( x+(c*blockWidth/nc), y-blockHeight, 
-									blockWidth/nc-intraChannelGap, blockHeight ), 
-								y < redAboveY? colourAbove : colourBelow );
+						for( int y = this.yOffset; y > this.yOffset-(d*this.vuSize); y -= this.blockSize )
+							AudioMixerDemo.this.img.drawShapeFilled( 
+								new Rectangle( x+(c*this.blockWidth/nc), y-this.blockHeight, 
+									this.blockWidth/nc-this.intraChannelGap, this.blockHeight ), 
+								y < redAboveY? this.colourAbove : this.colourBelow );
 					}
 						
 					// Do beat detection and show the beats as a yellow
 					// light underneath the VUs
-					if( beatDetectorLightCount[i] <= 0 )
+					if( this.beatDetectorLightCount[i] <= 0 )
 					{
-						beatDetector.process( channels[i].getSampleChunk() );
-						if( beatDetector.beatDetected() )
-							beatDetectorLightCount[i] = 20;
+						this.beatDetector.process( channels[i].getSampleChunk() );
+						if( this.beatDetector.beatDetected() )
+							this.beatDetectorLightCount[i] = 20;
 					}
 					
 					// The light count is a hysteresis for the lights so that
 					// they stay on for longer than the pulse detected as a beat.
-					if( beatDetectorLightCount[i]-- >= 0 )
-						img.drawShapeFilled( 
-							new Rectangle( x, yOffset+4, blockWidth, 15 ),
+					if( this.beatDetectorLightCount[i]-- >= 0 )
+						AudioMixerDemo.this.img.drawShapeFilled( 
+							new Rectangle( x, this.yOffset+4, this.blockWidth, 15 ),
 							RGBColour.YELLOW );
 					else
-						img.drawShapeFilled( 
-								new Rectangle( x, yOffset+4, blockWidth, 15 ),
+						AudioMixerDemo.this.img.drawShapeFilled( 
+								new Rectangle( x, this.yOffset+4, this.blockWidth, 15 ),
 								new Float[]{0.2f,0.2f,0f} );
 					
-					DisplayUtilities.displayName( img, "VU Meters" );
+					DisplayUtilities.displayName( AudioMixerDemo.this.img, "VU Meters" );
 				}
-				catch( Exception e )
+				catch( final Exception e )
 				{
 					e.printStackTrace();
 				}
@@ -306,7 +307,7 @@ public class AudioMixerDemo
 	 * 	Default main
 	 *  @param args Command-line arguments
 	 */
-	public static void main(String[] args) 
+	public static void main(final String[] args) 
 	{
 		new AudioMixerDemo();
 	}

@@ -15,7 +15,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.vis.VideoVisualisation;
-import org.openimaj.vis.Visualisation;
+import org.openimaj.vis.VisualisationImpl;
 import org.openimaj.vis.general.LabelledPointVisualisation;
 import org.openimaj.vis.general.LabelledPointVisualisation.LabelledDot;
 import org.openimaj.vis.world.WorldMap;
@@ -32,7 +32,7 @@ import com.Ostermiller.util.LabeledCSVParser;
  *	all available indicators). If you get the name wrong you'll get an NPE probably.
  *	<p>
  *	It demonstrates the {@link WorldVis} interface as well as using the {@link VideoVisualisation}
- *	API to convert a {@link Visualisation} into a {@link Video} which is displayed using a
+ *	API to convert a {@link VisualisationImpl} into a {@link Video} which is displayed using a
  *	standard {@link VideoDisplay}.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)

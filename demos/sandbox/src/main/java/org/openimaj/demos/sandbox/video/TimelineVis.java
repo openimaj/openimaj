@@ -40,7 +40,7 @@ import org.openimaj.vis.timeline.Timeline.TimelineTrack;
 import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
 
 /**
- * Visualisation example of a timeline showing video, audio and other stuff.
+ * VisualisationImpl example of a timeline showing video, audio and other stuff.
  *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 3 Jul 2012

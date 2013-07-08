@@ -639,20 +639,25 @@ public class XuggleVideo extends Video<MBFImage>
 		int openResult = 0;
 		try
 		{
-			final URI uri = new URI(this.url);
+			URI uri = new URI(this.url);
 
+			if( uri.toString().contains( "file:/") && !uri.toString().contains("file://") )
+				uri = new URI("file://"+uri.getPath() );
+			
+			System.out.println( uri.toString() );
+			
 			// If it's a valid URI, we'll try to open the container using the
 			// URI string.
 			container = IContainer.make();
 			openResult = container.open(uri.toString(),
-					IContainer.Type.READ, null, true, true);
+						IContainer.Type.READ, null, true, true);
 
 			// If there was an error trying to open the container in this way,
 			// it may be that we have a resource URL (which ffmpeg doesn't
 			// understand), so we'll try opening an InputStream to the resource.
 			if (openResult < 0)
 			{
-				System.out.println("URL " + this.url + " could not be opened by ffmpeg. " +
+				System.out.println("URL " + uri.toString() + " could not be opened by ffmpeg. " +
 						"Trying to open a stream to the URL instead.");
 				final InputStream is = uri.toURL().openStream();
 				openResult = container.open(is, null, true, true);

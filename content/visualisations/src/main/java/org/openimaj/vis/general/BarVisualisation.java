@@ -40,7 +40,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.vis.Visualisation;
+import org.openimaj.vis.VisualisationImpl;
 
 /**
  * The {@link BarVisualisation} can be used to draw to an image a bar graph of
@@ -50,7 +50,7 @@ import org.openimaj.vis.Visualisation;
  * @created 26 Jul 2012
  * @version $Author$, $Revision$, $Date$
  */
-public class BarVisualisation extends Visualisation<double[]>
+public class BarVisualisation extends VisualisationImpl<double[]>
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -176,7 +176,7 @@ public class BarVisualisation extends Visualisation<double[]>
 	 * @param v
 	 *            The visualisation to overlay
 	 */
-	public BarVisualisation(final Visualisation<?> v)
+	public BarVisualisation(final VisualisationImpl<?> v)
 	{
 		super(v);
 	}
@@ -369,7 +369,7 @@ public class BarVisualisation extends Visualisation<double[]>
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.openimaj.vis.Visualisation#update()
+	 * @see org.openimaj.vis.VisualisationImpl#update()
 	 */
 	@Override
 	public void update()

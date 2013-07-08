@@ -251,7 +251,8 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 
 			// Now draw the countries onto the sea. We transform each of the shapes
 			// by the above transform matrix prior to plotting them to the image.
-			for( final String countryCode : this.activeCountries )
+			final HashSet<String> k = new HashSet<String>(this.activeCountries);
+			for( final String countryCode : k )
 			{
 				final WorldPlace wp = this.worldPolys.byCountryCode( countryCode );
 

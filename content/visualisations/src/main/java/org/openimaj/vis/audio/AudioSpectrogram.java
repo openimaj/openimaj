@@ -45,7 +45,7 @@ import org.openimaj.audio.filters.HanningAudioProcessor;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.typography.hershey.HersheyFont;
-import org.openimaj.vis.Visualisation;
+import org.openimaj.vis.VisualisationImpl;
 
 /**
  * A spectrogram visualisation that scrolls the audio visualisation as the audio
@@ -57,7 +57,7 @@ import org.openimaj.vis.Visualisation;
  * @created 19 Jul 2012
  * @version $Author$, $Revision$, $Date$
  */
-public class AudioSpectrogram extends Visualisation<float[]>
+public class AudioSpectrogram extends VisualisationImpl<float[]>
 {
 	/**
 	 * A listener for when the spectrogram has completed processing.
@@ -223,7 +223,7 @@ public class AudioSpectrogram extends Visualisation<float[]>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.Visualisation#setData(java.lang.Object)
+	 * 	@see org.openimaj.vis.VisualisationImpl#setData(java.lang.Object)
 	 */
 	@Override
 	public void setData( final float[] data )
@@ -321,7 +321,7 @@ public class AudioSpectrogram extends Visualisation<float[]>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.Visualisation#update()
+	 * 	@see org.openimaj.vis.VisualisationImpl#update()
 	 */
 	@Override
 	public void update()

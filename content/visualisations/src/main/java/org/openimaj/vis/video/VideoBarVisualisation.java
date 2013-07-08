@@ -264,7 +264,7 @@ public abstract class VideoBarVisualisation extends TimelineObjectAdapter<Video<
 	 * 	own implementation.
 	 *
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.Visualisation#update()
+	 * 	@see org.openimaj.vis.VisualisationImpl#update()
 	 */
 	@Override
 	public void update()

@@ -37,7 +37,7 @@ import org.openimaj.audio.samples.FloatSampleBuffer;
 import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.image.MBFImage;
 import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.vis.Visualisation;
+import org.openimaj.vis.VisualisationImpl;
 
 /**
  *	A visualisation for signals. It utilises the {@link SampleBuffer} class
@@ -54,7 +54,7 @@ import org.openimaj.vis.Visualisation;
  *  @created 13 Jul 2012
  *	@version $Author$, $Revision$, $Date$
  */
-public class AudioWaveform extends Visualisation<SampleBuffer>
+public class AudioWaveform extends VisualisationImpl<SampleBuffer>
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -94,7 +94,7 @@ public class AudioWaveform extends Visualisation<SampleBuffer>
 	 * 	Create an audio waveform that overlays the given visualisation.
 	 * 	@param v The visualisation to overlay
 	 */
-	public AudioWaveform( final Visualisation<?> v )
+	public AudioWaveform( final VisualisationImpl<?> v )
 	{
 		super( v );
 	}
@@ -153,7 +153,7 @@ public class AudioWaveform extends Visualisation<SampleBuffer>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.Visualisation#update()
+	 * 	@see org.openimaj.vis.VisualisationImpl#update()
 	 */
 	@Override
 	public void update()

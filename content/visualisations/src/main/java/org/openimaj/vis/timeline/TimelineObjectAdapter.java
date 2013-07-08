@@ -34,12 +34,12 @@ package org.openimaj.vis.timeline;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.vis.DataPixelTransformer;
-import org.openimaj.vis.Visualisation;
+import org.openimaj.vis.VisualisationImpl;
 
 /**
  *	A timeline object is a temporal object and is able to drawn sections
- *	of temporal data into a given viewport.  As this class also extends {@link Visualisation}, the
- *	implementation of {@link Visualisation#update()} should use those dimensions
+ *	of temporal data into a given viewport.  As this class also extends {@link VisualisationImpl}, the
+ *	implementation of {@link VisualisationImpl#update()} should use those dimensions
  *	and time series to draw into the <code>visImage</code> member.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
@@ -47,7 +47,7 @@ import org.openimaj.vis.Visualisation;
  *	@version $Author$, $Revision$, $Date$
  * 	@param <T> The type of the data the timeline is displaying
  */
-public abstract class TimelineObjectAdapter<T> extends Visualisation<T>
+public abstract class TimelineObjectAdapter<T> extends VisualisationImpl<T>
 	implements TimelineObject
 {
 	/** */
@@ -61,6 +61,16 @@ public abstract class TimelineObjectAdapter<T> extends Visualisation<T>
 
 	/** The pixel transformer to use */
 	protected DataPixelTransformer<MBFImage> pixelTransformer = null;
+
+	/**
+	 * 	Default constructor. Note that it generates a visualisation image
+	 * 	for visualisation of the timeline object as a stand-alone visualisation.
+	 * 	The size of this image is fixed to 1000x300.
+	 */
+	public TimelineObjectAdapter()
+	{
+		super( 1000, 300 );
+	}
 
 	/**
 	 *	{@inheritDoc}

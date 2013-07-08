@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.vis.Visualisation;
+import org.openimaj.vis.VisualisationImpl;
 import org.openimaj.vis.general.XYPlotVisualisation.LocatedObject;
 
 /**
@@ -19,7 +19,7 @@ import org.openimaj.vis.general.XYPlotVisualisation.LocatedObject;
  * @param <O> The type of object to be visualised
  * @created 3 Jun 2013
  */
-public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>>
+public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject<O>>>
 {
 	/**
 	 * Class that locates an object.
@@ -116,7 +116,7 @@ public class XYPlotVisualisation<O> extends Visualisation<List<LocatedObject<O>>
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.openimaj.vis.Visualisation#update()
+	 * @see org.openimaj.vis.VisualisationImpl#update()
 	 */
 	@Override
 	public void update()
