@@ -138,6 +138,14 @@ public class BarVisualisation extends Visualisation<double[]>
 
 	private double dataRange;
 
+	private StrokeColourProvider<Float[]> strokeColourProvider = new StrokeColourProvider<Float[]>() {
+		
+		@Override
+		public Float[] getStrokeColour(int row) {
+			return strokeColour;
+		}
+	};
+
 	/**
 	 * Create a bar visualisation of the given size
 	 * 
@@ -308,7 +316,7 @@ public class BarVisualisation extends Visualisation<double[]>
 					this.visImage.drawShapeFilled(barRect, c);
 
 					if (barWidth > 3)
-						this.visImage.drawShape(barRect, this.getStrokeColour());
+						this.visImage.drawShape(barRect, this.getStrokeColour(i));
 
 					// If we're to draw the bar's value, do that here.
 					if (this.drawValue)
@@ -499,11 +507,19 @@ public class BarVisualisation extends Visualisation<double[]>
 	}
 
 	/**
+	 * @param row the row
 	 * @return the strokeColour
 	 */
-	public Float[] getStrokeColour()
+	public Float[] getStrokeColour(int row)
 	{
-		return this.strokeColour;
+		return this.strokeColourProvider.getStrokeColour(row);
+	}
+	
+	/**
+	 * @param prov
+	 */
+	public void setStrokeProvider(StrokeColourProvider<Float[]> prov){
+		this.strokeColourProvider = prov;
 	}
 
 	/**
