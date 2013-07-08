@@ -200,7 +200,7 @@ public enum HersheyFont implements Font<HersheyFont> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T, Q extends FontStyle<HersheyFont, T>> FontRenderer<T, Q> getRenderer(final ImageRenderer<T,?> renderer) {
-		return (FontRenderer<T, Q>) (HersheyFontRenderer.INSTANCE);
+		return (FontRenderer<T, Q>) ((Object) HersheyFontRenderer.INSTANCE);
 	}
 
 	@Override
