@@ -80,18 +80,19 @@ public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer)
+	 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer2D)
 	 */
 	@Override
 	public void plotObject( final MBFImage visImage,
 			final XYPlotVisualisation.LocatedObject<ColouredDot> object,
-			final AxesRenderer<Float[],MBFImage> renderer )
+			final AxesRenderer2D<Float[],MBFImage> renderer )
 	{
+		System.out.println( "Object at "+object.x+","+object.y+" is plotted at "+
+				renderer.calculatePosition( object.x, object.y ) );
 		visImage.createRenderer().drawShapeFilled(
-				new Circle( renderer.calculatePosition( visImage,
-						object.x, object.y ),
-						(float)(object.object.size * renderer.getxUnitSizePx()) ),
-				object.object.colour );
+			new Circle( renderer.calculatePosition( object.x, object.y ),
+				(float)(renderer.scaleDimensions( object.object.size, object.object.size )[0] ) ),
+			object.object.colour );
 	}
 
 	/**
@@ -110,6 +111,16 @@ public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
 	public static void main( final String[] args )
 	{
 		final DotPlotVisualisation dpv = new DotPlotVisualisation( 1000, 600 );
+		dpv.axesRenderer2D.setMaxXValue( 1 );
+		dpv.axesRenderer2D.setMinXValue( -1 );
+		dpv.axesRenderer2D.setMaxYValue( 1 );
+		dpv.axesRenderer2D.setMinYValue( -1 );
+		dpv.axesRenderer2D.setxMajorTickSpacing( 0.2 );
+		dpv.axesRenderer2D.setxMinorTickSpacing( 0.1 );
+		dpv.axesRenderer2D.setyMajorTickSpacing( 0.2 );
+		dpv.axesRenderer2D.setyMinorTickSpacing( 0.1 );
+		dpv.axesRenderer2D.setxAxisPosition( 300 );
+		dpv.setAutoScaleAxes( false );
 
 		for( int i = 0; i < 10; i++ )
 			dpv.addPoint( (Math.random()-0.5)*2, (Math.random()-0.5)*2,

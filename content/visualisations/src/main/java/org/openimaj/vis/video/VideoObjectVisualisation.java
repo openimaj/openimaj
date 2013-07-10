@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.openimaj.vis.video;
 
@@ -18,7 +18,7 @@ import org.openimaj.video.Video;
  *	the course of the video. The trackObject method is called during processing
  *	so that subclasses can track whatever object it is that they wish to track.
  *	This should return a set of object coordinates that can be used to update
- *	the visualisation later. The type of position visualisation can be chosen. 
+ *	the visualisation later. The type of position visualisation can be chosen.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Feb 2013
@@ -38,7 +38,7 @@ public abstract class VideoObjectVisualisation extends VideoBarVisualisation
 		DOTS
 		{
 			@Override
-			public void draw( final MBFImage vis, final int xoffset, 
+			public void draw( final MBFImage vis, final int xoffset,
 					final int yoffset, final PointList pl )
 			{
 				for( final Point2d p : pl )
@@ -49,7 +49,7 @@ public abstract class VideoObjectVisualisation extends VideoBarVisualisation
 				}
 			}
 		};
-		
+
 		/**
 		 * 	Draw the point list into the given visualisation at the given offset.
 		 *	@param vis The visualisation
@@ -57,34 +57,30 @@ public abstract class VideoObjectVisualisation extends VideoBarVisualisation
 		 *	@param yoffset The offset
 		 *	@param pl The pointlist
 		 */
-		public abstract void draw( final MBFImage vis, 
+		public abstract void draw( final MBFImage vis,
 				final int xoffset, int yoffset, PointList pl );
 	}
-	
+
 	/** We store the positions of all the objects as we go so we can redraw them */
 	private final List<PointList> objectPositions = null;
-	
-	/** The width of the video frame */
-	private int frameWidth  = 0;
-	
+
 	/** The height of the video frame */
 	private int frameHeight = 0;
-	
+
 	/** The type of point drawing to use */
 	private final DrawType drawType = DrawType.DOTS;
-	
+
 	/** */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 
+	 *
 	 *	@param video
 	 */
 	protected VideoObjectVisualisation( final Video<MBFImage> video )
 	{
 		super( video );
-		
-		this.frameWidth  = video.getWidth();
+
 		this.frameHeight = video.getHeight();
 	}
 
@@ -95,7 +91,7 @@ public abstract class VideoObjectVisualisation extends VideoBarVisualisation
 	 * 	with correctly by the visualisation. The point positions should be
 	 * 	in terms of the frame size and they will be resized to fit within
 	 * 	the visualisation.
-	 * 
+	 *
 	 *	@param frame The frame
 	 *	@return A {@link PointList} representing the object position
 	 */
@@ -119,7 +115,7 @@ public abstract class VideoObjectVisualisation extends VideoBarVisualisation
 	public void updateVis( final MBFImage vis )
 	{
 		final float scalar = vis.getHeight() / this.frameHeight;
-		
+
 		// Redraw each of the positions.
 		int frame = 0;
 		for( final PointList pos : this.objectPositions )

@@ -23,8 +23,7 @@ import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.vis.AnimatedVisualisationListener;
 import org.openimaj.vis.AnimatedVisualisationProvider;
-import org.openimaj.vis.animators.ColourSpaceAnimator;
-import org.openimaj.vis.general.AxesRenderer;
+import org.openimaj.vis.general.AxesRenderer2D;
 import org.openimaj.vis.general.ItemPlotter;
 import org.openimaj.vis.general.LabelledPointVisualisation;
 import org.openimaj.vis.general.LabelledPointVisualisation.LabelledDot;
@@ -97,28 +96,31 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 	 */
 	private void init()
 	{
-		super.axesRenderer.setMinXValue( -180 );
-		super.axesRenderer.setMaxXValue( 180 );
-		super.axesRenderer.setMinYValue( -90 );
-		super.axesRenderer.setMaxYValue( 90 );
-		super.axesRenderer.setAxisPaddingLeft( 50 );
-		super.axesRenderer.setAxisPaddingBottom( 50 );
-		super.axesRenderer.setAxisPaddingRight( 50 );
-		super.axesRenderer.setAxisPaddingTop( 50 );
-		super.axesRenderer.setxMajorTickSpacing( 10 );
-		super.axesRenderer.setyMajorTickSpacing( 10 );
-		super.axesRenderer.setxMinorTickSpacing( 5 );
-		super.axesRenderer.setyMinorTickSpacing( 5 );
-		super.axesRenderer.setxLabelSpacing( 90 );
-		super.axesRenderer.setyLabelSpacing( 45 );
-		super.axesRenderer.setxAxisColour( RGBColour.WHITE );
-		super.axesRenderer.setyAxisColour( RGBColour.WHITE );
-		super.axesRenderer.setyTickLabelColour( RGBColour.WHITE );
-		super.axesRenderer.setxTickLabelColour( RGBColour.WHITE );
-		super.axesRenderer.setDrawXAxisName( false );
-		super.axesRenderer.setDrawYAxisName( false );
-		super.axesRenderer.setDrawMajorTickGrid( false );
-		super.axesRenderer.setDrawMinorTickGrid( false );
+		super.setAutoScaleAxes( false );
+		super.setAutoPositionXAxis( true );
+		super.axesRenderer2D.setAutoScaleAxes( false );
+		super.axesRenderer2D.setMinXValue( -180 );
+		super.axesRenderer2D.setMaxXValue( 180 );
+		super.axesRenderer2D.setMinYValue( -90 );
+		super.axesRenderer2D.setMaxYValue( 90 );
+		super.axesRenderer2D.setAxisPaddingLeft( 50 );
+		super.axesRenderer2D.setAxisPaddingBottom( 50 );
+		super.axesRenderer2D.setAxisPaddingRight( 50 );
+		super.axesRenderer2D.setAxisPaddingTop( 50 );
+		super.axesRenderer2D.setxMajorTickSpacing( 10 );
+		super.axesRenderer2D.setyMajorTickSpacing( 10 );
+		super.axesRenderer2D.setxMinorTickSpacing( 5 );
+		super.axesRenderer2D.setyMinorTickSpacing( 5 );
+		super.axesRenderer2D.setxLabelSpacing( 90 );
+		super.axesRenderer2D.setyLabelSpacing( 45 );
+		super.axesRenderer2D.setxAxisColour( RGBColour.WHITE );
+		super.axesRenderer2D.setyAxisColour( RGBColour.WHITE );
+		super.axesRenderer2D.setyTickLabelColour( RGBColour.WHITE );
+		super.axesRenderer2D.setxTickLabelColour( RGBColour.WHITE );
+		super.axesRenderer2D.setDrawXAxisName( false );
+		super.axesRenderer2D.setDrawYAxisName( false );
+		super.axesRenderer2D.setDrawMajorTickGrid( false );
+		super.axesRenderer2D.setDrawMinorTickGrid( false );
 		this.worldPolys = new WorldPolygons();
 		this.addAnimatedVisualisationListener( this );
 	}
@@ -163,64 +165,74 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		img.fill( this.seaColour );
 	}
 
-	private void drawCachedImage( final MBFImage img, final AxesRenderer<Float[], MBFImage> axesRenderer )
+	private void drawCachedImage( final MBFImage img,
+			final AxesRenderer2D<Float[], MBFImage> axesRenderer )
 	{
-		this.cachedWorldImage = new MBFImage( img.getWidth(), img.getHeight(), 4 );
-
-		// Fill the image with the sea colour.
-		// We'll draw the countries on top of this.
-		this.drawSea( this.cachedWorldImage );
-
-		// Make the image fit into the axes centred around 0,0 long/lat
-		final Point2d mid = axesRenderer.calculatePosition( this.cachedWorldImage, 0, 0 );
-		final Point2d dateLine0 = axesRenderer.calculatePosition( this.cachedWorldImage, 180, 0 );
-		final Point2d northPole = axesRenderer.calculatePosition( this.cachedWorldImage, 0, -90 );
-		final double scaleX = (dateLine0.getX()-mid.getX()) / 180d;
-		final double scaleY = (northPole.getY()-mid.getY()) / 90d;
-		Matrix trans = Matrix.identity(3, 3);
-		trans = trans.times(
-			TransformUtilities.scaleMatrixAboutPoint(
-				scaleX, -scaleY, mid
-			)
-		);
-
-		// Translate to 0,0
-		trans = trans.times(
-			TransformUtilities.translateMatrix(mid.getX(), mid.getY())
-		);
-
-		// Now draw the countries onto the sea. We transform each of the shapes
-		// by the above transform matrix prior to plotting them to the image.
-		for( final WorldPlace wp : this.worldPolys.getShapes() )
+		synchronized( axesRenderer )
 		{
-			// Each place may have more than one polygon.
-			final List<Shape> shapes = wp.getShapes();
+			System.out.println( "Drawing cached world image "+img.getWidth()+"x"+img.getHeight() );
+			this.cachedWorldImage = new MBFImage( img.getWidth(), img.getHeight(), 4 );
 
-			final MBFImageRenderer ir = this.cachedWorldImage.createRenderer( RenderHints.ANTI_ALIASED );
+			// Fill the image with the sea colour.
+			// We'll draw the countries on top of this.
+			this.drawSea( this.cachedWorldImage );
 
-			// For each of the polygons... draw them to the image.
-			for( Shape s : shapes )
+			// Make the image fit into the axes centred around 0,0 long/lat
+			final Point2d mid = axesRenderer.calculatePosition( 0, 0 );
+			final Point2d dateLine0 = axesRenderer.calculatePosition( 180, 0 );
+			final Point2d northPole = axesRenderer.calculatePosition( 0, -90 );
+
+			System.out.println( "0,0 @ "+mid );
+			System.out.println( "dateLine: "+dateLine0 );
+			System.out.println( "northpole: "+northPole );
+
+			final double scaleX = (dateLine0.getX()-mid.getX()) / 180d;
+			final double scaleY = (northPole.getY()-mid.getY()) / 90d;
+			Matrix trans = Matrix.identity(3, 3);
+			trans = trans.times(
+				TransformUtilities.scaleMatrixAboutPoint(
+					scaleX, -scaleY, mid
+				)
+			);
+
+			// Translate to 0,0
+			trans = trans.times(
+				TransformUtilities.translateMatrix(mid.getX(), mid.getY())
+			);
+
+			// Now draw the countries onto the sea. We transform each of the shapes
+			// by the above transform matrix prior to plotting them to the image.
+			for( final WorldPlace wp : this.worldPolys.getShapes() )
 			{
-				s = s.transform(trans);
+				// Each place may have more than one polygon.
+				final List<Shape> shapes = wp.getShapes();
 
-				// Fill the country with the land colour
-				ir.drawShapeFilled( s, this.defaultCountryLandColour );
+				final MBFImageRenderer ir = this.cachedWorldImage.createRenderer( RenderHints.ANTI_ALIASED );
 
-				// Draw the outline shape of the country
-				ir.drawShape( s, 1, this.defaultCountryOutlineColour );
+				// For each of the polygons... draw them to the image.
+				for( Shape s : shapes )
+				{
+					s = s.transform(trans);
+
+					// Fill the country with the land colour
+					ir.drawShapeFilled( s, this.defaultCountryLandColour );
+
+					// Draw the outline shape of the country
+					ir.drawShape( s, 1, this.defaultCountryOutlineColour );
+				}
 			}
 		}
 	}
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.general.XYPlotVisualisation#beforeAxesRender(org.openimaj.image.MBFImage, org.openimaj.vis.general.AxesRenderer)
+	 * 	@see org.openimaj.vis.general.XYPlotVisualisation#beforeAxesRender(org.openimaj.image.MBFImage, org.openimaj.vis.general.AxesRenderer2D)
 	 */
 	@Override
-	public void beforeAxesRender( final MBFImage visImage,
-			final AxesRenderer<Float[], MBFImage> axesRenderer )
+	synchronized public void beforeAxesRender( final MBFImage visImage,
+			final AxesRenderer2D<Float[], MBFImage> axesRenderer )
 	{
-		synchronized( visImage )
+		synchronized( axesRenderer )
 		{
 			// Redraw the world if the image dimensions aren't the same.
 			if( this.cachedWorldImage == null ||
@@ -229,12 +241,13 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 					this.drawCachedImage( visImage, axesRenderer );
 
 			// Blat the cached image
+			System.out.println( "Blitting cached world image" );
 			visImage.drawImage( this.cachedWorldImage, 0,0 );
 
 			// Make the image fit into the axes centred around 0,0 long/lat
-			final Point2d mid = axesRenderer.calculatePosition( visImage, 0, 0 );
-			final Point2d dateLine0 = axesRenderer.calculatePosition( visImage, 180, 0 );
-			final Point2d northPole = axesRenderer.calculatePosition( visImage, 0, -90 );
+			final Point2d mid = axesRenderer.calculatePosition( 0, 0 );
+			final Point2d dateLine0 = axesRenderer.calculatePosition( 180, 0 );
+			final Point2d northPole = axesRenderer.calculatePosition( 0, -90 );
 			final double scaleX = (dateLine0.getX()-mid.getX()) / 180d;
 			final double scaleY = (northPole.getY()-mid.getY()) / 90d;
 			Matrix trans = Matrix.identity(3, 3);
@@ -470,7 +483,7 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		wp.getAxesRenderer().setDrawMajorTickGrid( true );
 		wp.showWindow( "World" );
 
-		// Wait 3 seconds ...
+/*		// Wait 3 seconds ...
 		try { Thread.sleep( 3000 ); } catch( final InterruptedException e ) {}
 
 		// ... and flash Russia
@@ -483,5 +496,5 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		// ... and flash Australia
 		wp.animateCountryColour( "au", new ColourSpaceAnimator(
 				new Float[]{1f,0.8f,0.8f}, wp.getHighlightCountryLandColour(), 5000 ) );
-	}
+*/	}
 }

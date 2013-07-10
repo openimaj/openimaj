@@ -12,7 +12,7 @@ import org.openimaj.vis.VisualisationImpl;
 import org.openimaj.vis.general.XYPlotVisualisation.LocatedObject;
 
 /**
- * Abstract visualisation for plotting X,Y items. Uses the {@link AxesRenderer}
+ * Abstract visualisation for plotting X,Y items. Uses the {@link AxesRenderer2D}
  * to determine the scale of the visualisation.
  *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
@@ -59,13 +59,19 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	private static final long serialVersionUID = 1L;
 
 	/** The renderer for the axes */
-	protected final AxesRenderer<Float[], MBFImage> axesRenderer = new AxesRenderer<Float[], MBFImage>();
+	protected final AxesRenderer2D<Float[], MBFImage> axesRenderer2D =
+			new AxesRenderer2D<Float[], MBFImage>();
 
 	/** Whether to render the axes on top of the data rather than underneath */
 	private final boolean renderAxesLast = false;
 
 	/** The item plotter to use */
 	protected ItemPlotter<O, Float[], MBFImage> plotter;
+
+	/** Whether to scale the axes to fit the data */
+	private boolean autoScaleAxes = true;
+
+	private boolean autoPositionXAxis = true;
 
 	/**
 	 * Default constructor
@@ -99,18 +105,18 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	{
 		this.data = new ArrayList<LocatedObject<O>>();
 
-		this.axesRenderer.setxAxisColour( RGBColour.WHITE );
-		this.axesRenderer.setyAxisColour( RGBColour.WHITE );
-		this.axesRenderer.setMajorTickColour( RGBColour.WHITE );
-		this.axesRenderer.setMinorTickColour( RGBColour.GRAY );
-		this.axesRenderer.setxTickLabelColour( RGBColour.GRAY );
-		this.axesRenderer.setyTickLabelColour( RGBColour.GRAY );
-		this.axesRenderer.setxAxisNameColour( RGBColour.WHITE );
-		this.axesRenderer.setyAxisNameColour( RGBColour.WHITE );
-		this.axesRenderer.setMajorGridColour( new Float[]{.5f,.5f,.5f,1f} );
-		this.axesRenderer.setMinorGridColour( new Float[]{.5f,.5f,.5f,1f} );
-		this.axesRenderer.setDrawMajorTickGrid( true );
-		this.axesRenderer.setDrawMinorTickGrid( true );
+		this.axesRenderer2D.setxAxisColour( RGBColour.WHITE );
+		this.axesRenderer2D.setyAxisColour( RGBColour.WHITE );
+		this.axesRenderer2D.setMajorTickColour( RGBColour.WHITE );
+		this.axesRenderer2D.setMinorTickColour( RGBColour.GRAY );
+		this.axesRenderer2D.setxTickLabelColour( RGBColour.GRAY );
+		this.axesRenderer2D.setyTickLabelColour( RGBColour.GRAY );
+		this.axesRenderer2D.setxAxisNameColour( RGBColour.WHITE );
+		this.axesRenderer2D.setyAxisNameColour( RGBColour.WHITE );
+		this.axesRenderer2D.setMajorGridColour( new Float[]{.5f,.5f,.5f,1f} );
+		this.axesRenderer2D.setMinorGridColour( new Float[]{.5f,.5f,.5f,1f} );
+		this.axesRenderer2D.setDrawMajorTickGrid( true );
+		this.axesRenderer2D.setDrawMinorTickGrid( true );
 	}
 
 	/**
@@ -121,10 +127,30 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	@Override
 	public void update()
 	{
-		this.axesRenderer.precalc( this.visImage );
-		this.beforeAxesRender( this.visImage, this.axesRenderer );
+		this.axesRenderer2D.setImage( this.visImage );
+		if( this.autoPositionXAxis )
+		{
+			synchronized( this.axesRenderer2D )
+			{
+				// Note, this might not work very well, if the axes are rotated.
+				final double xAxisPosition = this.axesRenderer2D.getAxisPaddingTop() +
+					this.axesRenderer2D.getyAxisConfig().getMaxValue() *
+					this.axesRenderer2D.getyAxisRenderer().getAxisLength() /
+					(this.axesRenderer2D.getyAxisConfig().getMaxValue()
+							- this.axesRenderer2D.getyAxisConfig().getMinValue());
+				System.out.println( "Setting x position: "+xAxisPosition );
+				this.axesRenderer2D.setxAxisPosition( xAxisPosition );
+			}
+		}
 
-		if( !this.renderAxesLast ) this.axesRenderer.renderAxis( this.visImage );
+		synchronized( this.axesRenderer2D )
+		{
+			this.axesRenderer2D.precalc();
+		}
+
+		this.beforeAxesRender( this.visImage, this.axesRenderer2D );
+
+		if( !this.renderAxesLast ) this.axesRenderer2D.renderAxis( this.visImage );
 
 		// Tell the plotter we're about to start rendering items,
 		// then loop over the items plotting them
@@ -132,11 +158,10 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 		synchronized( this.data )
 		{
 			for( final LocatedObject<O> o : this.data )
-				this.plotter.plotObject( this.visImage, o, this.axesRenderer );
-
+				this.plotter.plotObject( this.visImage, o, this.axesRenderer2D );
 		}
 
-		if( this.renderAxesLast ) this.axesRenderer.renderAxis( this.visImage );
+		if( this.renderAxesLast ) this.axesRenderer2D.renderAxis( this.visImage );
 	}
 
 	/**
@@ -146,7 +171,7 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	 * @param visImage The image to draw to
 	 * @param renderer The axes renderer
 	 */
-	public void beforeAxesRender( final MBFImage visImage, final AxesRenderer<Float[], MBFImage> renderer )
+	public void beforeAxesRender( final MBFImage visImage, final AxesRenderer2D<Float[], MBFImage> renderer )
 	{
 		// No implementation by default
 	}
@@ -161,6 +186,7 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	public void addPoint( final double x, final double y, final O object )
 	{
 		this.data.add( new LocatedObject<O>( x, y, object ) );
+		this.validateData();
 	}
 
 	/**
@@ -181,6 +207,7 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 		}
 
 		if( toRemove != null ) this.data.remove( toRemove );
+		this.validateData();
 	}
 
 	/**
@@ -199,9 +226,9 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	 *
 	 * @return The axes renderer.
 	 */
-	public AxesRenderer<Float[], MBFImage> getAxesRenderer()
+	public AxesRenderer2D<Float[], MBFImage> getAxesRenderer()
 	{
-		return this.axesRenderer;
+		return this.axesRenderer2D;
 	}
 
 	/**
@@ -213,5 +240,74 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 		{
 			this.data.clear();
 		}
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.VisualisationImpl#setData(java.lang.Object)
+	 */
+	@Override
+	public void setData( final List<LocatedObject<O>> data )
+	{
+		super.setData( data );
+		this.validateData();
+	}
+
+	private void validateData()
+	{
+		if( this.autoScaleAxes && this.data.size() > 0 )
+		{
+			double minX = Double.MAX_VALUE;
+			double maxX = Double.MIN_VALUE;
+			double minY = Double.MAX_VALUE;
+			double maxY = Double.MIN_VALUE;
+			for( final LocatedObject<O> o : this.data)
+			{
+				minX = Math.min( minX, o.x );
+				maxX = Math.max( maxX, o.x );
+				minY = Math.min( minY, o.y );
+				maxY = Math.max( maxY, o.y );
+			}
+
+			this.axesRenderer2D.setMaxXValue( maxX );
+			this.axesRenderer2D.setMinXValue( minX );
+			this.axesRenderer2D.setMaxYValue( maxY );
+			this.axesRenderer2D.setMinYValue( minY );
+			this.axesRenderer2D.precalc();
+
+			System.out.println( "max x: "+maxX+", min x: "+minX+", max y: "+maxY+", min y: "+minY );
+		}
+	}
+
+	/**
+	 *	@return the autoScaleAxes
+	 */
+	public boolean isAutoScaleAxes()
+	{
+		return this.autoScaleAxes;
+	}
+
+	/**
+	 *	@param autoScaleAxes the autoScaleAxes to set
+	 */
+	public void setAutoScaleAxes( final boolean autoScaleAxes )
+	{
+		this.autoScaleAxes = autoScaleAxes;
+	}
+
+	/**
+	 *	@return the autoPositionXAxis
+	 */
+	public boolean isAutoPositionXAxis()
+	{
+		return this.autoPositionXAxis;
+	}
+
+	/**
+	 *	@param autoPositionXAxis the autoPositionXAxis to set
+	 */
+	public void setAutoPositionXAxis( final boolean autoPositionXAxis )
+	{
+		this.autoPositionXAxis = autoPositionXAxis;
 	}
 }

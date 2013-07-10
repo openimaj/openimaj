@@ -42,10 +42,10 @@ public class ImageThumbnailPlotter implements ItemPlotter<MBFImage,Float[],MBFIm
 	public void plotObject(
 			final MBFImage visImage,
 			final LocatedObject<MBFImage> object,
-			final AxesRenderer<Float[],MBFImage> renderer )
+			final AxesRenderer2D<Float[],MBFImage> renderer )
 	{
 		final MBFImage thumbnail = object.object.process( new ResizeProcessor( this.thumbnailSize ) );
-		final Point2d p = renderer.calculatePosition( visImage, object.x, object.y );
+		final Point2d p = renderer.calculatePosition( object.x, object.y );
 		visImage.createRenderer().drawImage( thumbnail, (int)p.getX(), (int)p.getY() );
 	}
 

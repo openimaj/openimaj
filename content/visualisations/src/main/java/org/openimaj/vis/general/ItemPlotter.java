@@ -8,7 +8,7 @@ import org.openimaj.vis.general.XYPlotVisualisation.LocatedObject;
 
 /**
  *	An interface for classes that are able to plot items into a visualisation
- *	using an {@link AxesRenderer} to determine the position.
+ *	using an {@link AxesRenderer2D} to determine the position.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 	@param <O> The type of object to be plotted
@@ -25,7 +25,7 @@ public interface ItemPlotter<O,Q,I extends Image<Q,I>>
 	public abstract void renderRestarting();
 
 	/**
-	 * 	Plots a specific object to the visualisation using the {@link AxesRenderer} to
+	 * 	Plots a specific object to the visualisation using the {@link AxesRenderer2D} to
 	 * 	provide the position of the object. Should side affect the given image.
 	 *
 	 *	@param visImage The image to draw to
@@ -33,5 +33,5 @@ public interface ItemPlotter<O,Q,I extends Image<Q,I>>
 	 *	@param renderer The axes renderer
 	 */
 	public abstract void plotObject( I visImage,
-			LocatedObject<O> object, AxesRenderer<Q,I> renderer );
+			LocatedObject<O> object, AxesRenderer2D<Q,I> renderer );
 }

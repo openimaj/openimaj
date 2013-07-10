@@ -105,25 +105,26 @@ public class LabelledPointVisualisation extends XYPlotVisualisation<LabelledDot>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer)
+	 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer2D)
 	 */
 	@Override
 	public void plotObject( final MBFImage visImage,
 			final XYPlotVisualisation.LocatedObject<LabelledDot> object,
-			final AxesRenderer<Float[],MBFImage> renderer )
+			final AxesRenderer2D<Float[],MBFImage> renderer )
 	{
 		// Get the position where we're going to place the dot
-		Point2d pos = renderer.calculatePosition( visImage, object.x, object.y );
+		Point2d pos = renderer.calculatePosition( object.x, object.y );
 
 		final MBFImageRenderer ir = visImage.createRenderer( RenderHints.ANTI_ALIASED );
 
 		// Draw the dot
 		ir.drawShapeFilled(
-				new Circle( pos,(float)(object.object.size * renderer.getxUnitSizePx()) ),
+				new Circle( pos,
+					(float)(renderer.scaleDimensions( object.object.size, object.object.size )[0] ) ),
 					object.object.colour );
 
 		// Get the position where we're going the place the text
-		pos = renderer.calculatePosition( visImage, object.x + object.object.size, object.y );
+		pos = renderer.calculatePosition( object.x + object.object.size, object.y );
 
 		// Create the font and font style
 		final HersheyFont f = HersheyFont.TIMES_MEDIUM;
@@ -178,6 +179,10 @@ public class LabelledPointVisualisation extends XYPlotVisualisation<LabelledDot>
 	public static void main( final String[] args )
 	{
 		final LabelledPointVisualisation dpv = new LabelledPointVisualisation( 1000, 600 );
+		dpv.getAxesRenderer().setxMajorTickSpacing( 0.2 );
+		dpv.getAxesRenderer().setxMinorTickSpacing( 0.05 );
+		dpv.getAxesRenderer().setyMajorTickSpacing( 0.2 );
+		dpv.getAxesRenderer().setyMinorTickSpacing( 0.05 );
 
 		for( int i = 0; i < 10; i++ )
 		{

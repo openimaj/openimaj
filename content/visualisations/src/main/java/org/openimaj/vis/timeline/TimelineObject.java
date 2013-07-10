@@ -5,8 +5,7 @@ package org.openimaj.vis.timeline;
 
 import java.awt.Dimension;
 
-import org.openimaj.image.MBFImage;
-import org.openimaj.vis.DataPixelTransformer;
+import org.openimaj.vis.DataUnitsTransformer;
 import org.openimaj.vis.VisualisationImageProvider;
 
 /**
@@ -25,11 +24,11 @@ public interface TimelineObject extends VisualisationImageProvider
 {
 	/**
 	 * 	The timeline object will need to know how to convert between
-	 * 	time and pixels, and the {@link DataPixelTransformer} given here
+	 * 	time and pixels, and the {@link DataUnitsTransformer} given here
 	 * 	should be able to do that. Use it to paint the image.
 	 *	@param dpt
 	 */
-	public void setDataPixelTransformer( DataPixelTransformer<MBFImage> dpt );
+	public void setDataPixelTransformer( DataUnitsTransformer<Float[],double[],int[]> dpt );
 
 	/**
 	 * 	Returns the start time of the timeline object in the timeline.

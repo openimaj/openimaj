@@ -32,8 +32,7 @@
  */
 package org.openimaj.vis.timeline;
 
-import org.openimaj.image.MBFImage;
-import org.openimaj.vis.DataPixelTransformer;
+import org.openimaj.vis.DataUnitsTransformer;
 import org.openimaj.vis.VisualisationImpl;
 
 /**
@@ -60,7 +59,7 @@ public abstract class TimelineObjectAdapter<T> extends VisualisationImpl<T>
 	protected long endTime = 0;
 
 	/** The pixel transformer to use */
-	protected DataPixelTransformer<MBFImage> pixelTransformer = null;
+	protected DataUnitsTransformer<Float[], double[], int[]> pixelTransformer = null;
 
 	/**
 	 * 	Default constructor. Note that it generates a visualisation image
@@ -104,10 +103,10 @@ public abstract class TimelineObjectAdapter<T> extends VisualisationImpl<T>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.timeline.TimelineObject#setDataPixelTransformer(org.openimaj.vis.DataPixelTransformer)
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#setDataPixelTransformer(org.openimaj.vis.DataUnitsTransformer)
 	 */
 	@Override
-	public void setDataPixelTransformer( final DataPixelTransformer<MBFImage> dpt )
+	public void setDataPixelTransformer( final DataUnitsTransformer<Float[],double[],int[]> dpt )
 	{
 		this.pixelTransformer = dpt;
 	}

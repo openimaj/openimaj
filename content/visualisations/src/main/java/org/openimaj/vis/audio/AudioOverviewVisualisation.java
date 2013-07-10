@@ -33,8 +33,6 @@ import gnu.trove.list.array.TFloatArrayList;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
@@ -48,7 +46,7 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
-import org.openimaj.vis.DataPixelTransformer;
+import org.openimaj.vis.DataUnitsTransformer;
 import org.openimaj.vis.VisualisationImpl;
 import org.openimaj.vis.timeline.TimelineObject;
 import org.openimaj.vis.timeline.TimelineObjectAdapter;
@@ -266,12 +264,6 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 	/** Whether the generation is complete */
 	private boolean generationComplete = false;
 
-	/** Set of markers to display on the image and their colours */
-	private final Map<Long,Float[]> markers = new HashMap<Long,Float[]>();
-
-	/** The data pixel transformer */
-	private DataPixelTransformer<MBFImage> pixelTransformer;
-
 	/**
 	 * 	Default constructor
 	 * 	@param as The audio data to plot
@@ -467,11 +459,10 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.timeline.TimelineObject#setDataPixelTransformer(org.openimaj.vis.DataPixelTransformer)
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#setDataPixelTransformer(org.openimaj.vis.DataUnitsTransformer)
 	 */
 	@Override
-	public void setDataPixelTransformer( final DataPixelTransformer<MBFImage> dpt )
+	public void setDataPixelTransformer( final DataUnitsTransformer<Float[],double[],int[]> dpt )
 	{
-		this.pixelTransformer = dpt;
 	}
 }

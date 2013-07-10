@@ -4,8 +4,6 @@
 package org.openimaj.vis.general;
 
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.geom.Rectangle2D;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -27,7 +25,6 @@ import org.openimaj.vis.AnimatedVisualisationProvider;
 import org.openimaj.vis.Visualisation;
 
 import com.jogamp.opengl.util.Animator;
-import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 
 /**
@@ -41,6 +38,8 @@ import com.jogamp.opengl.util.gl2.GLUT;
 public class BarVisualisation3D implements Visualisation<double[][]>, GLEventListener,
 	AnimatedVisualisationProvider
 {
+	private final AxesRenderer3D axesRenderer = new AxesRenderer3D();
+
 	/** The GLU library we'll use */
 	private final GLUgl2 glu = new GLUgl2();
 
@@ -76,9 +75,6 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 
 	/** Object that provide the camera position over time */
 	private CameraPositionProvider cameraPosition;
-
-	/** Text renderer for the axes labels */
-	private TextRenderer textRenderer;
 
 	/** The maximum value of the data (for auto scaling) */
 	private double max = 1;
@@ -119,9 +115,6 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 	@Override
 	public void updateVis()
 	{
-		// final float[] pos = this.cameraPosition.getCameraPosition();
-		// this.glu.gluLookAt( pos[0], pos[1], pos[2], pos[3], pos[4], pos[5],
-		// pos[6], pos[7], pos[8] );
 	}
 
 	/**
@@ -138,82 +131,34 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 		final float[] pos = this.cameraPosition.getCameraPosition();
 		this.glu.gluLookAt( pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7], pos[8] );
 
-		gl.glPushMatrix();
+		this.axesRenderer.renderAxis( drawable );
+
+		// Create the boxes
+		if( this.data != null )
 		{
-			gl.glLineWidth( 2 );
-			gl.glColor3f( 1, 1, 1 );
-
-			// Draw the X, Y axes
-			final float zero = -0.001f;
-			gl.glBegin( GL.GL_LINE_STRIP );
-			{
-				gl.glColor3f( this.xAxisColour[0], this.xAxisColour[1], this.xAxisColour[2] );
-				gl.glVertex3f( 1, zero, zero );
-				gl.glVertex3f( zero, zero, zero ); // x-axis
-				gl.glColor3f( this.yAxisColour[0], this.yAxisColour[1], this.yAxisColour[2] );
-				gl.glVertex3f( zero, 1, zero ); // y-axis
-			}
-			gl.glEnd();
-
-			gl.glBegin( GL.GL_LINES );
-			{
-				gl.glColor3f( this.xAxisColour[0], this.xAxisColour[1], this.xAxisColour[2] );
-				gl.glVertex3f( zero, zero, zero );
-				gl.glColor3f( this.zAxisColour[0], this.zAxisColour[1], this.zAxisColour[2] );
-				gl.glVertex3f( zero, zero, -1 ); // z-axis
-			}
-			gl.glEnd();
-
-			gl.glPushMatrix();
-			this.textRenderer.begin3DRendering();
-			{
-				gl.glMatrixMode( GLMatrixFunc.GL_MODELVIEW );
-
-				this.textRenderer.setColor( 1.0f, 0.2f, 0.2f, 0.8f );
-				final float scale = 0.003f;
-
-				final Rectangle2D xNameBounds = this.textRenderer.getBounds( this.xAxisName );
-				this.textRenderer.draw3D( this.xAxisName, (float)(1-xNameBounds.getWidth()*scale),
-						(float)(-xNameBounds.getHeight()*scale), 0.1f, scale );
-
-				final Rectangle2D yNameBounds = this.textRenderer.getBounds( this.yAxisName );
-				this.textRenderer.draw3D( this.yAxisName, (float)(-yNameBounds.getWidth()*scale),
-						1f, 0.01f, scale );
-
-				final Rectangle2D zNameBounds = this.textRenderer.getBounds( this.zAxisName );
-				this.textRenderer.draw3D( this.zAxisName, (float)(-zNameBounds.getWidth()*scale),
-						0f, -1.1f, scale );
-			}
-			this.textRenderer.end3DRendering();
-			gl.glPopMatrix();
-
-			// Create the boxes
-			if( this.data != null )
-			{
 //				synchronized( this.data )
+			{
+				for( int z = 0; z < this.data.length; z++ )
 				{
-					for( int z = 0; z < this.data.length; z++ )
+					final double b = 1d / this.data[z].length;
+					for( int x = 0; x < this.data[z].length; x++ )
 					{
-						final double b = 1d / this.data[z].length;
-						for( int x = 0; x < this.data[z].length; x++ )
+						final double v = this.oneOverMax * this.data[z][x];
+						gl.glPushMatrix();
 						{
-							final double v = this.oneOverMax * this.data[z][x];
-							gl.glPushMatrix();
-							{
-								final float[] colour = new float[3];
-								this.colourMap.apply( (float) (this.data[z][x] / this.max), colour );
-								gl.glColor3f( colour[0], colour[1], colour[2] );
-								gl.glTranslatef(
-										(float) (b * x + b / 2d),
-										(float) (v / 2d),
-										(float)(this.oneOverDataLength * z + this.oneOverDataLength / 2d)-1f );
-								gl.glScalef( (float) b, (float)Math.abs(v), (float) this.oneOverDataLength );
-								this.glut.glutSolidCube( 1f );
-								gl.glColor3f( 0, 0, 0 );
-								this.glut.glutWireCube( 1f );
-							}
-							gl.glPopMatrix();
+							final float[] colour = new float[3];
+							this.colourMap.apply( (float) (this.data[z][x] / this.max), colour );
+							gl.glColor3f( colour[0], colour[1], colour[2] );
+							gl.glTranslatef(
+									(float) (b * x + b / 2d),
+									(float) (v / 2d),
+									(float)(this.oneOverDataLength * z + this.oneOverDataLength / 2d)-1f );
+							gl.glScalef( (float) b, (float)Math.abs(v), (float) this.oneOverDataLength );
+							this.glut.glutSolidCube( 1f );
+							gl.glColor3f( 0, 0, 0 );
+							this.glut.glutWireCube( 1f );
 						}
+						gl.glPopMatrix();
 					}
 				}
 			}
@@ -291,8 +236,6 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 	@Override
 	public void init( final GLAutoDrawable drawable )
 	{
-		this.textRenderer = new TextRenderer( new Font( "SansSerif", Font.BOLD, 36 ) );
-
 		final GL2 gl = drawable.getGL().getGL2();
 		gl.setSwapInterval( 1 );
 		gl.glEnable( GL.GL_DEPTH_TEST );

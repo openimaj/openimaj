@@ -314,7 +314,7 @@ public abstract class VisualisationImpl<T> extends JPanel
 		f.pack();
 		f.setVisible( true );
 		this.addComponentListener( this );
-		this.requiredSize = f.getSize();
+		this.requiredSize = this.getSize();
 		this.updateVis();
 		return f;
 	}

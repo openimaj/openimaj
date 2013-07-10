@@ -146,8 +146,8 @@ public abstract class VideoBarVisualisation extends TimelineObjectAdapter<Video<
 		this.processingMarker = new VideoTimelineMarker();
 		this.processingMarker.type = TimelineMarkerType.LABEL;
 
-		this.setRequiredSize( new Dimension( (int)this.pixelTransformer.calculatePosition(
-				this.visImage, this.data.countFrames()*1000/this.data.getFPS(), 0 ).getX(),
+		this.setRequiredSize( new Dimension(
+			this.pixelTransformer.calculatePosition( new double[]{0d,0d} )[0],
 				this.getRequiredSize().height ) );
 
 		// Iterate through the data to get each frame.
@@ -212,7 +212,7 @@ public abstract class VideoBarVisualisation extends TimelineObjectAdapter<Video<
 	protected double getTimePosition(final Timecode t)
 	{
 		return this.pixelTransformer.calculatePosition(
-				this.visImage, t.getTimecodeInMilliseconds(), 0 ).getX();
+				new double[]{ t.getTimecodeInMilliseconds(), 0 } )[0];
 	}
 
 	/**
@@ -226,7 +226,7 @@ public abstract class VideoBarVisualisation extends TimelineObjectAdapter<Video<
 	protected double getTimePosition(final int nFrame)
 	{
 		return this.pixelTransformer.calculatePosition(
-				this.visImage, nFrame*1000/this.data.getFPS(), 0 ).getX();
+				new double[] { nFrame*1000/this.data.getFPS(), 0 } )[0];
 	}
 
 	/**

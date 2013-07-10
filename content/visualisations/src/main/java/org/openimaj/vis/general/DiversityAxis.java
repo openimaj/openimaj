@@ -47,12 +47,12 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 	 */
 	private void init()
 	{
-		this.axesRenderer.setDrawYTicks( false );
-		this.axesRenderer.setDrawYTickLabels( false );
-		this.axesRenderer.setyLabelSpacing( 1 );
-		this.axesRenderer.setMinYValue( 0 );
-		this.axesRenderer.setAxisPaddingBottom( 50 );
-		this.axesRenderer.setyAxisName( "" );
+		this.axesRenderer2D.setDrawYTicks( false );
+		this.axesRenderer2D.setDrawYTickLabels( false );
+		this.axesRenderer2D.setyLabelSpacing( 1 );
+		this.axesRenderer2D.setMinYValue( 0 );
+		this.axesRenderer2D.setAxisPaddingBottom( 50 );
+		this.axesRenderer2D.setyAxisName( "" );
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 	 */
 	public void setDiversityAxisName( final String name )
 	{
-		this.axesRenderer.setxAxisName( name );
+		this.axesRenderer2D.setxAxisName( name );
 	}
 
 	/**
@@ -79,24 +79,25 @@ public class DiversityAxis<O> extends XYPlotVisualisation<O>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.general.XYPlotVisualisation#beforeAxesRender(org.openimaj.image.MBFImage, org.openimaj.vis.general.AxesRenderer)
+	 * 	@see org.openimaj.vis.general.XYPlotVisualisation#beforeAxesRender(org.openimaj.image.MBFImage, org.openimaj.vis.general.AxesRenderer2D)
 	 */
 	@Override
 	public void beforeAxesRender( final MBFImage visImage,
-			final AxesRenderer<Float[],MBFImage> renderer )
+			final AxesRenderer2D<Float[],MBFImage> renderer )
 	{
 		int maxBand = 1;
 		for( final XYPlotVisualisation.LocatedObject<O> s : this.data )
 			maxBand = Math.max( maxBand, (int)s.y );
 
 		renderer.setMaxYValue( maxBand );
-		renderer.precalc( visImage );
+		renderer.setImage( visImage );
+		renderer.precalc( );
 
 		final Float[][] cols = new Float[][]{ {0.4f,0.4f,0.4f}, {0.3f,0.3f,0.3f} };
 		for( int b = 1; b <= maxBand; b++ )
 		{
-			final int topOfBand    = (int)renderer.calculatePosition( visImage, 0, b ).getY();
-			final int bottomOfBand = (int)renderer.calculatePosition( visImage, 0, b-1 ).getY();
+			final int topOfBand    = (int)renderer.calculatePosition( 0, b ).getY();
+			final int bottomOfBand = (int)renderer.calculatePosition( 0, b-1 ).getY();
 			visImage.createRenderer().drawShapeFilled(
 				new Rectangle( 0, topOfBand, visImage.getWidth(), bottomOfBand-topOfBand ),
 				cols[b%2] );

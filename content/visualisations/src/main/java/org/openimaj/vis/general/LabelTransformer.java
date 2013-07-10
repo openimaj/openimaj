@@ -4,7 +4,7 @@
 package org.openimaj.vis.general;
 
 /**
- *	Used by the {@link AxesRenderer} to write labels onto the axes.
+ *	Used by the {@link AxesRenderer2D} to write labels onto the axes.
  *	The label transformer should take a value and return a string.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)

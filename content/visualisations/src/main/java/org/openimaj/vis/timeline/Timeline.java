@@ -44,7 +44,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.vis.AnimatedVisualisationProvider;
-import org.openimaj.vis.general.AxesRenderer;
+import org.openimaj.vis.general.AxesRenderer2D;
 import org.openimaj.vis.general.DiversityAxis;
 import org.openimaj.vis.general.ItemPlotter;
 import org.openimaj.vis.general.LabelTransformer;
@@ -88,15 +88,15 @@ public class Timeline extends DiversityAxis<TimelineObject>
 
 		/**
 		 *	{@inheritDoc}
-		 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer)
+		 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer2D)
 		 */
 		@Override
 		public void plotObject( final MBFImage visImage,
 				final org.openimaj.vis.general.XYPlotVisualisation.LocatedObject<TimelineObject> object,
-				final AxesRenderer<Float[], MBFImage> renderer )
+				final AxesRenderer2D<Float[], MBFImage> renderer )
 		{
 			// Work out where we're going to plot this timeline object.
-			final Point2d p = renderer.calculatePosition( visImage, object.x, object.y );
+			final Point2d p = renderer.calculatePosition( object.x, object.y );
 
 			// Reset its size, if we need to then update the visualisation
 			object.object.setRequiredSize( new Dimension(
@@ -316,20 +316,20 @@ public class Timeline extends DiversityAxis<TimelineObject>
 				this.visImage.getHeight(), 4 );
 
 		// Setup the axis renderer (the timeline's ruler);
-		this.axesRenderer.setAxisPaddingLeft( this.sidebarWidth );
-		this.axesRenderer.setDrawYAxis( false );
-		this.axesRenderer.setDrawXAxisName( false );
-		this.axesRenderer.setMajorTickColour( RGBColour.WHITE );
-		this.axesRenderer.setMinorTickColour( RGBColour.WHITE );
-		this.axesRenderer.setMajorTickColour( RGBColour.WHITE );
-		this.axesRenderer.setMinorTickColour( RGBColour.WHITE );
-		this.axesRenderer.setxAxisNameColour( RGBColour.WHITE );
-		this.axesRenderer.setxTickLabelColour( RGBColour.WHITE );
-		this.axesRenderer.setxAxisColour( RGBColour.WHITE );
-		this.axesRenderer.setxMajorTickSpacing( 10000 );
-		this.axesRenderer.setxMinorTickSpacing( 1000 );
-		this.axesRenderer.setxLabelSpacing( 10000 );
-		this.axesRenderer.setxAxisLabelTransformer( new LabelTransformer()
+		this.axesRenderer2D.setAxisPaddingLeft( this.sidebarWidth );
+		this.axesRenderer2D.setDrawYAxis( false );
+		this.axesRenderer2D.setDrawXAxisName( false );
+		this.axesRenderer2D.setMajorTickColour( RGBColour.WHITE );
+		this.axesRenderer2D.setMinorTickColour( RGBColour.WHITE );
+		this.axesRenderer2D.setMajorTickColour( RGBColour.WHITE );
+		this.axesRenderer2D.setMinorTickColour( RGBColour.WHITE );
+		this.axesRenderer2D.setxAxisNameColour( RGBColour.WHITE );
+		this.axesRenderer2D.setxTickLabelColour( RGBColour.WHITE );
+		this.axesRenderer2D.setxAxisColour( RGBColour.WHITE );
+		this.axesRenderer2D.setxMajorTickSpacing( 10000 );
+		this.axesRenderer2D.setxMinorTickSpacing( 1000 );
+		this.axesRenderer2D.setxLabelSpacing( 10000 );
+		this.axesRenderer2D.setxAxisLabelTransformer( new LabelTransformer()
 		{
 			@Override
 			public String transform( final double value )
@@ -343,7 +343,7 @@ public class Timeline extends DiversityAxis<TimelineObject>
 		this.setTimeScalar( 50 );
 
 		// Do the precalcs for the axes renderer
-		this.axesRenderer.precalc( this.visImage );
+		this.axesRenderer2D.precalc( );
 	}
 
 	/**
@@ -394,9 +394,10 @@ public class Timeline extends DiversityAxis<TimelineObject>
 		if( obj instanceof AnimatedVisualisationProvider )
 			((AnimatedVisualisationProvider)obj).addAnimatedVisualisationListener( this );
 
-		obj.setDataPixelTransformer( this.axesRenderer.getRelativePixelTransformer(
-				(int)this.axesRenderer.calculatePosition(
-						this.visImage, obj.getStartTimeMilliseconds(), 0 ).getX(),
+		obj.setDataPixelTransformer(
+			this.axesRenderer2D.getRelativePixelTransformer(
+				(int)this.axesRenderer2D.calculatePosition(
+						obj.getStartTimeMilliseconds(), 0 ).getX(),
 				tt.getTrackNumber() ) );
 
 		return tt;
@@ -457,7 +458,7 @@ public class Timeline extends DiversityAxis<TimelineObject>
 	public void setTimeScalar( final double ts )
 	{
 		this.timeScalar = ts;
-		this.axesRenderer.setMaxXValue( this.timeScalar * (this.visImage.getWidth()-this.sidebarWidth) );
+		this.axesRenderer2D.setMaxXValue( this.timeScalar * (this.visImage.getWidth()-this.sidebarWidth) );
 
 		this.updateVis();
 	}

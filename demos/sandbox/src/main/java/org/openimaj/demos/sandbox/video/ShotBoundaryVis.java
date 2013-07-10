@@ -31,11 +31,8 @@ package org.openimaj.demos.sandbox.video;
 
 import java.io.File;
 
-import org.openimaj.image.MBFImage;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.video.xuggle.XuggleVideo;
-import org.openimaj.vis.DataPixelTransformer;
+import org.openimaj.vis.DataUnitsTransformer;
 import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
 
 /**
@@ -58,27 +55,28 @@ public class ShotBoundaryVis
 		System.out.println("HERRE");
 		final ShotBoundaryVideoBarVisualisation sbvbv =
 				new ShotBoundaryVideoBarVisualisation(video);
-		sbvbv.setDataPixelTransformer( new DataPixelTransformer<MBFImage>()
+		sbvbv.setDataPixelTransformer( new DataUnitsTransformer<Float[],double[],int[]>()
 		{
 			private double videoLength = 0;
 
 			@Override
-			public void precalc( final MBFImage image )
+			public void precalc()
 			{
 				this.videoLength = 1000d * video.countFrames() / video.getFPS();
 			}
 
 			@Override
-			public double[] calculateUnitsAt( final MBFImage image, final int x, final int y )
+			public double[] calculateUnitsAt( final int[] xy )
 			{
 				return new double[]
-				{  this.videoLength / image.getWidth() * x, y };
+				{  this.videoLength / sbvbv.getVisualisationImage().getWidth() * xy[0], xy[1] };
 			}
 
 			@Override
-			public Point2d calculatePosition( final MBFImage image, final double x, final double y )
+			public int[] calculatePosition( final double xy[] )
 			{
-				return new Point2dImpl( (float)(this.videoLength / x * image.getWidth()), (float)y );
+				return new int[] { (int)(this.videoLength / xy[0] *
+						sbvbv.getVisualisationImage().getWidth()), (int)xy[1] };
 			}
 		} );
 		sbvbv.showWindow( "Shot Boundaries" );
