@@ -9,8 +9,11 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2ES1;
+import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
+import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.gl2.GLUgl2;
 
@@ -54,6 +57,9 @@ public abstract class Visualisation3D<D> implements
 
 	/** The data! */
 	protected D data;
+
+	/** Whether lighting should be enabled */
+	private boolean enableLights = false;
 
 
 	/**
@@ -112,12 +118,12 @@ public abstract class Visualisation3D<D> implements
 		final GL2 gl = drawable.getGL().getGL2();
 		gl.setSwapInterval( 1 );
 		gl.glEnable( GL.GL_DEPTH_TEST );
-		// gl.glEnable( GLLightingFunc.GL_LIGHTING );
-		// gl.glEnable( GLLightingFunc.GL_LIGHT0 );
-		// gl.glEnable( GLLightingFunc.GL_COLOR_MATERIAL );
+        gl.glDepthFunc( GL.GL_LEQUAL );
+        gl.glShadeModel( GLLightingFunc.GL_SMOOTH );
+        gl.glHint( GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST );
 //		gl.glEnable( GL.GL_BLEND );
 //		gl.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA );
-//		gl.glEnable( GL2GL3.GL_POLYGON_SMOOTH );
+		gl.glEnable( GL2GL3.GL_POLYGON_SMOOTH );
 
 		final float w = this.window.getDrawableSurface().getWidth();
 		final float h = this.window.getDrawableSurface().getHeight();
@@ -151,6 +157,24 @@ public abstract class Visualisation3D<D> implements
 		{
 			final float[] pos = this.cameraPosition.getCameraPosition();
 			this.glu.gluLookAt( pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7], pos[8] );
+		}
+
+        // Prepare light parameters.
+		if( this.enableLights )
+		{
+	        final float SHINE_ALL_DIRECTIONS = 1;
+	        final float[] lightPos = {-30, 0, 0, SHINE_ALL_DIRECTIONS};
+	        final float[] lightColorAmbient = {0.2f, 0.2f, 0.2f, 1f};
+	        final float[] lightColorSpecular = {0.5f, 0.5f, 0.5f, 1f};
+
+	        // Set light parameters.
+	        gl.glLightfv( GLLightingFunc.GL_LIGHT1, GLLightingFunc.GL_POSITION, lightPos, 0 );
+	        gl.glLightfv( GLLightingFunc.GL_LIGHT1, GLLightingFunc.GL_AMBIENT, lightColorAmbient, 0 );
+	        gl.glLightfv( GLLightingFunc.GL_LIGHT1, GLLightingFunc.GL_SPECULAR, lightColorSpecular, 0 );
+
+	        // Enable lighting in GL.
+	        gl.glEnable( GLLightingFunc.GL_LIGHT1 );
+	        gl.glEnable( GLLightingFunc.GL_LIGHTING );
 		}
 
 		this.renderVis( drawable );
@@ -207,5 +231,23 @@ public abstract class Visualisation3D<D> implements
 	public void setData( final D data )
 	{
 		this.data = data;
+	}
+
+
+	/**
+	 *	@return the enableLights
+	 */
+	public boolean isEnableLights()
+	{
+		return this.enableLights;
+	}
+
+
+	/**
+	 *	@param enableLights the enableLights to set
+	 */
+	public void setEnableLights( final boolean enableLights )
+	{
+		this.enableLights = enableLights;
 	}
 }

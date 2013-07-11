@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 
 import org.openimaj.image.colour.RGBColour;
@@ -246,6 +247,12 @@ public class AxisRenderer3D
 		gl.glColor3f( config.getRenderingConfig().getMinorGridColour()[0],
 				config.getRenderingConfig().getMinorGridColour()[1],
 				config.getRenderingConfig().getMinorGridColour()[2] );
+        final float[] rgba = { config.getRenderingConfig().getMinorGridColour()[0],
+				config.getRenderingConfig().getMinorGridColour()[1],
+				config.getRenderingConfig().getMinorGridColour()[2] };
+        gl.glMaterialfv( GL.GL_FRONT, GLLightingFunc.GL_AMBIENT, rgba, 0);
+        gl.glMaterialfv( GL.GL_FRONT, GLLightingFunc.GL_SPECULAR, rgba, 0);
+        gl.glMaterialf( GL.GL_FRONT, GLLightingFunc.GL_SHININESS, 0f);
 
 		final float ll = this.calculatePosition( location ).floatValue();
 

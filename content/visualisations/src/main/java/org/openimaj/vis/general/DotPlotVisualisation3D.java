@@ -3,8 +3,10 @@
  */
 package org.openimaj.vis.general;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
@@ -83,12 +85,21 @@ public class DotPlotVisualisation3D extends XYZVisualisation3D<ColouredDot> impl
 		gl.glScaled( s[0], s[1], s[2] );
 
 		// Create a sphere
-		gl.glColor3f( object.object.colour[0], object.object.colour[1], object.object.colour[2] );
+		if( !this.isEnableLights() )
+			gl.glColor3f( object.object.colour[0], object.object.colour[1], object.object.colour[2] );
+		else
+		{
+	        final float[] rgba = { object.object.colour[0], object.object.colour[1], object.object.colour[2] };
+	        gl.glMaterialfv( GL.GL_FRONT, GLLightingFunc.GL_AMBIENT, rgba, 0);
+	        gl.glMaterialfv( GL.GL_FRONT, GLLightingFunc.GL_SPECULAR, rgba, 0);
+	        gl.glMaterialf( GL.GL_FRONT, GLLightingFunc.GL_SHININESS, 0.05f);
+		}
 
 		final GLUquadric qobj0 = this.glu.gluNewQuadric();
 		this.glu.gluQuadricDrawStyle( qobj0, GLU.GLU_FILL );
 		this.glu.gluQuadricNormals( qobj0, GLU.GLU_SMOOTH );
 		this.glu.gluSphere( qobj0, 1, 12, 12 );
+		this.glu.gluDeleteQuadric( qobj0 );
 
 		gl.glPopMatrix();
 	}
@@ -176,6 +187,7 @@ public class DotPlotVisualisation3D extends XYZVisualisation3D<ColouredDot> impl
 		final DotPlotVisualisation3D dpv = new DotPlotVisualisation3D( 1000, 600 );
 		dpv.getAxesRenderer().setAxesRanges( -1, 1, -1, 1, -1, 1 );
 		dpv.setColourMapRange( 0, 0.1 );
+		dpv.setEnableLights( false );
 
 		for( int i = 0; i < 100; i++ )
 			dpv.addPoint( (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2,

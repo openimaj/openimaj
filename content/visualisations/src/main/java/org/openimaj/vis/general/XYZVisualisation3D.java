@@ -130,7 +130,9 @@ public class XYZVisualisation3D<D> extends Visualisation3D<List<LocatedObject3D<
 
 		this.axesRenderer.renderAxis( drawable );
 
-		for( final LocatedObject3D<D> d : this.data )
+		final List<LocatedObject3D<D>> x = new ArrayList<XYZVisualisation3D.LocatedObject3D<D>>();
+		x.addAll( this.data );
+		for( final LocatedObject3D<D> d : x )
 		{
 			gl.glPushMatrix();
 			this.plotter.plotObject( drawable, d, this.axesRenderer );
