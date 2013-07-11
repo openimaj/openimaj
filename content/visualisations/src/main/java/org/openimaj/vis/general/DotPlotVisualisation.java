@@ -4,6 +4,7 @@
 package org.openimaj.vis.general;
 
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.vis.general.DotPlotVisualisation.ColouredDot;
@@ -46,6 +47,15 @@ public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
 	/** */
 	private static final long serialVersionUID = 1L;
 
+	/** A colour map to use */
+	private ColourMap colourMap = ColourMap.Autumn;
+
+	/** Colour map range */
+	private double colourMapMin = -1;
+
+	/** Colour map range */
+	private double colourMapMax = 1;
+
 	/**
 	 *	Default construcotr
 	 */
@@ -75,7 +85,10 @@ public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
 	 */
 	public void addPoint( final double x, final double y, final double d )
 	{
-		super.addPoint( x, y, new ColouredDot( d, RGBColour.RED ) );
+		Float[] c = RGBColour.RED;
+		if( this.colourMap != null )
+			c = this.colourMap.apply( (float)((d-this.colourMapMin)/(this.colourMapMax-this.colourMapMin)) );
+		super.addPoint( x, y, new ColouredDot( d, c ) );
 	}
 
 	/**
@@ -87,8 +100,8 @@ public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
 			final XYPlotVisualisation.LocatedObject<ColouredDot> object,
 			final AxesRenderer2D<Float[],MBFImage> renderer )
 	{
-		System.out.println( "Object at "+object.x+","+object.y+" is plotted at "+
-				renderer.calculatePosition( object.x, object.y ) );
+//		System.out.println( "Object at "+object.x+","+object.y+" is plotted at "+
+//				renderer.calculatePosition( object.x, object.y ) );
 		visImage.createRenderer().drawShapeFilled(
 			new Circle( renderer.calculatePosition( object.x, object.y ),
 				(float)(renderer.scaleDimensions( object.object.size, object.object.size )[0] ) ),
@@ -102,6 +115,64 @@ public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
 	@Override
 	public void renderRestarting()
 	{
+	}
+
+	/**
+	 *	@return the colourMap
+	 */
+	public ColourMap getColourMap()
+	{
+		return this.colourMap;
+	}
+
+	/**
+	 *	@param colourMap the colourMap to set
+	 */
+	public void setColourMap( final ColourMap colourMap )
+	{
+		this.colourMap = colourMap;
+	}
+
+	/**
+	 *	@return the colourMapRange
+	 */
+	public double getColourMapMin()
+	{
+		return this.colourMapMin;
+	}
+
+	/**
+	 *	@param colourMapRange the colourMapRange to set
+	 */
+	public void setColourMapMin( final double colourMapRange )
+	{
+		this.colourMapMin = colourMapRange;
+	}
+
+	/**
+	 *	@return the colourMapMax
+	 */
+	public double getColourMapMax()
+	{
+		return this.colourMapMax;
+	}
+
+	/**
+	 *	@param colourMapMax the colourMapMax to set
+	 */
+	public void setColourMapMax( final double colourMapMax )
+	{
+		this.colourMapMax = colourMapMax;
+	}
+
+	/**
+	 *	@param min
+	 *	@param max
+	 */
+	public void setColourMapRange( final double min, final double max )
+	{
+		this.colourMapMin = min;
+		this.colourMapMax = max;
 	}
 
 	/**
@@ -121,10 +192,11 @@ public class DotPlotVisualisation extends XYPlotVisualisation<ColouredDot>
 		dpv.axesRenderer2D.setyMinorTickSpacing( 0.1 );
 		dpv.axesRenderer2D.setxAxisPosition( 300 );
 		dpv.setAutoScaleAxes( false );
+		dpv.setColourMapRange( 0, 0.2 );
 
 		for( int i = 0; i < 10; i++ )
 			dpv.addPoint( (Math.random()-0.5)*2, (Math.random()-0.5)*2,
-					Math.random()/10 );
+					i/50d );
 
 		dpv.updateVis();
 		dpv.showWindow( "Dot plot" );

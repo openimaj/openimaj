@@ -81,9 +81,12 @@ public class AxisRenderer3D
 					config.getRenderingConfig().getColour()[1],
 					config.getRenderingConfig().getColour()[2] );
 
+			final float n1 = this.calculatePosition( config.getMinValue() ).floatValue();
+			final float n2 = this.calculatePosition( config.getMaxValue() ).floatValue();
+
 			// We draw in the x axis, so the orientation has to be set appropriately
-			gl.glVertex3f( 1, zero, zero );
-			gl.glVertex3f( zero, zero, zero );
+			gl.glVertex3f( n1, zero, zero );
+			gl.glVertex3f( n2, zero, zero );
 		}
 		gl.glEnd();
 
@@ -303,5 +306,11 @@ public class AxisRenderer3D
 	public void setGridDirection( final int i )
 	{
 		this.gridDirection  = i;
+	}
+
+	@Override
+	public Double scaleDimension( final Double dimension )
+	{
+		return dimension * (this.axisLength/(this.config.getMaxValue()-this.config.getMinValue()));
 	}
 }

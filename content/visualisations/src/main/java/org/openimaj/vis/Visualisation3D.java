@@ -1,0 +1,211 @@
+/**
+ *
+ */
+package org.openimaj.vis;
+
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLEventListener;
+import javax.media.opengl.fixedfunc.GLMatrixFunc;
+import javax.media.opengl.glu.gl2.GLUgl2;
+
+import org.openimaj.image.MBFImage;
+import org.openimaj.vis.general.CameraPositionProvider;
+import org.openimaj.vis.general.JOGLWindow;
+
+import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.gl2.GLUT;
+
+/**
+ *
+ *
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *  @created 11 Jul 2013
+ *	@version $Author$, $Revision$, $Date$
+ * 	@param <D> Data type
+ */
+public abstract class Visualisation3D<D> implements
+	GLEventListener, Visualisation<D>,
+	AnimatedVisualisationProvider
+{
+	/** The GLU library we'll use */
+	protected final GLUgl2 glu = new GLUgl2();
+
+	/** The GLUT library we'll use */
+	protected final GLUT glut = new GLUT();
+
+	/** The JOGL Window (NEWT) */
+	protected JOGLWindow window;
+
+	/** Animation listeners */
+	private final List<AnimatedVisualisationListener> listeners =
+			new ArrayList<AnimatedVisualisationListener>();
+
+	/** The animation */
+	private final Animator animator;
+
+	/** Object that provide the camera position over time */
+	protected CameraPositionProvider cameraPosition;
+
+	/** The data! */
+	protected D data;
+
+
+	/**
+	 * 	Render the visualisation into the drawable
+	 *	@param drawable The drawable
+	 */
+	protected abstract void renderVis( GLAutoDrawable drawable );
+
+
+	/**
+	 *	@param width
+	 *	@param height
+	 */
+	public Visualisation3D( final int width, final int height )
+	{
+		this.window = new JOGLWindow( width, height );
+
+		if( this.window.getDrawableSurface() == null )
+			throw new RuntimeException( "Unable to get OpenGL surface." );
+
+		this.window.getDrawableSurface().addGLEventListener( this );
+
+		this.animator = new Animator( this.window.getDrawableSurface() );
+		this.animator.add( this.window.getDrawableSurface() );
+		this.animator.start();
+	}
+
+	/**
+	 * 	Closes the window and cleans up
+	 *
+	 *	{@inheritDoc}
+	 * 	@see java.lang.Object#finalize()
+	 */
+	@Override
+	protected void finalize() throws Throwable
+	{
+		this.animator.stop();
+		this.window.close();
+	};
+
+	@Override
+	public void addAnimatedVisualisationListener( final AnimatedVisualisationListener avl )
+	{
+		this.listeners.add( avl );
+	}
+
+	@Override
+	public void removeAnimatedVisualisationListener( final AnimatedVisualisationListener avl )
+	{
+		this.listeners.remove( avl );
+	}
+
+	@Override
+	public void init( final GLAutoDrawable drawable )
+	{
+		final GL2 gl = drawable.getGL().getGL2();
+		gl.setSwapInterval( 1 );
+		gl.glEnable( GL.GL_DEPTH_TEST );
+		// gl.glEnable( GLLightingFunc.GL_LIGHTING );
+		// gl.glEnable( GLLightingFunc.GL_LIGHT0 );
+		// gl.glEnable( GLLightingFunc.GL_COLOR_MATERIAL );
+//		gl.glEnable( GL.GL_BLEND );
+//		gl.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA );
+//		gl.glEnable( GL2GL3.GL_POLYGON_SMOOTH );
+
+		final float w = this.window.getDrawableSurface().getWidth();
+		final float h = this.window.getDrawableSurface().getHeight();
+
+		// Set the projection matrix (only done once - just here)
+		gl.glMatrixMode( GLMatrixFunc.GL_PROJECTION );
+		gl.glLoadIdentity();
+		this.glu.gluPerspective( 50, (w / h), 0.01, 10 );
+
+		// Set the initial model matrix
+		gl.glMatrixMode( GLMatrixFunc.GL_MODELVIEW );
+		gl.glLoadIdentity();
+		gl.glViewport( 0, 0, (int) w, (int) h ); /* viewport size in pixels */
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @see javax.media.opengl.GLEventListener#display(javax.media.opengl.GLAutoDrawable)
+	 */
+	@Override
+	public void display( final GLAutoDrawable drawable )
+	{
+		this.updateVis();
+
+		final GL2 gl = drawable.getGL().getGL2();
+		gl.glMatrixMode( GLMatrixFunc.GL_MODELVIEW );
+		gl.glLoadIdentity();
+
+		if( this.cameraPosition != null )
+		{
+			final float[] pos = this.cameraPosition.getCameraPosition();
+			this.glu.gluLookAt( pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7], pos[8] );
+		}
+
+		this.renderVis( drawable );
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see javax.media.opengl.GLEventListener#dispose(javax.media.opengl.GLAutoDrawable)
+	 */
+	@Override
+	public void dispose( final GLAutoDrawable drawable )
+	{
+		drawable.removeGLEventListener( this );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @see javax.media.opengl.GLEventListener#reshape(javax.media.opengl.GLAutoDrawable,
+	 *      int, int, int, int)
+	 */
+	@Override
+	public void reshape( final GLAutoDrawable drawable, final int arg1, final int arg2, final int arg3, final int arg4 )
+	{
+		final GL2 gl = drawable.getGL().getGL2();
+		final float w = this.window.getDrawableSurface().getWidth();
+		final float h = this.window.getDrawableSurface().getHeight();
+		gl.glMatrixMode( GLMatrixFunc.GL_PROJECTION );
+		gl.glLoadIdentity();
+		this.glu.gluPerspective( 50, (w / h), 0.01, 10 );
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.VisualisationImageProvider#getVisualisationImage()
+	 */
+	@Override
+	public MBFImage getVisualisationImage()
+	{
+		// TODO: Need to convert the GL buffer to a MBFImage
+		return null;
+	}
+
+	@Override
+	public void setRequiredSize( final Dimension d )
+	{
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.Visualisation#setData(java.lang.Object)
+	 */
+	@Override
+	public void setData( final D data )
+	{
+		this.data = data;
+	}
+}

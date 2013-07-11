@@ -29,7 +29,7 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 3 Jun 2013
 	 */
-	protected static class LocatedObject<O>
+	public static class LocatedObject<O>
 	{
 		/** The x position */
 		public double x;

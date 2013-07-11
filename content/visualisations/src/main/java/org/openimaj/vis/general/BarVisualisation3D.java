@@ -3,29 +3,18 @@
  */
 package org.openimaj.vis.general;
 
-import java.awt.Dimension;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
-import javax.media.opengl.glu.gl2.GLUgl2;
 
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.vis.AnimatedVisualisationListener;
-import org.openimaj.vis.AnimatedVisualisationProvider;
-import org.openimaj.vis.Visualisation;
-
-import com.jogamp.opengl.util.Animator;
-import com.jogamp.opengl.util.gl2.GLUT;
+import org.openimaj.vis.Visualisation3D;
 
 /**
  * Plots oneOverDataLength bars in oneOverDataLength 3-dimensional space, which means there are 2 dimensions for
@@ -35,22 +24,9 @@ import com.jogamp.opengl.util.gl2.GLUT;
  * @created 4 Jul 2013
  * @version $Author$, $Revision$, $Date$
  */
-public class BarVisualisation3D implements Visualisation<double[][]>, GLEventListener,
-	AnimatedVisualisationProvider
+public class BarVisualisation3D extends Visualisation3D<double[][]>
 {
-	private final AxesRenderer3D axesRenderer = new AxesRenderer3D();
-
-	/** The GLU library we'll use */
-	private final GLUgl2 glu = new GLUgl2();
-
-	/** The GLUT library we'll use */
-	private final GLUT glut = new GLUT();
-
-	/** The JOGLWindow in which we're drawing */
-	private final JOGLWindow window;
-
-	/** The data */
-	private double[][] data;
+	private AxesRenderer3D axesRenderer;
 
 	/** The colour map for the bars */
 	private ColourMap colourMap = ColourMap.Autumn;
@@ -73,9 +49,6 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 	/** The colour of the z axis */
 	private Float[] zAxisColour = RGBColour.BLUE;
 
-	/** Object that provide the camera position over time */
-	private CameraPositionProvider cameraPosition;
-
 	/** The maximum value of the data (for auto scaling) */
 	private double max = 1;
 
@@ -88,23 +61,13 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 	/** Precalculated 1/max */
 	private double oneOverMax;
 
-	/** Animation listeners */
-	private final List<AnimatedVisualisationListener> listeners =
-			new ArrayList<AnimatedVisualisationListener>();
-
 	/**
 	 *	@param width
 	 *	@param height
 	 */
 	public BarVisualisation3D( final int width, final int height )
 	{
-		this.window = new JOGLWindow( width, height );
-		this.window.getDrawableSurface().addGLEventListener( this );
-
-		final Animator animator = new Animator( this.window.getDrawableSurface() );
-//		final FPSAnimator animator = new FPSAnimator( this.window.getDrawableSurface(), 25 );
-		animator.add( this.window.getDrawableSurface() );
-		animator.start();
+		super( width, height );
 	}
 
 	/**
@@ -120,16 +83,13 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 	/**
 	 * Renders the visualisation
 	 */
-	private void renderVis( final GLAutoDrawable drawable )
+	@Override
+	protected void renderVis( final GLAutoDrawable drawable )
 	{
+		if( drawable == null || this.axesRenderer == null ) return;
+
 		final GL2 gl = drawable.getGL().getGL2();
 		gl.glClear( GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT );
-
-		gl.glMatrixMode( GLMatrixFunc.GL_MODELVIEW );
-		gl.glLoadIdentity();
-
-		final float[] pos = this.cameraPosition.getCameraPosition();
-		this.glu.gluLookAt( pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7], pos[8] );
 
 		this.axesRenderer.renderAxis( drawable );
 
@@ -163,7 +123,6 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 				}
 			}
 		}
-		gl.glPopMatrix();
 	}
 
 	protected DoubleBuffer get2dPoint( final GL2 gl, final double x, final double y, final double z )
@@ -187,77 +146,14 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.openimaj.vis.VisualisationImageProvider#getVisualisationImage()
-	 */
-	@Override
-	public MBFImage getVisualisationImage()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.openimaj.vis.VisualisationImageProvider#setRequiredSize(java.awt.Dimension)
-	 */
-	@Override
-	public void setRequiredSize( final Dimension d )
-	{
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see javax.media.opengl.GLEventListener#display(javax.media.opengl.GLAutoDrawable)
-	 */
-	@Override
-	public void display( final GLAutoDrawable drawable )
-	{
-		this.updateVis();
-		this.renderVis( drawable );
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see javax.media.opengl.GLEventListener#dispose(javax.media.opengl.GLAutoDrawable)
-	 */
-	@Override
-	public void dispose( final GLAutoDrawable arg0 )
-	{
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
 	 * @see javax.media.opengl.GLEventListener#init(javax.media.opengl.GLAutoDrawable)
 	 */
 	@Override
 	public void init( final GLAutoDrawable drawable )
 	{
-		final GL2 gl = drawable.getGL().getGL2();
-		gl.setSwapInterval( 1 );
-		gl.glEnable( GL.GL_DEPTH_TEST );
-		// gl.glEnable( GLLightingFunc.GL_LIGHTING );
-		// gl.glEnable( GLLightingFunc.GL_LIGHT0 );
-		// gl.glEnable( GLLightingFunc.GL_COLOR_MATERIAL );
-//		gl.glEnable( GL.GL_BLEND );
-//		gl.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA );
-//		gl.glEnable( GL2GL3.GL_POLYGON_SMOOTH );
+		super.init( drawable );
 
-		final float w = this.window.getDrawableSurface().getWidth();
-		final float h = this.window.getDrawableSurface().getHeight();
-
-		// Set the projection matrix (only done once - just here)
-		gl.glMatrixMode( GLMatrixFunc.GL_PROJECTION );
-		gl.glLoadIdentity();
-		this.glu.gluPerspective( 50, (w / h), 0.01, 10 );
-
-		// Set the initial model matrix
-		gl.glMatrixMode( GLMatrixFunc.GL_MODELVIEW );
-		gl.glLoadIdentity();
-		gl.glViewport( 0, 0, (int) w, (int) h ); /* viewport size in pixels */
+		this.axesRenderer = new AxesRenderer3D();
 
 		// Set the initial look at
 		final float eyeX = 0.5f, eyeY = 1f, eyeZ = 2f;
@@ -275,54 +171,25 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see javax.media.opengl.GLEventListener#reshape(javax.media.opengl.GLAutoDrawable,
-	 *      int, int, int, int)
-	 */
-	@Override
-	public void reshape( final GLAutoDrawable drawable, final int arg1, final int arg2, final int arg3, final int arg4 )
-	{
-		final GL2 gl = drawable.getGL().getGL2();
-		final float w = this.window.getDrawableSurface().getWidth();
-		final float h = this.window.getDrawableSurface().getHeight();
-		gl.glMatrixMode( GLMatrixFunc.GL_PROJECTION );
-		gl.glLoadIdentity();
-		this.glu.gluPerspective( 50, (w / h), 0.01, 10 );
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
 	 * @see org.openimaj.vis.Visualisation#setData(java.lang.Object)
 	 */
 	@Override
 	public void setData( final double[][] data )
 	{
-		if( data == null ) return;
 
-		if( this.data == null )
-			this.data = data;
-		else
+		super.setData( data );
+
+		if( this.autoScale )
 		{
-//			synchronized( data )
-			{
-				this.data = data;
-			}
+			this.max = 0;
+			for( final double[] d : this.data )
+				this.max = Math.max( this.max,
+						Math.max( Math.abs( ArrayUtils.maxValue( d ) ),
+								Math.abs( ArrayUtils.minValue(d) ) ) );
 		}
 
-//		synchronized( data )
-		{
-			if( this.autoScale )
-			{
-				this.max = 0;
-				for( final double[] d : this.data )
-					this.max = Math.max( this.max,
-							Math.max( Math.abs( ArrayUtils.maxValue( d ) ),
-									Math.abs( ArrayUtils.minValue(d) ) ) );
-			}
-
-			this.oneOverDataLength = 1d / this.data.length;
-			this.oneOverMax = 1d / this.max;
-		}
+		this.oneOverDataLength = 1d / this.data.length;
+		this.oneOverMax = 1d / this.max;
 	}
 
 	/**
@@ -333,18 +200,6 @@ public class BarVisualisation3D implements Visualisation<double[][]>, GLEventLis
 	{
 		this.max = max;
 		this.oneOverMax = 1d / this.max;
-	}
-
-	@Override
-	public void addAnimatedVisualisationListener( final AnimatedVisualisationListener avl )
-	{
-		this.listeners.add( avl );
-	}
-
-	@Override
-	public void removeAnimatedVisualisationListener( final AnimatedVisualisationListener avl )
-	{
-		this.listeners.remove( avl );
 	}
 
 	/**

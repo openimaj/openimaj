@@ -33,8 +33,14 @@ public class RotatingCameraProvider implements CameraPositionProvider
 	/** The speed of the z oscillation */
 	private final float zS;
 
-	/** The radius of the oscillation */
-	private final float radius;
+	/** The radius of the X oscillation */
+	private final float radiusX;
+
+	/** The radius of the Y oscillation */
+	private final float radiusY;
+
+	/** The radius of the Z oscillation */
+	private final float radiusZ;
 
 	/** The time the provider was initialised */
 	private long startTime = 0;
@@ -77,7 +83,44 @@ public class RotatingCameraProvider implements CameraPositionProvider
 		this.xS = yS;
 		this.yS = yS;
 		this.zS = zS;
-		this.radius = radius;
+		this.radiusX = this.radiusY = this.radiusZ = radius;
+		this.startTime = System.currentTimeMillis();
+	}
+
+	/**
+	 * 	Rotating camera provider looking at x, y, z with the given radius.
+	 *
+	 * 	@param xPos The initial position of the camera x coordinate
+	 * 	@param yPos The initial position of the camera y coordinate
+	 * 	@param zPos The initial position of the camera z coordinate
+	 *	@param x The x The look-at point of the camera x coordinate
+	 *	@param y The y The look-at point of the camera y coordinate
+	 *	@param z The z The look-at point of the camera z coordinate
+	 *	@param xS The x speed The x oscillation speed
+	 *	@param yS The y speed The y oscillation speed
+	 *	@param zS The z speed The z oscillation speed
+	 * 	@param radiusX The amplitude of the X osciallitions
+	 * 	@param radiusY The amplitude of the Y osciallitions
+	 * 	@param radiusZ The amplitude of the Z osciallitions
+	 */
+	public RotatingCameraProvider(
+			final float xPos, final float yPos, final float zPos,
+			final float x, final float y, final float z,
+			final float xS, final float yS, final float zS,
+			final float radiusX, final float radiusY, final float radiusZ )
+	{
+		this.xPos = xPos;
+		this.yPos = yPos;
+		this.zPos = zPos;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.xS = yS;
+		this.yS = yS;
+		this.zS = zS;
+		this.radiusX = radiusX;
+		this.radiusY = radiusY;
+		this.radiusZ = radiusZ;
 		this.startTime = System.currentTimeMillis();
 	}
 
@@ -91,9 +134,9 @@ public class RotatingCameraProvider implements CameraPositionProvider
 		final long currentTime = System.currentTimeMillis();
 		final long diffTime = currentTime - this.startTime;
 
-		final float xPos = (float)(this.xPos + this.radius * Math.sin( diffTime * this.xS ));
-		final float yPos = (float)(this.yPos + this.radius * Math.cos( diffTime * this.yS ));
-		final float zPos = (float)(this.zPos + this.radius * Math.sin( diffTime * this.zS ));
+		final float xPos = (float)(this.xPos + this.radiusX * Math.sin( diffTime * this.xS ));
+		final float yPos = (float)(this.yPos + this.radiusY * Math.cos( diffTime * this.yS ));
+		final float zPos = (float)(this.zPos + this.radiusZ * Math.sin( diffTime * this.zS ));
 
 		final float[] f = new float[] {xPos, yPos, zPos, this.x, this.y, this.z, 0, 1, 0};
 		return f;

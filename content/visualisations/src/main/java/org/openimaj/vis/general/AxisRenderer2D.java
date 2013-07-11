@@ -57,6 +57,12 @@ public class AxisRenderer2D<Q> extends AxisRenderer<Q>
 	}
 
 	@Override
+	public double[] scaleDimension( final Double dimension )
+	{
+		return new double[] { dimension * this.getCurrentScale() };
+	}
+
+	@Override
 	public void precalc()
 	{
 		// Create an axis line between the min and max value
@@ -247,6 +253,7 @@ public class AxisRenderer2D<Q> extends AxisRenderer<Q>
 	/**
 	 *	@return the config
 	 */
+	@Override
 	public AxisConfig<Q> getConfig()
 	{
 		return this.config;
@@ -255,6 +262,7 @@ public class AxisRenderer2D<Q> extends AxisRenderer<Q>
 	/**
 	 *	@param config the config to set
 	 */
+	@Override
 	public void setConfig( final AxisConfig<Q> config )
 	{
 		this.config = config;

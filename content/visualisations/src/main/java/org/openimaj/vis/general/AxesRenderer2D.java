@@ -826,6 +826,8 @@ public class AxesRenderer2D<Q,I extends Image<Q,I>>
 	 * 	Returns a data pixel transformer that is based on this axes renderer but has its values
 	 * 	offset by the given number of pixels.
 	 *
+	 * 	// TODO: This method doesn't work at the moment
+	 *
 	 *	@param xOffset The x location
 	 *	@param yOffset The y location
 	 *	@return A new data pixel transformer
@@ -833,6 +835,7 @@ public class AxesRenderer2D<Q,I extends Image<Q,I>>
 	public DataUnitsTransformer<Q,double[],int[]> getRelativePixelTransformer(
 			final int xOffset, final int yOffset )
 	{
+		// TODO: This needs completing
 		return new DataUnitsTransformer<Q,double[],int[]>()
 		{
 			@Override
@@ -850,6 +853,13 @@ public class AxesRenderer2D<Q,I extends Image<Q,I>>
 
 			@Override
 			public double[] calculateUnitsAt( final int[] position )
+			{
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public int[] scaleDimension( final double[] dimension )
 			{
 				// TODO Auto-generated method stub
 				return null;
@@ -963,6 +973,20 @@ public class AxesRenderer2D<Q,I extends Image<Q,I>>
 		return new double[]{
 			xs * this.xAxisRenderer.getCurrentScale(),
 			ys * this.yAxisRenderer.getCurrentScale()
+		};
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.DataUnitsTransformer#scaleDimension(java.lang.Object)
+	 */
+	@Override
+	public int[] scaleDimension( final double[] dimension )
+	{
+		return new int[]
+		{
+			(int)(dimension[0] * this.xAxisRenderer.getCurrentScale()),
+			(int)(dimension[1] * this.yAxisRenderer.getCurrentScale())
 		};
 	}
 

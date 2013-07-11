@@ -39,4 +39,12 @@ public interface DataUnitsTransformer<Q,D,U>
 	 *	@return the data units on the given axis
 	 */
 	public D calculateUnitsAt( U position );
+
+	/**
+	 * 	Given a specific data dimension, calculates a render dimension.
+	 *
+	 *	@param dimension The units/data dimension
+	 *	@return The scaled dimension
+	 */
+	public U scaleDimension( D dimension );
 }

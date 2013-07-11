@@ -72,6 +72,80 @@ public class AxesRenderer3D implements DataUnitsTransformer<float[], double[], d
 	}
 
 	/**
+	 * 	Set the maximum x value
+	 *	@param d The new maximum
+	 */
+	public void setMaxXValue( final double d )
+	{
+		this.xAxisRenderer.getConfig().setMaxValue( d );
+	}
+
+	/**
+	 * 	Set the maximum y value
+	 *	@param d The new maximum
+	 */
+	public void setMaxYValue( final double d )
+	{
+		this.yAxisRenderer.getConfig().setMaxValue( d );
+	}
+
+	/**
+	 * 	Set the maximum z value
+	 *	@param d The new maximum
+	 */
+	public void setMaxZValue( final double d )
+	{
+		this.zAxisRenderer.getConfig().setMaxValue( d );
+	}
+
+	/**
+	 * 	Set the Minimum x value
+	 *	@param d The new Minimum
+	 */
+	public void setMinXValue( final double d )
+	{
+		this.xAxisRenderer.getConfig().setMinValue( d );
+	}
+
+	/**
+	 * 	Set the Minimum y value
+	 *	@param d The new Minimum
+	 */
+	public void setMinYValue( final double d )
+	{
+		this.yAxisRenderer.getConfig().setMinValue( d );
+	}
+
+	/**
+	 * 	Set the Minimum z value
+	 *	@param d The new Minimum
+	 */
+	public void setMinZValue( final double d )
+	{
+		this.zAxisRenderer.getConfig().setMinValue( d );
+	}
+
+	/**
+	 *
+	 *	@param minX
+	 *	@param maxX
+	 *	@param minY
+	 *	@param maxY
+	 *	@param minZ
+	 *	@param maxZ
+	 */
+	public void setAxesRanges( final double minX, final double maxX, final double minY,
+			final double maxY, final double minZ, final double maxZ )
+	{
+		this.setMinXValue( minX );
+		this.setMaxXValue( maxX );
+		this.setMinYValue( minY );
+		this.setMaxYValue( maxY );
+		this.setMinZValue( minZ );
+		this.setMaxZValue( maxZ );
+	}
+
+	/**
 	 *	@param glad
 	 */
 	public void renderAxis( final GLAutoDrawable glad )
@@ -104,20 +178,36 @@ public class AxesRenderer3D implements DataUnitsTransformer<float[], double[], d
 	@Override
 	public void precalc()
 	{
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public double[] calculatePosition( final double[] units )
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new double[] {
+			this.xAxisRenderer.calculatePosition( units[0] ),
+			this.yAxisRenderer.calculatePosition( units[1] ),
+			this.zAxisRenderer.calculatePosition( units[2] )
+		};
 	}
 
 	@Override
 	public double[] calculateUnitsAt( final double[] position )
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new double[] {
+				this.xAxisRenderer.calculateUnitsAt( position[0] ),
+				this.yAxisRenderer.calculateUnitsAt( position[1] ),
+				this.zAxisRenderer.calculateUnitsAt( position[2] )
+			};
+	}
+
+	@Override
+	public double[] scaleDimension( final double[] dimension )
+	{
+		return new double[]
+		{
+				this.xAxisRenderer.scaleDimension( dimension[0] ),
+				this.yAxisRenderer.scaleDimension( dimension[1] ),
+				this.zAxisRenderer.scaleDimension( dimension[2] ),
+		};
 	}
 }
