@@ -78,6 +78,12 @@ public class ShotBoundaryVis
 				return new int[] { (int)(this.videoLength / xy[0] *
 						sbvbv.getVisualisationImage().getWidth()), (int)xy[1] };
 			}
+
+			@Override
+			public int[] scaleDimension( final double[] dimension )
+			{
+				return null;
+			}
 		} );
 		sbvbv.showWindow( "Shot Boundaries" );
 		sbvbv.processVideo();
