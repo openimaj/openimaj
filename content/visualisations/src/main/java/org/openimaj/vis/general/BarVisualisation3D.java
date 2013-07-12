@@ -114,7 +114,10 @@ public class BarVisualisation3D extends Visualisation3D<double[][]>
 									(float) (v / 2d),
 									(float)(this.oneOverDataLength * z + this.oneOverDataLength / 2d)-1f );
 							gl.glScalef( (float) b, (float)Math.abs(v), (float) this.oneOverDataLength );
+							gl.glEnable( GL.GL_POLYGON_OFFSET_FILL );
+							gl.glPolygonOffset( 1, 1 );
 							this.glut.glutSolidCube( 1f );
+							gl.glDisable( GL.GL_POLYGON_OFFSET_FILL );
 							gl.glColor3f( 0, 0, 0 );
 							this.glut.glutWireCube( 1f );
 						}

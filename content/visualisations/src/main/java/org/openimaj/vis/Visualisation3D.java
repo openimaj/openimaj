@@ -177,6 +177,8 @@ public abstract class Visualisation3D<D> implements
 	        gl.glEnable( GLLightingFunc.GL_LIGHTING );
 		}
 
+		gl.glClear( GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT );
+
 		this.renderVis( drawable );
 	}
 

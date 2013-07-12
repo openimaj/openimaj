@@ -6,7 +6,6 @@ package org.openimaj.vis.general;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
@@ -126,7 +125,6 @@ public class XYZVisualisation3D<D> extends Visualisation3D<List<LocatedObject3D<
 		if( drawable == null || this.axesRenderer == null ) return;
 
 		final GL2 gl = drawable.getGL().getGL2();
-		gl.glClear( GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT );
 
 		this.axesRenderer.renderAxis( drawable );
 
