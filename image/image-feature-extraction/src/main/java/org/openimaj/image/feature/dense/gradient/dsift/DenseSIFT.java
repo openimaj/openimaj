@@ -3,15 +3,14 @@ package org.openimaj.image.feature.dense.gradient.dsift;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
-import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.processing.convolution.FImageConvolveSeparable;
 import org.openimaj.image.processing.convolution.FImageGradients;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
- * Implementation of a dense SIFT feature extractor. Extracts upright SIFT
- * features at a single scale on a grid.
+ * Implementation of a dense SIFT feature extractor for {@link FImage}s.
+ * Extracts upright SIFT features at a single scale on a grid.
  * <p>
  * Implementation inspired by the <a
  * href="http://www.vlfeat.org/api/dsift.html#dsift-usage">VLFeat extractor</a>.
@@ -28,7 +27,7 @@ import org.openimaj.util.array.ArrayUtils;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class DenseSIFT implements ImageAnalyser<FImage>, Cloneable {
+public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 	class WorkingData {
 		/**
 		 * minimum X bound for sampling the descriptors (inclusive)
@@ -307,15 +306,7 @@ public class DenseSIFT implements ImageAnalyser<FImage>, Cloneable {
 		}
 	}
 
-	/**
-	 * Compute the dense sift descriptors inside the bounds rectangle of the
-	 * given image.
-	 * 
-	 * @param image
-	 *            the image
-	 * @param bounds
-	 *            the bounds rectangle
-	 */
+	@Override
 	public void analyseImage(FImage image, Rectangle bounds) {
 		data.boundMinX = (int) bounds.x;
 		data.boundMaxX = (int) (bounds.width - 1);
@@ -356,25 +347,7 @@ public class DenseSIFT implements ImageAnalyser<FImage>, Cloneable {
 		}
 	}
 
-	/**
-	 * Compute the dense sift descriptors of the given image. The entire image
-	 * will be sampled.
-	 * 
-	 * @param image
-	 *            the image
-	 */
 	@Override
-	public void analyseImage(FImage image) {
-		analyseImage(image, image.getBounds());
-	}
-
-	/**
-	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * in the form of a list of local features with float vectors.
-	 * 
-	 * @return a list of {@link FloatDSIFTKeypoint}s.
-	 */
 	public LocalFeatureList<FloatDSIFTKeypoint> getFloatKeypoints() {
 		final MemoryLocalFeatureList<FloatDSIFTKeypoint> keys = new MemoryLocalFeatureList<FloatDSIFTKeypoint>(numOriBins
 				* numBinsX * numBinsY, descriptors.length);
@@ -394,13 +367,7 @@ public class DenseSIFT implements ImageAnalyser<FImage>, Cloneable {
 		return keys;
 	}
 
-	/**
-	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * in the form of a list of local features with byte vectors.
-	 * 
-	 * @return a list of {@link ByteDSIFTKeypoint}s.
-	 */
+	@Override
 	public LocalFeatureList<ByteDSIFTKeypoint> getByteKeypoints() {
 		final MemoryLocalFeatureList<ByteDSIFTKeypoint> keys = new MemoryLocalFeatureList<ByteDSIFTKeypoint>(numOriBins
 				* numBinsX * numBinsY, descriptors.length);
@@ -420,17 +387,7 @@ public class DenseSIFT implements ImageAnalyser<FImage>, Cloneable {
 		return keys;
 	}
 
-	/**
-	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * in the form of a list of local features with float vectors. Only the
-	 * features with an energy above the given threshold will be returned.
-	 * 
-	 * @param energyThreshold
-	 *            the threshold on the feature energy
-	 * 
-	 * @return a list of {@link FloatDSIFTKeypoint}s.
-	 */
+	@Override
 	public LocalFeatureList<FloatDSIFTKeypoint> getFloatKeypoints(float energyThreshold) {
 		final MemoryLocalFeatureList<FloatDSIFTKeypoint> keys = new MemoryLocalFeatureList<FloatDSIFTKeypoint>(numOriBins
 				* numBinsX * numBinsY);
@@ -452,17 +409,7 @@ public class DenseSIFT implements ImageAnalyser<FImage>, Cloneable {
 		return keys;
 	}
 
-	/**
-	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * in the form of a list of local features with byte vectors. Only the
-	 * features with an energy above the given threshold will be returned.
-	 * 
-	 * @param energyThreshold
-	 *            the threshold on the feature energy
-	 * 
-	 * @return a list of {@link ByteDSIFTKeypoint}s.
-	 */
+	@Override
 	public LocalFeatureList<ByteDSIFTKeypoint> getByteKeypoints(float energyThreshold) {
 		final MemoryLocalFeatureList<ByteDSIFTKeypoint> keys = new MemoryLocalFeatureList<ByteDSIFTKeypoint>(numOriBins
 				* numBinsX * numBinsY);
@@ -491,6 +438,7 @@ public class DenseSIFT implements ImageAnalyser<FImage>, Cloneable {
 	 * 
 	 * @return the descriptors.
 	 */
+	@Override
 	public float[][] getDescriptors() {
 		return descriptors;
 	}
@@ -499,5 +447,40 @@ public class DenseSIFT implements ImageAnalyser<FImage>, Cloneable {
 	public DenseSIFT clone() {
 		return new DenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins, gaussianWindowSize,
 				valueThreshold);
+	}
+
+	@Override
+	public void setBinWidth(int size) {
+		this.binWidth = size;
+	}
+
+	@Override
+	public void setBinHeight(int size) {
+		this.binHeight = size;
+	}
+
+	@Override
+	public int getBinWidth() {
+		return binWidth;
+	}
+
+	@Override
+	public int getBinHeight() {
+		return binHeight;
+	}
+
+	@Override
+	public int getNumBinsX() {
+		return numBinsX;
+	}
+
+	@Override
+	public int getNumBinsY() {
+		return numBinsY;
+	}
+
+	@Override
+	public int getNumOriBins() {
+		return numOriBins;
 	}
 }

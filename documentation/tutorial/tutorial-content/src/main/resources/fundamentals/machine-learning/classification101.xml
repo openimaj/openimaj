@@ -108,7 +108,7 @@
 		  <literal>PyramidDenseSIFT</literal> object:
 		</para>
 		<programlisting>DenseSIFT dsift = new DenseSIFT(5, 7);
-PyramidDenseSIFT pdsift = new PyramidDenseSIFT(dsift, 6f, 7);</programlisting>
+PyramidDenseSIFT<FImage> pdsift = new PyramidDenseSIFT<FImage>(dsift, 6f, 7);</programlisting>
 		<para>
 		  The <literal>PyramidDenseSIFT</literal> class takes a normal
 		  <literal>DenseSIFT</literal> instance and applies it to different
@@ -124,7 +124,7 @@ PyramidDenseSIFT pdsift = new PyramidDenseSIFT(dsift, 6f, 7);</programlisting>
 		  <literal>PyramidDenseSIFT</literal> object:
 		</para>
 		<programlisting>static HardAssigner&lt;byte[], float[], IntFloatPair&gt; trainQuantiser(
-	            Dataset&lt;Record&lt;FImage&gt;&gt; sample, PyramidDenseSIFT pdsift)
+	            Dataset&lt;Record&lt;FImage&gt;&gt; sample, PyramidDenseSIFT<FImage> pdsift)
 {
     List&lt;LocalFeatureList&lt;ByteDSIFTKeypoint&gt;&gt; allkeys = new ArrayList&lt;LocalFeatureList&lt;ByteDSIFTKeypoint&gt;&gt;();
 
@@ -163,10 +163,10 @@ PyramidDenseSIFT pdsift = new PyramidDenseSIFT(dsift, 6f, 7);</programlisting>
 		  train our classifier:
 		</para>
 		<programlisting>static class PHOWExtractor implements FeatureExtractor&lt;DoubleFV, Record&lt;FImage&gt;&gt; {
-    PyramidDenseSIFT pdsift;
+    PyramidDenseSIFT<FImage> pdsift;
     HardAssigner&lt;byte[], float[], IntFloatPair&gt; assigner;
 
-    public PHOWExtractor(PyramidDenseSIFT pdsift, HardAssigner&lt;byte[], float[], IntFloatPair&gt; assigner)
+    public PHOWExtractor(PyramidDenseSIFT<FImage> pdsift, HardAssigner&lt;byte[], float[], IntFloatPair&gt; assigner)
     {
         this.pdsift = pdsift;
         this.assigner = assigner;

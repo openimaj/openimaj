@@ -59,7 +59,7 @@ public class App {
 
 		System.out.println("Construct the base feature extractor");
 		final DenseSIFT dsift = new DenseSIFT(5, 7);
-		final PyramidDenseSIFT pdsift = new PyramidDenseSIFT(dsift, 6f, 7);
+		final PyramidDenseSIFT<FImage> pdsift = new PyramidDenseSIFT<FImage>(dsift, 6f, 7);
 
 		System.out.println("Create training and testing data");
 		final GroupedRandomSplitter<String, Record<FImage>> splits = new GroupedRandomSplitter<String, Record<FImage>>(
@@ -91,10 +91,11 @@ public class App {
 	}
 
 	private static final class SpPHOWExtractorImplementation implements FeatureExtractor<DoubleFV, Record<FImage>> {
-		PyramidDenseSIFT pdsift;
+		PyramidDenseSIFT<FImage> pdsift;
 		HardAssigner<byte[], float[], IntFloatPair> assigner;
 
-		public SpPHOWExtractorImplementation(PyramidDenseSIFT pdsift, HardAssigner<byte[], float[], IntFloatPair> assigner)
+		public SpPHOWExtractorImplementation(PyramidDenseSIFT<FImage> pdsift,
+				HardAssigner<byte[], float[], IntFloatPair> assigner)
 		{
 			this.pdsift = pdsift;
 			this.assigner = assigner;
@@ -118,7 +119,7 @@ public class App {
 	}
 
 	private static HardAssigner<byte[], float[], IntFloatPair> trainQuantiser(
-			GroupedDataset<String, ListDataset<Record<FImage>>, Record<FImage>> sample, PyramidDenseSIFT pdsift)
+			GroupedDataset<String, ListDataset<Record<FImage>>, Record<FImage>> sample, PyramidDenseSIFT<FImage> pdsift)
 	{
 		List<LocalFeatureList<ByteDSIFTKeypoint>> allkeys = new ArrayList<LocalFeatureList<ByteDSIFTKeypoint>>();
 

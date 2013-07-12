@@ -6,24 +6,30 @@ import java.util.List;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
-import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.image.Image;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.IntObjectPair;
 
 /**
- * A scale-space pyramid of dense SIFT. Dense sift features are extracted for
- * the given bin sizes (scales). The image is optionally smoothed with a
- * Gaussian before each scale.
+ * A scale-space pyramid of dense SIFT for {@link FImage}s. Dense sift features
+ * are extracted for the given bin sizes (scales). The image is optionally
+ * smoothed with a Gaussian before each scale.
  * <p>
  * The {@link PyramidDenseSIFT} is not thread safe, but is reusable like the
  * {@link DenseSIFT} analyser.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @param <IMAGE>
+ *            Type of image to be processed.
  * 
  */
-public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
+public class PyramidDenseSIFT<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
+		extends
+		AbstractDenseSIFT<IMAGE>
+{
 	/**
 	 * Scales at which the dense SIFT features are extracted. Each value is used
 	 * as bin size for the {@link DenseSIFT}.
@@ -36,10 +42,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 	 */
 	float magnificationFactor;
 
-	DenseSIFT dsift;
-	DenseSIFT.WorkingData[] workingData;
-
-	float[][][] descriptors;
+	private List<AbstractDenseSIFT<IMAGE>> levels;
 
 	/**
 	 * Construct the pyramid dense sift extractor. The magnification factor is
@@ -49,56 +52,33 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 	 * 0, then no smoothing will be applied at any level.
 	 * 
 	 * @param dsift
-	 *            the underlying dense sift extractor
+	 *            the underlying dense sift extractor (typically a
+	 *            {@link DenseSIFT} (or {@link ApproximateDenseSIFT}) or
+	 *            {@link ColourDenseSIFT} depending on the image type).
 	 * @param magFactor
 	 *            the magnification factor
 	 * @param sizes
 	 *            the scales (bin sizes for dense sift)
 	 */
-	public PyramidDenseSIFT(DenseSIFT dsift, float magFactor, int... sizes) {
-		this.dsift = dsift;
+	public PyramidDenseSIFT(AbstractDenseSIFT<IMAGE> dsift, float magFactor, int... sizes) {
 		this.sizes = sizes;
 		this.magnificationFactor = magFactor;
 
-		workingData = new DenseSIFT.WorkingData[sizes.length];
+		levels = new ArrayList<AbstractDenseSIFT<IMAGE>>(sizes.length);
 		for (int i = 0; i < sizes.length; i++) {
-			workingData[i] = dsift.new WorkingData();
+			levels.add(dsift.clone());
 		}
 	}
 
-	/**
-	 * Compute the pyramidal dense sift descriptors of the given image. The
-	 * entire image will be sampled.
-	 * 
-	 * @param image
-	 *            the image
-	 */
 	@Override
-	public void analyseImage(FImage image) {
-		final Rectangle bounds = image.getBounds();
-
-		analyseImage(image, bounds);
-	}
-
-	/**
-	 * Compute the pyramidal dense sift descriptors inside the bounds rectangle
-	 * of the given image.
-	 * 
-	 * @param image
-	 *            the image
-	 * @param originalBounds
-	 *            the bounds rectangle
-	 */
-	public void analyseImage(FImage image, Rectangle originalBounds) {
+	public void analyseImage(IMAGE image, Rectangle originalBounds) {
 		final Rectangle bounds = originalBounds;
-
-		descriptors = new float[sizes.length][][];
 
 		for (int i = 0; i < sizes.length; i++) {
 			final int size = sizes[i];
 			final int offset = (int) Math.floor(3f / 2f * (ArrayUtils.maxValue(sizes) - size));
 
-			final FImage smoothed;
+			final IMAGE smoothed;
 			if (magnificationFactor == 0) {
 				smoothed = image;
 			} else {
@@ -109,92 +89,60 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 			// extract DSIFT
 			bounds.x = originalBounds.x + offset;
 			bounds.y = originalBounds.y + offset;
-			dsift.data = workingData[i];
-			dsift.binWidth = size;
-			dsift.binHeight = size;
+
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
+			dsift.setBinWidth(size);
+			dsift.setBinHeight(size);
 			dsift.analyseImage(smoothed, bounds);
-			descriptors[i] = dsift.descriptors;
 		}
 	}
 
-	/**
-	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * in the form of a list of local features with float vectors.
-	 * 
-	 * @return a list of {@link FloatDSIFTKeypoint}s.
-	 */
+	@Override
 	public LocalFeatureList<FloatDSIFTKeypoint> getFloatKeypoints() {
-		final LocalFeatureList<FloatDSIFTKeypoint> kpts = new MemoryLocalFeatureList<FloatDSIFTKeypoint>(dsift.numOriBins
-				* dsift.numBinsX * dsift.numBinsY);
+		final LocalFeatureList<FloatDSIFTKeypoint> kpts = new MemoryLocalFeatureList<FloatDSIFTKeypoint>(getNumOriBins()
+				* getNumBinsX() * getNumBinsY());
 
 		for (int i = 0; i < sizes.length; i++) {
-			dsift.descriptors = descriptors[i];
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
 			kpts.addAll(dsift.getFloatKeypoints());
 		}
 
 		return kpts;
 	}
 
-	/**
-	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * in the form of a list of local features with byte vectors.
-	 * 
-	 * @return a list of {@link ByteDSIFTKeypoint}s.
-	 */
+	@Override
 	public LocalFeatureList<ByteDSIFTKeypoint> getByteKeypoints() {
-		final LocalFeatureList<ByteDSIFTKeypoint> kpts = new MemoryLocalFeatureList<ByteDSIFTKeypoint>(dsift.numOriBins
-				* dsift.numBinsX * dsift.numBinsY);
+		final LocalFeatureList<ByteDSIFTKeypoint> kpts = new MemoryLocalFeatureList<ByteDSIFTKeypoint>(getNumOriBins()
+				* getNumBinsX() * getNumBinsY());
 
 		for (int i = 0; i < sizes.length; i++) {
-			dsift.descriptors = descriptors[i];
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
 			kpts.addAll(dsift.getByteKeypoints());
 		}
 
 		return kpts;
 	}
 
-	/**
-	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * in the form of a list of local features with float vectors. Only the
-	 * features with an energy above the given threshold will be returned.
-	 * 
-	 * @param energyThreshold
-	 *            the threshold on the feature energy
-	 * 
-	 * @return a list of {@link FloatDSIFTKeypoint}s.
-	 */
+	@Override
 	public LocalFeatureList<FloatDSIFTKeypoint> getFloatKeypoints(float energyThreshold) {
-		final LocalFeatureList<FloatDSIFTKeypoint> kpts = new MemoryLocalFeatureList<FloatDSIFTKeypoint>(dsift.numOriBins
-				* dsift.numBinsX * dsift.numBinsY);
+		final LocalFeatureList<FloatDSIFTKeypoint> kpts = new MemoryLocalFeatureList<FloatDSIFTKeypoint>(getNumOriBins()
+				* getNumBinsX() * getNumBinsY());
 
 		for (int i = 0; i < sizes.length; i++) {
-			dsift.descriptors = descriptors[i];
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
 			kpts.addAll(dsift.getFloatKeypoints(energyThreshold));
 		}
 
 		return kpts;
 	}
 
-	/**
-	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * in the form of a list of local features with byte vectors. Only the
-	 * features with an energy above the given threshold will be returned.
-	 * 
-	 * @param energyThreshold
-	 *            the threshold on the feature energy
-	 * 
-	 * @return a list of {@link ByteDSIFTKeypoint}s.
-	 */
+	@Override
 	public LocalFeatureList<ByteDSIFTKeypoint> getByteKeypoints(float energyThreshold) {
-		final LocalFeatureList<ByteDSIFTKeypoint> kpts = new MemoryLocalFeatureList<ByteDSIFTKeypoint>(dsift.numOriBins
-				* dsift.numBinsX * dsift.numBinsY);
+		final LocalFeatureList<ByteDSIFTKeypoint> kpts = new MemoryLocalFeatureList<ByteDSIFTKeypoint>(getNumOriBins()
+				* getNumBinsX() * getNumBinsY());
 
 		for (int i = 0; i < sizes.length; i++) {
-			dsift.descriptors = descriptors[i];
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
 			kpts.addAll(dsift.getByteKeypoints(energyThreshold));
 		}
 
@@ -203,7 +151,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 
 	/**
 	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
+	 * {@link #analyseImage(Image)} or {@link #analyseImage(Image, Rectangle)}
 	 * in the form of a list of local features with float vectors.
 	 * 
 	 * @return a list of {@link FloatDSIFTKeypoint}s.
@@ -213,7 +161,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 				sizes.length);
 
 		for (int i = 0; i < sizes.length; i++) {
-			dsift.descriptors = descriptors[i];
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
 
 			prs.add(new IntObjectPair<LocalFeatureList<FloatDSIFTKeypoint>>(sizes[i], dsift.getFloatKeypoints()));
 		}
@@ -223,7 +171,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 
 	/**
 	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
+	 * {@link #analyseImage(Image)} or {@link #analyseImage(Image, Rectangle)}
 	 * in the form of a list of local features with byte vectors.
 	 * 
 	 * @return a list of {@link ByteDSIFTKeypoint}s.
@@ -233,7 +181,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 				sizes.length);
 
 		for (int i = 0; i < sizes.length; i++) {
-			dsift.descriptors = descriptors[i];
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
 
 			prs.add(new IntObjectPair<LocalFeatureList<ByteDSIFTKeypoint>>(sizes[i], dsift.getByteKeypoints()));
 		}
@@ -243,7 +191,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 
 	/**
 	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
+	 * {@link #analyseImage(Image)} or {@link #analyseImage(Image, Rectangle)}
 	 * in the form of a list of local features with float vectors. Only the
 	 * features with an energy above the given threshold will be returned.
 	 * 
@@ -257,7 +205,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 				sizes.length);
 
 		for (int i = 0; i < sizes.length; i++) {
-			dsift.descriptors = descriptors[i];
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
 
 			prs.add(new IntObjectPair<LocalFeatureList<FloatDSIFTKeypoint>>(sizes[i], dsift
 					.getFloatKeypoints(energyThreshold)));
@@ -268,7 +216,7 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 
 	/**
 	 * Get the SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
+	 * {@link #analyseImage(Image)} or {@link #analyseImage(Image, Rectangle)}
 	 * in the form of a list of local features with byte vectors. Only the
 	 * features with an energy above the given threshold will be returned.
 	 * 
@@ -282,10 +230,10 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 				sizes.length);
 
 		for (int i = 0; i < sizes.length; i++) {
-			dsift.descriptors = descriptors[i];
+			final AbstractDenseSIFT<IMAGE> dsift = levels.get(i);
 
-			prs.add(new IntObjectPair<LocalFeatureList<ByteDSIFTKeypoint>>(sizes[i], dsift
-					.getByteKeypoints(energyThreshold)));
+			prs.add(new IntObjectPair<LocalFeatureList<ByteDSIFTKeypoint>>(sizes[i],
+					dsift.getByteKeypoints(energyThreshold)));
 		}
 
 		return prs;
@@ -293,13 +241,19 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 
 	/**
 	 * Get the computed raw dense SIFT descriptors from the previous call to
-	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
-	 * . The descriptors are grouped by the sizes at which they were extracted.
+	 * {@link #analyseImage(Image)} or {@link #analyseImage(Image, Rectangle)} .
+	 * The descriptors are grouped by the sizes at which they were extracted.
 	 * 
 	 * @return the descriptors.
 	 */
-	public float[][][] getDescriptors() {
-		return descriptors;
+	public float[][][] getLevelDescriptors() {
+		final float[][][] descr = new float[sizes.length][][];
+
+		for (int i = 0; i < sizes.length; i++) {
+			descr[i] = levels.get(i).getDescriptors();
+		}
+
+		return descr;
 	}
 
 	/**
@@ -309,5 +263,76 @@ public class PyramidDenseSIFT implements ImageAnalyser<FImage> {
 	 */
 	public int[] getSizes() {
 		return sizes;
+	}
+
+	/**
+	 * Not supported.
+	 * 
+	 * @throws UnsupportedOperationException
+	 */
+	@Override
+	public void setBinWidth(int size) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Not supported.
+	 * 
+	 * @throws UnsupportedOperationException
+	 */
+	@Override
+	public void setBinHeight(int size) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * This returns the bin size of the zeroth level only. {@inheritDoc}
+	 */
+	@Override
+	public int getBinWidth() {
+		return sizes[0];
+	}
+
+	/**
+	 * This returns the bin size of the zeroth level only. {@inheritDoc}
+	 */
+	@Override
+	public int getBinHeight() {
+		return sizes[0];
+	}
+
+	@Override
+	public int getNumBinsX() {
+		return levels.get(0).getNumBinsX();
+	}
+
+	@Override
+	public int getNumBinsY() {
+		return levels.get(0).getNumBinsY();
+	}
+
+	@Override
+	public int getNumOriBins() {
+		return levels.get(0).getNumOriBins();
+	}
+
+	@Override
+	public float[][] getDescriptors() {
+		int len = 0;
+		for (int i = 0; i < sizes.length; i++) {
+			len += levels.get(i).getDescriptors().length;
+		}
+
+		final float[][] descr = new float[len][];
+
+		int offset = 0;
+		for (int i = 0; i < sizes.length; i++) {
+			final float[][] ldescr = levels.get(i).getDescriptors();
+			for (int j = 0; j < ldescr.length; j++) {
+				descr[offset++] = ldescr[j];
+			}
+		}
+
+		return descr;
 	}
 }

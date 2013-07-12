@@ -196,4 +196,9 @@ public class ApproximateDenseSIFT extends DenseSIFT {
 			}
 		}
 	}
+
+	@Override
+	public ApproximateDenseSIFT clone() {
+		return (ApproximateDenseSIFT) super.clone();
+	}
 }
