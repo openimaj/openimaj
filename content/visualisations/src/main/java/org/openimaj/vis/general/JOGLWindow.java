@@ -35,19 +35,19 @@ public class JOGLWindow
 	private PointImmutable wpos;
 
 	/** Whether the window is undecorated (if windowed) */
-	private final boolean undecorated = false;
+	private boolean undecorated = false;
 
 	/** Whether the 3D view should always be on top */
-	private final boolean alwaysOnTop = false;
+	private boolean alwaysOnTop = false;
 
 	/** Whether to run full screen (rather than windowed) */
-	private final boolean fullscreen = false;
+	private boolean fullscreen = false;
 
 	/** Whether the mouse is visible in the window */
-	private final boolean mouseVisible = true;
+	private boolean mouseVisible = true;
 
 	/** Whether the mouse is confined to the window */
-	private final boolean mouseConfined = false;
+	private boolean mouseConfined = false;
 
 	/** The window that is created */
 	private GLWindow glWindow;
@@ -148,6 +148,86 @@ public class JOGLWindow
 	public GLAutoDrawable getDrawableSurface()
 	{
 		return this.glWindow;
+	}
+
+	/**
+	 *	@return the undecorated
+	 */
+	public boolean isUndecorated()
+	{
+		return this.undecorated;
+	}
+
+	/**
+	 *	@param undecorated the undecorated to set
+	 */
+	public void setUndecorated( final boolean undecorated )
+	{
+		this.undecorated = undecorated;
+	}
+
+	/**
+	 *	@return the alwaysOnTop
+	 */
+	public boolean isAlwaysOnTop()
+	{
+		return this.alwaysOnTop;
+	}
+
+	/**
+	 *	@param alwaysOnTop the alwaysOnTop to set
+	 */
+	public void setAlwaysOnTop( final boolean alwaysOnTop )
+	{
+		this.alwaysOnTop = alwaysOnTop;
+	}
+
+	/**
+	 *	@return the fullscreen
+	 */
+	public boolean isFullscreen()
+	{
+		return this.fullscreen;
+	}
+
+	/**
+	 *	@param fullscreen the fullscreen to set
+	 */
+	public void setFullscreen( final boolean fullscreen )
+	{
+		this.fullscreen = fullscreen;
+	}
+
+	/**
+	 *	@return the mouseVisible
+	 */
+	public boolean isMouseVisible()
+	{
+		return this.mouseVisible;
+	}
+
+	/**
+	 *	@param mouseVisible the mouseVisible to set
+	 */
+	public void setMouseVisible( final boolean mouseVisible )
+	{
+		this.mouseVisible = mouseVisible;
+	}
+
+	/**
+	 *	@return the mouseConfined
+	 */
+	public boolean isMouseConfined()
+	{
+		return this.mouseConfined;
+	}
+
+	/**
+	 *	@param mouseConfined the mouseConfined to set
+	 */
+	public void setMouseConfined( final boolean mouseConfined )
+	{
+		this.mouseConfined = mouseConfined;
 	}
 
 	/**
