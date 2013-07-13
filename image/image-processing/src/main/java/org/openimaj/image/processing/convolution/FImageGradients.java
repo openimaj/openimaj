@@ -330,6 +330,11 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 				final int oi = (int) Math.floor(po);
 				final float of = po - oi;
 
+				// reset
+				for (int i = 0; i < magnitudes.length; i++)
+					magnitudes[i].pixels[r][c] = 0;
+
+				// set
 				magnitudes[oi % numOriBins].pixels[r][c] = (1f - of) * mag;
 				magnitudes[(oi + 1) % numOriBins].pixels[r][c] = of * mag;
 			}
