@@ -65,7 +65,7 @@ public class ColourDenseSIFT extends AbstractDenseSIFT<MBFImage> {
 
 		// other bands
 		for (int j = 1; j < cimg.bands.size(); j++) {
-			dsift.analyseImage(cimg.bands.get(0), bounds);
+			dsift.analyseImage(cimg.bands.get(j), bounds);
 			for (int i = 0; i < descriptors.length; i++) {
 				System.arraycopy(dsift.descriptors[i], 0, descriptors[i], j * len, len);
 				tmpEnergies[i][j] = dsift.energies[i];
@@ -73,6 +73,7 @@ public class ColourDenseSIFT extends AbstractDenseSIFT<MBFImage> {
 		}
 
 		// deal with energies
+		energies = new float[descriptors.length];
 		for (int i = 0; i < descriptors.length; i++) {
 			energies[i] = colourSpace.computeIntensity(tmpEnergies[i]);
 		}
