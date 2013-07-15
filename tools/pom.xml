@@ -27,6 +27,7 @@
     <module>ImageCollectionTool</module>
     <module>SimilarityMatrixTool</module>
     <module>TwitterPreprocessingTool</module>
+    <module>TwitterPreprocessingWebService</module>
     <module>RedditHarvester</module>
     <module>picslurper</module>
     <module>ReferencesTool</module>
