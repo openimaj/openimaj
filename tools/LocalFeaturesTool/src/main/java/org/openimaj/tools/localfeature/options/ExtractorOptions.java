@@ -27,57 +27,49 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.localfeature;
+package org.openimaj.tools.localfeature.options;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.openimaj.feature.local.LocalFeature;
-import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.io.IOUtils;
-import org.openimaj.time.Timer;
-import org.openimaj.tools.localfeature.options.ExtractorOptions;
+import org.kohsuke.args4j.Option;
 
 /**
- * Tool for extracting local features
+ * Options for the Extractor tool
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class Extractor {
+public class ExtractorOptions extends BaseExtractorOptions {
+	@Option(name = "--input", aliases = "-i", required = true, usage = "Input image file.", metaVar = "STRING")
+	private String input;
+
+	@Option(name = "--output", aliases = "-o", required = true, usage = "Output keypoint file.", metaVar = "STRING")
+	private String output;
 
 	/**
-	 * Run the tool
+	 * Get the input location
 	 * 
-	 * @param args
+	 * @return the input location
+	 */
+	public String getInput() {
+		return input;
+	}
+
+	/**
+	 * Get the output location
+	 * 
+	 * @return the output location
+	 */
+	public String getOutput() {
+		return output;
+	}
+
+	/**
+	 * Read the input image as bytes
+	 * 
+	 * @return the input image as bytes
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
-		final ExtractorOptions options = new ExtractorOptions();
-		final CmdLineParser parser = new CmdLineParser(options);
-
-		try {
-			parser.parseArgument(args);
-		} catch (final CmdLineException e) {
-			System.err.println(e.getMessage());
-			System.err.println("Usage: java -jar LocalFeaturesTool.jar Extractor [options] -i imageFile -o keypointFile");
-			parser.printUsage(System.err);
-			return;
-		}
-
-		final byte[] img = options.getInputImage();
-		final Timer timing = Timer.timer();
-		final LocalFeatureList<? extends LocalFeature<?, ?>> kpl = options.getMode().extract(img);
-		timing.stop();
-		if (options.printTiming()) {
-			System.out.println("Took: " + timing.duration());
-		}
-
-		if (options.isAsciiMode()) {
-			IOUtils.writeASCII(new File(options.getOutput()), kpl);
-		} else {
-			IOUtils.writeBinary(new File(options.getOutput()), kpl);
-		}
+	public byte[] getInputImage() throws IOException {
+		return getInputImage(input);
 	}
 }

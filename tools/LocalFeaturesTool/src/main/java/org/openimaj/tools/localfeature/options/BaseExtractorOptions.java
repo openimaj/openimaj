@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.localfeature;
+package org.openimaj.tools.localfeature.options;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,16 +35,14 @@ import java.io.IOException;
 
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.tools.localfeature.LocalFeatureMode.LocalFeatureModeOp;
+import org.openimaj.tools.localfeature.options.LocalFeatureMode.LocalFeatureModeOp;
 
-public class LocalFeaturesToolOptions extends SharedOptions {
-
-	@Option(name = "--input", aliases = "-i", required = true, usage = "Input image FILE.", metaVar = "STRING")
-	private String input;
-
-	@Option(name = "--output", aliases = "-o", required = true, usage = "Output keypoint FILE.", metaVar = "STRING")
-	private String output;
-
+/**
+ * Options for the Extractor tool
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class BaseExtractorOptions extends SharedOptions {
 	@Option(
 			name = "--mode",
 			aliases = "-m",
@@ -61,28 +59,37 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 			usage = "Print to the standard output the time taken to extract features")
 	boolean printTime = false;
 
-	public String getInput() throws IOException {
-		return input;
-	}
-
-	public File getOutput() {
-		return new File(output);
-	}
-
-	public String getInputString() {
-		return input;
-	}
-
-	public String getOutputString() {
-		return output;
-	}
-
+	/**
+	 * @return the mode
+	 */
 	public LocalFeatureModeOp getMode() {
 		return modeOp;
 	}
 
-	public byte[] getInputImage() throws IOException {
-		final File file = new File(this.getInput());
+	/**
+	 * Read the input image as bytes
+	 * 
+	 * @param input
+	 *            the input location
+	 * 
+	 * @return the input image as bytes
+	 * @throws IOException
+	 */
+	public byte[] getInputImage(String input) throws IOException {
+		return getInputImage(new File(input));
+	}
+
+	/**
+	 * Read the input image as bytes
+	 * 
+	 * @param file
+	 *            the input location
+	 * 
+	 * @return the input image as bytes
+	 * @throws IOException
+	 */
+	public byte[] getInputImage(File file) throws IOException {
+
 		if (file.isDirectory())
 			throw new RuntimeException("Unsupported operation, file "
 					+ file.getAbsolutePath() + " is a directory");
@@ -118,6 +125,9 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 		return buffer;
 	}
 
+	/**
+	 * @return true if timing information should be printed
+	 */
 	public boolean printTiming() {
 		return this.printTime;
 	}

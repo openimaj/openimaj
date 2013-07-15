@@ -27,14 +27,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.localfeature;
+package org.openimaj.tools.localfeature.options;
 
 import org.kohsuke.args4j.Option;
 
+/**
+ * Common options
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
 public class SharedOptions {
-	@Option(name="--ascii", aliases="-a", required=false, usage="Save in David Lowe's ASCII format rather than compressed binary.")
+	@Option(
+			name = "--ascii",
+			aliases = "-a",
+			required = false,
+			usage = "Save in David Lowe's ASCII format rather than compressed binary.")
 	private boolean asciiMode = false;
 
+	/**
+	 * @return true if features should be written as ASCII
+	 */
 	public boolean isAsciiMode() {
 		return asciiMode;
 	}

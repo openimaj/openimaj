@@ -53,13 +53,17 @@ public abstract class InOutToolOptions {
 	@Option(name = "--output", aliases = "-o", required = false, usage = "output location", metaVar = "STRING")
 	protected String output = null;
 
-	@Option(name = "--remove-existing-output", aliases = "-rm", required = false, usage = "If existing output exists, remove it")
+	@Option(
+			name = "--remove-existing-output",
+			aliases = "-rm",
+			required = false,
+			usage = "If existing output exists, remove it")
 	boolean force = false;
 
 	@Option(name = "--input-file", aliases = "-if", required = false, usage = "Get a set of inputs as listed in a file")
 	private String inputFile = null;
 
-	@Option(name = "--no-continue", aliases = "-nc", required = false, usage = "Do not continue an existing output", metaVar = "STRING")
+	@Option(name = "--no-continue", aliases = "-nc", required = false, usage = "Do not continue an existing output")
 	boolean contin = false;
 
 	/**
@@ -114,14 +118,14 @@ public abstract class InOutToolOptions {
 	 *            optional default values if the modeoptions is empty
 	 */
 	public static <T> void prepareMultivaluedArgument(List<T> modeOptions, T... defaults) {
-		Set<T> modes = new HashSet<T>();
-		for (T mode : modeOptions) {
+		final Set<T> modes = new HashSet<T>();
+		for (final T mode : modeOptions) {
 			modes.add(mode);
 		}
 		modeOptions.clear();
 		modeOptions.addAll(modes);
 		if (modeOptions.isEmpty()) {
-			for (T t : defaults) {
+			for (final T t : defaults) {
 				modeOptions.add(t);
 			}
 		}
@@ -158,9 +162,9 @@ public abstract class InOutToolOptions {
 			return new String[] { this.input };
 		} else {
 			try {
-				String[] lines = FileUtils.readlines(inputFileF);
+				final String[] lines = FileUtils.readlines(inputFileF);
 				return lines;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				if (this.input == null)
 					return null;
 				return new String[] { this.input };
@@ -182,5 +186,4 @@ public abstract class InOutToolOptions {
 	public void setInputFile(String inputFile) {
 		this.inputFile = inputFile;
 	}
-
 }

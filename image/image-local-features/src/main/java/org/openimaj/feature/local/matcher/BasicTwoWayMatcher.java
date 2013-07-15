@@ -58,16 +58,15 @@ public class BasicTwoWayMatcher<T extends LocalFeature<?, ?>> implements LocalFe
 	}
 
 	/**
-	 * This searches through the keypoints in klist for the two closest matches
-	 * to key. If the closest is less than 0.6 times distance to second closest,
-	 * then return the closest match. Otherwise, return NULL.
+	 * This searches through the keypoints in klist for the closest match to
+	 * key.
 	 */
 	protected T findMatch(T query, List<T> features)
 	{
 		double distsq = Double.MAX_VALUE;
 		T minkey = null;
 
-		// find two closest matches
+		// find closest match
 		for (final T target : features) {
 			final double dsq = target.getFeatureVector().asDoubleFV()
 					.compare(query.getFeatureVector().asDoubleFV(), DoubleFVComparison.EUCLIDEAN);

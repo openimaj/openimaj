@@ -37,34 +37,36 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.io.IOUtils;
+import org.openimaj.tools.localfeature.options.SharedOptions;
 
 /**
- * Convert types of local feature. 
+ * Convert types of local feature.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 class Converter {
 	/**
 	 * The main method
+	 * 
 	 * @param args
 	 * @throws IOException
 	 */
-	public static void main(String [] args) throws IOException {
-		SharedOptions options = new SharedOptions();
-		CmdLineParser parser = new CmdLineParser(options);
-		
-	    try {
-		    parser.parseArgument(args);
-		} catch(CmdLineException e) {
-		    System.err.println(e.getMessage());
-		    System.err.println("Usage: java -cp LocalFeaturesTool.jar Converter [-a] < keysIn > keysOut");
-		    parser.printUsage(System.err);
-		    return;
+	public static void main(String[] args) throws IOException {
+		final SharedOptions options = new SharedOptions();
+		final CmdLineParser parser = new CmdLineParser(options);
+
+		try {
+			parser.parseArgument(args);
+		} catch (final CmdLineException e) {
+			System.err.println(e.getMessage());
+			System.err.println("Usage: java -cp LocalFeaturesTool.jar Converter [-a] < keysIn > keysOut");
+			parser.printUsage(System.err);
+			return;
 		}
-		
-		LocalFeatureList<Keypoint> keys = MemoryLocalFeatureList.read(System.in, Keypoint.class);
-		
+
+		final LocalFeatureList<Keypoint> keys = MemoryLocalFeatureList.read(System.in, Keypoint.class);
+
 		if (options.isAsciiMode()) {
 			IOUtils.writeASCII(System.out, keys);
 		} else {

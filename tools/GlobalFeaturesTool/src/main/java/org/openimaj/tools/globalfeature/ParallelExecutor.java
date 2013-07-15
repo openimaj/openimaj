@@ -46,86 +46,88 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 /**
- * A tool for running other tools in parallel, in a similar
- * manner to a UNIX Makefile.
+ * A tool for running other tools in parallel, in a similar manner to a UNIX
+ * Makefile.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ParallelExecutor {
-	@Option(name="--input", aliases="-i", usage="input directory", required=true)
+	@Option(name = "--input", aliases = "-i", usage = "input directory", required = true)
 	private File inputBase;
 
-	@Option(name="--output", aliases="-o", usage="output directory", required=true)
+	@Option(name = "--output", aliases = "-o", usage = "output directory", required = true)
 	private File outputBase;
 
-	@Option(name="--output-ext", aliases="-e", usage="output extension", required=true)
+	@Option(name = "--output-ext", aliases = "-e", usage = "output extension", required = true)
 	private File outputExt;
 
-	@Option(name="--input-regex", aliases="-r", usage="input regex")
+	@Option(name = "--input-regex", aliases = "-r", usage = "input regex")
 	private String inputRegex;
 
-	@Option(name="--class", aliases="-c", usage="class to run", required=true)
+	@Option(name = "--class", aliases = "-c", usage = "class to run", required = true)
 	private String commandClass;
 
-	@Option(name="--args", aliases="-a", usage="arguments to pass", required=true)
+	@Option(name = "--args", aliases = "-a", usage = "arguments to pass", required = true)
 	private String commandArgs;
 
-	@Option(name="--force", aliases="-f", usage="force regenerate")
+	@Option(name = "--force", aliases = "-f", usage = "force regenerate")
 	private boolean force = false;
 
-	@Option(name="-j", usage="n paralled jobs", required=false)
+	@Option(name = "-j", usage = "n paralled jobs", required = false)
 	private int njobs = 1;
 
-	@Option(name="--timing", aliases="-t", usage="print timing information")
+	@Option(name = "--timing", aliases = "-t", usage = "print timing information")
 	private boolean timing = false;
-	
-	@Option(name="--verbose", aliases="-v", usage="print timing information")
+
+	@Option(name = "--verbose", aliases = "-v", usage = "print timing information")
 	private boolean verbose = false;
-	
-//	private TLongObjectHashMap<URLClassLoader> classLoaders = new TLongObjectHashMap<URLClassLoader>();
-	
+
+	// private TLongObjectHashMap<URLClassLoader> classLoaders = new
+	// TLongObjectHashMap<URLClassLoader>();
+
 	synchronized Class<?> loadClass(String clzName) throws ClassNotFoundException {
-//		long id = Thread.currentThread().getId();
+		// long id = Thread.currentThread().getId();
 		URLClassLoader tmp;
-		
-//		if (classLoaders.containsKey(id)) {
-//			tmp = classLoaders.get(id);
-//		} else {
-			tmp = new URLClassLoader(new URL[] {getClassPath()}) {
-				@Override
-				public synchronized Class<?> loadClass(String name) throws ClassNotFoundException {
-					Class<?> cl = null;
-					try {
-						cl = findLoadedClass(name);
-						if (cl != null) return cl;
-						cl = findClass(name);
-					} catch (ClassNotFoundException e) {
-						cl = super.loadClass(name);
-					}
-				
-					return cl;
+
+		// if (classLoaders.containsKey(id)) {
+		// tmp = classLoaders.get(id);
+		// } else {
+		tmp = new URLClassLoader(new URL[] { getClassPath() }) {
+			@Override
+			public synchronized Class<?> loadClass(String name) throws ClassNotFoundException {
+				Class<?> cl = null;
+				try {
+					cl = findLoadedClass(name);
+					if (cl != null)
+						return cl;
+					cl = findClass(name);
+				} catch (final ClassNotFoundException e) {
+					cl = super.loadClass(name);
 				}
-			};
-			
-//			classLoaders.put(id, tmp);
-//		}
-		
+
+				return cl;
+			}
+		};
+
+		// classLoaders.put(id, tmp);
+		// }
+
 		return tmp.loadClass(clzName);
 	}
 
 	private static URL getClassPath() {
-		String resName = ParallelExecutor.class.getName().replace('.', '/') + ".class";
-		String loc = ParallelExecutor.class.getClassLoader().getResource(resName).toExternalForm();    
+		final String resName = ParallelExecutor.class.getName().replace('.', '/') + ".class";
+		final String loc = ParallelExecutor.class.getClassLoader().getResource(resName).toExternalForm();
 		URL cp;
 		try {
 			cp = new URL(loc.substring(0, loc.length() - resName.length()));
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
 		return cp;
 	}
-	
+
 	class Job implements Callable<Boolean> {
 		File file;
 
@@ -139,24 +141,26 @@ public class ParallelExecutor {
 				Class<?> clz = null;
 				try {
 					clz = loadClass(commandClass);
-//					clz = Class.forName(commandClass);
-				} catch (ClassNotFoundException e) {
-					clz = loadClass("org.openimaj.tools.globalfeature."+commandClass);
-//					clz = Class.forName("uk.ac.soton.ecs.jsh2."+commandClass);
+					// clz = Class.forName(commandClass);
+				} catch (final ClassNotFoundException e) {
+					clz = loadClass("org.openimaj.tools.globalfeature." + commandClass);
+					// clz =
+					// Class.forName("uk.ac.soton.ecs.jsh2."+commandClass);
 				}
 
-				Method m = clz.getMethod("main", String[].class);
+				final Method m = clz.getMethod("main", String[].class);
 
-				File output = getOutput(file);
+				final File output = getOutput(file);
 				output.getParentFile().mkdirs();
 
 				String theCommandArgs = commandArgs.replace("__IN__", file.getAbsolutePath());
 				theCommandArgs = theCommandArgs.replace("__OUT__", output.getAbsolutePath());
 
-				if (verbose) System.err.println("java " + commandClass + " " + theCommandArgs);
+				if (verbose)
+					System.err.println("java " + commandClass + " " + theCommandArgs);
 
-				m.invoke(null, new Object[] {theCommandArgs.split(" ")});
-			} catch (Throwable e) {
+				m.invoke(null, new Object[] { theCommandArgs.split(" ") });
+			} catch (final Throwable e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -166,36 +170,39 @@ public class ParallelExecutor {
 	}
 
 	void execute() throws InterruptedException {
-		double t1 = System.currentTimeMillis();
-		List<File> inputFiles = getInputs();
-		double t2 = System.currentTimeMillis();
+		final double t1 = System.currentTimeMillis();
+		final List<File> inputFiles = getInputs();
+		final double t2 = System.currentTimeMillis();
 		if (timing) {
 			System.out.println("Input files:\t" + inputFiles.size());
-			System.out.println("Search time:\t" + ((t2-t1)/1000.0) + " secs");
+			System.out.println("Search time:\t" + ((t2 - t1) / 1000.0) + " secs");
 		}
-		
-		List<Job> jobs = new ArrayList<Job>();
-		
-		for (File f : inputFiles) jobs.add(new Job(f));
-		double t3 = System.currentTimeMillis();
-		if (timing) System.out.println("Job create:\t" + ((t3-t2)/1000.0) + " secs");
 
-		ExecutorService es = Executors.newFixedThreadPool(njobs);
+		final List<Job> jobs = new ArrayList<Job>();
+
+		for (final File f : inputFiles)
+			jobs.add(new Job(f));
+		final double t3 = System.currentTimeMillis();
+		if (timing)
+			System.out.println("Job create:\t" + ((t3 - t2) / 1000.0) + " secs");
+
+		final ExecutorService es = Executors.newFixedThreadPool(njobs);
 		es.invokeAll(jobs);
 		es.shutdown();
-		
-		double t4 = System.currentTimeMillis();
+
+		final double t4 = System.currentTimeMillis();
 		if (timing) {
-			System.out.println("Proc time total:\t" + ((t4-t3)/1000.0) + " secs");
-			System.out.println("Proc time per file:\t" + (((t4-t3)/1000.0) / inputFiles.size()) + " secs");
-			
-			System.out.println("Norm Proc time total:\t" + (njobs * (t4-t3)/1000) + " secs");
-			System.out.println("Norm Proc time per file:\t" + (njobs * ((t4-t3)/1000.0) / inputFiles.size()) + " secs");
+			System.out.println("Proc time total:\t" + ((t4 - t3) / 1000.0) + " secs");
+			System.out.println("Proc time per file:\t" + (((t4 - t3) / 1000.0) / inputFiles.size()) + " secs");
+
+			System.out.println("Norm Proc time total:\t" + (njobs * (t4 - t3) / 1000) + " secs");
+			System.out.println("Norm Proc time per file:\t" + (njobs * ((t4 - t3) / 1000.0) / inputFiles.size())
+					+ " secs");
 		}
 	}
 
 	private List<File> getInputs() {
-		List<File> files = new ArrayList<File>();
+		final List<File> files = new ArrayList<File>();
 
 		getInputs(files, inputBase);
 
@@ -203,14 +210,14 @@ public class ParallelExecutor {
 	}
 
 	private void getInputs(List<File> files, File dir) {
-		for (File f : dir.listFiles()) {
+		for (final File f : dir.listFiles()) {
 			if (f.isDirectory()) {
 				getInputs(files, f);
 			} else {
-				//check matches regex
+				// check matches regex
 				if (inputRegex == null || f.getName().matches(inputRegex)) {
-					//check output
-					File output = getOutput(f);
+					// check output
+					final File output = getOutput(f);
 
 					if (!output.exists() || force) {
 						files.add(f);
@@ -221,9 +228,9 @@ public class ParallelExecutor {
 	}
 
 	private File getOutput(File f) {
-		File tmp = new File(outputBase, f.getAbsolutePath().replace(inputBase.getAbsolutePath(), ""));
+		final File tmp = new File(outputBase, f.getAbsolutePath().replace(inputBase.getAbsolutePath(), ""));
 		String outputName = tmp.getName();
-		if(tmp.getName().contains(".")){
+		if (tmp.getName().contains(".")) {
 			outputName = tmp.getName().substring(0, tmp.getName().lastIndexOf("."));
 		}
 		return new File(tmp.getParent(), outputName + outputExt);
@@ -231,20 +238,22 @@ public class ParallelExecutor {
 
 	/**
 	 * The main method of the tool.
+	 * 
 	 * @param args
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static void main(String [] args) throws IOException, InterruptedException {
-		ParallelExecutor tool = new ParallelExecutor();
+	public static void main(String[] args) throws IOException, InterruptedException {
+		final ParallelExecutor tool = new ParallelExecutor();
 
-		CmdLineParser parser = new CmdLineParser(tool);
+		final CmdLineParser parser = new CmdLineParser(tool);
 
 		try {
 			parser.parseArgument(args);
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
-			System.err.println("Usage: java -cp GlobalFeaturesTool.jar uk.ac.soton.ecs.jsh2.ParallelExecutor [options...]");
+			System.err
+					.println("Usage: java -cp GlobalFeaturesTool.jar uk.ac.soton.ecs.jsh2.ParallelExecutor [options...]");
 			parser.printUsage(System.err);
 			return;
 		}

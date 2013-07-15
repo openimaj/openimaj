@@ -31,6 +31,7 @@ package org.openimaj.tools.localfeature;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -38,15 +39,16 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.io.IOUtils;
 import org.openimaj.time.Timer;
-import org.openimaj.tools.localfeature.options.ExtractorOptions;
+import org.openimaj.tools.localfeature.options.BatchExtractorOptions;
+import org.openimaj.util.function.Operation;
+import org.openimaj.util.parallel.Parallel;
 
 /**
  * Tool for extracting local features
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class Extractor {
-
+public class BatchExtractor {
 	/**
 	 * Run the tool
 	 * 
@@ -54,7 +56,7 @@ public class Extractor {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		final ExtractorOptions options = new ExtractorOptions();
+		final BatchExtractorOptions options = new BatchExtractorOptions();
 		final CmdLineParser parser = new CmdLineParser(options);
 
 		try {
@@ -66,18 +68,31 @@ public class Extractor {
 			return;
 		}
 
-		final byte[] img = options.getInputImage();
-		final Timer timing = Timer.timer();
-		final LocalFeatureList<? extends LocalFeature<?, ?>> kpl = options.getMode().extract(img);
-		timing.stop();
-		if (options.printTiming()) {
-			System.out.println("Took: " + timing.duration());
-		}
+		final ThreadPoolExecutor pool = options.getThreadPool();
 
-		if (options.isAsciiMode()) {
-			IOUtils.writeASCII(new File(options.getOutput()), kpl);
-		} else {
-			IOUtils.writeBinary(new File(options.getOutput()), kpl);
-		}
+		Parallel.forEach(options.getInputs(), new Operation<File>() {
+			@Override
+			public void perform(File input) {
+				try {
+					final byte[] img = options.getInputImage(input);
+
+					final Timer timing = Timer.timer();
+					final LocalFeatureList<? extends LocalFeature<?, ?>> kpl = options.getMode().extract(img);
+					timing.stop();
+
+					if (options.printTiming()) {
+						System.out.println("Took: " + timing.duration());
+					}
+
+					if (options.isAsciiMode()) {
+						IOUtils.writeASCII(options.getOutput(input), kpl);
+					} else {
+						IOUtils.writeBinary(options.getOutput(input), kpl);
+					}
+				} catch (final IOException e) {
+
+				}
+			}
+		}, pool);
 	}
 }

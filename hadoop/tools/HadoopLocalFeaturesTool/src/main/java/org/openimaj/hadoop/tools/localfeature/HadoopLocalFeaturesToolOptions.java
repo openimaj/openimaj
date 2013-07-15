@@ -47,9 +47,9 @@ import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool.JKeypointMapper;
 import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesToolOptions.MapperMode.MapperModeOp;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
-import org.openimaj.tools.localfeature.LocalFeaturesToolOptions;
+import org.openimaj.tools.localfeature.options.ExtractorOptions;
 
-public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
+public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 	static enum MapperMode implements CmdLineOptionsProvider {
 		STANDARD {
 			@Override
@@ -152,7 +152,7 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 	private void validate() {
 		if (replace && beforeMap) {
 			try {
-				final URI outuri = SequenceFileUtility.convertToURI(this.getOutputString());
+				final URI outuri = SequenceFileUtility.convertToURI(this.getOutput());
 				final FileSystem fs = getFileSystem(outuri);
 				fs.delete(new Path(outuri.toString()), true);
 			} catch (final IOException e) {
@@ -170,11 +170,11 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 	}
 
 	public Path[] getInputPaths() throws IOException {
-		final Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getInputString(), "part");
+		final Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getInput(), "part");
 		return sequenceFiles;
 	}
 
 	public Path getOutputPath() {
-		return new Path(SequenceFileUtility.convertToURI(this.getOutputString()).toString());
+		return new Path(SequenceFileUtility.convertToURI(this.getOutput()).toString());
 	}
 }
