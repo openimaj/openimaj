@@ -62,13 +62,13 @@ import org.openimaj.twitter.collection.TwitterStatusList;
 
 /**
  * Test some key functionality of the twitter preprocessing tool over hadoop
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class HadoopTwitterPreprocessingToolTest {
 	/**
-	 * 
+	 *
 	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
@@ -90,7 +90,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Prepare all input files
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Before
@@ -123,7 +123,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some json tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -135,7 +135,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some json tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -147,7 +147,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some json tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -159,7 +159,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Stem using some more difficult raw text
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -171,7 +171,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some json tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -183,7 +183,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some json tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -200,7 +200,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some json tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -212,7 +212,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some raw tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -224,7 +224,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some raw tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -236,7 +236,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some raw tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -247,7 +247,7 @@ public class HadoopTwitterPreprocessingToolTest {
 
 	/**
 	 * Using hadoop to tokenise some raw tweets
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -270,7 +270,14 @@ public class HadoopTwitterPreprocessingToolTest {
 		final HadoopTwitterPreprocessingToolOptions opts = new HadoopTwitterPreprocessingToolOptions(createModes(mode)
 				.split(" "), false);
 		opts.prepare();
-		assertTrue(checkSameAnalysis(inputFile, firstPart(outputFile), opts.preprocessingMode(), readtype));
+		assertTrue(
+			checkSameAnalysis(
+				inputFile,
+				firstPart(outputFile),
+				opts.preprocessingMode(),
+				readtype
+			)
+		);
 		FileUtils.deleteRecursive(outputFile);
 
 	}
