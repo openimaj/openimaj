@@ -44,58 +44,65 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.log4j.Logger;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
-import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.io.IOUtils;
 
+/**
+ * Hadoop version of the LocalFeaturesTool. Capable of extracting features from
+ * images in sequencefiles.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ */
 public class HadoopLocalFeaturesTool extends Configured implements Tool {
-	private static final String ARGS_KEY = "clusterquantiser.args";
+	private static final String ARGS_KEY = "openimaj.localfeaturestool.args";
 
-	static class JKeypointMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
-		public DoGSIFTEngine egn = null;
+	/**
+	 * Feature extraction mapper.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 */
+	static class LocalFeaturesMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
+		private static final Logger logger = Logger.getLogger(LocalFeaturesMapper.class);
 		private HadoopLocalFeaturesToolOptions options;
 
-		public JKeypointMapper() {
-		}
-
 		@Override
-		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException,
+		protected void setup(Context context) throws IOException,
 				InterruptedException
 		{
 			final InputStream ios = null;
 			try {
 				options = new HadoopLocalFeaturesToolOptions(context.getConfiguration().getStrings(ARGS_KEY));
 				options.prepare();
-				egn = new DoGSIFTEngine();
 			} finally {
 				if (ios != null)
 					ios.close();
 			}
-
 		}
 
 		@Override
 		protected void
-				map(Text key, BytesWritable value, Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)
-						throws java.io.IOException, InterruptedException
+				map(Text key, BytesWritable value, Context context) throws IOException, InterruptedException
 		{
 			try {
-				System.err.println("Generating Keypoint for image: " + key);
-				System.err.println("... Keypoint mode: " + options.getMode());
+				logger.info("Generating Keypoint for image: " + key);
+				logger.trace("Keypoint mode: " + options.getMode());
 				ByteArrayOutputStream baos = null;
 				final LocalFeatureList<? extends LocalFeature<?, ?>> kpl = options.getMode().extract(value.getBytes());
 
-				System.err.println("... Keypoints generated! Found: " + kpl.size());
+				logger.debug("Keypoints generated! Found: " + kpl.size());
 				if (options.dontwrite) {
-					System.out.println("... Not Writing");
+					logger.trace("Not Writing");
 					return;
 				}
 
-				System.err.println("... Writing ");
+				logger.trace("Writing");
 				baos = new ByteArrayOutputStream();
 				if (options.isAsciiMode()) {
 					IOUtils.writeASCII(baos, kpl);
@@ -103,9 +110,9 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 					IOUtils.writeBinary(baos, kpl);
 				}
 				context.write(key, new BytesWritable(baos.toByteArray()));
-				System.err.println("... Done!");
+				logger.debug("Done!");
 			} catch (final Throwable e) {
-				System.err.println("... Problem with this image! Keeping Calm. Carrying on.");
+				logger.warn("Problem with this image. (" + e + "/" + key + ")");
 				e.printStackTrace(System.err);
 			}
 		}
@@ -115,31 +122,42 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		final HadoopLocalFeaturesToolOptions options = new HadoopLocalFeaturesToolOptions(args, true);
 		options.prepare();
-		// String clusterFileString = options.getInputString();
+
 		final Path[] paths = options.getInputPaths();
 		final TextBytesSequenceFileUtility util = new TextBytesSequenceFileUtility(paths[0].toUri(), true);
 		final Map<String, String> metadata = new HashMap<String, String>();
+
 		if (util.getUUID() != null)
 			metadata.put(MetadataConfiguration.UUID_KEY, util.getUUID());
-		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/siftkeypoints-"
-				+ (options.isAsciiMode() ? "ascii" : "bin"));
-		metadata.put("clusterquantiser.filetype", (options.isAsciiMode() ? "ascii" : "bin"));
+
+		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/localfeatures-" + options.getMode().name()
+				+ "-" + (options.isAsciiMode() ? "ascii" : "bin"));
 
 		final Job job = TextBytesJobUtil.createJob(paths, options.getOutputPath(), metadata, this.getConf());
 		job.setJarByClass(this.getClass());
-		options.mapperModeOp.prepareJobMapper(job, JKeypointMapper.class);
+
+		options.mapperModeOp.prepareJobMapper(job, LocalFeaturesMapper.class);
 		job.getConfiguration().setStrings(ARGS_KEY, args);
 		job.setNumReduceTasks(0);
 
-		SequenceFileOutputFormat.setCompressOutput(job, false);
+		SequenceFileOutputFormat.setCompressOutput(job, !options.dontcompress);
+
 		long start, end;
 		start = System.currentTimeMillis();
 		job.waitForCompletion(true);
 		end = System.currentTimeMillis();
+
 		System.out.println("Took: " + (end - start) + "ms");
+
 		return 0;
 	}
 
+	/**
+	 * The main entry point
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		ToolRunner.run(new HadoopLocalFeaturesTool(), args);
 	}

@@ -44,11 +44,16 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
-import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool.JKeypointMapper;
+import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool.LocalFeaturesMapper;
 import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesToolOptions.MapperMode.MapperModeOp;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.localfeature.options.ExtractorOptions;
 
+/**
+ * Options for the {@link HadoopLocalFeaturesTool}.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 	static enum MapperMode implements CmdLineOptionsProvider {
 		STANDARD {
@@ -56,7 +61,7 @@ public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 			public MapperModeOp getOptions() {
 				return new MapperModeOp() {
 					@Override
-					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+					public void prepareJobMapper(Job job, Class<LocalFeaturesMapper> mapperClass) {
 						job.setMapperClass(mapperClass);
 					}
 				};
@@ -75,7 +80,7 @@ public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 					private int concurrency = Runtime.getRuntime().availableProcessors();
 
 					@Override
-					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+					public void prepareJobMapper(Job job, Class<LocalFeaturesMapper> mapperClass) {
 						if (concurrency <= 0)
 							concurrency = Runtime.getRuntime().availableProcessors();
 
@@ -92,7 +97,7 @@ public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 		public abstract MapperModeOp getOptions();
 
 		public interface MapperModeOp {
-			public abstract void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass);
+			public abstract void prepareJobMapper(Job job, Class<LocalFeaturesMapper> mapperClass);
 		}
 	}
 
@@ -123,17 +128,38 @@ public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 			metaVar = "BOOLEAN")
 	boolean dontwrite = false;
 
+	@Option(
+			name = "--dont-compress-output",
+			required = false,
+			usage = "Don't compress sequencefile records.",
+			metaVar = "BOOLEAN")
+	boolean dontcompress = false;
+
 	private boolean beforeMap;
 
+	/**
+	 * Construct with the given arguments string
+	 * 
+	 * @param args
+	 */
 	public HadoopLocalFeaturesToolOptions(String[] args) {
 		this(args, false);
 	}
 
+	/**
+	 * Construct with the given arguments string
+	 * 
+	 * @param args
+	 * @param beforeMap
+	 */
 	public HadoopLocalFeaturesToolOptions(String[] args, boolean beforeMap) {
 		this.args = args;
 		this.beforeMap = beforeMap;
 	}
 
+	/**
+	 * Prepare the options
+	 */
 	public void prepare() {
 		final CmdLineParser parser = new CmdLineParser(this);
 		try {
@@ -141,7 +167,7 @@ public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 			this.validate();
 		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
-			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
+			System.err.println("Usage: hadoop jar HadoopLocalFeaturesTool.jar [options...] [files...]");
 			parser.printUsage(System.err);
 			System.err.print(ClusterQuantiserOptions.EXTRA_USAGE_INFO);
 
@@ -161,7 +187,7 @@ public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 		}
 	}
 
-	public static FileSystem getFileSystem(URI uri) throws IOException {
+	static FileSystem getFileSystem(URI uri) throws IOException {
 		final Configuration config = new Configuration();
 		FileSystem fs = FileSystem.get(uri, config);
 		if (fs instanceof LocalFileSystem)
@@ -169,11 +195,18 @@ public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 		return fs;
 	}
 
+	/**
+	 * @return the input paths
+	 * @throws IOException
+	 */
 	public Path[] getInputPaths() throws IOException {
 		final Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getInput(), "part");
 		return sequenceFiles;
 	}
 
+	/**
+	 * @return the output path
+	 */
 	public Path getOutputPath() {
 		return new Path(SequenceFileUtility.convertToURI(this.getOutput()).toString());
 	}
