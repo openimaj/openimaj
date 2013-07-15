@@ -31,6 +31,6 @@
     <module>picslurper</module>
     <module>ReferencesTool</module>
     <module>openimaj-processing</module>
-    <module>ImageIndexingTool</module>
+    <module>CBIRTools</module>
   </modules>
 </project>

@@ -23,6 +23,6 @@
     <module>faces</module>
     <module>image-annotation</module>
     <module>object-detection</module>
-    <module>image-indexing</module>
+    <module>image-indexing-retrieval</module>
   </modules>
 </project>
