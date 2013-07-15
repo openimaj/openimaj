@@ -35,6 +35,7 @@ import java.net.URI;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -70,6 +71,13 @@ public class HadoopDownloaderOptions {
 			required = false,
 			usage = "Number of reducers. Controls the number of sequencefile parts created.")
 	private int nreducers = 0;
+
+	@Option(
+			name = "--num-threads",
+			aliases = "-nt",
+			required = false,
+			usage = "Number of mapper threads. If > 1, then a multithreaded mapper will be used.")
+	private int nThreads = 1;
 
 	@Option(
 			name = "--input-mode",
@@ -189,5 +197,15 @@ public class HadoopDownloaderOptions {
 	 */
 	public boolean writeFailures() {
 		return writeFailures;
+	}
+
+	/**
+	 * Get the number of threads to use in the mapper. If >1 a
+	 * {@link MultithreadedMapper} will be used.
+	 * 
+	 * @return number of threads to use
+	 */
+	public int getNumberOfThreads() {
+		return nThreads;
 	}
 }

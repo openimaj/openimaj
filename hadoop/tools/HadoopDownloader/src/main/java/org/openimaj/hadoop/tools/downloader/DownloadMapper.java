@@ -53,70 +53,73 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritable> {
 	private static Logger logger = Logger.getLogger(DownloadMapper.class);
-	
+
 	private Parser parser;
 	private long sleep;
 	private boolean followRedirects;
-	private FSDataOutputStream failureWriter = null;
-	
+	private static FSDataOutputStream failureWriter = null;
+
 	protected enum Counters {
 		DOWNLOADED,
 		FAILED,
 		PARSE_ERROR
 	}
-	
+
 	@Override
 	protected void setup(Context context) throws IOException, InterruptedException {
-		HadoopDownloaderOptions options = new HadoopDownloaderOptions(context.getConfiguration().getStrings(HadoopDownloader.ARGS_KEY));
+		final HadoopDownloaderOptions options = new HadoopDownloaderOptions(context.getConfiguration().getStrings(
+				HadoopDownloader.ARGS_KEY));
 		options.prepare(false);
-		
+
 		parser = options.getInputParser();
 		sleep = options.getSleep();
 		followRedirects = options.followRedirects();
-		
-		if (options.writeFailures()) {
-			String[] taskId = context.getConfiguration().get("mapred.task.id").split("_");
-			Path workPath = FileOutputFormat.getWorkOutputPath(context);
-			workPath = workPath.suffix("/failures" + "-" + taskId[4].substring(1));
-			failureWriter = workPath.getFileSystem(context.getConfiguration()).create(workPath);
+
+		synchronized (DownloadMapper.class) {
+			if (options.writeFailures() && failureWriter != null) {
+				final String[] taskId = context.getConfiguration().get("mapred.task.id").split("_");
+				Path workPath = FileOutputFormat.getWorkOutputPath(context);
+				workPath = workPath.suffix("/failures" + "-" + taskId[4].substring(1));
+				failureWriter = workPath.getFileSystem(context.getConfiguration()).create(workPath);
+			}
 		}
 	}
-	
+
 	@Override
 	protected void cleanup(Context context) throws IOException, InterruptedException {
 		if (failureWriter != null) {
 			failureWriter.close();
 			failureWriter = null;
 		}
-		
+
 		super.cleanup(context);
 	}
 
 	@Override
 	public void map(LongWritable index, Text urlLine, Context context) {
 		logger.info("Attempting to download: " + urlLine);
-		
+
 		try {
-			IndependentPair<String, List<URL>> urlData = parser.parse(urlLine.toString());
-			
+			final IndependentPair<String, List<URL>> urlData = parser.parse(urlLine.toString());
+
 			if (urlData == null) {
 				logger.trace("parser returned null; record skipped.");
 				return;
 			}
-			
+
 			boolean downloaded = false;
-			for (URL potential : urlData.secondObject()) {
+			for (final URL potential : urlData.secondObject()) {
 				downloaded = tryDownload(urlData.firstObject(), potential, context);
-				
+
 				if (downloaded) {
 					logger.info("Dowloaded: " + potential);
 					context.getCounter(Counters.DOWNLOADED).increment(1);
 					return;
 				}
-				
+
 				logger.trace("Not found; trying next");
 			}
-			
+
 			if (!downloaded) {
 				logger.info("Failed to download: " + urlLine);
 				context.getCounter(Counters.FAILED).increment(1);
@@ -124,28 +127,28 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 			} else {
 				context.getCounter(Counters.DOWNLOADED).increment(1);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			logger.info("Error parsing: " + urlLine);
 			logger.trace(e);
 			context.getCounter(Counters.PARSE_ERROR).increment(1);
 			writeFailure(urlLine, context);
 		}
-		
+
 		if (sleep > 0) {
 			try {
 				logger.trace("Waiting before continuing");
 				Thread.sleep(sleep);
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				logger.trace("Wait was interupted; ignoring");
 			}
 		}
 	}
 
-	private void writeFailure(Text urlLine, Context context) {
+	private synchronized static void writeFailure(Text urlLine, Context context) {
 		if (failureWriter != null) {
 			try {
 				failureWriter.writeUTF(urlLine + "\n");
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				logger.error(e);
 			}
 		}
@@ -153,18 +156,18 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 
 	private boolean tryDownload(String key, URL url, Context context) throws InterruptedException {
 		try {
-			byte[] bytes = HttpUtils.readURLAsBytes(url, followRedirects);
-			
+			final byte[] bytes = HttpUtils.readURLAsBytes(url, followRedirects);
+
 			if (bytes == null)
 				return false;
-			
-			BytesWritable bw = new BytesWritable(bytes);
+
+			final BytesWritable bw = new BytesWritable(bytes);
 			context.write(new Text(key), bw);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			logger.trace(e);
 			return false;
 		}
-		
+
 		return true;
 	}
 }
