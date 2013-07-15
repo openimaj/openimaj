@@ -27,16 +27,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.hadoop.tools.localfeature;
+package org.openimaj.hadoop.tools.image.indexing;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
@@ -45,30 +46,39 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.openimaj.demos.sandbox.vlad.VLADIndexer;
+import org.kohsuke.args4j.Option;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
-import org.openimaj.feature.normalisation.HellingerNormaliser;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
-import org.openimaj.image.feature.local.keypoints.FloatKeypoint;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.indexing.vlad.VLADIndexerData;
 
-public class VLADExtractor extends Configured implements Tool {
-	static enum COUNTERS {
-		EMIT, NULL;
-	}
+/**
+ * Extractor for VLAD-PCA features. Consumes existing local-features and
+ * requires a {@link VLADIndexerData} to provide the data.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class HadoopPcaVladExtractor extends Configured implements Tool {
+	private static final String VLAD_INDEXER_DATA_PATH_KEY = "openimaj.vlad.indexer.data";
 
-	static class VLADMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
-		private VLADIndexer indexer;
+	/**
+	 * {@link Mapper} for extracting PCA-VLAD features from sets of local
+	 * features
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+	static class PcaVladMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
+		static enum COUNTERS {
+			EMIT, NULL;
+		}
+
+		private VLADIndexerData indexer;
 
 		@Override
 		protected void setup(Context context) throws IOException, InterruptedException
 		{
-			final Path p = new Path(
-					"hdfs://seurat.ecs.soton.ac.uk/data/vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.dat");
-			final InputStream is = p.getFileSystem(context.getConfiguration()).open(p);
-			indexer = VLADIndexer.read(is);
-			is.close();
+			indexer = VLADIndexerData.read(new File("./" + context.getConfiguration().get(VLAD_INDEXER_DATA_PATH_KEY)));
 		}
 
 		@Override
@@ -77,14 +87,8 @@ public class VLADExtractor extends Configured implements Tool {
 		{
 			final List<Keypoint> keys = MemoryLocalFeatureList.read(new ByteArrayInputStream(value.getBytes()),
 					Keypoint.class);
-			final MemoryLocalFeatureList<FloatKeypoint> fkeys =
-					FloatKeypoint.convert(keys);
 
-			for (final FloatKeypoint k : fkeys) {
-				HellingerNormaliser.normalise(k.vector, 0);
-			}
-
-			final float[] vladData = indexer.extract(fkeys);
+			final float[] vladData = indexer.extractPcaVlad(keys);
 
 			if (vladData == null) {
 				context.getCounter(COUNTERS.NULL).increment(1L);
@@ -101,28 +105,59 @@ public class VLADExtractor extends Configured implements Tool {
 		}
 	}
 
+	@Option(
+			name = "--dont-compress-output",
+			required = false,
+			usage = "Don't compress sequencefile records.",
+			metaVar = "BOOLEAN")
+	private boolean dontcompress = false;
+
+	@Option(
+			name = "--remove",
+			aliases = "-rm",
+			required = false,
+			usage = "Remove the existing output location if it exists.",
+			metaVar = "BOOLEAN")
+	private boolean replace = false;
+
+	@Option(name = "--input", aliases = "-i", required = true, usage = "Input local features file.", metaVar = "STRING")
+	private String input;
+
+	@Option(name = "--output", aliases = "-o", required = true, usage = "Output pca-vlad file.", metaVar = "STRING")
+	private String output;
+
+	@Option(name = "--indexer-data", aliases = "-id", required = true, usage = "Indexer data file.", metaVar = "STRING")
+	private String indexerData;
+
 	@Override
 	public int run(String[] args) throws Exception {
-		final Path[] paths = SequenceFileUtility.getFilePaths(
-				"hdfs://seurat.ecs.soton.ac.uk/data/flickr-all-geo-16-46M-sift1x.seq", "part");
-		final Path outputPath = new Path(
-				"hdfs://seurat.ecs.soton.ac.uk/data/flickr-all-geo-vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.seq");
+		final Path[] paths = SequenceFileUtility.getFilePaths(input, "part");
+		final Path outputPath = new Path(output);
 
-		if (outputPath.getFileSystem(this.getConf()).exists(outputPath))
+		if (outputPath.getFileSystem(this.getConf()).exists(outputPath) && replace)
 			outputPath.getFileSystem(this.getConf()).delete(outputPath, true);
 
 		final Job job = TextBytesJobUtil.createJob(paths, outputPath, null, this.getConf());
 		job.setJarByClass(this.getClass());
-		job.setMapperClass(VLADMapper.class);
+		job.setMapperClass(PcaVladMapper.class);
 		job.setNumReduceTasks(0);
 
-		SequenceFileOutputFormat.setCompressOutput(job, false);
+		DistributedCache.addFileToClassPath(new Path(indexerData), job.getConfiguration());
+		job.getConfiguration().set(VLAD_INDEXER_DATA_PATH_KEY, new Path(indexerData).getName());
+
+		SequenceFileOutputFormat.setCompressOutput(job, !dontcompress);
 		job.waitForCompletion(true);
 
 		return 0;
 	}
 
+	/**
+	 * Main method
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
-		ToolRunner.run(new VLADExtractor(), args);
+		ToolRunner.run(new HadoopPcaVladExtractor(), args);
 	}
 }

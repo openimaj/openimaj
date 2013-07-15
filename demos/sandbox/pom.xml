@@ -31,6 +31,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
+			<artifactId>image-indexing-retrieval</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
 		  <artifactId>common-stream</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>

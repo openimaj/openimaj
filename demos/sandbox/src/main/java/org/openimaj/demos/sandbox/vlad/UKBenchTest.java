@@ -31,60 +31,57 @@ package org.openimaj.demos.sandbox.vlad;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
+import org.openimaj.feature.local.list.MemoryLocalFeatureList;
+import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.indexing.vlad.VLADIndexerData;
 import org.openimaj.io.IOUtils;
 import org.openimaj.knn.pq.FloatADCNearestNeighbours;
+import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IntObjectPair;
+import org.openimaj.util.parallel.Parallel;
 
 public class UKBenchTest {
-	// public static void main(String[] args) throws IOException {
-	// final VLADIndexer indexer = VLADIndexer.read(new
-	// File("/Users/jsh2/vlad-indexer-ukbench-2x-nohell.dat"));
-	//
-	// final List<IntObjectPair<float[]>> index = new
-	// ArrayList<IntObjectPair<float[]>>();
-	// final List<IntObjectPair<float[]>> syncList =
-	// Collections.synchronizedList(index);
-	//
-	// Parallel.forEach(Arrays.asList(new
-	// File("/Users/jsh2/Data/ukbench/sift/").listFiles()), new
-	// Operation<File>()
-	// {
-	//
-	// @Override
-	// public void perform(File f) {
-	// try {
-	// System.out.println(f);
-	//
-	// final int id = Integer.parseInt(f.getName().replace("ukbench",
-	// "").replace(".jpg", ""));
-	//
-	// final MemoryLocalFeatureList<Keypoint> keys =
-	// MemoryLocalFeatureList.read(f, Keypoint.class);
-	// final MemoryLocalFeatureList<FloatKeypoint> fkeys =
-	// FloatKeypoint.convert(keys);
-	//
-	// for (final FloatKeypoint k : fkeys) {
-	// HellingerNormaliser.normalise(k.vector, 0);
-	// }
-	//
-	// indexer.index(fkeys, id, syncList);
-	// } catch (final Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	// });
-	//
-	// IOUtils.writeToFile(index, new
-	// File("/Users/jsh2/Desktop/ukb-nohell.idx"));
-	// }
+	public static void index() throws IOException {
+		final VLADIndexerData indexer = VLADIndexerData.read(new File("/Users/jsh2/vlad-indexer-ukbench-2x-nohell.dat"));
 
-	public static void main(String[] args) throws IOException {
-		final VLADIndexer indexer = VLADIndexer.read(new
+		final List<IntObjectPair<float[]>> index = new ArrayList<IntObjectPair<float[]>>();
+		final List<IntObjectPair<float[]>> syncList = Collections.synchronizedList(index);
+
+		Parallel.forEach(Arrays.asList(new File("/Users/jsh2/Data/ukbench/sift/").listFiles()), new
+				Operation<File>()
+				{
+
+					@Override
+					public void perform(File f) {
+						try {
+							System.out.println(f);
+
+							final int id = Integer.parseInt(f.getName().replace("ukbench",
+									"").replace(".jpg", ""));
+
+							final MemoryLocalFeatureList<Keypoint> keys =
+									MemoryLocalFeatureList.read(f, Keypoint.class);
+
+							syncList.add(new IntObjectPair<float[]>(id, indexer.extractPcaVlad(keys)));
+						} catch (final Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+
+		IOUtils.writeToFile(index, new
+				File("/Users/jsh2/Desktop/ukb-nohell.idx"));
+	}
+
+	public static void search() throws IOException {
+		final VLADIndexerData indexer = VLADIndexerData.read(new
 				File("/Users/jsh2/vlad-indexer-ukbench-2x-nohell.dat"));
 		final List<IntObjectPair<float[]>> index = IOUtils.readFromFile(new
 				File("/Users/jsh2/Desktop/ukb-nohell.idx"));
@@ -100,7 +97,7 @@ public class UKBenchTest {
 		final List<float[]> data = IntObjectPair.getSecond(index);
 
 		final FloatADCNearestNeighbours nn = new
-				FloatADCNearestNeighbours(indexer.pq,
+				FloatADCNearestNeighbours(indexer.getProductQuantiser(),
 						data.toArray(new float[data.size()][]));
 		// final FloatNearestNeighboursExact nn = new
 		// FloatNearestNeighboursExact(data.toArray(new float[data.size()][]));

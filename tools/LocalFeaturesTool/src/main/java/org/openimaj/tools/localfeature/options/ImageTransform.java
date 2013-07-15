@@ -29,8 +29,6 @@
  */
 package org.openimaj.tools.localfeature.options;
 
-import java.io.IOException;
-
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.openimaj.image.FImage;
@@ -38,10 +36,9 @@ import org.openimaj.image.Image;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-
 /**
  * Image pre-processing options
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 enum ImageTransform implements CmdLineOptionsProvider {
@@ -55,8 +52,8 @@ enum ImageTransform implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-	 * Resize the image so the longest dimension
-	 * matches the given size (only scales down).
+	 * Resize the image so the longest dimension matches the given size (only
+	 * scales down).
 	 */
 	RESIZE_MAX {
 		@Override
@@ -64,10 +61,10 @@ enum ImageTransform implements CmdLineOptionsProvider {
 			return new ResizeMaxOp();
 		}
 	};
-	
+
 	@Override
 	public abstract ImageTransformOp getOptions();
-	
+
 	/**
 	 * Pre-processing transform
 	 * 
@@ -76,47 +73,54 @@ enum ImageTransform implements CmdLineOptionsProvider {
 	public static abstract class ImageTransformOp {
 		/**
 		 * Apply the transform
-		 * @param a the input image
+		 * 
+		 * @param a
+		 *            the input image
 		 * @return the transformed image
-		 * @throws IOException
 		 */
-		public abstract Image<?,?> transform(Image<?,?> a) throws IOException;
+		public abstract Image<?, ?> transform(Image<?, ?> a);
 	}
-	
+
 	private static class NothingOp extends ImageTransformOp {
 		@Override
-		public Image<?,?> transform(Image<?,?> a){
+		public Image<?, ?> transform(Image<?, ?> a) {
 			return a;
-		}		
+		}
 	}
-	
+
 	private static class ResizeMaxOp extends ImageTransformOp {
-		@Option(name="--dim-max", aliases="-dmax", required=false, usage="The resultant length of maximum dimention")
+		@Option(
+				name = "--dim-max",
+				aliases = "-dmax",
+				required = false,
+				usage = "The resultant length of maximum dimention")
 		private int dmax = 640;
-		
+
 		@SuppressWarnings("unchecked")
 		@Override
-		public Image<?,?> transform(Image<?,?> a) throws IOException {
-			if(!(a instanceof SinglebandImageProcessor.Processable<?,?,?>))
-				throw new IOException("Can't resize that kind of image");
-			int aw = a.getWidth();
-			int ah = a.getHeight();
+		public Image<?, ?> transform(Image<?, ?> a) {
+			if (!(a instanceof SinglebandImageProcessor.Processable<?, ?, ?>))
+				throw new RuntimeException("Can't resize that kind of image");
+
+			final int aw = a.getWidth();
+			final int ah = a.getHeight();
 			int newwidth, newheight;
-			if(aw < ah){
+			if (aw < ah) {
 				// Final height will be dmax
 				newheight = dmax;
-				float resizeRatio = ((float)dmax/(float)ah);
+				final float resizeRatio = ((float) dmax / (float) ah);
 				newwidth = (int) (aw * resizeRatio);
 			}
-			else{
-				// Final width will be dmax, 
+			else {
+				// Final width will be dmax,
 				newwidth = dmax;
-				float resizeRatio = ((float)dmax/(float)aw);
+				final float resizeRatio = ((float) dmax / (float) aw);
 				newheight = (int) (ah * resizeRatio);
 			}
-			
+
 			System.out.println("Resizing image to: " + newwidth + "x" + newheight);
-			return ((SinglebandImageProcessor.Processable<Float, FImage, FImage>)a).process(new ResizeProcessor(newwidth,newheight));
-		}		
+			return ((SinglebandImageProcessor.Processable<Float, FImage, FImage>) a).process(new ResizeProcessor(
+					newwidth, newheight));
+		}
 	}
 }

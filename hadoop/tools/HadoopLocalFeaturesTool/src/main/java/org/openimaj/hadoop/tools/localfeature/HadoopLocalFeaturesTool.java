@@ -69,6 +69,10 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
 	static class LocalFeaturesMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
+		static enum Counters {
+			SUCCESSFUL, FAILED;
+		}
+
 		private static final Logger logger = Logger.getLogger(LocalFeaturesMapper.class);
 		private HadoopLocalFeaturesToolOptions options;
 
@@ -111,7 +115,9 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 				}
 				context.write(key, new BytesWritable(baos.toByteArray()));
 				logger.debug("Done!");
+				context.getCounter(Counters.SUCCESSFUL).increment(1L);
 			} catch (final Throwable e) {
+				context.getCounter(Counters.FAILED).increment(1L);
 				logger.warn("Problem with this image. (" + e + "/" + key + ")");
 				e.printStackTrace(System.err);
 			}
@@ -148,6 +154,8 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 		end = System.currentTimeMillis();
 
 		System.out.println("Took: " + (end - start) + "ms");
+
+		options.serialiseExtractor();
 
 		return 0;
 	}

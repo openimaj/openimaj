@@ -31,6 +31,7 @@ package org.openimaj.tools.localfeature.options;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.openimaj.image.FImage;
@@ -38,6 +39,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.colour.Transforms;
 
 /**
  * Colour modes
@@ -55,9 +57,8 @@ enum ColourMode implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-	 * Find interest using intensity image, but extract
-	 * features in colour
-	 *
+	 * Find interest using intensity image, but extract features in colour
+	 * 
 	 */
 	INTENSITY_COLOUR {
 		@Override
@@ -66,18 +67,17 @@ enum ColourMode implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-	 * Find & extract features in a single colour band 
+	 * Find & extract features in a single colour band
 	 */
 	SINGLE_COLOUR {
 		@Override
 		public ColourModeOp getOptions() {
 			return new SingleColour();
-		}		
-	}
-	;
-	
+		}
+	};
+
 	/**
-	 * Ways of reading an image 
+	 * Ways of reading an image, and/or converting colours
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
@@ -85,44 +85,87 @@ enum ColourMode implements CmdLineOptionsProvider {
 		/**
 		 * Read the image from the byte array
 		 * 
-		 * @param img the image bytes
+		 * @param img
+		 *            the image bytes
 		 * @return the image
 		 * @throws IOException
 		 */
-		public abstract Image<?,?> process(byte[] img) throws IOException;		
+		public abstract Image<?, ?> process(byte[] img) throws IOException;
+
+		/**
+		 * Convert the image appropriately
+		 * 
+		 * @param img
+		 *            the image
+		 * @return the image
+		 */
+		public abstract Image<?, ?> process(MBFImage img);
 	}
-	
+
 	private static class Intensity extends ColourModeOp {
 		@Override
-		public FImage process(byte[] img) throws IOException{
+		public FImage process(byte[] img) throws IOException {
 			return ImageUtilities.readF(new ByteArrayInputStream(img));
 		}
-	}
-	
-	private static class IntensityColour extends ColourModeOp {
-		@Option(name="--colour-conversion", aliases="-cc", required=false, usage="Optionally specify a colour space conversion")
-		private ColourSpace ct = null;
-		
+
 		@Override
-		public MBFImage process(byte[] img) throws IOException{
-			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
-			if(ct!=null) toRet = ct.convert(toRet);
-			return toRet;
+		public Image<?, ?> process(MBFImage img) {
+			return Transforms.calculateIntensityNTSC(img);
 		}
 	}
-	
-	private static class SingleColour extends ColourModeOp {
-		@Option(name="--colour-conversion", aliases="-cc", required=false, usage="Optionally specify a colour space conversion")
+
+	private static class IntensityColour extends ColourModeOp {
+		@Option(
+				name = "--colour-conversion",
+				aliases = "-cc",
+				required = false,
+				usage = "Optionally specify a colour space conversion")
 		private ColourSpace ct = null;
-		
-		@Option(name="--isolated-colour", aliases="-ic", required=false, usage="Specify the image band you wish extracted, defaults to 0")
-		private int band = 0;
-		
+
 		@Override
-		public FImage process(byte[] img) throws IOException{
+		public MBFImage process(byte[] img) throws IOException {
 			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
-			if(ct!=null) toRet = ct.convert(toRet);
+			if (ct != null)
+				toRet = ct.convert(toRet);
+			return toRet;
+		}
+
+		@Override
+		public Image<?, ?> process(MBFImage img) {
+			if (ct != null)
+				img = ct.convert(img);
+			return img;
+		}
+	}
+
+	private static class SingleColour extends ColourModeOp {
+		@Option(
+				name = "--colour-conversion",
+				aliases = "-cc",
+				required = false,
+				usage = "Optionally specify a colour space conversion")
+		private ColourSpace ct = null;
+
+		@Option(
+				name = "--isolated-colour",
+				aliases = "-ic",
+				required = false,
+				usage = "Specify the image band you wish extracted, defaults to 0")
+		private int band = 0;
+
+		@Override
+		public FImage process(byte[] img) throws IOException {
+			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
+			if (ct != null)
+				toRet = ct.convert(toRet);
 			return toRet.getBand(band);
+		}
+
+		@Override
+		public Image<?, ?> process(MBFImage img) {
+			if (ct != null)
+				img = ct.convert(img);
+			return img.getBand(band);
 		}
 	}
 }

@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.openimaj.demos.sandbox.vlad.VLADIndexer;
 import org.openimaj.feature.MultidimensionalFloatFV;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.normalisation.HellingerNormaliser;
@@ -44,6 +43,7 @@ import org.openimaj.image.feature.local.aggregate.VLAD;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.FloatKeypoint;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.indexing.vlad.VLADIndexerData;
 
 public class VLADDemo {
 	public static void main(String[] args) throws IOException {
@@ -57,7 +57,7 @@ public class VLADDemo {
 		for (final FloatKeypoint k : fkeys)
 			HellingerNormaliser.normalise(k.vector, 0);
 
-		final VLADIndexer indexer = VLADIndexer.read(new File("/Users/jsh2/vlad-indexer-ukbench-2x.dat"));
+		final VLADIndexerData indexer = VLADIndexerData.read(new File("/Users/jsh2/vlad-indexer-ukbench-2x.dat"));
 
 		// final ByteCentroidsResult centroids = IOUtils.read(new
 		// File("/Users/jsh2/Desktop/ukbench16.voc"),
@@ -67,7 +67,7 @@ public class VLADDemo {
 		// centroids.centroids, true);
 		// final MultidimensionalFloatFV agg = vlad.aggregate(features);
 
-		final MultidimensionalFloatFV agg = indexer.vlad.aggregate(fkeys);
+		final MultidimensionalFloatFV agg = indexer.getVLAD().aggregate(fkeys);
 
 		System.out.println(agg);
 

@@ -35,6 +35,7 @@ import java.io.IOException;
 
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
+import org.openimaj.io.IOUtils;
 import org.openimaj.tools.localfeature.options.LocalFeatureMode.LocalFeatureModeOp;
 
 /**
@@ -58,6 +59,12 @@ public class BaseExtractorOptions extends SharedOptions {
 			required = false,
 			usage = "Print to the standard output the time taken to extract features")
 	boolean printTime = false;
+
+	@Option(
+			name = "--extractor-file",
+			aliases = "-ef",
+			usage = "Serialise the configured feature extractor to the given file")
+	File extractorFile;
 
 	/**
 	 * @return the mode
@@ -130,5 +137,17 @@ public class BaseExtractorOptions extends SharedOptions {
 	 */
 	public boolean printTiming() {
 		return this.printTime;
+	}
+
+	/**
+	 * Serialise the feature extractor to a file so it can be reused by other
+	 * tools or code.
+	 * 
+	 * @throws IOException
+	 */
+	public void serialiseExtractor() throws IOException {
+		if (extractorFile != null) {
+			IOUtils.writeToFile(this.modeOp, extractorFile);
+		}
 	}
 }

@@ -94,5 +94,7 @@ public class BatchExtractor {
 				}
 			}
 		}, pool);
+
+		options.serialiseExtractor();
 	}
 }

@@ -193,10 +193,9 @@ public class SWTTextDetector {
 				for (final LineCandidate line : lines) {
 					frame.drawShape(line.regularBoundingBox, RGBColour.RED);
 
-					// final List<WordCandidate> words =
-					// WordCandidate.extractWords(line);
-					// for (final WordCandidate wc : words)
-					// frame.drawShape(wc.regularBoundingBox, RGBColour.BLUE);
+					final List<WordCandidate> words = WordCandidate.extractWords(line);
+					for (final WordCandidate wc : words)
+						frame.drawShape(wc.regularBoundingBox, RGBColour.BLUE);
 				}
 			}
 

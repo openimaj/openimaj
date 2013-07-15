@@ -27,59 +27,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.localfeature;
+package org.openimaj.feature.local;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.List;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.openimaj.feature.local.LocalFeature;
-import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.io.IOUtils;
-import org.openimaj.time.Timer;
-import org.openimaj.tools.localfeature.options.ExtractorOptions;
+import org.openimaj.feature.FeatureExtractor;
 
 /**
- * Tool for extracting local features
+ * Interface for objects capable of extracting local features from a given
+ * object. It is expected that implementors of this interface are threadsafe and
+ * can allow multiple calls to {@link #extractFeature(Object)} at the same time
+ * (or they at least synchronise the method).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <FEATURE>
+ *            Type of local feature
+ * @param <OBJECT>
+ *            Type of object
  */
-public class Extractor {
-
+public interface LocalFeatureExtractor<FEATURE extends LocalFeature<?, ?>, OBJECT>
+		extends
+		FeatureExtractor<List<? extends FEATURE>, OBJECT>
+{
 	/**
-	 * Run the tool
+	 * Get the actual type of {@link LocalFeature}s extracted.
 	 * 
-	 * @param args
-	 * @throws IOException
+	 * @return the actual type of LocalFeature produced.
 	 */
-	public static void main(String[] args) throws IOException {
-		final ExtractorOptions options = new ExtractorOptions();
-		final CmdLineParser parser = new CmdLineParser(options);
-
-		try {
-			parser.parseArgument(args);
-		} catch (final CmdLineException e) {
-			System.err.println(e.getMessage());
-			System.err.println("Usage: java -jar LocalFeaturesTool.jar Extractor [options] -i imageFile -o keypointFile");
-			parser.printUsage(System.err);
-			return;
-		}
-
-		final byte[] img = options.getInputImage();
-		final Timer timing = Timer.timer();
-		final LocalFeatureList<? extends LocalFeature<?, ?>> kpl = options.getMode().extract(img);
-		timing.stop();
-		if (options.printTiming()) {
-			System.out.println("Took: " + timing.duration());
-		}
-
-		if (options.isAsciiMode()) {
-			IOUtils.writeASCII(new File(options.getOutput()), kpl);
-		} else {
-			IOUtils.writeBinary(new File(options.getOutput()), kpl);
-		}
-
-		options.serialiseExtractor();
-	}
+	public abstract Class<? extends LocalFeature<?, ?>> getFeatureClass();
 }

@@ -36,12 +36,14 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.feature.local.LocalFeature;
+import org.openimaj.feature.local.LocalFeatureExtractor;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.dense.gradient.dsift.ApproximateDenseSIFT;
 import org.openimaj.image.feature.dense.gradient.dsift.ByteDSIFTKeypoint;
 import org.openimaj.image.feature.dense.gradient.dsift.ColourDenseSIFT;
@@ -162,7 +164,10 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
-	public static abstract class LocalFeatureModeOp {
+	public static abstract class LocalFeatureModeOp
+			implements
+			LocalFeatureExtractor<LocalFeature<?, ?>, MBFImage>
+	{
 		private LocalFeatureMode mode;
 
 		@Option(
@@ -183,11 +188,6 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		 * @throws IOException
 		 */
 		public abstract LocalFeatureList<? extends LocalFeature<?, ?>> extract(byte[] image) throws IOException;
-
-		/**
-		 * @return the actual type of LocalFeature produced.
-		 */
-		public abstract Class<? extends LocalFeature<?, ?>> getFeatureClass();
 
 		private LocalFeatureModeOp(LocalFeatureMode mode) {
 			this.mode = mode;
@@ -242,13 +242,26 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<Keypoint> extract(byte[] img) throws IOException {
+			return extract(cmOp.process(img));
+		}
+
+		@Override
+		public Class<? extends LocalFeature<?, ?>> getFeatureClass() {
+			return Keypoint.class;
+		}
+
+		@Override
+		public LocalFeatureList<Keypoint> extractFeature(MBFImage img) {
+			return extract(cmOp.process(img));
+		}
+
+		private LocalFeatureList<Keypoint> extract(Image<?, ?> image) {
 			LocalFeatureList<Keypoint> keys = null;
 			switch (this.cm) {
 			case SINGLE_COLOUR:
 			case INTENSITY: {
 				final DoGSIFTEngine engine = new DoGSIFTEngine();
 				engine.getOptions().setDoubleInitialImage(!noDoubleImageSize);
-				Image<?, ?> image = cmOp.process(img);
 				image = itOp.transform(image);
 
 				keys = engine.findFeatures((FImage) image);
@@ -257,19 +270,13 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			case INTENSITY_COLOUR: {
 				final DoGColourSIFTEngine engine = new DoGColourSIFTEngine();
 				engine.getOptions().setDoubleInitialImage(!noDoubleImageSize);
-				MBFImage image = (MBFImage) cmOp.process(img);
-				image = (MBFImage) itOp.transform(image);
+				image = itOp.transform(image);
 
-				keys = engine.findFeatures(image);
+				keys = engine.findFeatures((MBFImage) image);
 				break;
 			}
 			}
 			return keys;
-		}
-
-		@Override
-		public Class<? extends LocalFeature<?, ?>> getFeatureClass() {
-			return Keypoint.class;
 		}
 	}
 
@@ -280,6 +287,21 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends Keypoint> extract(byte[] img) throws IOException {
+			final MinMaxDoGSIFTEngine engine = new MinMaxDoGSIFTEngine();
+			LocalFeatureList<MinMaxKeypoint> keys = null;
+			switch (this.cm) {
+			case SINGLE_COLOUR:
+			case INTENSITY:
+				keys = engine.findFeatures((FImage) cmOp.process(img));
+				break;
+			case INTENSITY_COLOUR:
+				throw new UnsupportedOperationException();
+			}
+			return keys;
+		}
+
+		@Override
+		public LocalFeatureList<? extends Keypoint> extractFeature(MBFImage img) {
 			final MinMaxDoGSIFTEngine engine = new MinMaxDoGSIFTEngine();
 			LocalFeatureList<MinMaxKeypoint> keys = null;
 			switch (this.cm) {
@@ -313,7 +335,24 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<Keypoint> extract(byte[] image) throws IOException {
+			LocalFeatureList<Keypoint> keys = null;
 
+			switch (this.cm) {
+			case SINGLE_COLOUR:
+			case INTENSITY:
+				final BasicASIFT basic = new BasicASIFT(!noDoubleImageSize);
+				basic.detectFeatures((FImage) itOp.transform(cmOp.process(image)), ntilts);
+				keys = basic.getFeatures();
+				break;
+			case INTENSITY_COLOUR:
+				final ColourASIFT colour = new ColourASIFT(!noDoubleImageSize);
+				colour.detectFeatures((MBFImage) itOp.transform(cmOp.process(image)), ntilts);
+			}
+			return keys;
+		}
+
+		@Override
+		public LocalFeatureList<Keypoint> extractFeature(MBFImage image) {
 			LocalFeatureList<Keypoint> keys = null;
 
 			switch (this.cm) {
@@ -350,6 +389,26 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<AffineSimulationKeypoint> extract(byte[] image) throws IOException {
+			final ASIFTEngine engine = new ASIFTEngine(!noDoubleImageSize, ntilts);
+			LocalFeatureList<AffineSimulationKeypoint> keys = null;
+			switch (this.cm) {
+			case SINGLE_COLOUR:
+			case INTENSITY:
+				FImage img = (FImage) cmOp.process(image);
+				img = (FImage) itOp.transform(img);
+				keys = engine.findFeatures(img);
+				break;
+			case INTENSITY_COLOUR:
+				final ColourASIFTEngine colourengine = new ColourASIFTEngine(!noDoubleImageSize, ntilts);
+				MBFImage colourimg = (MBFImage) cmOp.process(image);
+				colourimg = (MBFImage) itOp.transform(colourimg);
+				keys = colourengine.findFeatures(colourimg);
+			}
+			return keys;
+		}
+
+		@Override
+		public LocalFeatureList<AffineSimulationKeypoint> extractFeature(MBFImage image) {
 			final ASIFTEngine engine = new ASIFTEngine(!noDoubleImageSize, ntilts);
 			LocalFeatureList<AffineSimulationKeypoint> keys = null;
 			switch (this.cm) {
@@ -457,6 +516,15 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends LocalFeature<?, ?>> extract(byte[] image) throws IOException {
+			return extract(ImageUtilities.readF(new ByteArrayInputStream(image)));
+		}
+
+		@Override
+		public LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(MBFImage image) {
+			return extract(Transforms.calculateIntensityNTSC(image));
+		}
+
+		LocalFeatureList<? extends LocalFeature<?, ?>> extract(FImage image) {
 			final DenseSIFT dsift;
 
 			if (approximate)
@@ -466,7 +534,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 				dsift = new DenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins,
 						gaussianWindowSize, valueThreshold);
 
-			dsift.analyseImage(ImageUtilities.readF(new ByteArrayInputStream(image)));
+			dsift.analyseImage(image);
 
 			if (contrastThreshold <= 0) {
 				if (byteFeatures)
@@ -497,6 +565,11 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends LocalFeature<?, ?>> extract(byte[] image) throws IOException {
+			return extractFeature(ImageUtilities.readMBF(new ByteArrayInputStream(image)));
+		}
+
+		@Override
+		public LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(MBFImage image) {
 			final ColourDenseSIFT dsift;
 
 			if (approximate)
@@ -508,7 +581,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 						numOriBins,
 						gaussianWindowSize, valueThreshold), colourspace);
 
-			dsift.analyseImage(ImageUtilities.readMBF(new ByteArrayInputStream(image)));
+			dsift.analyseImage(image);
 
 			if (contrastThreshold <= 0) {
 				if (byteFeatures)
@@ -541,6 +614,15 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends LocalFeature<?, ?>> extract(byte[] image) throws IOException {
+			return extractFeature(ImageUtilities.readF(new ByteArrayInputStream(image)));
+		}
+
+		@Override
+		public LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(MBFImage image) {
+			return extractFeature(Transforms.calculateIntensityNTSC(image));
+		}
+
+		LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(FImage image) {
 			final PyramidDenseSIFT<FImage> dsift;
 
 			if (approximate)
@@ -551,7 +633,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 				dsift = new PyramidDenseSIFT<FImage>(new DenseSIFT(stepX, stepY, 1, 1, numBinsX, numBinsY, numOriBins,
 						gaussianWindowSize, valueThreshold), magnificationFactor, sizes);
 
-			dsift.analyseImage(ImageUtilities.readF(new ByteArrayInputStream(image)));
+			dsift.analyseImage(image);
 
 			if (contrastThreshold <= 0) {
 				if (byteFeatures)
@@ -582,6 +664,11 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends LocalFeature<?, ?>> extract(byte[] image) throws IOException {
+			return extractFeature(ImageUtilities.readMBF(new ByteArrayInputStream(image)));
+		}
+
+		@Override
+		public LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(MBFImage image) {
 			final PyramidDenseSIFT<MBFImage> dsift;
 
 			if (approximate)
@@ -595,7 +682,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 						numOriBins,
 						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, sizes);
 
-			dsift.analyseImage(ImageUtilities.readMBF(new ByteArrayInputStream(image)));
+			dsift.analyseImage(image);
 
 			if (contrastThreshold <= 0) {
 				if (byteFeatures)

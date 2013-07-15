@@ -27,25 +27,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox.vlad;
+package org.openimaj.image.indexing.vlad;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math.random.MersenneTwister;
 import org.openimaj.data.RandomData;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.MultidimensionalFloatFV;
-import org.openimaj.feature.local.filter.ByteEntropyFilter;
+import org.openimaj.feature.local.FloatLocalFeatureAdaptor;
+import org.openimaj.feature.local.LocalFeature;
+import org.openimaj.feature.local.LocalFeatureExtractor;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.feature.normalisation.HellingerNormaliser;
+import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.aggregate.VLAD;
-import org.openimaj.image.feature.local.keypoints.FloatKeypoint;
-import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.knn.pq.FloatProductQuantiser;
 import org.openimaj.knn.pq.FloatProductQuantiserUtilities;
 import org.openimaj.math.matrix.algorithm.pca.ThinSvdPrincipalComponentAnalysis;
@@ -54,50 +53,139 @@ import org.openimaj.ml.clustering.assignment.hard.ExactFloatAssigner;
 import org.openimaj.ml.clustering.kmeans.FloatKMeans;
 import org.openimaj.ml.pca.FeatureVectorPCA;
 import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.util.filter.FilterUtils;
+import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.list.AcceptingListView;
 import org.openimaj.util.parallel.Parallel;
 
 import Jama.Matrix;
 
-public class VLADPrep {
-	List<File> localFeatures;
-	boolean normalise = false;
+/**
+ * Class for learning the data required to efficiently index images using VLAD
+ * with PCA and product quantisers.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class VLADIndexerDataBuilder {
+	/**
+	 * Feature post-processing options
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public enum StandardPostProcesses
+			implements
+			Function<List<? extends LocalFeature<?, ?>>, List<FloatLocalFeatureAdaptor<?>>>
+	{
+		/**
+		 * Do nothing, other than convert to float is required
+		 * 
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+		 * 
+		 */
+		NONE {
+			@Override
+			public List<FloatLocalFeatureAdaptor<?>> apply(List<? extends LocalFeature<?, ?>> in) {
+				return FloatLocalFeatureAdaptor.wrapUntyped(in);
+			}
+		},
+		/**
+		 * Apply Hellinger normalisation to the converted float features
+		 * 
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+		 * 
+		 */
+		HELLINGER {
+			private HellingerNormaliser hell = new HellingerNormaliser(0);
 
-	int numVladCentroids = 64;
-	int numIterations = 100;
+			@Override
+			public List<FloatLocalFeatureAdaptor<?>> apply(List<? extends LocalFeature<?, ?>> in) {
+				return FloatLocalFeatureAdaptor.wrapUntyped(in, hell);
+			}
+		}
+	}
+
+	private LocalFeatureExtractor<LocalFeature<?, ?>, MBFImage> extractor;
+	private List<File> localFeatures;
+	private boolean normalise = false;
+	private int numVladCentroids = 64;
+	private int numIterations = 100;
 	private int numPcaDims = 128;
 	private int numPqIterations = 100;
 	private int numPqAssigners = 16;
-
 	private float sampleProp = 0.1f;
+	private Function<List<? extends LocalFeature<?, ?>>, List<FloatLocalFeatureAdaptor<?>>> postProcess = StandardPostProcesses.NONE;
 
-	private File outputFile;
-	protected boolean entropyFilter = false;
-	protected boolean hellinger = true;
-
-	public static void main(String[] args) throws IOException {
-		final VLADPrep vp = new VLADPrep();
-		vp.localFeatures = Arrays.asList(new File("/Volumes/Raid/mirflickr/sift-1x/").listFiles(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".sift");
-			}
-		}));
-		vp.outputFile = new File("/Users/jsh2/vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.dat");
-		// vp.localFeatures = Arrays.asList(new
-		// File("/Users/jsh2/Data/ukbench/sift/").listFiles());
-		// vp.outputFile = new
-		// File("/Users/jsh2/vlad-indexer-ukbench-2x-nohell.dat");
-		vp.process();
+	/**
+	 * Construct a {@link VLADIndexerDataBuilder} with the given parameters
+	 * 
+	 * @param extractor
+	 *            the local feature extractor used to generate the input
+	 *            features
+	 * @param localFeatures
+	 *            a list of file locations of the files containing the input
+	 *            local features (one per image)
+	 * @param normalise
+	 *            should the resultant VLAD features be l2 normalised?
+	 * @param numVladCentroids
+	 *            the number of centroids for VLAD (~64)
+	 * @param numIterations
+	 *            the number of clustering iterations (~100)
+	 * @param numPcaDims
+	 *            the number of dimensions to project down to using PCA (~128
+	 *            for normal SIFT)
+	 * @param numPqIterations
+	 *            the number of iterations for clustering the product quantisers
+	 *            (~100)
+	 * @param numPqAssigners
+	 *            the number of product quantiser assigners (~16)
+	 * @param sampleProp
+	 *            the proportion of features to sample for the clustering the
+	 *            VLAD centroids
+	 * @param postProcess
+	 *            the post-processing to apply to the raw features before input
+	 *            to VLAD
+	 */
+	public VLADIndexerDataBuilder(LocalFeatureExtractor<LocalFeature<?, ?>, MBFImage> extractor,
+			List<File> localFeatures, boolean normalise, int numVladCentroids, int numIterations, int numPcaDims,
+			int numPqIterations, int numPqAssigners, float sampleProp,
+			Function<List<? extends LocalFeature<?, ?>>, List<FloatLocalFeatureAdaptor<?>>> postProcess)
+	{
+		super();
+		this.extractor = extractor;
+		this.localFeatures = localFeatures;
+		this.normalise = normalise;
+		this.numVladCentroids = numVladCentroids;
+		this.numIterations = numIterations;
+		this.numPcaDims = numPcaDims;
+		this.numPqIterations = numPqIterations;
+		this.numPqAssigners = numPqAssigners;
+		this.sampleProp = sampleProp;
+		this.postProcess = postProcess == null ? StandardPostProcesses.NONE : postProcess;
 	}
 
-	void process() throws IOException {
+	/**
+	 * Build the {@link VLADIndexerData} using the information provided at
+	 * construction time. The following steps are taken:
+	 * <p>
+	 * <ol>
+	 * <li>A sample of the features is loaded
+	 * <li>The sample is clustered using k-means
+	 * <li>VLAD representations are then built for all the input images
+	 * <li>PCA is performed on the VLAD features
+	 * <li>Whitening is applied to the PCA basis
+	 * <li>The VLAD features are projected by the basis
+	 * <li>Product quantisers are learned
+	 * <li>The final {@link VLADIndexerData} object is created
+	 * </ol>
+	 * 
+	 * @return a newly learned {@link VLADIndexerData} object
+	 * @throws IOException
+	 */
+	public VLADIndexerData buildIndexerData() throws IOException {
 		// Load the data and normalise
 		System.out.println("Loading Data from " + localFeatures.size() + " files");
-		final List<FloatKeypoint> samples = loadSample();
+		final List<FloatLocalFeatureAdaptor<?>> samples = loadSample();
 
 		// cluster
 		System.out.println("Clustering " + samples.size() + " Data Points");
@@ -126,9 +214,7 @@ public class VLADPrep {
 		System.out.println("Learning Product Quantiser Parameters");
 		final FloatProductQuantiser pq = FloatProductQuantiserUtilities.train(pcaVlads, numPqAssigners, numPqIterations);
 
-		// save everything
-		final VLADIndexer indexer = new VLADIndexer(vlad, pca, pq);
-		indexer.save(outputFile);
+		return new VLADIndexerData(vlad, pca, pq, extractor, postProcess);
 	}
 
 	private Matrix createRandomWhitening(final int ndims) {
@@ -180,17 +266,7 @@ public class VLADPrep {
 			@Override
 			public void perform(File file) {
 				try {
-					List<Keypoint> keys = MemoryLocalFeatureList.read(file, Keypoint.class);
-					if (entropyFilter)
-						keys = FilterUtils.filter(keys, new ByteEntropyFilter());
-					final List<FloatKeypoint> fkeys = FloatKeypoint.convert(keys);
-
-					if (hellinger) {
-						for (final FloatKeypoint k : fkeys) {
-							HellingerNormaliser.normalise(k.vector, 0);
-						}
-					}
-
+					final List<FloatLocalFeatureAdaptor<?>> fkeys = readFeatures(file);
 					final MultidimensionalFloatFV feature = vlad.aggregate(fkeys);
 
 					synchronized (vlads) {
@@ -206,27 +282,25 @@ public class VLADPrep {
 		return vlads;
 	}
 
-	private List<FloatKeypoint> loadSample() {
-		final List<FloatKeypoint> samples = new ArrayList<FloatKeypoint>();
+	private List<FloatLocalFeatureAdaptor<?>> readFeatures(File file) throws IOException {
+		final List<? extends LocalFeature<?, ?>> keys = MemoryLocalFeatureList.read(file, extractor.getFeatureClass());
+
+		return postProcess.apply(keys);
+	}
+
+	private List<FloatLocalFeatureAdaptor<?>> loadSample() {
+		final List<FloatLocalFeatureAdaptor<?>> samples = new ArrayList<FloatLocalFeatureAdaptor<?>>();
 
 		Parallel.forEach(localFeatures, new Operation<File>() {
 			@Override
 			public void perform(File file) {
 				try {
-					List<Keypoint> keys = MemoryLocalFeatureList.read(file, Keypoint.class);
-					if (entropyFilter)
-						keys = FilterUtils.filter(keys, new ByteEntropyFilter());
-					final List<FloatKeypoint> fkeys = FloatKeypoint.convert(keys);
+					final List<FloatLocalFeatureAdaptor<?>> fkeys = readFeatures(file);
 
 					final int[] indices = RandomData.getUniqueRandomInts((int) (fkeys.size() * sampleProp), 0,
 							fkeys.size());
-					final AcceptingListView<FloatKeypoint> filtered = new AcceptingListView<FloatKeypoint>(fkeys, indices);
-
-					if (hellinger) {
-						for (final FloatKeypoint k : filtered) {
-							HellingerNormaliser.normalise(k.vector, 0);
-						}
-					}
+					final AcceptingListView<FloatLocalFeatureAdaptor<?>> filtered = new AcceptingListView<FloatLocalFeatureAdaptor<?>>(
+							fkeys, indices);
 
 					synchronized (samples) {
 						samples.addAll(filtered);
@@ -240,11 +314,11 @@ public class VLADPrep {
 		return samples;
 	}
 
-	private FloatCentroidsResult cluster(List<FloatKeypoint> rawData) {
+	private FloatCentroidsResult cluster(List<FloatLocalFeatureAdaptor<?>> rawData) {
 		// build full data array
 		final float[][] vectors = new float[rawData.size()][];
 		for (int i = 0; i < vectors.length; i++) {
-			vectors[i] = rawData.get(i).vector;
+			vectors[i] = rawData.get(i).getFeatureVector().values;
 		}
 
 		// Perform clustering
@@ -253,5 +327,4 @@ public class VLADPrep {
 
 		return centroids;
 	}
-
 }

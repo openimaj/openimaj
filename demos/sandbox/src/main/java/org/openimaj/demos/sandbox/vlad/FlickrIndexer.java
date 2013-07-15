@@ -48,6 +48,7 @@ import java.util.Map.Entry;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
+import org.openimaj.image.indexing.vlad.VLADIndexerData;
 import org.openimaj.io.IOUtils;
 import org.openimaj.knn.pq.IncrementalFloatADCNearestNeighbours;
 
@@ -132,9 +133,10 @@ public class FlickrIndexer {
 
 		final DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(input)));
 
-		final VLADIndexer indexer = VLADIndexer.read(new File(
+		final VLADIndexerData indexer = VLADIndexerData.read(new File(
 				"/Users/jsh2/vlad64-pca128-pq16x8-indexer-mirflickr25k-sift1x.dat"));
-		final IncrementalFloatADCNearestNeighbours nn = new IncrementalFloatADCNearestNeighbours(indexer.pq, 128,
+		final IncrementalFloatADCNearestNeighbours nn = new IncrementalFloatADCNearestNeighbours(
+				indexer.getProductQuantiser(), 128,
 				46000000);
 		final TLongArrayList indexes = new TLongArrayList(46000000);
 		try {

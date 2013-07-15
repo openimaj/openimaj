@@ -47,6 +47,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.openimaj.image.indexing.vlad.VLADIndexerData;
 import org.openimaj.io.IOUtils;
 import org.openimaj.knn.pq.FloatADCNearestNeighbours;
 import org.openimaj.util.pair.IntObjectPair;
@@ -72,7 +73,8 @@ public class ServerTest {
 			// File("/Users/jsh2/Desktop/ukb.idx"));
 			// imageFormat = "/Users/jsh2/Data/ukbench/full/ukbench%05d.jpg";
 			// offset = 0;
-			final VLADIndexer indexer = VLADIndexer.read(new File("/Users/jsh2/vlad-indexer-mirflickr25k-1x.dat"));
+			final VLADIndexerData indexer = VLADIndexerData
+					.read(new File("/Users/jsh2/vlad-indexer-mirflickr25k-1x.dat"));
 			index = IOUtils.readFromFile(new File("/Users/jsh2/Desktop/mirflickr25k.idx"));
 			imageFormat = "/Volumes/Raid/mirflickr/mirflickr/im%d.jpg";
 			offset = 1;
@@ -90,7 +92,7 @@ public class ServerTest {
 			});
 
 			final List<float[]> data = IntObjectPair.getSecond(index);
-			nn = new FloatADCNearestNeighbours(indexer.pq, data.toArray(new float[data.size()][]));
+			nn = new FloatADCNearestNeighbours(indexer.getProductQuantiser(), data.toArray(new float[data.size()][]));
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

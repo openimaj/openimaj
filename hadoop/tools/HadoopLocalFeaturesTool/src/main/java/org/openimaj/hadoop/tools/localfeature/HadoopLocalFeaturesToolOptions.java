@@ -46,7 +46,6 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool.LocalFeaturesMapper;
 import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesToolOptions.MapperMode.MapperModeOp;
-import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.localfeature.options.ExtractorOptions;
 
 /**
@@ -169,7 +168,6 @@ public class HadoopLocalFeaturesToolOptions extends ExtractorOptions {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: hadoop jar HadoopLocalFeaturesTool.jar [options...] [files...]");
 			parser.printUsage(System.err);
-			System.err.print(ClusterQuantiserOptions.EXTRA_USAGE_INFO);
 
 			System.exit(1);
 		}

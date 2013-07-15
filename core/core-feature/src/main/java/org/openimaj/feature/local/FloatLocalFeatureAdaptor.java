@@ -175,6 +175,21 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 	 * 
 	 * @param list
 	 *            the input list
+	 * @return the wrapped list
+	 */
+	public static List<FloatLocalFeatureAdaptor<?>> wrapUntyped(
+			final List<? extends LocalFeature<?, ?>> list)
+	{
+		return wrapUntyped(list, null);
+	}
+
+	/**
+	 * Produce a {@link LocalFeatureList} of {@link FloatLocalFeatureAdaptor} by
+	 * wrapping the input list, and dynamically wrapping with the
+	 * {@link FloatLocalFeatureAdaptor}s on demand.
+	 * 
+	 * @param list
+	 *            the input list
 	 * @param normaliser
 	 *            the normaliser
 	 * @return the wrapped list
@@ -187,6 +202,37 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 			@Override
 			public FloatLocalFeatureAdaptor<L> get(int index) {
 				return new FloatLocalFeatureAdaptor<L>(list.get(index), normaliser);
+			}
+
+			@Override
+			public int size() {
+				return list.size();
+			}
+		};
+
+		return out;
+	}
+
+	/**
+	 * Produce a {@link LocalFeatureList} of {@link FloatLocalFeatureAdaptor} by
+	 * wrapping the input list, and dynamically wrapping with the
+	 * {@link FloatLocalFeatureAdaptor}s on demand.
+	 * 
+	 * @param list
+	 *            the input list
+	 * @param normaliser
+	 *            the normaliser
+	 * @return the wrapped list
+	 */
+	public static List<FloatLocalFeatureAdaptor<?>> wrapUntyped(
+			final List<? extends LocalFeature<?, ?>> list, final Normaliser<FloatFV> normaliser)
+	{
+		final List<FloatLocalFeatureAdaptor<?>> out = new AbstractList<FloatLocalFeatureAdaptor<?>>() {
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public FloatLocalFeatureAdaptor<?> get(int index) {
+				return new FloatLocalFeatureAdaptor<Location>((LocalFeature<Location, ?>) list.get(index), normaliser);
 			}
 
 			@Override
