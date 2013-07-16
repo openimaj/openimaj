@@ -6,9 +6,12 @@ import java.util.Set;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.ml.annotation.Annotated;
+import org.openimaj.ml.annotation.AnnotatedObject;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.utils.AnnotatedListHelper;
@@ -76,18 +79,55 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		MULTILABEL;
 	}
 
-	interface InternalModel<OBJECT, ANNOTATION> {
-		public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data);
+	static abstract class InternalModel<OBJECT, ANNOTATION> {
+		ArrayList<ANNOTATION> annotationsList;
+		Set<ANNOTATION> annotations;
+		FeatureExtractor<? extends FeatureVector, OBJECT> extractor;
 
-		public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object);
+		public abstract void train(List<? extends Annotated<OBJECT, ANNOTATION>> data);
+
+		public abstract void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset);
+
+		public abstract List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object);
+
+		Feature[] computeFeature(OBJECT object) {
+			final FeatureVector feature = extractor.extractFeature(object);
+
+			return LiblinearHelper.convert(feature);
+		}
 	}
 
-	class Multiclass implements InternalModel<OBJECT, ANNOTATION> {
+	static class Multiclass<OBJECT, ANNOTATION> extends InternalModel<OBJECT, ANNOTATION> {
 		private Parameter parameter;
 		private Model model;
 
 		public Multiclass(SolverType solver, double C, double eps) {
 			parameter = new Parameter(solver, C, eps);
+		}
+
+		@Override
+		public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+			annotationsList = new ArrayList<ANNOTATION>(dataset.getGroups());
+
+			final int nItems = dataset.numInstances();
+			final int featureLength = extractor.extractFeature(dataset.getRandomInstance()).length();
+
+			final Problem problem = new Problem();
+			problem.l = nItems;
+			problem.n = featureLength;
+			problem.x = new Feature[nItems][];
+			problem.y = new double[nItems];
+
+			int i = 0;
+			for (final ANNOTATION annotation : dataset.getGroups()) {
+				for (final OBJECT object : dataset.get(annotation)) {
+					problem.y[i] = annotationsList.indexOf(annotation) + 1;
+					problem.x[i] = computeFeature(object);
+					i++;
+				}
+			}
+
+			model = Linear.train(problem, parameter);
 		}
 
 		@Override
@@ -148,7 +188,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
 	 */
-	class Multilabel implements InternalModel<OBJECT, ANNOTATION> {
+	static class Multilabel<OBJECT, ANNOTATION> extends InternalModel<OBJECT, ANNOTATION> {
 		private Parameter parameter;
 		private Model[] models;
 
@@ -218,12 +258,14 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 
 			return result;
 		}
+
+		@Override
+		public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+			train(AnnotatedObject.createList(dataset));
+		}
 	}
 
 	InternalModel<OBJECT, ANNOTATION> internal;
-	private Set<ANNOTATION> annotations;
-	private ArrayList<ANNOTATION> annotationsList;
-	private FeatureExtractor<? extends FeatureVector, OBJECT> extractor;
 
 	/**
 	 * Default constructor.
@@ -242,24 +284,18 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	public LiblinearAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, Mode mode, SolverType solver,
 			double C, double eps)
 	{
-		this.extractor = extractor;
-
 		switch (mode) {
 		case MULTICLASS:
-			this.internal = new Multiclass(solver, C, eps);
+			this.internal = new Multiclass<OBJECT, ANNOTATION>(solver, C, eps);
 			break;
 		case MULTILABEL:
-			this.internal = new Multilabel(solver, C, eps);
+			this.internal = new Multilabel<OBJECT, ANNOTATION>(solver, C, eps);
 			break;
 		default:
 			throw new RuntimeException("Unhandled mode");
 		}
-	}
 
-	private Feature[] computeFeature(OBJECT object) {
-		final FeatureVector feature = extractor.extractFeature(object);
-
-		return LiblinearHelper.convert(feature);
+		this.internal.extractor = extractor;
 	}
 
 	@Override
@@ -269,11 +305,16 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 
 	@Override
 	public Set<ANNOTATION> getAnnotations() {
-		return annotations;
+		return internal.annotations;
 	}
 
 	@Override
 	public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object) {
 		return internal.annotate(object);
+	}
+
+	@Override
+	public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+		internal.train(dataset);
 	}
 }

@@ -225,7 +225,7 @@ public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
 	 * @return the histogram in the window of the last analysed image
 	 */
 	public Histogram computeHistogram(Rectangle roi, FImage weights) {
-		return computeHistogram((int) roi.x, (int) roi.y, (int) roi.width, (int) roi.height);
+		return computeHistogram((int) roi.x, (int) roi.y, (int) roi.width, (int) roi.height, weights);
 	}
 
 	/**

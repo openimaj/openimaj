@@ -57,7 +57,7 @@ public class Histogram extends DoubleFV {
 	 * @param hs
 	 *            histograms to concatenate
 	 */
-	public Histogram(Histogram... hs) {
+	public Histogram(DoubleFV... hs) {
 		final double[][] hists = new double[hs.length][];
 		for (int i = 0; i < hs.length; i++) {
 			hists[i] = hs[i].values;
@@ -66,7 +66,13 @@ public class Histogram extends DoubleFV {
 		this.values = ArrayUtils.concatenate(hists);
 	}
 
-	protected Histogram(double[] data) {
+	/**
+	 * Construct from values array and dimensions
+	 * 
+	 * @param data
+	 *            the flat array of values
+	 */
+	public Histogram(double[] data) {
 		super(data);
 	}
 
