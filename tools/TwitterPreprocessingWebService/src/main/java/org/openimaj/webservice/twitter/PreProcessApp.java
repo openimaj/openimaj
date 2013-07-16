@@ -3,28 +3,34 @@ package org.openimaj.webservice.twitter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
+import java.util.Set;
 
 import javax.jws.WebService;
 
 import org.apache.log4j.Logger;
+import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
+import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
 import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.StreamTwitterStatusList;
+import org.openimaj.twitter.collection.TwitterStatusListUtils;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.routing.Router;
+
+import cern.colt.Arrays;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -40,6 +46,7 @@ public class PreProcessApp extends Application {
 		@Post
 		public Representation level(Representation rep) {
 			
+			List<Map<?,?>> retList = new ArrayList<Map<?,?>>();
 			try {
 				String data = rep.getText();
 				String intype = (String) this.getRequestAttributes().get("intype");
@@ -47,7 +54,6 @@ public class PreProcessApp extends Application {
 				logger.info(String.format("Input: %s, Output: %s, Data Len: %d",intype,outtype,data.length()));
 				Class<? extends GeneralJSON> inputClass = getTypeClass(intype);
 				Class<? extends GeneralJSON> outputClass = getTypeClass(outtype);
-				Scanner dataScanner = new Scanner(data);
 				InputStream is = new ByteArrayInputStream( data.getBytes("UTF-8") );
 				List<USMFStatus> list = StreamTwitterStatusList.readUSMF(is, inputClass,"UTF-8");
 				List<TwitterPreprocessingMode<?>> modes  = null;
@@ -66,13 +72,25 @@ public class PreProcessApp extends Application {
 							logger.error(String.format("Problem producing %s for %s",usmfStatus.id,mode.toString()), e);
 						}
 					}
+					TwitterOutputMode om = null;
+					if(!this.getQuery().contains("om")){
+						om = TwitterOutputModeOption.APPEND.getOptions();
+					}
+					else{						
+						TwitterOutputModeOption.valueOf(this.getQuery().getValues("om")).getOptions();
+					}
+					final GeneralJSON outInstance = TwitterStatusListUtils.newInstance(outputClass);
+					outInstance.fromUSMF(usmfStatus);
+					StringWriter sw = new StringWriter();
+					om.output(outInstance, new PrintWriter(sw));
+					Map<?,?> map = gson.fromJson(sw.toString(), Map.class);
+					retList.add(map);
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Problem reading input", e);
 			}
-			Map<Object,Object> retMap = new HashMap<Object, Object>();
-			JsonRepresentation ret = new JsonRepresentation(gson.toJson(retMap));
+			
+			JsonRepresentation ret = new JsonRepresentation(gson.toJson(retList));
 			return ret;
 		}
 		
@@ -81,9 +99,14 @@ public class PreProcessApp extends Application {
 		 * @throws Exception
 		 */
 		public List<TwitterPreprocessingMode<?>> preprocessingModes(String[] modeStrings) throws Exception {
+			logger.debug("Modes asked for: " + Arrays.toString(modeStrings));
 			ArrayList<TwitterPreprocessingMode<?>> modes = new ArrayList<TwitterPreprocessingMode<?>>();
+			Set<String> validModes = new HashSet<String>();
+			for (TwitterPreprocessingModeOption string : TwitterPreprocessingModeOption.values()) {
+				validModes.add(string.name());
+			}
 			for (String modeString: modeStrings) {
-				if(!TwitterPreprocessingModeOption.)
+				if(!validModes.contains(modeString)) continue;
 				TwitterPreprocessingModeOption valueOf = TwitterPreprocessingModeOption.valueOf(modeString);
 				modes.add(valueOf.getOptions());
 			}

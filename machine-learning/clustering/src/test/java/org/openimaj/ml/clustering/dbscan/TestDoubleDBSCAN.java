@@ -1,6 +1,8 @@
 package org.openimaj.ml.clustering.dbscan;
 
 import static org.junit.Assert.assertTrue;
+import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
+import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,6 +119,37 @@ public class TestDoubleDBSCAN {
 			)
 		);
 		DoubleDBSCANClusters res = dbscan.cluster(testData);
+		for (int i = 0; i < res.noise.length; i++) {
+			assertTrue(res.noise[i] < this.testStats.noutliers);
+		}
+		assertTrue(res.noise.length == this.testStats.noutliers);
+		for (int i = 0; i < this.testClusters.length; i++) {
+			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusterMembers[i])));
+		}
+	}
+	/**
+	 *
+	 */
+	@Test
+	public void testSimDBSCAN(){
+		DoubleDBSCAN dbscan = new DoubleDBSCAN(
+			new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
+				2,
+				this.testStats.eps,
+				this.testStats.minpts,
+				new DoubleNearestNeighboursExact.Factory()
+			)
+		);
+		SparseMatrix mat = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(testData.length,testData.length);
+		for (int i = 0; i < testData.length; i++) {
+			for (int j = i; j < testData.length; j++) {
+				double d = DoubleNearestNeighboursExact.distanceFunc(testData[i], testData[j]);
+				if(d>this.testStats.eps) continue;
+				mat.setElement(i, j, d);
+				mat.setElement(j, i, d);
+			}
+		}
+		DoubleDBSCANClusters res = dbscan.cluster(mat,true);
 		for (int i = 0; i < res.noise.length; i++) {
 			assertTrue(res.noise[i] < this.testStats.noutliers);
 		}

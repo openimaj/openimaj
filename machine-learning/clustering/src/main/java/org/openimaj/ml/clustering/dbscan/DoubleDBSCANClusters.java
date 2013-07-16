@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import org.openimaj.ml.clustering.SimilarityClusters;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 
@@ -15,7 +16,7 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DoubleDBSCANClusters extends DBSCANClusters implements SpatialClusters<double[]>{
+public class DoubleDBSCANClusters extends DBSCANClusters implements SpatialClusters<double[]>, SimilarityClusters{
 
 	/**
 	 * The data
@@ -65,6 +66,11 @@ public class DoubleDBSCANClusters extends DBSCANClusters implements SpatialClust
 	@Override
 	public HardAssigner<double[], ?, ?> defaultHardAssigner() {
 		return null;
+	}
+
+	@Override
+	public int numEntries() {
+		return data.length;
 	}
 
 }

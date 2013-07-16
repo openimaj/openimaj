@@ -18,7 +18,7 @@ public class TwitterPreprocessingWebService extends Component{
 
 	public TwitterPreprocessingWebService() throws Exception {
 		loadProps();
-//		this.getContext().getLogger().setLevel(java.util.logging.Level.OFF);
+		this.getContext().getLogger().setLevel(java.util.logging.Level.ALL);
 		getServers().add(Protocol.HTTP,Integer.parseInt(System.getProperty("eye.service.port","8080")));
 		getDefaultHost().attach("/process", new PreProcessApp());
 		LoggerUtils.prepareConsoleLogger();

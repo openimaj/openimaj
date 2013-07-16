@@ -5,6 +5,9 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.set.hash.TIntHashSet;
+import gov.sandia.cognition.math.matrix.VectorEntry;
+import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
+import gov.sandia.cognition.math.matrix.mtj.SparseVector;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,7 +15,9 @@ import java.util.List;
 
 import org.openimaj.data.DataSource;
 import org.openimaj.knn.DoubleNearestNeighbours;
+import org.openimaj.ml.clustering.SimilarityClusterer;
 import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.dbscan.neighbourhood.RegionMode;
 import org.openimaj.util.pair.IntDoublePair;
 
 /**
@@ -21,7 +26,7 @@ import org.openimaj.util.pair.IntDoublePair;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, double[]>{
+public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, double[]>, SimilarityClusterer<DoubleDBSCANClusters>{
 
 	private DBSCANConfiguration<DoubleNearestNeighbours, double[]> conf;
 
@@ -32,41 +37,104 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 	public DoubleDBSCAN(DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf) {
 		this.conf = dbsConf;
 	}
-
-	private class State{
+	class NNRegionMode implements RegionMode<IntDoublePair>{
+		double[][] data;
 		DoubleNearestNeighbours nn;
+		public NNRegionMode(double[][] data) {
+			this.data = data;
+			this.nn = DoubleDBSCAN.this.conf.factory.create(data);
+		}
+		@Override
+		public List<IntDoublePair> regionQuery(int index) {
+			List<IntDoublePair> res = nn.searchKNN(data[index], data.length);
+			List<IntDoublePair> ret = new ArrayList<IntDoublePair>();
+			for (IntDoublePair intFloatPair : res) {
+				if(intFloatPair.second<DoubleDBSCAN.this.conf.eps)ret.add(intFloatPair);
+				else break;
+			}
+			return ret;
+		}
+
+	}
+	class SimilarityRegionMode implements RegionMode<IntDoublePair>{
+		private SparseMatrix mat;
+		private boolean distanceMode;
+		public SimilarityRegionMode(SparseMatrix mat, boolean distanceMode) {
+			this.mat = mat;
+			this.distanceMode = distanceMode;
+		}
+		@Override
+		public List<IntDoublePair> regionQuery(int index) {
+			SparseVector sims = mat.getRow(index);
+			List<IntDoublePair> ret = new ArrayList<IntDoublePair>();
+			if(distanceMode){
+				for (VectorEntry ent: sims) {
+					if(ent.getValue()<DoubleDBSCAN.this.conf.eps)ret.add(IntDoublePair.pair(ent.getIndex(), ent.getValue()));
+					else break;
+				}
+			}
+			else{
+				for (VectorEntry ent: sims) {
+					if(ent.getValue()>DoubleDBSCAN.this.conf.eps)ret.add(IntDoublePair.pair(ent.getIndex(), ent.getValue()));
+				}
+			}
+			return ret;
+		}
+
+	}
+	private class State{
+
 		TIntHashSet visited = new TIntHashSet();
 		TIntHashSet noise = new TIntHashSet();
 		TIntHashSet addedToCluster = new TIntHashSet();
 		TIntObjectHashMap<TIntList> clusters = new TIntObjectHashMap<TIntList>();
-		int dataLen;
-		State(double[][] data){
-			nn = DoubleDBSCAN.this.conf.getNearestNeighbourFactory().create(data);
-			dataLen = data.length;
+		private RegionMode<IntDoublePair> regionMode;
+		private int length;
+		State(int length, RegionMode<IntDoublePair> regionMode){
+			this.regionMode = regionMode;
+			this.length = length;
 		}
 	}
 
 	@Override
 	public DoubleDBSCANClusters cluster(double[][] data) {
+		State state = new State(data.length,new NNRegionMode(data));
+		return dbscan(state);
+	}
+
+	@Override
+	public DoubleDBSCANClusters cluster(DataSource<double[]> data) {
+		double[][] allData = new double[data.numRows()][];
+		Iterator<double[]> iterator = data.iterator();
+		for (int i = 0; i < allData.length; i++) {
+			allData[i] = iterator.next();
+		}
+		return this.cluster(allData);
+	}
+
+	@Override
+	public DoubleDBSCANClusters cluster(SparseMatrix data,boolean distanceMode) {
+		State s = new State(data.getNumColumns(), new SimilarityRegionMode(data, distanceMode));
+		return dbscan(s);
+	}
+
+	private DoubleDBSCANClusters dbscan(State state) {
 		int clusterIndex = 0;
-		State state = new State(data);
-		for (int p = 0; p < data.length; p++) {
+		for (int p = 0; p < state.length; p++) {
 			if(state.visited.contains(p))continue;
-			double[] point = data[p];
-			List<IntDoublePair> region = regionQuery(point,state);
+			List<IntDoublePair> region = state.regionMode.regionQuery(p);
 			if(region.size() < conf.minPts){
 				state.noise.add(p);
 			}
 			else{
 				TIntList cluster = new TIntArrayList();
 				state.clusters.put(clusterIndex, cluster);
-				expandCluster(data,p,region,cluster,state);
+				expandCluster(p,region,cluster,state);
 				clusterIndex++;
 			}
 		}
 		final DoubleDBSCANClusters dbscanClusters = new DoubleDBSCANClusters();
 		dbscanClusters.clusterMembers = new int[state.clusters.size()][];
-		dbscanClusters.data = data;
 		state.clusters.forEachEntry(new TIntObjectProcedure<TIntList>() {
 			@Override
 			public boolean execute(int cluster, TIntList b) {
@@ -79,13 +147,13 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 		return dbscanClusters;
 	}
 
-	private void expandCluster(double[][] data, int p, List<IntDoublePair> region, TIntList cluster, State state) {
+	private void expandCluster(int p, List<IntDoublePair> region, TIntList cluster, State state) {
 		addToCluster(p,cluster,state);
 		for (int regionIndex = 0; regionIndex < region.size(); regionIndex++) {
 			int pprime = region.get(regionIndex).first;
 			if (!state.visited.contains(pprime)){
 				state.visited.add(pprime);
-				List<IntDoublePair> regionPrime = regionQuery(data[pprime], state);
+				List<IntDoublePair> regionPrime = state.regionMode.regionQuery(pprime);
 				if(regionPrime.size()>= this.conf.minPts) region.addAll(regionPrime);
 			}
 
@@ -98,26 +166,6 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 			cluster.add(p);
 			state.addedToCluster.add(p);
 		}
-	}
-
-	private List<IntDoublePair> regionQuery(double[] data, State state) {
-		List<IntDoublePair> res = state.nn.searchKNN(data, state.dataLen);
-		List<IntDoublePair> ret = new ArrayList<IntDoublePair>();
-		for (IntDoublePair intFloatPair : res) {
-			if(intFloatPair.second<this.conf.eps)ret.add(intFloatPair);
-			else break;
-		}
-		return ret;
-	}
-
-	@Override
-	public DoubleDBSCANClusters cluster(DataSource<double[]> data) {
-		double[][] allData = new double[data.numRows()][];
-		Iterator<double[]> iterator = data.iterator();
-		for (int i = 0; i < allData.length; i++) {
-			allData[i] = iterator.next();
-		}
-		return this.cluster(allData);
 	}
 
 
