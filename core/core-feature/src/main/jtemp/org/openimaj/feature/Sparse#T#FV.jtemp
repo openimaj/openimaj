@@ -54,6 +54,9 @@ public class Sparse#T#FV implements FeatureVector, Concatenatable<Sparse#T#FV, S
 	 * The underlying data backing the feature vector
 	 */
 	public Sparse#T#Array values;
+	
+	public Sparse#T#FV(){
+	}
 
 	/**
 	 * Construct empty FV with given number of bins
