@@ -1,6 +1,5 @@
 package org.openimaj.image.feature.dense.gradient.binning;
 
-import org.openimaj.feature.DoubleFV;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.BinnedImageHistogramAnalyser;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -13,37 +12,58 @@ public class BasicHOGStrategy implements SpatialBinningStrategy {
 	int cellsPerBlockX = 3;
 	int cellsPerBlockY = 3;
 
+	public BasicHOGStrategy(int cellSize, int cellsPerBlock) {
+		this(cellSize, cellSize, cellsPerBlock, cellsPerBlock);
+	}
+
+	public BasicHOGStrategy(int cellWidth, int cellHeight, int cellsPerBlockX, int cellsPerBlockY) {
+		super();
+		this.cellWidth = cellWidth;
+		this.cellHeight = cellHeight;
+		this.cellsPerBlockX = cellsPerBlockX;
+		this.cellsPerBlockY = cellsPerBlockY;
+	}
+
 	@Override
 	public Histogram extract(BinnedImageHistogramAnalyser binnedData, FImage magnitudes, Rectangle region) {
 		final Histogram[][] cells = computeCells(binnedData, magnitudes, region);
 		final Histogram[][] blocks = computeBlocks(cells);
 
+		final Histogram[] normBlocks = new Histogram[blocks[0].length * blocks.length * 4];
 		// final Histogram[] normBlocks = new Histogram[blocks[0].length *
-		// blocks.length * 4];
-		final Histogram[] normBlocks = new Histogram[blocks[0].length * blocks.length];
+		// blocks.length];
 
 		for (int j = 0, k = 0; j < blocks.length; j++) {
 			for (int i = 0; i < blocks[0].length; i++) {
-				final DoubleFV l1 = blocks[j][i].normaliseFV(1);
-				final DoubleFV l2 = blocks[j][i].normaliseFV(2);
+				final Histogram l1 = blocks[j][i].clone();
+				l1.normaliseL1();
 
-				final double[] l1sqrt = l1.values.clone();
-				for (int x = 0; x < l1sqrt.length; x++)
-					l1sqrt[x] = Math.sqrt(l1sqrt[x]);
+				// each cell is l2 normed, so it follows that the l2 norm of the
+				// block is simply the values divided by the area
+				final Histogram l2 = blocks[j][i].clone();
+				ArrayUtils.divide(l2.values, cellsPerBlockX * cellsPerBlockY);
 
-				final double[] l2clip = l2.values.clone();
-				for (int x = 0; x < l1sqrt.length; x++)
-					l1sqrt[x] = l1sqrt[x] > 0.2 ? 0.2 : l1sqrt[x];
-				ArrayUtils.normalise(l2clip);
+				final Histogram l1sqrt = l1.clone();
+				for (int x = 0; x < l1sqrt.values.length; x++)
+					l1sqrt.values[x] = Math.sqrt(l1sqrt.values[x]);
 
+				final Histogram l2clip = l2.clone();
+				double sumsq = 0;
+				for (int x = 0; x < l2clip.values.length; x++) {
+					l2clip.values[x] = l2clip.values[x] > 0.2 ? 0.2 : l2clip.values[x];
+					sumsq += l2clip.values[x];
+				}
+				ArrayUtils.divide(l2clip.values, Math.sqrt(sumsq));
+
+				normBlocks[k++] = l2;
+				normBlocks[k++] = l2clip;
+				normBlocks[k++] = l1;
+				normBlocks[k++] = l1sqrt;
+
+				// for (int x = 0; x < l1sqrt.length; x++)
+				// l2.values[x] = (l2.values[x] + l2clip[x] + l1.values[x] +
+				// l1sqrt[x]) / 4.0;
 				// normBlocks[k++] = new Histogram(l2);
-				// normBlocks[k++] = new Histogram(l2clip);
-				// normBlocks[k++] = new Histogram(l1);
-				// normBlocks[k++] = new Histogram(l1sqrt);
-
-				for (int x = 0; x < l1sqrt.length; x++)
-					l2.values[x] = (l2.values[x] + l2clip[x] + l1.values[x] + l1sqrt[x]) / 4.0;
-				normBlocks[k++] = new Histogram(l2);
 			}
 		}
 
@@ -106,7 +126,7 @@ public class BasicHOGStrategy implements SpatialBinningStrategy {
 
 		for (int j = 0; j < numCellsY; j++)
 			for (int i = 0; i < numCellsX; i++)
-				cells[j][i].normalise();
+				cells[j][i].normaliseL2();
 
 		return cells;
 	}

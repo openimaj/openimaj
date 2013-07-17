@@ -77,7 +77,7 @@ public class Histogram extends DoubleFV {
 	}
 
 	/**
-	 * Normalise to unit length
+	 * Normalise to unit area
 	 */
 	public void normalise() {
 		double sum = 0;
@@ -87,6 +87,32 @@ public class Histogram extends DoubleFV {
 
 		for (int i = 0; i < values.length; i++)
 			values[i] /= sum;
+	}
+
+	/**
+	 * l1 norm
+	 */
+	public void normaliseL1() {
+		double sum = 0;
+
+		for (int i = 0; i < values.length; i++)
+			sum += Math.abs(values[i]);
+
+		for (int i = 0; i < values.length; i++)
+			values[i] /= sum;
+	}
+
+	/**
+	 * l2 norm
+	 */
+	public void normaliseL2() {
+		double sumsq = 0;
+
+		for (int i = 0; i < values.length; i++)
+			sumsq += values[i] * values[i];
+
+		for (int i = 0; i < values.length; i++)
+			values[i] /= Math.sqrt(sumsq);
 	}
 
 	/**

@@ -50,7 +50,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.bwaldvogel</groupId>
-			<artifactId>liblinear</artifactId>
+			<artifactId>liblinear-dense</artifactId>
 			<version>1.92</version>
 		</dependency>
 		<dependency>

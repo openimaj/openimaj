@@ -33,6 +33,7 @@ import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.statistics.distribution.Histogram;
 import org.openimaj.ml.annotation.linear.LiblinearAnnotator;
+import org.openimaj.time.Timer;
 
 @DatasetDescription(
 		name = "INRIAPerson",
@@ -138,7 +139,7 @@ public class INRIAPersonDataset {
 
 	static class Extractor implements FeatureExtractor<DoubleFV, FImage> {
 		final InterpolatingBinnedImageHistogramAnalyser interpAnalyser = new InterpolatingBinnedImageHistogramAnalyser(9);
-		final BasicHOGStrategy strategy = new BasicHOGStrategy();
+		final BasicHOGStrategy strategy = new BasicHOGStrategy(8, 2);
 		final HistogramOfGradients hog = new HistogramOfGradients(interpAnalyser, FImageGradients.Mode.Unsigned, strategy);
 		int i = 0;
 
@@ -154,39 +155,54 @@ public class INRIAPersonDataset {
 
 			return f;
 		}
-
 	}
 
 	public static void main(String[] args) throws IOException {
-		// LiblinearAnnotator<FImage, Boolean> ann = new
-		// LiblinearAnnotator<FImage, Boolean>(new Extractor(), Mode.MULTICLASS,
-		// SolverType.L2R_L2LOSS_SVC, 1, 0.01);
-		//
-		// ann.train(getTrainingData());
+		// final LiblinearAnnotator<DoubleFV, Boolean> ann = new
+		// LiblinearAnnotator<DoubleFV, Boolean>(
+		// new IdentityFeatureExtractor<DoubleFV>(), Mode.MULTICLASS,
+		// SolverType.L2R_L2LOSS_SVC, 0.01, 0.01, true);
+		// ann.train(DatasetExtractors.createLazyFeatureDataset(getTrainingData(),
+		// new Extractor()));
 		// IOUtils.writeToFile(ann, new File("initial-classifier.dat"));
 
-		final LiblinearAnnotator<FImage, Boolean> ann =
+		final LiblinearAnnotator<DoubleFV, Boolean> ann =
 				IOUtils.readFromFile(new File("initial-classifier.dat"));
 
 		final FImage img = ImageUtilities.readF(new
 				File("/Users/jsh2/Data/INRIAPerson/Test/pos/crop_000006.png"));
-		System.out.println(img.width);
+
 		final SimplePyramid<FImage> pyr = new SimplePyramid<FImage>(1.2f);
 		pyr.analyseImage(img);
 
-		for (final FImage i : pyr.pyramid) {
-			if (i.width < 64 || i.height < 128)
-				continue;
+		final Extractor e = new Extractor();
 
-			final MBFImage rgb = i.toRGB();
-			for (int y = 0; y < i.height - 128; y += 8) {
-				for (int x = 0; x < i.width - 64; x += 8) {
-					if (ann.annotate(i.extractROI(x, y, 64, 128)).get(0).annotation) {
-						rgb.drawShape(new Rectangle(x, y, 64, 128), RGBColour.RED);
+		for (int k = 0; k < 1000; k++) {
+			final Timer t1 = Timer.timer();
+			for (final FImage i : pyr.pyramid) {
+				if (i.width < 64 || i.height < 128)
+					continue;
+
+				final MBFImage rgb = i.toRGB();
+				final Timer t2 = Timer.timer();
+				e.hog.analyseImage(i);
+				int nwindows = 0;
+				for (int y = 0; y < i.height - 128; y += 8) {
+					for (int x = 0; x < i.width - 64; x += 8) {
+						final Rectangle rectangle = new Rectangle(x, y, 64, 128);
+						nwindows++;
+						final Histogram f = e.hog.extractFeature(rectangle);
+						if (ann.annotate(f).get(0).annotation) {
+							rgb.drawShape(new Rectangle(x, y, 64, 128), RGBColour.RED);
+						}
 					}
 				}
+				System.out.format("Image %d x %d (%d windows) took %2.2fs\n",
+						i.width, i.height, nwindows,
+						t2.duration() / 1000.0);
+				DisplayUtilities.displayName(rgb, "name " + i.hashCode());
 			}
-			DisplayUtilities.displayName(rgb, "name " + i.hashCode());
+			System.out.format("Total time: %2.2fs\n", t1.duration() / 1000.0);
 		}
 	}
 }
