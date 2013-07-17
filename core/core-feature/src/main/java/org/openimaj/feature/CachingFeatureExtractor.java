@@ -58,6 +58,7 @@ public class CachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 	@Override
 	public FEATURE extractFeature(OBJECT object) {
 		FEATURE cachedFeature = this.cache.get(object.getID());
+		
 
 		FEATURE feature = null;
 		if (!force && cachedFeature!=null) {
@@ -69,6 +70,9 @@ public class CachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 
 		feature = extractor.extractFeature(object);
 		this.cache.put(object.getID(), feature);
+		if(this.cache.size() % 2000 == 0){
+			logger.debug("Feature Cache Size is now: " + this.cache.size());
+		}
 		return feature;
 	}
 
