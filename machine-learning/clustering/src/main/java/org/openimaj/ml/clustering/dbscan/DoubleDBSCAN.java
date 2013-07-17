@@ -68,14 +68,19 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 			SparseVector sims = mat.getRow(index);
 			List<IntDoublePair> ret = new ArrayList<IntDoublePair>();
 			if(distanceMode){
+				ret.add(IntDoublePair.pair(index, 0));
 				for (VectorEntry ent: sims) {
-					if(ent.getValue()<DoubleDBSCAN.this.conf.eps)ret.add(IntDoublePair.pair(ent.getIndex(), ent.getValue()));
+					double v= ent.getValue();
+					if(v<DoubleDBSCAN.this.conf.eps)
+						ret.add(IntDoublePair.pair(ent.getIndex(), v));
 					else break;
 				}
 			}
 			else{
+				ret.add(IntDoublePair.pair(index, DoubleDBSCAN.this.conf.eps * 2)); // HACK
 				for (VectorEntry ent: sims) {
-					if(ent.getValue()>DoubleDBSCAN.this.conf.eps)ret.add(IntDoublePair.pair(ent.getIndex(), ent.getValue()));
+					if(ent.getValue()>DoubleDBSCAN.this.conf.eps)
+						ret.add(IntDoublePair.pair(ent.getIndex(), ent.getValue()));
 				}
 			}
 			return ret;
@@ -114,7 +119,7 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 
 	@Override
 	public DoubleDBSCANClusters cluster(SparseMatrix data,boolean distanceMode) {
-		State s = new State(data.getNumColumns(), new SimilarityRegionMode(data, distanceMode));
+		State s = new State(data.getNumRows(), new SimilarityRegionMode(data, distanceMode));
 		return dbscan(s);
 	}
 
@@ -166,6 +171,13 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 			cluster.add(p);
 			state.addedToCluster.add(p);
 		}
+	}
+
+	/**
+	 * @return the config of this {@link DoubleDBSCAN}
+	 */
+	public DBSCANConfiguration<DoubleNearestNeighbours, double[]>  getConfig() {
+		return this.conf;
 	}
 
 

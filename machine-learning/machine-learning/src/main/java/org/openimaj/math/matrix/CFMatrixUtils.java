@@ -6,6 +6,7 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
+import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 import com.jmatio.types.MLArray;
@@ -166,6 +167,16 @@ public class CFMatrixUtils {
 			max = Math.max(max, vectorEntry.getValue());
 		}
 		return max;
+	}
+
+	public static double sparcity(SparseMatrix mat) {
+		double size = mat.getNumRows() * mat.getNumColumns();
+		double count = 0;
+		for (MatrixEntry matrixEntry : mat) {
+			if(matrixEntry.getValue()!=0)
+				count++;
+		}
+		return (size-count)/size;
 	}
 
 }

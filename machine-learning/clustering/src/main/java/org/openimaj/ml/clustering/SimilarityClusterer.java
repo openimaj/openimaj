@@ -17,7 +17,9 @@ import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 public interface SimilarityClusterer<CLUSTERTYPE extends SimilarityClusters> {
 
 	/**
-	 * Perform clustering on the given data.
+	 * Perform clustering on the given data. Note that this matrix is assumed to be square and symmetric.
+	 * Furthermore the diagonal elements are always taken as being "exactly similar" i.e. 0 for distance
+	 * and ... identical for similarity
 	 *
 	 * @param data
 	 *            the data.

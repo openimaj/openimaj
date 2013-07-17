@@ -144,7 +144,8 @@ public class TestDoubleDBSCAN {
 		for (int i = 0; i < testData.length; i++) {
 			for (int j = i; j < testData.length; j++) {
 				double d = DoubleNearestNeighboursExact.distanceFunc(testData[i], testData[j]);
-				if(d>this.testStats.eps) continue;
+				if(d>=this.testStats.eps) continue;
+				if(d==0)d = Double.MIN_VALUE;
 				mat.setElement(i, j, d);
 				mat.setElement(j, i, d);
 			}

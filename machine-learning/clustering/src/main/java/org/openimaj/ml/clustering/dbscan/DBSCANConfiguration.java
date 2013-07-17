@@ -78,6 +78,10 @@ public class DBSCANConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 *
 	 * @param M
 	 *            number of elements in the data points.
+	 * @param eps
+	 * 			  the distance which defines neighbourhood membership
+	 * @param minPts
+	 * 			  minimum number of features such that a new cluster is created
 	 * @param nnFactory
 	 *            the factory for producing the {@link NearestNeighbours}.
 	 */
@@ -151,5 +155,12 @@ public class DBSCANConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 */
 	public void setNearestNeighbourFactory(NearestNeighboursFactory<? extends NN, DATA> factory) {
 		this.factory = factory;
+	}
+
+	/**
+	 * @return epsilon for DBScan
+	 */
+	public double getEps() {
+		return this.eps;
 	}
 }

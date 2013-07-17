@@ -12,9 +12,9 @@ import org.openimaj.io.WriteableBinary;
  * A simple wrapper for a feature extractor that caches the extracted feature to
  * disk. If a feature has already been generated for a given object, it will be
  * re-read from disk rather than being re-generated.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <FEATURE>
  *            Type of feature
  * @param <OBJECT>
@@ -34,7 +34,7 @@ public class DiskCachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 	 * Construct the cache in the given directory. There will be one file
 	 * created per object. The given extractor will be used to generate the
 	 * features.
-	 * 
+	 *
 	 * @param cacheDir
 	 *            the location of the cache
 	 * @param extractor
@@ -48,7 +48,7 @@ public class DiskCachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 	 * Construct the cache in the given directory. There will be one file
 	 * created per object. The given extractor will be used to generate the
 	 * features. Optionally, all features can be regenerated.
-	 * 
+	 *
 	 * @param cacheDir
 	 *            the location of the cache
 	 * @param extractor
@@ -102,7 +102,7 @@ public class DiskCachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 	private FEATURE load(File cachedFeature) {
 		try {
 			return (FEATURE) IOUtils.read(cachedFeature);
-		} catch (final IOException e) {
+		} catch (final Exception e) {
 			try {
 				return (FEATURE) IOUtils.readFromFile(cachedFeature);
 			} catch (final IOException e1) {
