@@ -42,9 +42,9 @@ import org.openimaj.math.geometry.shape.Shape;
 /**
  * A DetectedFace models a face detected by a face detector, together with the
  * locations of certain facial features localised on the face.
- * 
+ *
  * @author Jonathon Hare
- * 
+ *
  */
 public class DetectedFace implements ReadWriteableBinary {
 	/**
@@ -68,14 +68,14 @@ public class DetectedFace implements ReadWriteableBinary {
 	 * Default constructor with an empty rectangle as bounds
 	 */
 	public DetectedFace() {
-		bounds = new Rectangle();
+		this.bounds = new Rectangle();
 	}
 
 	/**
 	 * Construct with a bounds rectangle (the bounding box of the face in the
 	 * detection image) and an image patch that describes the contents of the
 	 * bounds rectangle from the original image.
-	 * 
+	 *
 	 * @param bounds
 	 *            The bounding box of the face in the detection image.
 	 * @param patch
@@ -83,34 +83,55 @@ public class DetectedFace implements ReadWriteableBinary {
 	 * @param confidence
 	 *            The confidence of the detection.
 	 */
-	public DetectedFace(Rectangle bounds, FImage patch, float confidence) {
+	public DetectedFace(final Rectangle bounds, final FImage patch, final float confidence) {
 		this.bounds = bounds;
 		this.facePatch = patch;
 		this.confidence = confidence;
 	}
 
 	/**
-	 * @return Get the sub-image representing the detected face
+	 * 	Returns the sub-image representing the face.
+	 * 	@return Get the sub-image representing the detected face
 	 */
 	public FImage getFacePatch() {
-		return facePatch;
+		return this.facePatch;
+	}
+
+	/**
+	 * 	Reset the face patch image
+	 *	@param img The image
+	 */
+	public void setFacePatch( final FImage img )
+	{
+		this.facePatch = img;
 	}
 
 	/**
 	 * Get the bounding box of the face in the detection image. This might be
 	 * the same as the shape returned by {@link #getShape()}, or it might
 	 * encompass that shape.
-	 * 
+	 *
 	 * @return The bounding box of the face in the detection image
 	 */
 	public Rectangle getBounds() {
-		return bounds;
+		return this.bounds;
+	}
+
+	/**
+	 * 	Set the bounds of this face. This is so that detected face objects
+	 * 	can be updated if the bounds were inaccurate, or tracking is taking
+	 * 	place on the object.
+	 *	@param rect The new bounds
+	 */
+	public void setBounds( final Rectangle rect )
+	{
+		this.bounds = rect;
 	}
 
 	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		bounds.writeBinary(out);
-		ImageUtilities.write(facePatch, "png", out);
+	public void writeBinary(final DataOutput out) throws IOException {
+		this.bounds.writeBinary(out);
+		ImageUtilities.write(this.facePatch, "png", out);
 	}
 
 	@Override
@@ -119,40 +140,40 @@ public class DetectedFace implements ReadWriteableBinary {
 	}
 
 	@Override
-	public void readBinary(DataInput in) throws IOException {
-		bounds.readBinary(in);
-		facePatch = ImageUtilities.readF(in);
+	public void readBinary(final DataInput in) throws IOException {
+		this.bounds.readBinary(in);
+		this.facePatch = ImageUtilities.readF(in);
 	}
 
 	/**
 	 * Get the confidence of the detection. Higher numbers mean higher
 	 * confidence.
-	 * 
+	 *
 	 * @return the confidence.
 	 */
 	public float getConfidence() {
-		return confidence;
+		return this.confidence;
 	}
 
 	/**
 	 * Get the shape of the detection. In most cases, this will just return the
 	 * bounds rectangle, however, subclasses can override to return a better
 	 * geometric description of the detection area.
-	 * 
+	 *
 	 * @return the shape describing the detection in the original image.
 	 */
 	public Shape getShape() {
-		return bounds;
+		return this.bounds;
 	}
 
 	/**
 	 * Set the confidence of the detection. Higher numbers mean higher
 	 * confidence.
-	 * 
+	 *
 	 * @param confidence
 	 *            the confidence.
 	 */
-	public void setConfidence(int confidence) {
+	public void setConfidence(final int confidence) {
 		this.confidence = confidence;
 	}
 }
