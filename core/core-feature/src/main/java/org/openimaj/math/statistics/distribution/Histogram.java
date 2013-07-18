@@ -98,8 +98,9 @@ public class Histogram extends DoubleFV {
 		for (int i = 0; i < values.length; i++)
 			sum += Math.abs(values[i]);
 
-		for (int i = 0; i < values.length; i++)
-			values[i] /= sum;
+		if (sum != 0)
+			for (int i = 0; i < values.length; i++)
+				values[i] /= sum;
 	}
 
 	/**
@@ -111,8 +112,9 @@ public class Histogram extends DoubleFV {
 		for (int i = 0; i < values.length; i++)
 			sumsq += values[i] * values[i];
 
-		for (int i = 0; i < values.length; i++)
-			values[i] /= Math.sqrt(sumsq);
+		if (sumsq != 0)
+			for (int i = 0; i < values.length; i++)
+				values[i] /= Math.sqrt(sumsq);
 	}
 
 	/**

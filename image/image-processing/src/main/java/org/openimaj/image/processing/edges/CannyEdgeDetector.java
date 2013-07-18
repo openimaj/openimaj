@@ -33,7 +33,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.analysis.algorithm.HistogramAnalyser;
+import org.openimaj.image.analysis.algorithm.histogram.HistogramAnalyser;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FSobel;
 import org.openimaj.image.processor.SinglebandImageProcessor;

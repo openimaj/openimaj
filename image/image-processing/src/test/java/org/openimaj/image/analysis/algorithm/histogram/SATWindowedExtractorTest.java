@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.analysis.algorithm;
+package org.openimaj.image.analysis.algorithm.histogram;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -38,18 +38,23 @@ import org.junit.Test;
 import org.openimaj.OpenIMAJ;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.image.processing.convolution.FImageGradients;
+import org.openimaj.image.processing.convolution.FImageGradients.Mode;
 import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
- * Tests for {@link BinnedImageHistogramAnalyser}.
+ * Tests for {@link BinnedWindowedExtractor}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class BinnedImageHistogramAnalyserTest {
+public class SATWindowedExtractorTest {
 	FImage image;
-	BinnedImageHistogramAnalyser analyser;
+	SATWindowedExtractor satInterp;
+	SATWindowedExtractor sat;
+	InterpolatedBinnedWindowedExtractor binnedInterp;
+	BinnedWindowedExtractor binned;
+	private FImageGradients gradMags;
 
 	/**
 	 * Setup tests
@@ -59,33 +64,42 @@ public class BinnedImageHistogramAnalyserTest {
 	@Before
 	public void setup() throws IOException {
 		image = ImageUtilities.readF(OpenIMAJ.getLogoAsStream());
-		analyser = new BinnedImageHistogramAnalyser(64);
-		image.analyseWith(analyser);
+
+		final Mode mode = FImageGradients.Mode.Unsigned;
+
+		final FImage[] interpMags = new FImage[9];
+		final FImage[] mags = new FImage[9];
+		for (int i = 0; i < 9; i++) {
+			interpMags[i] = new FImage(image.width, image.height);
+			mags[i] = new FImage(image.width, image.height);
+		}
+
+		FImageGradients.gradientMagnitudesAndQuantisedOrientations(image, interpMags, true, mode);
+		FImageGradients.gradientMagnitudesAndQuantisedOrientations(image, mags, false, mode);
+
+		satInterp = new SATWindowedExtractor(interpMags);
+		sat = new SATWindowedExtractor(mags);
+
+		gradMags = FImageGradients.getGradientMagnitudesAndOrientations(image, mode);
+		binnedInterp = new InterpolatedBinnedWindowedExtractor(9, mode.minAngle(), mode.maxAngle(), true);
+		binned = new BinnedWindowedExtractor(9, mode.minAngle(), mode.maxAngle());
+		gradMags.orientations.analyseWith(binnedInterp);
+		gradMags.orientations.analyseWith(binned);
 	}
 
 	/**
 	 * Test that the global histogram produced with {@link HistogramAnalyser}
-	 * matches the one produced with {@link BinnedImageHistogramAnalyser}.
+	 * matches the one produced with {@link BinnedWindowedExtractor}.
 	 */
 	@Test
 	public void testFullHistogram() {
-		final Histogram hist1 = HistogramAnalyser.getHistogram(image, analyser.nbins);
-		final Histogram hist2 = analyser.computeHistogram(0, 0, image.width, image.height);
+		final Histogram hist1 = binned.computeHistogram(image.getBounds(), gradMags.magnitudes);
+		final Histogram hist2 = sat.computeHistogram(image.getBounds());
+		assertArrayEquals(hist1.values, hist2.values, 0.5);
 
-		assertArrayEquals(hist1.values, hist2.values, 0.0001);
-	}
+		final Histogram hist3 = binnedInterp.computeHistogram(image.getBounds(), gradMags.magnitudes);
+		final Histogram hist4 = satInterp.computeHistogram(image.getBounds());
 
-	/**
-	 * Test that the windowed histogram produced with {@link HistogramAnalyser}
-	 * matches the one produced with {@link BinnedImageHistogramAnalyser}.
-	 */
-	@Test
-	public void testWindowedHistogram() {
-		final Rectangle roi = new Rectangle(50, 10, 100, 100);
-
-		final Histogram hist1 = HistogramAnalyser.getHistogram(image.extractROI(roi), analyser.nbins);
-		final Histogram hist2 = analyser.computeHistogram(roi);
-
-		assertArrayEquals(hist1.values, hist2.values, 0.0001);
+		assertArrayEquals(hist3.values, hist4.values, 0.5);
 	}
 }

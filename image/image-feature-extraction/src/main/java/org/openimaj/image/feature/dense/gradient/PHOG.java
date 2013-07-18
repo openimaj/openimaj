@@ -32,27 +32,63 @@ package org.openimaj.image.feature.dense.gradient;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.feature.DoubleFV;
+import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.analysis.algorithm.BinnedImageHistogramAnalyser;
+import org.openimaj.image.analysis.algorithm.histogram.SATWindowedExtractor;
 import org.openimaj.image.pixel.sampling.QuadtreeSampler;
 import org.openimaj.image.processing.convolution.FImageGradients;
-import org.openimaj.image.processing.edges.CannyEdgeDetector;
+import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.statistics.distribution.Histogram;
 
-public class PyramidHistogramOfGradients implements ImageAnalyser<FImage> {
-	BinnedImageHistogramAnalyser histExtractor;
-	FImage magnitudes;
-	int nlevels;
+/**
+ * This class is an implementation of an extractor for the PHOG (Pyramid
+ * Histograms of Orientation Gradients) feature described by Bosch et al. The
+ * PHOG feature is computed by creating a quadtree of orientation histograms
+ * over the entire image and appending the histograms for each cell of the
+ * quadtree into a single vector which is then l1 normalised (sum to unity). In
+ * the original description, only orientations at edge pixels were counted; that
+ * restriction is optional in this implementation.
+ * 
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class PHOG implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
+	private int nlevels = 3;
+	private int nbins = 10;
+	private FImageGradients.Mode orientationMode = FImageGradients.Mode.Unsigned;
+	private ImageProcessor<FImage> edgeDetector;
+
+	private SATWindowedExtractor histExtractor;
+	private Rectangle lastBounds;
 
 	@Override
 	public void analyseImage(FImage image) {
-		final FImage edges = image.process(new CannyEdgeDetector());
-		final FImageGradients gmo = FImageGradients.getGradientMagnitudesAndOrientations(image);
+		lastBounds = image.getBounds();
 
-		this.magnitudes = gmo.magnitudes.multiplyInplace(edges);
-		this.histExtractor.analyseImage(gmo.orientations);
+		final FImage[] magnitudes = new FImage[nbins];
+
+		for (int i = 0; i < nbins; i++)
+			magnitudes[i] = new FImage(image.width, image.height);
+
+		FImageGradients.gradientMagnitudesAndQuantisedOrientations(image, magnitudes, true,
+				orientationMode);
+
+		if (edgeDetector != null) {
+			final FImage edges = image.process(edgeDetector);
+
+			for (int i = 0; i < nbins; i++)
+				magnitudes[i].multiplyInplace(edges);
+		}
+
+		histExtractor = new SATWindowedExtractor(magnitudes);
+	}
+
+	public Histogram extractFeature() {
+		return extractFeature(lastBounds);
 	}
 
 	public Histogram extractFeature(Rectangle rect) {
@@ -61,9 +97,14 @@ public class PyramidHistogramOfGradients implements ImageAnalyser<FImage> {
 		final Histogram hist = new Histogram(0);
 
 		for (final Rectangle r : sampler) {
-			hist.combine(histExtractor.computeHistogram(r, magnitudes));
+			hist.combine(histExtractor.computeHistogram(r));
 		}
 
 		return hist;
+	}
+
+	@Override
+	public Histogram getFeatureVector() {
+		return extractFeature();
 	}
 }

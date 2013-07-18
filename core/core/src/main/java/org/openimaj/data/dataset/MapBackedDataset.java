@@ -105,7 +105,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 		int count = 0;
 
 		for (final DATASET d : map.values()) {
-			if (index > count + d.numInstances()) {
+			if (index >= count + d.numInstances()) {
 				count += d.numInstances();
 			} else {
 				if (d instanceof ListDataset) {

@@ -34,7 +34,7 @@ package org.openimaj.video.processing.shotdetector;
 
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.analysis.algorithm.HistogramAnalyser;
+import org.openimaj.image.analysis.algorithm.histogram.HistogramAnalyser;
 import org.openimaj.math.statistics.distribution.Histogram;
 import org.openimaj.video.Video;
 

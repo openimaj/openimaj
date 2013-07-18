@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.analysis.algorithm;
+package org.openimaj.image.analysis.algorithm.histogram;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;

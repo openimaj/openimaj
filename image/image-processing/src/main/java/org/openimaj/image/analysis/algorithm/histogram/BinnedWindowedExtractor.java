@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.analysis.algorithm;
+package org.openimaj.image.analysis.algorithm.histogram;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
@@ -35,17 +35,17 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
+ * This class implements a {@link WindowedHistogramExtractor} with the primary
+ * purpose of of producing efficient access to histograms of arbitrary windows
+ * of the image.
+ * <p>
  * This class analyses an image and produces an 2D array of integers with a
  * one-to-one correspondence with the image pixels. Each integer represents the
  * bin of the histogram into which the corresponding pixel would fall.
- * <p>
- * The primary purpose of this analyser is to produce efficient access to
- * histograms of arbitrary windows of the image. A number of methods are
- * provided to extract such histograms.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
+public class BinnedWindowedExtractor implements ImageAnalyser<FImage>, WindowedHistogramExtractor {
 	protected int[][] binMap;
 	protected int nbins;
 	protected float min = 0;
@@ -58,7 +58,7 @@ public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
 	 * @param nbins
 	 *            number of bins
 	 */
-	public BinnedImageHistogramAnalyser(int nbins) {
+	public BinnedWindowedExtractor(int nbins) {
 		this.nbins = nbins;
 	}
 
@@ -72,17 +72,19 @@ public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
 	 * @param max
 	 *            maximum expected value
 	 */
-	public BinnedImageHistogramAnalyser(int nbins, float min, float max) {
+	public BinnedWindowedExtractor(int nbins, float min, float max) {
 		this.nbins = nbins;
 		this.min = min;
 		this.max = max;
 	}
 
-	/**
-	 * Get the number of bins
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return the number of bins
+	 * @see
+	 * org.openimaj.image.analysis.algorithm.ImageHistogramAnalyser#getNumBins()
 	 */
+	@Override
 	public int getNumBins() {
 		return nbins;
 	}
@@ -150,7 +152,7 @@ public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int bin = (int) (((image.pixels[y][x] - min) / max) * nbins);
+				int bin = (int) (((image.pixels[y][x] - min) / (max - min)) * nbins);
 
 				if (bin > (nbins - 1))
 					bin = nbins - 1;
@@ -170,45 +172,30 @@ public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
 		return binMap;
 	}
 
-	/**
-	 * Compute the histogram for the given window. Each pixel contributes 1 to
-	 * the corresponding bin.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param roi
-	 *            the window
-	 * @return the histogram in the window of the last analysed image
+	 * @see
+	 * org.openimaj.image.analysis.algorithm.ImageHistogramAnalyser#computeHistogram
+	 * (org.openimaj.math.geometry.shape.Rectangle)
 	 */
+	@Override
 	public Histogram computeHistogram(Rectangle roi) {
 		return computeHistogram((int) roi.x, (int) roi.y, (int) roi.width, (int) roi.height);
 	}
 
-	/**
-	 * Compute the histogram for the given window. Each pixel contributes 1 to
-	 * the corresponding bin.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param x
-	 *            The x-coordinate of the top-left of the window
-	 * @param y
-	 *            The y-coordinate of the top-left of the window
-	 * @param w
-	 *            The width of the window
-	 * @param h
-	 *            The height of the window
-	 * @return the histogram in the window of the last analysed image
+	 * @see
+	 * org.openimaj.image.analysis.algorithm.ImageHistogramAnalyser#computeHistogram
+	 * (int, int, int, int)
 	 */
+	@Override
 	public Histogram computeHistogram(int x, int y, int w, int h) {
 		final Histogram hist = new Histogram(nbins);
 
-		final int starty = Math.max(0, y);
-		final int startx = Math.max(0, x);
-		final int stopy = Math.min(binMap.length, y + h);
-		final int stopx = Math.min(binMap[0].length, x + w);
-
-		for (int r = starty; r < stopy; r++) {
-			for (int c = startx; c < stopx; c++) {
-				hist.values[binMap[r][c]]++;
-			}
-		}
+		computeHistogram(x, y, w, h, hist);
 
 		return hist;
 	}
@@ -301,5 +288,24 @@ public class BinnedImageHistogramAnalyser implements ImageAnalyser<FImage> {
 		}
 
 		return hist;
+	}
+
+	@Override
+	public void computeHistogram(Rectangle roi, Histogram histogram) {
+		computeHistogram((int) roi.x, (int) roi.y, (int) roi.width, (int) roi.height, histogram);
+	}
+
+	@Override
+	public void computeHistogram(int x, int y, int w, int h, Histogram histogram) {
+		final int starty = Math.max(0, y);
+		final int startx = Math.max(0, x);
+		final int stopy = Math.min(binMap.length, y + h);
+		final int stopx = Math.min(binMap[0].length, x + w);
+
+		for (int r = starty; r < stopy; r++) {
+			for (int c = startx; c < stopx; c++) {
+				histogram.values[binMap[r][c]]++;
+			}
+		}
 	}
 }

@@ -1,7 +1,7 @@
 package org.openimaj.image.feature.dense.gradient.binning;
 
-import org.openimaj.image.FImage;
-import org.openimaj.image.analysis.algorithm.BinnedImageHistogramAnalyser;
+import org.openimaj.image.analysis.algorithm.histogram.WindowedHistogramExtractor;
+import org.openimaj.image.analysis.algorithm.histogram.binning.SpatialBinningStrategy;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.statistics.distribution.Histogram;
 import org.openimaj.util.array.ArrayUtils;
@@ -25,8 +25,8 @@ public class BasicHOGStrategy implements SpatialBinningStrategy {
 	}
 
 	@Override
-	public Histogram extract(BinnedImageHistogramAnalyser binnedData, FImage magnitudes, Rectangle region) {
-		final Histogram[][] cells = computeCells(binnedData, magnitudes, region);
+	public Histogram extract(WindowedHistogramExtractor binnedData, Rectangle region, Histogram output) {
+		final Histogram[][] cells = computeCells(binnedData, region);
 		final Histogram[][] blocks = computeBlocks(cells);
 
 		final Histogram[] normBlocks = new Histogram[blocks[0].length * blocks.length * 4];
@@ -53,7 +53,8 @@ public class BasicHOGStrategy implements SpatialBinningStrategy {
 					l2clip.values[x] = l2clip.values[x] > 0.2 ? 0.2 : l2clip.values[x];
 					sumsq += l2clip.values[x];
 				}
-				ArrayUtils.divide(l2clip.values, Math.sqrt(sumsq));
+				if (sumsq != 0)
+					ArrayUtils.divide(l2clip.values, Math.sqrt(sumsq));
 
 				normBlocks[k++] = l2;
 				normBlocks[k++] = l2clip;
@@ -65,6 +66,12 @@ public class BasicHOGStrategy implements SpatialBinningStrategy {
 				// l1sqrt[x]) / 4.0;
 				// normBlocks[k++] = new Histogram(l2);
 			}
+		}
+
+		final Histogram res = new Histogram(normBlocks);
+		for (int kk = 0; kk < res.values.length; kk++) {
+			if (Double.isNaN(res.values[kk]))
+				System.out.println("NaN");
 		}
 
 		return new Histogram(normBlocks);
@@ -90,43 +97,17 @@ public class BasicHOGStrategy implements SpatialBinningStrategy {
 		return blocks;
 	}
 
-	private Histogram[][] computeCells(BinnedImageHistogramAnalyser binnedData, FImage magnitudes, Rectangle region) {
-		// TODO: bilerp
+	private Histogram[][] computeCells(WindowedHistogramExtractor binnedData, Rectangle region) {
 		final int numCellsX = (int) ((region.width + cellWidth / 2) / cellWidth);
 		final int numCellsY = (int) ((region.height + cellHeight / 2) / cellHeight);
 
-		final int[][] map = binnedData.getBinMap();
-		final float[][] weights = magnitudes.pixels;
-		final int nbins = binnedData.getNumBins();
-
 		final Histogram[][] cells = new Histogram[numCellsY][numCellsX];
-		for (int j = 0; j < numCellsY; j++)
-			for (int i = 0; i < numCellsX; i++)
-				cells[j][i] = new Histogram(nbins);
-
-		for (int y = 0; y < region.height; y++) {
-			final int cellY = y / cellHeight;
-
-			if (cellY >= numCellsY)
-				break;
-
-			for (int x = 0; x < region.width; x++) {
-				final int cellX = x / cellWidth;
-
-				if (cellX >= numCellsX)
-					break;
-
-				final int xx = (int) (region.x + x);
-				final int yy = (int) (region.y + y);
-
-				if (xx >= 0 && yy >= 0 && xx < magnitudes.width && yy < magnitudes.height)
-					cells[cellY][cellX].values[map[yy][xx]] += weights[yy][xx];
+		for (int j = 0, y = (int) region.y; j < numCellsY; j++, y += cellHeight) {
+			for (int i = 0, x = (int) region.x; i < numCellsX; i++, x += cellWidth) {
+				cells[j][i] = binnedData.computeHistogram(x, y, cellWidth, cellHeight);
+				cells[j][i].normaliseL2();
 			}
 		}
-
-		for (int j = 0; j < numCellsY; j++)
-			for (int i = 0; i < numCellsX; i++)
-				cells[j][i].normaliseL2();
 
 		return cells;
 	}

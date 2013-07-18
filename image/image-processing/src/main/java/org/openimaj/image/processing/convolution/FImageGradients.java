@@ -275,7 +275,10 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 					ygrad = image.pixels[r - 1][c] - image.pixels[r + 1][c];
 
 				magnitudes.pixels[r][c] = (float) Math.sqrt(xgrad * xgrad + ygrad * ygrad);
-				orientations.pixels[r][c] = (float) FastMath.atan(ygrad / xgrad);
+				if (magnitudes.pixels[r][c] == 0)
+					orientations.pixels[r][c] = 0;
+				else
+					orientations.pixels[r][c] = (float) FastMath.atan(ygrad / xgrad);
 			}
 		}
 	}
@@ -284,10 +287,11 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 	 * Estimate gradients magnitudes and orientations by calculating pixel
 	 * differences. Edges get special treatment.
 	 * <p>
-	 * The orientations are quantised into magnitudes.length bins and the
-	 * magnitudes are spread to the adjacent bin through linear interpolation.
-	 * The magnitudes parameter must be fully allocated as an array of num
-	 * orientation bin images, each of the same size as the input image.
+	 * The orientations are quantised into <code>magnitudes.length</code> bins
+	 * and the magnitudes are spread to the adjacent bin through linear
+	 * interpolation. The magnitudes parameter must be fully allocated as an
+	 * array of num orientation bin images, each of the same size as the input
+	 * image.
 	 * 
 	 * @param image
 	 * @param magnitudes
@@ -337,6 +341,89 @@ public class FImageGradients implements ImageAnalyser<FImage> {
 				// set
 				magnitudes[oi % numOriBins].pixels[r][c] = (1f - of) * mag;
 				magnitudes[(oi + 1) % numOriBins].pixels[r][c] = of * mag;
+			}
+		}
+	}
+
+	/**
+	 * Estimate gradients magnitudes and orientations by calculating pixel
+	 * differences. Edges get special treatment.
+	 * <p>
+	 * The orientations are quantised into <code>magnitudes.length</code> bins.
+	 * Magnitudes are optionally spread to the adjacent bin through linear
+	 * interpolation. The magnitudes parameter must be fully allocated as an
+	 * array of num orientation bin images, each of the same size as the input
+	 * image.
+	 * 
+	 * @param image
+	 * @param magnitudes
+	 * @param interp
+	 * @param mode
+	 */
+	public static void gradientMagnitudesAndQuantisedOrientations(FImage image, FImage[] magnitudes, boolean interp,
+			Mode mode)
+	{
+		final int numOriBins = magnitudes.length;
+
+		// Note: unrolling this loop to remove the if's doesn't
+		// actually seem to make it faster!
+		for (int r = 0; r < image.height; r++) {
+			for (int c = 0; c < image.width; c++) {
+				float xgrad, ygrad;
+
+				if (c == 0)
+					xgrad = 2.0f * (image.pixels[r][c + 1] - image.pixels[r][c]);
+				else if (c == image.width - 1)
+					xgrad = 2.0f * (image.pixels[r][c] - image.pixels[r][c - 1]);
+				else
+					xgrad = image.pixels[r][c + 1] - image.pixels[r][c - 1];
+				if (r == 0)
+					ygrad = 2.0f * (image.pixels[r][c] - image.pixels[r + 1][c]);
+				else if (r == image.height - 1)
+					ygrad = 2.0f * (image.pixels[r - 1][c] - image.pixels[r][c]);
+				else
+					ygrad = image.pixels[r - 1][c] - image.pixels[r + 1][c];
+
+				// JH - my benchmarking shows that (at least on OSX) Math.atan2
+				// is really
+				// slow... FastMath provides an alternative that is much faster
+				final float mag = (float) Math.sqrt(xgrad * xgrad + ygrad * ygrad);
+
+				float po;
+				if (mode == Mode.Unsigned) {
+					final float ori = mag == 0 ? PI_OVER_TWO_FLOAT : (float) FastMath.atan(ygrad / xgrad)
+							+ PI_OVER_TWO_FLOAT;
+
+					po = numOriBins * ori / PI_FLOAT; // po is now 0<=po<oriSize
+				} else {
+					float ori = (float) FastMath.atan2(ygrad, xgrad);
+
+					// adjust range
+					ori = ((ori %= TWO_PI_FLOAT) >= 0 ? ori : (ori + TWO_PI_FLOAT));
+
+					po = numOriBins * ori / TWO_PI_FLOAT; // po is now
+															// 0<=po<oriSize
+				}
+
+				// reset
+				for (int i = 0; i < magnitudes.length; i++)
+					magnitudes[i].pixels[r][c] = 0;
+
+				int oi = (int) Math.floor(po);
+				final float of = po - oi;
+
+				// set
+				if (interp) {
+					magnitudes[oi % numOriBins].pixels[r][c] = (1f - of) * mag;
+					magnitudes[(oi + 1) % numOriBins].pixels[r][c] = of * mag;
+				} else {
+					// if (of > 0.5)
+					// magnitudes[(oi + 1) % numOriBins].pixels[r][c] = mag;
+					// else
+					if (oi > numOriBins - 1)
+						oi = numOriBins - 1;
+					magnitudes[oi].pixels[r][c] = mag;
+				}
 			}
 		}
 	}

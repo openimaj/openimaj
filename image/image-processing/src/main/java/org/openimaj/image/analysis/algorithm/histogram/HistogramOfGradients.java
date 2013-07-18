@@ -27,52 +27,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.dense.gradient;
+package org.openimaj.image.analysis.algorithm.histogram;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.analysis.algorithm.histogram.SATWindowedExtractor;
 import org.openimaj.image.analysis.algorithm.histogram.binning.SpatialBinningStrategy;
 import org.openimaj.image.processing.convolution.FImageGradients;
-import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
- * Implementation of the Histogram of Gradients (HOG) feature. This
- * implementation allows any kind of spatial layout to be used, and provides the
- * standard Rectangular (R-HOG) and Circular (C-HOG) strategies. Features can be
- * efficiently extracted for the whole image, or sub-region(s).
+ * Implementation of the {@link WindowedHistogramExtractor} for efficiently
+ * extracting gradient orientation histograms. This implementation is built on
+ * top of a {@link SATWindowedExtractor}. The {@link #analyseImage(FImage)}
+ * method can be used to precompute the underlying data required for efficient
+ * histogram extraction using any of the <code>computeHistogram</code> methods.
  * <p>
- * The original description of HOG describes a feature that essentially
- * describes local TEXTURE based on the histogram of all gradients in the patch
- * (like dense SIFT). Confusingly, a different feature called PHOG (Pyramid HOG)
- * was later proposed that is primarily a SHAPE descriptor. PHOG computes
- * HOG-like descriptors in a spatial pyramid; however it only counts gradients
- * belonging to strong edges (hence it why describes shape rather than texture).
- * Both these descriptors obviously have their merits, but it is also likely
- * that a SHAPE variant of the HOG and a TEXTURE variant of the PHOG could also
- * be useful. With this in mind, this class can optionally be used to compute a
- * modified HOG feature which suppresses gradients at certain spatial locations
- * (i.e. those not on edges).
+ * Computed histograms are simply the sum of magnitudes for each orientation bin
+ * over the given window. If you need to generate more complex features (for
+ * example, aggregated spatially binned histograms) then use this class in
+ * combination with a {@link SpatialBinningStrategy}.
+ * <p>
+ * The {@link #analyseImage(FImage, FImage)} method can be used to construct
+ * histograms with moderated magnitudes (for example, suppressing all magnitudes
+ * except those at edges).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class HistogramOfGradients implements ImageAnalyser<FImage> {
-	protected SATWindowedExtractor histExtractor;
-	protected SpatialBinningStrategy strategy;
+public class HistogramOfGradients extends SATWindowedExtractor implements ImageAnalyser<FImage> {
 	private FImageGradients.Mode orientationMode;
-	private int nbins;
 	private boolean histogramInterpolation;
 
-	private Histogram currentHist;
+	public HistogramOfGradients(int nbins, boolean histogramInterpolation, FImageGradients.Mode orientationMode) {
+		super(nbins);
 
-	public HistogramOfGradients(int nbins, boolean histogramInterpolation, FImageGradients.Mode orientationMode,
-			SpatialBinningStrategy strategy)
-	{
-		this.nbins = nbins;
 		this.histogramInterpolation = histogramInterpolation;
 		this.orientationMode = orientationMode;
-		this.strategy = strategy;
 	}
 
 	@Override
@@ -85,7 +73,7 @@ public class HistogramOfGradients implements ImageAnalyser<FImage> {
 		FImageGradients.gradientMagnitudesAndQuantisedOrientations(image, magnitudes, histogramInterpolation,
 				orientationMode);
 
-		histExtractor = new SATWindowedExtractor(magnitudes);
+		computeSATs(magnitudes);
 	}
 
 	public void analyseImage(FImage image, FImage edges) {
@@ -100,10 +88,6 @@ public class HistogramOfGradients implements ImageAnalyser<FImage> {
 		for (int i = 0; i < nbins; i++)
 			magnitudes[i].multiplyInplace(edges);
 
-		histExtractor = new SATWindowedExtractor(magnitudes);
-	}
-
-	public Histogram extractFeature(Rectangle rectangle) {
-		return currentHist = strategy.extract(histExtractor, rectangle, currentHist);
+		computeSATs(magnitudes);
 	}
 }

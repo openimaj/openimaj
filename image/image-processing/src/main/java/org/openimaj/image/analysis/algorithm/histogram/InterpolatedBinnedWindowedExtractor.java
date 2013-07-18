@@ -27,14 +27,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.analysis.algorithm;
+package org.openimaj.image.analysis.algorithm.histogram;
 
 import org.openimaj.image.FImage;
 import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
- * The {@link InterpolatingBinnedImageHistogramAnalyser} is an extension to a
- * {@link BinnedImageHistogramAnalyser} that performs soft assignment to the
+ * The {@link InterpolatedBinnedWindowedExtractor} is an extension to a
+ * {@link BinnedWindowedExtractor} that performs soft assignment to the
  * histogram bins through linear interpolation. If a point being histogrammed
  * lies directly between two bins, half of its weight will be added to both
  * bins. If a point is directly in the centre of a bin, then its full weight
@@ -53,7 +53,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistogramAnalyser {
+public class InterpolatedBinnedWindowedExtractor extends BinnedWindowedExtractor {
 	/**
 	 * The weight to apply to the left bin (i.e. the one that was stored). The
 	 * weight of the right bin is 1-this.
@@ -72,7 +72,7 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 	 * @param nbins
 	 *            number of bins
 	 */
-	public InterpolatingBinnedImageHistogramAnalyser(int nbins) {
+	public InterpolatedBinnedWindowedExtractor(int nbins) {
 		super(nbins);
 	}
 
@@ -85,7 +85,7 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 	 * @param wrap
 	 *            true if the histogram is cyclic; false otherwise
 	 */
-	public InterpolatingBinnedImageHistogramAnalyser(int nbins, boolean wrap) {
+	public InterpolatedBinnedWindowedExtractor(int nbins, boolean wrap) {
 		super(nbins);
 		this.wrap = true;
 	}
@@ -101,7 +101,7 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 	 * @param max
 	 *            maximum expected value
 	 */
-	public InterpolatingBinnedImageHistogramAnalyser(int nbins, float min, float max) {
+	public InterpolatedBinnedWindowedExtractor(int nbins, float min, float max) {
 		super(nbins, min, max);
 	}
 
@@ -118,7 +118,7 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 	 * @param wrap
 	 *            true if the histogram is cyclic; false otherwise
 	 */
-	public InterpolatingBinnedImageHistogramAnalyser(int nbins, float min, float max, boolean wrap) {
+	public InterpolatedBinnedWindowedExtractor(int nbins, float min, float max, boolean wrap) {
 		super(nbins, min, max);
 		this.wrap = wrap;
 	}
@@ -137,7 +137,7 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 		if (wrap) {
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
-					final float val = ((image.pixels[y][x] - min) / max) * nbins;
+					final float val = ((image.pixels[y][x] - min) / (max - min)) * nbins;
 					final int bin = (int) Math.floor(val);
 					final float delta = val - bin;
 
@@ -151,7 +151,7 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 		} else {
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
-					final float val = ((image.pixels[y][x] - min) / max) * nbins;
+					final float val = ((image.pixels[y][x] - min) / (max - min)) * nbins;
 					final int bin = (int) Math.floor(val);
 					final float delta = val - bin;
 
@@ -196,11 +196,11 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 				final int bin = binMap[r][c];
 				hist.values[bin] += weights[r][c];
 
-				if (wrap) {
-					if (bin + 1 == nbins) {
-						hist.values[0] += (1 - weights[r][c]);
-					}
-				} else if (bin + 1 < nbins) {
+				if (wrap && bin + 1 == nbins) {
+					hist.values[0] += (1 - weights[r][c]);
+				}
+
+				if (bin + 1 < nbins) {
 					hist.values[bin + 1] += (1 - weights[r][c]);
 				}
 			}
@@ -223,11 +223,11 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 				final int bin = binMap[r][c];
 				hist.values[bin] += (extWeights.pixels[r][c] * weights[r][c]);
 
-				if (wrap) {
-					if (bin + 1 == nbins) {
-						hist.values[0] += (extWeights.pixels[r][c] * (1 - weights[r][c]));
-					}
-				} else if (bin + 1 < nbins) {
+				if (wrap && bin + 1 == nbins) {
+					hist.values[0] += (extWeights.pixels[r][c] * (1 - weights[r][c]));
+				}
+
+				if (bin + 1 < nbins) {
 					hist.values[bin + 1] += (extWeights.pixels[r][c] * (1 - weights[r][c]));
 				}
 			}
@@ -254,11 +254,11 @@ public class InterpolatingBinnedImageHistogramAnalyser extends BinnedImageHistog
 				final int bin = binMap[r][c];
 				hist.values[bin] += (extWeights.pixels[r][c] * weights[r][c] * windowWeights.pixels[wr][wc]);
 
-				if (wrap) {
-					if (bin + 1 == nbins) {
-						hist.values[0] += (extWeights.pixels[r][c] * (1 - weights[r][c]) * windowWeights.pixels[wr][wc]);
-					}
-				} else if (bin + 1 < nbins) {
+				if (wrap && bin + 1 == nbins) {
+					hist.values[0] += (extWeights.pixels[r][c] * (1 - weights[r][c]) * windowWeights.pixels[wr][wc]);
+				}
+
+				if (bin + 1 < nbins) {
 					hist.values[bin + 1] += (extWeights.pixels[r][c] * (1 - weights[r][c]) * windowWeights.pixels[wr][wc]);
 				}
 			}

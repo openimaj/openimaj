@@ -27,21 +27,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.analysis.algorithm;
+package org.openimaj.image.analysis.algorithm.histogram;
 
 import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.Test;
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.algorithm.histogram.InterpolatedBinnedWindowedExtractor;
 import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
- * Tests for {@link BinnedImageHistogramAnalyser}.
+ * Tests for {@link BinnedWindowedExtractor}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class InterpolatingBinnedImageHistogramAnalyserTest {
+public class InterpolatingBinnedWindowedExtractorTest {
 	/**
 	 * Test with a single pixel falling into a single bin
 	 */
@@ -49,7 +50,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 	public void testSinglePixel1() {
 		final FImage i = new FImage(new float[][] { { 0.5f } });
 
-		final InterpolatingBinnedImageHistogramAnalyser a = new InterpolatingBinnedImageHistogramAnalyser(5);
+		final InterpolatedBinnedWindowedExtractor a = new InterpolatedBinnedWindowedExtractor(5);
 		a.analyseImage(i);
 
 		final Histogram h = a.computeHistogram(0, 0, 1, 1);
@@ -63,7 +64,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 	public void testSinglePixel2() {
 		final FImage i = new FImage(new float[][] { { 0.5f } });
 
-		final InterpolatingBinnedImageHistogramAnalyser a = new InterpolatingBinnedImageHistogramAnalyser(4);
+		final InterpolatedBinnedWindowedExtractor a = new InterpolatedBinnedWindowedExtractor(4);
 		a.analyseImage(i);
 
 		final Histogram h = a.computeHistogram(0, 0, 1, 1);
@@ -77,7 +78,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 	public void testSinglePixel3() {
 		final FImage i = new FImage(new float[][] { { 0.0f } });
 
-		final InterpolatingBinnedImageHistogramAnalyser a = new InterpolatingBinnedImageHistogramAnalyser(4);
+		final InterpolatedBinnedWindowedExtractor a = new InterpolatedBinnedWindowedExtractor(4);
 		a.analyseImage(i);
 
 		final Histogram h = a.computeHistogram(0, 0, 1, 1);
@@ -91,7 +92,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 	public void testSinglePixel4() {
 		final FImage i = new FImage(new float[][] { { 1.0f } });
 
-		final InterpolatingBinnedImageHistogramAnalyser a = new InterpolatingBinnedImageHistogramAnalyser(4);
+		final InterpolatedBinnedWindowedExtractor a = new InterpolatedBinnedWindowedExtractor(4);
 		a.analyseImage(i);
 
 		final Histogram h = a.computeHistogram(0, 0, 1, 1);
@@ -106,7 +107,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 	public void testSinglePixelWrap() {
 		final FImage i = new FImage(new float[][] { { 1.0f } });
 
-		final InterpolatingBinnedImageHistogramAnalyser a = new InterpolatingBinnedImageHistogramAnalyser(4);
+		final InterpolatedBinnedWindowedExtractor a = new InterpolatedBinnedWindowedExtractor(4);
 		a.wrap = true;
 		a.analyseImage(i);
 
@@ -121,7 +122,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 	public void testSinglePixelWrap2() {
 		final FImage i = new FImage(new float[][] { { 0.9f } });
 
-		final InterpolatingBinnedImageHistogramAnalyser a = new InterpolatingBinnedImageHistogramAnalyser(5);
+		final InterpolatedBinnedWindowedExtractor a = new InterpolatedBinnedWindowedExtractor(5);
 		a.wrap = true;
 		a.analyseImage(i);
 
@@ -137,7 +138,7 @@ public class InterpolatingBinnedImageHistogramAnalyserTest {
 	public void testSinglePixelWrap3() {
 		final FImage i = new FImage(new float[][] { { 0.95f } });
 
-		final InterpolatingBinnedImageHistogramAnalyser a = new InterpolatingBinnedImageHistogramAnalyser(5);
+		final InterpolatedBinnedWindowedExtractor a = new InterpolatedBinnedWindowedExtractor(5);
 		a.wrap = true;
 		a.analyseImage(i);
 

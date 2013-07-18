@@ -22,11 +22,9 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.analysis.algorithm.InterpolatingBinnedImageHistogramAnalyser;
-import org.openimaj.image.analysis.pyramid.SimplePyramid;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.dense.gradient.HistogramOfGradients;
-import org.openimaj.image.feature.dense.gradient.binning.BasicHOGStrategy;
+import org.openimaj.image.feature.dense.gradient.binning.FastFlexibleHOGStrategy;
 import org.openimaj.image.processing.convolution.FImageGradients;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.InputStreamObjectReader;
@@ -138,9 +136,8 @@ public class INRIAPersonDataset {
 	}
 
 	static class Extractor implements FeatureExtractor<DoubleFV, FImage> {
-		final InterpolatingBinnedImageHistogramAnalyser interpAnalyser = new InterpolatingBinnedImageHistogramAnalyser(9);
-		final BasicHOGStrategy strategy = new BasicHOGStrategy(8, 2);
-		final HistogramOfGradients hog = new HistogramOfGradients(interpAnalyser, FImageGradients.Mode.Unsigned, strategy);
+		final FastFlexibleHOGStrategy strategy = new FastFlexibleHOGStrategy(8, 16, 2);
+		final HistogramOfGradients hog = new HistogramOfGradients(9, false, FImageGradients.Mode.Unsigned, strategy);
 		int i = 0;
 
 		@Override
@@ -158,7 +155,7 @@ public class INRIAPersonDataset {
 	}
 
 	public static void main(String[] args) throws IOException {
-		// final LiblinearAnnotator<DoubleFV, Boolean> ann = new
+		// LiblinearAnnotator<DoubleFV, Boolean> ann = new
 		// LiblinearAnnotator<DoubleFV, Boolean>(
 		// new IdentityFeatureExtractor<DoubleFV>(), Mode.MULTICLASS,
 		// SolverType.L2R_L2LOSS_SVC, 0.01, 0.01, true);
@@ -172,35 +169,36 @@ public class INRIAPersonDataset {
 		final FImage img = ImageUtilities.readF(new
 				File("/Users/jsh2/Data/INRIAPerson/Test/pos/crop_000006.png"));
 
-		final SimplePyramid<FImage> pyr = new SimplePyramid<FImage>(1.2f);
-		pyr.analyseImage(img);
-
 		final Extractor e = new Extractor();
+		e.hog.analyseImage(img);
 
 		for (int k = 0; k < 1000; k++) {
 			final Timer t1 = Timer.timer();
-			for (final FImage i : pyr.pyramid) {
-				if (i.width < 64 || i.height < 128)
-					continue;
-
-				final MBFImage rgb = i.toRGB();
+			int width = 64;
+			int height = 128;
+			int step = 8;
+			for (int level = 0; level < 10; level++) {
+				final MBFImage rgb = img.toRGB();
 				final Timer t2 = Timer.timer();
-				e.hog.analyseImage(i);
 				int nwindows = 0;
-				for (int y = 0; y < i.height - 128; y += 8) {
-					for (int x = 0; x < i.width - 64; x += 8) {
-						final Rectangle rectangle = new Rectangle(x, y, 64, 128);
+				for (int y = 0; y < img.height - height; y += step) {
+					for (int x = 0; x < img.width - width; x += step) {
+						final Rectangle rectangle = new Rectangle(x, y, width, height);
 						nwindows++;
 						final Histogram f = e.hog.extractFeature(rectangle);
 						if (ann.annotate(f).get(0).annotation) {
-							rgb.drawShape(new Rectangle(x, y, 64, 128), RGBColour.RED);
+							rgb.drawShape(new Rectangle(x, y, width, height), RGBColour.RED);
 						}
 					}
 				}
 				System.out.format("Image %d x %d (%d windows) took %2.2fs\n",
-						i.width, i.height, nwindows,
+						img.width, img.height, nwindows,
 						t2.duration() / 1000.0);
-				DisplayUtilities.displayName(rgb, "name " + i.hashCode());
+				DisplayUtilities.displayName(rgb, "name " + level);
+
+				width = (int) Math.floor(width * 1.2);
+				height = (int) Math.floor(height * 1.2);
+				step = (int) Math.floor(step * 1.2);
 			}
 			System.out.format("Total time: %2.2fs\n", t1.duration() / 1000.0);
 		}
