@@ -30,8 +30,6 @@ public class BasicHOGStrategy implements SpatialBinningStrategy {
 		final Histogram[][] blocks = computeBlocks(cells);
 
 		final Histogram[] normBlocks = new Histogram[blocks[0].length * blocks.length * 4];
-		// final Histogram[] normBlocks = new Histogram[blocks[0].length *
-		// blocks.length];
 
 		for (int j = 0, k = 0; j < blocks.length; j++) {
 			for (int i = 0; i < blocks[0].length; i++) {
@@ -60,11 +58,6 @@ public class BasicHOGStrategy implements SpatialBinningStrategy {
 				normBlocks[k++] = l2clip;
 				normBlocks[k++] = l1;
 				normBlocks[k++] = l1sqrt;
-
-				// for (int x = 0; x < l1sqrt.length; x++)
-				// l2.values[x] = (l2.values[x] + l2clip[x] + l1.values[x] +
-				// l1sqrt[x]) / 4.0;
-				// normBlocks[k++] = new Histogram(l2);
 			}
 		}
 

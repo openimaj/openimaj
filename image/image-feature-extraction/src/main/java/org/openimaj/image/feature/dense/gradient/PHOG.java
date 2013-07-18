@@ -29,16 +29,20 @@
  */
 package org.openimaj.image.feature.dense.gradient;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.analysis.algorithm.histogram.SATWindowedExtractor;
+import org.openimaj.image.analysis.algorithm.histogram.BinnedWindowedExtractor;
+import org.openimaj.image.analysis.algorithm.histogram.GradientOrientationHistogramExtractor;
+import org.openimaj.image.analysis.algorithm.histogram.InterpolatedBinnedWindowedExtractor;
+import org.openimaj.image.analysis.algorithm.histogram.binning.QuadtreeStrategy;
 import org.openimaj.image.pixel.sampling.QuadtreeSampler;
 import org.openimaj.image.processing.convolution.FImageGradients;
+import org.openimaj.image.processing.convolution.FImageGradients.Mode;
+import org.openimaj.image.processing.edges.CannyEdgeDetector;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.statistics.distribution.Histogram;
@@ -48,63 +52,120 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * Histograms of Orientation Gradients) feature described by Bosch et al. The
  * PHOG feature is computed by creating a quadtree of orientation histograms
  * over the entire image and appending the histograms for each cell of the
- * quadtree into a single vector which is then l1 normalised (sum to unity). In
- * the original description, only orientations at edge pixels were counted; that
- * restriction is optional in this implementation.
- * 
+ * quadtree into a single vector which is then l1 normalised (sum to unity).
+ * <p>
+ * In the original description, only orientations at edge pixels were counted;
+ * that restriction is optional in this implementation. If only edge pixels are
+ * used, then the feature describes the distribution of <b>shape</b> in the
+ * image. Conversely, if all pixels are used, the feature essentially describes
+ * the texture of the image.
+ * <p>
+ * As this class will typically be used to only construct a single feature from
+ * an image, it is built around a {@link BinnedWindowedExtractor} (or
+ * {@link InterpolatedBinnedWindowedExtractor} if interpolation is used). This
+ * will be much more efficient than a
+ * {@link GradientOrientationHistogramExtractor} in the single window case. If
+ * you do need to extract many PHOG-like features different rectangles of the
+ * same image, use a {@link GradientOrientationHistogramExtractor} coupled with
+ * a {@link QuadtreeStrategy} to achieve the desired effect.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Bosch, Anna", "Zisserman, Andrew", "Munoz, Xavier" },
+		title = "Representing shape with a spatial pyramid kernel",
+		year = "2007",
+		booktitle = "Proceedings of the 6th ACM international conference on Image and video retrieval",
+		pages = { "401", "", "408" },
+		url = "http://doi.acm.org/10.1145/1282280.1282340",
+		publisher = "ACM",
+		series = "CIVR '07",
+		customData = {
+				"isbn", "978-1-59593-733-9",
+				"location", "Amsterdam, The Netherlands",
+				"numpages", "8",
+				"doi", "10.1145/1282280.1282340",
+				"acmid", "1282340",
+				"address", "New York, NY, USA",
+				"keywords", "object and video retrieval, shape features, spatial pyramid kernel"
+		})
 public class PHOG implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	private int nlevels = 3;
-	private int nbins = 10;
-	private FImageGradients.Mode orientationMode = FImageGradients.Mode.Unsigned;
 	private ImageProcessor<FImage> edgeDetector;
+	private Mode orientationMode;
 
-	private SATWindowedExtractor histExtractor;
+	private BinnedWindowedExtractor histExtractor;
 	private Rectangle lastBounds;
+	private FImage magnitudes;
+
+	public PHOG(int nlevels, int nbins, FImageGradients.Mode orientationMode)
+	{
+		this(nlevels, nbins, true, orientationMode, new CannyEdgeDetector());
+	}
+
+	public PHOG(int nlevels, int nbins, boolean histogramInterpolation, FImageGradients.Mode orientationMode,
+			ImageProcessor<FImage> edgeDetector)
+	{
+		this.nlevels = nlevels;
+		this.edgeDetector = edgeDetector;
+		this.orientationMode = orientationMode;
+
+		if (histogramInterpolation)
+			histExtractor = new InterpolatedBinnedWindowedExtractor(nbins, true);
+		else
+			histExtractor = new BinnedWindowedExtractor(nbins);
+
+		histExtractor.setMax(orientationMode.maxAngle());
+		histExtractor.setMin(orientationMode.minAngle());
+	}
 
 	@Override
 	public void analyseImage(FImage image) {
 		lastBounds = image.getBounds();
 
-		final FImage[] magnitudes = new FImage[nbins];
+		final FImageGradients gradMag = FImageGradients.getGradientMagnitudesAndOrientations(image, orientationMode);
+		this.magnitudes = gradMag.magnitudes;
 
-		for (int i = 0; i < nbins; i++)
-			magnitudes[i] = new FImage(image.width, image.height);
-
-		FImageGradients.gradientMagnitudesAndQuantisedOrientations(image, magnitudes, true,
-				orientationMode);
+		histExtractor.analyseImage(gradMag.orientations);
 
 		if (edgeDetector != null) {
-			final FImage edges = image.process(edgeDetector);
-
-			for (int i = 0; i < nbins; i++)
-				magnitudes[i].multiplyInplace(edges);
+			magnitudes.multiplyInplace(image.process(edgeDetector));
 		}
-
-		histExtractor = new SATWindowedExtractor(magnitudes);
 	}
 
-	public Histogram extractFeature() {
-		return extractFeature(lastBounds);
-	}
-
-	public Histogram extractFeature(Rectangle rect) {
+	/**
+	 * Extract the PHOG feature for the specified region of the image last
+	 * analysed with {@link #analyseImage(FImage)}.
+	 * 
+	 * @param rect
+	 *            the region
+	 * @return the PHOG feature
+	 */
+	public Histogram getFeatureVector(Rectangle rect) {
 		final QuadtreeSampler sampler = new QuadtreeSampler(rect, nlevels);
-		final List<float[]> parts = new ArrayList<float[]>();
 		final Histogram hist = new Histogram(0);
 
 		for (final Rectangle r : sampler) {
-			hist.combine(histExtractor.computeHistogram(r));
+			hist.combine(histExtractor.computeHistogram(r, magnitudes));
 		}
+
+		hist.normaliseL1();
 
 		return hist;
 	}
 
+	/**
+	 * Extract the PHOG feature for the whole of the image last analysed with
+	 * {@link #analyseImage(FImage)}.
+	 * 
+	 * @return the PHOG feature
+	 * 
+	 * @see org.openimaj.feature.FeatureVectorProvider#getFeatureVector()
+	 */
 	@Override
 	public Histogram getFeatureVector() {
-		return extractFeature();
+		return getFeatureVector(lastBounds);
 	}
 }
