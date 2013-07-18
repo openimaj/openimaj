@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.image.processing.face.tracking;
 
@@ -39,23 +39,24 @@ import java.util.List;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.processing.tracking.BasicObjectTracker;
 import org.openimaj.video.tracking.klt.KLTTracker;
 
 /**
  * A face tracker that uses the {@link HaarCascadeDetector} to detect faces in
  * the image and then tracks them using the {@link KLTTracker}.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- * 
+ *
  * @created 13 Oct 2011
  */
 public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 	/** The face detector used to detect the faces */
-	private HaarCascadeDetector faceDetector = new HaarCascadeDetector();
+	private final HaarCascadeDetector faceDetector = new HaarCascadeDetector();
 
 	/** A list of trackers that are tracking faces within the image */
-	private List<BasicObjectTracker> trackers = new ArrayList<BasicObjectTracker>();
+	private final List<BasicObjectTracker> trackers = new ArrayList<BasicObjectTracker>();
 
 	/** The previous frame */
 	private FImage previousFrame = null;
@@ -63,51 +64,63 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 	/** When all faces are lost, the frame is retried */
 	private boolean retryFrame = false;
 
+	/** The number of frames to force a retry */
+	private int forceRetry = -1;
+
+	/** Used for forcing retry */
+	private int frameCounter = 0;
+
+	private final float detectionScalar = 1.2f;
+
 	/**
 	 * Default constructor that takes the minimum size (in pixels) of detections
 	 * that should be considered faces.
-	 * 
+	 *
 	 * @param minSize
 	 *            The minimum size of face boxes
 	 */
-	public KLTHaarFaceTracker(int minSize) {
-		faceDetector.setMinSize(minSize);
+	public KLTHaarFaceTracker(final int minSize) {
+		this.faceDetector.setMinSize(minSize);
 	}
 
 	/**
 	 * Used to detect faces when there is no current state.
-	 * 
+	 *
 	 * @return The list of detected faces
 	 */
-	private List<DetectedFace> detectFaces(FImage img) {
-		return faceDetector.detectFaces(img);
+	private List<DetectedFace> detectFaces(final FImage img) {
+		return this.faceDetector.detectFaces(img);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processing.face.tracking.FaceTracker#trackFace(org.openimaj.image.Image)
 	 */
 	@Override
-	public List<DetectedFace> trackFace(FImage img) {
+	public List<DetectedFace> trackFace(final FImage img)
+	{
 		List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
+
+		// Determine whether we need to force a retry now
+		if( this.forceRetry != -1 && this.frameCounter % this.forceRetry == 0 )
+			this.trackers.clear();
 
 		// If we're just starting tracking, find some features and start
 		// tracking them.
-		if (previousFrame == null || trackers.size() == 0) {
-			System.out.println("Detecting faces...");
+		if (this.previousFrame == null || this.trackers.size() == 0 ) {
 
 			// Detect the faces in the image.
-			final List<DetectedFace> faces = detectFaces(img);
-
-			System.out.println("Found " + faces.size() + " faces ");
+			final List<DetectedFace> faces = this.detectFaces(img);
 
 			// Create trackers for each face found
 			for (final DetectedFace face : faces) {
 				// Create a new tracker for this face
 				final BasicObjectTracker faceTracker = new BasicObjectTracker();
-				faceTracker.initialiseTracking(face.getBounds(), img);
-				trackers.add(faceTracker);
+				final Rectangle r = face.getBounds();
+				r.scaleCOG( this.detectionScalar );
+				faceTracker.initialiseTracking( r, img);
+				this.trackers.add(faceTracker);
 
 				// Store the last frame
 				this.previousFrame = img;
@@ -116,9 +129,9 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 			detectedFaces = faces;
 		} else
 		// If we have a previous frame, attempt to track the frame
-		if (previousFrame != null) {
+		if (this.previousFrame != null) {
 			// Update all the trackers
-			final Iterator<BasicObjectTracker> i = trackers.iterator();
+			final Iterator<BasicObjectTracker> i = this.trackers.iterator();
 			while (i.hasNext()) {
 				final BasicObjectTracker tracker = i.next();
 				if (tracker.trackObject(img).size() == 0)
@@ -128,21 +141,39 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 					// face
 					detectedFaces
 							.add(new DetectedFace(
-									tracker.getFeatureList().getBounds(), null, tracker.getFeatureList()
-											.countRemainingFeatures()));
+									tracker.getFeatureList().getBounds(),
+									img.extractROI( tracker.getFeatureList().getBounds() ),
+									tracker.getFeatureList().countRemainingFeatures()));
 
 					// Store the last frame
 					this.previousFrame = img;
 				}
 			}
 
-			if (trackers.size() == 0 && this.retryFrame == false) {
+			if (this.trackers.size() == 0 && this.retryFrame == false) {
 				this.retryFrame = true;
-				detectedFaces = trackFace(img);
+				detectedFaces = this.trackFace(img);
 			}
 		}
 
+		this.frameCounter++;
 		this.retryFrame = false;
 		return detectedFaces;
+	}
+
+	/**
+	 *	@return the forceRetry
+	 */
+	public int getForceRetry()
+	{
+		return this.forceRetry;
+	}
+
+	/**
+	 *	@param forceRetry the forceRetry to set
+	 */
+	public void setForceRetry( final int forceRetry )
+	{
+		this.forceRetry = forceRetry;
 	}
 }

@@ -112,10 +112,10 @@ public class CLMFaceTracker {
 	 * and models.
 	 */
 	public CLMFaceTracker() {
-		model = new MultiTracker(MultiTracker.load(Tracker.class
+		this.model = new MultiTracker(MultiTracker.load(Tracker.class
 				.getResourceAsStream("face2.tracker")));
-		triangles = IO.loadTri(Tracker.class.getResourceAsStream("face.tri"));
-		connections = IO.loadCon(Tracker.class.getResourceAsStream("face.con"));
+		this.triangles = IO.loadTri(Tracker.class.getResourceAsStream("face.tri"));
+		this.connections = IO.loadCon(Tracker.class.getResourceAsStream("face.con"));
 	}
 
 	/**
@@ -124,11 +124,11 @@ public class CLMFaceTracker {
 	 * @param frame
 	 *            The frame
 	 */
-	public void track(MBFImage frame) {
+	public void track(final MBFImage frame) {
 		// Make a greyscale image
 		final FImage im = frame.flatten();
 
-		track(im);
+		this.track(im);
 	}
 
 	/**
@@ -139,27 +139,27 @@ public class CLMFaceTracker {
 	 */
 	public void track(FImage im) {
 		// If we're to rescale, let's do that first
-		if (scale != 1)
-			if (scale == 0.5f)
+		if (this.scale != 1)
+			if (this.scale == 0.5f)
 				im = ResizeProcessor.halfSize(im);
 			else
-				im = ResizeProcessor.resample(im, (int) (scale * im.width),
-						(int) (scale * im.height));
+				im = ResizeProcessor.resample(im, (int) (this.scale * im.width),
+						(int) (this.scale * im.height));
 
 		int[] wSize;
-		if (failed)
-			wSize = wSize2;
+		if (this.failed)
+			wSize = this.wSize2;
 		else
-			wSize = wSize1;
+			wSize = this.wSize1;
 
 		// Track the face
-		if (model.track(im, wSize, fpd, nIter, clamp, fTol, fcheck,
-				searchAreaSize) == 0)
+		if (this.model.track(im, wSize, this.fpd, this.nIter, this.clamp, this.fTol, this.fcheck,
+				this.searchAreaSize) == 0)
 		{
-			failed = false;
+			this.failed = false;
 		} else {
-			model.frameReset();
-			failed = true;
+			this.model.frameReset();
+			this.failed = true;
 		}
 	}
 
@@ -167,7 +167,7 @@ public class CLMFaceTracker {
 	 * Force a reset on the next frame to be tracked.
 	 */
 	public void reset() {
-		model.frameReset();
+		this.model.frameReset();
 	}
 
 	/**
@@ -186,25 +186,25 @@ public class CLMFaceTracker {
 	 * @param drawBounds
 	 *            Whether to draw the bounds
 	 */
-	public void drawModel(MBFImage image, boolean drawTriangles,
-			boolean drawConnections, boolean drawPoints,
-			boolean drawSearchArea, boolean drawBounds)
+	public void drawModel(final MBFImage image, final boolean drawTriangles,
+			final boolean drawConnections, final boolean drawPoints,
+			final boolean drawSearchArea, final boolean drawBounds)
 	{
-		for (int fc = 0; fc < model.trackedFaces.size(); fc++) {
-			final MultiTracker.TrackedFace f = model.trackedFaces.get(fc);
+		for (int fc = 0; fc < this.model.trackedFaces.size(); fc++) {
+			final MultiTracker.TrackedFace f = this.model.trackedFaces.get(fc);
 
 			if (drawSearchArea) {
 				// Draw the search area size
 				final Rectangle r = f.lastMatchBounds.clone();
-				r.scaleCOG(searchAreaSize);
+				r.scaleCOG(this.searchAreaSize);
 				image.createRenderer().drawShape(r, RGBColour.YELLOW);
 			}
 
 			// Draw the face model
-			drawFaceModel(image, f, drawTriangles, drawConnections, drawPoints,
-					drawSearchArea, drawBounds, triangles, connections, scale,
-					boundingBoxColour, meshColour, connectionColour,
-					pointColour);
+			CLMFaceTracker.drawFaceModel(image, f, drawTriangles, drawConnections, drawPoints,
+					drawSearchArea, drawBounds, this.triangles, this.connections, this.scale,
+					this.boundingBoxColour, this.meshColour, this.connectionColour,
+					this.pointColour);
 		}
 	}
 
@@ -240,11 +240,11 @@ public class CLMFaceTracker {
 	 * @param pointColour
 	 *            Colour to draw the points
 	 */
-	public static void drawFaceModel(MBFImage image, MultiTracker.TrackedFace f,
-			boolean drawTriangles, boolean drawConnections, boolean drawPoints,
-			boolean drawSearchArea, boolean drawBounds, int[][] triangles,
-			int[][] connections, float scale, Float[] boundingBoxColour,
-			Float[] meshColour, Float[] connectionColour, Float[] pointColour)
+	public static void drawFaceModel(final MBFImage image, final MultiTracker.TrackedFace f,
+			final boolean drawTriangles, final boolean drawConnections, final boolean drawPoints,
+			final boolean drawSearchArea, final boolean drawBounds, final int[][] triangles,
+			final int[][] connections, final float scale, final Float[] boundingBoxColour,
+			final Float[] meshColour, final Float[] connectionColour, final Float[] pointColour)
 	{
 		final int n = f.shape.getRowDimension() / 2;
 		final Matrix visi = f.clm._visi[f.clm.getViewIdx()];
@@ -353,7 +353,7 @@ public class CLMFaceTracker {
 	 * @param face
 	 *            The face to initialise
 	 */
-	public void initialiseFaceModel(TrackedFace face) {
+	public void initialiseFaceModel(final TrackedFace face) {
 		this.model.initShape(face.redetectedBounds, face.shape,
 				face.referenceShape);
 	}
@@ -362,14 +362,14 @@ public class CLMFaceTracker {
 	 * @return the searchAreaSize
 	 */
 	public float getSearchAreaSize() {
-		return searchAreaSize;
+		return this.searchAreaSize;
 	}
 
 	/**
 	 * @param searchAreaSize
 	 *            the searchAreaSize to set
 	 */
-	public void setSearchAreaSize(float searchAreaSize) {
+	public void setSearchAreaSize(final float searchAreaSize) {
 		this.searchAreaSize = searchAreaSize;
 	}
 
@@ -377,14 +377,14 @@ public class CLMFaceTracker {
 	 * @return the connectionColour
 	 */
 	public Float[] getConnectionColour() {
-		return connectionColour;
+		return this.connectionColour;
 	}
 
 	/**
 	 * @param connectionColour
 	 *            the connectionColour to set
 	 */
-	public void setConnectionColour(Float[] connectionColour) {
+	public void setConnectionColour(final Float[] connectionColour) {
 		this.connectionColour = connectionColour;
 	}
 
@@ -392,14 +392,14 @@ public class CLMFaceTracker {
 	 * @return the pointColour
 	 */
 	public Float[] getPointColour() {
-		return pointColour;
+		return this.pointColour;
 	}
 
 	/**
 	 * @param pointColour
 	 *            the pointColour to set
 	 */
-	public void setPointColour(Float[] pointColour) {
+	public void setPointColour(final Float[] pointColour) {
 		this.pointColour = pointColour;
 	}
 
@@ -407,14 +407,14 @@ public class CLMFaceTracker {
 	 * @return the meshColour
 	 */
 	public Float[] getMeshColour() {
-		return meshColour;
+		return this.meshColour;
 	}
 
 	/**
 	 * @param meshColour
 	 *            the meshColour to set
 	 */
-	public void setMeshColour(Float[] meshColour) {
+	public void setMeshColour(final Float[] meshColour) {
 		this.meshColour = meshColour;
 	}
 
@@ -422,14 +422,14 @@ public class CLMFaceTracker {
 	 * @return the boundingBoxColour
 	 */
 	public Float[] getBoundingBoxColour() {
-		return boundingBoxColour;
+		return this.boundingBoxColour;
 	}
 
 	/**
 	 * @param boundingBoxColour
 	 *            the boundingBoxColour to set
 	 */
-	public void setBoundingBoxColour(Float[] boundingBoxColour) {
+	public void setBoundingBoxColour(final Float[] boundingBoxColour) {
 		this.boundingBoxColour = boundingBoxColour;
 	}
 
@@ -437,14 +437,14 @@ public class CLMFaceTracker {
 	 * @return the searchAreaColour
 	 */
 	public Float[] getSearchAreaColour() {
-		return searchAreaColour;
+		return this.searchAreaColour;
 	}
 
 	/**
 	 * @param searchAreaColour
 	 *            the searchAreaColour to set
 	 */
-	public void setSearchAreaColour(Float[] searchAreaColour) {
+	public void setSearchAreaColour(final Float[] searchAreaColour) {
 		this.searchAreaColour = searchAreaColour;
 	}
 
@@ -463,8 +463,8 @@ public class CLMFaceTracker {
 	 *            the {@link TrackedFace}
 	 * @return the mesh
 	 */
-	public List<Triangle> getTriangles(TrackedFace face) {
-		return getTriangles(face.shape, face.clm._visi[face.clm.getViewIdx()], triangles);
+	public List<Triangle> getTriangles(final TrackedFace face) {
+		return CLMFaceTracker.getTriangles(face.shape, face.clm._visi[face.clm.getViewIdx()], this.triangles);
 	}
 
 	/**
@@ -479,7 +479,7 @@ public class CLMFaceTracker {
 	 *
 	 * @return the mesh
 	 */
-	public static List<Triangle> getTriangles(Matrix shape, Matrix visi, int[][] triangles) {
+	public static List<Triangle> getTriangles(final Matrix shape, final Matrix visi, final int[][] triangles) {
 		final int n = shape.getRowDimension() / 2;
 		final List<Triangle> tris = new ArrayList<Triangle>();
 
@@ -504,5 +504,15 @@ public class CLMFaceTracker {
 		}
 
 		return tris;
+	}
+
+	/**
+	 * 	Set the number of frames after which a redection is forced by the tracker.
+	 * 	Set it to -1 to avoid forcing any redetection.
+	 *	@param nFrames The number of frames.
+	 */
+	public void setRedetectEvery( final int nFrames )
+	{
+		this.fpd = nFrames;
 	}
 }
