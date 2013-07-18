@@ -377,6 +377,26 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	InternalModel<OBJECT, ANNOTATION> internal;
 
 	/**
+	 * Default constructor. Assumes sparse features.
+	 * 
+	 * @param extractor
+	 *            the feature extractor
+	 * @param mode
+	 *            the mode
+	 * @param solver
+	 *            the liblinear solver
+	 * @param C
+	 *            the C parameter (usually 1 or larger)
+	 * @param eps
+	 *            the epsilon value
+	 */
+	public LiblinearAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, Mode mode, SolverType solver,
+			double C, double eps)
+	{
+		this(extractor, mode, solver, C, eps, false);
+	}
+
+	/**
 	 * Default constructor.
 	 * 
 	 * @param extractor
