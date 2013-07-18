@@ -13,7 +13,9 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 
+import org.openimaj.image.FImage;
 import org.openimaj.image.colour.ColourMap;
+import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.vis.Visualisation3D;
 
 /**
@@ -348,6 +350,20 @@ public class HeightMap3D extends Visualisation3D<double[][]>
 	}
 
 	/**
+	 * 	Create a height map from an FImage.
+	 *	@param img The image
+	 *	@return The height map
+	 */
+	public static HeightMap3D createFromFImage( final FImage img )
+	{
+		final HeightMap3D hm = new HeightMap3D( img.getWidth(), img.getHeight() );
+		hm.setMaxValue( 10 );
+		hm.setMinValue( 0 );
+		hm.setData( ArrayUtils.convertToDouble( img.pixels ) );
+		return hm;
+	}
+
+	/**
 	 * 	Example of the height map. Switches between showing a 2D Gaussian and a 2D sinc
 	 * 	function.
 	 *
@@ -359,6 +375,9 @@ public class HeightMap3D extends Visualisation3D<double[][]>
 	public static void main( final String[] args ) throws MalformedURLException,
 		IOException, InterruptedException
 	{
+//		HeightMap3D.createFromFImage( ImageUtilities.readF(
+//				new URL("http://www.alvaromartin.net/images/surfaceclipmaps/heightmap.jpg") ) );
+
 		final HeightMap3D hm = new HeightMap3D( 1000, 800 );
 		hm.setEnableLights( false );
 		hm.setMaxValue( 1 );
