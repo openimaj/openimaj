@@ -52,11 +52,31 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class HistogramOfGradients extends SATWindowedExtractor implements ImageAnalyser<FImage> {
+public class GradientOrientationHistogramExtractor
+		extends SATWindowedExtractor
+		implements ImageAnalyser<FImage>
+{
 	private FImageGradients.Mode orientationMode;
 	private boolean histogramInterpolation;
 
-	public HistogramOfGradients(int nbins, boolean histogramInterpolation, FImageGradients.Mode orientationMode) {
+	/**
+	 * Construct a new {@link GradientOrientationHistogramExtractor} with the
+	 * given number of bins. Optionally perform linear interpolation across
+	 * orientation bins. Histograms can also use either signed or unsigned
+	 * gradients.
+	 * 
+	 * @param nbins
+	 *            number of bins
+	 * @param histogramInterpolation
+	 *            if true cyclic linear interpolation is used to share the
+	 *            magnitude across the two closest bins; if false only the
+	 *            closest bin will be filled.
+	 * @param orientationMode
+	 *            the range of orientations to extract
+	 */
+	public GradientOrientationHistogramExtractor(int nbins, boolean histogramInterpolation,
+			FImageGradients.Mode orientationMode)
+	{
 		super(nbins);
 
 		this.histogramInterpolation = histogramInterpolation;
@@ -76,6 +96,18 @@ public class HistogramOfGradients extends SATWindowedExtractor implements ImageA
 		computeSATs(magnitudes);
 	}
 
+	/**
+	 * Analyse the given image, but construct the internal data such that the
+	 * gradient magnitudes are multiplied by the given edge map before being
+	 * accumulated. This could be used to suppress all magnitudes except those
+	 * at edges; the resultant extracted histograms would only contain
+	 * information about edge gradients.
+	 * 
+	 * @param image
+	 *            the image to analyse
+	 * @param edges
+	 *            the edge image
+	 */
 	public void analyseImage(FImage image, FImage edges) {
 		final FImage[] magnitudes = new FImage[nbins];
 
