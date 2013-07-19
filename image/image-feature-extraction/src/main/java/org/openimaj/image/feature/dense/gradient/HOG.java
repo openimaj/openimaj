@@ -58,7 +58,6 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HOG extends GradientOrientationHistogramExtractor {
-	protected GradientOrientationHistogramExtractor histExtractor;
 	protected SpatialBinningStrategy strategy;
 
 	private Histogram currentHist;
@@ -109,6 +108,6 @@ public class HOG extends GradientOrientationHistogramExtractor {
 	 * @return the computed HOG feature
 	 */
 	public Histogram getFeatureVector(Rectangle rectangle) {
-		return currentHist = strategy.extract(histExtractor, rectangle, currentHist);
+		return currentHist = strategy.extract(this, rectangle, currentHist);
 	}
 }

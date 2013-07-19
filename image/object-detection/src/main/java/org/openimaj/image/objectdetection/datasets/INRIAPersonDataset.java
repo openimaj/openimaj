@@ -148,7 +148,7 @@ public class INRIAPersonDataset {
 			final int offsetY = (image.height - 128) / 2;
 			hog.analyseImage(image);
 
-			final Histogram f = hog.extractFeature(new Rectangle(offsetX, offsetY, 64, 128));
+			final Histogram f = hog.getFeatureVector(new Rectangle(offsetX, offsetY, 64, 128));
 
 			return f;
 		}
@@ -185,7 +185,7 @@ public class INRIAPersonDataset {
 					for (int x = 0; x < img.width - width; x += step) {
 						final Rectangle rectangle = new Rectangle(x, y, width, height);
 						nwindows++;
-						final Histogram f = e.hog.extractFeature(rectangle);
+						final Histogram f = e.hog.getFeatureVector(rectangle);
 						if (ann.annotate(f).get(0).annotation) {
 							rgb.drawShape(new Rectangle(x, y, width, height), RGBColour.RED);
 						}
