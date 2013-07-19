@@ -23,8 +23,8 @@ import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.feature.dense.gradient.HistogramOfGradients;
-import org.openimaj.image.feature.dense.gradient.binning.FastFlexibleHOGStrategy;
+import org.openimaj.image.feature.dense.gradient.HOG;
+import org.openimaj.image.feature.dense.gradient.binning.FlexibleHOGStrategy;
 import org.openimaj.image.processing.convolution.FImageGradients;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.InputStreamObjectReader;
@@ -136,8 +136,8 @@ public class INRIAPersonDataset {
 	}
 
 	static class Extractor implements FeatureExtractor<DoubleFV, FImage> {
-		final FastFlexibleHOGStrategy strategy = new FastFlexibleHOGStrategy(8, 16, 2);
-		final HistogramOfGradients hog = new HistogramOfGradients(9, false, FImageGradients.Mode.Unsigned, strategy);
+		final FlexibleHOGStrategy strategy = new FlexibleHOGStrategy(8, 16, 2);
+		final HOG hog = new HOG(9, false, FImageGradients.Mode.Unsigned, strategy);
 		int i = 0;
 
 		@Override
