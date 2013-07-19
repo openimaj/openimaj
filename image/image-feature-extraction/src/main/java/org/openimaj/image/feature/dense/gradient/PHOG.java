@@ -100,11 +100,50 @@ public class PHOG implements ImageAnalyser<FImage>, FeatureVectorProvider<Double
 	private Rectangle lastBounds;
 	private FImage magnitudes;
 
+	/**
+	 * Construct with the values used in the paper: 4 levels (corresponds to l=3
+	 * in the paper), 40 orientation bins (interpolated), signed gradients
+	 * (called "shape360" in the original paper) and Canny edge detection.
+	 */
+	public PHOG() {
+		this(4, 40, FImageGradients.Mode.Signed);
+	}
+
+	/**
+	 * Construct with the given values, using Canny edge detection and gradient
+	 * histogram interpolation.
+	 * 
+	 * @param nlevels
+	 *            number of pyramid levels (note this includes l0, so you might
+	 *            need 1 more)
+	 * @param nbins
+	 *            number of bins
+	 * @param orientationMode
+	 *            the orientation mode
+	 */
 	public PHOG(int nlevels, int nbins, FImageGradients.Mode orientationMode)
 	{
 		this(nlevels, nbins, true, orientationMode, new CannyEdgeDetector());
 	}
 
+	/**
+	 * Construct with the given parameters. The <code>edgeDetector</code>
+	 * parameter can be <code>null</code> if you don't want to filter out
+	 * non-edge pixels from the histograms.
+	 * 
+	 * @param nlevels
+	 *            number of pyramid levels (note this includes l0, so you might
+	 *            need 1 more)
+	 * @param nbins
+	 *            number of bins
+	 * @param histogramInterpolation
+	 *            should the gradient orientations be interpolated?
+	 * @param orientationMode
+	 *            the orientation mode
+	 * @param edgeDetector
+	 *            the edge detector to use (may be <code>null</code> for
+	 *            gradient features)
+	 */
 	public PHOG(int nlevels, int nbins, boolean histogramInterpolation, FImageGradients.Mode orientationMode,
 			ImageProcessor<FImage> edgeDetector)
 	{
@@ -144,11 +183,12 @@ public class PHOG implements ImageAnalyser<FImage>, FeatureVectorProvider<Double
 	 * @return the PHOG feature
 	 */
 	public Histogram getFeatureVector(Rectangle rect) {
-		final QuadtreeSampler sampler = new QuadtreeSampler(rect, nlevels);
-		final Histogram hist = new Histogram(0);
+		final QuadtreeSampler sampler = new QuadtreeSampler(rect, nlevels + 1);
+		Histogram hist = new Histogram(0);
 
 		for (final Rectangle r : sampler) {
-			hist.combine(histExtractor.computeHistogram(r, magnitudes));
+			final Histogram h = histExtractor.computeHistogram(r, magnitudes);
+			hist = hist.combine(h);
 		}
 
 		hist.normaliseL1();
