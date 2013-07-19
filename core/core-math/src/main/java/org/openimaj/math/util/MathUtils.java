@@ -1,10 +1,11 @@
 package org.openimaj.math.util;
 
+
 /**
  * A collection of maths functions not available anywhere else ive seen
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class MathUtils {
 
@@ -15,7 +16,7 @@ public class MathUtils {
 	 * == max(log_a,log_b) and so it becomes: LARGE + log(1 + exp(SMALL -
 	 * LARGE)) == LARGE + log(1 + SMALL) ~= large the whole idea being to avoid
 	 * an overflow (exp(LARGE) == VERY LARGE == overflow)
-	 * 
+	 *
 	 * @param log_a
 	 * @param log_b
 	 * @return log(a+b)
@@ -33,7 +34,7 @@ public class MathUtils {
 
 	/**
 	 * Returns the next power of 2 superior to n.
-	 * 
+	 *
 	 * @param n
 	 *            The value to find the next power of 2 above
 	 * @return The next power of 2
@@ -45,9 +46,9 @@ public class MathUtils {
 	/**
 	 * Implementation of the C <code>frexp</code> function to break
 	 * floating-point number into normalized fraction and power of 2.
-	 * 
+	 *
 	 * @see "http://stackoverflow.com/questions/1552738/is-there-a-java-equivalent-of-frexp"
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 * @return the exponent and mantissa of the input value
@@ -96,7 +97,7 @@ public class MathUtils {
 
 	/**
 	 * Class to hold an exponent and mantissa
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class ExponentAndMantissa {
