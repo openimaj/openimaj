@@ -25,12 +25,13 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 
 	private int numBlocksX;
 	private int numBlocksY;
-	private Histogram[][] blocks;
-	private Histogram[][] cells;
 	private int blockLength;
 	private int blockArea;
 	private int blockStepX;
 	private int blockStepY;
+
+	private transient Histogram[][] blocks;
+	private transient Histogram[][] cells;
 
 	/**
 	 * Construct with square cells of the given size (in pixels). Square blocks
@@ -119,16 +120,16 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 		this.blockStepX = blockStepX;
 		this.blockStepY = blockStepY;
 
-		cells = new Histogram[numCellsY][numCellsX];
-
 		numBlocksX = (cells[0].length - cellsPerBlockX) / blockStepX;
 		numBlocksY = (cells.length - cellsPerBlockY) / blockStepY;
-		blocks = new Histogram[numBlocksY][numBlocksX];
 	}
 
 	@Override
 	public Histogram extract(WindowedHistogramExtractor binnedData, Rectangle region, Histogram output) {
-		if (cells[0][0] == null || cells[0][0].values.length != binnedData.getNumBins()) {
+		if (cells == null || cells[0][0].values.length != binnedData.getNumBins()) {
+			cells = new Histogram[numCellsY][numCellsX];
+			blocks = new Histogram[numBlocksY][numBlocksX];
+
 			for (int j = 0; j < numCellsY; j++)
 				for (int i = 0; i < numCellsX; i++)
 					cells[j][i] = new Histogram(binnedData.getNumBins());

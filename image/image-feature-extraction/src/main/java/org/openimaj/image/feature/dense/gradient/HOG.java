@@ -29,7 +29,10 @@
  */
 package org.openimaj.image.feature.dense.gradient;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.analysis.algorithm.histogram.GradientOrientationHistogramExtractor;
 import org.openimaj.image.analysis.algorithm.histogram.binning.SpatialBinningStrategy;
 import org.openimaj.image.feature.dense.gradient.binning.FixedHOGStrategy;
@@ -57,10 +60,28 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class HOG extends GradientOrientationHistogramExtractor {
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Dalal, Navneet", "Triggs, Bill" },
+		title = "Histograms of Oriented Gradients for Human Detection",
+		year = "2005",
+		booktitle = "Proceedings of the 2005 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR'05) - Volume 1 - Volume 01",
+		pages = { "886", "", "893" },
+		url = "http://dx.doi.org/10.1109/CVPR.2005.177",
+		publisher = "IEEE Computer Society",
+		series = "CVPR '05",
+		customData = {
+				"isbn", "0-7695-2372-2",
+				"numpages", "8",
+				"doi", "10.1109/CVPR.2005.177",
+				"acmid", "1069007",
+				"address", "Washington, DC, USA"
+		})
+public class HOG implements ImageAnalyser<FImage> {
+	GradientOrientationHistogramExtractor extractor;
 	protected SpatialBinningStrategy strategy;
 
-	private Histogram currentHist;
+	private transient Histogram currentHist;
 
 	/**
 	 * Construct a new {@link HOG} with the 9 bins, using histogram
@@ -96,8 +117,30 @@ public class HOG extends GradientOrientationHistogramExtractor {
 	public HOG(int nbins, boolean histogramInterpolation, FImageGradients.Mode orientationMode,
 			SpatialBinningStrategy strategy)
 	{
-		super(nbins, histogramInterpolation, orientationMode);
+		this.extractor = new GradientOrientationHistogramExtractor(nbins, histogramInterpolation, orientationMode);
+
 		this.strategy = strategy;
+	}
+
+	@Override
+	public void analyseImage(FImage image) {
+		extractor.analyseImage(image);
+	}
+
+	/**
+	 * Analyse the given image, but construct the internal data such that the
+	 * gradient magnitudes are multiplied by the given edge map before being
+	 * accumulated. This could be used to suppress all magnitudes except those
+	 * at edges; the resultant extracted histograms would only contain
+	 * information about edge gradients.
+	 * 
+	 * @param image
+	 *            the image to analyse
+	 * @param edges
+	 *            the edge image
+	 */
+	public void analyseImage(FImage image, FImage edges) {
+		extractor.analyseImage(image, edges);
 	}
 
 	/**
@@ -108,6 +151,6 @@ public class HOG extends GradientOrientationHistogramExtractor {
 	 * @return the computed HOG feature
 	 */
 	public Histogram getFeatureVector(Rectangle rectangle) {
-		return currentHist = strategy.extract(this, rectangle, currentHist);
+		return currentHist = strategy.extract(extractor, rectangle, currentHist);
 	}
 }
