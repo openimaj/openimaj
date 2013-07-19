@@ -1,6 +1,5 @@
 package org.openimaj.ml.annotation.utils;
 
-import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.SparseByteFV;
 import org.openimaj.feature.SparseDoubleFV;
@@ -94,17 +93,14 @@ public class LiblinearHelper {
 	}
 
 	/**
-	 * Convert a {@link FeatureVector} to an array of doubles. If the
-	 * feature-vector is a {@link DoubleFV} then the internal array is returned,
-	 * otherwise the {@link FeatureVector#asDoubleVector()} method is used.
+	 * Convert a {@link FeatureVector} to an array of doubles using
+	 * {@link FeatureVector#asDoubleVector()}.
 	 * 
 	 * @param feature
 	 *            the feature
 	 * @return the double[] version of the feature
 	 */
 	public static double[] convertDense(FeatureVector feature) {
-		if (feature instanceof DoubleFV)
-			return ((DoubleFV) feature).values;
 		return feature.asDoubleVector();
 	}
 }
