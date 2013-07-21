@@ -5,6 +5,8 @@ import gov.sandia.cognition.math.matrix.MatrixEntry;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
+import gov.sandia.cognition.math.matrix.mtj.AbstractMTJMatrix;
+import gov.sandia.cognition.math.matrix.mtj.DenseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
@@ -177,6 +179,33 @@ public class CFMatrixUtils {
 				count++;
 		}
 		return (size-count)/size;
+	}
+
+	/**
+	 * Bring each element to the power d
+	 * @param degree
+	 * @param d
+	 * @return the input 
+	 */
+	public static <T extends Matrix>  T powInplace(T degree, double d) {
+		for (MatrixEntry ent : degree) {
+			degree.setElement(ent.getRowIndex(), ent.getColumnIndex(), Math.pow(ent.getValue(), d));
+		}
+		return degree;
+	}
+
+	/**
+	 * @param laplacian
+	 * @return copy and convert 
+	 */
+	public static Jama.Matrix asJama(Matrix laplacian) {
+		
+		Jama.Matrix ret = new Jama.Matrix(laplacian.getNumRows(), laplacian.getNumColumns());
+		for (MatrixEntry matrixEntry : laplacian) {
+			ret.set(matrixEntry.getRowIndex(), matrixEntry.getColumnIndex(), matrixEntry.getValue());
+		}
+		
+		return ret;
 	}
 
 }

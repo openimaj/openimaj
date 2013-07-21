@@ -54,12 +54,6 @@
 			<version>1.92</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sourceforge.jmatio</groupId>
-			<artifactId>jmatio</artifactId>
-			<version>1.2</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>tw.edu.ntu.csie</groupId>
 			<artifactId>libsvm</artifactId>
 			<version>3.1</version>
