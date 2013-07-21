@@ -120,8 +120,8 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 		this.blockStepX = blockStepX;
 		this.blockStepY = blockStepY;
 
-		numBlocksX = (cells[0].length - cellsPerBlockX) / blockStepX;
-		numBlocksY = (cells.length - cellsPerBlockY) / blockStepY;
+		numBlocksX = (numCellsX - cellsPerBlockX) / blockStepX;
+		numBlocksY = (numCellsY - cellsPerBlockY) / blockStepY;
 	}
 
 	@Override
