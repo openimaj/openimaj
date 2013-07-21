@@ -7,9 +7,18 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.objectdetection.AbstractMultiScaleObjectDetector;
 import org.openimaj.math.geometry.shape.Rectangle;
 
-public class HOGFeatureDetector extends AbstractMultiScaleObjectDetector<FImage, Rectangle> {
-	protected float scaleFactor = 1.1f;
+public class HOGDetector extends AbstractMultiScaleObjectDetector<FImage, Rectangle> {
+	protected float scaleFactor = 1.2f;
 	protected HOGClassifier classifier;
+
+	public HOGDetector(HOGClassifier classifier, float scaleFactor) {
+		this.classifier = classifier;
+		this.scaleFactor = scaleFactor;
+	}
+
+	public HOGDetector(HOGClassifier classifier) {
+		this.classifier = classifier;
+	}
 
 	@Override
 	public List<Rectangle> detect(FImage image) {
@@ -23,8 +32,8 @@ public class HOGFeatureDetector extends AbstractMultiScaleObjectDetector<FImage,
 		// compute the number of scales to test and the starting factor
 		int nFactors = 0;
 		int startFactor = 0;
-		for (float factor = 1; factor * classifier.width < imageWidth - 10 &&
-				factor * classifier.height < imageHeight - 10; factor *= scaleFactor)
+		for (float factor = 1; factor * classifier.width < imageWidth &&
+				factor * classifier.height < imageHeight; factor *= scaleFactor)
 		{
 			final float width = factor * classifier.width;
 			final float height = factor * classifier.height;
@@ -42,9 +51,10 @@ public class HOGFeatureDetector extends AbstractMultiScaleObjectDetector<FImage,
 
 		// run the detection at each scale
 		float factor = (float) Math.pow(scaleFactor, startFactor);
-		for (int scaleStep = startFactor; scaleStep < nFactors; factor *= scaleFactor, scaleStep++) {
-			final float ystep = Math.max(2, factor);
-
+		for (int scaleStep = startFactor; scaleStep < nFactors; factor *=
+				scaleFactor, scaleStep++)
+		{
+			final float ystep = 8 * factor;
 			final int windowWidth = (int) (factor * classifier.width);
 			final int windowHeight = (int) (factor * classifier.height);
 
@@ -52,9 +62,9 @@ public class HOGFeatureDetector extends AbstractMultiScaleObjectDetector<FImage,
 			final int startX = (int) (roi == null ? 0 : Math.max(0, roi.x));
 			final int startY = (int) (roi == null ? 0 : Math.max(0, roi.y));
 			final int stopX = Math.round(
-					(((roi == null ? imageWidth : Math.min(imageWidth, roi.x + roi.width)) - windowWidth)) / ystep);
-			final int stopY = Math.round(
-					(((roi == null ? imageHeight : Math.min(imageHeight, roi.y + roi.height)) - windowHeight)) / ystep);
+					(roi == null ? imageWidth : Math.min(imageWidth, roi.x + roi.width)) - windowWidth);
+			final int stopY = Math.round((((roi == null ? imageHeight : Math.min(imageHeight, roi.y +
+					roi.height)) - windowHeight)));
 
 			detectAtScale(startX, stopX, startY, stopY, ystep, windowWidth, windowHeight, results);
 		}
@@ -90,15 +100,11 @@ public class HOGFeatureDetector extends AbstractMultiScaleObjectDetector<FImage,
 	{
 		final Rectangle current = new Rectangle();
 
-		for (int iy = startY; iy < stopY; iy++) {
-			final int y = Math.round(iy * ystep);
-
-			for (int ix = startX, xstep = 0; ix < stopX; ix += xstep) {
-				final int x = Math.round(ix * ystep);
-
-				current.x = x;
-				current.y = y;
-				current.height = windowWidth;
+		for (int iy = startY; iy < stopY; iy += ystep) {
+			for (int ix = startX; ix < stopX; ix += ystep) {
+				current.x = ix;
+				current.y = iy;
+				current.width = windowWidth;
 				current.height = windowHeight;
 
 				if (classifier.classify(current)) {
