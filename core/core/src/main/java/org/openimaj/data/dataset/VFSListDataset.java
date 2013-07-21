@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
@@ -74,7 +75,14 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE, File
 
 		@Override
 		public INSTANCE read(FileObject source) throws IOException {
-			return streamReader.read(source.getContent().getInputStream());
+			FileContent content = null;
+			try {
+				content = source.getContent();
+				return streamReader.read(content.getInputStream());
+			} finally {
+				if (content != null)
+					content.close();
+			}
 		}
 
 		@Override
