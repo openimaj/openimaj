@@ -50,12 +50,6 @@ public class TestDoubleNormalisedSpecralClustering {
 	 */
 	@Test
 	public void testSimSpatialCluster(){
-//		KMeansConfiguration<DoubleNearestNeighbours, double[]> kmeansConf = new KMeansConfiguration<DoubleNearestNeighbours, double[]>(
-//				2,
-//				testStats.ncluster,
-//				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
-//		);
-//		//		DoubleKMeans inner = new DoubleKMeans(kmeansConf);
 		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
 				2, 1, 2, 
 				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
@@ -65,8 +59,39 @@ public class TestDoubleNormalisedSpecralClustering {
 			inner
 		);
 		DoubleNormalisedSpectralClustering clust = new DoubleNormalisedSpectralClustering(conf);
-		SparseMatrix mat = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(testData.length,testData.length);
-		DoubleFVComparison dist = DoubleFVComparison.EUCLIDEAN;
+		SparseMatrix mat_norm = normalisedSimilarity();
+		Clusters res = clust.cluster(mat_norm,true);
+		confirmClusters(res);
+	}
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void testSimSpatialClusterInverse(){
+		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
+				2, 1, 2, 
+				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
+		);
+		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
+		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(inner, new GraphLaplacian.Normalised());
+		DoubleNormalisedSpectralClustering clust = new DoubleNormalisedSpectralClustering(conf);
+		SparseMatrix mat_norm = normalisedSimilarity();
+		Clusters res = clust.cluster(mat_norm,true);
+		confirmClusters(res);
+	}
+
+
+	private void confirmClusters(Clusters res) {
+		for (int i = 0; i < this.testClusters.length; i++) {
+			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusters()[i])));
+		}
+	}
+
+
+	private SparseMatrix normalisedSimilarity() {
+		final SparseMatrix mat = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(testData.length,testData.length);
+		final DoubleFVComparison dist = DoubleFVComparison.EUCLIDEAN;
 		double maxD = 0;
 		for (int i = 0; i < testData.length; i++) {
 			for (int j = i; j < testData.length; j++) {
@@ -93,13 +118,7 @@ public class TestDoubleNormalisedSpecralClustering {
 				mat_norm.setElement(j, i, 1-d);
 			}
 		}
-		Clusters res = clust.cluster(mat_norm,true);
-//		System.out.println(res);
-//		System.out.println(new Clusters(this.testClusters));
-		for (int i = 0; i < this.testClusters.length; i++) {
-			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusters()[i])));
-		}
-		
+		return mat_norm;
 	}
 	private Set<Integer> toSet(int[] is) {
 		Set<Integer> set = new HashSet<Integer>();

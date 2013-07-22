@@ -2,6 +2,8 @@ package org.openimaj.ml.clustering.spectral;
 
 
 
+import java.util.Iterator;
+
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -10,11 +12,10 @@ import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.EigenDecompositionRightMTJ;
 
-import java.util.Comparator;
-
 import org.openimaj.ml.clustering.SimilarityClusterer;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.TrainingIndexClusters;
+import org.openimaj.util.pair.DoubleObjectPair;
 import org.openimaj.util.queue.BoundedPriorityQueue;
 
 /**
@@ -58,48 +59,29 @@ public class DoubleNormalisedSpectralClustering implements SimilarityClusterer<C
 		// done!
 		return new Clusters(clustered);
 	}
-	private class EigenVectorValue{
-		public EigenVectorValue(double d, Vector column) {
-			this.col = column;
-			this.val = d;
-		}
-		Vector col;
-		Double val;
-	}
 	private double[][] lowestCols(EigenDecompositionRightMTJ eig) {
 		
 		ComplexNumber[] vals = eig.getEigenValues();
-		int eigenVectorSelect = conf.eigenChooser.nEigenVectors(vals);
-		BoundedPriorityQueue<EigenVectorValue> bpq = new BoundedPriorityQueue<DoubleNormalisedSpectralClustering.EigenVectorValue>(
-			eigenVectorSelect,
-			new Comparator<EigenVectorValue>() {
-				@Override
-				public int compare(EigenVectorValue o1, EigenVectorValue o2) {
-					return o1.val.compareTo(o2.val);
-				}
-			}
-		);
+		int eigenVectorSelect = conf.eigenChooser.nEigenVectors(this.conf.laplacian.eigenIterator(eig),vals.length);
+		
 		
 		Matrix vects = eig.getEigenVectorsRealPart();
-		int nrows = 0;
-		for (int i = 0; i < vals.length; i++) {
-			nrows = vects.getColumn(i).getDimensionality();
-			bpq.offer(new EigenVectorValue(vals[i].getMagnitude(),vects.getColumn(i)));
-		}
+		int nrows = vects.getColumn(0).getDimensionality();
 		double[][] ret = new double[nrows][eigenVectorSelect];
 		double[] retSum = new double[nrows];
 		
-		EigenVectorValue v;
 		int col = 0;
 		// Calculate U matrix (containing n smallests eigen valued columns)
-		while((v = bpq.pollTail())!=null){
-			System.out.println(v.val);
-			for (int i = 0; i < v.col.getDimensionality(); i++) {
-				double elColI = v.col.getElement(i);
+		for (Iterator<DoubleObjectPair<Vector>> iterator = this.conf.laplacian.eigenIterator(eig); iterator.hasNext();) {
+			DoubleObjectPair<Vector> v = iterator.next();
+			System.out.println(v.first);
+			for (int i = 0; i < v.second.getDimensionality(); i++) {
+				double elColI = v.second.getElement(i);
 				ret[i][col] = elColI;
 				retSum[i] += elColI * elColI;
 			}
 			col++;
+			if(col == eigenVectorSelect) break;
 		}
 		
 		// normalise rows

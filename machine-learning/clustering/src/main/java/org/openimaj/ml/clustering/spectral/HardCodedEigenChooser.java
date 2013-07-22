@@ -1,6 +1,10 @@
 package org.openimaj.ml.clustering.spectral;
 
-import gov.sandia.cognition.math.ComplexNumber;
+import gov.sandia.cognition.math.matrix.Vector;
+
+import java.util.Iterator;
+
+import org.openimaj.util.pair.DoubleObjectPair;
 
 /**
  * 
@@ -17,9 +21,8 @@ public class HardCodedEigenChooser extends EigenChooser{
 		this.count = eigK;
 	}
 	@Override
-	public int nEigenVectors(ComplexNumber[] vals) {
+	public int nEigenVectors(Iterator<DoubleObjectPair<Vector>> vals, int total) {
 		return count;
 	}
-	
 	
 }

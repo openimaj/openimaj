@@ -1,6 +1,10 @@
 package org.openimaj.ml.clustering.spectral;
 
-import gov.sandia.cognition.math.ComplexNumber;
+import gov.sandia.cognition.math.matrix.Vector;
+
+import java.util.Iterator;
+
+import org.openimaj.util.pair.DoubleObjectPair;
 
 /**
  * Attempts to automatically choose the number of eigen vectors based on the 
@@ -26,23 +30,25 @@ public class AutoSelectingEigenChooser extends EigenChooser {
 	}
 
 	@Override
-	public int nEigenVectors(ComplexNumber[] vals) {
+	public int nEigenVectors(Iterator<DoubleObjectPair<Vector>> vals, int totalEigenVectors) {
 		int count = 0;
-		double prev = vals[vals.length-1].getMagnitude();
-		for (int i = vals.length-2; i >= 0; i--) {
-			double val = vals[i].getMagnitude();
-			if(prev != 0){
-				double d = val - prev;
-				double l = prev * relativeGap;
-				if(d > l) {
+		double prevDiff = 0;
+		double prevVal = vals.next().first;
+		for (;vals.hasNext();) {
+			double val = vals.next().first;
+			double diff = Math.abs(val - prevVal);
+			if(prevDiff != 0){
+				double l = prevDiff * relativeGap;
+				if(diff > l) {
 					count++;
 					break;
 				}
 			}
-			prev = val;
+			prevDiff = diff;
+			prevVal = val;
 			count ++;
 		}
-		int maxCount = (int) (vals.length * maxSelect);
+		int maxCount = (int) (totalEigenVectors * maxSelect);
 		if(count > maxCount){
 			return maxCount;
 		}
