@@ -1,15 +1,17 @@
 package org.openimaj.ml.clustering.spectral;
 
-import gov.sandia.cognition.math.matrix.Vector;
-
 import java.util.Iterator;
 
+import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
 
+import ch.akuhn.matrix.Vector;
+import ch.akuhn.matrix.eigenvalues.FewEigenvalues;
+
 /**
- * Attempts to automatically choose the number of eigen vectors based on the 
- * relative gap between eigen values. In spectral clustering the gap between the 
- * eigen values of "good" clusters jumps. This class ignores the gap between 0 and 
+ * Attempts to automatically choose the number of eigen vectors based on the
+ * relative gap between eigen values. In spectral clustering the gap between the
+ * eigen values of "good" clusters jumps. This class ignores the gap between 0 and
  * the next item because 0s represent completely isolated objects and in all but the trivial
  * case we must stop after we have run out of 0s.
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -53,6 +55,16 @@ public class AutoSelectingEigenChooser extends EigenChooser {
 			return maxCount;
 		}
 		return count;
+	}
+
+	@Override
+	public FewEigenvalues prepare(FewEigenvalues eig, Mode direction, int total) {
+		if(direction == Mode.FORWARD){
+			return eig.greatest((int) (total*maxSelect));
+		}
+		else{
+			return eig.lowest((int) (total*maxSelect));
+		}
 	}
 
 

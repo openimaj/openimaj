@@ -54,7 +54,7 @@ import org.openimaj.util.reflection.ReflectionUtils;
  * to the stage. For most jobs these generics and providing the mapper/reducer
  * classes should be enough. If any further settings need to be configured use
  * the {@link #setup(Job)} which is called before the job is being returned
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <INPUT_FORMAT>
  *            The job's input format. Must be a {@link FileOutputFormat}. Used
@@ -78,7 +78,7 @@ import org.openimaj.util.reflection.ReflectionUtils;
  *            The key format of the output of the reduce task
  * @param <OUTPUT_VALUE>
  *            The valueformat of the output of the reduce task
- * 
+ *
  */
 
 @SuppressWarnings({ "unused", "unchecked" })
@@ -135,8 +135,7 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 		// A bit of a dirty hack, if any input file is an lzo file sneakily
 		// switch the input format class to LZOTextInput
 		if (inputFormatClass.equals(TextInputFormat.class) && containsLZO(inputs)) {
-			job.setInputFormatClass((Class<? extends InputFormat>) Class
-					.forName("com.hadoop.compression.lzo.LzoTextInputFormat"));
+			job.setInputFormatClass((Class<? extends InputFormat>) Class.forName("com.hadoop.mapreduce.LzoTextInputFormat"));
 		}
 		else {
 			job.setInputFormatClass(inputFormatClass);
@@ -169,7 +168,7 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 	 * For stages which require more fine grained control of how a job's
 	 * combiner is set. This class is called with the job being constructed by
 	 * this stage and the result of {@link #combiner()}.
-	 * 
+	 *
 	 * @param job
 	 * @param combiner
 	 */
@@ -183,7 +182,7 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 	 * For stages which require more fine grained control of how a job's reducer
 	 * is set. This class is called with the job being constructed by this stage
 	 * and the result of {@link #reducer()}.
-	 * 
+	 *
 	 * @param job
 	 * @param reducer
 	 */
@@ -200,9 +199,9 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 	 * {@link Job#setMapperClass(Class)} and set the {@link MultithreadedMapper}
 	 * mapper classed with
 	 * {@link MultithreadedMapper#setMapperClass(Job, Class)}.
-	 * 
+	 *
 	 * this function is called with the result of {@link #mapper()}
-	 * 
+	 *
 	 * @param job
 	 * @param mapper
 	 */
@@ -222,7 +221,7 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 
 	/**
 	 * Add any final adjustments to the job's config
-	 * 
+	 *
 	 * @param job
 	 * @throws IOException
 	 */
@@ -232,7 +231,7 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 	/**
 	 * By default this method returns the {@link IdentityMapper} class. This
 	 * mapper outputs the values handed as they are.
-	 * 
+	 *
 	 * @return the class of the mapper to use
 	 */
 	public Class<? extends Mapper<INPUT_KEY, INPUT_VALUE, MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE>> mapper() {
@@ -243,7 +242,7 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 	/**
 	 * By default this method returns the {@link IdentityReducer} class. This
 	 * reducer outputs the values handed as they are.
-	 * 
+	 *
 	 * @return the class of the reducer to use
 	 */
 	public Class<? extends Reducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE>> reducer() {
@@ -254,7 +253,7 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 	/**
 	 * By default this method returns the {@link IdentityReducer} class. This
 	 * combiner outputs the values handed as they are.
-	 * 
+	 *
 	 * @return the class of the reducer to use
 	 */
 	public Class<? extends Reducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE>> combiner() {
@@ -285,7 +284,7 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 	 * Called when the stage's job is completed. Might never be called in some
 	 * cases. For example, when the stagerunner is told specifically not to wait
 	 * for the job to finish.
-	 * 
+	 *
 	 * @param job
 	 */
 	public void finished(Job job) {

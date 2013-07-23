@@ -51,9 +51,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>ch.akuhn.matrix</groupId>
+      <groupId>org.openimaj</groupId>
       <artifactId>MatrixLib</artifactId>
-      <version>1.0-OpenIMAJ-Fixes</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>gov.sandia.foundry</groupId>

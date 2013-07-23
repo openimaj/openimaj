@@ -37,6 +37,7 @@ import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import ch.akuhn.matrix.SparseMatrix;
 
 /**
  * Miscellaneous matrix operations.
@@ -1358,5 +1359,9 @@ public class MatrixUtils {
 			}
 		}
 		return m;
+	}
+
+	public static double sparcity(SparseMatrix rowmat) {
+		return 1-rowmat.density();
 	}
 }

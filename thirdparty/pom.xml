@@ -25,5 +25,6 @@
     <module>IREval</module>
     <module>FaceTracker</module>
     <module>processing-core</module>
+    <module>MatrixLib</module>
   </modules>
 </project>

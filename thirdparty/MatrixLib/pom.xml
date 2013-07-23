@@ -1,10 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>ch.akuhn.matrix</groupId>
+  <parent>
+    <artifactId>thirdparty</artifactId>
+    <groupId>org.openimaj</groupId>
+    <version>1.1.1-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <groupId>org.openimaj</groupId>
+  <version>1.1.1-SNAPSHOT</version>
   <artifactId>MatrixLib</artifactId>
-  <version>1.0-OpenIMAJ-Fixes</version>
   <packaging>jar</packaging>
 
   <name>MatrixLib</name>
@@ -24,37 +29,8 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<repositories>
-		<repository>
-			<id>Java.net repository</id>
-			<url>http://download.java.net/maven/2</url>
-		</repository>
-		<repository>
-      <id>octopussy</id>
-      <name>Octopussy Maven Releases Repository</name>
-      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
-    </repository>
-	</repositories>
-	<distributionManagement>
-	    <repository>
-	      <id>octopussy</id>
-	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
-	    </repository>
-	 </distributionManagement>
 </project>

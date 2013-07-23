@@ -57,7 +57,7 @@ public class GrepFilter extends TwitterPreprocessingPredicate {
 
 	@Override
 	public boolean test(USMFStatus twitterStatus) {
-		String text = twitterStatus.text;
+		String text = twitterStatus.text.toLowerCase();
 		boolean match = searcher.search(text.getBytes()).hasNext();
 		if(match) return match;
 		// now do the slower regexes if there are any
@@ -69,7 +69,7 @@ public class GrepFilter extends TwitterPreprocessingPredicate {
 	public void validate() {
 		searcher = new AhoCorasick<String>();
 		for (String match : this.stringMatch) {
-			searcher.add(match.getBytes(), match);
+			searcher.add(match.toLowerCase().getBytes(), match);
 		}
 		searcher.prepare();
 

@@ -5,9 +5,6 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.set.hash.TIntHashSet;
-import gov.sandia.cognition.math.matrix.VectorEntry;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
-import gov.sandia.cognition.math.matrix.mtj.SparseVector;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,6 +16,10 @@ import org.openimaj.ml.clustering.SimilarityClusterer;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.dbscan.neighbourhood.RegionMode;
 import org.openimaj.util.pair.IntDoublePair;
+
+import ch.akuhn.matrix.SparseMatrix;
+import ch.akuhn.matrix.Vector;
+import ch.akuhn.matrix.Vector.Entry;
 
 /**
  * Implementation of DBSCAN (http://en.wikipedia.org/wiki/DBSCAN) using
@@ -65,22 +66,22 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 		}
 		@Override
 		public List<IntDoublePair> regionQuery(int index) {
-			SparseVector sims = mat.getRow(index);
+			Vector vec = mat.row(index);
 			List<IntDoublePair> ret = new ArrayList<IntDoublePair>();
 			if(distanceMode){
 				ret.add(IntDoublePair.pair(index, 0));
-				for (VectorEntry ent: sims) {
-					double v= ent.getValue();
+				for (Entry ent: vec.entries()) {
+					double v= ent.value;
 					if(v<DoubleDBSCAN.this.conf.eps)
-						ret.add(IntDoublePair.pair(ent.getIndex(), v));
+						ret.add(IntDoublePair.pair(ent.index, v));
 					else break;
 				}
 			}
 			else{
 				ret.add(IntDoublePair.pair(index, DoubleDBSCAN.this.conf.eps * 2)); // HACK
-				for (VectorEntry ent: sims) {
-					if(ent.getValue()>DoubleDBSCAN.this.conf.eps)
-						ret.add(IntDoublePair.pair(ent.getIndex(), ent.getValue()));
+				for (Entry ent: vec.entries()) {
+					if(ent.value>DoubleDBSCAN.this.conf.eps)
+						ret.add(IntDoublePair.pair(ent.index, ent.value));
 				}
 			}
 			return ret;
@@ -119,7 +120,7 @@ public class DoubleDBSCAN implements SpatialClusterer<DoubleDBSCANClusters, doub
 
 	@Override
 	public DoubleDBSCANClusters cluster(SparseMatrix data,boolean distanceMode) {
-		State s = new State(data.getNumRows(), new SimilarityRegionMode(data, distanceMode));
+		State s = new State(data.rowCount(), new SimilarityRegionMode(data, distanceMode));
 		return dbscan(s);
 	}
 

@@ -1,7 +1,6 @@
 package org.openimaj.ml.clustering;
 
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
-
+import ch.akuhn.matrix.SparseMatrix;
 
 /**
  * A {@link SimilarityClusterer} clusters data that can be represented as a similarity

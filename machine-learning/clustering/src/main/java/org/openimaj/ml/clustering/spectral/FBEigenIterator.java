@@ -1,13 +1,11 @@
 package org.openimaj.ml.clustering.spectral;
 
-import gov.sandia.cognition.math.ComplexNumber;
-import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.decomposition.EigenDecomposition;
-
 import java.util.Iterator;
 
 import org.openimaj.util.pair.DoubleObjectPair;
+
+import ch.akuhn.matrix.Vector;
+import ch.akuhn.matrix.eigenvalues.Eigenvalues;
 
 /**
  * A forward or backward iterator of eigen vector/value pairs
@@ -16,7 +14,7 @@ import org.openimaj.util.pair.DoubleObjectPair;
  */
 public final class FBEigenIterator implements
 		Iterator<DoubleObjectPair<Vector>> {
-	
+
 	/**
 	 * The mode
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -24,7 +22,7 @@ public final class FBEigenIterator implements
 	 */
 	public static enum Mode{
 		/**
-		 * Forward from index 0 
+		 * Forward from index 0
 		 */
 		FORWARD,
 		/**
@@ -35,16 +33,16 @@ public final class FBEigenIterator implements
 
 	private int pos;
 	private int dir;
-	private ComplexNumber[] values;
-	private Matrix vectors;
+	private double[] values;
+	private Vector[] vectors;
 	private int lim;
 	/**
 	 * @param fb
 	 * @param evd
 	 */
-	public FBEigenIterator(FBEigenIterator.Mode fb, EigenDecomposition evd) {
-		this.values = evd.getEigenValues();
-		this.vectors = evd.getEigenVectorsRealPart();
+	public FBEigenIterator(FBEigenIterator.Mode fb, Eigenvalues evd) {
+		this.values = evd.value;
+		this.vectors = evd.vector;
 		switch (fb) {
 		case FORWARD:
 			this.pos = 0;
@@ -66,7 +64,7 @@ public final class FBEigenIterator implements
 
 	@Override
 	public DoubleObjectPair<Vector> next() {
-		DoubleObjectPair<Vector> ret = new DoubleObjectPair<Vector>(this.values[pos].getMagnitude(), this.vectors.getColumn(pos));
+		DoubleObjectPair<Vector> ret = new DoubleObjectPair<Vector>(this.values[pos], this.vectors[pos]);
 		pos += dir;
 		return ret;
 	}

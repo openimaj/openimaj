@@ -1,35 +1,39 @@
 package org.openimaj.ml.clustering.spectral;
 
-import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.decomposition.EigenDecomposition;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 import java.util.Iterator;
 
-import org.openimaj.math.matrix.CFMatrixUtils;
+import org.openimaj.math.matrix.DiagonalMatrix;
+import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
 
+import ch.akuhn.matrix.SparseMatrix;
+import ch.akuhn.matrix.Vector;
+import ch.akuhn.matrix.eigenvalues.Eigenvalues;
+
 /**
- * Functions which turn a graph weight adjacency matrix into the Laplacian 
- * matrix. 
+ * Functions which turn a graph weight adjacency matrix into the Laplacian
+ * matrix.
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class GraphLaplacian{
-	
+
 
 	/**
-	 * @param adj the adjanceny matrix should be square and symmetric 
+	 * @param adj the adjanceny matrix should be square and symmetric
 	 * @return the laplacian
 	 */
-	public Matrix laplacian(SparseMatrix adj){
-		SparseMatrix degree = SparseMatrixFactoryMTJ.INSTANCE.createIdentity(adj.getNumRows(), adj.getNumRows());
-		for (int i = 0; i < adj.getNumRows(); i++) {
-			degree.setElement(i, i, adj.getRow(i).sum());
+	public SparseMatrix laplacian(SparseMatrix adj){
+		DiagonalMatrix degree = new DiagonalMatrix(adj.rowCount());
+
+		int i = 0;
+		for (Vector row : adj.rows()) {
+			degree.put(i, i, row.sum());
+			i++;
 		}
+
 		return laplacian(adj,degree);
 	}
 
@@ -38,36 +42,52 @@ public abstract class GraphLaplacian{
 	 * @param degree the sum of the adjacency for a node in the diagonals
 	 * @return the laplacian
 	 */
-	public abstract Matrix laplacian(SparseMatrix adj, SparseMatrix degree);
-	
+	public abstract SparseMatrix laplacian(SparseMatrix adj, DiagonalMatrix degree);
+
 	/**
 	 * @param evd
 	 * @return provides an iterator over the (presumeably sorted)
 	 */
-	public abstract Iterator<DoubleObjectPair<Vector>> eigenIterator(EigenDecomposition evd);
-	
+	public abstract Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd);
+
 	/**
 	 * The symmetric normalised Laplacian is defined as:
 	 * L = I - D^-1/2 A D^-1/2
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
-	public static class Symmetric extends GraphLaplacian{		
+	public static class Symmetric extends GraphLaplacian{
 		@Override
-		public Matrix laplacian(SparseMatrix adj, SparseMatrix degree) {
-			SparseMatrix invSqrtDegree = CFMatrixUtils.powInplace(degree,-1./2.);
-			SparseMatrix ident = SparseMatrixFactoryMTJ.INSTANCE.createIdentity(degree.getNumRows(), degree.getNumRows());
-			return ident.minus(invSqrtDegree.times(adj).times(invSqrtDegree));
+		public SparseMatrix laplacian(SparseMatrix adj, DiagonalMatrix degree) {
+			DiagonalMatrix invSqrtDegree = MatlibMatrixUtils.powInplace(degree,-1./2.);
+			DiagonalMatrix ident = DiagonalMatrix.ones(degree.rowCount());
+			SparseMatrix ret = MatlibMatrixUtils.minusInplace(
+				ident,
+				MatlibMatrixUtils.times(
+					MatlibMatrixUtils.times(
+						invSqrtDegree, adj
+					),
+					invSqrtDegree
+				)
+			);
+			return ret;
 		}
 
 		@Override
-		public Iterator<DoubleObjectPair<Vector>> eigenIterator(EigenDecomposition evd) {
+		public Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd) {
 			return new FBEigenIterator(Mode.BACKWARD, evd);
 		}
 
-		
+		@Override
+		public Mode direction() {
+			return Mode.BACKWARD;
+		}
+
+
+
+
 	}
-	
+
 	/**
 	 * The inverted symmetric normalised Laplacian is defined as:
 	 * L = D^-1/2 A D^-1/2
@@ -77,17 +97,31 @@ public abstract class GraphLaplacian{
 	public static class Normalised extends GraphLaplacian{
 
 		@Override
-		public Matrix laplacian(SparseMatrix adj, SparseMatrix degree) {
-			SparseMatrix invSqrtDegree = CFMatrixUtils.powInplace(degree,-1./2.);
-			return invSqrtDegree.times(adj).times(invSqrtDegree);
+		public SparseMatrix laplacian(SparseMatrix adj, DiagonalMatrix degree) {
+			DiagonalMatrix invSqrtDegree = MatlibMatrixUtils.powInplace(degree,-1./2.);
+			SparseMatrix ret = MatlibMatrixUtils.times(
+				MatlibMatrixUtils.times(
+					invSqrtDegree, adj
+				),
+				invSqrtDegree
+			);
+			return ret;
 		}
 
 		@Override
-		public Iterator<DoubleObjectPair<Vector>> eigenIterator(EigenDecomposition evd) {
-			return new FBEigenIterator(Mode.FORWARD, evd);
+		public Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd) {
+			return new FBEigenIterator(Mode.BACKWARD, evd);
+		}
+
+		@Override
+		public Mode direction() {
+			return Mode.FORWARD;
 		}
 
 	}
 
-	
+	/**
+	 * @return the direction which this laplacian creates useful eigen values
+	 */
+	public abstract Mode direction();
 }

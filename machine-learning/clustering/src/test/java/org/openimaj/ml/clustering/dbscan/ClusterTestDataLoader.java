@@ -38,9 +38,13 @@ public class ClusterTestDataLoader{
 		 */
 		public double mineps;
 	}
-	
+
 	private Logger logger = Logger.getLogger(TestDoubleDBSCAN.class);
-	public ClusterTestDataLoader.TestStats readTestStats(String[] data) {
+	/**
+	 * @param data
+	 * @return read {@link TestStats}
+	 */
+	public TestStats readTestStats(String[] data) {
 		ClusterTestDataLoader.TestStats ret = new TestStats();
 		int i = 0;
 		ret.eps = Double.parseDouble(data[i++].split("=")[1].trim());
@@ -50,8 +54,12 @@ public class ClusterTestDataLoader{
 		ret.mineps = Double.parseDouble(data[i++].split("=")[1].trim());
 		return ret;
 	}
-	
-	
+
+
+	/**
+	 * @param data
+	 * @return read the correct clusters
+	 */
 	public int[][] readTestClusters(String[] data) {
 		int i = 0;
 		for (;data[i].length()!=0; i++);
@@ -66,19 +74,27 @@ public class ClusterTestDataLoader{
 		logger .debug(String.format("Loading %d items in %d clusters\n",count,clusters.size()));
 		return clusters.toArray(new int[clusters.size()][]);
 	}
+	/**
+	 * @param string
+	 * @return read
+	 */
 	public int[] readIntDataLine(String string) {
 		String[] split = string.split(",");
 		int[] arr = new int[split.length-1];
 		int i = 0;
-		
+
 		for (String s : split) {
 			if(s.contains("<"))continue; // skip the first, it is the cluster index
 			s = s.replace(">", "").trim();
 			arr[i++] = Integer.parseInt(s)-1;
-			
+
 		}
 		return arr;
 	}
+	/**
+	 * @param data
+	 * @return read the test data
+	 */
 	public double[][] readTestData(String[] data) {
 		int i = 0;
 		for (;data[i].length()!=0; i++);

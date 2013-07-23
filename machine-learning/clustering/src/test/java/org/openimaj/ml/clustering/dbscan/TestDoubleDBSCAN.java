@@ -1,8 +1,6 @@
 package org.openimaj.ml.clustering.dbscan;
 
 import static org.junit.Assert.assertTrue;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -14,6 +12,8 @@ import org.openimaj.io.FileUtils;
 import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.ml.clustering.dbscan.ClusterTestDataLoader.TestStats;
+
+import ch.akuhn.matrix.SparseMatrix;
 
 /**
  * Test DBSCAN implementation using data generated from:
@@ -37,7 +37,7 @@ public class TestDoubleDBSCAN {
 		this.testData = loader.readTestData(data);
 		this.testClusters = loader.readTestClusters(data);
 	}
-	
+
 	/**
 	 *
 	 */
@@ -73,14 +73,14 @@ public class TestDoubleDBSCAN {
 				new DoubleNearestNeighboursExact.Factory()
 			)
 		);
-		SparseMatrix mat = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(testData.length,testData.length);
+		SparseMatrix mat = new SparseMatrix(testData.length,testData.length);
 		for (int i = 0; i < testData.length; i++) {
 			for (int j = i; j < testData.length; j++) {
 				double d = DoubleNearestNeighboursExact.distanceFunc(testData[i], testData[j]);
 				if(d>=this.testStats.eps) continue;
 				if(d==0)d = Double.MIN_VALUE;
-				mat.setElement(i, j, d);
-				mat.setElement(j, i, d);
+				mat.put(i, j, d);
+				mat.put(j, i, d);
 			}
 		}
 		DoubleDBSCANClusters res = dbscan.cluster(mat,true);

@@ -59,7 +59,7 @@ public class SparseMatrix extends Matrix {
 
         for (int ri = 0; ri<rows.size(); ri++) {
         	Vector row = rows.get(ri);
-        	
+
             for (Entry column: row.entries()) {
                 dense[ri][column.index] = column.value;
             }
@@ -95,6 +95,11 @@ public class SparseMatrix extends Matrix {
     @Override
     public Iterable<Vector> rows() {
         return Collections.unmodifiableCollection(rows);
+    }
+
+    @Override
+    public Vector row(int row) {
+    	return this.rows.get(row);
     }
 
     @Override
@@ -136,7 +141,7 @@ public class SparseMatrix extends Matrix {
         assert matrix.used() == used;
         return matrix;
     }
-    
+
     public static SparseMatrix random(int n, int m, double density) {
     	Random random = new Random();
     	SparseMatrix A = new SparseMatrix(n, m);
@@ -148,7 +153,7 @@ public class SparseMatrix extends Matrix {
 		}
     	return A;
     }
-    
+
     @Override
 	public Vector mult(Vector dense) {
 		assert dense.size() == this.columnCount();
@@ -177,5 +182,5 @@ public class SparseMatrix extends Matrix {
 			}
 		}
 		return Vector.wrap(y);
-    }	
+    }
 }
