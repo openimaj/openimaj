@@ -501,13 +501,14 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		// Check if we have an alpha channel. If we do, we'll use alpha
 		// compositing, otherwise, we'll simply copy the pixel colour into
 		// the pixel position.
-		if( this.colourSpace == ColourSpace.RGBA )
+		if( this.colourSpace == ColourSpace.RGBA && this.numBands() >= 4 && val.length >= 4 )
 		{
 			final float[] p = ImageUtilities.alphaCompositePixel( this.getPixel(x,y), val );
 			this.getBand(0).pixels[y][x] = p[0];
 			this.getBand(1).pixels[y][x] = p[1];
 			this.getBand(2).pixels[y][x] = p[2];
-			this.getBand(3).pixels[y][x] = p[3];
+			if( this.numBands() >= 4 )
+				this.getBand(3).pixels[y][x] = p[3];
 		}
 		else
 			super.setPixel( x, y, val );
