@@ -61,7 +61,7 @@ import org.openimaj.io.InputStreamObjectReader;
 
 /**
  * A static utility class with methods for dealing with images.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ImageUtilities {
@@ -70,12 +70,12 @@ public class ImageUtilities {
 	 */
 	public static final InputStreamObjectReader<FImage> FIMAGE_READER = new InputStreamObjectReader<FImage>() {
 		@Override
-		public FImage read(InputStream stream) throws IOException {
+		public FImage read(final InputStream stream) throws IOException {
 			return ImageUtilities.readF(stream);
 		}
 
 		@Override
-		public boolean canRead(InputStream stream, String name) {
+		public boolean canRead(final InputStream stream, final String name) {
 			try {
 				final ByteSource src = new ByteSourceInputStream(stream, name);
 
@@ -91,12 +91,12 @@ public class ImageUtilities {
 	 */
 	public static final InputStreamObjectReader<MBFImage> MBFIMAGE_READER = new InputStreamObjectReader<MBFImage>() {
 		@Override
-		public MBFImage read(InputStream stream) throws IOException {
+		public MBFImage read(final InputStream stream) throws IOException {
 			return ImageUtilities.readMBF(stream);
 		}
 
 		@Override
-		public boolean canRead(InputStream stream, String name) {
+		public boolean canRead(final InputStream stream, final String name) {
 			try {
 				final ByteSource src = new ByteSourceInputStream(stream, name);
 
@@ -113,8 +113,8 @@ public class ImageUtilities {
 	// Static initialisation
 	static {
 		BYTE_TO_FLOAT_LUT = new float[256];
-		for (int i = 0; i < BYTE_TO_FLOAT_LUT.length; i++)
-			BYTE_TO_FLOAT_LUT[i] = i / 255f;
+		for (int i = 0; i < ImageUtilities.BYTE_TO_FLOAT_LUT.length; i++)
+			ImageUtilities.BYTE_TO_FLOAT_LUT[i] = i / 255f;
 	}
 
 	private ImageUtilities() {
@@ -125,14 +125,14 @@ public class ImageUtilities {
 	 * Calculate normalised RGB planes. Extracts the planes from the given RGB
 	 * BufferedImage and returns an array of FImage of length 3. The images are
 	 * ordered Red, Green and Blue.
-	 * 
+	 *
 	 * @param bimg
 	 *            A {@link BufferedImage} from which the planes are extracted.
 	 * @return An array of {@link FImage}.
 	 */
-	public static FImage[] getNormalisedColourPlanes(BufferedImage bimg) {
+	public static FImage[] getNormalisedColourPlanes(final BufferedImage bimg) {
 		final FImage[] images = new FImage[3];
-		final BufferedImage workingImage = createWorkingImage(bimg);
+		final BufferedImage workingImage = ImageUtilities.createWorkingImage(bimg);
 		final int[] data = workingImage.getRGB(0, 0, workingImage.getWidth(), workingImage.getHeight(), null, 0,
 				workingImage.getWidth());
 
@@ -172,12 +172,12 @@ public class ImageUtilities {
 	/**
 	 * Returns a ARGB BufferedImage, even if the input BufferedImage is not ARGB
 	 * format.
-	 * 
+	 *
 	 * @param bimg
 	 *            The {@link BufferedImage} to normalise to ARGB
 	 * @return An ARGB {@link BufferedImage}
 	 */
-	public static BufferedImage createWorkingImage(BufferedImage bimg) {
+	public static BufferedImage createWorkingImage(final BufferedImage bimg) {
 		// to avoid performance complications in the getRGB method, we
 		// pre-calculate the RGB rep of the image
 		BufferedImage workingImage;
@@ -195,7 +195,7 @@ public class ImageUtilities {
 	 * Write the given image to the given file with the given format name.
 	 * Format names are the same as used by
 	 * {@link ImageIO#write(java.awt.image.RenderedImage, String, File)}.
-	 * 
+	 *
 	 * @param image
 	 *            The image to write.
 	 * @param formatName
@@ -205,8 +205,8 @@ public class ImageUtilities {
 	 * @throws IOException
 	 *             If the image cannot be written to the file.
 	 */
-	public static void write(Image<?, ?> image, String formatName, File output) throws IOException {
-		ImageIO.write(createBufferedImageForDisplay(image), formatName, output);
+	public static void write(final Image<?, ?> image, final String formatName, final File output) throws IOException {
+		ImageIO.write(ImageUtilities.createBufferedImageForDisplay(image), formatName, output);
 	}
 
 	/**
@@ -214,7 +214,7 @@ public class ImageUtilities {
 	 * Format names are the same as used by
 	 * {@link ImageIO#write(java.awt.image.RenderedImage, String, OutputStream)}
 	 * .
-	 * 
+	 *
 	 * @param image
 	 *            The image to write.
 	 * @param formatName
@@ -224,8 +224,8 @@ public class ImageUtilities {
 	 * @throws IOException
 	 *             If the image cannot be written to the file.
 	 */
-	public static void write(Image<?, ?> image, String formatName, OutputStream output) throws IOException {
-		ImageIO.write(createBufferedImageForDisplay(image), formatName, output);
+	public static void write(final Image<?, ?> image, final String formatName, final OutputStream output) throws IOException {
+		ImageIO.write(ImageUtilities.createBufferedImageForDisplay(image), formatName, output);
 	}
 
 	/**
@@ -233,7 +233,7 @@ public class ImageUtilities {
 	 * Format names are the same as used by
 	 * {@link ImageIO#write(java.awt.image.RenderedImage, String, ImageOutputStream)}
 	 * .
-	 * 
+	 *
 	 * @param image
 	 *            The image to write.
 	 * @param formatName
@@ -243,15 +243,15 @@ public class ImageUtilities {
 	 * @throws IOException
 	 *             If the image cannot be written to the file.
 	 */
-	public static void write(Image<?, ?> image, String formatName, ImageOutputStream output) throws IOException {
-		ImageIO.write(createBufferedImageForDisplay(image), formatName, output);
+	public static void write(final Image<?, ?> image, final String formatName, final ImageOutputStream output) throws IOException {
+		ImageIO.write(ImageUtilities.createBufferedImageForDisplay(image), formatName, output);
 	}
 
 	/**
 	 * Write the given image to the given file, guessing the format name from
 	 * the extension. Format names are the same as used by
 	 * {@link ImageIO#write(java.awt.image.RenderedImage, String, File)}.
-	 * 
+	 *
 	 * @param image
 	 *            The image to write.
 	 * @param output
@@ -259,24 +259,24 @@ public class ImageUtilities {
 	 * @throws IOException
 	 *             If the image cannot be written to the file.
 	 */
-	public static void write(Image<?, ?> image, File output) throws IOException {
+	public static void write(final Image<?, ?> image, final File output) throws IOException {
 		final String name = output.getName();
 		String format = name.substring(name.lastIndexOf(".") + 1);
 
 		format = format.toLowerCase().trim();
 
-		ImageIO.write(createBufferedImageForDisplay(image), format, output);
+		ImageIO.write(ImageUtilities.createBufferedImageForDisplay(image), format, output);
 	}
 
 	/**
 	 * Create an FImage from a buffered image.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return an FImage representation of the input image
 	 */
-	public static FImage createFImage(BufferedImage image) {
-		final BufferedImage bimg = createWorkingImage(image);
+	public static FImage createFImage(final BufferedImage image) {
+		final BufferedImage bimg = ImageUtilities.createWorkingImage(image);
 		final int[] data = bimg.getRGB(0, 0, bimg.getWidth(), bimg.getHeight(), null, 0, bimg.getWidth());
 
 		return new FImage(data, bimg.getWidth(), bimg.getHeight());
@@ -284,15 +284,15 @@ public class ImageUtilities {
 
 	/**
 	 * Create an MBFImage from a buffered image.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param alpha
 	 *            should the resultant MBFImage have an alpha channel
 	 * @return an MBFImage representation of the input image
 	 */
-	public static MBFImage createMBFImage(BufferedImage image, boolean alpha) {
-		final BufferedImage bimg = createWorkingImage(image);
+	public static MBFImage createMBFImage(final BufferedImage image, final boolean alpha) {
+		final BufferedImage bimg = ImageUtilities.createWorkingImage(image);
 		final int[] data = bimg.getRGB(0, 0, bimg.getWidth(), bimg.getHeight(), null, 0, bimg.getWidth());
 
 		return new MBFImage(data, bimg.getWidth(), bimg.getHeight(), alpha);
@@ -300,132 +300,132 @@ public class ImageUtilities {
 
 	/**
 	 * Reads an {@link FImage} from the given file.
-	 * 
+	 *
 	 * @param input
 	 *            The file to read the {@link FImage} from.
 	 * @return An {@link FImage}
 	 * @throws IOException
 	 *             if the file cannot be read
 	 */
-	public static FImage readF(File input) throws IOException {
-		return createFImage(ExtendedImageIO.read(input));
+	public static FImage readF(final File input) throws IOException {
+		return ImageUtilities.createFImage(ExtendedImageIO.read(input));
 	}
 
 	/**
 	 * Reads an {@link FImage} from the given input stream.
-	 * 
+	 *
 	 * @param input
 	 *            The input stream to read the {@link FImage} from.
 	 * @return An {@link FImage}
 	 * @throws IOException
 	 *             if the stream cannot be read
 	 */
-	public static FImage readF(InputStream input) throws IOException {
-		return createFImage(ExtendedImageIO.read(input));
+	public static FImage readF(final InputStream input) throws IOException {
+		return ImageUtilities.createFImage(ExtendedImageIO.read(input));
 	}
 
 	/**
 	 * Reads an {@link FImage} from the given URL.
-	 * 
+	 *
 	 * @param input
 	 *            The URL to read the {@link FImage} from.
 	 * @return An {@link FImage}
 	 * @throws IOException
 	 *             if the URL stream cannot be read
 	 */
-	public static FImage readF(URL input) throws IOException {
-		return createFImage(ExtendedImageIO.read(input));
+	public static FImage readF(final URL input) throws IOException {
+		return ImageUtilities.createFImage(ExtendedImageIO.read(input));
 	}
 
 	/**
 	 * Reads an {@link MBFImage} from the given file.
-	 * 
+	 *
 	 * @param input
 	 *            The file to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
 	 * @throws IOException
 	 *             if the file cannot be read
 	 */
-	public static MBFImage readMBF(File input) throws IOException {
-		return createMBFImage(ExtendedImageIO.read(input), false);
+	public static MBFImage readMBF(final File input) throws IOException {
+		return ImageUtilities.createMBFImage(ExtendedImageIO.read(input), false);
 	}
 
 	/**
 	 * Reads an {@link MBFImage} from the given input stream.
-	 * 
+	 *
 	 * @param input
 	 *            The input stream to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
 	 * @throws IOException
 	 *             if the stream cannot be read
 	 */
-	public static MBFImage readMBF(InputStream input) throws IOException {
-		return createMBFImage(ExtendedImageIO.read(input), false);
+	public static MBFImage readMBF(final InputStream input) throws IOException {
+		return ImageUtilities.createMBFImage(ExtendedImageIO.read(input), false);
 	}
 
 	/**
 	 * Reads an {@link MBFImage} from the given URL.
-	 * 
+	 *
 	 * @param input
 	 *            The URL to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
 	 * @throws IOException
 	 *             if the URL stream cannot be read
 	 */
-	public static MBFImage readMBF(URL input) throws IOException {
-		return createMBFImage(ExtendedImageIO.read(input), false);
+	public static MBFImage readMBF(final URL input) throws IOException {
+		return ImageUtilities.createMBFImage(ExtendedImageIO.read(input), false);
 	}
 
 	/**
 	 * Reads an {@link MBFImage} from the given file. The resultant MBImage will
 	 * contain an alpha channel
-	 * 
+	 *
 	 * @param input
 	 *            The file to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
 	 * @throws IOException
 	 *             if the file cannot be read
 	 */
-	public static MBFImage readMBFAlpha(File input) throws IOException {
-		return createMBFImage(ExtendedImageIO.read(input), true);
+	public static MBFImage readMBFAlpha(final File input) throws IOException {
+		return ImageUtilities.createMBFImage(ExtendedImageIO.read(input), true);
 	}
 
 	/**
 	 * Reads an {@link MBFImage} from the given input stream. The resultant
 	 * MBImage will contain an alpha channel
-	 * 
+	 *
 	 * @param input
 	 *            The input stream to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
 	 * @throws IOException
 	 *             if the stream cannot be read
 	 */
-	public static MBFImage readMBFAlpha(InputStream input) throws IOException {
-		return createMBFImage(ExtendedImageIO.read(input), true);
+	public static MBFImage readMBFAlpha(final InputStream input) throws IOException {
+		return ImageUtilities.createMBFImage(ExtendedImageIO.read(input), true);
 	}
 
 	/**
 	 * Reads an {@link MBFImage} from the given URL. The resultant MBImage will
 	 * contain an alpha channel
-	 * 
+	 *
 	 * @param input
 	 *            The URL to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
 	 * @throws IOException
 	 *             if the URL stream cannot be read
 	 */
-	public static MBFImage readMBFAlpha(URL input) throws IOException {
-		return createMBFImage(ExtendedImageIO.read(input), true);
+	public static MBFImage readMBFAlpha(final URL input) throws IOException {
+		return ImageUtilities.createMBFImage(ExtendedImageIO.read(input), true);
 	}
 
 	/**
 	 * Checks whether the width and height of all the given images match.
-	 * 
+	 *
 	 * @param images
 	 *            The images to compare sizes.
 	 * @return TRUE if all the images are the same size; FALSE otherwise
 	 */
-	protected static boolean checkSameSize(Image<?, ?>... images) {
+	protected static boolean checkSameSize(final Image<?, ?>... images) {
 		if (images == null || images.length == 0)
 			return true;
 
@@ -433,13 +433,13 @@ public class ImageUtilities {
 		final int w = image.getWidth();
 		final int h = image.getHeight();
 
-		return checkSize(h, w, images);
+		return ImageUtilities.checkSize(h, w, images);
 	}
 
 	/**
 	 * Checks whether the width and height of all the given images match the
 	 * given width and height.
-	 * 
+	 *
 	 * @param h
 	 *            The height to match against all the images
 	 * @param w
@@ -449,7 +449,7 @@ public class ImageUtilities {
 	 * @return TRUE if all the images are <code>wxh</code> in size; FALSE
 	 *         otherwise
 	 */
-	protected static boolean checkSize(int h, int w, Image<?, ?>... images) {
+	protected static boolean checkSize(final int h, final int w, final Image<?, ?>... images) {
 		for (final Image<?, ?> image : images)
 			if (image.getHeight() != h || image.getWidth() != w)
 				return false;
@@ -459,7 +459,7 @@ public class ImageUtilities {
 	/**
 	 * Checks whether the width and height of all the given images match the
 	 * given width and height.
-	 * 
+	 *
 	 * @param h
 	 *            The height to match against all the images
 	 * @param w
@@ -469,7 +469,7 @@ public class ImageUtilities {
 	 * @return TRUE if all the images are <code>wxh</code> in size; FALSE
 	 *         otherwise
 	 */
-	protected static boolean checkSize(int h, int w, Iterable<? extends Image<?, ?>> images) {
+	protected static boolean checkSize(final int h, final int w, final Iterable<? extends Image<?, ?>> images) {
 		for (final Image<?, ?> image : images)
 			if (image.getHeight() != h || image.getWidth() != w)
 				return false;
@@ -480,7 +480,7 @@ public class ImageUtilities {
 	 * Reads a PNM header from the byte array containing the PNM binary data.
 	 * The <code>headerData</code> variable will be populated with the header
 	 * information. Returns the number of bytes read from the array.
-	 * 
+	 *
 	 * @param data
 	 *            The PNM binary data.
 	 * @param headerData
@@ -489,7 +489,7 @@ public class ImageUtilities {
 	 * @throws IOException
 	 *             if the byte array does not contain PNM information.
 	 */
-	protected static int pnmReadHeader(byte[] data, Map<String, Integer> headerData) throws IOException {
+	protected static int pnmReadHeader(final byte[] data, final Map<String, Integer> headerData) throws IOException {
 		final ByteArrayInputStream bais = new ByteArrayInputStream(data);
 		final InputStreamReader isr = new InputStreamReader(bais);
 		final BufferedReader br = new BufferedReader(isr);
@@ -530,14 +530,14 @@ public class ImageUtilities {
 
 	/**
 	 * Returns the contents of a file in a byte array.
-	 * 
+	 *
 	 * @param file
 	 *            The file to read
 	 * @return A byte array representation of the file.
 	 * @throws IOException
 	 *             if the file cannot be read fully.
 	 */
-	protected static byte[] getBytes(File file) throws IOException {
+	protected static byte[] getBytes(final File file) throws IOException {
 		InputStream is = null;
 		try {
 			is = new FileInputStream(file);
@@ -581,14 +581,14 @@ public class ImageUtilities {
 	/**
 	 * Converts the input stream to a byte array. The input stream is fully
 	 * read.
-	 * 
+	 *
 	 * @param stream
 	 *            The {@link InputStream} to convert to byte array
 	 * @return A byte array representation of the {@link InputStream} data.
 	 * @throws IOException
 	 *             if the input stream cannot be fully read.
 	 */
-	protected static byte[] getBytes(InputStream stream) throws IOException {
+	protected static byte[] getBytes(final InputStream stream) throws IOException {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		final byte[] b = new byte[4096];
 
@@ -600,25 +600,25 @@ public class ImageUtilities {
 
 	/**
 	 * Convert any image to a {@link BufferedImage}.
-	 * 
+	 *
 	 * @param img
 	 *            image to convert
 	 * @return BufferedImage representation
 	 */
-	public static BufferedImage createBufferedImage(Image<?, ?> img) {
-		return createBufferedImage(img, null);
+	public static BufferedImage createBufferedImage(final Image<?, ?> img) {
+		return ImageUtilities.createBufferedImage(img, null);
 	}
 
 	/**
 	 * Convert any image to a {@link BufferedImage}.
-	 * 
+	 *
 	 * @param img
 	 *            image to convert
 	 * @param bimg
 	 *            BufferedImage to draw into if possible. Can be null.
 	 * @return BufferedImage representation
 	 */
-	public static BufferedImage createBufferedImage(Image<?, ?> img, BufferedImage bimg) {
+	public static BufferedImage createBufferedImage(final Image<?, ?> img, BufferedImage bimg) {
 		if (bimg == null || bimg.getWidth() != img.getWidth() || bimg.getHeight() != img.getHeight()
 				|| bimg.getType() != BufferedImage.TYPE_INT_ARGB)
 			bimg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -630,34 +630,34 @@ public class ImageUtilities {
 
 	/**
 	 * Convert any image to a {@link BufferedImage}.
-	 * 
+	 *
 	 * @param img
 	 *            image to convert
 	 * @return BufferedImage representation
 	 */
-	public static BufferedImage createBufferedImageForDisplay(Image<?, ?> img) {
+	public static BufferedImage createBufferedImageForDisplay(final Image<?, ?> img) {
 		if (img instanceof MBFImage)
-			return createBufferedImageForDisplay((MBFImage) img);
+			return ImageUtilities.createBufferedImageForDisplay((MBFImage) img);
 		else if (img instanceof FImage)
-			return createBufferedImage((FImage) img);
-		return createBufferedImage(img);
+			return ImageUtilities.createBufferedImage((FImage) img);
+		return ImageUtilities.createBufferedImage(img);
 	}
 
 	/**
 	 * Convert any image to a {@link BufferedImage}.
-	 * 
+	 *
 	 * @param img
 	 *            image to convert
 	 * @param bimg
 	 *            BufferedImage to draw into if possible. Can be null.
 	 * @return BufferedImage representation
 	 */
-	public static BufferedImage createBufferedImageForDisplay(Image<?, ?> img, BufferedImage bimg) {
+	public static BufferedImage createBufferedImageForDisplay(final Image<?, ?> img, final BufferedImage bimg) {
 		if (img instanceof MBFImage)
-			return createBufferedImageForDisplay((MBFImage) img, bimg);
+			return ImageUtilities.createBufferedImageForDisplay((MBFImage) img, bimg);
 		else if (img instanceof FImage)
-			return createBufferedImage((FImage) img, bimg);
-		return createBufferedImage(img, bimg);
+			return ImageUtilities.createBufferedImage((FImage) img, bimg);
+		return ImageUtilities.createBufferedImage(img, bimg);
 	}
 
 	/**
@@ -665,13 +665,13 @@ public class ImageUtilities {
 	 * typically much faster than to create and display than an ARGB buffered
 	 * image. If the input image is not in RGB format, then the ARGB form will
 	 * be returned instead.
-	 * 
+	 *
 	 * @param img
 	 *            the image to convert
 	 * @return the converted image
 	 */
-	public static BufferedImage createBufferedImageForDisplay(MBFImage img) {
-		return createBufferedImageForDisplay(img, null);
+	public static BufferedImage createBufferedImageForDisplay(final MBFImage img) {
+		return ImageUtilities.createBufferedImageForDisplay(img, null);
 	}
 
 	/**
@@ -679,16 +679,16 @@ public class ImageUtilities {
 	 * typically much faster than to create and display than an ARGB buffered
 	 * image. If the input image is not in RGB format, then the ARGB form will
 	 * be returned instead.
-	 * 
+	 *
 	 * @param img
 	 *            the image to convert
 	 * @param ret
 	 *            the image to draw into if possible. Can be null.
 	 * @return the converted image. Might not be the same as the ret parameter.
 	 */
-	public static BufferedImage createBufferedImageForDisplay(MBFImage img, BufferedImage ret) {
+	public static BufferedImage createBufferedImageForDisplay(final MBFImage img, BufferedImage ret) {
 		if (img.colourSpace != ColourSpace.RGB)
-			return createBufferedImage(img, ret);
+			return ImageUtilities.createBufferedImage(img, ret);
 
 		final int width = img.getWidth();
 		final int height = img.getHeight();
@@ -723,26 +723,26 @@ public class ImageUtilities {
 	/**
 	 * Efficiently create a TYPE_BYTE_GRAY for display. This is typically much
 	 * faster than to create and display than an ARGB buffered image.
-	 * 
+	 *
 	 * @param img
 	 *            the image to convert
 	 * @return the converted image
 	 */
-	public static BufferedImage createBufferedImage(FImage img) {
-		return createBufferedImage(img, null);
+	public static BufferedImage createBufferedImage(final FImage img) {
+		return ImageUtilities.createBufferedImage(img, null);
 	}
 
 	/**
 	 * Efficiently create a TYPE_BYTE_GRAY for display. This is typically much
 	 * faster than to create and display than an ARGB buffered image.
-	 * 
+	 *
 	 * @param img
 	 *            the image to convert
 	 * @param ret
 	 *            BufferedImage to draw into if possible. Can be null.
 	 * @return the converted image
 	 */
-	public static BufferedImage createBufferedImage(FImage img, BufferedImage ret) {
+	public static BufferedImage createBufferedImage(final FImage img, BufferedImage ret) {
 		final int width = img.getWidth();
 		final int height = img.getHeight();
 
@@ -771,7 +771,7 @@ public class ImageUtilities {
 
 	/**
 	 * Write an image to a {@link DataOutput}.
-	 * 
+	 *
 	 * @param img
 	 *            the image
 	 * @param formatName
@@ -781,33 +781,33 @@ public class ImageUtilities {
 	 * @throws IOException
 	 *             if an error occurs
 	 */
-	public static void write(Image<?, ?> img, String formatName, DataOutput out) throws IOException {
+	public static void write(final Image<?, ?> img, final String formatName, final DataOutput out) throws IOException {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		write(img, formatName, baos);
+		ImageUtilities.write(img, formatName, baos);
 		out.writeInt(baos.size());
 		out.write(baos.toByteArray());
 	}
 
 	/**
 	 * Read an {@link FImage} from a DataInput
-	 * 
+	 *
 	 * @param in
 	 *            input
 	 * @return new FImage
 	 * @throws IOException
 	 *             if error occurs
 	 */
-	public static FImage readF(DataInput in) throws IOException {
+	public static FImage readF(final DataInput in) throws IOException {
 		final int sz = in.readInt();
 		final byte[] bytes = new byte[sz];
 		in.readFully(bytes);
 
-		return readF(new ByteArrayInputStream(bytes));
+		return ImageUtilities.readF(new ByteArrayInputStream(bytes));
 	}
 
 	/**
 	 * Assign the contents of a {@link BufferedImage} to an {@link Image}.
-	 * 
+	 *
 	 * @param <I>
 	 *            the type of {@link Image}
 	 * @param img
@@ -816,10 +816,68 @@ public class ImageUtilities {
 	 *            the {@link Image} to fill
 	 * @return the given input image.
 	 */
-	public static <I extends Image<?, I>> I assignBufferedImage(BufferedImage img, I oiImage) {
-		final BufferedImage bimg = createWorkingImage(img);
+	public static <I extends Image<?, I>> I assignBufferedImage(final BufferedImage img, final I oiImage) {
+		final BufferedImage bimg = ImageUtilities.createWorkingImage(img);
 		final int[] data = bimg.getRGB(0, 0, bimg.getWidth(), bimg.getHeight(), null, 0, bimg.getWidth());
 
 		return oiImage.internalAssign(data, bimg.getWidth(), bimg.getHeight());
+	}
+
+	/**
+	 * 	Alpha composites the pixel p1 with the pixel p2, returning the value
+	 * 	in pixel p1
+	 *	@param p1 The first pixel
+	 *	@param p2 The second pixel
+	 *	@return The updates first pixel p1
+	 */
+	public static float[] alphaCompositePixel( final float[] p1, final float[] p2 )
+	{
+		final float thisR = p1[0];
+		final float thisG = p1[1];
+		final float thisB = p1[2];
+		float thisA = 1f;
+		if( p1.length == 4 )
+			thisA = p1[3];
+		float thatA = 1f;
+		if( p2.length == 4 )
+			thatA = p2[3];
+		final float thatR = p2[0];
+		final float thatG = p2[1];
+		final float thatB = p2[2];
+
+		float a = thatA + thisA * (1 - thatA);
+		a = a > 1.0f ? 1.0f : a;
+		float r = thatR * thatA + (thisR * thisA) * (1 - thatA);
+		r = r > 1.0f ? 1.0f : r;
+		float g = thatG * thatA + (thisG * thisA) * (1 - thatA);
+		g = g > 1.0f ? 1.0f : g;
+		float b = thatB * thatA + (thisB * thisA) * (1 - thatA);
+		b = b > 1.0f ? 1.0f : b;
+
+		p1[0] = r;
+		p1[1] = g;
+		p1[2] = b;
+		if( p1.length == 4 )
+			p1[3] = a;
+
+		return p1;
+	}
+
+	/**
+	 * 	Alpha composites the pixel p1 with the pixel p2, returning the value
+	 * 	in pixel p1
+	 *	@param p1 The first pixel
+	 *	@param p2 The second pixel
+	 *	@return The updates first pixel p1
+	 */
+	public static float[] alphaCompositePixel( final Float[] p1, final Float[] p2 )
+	{
+		final float[] p1p = new float[p1.length];
+		for( int b = 0; b < p1.length; b++ )
+			p1p[b] = p1[b];
+		final float[] p2p = new float[p2.length];
+		for( int b = 0; b < p2.length; b++ )
+			p2p[b] = p2[b];
+		return ImageUtilities.alphaCompositePixel( p1p, p2p );
 	}
 }

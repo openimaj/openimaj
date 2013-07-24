@@ -32,19 +32,20 @@ package org.openimaj.image.renderer;
 import java.util.Arrays;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 
 /**
  * {@link ImageRenderer} for {@link MBFImage} images.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage> {
 
 	/**
 	 * Construct with given target image.
-	 * 
+	 *
 	 * @param targetImage
 	 *            the target image.
 	 */
@@ -54,7 +55,7 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 
 	/**
 	 * Construct with given target image and rendering hints.
-	 * 
+	 *
 	 * @param targetImage
 	 *            the target image.
 	 * @param hints
@@ -79,7 +80,7 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 	/**
 	 * Draw the provided image at the given coordinates. Parts of the image
 	 * outside the bounds of this image will be ignored
-	 * 
+	 *
 	 * @param image
 	 *            Image to draw.
 	 * @param x
@@ -118,46 +119,22 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 		 * correctly. Basically you add together the pixel values such that the
 		 * pixel on top dominates (i.e. the image being added)
 		 */
-		float thisA = 1.0f, thatA = 1.0f, thisR, thisG, thisB, thatR, thatG, thatB, a, r, g, b;
+//		final float thisA = 1.0f, thatA = 1.0f, thisR, thisG, thisB, thatR, thatG, thatB, a, r, g, b;
 		for (int yy = starty; yy < stopy; yy++) {
 			final int thatY = yy - y;
 
 			for (int xx = startx; xx < stopx; xx++) {
+
 				final int thatX = xx - x;
 
-				if (thisPixels.length == 4) {
-					thisA = thisPixels[3][yy][xx];
+				final float[] p = ImageUtilities.alphaCompositePixel(
+					this.targetImage.getPixel( xx,yy ), image.getPixel( thatX, thatY ) );
 
-				}
-				thisR = thisPixels[0][yy][xx];
-				thisG = thisPixels[1][yy][xx];
-				thisB = thisPixels[2][yy][xx];
-				if (thatPixels.length == 4) {
-					thatA = thatPixels[3][thatY][thatX];
-				}
-				thatR = thatPixels[0][thatY][thatX];
-				thatG = thatPixels[1][thatY][thatX];
-				thatB = thatPixels[2][thatY][thatX];
-
-				a = thatA + thisA * (1 - thatA);
-				a = a > 1.0f ? 1.0f : a;
-				r = thatR * thatA + (thisR * thisA) * (1 - thatA);
-				r = r > 1.0f ? 1.0f : r;
-				g = thatG * thatA + (thisG * thisA) * (1 - thatA);
-				g = g > 1.0f ? 1.0f : g;
-				b = thatB * thatA + (thisB * thisA) * (1 - thatA);
-				b = b > 1.0f ? 1.0f : b;
-
-				if (thisPixels.length == 4) {
-					thisPixels[0][yy][xx] = r;
-					thisPixels[1][yy][xx] = g;
-					thisPixels[2][yy][xx] = b;
-					thisPixels[3][yy][xx] = a;
-				} else {
-					thisPixels[0][yy][xx] = r;
-					thisPixels[1][yy][xx] = g;
-					thisPixels[2][yy][xx] = b;
-				}
+				thisPixels[0][yy][xx] = p[0];
+				thisPixels[1][yy][xx] = p[1];
+				thisPixels[2][yy][xx] = p[2];
+				if( p.length == 4 )
+					thisPixels[3][yy][xx] = p[3];
 			}
 		}
 	}
