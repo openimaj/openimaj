@@ -112,4 +112,9 @@ public class DiskCachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		return this.extractor.toString();
+	}
 }

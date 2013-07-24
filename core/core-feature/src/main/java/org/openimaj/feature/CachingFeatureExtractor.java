@@ -73,4 +73,9 @@ public class CachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 		return feature;
 	}
 
+	@Override
+	public String toString() {
+		return this.extractor.toString();
+	}
+
 }

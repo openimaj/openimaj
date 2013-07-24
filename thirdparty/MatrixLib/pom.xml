@@ -10,7 +10,6 @@
   <groupId>org.openimaj</groupId>
   <version>1.1.1-SNAPSHOT</version>
   <artifactId>MatrixLib</artifactId>
-  <packaging>jar</packaging>
 
   <name>MatrixLib</name>
   <url>http://maven.apache.org</url>
@@ -32,5 +31,11 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-citation</artifactId>
+      <version>1.1.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
+
 </project>
