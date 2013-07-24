@@ -51,6 +51,7 @@ import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.io.IOUtils;
+import org.openimaj.time.Timer;
 
 /**
  * Hadoop version of the LocalFeaturesTool. Capable of extracting features from
@@ -95,6 +96,7 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 				map(Text key, BytesWritable value, Context context) throws IOException, InterruptedException
 		{
 			try {
+				final Timer t = Timer.timer();
 				logger.info("Generating Keypoint for image: " + key);
 				logger.trace("Keypoint mode: " + options.getMode());
 				ByteArrayOutputStream baos = null;
@@ -114,7 +116,7 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 					IOUtils.writeBinary(baos, kpl);
 				}
 				context.write(key, new BytesWritable(baos.toByteArray()));
-				logger.debug("Done!");
+				logger.info("Done in " + t.duration() + "ms");
 				context.getCounter(Counters.SUCCESSFUL).increment(1L);
 			} catch (final Throwable e) {
 				context.getCounter(Counters.FAILED).increment(1L);

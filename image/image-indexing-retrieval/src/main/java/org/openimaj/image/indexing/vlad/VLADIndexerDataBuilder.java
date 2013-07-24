@@ -114,6 +114,7 @@ public class VLADIndexerDataBuilder {
 	private int numPqIterations = 100;
 	private int numPqAssigners = 16;
 	private float sampleProp = 0.1f;
+	private float pcaSampleProp;
 	private Function<List<? extends LocalFeature<?, ?>>, List<FloatLocalFeatureAdaptor<?>>> postProcess = StandardPostProcesses.NONE;
 
 	/**
@@ -142,13 +143,15 @@ public class VLADIndexerDataBuilder {
 	 * @param sampleProp
 	 *            the proportion of features to sample for the clustering the
 	 *            VLAD centroids
+	 * @param pcaSampleProp
+	 *            the proportion of images to sample for computing the PCA basis
 	 * @param postProcess
 	 *            the post-processing to apply to the raw features before input
 	 *            to VLAD
 	 */
 	public VLADIndexerDataBuilder(LocalFeatureExtractor<LocalFeature<?, ?>, MBFImage> extractor,
 			List<File> localFeatures, boolean normalise, int numVladCentroids, int numIterations, int numPcaDims,
-			int numPqIterations, int numPqAssigners, float sampleProp,
+			int numPqIterations, int numPqAssigners, float sampleProp, float pcaSampleProp,
 			Function<List<? extends LocalFeature<?, ?>>, List<FloatLocalFeatureAdaptor<?>>> postProcess)
 	{
 		super();
@@ -161,6 +164,7 @@ public class VLADIndexerDataBuilder {
 		this.numPqIterations = numPqIterations;
 		this.numPqAssigners = numPqAssigners;
 		this.sampleProp = sampleProp;
+		this.pcaSampleProp = pcaSampleProp;
 		this.postProcess = postProcess == null ? StandardPostProcesses.NONE : postProcess;
 	}
 
@@ -183,17 +187,8 @@ public class VLADIndexerDataBuilder {
 	 * @throws IOException
 	 */
 	public VLADIndexerData buildIndexerData() throws IOException {
-		// Load the data and normalise
-		System.out.println("Loading Data from " + localFeatures.size() + " files");
-		final List<FloatLocalFeatureAdaptor<?>> samples = loadSample();
+		final VLAD<float[]> vlad = buildVLAD();
 
-		// cluster
-		System.out.println("Clustering " + samples.size() + " Data Points");
-		final FloatCentroidsResult centroids = cluster(samples);
-
-		// build vlads
-		System.out.println("Building VLADs");
-		final VLAD<float[]> vlad = new VLAD<float[]>(new ExactFloatAssigner(centroids), centroids, normalise);
 		final List<MultidimensionalFloatFV> vlads = computeVLADs(vlad);
 
 		// learn PCA basis
@@ -215,6 +210,31 @@ public class VLADIndexerDataBuilder {
 		final FloatProductQuantiser pq = FloatProductQuantiserUtilities.train(pcaVlads, numPqAssigners, numPqIterations);
 
 		return new VLADIndexerData(vlad, pca, pq, extractor, postProcess);
+	}
+
+	/**
+	 * Build a {@link VLAD} using the information provided at construction time.
+	 * The following steps are taken:
+	 * <p>
+	 * <ol>
+	 * <li>A sample of the features is loaded
+	 * <li>The sample is clustered using k-means
+	 * </ol>
+	 * 
+	 * @return the {@link VLAD}
+	 */
+	public VLAD<float[]> buildVLAD() {
+		// Load the data and normalise
+		System.out.println("Loading Data from " + localFeatures.size() + " files");
+		final List<FloatLocalFeatureAdaptor<?>> samples = loadSample();
+
+		// cluster
+		System.out.println("Clustering " + samples.size() + " Data Points");
+		final FloatCentroidsResult centroids = cluster(samples);
+
+		// build vlads
+		System.out.println("Building VLADs");
+		return new VLAD<float[]>(new ExactFloatAssigner(centroids), centroids, normalise);
 	}
 
 	private Matrix createRandomWhitening(final int ndims) {
@@ -262,7 +282,11 @@ public class VLADIndexerDataBuilder {
 	private List<MultidimensionalFloatFV> computeVLADs(final VLAD<float[]> vlad) {
 		final List<MultidimensionalFloatFV> vlads = new ArrayList<MultidimensionalFloatFV>();
 
-		Parallel.forEach(localFeatures, new Operation<File>() {
+		final int[] indices = RandomData.getUniqueRandomInts((int) (localFeatures.size() * pcaSampleProp), 0,
+				localFeatures.size());
+		final List<File> selectedLocalFeatures = new AcceptingListView<File>(localFeatures, indices);
+
+		Parallel.forEach(selectedLocalFeatures, new Operation<File>() {
 			@Override
 			public void perform(File file) {
 				try {

@@ -124,6 +124,40 @@ public class VLADIndexerData {
 	}
 
 	/**
+	 * Extract the product-quantised PCA-projected VLAD feature from the given
+	 * raw local features. The local features will be post-processed before
+	 * being aggregated using {@link VLAD} and projected by the PCA basis.
+	 * 
+	 * @param features
+	 *            the raw local features
+	 * @return the product-quantised pca-vlad aggregated representation of the
+	 *         image
+	 */
+	public byte[] extractPQPcaVlad(List<? extends LocalFeature<?, ?>> features) {
+		final MultidimensionalFloatFV keys = vlad.aggregate(postProcess.apply(features));
+
+		if (keys == null)
+			return null;
+
+		final DoubleFV subspaceVector = pca.project(keys).normaliseFV(2);
+		return pq.quantise(ArrayUtils.convertToFloat(subspaceVector.values));
+	}
+
+	/**
+	 * Extract the product-quantisedPCA-projected VLAD feature from the given
+	 * image. The local features will be post-processed before being aggregated
+	 * using {@link VLAD} and projected by the PCA basis.
+	 * 
+	 * @param image
+	 *            the image to extract from
+	 * @return the product-quantised pca-vlad aggregated representation of the
+	 *         image
+	 */
+	public byte[] extractPQPcaVlad(MBFImage image) {
+		return extractPQPcaVlad(extractor.extractFeature(image));
+	}
+
+	/**
 	 * Get the product quantiser
 	 * 
 	 * @return get the product quantiser

@@ -24,6 +24,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.openimaj.tools</groupId>
+      <artifactId>LocalFeaturesTool</artifactId>
+      <version>1.1.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
       <version>1.1.1-SNAPSHOT</version>
@@ -58,20 +64,22 @@
           <useDefaultMapping>true</useDefaultMapping>
         </configuration>
       </plugin>
-      <!-- <plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2.1</version>
         <configuration>
+					<finalName>CBIRTools</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass></mainClass>
+              <mainClass>org.openimaj.tools.cbir.CBIRMain</mainClass>
             </manifest>
           </archive>
         </configuration>
-      </plugin> -->
+      </plugin>
     </plugins>
   </build>
 </project>

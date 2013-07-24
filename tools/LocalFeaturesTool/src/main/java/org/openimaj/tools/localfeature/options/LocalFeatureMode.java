@@ -31,6 +31,8 @@ package org.openimaj.tools.localfeature.options;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
@@ -109,9 +111,6 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Dense SIFT
-	 * 
-	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
 	 */
 	DENSE_SIFT {
 		@Override
@@ -121,9 +120,6 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Colour Dense SIFT
-	 * 
-	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
 	 */
 	COLOUR_DENSE_SIFT {
 		@Override
@@ -133,9 +129,6 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Dense SIFT in a pyramid
-	 * 
-	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
 	 */
 	PYRAMID_DENSE_SIFT {
 		@Override
@@ -145,9 +138,6 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Dense colour SIFT in a pyramid
-	 * 
-	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
 	 */
 	PYRAMID_COLOUR_DENSE_SIFT {
 		@Override
@@ -434,7 +424,11 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	}
 
 	private static abstract class AbstractDenseSiftMode extends LocalFeatureModeOp {
-		@Option(name = "--approximate", aliases = "-a", required = false, usage = "Enable approximate mode (much faster)")
+		@Option(
+				name = "--approximate",
+				aliases = "-ap",
+				required = false,
+				usage = "Enable approximate mode (much faster)")
 		boolean approximate;
 
 		@Option(
@@ -445,8 +439,8 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		protected int stepX = 5;
 
 		@Option(
-				name = "--step-x",
-				aliases = "-sx",
+				name = "--step-y",
+				aliases = "-sy",
 				required = false,
 				usage = "Step size of sampling window in y-direction (in pixels)")
 		protected int stepY = 5;
@@ -599,8 +593,9 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		@Option(
 				name = "--sizes",
 				aliases = "-s",
+				required = true,
 				usage = "Scales at which the dense SIFT features are extracted. Each value is used as bin size for the DenseSIFT.")
-		int[] sizes = { 4, 6, 8, 10 };
+		List<Integer> sizes = new ArrayList<Integer>();
 
 		@Option(
 				name = "--magnification-factor",
@@ -622,16 +617,26 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			return extractFeature(Transforms.calculateIntensityNTSC(image));
 		}
 
+		protected int[] toArray(List<Integer> in) {
+			final int[] out = new int[in.size()];
+
+			for (int i = 0; i < out.length; i++) {
+				out[i] = in.get(i);
+			}
+
+			return out;
+		}
+
 		LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(FImage image) {
 			final PyramidDenseSIFT<FImage> dsift;
 
 			if (approximate)
 				dsift = new PyramidDenseSIFT<FImage>(new ApproximateDenseSIFT(stepX, stepY, 1, 1, numBinsX, numBinsY,
 						numOriBins,
-						gaussianWindowSize, valueThreshold), magnificationFactor, sizes);
+						gaussianWindowSize, valueThreshold), magnificationFactor, toArray(sizes));
 			else
 				dsift = new PyramidDenseSIFT<FImage>(new DenseSIFT(stepX, stepY, 1, 1, numBinsX, numBinsY, numOriBins,
-						gaussianWindowSize, valueThreshold), magnificationFactor, sizes);
+						gaussianWindowSize, valueThreshold), magnificationFactor, toArray(sizes));
 
 			dsift.analyseImage(image);
 
@@ -675,12 +680,12 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 				dsift = new PyramidDenseSIFT<MBFImage>(new ColourDenseSIFT(new ApproximateDenseSIFT(stepX, stepY, 1, 1,
 						numBinsX,
 						numBinsY, numOriBins,
-						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, sizes);
+						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, toArray(sizes));
 			else
 				dsift = new PyramidDenseSIFT<MBFImage>(new ColourDenseSIFT(new DenseSIFT(stepX, stepY, 1, 1, numBinsX,
 						numBinsY,
 						numOriBins,
-						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, sizes);
+						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, toArray(sizes));
 
 			dsift.analyseImage(image);
 

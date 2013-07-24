@@ -28,7 +28,7 @@ import org.openimaj.util.array.ArrayUtils;
  * 
  */
 public class DenseSIFT extends AbstractDenseSIFT<FImage> {
-	class WorkingData {
+	static class WorkingData {
 		/**
 		 * minimum X bound for sampling the descriptors (inclusive)
 		 */
@@ -63,28 +63,28 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 		 * @param image
 		 *            the image being analysed
 		 */
-		protected void setupWorkingSpace(FImage image) {
+		protected void setupWorkingSpace(FImage image, DenseSIFT dsift) {
 			if (gradientMagnitudes == null) {
-				gradientMagnitudes = new FImage[numOriBins];
+				gradientMagnitudes = new FImage[dsift.numOriBins];
 			}
 
 			if (gradientMagnitudes[0] == null || gradientMagnitudes[0].width != image.width
 					|| gradientMagnitudes[0].height != image.height)
 			{
-				for (int i = 0; i < numOriBins; i++)
+				for (int i = 0; i < dsift.numOriBins; i++)
 					gradientMagnitudes[i] = new FImage(image.width, image.height);
 			}
 
-			final int rangeX = boundMaxX - boundMinX - (numBinsX - 1) * binWidth;
-			final int rangeY = boundMaxY - boundMinY - (numBinsY - 1) * binHeight;
+			final int rangeX = boundMaxX - boundMinX - (dsift.numBinsX - 1) * dsift.binWidth;
+			final int rangeY = boundMaxY - boundMinY - (dsift.numBinsY - 1) * dsift.binHeight;
 
-			final int numWindowsX = (rangeX >= 0) ? rangeX / stepX + 1 : 0;
-			final int numWindowsY = (rangeY >= 0) ? rangeY / stepY + 1 : 0;
+			final int numWindowsX = (rangeX >= 0) ? rangeX / dsift.stepX + 1 : 0;
+			final int numWindowsY = (rangeY >= 0) ? rangeY / dsift.stepY + 1 : 0;
 
 			final int numFeatures = numWindowsX * numWindowsY;
 
-			descriptors = new float[numFeatures][numOriBins * numBinsX * numBinsY];
-			energies = new float[numFeatures];
+			dsift.descriptors = new float[numFeatures][dsift.numOriBins * dsift.numBinsX * dsift.numBinsY];
+			dsift.energies = new float[numFeatures];
 		}
 	}
 
@@ -133,17 +133,17 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 	 */
 	protected float valueThreshold = 0.2f;
 
-	protected WorkingData data = new WorkingData();
+	protected volatile WorkingData data = new WorkingData();
 
 	/**
 	 * Extracted descriptors
 	 */
-	protected float[][] descriptors;
+	protected volatile float[][] descriptors;
 
 	/**
 	 * Descriptor energies
 	 */
-	protected float[] energies;
+	protected volatile float[] energies;
 
 	/**
 	 * Construct with the default configuration: standard SIFT geometry (4x4x8),
@@ -308,12 +308,15 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 
 	@Override
 	public void analyseImage(FImage image, Rectangle bounds) {
+		if (data == null)
+			data = new WorkingData();
+
 		data.boundMinX = (int) bounds.x;
 		data.boundMaxX = (int) (bounds.width - 1);
 		data.boundMinY = (int) bounds.y;
 		data.boundMaxY = (int) (bounds.height - 1);
 
-		data.setupWorkingSpace(image);
+		data.setupWorkingSpace(image, this);
 
 		FImageGradients.gradientMagnitudesAndQuantisedOrientations(image, data.gradientMagnitudes);
 
@@ -445,8 +448,13 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 
 	@Override
 	public DenseSIFT clone() {
-		return new DenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins, gaussianWindowSize,
-				valueThreshold);
+		final DenseSIFT clone = (DenseSIFT) super.clone();
+
+		clone.descriptors = null;
+		clone.energies = null;
+		clone.data = null;
+
+		return clone;
 	}
 
 	@Override

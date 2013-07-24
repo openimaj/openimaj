@@ -2,9 +2,16 @@ package org.openimaj.image.objectdetection.hog;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.openimaj.data.RandomData;
 import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListBackedDataset;
 import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.MapBackedDataset;
 import org.openimaj.feature.DatasetExtractors;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
@@ -20,6 +27,9 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.statistics.distribution.Histogram;
 import org.openimaj.ml.annotation.linear.LiblinearAnnotator;
 import org.openimaj.ml.annotation.linear.LiblinearAnnotator.Mode;
+import org.openimaj.util.list.AcceptingListView;
+import org.openimaj.util.list.ConcatenatedList;
+import org.openimaj.util.pair.IntObjectPair;
 
 import de.bwaldvogel.liblinear.SolverType;
 
@@ -56,77 +66,75 @@ public class Training {
 		final GroupedDataset<Boolean, ListDataset<DoubleFV>, DoubleFV> trainingData = DatasetExtractors
 				.createLazyFeatureDataset(trainingImages, new Extractor(hogClassifier));
 
-		final LiblinearAnnotator<DoubleFV, Boolean> ann = new LiblinearAnnotator<DoubleFV, Boolean>(
-				new IdentityFeatureExtractor<DoubleFV>(), Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 100, 0.01, true);
+		LiblinearAnnotator<DoubleFV, Boolean> ann = new LiblinearAnnotator<DoubleFV, Boolean>(
+				new IdentityFeatureExtractor<DoubleFV>(), Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 0.01, 0.01, 1, true);
 		ann.train(trainingData);
 		hogClassifier.classifier = ann;
 
 		IOUtils.writeToFile(hogClassifier, new File("initial-classifier.dat"));
 
-		// final HOGDetector detector = new HOGDetector(hogClassifier, 1.2f);
-		//
-		// final ListDataset<FImage> negImages =
-		// INRIAPersonDataset.getNegativeTrainingImages(ImageUtilities.FIMAGE_READER);
-		// final List<IntObjectPair<Rectangle>> extraNegatives = new
-		// ArrayList<IntObjectPair<Rectangle>>();
-		// for (int i = 0; i < negImages.numInstances(); i++) {
-		// final FImage image = negImages.get(i);
-		//
-		// final List<Rectangle> rects = detector.detect(image);
-		// if (rects != null) {
-		// for (final Rectangle r : rects) {
-		// extraNegatives.add(new IntObjectPair<Rectangle>(i, r));
-		// }
-		// }
-		// }
-		//
-		// List<FImage> hardExamples = new AbstractList<FImage>() {
-		//
-		// int lastImageId = -1;
-		// FImage lastImage;
-		//
-		// @Override
-		// public FImage get(int index) {
-		// final IntObjectPair<Rectangle> p = extraNegatives.get(index);
-		//
-		// if (p.first != lastImageId) {
-		// lastImageId = p.first;
-		// lastImage = negImages.get(p.first);
-		// }
-		//
-		// return lastImage.extractROI(p.second);
-		// }
-		//
-		// @Override
-		// public int size() {
-		// return extraNegatives.size();
-		// }
-		// };
-		//
-		// final int[] indices = RandomData.getUniqueRandomInts(2000, 0,
-		// hardExamples.size());
-		// Arrays.sort(indices);
-		// hardExamples = new AcceptingListView<FImage>(hardExamples, indices);
-		//
-		// final List<FImage> extendedNegatives = new
-		// ConcatenatedList<FImage>(trainingImages.get(false), hardExamples);
-		// final GroupedDataset<Boolean, ListDataset<FImage>, FImage>
-		// extendedTrainingImages = new MapBackedDataset<Boolean,
-		// ListDataset<FImage>, FImage>();
-		// extendedTrainingImages.put(true, trainingImages.get(true));
-		// extendedTrainingImages.put(false, new
-		// ListBackedDataset<FImage>(extendedNegatives));
-		//
-		// final GroupedDataset<Boolean, ListDataset<DoubleFV>, DoubleFV>
-		// extendedTrainingData = DatasetExtractors
-		// .createLazyFeatureDataset(extendedTrainingImages, new
-		// Extractor(hogClassifier));
-		//
-		// ann = new LiblinearAnnotator<DoubleFV, Boolean>(
-		// new IdentityFeatureExtractor<DoubleFV>(), Mode.MULTICLASS,
-		// SolverType.L2R_L2LOSS_SVC, 100, 0.01, true);
-		// ann.train(extendedTrainingData);
-		// hogClassifier.classifier = ann;
+		final HOGDetector detector = new HOGDetector(hogClassifier, 1.2f);
+
+		final ListDataset<FImage> negImages =
+				INRIAPersonDataset.getNegativeTrainingImages(ImageUtilities.FIMAGE_READER);
+		final List<IntObjectPair<Rectangle>> extraNegatives = new
+				ArrayList<IntObjectPair<Rectangle>>();
+		for (int i = 0; i < negImages.numInstances(); i++) {
+			final FImage image = negImages.get(i);
+
+			final List<Rectangle> rects = detector.detect(image);
+			if (rects != null) {
+				for (final Rectangle r : rects) {
+					extraNegatives.add(new IntObjectPair<Rectangle>(i, r));
+				}
+			}
+		}
+
+		List<FImage> hardExamples = new AbstractList<FImage>() {
+
+			int lastImageId = -1;
+			FImage lastImage;
+
+			@Override
+			public FImage get(int index) {
+				final IntObjectPair<Rectangle> p = extraNegatives.get(index);
+
+				if (p.first != lastImageId) {
+					lastImageId = p.first;
+					lastImage = negImages.get(p.first);
+				}
+
+				return lastImage.extractROI(p.second);
+			}
+
+			@Override
+			public int size() {
+				return extraNegatives.size();
+			}
+		};
+
+		final int[] indices = RandomData.getUniqueRandomInts(2000, 0,
+				hardExamples.size());
+		Arrays.sort(indices);
+		hardExamples = new AcceptingListView<FImage>(hardExamples, indices);
+
+		final List<FImage> extendedNegatives = new
+				ConcatenatedList<FImage>(trainingImages.get(false), hardExamples);
+		final GroupedDataset<Boolean, ListDataset<FImage>, FImage> extendedTrainingImages = new MapBackedDataset<Boolean,
+				ListDataset<FImage>, FImage>();
+		extendedTrainingImages.put(true, trainingImages.get(true));
+		extendedTrainingImages.put(false, new
+				ListBackedDataset<FImage>(extendedNegatives));
+
+		final GroupedDataset<Boolean, ListDataset<DoubleFV>, DoubleFV> extendedTrainingData = DatasetExtractors
+				.createLazyFeatureDataset(extendedTrainingImages, new
+						Extractor(hogClassifier));
+
+		ann = new LiblinearAnnotator<DoubleFV, Boolean>(
+				new IdentityFeatureExtractor<DoubleFV>(), Mode.MULTICLASS,
+				SolverType.L2R_L2LOSS_SVC, 0.01, 0.01, 1, true);
+		ann.train(extendedTrainingData);
+		hogClassifier.classifier = ann;
 
 		int c = 0, p = 0;
 		for (final FImage i : INRIAPersonDataset.getPositiveTrainingImages(ImageUtilities.FIMAGE_READER)) {
@@ -135,7 +143,7 @@ public class Training {
 			final int offsetX = (i.width - 64) / 2;
 			final int offsetY = (i.height - 128) / 2;
 
-			p += hogClassifier.classify(new Rectangle(offsetX, offsetY, 64, 128)) ? 1 : 0;
+			p += hogClassifier.classify(new Rectangle(offsetX, offsetY, 64, 128)) > 0.5 ? 1 : 0;
 			c++;
 		}
 		System.out.println(p + "/" + c);

@@ -199,8 +199,8 @@ public class FixedHOGStrategy implements SpatialBinningStrategy {
 	}
 
 	private Histogram[][] computeBlocks(Histogram[][] cells) {
-		final int numBlocksX = (cells[0].length - cellsPerBlockX) / this.blockStepX;
-		final int numBlocksY = (cells.length - cellsPerBlockY) / this.blockStepY;
+		final int numBlocksX = 1 + (cells[0].length - cellsPerBlockX) / this.blockStepX;
+		final int numBlocksY = 1 + (cells.length - cellsPerBlockY) / this.blockStepY;
 		final Histogram[][] blocks = new Histogram[numBlocksY][numBlocksX];
 
 		for (int y = 0; y < numBlocksY; y++) {

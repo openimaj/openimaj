@@ -46,6 +46,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
@@ -131,6 +133,17 @@ public class HadoopPcaVladExtractor extends Configured implements Tool {
 
 	@Override
 	public int run(String[] args) throws Exception {
+		final CmdLineParser parser = new CmdLineParser(this);
+
+		try {
+			parser.parseArgument(args);
+		} catch (final CmdLineException e) {
+			System.err.println(e.getMessage());
+			System.err.println("Usage: hadoop jar HadoopImageIndexer.jar [options]");
+			parser.printUsage(System.err);
+			return -1;
+		}
+
 		final Path[] paths = SequenceFileUtility.getFilePaths(input, "part");
 		final Path outputPath = new Path(output);
 

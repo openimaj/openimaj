@@ -1,6 +1,7 @@
 package org.openimaj.ml.annotation.linear;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -83,9 +84,10 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 
 	static abstract class InternalModel<OBJECT, ANNOTATION> {
 		ArrayList<ANNOTATION> annotationsList;
-		Set<ANNOTATION> annotations;
 		FeatureExtractor<? extends FeatureVector, OBJECT> extractor;
 		boolean dense;
+		double bias = -1;
+		boolean estimateProbabilities = true;
 
 		public abstract void train(List<? extends Annotated<OBJECT, ANNOTATION>> data);
 
@@ -96,13 +98,39 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		Feature[] computeFeature(OBJECT object) {
 			final FeatureVector feature = extractor.extractFeature(object);
 
-			return LiblinearHelper.convert(feature);
+			return LiblinearHelper.convert(feature, bias);
 		}
 
 		double[] computeFeatureDense(OBJECT object) {
 			final FeatureVector feature = extractor.extractFeature(object);
 
-			return LiblinearHelper.convertDense(feature);
+			return LiblinearHelper.convertDense(feature, bias);
+		}
+
+		void computeProbabilities(double[] prob_estimates) {
+			if (!estimateProbabilities)
+				return;
+
+			final int nr_class = annotationsList.size();
+			int nr_w;
+			if (nr_class == 2)
+				nr_w = 1;
+			else
+				nr_w = nr_class;
+
+			for (int i = 0; i < nr_w; i++)
+				prob_estimates[i] = 1 / (1 + Math.exp(-prob_estimates[i]));
+
+			if (nr_class == 2) // for binary classification
+				prob_estimates[1] = 1. - prob_estimates[0];
+			else {
+				double sum = 0;
+				for (int i = 0; i < nr_class; i++)
+					sum += prob_estimates[i];
+
+				for (int i = 0; i < nr_class; i++)
+					prob_estimates[i] = prob_estimates[i] / sum;
+			}
 		}
 	}
 
@@ -110,9 +138,10 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		private Parameter parameter;
 		private Model model;
 
-		public Multiclass(SolverType solver, double C, double eps, boolean dense) {
+		public Multiclass(SolverType solver, double C, double eps, double bias, boolean dense) {
 			parameter = new Parameter(solver, C, eps);
 			this.dense = dense;
+			this.bias = bias;
 		}
 
 		@Override
@@ -125,7 +154,8 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 			if (dense) {
 				final DenseProblem problem = new DenseProblem();
 				problem.l = nItems;
-				problem.n = featureLength;
+				problem.n = featureLength + 1;
+				problem.bias = bias;
 				problem.x = new double[nItems][];
 				problem.y = new double[nItems];
 
@@ -143,6 +173,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 				final Problem problem = new Problem();
 				problem.l = nItems;
 				problem.n = featureLength;
+				problem.bias = bias;
 				problem.x = new Feature[nItems][];
 				problem.y = new double[nItems];
 
@@ -162,7 +193,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		@Override
 		public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
 			final AnnotatedListHelper<OBJECT, ANNOTATION> helper = new AnnotatedListHelper<OBJECT, ANNOTATION>(data);
-			annotations = helper.getAnnotations();
+			final Set<ANNOTATION> annotations = helper.getAnnotations();
 			annotationsList = new ArrayList<ANNOTATION>(annotations);
 
 			final int nItems = data.size();
@@ -172,6 +203,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 				final DenseProblem problem = new DenseProblem();
 				problem.l = nItems;
 				problem.n = featureLength;
+				problem.bias = bias;
 				problem.x = new double[nItems][];
 				problem.y = new double[nItems];
 
@@ -193,6 +225,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 				final Problem problem = new Problem();
 				problem.l = nItems;
 				problem.n = featureLength;
+				problem.bias = bias;
 				problem.x = new Feature[nItems][];
 				problem.y = new double[nItems];
 
@@ -222,23 +255,29 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 				final double[] feature = computeFeatureDense(object);
 
 				if (parameter.getSolverType().isLogisticRegressionSolver()) {
-					final double[] probs = new double[annotations.size()];
+					final double[] probs = new double[annotationsList.size()];
 					clz = DenseLinear.predictProbability(model, feature, probs) - 1;
 					prob = probs[(int) clz];
 				} else {
-					clz = DenseLinear.predict(model, feature) - 1;
-					prob = 1;
+					// clz = DenseLinear.predict(model, feature) - 1;
+					final double[] prob_estimates = new double[annotationsList.size()];
+					clz = DenseLinear.predictValues(model, feature, prob_estimates) - 1;
+					computeProbabilities(prob_estimates);
+					prob = prob_estimates[(int) clz];
 				}
 			} else {
 				final Feature[] feature = computeFeature(object);
 
 				if (parameter.getSolverType().isLogisticRegressionSolver()) {
-					final double[] probs = new double[annotations.size()];
+					final double[] probs = new double[annotationsList.size()];
 					clz = Linear.predictProbability(model, feature, probs) - 1;
 					prob = probs[(int) clz];
 				} else {
-					clz = Linear.predict(model, feature) - 1;
-					prob = 1;
+					// clz = Linear.predict(model, feature) - 1;
+					final double[] prob_estimates = new double[annotationsList.size()];
+					clz = Linear.predictValues(model, feature, prob_estimates) - 1;
+					computeProbabilities(prob_estimates);
+					prob = prob_estimates[(int) clz];
 				}
 			}
 
@@ -261,15 +300,16 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		private static final int NEGATIVE_CLASS = 1;
 		private static final int POSTIVE_CLASS = 2;
 
-		public Multilabel(SolverType solver, double C, double eps, boolean dense) {
+		public Multilabel(SolverType solver, double C, double eps, double bias, boolean dense) {
 			parameter = new Parameter(solver, C, eps);
 			this.dense = dense;
+			this.bias = bias;
 		}
 
 		@Override
 		public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
 			final AnnotatedListHelper<OBJECT, ANNOTATION> helper = new AnnotatedListHelper<OBJECT, ANNOTATION>(data);
-			annotations = helper.getAnnotations();
+			final Set<ANNOTATION> annotations = helper.getAnnotations();
 			annotationsList = new ArrayList<ANNOTATION>(annotations);
 
 			final int featureLength = extractor.extractFeature(data.get(0).getObject()).length();
@@ -285,16 +325,17 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 					final DenseProblem problem = new DenseProblem();
 					problem.l = positive.size() + negative.size();
 					problem.n = featureLength;
+					problem.bias = bias;
 					problem.x = new double[problem.l][];
 					problem.y = new double[problem.l];
 
 					for (int j = 0; j < negative.size(); j++) {
-						problem.x[j] = LiblinearHelper.convertDense(negative.get(j));
+						problem.x[j] = LiblinearHelper.convertDense(negative.get(j), bias);
 						problem.y[j] = NEGATIVE_CLASS;
 					}
 
 					for (int j = negative.size(), k = 0; k < positive.size(); j++, k++) {
-						problem.x[j] = LiblinearHelper.convertDense(positive.get(k));
+						problem.x[j] = LiblinearHelper.convertDense(positive.get(k), bias);
 						problem.y[j] = POSTIVE_CLASS;
 					}
 
@@ -303,16 +344,17 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 					final Problem problem = new Problem();
 					problem.l = positive.size() + negative.size();
 					problem.n = featureLength;
+					problem.bias = bias;
 					problem.x = new Feature[problem.l][];
 					problem.y = new double[problem.l];
 
 					for (int j = 0; j < negative.size(); j++) {
-						problem.x[j] = LiblinearHelper.convert(negative.get(j));
+						problem.x[j] = LiblinearHelper.convert(negative.get(j), bias);
 						problem.y[j] = NEGATIVE_CLASS;
 					}
 
 					for (int j = negative.size(), k = 0; k < positive.size(); j++, k++) {
-						problem.x[j] = LiblinearHelper.convert(positive.get(k));
+						problem.x[j] = LiblinearHelper.convert(positive.get(k), bias);
 						problem.y[j] = POSTIVE_CLASS;
 					}
 
@@ -332,12 +374,14 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 					final double clz;
 					final double prob;
 					if (parameter.getSolverType().isLogisticRegressionSolver()) {
-						final double[] probs = new double[annotations.size()];
+						final double[] probs = new double[annotationsList.size()];
 						clz = DenseLinear.predictProbability(models[i], feature, probs);
 						prob = probs[(int) clz - 1];
 					} else {
-						clz = DenseLinear.predict(models[i], feature);
-						prob = 1;
+						final double[] prob_estimates = new double[2];
+						clz = DenseLinear.predictValues(models[i], feature, prob_estimates);
+						computeProbabilities(prob_estimates);
+						prob = prob_estimates[(int) clz - 1];
 					}
 
 					if (clz == POSTIVE_CLASS) {
@@ -351,12 +395,14 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 					final double clz;
 					final double prob;
 					if (parameter.getSolverType().isLogisticRegressionSolver()) {
-						final double[] probs = new double[annotations.size()];
+						final double[] probs = new double[annotationsList.size()];
 						clz = Linear.predictProbability(models[i], feature, probs);
 						prob = probs[(int) clz - 1];
 					} else {
-						clz = Linear.predict(models[i], feature);
-						prob = 1;
+						final double[] prob_estimates = new double[2];
+						clz = Linear.predictValues(models[i], feature, prob_estimates);
+						computeProbabilities(prob_estimates);
+						prob = prob_estimates[(int) clz - 1];
 					}
 
 					if (clz == POSTIVE_CLASS) {
@@ -393,7 +439,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	public LiblinearAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, Mode mode, SolverType solver,
 			double C, double eps)
 	{
-		this(extractor, mode, solver, C, eps, false);
+		this(extractor, mode, solver, C, eps, -1, false);
 	}
 
 	/**
@@ -414,14 +460,14 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	 *            will be used to drastically reduce memory usage
 	 */
 	public LiblinearAnnotator(FeatureExtractor<? extends FeatureVector, OBJECT> extractor, Mode mode, SolverType solver,
-			double C, double eps, boolean dense)
+			double C, double eps, double bias, boolean dense)
 	{
 		switch (mode) {
 		case MULTICLASS:
-			this.internal = new Multiclass<OBJECT, ANNOTATION>(solver, C, eps, dense);
+			this.internal = new Multiclass<OBJECT, ANNOTATION>(solver, C, eps, bias, dense);
 			break;
 		case MULTILABEL:
-			this.internal = new Multilabel<OBJECT, ANNOTATION>(solver, C, eps, dense);
+			this.internal = new Multilabel<OBJECT, ANNOTATION>(solver, C, eps, bias, dense);
 			break;
 		default:
 			throw new RuntimeException("Unhandled mode");
@@ -437,7 +483,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 
 	@Override
 	public Set<ANNOTATION> getAnnotations() {
-		return internal.annotations;
+		return new HashSet<ANNOTATION>(internal.annotationsList);
 	}
 
 	@Override

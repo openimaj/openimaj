@@ -27,8 +27,8 @@ public class ColourDenseSIFT extends AbstractDenseSIFT<MBFImage> {
 	DenseSIFT dsift;
 	ColourSpace colourSpace;
 
-	float[][] descriptors;
-	float[] energies;
+	volatile float[][] descriptors;
+	volatile float[] energies;
 
 	/**
 	 * Construct with the given internal {@link DenseSIFT} extractor to apply to

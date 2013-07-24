@@ -96,21 +96,21 @@ public class PlotFlickrGeo {
 			if (parts.length == 19) {
 				if (parts[15].trim() != "null" && parts[16].trim() != "null") {
 					final ImgRec rec = new ImgRec();
-					// rec.farm = parts[0].trim();
-					// rec.server = parts[1].trim();
-					// rec.id = parts[2].trim();
-					// rec.secret = parts[3].trim();
-					// rec.originalSecret = parts[4].trim();
-					// rec.mediumUrl = parts[5].trim();
-					// rec.imageDir = parts[6].trim();
-					// rec.title = parts[7].trim();
-					// rec.description = parts[8].trim();
-					// rec.license = parts[9].trim();
-					// rec.datePosted = parts[10].trim();
-					// rec.dateTaken = parts[11].trim();
-					// rec.ownerid = parts[12].trim();
-					// rec.username = parts[13].trim();
-					// rec.accuracy = parts[14].trim();
+					rec.farm = parts[0].trim();
+					rec.server = parts[1].trim();
+					rec.id = parts[2].trim();
+					rec.secret = parts[3].trim();
+					rec.originalSecret = parts[4].trim();
+					rec.mediumUrl = parts[5].trim();
+					rec.imageDir = parts[6].trim();
+					rec.title = parts[7].trim();
+					rec.description = parts[8].trim();
+					rec.license = parts[9].trim();
+					rec.datePosted = parts[10].trim();
+					rec.dateTaken = parts[11].trim();
+					rec.ownerid = parts[12].trim();
+					rec.username = parts[13].trim();
+					rec.accuracy = parts[14].trim();
 					if (parts[15].trim().length() == 0)
 						return null;
 					rec.latitude = Double.parseDouble(parts[15].trim());
@@ -265,24 +265,76 @@ public class PlotFlickrGeo {
 	// }
 	// }
 
+	// public static void main(String[] args) throws IOException {
+	// final File inputcsv = new File("/Users/jsh2/Desktop/world-geo.csv");
+	// final List<float[]> data = new ArrayList<float[]>(10000000);
+	//
+	// // read in images
+	// final BufferedReader br = new BufferedReader(new FileReader(inputcsv));
+	// String line;
+	// int i = 0;
+	// while ((line = br.readLine()) != null) {
+	// final String[] parts = line.split(",");
+	//
+	// final float longitude = Float.parseFloat(parts[0]);
+	// final float latitude = Float.parseFloat(parts[1]);
+	//
+	// data.add(new float[] { longitude, latitude });
+	//
+	// if (i++ % 10000 == 0)
+	// System.out.println(i);
+	// }
+	// br.close();
+	//
+	// System.out.println("Done reading");
+	//
+	// final float[][] dataArr = new float[2][data.size()];
+	// for (i = 0; i < data.size(); i++) {
+	// dataArr[0][i] = data.get(i)[0];
+	// dataArr[1][i] = data.get(i)[1];
+	// }
+	//
+	// final NumberAxis domainAxis = new NumberAxis("X");
+	// domainAxis.setRange(-180, 180);
+	// final NumberAxis rangeAxis = new NumberAxis("Y");
+	// rangeAxis.setRange(-90, 90);
+	// final FastScatterPlot plot = new FastScatterPlot(dataArr, domainAxis,
+	// rangeAxis);
+	//
+	// final JFreeChart chart = new JFreeChart("Fast Scatter Plot", plot);
+	// chart.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING,
+	// RenderingHints.VALUE_ANTIALIAS_ON);
+	//
+	// final ChartPanel chartPanel = new ChartPanel(chart);
+	// chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+	// final ApplicationFrame frame = new ApplicationFrame("Title");
+	// frame.setContentPane(chartPanel);
+	// frame.pack();
+	// frame.setVisible(true);
+	// }
+
 	public static void main(String[] args) throws IOException {
-		final File inputcsv = new File("/Users/jsh2/Desktop/world-geo.csv");
-		final List<float[]> data = new ArrayList<float[]>(10000000);
+		final File inputcsv = new File("/Volumes/SSD/training_latlng");
+		final List<double[]> data = new ArrayList<double[]>(10000000);
 
 		// read in images
 		final BufferedReader br = new BufferedReader(new FileReader(inputcsv));
 		String line;
 		int i = 0;
+		br.readLine();
 		while ((line = br.readLine()) != null) {
-			final String[] parts = line.split(",");
+			final String[] parts = line.split(" ");
 
-			final float longitude = Float.parseFloat(parts[0]);
-			final float latitude = Float.parseFloat(parts[1]);
+			final double longitude = Double.parseDouble(parts[2]);
+			final double latitude = Double.parseDouble(parts[1]);
 
-			data.add(new float[] { longitude, latitude });
+			data.add(new double[] { longitude, latitude });
 
-			if (i++ % 10000 == 0)
-				System.out.println(i);
+			if (longitude >= -0.1 && longitude < 0 && latitude > 50 && latitude < 54)
+				System.out.println(parts[0] + " " + latitude + " " + longitude);
+
+			// if (i++ % 10000 == 0)
+			// System.out.println(i);
 		}
 		br.close();
 
@@ -290,8 +342,8 @@ public class PlotFlickrGeo {
 
 		final float[][] dataArr = new float[2][data.size()];
 		for (i = 0; i < data.size(); i++) {
-			dataArr[0][i] = data.get(i)[0];
-			dataArr[1][i] = data.get(i)[1];
+			dataArr[0][i] = (float) data.get(i)[0];
+			dataArr[1][i] = (float) data.get(i)[1];
 		}
 
 		final NumberAxis domainAxis = new NumberAxis("X");
@@ -310,4 +362,5 @@ public class PlotFlickrGeo {
 		frame.pack();
 		frame.setVisible(true);
 	}
+
 }

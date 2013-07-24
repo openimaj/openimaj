@@ -10,6 +10,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 public class HOGDetector extends AbstractMultiScaleObjectDetector<FImage, Rectangle> {
 	protected float scaleFactor = 1.2f;
 	protected HOGClassifier classifier;
+	double threshold = 0.5;
 
 	public HOGDetector(HOGClassifier classifier, float scaleFactor) {
 		this.classifier = classifier;
@@ -107,7 +108,7 @@ public class HOGDetector extends AbstractMultiScaleObjectDetector<FImage, Rectan
 				current.width = windowWidth;
 				current.height = windowHeight;
 
-				if (classifier.classify(current)) {
+				if (classifier.classify(current) > threshold) {
 					results.add(current.clone());
 				}
 			}

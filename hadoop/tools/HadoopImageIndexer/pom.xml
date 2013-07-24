@@ -58,20 +58,20 @@
           <useDefaultMapping>true</useDefaultMapping>
         </configuration>
       </plugin>
-      <!-- <plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2.1</version>
         <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
+					<descriptors>
+						<descriptor>src/main/assembly/jar-without-license.xml</descriptor>
+					</descriptors>
           <archive>
             <manifest>
-              <mainClass></mainClass>
+              <mainClass>org.openimaj.hadoop.tools.image.indexing.HadoopPqPcaVladIndexer</mainClass>
             </manifest>
           </archive>
         </configuration>
-      </plugin> -->
+      </plugin>
     </plugins>
   </build>
 </project>
