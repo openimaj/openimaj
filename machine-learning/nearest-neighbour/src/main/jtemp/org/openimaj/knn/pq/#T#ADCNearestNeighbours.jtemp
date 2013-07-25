@@ -108,6 +108,23 @@ public class #T#ADCNearestNeighbours extends #T#NearestNeighbours {
 		}
 	}
 
+    /**
+	 * Construct the ADC with the given quantiser and pre-quantised data .
+	 * 
+	 * @param pq
+	 *            the Product Quantiser
+	 * @param pqData
+	 *            the pre-quantised data (i.e. vectors already quantised with
+	 *            the given pq)
+	 * @param ndims
+	 *            the dimensionality of the indexed data
+	 */
+	public #T#ADCNearestNeighbours(#T#ProductQuantiser pq, byte[][] pqData, int ndims) {
+		this.ndims = ndims;
+		this.pq = pq;
+		this.data = pqData;
+	}
+
 	@Override
 	public void searchNN(final #t# [][] qus, int [] indices, #r# [] distances) {
 		final int N = qus.length;
