@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configured;
@@ -63,8 +64,6 @@ import org.openimaj.image.indexing.vlad.VLADIndexerData;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HadoopPqPcaVladIndexer extends Configured implements Tool {
-	private static final String VLAD_INDEXER_DATA_PATH_KEY = "openimaj.vlad.indexer.data";
-
 	/**
 	 * {@link Mapper} for extracting PQ-PCA-VLAD features from sets of local
 	 * features. Also outputs the raw PCA-VLAD features.
@@ -82,7 +81,7 @@ public class HadoopPqPcaVladIndexer extends Configured implements Tool {
 		@Override
 		protected void setup(Context context) throws IOException, InterruptedException
 		{
-			indexer = VLADIndexerData.read(new File("./" + context.getConfiguration().get(VLAD_INDEXER_DATA_PATH_KEY)));
+			indexer = VLADIndexerData.read(new File("vlad-data.bin"));
 			mos = new MultipleOutputs<Text, BytesWritable>(context);
 		}
 
@@ -94,12 +93,14 @@ public class HadoopPqPcaVladIndexer extends Configured implements Tool {
 					Keypoint.class);
 
 			final float[] vladData = indexer.extractPcaVlad(keys);
-			final byte[] pqVladData = indexer.getProductQuantiser().quantise(vladData);
 
-			if (pqVladData == null) {
+			if (vladData == null) {
 				context.getCounter(COUNTERS.NULL).increment(1L);
+				System.out.println("VLAD is null; keys has length " + keys.size());
 				return;
 			}
+
+			final byte[] pqVladData = indexer.getProductQuantiser().quantise(vladData);
 
 			mos.write("pcavlad", key, floatToBytes(vladData));
 
@@ -175,8 +176,8 @@ public class HadoopPqPcaVladIndexer extends Configured implements Tool {
 
 		MultipleOutputs.addNamedOutput(job, "pcavlad", SequenceFileOutputFormat.class, Text.class, BytesWritable.class);
 
-		DistributedCache.addFileToClassPath(new Path(indexerData), job.getConfiguration());
-		job.getConfiguration().set(VLAD_INDEXER_DATA_PATH_KEY, new Path(indexerData).getName());
+		DistributedCache.createSymlink(job.getConfiguration());
+		DistributedCache.addCacheFile(new URI(indexerData + "#vlad-data.bin"), job.getConfiguration());
 
 		SequenceFileOutputFormat.setCompressOutput(job, !dontcompress);
 		job.waitForCompletion(true);
