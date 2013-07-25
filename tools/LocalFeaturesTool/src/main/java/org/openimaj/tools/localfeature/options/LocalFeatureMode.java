@@ -515,7 +515,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(MBFImage image) {
-			return extract(Transforms.calculateIntensityNTSC(image));
+			return extract(Transforms.calculateIntensityNTSC_LUT(image));
 		}
 
 		LocalFeatureList<? extends LocalFeature<?, ?>> extract(FImage image) {
@@ -614,7 +614,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(MBFImage image) {
-			return extractFeature(Transforms.calculateIntensityNTSC(image));
+			return extractFeature(Transforms.calculateIntensityNTSC_LUT(image));
 		}
 
 		protected int[] toArray(List<Integer> in) {

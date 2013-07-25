@@ -110,7 +110,7 @@ enum ColourMode implements CmdLineOptionsProvider {
 
 		@Override
 		public Image<?, ?> process(MBFImage img) {
-			return Transforms.calculateIntensityNTSC(img);
+			return Transforms.calculateIntensityNTSC_LUT(img);
 		}
 	}
 
