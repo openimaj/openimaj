@@ -270,4 +270,36 @@ public class VLADIndexerData {
 	public VLAD<float[]> getVLAD() {
 		return vlad;
 	}
+
+	/**
+	 * Get the dimensionality of the float vectors extracted from the pca-vlad
+	 * process.
+	 * 
+	 * @return the dimensionality.
+	 */
+	public int numDimensions() {
+		return this.pca.getEigenValues().length;
+	}
+
+	/**
+	 * @return the pca
+	 */
+	public FeatureVectorPCA getPCA() {
+		return pca;
+	}
+
+	/**
+	 * @return the extractor
+	 */
+	public LocalFeatureExtractor<LocalFeature<?, ?>, MBFImage> getExtractor() {
+		return extractor;
+	}
+
+	/**
+	 * @return the postProcess
+	 */
+	public Function<List<? extends LocalFeature<?, ?>>, List<FloatLocalFeatureAdaptor<?>>> getPostProcess() {
+		return postProcess;
+	}
+
 }
