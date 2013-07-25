@@ -199,6 +199,7 @@ public class CLMDetectedFace extends DetectedFace {
 	}
 
 	/**
+	 * Returns the scale (size) of the face
 	 * @return the scale of the model
 	 */
 	public double getScale() {
@@ -206,6 +207,7 @@ public class CLMDetectedFace extends DetectedFace {
 	}
 
 	/**
+	 * Returns the pitch of the model (that is the look up/down, noddy head movement).
 	 * @return the pitch of the model
 	 */
 	public double getPitch() {
@@ -213,6 +215,7 @@ public class CLMDetectedFace extends DetectedFace {
 	}
 
 	/**
+	 * Returns the yaw of the face (that is the side-to-side, shakey head movement).
 	 * @return the yaw of the model
 	 */
 	public double getYaw() {
@@ -220,6 +223,7 @@ public class CLMDetectedFace extends DetectedFace {
 	}
 
 	/**
+	 * Returns the roll of the model (that is the spinning, standy on the head movement)
 	 * @return the roll of the model
 	 */
 	public double getRoll() {
@@ -227,6 +231,7 @@ public class CLMDetectedFace extends DetectedFace {
 	}
 
 	/**
+	 * Returns the x-translation in the model
 	 * @return the x-translation of the model
 	 */
 	public double getTranslationX() {
@@ -234,6 +239,7 @@ public class CLMDetectedFace extends DetectedFace {
 	}
 
 	/**
+	 * Returns the y-translation in the model
 	 * @return the y-translation of the model
 	 */
 	public double getTranslationY() {
