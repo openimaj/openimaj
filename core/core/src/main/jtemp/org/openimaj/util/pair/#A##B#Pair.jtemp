@@ -189,4 +189,9 @@ public class #A##B#Pair {
 
 		return extracted;
 	}	
+	
+	@Override
+	public String toString() {
+		return "("+first + ", "+ second+")";
+	}
 }
