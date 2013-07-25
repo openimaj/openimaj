@@ -1362,6 +1362,7 @@ public class MatrixUtils {
 	}
 
 	public static double sparcity(SparseMatrix rowmat) {
-		return 1-rowmat.density();
+		double density = (double)rowmat.used() / ((double)rowmat.rowCount() * (double)rowmat.columnCount()); 
+		return 1-density;
 	}
 }

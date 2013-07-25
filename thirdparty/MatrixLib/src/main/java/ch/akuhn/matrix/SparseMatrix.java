@@ -107,7 +107,13 @@ public class SparseMatrix extends Matrix {
         return rows.size();
     }
 
-    protected void setRow(int row, SparseVector values) {
+    /**
+     * Sets the row, no check is made on {@link SparseVector#size()}
+     * Use with care.
+     * @param row
+     * @param values
+     */
+    public void setRow(int row, SparseVector values) {
         rows.set(row, values);
     }
 

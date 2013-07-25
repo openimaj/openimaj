@@ -28,4 +28,16 @@ public class LoggerUtils {
 		  //add appender to any Logger (here is root)
 		  Logger.getRootLogger().addAppender(console);
 	}
+
+	/**
+	 * Debug message occationally
+	 * @param logger
+	 * @param message
+	 * @param b
+	 */
+	public static void debug(Logger logger, String message, boolean b) {
+		if(b){
+			logger.debug(message);
+		}
+	}
 }
