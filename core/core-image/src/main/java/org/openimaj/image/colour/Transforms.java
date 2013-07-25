@@ -30,21 +30,22 @@
 package org.openimaj.image.colour;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
  * A collection of static methods for colour transformations
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class Transforms {
 
 	/**
 	 * Calculate intensity by averaging R, G, B planes. Assumes planes are all
 	 * in the same magnitude.
-	 *
+	 * 
 	 * @param in
 	 *            MBFImage with 3 bands
 	 * @return intensity image
@@ -69,7 +70,7 @@ public class Transforms {
 	/**
 	 * Calculate Intensity image from an RGB or RGBA MBFImage with given
 	 * weightings for R, G and B
-	 *
+	 * 
 	 * @param in
 	 *            input image
 	 * @param wR
@@ -108,7 +109,7 @@ public class Transforms {
 	/**
 	 * Calculate intensity by a weighted average of the R, G, B planes. Assumes
 	 * planes are all in the same magnitude, and NTSC weighting coefficients.
-	 *
+	 * 
 	 * @param in
 	 *            MBFImage with 3 bands
 	 * @return intensity image
@@ -131,8 +132,37 @@ public class Transforms {
 	}
 
 	/**
+	 * Calculate intensity by a weighted average of the R, G, B planes. Assumes
+	 * planes are all in 0..1, and NTSC weighting coefficients. Assignment to
+	 * graylevels is done using a LUT, so greys will have one of 256 discrete
+	 * levels. The primary purpose of this is to be compatible with
+	 * {@link FImage#FImage(int[], int, int)} and give exactly the same result.
+	 * 
+	 * @param in
+	 *            MBFImage with 3 bands
+	 * @return intensity image
+	 */
+	public static FImage calculateIntensityNTSC_LUT(final MBFImage in) {
+		if (in.colourSpace != ColourSpace.RGB && in.colourSpace != ColourSpace.RGBA)
+			throw new UnsupportedOperationException("Can only convert RGB or RGBA images");
+
+		final FImage out = new FImage(in.getWidth(), in.getHeight());
+
+		for (int r = 0; r < in.getHeight(); r++) {
+			for (int c = 0; c < in.getWidth(); c++) {
+				out.pixels[r][c] = ImageUtilities.BYTE_TO_FLOAT_LUT[(int) ((
+						0.299f * (255 * in.getBand(0).pixels[r][c]) +
+								0.587f * (255 * in.getBand(1).pixels[r][c]) +
+						0.114f * (255 * in.getBand(2).pixels[r][c])))];
+			}
+		}
+
+		return out;
+	}
+
+	/**
 	 * Calculate Hue in 0..1 range from a 3-band RGB MBFImage
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return Hue image
@@ -179,7 +209,7 @@ public class Transforms {
 
 	/**
 	 * Calculate Saturation image from a 3-band RGB MBFImage
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return Saturation image
@@ -211,7 +241,7 @@ public class Transforms {
 
 	/**
 	 * Transform 3 band RGB image to HSV
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return HSV image
@@ -231,7 +261,7 @@ public class Transforms {
 
 	/**
 	 * Transform 3 band RGB image to HSL
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return HSL image
@@ -241,31 +271,33 @@ public class Transforms {
 			throw new IllegalArgumentException("RGB or RGBA colourspace is required");
 
 		final MBFImage out = in.clone();
-		final float[] pix = new float[ in.numBands() ];
-		for( int y = 0; y < in.getHeight(); y++ ) {
-			for( int x = 0; x < in.getWidth(); x++ ) {
-				for( int b = 0; b < in.numBands(); b++ )
+		final float[] pix = new float[in.numBands()];
+		for (int y = 0; y < in.getHeight(); y++) {
+			for (int x = 0; x < in.getWidth(); x++) {
+				for (int b = 0; b < in.numBands(); b++)
 					pix[b] = in.getBand(b).pixels[y][x];
-				Transforms.RGB_TO_HSL( pix, pix );
-				for( int b = 0; b < in.numBands(); b++ )
+				Transforms.RGB_TO_HSL(pix, pix);
+				for (int b = 0; b < in.numBands(); b++)
 					out.getBand(b).pixels[y][x] = pix[b];
 			}
 		}
 
-//		final MBFImage out = Transforms.RGB_TO_HSV(in);
-//
-//		final FImage R = in.getBand(0);
-//		final FImage G = in.getBand(1);
-//		final FImage B = in.getBand(2);
-//
-//		final FImage L = out.getBand(2);
-//		for (int y = 0; y < L.height; y++) {
-//			for (int x = 0; x < L.width; x++) {
-//				final float max = Math.max(Math.max(R.pixels[y][x], G.pixels[y][x]), B.pixels[y][x]);
-//				final float min = Math.min(Math.min(R.pixels[y][x], G.pixels[y][x]), B.pixels[y][x]);
-//				L.pixels[y][x] = 0.5f * (max - min);
-//			}
-//		}
+		// final MBFImage out = Transforms.RGB_TO_HSV(in);
+		//
+		// final FImage R = in.getBand(0);
+		// final FImage G = in.getBand(1);
+		// final FImage B = in.getBand(2);
+		//
+		// final FImage L = out.getBand(2);
+		// for (int y = 0; y < L.height; y++) {
+		// for (int x = 0; x < L.width; x++) {
+		// final float max = Math.max(Math.max(R.pixels[y][x], G.pixels[y][x]),
+		// B.pixels[y][x]);
+		// final float min = Math.min(Math.min(R.pixels[y][x], G.pixels[y][x]),
+		// B.pixels[y][x]);
+		// L.pixels[y][x] = 0.5f * (max - min);
+		// }
+		// }
 
 		out.colourSpace = ColourSpace.HSL;
 
@@ -273,90 +305,102 @@ public class Transforms {
 	}
 
 	/**
-	 * Converts an RGB color value to HSL. Conversion formula
-	 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
-	 * Assumes r, g, and b are contained in the set [0, 1] and
-	 * returns h, s, and l in the set [0, 1].
-	 *
+	 * Converts an RGB color value to HSL. Conversion formula adapted from
+	 * http://en.wikipedia.org/wiki/HSL_color_space. Assumes r, g, and b are
+	 * contained in the set [0, 1] and returns h, s, and l in the set [0, 1].
+	 * 
 	 * @see "http://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion"
-	 * @param rgb The input RGB pixel
-	 * @param hsl The output HSL pixel
+	 * @param rgb
+	 *            The input RGB pixel
+	 * @param hsl
+	 *            The output HSL pixel
 	 * @return The output HSL pixel
 	 */
-	public static float[] RGB_TO_HSL( final float[] rgb, final float[] hsl )
+	public static float[] RGB_TO_HSL(final float[] rgb, final float[] hsl)
 	{
 		final float r = rgb[0], g = rgb[1], b = rgb[2];
-	    final float max = Math.max(r, Math.max( g, b )), min = Math.min(r, Math.min(g, b));
-	    float h = 0, s;
+		final float max = Math.max(r, Math.max(g, b)), min = Math.min(r, Math.min(g, b));
+		float h = 0, s;
 		final float l = (max + min) / 2f;
 
-	    if(max == min) {
-	        h = s = 0f; // achromatic
-	    } else {
-	        final float d = max - min;
-	        s = l > 0.5f ? d / (2f - max - min) : d / (max + min);
-	        if( max == r )
-	        	h = (g - b) / d + (g < b ? 6f : 0);
-	        else if( max == g )
-	        	h = (b - r) / d + 2f;
-	        else if( max == b )
-	            h = (r - g) / d + 4f;
-	        h /= 6f;
-	    }
+		if (max == min) {
+			h = s = 0f; // achromatic
+		} else {
+			final float d = max - min;
+			s = l > 0.5f ? d / (2f - max - min) : d / (max + min);
+			if (max == r)
+				h = (g - b) / d + (g < b ? 6f : 0);
+			else if (max == g)
+				h = (b - r) / d + 2f;
+			else if (max == b)
+				h = (r - g) / d + 4f;
+			h /= 6f;
+		}
 
-	    hsl[0] = h; hsl[1] = s; hsl[2] = l;
-	    return hsl;
+		hsl[0] = h;
+		hsl[1] = s;
+		hsl[2] = l;
+		return hsl;
 	}
 
 	/**
- 	 * Converts an HSL color value to RGB. Conversion formula
-	 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
-	 * Assumes h, s, and l are contained in the set [0, 1] and
-	 * returns r, g, and b in the set [0, 255].
-	 *
-	 * @param hsl The HSL input pixel
-	 * @param rgb The RGB output pixel
+	 * Converts an HSL color value to RGB. Conversion formula adapted from
+	 * http://en.wikipedia.org/wiki/HSL_color_space. Assumes h, s, and l are
+	 * contained in the set [0, 1] and returns r, g, and b in the set [0, 255].
+	 * 
+	 * @param hsl
+	 *            The HSL input pixel
+	 * @param rgb
+	 *            The RGB output pixel
 	 * @return The RGB output pixel
-	 *
+	 * 
 	 * @see "http://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion"
 	 */
-	public static float[] HSL_TO_RGB( final float[] hsl , final float[] rgb )
+	public static float[] HSL_TO_RGB(final float[] hsl, final float[] rgb)
 	{
-	    float r, g, b;
-	    final float h = hsl[0], s = hsl[1], l = hsl[2];
+		float r, g, b;
+		final float h = hsl[0], s = hsl[1], l = hsl[2];
 
-	    if( s == 0 ) {
-	        r = g = b = l; // achromatic
-	    } else {
+		if (s == 0) {
+			r = g = b = l; // achromatic
+		} else {
 
-	        final float q = l < 0.5f ? l * (1f + s) : l + s - l * s;
-	        final float p = 2f * l - q;
-	        r = Transforms.hue2rgb(p, q, h + 1f/3f);
-	        g = Transforms.hue2rgb(p, q, h);
-	        b = Transforms.hue2rgb(p, q, h - 1f/3f);
-	    }
+			final float q = l < 0.5f ? l * (1f + s) : l + s - l * s;
+			final float p = 2f * l - q;
+			r = Transforms.hue2rgb(p, q, h + 1f / 3f);
+			g = Transforms.hue2rgb(p, q, h);
+			b = Transforms.hue2rgb(p, q, h - 1f / 3f);
+		}
 
-	    rgb[0] = r; rgb[1] = g; rgb[2] = b;
-	    return rgb;
+		rgb[0] = r;
+		rgb[1] = g;
+		rgb[2] = b;
+		return rgb;
 	}
 
 	/**
-	 * 	Used for the HSL to RGB conversion.
-	 *	@return The hue
+	 * Used for the HSL to RGB conversion.
+	 * 
+	 * @return The hue
 	 */
-    private static float hue2rgb( final float p, final float q, float t )
-    {
-        if(t < 0f) t += 1f;
-        if(t > 1f) t -= 1f;
-        if(t < 1f/6f) return p + (q - p) * 6f * t;
-        if(t < 1f/2f) return q;
-        if(t < 2f/3f) return p + (q - p) * (2f/3f - t) * 6f;
-        return p;
-    }
+	private static float hue2rgb(final float p, final float q, float t)
+	{
+		if (t < 0f)
+			t += 1f;
+		if (t > 1f)
+			t -= 1f;
+		if (t < 1f / 6f)
+			return p + (q - p) * 6f * t;
+		if (t < 1f / 2f)
+			return q;
+		if (t < 2f / 3f)
+			return p + (q - p) * (2f / 3f - t) * 6f;
+		return p;
+	}
 
 	/**
 	 * Transform 3 band RGB image to HSY
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return HSV image
@@ -376,7 +420,7 @@ public class Transforms {
 
 	/**
 	 * Transform 3 band RGB image to HS
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return HS image
@@ -396,7 +440,7 @@ public class Transforms {
 	/**
 	 * Convert to HS using the formulation from
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return HS image
@@ -413,7 +457,7 @@ public class Transforms {
 	 * them from a radial coordinate system to Cartesian coordinates. Assumes
 	 * the Hue is the first band and Saturation is the second band. Any
 	 * additional bands will be cloned to the result image.
-	 *
+	 * 
 	 * @param in
 	 *            input image
 	 * @return Multi-band image with coupled first and second bands calculated
@@ -448,7 +492,7 @@ public class Transforms {
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space The
 	 * assumption is that RGB are in the range 0..1. H is output in the range
 	 * 0..1, SV are output in the range 0..1
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return HSV image
@@ -479,7 +523,7 @@ public class Transforms {
 				pIn[1] = G[y][x];
 				pIn[2] = B[y][x];
 
-				Transforms.RGB_TO_HSV( pIn, pOut );
+				Transforms.RGB_TO_HSV(pIn, pOut);
 
 				H[y][x] = pOut[0];
 				S[y][x] = pOut[1];
@@ -490,12 +534,15 @@ public class Transforms {
 	}
 
 	/**
-	 * 	Convert a single RGB pixel to HSV.
-	 *	@param rgb The pixel in RGB
-	 *	@param hsv The output pixel in HSV
-	 *	@return the output pixel, hsv
+	 * Convert a single RGB pixel to HSV.
+	 * 
+	 * @param rgb
+	 *            The pixel in RGB
+	 * @param hsv
+	 *            The output pixel in HSV
+	 * @return the output pixel, hsv
 	 */
-	static float[] RGB_TO_HSV( final float[] rgb, final float[] hsv )
+	static float[] RGB_TO_HSV(final float[] rgb, final float[] hsv)
 	{
 		float H, S, V;
 
@@ -614,7 +661,9 @@ public class Transforms {
 			}
 		}
 
-		hsv[0] = H; hsv[1] = S; hsv[2] = V;
+		hsv[0] = H;
+		hsv[1] = S;
+		hsv[2] = V;
 		return hsv;
 	}
 
@@ -623,7 +672,7 @@ public class Transforms {
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space Assumption is
 	 * that H is in the range 0..1 and SV are in the range 0..1. RGB are output
 	 * in the range 0..1
-	 *
+	 * 
 	 * @param in
 	 *            input image
 	 * @return RGB image
@@ -734,7 +783,7 @@ public class Transforms {
 	/**
 	 * Convert to Hue to H2 using the formulation from:
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space
-	 *
+	 * 
 	 * @param in
 	 *            input image
 	 * @return Two-component hue image
@@ -777,7 +826,7 @@ public class Transforms {
 	/**
 	 * Convert HSV to H2SV using the formulation from:
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space
-	 *
+	 * 
 	 * @param in
 	 *            HSV image
 	 * @return H2SV image
@@ -795,7 +844,7 @@ public class Transforms {
 
 	/**
 	 * Convert RGB to H2SV
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return H2SV image
@@ -811,7 +860,7 @@ public class Transforms {
 
 	/**
 	 * Convert RGB to H2S
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return H2S image
@@ -830,7 +879,7 @@ public class Transforms {
 	/**
 	 * Convert to Hue to H2 VARIANT 2 using the formulation from:
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space
-	 *
+	 * 
 	 * @param in
 	 *            Hue image
 	 * @return H1H2_2 image
@@ -874,7 +923,7 @@ public class Transforms {
 	 * Convert H2SV to HSV VARIANT 1 using the simple formulation from:
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space Assumes H1
 	 * and H2 are 0..1. Output H is 0..1
-	 *
+	 * 
 	 * @param in
 	 *            H2SV image
 	 * @return HSV image
@@ -911,7 +960,7 @@ public class Transforms {
 	 * Convert H2SV to HSV VARIANT 2 using the simple formulation from:
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space Assumes H1
 	 * and H2 are 0..1. Output H is 0..1
-	 *
+	 * 
 	 * @param in
 	 *            H2SV2 image
 	 * @return HSV image
@@ -947,7 +996,7 @@ public class Transforms {
 	/**
 	 * Convert HSV to H2SV VARIANT 2 using the formulation from:
 	 * http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space
-	 *
+	 * 
 	 * @param in
 	 *            HSV image
 	 * @return H2SV_2 image
@@ -965,7 +1014,7 @@ public class Transforms {
 
 	/**
 	 * Convert RGB to H2SV2 VARIANT 2
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return H2SV_2 image
@@ -981,7 +1030,7 @@ public class Transforms {
 
 	/**
 	 * Convert RGB to H2S VARIANT 2
-	 *
+	 * 
 	 * @param in
 	 *            RGB or RGBA image
 	 * @return H2S image
@@ -998,7 +1047,7 @@ public class Transforms {
 
 	/**
 	 * Intensity normalisation
-	 *
+	 * 
 	 * @param in
 	 *            RGB image
 	 * @return normalised RGB image
@@ -1035,10 +1084,10 @@ public class Transforms {
 	/**
 	 * CIE_XYZ color space transform from RGB. Uses inverse sRGB companding for
 	 * energy normalisation and assumes a D65 whitepoint.
-	 *
+	 * 
 	 * Transform described here:
 	 * http://www.brucelindbloom.com/Eqn_RGB_to_XYZ.html
-	 *
+	 * 
 	 * @param in
 	 *            input RGB image
 	 * @return CIEXYZ image
@@ -1080,10 +1129,10 @@ public class Transforms {
 	/**
 	 * CIE_XYZ color space transform to RGB. Uses sRGB companding for energy
 	 * normalisation and assumes a D65 whitepoint.
-	 *
+	 * 
 	 * Transform described here:
 	 * http://www.brucelindbloom.com/Eqn_XYZ_to_RGB.html
-	 *
+	 * 
 	 * @param in
 	 *            input CIEXYZ image
 	 * @return RGB image
@@ -1095,10 +1144,10 @@ public class Transforms {
 	/**
 	 * CIE_XYZ color space transform to RGB. Uses sRGB companding for energy
 	 * normalisation and assumes a D65 whitepoint.
-	 *
+	 * 
 	 * Transform described here:
 	 * http://www.brucelindbloom.com/Eqn_XYZ_to_RGB.html
-	 *
+	 * 
 	 * @param in
 	 *            input CIEXYZ image
 	 * @param inPlace
@@ -1150,7 +1199,7 @@ public class Transforms {
 	/**
 	 * Convert CIEXYZ to CIELab. See
 	 * http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html
-	 *
+	 * 
 	 * @param input
 	 *            input image
 	 * @return converted image
@@ -1162,7 +1211,7 @@ public class Transforms {
 	/**
 	 * Convert CIEXYZ to CIELab. See
 	 * http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html
-	 *
+	 * 
 	 * @param input
 	 *            input image
 	 * @param inPlace
@@ -1233,9 +1282,9 @@ public class Transforms {
 	 * Convert RGB to CIE Lab. See <a
 	 * href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
-	 *
+	 * 
 	 * Conversion goes from RGB->XYZ->Lab
-	 *
+	 * 
 	 * @param input
 	 *            input RGB image
 	 * @return transformed CIE Lab image
@@ -1248,7 +1297,7 @@ public class Transforms {
 	 * Convert CIELab to CIEXYZ. See <a
 	 * href="http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html">
 	 * http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html</a>
-	 *
+	 * 
 	 * @param input
 	 *            input image
 	 * @return converted image
@@ -1313,9 +1362,9 @@ public class Transforms {
 	 * Convert CIE Lab to RGB. See <a
 	 * href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
-	 *
+	 * 
 	 * Conversion goes from Lab->XYZ->RGB
-	 *
+	 * 
 	 * @param input
 	 *            input CIE Lab image
 	 * @return transformed RGB image
@@ -1328,7 +1377,7 @@ public class Transforms {
 	 * Convert CIEXYZ to CIELab and normalise the resultant L, a & b values to
 	 * 0..1. See <a href="http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html">
 	 * http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html</a>.
-	 *
+	 * 
 	 * @param input
 	 *            input image
 	 * @return converted image
@@ -1341,9 +1390,9 @@ public class Transforms {
 	 * Convert normalised CIE Lab to RGB. The L, a & b values are in 0..1. See
 	 * <a href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
-	 *
+	 * 
 	 * Conversion goes from Lab->XYZ->RGB
-	 *
+	 * 
 	 * @param input
 	 *            input CIE Lab image
 	 * @return transformed RGB image
@@ -1355,7 +1404,7 @@ public class Transforms {
 	/**
 	 * Convert CIEXYZ to CIELUV (CIE 1976) See
 	 * http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Lab.html
-	 *
+	 * 
 	 * @param input
 	 *            input image
 	 * @return converted image
@@ -1367,7 +1416,7 @@ public class Transforms {
 	/**
 	 * Convert CIEXYZ to CIELUV (CIE 1976) See
 	 * http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Lab.html
-	 *
+	 * 
 	 * @param input
 	 *            input image
 	 * @param inPlace
@@ -1438,9 +1487,9 @@ public class Transforms {
 	 * Convert RGB to CIE LUV. See <a
 	 * href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
-	 *
+	 * 
 	 * Conversion goes from RGB->XYZ->LUV
-	 *
+	 * 
 	 * @param input
 	 *            input RGB image
 	 * @return transformed CIE LUV image
@@ -1453,7 +1502,7 @@ public class Transforms {
 	 * Convert CIELUV to CIEXYZ. See <a
 	 * href="http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html">
 	 * http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html</a>
-	 *
+	 * 
 	 * @param input
 	 *            input image
 	 * @return converted image
@@ -1516,9 +1565,9 @@ public class Transforms {
 	 * Convert CIE LUV to RGB. See <a
 	 * href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
-	 *
+	 * 
 	 * Conversion goes from LUV->XYZ->RGB
-	 *
+	 * 
 	 * @param input
 	 *            input CIE LUV image
 	 * @return transformed RGB image
@@ -1530,7 +1579,7 @@ public class Transforms {
 	/**
 	 * Convert from RGB to YUV. Y is in the range [0, 1]; U is [-0.436, 0.436]
 	 * and V is [-0.615, 0.615].
-	 *
+	 * 
 	 * @param input
 	 *            input RGB image
 	 * @return transformed YUV image
@@ -1542,7 +1591,7 @@ public class Transforms {
 	/**
 	 * Convert from RGB to normalised YUV. Y, U and V are all in the range [0,
 	 * 1].
-	 *
+	 * 
 	 * @param input
 	 *            input RGB image
 	 * @return transformed normalised YUV image
@@ -1556,7 +1605,7 @@ public class Transforms {
 	 * image. The U and V components can optionally be normalised to 0..1 or
 	 * alternatively take the standard ranges: U in [-0.436, 0.436] and V in
 	 * [-0.615, 0.615].
-	 *
+	 * 
 	 * @param input
 	 *            input RGB image
 	 * @param inPlace
@@ -1621,7 +1670,7 @@ public class Transforms {
 
 	/**
 	 * Convert from normalised YUV to RGB.
-	 *
+	 * 
 	 * @param input
 	 *            input normalised YUV image
 	 * @return transformed RGB image
@@ -1632,7 +1681,7 @@ public class Transforms {
 
 	/**
 	 * Convert from YUV to RGB.
-	 *
+	 * 
 	 * @param input
 	 *            input YUV image
 	 * @return transformed RGB image
@@ -1646,7 +1695,7 @@ public class Transforms {
 	 * image. The U and V components are either in [0, 1] (norm = true) or
 	 * alternatively take the standard ranges (norm = false): U in [-0.436,
 	 * 0.436] and V in [-0.615, 0.615].
-	 *
+	 * 
 	 * @param input
 	 *            input RGB image
 	 * @param inPlace
@@ -1707,115 +1756,131 @@ public class Transforms {
 	}
 
 	/**
-	 * 	Converts a Kelvin colour temperature the RGB black body equivalent. Note that
-	 * 	the output values are in the range 0..1.
-	 *
-	 * 	@see "http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/"
-	 *
-	 *	@param temperature the colour temperature.
-	 *	@return RGB value (0..1)
+	 * Converts a Kelvin colour temperature the RGB black body equivalent. Note
+	 * that the output values are in the range 0..1.
+	 * 
+	 * @see "http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/"
+	 * 
+	 * @param temperature
+	 *            the colour temperature.
+	 * @return RGB value (0..1)
 	 */
-	public static double[] kelvinToRGB( double temperature )
+	public static double[] kelvinToRGB(double temperature)
 	{
-		// Start with a temperature, in Kelvin, somewhere between 1000 and 40000.
-		// (Other values may work, but I can't make any promises about the quality
-		// of the algorithm's estimates above 40000 K.) Note also that the temperature
+		// Start with a temperature, in Kelvin, somewhere between 1000 and
+		// 40000.
+		// (Other values may work, but I can't make any promises about the
+		// quality
+		// of the algorithm's estimates above 40000 K.) Note also that the
+		// temperature
 		// and color variables need to be declared as floating-point.
 
-	    temperature = temperature / 100d;
+		temperature = temperature / 100d;
 
-	    double r = 0;
-	    if( temperature <= 66 )
-	    	r = 255;
-	    else
-	    {
-	    	r = temperature - 60;
-	    	r = 329.698727446 * Math.pow( r, -0.1332047592 );
-	    	if( r < 0 ) r = 0;
-	    	if( r > 255 ) r = 255;
-	    }
+		double r = 0;
+		if (temperature <= 66)
+			r = 255;
+		else
+		{
+			r = temperature - 60;
+			r = 329.698727446 * Math.pow(r, -0.1332047592);
+			if (r < 0)
+				r = 0;
+			if (r > 255)
+				r = 255;
+		}
 
-	    double g = 0;
-   	    if( temperature <= 66 )
-   	    {
-   	    	g = temperature;
-	    	g = 99.4708025861 * Math.log(g) - 161.1195681661;
-	    	if( g < 0 ) g = 0;
-	    	if( g > 255 ) g = 255;
-   	    }
-   	    else
-   	    {
-   	    	g = temperature - 60;
-   	    	g = 288.1221695283 * Math.pow( g, -0.0755148492 );
-	    	if( g < 0 ) g = 0;
-	    	if( g > 255 ) g = 255;
-   	    }
+		double g = 0;
+		if (temperature <= 66)
+		{
+			g = temperature;
+			g = 99.4708025861 * Math.log(g) - 161.1195681661;
+			if (g < 0)
+				g = 0;
+			if (g > 255)
+				g = 255;
+		}
+		else
+		{
+			g = temperature - 60;
+			g = 288.1221695283 * Math.pow(g, -0.0755148492);
+			if (g < 0)
+				g = 0;
+			if (g > 255)
+				g = 255;
+		}
 
-   	    double b = 0;
-   	    if( temperature >= 66 )
-   	    	b = 255;
-   	    else
-   	    {
-   	    	if( temperature <= 19 )
-   	    		b = 0;
-   	    	else
-   	    	{
-   	    		b = temperature - 10;
-   	    		b = 138.5177312231 * Math.log(b) - 305.0447927307;
-   	    		if( b < 0 ) b = 0;
-   	    		if( b > 255 ) b = 255;
-   	    	}
-   	    }
+		double b = 0;
+		if (temperature >= 66)
+			b = 255;
+		else
+		{
+			if (temperature <= 19)
+				b = 0;
+			else
+			{
+				b = temperature - 10;
+				b = 138.5177312231 * Math.log(b) - 305.0447927307;
+				if (b < 0)
+					b = 0;
+				if (b > 255)
+					b = 255;
+			}
+		}
 
-   	    return new double[] { r/255d, g/255d, b/255d };
+		return new double[] { r / 255d, g / 255d, b / 255d };
 	}
 
 	/**
-	 * 	Correct colour temperature using the method documented at Tanner Helland.
-	 * 	Calculated the black body colour for the given temperature and alpha blends
-	 * 	that with a constant luminance with the original image at the given strength.
-	 * 	Only works on RGB images. Side affects the incoming image.
+	 * Correct colour temperature using the method documented at Tanner Helland.
+	 * Calculated the black body colour for the given temperature and alpha
+	 * blends that with a constant luminance with the original image at the
+	 * given strength. Only works on RGB images. Side affects the incoming
+	 * image.
+	 * 
 	 * @param image
-	 * @param colourTemperature The colour temperature.
-	 * @param strength The strength of colour correction
-	 *
-	 * 	@see "http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/"
-	 *	@return The affected image.
+	 * @param colourTemperature
+	 *            The colour temperature.
+	 * @param strength
+	 *            The strength of colour correction
+	 * 
+	 * @see "http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/"
+	 * @return The affected image.
 	 */
-	public static MBFImage colourTemperatureCorrection( final MBFImage image,
-			final double colourTemperature, final double strength )
+	public static MBFImage colourTemperatureCorrection(final MBFImage image,
+			final double colourTemperature, final double strength)
 	{
-		if( image.colourSpace != ColourSpace.RGB )
-			throw new IllegalArgumentException( "Colour correction only available for RGB images. " +
-					"Try using the colour transforms to convert to RGB." );
+		if (image.colourSpace != ColourSpace.RGB)
+			throw new IllegalArgumentException("Colour correction only available for RGB images. " +
+					"Try using the colour transforms to convert to RGB.");
 
 		// Get the black body colour for the given temperature.
-		final double rgb[] = Transforms.kelvinToRGB( colourTemperature );
+		final double rgb[] = Transforms.kelvinToRGB(colourTemperature);
 
 		final float[] pix = new float[image.numBands()];
 		final float[] oPix = new float[image.numBands()];
-		for( int y = 0; y < image.getHeight(); y++ )
+		for (int y = 0; y < image.getHeight(); y++)
 		{
-			for( int x = 0; x < image.getWidth(); x++ )
+			for (int x = 0; x < image.getWidth(); x++)
 			{
-				for( int b = 0; b < image.numBands(); b++ )
+				for (int b = 0; b < image.numBands(); b++)
 				{
 					float f = image.getBand(b).pixels[y][x];
 					oPix[b] = f;
-					f = (float)(f * strength + rgb[b] * (1f-strength));
+					f = (float) (f * strength + rgb[b] * (1f - strength));
 					pix[b] = f;
 				}
 
 				// pix contains the alpha blended original pixels. Calculate HSL
-				Transforms.RGB_TO_HSL( pix, pix );
+				Transforms.RGB_TO_HSL(pix, pix);
 
 				// subsititue the luminance of original pixels
-				pix[2] = (ArrayUtils.maxValue( oPix )+ArrayUtils.minValue( oPix ))/2f;
+				pix[2] = (ArrayUtils.maxValue(oPix) + ArrayUtils.minValue(oPix)) / 2f;
 
 				// Transform back to RGB
-				Transforms.HSL_TO_RGB( pix, pix );
+				Transforms.HSL_TO_RGB(pix, pix);
 
-				for( int b = 0; b < image.numBands(); b++ )
+				for (int b = 0; b < image.numBands(); b++)
 					image.getBand(b).pixels[y][x] = pix[b];
 			}
 		}
