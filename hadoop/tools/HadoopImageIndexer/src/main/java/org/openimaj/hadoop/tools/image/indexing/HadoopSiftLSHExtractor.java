@@ -265,6 +265,6 @@ public class HadoopSiftLSHExtractor extends Configured implements Tool {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		ToolRunner.run(new HadoopPqPcaVladIndexer(), args);
+		ToolRunner.run(new HadoopSiftLSHExtractor(), args);
 	}
 }
