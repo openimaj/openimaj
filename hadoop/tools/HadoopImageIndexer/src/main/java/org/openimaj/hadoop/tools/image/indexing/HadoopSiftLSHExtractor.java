@@ -184,7 +184,8 @@ public class HadoopSiftLSHExtractor extends Configured implements Tool {
 		protected void reduce(MapperOut key, Iterable<Text> values, Context context) throws IOException,
 				InterruptedException
 		{
-			System.out.println("Task: " + context.getTaskAttemptID() + " -> index: " + key.index);
+			// System.out.println("Task: " + context.getTaskAttemptID() +
+			// " -> index: " + key.index);
 
 			final Set<String> valSet = new HashSet<String>();
 			for (final Text t : values) {
