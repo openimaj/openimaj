@@ -243,6 +243,12 @@ public class HadoopSiftLSHExtractor extends Configured implements Tool {
 			outputPath.getFileSystem(this.getConf()).delete(outputPath, true);
 
 		final Job job = TextBytesJobUtil.createJob(paths, outputPath, null, this.getConf());
+
+		job.setMapOutputKeyClass(MapperOut.class);
+		job.setMapOutputValueClass(Text.class);
+		job.setOutputKeyClass(IntWritable.class);
+		job.setOutputValueClass(Text.class);
+
 		job.setJarByClass(this.getClass());
 
 		job.setMapperClass(LSHMapper.class);
