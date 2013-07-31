@@ -4,6 +4,7 @@ package org.openimaj.ml.clustering.spectral;
 
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.openimaj.ml.clustering.SimilarityClusterer;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.TrainingIndexClusters;
@@ -23,7 +24,7 @@ import ch.akuhn.matrix.eigenvalues.FewEigenvalues;
  *
  */
 public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
-
+	final static Logger logger = Logger.getLogger(DoubleSpectralClustering.class);
 	private SpectralClusteringConf<double[]> conf;
 
 	/**
@@ -36,13 +37,13 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 
 	@Override
 	public Clusters cluster(SparseMatrix data, boolean distanceMode) {
-		// Compute the laplacian of the graph
-		final SparseMatrix laplacian = conf.laplacian.laplacian(data);
-		// Calculate the eigvectors
-		// Use the lowest eigen valued cols as the features, each row is a data item in the reduced feature space
-		// Also normalise each row
-		double[][] lowestCols = lowestCols(laplacian);
+		// Get the laplacian, solve the eigen problem and choose the best 
+		double[][] lowestCols = spectralCluster(data);
+		// Using the eigenspace, cluster
+		return eigenspaceCluster(lowestCols);
+	}
 
+	protected Clusters eigenspaceCluster(double[][] lowestCols) {
 		// Cluster the rows with the internal spatial clusterer
 		SpatialClusters<double[]> cluster = conf.internal.cluster(lowestCols);
 		// if the clusters contain the cluster indexes of the training examples use those
@@ -54,7 +55,22 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 		// done!
 		return new Clusters(clustered);
 	}
-	private double[][] lowestCols(final SparseMatrix laplacian) {
+
+	protected double[][] spectralCluster(SparseMatrix data) {
+		// Compute the laplacian of the graph
+		final SparseMatrix laplacian = laplacian(data);
+		// Calculate the eigvectors
+		// Use the lowest eigen valued cols as the features, each row is a data item in the reduced feature space
+		// Also normalise each row
+		double[][] lowestCols = bestCols(laplacian);
+		return lowestCols;
+	}
+
+	protected SparseMatrix laplacian(SparseMatrix data) {
+		return conf.laplacian.laplacian(data);
+	}
+	
+	protected double[][] bestCols(final SparseMatrix laplacian) {
 		FewEigenvalues eig = new FewEigenvalues(laplacian.columnCount()) {
 			@Override
 			protected Vector callback(Vector vector) {
@@ -64,12 +80,12 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 		eig = conf.eigenChooser.prepare(eig,conf.laplacian.direction(),laplacian.columnCount());
 		eig.run();
 		int eigenVectorSelect = conf.eigenChooser.nEigenVectors(this.conf.laplacian.eigenIterator(eig),laplacian.columnCount());
+		logger.debug("Selected dimensions: " + eigenVectorSelect);
 
 
 		int nrows = eig.vector[0].size();
 		double[][] ret = new double[nrows][eigenVectorSelect];
 		double[] retSum = new double[nrows];
-
 		int col = 0;
 		// Calculate U matrix (containing n smallests eigen valued columns)
 		for (Iterator<DoubleObjectPair<Vector>> iterator = this.conf.laplacian.eigenIterator(eig); iterator.hasNext();) {
@@ -87,7 +103,7 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 		for (int i = 0; i < ret.length; i++) {
 			double[] row = ret[i];
 			for (int j = 0; j < row.length; j++) {
-				row[j] /= Math.sqrt(retSum[i]);
+				row[j] /= Math.sqrt(retSum[i]/eigenVectorSelect);
 			}
 		}
 

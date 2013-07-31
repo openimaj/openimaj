@@ -525,6 +525,27 @@ public class ArrayUtils {
 
 		return concat;
 	}
+	
+	 /*-- concatenate() --*/
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays
+	 *            the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static #t#[][] concatenate(final #t#[][]... arrays) {
+		final #t#[][] concat = new #t#[arrays[0].length][];
+		for(int i = 0; i < concat.length; i++){
+			final #t#[][] row = new #t#[arrays.length][];
+			for(int j = 0; j < row.length; j++){
+				row[j] = arrays[j][i];
+			} 
+			concat[i] = concatenate(row);
+		}
+		
+		return concat;
+	}
 
 	/*-- sumValues() --*/
 	/*** 

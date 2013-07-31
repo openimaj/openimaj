@@ -51,7 +51,7 @@ public class TestDoubleNormalisedSpecralClustering {
 	@Test
 	public void testSimSpatialCluster(){
 		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				2, 1, 2,
+				1, 2,
 				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
 		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
@@ -69,8 +69,7 @@ public class TestDoubleNormalisedSpecralClustering {
 	 */
 	@Test
 	public void testSimSpatialClusterInverse(){
-		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				2, 1, 2,
+		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>( 1, 2,
 				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
 		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);

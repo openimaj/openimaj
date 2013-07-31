@@ -21,7 +21,7 @@ public class LoggerUtils {
 	public static void prepareConsoleLogger(){
 		  ConsoleAppender console = new ConsoleAppender(); //create appender
 		  //configure the appender
-		  String PATTERN = "%m";
+		  String PATTERN = "%m\n";
 		  console.setLayout(new PatternLayout(PATTERN)); 
 		  console.setThreshold(Level.DEBUG);
 		  console.activateOptions();

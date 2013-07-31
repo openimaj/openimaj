@@ -13,6 +13,8 @@ import ch.akuhn.matrix.Vector.Entry;
  */
 public class MatlibMatrixUtils {
 
+	private static final double EPS = 1e-8;
+
 	/**
 	 * @param mat
 	 * @return uses {@link SparseMatrix#density()}
@@ -73,6 +75,19 @@ public class MatlibMatrixUtils {
 		}
 		return mat;
 	}
+	
+	/**
+	 * A = A + B
+	 * @param A
+	 * @param B
+	 * @return A
+	 */
+	public static SparseMatrix plusInplace(SparseMatrix A, SparseMatrix B) {
+		for (int i = 0; i < A.rowCount(); i++) {
+			A.addToRow(i, B.row(i));
+		}
+		return A;
+	}
 
 	/**
 	 * @param D
@@ -101,6 +116,41 @@ public class MatlibMatrixUtils {
 		}
 		return A;
 	}
+
+	/**
+	 * Y = A . Bt
+	 * @param A
+	 * @param B
+	 * @param Y
+	 * @return Y
+	 */
+	public static <T extends Matrix> T dotProductTranspose(Matrix A, Matrix B, T Y) {
+		int mA = A.rowCount();
+		int nB = B.rowCount();
+		
+		for (int i = 0; i < mA; i++) {
+			for (int j = 0; j < nB; j++) {
+				double dot = A.row(i).dot(B.row(j));
+				if(Math.abs(dot)>EPS) Y.put(i, j, dot);
+			}
+		}
+		return Y;
+	}
+
+	/**
+	 * A = A . s
+	 * @param A
+	 * @param s
+	 * @return A
+	 */
+	public static SparseMatrix scaleInplace(SparseMatrix A, double s) {
+		for (Vector row: A.rows()) {
+			row.timesEquals(s);
+		}
+		return A;
+	}
+
+	
 
 
 

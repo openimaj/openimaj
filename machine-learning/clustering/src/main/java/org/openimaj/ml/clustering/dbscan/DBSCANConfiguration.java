@@ -44,10 +44,6 @@ import org.openimaj.knn.NearestNeighboursFactory;
  */
 public class DBSCANConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA> implements Cloneable {
 
-	/**
-	 * The number of dimensions
-	 */
-	protected int M;
 
 
 	/**
@@ -85,9 +81,8 @@ public class DBSCANConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 * @param nnFactory
 	 *            the factory for producing the {@link NearestNeighbours}.
 	 */
-	public DBSCANConfiguration(int M, double eps, int minPts, NearestNeighboursFactory<? extends NN, DATA> nnFactory)
+	public DBSCANConfiguration(double eps, int minPts, NearestNeighboursFactory<? extends NN, DATA> nnFactory)
 	{
-		this.M = M;
 		this.eps = eps;
 		this.minPts = minPts;
 		this.factory = nnFactory;
@@ -99,7 +94,7 @@ public class DBSCANConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 * nearest-neighbours factory must be set before the configuration is used.
 	 */
 	public DBSCANConfiguration() {
-		this(0, 0.0, 0, null);
+		this(0.0, 0, null);
 	}
 
 	/*
@@ -115,25 +110,6 @@ public class DBSCANConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 		} catch (final CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	/**
-	 * Get the dimensionality.
-	 *
-	 * @return the number of elements in the data points
-	 */
-	public int numDimensions() {
-		return M;
-	}
-
-	/**
-	 * Set the dimensionality.
-	 *
-	 * @param m
-	 *            the number of elements in the data points
-	 */
-	public void setNumDimensions(int m) {
-		M = m;
 	}
 
 	/**

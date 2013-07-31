@@ -56,7 +56,7 @@ public class DoubleDBSCANClusters extends DBSCANClusters implements SpatialClust
 
 	@Override
 	public int numDimensions() {
-		return this.conf.M;
+		return this.data[0].length;
 	}
 
 	@Override

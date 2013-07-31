@@ -45,7 +45,6 @@ public class TestDoubleDBSCAN {
 	public void testDBSCAN(){
 		DoubleDBSCAN dbscan = new DoubleDBSCAN(
 			new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				2,
 				this.testStats.eps,
 				this.testStats.minpts,
 				new DoubleNearestNeighboursExact.Factory()
@@ -67,7 +66,6 @@ public class TestDoubleDBSCAN {
 	public void testSimDBSCAN(){
 		DoubleDBSCAN dbscan = new DoubleDBSCAN(
 			new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				2,
 				this.testStats.eps,
 				this.testStats.minpts,
 				new DoubleNearestNeighboursExact.Factory()
