@@ -109,7 +109,7 @@ public abstract class Matrix {
     public double[][] asArray() {
 		double[][] result = new double[rowCount()][columnCount()];
 		for (int x = 0; x < result.length; x++) {
-			for (int y = 0; y < result.length; y++) {
+			for (int y = 0; y < result[x].length; y++) {
 				result[x][y] = get(x,y);
 			}
 		}

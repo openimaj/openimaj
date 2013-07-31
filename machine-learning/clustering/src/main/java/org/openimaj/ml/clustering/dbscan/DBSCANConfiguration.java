@@ -97,6 +97,14 @@ public class DBSCANConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 		this(0.0, 0, null);
 	}
 
+	/**
+	 * @param eps
+	 * @param minPts
+	 */
+	public DBSCANConfiguration(double eps, int minPts) {
+		this(eps,minPts,null);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *

@@ -62,7 +62,14 @@ public class MEAnalysis implements AnalysisResult{
 
 	@Override
 	public String getSummaryReport() {
-		return String.format("(purity=%2.5f,nmi=%2.5f,P=%2.2f,R=%2.5f,F1=%2.5f)",purity,nmi,precision,recall,fscore(1));
+		return String.format("(purity=%2.5f,nmi=%2.5f,P=%2.2f,R=%2.5f,F1=%2.5f,RandI=%2.5f)",purity,nmi,precision,recall,fscore(1),randIndex());
+	}
+
+	/**
+	 * @return the proportion of true decisions made as compared to all decisions made
+	 */
+	public double randIndex() {
+		return (TP + TN) / (double)(TP + FP + TN + FN);
 	}
 
 	@Override

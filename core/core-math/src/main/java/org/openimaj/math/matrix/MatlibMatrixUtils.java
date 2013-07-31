@@ -1,6 +1,7 @@
 package org.openimaj.math.matrix;
 
 
+import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
@@ -92,13 +93,13 @@ public class MatlibMatrixUtils {
 	/**
 	 * @param D
 	 * @param A
-	 * @return the same matrix A
+	 * @return D - A, the same matrix A
 	 *
 	 */
 	public static <T extends Matrix> T minusInplace(DiagonalMatrix D, T A) {
 		double[] Dval = D.getVals();
 		for (int i = 0; i < Dval.length; i++) {
-			A.put(i, i, A.get(i, i) - Dval[i]);
+			A.put(i, i, Dval[i] - A.get(i, i));
 		}
 		return A;
 	}
@@ -148,6 +149,59 @@ public class MatlibMatrixUtils {
 			row.timesEquals(s);
 		}
 		return A;
+	}
+
+	/**
+	 * @param laplacian
+	 * @return returns a dense jama matrix
+	 */
+	public static Jama.Matrix toJama(Matrix laplacian) {
+		Jama.Matrix ret = new Jama.Matrix(laplacian.asArray());
+		return ret;
+	}
+
+	/**
+	 * @param vector
+	 * @return the vector as a column in a matrix
+	 */
+	public static Jama.Matrix toColJama(Vector vector) {
+		double[] vec = new double[vector.size()];
+		vector.storeOn(vec, 0);
+		Jama.Matrix ret = new Jama.Matrix(vec.length, 1);
+		for (int i = 0; i < vec.length; i++) {
+			ret.set(i, 0, vec[i]);
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * @param vector
+	 * @return the vector as a row in a matrix
+	 */
+	public static Jama.Matrix toRowJama(Vector vector) {
+		double[] vec = new double[vector.size()];
+		vector.storeOn(vec, 0);
+		Jama.Matrix ret = new Jama.Matrix(1,vec.length);
+		for (int i = 0; i < vec.length; i++) {
+			ret.set(0, i, vec[i]);
+		}
+		
+		return ret;
+	}
+
+	/**
+	 * @param sol
+	 * @return Dense matrix from a {@link Jama.Matrix}
+	 */
+	public static Matrix fromJama(Jama.Matrix sol) {
+		DenseMatrix mat = new DenseMatrix(sol.getRowDimension(), sol.getColumnDimension());
+		for (int i = 0; i < mat.rowCount(); i++) {
+			for (int j = 0; j < mat.columnCount(); j++) {
+				mat.put(i, j, sol.get(i, j));
+			}
+		}
+		return mat;
 	}
 
 	

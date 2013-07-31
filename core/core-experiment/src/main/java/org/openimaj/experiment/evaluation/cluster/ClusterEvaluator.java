@@ -25,13 +25,11 @@ public class ClusterEvaluator<D, T extends AnalysisResult> implements Evaluator<
 
 	/**
 	 * @param gen
-	 * @param data
 	 * @param clusters
 	 * @param analyser
 	 */
 	public ClusterEvaluator(ClustererWrapper gen, int[][] clusters, ClusterAnalyser<T> analyser) {
 		this.gen = gen;
-		this.data = data;
 		this.correct = clusters;
 		this.analyser = analyser;
 	}

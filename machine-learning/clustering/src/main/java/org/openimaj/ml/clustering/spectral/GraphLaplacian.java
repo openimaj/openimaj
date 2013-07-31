@@ -80,7 +80,7 @@ public abstract class GraphLaplacian{
 
 		@Override
 		public Mode direction() {
-			return Mode.BACKWARD;
+			return Mode.FORWARD;
 		}
 
 

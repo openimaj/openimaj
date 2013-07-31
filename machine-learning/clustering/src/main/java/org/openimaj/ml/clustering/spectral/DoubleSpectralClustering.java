@@ -13,7 +13,7 @@ import org.openimaj.util.pair.DoubleObjectPair;
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
 import ch.akuhn.matrix.Vector.Entry;
-import ch.akuhn.matrix.eigenvalues.FewEigenvalues;
+import ch.akuhn.matrix.eigenvalues.Eigenvalues;
 
 /**
  * Built from a mixture of this tutorial:
@@ -48,7 +48,9 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 		SpatialClusters<double[]> cluster = conf.internal.cluster(lowestCols);
 		// if the clusters contain the cluster indexes of the training examples use those
 		if(cluster instanceof TrainingIndexClusters){
-			return new Clusters(((TrainingIndexClusters)cluster).clusters());
+			Clusters clusters = new Clusters(((TrainingIndexClusters)cluster).clusters());
+			logger.debug(clusters);
+			return clusters;
 		}
 		// Otherwise attempt to assign values to clusters
 		int[] clustered = cluster.defaultHardAssigner().assign(lowestCols);
@@ -71,13 +73,8 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 	}
 	
 	protected double[][] bestCols(final SparseMatrix laplacian) {
-		FewEigenvalues eig = new FewEigenvalues(laplacian.columnCount()) {
-			@Override
-			protected Vector callback(Vector vector) {
-				return laplacian.mult(vector);
-			}
-		};
-		eig = conf.eigenChooser.prepare(eig,conf.laplacian.direction(),laplacian.columnCount());
+		
+		Eigenvalues eig = conf.eigenChooser.prepare(laplacian, conf.laplacian.direction());
 		eig.run();
 		int eigenVectorSelect = conf.eigenChooser.nEigenVectors(this.conf.laplacian.eigenIterator(eig),laplacian.columnCount());
 		logger.debug("Selected dimensions: " + eigenVectorSelect);
@@ -103,7 +100,7 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 		for (int i = 0; i < ret.length; i++) {
 			double[] row = ret[i];
 			for (int j = 0; j < row.length; j++) {
-				row[j] /= Math.sqrt(retSum[i]/eigenVectorSelect);
+				row[j] /= Math.sqrt(retSum[i]);
 			}
 		}
 

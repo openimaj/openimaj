@@ -12,6 +12,7 @@ import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.io.FileUtils;
 import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
+import org.openimaj.logger.LoggerUtils;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.dbscan.ClusterTestDataLoader;
 import org.openimaj.ml.clustering.dbscan.ClusterTestDataLoader.TestStats;
@@ -37,6 +38,7 @@ public class TestDoubleNormalisedSpecralClustering {
 	 */
 	@Before
 	public void loadTest() throws IOException{
+		LoggerUtils.prepareConsoleLogger();
 		String[] data = FileUtils.readlines(TestDoubleNormalisedSpecralClustering.class.getResourceAsStream("/org/openimaj/ml/clustering/dbscan/dbscandata"));
 		ClusterTestDataLoader loader = new ClusterTestDataLoader();
 		this.testStats = loader.readTestStats(data);
@@ -51,7 +53,7 @@ public class TestDoubleNormalisedSpecralClustering {
 	@Test
 	public void testSimSpatialCluster(){
 		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				1, 2,
+				0.1, 3,
 				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
 		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
@@ -69,13 +71,30 @@ public class TestDoubleNormalisedSpecralClustering {
 	 */
 	@Test
 	public void testSimSpatialClusterInverse(){
-		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>( 1, 2,
-				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
+		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>( 
+				0.1, 3, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
 		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(inner, new GraphLaplacian.Normalised());
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
  		SparseMatrix mat_norm = normalisedSimilarity();
+		Clusters res = clust.cluster(mat_norm,true);
+		confirmClusters(res);
+	}
+	
+	/**
+	 *
+	 */
+	@Test
+	public void testSimSpatialClusterInverseHardcoded(){
+		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>( 
+				0.2, 2, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
+		);
+		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
+		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(inner, new GraphLaplacian.Normalised());
+//		conf.eigenChooser = new HardCodedEigenChooser(3);
+		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
+		SparseMatrix mat_norm = normalisedSimilarity(Double.MAX_VALUE);
 		Clusters res = clust.cluster(mat_norm,true);
 		confirmClusters(res);
 	}
@@ -88,14 +107,18 @@ public class TestDoubleNormalisedSpecralClustering {
 	}
 
 
+	
 	private SparseMatrix normalisedSimilarity() {
+		return normalisedSimilarity(this.testStats.eps);
+	}
+	private SparseMatrix normalisedSimilarity(double eps) {
 		final SparseMatrix mat = new SparseMatrix(testData.length,testData.length);
 		final DoubleFVComparison dist = DoubleFVComparison.EUCLIDEAN;
 		double maxD = 0;
 		for (int i = 0; i < testData.length; i++) {
 			for (int j = i; j < testData.length; j++) {
 				double d = dist.compare(testData[i], testData[j]);
-				if(d>this.testStats.eps) d = Double.NaN;
+				if(d>eps) d = Double.NaN;
 				else{
 					maxD = Math.max(d, maxD);
 				}
@@ -105,7 +128,7 @@ public class TestDoubleNormalisedSpecralClustering {
 		}
 		SparseMatrix mat_norm = new SparseMatrix(testData.length,testData.length);
 		for (int i = 0; i < testData.length; i++) {
-			for (int j = i; j < testData.length; j++) {
+			for (int j = i+1; j < testData.length; j++) {
 				double d = mat.get(i, j);
 				if(Double.isNaN(d)){
 					continue;

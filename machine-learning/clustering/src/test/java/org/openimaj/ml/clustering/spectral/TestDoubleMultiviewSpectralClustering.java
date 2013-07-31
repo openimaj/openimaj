@@ -44,8 +44,8 @@ public class TestDoubleMultiviewSpectralClustering {
 	private ArrayList<double[]> alldata;
 	private HashMap<Integer, List<double[]>> splitdata;
 	private SparseMatrix allsim;
-	private double epsd = 0.4;
-	private double epss = 0.3;
+	private double epsd = 10;
+	private double epss = 0.04;
 	private ArrayList<SparseMatrix> splitsim;
 
 	@Before
@@ -96,7 +96,7 @@ public class TestDoubleMultiviewSpectralClustering {
 			double diff = CFMatrixUtils.max(m.getColumn(c)) - CFMatrixUtils.min(m.getColumn(c));
 			double cmean = mean.getElement(0, c);
 			for (int r = 0; r < m.getNumRows(); r++) {
-				asDouble[r][c] = (m.getElement(r, c) - cmean)/diff;
+				asDouble[r][c] = (m.getElement(r, c) - cmean);
 			}
 		}
 		return asDouble;
@@ -158,7 +158,7 @@ public class TestDoubleMultiviewSpectralClustering {
 		MultiviewSpectralClusteringConf<double[]> conf = new MultiviewSpectralClusteringConf<double[]>(
 			0.1,inner
 		);
-		conf.eigenChooser = new AutoSelectingEigenChooser(100, 0.2);
+		conf.eigenChooser = new AutoSelectingEigenChooser(100, 1.0);
 		conf.stop = new StoppingCondition.HardCoded(10);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
 		DoubleMultiviewSpectralClustering multi = new DoubleMultiviewSpectralClustering(conf);
@@ -169,5 +169,7 @@ public class TestDoubleMultiviewSpectralClustering {
 		System.out.println(clusters1);
 //		System.out.println(clusters2);
 	}
+	
+	
 
 }

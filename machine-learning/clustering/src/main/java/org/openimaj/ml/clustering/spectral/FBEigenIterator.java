@@ -22,11 +22,11 @@ public final class FBEigenIterator implements
 	 */
 	public static enum Mode{
 		/**
-		 * Forward from index 0
+		 * Forward from index 0, the eigenvalue order is ascending 
 		 */
 		FORWARD,
 		/**
-		 *  Backward from indes n-1
+		 *  Backward from indes n-1, the eigenvalue order is decending
 		 */
 		BACKWARD;
 	}

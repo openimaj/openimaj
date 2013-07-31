@@ -46,7 +46,8 @@ public class MEClusterAnalyser implements ClusterAnalyser<MEAnalysis>{
 		// Go through each estimated class
 		for (int[] cluster : estimated) {
 			// The potential correct pairings is calculated as a cluster length pick 2
-			positive += MathUtil.binomialCoefficient(cluster.length, 2);
+			if(cluster.length > 1)
+				positive += MathUtil.binomialCoefficient(cluster.length, 2);
 			remainingTotal -= cluster.length;
 			// The potential negative pairings is the size of this class times the remaining items
 			negative += remainingTotal  * cluster.length;

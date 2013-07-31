@@ -2,9 +2,14 @@ package org.openimaj.ml.clustering.spectral;
 
 import java.util.Iterator;
 
+import org.openimaj.math.matrix.MatlibMatrixUtils;
+import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
 
+import Jama.Matrix;
+
+import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
 import ch.akuhn.matrix.eigenvalues.FewEigenvalues;
 
@@ -38,6 +43,7 @@ public class AutoSelectingEigenChooser extends EigenChooser {
 		double prevVal = vals.next().first;
 		for (;vals.hasNext();) {
 			double val = vals.next().first;
+			if(val < 0) break;
 			double diff = Math.abs(val - prevVal);
 			if(prevDiff != 0){
 				double l = prevDiff * relativeGap;
@@ -58,11 +64,24 @@ public class AutoSelectingEigenChooser extends EigenChooser {
 	}
 
 	@Override
-	public FewEigenvalues prepare(FewEigenvalues eig, Mode direction, int total) {
+	public FewEigenvalues prepare(final SparseMatrix laplacian, Mode direction) {
+		int total = laplacian.columnCount();
 		if(direction == Mode.FORWARD){
+			FewEigenvalues eig = FewEigenvalues.of(laplacian);
 			return eig.greatest((int) (total*maxSelect));
 		}
 		else{
+//			final Matrix jamaLap = MatrixUtils.pseudoInverse(MatlibMatrixUtils.toJama(laplacian));
+//			FewEigenvalues eig = new FewEigenvalues(laplacian.columnCount()){
+//
+//				@Override
+//				protected Vector callback(Vector vector) {
+//					Matrix sol = jamaLap.times(MatlibMatrixUtils.toColJama(vector));
+//					return MatlibMatrixUtils.fromJama(sol).column(0);
+//				}
+//				
+//			};
+			FewEigenvalues eig = FewEigenvalues.of(laplacian);
 			return eig.lowest((int) (total*maxSelect));
 		}
 	}

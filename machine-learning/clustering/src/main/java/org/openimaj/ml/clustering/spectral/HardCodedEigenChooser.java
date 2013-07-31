@@ -6,7 +6,9 @@ import java.util.Iterator;
 import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
 
+import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
+import ch.akuhn.matrix.eigenvalues.Eigenvalues;
 import ch.akuhn.matrix.eigenvalues.FewEigenvalues;
 
 /**
@@ -28,7 +30,8 @@ public class HardCodedEigenChooser extends EigenChooser{
 		return count;
 	}
 	@Override
-	public FewEigenvalues prepare(FewEigenvalues eig, Mode direction, int total) {
+	public Eigenvalues prepare(final SparseMatrix laplacian, Mode direction) {
+		FewEigenvalues eig = FewEigenvalues.of(laplacian);
 		if(direction == Mode.FORWARD){
 			return eig.greatest(count);
 		}

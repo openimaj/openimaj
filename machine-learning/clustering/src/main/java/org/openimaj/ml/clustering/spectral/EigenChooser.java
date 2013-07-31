@@ -5,8 +5,9 @@ import java.util.Iterator;
 import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
 
+import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
-import ch.akuhn.matrix.eigenvalues.FewEigenvalues;
+import ch.akuhn.matrix.eigenvalues.Eigenvalues;
 
 /**
  * Method which makes a decision on how many eigen vectors to select
@@ -24,10 +25,10 @@ public abstract class EigenChooser{
 	/**
 	 * Make a coarse decision of the number of eigen vectors to extract in the first place
 	 * with the knowledge of the eigen values that will likely be important
-	 * @param eig the current eigen decompositon
+	 * @param laplacian the matrix to be decomposed
 	 * @param direction the direction (backward means smallest to biggest)
 	 * @param total the total eigen vectors which will be produced
 	 * @return the prepared eigen values
 	 */
-	public abstract FewEigenvalues prepare(FewEigenvalues eig, Mode direction, int total) ;
+	public abstract Eigenvalues prepare(SparseMatrix laplacian, Mode direction) ;
 }
