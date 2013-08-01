@@ -1,6 +1,9 @@
 package org.openimaj.ml.clustering.spectral;
 
-import static org.junit.Assert.*;
+import gnu.trove.list.array.TIntArrayList;
+import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.mtj.DenseMatrix;
+import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,28 +11,17 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-
-import gnu.trove.list.array.TIntArrayList;
-import gov.sandia.cognition.io.CSVUtility;
-import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.mtj.DenseMatrix;
-import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.feature.DoubleFVComparison;
-import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.logger.LoggerUtils;
 import org.openimaj.math.matrix.CFMatrixUtils;
-import org.openimaj.math.matrix.MatrixUtils;
+import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusterer;
-import org.openimaj.ml.clustering.dbscan.DBSCANConfiguration;
-import org.openimaj.ml.clustering.dbscan.DoubleDBSCAN;
 import org.openimaj.ml.clustering.dbscan.DoubleDBSCANClusters;
-import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.ml.clustering.dbscan.DoubleNNDBSCAN;
 
 import ch.akuhn.matrix.SparseMatrix;
 
@@ -48,6 +40,9 @@ public class TestDoubleMultiviewSpectralClustering {
 	private double epss = 0.04;
 	private ArrayList<SparseMatrix> splitsim;
 
+	/**
+	 * @throws IOException
+	 */
 	@Before
 	public void begin() throws IOException{
 		LoggerUtils.prepareConsoleLogger();
@@ -150,11 +145,9 @@ public class TestDoubleMultiviewSpectralClustering {
 
 	@Test
 	public void test() {
-		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
+		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
 				epss, 2,
-				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
-		);
-		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
+				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN));
 		MultiviewSpectralClusteringConf<double[]> conf = new MultiviewSpectralClusteringConf<double[]>(
 			0.1,inner
 		);
@@ -163,7 +156,7 @@ public class TestDoubleMultiviewSpectralClustering {
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
 		DoubleMultiviewSpectralClustering multi = new DoubleMultiviewSpectralClustering(conf);
 		
-		Clusters clusters1 = clust.cluster(allsim, false);
+		IndexClusters clusters1 = clust.cluster(allsim);
 //		Clusters clusters2 = multi.cluster(splitsim, false);
 		
 		System.out.println(clusters1);

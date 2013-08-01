@@ -7,7 +7,7 @@ import org.openimaj.feature.FeatureExtractor;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class WrapperExtractor implements FeatureExtractor<DoubleFV, double[]>{
+public class DummyExtractor implements FeatureExtractor<DoubleFV, double[]>{
 
 	@Override
 	public DoubleFV extractFeature(double[] object) {

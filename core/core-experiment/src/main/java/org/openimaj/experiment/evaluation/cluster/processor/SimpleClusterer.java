@@ -4,11 +4,13 @@ package org.openimaj.experiment.evaluation.cluster.processor;
 /**
  * Something which wraps the functionality of producing clusters
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @param <DATA> 
  *
  */
-public interface ClustererWrapper {
+public interface SimpleClusterer<DATA> {
 	/**
-	 * @return Given a list of data items, cluster them by index
+	 * @param data 
+	 * @return Given data items, cluster them by index
 	 */
-	public int[][] cluster();
+	public int[][] rawcluster(DATA data);
 }

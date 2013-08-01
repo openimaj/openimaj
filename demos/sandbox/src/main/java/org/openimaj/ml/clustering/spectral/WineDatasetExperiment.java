@@ -1,19 +1,23 @@
 package org.openimaj.ml.clustering.spectral;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.openimaj.experiment.evaluation.cluster.ClusterEvaluator;
 import org.openimaj.experiment.evaluation.cluster.analyser.MEAnalysis;
 import org.openimaj.experiment.evaluation.cluster.analyser.MEClusterAnalyser;
-import org.openimaj.experiment.evaluation.cluster.processor.ClustererWrapper;
+import org.openimaj.experiment.evaluation.cluster.processor.SimpleClusterer;
 import org.openimaj.feature.DoubleFVComparison;
-import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
-import org.openimaj.ml.clustering.dbscan.DBSCANConfiguration;
-import org.openimaj.ml.clustering.dbscan.DoubleDBSCAN;
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.dbscan.DistanceDBSCAN;
+import org.openimaj.ml.clustering.dbscan.DoubleDBSCANClusters;
+import org.openimaj.ml.clustering.dbscan.DoubleNNDBSCAN;
+import org.openimaj.ml.clustering.dbscan.SparseMatrixDBSCAN;
 import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.ml.dataset.WineDataset;
+import org.openimaj.util.function.Function;
 import org.openimaj.util.pair.DoubleObjectPair;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -57,12 +61,8 @@ public class WineDatasetExperiment {
 		
 		logger.info("Clustering using modified spectral clustering");
 		DoubleSpectralClustering clustCSP = prepareCSPSpectralClustering(ds);
-		ClustererWrapper cspWrapper = new RBFSimilarityDoubleClustererWrapper<double[]>(
-				ds, 
-				new WrapperExtractor(), 
-				clustCSP
-				);
-		evaluate(ds, cspWrapper);
+		Function<List<double[]>,SparseMatrix> func = new RBFSimilarityDoubleClustererWrapper<double[]>(new DummyExtractor());
+		evaluate(ds, clustCSP, func);
 	}
 
 	private static DoubleSpectralClustering prepareCSPSpectralClustering(WineDataset ds) {
@@ -88,24 +88,17 @@ public class WineDatasetExperiment {
 		return clust;
 	}
 
-	private static DoubleDBSCAN prepareDBScane() {
+	private static SparseMatrixDBSCAN prepareDBScane() {
 		// Creater the spectral clustering
 		double epss = 0.5;
-		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				epss, 1
-		);
-		DoubleDBSCAN inner = new DoubleDBSCAN(dbsConf);
+		SparseMatrixDBSCAN inner = new DistanceDBSCAN(epss, 1);
 		return inner;
 	}
 
 	private static DoubleSpectralClustering prepareSpectralClustering() {
 		// Creater the spectral clustering
 		double epss = 0.6;
-		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				epss, 2,
-				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
-		);
-		DoubleDBSCAN inner = new DoubleDBSCAN(dbsConf);
+		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(epss, 2,new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN));
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(
 			inner
 		);
@@ -115,13 +108,8 @@ public class WineDatasetExperiment {
 		return clust;
 	}
 
-	private static void evaluate(WineDataset ds, ClustererWrapper wrapper) {
-		ClusterEvaluator<double[], MEAnalysis> eval =
-		new ClusterEvaluator<double[], MEAnalysis>(
-			wrapper,
-			new MEClusterAnalyser(),
-			ds
-		);
+	private static void evaluate(WineDataset ds, SimpleClusterer<SparseMatrix> clust, Function<List<double[]>, SparseMatrix> func) {
+		ClusterEvaluator<SparseMatrix, MEAnalysis> eval = new ClusterEvaluator<SparseMatrix, MEAnalysis>(clust,new MEClusterAnalyser(),ds,func);
 		int[][] evaluate = eval.evaluate();
 		logger.info("Expected Classes: " + ds.size());
 		logger.info("Detected Classes: " + evaluate.length);

@@ -2,12 +2,10 @@ package org.openimaj.ml.clustering.spectral;
 
 
 import org.apache.log4j.Logger;
-import org.openimaj.data.dataset.Dataset;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.clustering.SimilarityClusterer;
-import org.openimaj.ml.clustering.TrainingIndexClusters;
 
 import ch.akuhn.matrix.SparseMatrix;
 
@@ -17,7 +15,7 @@ import ch.akuhn.matrix.SparseMatrix;
  *
  * @param <T>
  */
-public class NormalisedSimilarityDoubleClustererWrapper<T> extends SimilarityDoubleClustererWrapper<T> {
+public class NormalisedSimilarityDoubleClustererWrapper<T> extends DoubleFVSimilarityFunction<T> {
 	
 	private double eps;
 
@@ -25,14 +23,11 @@ public class NormalisedSimilarityDoubleClustererWrapper<T> extends SimilarityDou
 
 	/**
 	 * 
-	 * @param data
 	 * @param extractor
-	 * @param dbscan
 	 * @param eps
 	 */
-	public NormalisedSimilarityDoubleClustererWrapper(Dataset<T> data,
-			FeatureExtractor<DoubleFV,T> extractor, SimilarityClusterer<? extends TrainingIndexClusters> dbscan, double eps) {
-		super(data, extractor, dbscan);
+	public NormalisedSimilarityDoubleClustererWrapper(FeatureExtractor<DoubleFV,T> extractor, double eps) {
+		super(extractor);
 		this.eps = eps;
 	}
 
@@ -40,13 +35,13 @@ public class NormalisedSimilarityDoubleClustererWrapper<T> extends SimilarityDou
 
 
 	
-	SparseMatrix similarity(double[][] testData) {
-		final SparseMatrix mat = new SparseMatrix(testData.length,testData.length);
+	SparseMatrix similarity() {
+		final SparseMatrix mat = new SparseMatrix(feats.length,feats.length);
 		final DoubleFVComparison dist = DoubleFVComparison.EUCLIDEAN;
 		double maxD = 0;
-		for (int i = 0; i < testData.length; i++) {
-			for (int j = i; j < testData.length; j++) {
-				double d = dist.compare(testData[i], testData[j]);
+		for (int i = 0; i < feats.length; i++) {
+			for (int j = i; j < feats.length; j++) {
+				double d = dist.compare(feats[i], feats[j]);
 				if(d>eps ) d = Double.NaN;
 				else{
 					maxD = Math.max(d, maxD);
@@ -55,9 +50,9 @@ public class NormalisedSimilarityDoubleClustererWrapper<T> extends SimilarityDou
 				mat.put(j, i, d);
 			}
 		}
-		SparseMatrix mat_norm = new SparseMatrix(testData.length,testData.length);
-		for (int i = 0; i < testData.length; i++) {
-			for (int j = i; j < testData.length; j++) {
+		SparseMatrix mat_norm = new SparseMatrix(feats.length,feats.length);
+		for (int i = 0; i < feats.length; i++) {
+			for (int j = i; j < feats.length; j++) {
 				double d = mat.get(i, j);
 				if(Double.isNaN(d)){
 					continue;

@@ -4,7 +4,7 @@ import ch.akuhn.matrix.SparseMatrix;
 
 
 /**
- * A {@link SimilarityClusterer} clusters data that can be represented as a similarity
+ * A {@link DistanceClusterer} clusters data that can be represented as a distance
  * matrix. Specifically these clusterers only need to know (in some sense) how similar two 
  * things are and nothing else
  *
@@ -12,10 +12,10 @@ import ch.akuhn.matrix.SparseMatrix;
  * @param <CLUSTERS> 
  *
  */
-public interface SimilarityClusterer<CLUSTERS extends IndexClusters> extends SparseMatrixClusterer<CLUSTERS> {
+public interface DistanceClusterer<CLUSTERS extends IndexClusters> extends SparseMatrixClusterer<CLUSTERS> {
 	/**
-	 * @param sim the similarity matrix
+	 * @param dist the distance matrix
 	 * @return the clusters
 	 */
-	public CLUSTERS clusterSimilarity(SparseMatrix sim);
+	public CLUSTERS clusterDistance(SparseMatrix dist);
 }

@@ -1,23 +1,33 @@
 package org.openimaj.ml.clustering.dbscan;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Scanner;
-
-import org.openimaj.ml.clustering.SimilarityClusters;
 import org.openimaj.ml.clustering.SpatialClusters;
-import org.openimaj.ml.clustering.TrainingIndexClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 
+
 /**
- * {@link DBSCANClusters} which also holds the original data, therefore allowing an implementation
- * of {@link #defaultHardAssigner()} with a single round of {@link DoubleDBSCAN}
+ * {@link DBSCANClusters} which also holds the original data
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DoubleDBSCANClusters extends DBSCANClusters implements SpatialClusters<double[]>, SimilarityClusters, TrainingIndexClusters{
+public class DoubleDBSCANClusters extends DBSCANClusters implements SpatialClusters<double[]>{
+
+	
+	/**
+	 * @param noise
+	 * @param clusters
+	 */
+	public DoubleDBSCANClusters(int[] noise, int[][] clusters) {
+		super(noise, clusters);
+	}
+	
+	/**
+	 * @param noise
+	 * @param clusters
+	 * @param nEntries
+	 */
+	public DoubleDBSCANClusters(int[] noise, int[][] clusters, int nEntries) {
+		super(noise, clusters, nEntries);
+	}
 
 	/**
 	 * The data
@@ -25,43 +35,8 @@ public class DoubleDBSCANClusters extends DBSCANClusters implements SpatialClust
 	public double[][] data;
 
 	@Override
-	public void readASCII(Scanner in) throws IOException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public String asciiHeader() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void readBinary(DataInput in) throws IOException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public byte[] binaryHeader() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public int numDimensions() {
-		return this.data[0].length;
-	}
-
-	@Override
-	public int numClusters() {
-		return this.clusterMembers.length;
+		return data[0].length;
 	}
 
 	@Override
@@ -69,14 +44,5 @@ public class DoubleDBSCANClusters extends DBSCANClusters implements SpatialClust
 		return null;
 	}
 
-	@Override
-	public int numEntries() {
-		return data.length;
-	}
-
-	@Override
-	public int[][] clusters() {
-		return this.clusterMembers;
-	}
-
+	
 }

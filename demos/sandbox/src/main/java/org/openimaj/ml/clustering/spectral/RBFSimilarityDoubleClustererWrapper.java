@@ -3,11 +3,8 @@ package org.openimaj.ml.clustering.spectral;
 
 import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.log4j.Logger;
-import org.openimaj.data.dataset.Dataset;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
-import org.openimaj.ml.clustering.SimilarityClusterer;
-import org.openimaj.ml.clustering.TrainingIndexClusters;
 
 import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.Matrix;
@@ -19,21 +16,16 @@ import ch.akuhn.matrix.SparseMatrix;
  *
  * @param <T>
  */
-public class RBFSimilarityDoubleClustererWrapper<T> extends SimilarityDoubleClustererWrapper<T> {
+public class RBFSimilarityDoubleClustererWrapper<T> extends DoubleFVSimilarityFunction<T> {
 	
 	private double[] var;
 	Logger logger = Logger.getLogger(RBFSimilarityDoubleClustererWrapper.class);
 
 	/**
-	 * 
-	 * @param data
 	 * @param extractor
-	 * @param dbscan
 	 */
-	public RBFSimilarityDoubleClustererWrapper(Dataset<T> data,FeatureExtractor<DoubleFV,T> extractor, SimilarityClusterer<? extends TrainingIndexClusters> dbscan) {
-		super(data, extractor, dbscan);
-		prepareFeats();
-		prepareVariance();
+	public RBFSimilarityDoubleClustererWrapper(FeatureExtractor<DoubleFV,T> extractor) {
+		super(extractor);
 	}
 	
 	private void prepareVariance() {
@@ -47,13 +39,14 @@ public class RBFSimilarityDoubleClustererWrapper<T> extends SimilarityDoubleClus
 		}
 	}
 
-	SparseMatrix similarity(double[][] testData) {
-		int N = testData.length;
+	SparseMatrix similarity() {
+		prepareVariance();
+		int N = feats.length;
 		SparseMatrix sim = new SparseMatrix(N,N);
 		for (int i = 0; i < N; i++) {
-			double[] di = testData[i];
+			double[] di = feats[i];
 			for (int j = i+1; j < N; j++) {
-				double[] dj = testData[j];
+				double[] dj = feats[j];
 				double expInner = 0;
 				// -1*sum((data(i,:)-data(j,:)).^2./(2*my_var))
 				for (int k = 0; k < dj.length; k++) {

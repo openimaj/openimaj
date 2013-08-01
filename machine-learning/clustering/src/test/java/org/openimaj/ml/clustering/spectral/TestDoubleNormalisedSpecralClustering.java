@@ -10,15 +10,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.io.FileUtils;
-import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.logger.LoggerUtils;
+import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.dbscan.ClusterTestDataLoader;
 import org.openimaj.ml.clustering.dbscan.ClusterTestDataLoader.TestStats;
-import org.openimaj.ml.clustering.dbscan.DBSCANConfiguration;
-import org.openimaj.ml.clustering.dbscan.DoubleDBSCAN;
 import org.openimaj.ml.clustering.dbscan.DoubleDBSCANClusters;
+import org.openimaj.ml.clustering.dbscan.DoubleNNDBSCAN;
 
 import ch.akuhn.matrix.SparseMatrix;
 
@@ -52,17 +51,15 @@ public class TestDoubleNormalisedSpecralClustering {
 	 */
 	@Test
 	public void testSimSpatialCluster(){
-		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
+		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
 				0.1, 3,
-				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
-		);
-		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
+				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN));
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(
 			inner
 		);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
 		SparseMatrix mat_norm = normalisedSimilarity();
-		Clusters res = clust.cluster(mat_norm,true);
+		IndexClusters res = clust.cluster(mat_norm);
 		confirmClusters(res);
 	}
 
@@ -71,14 +68,13 @@ public class TestDoubleNormalisedSpecralClustering {
 	 */
 	@Test
 	public void testSimSpatialClusterInverse(){
-		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>( 
-				0.1, 3, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
+		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
+			0.1, 3, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
-		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(inner, new GraphLaplacian.Normalised());
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
  		SparseMatrix mat_norm = normalisedSimilarity();
-		Clusters res = clust.cluster(mat_norm,true);
+		IndexClusters res = clust.cluster(mat_norm);
 		confirmClusters(res);
 	}
 	
@@ -87,20 +83,19 @@ public class TestDoubleNormalisedSpecralClustering {
 	 */
 	@Test
 	public void testSimSpatialClusterInverseHardcoded(){
-		DBSCANConfiguration<DoubleNearestNeighbours, double[]> dbsConf = new DBSCANConfiguration<DoubleNearestNeighbours, double[]>( 
-				0.2, 2, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
+		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
+			0.2, 2, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
-		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleDBSCAN(dbsConf);
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(inner, new GraphLaplacian.Normalised());
 //		conf.eigenChooser = new HardCodedEigenChooser(3);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
 		SparseMatrix mat_norm = normalisedSimilarity(Double.MAX_VALUE);
-		Clusters res = clust.cluster(mat_norm,true);
+		IndexClusters res = clust.cluster(mat_norm);
 		confirmClusters(res);
 	}
 
 
-	private void confirmClusters(Clusters res) {
+	private void confirmClusters(IndexClusters res) {
 		for (int i = 0; i < this.testClusters.length; i++) {
 			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusters()[i])));
 		}

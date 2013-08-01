@@ -9,7 +9,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.io.FileUtils;
-import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.ml.clustering.dbscan.ClusterTestDataLoader.TestStats;
 
@@ -43,20 +42,18 @@ public class TestDoubleDBSCAN {
 	 */
 	@Test
 	public void testDBSCAN(){
-		DoubleDBSCAN dbscan = new DoubleDBSCAN(
-			new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				this.testStats.eps,
-				this.testStats.minpts,
-				new DoubleNearestNeighboursExact.Factory()
-			)
+		DoubleNNDBSCAN dbscan = new DoubleNNDBSCAN(
+			this.testStats.eps,
+			this.testStats.minpts,
+			new DoubleNearestNeighboursExact.Factory()
 		);
 		DoubleDBSCANClusters res = dbscan.cluster(testData);
-		for (int i = 0; i < res.noise.length; i++) {
-			assertTrue(res.noise[i] < this.testStats.noutliers);
+		for (int i = 0; i < res.getNoise().length; i++) {
+			assertTrue(res.getNoise()[i] < this.testStats.noutliers);
 		}
-		assertTrue(res.noise.length == this.testStats.noutliers);
+		assertTrue(res.getNoise().length == this.testStats.noutliers);
 		for (int i = 0; i < this.testClusters.length; i++) {
-			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusterMembers[i])));
+			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusters()[i])));
 		}
 	}
 	/**
@@ -64,12 +61,9 @@ public class TestDoubleDBSCAN {
 	 */
 	@Test
 	public void testSimDBSCAN(){
-		DoubleDBSCAN dbscan = new DoubleDBSCAN(
-			new DBSCANConfiguration<DoubleNearestNeighbours, double[]>(
-				this.testStats.eps,
-				this.testStats.minpts,
-				new DoubleNearestNeighboursExact.Factory()
-			)
+		SparseMatrixDBSCAN dbscan = new DistanceDBSCAN(
+			this.testStats.eps,
+			this.testStats.minpts
 		);
 		SparseMatrix mat = new SparseMatrix(testData.length,testData.length);
 		for (int i = 0; i < testData.length; i++) {
@@ -81,13 +75,13 @@ public class TestDoubleDBSCAN {
 				mat.put(j, i, d);
 			}
 		}
-		DoubleDBSCANClusters res = dbscan.cluster(mat,true);
-		for (int i = 0; i < res.noise.length; i++) {
-			assertTrue(res.noise[i] < this.testStats.noutliers);
+		DoubleDBSCANClusters res = dbscan.cluster(mat);
+		for (int i = 0; i < res.getNoise().length; i++) {
+			assertTrue(res.getNoise()[i] < this.testStats.noutliers);
 		}
-		assertTrue(res.noise.length == this.testStats.noutliers);
+		assertTrue(res.getNoise().length == this.testStats.noutliers);
 		for (int i = 0; i < this.testClusters.length; i++) {
-			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusterMembers[i])));
+			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusters()[i])));
 		}
 	}
 	private Set<Integer> toSet(int[] is) {

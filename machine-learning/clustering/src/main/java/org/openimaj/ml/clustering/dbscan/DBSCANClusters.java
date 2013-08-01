@@ -2,43 +2,40 @@ package org.openimaj.ml.clustering.dbscan;
 
 import java.util.Arrays;
 
-import org.openimaj.knn.DoubleNearestNeighbours;
+import org.openimaj.ml.clustering.IndexClusters;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class DBSCANClusters {
-	/**
-	 * The members of a cluster
-	 */
-	int[][] clusterMembers;
+public class DBSCANClusters extends IndexClusters {
 	/**
 	 * Indexes of noise elements
 	 */
-	int[] noise;
+	private int[] noise;
+	
 	/**
-	 * The configuration that created this DBSCAN cluster
+	 * @param noise
+	 * @param clusters
 	 */
-	DBSCANConfiguration<DoubleNearestNeighbours, double[]> conf;
-
-
-	@Override
-	public String toString() {
-		int[][] clusters = clusterMembers;
-		int i = 0;
-		String str = "";
-		for (int[] member : clusters) {
-			str += String.format("%d %s\n",i++,Arrays.toString(member));
-		}
-		str+=String.format("%s", Arrays.toString(this.noise));
-		return str;
+	public DBSCANClusters(int[] noise, int[][] clusters) {
+		super(clusters);
+		this.noise = noise;
 	}
 	
 	/**
-	 * @return the clusters and the indexes of data assigned
+	 * @param noise
+	 * @param clusters
+	 * @param nEntries 
 	 */
-	public int[][] getClusterMembers(){
-		return this.clusterMembers;
+	public DBSCANClusters(int[] noise, int[][] clusters, int nEntries) {
+		super(clusters,nEntries);
+		this.noise = noise;
+	}
+	
+	@Override
+	public String toString() {
+		String str = String.format("%s", Arrays.toString(this.noise));
+		return super.toString() + "\n" + str;
 	}
 	
 	/**

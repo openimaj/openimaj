@@ -8,7 +8,7 @@ import java.util.List;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
-import org.openimaj.math.matrix.MatrixUtils;
+import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.MultiviewSimilarityClusterer;
 import org.openimaj.util.array.ArrayUtils;
 
@@ -30,7 +30,7 @@ import ch.akuhn.matrix.SparseMatrix;
 		pages = { "1413", "", "1421" },
 		editor = { "J. Shawe-Taylor", "R.S. Zemel", "P. Bartlett", "F.C.N. Pereira", "K.Q. Weinberger" }
 	)
-public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClusterer<Clusters>{
+public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClusterer<IndexClusters>{
 
 	private MultiviewSpectralClusteringConf<double[]> conf;
 
@@ -43,11 +43,11 @@ public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClu
 	}
 
 	@Override
-	public Clusters cluster(List<SparseMatrix> data, boolean distanceMode) {
+	public IndexClusters cluster(List<SparseMatrix> data) {
 		DoubleSpectralClustering dsp = new DoubleSpectralClustering(conf);
 		
 		if(data.size() == 1){
-			return dsp.cluster(data.get(0), distanceMode);
+			return dsp.cluster(data.get(0));
 		}		
 		
 		// Solve the spectral clustering for each view
@@ -80,6 +80,11 @@ public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClu
 		}
 		// Concatenate the eigen spaces and cluster using the conf clusterer
 		return dsp.eigenspaceCluster(ArrayUtils.concatenate(answers.toArray(new double[answers.size()][][])));
+	}
+
+	@Override
+	public int[][] rawcluster(List<SparseMatrix> data) {
+		return this.cluster(data).clusters();
 	}
 
 }

@@ -8,7 +8,8 @@ import java.util.Map.Entry;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.Evaluator;
 import org.openimaj.experiment.evaluation.cluster.analyser.ClusterAnalyser;
-import org.openimaj.experiment.evaluation.cluster.processor.ClustererWrapper;
+import org.openimaj.experiment.evaluation.cluster.processor.SimpleClusterer;
+import org.openimaj.util.function.Function;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -18,45 +19,85 @@ import org.openimaj.experiment.evaluation.cluster.processor.ClustererWrapper;
  */
 public class ClusterEvaluator<D, T extends AnalysisResult> implements Evaluator<int[][],T>{
 
-	private ClustererWrapper gen;
-	private List<D> data;
 	private int[][] correct;
 	private ClusterAnalyser<T> analyser;
+	private SimpleClusterer<D> gen;
+	private D data;
 
 	/**
 	 * @param gen
+	 * @param data 
 	 * @param clusters
 	 * @param analyser
 	 */
-	public ClusterEvaluator(ClustererWrapper gen, int[][] clusters, ClusterAnalyser<T> analyser) {
+	public ClusterEvaluator(SimpleClusterer<D> gen, D data, int[][] clusters, ClusterAnalyser<T> analyser) {
 		this.gen = gen;
 		this.correct = clusters;
 		this.analyser = analyser;
+		this.data = data;
 	}
+	
+	/**
+	 * @param gen
+	 * @param data 
+	 * @param dataset extract the elements of this map "in order" and build a ground truth. very dangerous.
+	 * @param analyser
+	 */
+	public <A,B> ClusterEvaluator(SimpleClusterer<D> gen, D data, Map<A,? extends List<B>> dataset, ClusterAnalyser<T> analyser) {
+		this.gen = gen;
+		this.correct = new int[dataset.size()][];
+		int j = 0;
+		int k = 0;
+		for (Entry<A, ? extends List<B>> es : dataset.entrySet()) {
+			this.correct[j] = new int[es.getValue().size()];
+			int i = 0;
+			List<B> value = es.getValue();
+			for (int l = 0; l < value.size(); l++) {
+				this.correct[j][i++] = k;
+				k++;
+			}
+			j++;
+		}
+		this.analyser = analyser;
+		this.data = data;
+	}
+	
 	/**
 	 * @param gen
 	 * @param analyser
 	 * @param dataset
+	 * @param transform turn a list of dataset items into the required type for clustering
 	 */
-	public <A> ClusterEvaluator(ClustererWrapper gen, ClusterAnalyser<T> analyser, Map<A,? extends List<D>> dataset) {
+	public <A,B> ClusterEvaluator(
+		SimpleClusterer<D> gen, 
+		ClusterAnalyser<T> analyser, 
+		Map<A,? extends List<B>> dataset, 
+		Function<List<B>,D> transform
+	) {
 		this.gen = gen;
 		this.analyser = analyser;
-		this.data = new ArrayList<D>();
 		this.correct = new int[dataset.size()][];
 		int j = 0;
-		for (Entry<A, ? extends List<D>> es : dataset.entrySet()) {
+		List<B> flattened = new ArrayList<B>();
+		for (Entry<A, ? extends List<B>> es : dataset.entrySet()) {
 			this.correct[j] = new int[es.getValue().size()];
-			for (int i = 0; i < es.getValue().size(); i++) {
-				this.correct[j][i] = this.data.size();
-				this.data.add(es.getValue().get(i));
+			int i = 0;
+			for (B b : es.getValue()) {
+				this.correct[j][i++] = flattened.size();
+				flattened.add(b);
 			}
 			j++;
 		}
+		this.data = transform.apply(flattened);
 	}
+	
+	
+	
+	
 
 	@Override
 	public int[][] evaluate() {
-		return this.gen.cluster();
+		return this.gen.rawcluster(this.data);
 	}
 
 	@Override

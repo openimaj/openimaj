@@ -7,7 +7,7 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.openimaj.ml.clustering.SimilarityClusterer;
 import org.openimaj.ml.clustering.SpatialClusters;
-import org.openimaj.ml.clustering.TrainingIndexClusters;
+import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.util.pair.DoubleObjectPair;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -23,7 +23,7 @@ import ch.akuhn.matrix.eigenvalues.Eigenvalues;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
+public class DoubleSpectralClustering implements SimilarityClusterer<IndexClusters>{
 	final static Logger logger = Logger.getLogger(DoubleSpectralClustering.class);
 	private SpectralClusteringConf<double[]> conf;
 
@@ -34,28 +34,34 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 	public DoubleSpectralClustering(SpectralClusteringConf<double[]> conf) {
 		this.conf = conf;
 	}
-
+	
 	@Override
-	public Clusters cluster(SparseMatrix data, boolean distanceMode) {
+	public IndexClusters clusterSimilarity(SparseMatrix sim) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public IndexClusters cluster(SparseMatrix data) {
 		// Get the laplacian, solve the eigen problem and choose the best 
 		double[][] lowestCols = spectralCluster(data);
 		// Using the eigenspace, cluster
 		return eigenspaceCluster(lowestCols);
 	}
 
-	protected Clusters eigenspaceCluster(double[][] lowestCols) {
+	protected IndexClusters eigenspaceCluster(double[][] lowestCols) {
 		// Cluster the rows with the internal spatial clusterer
 		SpatialClusters<double[]> cluster = conf.internal.cluster(lowestCols);
 		// if the clusters contain the cluster indexes of the training examples use those
-		if(cluster instanceof TrainingIndexClusters){
-			Clusters clusters = new Clusters(((TrainingIndexClusters)cluster).clusters());
+		if(cluster instanceof IndexClusters){
+			IndexClusters clusters = new IndexClusters(((IndexClusters)cluster).clusters());
 			logger.debug(clusters);
 			return clusters;
 		}
 		// Otherwise attempt to assign values to clusters
 		int[] clustered = cluster.defaultHardAssigner().assign(lowestCols);
 		// done!
-		return new Clusters(clustered);
+		return new IndexClusters(clustered);
 	}
 
 	protected double[][] spectralCluster(SparseMatrix data) {
@@ -106,5 +112,12 @@ public class DoubleSpectralClustering implements SimilarityClusterer<Clusters>{
 
 		return ret;
 	}
+
+	@Override
+	public int[][] rawcluster(SparseMatrix data) {
+		return this.cluster(data).clusters();
+	}
+
+	
 
 }

@@ -15,4 +15,9 @@ public interface RegionMode<PAIRTYPE>{
 	 * @return a list of neighbours
 	 */
 	public List<PAIRTYPE> regionQuery(int index);
+	
+	/**
+	 * @return whether the provided region is valid
+	 */
+	public boolean validRegion(List<PAIRTYPE> region);
 }
