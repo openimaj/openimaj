@@ -93,6 +93,17 @@ public class XYZVisualisation3D<D> extends Visualisation3D<List<LocatedObject3D<
 	}
 
 	/**
+	 * 	Constructor that takes the item plotter
+	 * 	@param width
+	 * 	@param height
+	 */
+	public XYZVisualisation3D( final int width, final int height )
+	{
+		super( width, height );
+		this.init();
+	}
+
+	/**
 	 *	Initialisation routine
 	 */
 	private void init()

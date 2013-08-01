@@ -11,8 +11,7 @@ import org.openimaj.vis.DataUnitsTransformer;
  *	A class for generating X, Y and Z axes in a 3D visualisation and providing
  *	data unit transformations.
  *
- *	// TODO: Need to add getters/setters
- *	// TODO: Need to implement data transformation
+ *	// TODO: Need to add getters/setters ***
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 10 Jul 2013
@@ -209,5 +208,29 @@ public class AxesRenderer3D implements DataUnitsTransformer<float[], double[], d
 				this.yAxisRenderer.scaleDimension( dimension[1] ),
 				this.zAxisRenderer.scaleDimension( dimension[2] ),
 		};
+	}
+
+	/**
+	 *	@return the xAxisRenderer
+	 */
+	public AxisRenderer3D getxAxisRenderer()
+	{
+		return this.xAxisRenderer;
+	}
+
+	/**
+	 *	@return the yAxisRenderer
+	 */
+	public AxisRenderer3D getyAxisRenderer()
+	{
+		return this.yAxisRenderer;
+	}
+
+	/**
+	 *	@return the zAxisRenderer
+	 */
+	public AxisRenderer3D getzAxisRenderer()
+	{
+		return this.zAxisRenderer;
 	}
 }
