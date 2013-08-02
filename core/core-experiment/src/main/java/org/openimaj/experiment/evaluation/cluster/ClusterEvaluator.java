@@ -64,15 +64,44 @@ public class ClusterEvaluator<D, T extends AnalysisResult> implements Evaluator<
 	
 	/**
 	 * @param gen
+	 * @param data 
+	 * @param indexFunc given a data instance, return its index
+	 * @param dataset 
 	 * @param analyser
+	 */
+	public <A,B> ClusterEvaluator(
+			Clusterer<D> gen, 
+			D data, 
+			Function<B,Integer> indexFunc,
+			Map<A,? extends List<B>> dataset, 
+			ClusterAnalyser<T> analyser) {
+		this.gen = gen;
+		this.correct = new int[dataset.size()][];
+		int j = 0;
+		for (Entry<A, ? extends List<B>> es : dataset.entrySet()) {
+			this.correct[j] = new int[es.getValue().size()];
+			int i = 0;
+			List<B> value = es.getValue();
+			for (B b : value) {
+				this.correct[j][i++] = indexFunc.apply(b);
+			}
+			j++;
+		}
+		this.analyser = analyser;
+		this.data = data;
+	}
+	
+	/**
+	 * @param gen
 	 * @param dataset
 	 * @param transform turn a list of dataset items into the required type for clustering
+	 * @param analyser
 	 */
 	public <A,B> ClusterEvaluator(
 		Clusterer<D> gen, 
-		ClusterAnalyser<T> analyser, 
 		Map<A,? extends List<B>> dataset, 
-		Function<List<B>,D> transform
+		Function<List<B>,D> transform, 
+		ClusterAnalyser<T> analyser
 	) {
 		this.gen = gen;
 		this.analyser = analyser;

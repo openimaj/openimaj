@@ -109,7 +109,7 @@ public class WineDatasetExperiment {
 	}
 
 	private static void evaluate(WineDataset ds, Clusterer<SparseMatrix> clust, Function<List<double[]>, SparseMatrix> func) {
-		ClusterEvaluator<SparseMatrix, MEAnalysis> eval = new ClusterEvaluator<SparseMatrix, MEAnalysis>(clust,new MEClusterAnalyser(),ds,func);
+		ClusterEvaluator<SparseMatrix, MEAnalysis> eval = new ClusterEvaluator<SparseMatrix, MEAnalysis>(clust,ds,func,new MEClusterAnalyser());
 		int[][] evaluate = eval.evaluate();
 		logger.info("Expected Classes: " + ds.size());
 		logger.info("Detected Classes: " + evaluate.length);
