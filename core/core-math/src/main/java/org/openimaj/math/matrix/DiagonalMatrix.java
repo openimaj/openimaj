@@ -103,4 +103,9 @@ public class DiagonalMatrix extends Matrix{
 	public double[] getVals() {
 		return this.vals;
 	}
+
+	@Override
+	public Matrix newInstance(int rows, int cols) {
+		return new DiagonalMatrix(rows);
+	}
 }

@@ -189,4 +189,9 @@ public class SparseMatrix extends Matrix {
 		}
 		return Vector.wrap(y);
     }
+
+	@Override
+	public Matrix newInstance(int rows, int cols) {
+		return new SparseMatrix(rows, cols);
+	}
 }

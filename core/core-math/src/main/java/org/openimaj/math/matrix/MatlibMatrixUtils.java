@@ -76,7 +76,7 @@ public class MatlibMatrixUtils {
 		}
 		return mat;
 	}
-	
+
 	/**
 	 * A = A + B
 	 * @param A
@@ -128,7 +128,7 @@ public class MatlibMatrixUtils {
 	public static <T extends Matrix> T dotProductTranspose(Matrix A, Matrix B, T Y) {
 		int mA = A.rowCount();
 		int nB = B.rowCount();
-		
+
 		for (int i = 0; i < mA; i++) {
 			for (int j = 0; j < nB; j++) {
 				double dot = A.row(i).dot(B.row(j));
@@ -171,10 +171,10 @@ public class MatlibMatrixUtils {
 		for (int i = 0; i < vec.length; i++) {
 			ret.set(i, 0, vec[i]);
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * @param vector
 	 * @return the vector as a row in a matrix
@@ -186,7 +186,7 @@ public class MatlibMatrixUtils {
 		for (int i = 0; i < vec.length; i++) {
 			ret.set(0, i, vec[i]);
 		}
-		
+
 		return ret;
 	}
 
@@ -204,7 +204,23 @@ public class MatlibMatrixUtils {
 		return mat;
 	}
 
-	
+	public static <T extends Matrix> T subMatrix(T mat, int rowstart, int rowend, int colstart, int colend) {
+		@SuppressWarnings("unchecked")
+		T ret = (T) mat.newInstance(rowend - rowstart, colend - colstart);
+
+		for (int i = 0; i < ret.rowCount(); i++) {
+			Vector row = mat.row(i + rowstart);
+			for (Entry ent : row.entries()) {
+				if(ent.index >= colstart && ent.index < colend){
+					ret.put(i, ent.index-colstart, ent.value);
+				}
+			}
+		}
+
+		return ret;
+	}
+
+
 
 
 

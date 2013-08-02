@@ -23,7 +23,7 @@ public abstract class Matrix {
     public Iterable<Vector> rows() {
     	return vecs(/*isRow*/ true);
     }
-    
+
     private Iterable<Vector> vecs(final boolean isRow) {
     	return new Iterable<Vector>() {
 			@Override
@@ -31,7 +31,7 @@ public abstract class Matrix {
 				return new Iterator<Vector>() {
 
 					private int count = 0;
-					
+
 					@Override
 					public boolean hasNext() {
 						return count < (isRow ? rowCount() : columnCount());
@@ -51,8 +51,8 @@ public abstract class Matrix {
 			}
 		};
     }
-    
-    
+
+
     public Iterable<Vector> columns() {
     	return vecs(/*isRow*/ false);
     }
@@ -62,11 +62,11 @@ public abstract class Matrix {
     public double density() {
         return (double) used() / elementCount();
     }
-    
+
     public int elementCount() {
     	return rowCount() * columnCount();
     }
-    
+
     public abstract double get(int row, int column);
 
     public abstract double put(int row, int column, double value);
@@ -75,7 +75,7 @@ public abstract class Matrix {
 
     public abstract int used();
 
-    /** @throws IOException 
+    /** @throws IOException
      * @see http://tedlab.mit.edu/~dr/svdlibc/SVD_F_ST.html */
     public void storeSparseOn(Appendable appendable) throws IOException {
         // this stores the transposed matrix, but as we will transpose it again
@@ -97,15 +97,15 @@ public abstract class Matrix {
         storeSparseOn(fw);
         fw.close();
     }
-    
+
     public Vector row(int row) {
     	return new Vec(row, /*isRow*/ true);
     }
-    
+
     public Vector column(int column) {
     	return new Vec(column, /*isRow*/ false);
     }
-    
+
     public double[][] asArray() {
 		double[][] result = new double[rowCount()][columnCount()];
 		for (int x = 0; x < result.length; x++) {
@@ -121,26 +121,26 @@ public abstract class Matrix {
 	}
 
 	private class Vec extends Vector {
-		
+
 		int index0;
     	private boolean isRow;
-    	
+
     	Vec(int n, boolean isRow) {
     		this.isRow = isRow;
     		this.index0 = n;
     	}
-    	
+
 		@Override
 		public int size() {
 			return isRow ? columnCount() : rowCount();
 		}
-			
+
 		@Override
 		public double put(int index, double value) {
 			return isRow ? Matrix.this.put(this.index0, index, value)
 					: Matrix.this.put(index, this.index0, value);
 		}
-			
+
 		@Override
 		public double get(int index) {
 			return isRow ? Matrix.this.get(this.index0, index)
@@ -164,7 +164,7 @@ public abstract class Matrix {
     }
 
 	/** Returns <code>y = Ax</code>.
-	 * 
+	 *
 	 */
 	public Vector mult(Vector x) {
 		assert x.size() == this.columnCount();
@@ -172,9 +172,9 @@ public abstract class Matrix {
 		int i = 0; for (Vector row: rows()) y.put(i++, row.dot(x));
 		return y;
 	}
-	
+
 	/** Returns <code>y = (A^T)x</code>.
-	 * 
+	 *
 	 */
 	public Vector transposeMultiply(Vector x) {
 		assert x.size() == this.rowCount();
@@ -182,11 +182,11 @@ public abstract class Matrix {
 		int i = 0; for (Vector row: rows()) row.scaleAndAddTo(x.get(i++), y);
 		return y;
 	}
-	
+
 	/** Returns <code>y = (A^T)Ax</code>.
-	 *<P> 
+	 *<P>
 	 * Useful for doing singular decomposition using ARPACK's dsaupd routine.
-	 * 
+	 *
 	 */
 	public Vector transposeNonTransposeMultiply(Vector x) {
 		return this.transposeMultiply(this.mult(x));
@@ -210,7 +210,7 @@ public abstract class Matrix {
 	public double[] asColumnMajorArray() {
 		double[] data = new double[columnCount() * rowCount()];
 		int n = columnCount();
-		int i = 0; 
+		int i = 0;
 		for (Vector row: rows()) {
 			for (Entry each: row.entries()) {
 				data[i + each.index * n] = each.value;
@@ -223,20 +223,20 @@ public abstract class Matrix {
 	public static SparseMatrix sparse(int n, int m) {
 		return new SparseMatrix(n, m);
 	}
-	
+
 	public double max() {
 		return Util.max(this.unwrap(), Double.NaN);
 	}
-	
+
 	public double min() {
 		return Util.min(this.unwrap(), Double.NaN);
 	}
-	
+
 	public double mean() {
 		double[][] values = unwrap();
 		return Util.sum(values) / Util.count(values);
 	}
-	
+
 	public double[][] unwrap() {
 		throw new IllegalStateException("cannot unwrap instance of " + this.getClass().getSimpleName());
 	}
@@ -251,5 +251,18 @@ public abstract class Matrix {
 	public int[] getHistogram() {
 		return Util.getHistogram(this.unwrap(), 100);
 	}
-	
+
+	/**
+	 * @return an empty instance of this matrix type
+	 */
+	public Matrix newInstance(){
+		return newInstance(rowCount(),columnCount());
+	}
+
+	/**
+	 * @param rows
+	 * @param cols
+	 * @return an empty instance of this matrix type
+	 */
+	public abstract Matrix newInstance(int rows, int cols);
 }

@@ -3,7 +3,7 @@ package ch.akuhn.matrix;
 import java.util.Arrays;
 
 /** Dense matrix.
- * 
+ *
  * @author Adrian Kuhn
  *
  */
@@ -15,7 +15,7 @@ public class DenseMatrix extends Matrix {
         this.values = values;
         this.assertInvariant();
     }
-    
+
     protected void assertInvariant() throws IllegalArgumentException {
     	if (values.length == 0) return;
     	int m = values[0].length;
@@ -76,7 +76,12 @@ public class DenseMatrix extends Matrix {
 	public void applyMultiplication(double d) {
 		Util.times(values, d);
 	}
-    
-    
-	
+
+
+	@Override
+	public Matrix newInstance(int rows, int cols) {
+		return new DenseMatrix(rows, cols);
+	}
+
+
 }

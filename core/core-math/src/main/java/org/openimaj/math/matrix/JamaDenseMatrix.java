@@ -154,4 +154,9 @@ public class JamaDenseMatrix extends ch.akuhn.matrix.Matrix {
 	public double[][] asArray() {
 		return matrix.getArray();
 	}
+
+	@Override
+	public ch.akuhn.matrix.Matrix newInstance(int rows, int cols) {
+		return new JamaDenseMatrix(rows, cols);
+	}
 }
