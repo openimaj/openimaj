@@ -51,6 +51,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.openimaj.data.DataSource;
 import org.openimaj.data.#T#ArrayBackedDataSource;
+import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.assignment.hard.KDTree#T#EuclideanAssigner;
@@ -221,6 +222,12 @@ import org.openimaj.util.pair.Int#R#Pair;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@Override
+	public int[][] performClustering(#t#[][] data) {
+		#T#CentroidsResult clusters = this.cluster(data);
+		return new IndexClusters(clusters.defaultHardAssigner().assign(data)).clusters();
 	}
 	
 	/**

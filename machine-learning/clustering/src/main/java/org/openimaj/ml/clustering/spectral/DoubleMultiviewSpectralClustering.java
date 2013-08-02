@@ -83,7 +83,7 @@ public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClu
 	}
 
 	@Override
-	public int[][] rawcluster(List<SparseMatrix> data) {
+	public int[][] performClustering(List<SparseMatrix> data) {
 		return this.cluster(data).clusters();
 	}
 

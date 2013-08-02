@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.Evaluator;
 import org.openimaj.experiment.evaluation.cluster.analyser.ClusterAnalyser;
-import org.openimaj.experiment.evaluation.cluster.processor.SimpleClusterer;
+import org.openimaj.experiment.evaluation.cluster.processor.Clusterer;
 import org.openimaj.util.function.Function;
 
 /**
@@ -21,7 +21,7 @@ public class ClusterEvaluator<D, T extends AnalysisResult> implements Evaluator<
 
 	private int[][] correct;
 	private ClusterAnalyser<T> analyser;
-	private SimpleClusterer<D> gen;
+	private Clusterer<D> gen;
 	private D data;
 
 	/**
@@ -30,7 +30,7 @@ public class ClusterEvaluator<D, T extends AnalysisResult> implements Evaluator<
 	 * @param clusters
 	 * @param analyser
 	 */
-	public ClusterEvaluator(SimpleClusterer<D> gen, D data, int[][] clusters, ClusterAnalyser<T> analyser) {
+	public ClusterEvaluator(Clusterer<D> gen, D data, int[][] clusters, ClusterAnalyser<T> analyser) {
 		this.gen = gen;
 		this.correct = clusters;
 		this.analyser = analyser;
@@ -43,7 +43,7 @@ public class ClusterEvaluator<D, T extends AnalysisResult> implements Evaluator<
 	 * @param dataset extract the elements of this map "in order" and build a ground truth. very dangerous.
 	 * @param analyser
 	 */
-	public <A,B> ClusterEvaluator(SimpleClusterer<D> gen, D data, Map<A,? extends List<B>> dataset, ClusterAnalyser<T> analyser) {
+	public <A,B> ClusterEvaluator(Clusterer<D> gen, D data, Map<A,? extends List<B>> dataset, ClusterAnalyser<T> analyser) {
 		this.gen = gen;
 		this.correct = new int[dataset.size()][];
 		int j = 0;
@@ -69,7 +69,7 @@ public class ClusterEvaluator<D, T extends AnalysisResult> implements Evaluator<
 	 * @param transform turn a list of dataset items into the required type for clustering
 	 */
 	public <A,B> ClusterEvaluator(
-		SimpleClusterer<D> gen, 
+		Clusterer<D> gen, 
 		ClusterAnalyser<T> analyser, 
 		Map<A,? extends List<B>> dataset, 
 		Function<List<B>,D> transform
@@ -97,7 +97,7 @@ public class ClusterEvaluator<D, T extends AnalysisResult> implements Evaluator<
 
 	@Override
 	public int[][] evaluate() {
-		return this.gen.rawcluster(this.data);
+		return this.gen.performClustering(this.data);
 	}
 
 	@Override

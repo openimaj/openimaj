@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.openimaj.experiment.evaluation.cluster.ClusterEvaluator;
 import org.openimaj.experiment.evaluation.cluster.analyser.MEAnalysis;
 import org.openimaj.experiment.evaluation.cluster.analyser.MEClusterAnalyser;
-import org.openimaj.experiment.evaluation.cluster.processor.SimpleClusterer;
+import org.openimaj.experiment.evaluation.cluster.processor.Clusterer;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.ml.clustering.SpatialClusterer;
@@ -108,7 +108,7 @@ public class WineDatasetExperiment {
 		return clust;
 	}
 
-	private static void evaluate(WineDataset ds, SimpleClusterer<SparseMatrix> clust, Function<List<double[]>, SparseMatrix> func) {
+	private static void evaluate(WineDataset ds, Clusterer<SparseMatrix> clust, Function<List<double[]>, SparseMatrix> func) {
 		ClusterEvaluator<SparseMatrix, MEAnalysis> eval = new ClusterEvaluator<SparseMatrix, MEAnalysis>(clust,new MEClusterAnalyser(),ds,func);
 		int[][] evaluate = eval.evaluate();
 		logger.info("Expected Classes: " + ds.size());

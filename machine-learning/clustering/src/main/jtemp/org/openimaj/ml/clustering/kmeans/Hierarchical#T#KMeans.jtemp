@@ -48,6 +48,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.IndexedViewDataSource;
 import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.Hierarchical#T#KMeansResult.Node;
@@ -232,6 +233,12 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 		result.root = trainLevel(data, Math.min(K, data.length), depth);
 		
 		return result;
+	}
+	
+	@Override
+	public int[][] performClustering(#t#[][] data) {
+		Hierarchical#T#KMeansResult clusters = this.cluster(data);
+		return new IndexClusters(clusters.defaultHardAssigner().assign(data)).clusters();
 	}
 	
 	@Override

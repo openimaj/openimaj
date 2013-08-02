@@ -27,7 +27,6 @@ public abstract class EigenChooser{
 	 * with the knowledge of the eigen values that will likely be important
 	 * @param laplacian the matrix to be decomposed
 	 * @param direction the direction (backward means smallest to biggest)
-	 * @param total the total eigen vectors which will be produced
 	 * @return the prepared eigen values
 	 */
 	public abstract Eigenvalues prepare(SparseMatrix laplacian, Mode direction) ;

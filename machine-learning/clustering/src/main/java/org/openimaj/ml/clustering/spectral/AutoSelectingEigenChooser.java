@@ -2,12 +2,8 @@ package org.openimaj.ml.clustering.spectral;
 
 import java.util.Iterator;
 
-import org.openimaj.math.matrix.MatlibMatrixUtils;
-import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
-
-import Jama.Matrix;
 
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;

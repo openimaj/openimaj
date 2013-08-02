@@ -69,7 +69,7 @@ public abstract class SparseMatrixDBSCAN extends DBSCAN implements SparseMatrixC
 	}
 
 	@Override
-	public int[][] rawcluster(SparseMatrix data) {
+	public int[][] performClustering(SparseMatrix data) {
 		return this.cluster(data).clusters();
 	}
 	

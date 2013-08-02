@@ -114,7 +114,7 @@ public class DoubleSpectralClustering implements SimilarityClusterer<IndexCluste
 	}
 
 	@Override
-	public int[][] rawcluster(SparseMatrix data) {
+	public int[][] performClustering(SparseMatrix data) {
 		return this.cluster(data).clusters();
 	}
 

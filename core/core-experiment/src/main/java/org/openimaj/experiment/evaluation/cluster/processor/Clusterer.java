@@ -7,10 +7,10 @@ package org.openimaj.experiment.evaluation.cluster.processor;
  * @param <DATA> 
  *
  */
-public interface SimpleClusterer<DATA> {
+public interface Clusterer<DATA> {
 	/**
 	 * @param data 
 	 * @return Given data items, cluster them by index
 	 */
-	public int[][] rawcluster(DATA data);
+	public int[][] performClustering(DATA data);
 }

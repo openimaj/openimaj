@@ -44,6 +44,7 @@ import java.util.Scanner;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
+import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
@@ -647,5 +648,10 @@ public class IntRandomForest
 	@Override
 	public int size() {
 		return this.currentInt;
+	}
+
+	@Override
+	public int[][] performClustering(int[][] data) {
+		return new IndexClusters(this.cluster(data).defaultHardAssigner().assign(data)).clusters();
 	}
 }

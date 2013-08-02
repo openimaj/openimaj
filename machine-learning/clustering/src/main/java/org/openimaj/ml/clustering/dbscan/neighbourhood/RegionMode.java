@@ -17,6 +17,7 @@ public interface RegionMode<PAIRTYPE>{
 	public List<PAIRTYPE> regionQuery(int index);
 	
 	/**
+	 * @param region 
 	 * @return whether the provided region is valid
 	 */
 	public boolean validRegion(List<PAIRTYPE> region);

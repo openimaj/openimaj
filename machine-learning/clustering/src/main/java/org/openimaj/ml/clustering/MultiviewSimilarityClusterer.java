@@ -11,6 +11,6 @@ import ch.akuhn.matrix.SparseMatrix;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <CLUSTERS> 
  */
-public interface MultiviewSimilarityClusterer<CLUSTERS extends IndexClusters> extends Clusterer<List<SparseMatrix>,CLUSTERS> {
+public interface MultiviewSimilarityClusterer<CLUSTERS extends IndexClusters> extends DataClusterer<List<SparseMatrix>,CLUSTERS> {
 
 }

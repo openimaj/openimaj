@@ -7,7 +7,7 @@ import java.util.List;
 import org.openimaj.data.DataSource;
 import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.knn.NearestNeighboursFactory;
-import org.openimaj.ml.clustering.Clusterer;
+import org.openimaj.ml.clustering.DataClusterer;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.dbscan.neighbourhood.RegionMode;
 import org.openimaj.util.pair.IntDoublePair;
@@ -18,7 +18,7 @@ import org.openimaj.util.pair.IntDoublePair;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DoubleNNDBSCAN extends DBSCAN implements SpatialClusterer<DoubleDBSCANClusters, double[]>, Clusterer<double[][], DoubleDBSCANClusters>{
+public class DoubleNNDBSCAN extends DBSCAN implements SpatialClusterer<DoubleDBSCANClusters, double[]>, DataClusterer<double[][], DoubleDBSCANClusters>{
 
 	private NearestNeighboursFactory<? extends DoubleNearestNeighbours, double[]> nnf;
 	private double eps;
@@ -79,7 +79,7 @@ public class DoubleNNDBSCAN extends DBSCAN implements SpatialClusterer<DoubleDBS
 	}
 
 	@Override
-	public int[][] rawcluster(double[][] data) {
+	public int[][] performClustering(double[][] data) {
 		return cluster(data).clusters();
 	}
 

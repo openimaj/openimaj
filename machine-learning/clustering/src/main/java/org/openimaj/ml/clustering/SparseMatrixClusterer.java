@@ -8,6 +8,6 @@ import ch.akuhn.matrix.SparseMatrix;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <CLUSTERS> 
  */
-public interface SparseMatrixClusterer<CLUSTERS extends IndexClusters> extends Clusterer<SparseMatrix,CLUSTERS>{
+public interface SparseMatrixClusterer<CLUSTERS extends IndexClusters> extends DataClusterer<SparseMatrix,CLUSTERS>{
 
 }

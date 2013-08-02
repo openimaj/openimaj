@@ -46,6 +46,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
 import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
@@ -416,5 +417,10 @@ public class IntRAC
 	@Override
 	public int size() {
 		return this.nDims;
+	}
+
+	@Override
+	public int[][] performClustering(int[][] data) {
+		return new IndexClusters(this.cluster(data).defaultHardAssigner().assign(data)).clusters();
 	}
 }

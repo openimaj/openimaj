@@ -30,6 +30,7 @@
 package org.openimaj.ml.clustering;
 
 import org.openimaj.data.DataSource;
+import org.openimaj.experiment.evaluation.cluster.processor.Clusterer;
 
 /**
  * A {@link SpatialClusterer} clusters data that can be represented as points in
@@ -45,7 +46,7 @@ import org.openimaj.data.DataSource;
  *            the primitive array datatype which represents a centroid of this
  *            cluster.
  */
-public interface SpatialClusterer<CLUSTERTYPE extends SpatialClusters<DATATYPE>, DATATYPE> {
+public interface SpatialClusterer<CLUSTERTYPE extends SpatialClusters<DATATYPE>, DATATYPE> extends Clusterer<DATATYPE[]>{
 
 	/**
 	 * Perform clustering on the given data.

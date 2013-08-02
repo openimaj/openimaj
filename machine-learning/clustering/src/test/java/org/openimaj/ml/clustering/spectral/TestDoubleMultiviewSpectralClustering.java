@@ -88,7 +88,7 @@ public class TestDoubleMultiviewSpectralClustering {
 		DenseMatrix mean = DenseMatrixFactoryMTJ.INSTANCE.copyRowVectors(times.sumOfRows());
 		CFMatrixUtils.powInplace(CFMatrixUtils.timesInplace(mean,1./asDouble.length),0.5);
 		for (int c = 0; c < m.getNumColumns(); c++) {
-			double diff = CFMatrixUtils.max(m.getColumn(c)) - CFMatrixUtils.min(m.getColumn(c));
+//			double diff = CFMatrixUtils.max(m.getColumn(c)) - CFMatrixUtils.min(m.getColumn(c));
 			double cmean = mean.getElement(0, c);
 			for (int r = 0; r < m.getNumRows(); r++) {
 				asDouble[r][c] = (m.getElement(r, c) - cmean);
@@ -143,6 +143,9 @@ public class TestDoubleMultiviewSpectralClustering {
 		return mat_norm;
 	}
 
+	/**
+	 * 
+	 */
 	@Test
 	public void test() {
 		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
@@ -154,7 +157,7 @@ public class TestDoubleMultiviewSpectralClustering {
 		conf.eigenChooser = new AutoSelectingEigenChooser(100, 1.0);
 		conf.stop = new StoppingCondition.HardCoded(10);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
-		DoubleMultiviewSpectralClustering multi = new DoubleMultiviewSpectralClustering(conf);
+//		DoubleMultiviewSpectralClustering multi = new DoubleMultiviewSpectralClustering(conf);
 		
 		IndexClusters clusters1 = clust.cluster(allsim);
 //		Clusters clusters2 = multi.cluster(splitsim, false);

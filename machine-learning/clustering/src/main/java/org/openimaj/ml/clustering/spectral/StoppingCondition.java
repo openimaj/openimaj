@@ -2,8 +2,6 @@ package org.openimaj.ml.clustering.spectral;
 
 import java.util.List;
 
-import ch.akuhn.matrix.Matrix;
-
 /**
  * The stopping condition for a multiview spectral clustering algorithm
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
