@@ -30,24 +30,19 @@ public class MEAnalysis implements AnalysisResult{
 	/**
 	 * The total number of pairs in a cluster which belong to the same class
 	 */
-	public int TP;
+	public long TP;
 	/**
 	 * The total number of pairs in a cluster which do not belong to the same class
 	 */
-	public int FP;
+	public long FP;
 	/**
 	 * The total number of pairs in different clusters which belong to different classes
 	 */
-	public int TN;
+	public long TN;
 	/**
 	 * The total number of pairs in different clusters which belong to the same class
 	 */
-	public int FN;
-
-	/**
-	 * The proportion of correct decisions made against incorrect decisions (un-weighted)
-	 */
-	public double randIndex;
+	public long FN;
 
 	/**
 	 * The number of true positives as a proportion of overall positives
@@ -58,11 +53,16 @@ public class MEAnalysis implements AnalysisResult{
 	 * The number of true positives as a porportion of true positives and false negatives
 	 */
 	public double recall;
+	
+	/**
+	 * 
+	 */
+	public double adjRandInd;
 
 
 	@Override
 	public String getSummaryReport() {
-		return String.format("(purity=%2.5f,nmi=%2.5f,P=%2.2f,R=%2.5f,F1=%2.5f,RandI=%2.5f)",purity,nmi,precision,recall,fscore(1),randIndex());
+		return String.format("(purity=%2.5f,nmi=%2.5f,P=%2.2f,R=%2.5f,F1=%2.5f,RandI=%2.5f,adjRI=%2.5f)",purity,nmi,precision,recall,fscore(1),randIndex(),adjRandInd);
 	}
 
 	/**

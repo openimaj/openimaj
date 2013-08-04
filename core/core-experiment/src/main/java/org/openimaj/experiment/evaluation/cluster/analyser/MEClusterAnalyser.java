@@ -4,9 +4,13 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gov.sandia.cognition.math.MathUtil;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.openimaj.logger.LoggerUtils;
 import org.openimaj.util.pair.IntIntPair;
 
 
@@ -25,18 +29,79 @@ public class MEClusterAnalyser implements ClusterAnalyser<MEAnalysis>{
 		Map<Integer,Integer> invEst = invert(estimated);
 		MEAnalysis ret = new MEAnalysis();
 		ret.purity = purity(correct,estimated,invCor,invEst);
-		ret.nmi = nmi(correct,estimated,invCor,invEst);
+//		ret.nmi = nmi(correct,estimated,invCor,invEst);
 		decisions(ret,correct,estimated,invCor,invEst);
+		adjustedRI(ret,correct,estimated);
 		return ret;
+	}
+
+	private void adjustedRI(MEAnalysis ret, int[][] correct, int[][] estimated) {
+		long[][] nij = new long[correct.length][estimated.length];
+		long[] ni = new long[correct.length];
+		long[] nj = new long[estimated.length];
+		
+		Map<Integer,Set<Integer>> estimatedSets = new HashMap<Integer, Set<Integer>>();
+		int i = 0;
+		for (int[] js : estimated) {
+			Set<Integer> set = fillSet(js);
+			estimatedSets.put(i++, set);
+		}
+		
+		i=0;
+		for (int[] is : correct) {
+			int j = 0;
+			Set<Integer> cset = fillSet(is);
+			for (Entry<Integer, Set<Integer>> ks : estimatedSets.entrySet()) {
+				HashSet<Integer> tmp = new HashSet<Integer>();
+				tmp.addAll(cset);
+				tmp.retainAll(ks.getValue());
+				int count = tmp.size();
+				nij[i][j] += count;
+				ni[i] += count;
+				nj[j] += count;
+				j++;
+			}
+			i++;
+		}
+		
+		long sumnij = 0;
+		long sumni  = 0;
+		long sumnj  = 0;
+		long sumn   = 0;
+		
+		for (i = 0; i < nij.length; i++) {
+			sumnj = 0;
+			for (int j = 0; j < nij[i].length; j++) {
+				if(nij[i][j] > 1){
+					sumnij += MathUtil.binomialCoefficient((int) nij[i][j], 2);
+				}
+				if(nj[j] > 1){
+					sumnj += MathUtil.binomialCoefficient((int) nj[j], 2);
+				}
+			}
+			if(ni[i] > 1){
+				sumni += MathUtil.binomialCoefficient((int) ni[i], 2);
+			}
+			sumn += ni[i];
+		}
+		double bisumn = MathUtil.binomialCoefficient((int) sumn, 2);
+		double div = (sumni * sumnj) / bisumn;
+		ret.adjRandInd = (sumnij - div) / (0.5 * (sumni + sumnj) - div); 
+	}
+
+	private Set<Integer> fillSet(int[] js) {
+		HashSet<Integer> set = new HashSet<Integer>();
+		for (Integer integer : js) set.add(integer);
+		return set;
 	}
 
 	private void decisions(MEAnalysis ret, int[][] correct, int[][] estimated, Map<Integer, Integer> invCor,Map<Integer, Integer> invEst)
 	{
-		int positive = 0;
-		int negative = 0;
-		int remainingTotal = 0;
-		int[] remaining = new int[correct.length];
-		int[] classCount = new int[correct.length];
+		long positive = 0;
+		long negative = 0;
+		long remainingTotal = 0;
+		long[] remaining = new long[correct.length];
+		long[] classCount = new long[correct.length];
 		// Count the remaining items not yet clustered, and the remaining items in each class not yet clustered
 		for (int i = 0; i < correct.length; i++) {
 			remainingTotal += correct[i].length;
@@ -60,7 +125,7 @@ public class MEClusterAnalyser implements ClusterAnalyser<MEAnalysis>{
 			// calculate the false negative pairings by considering the number for this class NOT in this cluster
 			for (int i = 0; i < classCount.length; i++) {
 				if(classCount[i] > 1){
-					ret.TP += MathUtil.binomialCoefficient(classCount[i], 2);
+					ret.TP += MathUtil.binomialCoefficient((int)classCount[i], 2);
 				}
 				remaining[i] -= classCount[i];
 				ret.FN += remaining[i] * classCount[i];
@@ -69,8 +134,10 @@ public class MEClusterAnalyser implements ClusterAnalyser<MEAnalysis>{
 		}
 		ret.FP = positive - ret.TP;
 		ret.TN = negative - ret.FN;
-
-		ret.randIndex = (double)(ret.TN + ret.TP) / (double)(ret.TN + ret.TP + ret.FN + ret.FP);
+		
+		if( ret.TP + ret.FP == 0){
+			ret.precision = 0;
+		}
 		ret.precision = ret.TP / (double)(ret.TP + ret.FP);
 		ret.recall = ret.TP / (double)(ret.TP + ret.FN);
 	}
@@ -78,11 +145,11 @@ public class MEClusterAnalyser implements ClusterAnalyser<MEAnalysis>{
 	private double nmi(int[][] c, int[][] e, Map<Integer, Integer> ic, Map<Integer, Integer> ie) {
 		double N = Math.max(ic.size(), ie.size());
 		double mi = mutualInformation(N, c,e,ic,ie);
-		logger.debug(String.format("Iec = %2.5f",mi));
+		LoggerUtils.debugFormat(logger,"Iec = %2.5f",mi);
 		double ent_e = entropy(e,N);
-		logger.debug(String.format("He = %2.5f",ent_e));
+		LoggerUtils.debugFormat(logger,"He = %2.5f",ent_e);
 		double ent_c = entropy(c,N);
-		logger.debug(String.format("Hc = %2.5f",ent_c));
+		LoggerUtils.debugFormat(logger,"Hc = %2.5f",ent_c);
 		return mi / ((ent_e + ent_c)/2);
 	}
 
@@ -95,7 +162,7 @@ public class MEClusterAnalyser implements ClusterAnalyser<MEAnalysis>{
 	private double entropy(int[][] clusters, double N) {
 		double total = 0;
 		for (int k = 0; k < clusters.length; k++) {
-			logger .debug(String.format("%2.1f/%2.1f * log2 ((%2.1f / %2.1f) )",(double)clusters[k].length,N,(double)clusters[k].length,N));
+			LoggerUtils.debugFormat(logger, "%2.1f/%2.1f * log2 ((%2.1f / %2.1f) )",(double)clusters[k].length,N,(double)clusters[k].length,N);
 			double prop = clusters[k].length / N;
 			total += prop * log2(prop);
 		}
@@ -127,11 +194,11 @@ public class MEClusterAnalyser implements ClusterAnalyser<MEAnalysis>{
 					if(ic.get(e[k][i]) == j) both++;
 				}
 				double normProp = (both * N)/(n_c * n_e);
-				logger.debug(String.format("normprop = %2.5f",normProp));
+//				LoggerUtils.debugFormat(logger,"normprop = %2.5f",normProp);
 				double sum = (both / N) * (log2(normProp));
 				mi += sum;
 
-				logger.debug(String.format("%2.1f/%2.1f * log2 ((%2.1f * %2.1f) / (%2.1f * %2.1f)) = %2.5f",both,N,both,N,n_c,n_e,sum));
+//				LoggerUtils.debugFormat(logger,"%2.1f/%2.1f * log2 ((%2.1f * %2.1f) / (%2.1f * %2.1f)) = %2.5f",both,N,both,N,n_c,n_e,sum);
 			}
 		}
 		return mi;

@@ -40,4 +40,28 @@ public class LoggerUtils {
 			logger.debug(message);
 		}
 	}
+
+	/**
+	 * Calls {@link #format(Logger, String, Level, Object...)} with level {@link Level#DEBUG}
+	 * @param logger
+	 * @param string
+	 * @param obj
+	 */
+	public static void debugFormat(Logger logger, String string, Object ... obj) {
+		format(logger,string,Level.DEBUG,obj);
+	}
+
+	/**
+	 * Checks the level, if acceptable calls {@link String#format(String, Object...)} at the appropriate level
+	 * @param logger
+	 * @param string
+	 * @param debug
+	 * @param obj
+	 */
+	public static void format(Logger logger, String string, Level debug, Object ... obj) {
+		Level l = logger.getEffectiveLevel();
+		if(debug.isGreaterOrEqual(l)){
+			logger.log(debug, String.format(string,obj));
+		}
+	}
 }

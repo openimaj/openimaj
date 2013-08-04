@@ -3,6 +3,9 @@ package ch.akuhn.matrix;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -16,7 +19,9 @@ import ch.akuhn.matrix.Vector.Entry;
  */
 public abstract class Matrix {
 
-    public double add(int row, int column, double value) {
+    private static final int MAX_PRINT = 100;
+
+	public double add(int row, int column, double value) {
         return put(row, column, get(row, column) + value);
     }
 
@@ -265,4 +270,24 @@ public abstract class Matrix {
 	 * @return an empty instance of this matrix type
 	 */
 	public abstract Matrix newInstance(int rows, int cols);
+	
+	@Override
+	public String toString() {
+		Writer sw = new StringWriter();
+		PrintWriter writer = new PrintWriter(sw);
+		writer.println("NRows = " + rowCount());
+		writer.println("NCols = " + columnCount());
+		int maxPrint = Math.min(rowCount() * columnCount(), MAX_PRINT);
+		int i;
+		for (i = 0; i < maxPrint ; i++) {
+			int row = i / columnCount();
+			int col = i - (row * columnCount());
+			writer.printf("%d\t%d\2.5f\n",row,col,this.get(row, col));
+		}
+		if(i < rowCount() * columnCount() - 1){
+			writer.printf("...");
+		}
+		writer.flush();
+		return sw.toString();
+	}
 }
