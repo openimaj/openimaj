@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.openimaj.experiment.evaluation.cluster.ClusterEvaluator;
-import org.openimaj.experiment.evaluation.cluster.analyser.MEAnalysis;
-import org.openimaj.experiment.evaluation.cluster.analyser.MEClusterAnalyser;
+import org.openimaj.experiment.evaluation.cluster.analyser.FullMEAnalysis;
+import org.openimaj.experiment.evaluation.cluster.analyser.FullMEClusterAnalyser;
 import org.openimaj.experiment.evaluation.cluster.processor.Clusterer;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
@@ -109,11 +109,11 @@ public class WineDatasetExperiment {
 	}
 
 	private static void evaluate(WineDataset ds, Clusterer<SparseMatrix> clust, Function<List<double[]>, SparseMatrix> func) {
-		ClusterEvaluator<SparseMatrix, MEAnalysis> eval = new ClusterEvaluator<SparseMatrix, MEAnalysis>(clust,ds,func,new MEClusterAnalyser());
+		ClusterEvaluator<SparseMatrix, FullMEAnalysis> eval = new ClusterEvaluator<SparseMatrix, FullMEAnalysis>(clust,ds,func,new FullMEClusterAnalyser());
 		int[][] evaluate = eval.evaluate();
 		logger.info("Expected Classes: " + ds.size());
 		logger.info("Detected Classes: " + evaluate.length);
-		MEAnalysis res = eval.analyse(evaluate);
+		FullMEAnalysis res = eval.analyse(evaluate);
 		System.out.println(res.getSummaryReport());
 	}
 }

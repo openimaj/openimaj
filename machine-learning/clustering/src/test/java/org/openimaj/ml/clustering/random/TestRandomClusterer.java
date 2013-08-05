@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.experiment.evaluation.cluster.analyser.MEAnalysis;
-import org.openimaj.experiment.evaluation.cluster.analyser.MEClusterAnalyser;
+import org.openimaj.experiment.evaluation.cluster.analyser.FullMEAnalysis;
+import org.openimaj.experiment.evaluation.cluster.analyser.FullMEClusterAnalyser;
 import org.openimaj.ml.clustering.IndexClusters;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -42,21 +42,41 @@ public class TestRandomClusterer {
 	@Test
 	public void testRC() throws Exception {
 		
-		MEClusterAnalyser meca = new MEClusterAnalyser();
-		MEAnalysis anal2 = meca.analyse(correct, estimate);
+		FullMEClusterAnalyser meca = new FullMEClusterAnalyser();
+		FullMEAnalysis anal2 = meca.analyse(correct, estimate);
 		
-		RandomClusterer rc = new RandomClusterer(3,1);
-		for (int i = 0; i < 10; i++) {			
+		RandomClusterer rc = new RandomClusterer(10,1);
+		for (int i = 0; i < 10000; i++) {			
 			SparseMatrix sm = new SparseMatrix(17,17);
 			int[][] c1 = rc.performClustering(sm);
-//			System.out.println(new IndexClusters(this.correct));
-//			System.out.println(new IndexClusters(this.estimate));
-//			System.out.println(new IndexClusters(c1));
-			MEAnalysis anal1 = meca.analyse(correct, c1);
-			assertTrue(anal1.adjRandInd < anal2.adjRandInd);
+//			
+			FullMEAnalysis anal1 = meca.analyse(correct, c1);
+			if(anal2.decision.fscore(1) <= anal1.decision.fscore(1)){
+				summarise(anal1,anal2, c1);
+			}
+			assertTrue(anal1.decision.fscore(1) < anal2.decision.fscore(1));
+//			if(anal1.randIndex() > anal2.randIndex()){
+//				System.out.println("RandI was beaten by adj randi");
+//				summarise(anal1,anal2, c1);
+//			}
+//			if(anal1.fscore(1) > anal2.fscore(1)){
+//				System.out.println("Fscore was beaten by adj randi");
+//				summarise(anal1,anal2, c1);
+//				
+//			}
 		}
 		
 		
+	}
+	private void summarise(FullMEAnalysis anal1,FullMEAnalysis anal2, int[][] c1) {
+		System.out.println("Correct");
+		System.out.println(new IndexClusters(correct));
+		System.out.println("Estimated");
+		System.out.println(new IndexClusters(estimate));
+		System.out.println(anal2.getSummaryReport());
+		System.out.println("Random");
+		System.out.println(new IndexClusters(c1));
+		System.out.println(anal1.getSummaryReport());
 	}
 	
 	
