@@ -24,7 +24,7 @@ public class RandomBaselineClusterAnalyser<
 		ClusterAnalyser<RandomBaselineClusterAnalysis<ANNYS>>
 	{
 
-	private static final int NUMBER_OF_TRIALS = 10;
+	private static final int NUMBER_OF_TRIALS = 100;
 	private ANNER ann;
 	private int trials;
 	private Random random;

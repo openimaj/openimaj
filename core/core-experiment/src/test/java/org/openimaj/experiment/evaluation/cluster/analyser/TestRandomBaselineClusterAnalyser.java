@@ -19,8 +19,10 @@ import org.openimaj.logger.LoggerUtils;
  *
  */
 public class TestRandomBaselineClusterAnalyser{
-	private static final String GROUNDTRUTH = "/org/openimaj/experiment/dataset/cluster/inex10_single_label.txt";
-	private static final String ESTIMATES = "/org/openimaj/experiment/dataset/cluster/inex10_clusters_50.txt";
+//	private static final String GROUNDTRUTH = "/org/openimaj/experiment/dataset/cluster/inex10_single_label.txt";
+//	private static final String ESTIMATES = "/org/openimaj/experiment/dataset/cluster/inex10_clusters_50.txt";
+	private static final String GROUNDTRUTH = "/org/openimaj/experiment/dataset/cluster/clusters.txt";
+	private static final String ESTIMATES = "/org/openimaj/experiment/dataset/cluster/estimates.txt";
 	private final static Logger logger = Logger.getLogger(TestRandomBaselineClusterAnalyser.class);
 	private ClusertEvalDataset groundTruth;
 	private ClusertEvalDataset estimate;
