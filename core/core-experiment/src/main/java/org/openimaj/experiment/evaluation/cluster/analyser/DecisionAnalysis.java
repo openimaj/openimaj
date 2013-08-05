@@ -10,7 +10,7 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * one can produce various cluster quality metrics including the fscore and randindex
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class DecisionAnalysis implements AnalysisResult{
+public class DecisionAnalysis implements AnalysisResult,RandomBaselineWrappable{
 
 	/**
 	 * The total number of pairs in a cluster which belong to the same class
@@ -87,6 +87,11 @@ public class DecisionAnalysis implements AnalysisResult{
 		double R = recall();
 		if(P + R == 0) return 0;
 		return ((beta2 + 1) * P * R)/(beta2 * P + R);
+	}
+
+	@Override
+	public double score() {
+		return randIndex();
 	}
 
 }

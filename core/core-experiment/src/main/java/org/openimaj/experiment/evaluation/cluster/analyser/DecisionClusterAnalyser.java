@@ -36,7 +36,9 @@ public class DecisionClusterAnalyser implements ClusterAnalyser<DecisionAnalysis
 
 			// We count the number of each class contained in this cluster
 			for (int i : cluster) {
-				classCount[invCor.get(i)]++;
+				Integer integer = invCor.get(i);
+				if(integer  == null) continue;
+				classCount[integer]++;
 			}
 			// For each class, if its count is more than one update the true positives.
 			// calculate the false negative pairings by considering the number for this class NOT in this cluster

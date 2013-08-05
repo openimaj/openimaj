@@ -4,11 +4,9 @@ import gnu.trove.map.hash.TIntLongHashMap;
 import gnu.trove.procedure.TIntLongProcedure;
 import gov.sandia.cognition.math.MathUtil;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -83,12 +81,6 @@ public class AdjustedRandomIndexClusterAnalyser implements ClusterAnalyser<Adjus
 		ret.adjRandInd = (sumnij[0] - div) / (0.5 * (sumni[0] + sumnj[0]) - div);
 		
 		return ret;
-	}
-
-	private Set<Integer> fillSet(int[] js) {
-		HashSet<Integer> set = new HashSet<Integer>();
-		for (Integer integer : js) set.add(integer);
-		return set;
 	}
 
 }

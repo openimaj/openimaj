@@ -1,16 +1,16 @@
 package org.openimaj.experiment.evaluation.cluster.analyser;
 
+import org.openimaj.experiment.evaluation.AnalysisResult;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
-
-import org.openimaj.experiment.evaluation.AnalysisResult;
 
 /**
  * Measures normalised mutual information. Intuatively this is how much information
  * one gets about the true clustering given the estimate clustering
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class NMIAnalysis implements AnalysisResult{
+public class NMIAnalysis implements AnalysisResult,RandomBaselineWrappable{
 
 	/**
 	 * The NMI
@@ -39,7 +39,12 @@ public class NMIAnalysis implements AnalysisResult{
 	
 	@Override
 	public String toString() {
-		return String.format("purity=%2.4f",nmi);
+		return String.format("nmi=%2.4f",nmi);
+	}
+
+	@Override
+	public double score() {
+		return nmi;
 	}
 
 }

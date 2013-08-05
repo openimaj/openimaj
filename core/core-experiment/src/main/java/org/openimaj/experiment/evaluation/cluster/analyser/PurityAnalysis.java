@@ -16,7 +16,7 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * Low means: most of the clusters had a roughly equal spread of all the classes
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class PurityAnalysis implements AnalysisResult{
+public class PurityAnalysis implements AnalysisResult,RandomBaselineWrappable{
 
 	/**
 	 * the purity
@@ -46,6 +46,11 @@ public class PurityAnalysis implements AnalysisResult{
 	@Override
 	public String toString() {
 		return String.format("purity=%2.4f",purity);
+	}
+
+	@Override
+	public double score() {
+		return this.purity;
 	}
 
 }

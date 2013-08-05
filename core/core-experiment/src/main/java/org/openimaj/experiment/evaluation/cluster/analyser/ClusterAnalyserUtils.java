@@ -5,7 +5,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.util.pair.IntIntPair;
 
 /**
@@ -41,6 +40,7 @@ public class ClusterAnalyserUtils{
 		int c = 0;
 		for (int i : is) {
 			Integer c_i = invCor.get(i);
+			if(c_i == null) continue;
 			int count = classCounts.adjustOrPutValue(c_i, 1, 1);
 			if(count > max){
 				max = count;

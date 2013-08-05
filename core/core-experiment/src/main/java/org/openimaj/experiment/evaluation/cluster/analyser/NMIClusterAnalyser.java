@@ -70,7 +70,9 @@ public class NMIClusterAnalyser implements ClusterAnalyser<NMIAnalysis>{
 				double n_c = c[j].length;
 				double both = 0;
 				for (int i = 0; i < e[k].length; i++) {
-					if(ic.get(e[k][i]) == j) both++;
+					Integer itemCluster = ic.get(e[k][i]);
+					if(itemCluster == null) continue;
+					if(itemCluster == j) both++;
 				}
 				double normProp = (both * N)/(n_c * n_e);
 //				LoggerUtils.debugFormat(logger,"normprop = %2.5f",normProp);

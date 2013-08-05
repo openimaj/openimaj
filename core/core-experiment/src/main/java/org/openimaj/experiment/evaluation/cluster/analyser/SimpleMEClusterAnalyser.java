@@ -1,8 +1,5 @@
 package org.openimaj.experiment.evaluation.cluster.analyser;
 
-import org.apache.log4j.Logger;
-
-
 /**
  * A set of measures used to evaulate clustering.
  * These metrics are taken from: http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-clustering-1.html
