@@ -476,6 +476,15 @@ public class AxesRenderer2D<Q,I extends Image<Q,I>>
 	}
 
 	/**
+	 * 	Returns the maximum value of the y axis
+	 *	@return The y axis maximum value
+	 */
+	public double getMaxYValue()
+	{
+		return this.yAxisConfig.getMaxValue();
+	}
+
+	/**
 	 *	@param minYValue the minYValue to set
 	 */
 	public void setMinYValue( final double minYValue )

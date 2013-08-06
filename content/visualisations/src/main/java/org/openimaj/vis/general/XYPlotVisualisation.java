@@ -63,7 +63,7 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 			new AxesRenderer2D<Float[], MBFImage>();
 
 	/** Whether to render the axes on top of the data rather than underneath */
-	private final boolean renderAxesLast = false;
+	private boolean renderAxesLast = false;
 
 	/** The item plotter to use */
 	protected ItemPlotter<O, Float[], MBFImage> plotter;
@@ -71,6 +71,7 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	/** Whether to scale the axes to fit the data */
 	private boolean autoScaleAxes = true;
 
+	/** Whether to auto position the x axis - if false you'll have to do it yourself */
 	private boolean autoPositionXAxis = true;
 
 	/**
@@ -99,12 +100,25 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	}
 
 	/**
+	 * Constructor that provides the width and height of the visualisation and a null plotter
+	 *
+	 * @param width Width of the vis in pixels
+	 * @param height Height of the vis in pixels
+	 */
+	public XYPlotVisualisation( final int width, final int height )
+	{
+		super( width, height );
+		this.init();
+	}
+
+	/**
 	 * Initialise
 	 */
 	private void init()
 	{
 		this.data = new ArrayList<LocatedObject<O>>();
 
+		// Set up a load of defaults for the axes renderer
 		this.axesRenderer2D.setxAxisColour( RGBColour.WHITE );
 		this.axesRenderer2D.setyAxisColour( RGBColour.WHITE );
 		this.axesRenderer2D.setMajorTickColour( RGBColour.WHITE );
@@ -127,7 +141,12 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	@Override
 	public void update()
 	{
+		// Tell the axes renderer where we're drawing the axes to.
 		this.axesRenderer2D.setImage( this.visImage );
+
+		// If we're going to auto position the axes we need to determine
+		// where in the display the x-axis will be positioned and set the
+		// axes renderer x axis position.
 		if( this.autoPositionXAxis )
 		{
 			synchronized( this.axesRenderer2D )
@@ -143,24 +162,34 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 			}
 		}
 
+		// Recalculate any sizes needed for the axes
 		synchronized( this.axesRenderer2D )
 		{
 			this.axesRenderer2D.precalc();
 		}
 
+		// Call the beforeAxesRender callback so the vis can draw anything it need sto
 		this.beforeAxesRender( this.visImage, this.axesRenderer2D );
 
+		// Render the axes if we're to do it below the plot
 		if( !this.renderAxesLast ) this.axesRenderer2D.renderAxis( this.visImage );
 
 		// Tell the plotter we're about to start rendering items,
 		// then loop over the items plotting them
-		this.plotter.renderRestarting();
-		synchronized( this.data )
+		if( this.plotter != null )
 		{
-			for( final LocatedObject<O> o : this.data )
-				this.plotter.plotObject( this.visImage, o, this.axesRenderer2D );
+			// Tell the plotter we're starting to render
+			this.plotter.renderRestarting();
+
+			// Render each data point using the plotter
+			synchronized( this.data )
+			{
+				for( final LocatedObject<O> o : this.data )
+					this.plotter.plotObject( this.visImage, o, this.axesRenderer2D );
+			}
 		}
 
+		// Render the axes if we're to do it on top of the plot
 		if( this.renderAxesLast ) this.axesRenderer2D.renderAxis( this.visImage );
 	}
 
@@ -253,7 +282,10 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 		this.validateData();
 	}
 
-	private void validateData()
+	/**
+	 * 	Set up the min/max of the axes based on the data.
+	 */
+	protected void validateData()
 	{
 		if( this.autoScaleAxes && this.data.size() > 0 )
 		{
@@ -309,5 +341,21 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 	public void setAutoPositionXAxis( final boolean autoPositionXAxis )
 	{
 		this.autoPositionXAxis = autoPositionXAxis;
+	}
+
+	/**
+	 *	@return the renderAxesLast
+	 */
+	public boolean isRenderAxesLast()
+	{
+		return this.renderAxesLast;
+	}
+
+	/**
+	 *	@param renderAxesLast the renderAxesLast to set
+	 */
+	public void setRenderAxesLast( final boolean renderAxesLast )
+	{
+		this.renderAxesLast = renderAxesLast;
 	}
 }
