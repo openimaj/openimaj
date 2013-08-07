@@ -67,16 +67,6 @@ public class AutoSelectingEigenChooser extends EigenChooser {
 			return eig.greatest((int) (total*maxSelect));
 		}
 		else{
-//			final Matrix jamaLap = MatrixUtils.pseudoInverse(MatlibMatrixUtils.toJama(laplacian));
-//			FewEigenvalues eig = new FewEigenvalues(laplacian.columnCount()){
-//
-//				@Override
-//				protected Vector callback(Vector vector) {
-//					Matrix sol = jamaLap.times(MatlibMatrixUtils.toColJama(vector));
-//					return MatlibMatrixUtils.fromJama(sol).column(0);
-//				}
-//				
-//			};
 			FewEigenvalues eig = FewEigenvalues.of(laplacian);
 			return eig.lowest((int) (total*maxSelect));
 		}

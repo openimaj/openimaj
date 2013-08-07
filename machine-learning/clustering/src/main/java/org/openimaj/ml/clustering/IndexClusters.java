@@ -53,8 +53,8 @@ import org.openimaj.io.IOUtils;
  */
 public class IndexClusters implements Clusters {
 	
-	private int[][] clusters;
-	private int nEntries;
+	protected int[][] clusters;
+	protected int nEntries;
 	
 	/**
 	 * used only to initailise for {@link IOUtils}

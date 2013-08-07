@@ -282,7 +282,7 @@ public abstract class Matrix {
 		for (i = 0; i < maxPrint ; i++) {
 			int row = i / columnCount();
 			int col = i - (row * columnCount());
-			writer.printf("%d\t%d\2.5f\n",row,col,this.get(row, col));
+			writer.printf("%d\t%d\t%2.5f\n",row,col,this.get(row, col));
 		}
 		if(i < rowCount() * columnCount() - 1){
 			writer.printf("...");

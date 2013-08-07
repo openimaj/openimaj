@@ -11,6 +11,7 @@ import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.MultiviewSimilarityClusterer;
 import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.pair.IndependentPair;
 
 import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.Matrix;
@@ -51,7 +52,7 @@ public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClu
 		}		
 		
 		// Solve the spectral clustering for each view
-		ArrayList<double[][]> answers = new ArrayList<double[][]>(data.size());
+		ArrayList<IndependentPair<double[], double[][]>> answers = new ArrayList<>(data.size());
 		for (int i = 0; i < data.size(); i++) {
 			answers.add(dsp.spectralCluster(data.get(i)));
 		}
@@ -63,7 +64,7 @@ public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClu
 				SparseMatrix ujujSum = null;
 				for (int j = 0; j < answers.size(); j++) {
 					if(i == j) continue;
-					Matrix uj = new DenseMatrix(answers.get(j));
+					Matrix uj = new DenseMatrix(answers.get(j).secondObject());
 					SparseMatrix ujuj = MatlibMatrixUtils.dotProductTranspose(uj,uj,new SparseMatrix(uj.rowCount(),uj.rowCount()));
 					if(ujujSum == null){
 						ujujSum = ujuj;
@@ -79,7 +80,8 @@ public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClu
 			}
 		}
 		// Concatenate the eigen spaces and cluster using the conf clusterer
-		return dsp.eigenspaceCluster(ArrayUtils.concatenate(answers.toArray(new double[answers.size()][][])));
+//		return dsp.eigenspaceCluster(ArrayUtils.concatenate(answers.toArray(new double[answers.size()][][])));
+		return null;
 	}
 
 	@Override

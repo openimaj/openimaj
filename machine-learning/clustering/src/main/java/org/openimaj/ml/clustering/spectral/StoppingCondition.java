@@ -2,6 +2,8 @@ package org.openimaj.ml.clustering.spectral;
 
 import java.util.List;
 
+import org.openimaj.util.pair.IndependentPair;
+
 /**
  * The stopping condition for a multiview spectral clustering algorithm
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -14,7 +16,7 @@ public interface StoppingCondition {
 	 * @param answers the list of current eigen vectors 
 	 * @return true if this iteration should not happen
 	 */
-	public boolean stop(List<double[][]> answers);
+	public boolean stop(List<IndependentPair<double[], double[][]>> answers);
 	
 	/**
 	 * Counts the iterations 
@@ -31,7 +33,7 @@ public interface StoppingCondition {
 			this.max = iters;
 		}
 		@Override
-		public boolean stop(List<double[][]> answers) {			
+		public boolean stop(List<IndependentPair<double[], double[][]>> answers) {			
 			return count ++ < this.max;
 		}
 		

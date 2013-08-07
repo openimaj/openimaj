@@ -42,7 +42,8 @@ public class NormalisedSimilarityDoubleClustererWrapper<T> extends DoubleFVSimil
 		for (int i = 0; i < feats.length; i++) {
 			for (int j = i; j < feats.length; j++) {
 				double d = dist.compare(feats[i], feats[j]);
-				if(d>eps ) d = Double.NaN;
+				if(d>eps ) 
+					d = Double.NaN;
 				else{
 					maxD = Math.max(d, maxD);
 				}

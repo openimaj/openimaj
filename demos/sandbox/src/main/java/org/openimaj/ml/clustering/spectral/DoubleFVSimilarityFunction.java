@@ -18,7 +18,7 @@ import ch.akuhn.matrix.SparseMatrix;
  */
 public abstract class DoubleFVSimilarityFunction<T> implements Function<List<T>,SparseMatrix>{
 	Logger logger = Logger.getLogger(DoubleFVSimilarityFunction.class);
-	double[][] feats = null;
+	protected double[][] feats = null;
 	private FeatureExtractor<DoubleFV, T> extractor;
 	private List<T> data;
 	/**
@@ -45,5 +45,5 @@ public abstract class DoubleFVSimilarityFunction<T> implements Function<List<T>,
 		}
 	}
 	
-	abstract SparseMatrix similarity();
+	protected abstract SparseMatrix similarity();
 }

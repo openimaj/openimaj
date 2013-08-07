@@ -45,6 +45,7 @@ public class RBFSimilarityDoubleClustererWrapper<T> extends DoubleFVSimilarityFu
 		SparseMatrix sim = new SparseMatrix(N,N);
 		for (int i = 0; i < N; i++) {
 			double[] di = feats[i];
+			sim.put(i,i,1);
 			for (int j = i+1; j < N; j++) {
 				double[] dj = feats[j];
 				double expInner = 0;

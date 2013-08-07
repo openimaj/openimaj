@@ -9,6 +9,7 @@ import org.openimaj.ml.clustering.SimilarityClusterer;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.util.pair.DoubleObjectPair;
+import org.openimaj.util.pair.IndependentPair;
 
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
@@ -23,7 +24,7 @@ import ch.akuhn.matrix.eigenvalues.Eigenvalues;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DoubleSpectralClustering implements SimilarityClusterer<IndexClusters>{
+public class DoubleSpectralClustering implements SimilarityClusterer<SpectralIndexedClusters>{
 	final static Logger logger = Logger.getLogger(DoubleSpectralClustering.class);
 	private SpectralClusteringConf<double[]> conf;
 
@@ -36,41 +37,40 @@ public class DoubleSpectralClustering implements SimilarityClusterer<IndexCluste
 	}
 	
 	@Override
-	public IndexClusters clusterSimilarity(SparseMatrix sim) {
-		// TODO Auto-generated method stub
-		return null;
+	public SpectralIndexedClusters clusterSimilarity(SparseMatrix sim) {
+		return cluster(sim);
 	}
 	
 	@Override
-	public IndexClusters cluster(SparseMatrix data) {
+	public SpectralIndexedClusters cluster(SparseMatrix data) {
 		// Get the laplacian, solve the eigen problem and choose the best 
-		double[][] lowestCols = spectralCluster(data);
+		IndependentPair<double[], double[][]> lowestCols = spectralCluster(data);
 		// Using the eigenspace, cluster
 		return eigenspaceCluster(lowestCols);
 	}
 
-	protected IndexClusters eigenspaceCluster(double[][] lowestCols) {
+	protected SpectralIndexedClusters eigenspaceCluster(IndependentPair<double[], double[][]> lowestCols) {
 		// Cluster the rows with the internal spatial clusterer
-		SpatialClusters<double[]> cluster = conf.internal.cluster(lowestCols);
+		SpatialClusters<double[]> cluster = conf.internal.cluster(lowestCols.getSecondObject());
 		// if the clusters contain the cluster indexes of the training examples use those
 		if(cluster instanceof IndexClusters){
 			IndexClusters clusters = new IndexClusters(((IndexClusters)cluster).clusters());
 			logger.debug(clusters);
-			return clusters;
+			return new SpectralIndexedClusters(clusters, lowestCols);
 		}
 		// Otherwise attempt to assign values to clusters
-		int[] clustered = cluster.defaultHardAssigner().assign(lowestCols);
+		int[] clustered = cluster.defaultHardAssigner().assign(lowestCols.getSecondObject());
 		// done!
-		return new IndexClusters(clustered);
+		return new SpectralIndexedClusters(new IndexClusters(clustered),lowestCols);
 	}
 
-	protected double[][] spectralCluster(SparseMatrix data) {
+	protected IndependentPair<double[], double[][]> spectralCluster(SparseMatrix data) {
 		// Compute the laplacian of the graph
 		final SparseMatrix laplacian = laplacian(data);
 		// Calculate the eigvectors
 		// Use the lowest eigen valued cols as the features, each row is a data item in the reduced feature space
 		// Also normalise each row
-		double[][] lowestCols = bestCols(laplacian);
+		IndependentPair<double[], double[][]> lowestCols = bestCols(laplacian);
 		return lowestCols;
 	}
 
@@ -78,7 +78,7 @@ public class DoubleSpectralClustering implements SimilarityClusterer<IndexCluste
 		return conf.laplacian.laplacian(data);
 	}
 	
-	protected double[][] bestCols(final SparseMatrix laplacian) {
+	protected IndependentPair<double[], double[][]> bestCols(final SparseMatrix laplacian) {
 		
 		Eigenvalues eig = conf.eigenChooser.prepare(laplacian, conf.laplacian.direction());
 		eig.run();
@@ -89,10 +89,13 @@ public class DoubleSpectralClustering implements SimilarityClusterer<IndexCluste
 		int nrows = eig.vector[0].size();
 		double[][] ret = new double[nrows][eigenVectorSelect];
 		double[] retSum = new double[nrows];
+		double[] eigvals = new double[eigenVectorSelect];
 		int col = 0;
 		// Calculate U matrix (containing n smallests eigen valued columns)
 		for (Iterator<DoubleObjectPair<Vector>> iterator = this.conf.laplacian.eigenIterator(eig); iterator.hasNext();) {
 			DoubleObjectPair<Vector> v = iterator.next();
+			eigvals[col] = v.first;
+			
 			for (Entry d : v.second.entries()) {
 				double elColI = d.value;
 				ret[d.index][col] = elColI;
@@ -110,7 +113,7 @@ public class DoubleSpectralClustering implements SimilarityClusterer<IndexCluste
 			}
 		}
 
-		return ret;
+		return IndependentPair.pair(eigvals, ret);
 	}
 
 	@Override
