@@ -38,6 +38,7 @@ public class AxisRenderer2D<Q> extends AxisRenderer<Q>
 	/** The axis line we've calculated */
 	private Line2d axisLine;
 
+	/** Units to pixels scaling */
 	private double currentScale = 1;
 
 	/**

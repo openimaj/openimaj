@@ -13,10 +13,10 @@ import org.junit.Test;
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 20 May 2013
  */
-public class BarVisualisationTest
+public class BarVisualisationBasicTest
 {
 	/** The visualisation to test */
-	private BarVisualisation bv;
+	private BarVisualisationBasic bv;
 
 	/**
 	 * 	Create some data less than 0, so the axis is above.
@@ -63,14 +63,13 @@ public class BarVisualisationTest
 	@Before
 	public void setUp()
 	{
-		this.bv = new BarVisualisation( 800, 400 );
+		this.bv = new BarVisualisationBasic( 800, 400 );
 	}
 
 	/**
 	 * 	Test data below zero with a fixed position 0 axis
 	 */
-	// Fixed axis is currently not supported by AxesRenderer2D
-	// @Test
+	@Test
 	public void testFixedBelowZero()
 	{
 		this.bv.setAxisLocation( 200 );
@@ -95,14 +94,8 @@ public class BarVisualisationTest
 		Assert.assertEquals( false, this.bv.isFixAxis() );
 		Assert.assertEquals( false, this.bv.isAxisAlwaysVisible() );
 		Assert.assertEquals( 4, this.bv.getAxisRangeY(), 0 );
-		Assert.assertEquals( 90, this.bv.getYscale(), 0 );
-		
-		// This is -340 because the axis length is 
-		//	400px - (2x padding) = 400px - 2*20 = 360px
-		// Each unit is therefore 360px/4 (-4-(-8)=4) = 90px, so zero
-		// is at 90px * -4 = -360px.  There is a top padding of 20px 
-		// which shifts it down to -340px
-		Assert.assertEquals( -340, this.bv.getAxisLocation(), 0 );
+		Assert.assertEquals( 100, this.bv.getYscale(), 0 );
+		Assert.assertEquals( -400, this.bv.getAxisLocation(), 0 );
 	}
 
 	/**
@@ -118,17 +111,14 @@ public class BarVisualisationTest
 		Assert.assertEquals( false, this.bv.isFixAxis() );
 		Assert.assertEquals( true, this.bv.isAxisAlwaysVisible() );
 		Assert.assertEquals( 8, this.bv.getAxisRangeY(), 0 );
-		Assert.assertEquals( 45, this.bv.getYscale(), 0 );
-		
-		// There's a 20px top-padding by default
-		Assert.assertEquals( 20, this.bv.getAxisLocation(), 0 );
+		Assert.assertEquals( 50, this.bv.getYscale(), 0 );
+		Assert.assertEquals( 0, this.bv.getAxisLocation(), 0 );
 	}
 
 	/**
 	 * 	Test data above zero with a fixed position zero axis
 	 */
-	// Fixed axis is currently not supported by AxesRenderer2D
-	// @Test
+	@Test
 	public void testFixedAboveZero()
 	{
 		this.bv.setAxisLocation( 200 );
@@ -153,12 +143,8 @@ public class BarVisualisationTest
 		Assert.assertEquals( false, this.bv.isFixAxis() );
 		Assert.assertEquals( false, this.bv.isAxisAlwaysVisible() );
 		Assert.assertEquals( 4, this.bv.getAxisRangeY(), 0 );
-		Assert.assertEquals( 90, this.bv.getYscale(), 0 );
-		
-		// The pixel position is 740 as the axis is only 360 in length
-		// (due to padding) which places it at 720, but there's also a 20px
-		// top padding which is added in
-		Assert.assertEquals( 740, this.bv.getAxisLocation(), 0 );
+		Assert.assertEquals( 100, this.bv.getYscale(), 0 );
+		Assert.assertEquals( 800, this.bv.getAxisLocation(), 0 );
 	}
 
 	/**
@@ -174,17 +160,14 @@ public class BarVisualisationTest
 		Assert.assertEquals( false, this.bv.isFixAxis() );
 		Assert.assertEquals( true, this.bv.isAxisAlwaysVisible() );
 		Assert.assertEquals( 8, this.bv.getAxisRangeY(), 0 );
-		Assert.assertEquals( 45, this.bv.getYscale(), 0 );
-		
-		// There's a 20px bottom padding added by default, so it's 400-20=380
-		Assert.assertEquals( 380, this.bv.getAxisLocation(), 0 );
+		Assert.assertEquals( 50, this.bv.getYscale(), 0 );
+		Assert.assertEquals( 400, this.bv.getAxisLocation(), 0 );
 	}
 
 	/**
 	 * 	Test distributed data with a fixed axis
 	 */
-	// Fixed axis is currently not supported by AxesRenderer2D
-	// @Test
+	@Test
 	public void testFixedDistributed()
 	{
 		this.bv.setAxisLocation( 200 );
@@ -193,7 +176,6 @@ public class BarVisualisationTest
 		Assert.assertEquals( true, this.bv.isFixAxis() );
 		Assert.assertEquals( 32, this.bv.getAxisRangeY(), 0 );
 		Assert.assertEquals( 12.5, this.bv.getYscale(), 0 );
-		
 		Assert.assertEquals( 200, this.bv.getAxisLocation(), 0 );
 	}
 
@@ -210,11 +192,8 @@ public class BarVisualisationTest
 		Assert.assertEquals( false, this.bv.isFixAxis() );
 		Assert.assertEquals( false, this.bv.isAxisAlwaysVisible() );
 		Assert.assertEquals( 24, this.bv.getAxisRangeY(), 0 );
-		Assert.assertEquals( 15, this.bv.getYscale(), 1 );
-		
-		// Each unit is 15px high (360px axis / 24 units). Max is
-		// 16, so 16*15 = 240px and there's a 20px top padding by default.
-		Assert.assertEquals( 260, this.bv.getAxisLocation(), 1 );
+		Assert.assertEquals( 16.666, this.bv.getYscale(), 1 );
+		Assert.assertEquals( 266.66, this.bv.getAxisLocation(), 1 );
 	}
 
 	/**
@@ -231,13 +210,7 @@ public class BarVisualisationTest
 		Assert.assertEquals( false, this.bv.isFixAxis() );
 		Assert.assertEquals( true, this.bv.isAxisAlwaysVisible() );
 		Assert.assertEquals( 24, this.bv.getAxisRangeY(), 0 );
-
-		// Test removed because it no longer makes good sense 
-		// now we're using the AxesRenderer2D class
-		// Assert.assertEquals( 16.666, this.bv.getYscale(), 1 );
-		
-		// Each unit is 15px high (360px axis / 24 units). Max is
-		// 16, so 16*15 = 240px and there's a 20px top padding by default.
-		Assert.assertEquals( 260, this.bv.getAxisLocation(), 1 );
+		Assert.assertEquals( 16.666, this.bv.getYscale(), 1 );
+		Assert.assertEquals( 266.66, this.bv.getAxisLocation(), 1 );
 	}
 }

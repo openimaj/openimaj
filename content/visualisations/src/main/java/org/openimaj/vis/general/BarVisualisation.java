@@ -381,6 +381,15 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 		super.validateData();
 		this.axesRenderer2D.setMaxXValue( data.length );
+		
+		// Force the axis to be zero if the axis always visible flag is set
+		if( axisAlwaysVisible )
+			if( getMinValue() > 0 )
+				setMinValue( 0 );
+			else if( getMaxValue() < 0 )
+				setMaxValue( 0 );
+		
+		super.updateVis();
 	}
 
 	/**
@@ -618,7 +627,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 */
 	public double getMaxValue()
 	{
-		return this.maxValue;
+		return axesRenderer2D.getyAxisConfig().getMaxValue();
 	}
 
 	/**
@@ -630,7 +639,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 */
 	public void setMaxValue(final double maxValue)
 	{
-		this.maxValue = maxValue;
+		axesRenderer2D.getyAxisConfig().setMaxValue( maxValue );
 		this.autoScale = false;
 	}
 
@@ -641,7 +650,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 */
 	public double getMinValue()
 	{
-		return this.minValue;
+		return axesRenderer2D.getyAxisConfig().getMinValue();
 	}
 
 	/**
@@ -653,7 +662,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 */
 	public void setMinValue(final double minValue)
 	{
-		this.minValue = minValue;
+		axesRenderer2D.getyAxisConfig().setMinValue( minValue );
 		this.autoScale = false;
 	}
 
@@ -688,7 +697,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 */
 	public double getAxisLocation()
 	{
-		return this.axisLocation;
+		return axesRenderer2D.getyAxisRenderer().calculatePosition( 0d )[1];
 	}
 
 	/**
@@ -731,7 +740,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 */
 	public double getYscale()
 	{
-		return this.yscale;
+		return axesRenderer2D.getyAxisRenderer().scaleDimension( 1d )[0];
 	}
 
 	/**
@@ -741,7 +750,19 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 */
 	public double getAxisRangeY()
 	{
-		return this.axisRangeY;
+		return axesRenderer2D.getyAxisConfig().getMaxValue() -
+				axesRenderer2D.getyAxisConfig().getMinValue();
+	}
+
+	/**
+	 * The data range being displayed.
+	 *
+	 * @return the axisRangeX
+	 */
+	public double getAxisRangeX()
+	{
+		return axesRenderer2D.getxAxisConfig().getMaxValue() -
+				axesRenderer2D.getxAxisConfig().getMinValue();
 	}
 
 	/**

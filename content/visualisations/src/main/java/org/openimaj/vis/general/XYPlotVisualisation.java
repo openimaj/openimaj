@@ -157,7 +157,9 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 					this.axesRenderer2D.getyAxisRenderer().getAxisLength() /
 					(this.axesRenderer2D.getyAxisConfig().getMaxValue()
 							- this.axesRenderer2D.getyAxisConfig().getMinValue());
+				
 				System.out.println( "Setting x position: "+xAxisPosition );
+				
 				this.axesRenderer2D.setxAxisPosition( xAxisPosition );
 			}
 		}
@@ -290,15 +292,15 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 		if( this.autoScaleAxes && this.data.size() > 0 )
 		{
 			double minX = Double.MAX_VALUE;
-			double maxX = Double.MIN_VALUE;
+			double maxX = -Double.MAX_VALUE;
 			double minY = Double.MAX_VALUE;
-			double maxY = Double.MIN_VALUE;
+			double maxY = -Double.MAX_VALUE;
 			for( final LocatedObject<O> o : this.data)
 			{
 				minX = Math.min( minX, o.x );
 				maxX = Math.max( maxX, o.x );
 				minY = Math.min( minY, o.y );
-				maxY = Math.max( maxY, o.y );
+				maxY = Math.max( maxY, o.y );				
 			}
 
 			this.axesRenderer2D.setMaxXValue( maxX );
@@ -307,7 +309,8 @@ public class XYPlotVisualisation<O> extends VisualisationImpl<List<LocatedObject
 			this.axesRenderer2D.setMinYValue( minY );
 			this.axesRenderer2D.precalc();
 
-			System.out.println( "max x: "+maxX+", min x: "+minX+", max y: "+maxY+", min y: "+minY );
+//			System.out.println( "XYPlotVis.validateData(): max x: "+maxX+
+//					", min x: "+minX+", max y: "+maxY+", min y: "+minY );
 		}
 	}
 
