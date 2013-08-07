@@ -35,7 +35,7 @@ public class NormalisedSimilarityDoubleClustererWrapper<T> extends DoubleFVSimil
 
 
 	
-	SparseMatrix similarity() {
+	protected SparseMatrix similarity() {
 		final SparseMatrix mat = new SparseMatrix(feats.length,feats.length);
 		final DoubleFVComparison dist = DoubleFVComparison.EUCLIDEAN;
 		double maxD = 0;
