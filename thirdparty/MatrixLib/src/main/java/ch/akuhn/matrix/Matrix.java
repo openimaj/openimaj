@@ -277,17 +277,17 @@ public abstract class Matrix {
 		PrintWriter writer = new PrintWriter(sw);
 		writer.println("NRows = " + rowCount());
 		writer.println("NCols = " + columnCount());
-//		int maxPrint = Math.min(rowCount() * columnCount(), MAX_PRINT);
-//		int i;
-//		for (i = 0; i < maxPrint ; i++) {
-//			int row = i / columnCount();
-//			int col = i - (row * columnCount());
-//			writer.printf("%d\t%d\2.5f\n",row,col,this.get(row, col));
-//		}
-//		if(i < rowCount() * columnCount() - 1){
-//			writer.printf("...");
-//		}
-//		writer.flush();
+		int maxPrint = Math.min(rowCount() * columnCount(), MAX_PRINT);
+		int i;
+		for (i = 0; i < maxPrint ; i++) {
+			int row = i / columnCount();
+			int col = i - (row * columnCount());
+			writer.printf("%d\t%d\2.5f\n",row,col,this.get(row, col));
+		}
+		if(i < rowCount() * columnCount() - 1){
+			writer.printf("...");
+		}
+		writer.flush();
 		return sw.toString();
 	}
 }
