@@ -13,7 +13,10 @@ public class FullMEClusterAnalyser implements ClusterAnalyser<FullMEAnalysis>{
 		FullMEAnalysis ret = new FullMEAnalysis();
 		ret.purity = new PurityClusterAnalyser().analyse(correct, estimated);
 		ret.nmi = new NMIClusterAnalyser().analyse(correct,estimated);
-		ret.decision = new DecisionClusterAnalyser().analyse(correct, estimated);
+		RandomIndexAnalysis riAnn = new RandomIndexClusterAnalyser().analyse(correct, estimated);
+		ret.decision = riAnn.getDecisionAnalysis();
+		ret.randIndex = riAnn;
+		ret.fscore = new FScoreAnalysis(riAnn.getDecisionAnalysis());
 		ret.adjRandInd = new AdjustedRandomIndexClusterAnalyser().analyse(correct, estimated);
 		return ret;
 	}

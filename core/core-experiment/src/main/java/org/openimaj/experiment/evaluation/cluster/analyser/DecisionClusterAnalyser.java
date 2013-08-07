@@ -2,16 +2,19 @@ package org.openimaj.experiment.evaluation.cluster.analyser;
 
 import java.util.Map;
 
+import org.openimaj.experiment.evaluation.AnalysisResult;
+
 import gov.sandia.cognition.math.MathUtil;
 
 /**
  * Gather the true positives, true negatives, false positives, false negatives for a {@link DecisionAnalysis} instance
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @param <T> the type of analysis
  */
-public class DecisionClusterAnalyser implements ClusterAnalyser<DecisionAnalysis> {
+public abstract class DecisionClusterAnalyser<T extends AnalysisResult> implements ClusterAnalyser<T> {
 
 	@Override
-	public DecisionAnalysis analyse(int[][] correct, int[][] estimated) {
+	public T analyse(int[][] correct, int[][] estimated) {
 		DecisionAnalysis ret = new DecisionAnalysis();
 		Map<Integer,Integer> invCor = ClusterAnalyserUtils.invert(correct);
 		long positive = 0;
@@ -54,7 +57,14 @@ public class DecisionClusterAnalyser implements ClusterAnalyser<DecisionAnalysis
 		ret.FP = positive - ret.TP;
 		ret.TN = negative - ret.FN;
 		
-		return ret;
+		return analysisResults(ret);
 	}
+
+	/**
+	 * Given a {@link DecisionAnalysis}, construct an analysis
+	 * @param ret
+	 * @return an analysis
+	 */
+	public abstract T analysisResults(DecisionAnalysis ret) ;
 
 }

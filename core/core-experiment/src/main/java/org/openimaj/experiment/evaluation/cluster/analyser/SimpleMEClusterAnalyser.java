@@ -12,7 +12,9 @@ public class SimpleMEClusterAnalyser implements ClusterAnalyser<SimpleMEAnalysis
 	public SimpleMEAnalysis analyse(int[][] correct, int[][] estimated) {
 		SimpleMEAnalysis ret = new SimpleMEAnalysis();
 		ret.purity = new PurityClusterAnalyser().analyse(correct, estimated);
-		ret.decision = new DecisionClusterAnalyser().analyse(correct, estimated);
+		ret.randIndex = new RandomIndexClusterAnalyser().analyse(correct, estimated);
+		ret.decision = ret.randIndex.getDecisionAnalysis();
+		ret.fscore = new FScoreAnalysis(ret.randIndex.getDecisionAnalysis());
 		ret.adjRandInd = new AdjustedRandomIndexClusterAnalyser().analyse(correct, estimated);
 		return ret;
 	}

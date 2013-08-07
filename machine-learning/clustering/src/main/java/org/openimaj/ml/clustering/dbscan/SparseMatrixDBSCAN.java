@@ -80,4 +80,16 @@ public abstract class SparseMatrixDBSCAN extends DBSCAN implements SparseMatrixC
 		return this.eps;
 	}
 
+	/**
+	 * @param eps the new eps
+	 */
+	public void setEps(double eps) {
+		this.eps = eps;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s: eps=%2.2f, minpts=%d",this.getClass().getSimpleName(),eps,minPts);
+	}
+
 }

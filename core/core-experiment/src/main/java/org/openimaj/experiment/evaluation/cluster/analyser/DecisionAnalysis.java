@@ -10,7 +10,7 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * one can produce various cluster quality metrics including the fscore and randindex
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class DecisionAnalysis implements AnalysisResult,RandomBaselineWrappable{
+public class DecisionAnalysis implements AnalysisResult{
 
 	/**
 	 * The total number of pairs in a cluster which belong to the same class
@@ -51,7 +51,7 @@ public class DecisionAnalysis implements AnalysisResult,RandomBaselineWrappable{
 	
 	@Override
 	public String toString() {
-		return String.format("P=%2.2f,R=%2.5f,F1=%2.5f,RandI=%2.5f",precision(),recall(),fscore(1),randIndex());
+		return String.format("P=%2.2f,R=%2.5f",precision(),recall());
 	}
 	
 	/**
@@ -69,29 +69,5 @@ public class DecisionAnalysis implements AnalysisResult,RandomBaselineWrappable{
 		if( TP + FN == 0) return 0;
 		return TP / (double)(TP + FN);
 	};
-	
-	/**
-	 * @return the proportion of true decisions made as compared to all decisions made
-	 */
-	public double randIndex() {
-		return (TP + TN) / (double)(TP + FP + TN + FN);
-	}
-
-	/**
-	 * @param beta
-	 * @return the f-score which weights up or down the relative importance of a false positive against false negatives
-	 */
-	public double fscore(double beta){
-		double beta2 = beta * beta;
-		double P = precision();
-		double R = recall();
-		if(P + R == 0) return 0;
-		return ((beta2 + 1) * P * R)/(beta2 * P + R);
-	}
-
-	@Override
-	public double score() {
-		return randIndex();
-	}
 
 }

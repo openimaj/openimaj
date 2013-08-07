@@ -39,17 +39,29 @@ public class RandomBaselineClusterAnalysis<T extends RandomBaselineWrappable & A
 
 	@Override
 	public String getSummaryReport() {
-		return String.format("score=(%s),baseline=%2.5f,divergence=%2.4f",this.score.getSummaryReport(),this.randscore,score());
+		return String.format("s=(%s),b=%2.5f,d=%2.4f",this.score.getSummaryReport(),this.randscore,score());
 	}
 
 	@Override
 	public String getDetailReport() {
 		return getSummaryReport();
 	}
-
+	
+	@Override
+	public String toString() {
+		return this.getSummaryReport();
+	}
+	
 	@Override
 	public double score() {
 		return this.score.score() - this.randscore;
+	}
+	
+	/**
+	 * @return the unmodified analysis
+	 */
+	public T getUnmodified(){
+		return this.score;
 	}
 
 }

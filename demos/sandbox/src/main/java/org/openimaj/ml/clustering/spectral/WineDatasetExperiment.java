@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.openimaj.experiment.evaluation.cluster.ClusterEvaluator;
+import org.openimaj.experiment.evaluation.cluster.RangedDBSCANClusterEvaluator;
 import org.openimaj.experiment.evaluation.cluster.analyser.FullMEAnalysis;
 import org.openimaj.experiment.evaluation.cluster.analyser.FullMEClusterAnalyser;
 import org.openimaj.experiment.evaluation.cluster.processor.Clusterer;
@@ -109,7 +109,7 @@ public class WineDatasetExperiment {
 	}
 
 	private static void evaluate(WineDataset ds, Clusterer<SparseMatrix> clust, Function<List<double[]>, SparseMatrix> func) {
-		ClusterEvaluator<SparseMatrix, FullMEAnalysis> eval = new ClusterEvaluator<SparseMatrix, FullMEAnalysis>(clust,ds,func,new FullMEClusterAnalyser());
+		RangedDBSCANClusterEvaluator<SparseMatrix, FullMEAnalysis> eval = new RangedDBSCANClusterEvaluator<SparseMatrix, FullMEAnalysis>(clust,ds,func,new FullMEClusterAnalyser());
 		int[][] evaluate = eval.evaluate();
 		logger.info("Expected Classes: " + ds.size());
 		logger.info("Detected Classes: " + evaluate.length);

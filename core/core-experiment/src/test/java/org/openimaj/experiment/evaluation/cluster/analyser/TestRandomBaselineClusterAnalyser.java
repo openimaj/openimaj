@@ -61,8 +61,8 @@ public class TestRandomBaselineClusterAnalyser{
 		logger.debug(annpure.getSummaryReport());
 		
 		logger.debug("Performing randind random baseline analysis");
-		RandomBaselineClusterAnalyser<DecisionClusterAnalyser, DecisionAnalysis> rrandi = new RandomBaselineClusterAnalyser<>(new DecisionClusterAnalyser());
-		RandomBaselineClusterAnalysis<DecisionAnalysis> annrandi = rrandi.analyse(gt, es);
+		RandomBaselineClusterAnalyser<RandomIndexClusterAnalyser, RandomIndexAnalysis> rrandi = new RandomBaselineClusterAnalyser<RandomIndexClusterAnalyser, RandomIndexAnalysis>(new RandomIndexClusterAnalyser());
+		RandomBaselineClusterAnalysis<RandomIndexAnalysis> annrandi = rrandi.analyse(gt, es);
 		logger.debug(annrandi.getSummaryReport());
 	}
 	

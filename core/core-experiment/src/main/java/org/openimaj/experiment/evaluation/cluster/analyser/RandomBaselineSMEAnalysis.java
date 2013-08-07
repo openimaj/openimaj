@@ -9,7 +9,7 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class SimpleMEAnalysis implements AnalysisResult{
+public class RandomBaselineSMEAnalysis implements AnalysisResult{
 
 	/**
 	 * A measure of how pure each cluster is.
@@ -21,37 +21,37 @@ public class SimpleMEAnalysis implements AnalysisResult{
 	 * High means: most of the clusters had a high number of a single class
 	 * Low means: most of the clusters had a roughly equal spread of all the classes
 	 */
-	public PurityAnalysis purity;
+	public RandomBaselineClusterAnalysis<PurityAnalysis> purity;
+	
+	/**
+	 * 
+	 */
+	public RandomBaselineClusterAnalysis<FScoreAnalysis> fscore;
+	
+	/**
+	 * 
+	 */
+	public RandomBaselineClusterAnalysis<RandomIndexAnalysis> randIndex;
 
 	/**
-	 * The {@link DecisionAnalysis} instance
+	 * General statistics
 	 */
-	public DecisionAnalysis decision;
-	
-	/**
-	 * 
-	 */
-	public FScoreAnalysis fscore;
-	
-	/**
-	 * 
-	 */
-	public RandomIndexAnalysis randIndex;
-	
-	/**
-	 * 
-	 */
-	public AdjustedRandomIndexAnalysis adjRandInd;
+	public ClusterStatsAnalysis stats;
 
 
 	@Override
 	public String getSummaryReport() {
-		return String.format("(%s,%s.%s,%s,%s)",purity,decision,fscore,randIndex,adjRandInd);
+		return String.format("s=[%s],p=[%s],f1=[%s],r=[%s])",stats,purity,fscore,randIndex);
 	}
 
 	@Override
 	public String getDetailReport() {
-		return "";
+		return String.format("stats: [%s]\npurity: [%s]\nf1: [%s]\nrandIndex: [%s])",stats,purity,fscore,randIndex);
+	}
+	
+	@Override
+	public String toString() {
+		return getDetailReport();
 	}
 
 

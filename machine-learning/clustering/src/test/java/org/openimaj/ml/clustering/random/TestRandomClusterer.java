@@ -51,10 +51,10 @@ public class TestRandomClusterer {
 			int[][] c1 = rc.performClustering(sm);
 //			
 			FullMEAnalysis anal1 = meca.analyse(correct, c1);
-			if(anal2.decision.fscore(1) <= anal1.decision.fscore(1)){
+			if(anal2.fscore.fscore(1) <= anal1.fscore.fscore(1)){
 				summarise(anal1,anal2, c1);
 			}
-			assertTrue(anal1.decision.fscore(1) < anal2.decision.fscore(1));
+			assertTrue(anal1.fscore.fscore(1) < anal2.fscore.fscore(1));
 //			if(anal1.randIndex() > anal2.randIndex()){
 //				System.out.println("RandI was beaten by adj randi");
 //				summarise(anal1,anal2, c1);

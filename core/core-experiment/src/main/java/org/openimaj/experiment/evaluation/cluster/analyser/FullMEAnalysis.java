@@ -34,14 +34,24 @@ public class FullMEAnalysis implements AnalysisResult{
 	public DecisionAnalysis decision;
 	
 	/**
+	 * The {@link FScoreAnalysis} instance
+	 */
+	public FScoreAnalysis fscore;
+	
+	/**
+	 * The {@link RandomIndexAnalysis} instance
+	 */
+	public RandomIndexAnalysis randIndex;
+	
+	/**
 	 * 
 	 */
-	public AdjustedRandomIndexAnalysis adjRandInd;
+	public AnalysisResult adjRandInd;
 
 
 	@Override
 	public String getSummaryReport() {
-		return String.format("(%s,%s,%s,%s)",purity,nmi,decision,adjRandInd);
+		return String.format("(%s,%s,%s,%s,%s,%s)",purity,nmi,decision,fscore,randIndex,adjRandInd);
 	}
 
 	@Override
