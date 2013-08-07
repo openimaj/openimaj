@@ -64,5 +64,12 @@ public class FScoreAnalysis implements AnalysisResult, RandomBaselineWrappable{
 		if(P + R == 0) return 0;
 		return ((beta2 + 1) * P * R)/(beta2 * P + R);
 	}
+	
+	/**
+	 * @return the underlying decision analysis
+	 */
+	public DecisionAnalysis getDecisionAnalysis(){
+		return this.ann;
+	}
 
 }

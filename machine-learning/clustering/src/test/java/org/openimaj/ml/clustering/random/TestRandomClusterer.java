@@ -46,7 +46,7 @@ public class TestRandomClusterer {
 		FullMEAnalysis anal2 = meca.analyse(correct, estimate);
 		
 		RandomClusterer rc = new RandomClusterer(10,1);
-		for (int i = 0; i < 10000; i++) {			
+		for (int i = 0; i < 100; i++) {			
 			SparseMatrix sm = new SparseMatrix(17,17);
 			int[][] c1 = rc.performClustering(sm);
 //			
