@@ -46,28 +46,29 @@ import org.openimaj.math.statistics.distribution.MultivariateGaussian;
 import Jama.CholeskyDecomposition;
 import Jama.Matrix;
 
-public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGenerator{
-
-
+public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGenerator {
 
 	private static final int N_POINTS = 200;
 	private List<MultivariateGaussian> normList;
 	private Random random;
 	private double[] pi;
+
 	private GaussianMixtureModelGenerator2D() {
 		normList = new ArrayList<MultivariateGaussian>();
 		this.random = new Random();
 	}
+
 	/**
 	 * @param ellipses
 	 */
-	public GaussianMixtureModelGenerator2D(Ellipse ... ellipses) {
+	public GaussianMixtureModelGenerator2D(Ellipse... ellipses) {
 		this();
-		for (Ellipse ellipse : ellipses) {
-			Matrix mean = new Matrix(1,2);
-			Point2d cog = ellipse.getCOG();
-			Ellipse corrected = new Ellipse(cog.getX(), cog.getY(), ellipse.getMajor()/2, ellipse.getMinor()/2, ellipse.getRotation());
-			Matrix covar = EllipseUtilities.ellipseToCovariance(corrected);
+		for (final Ellipse ellipse : ellipses) {
+			final Matrix mean = new Matrix(1, 2);
+			final Point2d cog = ellipse.getCOG();
+			final Ellipse corrected = new Ellipse(cog.getX(), cog.getY(), ellipse.getMajor() / 2, ellipse.getMinor() / 2,
+					ellipse.getRotation());
+			final Matrix covar = EllipseUtilities.ellipseToCovariance(corrected);
 			mean.set(0, 0, cog.getX());
 			mean.set(0, 1, cog.getY());
 
@@ -76,37 +77,37 @@ public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGene
 
 		this.pi = new double[normList.size()];
 		for (int i = 0; i < pi.length; i++) {
-			pi[i] = 1f/pi.length;
+			pi[i] = 1f / pi.length;
 		}
 	}
 
 	@Override
 	public Generated generate() {
-		Generated g = new Generated();
-		double probZ = random.nextDouble();
+		final Generated g = new Generated();
+		final double probZ = random.nextDouble();
 		double sum = 0;
 		g.distribution = this.pi.length - 1;
 		for (int i = 0; i < this.pi.length; i++) {
 			sum += pi[i];
-			if(sum > probZ){
+			if (sum > probZ) {
 				g.distribution = i;
 				break;
 			}
 		}
 
-		MultivariateGaussian distrib = this.normList.get(g.distribution);
-		Matrix mean = distrib.getMean().transpose();
-		Matrix covar = distrib.getCovar();
-		CholeskyDecomposition decomp = new CholeskyDecomposition(covar);
-		Matrix r = MatrixUtils.randGaussian(2,1);
+		final MultivariateGaussian distrib = this.normList.get(g.distribution);
+		final Matrix mean = distrib.getMean().transpose();
+		final Matrix covar = distrib.getCovar();
+		final CholeskyDecomposition decomp = new CholeskyDecomposition(covar);
+		final Matrix r = MatrixUtils.randGaussian(2, 1);
 
-		Matrix genPoint = mean.plus(decomp.getL().times(r));
-		g.point = new double[]{genPoint.get(0, 0),genPoint.get(1,0)};
+		final Matrix genPoint = mean.plus(decomp.getL().times(r));
+		g.point = new double[] { genPoint.get(0, 0), genPoint.get(1, 0) };
 		g.responsibilities = new double[this.pi.length];
 
 		sum = 0;
 		for (int i = 0; i < g.responsibilities.length; i++) {
-			sum += g.responsibilities[i] = this.normList.get(i).estimateProbability(new float[]{(float) (g.point[0]),(float) g.point[1]});
+			sum += g.responsibilities[i] = this.normList.get(i).estimateProbability(g.point);
 		}
 
 		for (int i = 0; i < g.responsibilities.length; i++) {
@@ -117,29 +118,30 @@ public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGene
 	}
 
 	public static void main(String[] args) {
-		Ellipse e1 = new Ellipse(200, 200, 40, 20, Math.PI/3);
-		Ellipse e2 = new Ellipse(220, 150, 60, 20, -Math.PI/3);
-		Ellipse e3 = new Ellipse(180, 200, 80, 20, -Math.PI/3);
-		Float[][] colours = new Float[][]{RGBColour.RED,RGBColour.GREEN,RGBColour.BLUE};
-		MBFImage image = new MBFImage(400,400,3);
+		final Ellipse e1 = new Ellipse(200, 200, 40, 20, Math.PI / 3);
+		final Ellipse e2 = new Ellipse(220, 150, 60, 20, -Math.PI / 3);
+		final Ellipse e3 = new Ellipse(180, 200, 80, 20, -Math.PI / 3);
+		final Float[][] colours = new Float[][] { RGBColour.RED, RGBColour.GREEN, RGBColour.BLUE };
+		final MBFImage image = new MBFImage(400, 400, 3);
 		image.drawShape(e1, RGBColour.RED);
 		image.drawShape(e2, RGBColour.GREEN);
 		image.drawShape(e3, RGBColour.BLUE);
 
-		GaussianMixtureModelGenerator2D gmm = new GaussianMixtureModelGenerator2D(e1,e2,e3);
-		MBFImage imageUnblended = image.clone();
-		MBFImage imageBlended = image.clone();
+		final GaussianMixtureModelGenerator2D gmm = new GaussianMixtureModelGenerator2D(e1, e2, e3);
+		final MBFImage imageUnblended = image.clone();
+		final MBFImage imageBlended = image.clone();
 		for (int i = 0; i < N_POINTS; i++) {
-			Generated gen = gmm.generate();
-			Point2d p = new Point2dImpl((float)gen.point[0],(float) gen.point[1]);
+			final Generated gen = gmm.generate();
+			final Point2d p = new Point2dImpl((float) gen.point[0], (float) gen.point[1]);
 			imageUnblended.drawPoint(p, colours[gen.distribution], 3);
-			Float[] weightedColour = new Float[3];
+			final Float[] weightedColour = new Float[3];
 			for (int j = 0; j < weightedColour.length; j++) {
 				weightedColour[j] = 0f;
 			}
 			for (int colour = 0; colour < colours.length; colour++) {
 				for (int channel = 0; channel < colours[colour].length; channel++) {
-					weightedColour[channel] = (float) (weightedColour[channel] + colours[colour][channel] * gen.responsibilities[colour]);
+					weightedColour[channel] = (float) (weightedColour[channel] + colours[colour][channel]
+							* gen.responsibilities[colour]);
 				}
 			}
 			double sumWeight = 0;
@@ -156,6 +158,7 @@ public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGene
 		DisplayUtilities.display(imageBlended);
 
 	}
+
 	@Override
 	public int dimentions() {
 		return 2;
