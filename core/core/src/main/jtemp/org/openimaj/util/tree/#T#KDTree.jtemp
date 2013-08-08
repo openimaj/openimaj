@@ -1,0 +1,375 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.util.tree;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Stack;
+
+import org.openimaj.util.pair.ObjectDoublePair;
+import org.openimaj.util.queue.BoundedPriorityQueue;
+
+/**
+ * Implementation of a simple KDTree for <code>#t#[]</code>s. Includes
+ * support for range search, neighbour search, and radius search.
+ * <p>
+ * The KDTree allows fast search for points in relatively low-dimension spaces.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class #T#KDTree {
+    private static class KDNode {
+    	int discriminateDim;
+    	#t#[] point;
+    	KDNode left, right;
+
+    	KDNode(#t#[] point, int discriminate) {
+    		this.point = point;
+    		this.left = right = null;
+    		this.discriminateDim = discriminate;
+    	}
+    }
+    
+	KDNode _root;
+
+	/**
+	 * Create an empty KDTree object
+	 */
+	public #T#KDTree() {
+		_root = null;
+	}
+
+	/**
+	 * Create a KDTree object and populate it with the given data.
+	 * 
+	 * @param coords
+	 *            the data to populate the index with.
+	 */
+	public #T#KDTree(Collection<#t#[]> coords) {
+		_root = null;
+		insertAll(coords);
+	}
+
+	/**
+	 * Insert all the points from the given collection into the index.
+	 * 
+	 * @param coords
+	 *            The points to add.
+	 */
+	public void insertAll(Collection<#t#[]> coords) {
+		for (final #t#[] c : coords)
+			insert(c);
+	}
+
+	/**
+	 * Inserts a point into the tree, preserving the spatial ordering.
+	 * 
+	 * @param point
+	 *            Point to insert.
+	 */
+	public void insert(#t#[] point) {
+
+		if (_root == null)
+			_root = new KDNode(point, 0);
+		else {
+			int discriminate;
+			KDNode curNode, tmpNode;
+			double ordinate1, ordinate2;
+
+			curNode = _root;
+
+			do {
+				tmpNode = curNode;
+				discriminate = tmpNode.discriminateDim;
+
+				ordinate1 = point[discriminate];
+				ordinate2 = tmpNode.point[discriminate];
+
+				if (ordinate1 > ordinate2)
+					curNode = tmpNode.right;
+				else
+					curNode = tmpNode.left;
+			} while (curNode != null);
+
+			if (++discriminate >= point.length)
+				discriminate = 0;
+
+			if (ordinate1 > ordinate2)
+				tmpNode.right = new KDNode(point, discriminate);
+			else
+				tmpNode.left = new KDNode(point, discriminate);
+		}
+	}
+
+	/**
+	 * Determines if a point is contained within a given k-dimensional bounding
+	 * box.
+	 */
+	static final boolean isContained(
+			#t#[] point, #t#[] lower, #t#[] upper)
+	{
+		double ordinate1, ordinate2, ordinate3;
+
+		for (int i = 0; i < point.length; i++) {
+			ordinate1 = point[i];
+			ordinate2 = lower[i];
+			ordinate3 = upper[i];
+
+			if (ordinate1 < ordinate2 || ordinate1 > ordinate3)
+				return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Searches the tree for all points contained within the bounding box
+	 * defined by the given upper and lower extremes
+	 * 
+	 * @param lowerExtreme
+	 * @param upperExtreme
+	 * @return the points within the given bounds
+	 */
+	public List<#t#[]> rangeSearch(#t#[] lowerExtreme, #t#[] upperExtreme) {
+		final ArrayList<#t#[]> results = new ArrayList<#t#[]>();
+		final Stack<KDNode> stack = new Stack<KDNode>();
+		KDNode tmpNode;
+		int discriminate;
+		double ordinate1, ordinate2;
+
+		if (_root == null)
+			return results;
+
+		stack.push(_root);
+
+		while (!stack.empty()) {
+			tmpNode = stack.pop();
+			discriminate = tmpNode.discriminateDim;
+
+			ordinate1 = tmpNode.point[discriminate];
+			ordinate2 = lowerExtreme[discriminate];
+
+			if (ordinate1 > ordinate2 && tmpNode.left != null)
+				stack.push(tmpNode.left);
+
+			ordinate2 = upperExtreme[discriminate];
+
+			if (ordinate1 < ordinate2 && tmpNode.right != null)
+				stack.push(tmpNode.right);
+
+			if (isContained(tmpNode.point, lowerExtreme, upperExtreme))
+				results.add(tmpNode.point);
+		}
+
+		return results;
+	}
+
+	protected static final double distance(#t#[] a, #t#[] b) {
+		double s = 0;
+
+		for (int i = 0; i < a.length; i++) {
+			final double fa = a[i];
+			final double fb = b[i];
+			s += (fa - fb) * (fa - fb);
+		}
+		return s;
+	}
+
+	/**
+	 * Find the nearest neighbour. Only one neighbour will be returned - if
+	 * multiple neighbours share the same location, or are equidistant, then
+	 * this might not be the one you expect.
+	 * 
+	 * @param query
+	 *            query coordinate
+	 * @return nearest neighbour
+	 */
+	public ObjectDoublePair<#t#[]> findNearestNeighbour(#t#[] query) {
+		final Stack<KDNode> stack = walkdown(query);
+		final ObjectDoublePair<#t#[]> state = new ObjectDoublePair<#t#[]>();
+		state.first = stack.peek().point;
+		state.second = distance(query, state.first);
+
+		if (state.second == 0)
+			return state;
+
+		while (!stack.isEmpty()) {
+			final KDNode current = stack.pop();
+
+			checkSubtree(current, query, state);
+		}
+
+		return state;
+	}
+
+	/**
+	 * Find the K nearest neighbours.
+	 * 
+	 * @param query
+	 *            query coordinate
+	 * @param k
+	 *            the number of neighbours to find
+	 * @return nearest neighbours
+	 */
+	public List<ObjectDoublePair<#t#[]>> findNearestNeighbours(#t#[] query, int k) {
+		final Stack<KDNode> stack = walkdown(query);
+		final BoundedPriorityQueue<ObjectDoublePair<#t#[]>> state = new BoundedPriorityQueue<ObjectDoublePair<#t#[]>>(
+				k);
+
+		final ObjectDoublePair<#t#[]> initialState = new ObjectDoublePair<#t#[]>();
+		initialState.first = stack.peek().point;
+		initialState.second = distance(query, initialState.first);
+		state.add(initialState);
+
+		while (!stack.isEmpty()) {
+			final KDNode current = stack.pop();
+
+			checkSubtreeK(current, query, state, k);
+		}
+
+		return state.toOrderedListDestructive();
+	}
+
+	/*
+	 * Check a subtree for a closer match
+	 */
+	private void checkSubtree(KDNode node, #t#[] query, ObjectDoublePair<#t#[]> state) {
+		if (node == null)
+			return;
+
+		final double dist = distance(query, node.point);
+		if (dist < state.second) {
+			state.first = node.point;
+			state.second = dist;
+		}
+
+		if (state.second == 0)
+			return;
+
+		final double d = node.point[node.discriminateDim] - query[node.discriminateDim];
+		if (d * d > state.second) {
+			// check subtree
+			final double ordinate1 = query[node.discriminateDim];
+			final double ordinate2 = node.point[node.discriminateDim];
+
+			if (ordinate1 > ordinate2)
+				checkSubtree(node.right, query, state);
+			else
+				checkSubtree(node.left, query, state);
+		} else {
+			checkSubtree(node.left, query, state);
+			checkSubtree(node.right, query, state);
+		}
+	}
+
+	private void checkSubtreeK(KDNode node, #t#[] query, PriorityQueue<ObjectDoublePair<#t#[]>> state, int k) {
+		if (node == null)
+			return;
+
+		final double dist = distance(query, node.point);
+
+		boolean cont = false;
+		for (final ObjectDoublePair<#t#[]> s : state)
+			if (s.first.equals(node.point)) {
+				cont = true;
+				break;
+			}
+
+		if (!cont) {
+			if (state.size() < k) {
+				// collect this node
+				final ObjectDoublePair<#t#[]> s = new ObjectDoublePair<#t#[]>();
+				s.first = node.point;
+				s.second = dist;
+				state.add(s);
+			} else if (dist < state.peek().second) {
+				// replace last node
+				final ObjectDoublePair<#t#[]> s = state.poll();
+				s.first = node.point;
+				s.second = dist;
+				state.add(s);
+			}
+		}
+
+		final double d = node.point[node.discriminateDim] - query[node.discriminateDim];
+		if (d * d > state.peek().second) {
+			// check subtree
+			final double ordinate1 = query[node.discriminateDim];
+			final double ordinate2 = node.point[node.discriminateDim];
+
+			if (ordinate1 > ordinate2)
+				checkSubtreeK(node.right, query, state, k);
+			else
+				checkSubtreeK(node.left, query, state, k);
+		} else {
+			checkSubtreeK(node.left, query, state, k);
+			checkSubtreeK(node.right, query, state, k);
+		}
+	}
+
+	/*
+	 * walk down the tree until we hit a leaf, and return the path taken
+	 */
+	private Stack<KDNode> walkdown(#t#[] point) {
+		if (_root == null)
+			return null;
+		else {
+			final Stack<KDNode> stack = new Stack<KDNode>();
+			int discriminate;
+			KDNode curNode, tmpNode;
+			double ordinate1, ordinate2;
+
+			curNode = _root;
+
+			do {
+				tmpNode = curNode;
+				stack.push(tmpNode);
+				if (tmpNode.point == point)
+					return stack;
+				discriminate = tmpNode.discriminateDim;
+
+				ordinate1 = point[discriminate];
+				ordinate2 = tmpNode.point[discriminate];
+
+				if (ordinate1 > ordinate2)
+					curNode = tmpNode.right;
+				else
+					curNode = tmpNode.left;
+			} while (curNode != null);
+
+			if (++discriminate >= point.length)
+				discriminate = 0;
+
+			return stack;
+		}
+	}
+}
