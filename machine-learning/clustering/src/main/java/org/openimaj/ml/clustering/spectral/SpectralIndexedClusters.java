@@ -29,7 +29,17 @@ public class SpectralIndexedClusters extends IndexClusters {
 		return valvects.firstObject();
 	}
 
+	/**
+	 * @return eigenvectors
+	 */
 	public double[][] eigenVectors() {
 		return valvects.getSecondObject();
+	}
+
+	/**
+	 * @return the eigenvectors and values
+	 */
+	public IndependentPair<double[], double[][]> getValVect() {
+		return this.valvects;
 	}
 }

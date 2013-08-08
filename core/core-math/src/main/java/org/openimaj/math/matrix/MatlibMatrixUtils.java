@@ -1,6 +1,9 @@
 package org.openimaj.math.matrix;
 
 
+import com.jmatio.types.MLArray;
+import com.jmatio.types.MLDouble;
+
 import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
@@ -217,6 +220,21 @@ public class MatlibMatrixUtils {
 			}
 		}
 
+		return ret;
+	}
+
+	/**
+	 * @param m
+	 * @return a {@link MLDouble} for matlab
+	 */
+	public static MLDouble asMatlab(Matrix m){
+		double[][] retArr = new double[m.rowCount()][m.columnCount()];
+		for (int i = 0; i < retArr.length; i++) {
+			for (int j = 0; j < retArr[i].length; j++) {
+				retArr[i][j] = m.get(i, j);
+			}
+		}
+		MLDouble ret = new MLDouble("out", retArr);
 		return ret;
 	}
 

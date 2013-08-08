@@ -29,6 +29,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+  <groupId>org.la4j</groupId>
+  <artifactId>la4j</artifactId>
+  <version>0.4.0</version>
+</dependency>
+    <dependency>
       <groupId>com.googlecode.matrix-toolkits-java</groupId>
       <artifactId>mtj</artifactId>
       <version>0.9.14</version>

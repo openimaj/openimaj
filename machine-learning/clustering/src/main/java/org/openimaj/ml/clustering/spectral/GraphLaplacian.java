@@ -30,6 +30,7 @@ public abstract class GraphLaplacian{
 
 		int i = 0;
 		for (Vector row : adj.rows()) {
+			row.put(i, 1); 
 			degree.put(i, i, row.sum());
 			i++;
 		}
@@ -82,10 +83,33 @@ public abstract class GraphLaplacian{
 		public Mode direction() {
 			return Mode.FORWARD;
 		}
+	}
+	
+	/**
+	 * The symmetric normalised Laplacian is defined as:
+	 * L = D - W
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 *
+	 */
+	public static class Unnormalised extends GraphLaplacian{
+		@Override
+		public SparseMatrix laplacian(SparseMatrix adj, DiagonalMatrix degree) {
+			SparseMatrix ret = MatlibMatrixUtils.minusInplace(
+				degree,
+				adj
+			);
+			return ret;
+		}
 
+		@Override
+		public Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd) {
+			return new FBEigenIterator(Mode.FORWARD, evd);
+		}
 
-
-
+		@Override
+		public Mode direction() {
+			return Mode.FORWARD;
+		}
 	}
 
 	/**
