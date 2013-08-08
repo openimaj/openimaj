@@ -28,33 +28,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.openimaj.math.statistics.distribution;
-import Jama.Matrix;
 
+import java.util.Random;
+
+import Jama.Matrix;
 
 /**
  * A single multidimensional Gaussian
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
-public class MultivariateGaussian {
+public class MultivariateGaussian extends AbstractMultivariateDistribution {
 	Matrix covar;
 	Matrix mean;
 	int N;
-	
+
 	Matrix inv_covar;
 	double pdf_const_factor;
-	
+	private Matrix chol;
+
 	protected MultivariateGaussian(int ndims) {
 		N = ndims;
 		mean = new Matrix(1, ndims);
 		covar = new Matrix(ndims, ndims);
 	}
-	
+
 	/**
 	 * Construct the Gaussian with the provided center and covariance
-	 * @param mean centre of the Gaussian
-	 * @param covar covariance of the Gaussian
+	 * 
+	 * @param mean
+	 *            centre of the Gaussian
+	 * @param covar
+	 *            covariance of the Gaussian
 	 */
 	public MultivariateGaussian(Matrix mean, Matrix covar) {
 		N = mean.getColumnDimension();
@@ -62,89 +68,99 @@ public class MultivariateGaussian {
 		this.covar = covar;
 		cacheValues();
 	}
-	
+
 	protected void cacheValues() {
 		inv_covar = covar.inverse();
 		pdf_const_factor = 1.0 / (Math.pow((2 * Math.PI), N) * Math.sqrt(covar.det()));
+
+		chol = covar.chol().getL();
 	}
-	
+
 	/**
 	 * Estimate a multidimensional Gaussian from the data
-	 * @param samples the data
+	 * 
+	 * @param samples
+	 *            the data
 	 * @return the Gaussian with the best fit to the data
 	 */
 	public static MultivariateGaussian estimate(float[][] samples) {
-		int nsamples = samples.length;
-		int ndims = samples[0].length; 
-		
-		MultivariateGaussian gauss = new MultivariateGaussian(ndims);
-		
-		//mean
-		for (int j=0; j<nsamples; j++) {
-			for (int i=0; i<ndims; i++) {
+		final int nsamples = samples.length;
+		final int ndims = samples[0].length;
+
+		final MultivariateGaussian gauss = new MultivariateGaussian(ndims);
+
+		// mean
+		for (int j = 0; j < nsamples; j++) {
+			for (int i = 0; i < ndims; i++) {
 				gauss.mean.set(0, i, gauss.mean.get(0, i) + samples[j][i]);
 			}
 		}
-		for (int i=0; i<ndims; i++) {
+		for (int i = 0; i < ndims; i++) {
 			gauss.mean.set(0, i, gauss.mean.get(0, i) / nsamples);
 		}
-		
-		//covar
-		for (int i=0; i<ndims; i++) {
-			for (int j=0; j<ndims; j++) {
+
+		// covar
+		for (int i = 0; i < ndims; i++) {
+			for (int j = 0; j < ndims; j++) {
 				double qij = 0;
-				
-				for (int k=0; k<nsamples; k++) {
-					qij += (samples[k][i] - gauss.mean.get(0, i)) * (samples[k][j] - gauss.mean.get(0, j)); 
+
+				for (int k = 0; k < nsamples; k++) {
+					qij += (samples[k][i] - gauss.mean.get(0, i)) * (samples[k][j] - gauss.mean.get(0, j));
 				}
-				
+
 				gauss.covar.set(i, j, qij / (nsamples - 1));
 			}
 		}
-		
+
 		gauss.cacheValues();
-		
+
 		return gauss;
 	}
-	
+
 	/**
-	 * Get the probability for a given point in space
-	 * relative to the PDF represented by this Gaussian.
+	 * Get the probability for a given point in space relative to the PDF
+	 * represented by this Gaussian.
 	 * 
-	 * @param sample the point
+	 * @param sample
+	 *            the point
 	 * @return the probability
 	 */
-	public double estimateProbability(float[] sample) {
-		Matrix xm = new Matrix(1, N);
-		for (int i=0; i<N; i++) xm.set(0, i, sample[i] - mean.get(0, i));
-		
-		Matrix xmt = xm.transpose();
-		
-		double v = xm.times(inv_covar.times(xmt)).get(0, 0);
-		
+	@Override
+	public double estimateProbability(double[] sample) {
+		final Matrix xm = new Matrix(1, N);
+		for (int i = 0; i < N; i++)
+			xm.set(0, i, sample[i] - mean.get(0, i));
+
+		final Matrix xmt = xm.transpose();
+
+		final double v = xm.times(inv_covar.times(xmt)).get(0, 0);
+
 		return pdf_const_factor * Math.exp(-0.5 * v);
 	}
-	
+
 	/**
-	 * Get the probability for a given point in space
-	 * relative to the PDF represented by this Gaussian.
+	 * Get the probability for a given point in space relative to the PDF
+	 * represented by this Gaussian.
 	 * 
-	 * @param sample the point
+	 * @param sample
+	 *            the point
 	 * @return the probability
 	 */
 	public double estimateProbability(Float[] sample) {
-		Matrix xm = new Matrix(1, N);
-		for (int i=0; i<N; i++) xm.set(0, i, sample[i] - mean.get(0, i));
-		
-		Matrix xmt = xm.transpose();
-		
-		double v = xm.times(inv_covar.times(xmt)).get(0, 0);
-		
+		final Matrix xm = new Matrix(1, N);
+		for (int i = 0; i < N; i++)
+			xm.set(0, i, sample[i] - mean.get(0, i));
+
+		final Matrix xmt = xm.transpose();
+
+		final double v = xm.times(inv_covar.times(xmt)).get(0, 0);
+
 		return pdf_const_factor * Math.exp(-0.5 * v);
 	}
 
 	/**
 	 * Get the covariance
+	 * 
 	 * @return the covariance
 	 */
 	public Matrix getCovar() {
@@ -153,6 +169,7 @@ public class MultivariateGaussian {
 
 	/**
 	 * Get the mean
+	 * 
 	 * @return the mean
 	 */
 	public Matrix getMean() {
@@ -161,9 +178,22 @@ public class MultivariateGaussian {
 
 	/**
 	 * Get the dimensionality
+	 * 
 	 * @return number of dimensions
 	 */
 	public int getDims() {
 		return N;
-	}	
+	}
+
+	@Override
+	public double[] sample(Random rng) {
+		final Matrix vec = new Matrix(N, 1);
+
+		for (int i = 0; i < N; i++)
+			vec.set(i, 0, rng.nextGaussian());
+
+		final Matrix result = this.mean.transpose().plus(chol.times(vec));
+
+		return result.getArray()[0];
+	}
 }
