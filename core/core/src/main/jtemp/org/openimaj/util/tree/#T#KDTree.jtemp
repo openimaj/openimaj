@@ -78,6 +78,17 @@ public class #T#KDTree {
 		_root = null;
 		insertAll(coords);
 	}
+	
+	/**
+	 * Create a KDTree object and populate it with the given data.
+	 * 
+	 * @param coords
+	 *            the data to populate the index with.
+	 */
+	public #T#KDTree(#t#[][] coords) {
+		_root = null;
+		insertAll(coords);
+	}
 
 	/**
 	 * Insert all the points from the given collection into the index.
@@ -86,6 +97,17 @@ public class #T#KDTree {
 	 *            The points to add.
 	 */
 	public void insertAll(Collection<#t#[]> coords) {
+		for (final #t#[] c : coords)
+			insert(c);
+	}
+	
+	/**
+	 * Insert all the points from the given collection into the index.
+	 * 
+	 * @param coords
+	 *            The points to add.
+	 */
+	public void insertAll(#t#[][] coords) {
 		for (final #t#[] c : coords)
 			insert(c);
 	}
@@ -178,12 +200,12 @@ public class #T#KDTree {
 			ordinate1 = tmpNode.point[discriminate];
 			ordinate2 = lowerExtreme[discriminate];
 
-			if (ordinate1 > ordinate2 && tmpNode.left != null)
+			if (ordinate1 >= ordinate2 && tmpNode.left != null)
 				stack.push(tmpNode.left);
 
 			ordinate2 = upperExtreme[discriminate];
 
-			if (ordinate1 < ordinate2 && tmpNode.right != null)
+			if (ordinate1 <= ordinate2 && tmpNode.right != null)
 				stack.push(tmpNode.right);
 
 			if (isContained(tmpNode.point, lowerExtreme, upperExtreme))
@@ -243,7 +265,7 @@ public class #T#KDTree {
 	public List<ObjectDoublePair<#t#[]>> findNearestNeighbours(#t#[] query, int k) {
 		final Stack<KDNode> stack = walkdown(query);
 		final BoundedPriorityQueue<ObjectDoublePair<#t#[]>> state = new BoundedPriorityQueue<ObjectDoublePair<#t#[]>>(
-				k);
+				k, ObjectDoublePair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
 		final ObjectDoublePair<#t#[]> initialState = new ObjectDoublePair<#t#[]>();
 		initialState.first = stack.peek().point;
@@ -371,5 +393,34 @@ public class #T#KDTree {
 
 			return stack;
 		}
+	}
+	
+	/**
+	 * Find all the points within the given radius of the given point
+	 * 
+	 * @param centre
+	 *            the centre point
+	 * @param radius
+	 *            the radius
+	 * @return the points
+	 */
+	public List<#t#[]> radiusSearch(#t#[] centre, #t# radius) {
+		final #t#[] lower = centre.clone();
+		final #t#[] upper = centre.clone();
+
+		for (int i = 0; i < centre.length; i++) {
+			lower[i] -= radius;
+			upper[i] += radius;
+		}
+
+		final List<#t#[]> rangeList = rangeSearch(lower, upper);
+		final List<#t#[]> radiusList = new ArrayList<#t#[]>();
+		final double radSq = radius * radius;
+		for (final #t#[] r : rangeList) {
+			if (distance(centre, r) < radSq)
+				radiusList.add(r);
+		}
+
+		return radiusList;
 	}
 }

@@ -30,6 +30,7 @@
 package org.openimaj.util.pair;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import gnu.trove.list.array.T#T#ArrayList;
@@ -42,6 +43,34 @@ import gnu.trove.list.array.T#T#ArrayList;
  * @param <Q> type of first object
  */
 public class Object#T#Pair<Q> {
+	/**
+     * Comparator for comparing the second element of a {@link Object#T#Pair} in ascending order.
+     */
+	public static final Comparator<Object#T#Pair<?>> SECOND_ITEM_ASCENDING_COMPARATOR = new Comparator<Object#T#Pair<?>>() {
+    	@Override
+		public int compare(Object#T#Pair<?> o1, Object#T#Pair<?> o2) {
+			if (o1.second < o2.second)
+				return -1;
+			if (o1.second > o2.second)
+				return 1;
+			return 0;
+		}
+	};
+
+	/**
+     * Comparator for comparing the second element of a {@link Object#T#Pair} in descending order.
+     */
+	public static final Comparator<Object#T#Pair<?>> SECOND_ITEM_DESCENDING_COMPARATOR = new Comparator<Object#T#Pair<?>>() {
+    	@Override
+		public int compare(Object#T#Pair<?> o1, Object#T#Pair<?> o2) {
+			if (o1.second < o2.second)
+				return 1;
+			if (o1.second > o2.second)
+				return -1;
+			return 0;
+		}
+	};
+    
 	/**
    	 * The first element of the pair  
  	 */

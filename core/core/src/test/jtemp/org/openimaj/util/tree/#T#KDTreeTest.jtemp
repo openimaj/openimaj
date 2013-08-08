@@ -1,0 +1,136 @@
+package org.openimaj.util.tree;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.openimaj.util.pair.ObjectDoublePair;
+
+/**
+ * Tests for the {@link #T#KDTree}
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class #T#KDTreeTest {
+	private #t#[][] data;
+	private #T#KDTree kd;
+
+	/**
+	 * Setup
+	 */
+	@Before
+	public void setup() {
+		this.data = new #t#[][] {
+				{ 10, 10 },
+				{ 0, 0 },
+				{ 1, 0 },
+				{ 0, 1 },
+				{ 1, 1 }
+		};
+
+		this.kd = new #T#KDTree(data);
+	}
+
+	/**
+	 * Tests for range search
+	 */
+	@Test
+	public void testRange() {
+		final List<#t#[]> r1 = kd.rangeSearch(new #t#[] { 0, 0 }, new #t#[] { 2, 2 });
+		assertEquals(4, r1.size());
+
+		final List<#t#[]> r2 = kd.rangeSearch(new #t#[] { 0, 0 }, new #t#[] { 1, 1 });
+		assertEquals(4, r2.size());
+
+		final List<#t#[]> r3 = kd.rangeSearch(new #t#[] { 5, 5 }, new #t#[] { 15, 15 });
+		assertEquals(1, r3.size());
+
+		final List<#t#[]> r4 = kd.rangeSearch(new #t#[] { 0, 0 }, new #t#[] { 10, 10 });
+		assertEquals(5, r4.size());
+	}
+
+	/**
+	 * Test for the nearest neighbour
+	 */
+	@Test
+	public void testNN() {
+		for (final #t#[] d : data) {
+			final ObjectDoublePair<#t#[]> r = kd.findNearestNeighbour(d);
+			testArrayEquals(d, r.first);
+			assertEquals(0, r.second, 0.000001);
+		}
+
+		final #t#[] p1 = { 11, 11 };
+		final ObjectDoublePair<#t#[]> r = kd.findNearestNeighbour(p1);
+		testArrayEquals(new #t#[] { 10, 10 }, r.first);
+		assertEquals(2 * 1 * 1, r.second, 0.000001);
+
+	}
+
+	/**
+	 * Test for the k nearest neighbour
+	 */
+	@Test
+	public void testKNN() {
+		final #t#[] p1 = { 11, 11 };
+		final ObjectDoublePair<#t#[]> r = kd.findNearestNeighbours(p1, 1).get(0);
+		testArrayEquals(new #t#[] { 10, 10 }, r.first);
+		assertEquals(2 * 1 * 1, r.second, 0.000001);
+
+		final #t#[] p2 = { 0, 0 };
+		final List<ObjectDoublePair<#t#[]>> nn = kd.findNearestNeighbours(p2, 4);
+		assertEquals(4, nn.size());
+		testArrayEquals(new #t#[] { 0, 0 }, nn.get(0).first);
+		assertEquals(0, nn.get(0).second, 0.000001);
+
+		if (nn.get(1).first == data[2]) {
+			testArrayEquals(data[3], nn.get(2).first);
+		} else {
+			testArrayEquals(data[2], nn.get(2).first);
+		}
+		testArrayEquals(data[4], nn.get(3).first);
+	}
+
+	/**
+	 * Tests for range search
+	 */
+	@Test
+	public void testRadius() {
+		final List<#t#[]> r1 = kd.radiusSearch(new #t#[] { 0, 0 }, (#t#) 10);
+		assertEquals(4, r1.size());
+
+		final List<#t#[]> r2 = kd.radiusSearch(new #t#[] { 10, 10 }, (#t#) 14);
+		assertEquals(4, r2.size());
+
+		final List<#t#[]> r3 = kd.radiusSearch(new #t#[] { 10, 10 }, (#t#) 5);
+		assertEquals(1, r3.size());
+	}
+	
+	protected void testArrayEquals(float[] a, float[] b) {
+        assertArrayEquals(a, b, 0.0000001f);
+	}
+	
+	protected void testArrayEquals(double[] a, double[] b) {
+        assertArrayEquals(a, b, 0.0000001);
+	}
+	
+	protected void testArrayEquals(int[] a, int[] b) {
+        assertArrayEquals(a, b);
+	}
+	
+	protected void testArrayEquals(short[] a, short[] b) {
+        assertArrayEquals(a, b);
+	}
+	
+	protected void testArrayEquals(long[] a, long[] b) {
+        assertArrayEquals(a, b);
+	}
+	
+	protected void testArrayEquals(byte[] a, byte[] b) {
+        assertArrayEquals(a, b);
+	}
+}
