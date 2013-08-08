@@ -1025,16 +1025,17 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 
 	/**
-	 * Get the pixel with the minimum value. Returns an {@link FValuePixel}
+	 * Get the pixel with the maximum value. Returns an {@link FValuePixel}
 	 * which contains the location and value of the pixel. If there are multiple
 	 * pixels with the same value then the first is returned. Note that this
 	 * method assumes all pixel values are greater than 0.
 	 * 
-	 * @return The minimum pixel as an {@link FValuePixel}.
+	 * @return the maximum pixel as an {@link FValuePixel}.
 	 */
 	public FValuePixel maxPixel()
 	{
 		final FValuePixel max = new FValuePixel(-1, -1);
+		max.value = -Float.MAX_VALUE;
 
 		for (int y = 0; y < this.height; y++) {
 			for (int x = 0; x < this.width; x++) {
@@ -1069,12 +1070,12 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 
 	/**
-	 * Get the pixel with the maximum value. Returns an {@link FValuePixel}
+	 * Get the pixel with the minimum value. Returns an {@link FValuePixel}
 	 * which contains the location and value of the pixel. If there are multiple
 	 * pixels with the same value then the first is returned. Note that this
 	 * method assumes all pixel values are greater than 0.
 	 * 
-	 * @return the maximum pixel as an {@link FValuePixel}.
+	 * @return The minimum pixel as an {@link FValuePixel}.
 	 */
 	public FValuePixel minPixel()
 	{
