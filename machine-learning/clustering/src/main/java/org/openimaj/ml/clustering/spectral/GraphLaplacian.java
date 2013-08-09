@@ -30,7 +30,7 @@ public abstract class GraphLaplacian{
 
 		int i = 0;
 		for (Vector row : adj.rows()) {
-			row.put(i, 1); 
+			row.put(i, 1); // Forces diagonal to be exactly similar
 			degree.put(i, i, row.sum());
 			i++;
 		}
