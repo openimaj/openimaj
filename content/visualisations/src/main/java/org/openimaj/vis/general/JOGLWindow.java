@@ -96,7 +96,7 @@ public class JOGLWindow
 	{
 		// Get the OpenGL profile and its capabilities.
 		// Tries to get OpenGL 3
-		final GLProfile glp = GLProfile.get( GLProfile.GL3 );
+		final GLProfile glp = GLProfile.get( GLProfile.GL2 );
 		final GLCapabilities caps = new GLCapabilities( glp );
 
 		// Get the display
