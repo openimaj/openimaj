@@ -1,14 +1,13 @@
 package org.openimaj.math.matrix;
 
 
-import com.jmatio.types.MLArray;
-import com.jmatio.types.MLDouble;
-
 import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
 import ch.akuhn.matrix.Vector.Entry;
+
+import com.jmatio.types.MLDouble;
 
 /**
  * Some helpful operations on {@link Matrix} instances
@@ -207,6 +206,16 @@ public class MatlibMatrixUtils {
 		return mat;
 	}
 
+	/**
+	 * Extract the submatrix of the same type of mat 
+	 * 
+	 * @param mat
+	 * @param rowstart
+	 * @param rowend
+	 * @param colstart
+	 * @param colend
+	 * @return new instance
+	 */
 	public static <T extends Matrix> T subMatrix(T mat, int rowstart, int rowend, int colstart, int colend) {
 		@SuppressWarnings("unchecked")
 		T ret = (T) mat.newInstance(rowend - rowstart, colend - colstart);
@@ -238,8 +247,86 @@ public class MatlibMatrixUtils {
 		return ret;
 	}
 
+	/**
+	 * Calculate all 3, used by {@link #min(Matrix)}, {@link #max(Matrix)} and {@link #mean(Matrix)}
+	 * @param mat
+	 * @return the min, max and mean of the provided matrix
+	 */
+	public static double[] minmaxmean(Matrix mat) {
+		double min = Double.MAX_VALUE, max = - Double.MAX_VALUE, mean = 0;
+		double size = mat.rowCount() * mat.columnCount();
+		for (Vector v : mat.rows()) {
+			for (Entry ent : v.entries()) {
+				min = Math.min(min, ent.value);
+				max = Math.max(max, ent.value);
+				mean += ent.value / size;
+			}
+		}
+		return new double[]{min,max,mean};
+	}
+	
+	/**
+	 * uses the first value returned by {@link #minmaxmean(Matrix)}
+	 * @param mat
+	 * @return the min
+	 */
+	public static double min(Matrix mat) {
+		return minmaxmean(mat)[0];
+	}
+	
+	/**
+	 * uses the second value returned by {@link #minmaxmean(Matrix)}
+	 * @param mat
+	 * @return the min
+	 */
+	public static double max(Matrix mat) {
+		return minmaxmean(mat)[1];
+	}
+	
+	/**
+	 * uses the third value returned by {@link #minmaxmean(Matrix)}
+	 * @param mat
+	 * @return the min
+	 */
+	public static double mean(Matrix mat) {
+		return minmaxmean(mat)[2];
+	}
 
-
-
-
+	/**
+	 * @param l
+	 * @param v
+	 * @return performs l - v returning a matrix of type T
+	 */
+	public static<T extends Matrix> T minus(T l, double v) {
+		@SuppressWarnings("unchecked")
+		T ret = (T) l.newInstance(l.rowCount(), l.columnCount());
+		int r = 0;
+		for (Vector vec : l.rows()) {
+			for (Entry ent : vec.entries()) {
+				ret.put(r, ent.index, ent.value - v);
+			}
+			r++;
+		}
+		return ret;
+	}
+	
+	/**
+	 * @param v
+	 * @param l
+	 * @return performs v - l returning a matrix of type T
+	 */
+	public static<T extends Matrix> T minus(double v, T l) {
+		@SuppressWarnings("unchecked")
+		T ret = (T) l.newInstance(l.rowCount(), l.columnCount());
+		for (int i = 0; i < l.rowCount(); i++) {
+			for (int j = 0; j < l.columnCount(); j++) {
+				ret.put(i,j, v - l.get(i,j));
+			}
+		}
+		
+		return ret;
+	}
+	
+	
+	
 }

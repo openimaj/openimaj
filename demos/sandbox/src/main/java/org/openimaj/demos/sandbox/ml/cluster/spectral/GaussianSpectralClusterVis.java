@@ -133,7 +133,7 @@ public class GaussianSpectralClusterVis {
 		
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(
 				new DoubleNNDBSCAN(0.2, 3, new DoubleNearestNeighboursExact.Factory()), 
-				new GraphLaplacian.Normalised()
+				new GraphLaplacian.Unnormalised()
 		);
 //		conf.eigenChooser = new AutoSelectingEigenChooser(30, 0.1);
 		conf.eigenChooser = new HardCodedEigenChooser(10);
