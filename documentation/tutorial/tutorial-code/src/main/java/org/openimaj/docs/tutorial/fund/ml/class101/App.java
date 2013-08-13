@@ -133,7 +133,7 @@ public class App {
 		if (allkeys.size() > 10000)
 			allkeys = allkeys.subList(0, 10000);
 
-		final ByteKMeans km = ByteKMeans.createKDTreeEnsemble(128, 300);
+		final ByteKMeans km = ByteKMeans.createKDTreeEnsemble(300);
 		final DataSource<byte[]> datasource = new LocalFeatureListDataSource<ByteDSIFTKeypoint, byte[]>(allkeys);
 		final ByteCentroidsResult result = km.cluster(datasource);
 

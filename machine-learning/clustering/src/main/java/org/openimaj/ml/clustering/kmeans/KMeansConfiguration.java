@@ -57,11 +57,6 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	public static final int DEFAULT_NUMBER_ITERATIONS = 30;
 
 	/**
-	 * The number of dimensions
-	 */
-	protected int M;
-
-	/**
 	 * The number of clusters
 	 */
 	protected int K;
@@ -88,8 +83,8 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	protected ExecutorService threadpool;
 
 	/**
-	 * Create configuration for data with <code>M</code> dimensions that will
-	 * create <code>K</code> clusters. The algorithm will run for a maximum of
+	 * Create configuration for data that will create <code>K</code> clusters.
+	 * The algorithm will run for a maximum of
 	 * {@link #DEFAULT_NUMBER_ITERATIONS} iterations, and make use of all
 	 * available processors, processing with blocks of
 	 * {@link #DEFAULT_BLOCK_SIZE} vectors.
@@ -99,31 +94,26 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 * or it could be an approximate method, for example based on an ensemble of
 	 * kd-trees.
 	 * 
-	 * @param M
-	 *            number of elements in the data points
 	 * @param K
 	 *            number of clusters to be found
 	 * @param nnFactory
 	 *            the factory for producing the {@link NearestNeighbours}.
 	 */
-	public KMeansConfiguration(int M, int K, NearestNeighboursFactory<? extends NN, DATA> nnFactory) {
-		this(M, K, nnFactory, DEFAULT_NUMBER_ITERATIONS, DEFAULT_BLOCK_SIZE, GlobalExecutorPool.getPool());
+	public KMeansConfiguration(int K, NearestNeighboursFactory<? extends NN, DATA> nnFactory) {
+		this(K, nnFactory, DEFAULT_NUMBER_ITERATIONS, DEFAULT_BLOCK_SIZE, GlobalExecutorPool.getPool());
 	}
 
 	/**
-	 * Create configuration for data with <code>M</code> dimensions that will
-	 * create <code>K</code> clusters. The algorithm will run for a maximum of
-	 * the given number of iterations, and will make use of all available
-	 * processors, processing with blocks of {@link #DEFAULT_BLOCK_SIZE}
-	 * vectors.
+	 * Create configuration for data that will create <code>K</code> clusters.
+	 * The algorithm will run for a maximum of the given number of iterations,
+	 * and will make use of all available processors, processing with blocks of
+	 * {@link #DEFAULT_BLOCK_SIZE} vectors.
 	 * <p>
 	 * The specified {@link NearestNeighboursFactory} determines the actual type
 	 * of k-means that will be performed; it could be exact nearest-neighbours,
 	 * or it could be an approximate method, for example based on an ensemble of
 	 * kd-trees.
 	 * 
-	 * @param M
-	 *            number of elements in the data points.
 	 * @param K
 	 *            number of clusters to be found
 	 * @param nnFactory
@@ -131,24 +121,21 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 * @param niters
 	 *            number of iterations
 	 */
-	public KMeansConfiguration(int M, int K, NearestNeighboursFactory<? extends NN, DATA> nnFactory, int niters) {
-		this(M, K, nnFactory, niters, DEFAULT_BLOCK_SIZE, GlobalExecutorPool.getPool());
+	public KMeansConfiguration(int K, NearestNeighboursFactory<? extends NN, DATA> nnFactory, int niters) {
+		this(K, nnFactory, niters, DEFAULT_BLOCK_SIZE, GlobalExecutorPool.getPool());
 	}
 
 	/**
-	 * Create configuration for data with <code>M</code> dimensions that will
-	 * create <code>K</code> clusters. The algorithm will run for a maximum of
-	 * the given number of iterations, and will make use of the provided
-	 * threadpool, processing with blocks of {@link #DEFAULT_BLOCK_SIZE}
-	 * vectors.
+	 * Create configuration for data that will create <code>K</code> clusters.
+	 * The algorithm will run for a maximum of the given number of iterations,
+	 * and will make use of the provided threadpool, processing with blocks of
+	 * {@link #DEFAULT_BLOCK_SIZE} vectors.
 	 * <p>
 	 * The specified {@link NearestNeighboursFactory} determines the actual type
 	 * of k-means that will be performed; it could be exact nearest-neighbours,
 	 * or it could be an approximate method, for example based on an ensemble of
 	 * kd-trees.
 	 * 
-	 * @param M
-	 *            number of elements in the data points.
 	 * @param K
 	 *            number of clusters to be found
 	 * @param nnFactory
@@ -158,10 +145,10 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 * @param niters
 	 *            number of training iterations
 	 */
-	public KMeansConfiguration(int M, int K, NearestNeighboursFactory<? extends NN, DATA> nnFactory, int niters,
+	public KMeansConfiguration(int K, NearestNeighboursFactory<? extends NN, DATA> nnFactory, int niters,
 			ExecutorService threadpool)
 	{
-		this(M, K, nnFactory, niters, DEFAULT_BLOCK_SIZE, threadpool);
+		this(K, nnFactory, niters, DEFAULT_BLOCK_SIZE, threadpool);
 	}
 
 	/**
@@ -176,8 +163,6 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 * or it could be an approximate method, for example based on an ensemble of
 	 * kd-trees.
 	 * 
-	 * @param M
-	 *            number of elements in the data points.
 	 * @param K
 	 *            number of clusters to be found
 	 * @param nnFactory
@@ -189,10 +174,9 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 * @param niters
 	 *            number of training iterations
 	 */
-	public KMeansConfiguration(int M, int K, NearestNeighboursFactory<? extends NN, DATA> nnFactory, int niters,
+	public KMeansConfiguration(int K, NearestNeighboursFactory<? extends NN, DATA> nnFactory, int niters,
 			int blockSize, ExecutorService threadpool)
 	{
-		this.M = M;
 		this.K = K;
 		this.factory = nnFactory;
 		this.niters = niters;
@@ -206,7 +190,7 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 	 * nearest-neighbours factory must be set before the configuration is used.
 	 */
 	public KMeansConfiguration() {
-		this(0, 0, null);
+		this(0, null);
 	}
 
 	/*
@@ -222,25 +206,6 @@ public class KMeansConfiguration<NN extends NearestNeighbours<DATA, ?, ?>, DATA>
 		} catch (final CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	/**
-	 * Get the dimensionality.
-	 * 
-	 * @return the number of elements in the data points
-	 */
-	public int numDimensions() {
-		return M;
-	}
-
-	/**
-	 * Set the dimensionality.
-	 * 
-	 * @param m
-	 *            the number of elements in the data points
-	 */
-	public void setNumDimensions(int m) {
-		M = m;
 	}
 
 	/**

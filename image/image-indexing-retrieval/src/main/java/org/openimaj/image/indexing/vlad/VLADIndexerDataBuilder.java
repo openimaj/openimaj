@@ -346,7 +346,7 @@ public class VLADIndexerDataBuilder {
 		}
 
 		// Perform clustering
-		final FloatKMeans kmeans = FloatKMeans.createExact(vectors[0].length, numVladCentroids, numIterations);
+		final FloatKMeans kmeans = FloatKMeans.createExact(numVladCentroids, numIterations);
 		final FloatCentroidsResult centroids = kmeans.cluster(vectors);
 
 		return centroids;

@@ -133,7 +133,7 @@ public class #T#KMeansTest {
 	 */
 	@Test
 	public void test#T#KMeans(){
-		#T#KMeans fkm = #T#KMeans.createKDTreeEnsemble(ds.numDimensions(), this.dataSets.size());
+		#T#KMeans fkm = #T#KMeans.createKDTreeEnsemble(this.dataSets.size());
 		fkm.seed(seed);
 		#T#CentroidsResult cluster = fkm.cluster(this.allData);
 		
@@ -164,7 +164,7 @@ public class #T#KMeansTest {
 		
 		RandomInMemory#T#DataSource data = new RandomInMemory#T#DataSource(N, D);
 		
-		#T#KMeans kmeans = #T#KMeans.createKDTreeEnsemble(N, K);
+		#T#KMeans kmeans = #T#KMeans.createKDTreeEnsemble(K);
 
 		kmeans.cluster(data);
 	}

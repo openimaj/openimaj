@@ -63,7 +63,7 @@ public class BatchExtractor {
 			parser.parseArgument(args);
 		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
-			System.err.println("Usage: java -jar LocalFeaturesTool.jar Extractor [options] -i imageFile -o keypointFile");
+			System.err.println("Usage: java -jar LocalFeaturesTool.jar BatchExtractor [options]");
 			parser.printUsage(System.err);
 			return;
 		}
@@ -90,7 +90,7 @@ public class BatchExtractor {
 						IOUtils.writeBinary(options.getOutput(input), kpl);
 					}
 				} catch (final IOException e) {
-
+					System.err.println(e);
 				}
 			}
 		}, pool);

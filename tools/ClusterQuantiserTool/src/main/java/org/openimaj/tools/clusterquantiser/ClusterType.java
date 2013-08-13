@@ -373,7 +373,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 			}
 
 			final KMeansConfiguration<ByteNearestNeighbours, byte[]> conf = new KMeansConfiguration<ByteNearestNeighbours, byte[]>(
-					ndims, K, assigner, I, B, pool);
+					K, assigner, I, B, pool);
 
 			return conf;
 		}
@@ -389,7 +389,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 			}
 
 			final KMeansConfiguration<IntNearestNeighbours, int[]> conf = new KMeansConfiguration<IntNearestNeighbours, int[]>(
-					ndims, K, assigner, I, B, pool);
+					K, assigner, I, B, pool);
 
 			return conf;
 		}
@@ -524,7 +524,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 			}
 
 			final KMeansConfiguration<IntNearestNeighbours, int[]> conf = new KMeansConfiguration<IntNearestNeighbours, int[]>(
-					ndims, K, assigner, I, B, pool);
+					K, assigner, I, B, pool);
 
 			return conf;
 		}

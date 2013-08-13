@@ -67,7 +67,8 @@ public class BatchExtractorOptions extends BaseExtractorOptions {
 	}
 
 	/**
-	 * Get the output file corresponding to the input
+	 * Get the output file corresponding to the input, making directories as
+	 * required
 	 * 
 	 * @param f
 	 *            the input file
@@ -79,7 +80,11 @@ public class BatchExtractorOptions extends BaseExtractorOptions {
 		if (tmp.getName().contains(".")) {
 			outputName = tmp.getName().substring(0, tmp.getName().lastIndexOf("."));
 		}
-		return new File(tmp.getParent(), outputName + outputExt);
+		final File output = new File(tmp.getParent(), outputName + outputExt);
+
+		output.getParentFile().mkdirs();
+
+		return output;
 	}
 
 	/**

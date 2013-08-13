@@ -70,7 +70,7 @@ public final class #T#ProductQuantiserUtilities {
 		final #t#[][] tmp = new #t#[data.length][subDim];
 
 		final #T#NearestNeighbours[] assigners = new #T#NearestNeighbours[numAssigners];
-		final #T#KMeans kmeans = #T#KMeans.createExact(subDim, K, 100);
+		final #T#KMeans kmeans = #T#KMeans.createExact(K, 100);
 
 		for (int i = 0; i < numAssigners; i++) {
 			// copy data

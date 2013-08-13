@@ -67,7 +67,7 @@ public class BoVWExample {
 		// Next we need to cluster the features to build the set of visual
 		// terms. We'll setup the clustering algorithm to create 200 visual
 		// terms using approximate k-means.
-		final ByteKMeans kmeans = ByteKMeans.createKDTreeEnsemble(imageKeypoints.get(imageUrls[0]).vecLength(), 200);
+		final ByteKMeans kmeans = ByteKMeans.createKDTreeEnsemble(200);
 
 		// We need to get the data in the correct format for the clustering.
 		// This can be done manually by copying the raw feature data into an

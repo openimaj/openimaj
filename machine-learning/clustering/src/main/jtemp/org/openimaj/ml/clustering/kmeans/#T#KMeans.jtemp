@@ -340,44 +340,40 @@ import org.openimaj.util.pair.Int#R#Pair;
  	
 	/**
 	 * Convenience method to quickly create an exact {@link #T#KMeans}. All
-	 * parameters other than the dimensionality and number of clusters are set
+	 * parameters other than the number of clusters are set
 	 * at their defaults, but can be manipulated through the configuration
 	 * returned by {@link #getConfiguration()}.
 	 * <p>
 	 * Euclidean distance is used to measure the distance between points.
 	 * 
-	 * @param M
-	 *            the dimensionality of the data being clustered
 	 * @param K
 	 *            the number of clusters
 	 * @return a {@link #T#KMeans} instance configured for exact k-means
 	 */
-	public static #T#KMeans createExact(int M, int K) {
+	public static #T#KMeans createExact(int K) {
 		final KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf =
-				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(M, K, new #T#NearestNeighboursExact.Factory());
+				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(K, new #T#NearestNeighboursExact.Factory());
 
 		return new #T#KMeans(conf);
 	}
 
 	/**
 	 * Convenience method to quickly create an exact {@link #T#KMeans}. All
-	 * parameters other than the dimensionality, number of clusters and number
+	 * parameters other than the number of clusters and number
 	 * of iterations are set at their defaults, but can be manipulated through
 	 * the configuration returned by {@link #getConfiguration()}.
 	 * <p>
 	 * Euclidean distance is used to measure the distance between points.
 	 * 
-	 * @param M
-	 *            the dimensionality of the data being clustered
 	 * @param K
 	 *            the number of clusters
 	 * @param niters
 	 *            maximum number of iterations
 	 * @return a {@link #T#KMeans} instance configured for exact k-means
 	 */
-	public static #T#KMeans createExact(int M, int K, int niters) {
+	public static #T#KMeans createExact(int K, int niters) {
 		final KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf =
-				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(M, K, new #T#NearestNeighboursExact.Factory(), niters);
+				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(K, new #T#NearestNeighboursExact.Factory(), niters);
 
 		return new #T#KMeans(conf);
 	}
@@ -385,22 +381,20 @@ import org.openimaj.util.pair.Int#R#Pair;
 	/**
 	 * Convenience method to quickly create an approximate {@link #T#KMeans}
 	 * using an ensemble of KD-Trees to perform nearest-neighbour lookup. All
-	 * parameters other than the dimensionality and number of clusters are set
+	 * parameters other than the number of clusters are set
 	 * at their defaults, but can be manipulated through the configuration
 	 * returned by {@link #getConfiguration()}. 
 	 * <p>
 	 * Euclidean distance is used to measure the distance between points.
 	 * 
-	 * @param M
-	 *            the dimensionality of the data being clustered
 	 * @param K
 	 *            the number of clusters
 	 * @return a {@link #T#KMeans} instance configured for approximate k-means 
 	 *              using an ensemble of KD-Trees
 	 */
-	public static #T#KMeans createKDTreeEnsemble(int M, int K) {
+	public static #T#KMeans createKDTreeEnsemble(int K) {
 		final KMeansConfiguration<#T#NearestNeighbours, #t#[]> conf =
-				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(M, K, new #T#NearestNeighboursKDTree.Factory());
+				new KMeansConfiguration<#T#NearestNeighbours, #t#[]>(K, new #T#NearestNeighboursKDTree.Factory());
 
 		return new #T#KMeans(conf);
 	}
