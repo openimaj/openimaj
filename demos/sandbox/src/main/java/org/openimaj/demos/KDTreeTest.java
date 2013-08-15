@@ -66,20 +66,23 @@ public class KDTreeTest {
 		Collections.sort(data, comparator);
 		System.out.println("starting");
 
+		final ArrayList<double[]> data2 = new ArrayList<double[]>(data);
+		Collections.shuffle(data2);
+
 		long bft = 0, kdt = 0, akdt = 0;
 		for (int i = 0; i < 100000; i++) {
-			final double[] pt = data.get(i);
+			final double[] pt = data2.get(i);
 
 			final double[] min = { pt[0] - r, pt[1] - r };
 			final double[] max = { pt[0] + r, pt[1] + r };
 
 			final long t1 = System.nanoTime();
-			System.out.println(bruteForceRangeSearch(data, min, max).size());
+			bruteForceRangeSearch(data, min, max);
 			final long t2 = System.nanoTime();
 			// kdtree.rangeSearch(min, max).size();
-			System.out.println(kdtree.coordinateRangeSearch(min, max).size());
+			kdtree.coordinateRangeSearch(min, max);
 			final long t3 = System.nanoTime();
-			System.out.println(altkdtree.rangeSearch(min, max).size());
+			altkdtree.rangeSearch(min, max);
 			final long t4 = System.nanoTime();
 			bft += t2 - t1;
 			kdt += t3 - t2;
