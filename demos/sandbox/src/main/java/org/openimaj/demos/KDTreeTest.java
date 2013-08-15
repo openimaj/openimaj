@@ -7,13 +7,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.openimaj.util.iterator.TextLineIterable;
-import org.openimaj.util.tree.AltDoubleKDTree2;
+import org.openimaj.util.tree.DoubleKDTree;
 
 public class KDTreeTest {
 	static List<double[]> readData() {
 		final List<double[]> ll = new ArrayList<double[]>();
 
-		for (final String s : new TextLineIterable(new File("/Users/jon/training_latlng"))) {
+		for (final String s : new TextLineIterable(new File("/Volumes/SSD/mediaeval13/placing/training_latlng"))) {
 			final String[] p = s.split(" ");
 			try {
 				ll.add(new double[] { Double.parseDouble(p[2]), Double.parseDouble(p[1]) });
@@ -59,9 +59,9 @@ public class KDTreeTest {
 
 		// final DoubleKDTree kdtree = new DoubleKDTree(data);
 		final FastKDTree kdtree = new FastKDTree(data.toArray(new double[data.size()][]),
-				new FastKDTree.RandomisedBestBinFirstMeanSplit());
+				new FastKDTree.BBFMedianSplit());
 
-		final AltDoubleKDTree2 altkdtree = new AltDoubleKDTree2(data);
+		final DoubleKDTree altkdtree = new DoubleKDTree(data);
 
 		Collections.sort(data, comparator);
 		System.out.println("starting");
@@ -73,16 +73,20 @@ public class KDTreeTest {
 		for (int i = 0; i < 100000; i++) {
 			final double[] pt = data2.get(i);
 
+			System.out.println();
+			System.out.println(pt[0] + " " + pt[1]);
+
 			final double[] min = { pt[0] - r, pt[1] - r };
 			final double[] max = { pt[0] + r, pt[1] + r };
 
 			final long t1 = System.nanoTime();
-			bruteForceRangeSearch(data, min, max);
+			// bruteForceRangeSearch(data, min, max);
 			final long t2 = System.nanoTime();
-			// kdtree.rangeSearch(min, max).size();
-			kdtree.coordinateRangeSearch(min, max);
+			// kdtree.coordinateRangeSearch(min, max);
+			System.out.println(kdtree.coordinateRadiusSearch(pt, r).size());
 			final long t3 = System.nanoTime();
-			altkdtree.rangeSearch(min, max);
+			// altkdtree.rangeSearch(min, max);
+			System.out.println(altkdtree.radiusSearch(pt, r).size());
 			final long t4 = System.nanoTime();
 			bft += t2 - t1;
 			kdt += t3 - t2;
