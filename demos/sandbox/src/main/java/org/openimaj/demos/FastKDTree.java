@@ -41,6 +41,32 @@ public class FastKDTree {
 		public IntDoublePair chooseSplit(final double[][] pnts, final IntArrayView inds, int depth);
 	}
 
+	public static class BasicMedianSplit implements SplitChooser {
+		int maxBucketSize = 10;
+
+		public BasicMedianSplit() {
+		}
+
+		public BasicMedianSplit(int maxBucketSize) {
+			this.maxBucketSize = maxBucketSize;
+		}
+
+		@Override
+		public IntDoublePair chooseSplit(double[][] pnts, IntArrayView inds, int depth) {
+			if (inds.size() < maxBucketSize)
+				return null;
+
+			final int dim = depth % pnts[0].length;
+
+			final double[] data = new double[inds.size()];
+			for (int i = 0; i < data.length; i++)
+				data[i] = pnts[inds.getFast(i)][dim];
+			final double median = ArrayUtils.quickSelect(data, data.length / 2);
+
+			return IntDoublePair.pair(dim, median);
+		}
+	}
+
 	/**
 	 * Randomised best-bin-first splitting strategy:
 	 * <ul>
