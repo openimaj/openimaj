@@ -438,4 +438,13 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 		// item was not added
 		return item;
 	}
+
+	/**
+	 * Is the {@link BoundedPriorityQueue} full?
+	 * 
+	 * @return true if full; false otherwise
+	 */
+	public boolean isFull() {
+		return this.maxSize == this.size();
+	}
 }
