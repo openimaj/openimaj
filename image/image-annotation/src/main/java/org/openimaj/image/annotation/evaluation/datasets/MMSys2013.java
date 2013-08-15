@@ -8,12 +8,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListBackedDataset;
 import org.openimaj.data.dataset.ListDataset;
@@ -22,6 +26,7 @@ import org.openimaj.experiment.annotations.DatasetDescription;
 import org.openimaj.image.annotation.evaluation.agreement.CohensKappaInterraterAgreement;
 import org.openimaj.image.annotation.evaluation.agreement.MajorityVoting;
 import org.openimaj.ml.annotation.ScoredAnnotation;
+import org.openimaj.util.iterator.TextLineIterable;
 import org.openimaj.web.flickr.FlickrImage;
 
 /**
@@ -35,6 +40,26 @@ import org.openimaj.web.flickr.FlickrImage;
  *  @created 12 Aug 2013
  *	@version $Author$, $Revision$, $Date$
  */
+@Reference(
+	type = ReferenceType.Inproceedings,
+	author = { "Loni, Babak", "Menendez, Maria", "Georgescu, Mihai", "Galli, Luca", "Massari, Claudio", "Altingovde, Ismail Sengor", "Martinenghi, Davide", "Melenhorst, Mark", "Vliegendhart, Raynor", "Larson, Martha" },
+	title = "Fashion-focused creative commons social dataset",
+	year = "2013",
+	booktitle = "Proceedings of the 4th ACM Multimedia Systems Conference",
+	pages = { "72", "", "77" },
+	url = "http://doi.acm.org/10.1145/2483977.2483984",
+	publisher = "ACM",
+	series = "MMSys '13",
+	customData = {
+		"isbn", "978-1-4503-1894-5",
+		"location", "Oslo, Norway",
+		"numpages", "6",
+		"doi", "10.1145/2483977.2483984",
+		"acmid", "2483984",
+		"address", "New York, NY, USA",
+		"keywords", "crowdsourcing, dataset, fashion, multimedia content analysis"
+	}
+)
 @DatasetDescription(
 	name = "Fashion-Focused Creative Commons Social Dataset",
 	description = "a fashion-focused Creative Commons dataset, which is "
@@ -142,7 +167,103 @@ public class MMSys2013
 	protected String nonExpertDataFile =
 			"Annotations/Annotation_PerImage_NonExperts.csv";
 
+	protected String groundTruthFile =
+			"Annotations/GroundTruth.csv";
+
+	protected String queriesFile =
+			"Metadata/queries.csv";
+
 	/**
+	 * 	Returns the ground truth set.
+	 *	@return The grouped dataset
+	 */
+	public GroupedDataset<String,GroupedDataset<String,ListDataset<Response>,Response>,Response>
+		getGroundTruth()
+	{
+		final GroupedDataset<String,
+		GroupedDataset<String, ListDataset<Response>, Response>,Response>
+			results = new MapBackedDataset<String, GroupedDataset<
+				String,ListDataset<Response>,Response>, MMSys2013.Response>();
+
+
+		// The ground truth dataset doesn't contain categories, sadly - just
+		// the filename and the results. So we need to go and get the categories
+		// for each of the images first. We'll do that from the queries file.
+		final HashMap<Long, String> categoryCache = new HashMap<Long,String>();
+		boolean firstLine = true;
+		for( final String line : new TextLineIterable(new File( this.baseLocation, this.queriesFile )) )
+		{
+			if( !firstLine )
+			{
+				final String[] parts = line.split( ",", -1 );
+
+				// The substrings remove the quotes either side of the value
+				categoryCache.put(
+					Long.parseLong(parts[3].substring(1).substring(0,parts[3].length()-2)),
+					parts[0].substring(1).substring(0,parts[0].length()-2) );
+			}
+
+			firstLine = false;
+		}
+
+		firstLine = true;
+		for( final String line : new TextLineIterable(new File( this.baseLocation, this.groundTruthFile )) )
+		{
+			if( !firstLine )
+			{
+				try
+				{
+					final String[] parts = line.split(",",-1);
+
+					// Get the category for the given image.
+					final String url = parts[0];
+					final FlickrImage fi = FlickrImage.create( new URL(url) );
+					final String cat = categoryCache.get( fi.getId() );
+
+					// Get the category list
+					GroupedDataset<String, ListDataset<Response>, Response>
+						gds = results.get( cat );
+
+					// Check whether we already have a dataset for
+					// the image in this category
+					if( gds == null )
+					{
+						// Create a new dataset for images in this category
+						gds = new MapBackedDataset<String,
+								ListDataset<Response>, Response>();
+						results.put( cat, gds );
+					}
+
+					// See if we have any responses for this image already
+					ListDataset<Response> ids = gds.get( url );
+
+					// If not, create the dataset for this image
+					if( ids == null )
+					{
+						ids = new ListBackedDataset<Response>();
+						gds.put( url, ids );
+					}
+
+					// Get the response for this image and add it
+					final Response rr = new Response(
+							this.parseQR( parts[1] ),
+							this.parseQR( parts[2] ), 1 );
+					ids.add( rr );
+				}
+				catch( final MalformedURLException e )
+				{
+					e.printStackTrace();
+				}
+			}
+
+			firstLine = false;
+		}
+
+		return results;
+	}
+
+	/**
+	 * 	Returns the results from the non-expert turkers.
 	 *	@return The grouped dataset
 	 */
 	public GroupedDataset<String,GroupedDataset<String,
@@ -152,6 +273,7 @@ public class MMSys2013
 	}
 
 	/**
+	 * 	Returns the results from the expert turkers.
 	 *	@return The grouped dataset
 	 */
 	public GroupedDataset<String, GroupedDataset<String,
@@ -357,6 +479,8 @@ public class MMSys2013
 	 */
 	public static void main( final String[] args )
 	{
+		System.out.println(  );
+
 		// Expert annotations for Q1 and Q2
 		final Map<String, List<ScoredAnnotation<QuestionResponse>>> q1r1 =
 				MMSys2013.getAnnotationsQ1( new MMSys2013().getExpertData().get( "Cowboy hat" ) );
@@ -369,7 +493,13 @@ public class MMSys2013
 		final Map<String, List<ScoredAnnotation<QuestionResponse>>> q2r2 =
 				MMSys2013.getAnnotationsQ2( new MMSys2013().getNonExpertData().get( "Cowboy hat" ) );
 
+		// Ground truth data for Q1 and Q2
+		final Map<String, List<ScoredAnnotation<QuestionResponse>>> q1gt =
+				MMSys2013.getAnnotationsQ1( new MMSys2013().getGroundTruth().get( "Cowboy hat") );
+		final Map<String, List<ScoredAnnotation<QuestionResponse>>> q2gt =
+				MMSys2013.getAnnotationsQ2( new MMSys2013().getGroundTruth().get( "Cowboy hat") );
 
+		// Majority voting on the data sets
 		final Map<String, ScoredAnnotation<QuestionResponse>> q1r1mv =
 				MajorityVoting.calculateBasicMajorityVote( q1r1 );
 		final Map<String, ScoredAnnotation<QuestionResponse>> q2r1mv =
@@ -378,8 +508,24 @@ public class MMSys2013
 				MajorityVoting.calculateBasicMajorityVote( q1r2 );
 		final Map<String, ScoredAnnotation<QuestionResponse>> q2r2mv =
 				MajorityVoting.calculateBasicMajorityVote( q2r2 );
+		final Map<String, ScoredAnnotation<QuestionResponse>> q1gtmv =
+				MajorityVoting.calculateBasicMajorityVote( q1gt );
+		final Map<String, ScoredAnnotation<QuestionResponse>> q2gtmv =
+				MajorityVoting.calculateBasicMajorityVote( q2gt );
 
-		System.out.println( "Question 1 agreement: "+CohensKappaInterraterAgreement.calculate( q1r1mv, q1r2mv ) );
-		System.out.println( "Question 2 agreement: "+CohensKappaInterraterAgreement.calculate( q2r1mv, q2r2mv ) );
+		// Agreement output
+		System.out.println( "Question 1 agreement between raters 1 and 2: "+
+				CohensKappaInterraterAgreement.calculate( q1r1mv, q1r2mv ) );
+		System.out.println( "Question 1 agreement between rater 1 and GT: "+
+				CohensKappaInterraterAgreement.calculate( q1r1mv, q1gtmv ) );
+		System.out.println( "Question 1 agreement between rater 2 and GT: "+
+				CohensKappaInterraterAgreement.calculate( q1r2mv, q1gtmv ) );
+
+		System.out.println( "Question 2 agreement between raters 1 and 2: "+
+				CohensKappaInterraterAgreement.calculate( q2r1mv, q2r2mv ) );
+		System.out.println( "Question 2 agreement between rater 1 and GT: "+
+				CohensKappaInterraterAgreement.calculate( q2r1mv, q2gtmv ) );
+		System.out.println( "Question 2 agreement between rater 2 and GT: "+
+				CohensKappaInterraterAgreement.calculate( q2r2mv, q2gtmv ) );
 	}
 }

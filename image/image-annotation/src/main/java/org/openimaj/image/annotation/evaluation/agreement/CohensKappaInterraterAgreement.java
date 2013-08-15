@@ -95,8 +95,9 @@ public class CohensKappaInterraterAgreement
 		double PrE = 0;
 		for( final A ann : answerCountsR1.keySet() )
 		{
+			final Integer i = answerCountsR2.get(ann);
 			final double PrAnnR1 = answerCountsR1.get(ann)/(double)totalCount;
-			final double PrAnnR2 = answerCountsR2.get(ann)/(double)totalCount;
+			final double PrAnnR2 = (i == null?0:i)/(double)totalCount;
 			PrE += PrAnnR1 * PrAnnR2;
 		}
 
