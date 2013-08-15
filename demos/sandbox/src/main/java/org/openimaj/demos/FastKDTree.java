@@ -1,13 +1,21 @@
 package org.openimaj.demos;
 
+import gnu.trove.procedure.TIntObjectProcedure;
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 import org.openimaj.util.array.IntArrayView;
 import org.openimaj.util.pair.DoubleIntPair;
 import org.openimaj.util.pair.IntDoublePair;
 
+import scala.actors.threadpool.Arrays;
 import cern.jet.random.Uniform;
+import cern.jet.random.engine.MersenneTwister;
 
 public class FastKDTree {
 	/**
@@ -32,21 +40,88 @@ public class FastKDTree {
 		public IntDoublePair chooseSplit(final double[][] pnts, final IntArrayView inds, int depth);
 	}
 
-	public static class BestBinFirstMeanSplit implements SplitChooser {
+	/**
+	 * Randomised best-bin-first splitting strategy:
+	 * <ul>
+	 * <li>Nodes with less than a set number of items become leafs.
+	 * <li>Otherwise:
+	 * <ul>
+	 * <li>a sample of the data is taken and the variance across each dimension
+	 * is computed.
+	 * <li>a dimension is chosen randomly from the dimensions with the higest
+	 * variance.
+	 * <li>the mean (computed from the variance sample) is taken as the split
+	 * point.
+	 * </ul>
+	 * </ul>
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static class RandomisedBestBinFirstMeanSplit implements SplitChooser {
 		/**
-		 * Maximum number of items in a leaf
+		 * Maximum number of items in a leaf.
 		 */
 		private static final int maxLeafSize = 14;
 
 		/**
 		 * Maximum number of points of variance estimation; all points used if
-		 * <=0
+		 * <=0.
 		 */
 		private static final int varianceMaxPoints = 128;
 
-		private static final int varest_max_randsz = 5;
+		/**
+		 * Number of dimensions to consider when randomly selecting one with a
+		 * big variance.
+		 */
+		private static final int randomMaxDims = 5;
 
+		/**
+		 * The random source
+		 */
 		private Uniform rng;
+
+		/**
+		 * Construct with the default values of 14 points per leaf (max), 128
+		 * samples for computing variance, and the 5 most varying dimensions
+		 * randomly selected. A new {@link MersenneTwister} is created as the
+		 * source for random numbers.
+		 */
+		public RandomisedBestBinFirstMeanSplit() {
+			this.rng = new Uniform(new MersenneTwister());
+		}
+
+		/**
+		 * Construct with the default values of 14 points per leaf (max), 128
+		 * samples for computing variance, and the 5 most varying dimensions
+		 * randomly selected. A new {@link MersenneTwister} is created as the
+		 * source for random numbers.
+		 * 
+		 * @param uniform
+		 *            the random number source
+		 */
+		public RandomisedBestBinFirstMeanSplit(Uniform uniform) {
+			this.rng = uniform;
+		}
+
+		/**
+		 * Construct with the given values.
+		 * 
+		 * @param maxLeafSize
+		 *            Maximum number of items in a leaf.
+		 * @param varianceMaxPoints
+		 *            Maximum number of points of variance estimation; all
+		 *            points used if <=0.
+		 * @param randomMaxDims
+		 *            Number of dimensions to consider when randomly selecting
+		 *            one with a big variance.
+		 * @param uniform
+		 *            the random number source
+		 */
+		public RandomisedBestBinFirstMeanSplit(int maxLeafSize, int varianceMaxPoints, int randomMaxDims, Uniform uniform)
+		{
+			this.rng = uniform;
+		}
 
 		@Override
 		public IntDoublePair chooseSplit(final double[][] pnts, final IntArrayView inds, int depth) {
@@ -56,31 +131,33 @@ public class FastKDTree {
 			final int D = pnts[0].length;
 
 			// Find mean & variance of each dimension.
-			final double[] sum_x = new double[D];
-			final double[] sum_xx = new double[D];
+			final double[] sumX = new double[D];
+			final double[] sumXX = new double[D];
 
 			final int count = Math.min(inds.size(), varianceMaxPoints);
 			for (int n = 0; n < count; ++n) {
 				for (int d = 0; d < D; ++d) {
-					sum_x[d] += pnts[inds.getFast(n)][d];
-					sum_xx[d] += (pnts[inds.getFast(n)][d] * pnts[inds.getFast(n)][d]);
+					final int i = inds.getFast(n);
+
+					sumX[d] += pnts[i][d];
+					sumXX[d] += (pnts[i][d] * pnts[i][d]);
 				}
 			}
 
-			final DoubleIntPair[] var_dim = new DoubleIntPair[D];
+			final DoubleIntPair[] varPerDim = new DoubleIntPair[D];
 			for (int d = 0; d < D; ++d) {
-				var_dim[d] = new DoubleIntPair();
-				var_dim[d].second = d;
+				varPerDim[d] = new DoubleIntPair();
+				varPerDim[d].second = d;
 
 				if (count <= 1)
-					var_dim[d].first = 0;
+					varPerDim[d].first = 0;
 				else
-					var_dim[d].first = (sum_xx[d] - ((double) 1 / count) * sum_x[d] * sum_x[d]) / (count - 1);
+					varPerDim[d].first = (sumXX[d] - ((double) 1 / count) * sumX[d] * sumX[d]) / (count - 1);
 			}
 
 			// Partial sort makes a BIG difference to the build time.
-			final int nrand = Math.min(varest_max_randsz, D);
-			Sorting.partial_sort(var_dim, 0, nrand, var_dim.length, new BinaryPredicate() {
+			final int nrand = Math.min(randomMaxDims, D);
+			Sorting.partial_sort(varPerDim, 0, nrand, varPerDim.length, new BinaryPredicate() {
 				@Override
 				public boolean apply(Object arg0, Object arg1) {
 					final DoubleIntPair p1 = (DoubleIntPair) arg0;
@@ -94,50 +171,50 @@ public class FastKDTree {
 				}
 			});
 
-			final int randd = var_dim[rng.nextIntFromTo(0, nrand - 1)].second;
+			final int randd = varPerDim[rng.nextIntFromTo(0, nrand - 1)].second;
 
-			return new IntDoublePair(randd, sum_x[randd] / count);
+			return new IntDoublePair(randd, sumX[randd] / count);
 		}
 	}
 
 	/**
 	 * An internal node of the KDTree
 	 */
-	private static class KDTreeNode {
+	public static class KDTreeNode {
 		/**
 		 * Node to the left
 		 */
-		private KDTreeNode left;
+		public KDTreeNode left;
 
 		/**
 		 * Node to the right
 		 */
-		KDTreeNode right;
+		public KDTreeNode right;
 
 		/**
 		 * Splitting value
 		 */
-		double discriminant;
+		public double discriminant;
 
 		/**
 		 * Splitting dimension
 		 */
-		int discriminantDimension;
+		public int discriminantDimension;
 
 		/**
 		 * The minimum bounds of this node
 		 */
-		double[] minBounds;
+		public double[] minBounds;
 
 		/**
 		 * The maximum bounds of this node
 		 */
-		double[] maxBounds;
+		public double[] maxBounds;
 
 		/**
 		 * The leaf only holds the indices of the original data
 		 */
-		int[] indices;
+		public int[] indices;
 
 		/**
 		 * Construct a new node with the given data
@@ -147,19 +224,23 @@ public class FastKDTree {
 		 * @param inds
 		 *            a list of indices that point to the relevant parts of the
 		 *            pnts array that should be used
+		 * @param split
+		 *            the {@link SplitChooser} to use when constructing the tree
 		 */
 		public KDTreeNode(final double[][] pnts, IntArrayView inds, SplitChooser split) {
-			this(pnts, inds, split, 0);
+			this(pnts, inds, split, 0, null, true);
 		}
 
-		private KDTreeNode(final double[][] pnts, IntArrayView inds, SplitChooser split, int depth) {
+		private KDTreeNode(final double[][] pnts, IntArrayView inds, SplitChooser split, int depth, KDTreeNode parent,
+				boolean isLeft)
+		{
 			final IntDoublePair spl = split.chooseSplit(pnts, inds, depth);
 
 			discriminantDimension = spl.first;
 			discriminant = spl.second;
 
-			// shift the inds so that all the data with
-			// data[discriminantDimension] < discriminant
+			// partially sort the inds so that all the data with
+			// data[discriminantDimension] < discriminant is on one side
 			final int N = inds.size();
 			int l = 0;
 			int r = N;
@@ -180,12 +261,78 @@ public class FastKDTree {
 				l = N / 2;
 			}
 
-			left = new KDTreeNode(pnts, inds.subView(0, l), split, depth + 1);
-			right = new KDTreeNode(pnts, inds.subView(l, N), split, depth + 1);
+			// set the bounds of this node
+			if (parent == null) {
+				this.minBounds = new double[pnts[0].length];
+				this.maxBounds = new double[pnts[0].length];
+				Arrays.fill(minBounds, -Double.MAX_VALUE);
+				Arrays.fill(maxBounds, Double.MAX_VALUE);
+			} else {
+				this.minBounds = parent.minBounds.clone();
+				this.maxBounds = parent.maxBounds.clone();
+
+				if (isLeft) {
+					maxBounds[parent.discriminantDimension] = parent.discriminant;
+				} else {
+					minBounds[parent.discriminantDimension] = parent.discriminant;
+				}
+			}
+
+			// create the child nodes
+			left = new KDTreeNode(pnts, inds.subView(0, l), split, depth + 1, this, true);
+			right = new KDTreeNode(pnts, inds.subView(l, N), split, depth + 1, this, false);
 		}
 
-		private boolean isLeaf() {
+		/**
+		 * Test to see if this node is a leaf node (i.e.
+		 * <code>{@link #indices} != null</code>)
+		 * 
+		 * @return true if this is a leaf node; false otherwise
+		 */
+		public boolean isLeaf() {
 			return indices == null;
+		}
+
+		private final boolean inRange(double value, double min, double max) {
+			return (value >= min) && (value <= max);
+		}
+
+		/**
+		 * Test whether the bounds of this node are disjoint from the
+		 * hyperrectangle described by the given bounds.
+		 * 
+		 * @param lowerExtreme
+		 *            the lower bounds of the hyperrectangle
+		 * @param upperExtreme
+		 *            the upper bounds of the hyperrectangle
+		 * @return true if disjoint; false otherwise
+		 */
+		public boolean isDisjointFrom(double[] lowerExtreme, double[] upperExtreme) {
+			for (int i = 0; i < lowerExtreme.length; i++) {
+				if (!(inRange(minBounds[i], lowerExtreme[i], upperExtreme[i]) || inRange(lowerExtreme[i], minBounds[i],
+						maxBounds[i])))
+					return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Test whether the bounds of this node are fully contained by the
+		 * hyperrectangle described by the given bounds.
+		 * 
+		 * @param lowerExtreme
+		 *            the lower bounds of the hyperrectangle
+		 * @param upperExtreme
+		 *            the upper bounds of the hyperrectangle
+		 * @return true if fully contained; false otherwise
+		 */
+		public boolean isContainedBy(double[] lowerExtreme, double[] upperExtreme) {
+			for (int i = 0; i < lowerExtreme.length; i++) {
+				if (minBounds[i] < lowerExtreme[i] || maxBounds[i] > upperExtreme[i])
+					return false;
+			}
+			return true;
 		}
 
 		// static void search(final double[] qu,
@@ -242,5 +389,109 @@ public class FastKDTree {
 	public FastKDTree(double[][] data, SplitChooser split) {
 		this.data = data;
 		this.root = new KDTreeNode(data, new IntArrayView(data.length), split);
+	}
+
+	/**
+	 * Search the tree for all points contained within the bounding box defined
+	 * by the given upper and lower extremes
+	 * 
+	 * @param lowerExtreme
+	 * @param upperExtreme
+	 * @return the points within the given bounds
+	 */
+	public List<double[]> coordinateRangeSearch(double[] lowerExtreme, double[] upperExtreme) {
+		final List<double[]> results = new ArrayList<double[]>();
+
+		rangeSearch(lowerExtreme, upperExtreme, new TIntObjectProcedure<double[]>() {
+			@Override
+			public boolean execute(int a, double[] b) {
+				results.add(b);
+
+				return true;
+			}
+		});
+
+		return results;
+	}
+
+	public void rangeSearch(double[] lowerExtreme, double[] upperExtreme, TIntObjectProcedure<double[]> proc) {
+		final Deque<KDTreeNode> stack = new ArrayDeque<KDTreeNode>();
+
+		if (root == null)
+			return;
+
+		stack.push(root);
+
+		while (!stack.isEmpty()) {
+			final KDTreeNode tmpNode = stack.pop();
+
+			if (tmpNode.isLeaf()) {
+				for (int i = 0; i < tmpNode.indices.length; i++) {
+					final int idx = tmpNode.indices[i];
+					final double[] vec = data[idx];
+					if (isContained(vec, lowerExtreme, upperExtreme))
+						if (!proc.execute(idx, vec))
+							return;
+				}
+			} else {
+
+				if (tmpNode.isDisjointFrom(lowerExtreme, upperExtreme)) {
+					continue;
+				}
+
+				if (tmpNode.isContainedBy(lowerExtreme, upperExtreme)) {
+					reportSubtree(tmpNode, proc);
+				} else {
+					if (tmpNode.left != null)
+						stack.push(tmpNode.left);
+					if (tmpNode.right != null)
+						stack.push(tmpNode.right);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Determines if a point is contained within a given k-dimensional bounding
+	 * box.
+	 */
+	private final boolean isContained(double[] point, double[] lower, double[] upper)
+	{
+		for (int i = 0; i < point.length; i++) {
+			if (point[i] < lower[i] || point[i] > upper[i])
+				return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Report all the child items of the given subtree to the process
+	 * 
+	 * @param root
+	 *            the root of the subtree
+	 * @param proc
+	 *            the process to apply
+	 */
+	private void reportSubtree(KDTreeNode root, TIntObjectProcedure<double[]> proc) {
+		final Deque<KDTreeNode> stack = new ArrayDeque<KDTreeNode>();
+		stack.push(root);
+
+		while (!stack.isEmpty()) {
+			final KDTreeNode tmpNode = stack.pop();
+
+			if (tmpNode.isLeaf()) {
+				for (int i = 0; i < tmpNode.indices.length; i++) {
+					final int idx = tmpNode.indices[i];
+					if (!proc.execute(idx, data[idx]))
+						return;
+				}
+			} else {
+				if (tmpNode.left != null)
+					stack.push(tmpNode.left);
+				if (tmpNode.right != null)
+					stack.push(tmpNode.right);
+			}
+		}
 	}
 }
