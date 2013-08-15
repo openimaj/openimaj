@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.array.IntArrayView;
 import org.openimaj.util.pair.DoubleIntPair;
 import org.openimaj.util.pair.IntDoublePair;
@@ -296,7 +297,7 @@ public class FastKDTree {
 		 * @return true if this is a leaf node; false otherwise
 		 */
 		public boolean isLeaf() {
-			return indices == null;
+			return indices != null;
 		}
 
 		private final boolean inRange(double value, double min, double max) {
@@ -394,7 +395,7 @@ public class FastKDTree {
 
 	public FastKDTree(double[][] data, SplitChooser split) {
 		this.data = data;
-		this.root = new KDTreeNode(data, new IntArrayView(data.length), split);
+		this.root = new KDTreeNode(data, new IntArrayView(ArrayUtils.range(0, data.length - 1)), split);
 	}
 
 	/**
@@ -440,7 +441,6 @@ public class FastKDTree {
 							return;
 				}
 			} else {
-
 				if (tmpNode.isDisjointFrom(lowerExtreme, upperExtreme)) {
 					continue;
 				}
