@@ -1,12 +1,13 @@
 package org.openimaj.demos;
 
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.procedure.TIntObjectProcedure;
+import gnu.trove.procedure.TObjectDoubleProcedure;
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
@@ -483,12 +484,15 @@ public class FastKDTree {
 				// If either partition is empty then the are vectors identical.
 				// Choose the midpoint to keep the O(nlog(n)) performance.
 				if (l == 0 || l == N) {
-					l = N / 2;
+					// l = N / 2;
+					this.discriminant = 0;
+					this.discriminantDimension = 0;
+					this.indices = inds.toArray();
+				} else {
+					// create the child nodes
+					left = new KDTreeNode(pnts, inds.subView(0, l), split, depth + 1, this, true);
+					right = new KDTreeNode(pnts, inds.subView(l, N), split, depth + 1, this, false);
 				}
-
-				// create the child nodes
-				left = new KDTreeNode(pnts, inds.subView(0, l), split, depth + 1, this, true);
-				right = new KDTreeNode(pnts, inds.subView(l, N), split, depth + 1, this, false);
 			}
 		}
 
@@ -581,6 +585,31 @@ public class FastKDTree {
 			@Override
 			public boolean execute(int a, double[] b) {
 				results.add(b);
+
+				return true;
+			}
+		});
+
+		return results;
+	}
+
+	/**
+	 * Search the tree for all points contained within the hyperrectangle
+	 * defined by the given upper and lower extremes.
+	 * 
+	 * @param lowerExtreme
+	 *            the lower extreme of the hyperrectangle
+	 * @param upperExtreme
+	 *            the upper extreme of the hyperrectangle
+	 * @return the points within the given bounds
+	 */
+	public TIntArrayList indexRangeSearch(double[] lowerExtreme, double[] upperExtreme) {
+		final TIntArrayList results = new TIntArrayList();
+
+		rangeSearch(lowerExtreme, upperExtreme, new TIntObjectProcedure<double[]>() {
+			@Override
+			public boolean execute(int a, double[] b) {
+				results.add(a);
 
 				return true;
 			}
@@ -685,17 +714,28 @@ public class FastKDTree {
 		}
 	}
 
+	/**
+	 * Nearest-neighbour search
+	 * 
+	 * @param qu
+	 *            the query point
+	 * @param n
+	 *            the number of neighbours to find
+	 * @return the indices and distances
+	 */
 	public List<IntDoublePair> nearestNeighbours(final double[] qu, int n) {
 		final BoundedPriorityQueue<IntDoublePair> queue = new BoundedPriorityQueue<IntDoublePair>(n,
 				IntDoublePair.SECOND_ITEM_ASCENDING_COMPARATOR);
 
-		searchSubTree(qu, root, queue, -1);
+		searchSubTree(qu, root, queue);
 
 		return queue.toOrderedListDestructive();
 	}
 
 	/**
-	 * Find all the points within the given radius of the given point
+	 * Find all the points within the given radius of the given point.
+	 * Internally this works by finding the points in the hyper-square
+	 * encompassing the hyper-circle and then filtering.
 	 * 
 	 * @param centre
 	 *            the centre point
@@ -703,7 +743,39 @@ public class FastKDTree {
 	 *            the radius
 	 * @return the points
 	 */
-	public List<double[]> radiusSearch2(double[] centre, double radius) {
+	public List<double[]> coordinateRadiusSearch(double[] centre, double radius) {
+		final List<double[]> radiusList = new ArrayList<double[]>();
+
+		coordinateRadiusSearch(centre, radius, new TObjectDoubleProcedure<double[]>() {
+			@Override
+			public boolean execute(double[] a, double b) {
+				radiusList.add(a);
+				return true;
+			}
+		});
+
+		return radiusList;
+	}
+
+	/**
+	 * Find all the points within the given radius of the given point.
+	 * Internally this works by finding the points in the hyper-square
+	 * encompassing the hyper-circle and then filtering. Each valid point that
+	 * is found is reported to the given processor together with its distance
+	 * from the centre.
+	 * <p>
+	 * The search can be stopped early by returning false from the
+	 * {@link TIntObjectProcedure#execute(int, Object)} method.
+	 * 
+	 * @param centre
+	 *            the centre point
+	 * @param radius
+	 *            the radius
+	 * @param proc
+	 *            the process
+	 */
+	public void coordinateRadiusSearch(final double[] centre, double radius, final TObjectDoubleProcedure<double[]> proc)
+	{
 		final double[] lower = centre.clone();
 		final double[] upper = centre.clone();
 
@@ -712,37 +784,20 @@ public class FastKDTree {
 			upper[i] += radius;
 		}
 
-		final List<double[]> rangeList = coordinateRangeSearch(lower, upper);
-		final List<double[]> radiusList = new ArrayList<double[]>(rangeList.size());
 		final double radSq = radius * radius;
-		for (final double[] r : rangeList) {
-			if (distance(centre, r) <= radSq)
-				radiusList.add(r);
-		}
-
-		return radiusList;
-	}
-
-	public List<IntDoublePair> radiusSearch(final double[] qu, double radius) {
-		final double radiusSq = radius * radius;
-
-		final List<IntDoublePair> list = new ArrayList<IntDoublePair>() {
-			private static final long serialVersionUID = 1L;
-
+		rangeSearch(lower, upper, new TIntObjectProcedure<double[]>() {
 			@Override
-			public boolean add(IntDoublePair e) {
-				if (e.second <= radiusSq)
-					return super.add(e);
-				return false;
+			public boolean execute(int idx, double[] point) {
+				final double d = distance(centre, point);
+				if (d <= radSq)
+					return proc.execute(point, d);
+
+				return true;
 			}
-		};
-
-		searchSubTree(qu, root, list, radiusSq);
-
-		return list;
+		});
 	}
 
-	private void searchSubTree(final double[] qu, KDTreeNode cur, Collection<IntDoublePair> queue, double distance) {
+	private void searchSubTree(final double[] qu, KDTreeNode cur, BoundedPriorityQueue<IntDoublePair> queue) {
 		final Deque<KDTreeNode> stack = new ArrayDeque<FastKDTree.KDTreeNode>();
 		while (!cur.isLeaf()) {
 			stack.push(cur);
@@ -767,23 +822,14 @@ public class FastKDTree {
 			cur = stack.pop();
 			final double diff = qu[cur.discriminantDimension] - cur.discriminant;
 
-			boolean searchSubtree = false;
-			if (distance >= 0) {
-				searchSubtree = diff * diff <= distance;
-			} else {
-				final double worstDist = ((BoundedPriorityQueue<IntDoublePair>) queue).peekTail().second;
+			final double worstDist = queue.peekTail().second;
 
-				if (diff * diff <= worstDist || !((BoundedPriorityQueue<IntDoublePair>) queue).isFull()) {
-					searchSubtree = true;
-				}
-			}
-
-			if (searchSubtree) {
+			if (diff * diff <= worstDist || !queue.isFull()) {
 				// need to search subtree
 				if (diff < 0) {
-					searchSubTree(qu, cur.right, queue, distance);
+					searchSubTree(qu, cur.right, queue);
 				} else {
-					searchSubTree(qu, cur.left, queue, distance);
+					searchSubTree(qu, cur.left, queue);
 				}
 			}
 		}
