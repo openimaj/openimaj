@@ -70,8 +70,6 @@ public class CohensKappaInterraterAgreement
 				final A annotation1 = r1a.annotation;
 				final A annotation2 = r2a.annotation;
 
-				System.out.println( totalCount+": Comparing: "+annotation1+" <-> "+annotation2 );
-
 				// Count the agreements
 				if( annotation1.equals( annotation2 ) )
 					agreementCount++;
