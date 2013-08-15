@@ -6,6 +6,7 @@ import jal.objects.Sorting;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
@@ -13,11 +14,21 @@ import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.array.IntArrayView;
 import org.openimaj.util.pair.DoubleIntPair;
 import org.openimaj.util.pair.IntDoublePair;
+import org.openimaj.util.queue.BoundedPriorityQueue;
 
 import scala.actors.threadpool.Arrays;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
+/**
+ * Immutable KD-Tree implementation for double[] data. Allows various
+ * tree-construction strategies to be applied through the
+ * {@link DoubleSplitChooser}. Supports efficient range, radius and
+ * nearest-neighbour search for relatively low dimensional spaces.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
 public class FastKDTree {
 	/**
 	 * Interface for describing how a branch in the KD-Tree should be created
@@ -25,7 +36,7 @@ public class FastKDTree {
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
 	 */
-	public static interface SplitChooser {
+	public static interface DoubleSplitChooser {
 		/**
 		 * Choose the dimension and discriminant on which to split the data.
 		 * 
@@ -35,28 +46,177 @@ public class FastKDTree {
 		 *            the indices of the data under consideration
 		 * @param depth
 		 *            the depth of the current data in the tree
+		 * @param minBounds
+		 *            the minimum bounds
+		 * @param maxBounds
+		 *            the maximum bounds
 		 * @return the dimension and discriminant, or null iff this is a leaf
 		 *         (containing all the points in inds).
 		 */
-		public IntDoublePair chooseSplit(final double[][] pnts, final IntArrayView inds, int depth);
+		public IntDoublePair chooseSplit(final double[][] pnts, final IntArrayView inds, int depth, double[] minBounds,
+				double[] maxBounds);
 	}
 
-	public static class BasicMedianSplit implements SplitChooser {
-		int maxBucketSize = 10;
+	/**
+	 * Basic median split. Each dimension will be split at it's median value in
+	 * turn.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static class BasicMedianSplit implements DoubleSplitChooser {
+		int maxBucketSize = 24;
 
+		/**
+		 * Construct with the default maximum number of items per bucket
+		 */
 		public BasicMedianSplit() {
 		}
 
+		/**
+		 * Construct with the given maximum number of items per bucket
+		 * 
+		 * @param maxBucketSize
+		 *            maximum number of items per bucket
+		 */
 		public BasicMedianSplit(int maxBucketSize) {
 			this.maxBucketSize = maxBucketSize;
 		}
 
 		@Override
-		public IntDoublePair chooseSplit(double[][] pnts, IntArrayView inds, int depth) {
+		public IntDoublePair chooseSplit(double[][] pnts, IntArrayView inds, int depth, double[] minBounds,
+				double[] maxBounds)
+		{
 			if (inds.size() < maxBucketSize)
 				return null;
 
 			final int dim = depth % pnts[0].length;
+
+			final double[] data = new double[inds.size()];
+			for (int i = 0; i < data.length; i++)
+				data[i] = pnts[inds.getFast(i)][dim];
+			final double median = ArrayUtils.quickSelect(data, data.length / 2);
+
+			return IntDoublePair.pair(dim, median);
+		}
+	}
+
+	/**
+	 * Best-bin-first median splitting. Best bin is chosen from the dimension
+	 * with the largest variance (computed from all the data at the node).
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static class BBFMedianSplit implements DoubleSplitChooser {
+		int maxBucketSize = 24;
+
+		/**
+		 * Construct with the default maximum number of items per bucket
+		 */
+		public BBFMedianSplit() {
+		}
+
+		/**
+		 * Construct with the given maximum number of items per bucket
+		 * 
+		 * @param maxBucketSize
+		 *            maximum number of items per bucket
+		 */
+		public BBFMedianSplit(int maxBucketSize) {
+			this.maxBucketSize = maxBucketSize;
+		}
+
+		@Override
+		public IntDoublePair chooseSplit(double[][] pnts, IntArrayView inds, int depth, double[] minBounds,
+				double[] maxBounds)
+		{
+			if (inds.size() < maxBucketSize)
+				return null;
+
+			// Find mean & variance of each dimension.
+			final int D = pnts[0].length;
+			final double[] sumX = new double[D];
+			final double[] sumXX = new double[D];
+			final int count = inds.size();
+
+			for (int n = 0; n < count; ++n) {
+				for (int d = 0; d < D; ++d) {
+					final int i = inds.getFast(n);
+
+					sumX[d] += pnts[i][d];
+					sumXX[d] += (pnts[i][d] * pnts[i][d]);
+				}
+			}
+
+			int dim = 0;
+			double maxVar = (sumXX[0] - ((double) 1 / count) * sumX[0] * sumX[0]) / (count - 1);
+
+			for (int d = 1; d < D; ++d) {
+				final double var = (sumXX[d] - ((double) 1 / count) * sumX[d] * sumX[d]) / (count - 1);
+				if (var > maxVar) {
+					maxVar = var;
+					dim = d;
+				}
+			}
+
+			if (maxVar == 0)
+				return null;
+
+			final double[] data = new double[inds.size()];
+			for (int i = 0; i < data.length; i++)
+				data[i] = pnts[inds.getFast(i)][dim];
+			final double median = ArrayUtils.quickSelect(data, data.length / 2);
+
+			return IntDoublePair.pair(dim, median);
+		}
+	}
+
+	/**
+	 * Approximate best-bin-first median splitting. Best bin is chosen from the
+	 * dimension with the largest range.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+	public static class ApproximateBBFMedianSplit implements DoubleSplitChooser {
+		int maxBucketSize = 24;
+
+		/**
+		 * Construct with the default maximum number of items per bucket
+		 */
+		public ApproximateBBFMedianSplit() {
+		}
+
+		/**
+		 * Construct with the given maximum number of items per bucket
+		 * 
+		 * @param maxBucketSize
+		 *            maximum number of items per bucket
+		 */
+		public ApproximateBBFMedianSplit(int maxBucketSize) {
+			this.maxBucketSize = maxBucketSize;
+		}
+
+		@Override
+		public IntDoublePair chooseSplit(double[][] pnts, IntArrayView inds, int depth, double[] minBounds,
+				double[] maxBounds)
+		{
+			if (inds.size() < maxBucketSize)
+				return null;
+
+			// find biggest range of each dimension
+			int dim = 0;
+			double maxVar = maxBounds[0] - minBounds[0];
+			for (int d = 1; d < pnts[0].length; ++d) {
+				final double var = maxBounds[d] - minBounds[d];
+				if (var > maxVar) {
+					maxVar = var;
+					dim = d;
+				}
+			}
+
+			if (maxVar == 0)
+				return null;
 
 			final double[] data = new double[inds.size()];
 			for (int i = 0; i < data.length; i++)
@@ -85,7 +245,7 @@ public class FastKDTree {
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
 	 */
-	public static class RandomisedBestBinFirstMeanSplit implements SplitChooser {
+	public static class RandomisedBBFMeanSplit implements DoubleSplitChooser {
 		/**
 		 * Maximum number of items in a leaf.
 		 */
@@ -114,7 +274,7 @@ public class FastKDTree {
 		 * randomly selected. A new {@link MersenneTwister} is created as the
 		 * source for random numbers.
 		 */
-		public RandomisedBestBinFirstMeanSplit() {
+		public RandomisedBBFMeanSplit() {
 			this.rng = new Uniform(new MersenneTwister());
 		}
 
@@ -127,7 +287,7 @@ public class FastKDTree {
 		 * @param uniform
 		 *            the random number source
 		 */
-		public RandomisedBestBinFirstMeanSplit(Uniform uniform) {
+		public RandomisedBBFMeanSplit(Uniform uniform) {
 			this.rng = uniform;
 		}
 
@@ -145,13 +305,15 @@ public class FastKDTree {
 		 * @param uniform
 		 *            the random number source
 		 */
-		public RandomisedBestBinFirstMeanSplit(int maxLeafSize, int varianceMaxPoints, int randomMaxDims, Uniform uniform)
+		public RandomisedBBFMeanSplit(int maxLeafSize, int varianceMaxPoints, int randomMaxDims, Uniform uniform)
 		{
 			this.rng = uniform;
 		}
 
 		@Override
-		public IntDoublePair chooseSplit(final double[][] pnts, final IntArrayView inds, int depth) {
+		public IntDoublePair chooseSplit(final double[][] pnts, final IntArrayView inds, int depth, double[] minBounds,
+				double[] maxBounds)
+		{
 			if (inds.size() < maxLeafSize)
 				return null;
 
@@ -252,19 +414,33 @@ public class FastKDTree {
 		 *            a list of indices that point to the relevant parts of the
 		 *            pnts array that should be used
 		 * @param split
-		 *            the {@link SplitChooser} to use when constructing the tree
+		 *            the {@link DoubleSplitChooser} to use when constructing
+		 *            the tree
 		 */
-		public KDTreeNode(final double[][] pnts, IntArrayView inds, SplitChooser split) {
+		public KDTreeNode(final double[][] pnts, IntArrayView inds, DoubleSplitChooser split) {
 			this(pnts, inds, split, 0, null, true);
 		}
 
-		private KDTreeNode(final double[][] pnts, IntArrayView inds, SplitChooser split, int depth, KDTreeNode parent,
+		private KDTreeNode(final double[][] pnts, IntArrayView inds, DoubleSplitChooser split, int depth,
+				KDTreeNode parent,
 				boolean isLeft)
 		{
 			// set the bounds of this node
 			if (parent == null) {
 				this.minBounds = new double[pnts[0].length];
 				this.maxBounds = new double[pnts[0].length];
+
+				Arrays.fill(minBounds, Double.MAX_VALUE);
+				Arrays.fill(maxBounds, -Double.MAX_VALUE);
+
+				for (int y = 0; y < pnts.length; y++) {
+					for (int x = 0; x < pnts[0].length; x++) {
+						if (minBounds[x] > pnts[y][x])
+							minBounds[x] = pnts[y][x];
+						if (maxBounds[x] < pnts[y][x])
+							maxBounds[x] = pnts[y][x];
+					}
+				}
 				Arrays.fill(minBounds, -Double.MAX_VALUE);
 				Arrays.fill(maxBounds, Double.MAX_VALUE);
 			} else {
@@ -278,8 +454,8 @@ public class FastKDTree {
 				}
 			}
 
-			//
-			final IntDoublePair spl = split.chooseSplit(pnts, inds, depth);
+			// test to see where/if we should split
+			final IntDoublePair spl = split.chooseSplit(pnts, inds, depth, minBounds, maxBounds);
 
 			if (spl == null) {
 				// this will be a leaf node
@@ -367,50 +543,6 @@ public class FastKDTree {
 			}
 			return true;
 		}
-
-		// static void search(final double[] qu,
-		// PriorityQueue<DoubleObjectPair<KDTreeNode>> pri_branch,
-		// List<IntDoublePair> nns, boolean[] seen, double[][] pnts, double
-		// mindsq)
-		// {
-		// KDTreeNode cur = this;
-		// KDTreeNode other = null;
-		//
-		// while (!cur.isLeaf()) { // Follow best bin first until we hit a
-		// // leaf
-		// final double diff = qu[cur.discriminantDimension]
-		// - cur.discriminant;
-		//
-		// if (diff < 0) {
-		// other = cur.right;
-		// cur = cur.left;
-		// }
-		// else {
-		// other = cur.left;
-		// cur = cur.right;
-		// }
-		//
-		// pri_branch.add(new DoubleObjectPair<KDTreeNode>(mindsq + diff * diff,
-		// other));
-		// }
-		//
-		// final int[] cur_inds = cur.indices;
-		// final int ncur_inds = cur_inds.length;
-		//
-		// int i;
-		// final double[] dsq = new double[1];
-		// for (i = 0; i < ncur_inds; ++i) {
-		// final int ci = cur_inds[i];
-		// if (!seen[ci]) {
-		// DoubleNearestNeighbours.distanceFunc(qu, new double[][] { pnts[ci] },
-		// dsq);
-		//
-		// nns.add(new IntDoublePair(ci, dsq[0]));
-		//
-		// seen[ci] = true;
-		// }
-		// }
-		// }
 	}
 
 	/** The tree roots */
@@ -419,17 +551,27 @@ public class FastKDTree {
 	/** The underlying data array */
 	public final double[][] data;
 
-	public FastKDTree(double[][] data, SplitChooser split) {
+	/**
+	 * Construct with the given data and splitting strategy
+	 * 
+	 * @param data
+	 *            the data
+	 * @param split
+	 *            the splitting strategy
+	 */
+	public FastKDTree(double[][] data, DoubleSplitChooser split) {
 		this.data = data;
 		this.root = new KDTreeNode(data, new IntArrayView(ArrayUtils.range(0, data.length - 1)), split);
 	}
 
 	/**
-	 * Search the tree for all points contained within the bounding box defined
-	 * by the given upper and lower extremes
+	 * Search the tree for all points contained within the hyperrectangle
+	 * defined by the given upper and lower extremes.
 	 * 
 	 * @param lowerExtreme
+	 *            the lower extreme of the hyperrectangle
 	 * @param upperExtreme
+	 *            the upper extreme of the hyperrectangle
 	 * @return the points within the given bounds
 	 */
 	public List<double[]> coordinateRangeSearch(double[] lowerExtreme, double[] upperExtreme) {
@@ -447,6 +589,22 @@ public class FastKDTree {
 		return results;
 	}
 
+	/**
+	 * Search the tree for all points contained within the hyperrectangle
+	 * defined by the given upper and lower extremes. Each valid point that is
+	 * found is reported to the given processor together with its index in the
+	 * original data.
+	 * <p>
+	 * The search can be stopped early by returning false from the
+	 * {@link TIntObjectProcedure#execute(int, Object)} method.
+	 * 
+	 * @param lowerExtreme
+	 *            the lower extreme of the hyperrectangle
+	 * @param upperExtreme
+	 *            the upper extreme of the hyperrectangle
+	 * @param proc
+	 *            the processor
+	 */
 	public void rangeSearch(double[] lowerExtreme, double[] upperExtreme, TIntObjectProcedure<double[]> proc) {
 		final Deque<KDTreeNode> stack = new ArrayDeque<KDTreeNode>();
 
@@ -525,5 +683,116 @@ public class FastKDTree {
 					stack.push(tmpNode.right);
 			}
 		}
+	}
+
+	public List<IntDoublePair> nearestNeighbours(final double[] qu, int n) {
+		final BoundedPriorityQueue<IntDoublePair> queue = new BoundedPriorityQueue<IntDoublePair>(n,
+				IntDoublePair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+		searchSubTree(qu, root, queue, -1);
+
+		return queue.toOrderedListDestructive();
+	}
+
+	/**
+	 * Find all the points within the given radius of the given point
+	 * 
+	 * @param centre
+	 *            the centre point
+	 * @param radius
+	 *            the radius
+	 * @return the points
+	 */
+	public List<double[]> radiusSearch2(double[] centre, double radius) {
+		final double[] lower = centre.clone();
+		final double[] upper = centre.clone();
+
+		for (int i = 0; i < centre.length; i++) {
+			lower[i] -= radius;
+			upper[i] += radius;
+		}
+
+		final List<double[]> rangeList = coordinateRangeSearch(lower, upper);
+		final List<double[]> radiusList = new ArrayList<double[]>(rangeList.size());
+		final double radSq = radius * radius;
+		for (final double[] r : rangeList) {
+			if (distance(centre, r) <= radSq)
+				radiusList.add(r);
+		}
+
+		return radiusList;
+	}
+
+	public List<IntDoublePair> radiusSearch(final double[] qu, double radius) {
+		final double radiusSq = radius * radius;
+
+		final List<IntDoublePair> list = new ArrayList<IntDoublePair>() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean add(IntDoublePair e) {
+				if (e.second <= radiusSq)
+					return super.add(e);
+				return false;
+			}
+		};
+
+		searchSubTree(qu, root, list, radiusSq);
+
+		return list;
+	}
+
+	private void searchSubTree(final double[] qu, KDTreeNode cur, Collection<IntDoublePair> queue, double distance) {
+		final Deque<KDTreeNode> stack = new ArrayDeque<FastKDTree.KDTreeNode>();
+		while (!cur.isLeaf()) {
+			stack.push(cur);
+
+			final double diff = qu[cur.discriminantDimension] - cur.discriminant;
+
+			if (diff < 0) {
+				cur = cur.left;
+			} else {
+				cur = cur.right;
+			}
+		}
+
+		for (int i = 0; i < cur.indices.length; i++) {
+			final int idx = cur.indices[i];
+			final double[] vec = data[idx];
+			final double dist = distance(qu, vec);
+			queue.add(new IntDoublePair(idx, dist));
+		}
+
+		while (!stack.isEmpty()) {
+			cur = stack.pop();
+			final double diff = qu[cur.discriminantDimension] - cur.discriminant;
+
+			boolean searchSubtree = false;
+			if (distance >= 0) {
+				searchSubtree = diff * diff <= distance;
+			} else {
+				final double worstDist = ((BoundedPriorityQueue<IntDoublePair>) queue).peekTail().second;
+
+				if (diff * diff <= worstDist || !((BoundedPriorityQueue<IntDoublePair>) queue).isFull()) {
+					searchSubtree = true;
+				}
+			}
+
+			if (searchSubtree) {
+				// need to search subtree
+				if (diff < 0) {
+					searchSubTree(qu, cur.right, queue, distance);
+				} else {
+					searchSubTree(qu, cur.left, queue, distance);
+				}
+			}
+		}
+	}
+
+	private double distance(double[] qu, double[] vec) {
+		double d = 0;
+		for (int i = 0; i < qu.length; i++)
+			d += (qu[i] - vec[i]) * (qu[i] - vec[i]);
+		return d;
 	}
 }
