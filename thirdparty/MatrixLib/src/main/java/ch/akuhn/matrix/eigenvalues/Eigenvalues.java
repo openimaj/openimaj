@@ -42,4 +42,11 @@ public class Eigenvalues {
 		return this;
 	}
 	
+	
+	/**
+	 * @return the total number of possible eigen vectors (i.e. the number of rows of the input)
+	 */
+	public int getN(){
+		return n;
+	}
 }

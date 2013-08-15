@@ -48,10 +48,10 @@ public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClu
 		}
 
 		// Solve the spectral clustering for each view
-		final ArrayList<IndependentPair<double[], double[][]>> answers = new ArrayList<IndependentPair<double[], double[][]>>(
-				data.size());
+		final ArrayList<IndependentPair<double[], double[][]>> answers = new ArrayList<IndependentPair<double[], double[][]>>(data.size());
+		PreparedSpectralClustering prep = new PreparedSpectralClustering(conf);
 		for (int i = 0; i < data.size(); i++) {
-			answers.add(dsp.spectralCluster(data.get(i)));
+			answers.add(prep.bestCols(dsp.spectralCluster(data.get(i))));
 		}
 		while (!conf.stop.stop(answers)) {
 			for (int i = 0; i < answers.size(); i++) {
@@ -75,7 +75,7 @@ public class DoubleMultiviewSpectralClustering implements MultiviewSimilarityClu
 				// L + lambda * (Sum_w!=v u_w . u_w^T)
 				MatlibMatrixUtils.plusInplace(laplacian, MatlibMatrixUtils.scaleInplace(ujujSum, conf.lambda));
 				// eig
-				answers.add(i, dsp.bestCols(laplacian));
+				answers.add(i, prep.bestCols(dsp.laplacianEigenVectors(laplacian)));
 			}
 		}
 		// Concatenate the eigen spaces and cluster using the conf clusterer

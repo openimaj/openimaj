@@ -10,7 +10,7 @@ public class RandomBaselineSMEClusterAnalyser implements ClusterAnalyser<RandomB
 	
 	@Override
 	public RandomBaselineSMEAnalysis analyse(int[][] correct, int[][] estimated) {
-		RandomBaselineSMEAnalysis ret = new RandomBaselineSMEAnalysis();
+		RandomBaselineSMEAnalysis ret = new RandomBaselineSMEAnalysis(correct,estimated);
 		ret.stats = new ClusterStatsAnalyser().analyse(correct,estimated);
 		ret.purity = new RandomBaselineClusterAnalyser<PurityClusterAnalyser, PurityAnalysis>(new PurityClusterAnalyser()).analyse(correct, estimated);
 		ret.randIndex = new RandomBaselineClusterAnalyser<RandomIndexClusterAnalyser, RandomIndexAnalysis>(new RandomIndexClusterAnalyser()).analyse(correct, estimated);

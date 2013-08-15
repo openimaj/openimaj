@@ -18,7 +18,7 @@ import ch.akuhn.matrix.eigenvalues.FewEigenvalues;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class AutoSelectingEigenChooser extends EigenChooser {
+public class ChangeDetectingEigenChooser extends EigenChooser {
 
 	private double relativeGap;
 	private double maxSelect;
@@ -27,7 +27,7 @@ public class AutoSelectingEigenChooser extends EigenChooser {
 	 * @param relativeGap the gap between previous and current (treated as absolute if previous value == 0)
 	 * @param maxSelect
 	 */
-	public AutoSelectingEigenChooser(double relativeGap, double maxSelect) {
+	public ChangeDetectingEigenChooser(double relativeGap, double maxSelect) {
 		this.relativeGap = relativeGap;
 		this.maxSelect = maxSelect;
 	}

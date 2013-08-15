@@ -51,7 +51,7 @@ public class DecisionAnalysis implements AnalysisResult{
 	
 	@Override
 	public String toString() {
-		return String.format("P=%2.2f,R=%2.5f",precision(),recall());
+		return String.format("{tp=%d,fp=%d,tn=%d,fn=%d,P=%2.2f,R=%2.5f}",TP,FP,TN,FN,precision(),recall());
 	}
 	
 	/**

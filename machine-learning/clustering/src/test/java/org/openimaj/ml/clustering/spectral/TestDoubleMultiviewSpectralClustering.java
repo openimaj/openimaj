@@ -154,7 +154,7 @@ public class TestDoubleMultiviewSpectralClustering {
 		MultiviewSpectralClusteringConf<double[]> conf = new MultiviewSpectralClusteringConf<double[]>(
 			0.1,inner
 		);
-		conf.eigenChooser = new AutoSelectingEigenChooser(100, 1.0);
+		conf.eigenChooser = new ChangeDetectingEigenChooser(100, 1.0);
 		conf.stop = new StoppingCondition.HardCoded(10);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
 //		DoubleMultiviewSpectralClustering multi = new DoubleMultiviewSpectralClustering(conf);

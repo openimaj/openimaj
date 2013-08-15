@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.openimaj.data.DataSource;
 import org.openimaj.knn.DoubleNearestNeighbours;
+import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.knn.NearestNeighboursFactory;
 import org.openimaj.ml.clustering.DataClusterer;
 import org.openimaj.ml.clustering.SpatialClusterer;
@@ -34,6 +35,9 @@ public class DoubleNNDBSCAN extends DBSCAN implements SpatialClusterer<DoubleDBS
 		this.eps = eps;
 		this.nnf = nnf;
 		this.minPts = minPts;
+	}
+	public DoubleNNDBSCAN(double eps, int minPts) {
+		this(eps,minPts,new DoubleNearestNeighboursExact.Factory());
 	}
 	class NNRegionMode implements RegionMode<IntDoublePair>{
 		double[][] data;

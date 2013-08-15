@@ -2,7 +2,9 @@ package org.openimaj.demos.sandbox.ml.cluster.spectral;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,12 +18,16 @@ import org.apache.log4j.Logger;
 import org.la4j.matrix.Matrices;
 import org.la4j.matrix.sparse.CRSMatrix;
 import org.openimaj.feature.DoubleFV;
+import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.logger.LoggerUtils;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.math.statistics.distribution.Histogram;
 import org.openimaj.ml.clustering.dbscan.DoubleNNDBSCAN;
+import org.openimaj.ml.clustering.spectral.AbsoluteValueEigenChooser;
+import org.openimaj.ml.clustering.spectral.ChangeDetectingEigenChooser;
 import org.openimaj.ml.clustering.spectral.DoubleFVSimilarityFunction;
 import org.openimaj.ml.clustering.spectral.DoubleSpectralClustering;
 import org.openimaj.ml.clustering.spectral.GraphLaplacian;
@@ -78,18 +84,18 @@ public class GaussianSpectralClusterVis {
 	}
 
 	private static final int NGAUSSIANS = 5;
-	private static final double RANGE = 100;
-	private static final int BINS = 1000;
+	protected static final double RANGE = 100;
+	protected static final int BINS = 1000;
 	private static final int POINTS_PER_DIST = 100;
 	protected static final double VAR_MIN = 0.0001d;
 	protected static final double VAR_MAX = 20;
 	private static final boolean LA4JMODE = false;
-	private static double diff;
-	private static Histogram histogram;
-	private static double var = 10d;
-	private static BarVisualisationBasic vis;
+	private double diff;
+	private Histogram histogram;
+	private double var = 10d;
+	private BarVisualisationBasic vis;
 	private static Logger logger = Logger.getLogger(GaussianRandomGenerator.class);
-	private static ChangeListener sliderListener = new ChangeListener() {
+	private ChangeListener sliderListener = new ChangeListener() {
 		@Override
 		public void stateChanged(ChangeEvent e) {
 			double meanProp = (meanSlider.getValue() - meanSlider.getMinimum()) / (double)(meanSlider.getMaximum() - meanSlider.getMinimum());
@@ -102,17 +108,30 @@ public class GaussianSpectralClusterVis {
 			
 		}
 	};
-	private static JSlider meanSlider;
-	private static JSlider varSlider;
-	private static SparseMatrix distanceMat;
-	private static DoubleSpectralClustering dsc;
-	private static List<BarVisualisationBasic> eigenvis;
-	private static BarVisualisationBasic evalvis;
+	private JSlider meanSlider;
+	private JSlider varSlider;
+	private SparseMatrix distanceMat;
+	private DoubleSpectralClustering dsc;
+	private List<BarVisualisationBasic> eigenvis;
+	private BarVisualisationBasic evalvis;
+	private BarVisualisationBasic bvb;
+	protected ArrayList<DoubleFV> fvs;
 	
-	public static void main(String[] args) {
-		LoggerUtils.prepareConsoleLogger();
+	/**
+	 * 
+	 */
+	public GaussianSpectralClusterVis() {
+		initDisplay();
+	}
+	
+	
+
+	protected void initDisplay() {
 		vis = new BarVisualisationBasic(800, 200);
 		evalvis = new BarVisualisationBasic(500, 100);
+		bvb = new BarVisualisationBasic(800, 200);
+		JFrame bvbFrame = bvb.showWindow("Clustered Gaussians");
+		bvbFrame.setLocation(800, bvbFrame.getY());
 		eigenvis = new ArrayList<BarVisualisationBasic>();
 		JFrame win = vis.showWindow("Gaussians");
 		win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -131,20 +150,32 @@ public class GaussianSpectralClusterVis {
 		}
 		diff = RANGE / (NGAUSSIANS + 1);
 		
-		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(
-				new DoubleNNDBSCAN(0.2, 3, new DoubleNearestNeighboursExact.Factory()), 
-				new GraphLaplacian.Unnormalised()
-		);
-//		conf.eigenChooser = new AutoSelectingEigenChooser(30, 0.1);
-		conf.eigenChooser = new HardCodedEigenChooser(10);
+		SpectralClusteringConf<double[]> conf = prepareConf();
+
 		dsc = new DoubleSpectralClustering(conf);
 		
 		prepareControls(controlx,controly);
 		redrawDistributions(true);
+	}
+
+	protected SpectralClusteringConf<double[]> prepareConf() {
+		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(
+				new DoubleNNDBSCAN(0.1, 3, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)), 
+				new GraphLaplacian.Normalised()
+		);
+//		conf.eigenChooser = new AbsoluteValueEigenChooser(0.4, 0.1);
+//		conf.eigenChooser = new ChangeDetectingEigenChooser(30, 0.1);
+		conf.eigenChooser = new AbsoluteValueEigenChooser(0.05, 0.1);
+		return conf;
+	}
+	
+	public static void main(String[] args) {
+		LoggerUtils.prepareConsoleLogger();
+		GaussianSpectralClusterVis gscvis = new GaussianSpectralClusterVis();
 		
 	}
 
-	private static void prepareControls(int x, int y) {
+	private void prepareControls(int x, int y) {
 		JFrame controlFrame = new JFrame();
 		controlFrame.setSize(250, 120);
 		JPanel controlPanel = new JPanel();
@@ -165,7 +196,7 @@ public class GaussianSpectralClusterVis {
 		controlFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	private static void redrawDistributions(boolean recalculate) {
+	private void redrawDistributions(boolean recalculate) {
 		histogram = regenDistributions(recalculate);
 		vis.setData(histogram.values);
 		
@@ -188,12 +219,64 @@ public class GaussianSpectralClusterVis {
 			for (; i < eigenvis.size(); i++) {
 				eigenvis.get(i).setData(new double[vsize]);
 			}
+			
+			
 		}
 		
 		
 	}
 
-	private static IndependentPair<double[], double[][]> extractEigenValues() {
+
+	protected void handleClusters(SpectralIndexedClusters clust) {
+		List<Float[]> clusterColours = RGBColour.randomColours(clust.numClusters());
+		int[] indexColours = new int[this.fvs.size()];
+		for (int i = 0; i < clust.numClusters(); i++) {
+			for (int index : clust.clusters()[i]) {
+				indexColours[index] = i;
+			}
+		}
+		
+		Histogram points = new Histogram(BINS);
+		Map<Integer,Map<Integer,Integer>> colourOptions = new HashMap<Integer,Map<Integer,Integer>>();
+		for (int i = 0; i < this.fvs.size(); i++) {
+			double propGen = this.fvs.get(i).values[0]/RANGE;
+			double genBin = BINS * propGen;
+			int index = (int) genBin;
+			if(index >= 0 && index < BINS){
+				points.values[index]++;
+				Map<Integer, Integer> options = colourOptions.get(index);
+				if(options == null)
+				{
+					colourOptions.put(index, options = new HashMap<Integer,Integer>());
+				}
+				Integer count = options.get(indexColours[i]);
+				if(count == null){
+					count = 0;
+				}
+				options.put(indexColours[i], count+1);
+			}
+		}
+		
+		Float[][] binColours = new Float[BINS][];
+		for (int i = 0; i < binColours.length; i++) {
+			if(colourOptions.containsKey(i)){
+				int maxCount = -Integer.MAX_VALUE;
+				Float[] maxColour = null;
+				for (java.util.Map.Entry<Integer, Integer> colourCounts : colourOptions.get(i).entrySet()) {
+					if(colourCounts.getValue() > maxCount) maxColour = clusterColours.get(colourCounts.getKey());
+				}
+				binColours[i] = maxColour;
+			}
+			else{
+				binColours[i] = RGBColour.BLACK;
+			}
+		}
+		
+		bvb.setInvidiualBarColours(binColours);
+		bvb.setData(points.values);
+	}
+
+	private IndependentPair<double[], double[][]> extractEigenValues() {
 		System.out.println(MatlibMatrixUtils.sparcity(distanceMat));
 		if(LA4JMODE){			
 			CRSMatrix mat = new CRSMatrix(distanceMat.rowCount(),distanceMat.columnCount());
@@ -212,15 +295,16 @@ public class GaussianSpectralClusterVis {
 		else{			
 			
 			SpectralIndexedClusters clust = dsc.cluster(distanceMat);
+			handleClusters(clust);
 			IndependentPair<double[], double[][]> valvec = clust.getValVect();
 			return valvec;
 		}
 	}
 
-	private static Histogram regenDistributions(boolean recalculate) {
+	private Histogram regenDistributions(boolean recalculate) {
 		ArrayList<GaussianDistribution> dist = new ArrayList<GaussianDistribution>();
 		Histogram points = new Histogram(BINS);
-		List<DoubleFV> fvs = new ArrayList<DoubleFV>();
+		this.fvs = new ArrayList<DoubleFV>();
 		for (int i = 0; i < NGAUSSIANS; i++) {
 			int mult = i - (NGAUSSIANS/2);
 			double mean = (RANGE/2) + (mult * diff);

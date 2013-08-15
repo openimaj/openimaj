@@ -52,11 +52,12 @@ public class TestDoubleNormalisedSpecralClustering {
 	@Test
 	public void testSimSpatialCluster(){
 		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
-				0.1, 3,
+				0.5, 3,
 				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN));
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(
 			inner
 		);
+		conf.eigenChooser = new AbsoluteValueEigenChooser(0.2, 0.1);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
 		SparseMatrix mat_norm = normalisedSimilarity();
 		IndexClusters res = clust.cluster(mat_norm);
@@ -69,9 +70,10 @@ public class TestDoubleNormalisedSpecralClustering {
 	@Test
 	public void testSimSpatialClusterInverse(){
 		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
-			0.1, 3, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
+			0.5, 3, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(inner, new GraphLaplacian.Normalised());
+		conf.eigenChooser = new AbsoluteValueEigenChooser(0.2, 0.1);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
  		SparseMatrix mat_norm = normalisedSimilarity();
 		IndexClusters res = clust.cluster(mat_norm);
@@ -87,7 +89,7 @@ public class TestDoubleNormalisedSpecralClustering {
 			0.2, 2, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(inner, new GraphLaplacian.Normalised());
-//		conf.eigenChooser = new HardCodedEigenChooser(3);
+		conf.eigenChooser = new AbsoluteValueEigenChooser(0.95, 0.1);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
 		SparseMatrix mat_norm = normalisedSimilarity(Double.MAX_VALUE);
 		IndexClusters res = clust.cluster(mat_norm);

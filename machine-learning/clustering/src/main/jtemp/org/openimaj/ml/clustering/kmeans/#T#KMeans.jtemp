@@ -398,4 +398,9 @@ import org.openimaj.util.pair.Int#R#Pair;
 
 		return new #T#KMeans(conf);
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s: {K=%d, NN=%s}", this.getClass().getSimpleName(), this.conf.K, this.conf.getNearestNeighbourFactory().getClass().getSimpleName());
+	}
 }

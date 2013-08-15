@@ -11,6 +11,7 @@ import org.openimaj.experiment.evaluation.cluster.processor.Clusterer;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.dbscan.DistanceDBSCAN;
 import org.openimaj.ml.clustering.dbscan.DoubleDBSCANClusters;
 import org.openimaj.ml.clustering.dbscan.DoubleNNDBSCAN;
@@ -66,10 +67,9 @@ public class WineDatasetExperiment {
 	}
 
 	private static DoubleSpectralClustering prepareCSPSpectralClustering(WineDataset ds) {
+		SpatialClusterer<? extends SpatialClusters<double[]>, double[]> cl = null;
 		// Creater the spectral clustering
-		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(
-			null
-		);
+		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(cl );
 		conf.eigenChooser = new EigenChooser() {
 			
 			@Override

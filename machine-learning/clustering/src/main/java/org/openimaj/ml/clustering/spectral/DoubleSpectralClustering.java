@@ -1,19 +1,8 @@
 package org.openimaj.ml.clustering.spectral;
-
-
-
-import java.util.Iterator;
-
 import org.apache.log4j.Logger;
 import org.openimaj.ml.clustering.SimilarityClusterer;
-import org.openimaj.ml.clustering.SpatialClusters;
-import org.openimaj.ml.clustering.IndexClusters;
-import org.openimaj.util.pair.DoubleObjectPair;
-import org.openimaj.util.pair.IndependentPair;
 
 import ch.akuhn.matrix.SparseMatrix;
-import ch.akuhn.matrix.Vector;
-import ch.akuhn.matrix.Vector.Entry;
 import ch.akuhn.matrix.eigenvalues.Eigenvalues;
 
 /**
@@ -36,6 +25,9 @@ public class DoubleSpectralClustering implements SimilarityClusterer<SpectralInd
 		this.conf = conf;
 	}
 	
+	protected DoubleSpectralClustering() {
+	}
+	
 	@Override
 	public SpectralIndexedClusters clusterSimilarity(SparseMatrix sim) {
 		return cluster(sim);
@@ -44,83 +36,44 @@ public class DoubleSpectralClustering implements SimilarityClusterer<SpectralInd
 	@Override
 	public SpectralIndexedClusters cluster(SparseMatrix data) {
 		// Get the laplacian, solve the eigen problem and choose the best 
-		IndependentPair<double[], double[][]> lowestCols = spectralCluster(data);
-		// Using the eigenspace, cluster
-		return eigenspaceCluster(lowestCols);
+		// Use the lowest eigen valued cols as the features, each row is a data item in the reduced feature space
+		Eigenvalues eig = spectralCluster(data);
+		PreparedSpectralClustering prep = new PreparedSpectralClustering(conf);
+		return prep.cluster(eig);
 	}
 
-	protected SpectralIndexedClusters eigenspaceCluster(IndependentPair<double[], double[][]> lowestCols) {
-		// Cluster the rows with the internal spatial clusterer
-		SpatialClusters<double[]> cluster = conf.internal.cluster(lowestCols.getSecondObject());
-		// if the clusters contain the cluster indexes of the training examples use those
-		if(cluster instanceof IndexClusters){
-			IndexClusters clusters = new IndexClusters(((IndexClusters)cluster).clusters());
-			logger.debug(clusters);
-			return new SpectralIndexedClusters(clusters, lowestCols);
-		}
-		// Otherwise attempt to assign values to clusters
-		int[] clustered = cluster.defaultHardAssigner().assign(lowestCols.getSecondObject());
-		// done!
-		return new SpectralIndexedClusters(new IndexClusters(clustered),lowestCols);
-	}
+	
 
-	protected IndependentPair<double[], double[][]> spectralCluster(SparseMatrix data) {
+	protected Eigenvalues spectralCluster(SparseMatrix data) {
 		// Compute the laplacian of the graph
 		final SparseMatrix laplacian = laplacian(data);
+		Eigenvalues eig = laplacianEigenVectors(laplacian);
+		
+		return eig;
+	}
+
+	protected Eigenvalues laplacianEigenVectors(final SparseMatrix laplacian) {
 		// Calculate the eigvectors
-		// Use the lowest eigen valued cols as the features, each row is a data item in the reduced feature space
-		// Also normalise each row
-		IndependentPair<double[], double[][]> lowestCols = bestCols(laplacian);
-		return lowestCols;
+		Eigenvalues eig = conf.eigenChooser.prepare(laplacian, conf.laplacian.direction());
+		eig.run();
+		return eig;
 	}
 
 	protected SparseMatrix laplacian(SparseMatrix data) {
 		return conf.laplacian.laplacian(data);
-	}
-	
-	protected IndependentPair<double[], double[][]> bestCols(final SparseMatrix laplacian) {
-		
-		Eigenvalues eig = conf.eigenChooser.prepare(laplacian, conf.laplacian.direction());
-		eig.run();
-		int eigenVectorSelect = conf.eigenChooser.nEigenVectors(this.conf.laplacian.eigenIterator(eig),laplacian.columnCount());
-		logger.debug("Selected dimensions: " + eigenVectorSelect);
-
-
-		int nrows = eig.vector[0].size();
-		double[][] ret = new double[nrows][eigenVectorSelect];
-		double[] retSum = new double[nrows];
-		double[] eigvals = new double[eigenVectorSelect];
-		int col = 0;
-		// Calculate U matrix (containing n smallests eigen valued columns)
-		for (Iterator<DoubleObjectPair<Vector>> iterator = this.conf.laplacian.eigenIterator(eig); iterator.hasNext();) {
-			DoubleObjectPair<Vector> v = iterator.next();
-			eigvals[col] = v.first;
-			
-			for (Entry d : v.second.entries()) {
-				double elColI = d.value;
-				ret[d.index][col] = elColI;
-				retSum[d.index] += elColI * elColI;
-			}
-			col++;
-			if(col == eigenVectorSelect) break;
-		}
-
-		// normalise rows
-		for (int i = 0; i < ret.length; i++) {
-			double[] row = ret[i];
-			for (int j = 0; j < row.length; j++) {
-				row[j] /= Math.sqrt(retSum[i]);
-			}
-		}
-
-		return IndependentPair.pair(eigvals, ret);
 	}
 
 	@Override
 	public int[][] performClustering(SparseMatrix data) {
 		return this.cluster(data).clusters();
 	}
-
 	
+	@Override
+	public String toString() {
+		return String.format("%s: {Laplacian: %s, EigenChooser: %s, SpatialClusterer: %s}",simpleName(this),simpleName(conf.laplacian),simpleName(conf.eigenChooser),conf.internal);
+	}
 
+	private String simpleName(Object o) {
+		return o.getClass().getSimpleName();
+	}
 }

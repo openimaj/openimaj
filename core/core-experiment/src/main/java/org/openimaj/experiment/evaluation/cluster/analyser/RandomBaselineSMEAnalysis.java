@@ -38,6 +38,21 @@ public class RandomBaselineSMEAnalysis implements AnalysisResult{
 	 */
 	public ClusterStatsAnalysis stats;
 
+	/**
+	 * The correct clustering
+	 */
+	public int[][] correct;
+
+	/**
+	 * The estimation
+	 */
+	public int[][] estimated;
+
+
+	public RandomBaselineSMEAnalysis(int[][] correct, int[][] estimated) {
+		this.correct = correct;
+		this.estimated = estimated;
+	}
 
 	@Override
 	public String getSummaryReport() {
