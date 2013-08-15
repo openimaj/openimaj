@@ -234,33 +234,6 @@ public class FastKDTree {
 		private KDTreeNode(final double[][] pnts, IntArrayView inds, SplitChooser split, int depth, KDTreeNode parent,
 				boolean isLeft)
 		{
-			final IntDoublePair spl = split.chooseSplit(pnts, inds, depth);
-
-			discriminantDimension = spl.first;
-			discriminant = spl.second;
-
-			// partially sort the inds so that all the data with
-			// data[discriminantDimension] < discriminant is on one side
-			final int N = inds.size();
-			int l = 0;
-			int r = N;
-			while (l != r) {
-				if (pnts[inds.getFast(l)][discriminantDimension] < discriminant)
-					l++;
-				else {
-					r--;
-					final int t = inds.getFast(l);
-					inds.setFast(l, inds.getFast(r));
-					inds.setFast(r, t);
-				}
-			}
-
-			// If either partition is empty then the are vectors identical.
-			// Choose the midpoint to keep the O(nlog(n)) performance.
-			if (l == 0 || l == N) {
-				l = N / 2;
-			}
-
 			// set the bounds of this node
 			if (parent == null) {
 				this.minBounds = new double[pnts[0].length];
@@ -278,9 +251,42 @@ public class FastKDTree {
 				}
 			}
 
-			// create the child nodes
-			left = new KDTreeNode(pnts, inds.subView(0, l), split, depth + 1, this, true);
-			right = new KDTreeNode(pnts, inds.subView(l, N), split, depth + 1, this, false);
+			//
+			final IntDoublePair spl = split.chooseSplit(pnts, inds, depth);
+
+			if (spl == null) {
+				// this will be a leaf node
+				indices = inds.toArray();
+			} else {
+				discriminantDimension = spl.first;
+				discriminant = spl.second;
+
+				// partially sort the inds so that all the data with
+				// data[discriminantDimension] < discriminant is on one side
+				final int N = inds.size();
+				int l = 0;
+				int r = N;
+				while (l != r) {
+					if (pnts[inds.getFast(l)][discriminantDimension] < discriminant)
+						l++;
+					else {
+						r--;
+						final int t = inds.getFast(l);
+						inds.setFast(l, inds.getFast(r));
+						inds.setFast(r, t);
+					}
+				}
+
+				// If either partition is empty then the are vectors identical.
+				// Choose the midpoint to keep the O(nlog(n)) performance.
+				if (l == 0 || l == N) {
+					l = N / 2;
+				}
+
+				// create the child nodes
+				left = new KDTreeNode(pnts, inds.subView(0, l), split, depth + 1, this, true);
+				right = new KDTreeNode(pnts, inds.subView(l, N), split, depth + 1, this, false);
+			}
 		}
 
 		/**
