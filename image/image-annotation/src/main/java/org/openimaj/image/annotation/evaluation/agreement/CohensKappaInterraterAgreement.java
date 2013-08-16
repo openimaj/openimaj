@@ -3,7 +3,8 @@
  */
 package org.openimaj.image.annotation.evaluation.agreement;
 
-import java.util.HashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+
 import java.util.Map;
 
 import org.openimaj.ml.annotation.ScoredAnnotation;
@@ -49,8 +50,8 @@ public class CohensKappaInterraterAgreement
 	{
 		int totalCount = 0;
 		int agreementCount = 0;
-		final Map<A,Integer> answerCountsR1 = new HashMap<A, Integer>();
-		final Map<A,Integer> answerCountsR2 = new HashMap<A, Integer>();
+		final TObjectIntHashMap<A> answerCountsR1 = new TObjectIntHashMap<A>();
+		final TObjectIntHashMap<A> answerCountsR2 = new TObjectIntHashMap<A>();
 
 		for( final K subjectKey : rater1.keySet() )
 		{
@@ -75,22 +76,20 @@ public class CohensKappaInterraterAgreement
 					agreementCount++;
 
 				// Count each of the answers for each of the raters
-				// First rater 1
-				Integer a;
-				if( (a = answerCountsR1.get(annotation1)) == null )
-						answerCountsR1.put( annotation1, 1 );
-				else	answerCountsR1.put( annotation1, a+1 );
-				// then rater 2
-				if( (a = answerCountsR2.get(annotation2)) == null )
-						answerCountsR2.put( annotation2, 1 );
-				else	answerCountsR2.put( annotation2, a+1 );
-
+				answerCountsR1.putIfAbsent( annotation1, 0 );
+				answerCountsR2.putIfAbsent( annotation2, 0 );
+				answerCountsR1.increment( annotation1 );
+				answerCountsR2.increment( annotation2 );
+				
 				// Keep a running total
 				totalCount++;
 			}
 		}
+		
+		System.out.println( answerCountsR1 );
 
 		final double PrA = agreementCount / (double)totalCount;
+		System.out.println( PrA );
 
 		double PrE = 0;
 		for( final A ann : answerCountsR1.keySet() )
@@ -100,6 +99,7 @@ public class CohensKappaInterraterAgreement
 			final double PrAnnR2 = (i == null?0:i)/(double)totalCount;
 			PrE += PrAnnR1 * PrAnnR2;
 		}
+		System.out.println( PrE );
 
 		final double kappa = (PrA - PrE) / (1d - PrE);
 
