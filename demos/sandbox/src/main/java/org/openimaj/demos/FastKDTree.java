@@ -8,6 +8,7 @@ import jal.objects.Sorting;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
@@ -17,7 +18,6 @@ import org.openimaj.util.pair.DoubleIntPair;
 import org.openimaj.util.pair.IntDoublePair;
 import org.openimaj.util.queue.BoundedPriorityQueue;
 
-import scala.actors.threadpool.Arrays;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
@@ -801,8 +801,6 @@ public class FastKDTree {
 	 * 
 	 * @param qu
 	 *            the query point
-	 * @param n
-	 *            the number of neighbours to find
 	 * @return the indices and distances
 	 */
 	public IntDoublePair nearestNeighbour(final double[] qu) {
