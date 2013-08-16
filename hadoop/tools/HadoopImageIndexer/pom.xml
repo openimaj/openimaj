@@ -67,7 +67,7 @@
 					</descriptors>
           <archive>
             <manifest>
-              <mainClass>org.openimaj.hadoop.tools.image.indexing.HadoopSiftLSHExtractor</mainClass>
+              <mainClass>org.openimaj.hadoop.tools.image.indexing.SimpleLSHDuplicatesFinder</mainClass>
             </manifest>
           </archive>
         </configuration>

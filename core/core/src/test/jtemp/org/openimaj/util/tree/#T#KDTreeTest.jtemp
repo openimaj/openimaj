@@ -1,3 +1,43 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == DOUBLE); 		
+		}
+		return (m['R'] == FLOAT);
+	}
+***/
 package org.openimaj.util.tree;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -7,7 +47,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.util.pair.ObjectDoublePair;
+import org.openimaj.util.pair.Int#R#Pair;
 
 /**
  * Tests for the {@link #T#KDTree}
@@ -40,17 +80,17 @@ public class #T#KDTreeTest {
 	 */
 	@Test
 	public void testRange() {
-		final List<#t#[]> r1 = kd.rangeSearch(new #t#[] { 0, 0 }, new #t#[] { 2, 2 });
-		assertEquals(4, r1.size());
+		final #t#[][] r1 = kd.coordinateRangeSearch(new #t#[] { 0, 0 }, new #t#[] { 2, 2 });
+		assertEquals(4, r1.length);
 
-		final List<#t#[]> r2 = kd.rangeSearch(new #t#[] { 0, 0 }, new #t#[] { 1, 1 });
-		assertEquals(4, r2.size());
+		final #t#[][] r2 = kd.coordinateRangeSearch(new #t#[] { 0, 0 }, new #t#[] { 1, 1 });
+		assertEquals(4, r2.length);
 
-		final List<#t#[]> r3 = kd.rangeSearch(new #t#[] { 5, 5 }, new #t#[] { 15, 15 });
-		assertEquals(1, r3.size());
+		final #t#[][] r3 = kd.coordinateRangeSearch(new #t#[] { 5, 5 }, new #t#[] { 15, 15 });
+		assertEquals(1, r3.length);
 
-		final List<#t#[]> r4 = kd.rangeSearch(new #t#[] { 0, 0 }, new #t#[] { 10, 10 });
-		assertEquals(5, r4.size());
+		final #t#[][] r4 = kd.coordinateRangeSearch(new #t#[] { 0, 0 }, new #t#[] { 10, 10 });
+		assertEquals(5, r4.length);
 	}
 
 	/**
@@ -59,14 +99,14 @@ public class #T#KDTreeTest {
 	@Test
 	public void testNN() {
 		for (final #t#[] d : data) {
-			final ObjectDoublePair<#t#[]> r = kd.findNearestNeighbour(d);
-			testArrayEquals(d, r.first);
+			final Int#R#Pair r = kd.nearestNeighbour(d);
+			testArrayEquals(d, data[r.first]);
 			assertEquals(0, r.second, 0.000001);
 		}
 
 		final #t#[] p1 = { 11, 11 };
-		final ObjectDoublePair<#t#[]> r = kd.findNearestNeighbour(p1);
-		testArrayEquals(new #t#[] { 10, 10 }, r.first);
+		final Int#R#Pair r = kd.nearestNeighbour(p1);
+		testArrayEquals(new #t#[] { 10, 10 }, data[r.first]);
 		assertEquals(2 * 1 * 1, r.second, 0.000001);
 
 	}
@@ -77,22 +117,22 @@ public class #T#KDTreeTest {
 	@Test
 	public void testKNN() {
 		final #t#[] p1 = { 11, 11 };
-		final ObjectDoublePair<#t#[]> r = kd.findNearestNeighbours(p1, 1).get(0);
-		testArrayEquals(new #t#[] { 10, 10 }, r.first);
+		final Int#R#Pair r = kd.nearestNeighbours(p1, 1).get(0);
+		testArrayEquals(new #t#[] { 10, 10 }, data[r.first]);
 		assertEquals(2 * 1 * 1, r.second, 0.000001);
 
 		final #t#[] p2 = { 0, 0 };
-		final List<ObjectDoublePair<#t#[]>> nn = kd.findNearestNeighbours(p2, 4);
+		final List<Int#R#Pair> nn = kd.nearestNeighbours(p2, 4);
 		assertEquals(4, nn.size());
-		testArrayEquals(new #t#[] { 0, 0 }, nn.get(0).first);
+		testArrayEquals(new #t#[] { 0, 0 }, data[nn.get(0).first]);
 		assertEquals(0, nn.get(0).second, 0.000001);
 
-		if (nn.get(1).first == data[2]) {
-			testArrayEquals(data[3], nn.get(2).first);
+		if (data[nn.get(1).first] == data[2]) {
+			testArrayEquals(data[3], data[nn.get(2).first]);
 		} else {
-			testArrayEquals(data[2], nn.get(2).first);
+			testArrayEquals(data[2], data[nn.get(2).first]);
 		}
-		testArrayEquals(data[4], nn.get(3).first);
+		testArrayEquals(data[4], data[nn.get(3).first]);
 	}
 
 	/**
@@ -100,14 +140,14 @@ public class #T#KDTreeTest {
 	 */
 	@Test
 	public void testRadius() {
-		final List<#t#[]> r1 = kd.radiusSearch(new #t#[] { 0, 0 }, (#t#) 10);
-		assertEquals(4, r1.size());
+		final #t#[][] r1 = kd.coordinateRadiusSearch(new #t#[] { 0, 0 }, (#t#) 10);
+		assertEquals(4, r1.length);
 
-		final List<#t#[]> r2 = kd.radiusSearch(new #t#[] { 10, 10 }, (#t#) 14);
-		assertEquals(4, r2.size());
+		final #t#[][] r2 = kd.coordinateRadiusSearch(new #t#[] { 10, 10 }, (#t#) 14);
+		assertEquals(4, r2.length);
 
-		final List<#t#[]> r3 = kd.radiusSearch(new #t#[] { 10, 10 }, (#t#) 5);
-		assertEquals(1, r3.size());
+		final #t#[][] r3 = kd.coordinateRadiusSearch(new #t#[] { 10, 10 }, (#t#) 5);
+		assertEquals(1, r3.length);
 	}
 	
 	protected void testArrayEquals(float[] a, float[] b) {

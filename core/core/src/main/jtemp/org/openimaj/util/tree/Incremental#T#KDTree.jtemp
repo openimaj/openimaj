@@ -39,14 +39,15 @@ import org.openimaj.util.pair.ObjectDoublePair;
 import org.openimaj.util.queue.BoundedPriorityQueue;
 
 /**
- * Implementation of a simple KDTree for <code>#t#[]</code>s. Includes
- * support for range search, neighbour search, and radius search.
+ * Implementation of a simple incremental KDTree for <code>#t#[]</code>s. Includes
+ * support for range search, neighbour search, and radius search. The tree created 
+ * by this class will usually be rather unbalanced.
  * <p>
  * The KDTree allows fast search for points in relatively low-dimension spaces.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class #T#KDTree {
+public class Incremental#T#KDTree {
     private static class KDNode {
     	int discriminateDim;
     	#t#[] point;
@@ -64,7 +65,7 @@ public class #T#KDTree {
 	/**
 	 * Create an empty KDTree object
 	 */
-	public #T#KDTree() {
+	public Incremental#T#KDTree() {
 		_root = null;
 	}
 
@@ -74,7 +75,7 @@ public class #T#KDTree {
 	 * @param coords
 	 *            the data to populate the index with.
 	 */
-	public #T#KDTree(Collection<#t#[]> coords) {
+	public Incremental#T#KDTree(Collection<#t#[]> coords) {
 		_root = null;
 		insertAll(coords);
 	}
@@ -85,7 +86,7 @@ public class #T#KDTree {
 	 * @param coords
 	 *            the data to populate the index with.
 	 */
-	public #T#KDTree(#t#[][] coords) {
+	public Incremental#T#KDTree(#t#[][] coords) {
 		_root = null;
 		insertAll(coords);
 	}
@@ -182,7 +183,7 @@ public class #T#KDTree {
 	 * @return the points within the given bounds
 	 */
 	public List<#t#[]> rangeSearch(#t#[] lowerExtreme, #t#[] upperExtreme) {
-		final ArrayList<#t#[]> results = new ArrayList<#t#[]>();
+		final ArrayList<#t#[]> results = new ArrayList<#t#[]>(1000);
 		final Stack<KDNode> stack = new Stack<KDNode>();
 		KDNode tmpNode;
 		int discriminate;
@@ -414,11 +415,43 @@ public class #T#KDTree {
 		}
 
 		final List<#t#[]> rangeList = rangeSearch(lower, upper);
-		final List<#t#[]> radiusList = new ArrayList<#t#[]>();
+		final List<#t#[]> radiusList = new ArrayList<#t#[]>(rangeList.size());
 		final double radSq = radius * radius;
 		for (final #t#[] r : rangeList) {
 			if (distance(centre, r) < radSq)
 				radiusList.add(r);
+		}
+
+		return radiusList;
+	}
+	
+	/**
+	 * Find all the points within the given radius of the given point. 
+	 * Returns the distance to the point as well as the point itself. Distance
+	 * is the squared L2 distance.
+	 * 
+	 * @param centre
+	 *            the centre point
+	 * @param radius
+	 *            the radius
+	 * @return the points and distances
+	 */
+	public List<ObjectDoublePair<#t#[]>> radiusDistanceSearch(#t#[] centre, #t# radius) {
+		final #t#[] lower = centre.clone();
+		final #t#[] upper = centre.clone();
+
+		for (int i = 0; i < centre.length; i++) {
+			lower[i] -= radius;
+			upper[i] += radius;
+		}
+
+		final List<#t#[]> rangeList = rangeSearch(lower, upper);
+		final List<ObjectDoublePair<#t#[]>> radiusList = new ArrayList<ObjectDoublePair<#t#[]>>(rangeList.size());
+		final double radSq = radius * radius;
+		for (final #t#[] r : rangeList) {
+			double dist = distance(centre, r);
+			if (dist < radSq)
+				radiusList.add(new ObjectDoublePair<#t#[]>(r, dist));
 		}
 
 		return radiusList;

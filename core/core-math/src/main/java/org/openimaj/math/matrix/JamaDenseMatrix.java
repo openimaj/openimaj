@@ -35,9 +35,9 @@ import Jama.Matrix;
 
 /**
  * Dense matrix wrapper for a JAMA matrix.
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class JamaDenseMatrix extends ch.akuhn.matrix.Matrix {
 	/** The underlying matrix */
@@ -45,7 +45,7 @@ public class JamaDenseMatrix extends ch.akuhn.matrix.Matrix {
 
 	/**
 	 * Construct with matrix. The matrix is retained.
-	 *
+	 * 
 	 * @param matrix
 	 *            The matrix.
 	 */
@@ -55,7 +55,7 @@ public class JamaDenseMatrix extends ch.akuhn.matrix.Matrix {
 
 	/**
 	 * Construct with 2d array of data.
-	 *
+	 * 
 	 * @param values
 	 *            The data.
 	 */
@@ -67,7 +67,7 @@ public class JamaDenseMatrix extends ch.akuhn.matrix.Matrix {
 	protected void assertInvariant() throws IllegalArgumentException {
 		if (matrix.getArray().length == 0)
 			return;
-		int m = matrix.getArray()[0].length;
+		final int m = matrix.getArray()[0].length;
 		for (int n = 0; n < matrix.getArray().length; n++) {
 			if (matrix.getArray()[n].length != m)
 				throw new IllegalArgumentException();
@@ -76,7 +76,7 @@ public class JamaDenseMatrix extends ch.akuhn.matrix.Matrix {
 
 	/**
 	 * Construct with given dimensions.
-	 *
+	 * 
 	 * @param rows
 	 *            number of rows.
 	 * @param columns
@@ -124,18 +124,18 @@ public class JamaDenseMatrix extends ch.akuhn.matrix.Matrix {
 
 	/**
 	 * Fill the elements with a constant value.
-	 *
+	 * 
 	 * @param constant
 	 *            the value to set the elements to.
 	 */
 	public void fill(double constant) {
-		for (double[] row : matrix.getArray())
+		for (final double[] row : matrix.getArray())
 			Arrays.fill(row, constant);
 	}
 
 	/**
 	 * Multiply all elements by a constant.
-	 *
+	 * 
 	 * @param d
 	 *            the multiplication factor.
 	 */

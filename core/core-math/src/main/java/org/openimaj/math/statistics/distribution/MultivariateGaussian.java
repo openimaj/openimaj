@@ -48,10 +48,7 @@ public class MultivariateGaussian extends AbstractMultivariateDistribution {
 	double pdf_const_factor;
 	private Matrix chol;
 
-	protected MultivariateGaussian(int ndims) {
-		N = ndims;
-		mean = new Matrix(1, ndims);
-		covar = new Matrix(ndims, ndims);
+	protected MultivariateGaussian() {
 	}
 
 	/**
@@ -66,6 +63,19 @@ public class MultivariateGaussian extends AbstractMultivariateDistribution {
 		N = mean.getColumnDimension();
 		this.mean = mean;
 		this.covar = covar;
+		cacheValues();
+	}
+
+	/**
+	 * Construct the Gaussian with the zero mean and unit variance
+	 * 
+	 * @param ndims
+	 *            number of dimensions
+	 */
+	public MultivariateGaussian(int ndims) {
+		N = ndims;
+		this.mean = new Matrix(1, N);
+		this.covar = Matrix.identity(N, N);
 		cacheValues();
 	}
 
@@ -87,7 +97,10 @@ public class MultivariateGaussian extends AbstractMultivariateDistribution {
 		final int nsamples = samples.length;
 		final int ndims = samples[0].length;
 
-		final MultivariateGaussian gauss = new MultivariateGaussian(ndims);
+		final MultivariateGaussian gauss = new MultivariateGaussian();
+		gauss.N = ndims;
+		gauss.mean = new Matrix(1, ndims);
+		gauss.covar = new Matrix(ndims, ndims);
 
 		// mean
 		for (int j = 0; j < nsamples; j++) {
@@ -192,7 +205,7 @@ public class MultivariateGaussian extends AbstractMultivariateDistribution {
 		for (int i = 0; i < N; i++)
 			vec.set(i, 0, rng.nextGaussian());
 
-		final Matrix result = this.mean.transpose().plus(chol.times(vec));
+		final Matrix result = this.mean.plus(chol.times(vec).transpose());
 
 		return result.getArray()[0];
 	}

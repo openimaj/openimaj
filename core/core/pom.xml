@@ -78,6 +78,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>vigna.dsi.unimi.it</groupId>
+      <artifactId>jal</artifactId>
+      <version>20031117</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
       <version>1.8.4</version>

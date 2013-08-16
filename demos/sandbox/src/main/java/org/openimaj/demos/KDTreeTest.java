@@ -58,10 +58,10 @@ public class KDTreeTest {
 		final double r = 0.01;
 
 		// final DoubleKDTree kdtree = new DoubleKDTree(data);
-		final FastKDTree kdtree = new FastKDTree(data.toArray(new double[data.size()][]),
-				new FastKDTree.BBFMedianSplit());
+		final DoubleKDTree kdtree = new DoubleKDTree(data.toArray(new double[data.size()][]),
+				new DoubleKDTree.BBFMedianSplit());
 
-		final DoubleKDTree altkdtree = new DoubleKDTree(data);
+		final DoubleKDTree altkdtree = new DoubleKDTree(data.toArray(new double[data.size()][]));
 
 		Collections.sort(data, comparator);
 		System.out.println("starting");

@@ -30,12 +30,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>vigna.dsi.unimi.it</groupId>
-      <artifactId>jal</artifactId>
-      <version>20031117</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
