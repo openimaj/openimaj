@@ -1,12 +1,17 @@
 package org.openimaj.math.matrix;
 
 
+import gov.sandia.cognition.math.matrix.mtj.SparseRowMatrix;
+import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
+import no.uib.cipr.matrix.sparse.SparseVector;
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
 import ch.akuhn.matrix.Vector.Entry;
 
+import com.jmatio.types.MLArray;
 import com.jmatio.types.MLDouble;
 
 /**
@@ -101,6 +106,10 @@ public class MatlibMatrixUtils {
 	public static <T extends Matrix> T minusInplace(DiagonalMatrix D, T A) {
 		double[] Dval = D.getVals();
 		for (int i = 0; i < Dval.length; i++) {
+			Iterable<Entry> rowents = A.row(i).entries();
+			for (Entry entry : rowents) {
+				A.put(i, entry.index, -entry.value);
+			}
 			A.put(i, i, Dval[i] - A.get(i, i));
 		}
 		return A;
@@ -201,6 +210,36 @@ public class MatlibMatrixUtils {
 		for (int i = 0; i < mat.rowCount(); i++) {
 			for (int j = 0; j < mat.columnCount(); j++) {
 				mat.put(i, j, sol.get(i, j));
+			}
+		}
+		return mat;
+	}
+	
+	/**
+	 * @param sol
+	 * @return Dense matrix from a {@link Jama.Matrix}
+	 */
+	public static no.uib.cipr.matrix.Matrix toMTJ(Matrix sol) {
+		no.uib.cipr.matrix.Matrix mat;
+		if(sol instanceof SparseMatrix){
+			FlexCompRowMatrix fmat = new FlexCompRowMatrix(sol.rowCount(), sol.columnCount());
+			int i = 0;
+			for (Vector vec : sol.rows()) {
+				SparseVector x = new SparseVector(vec.size(), vec.used());
+				for (Entry ve : vec.entries()) {
+					x.set(ve.index, ve.value);
+				}
+				fmat.setRow(i, x);
+				i++;
+			}
+			mat = fmat;
+		}
+		else{
+			mat = new no.uib.cipr.matrix.DenseMatrix(sol.rowCount(),sol.columnCount());
+			for (int i = 0; i < sol.rowCount(); i++) {
+				for (int j = 0; j < sol.columnCount(); j++) {
+					mat.set(i, j, sol.get(i, j));
+				}
 			}
 		}
 		return mat;
@@ -325,6 +364,17 @@ public class MatlibMatrixUtils {
 		}
 		
 		return ret;
+	}
+
+	public static Matrix fromMatlab(MLArray mlArray) {
+		Matrix mat = new DenseMatrix(mlArray.getM(), mlArray.getN());
+		MLDouble mlDouble = (MLDouble)mlArray;
+		for (int i = 0; i < mat.rowCount(); i++) {
+			for (int j = 0; j < mat.columnCount(); j++) {
+				mat.put(i, j, mlDouble.get(i, j));
+			}
+		}
+		return mat;
 	}
 	
 	

@@ -2,7 +2,6 @@ package org.openimaj.ml.clustering.spectral;
 
 import java.util.Iterator;
 
-import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -33,33 +32,32 @@ public class AbsoluteValueEigenChooser extends EigenChooser{
 	public int nEigenVectors(Iterator<DoubleObjectPair<Vector>> vals, int totalEigenVectors) {
 		double max = -Double.MAX_VALUE;
 		double[] valids = new double[totalEigenVectors];
-		int i = 0;
+		valids[0] = vals.next().first; // Skip the first item in the calculation of max
+		int i = 1; // start from the second index
 		for (; vals.hasNext();) {
-			valids[i] = vals.next().first;
+			double val = vals.next().first;
+			if(val < 0) break;
+			valids[i] = val;
 			max = Math.max(max, valids[i]);
 			i++;
 		}
-		int count = 1;
-		double first = valids[0];
-		for (int j = 1; j < valids.length; j++) {
+		int maxindex = i+1;
+		int count = 2; // the first and the second must be included
+		double first = valids[1]; // the second is what we compare against
+		for (int j = 2; j < maxindex; j++) {
 			double diff = Math.abs(first - valids[j]);
-			if(diff / max > absoluteGap) break;
+			if(diff / max > absoluteGap) 
+				break;
 			count++;
 		}
 		return count;
 	}
 
 	@Override
-	public FewEigenvalues prepare(final SparseMatrix laplacian, Mode direction) {
+	public FewEigenvalues prepare(final SparseMatrix laplacian) {
 		int total = laplacian.columnCount();
-		if(direction == Mode.FORWARD){
-			FewEigenvalues eig = FewEigenvalues.of(laplacian);
-			return eig.greatest((int) (total*maxSelect));
-		}
-		else{
-			FewEigenvalues eig = FewEigenvalues.of(laplacian);
-			return eig.lowest((int) (total*maxSelect));
-		}
+		FewEigenvalues eig = FewEigenvalues.of(laplacian);
+		return eig.greatest((int) (total*maxSelect));
 	}
 
 }

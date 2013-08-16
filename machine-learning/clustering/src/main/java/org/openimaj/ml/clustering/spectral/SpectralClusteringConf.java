@@ -56,7 +56,7 @@ public class SpectralClusteringConf<DATATYPE>{
 	 */
 	public SpectralClusteringConf(SpatialClusterer<? extends SpatialClusters<DATATYPE>,DATATYPE> internal, int eigK) {
 		this.internal = new DefaultClustererFunction<DATATYPE>(internal);
-		this.laplacian = new GraphLaplacian.Symmetric();
+		this.laplacian = new GraphLaplacian.Normalised();
 		this.eigenChooser = new HardCodedEigenChooser(eigK);
 
 	}
@@ -71,7 +71,7 @@ public class SpectralClusteringConf<DATATYPE>{
 	 */
 	public SpectralClusteringConf(SpatialClusterer<? extends SpatialClusters<DATATYPE>,DATATYPE> internal) {
 		this.internal = new DefaultClustererFunction<DATATYPE>(internal);
-		this.laplacian = new GraphLaplacian.Symmetric();
+		this.laplacian = new GraphLaplacian.Normalised();
 		this.eigenChooser = new ChangeDetectingEigenChooser(100,0.1);
 
 	}
@@ -112,7 +112,7 @@ public class SpectralClusteringConf<DATATYPE>{
 	 */
 	public SpectralClusteringConf(Function<IndependentPair<double[], double[][]>, SpatialClusterer<? extends SpatialClusters<DATATYPE>, DATATYPE>> internal) {
 		this.internal = internal;
-		this.laplacian = new GraphLaplacian.Symmetric();
+		this.laplacian = new GraphLaplacian.Normalised();
 		this.eigenChooser = new ChangeDetectingEigenChooser(100,0.1);
 
 	}

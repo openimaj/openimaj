@@ -2,7 +2,6 @@ package org.openimaj.ml.clustering.spectral;
 
 import java.util.Iterator;
 
-import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -60,16 +59,10 @@ public class ChangeDetectingEigenChooser extends EigenChooser {
 	}
 
 	@Override
-	public FewEigenvalues prepare(final SparseMatrix laplacian, Mode direction) {
+	public FewEigenvalues prepare(final SparseMatrix laplacian) {
 		int total = laplacian.columnCount();
-		if(direction == Mode.FORWARD){
-			FewEigenvalues eig = FewEigenvalues.of(laplacian);
-			return eig.greatest((int) (total*maxSelect));
-		}
-		else{
-			FewEigenvalues eig = FewEigenvalues.of(laplacian);
-			return eig.lowest((int) (total*maxSelect));
-		}
+		FewEigenvalues eig = FewEigenvalues.of(laplacian);
+		return eig.greatest((int) (total*maxSelect));
 	}
 
 

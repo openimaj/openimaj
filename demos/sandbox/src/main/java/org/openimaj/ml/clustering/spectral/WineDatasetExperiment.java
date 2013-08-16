@@ -16,7 +16,6 @@ import org.openimaj.ml.clustering.dbscan.DistanceDBSCAN;
 import org.openimaj.ml.clustering.dbscan.DoubleDBSCANClusters;
 import org.openimaj.ml.clustering.dbscan.DoubleNNDBSCAN;
 import org.openimaj.ml.clustering.dbscan.SparseMatrixDBSCAN;
-import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.ml.dataset.WineDataset;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.pair.DoubleObjectPair;
@@ -73,7 +72,7 @@ public class WineDatasetExperiment {
 		conf.eigenChooser = new EigenChooser() {
 			
 			@Override
-			public Eigenvalues prepare(SparseMatrix laplacian, Mode direction) {
+			public Eigenvalues prepare(SparseMatrix laplacian) {
 				Eigenvalues eig = new AllEigenvalues(laplacian);
 				return eig;
 			}

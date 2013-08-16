@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import org.openimaj.math.matrix.DiagonalMatrix;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
-import org.openimaj.ml.clustering.spectral.FBEigenIterator.Mode;
 import org.openimaj.util.pair.DoubleObjectPair;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -30,7 +29,7 @@ public abstract class GraphLaplacian{
 
 		int i = 0;
 		for (Vector row : adj.rows()) {
-			row.put(i, 1); // Forces diagonal to be exactly similar
+			row.put(i, 0);
 			degree.put(i, i, row.sum());
 			i++;
 		}
@@ -49,40 +48,8 @@ public abstract class GraphLaplacian{
 	 * @param evd
 	 * @return provides an iterator over the (presumeably sorted)
 	 */
-	public abstract Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd);
-
-	/**
-	 * The symmetric normalised Laplacian is defined as:
-	 * L = I - D^-1/2 A D^-1/2
-	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
-	 */
-	public static class Symmetric extends GraphLaplacian{
-		@Override
-		public SparseMatrix laplacian(SparseMatrix adj, DiagonalMatrix degree) {
-			DiagonalMatrix invSqrtDegree = MatlibMatrixUtils.powInplace(degree,-1./2.);
-			DiagonalMatrix ident = DiagonalMatrix.ones(degree.rowCount());
-			SparseMatrix ret = MatlibMatrixUtils.minusInplace(
-				ident,
-				MatlibMatrixUtils.times(
-					MatlibMatrixUtils.times(
-						invSqrtDegree, adj
-					),
-					invSqrtDegree
-				)
-			);
-			return ret;
-		}
-
-		@Override
-		public Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd) {
-			return new FBEigenIterator(Mode.BACKWARD, evd);
-		}
-
-		@Override
-		public Mode direction() {
-			return Mode.FORWARD;
-		}
+	public Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd) {
+		return new FBEigenIterator(evd);
 	}
 	
 	/**
@@ -94,21 +61,14 @@ public abstract class GraphLaplacian{
 	public static class Unnormalised extends GraphLaplacian{
 		@Override
 		public SparseMatrix laplacian(SparseMatrix adj, DiagonalMatrix degree) {
-			SparseMatrix ret = MatlibMatrixUtils.minusInplace(
-				degree,
-				adj
+			SparseMatrix ret = MatlibMatrixUtils.plusInplace(
+				DiagonalMatrix.ones(degree.rowCount()), 
+				MatlibMatrixUtils.minusInplace(
+					degree,
+					adj
+				)
 			);
 			return ret;
-		}
-
-		@Override
-		public Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd) {
-			return new FBEigenIterator(Mode.FORWARD, evd);
-		}
-
-		@Override
-		public Mode direction() {
-			return Mode.FORWARD;
 		}
 	}
 
@@ -123,6 +83,10 @@ public abstract class GraphLaplacian{
 		@Override
 		public SparseMatrix laplacian(SparseMatrix adj, DiagonalMatrix degree) {
 			DiagonalMatrix invSqrtDegree = MatlibMatrixUtils.powInplace(degree,-1./2.);
+			for (int i = 0; i < degree.rowCount(); i++) {
+				if(Double.isNaN(degree.get(i, i)) || Double.isInfinite(degree.get(i, i)) ) 
+					invSqrtDegree.put(i, i, 0); 
+			}
 			SparseMatrix ret = MatlibMatrixUtils.times(
 				MatlibMatrixUtils.times(
 					invSqrtDegree, adj
@@ -134,18 +98,40 @@ public abstract class GraphLaplacian{
 
 		@Override
 		public Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd) {
-			return new FBEigenIterator(Mode.BACKWARD, evd);
+			return new FBEigenIterator(evd);
+		}
+
+	}
+	
+	/**
+	 * The inverted symmetric normalised Laplacian is defined as:
+	 * L = D^-1 . W
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 *
+	 */
+	public static class Warped extends GraphLaplacian{
+
+		@Override
+		public SparseMatrix laplacian(SparseMatrix adj, DiagonalMatrix degree) {
+			DiagonalMatrix invDegree = MatlibMatrixUtils.powInplace(degree,-1.);
+			for (int i = 0; i < degree.rowCount(); i++) {
+				if(Double.isNaN(degree.get(i, i)) || Double.isInfinite(degree.get(i, i)) ) 
+					invDegree.put(i, i, 0); 
+			}
+			SparseMatrix ret = MatlibMatrixUtils.times(
+				MatlibMatrixUtils.times(
+					invDegree, adj
+				),
+				invDegree
+			);
+			return ret;
 		}
 
 		@Override
-		public Mode direction() {
-			return Mode.FORWARD;
+		public Iterator<DoubleObjectPair<Vector>> eigenIterator(Eigenvalues evd) {
+			return new FBEigenIterator(evd);
 		}
 
 	}
 
-	/**
-	 * @return the direction which this laplacian creates useful eigen values
-	 */
-	public abstract Mode direction();
 }

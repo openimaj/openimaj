@@ -3,6 +3,7 @@ package ch.akuhn.matrix.eigenvalues;
 import java.util.Arrays;
 
 import org.netlib.arpack.ARPACK;
+import org.netlib.lapack.LAPACK;
 import org.netlib.util.doubleW;
 import org.netlib.util.intW;
 
@@ -158,6 +159,7 @@ public abstract class FewEigenvalues extends Eigenvalues {
 		assert n > 0;
 		assert nev > 0;
 		assert ncv > nev && ncv <= n;
+		
 		while (true) {
 			arpack.dsaupd(
 					ido, // reverse communication parameter

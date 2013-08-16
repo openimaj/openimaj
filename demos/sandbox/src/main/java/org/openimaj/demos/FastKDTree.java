@@ -921,4 +921,39 @@ public class FastKDTree {
 			d += (qu[i] - vec[i]) * (qu[i] - vec[i]);
 		return d;
 	}
+
+	/**
+	 * @return find all list of indices of all leaves
+	 */
+	public List<int[]> findLeafIndices() {
+		Deque<KDTreeNode> nodes = new ArrayDeque<KDTreeNode>();
+		nodes.push(root);
+		List<int[]> leaves = new ArrayList<int[]>();
+		while(nodes.size()!=0){
+			KDTreeNode node = nodes.pop();
+			if(node.isLeaf()){
+				leaves.add(node.indices);
+			}else{
+				nodes.add(node.left);
+				nodes.add(node.right);
+			}
+		}
+		return leaves;
+	}
+	
+	/**
+	 * @return find all the data at the leaves
+	 */
+	public List<double[][]> findLeafValues() {
+		List<int[]> leaves = findLeafIndices();
+		List<double[][]> leafValues = new ArrayList<double[][]>();
+		for (int[] is : leaves) {
+			double[][] values = new double[is.length][];
+			for (int i = 0; i < values.length; i++) {
+				values[i] = this.data[is[i]];
+			}
+			leafValues.add(values);
+		}
+		return leafValues;
+	}
 }

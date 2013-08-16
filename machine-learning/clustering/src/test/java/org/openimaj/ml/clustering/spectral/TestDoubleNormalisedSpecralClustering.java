@@ -2,7 +2,10 @@ package org.openimaj.ml.clustering.spectral;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +15,7 @@ import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.io.FileUtils;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.logger.LoggerUtils;
+import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.dbscan.ClusterTestDataLoader;
@@ -20,6 +24,9 @@ import org.openimaj.ml.clustering.dbscan.DoubleDBSCANClusters;
 import org.openimaj.ml.clustering.dbscan.DoubleNNDBSCAN;
 
 import ch.akuhn.matrix.SparseMatrix;
+
+import com.jmatio.io.MatFileWriter;
+import com.jmatio.types.MLArray;
 
 /**
  * Test Spectral Clustering implementation using data generated from:
@@ -46,23 +53,6 @@ public class TestDoubleNormalisedSpecralClustering {
 	}
 
 
-	/**
-	 *
-	 */
-	@Test
-	public void testSimSpatialCluster(){
-		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
-				0.5, 3,
-				new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN));
-		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(
-			inner
-		);
-		conf.eigenChooser = new AbsoluteValueEigenChooser(0.2, 0.1);
-		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
-		SparseMatrix mat_norm = normalisedSimilarity();
-		IndexClusters res = clust.cluster(mat_norm);
-		confirmClusters(res);
-	}
 
 	/**
 	 *
@@ -81,10 +71,11 @@ public class TestDoubleNormalisedSpecralClustering {
 	}
 	
 	/**
+	 * @throws IOException 
 	 *
 	 */
 	@Test
-	public void testSimSpatialClusterInverseHardcoded(){
+	public void testSimSpatialClusterInverseHardcoded() throws IOException{
 		SpatialClusterer<DoubleDBSCANClusters,double[]> inner = new DoubleNNDBSCAN(
 			0.2, 2, new DoubleNearestNeighboursExact.Factory(DoubleFVComparison.EUCLIDEAN)
 		);
@@ -92,6 +83,9 @@ public class TestDoubleNormalisedSpecralClustering {
 		conf.eigenChooser = new AbsoluteValueEigenChooser(0.95, 0.1);
 		DoubleSpectralClustering clust = new DoubleSpectralClustering(conf);
 		SparseMatrix mat_norm = normalisedSimilarity(Double.MAX_VALUE);
+		Collection<MLArray> col = new ArrayList<MLArray>();
+		col.add(MatlibMatrixUtils.asMatlab(mat_norm));
+		MatFileWriter writ = new MatFileWriter(new File("/Users/ss/Experiments/python/Whard.mat"), col);
 		IndexClusters res = clust.cluster(mat_norm);
 		confirmClusters(res);
 	}

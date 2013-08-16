@@ -15,48 +15,20 @@ import ch.akuhn.matrix.eigenvalues.Eigenvalues;
 public final class FBEigenIterator implements
 		Iterator<DoubleObjectPair<Vector>> {
 
-	/**
-	 * The mode
-	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
-	 */
-	public static enum Mode{
-		/**
-		 * Forward from index 0, the eigenvalue order is ascending 
-		 */
-		FORWARD,
-		/**
-		 *  Backward from indes n-1, the eigenvalue order is decending
-		 */
-		BACKWARD;
-	}
-
 	private int pos;
 	private int dir;
 	private double[] values;
 	private Vector[] vectors;
 	private int lim;
 	/**
-	 * @param fb
 	 * @param evd
 	 */
-	public FBEigenIterator(FBEigenIterator.Mode fb, Eigenvalues evd) {
+	public FBEigenIterator(Eigenvalues evd) {
 		this.values = evd.value;
 		this.vectors = evd.vector;
-		switch (fb) {
-		case FORWARD:
-			this.pos = 0;
-			this.dir = 1;
-			this.lim = values.length;
-		break;
-		case BACKWARD:
-			this.pos = values.length-1;
-			this.dir = -1;
-			this.lim = -1;
-			break;
-		default:
-			break;
-		}
+		this.pos = values.length-1;
+		this.dir = -1;
+		this.lim = -1;
 	}
 
 	@Override
