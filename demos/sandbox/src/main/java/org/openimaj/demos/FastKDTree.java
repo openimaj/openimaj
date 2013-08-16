@@ -603,7 +603,7 @@ public class FastKDTree {
 	 *            the upper extreme of the hyperrectangle
 	 * @return the points within the given bounds
 	 */
-	public TIntArrayList indexRangeSearch(double[] lowerExtreme, double[] upperExtreme) {
+	public int[] indexRangeSearch(double[] lowerExtreme, double[] upperExtreme) {
 		final TIntArrayList results = new TIntArrayList();
 
 		rangeSearch(lowerExtreme, upperExtreme, new TIntObjectProcedure<double[]>() {
@@ -615,7 +615,71 @@ public class FastKDTree {
 			}
 		});
 
-		return results;
+		return results.toArray();
+	}
+
+	/**
+	 * Search the tree for the indexes of all points contained within the
+	 * hypersphere defined by the given centre and radius.
+	 * 
+	 * @param centre
+	 *            the centre point
+	 * @param radius
+	 *            the radius
+	 * @return the points within the given bounds
+	 */
+	public int[] indexRadiusSearch(double[] centre, double radius) {
+		final TIntArrayList results = new TIntArrayList();
+
+		this.radiusSearch(centre, radius, new TIntObjectProcedure<double[]>() {
+			@Override
+			public boolean execute(int a, double[] b) {
+				results.add(a);
+
+				return true;
+			}
+		});
+
+		return results.toArray();
+	}
+
+	/**
+	 * Find all the points within the given radius of the given point.
+	 * Internally this works by finding the points in the hyper-square
+	 * encompassing the hyper-circle and then filtering. Each valid point that
+	 * is found is reported to the given processor together with its index.
+	 * <p>
+	 * The search can be stopped early by returning false from the
+	 * {@link TIntObjectProcedure#execute(int, Object)} method.
+	 * 
+	 * @param centre
+	 *            the centre point
+	 * @param radius
+	 *            the radius
+	 * @param proc
+	 *            the process
+	 */
+	public void radiusSearch(final double[] centre, double radius, final TIntObjectProcedure<double[]> proc)
+	{
+		final double[] lower = centre.clone();
+		final double[] upper = centre.clone();
+
+		for (int i = 0; i < centre.length; i++) {
+			lower[i] -= radius;
+			upper[i] += radius;
+		}
+
+		final double radSq = radius * radius;
+		rangeSearch(lower, upper, new TIntObjectProcedure<double[]>() {
+			@Override
+			public boolean execute(int idx, double[] point) {
+				final double d = distance(centre, point);
+				if (d <= radSq)
+					return proc.execute(idx, point);
+
+				return true;
+			}
+		});
 	}
 
 	/**
@@ -730,6 +794,24 @@ public class FastKDTree {
 		searchSubTree(qu, root, queue);
 
 		return queue.toOrderedListDestructive();
+	}
+
+	/**
+	 * Nearest-neighbour search
+	 * 
+	 * @param qu
+	 *            the query point
+	 * @param n
+	 *            the number of neighbours to find
+	 * @return the indices and distances
+	 */
+	public IntDoublePair nearestNeighbour(final double[] qu) {
+		final BoundedPriorityQueue<IntDoublePair> queue = new BoundedPriorityQueue<IntDoublePair>(1,
+				IntDoublePair.SECOND_ITEM_ASCENDING_COMPARATOR);
+
+		searchSubTree(qu, root, queue);
+
+		return queue.peek();
 	}
 
 	/**
