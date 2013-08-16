@@ -86,7 +86,7 @@ public class KDTreeTest {
 			System.out.println(kdtree.coordinateRadiusSearch(pt, r).length);
 			final long t3 = System.nanoTime();
 			// altkdtree.rangeSearch(min, max);
-			System.out.println(altkdtree.radiusSearch(pt, r).size());
+//			System.out.println(altkdtree.radiusSearch(pt, r).size());
 			final long t4 = System.nanoTime();
 			bft += t2 - t1;
 			kdt += t3 - t2;

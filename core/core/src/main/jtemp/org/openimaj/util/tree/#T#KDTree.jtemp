@@ -969,4 +969,26 @@ public class #T#KDTree {
 			d += (qu[i] - vec[i]) * (qu[i] - vec[i]);
 		return d;
 	}
+	
+	/**
+	 * Find all the indices seperated by leaves
+	 * @return all the leaves
+	 */
+	public List<int[]> leafIndices() {
+		List<int[]> leafInds = new ArrayList<int[]>();
+		Deque<KDTreeNode> nodes = new ArrayDeque<KDTreeNode>();
+		nodes.push(root);
+		while(nodes.size()!=0){
+			KDTreeNode node = nodes.pop();
+			if(node.isLeaf()){
+				leafInds.add(node.indices);
+			}
+			else{
+				nodes.push(node.left);
+				nodes.push(node.right);
+			}
+		}
+		
+		return leafInds;
+	}
 }

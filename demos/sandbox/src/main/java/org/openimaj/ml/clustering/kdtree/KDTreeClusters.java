@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.openimaj.demos.FastKDTree;
-import org.openimaj.demos.FastKDTree.KDTreeNode;
 import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.util.pair.IntDoublePair;
+import org.openimaj.util.tree.DoubleKDTree;
+import org.openimaj.util.tree.DoubleKDTree.KDTreeNode;
 
 /**
  *
@@ -80,15 +80,15 @@ public class KDTreeClusters extends IndexClusters implements SpatialClusters<dou
 
 	private List<int[]> leaves;
 	private int dims;
-	private FastKDTree tree;
+	private DoubleKDTree tree;
 
 	/**
 	 * @param tree the KDTree which represents the clusters
 	 * @param dims 
 	 */
-	public KDTreeClusters(FastKDTree tree, int dims) {
+	public KDTreeClusters(DoubleKDTree tree, int dims) {
 		this.tree = tree;
-		this.leaves = tree.findLeafIndices();
+		this.leaves = tree.leafIndices();
 		this.dims = dims;
 		this.clusters = new int[leaves.size()][];
 		for (int i = 0; i < clusters.length; i++) {

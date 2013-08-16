@@ -4,12 +4,12 @@ import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.commons.math.stat.descriptive.rank.Max;
 import org.openimaj.data.DataSource;
-import org.openimaj.demos.FastKDTree;
-import org.openimaj.demos.FastKDTree.DoubleSplitChooser;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.array.IntArrayView;
 import org.openimaj.util.pair.IntDoublePair;
+import org.openimaj.util.tree.DoubleKDTree;
+import org.openimaj.util.tree.DoubleKDTree.SplitChooser;
 
 import scala.actors.threadpool.Arrays;
 
@@ -26,7 +26,7 @@ public class DoubleKDTreeClusterer implements SpatialClusterer<KDTreeClusters, d
 	int ndims = -1;
 	private int startindex = -1;
 	
-	class CappedVarianceSplitChooser implements DoubleSplitChooser{
+	class CappedVarianceSplitChooser implements SplitChooser{
 		
 		
 		double[] firstVariances = null;
@@ -101,7 +101,7 @@ public class DoubleKDTreeClusterer implements SpatialClusterer<KDTreeClusters, d
 			ndims = data[0].length;
 		}
 		
-		FastKDTree tree = new FastKDTree(data, new CappedVarianceSplitChooser());
+		DoubleKDTree tree = new DoubleKDTree(data, new CappedVarianceSplitChooser());
 		return new KDTreeClusters(tree, ndims);
 	}
 
