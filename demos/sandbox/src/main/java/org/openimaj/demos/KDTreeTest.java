@@ -83,7 +83,7 @@ public class KDTreeTest {
 			// bruteForceRangeSearch(data, min, max);
 			final long t2 = System.nanoTime();
 			// kdtree.coordinateRangeSearch(min, max);
-			System.out.println(kdtree.coordinateRadiusSearch(pt, r).size());
+			System.out.println(kdtree.coordinateRadiusSearch(pt, r).length);
 			final long t3 = System.nanoTime();
 			// altkdtree.rangeSearch(min, max);
 			System.out.println(altkdtree.radiusSearch(pt, r).size());

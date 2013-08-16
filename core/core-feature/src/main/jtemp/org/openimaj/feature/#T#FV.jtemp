@@ -313,4 +313,14 @@ public class #T#FV extends ArrayFeatureVector<#t#[]> implements Concatenatable<#
 		
 		return new #T#FV(data);
 	}
+	
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(values);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return Arrays.equals(values, ((#T#FV)obj).values);
+	}
 }

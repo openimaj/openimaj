@@ -743,7 +743,7 @@ public class FastKDTree {
 	 *            the radius
 	 * @return the points
 	 */
-	public List<double[]> coordinateRadiusSearch(double[] centre, double radius) {
+	public double[][] coordinateRadiusSearch(double[] centre, double radius) {
 		final List<double[]> radiusList = new ArrayList<double[]>();
 
 		coordinateRadiusSearch(centre, radius, new TObjectDoubleProcedure<double[]>() {
@@ -754,7 +754,7 @@ public class FastKDTree {
 			}
 		});
 
-		return radiusList;
+		return radiusList.toArray(new double[radiusList.size()][]);
 	}
 
 	/**
