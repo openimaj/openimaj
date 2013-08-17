@@ -5,6 +5,7 @@ import gnu.trove.list.array.TIntArrayList;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.io.FileUtils;
 import org.openimaj.math.matrix.JamaDenseMatrix;
+import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.kdtree.ClusterTestDataLoader.TestStats;
 import org.openimaj.ml.clustering.spectral.DoubleSpectralClustering;
@@ -24,6 +26,9 @@ import org.openimaj.ml.clustering.spectral.SpectralClusteringConf;
 import org.openimaj.ml.clustering.spectral.SpectralIndexedClusters;
 import org.openimaj.vis.general.BarVisualisationBasic;
 import org.openimaj.vis.general.DotPlotVisualisation;
+
+import com.jmatio.io.MatFileWriter;
+import com.jmatio.types.MLArray;
 
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
@@ -44,7 +49,7 @@ public class TestDoubleKDTreeClusterer {
 	 */
 	@Before
 	public void loadTest() throws IOException{
-		String[] data = FileUtils.readlines(new File("/Users/ss/Development/java/openimaj/trunk/machine-learning/clustering/src/test/resources/org/openimaj/ml/clustering/dbscan/dbscandata"));
+		String[] data = FileUtils.readlines(TestDoubleKDTreeClusterer.class.getResourceAsStream("/org/openimaj/ml/clustering/dbscan/dbscandata"));
 		ClusterTestDataLoader loader = new ClusterTestDataLoader();
 		this.testStats = loader.readTestStats(data);
 		this.testData = loader.readTestData(data);
@@ -62,10 +67,19 @@ public class TestDoubleKDTreeClusterer {
 	 */
 	@Test
 	public void doTest(){
-		SparseMatrix simmat = normalisedSimilarity();		
+		SparseMatrix simmat = normalisedSimilarity();
+		MLArray arr = MatlibMatrixUtils.asMatlab(simmat);
+		ArrayList<MLArray> tosave = new ArrayList<MLArray>();
+		tosave.add(arr);
+		try {
+			MatFileWriter writer = new MatFileWriter(new File("/home/ss/Experiments/python/sim.mat"),tosave);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		drawdata();
 		int neigSelect = 5;
-		DoubleKDTreeClusterer spatial = new DoubleKDTreeClusterer(0.2,0,neigSelect);
+		DoubleKDTreeClusterer spatial = new DoubleKDTreeClusterer(0.01,1,1);
 		
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(spatial);
 		conf.laplacian = new GraphLaplacian.Normalised();
@@ -86,10 +100,10 @@ public class TestDoubleKDTreeClusterer {
 			JFrame w = bvb.showWindow("eig");
 			w.setLocation(w.getLocation().x, 100 * i);
 		}
+		System.out.println(new IndexClusters(this.testClusters));
 		System.out.println(res);
 		
-		System.out.println(new IndexClusters(this.testClusters));
-		confirmClusters(res);
+//		confirmClusters(res);
 	}
 
 
