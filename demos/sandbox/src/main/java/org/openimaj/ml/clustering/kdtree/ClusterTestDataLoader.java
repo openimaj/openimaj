@@ -1,7 +1,9 @@
 package org.openimaj.ml.clustering.kdtree;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -38,6 +40,26 @@ public class ClusterTestDataLoader{
 		 */
 		public double mineps;
 	}
+	private int percluster = -1;
+	private boolean outliers = true;
+	
+	
+	/**
+	 * 
+	 */
+	public ClusterTestDataLoader() {
+		this.percluster = -1;
+	}
+	
+	/**
+	 * @param percluster 
+	 * @param outliers 
+	 * 
+	 */
+	public ClusterTestDataLoader(int percluster, boolean outliers) {
+		this.percluster = percluster;
+		this.outliers = outliers;
+	}
 
 	private Logger logger = Logger.getLogger(ClusterTestDataLoader.class);
 	/**
@@ -72,8 +94,22 @@ public class ClusterTestDataLoader{
 			count += readIntDataLine.length;
 		}
 		logger .debug(String.format("Loading %d items in %d clusters\n",count,clusters.size()));
+		correctClusters(clusters);
 		return clusters.toArray(new int[clusters.size()][]);
 	}
+	private void correctClusters(List<int[]> clusters) {
+		if(this.percluster==-1) return;
+		for (int i = 0; i < clusters.size(); i++) {
+			int[] corrected = new int[percluster];
+			int[] toCorrect = clusters.get(0);
+			clusters.remove(0);
+			for (int j = 0; j < corrected.length; j++) {
+				corrected[j] = toCorrect[j];
+			}
+			clusters.add(corrected);
+		}
+	}
+
 	/**
 	 * @param string
 	 * @return read
@@ -96,15 +132,35 @@ public class ClusterTestDataLoader{
 	 * @return read the test data
 	 */
 	public double[][] readTestData(String[] data) {
+		int[][] correct = readTestClusters(data);
+		TestStats stats = readTestStats(data);
+		Set<Integer> exist = existing(correct);
+		
 		int i = 0;
 		for (;data[i].length()!=0; i++);
 		List<double[]> dataL = new ArrayList<double[]>();
-		for (i=i+1;data[i].length()!=0; i++){
-			dataL.add(readDataLine(data[i]));
+		int start = i+1;
+		for (i=start;data[i].length()!=0; i++){
+			if(exist.contains(i-start) || (i - start < stats.noutliers && this.outliers)){				
+				dataL.add(readDataLine(data[i]));
+			}
+			else{
+				dataL.add(null);
+			}
 		}
 		logger.debug(String.format("Loading %d data items\n",dataL.size()));
 		return dataL.toArray(new double[dataL.size()][]);
 	}
+	private Set<Integer> existing(int[][] correct) {
+		Set<Integer> exist = new HashSet<Integer>();
+		for (int[] is : correct) {
+			for (int i : is) {
+				exist.add(i);
+			}
+		}
+		return exist;
+	}
+
 	private double[] readDataLine(String string) {
 		String[] split = string.split(" ");
 		double[] arr = new double[]{

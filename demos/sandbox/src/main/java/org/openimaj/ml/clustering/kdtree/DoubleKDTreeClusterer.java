@@ -69,7 +69,9 @@ public class DoubleKDTreeClusterer implements SpatialClusterer<KDTreeClusters, d
 				IntDoublePair maxDim = maxDim(MatrixUtils.abs(var).getArray()[0]);
 				double[] col = mat.getMatrix(0, inds.size()-1, maxDim.first, maxDim.first).transpose().getArray()[0];
 				double mid = ArrayUtils.quickSelect(col, col.length/2);
-				return IntDoublePair.pair(maxDim.first+1,mid);
+				if(ArrayUtils.minValue(col) == mid) mid += Double.MIN_NORMAL;
+				if(ArrayUtils.maxValue(col) == mid) mid -= Double.MIN_NORMAL;
+				return IntDoublePair.pair(maxDim.first+startindex,mid);
 			}
 		}
 

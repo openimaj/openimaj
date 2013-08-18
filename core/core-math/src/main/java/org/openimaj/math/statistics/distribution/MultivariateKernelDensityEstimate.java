@@ -52,7 +52,7 @@ public class MultivariateKernelDensityEstimate extends AbstractMultivariateDistr
 	public MultivariateKernelDensityEstimate(List<double[]> data, StandardUnivariateKernels kernel, double bandwidth)
 	{
 		this.data = data.toArray(new double[data.size()][]);
-		this.tree = new DoubleKDTree(data);
+//		this.tree = new DoubleKDTree(data);
 		this.kernel = kernel;
 		this.bandwidth = bandwidth;
 	}
@@ -70,33 +70,35 @@ public class MultivariateKernelDensityEstimate extends AbstractMultivariateDistr
 
 	@Override
 	public double estimateProbability(double[] sample) {
-		final List<ObjectDoublePair<double[]>> neighbours = tree.radiusDistanceSearch(sample, kernel.getCutOff()
-				* bandwidth);
-
-		double prob = 0;
-		for (int i = 0; i < neighbours.size(); i++) {
-			prob += kernel.evaluate(Math.sqrt(neighbours.get(i).second) / bandwidth);
-		}
-
-		return prob / (bandwidth * data.length);
+//		final List<ObjectDoublePair<double[]>> neighbours = tree.radiusDistanceSearch(sample, kernel.getCutOff()
+//				* bandwidth);
+//
+//		double prob = 0;
+//		for (int i = 0; i < neighbours.size(); i++) {
+//			prob += kernel.evaluate(Math.sqrt(neighbours.get(i).second) / bandwidth);
+//		}
+//
+//		return prob / (bandwidth * data.length);
+		return 0;
 	}
 
 	public List<ObjectDoublePair<double[]>> getSupport(double[] sample) {
-		final List<double[]> neighbours = tree.radiusSearch(sample, kernel.getCutOff() * bandwidth);
-		final List<ObjectDoublePair<double[]>> support = new ArrayList<ObjectDoublePair<double[]>>(neighbours.size());
-
-		for (int i = 0; i < neighbours.size(); i++) {
-			final double[] ni = neighbours.get(i);
-
-			double dist = 0;
-			for (int j = 0; j < sample.length; j++) {
-				final double val = (sample[j] - ni[j]);
-				dist += val * val;
-			}
-
-			support.add(ObjectDoublePair.pair(ni, kernel.evaluate(Math.sqrt(dist) / bandwidth)));
-		}
-
-		return support;
+//		final List<double[]> neighbours = tree.radiusSearch(sample, kernel.getCutOff() * bandwidth);
+//		final List<ObjectDoublePair<double[]>> support = new ArrayList<ObjectDoublePair<double[]>>(neighbours.size());
+//
+//		for (int i = 0; i < neighbours.size(); i++) {
+//			final double[] ni = neighbours.get(i);
+//
+//			double dist = 0;
+//			for (int j = 0; j < sample.length; j++) {
+//				final double val = (sample[j] - ni[j]);
+//				dist += val * val;
+//			}
+//
+//			support.add(ObjectDoublePair.pair(ni, kernel.evaluate(Math.sqrt(dist) / bandwidth)));
+//		}
+//
+//		return support;
+		return null;
 	}
 }

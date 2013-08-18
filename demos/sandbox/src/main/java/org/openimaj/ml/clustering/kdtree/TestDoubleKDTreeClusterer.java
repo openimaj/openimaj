@@ -50,7 +50,7 @@ public class TestDoubleKDTreeClusterer {
 	@Before
 	public void loadTest() throws IOException{
 		String[] data = FileUtils.readlines(TestDoubleKDTreeClusterer.class.getResourceAsStream("/org/openimaj/ml/clustering/dbscan/dbscandata"));
-		ClusterTestDataLoader loader = new ClusterTestDataLoader();
+		ClusterTestDataLoader loader = new ClusterTestDataLoader(3,false);
 		this.testStats = loader.readTestStats(data);
 		this.testData = loader.readTestData(data);
 		this.testClusters = loader.readTestClusters(data);
