@@ -5,7 +5,6 @@ import org.apache.commons.math.stat.descriptive.rank.Max;
 import org.openimaj.data.DataSource;
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.ml.clustering.SpatialClusterer;
-import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.array.IntArrayView;
 import org.openimaj.util.pair.IntDoublePair;
 import org.openimaj.util.tree.DoubleKDTree;
@@ -25,7 +24,8 @@ public class DoubleKDTreeClusterer implements SpatialClusterer<KDTreeClusters, d
 	int minpts = DEFAULT_MINPTS;
 	int ndims = -1;
 	private int startindex = -1;
-	
+	private SplitDetectionMode detectionMode = new SplitDetectionMode.VARIABLE_MEDIAN();
+//	private SplitDetectionMode detectionMode = new SplitDetectionMode.MEAN();
 	class CappedVarianceSplitChooser implements SplitChooser{
 		
 		
@@ -68,9 +68,7 @@ public class DoubleKDTreeClusterer implements SpatialClusterer<KDTreeClusters, d
 			else{
 				IntDoublePair maxDim = maxDim(MatrixUtils.abs(var).getArray()[0]);
 				double[] col = mat.getMatrix(0, inds.size()-1, maxDim.first, maxDim.first).transpose().getArray()[0];
-				double mid = ArrayUtils.quickSelect(col, col.length/2);
-				if(ArrayUtils.minValue(col) == mid) mid += Double.MIN_NORMAL;
-				if(ArrayUtils.maxValue(col) == mid) mid -= Double.MIN_NORMAL;
+				double mid = detectionMode.detect(col);
 				return IntDoublePair.pair(maxDim.first+startindex,mid);
 			}
 		}

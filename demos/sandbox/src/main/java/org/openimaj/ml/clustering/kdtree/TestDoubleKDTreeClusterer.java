@@ -50,10 +50,12 @@ public class TestDoubleKDTreeClusterer {
 	@Before
 	public void loadTest() throws IOException{
 		String[] data = FileUtils.readlines(TestDoubleKDTreeClusterer.class.getResourceAsStream("/org/openimaj/ml/clustering/dbscan/dbscandata"));
-		ClusterTestDataLoader loader = new ClusterTestDataLoader(3,false);
-		this.testStats = loader.readTestStats(data);
-		this.testData = loader.readTestData(data);
-		this.testClusters = loader.readTestClusters(data);
+//		ClusterTestDataLoader loader = new ClusterTestDataLoader(2,false);
+		ClusterTestDataLoader loader = new ClusterTestDataLoader();
+		loader.prepare(data);
+		this.testStats = loader.getTestStats();
+		this.testData = loader.getTestData();
+		this.testClusters = loader.getTestClusters();
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -79,7 +81,7 @@ public class TestDoubleKDTreeClusterer {
 		}
 		drawdata();
 		int neigSelect = 5;
-		DoubleKDTreeClusterer spatial = new DoubleKDTreeClusterer(0.01,1,1);
+		DoubleKDTreeClusterer spatial = new DoubleKDTreeClusterer(0.01,1,4);
 		
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(spatial);
 		conf.laplacian = new GraphLaplacian.Normalised();
