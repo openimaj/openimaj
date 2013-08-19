@@ -41,22 +41,22 @@ import ch.akuhn.matrix.SparseMatrix;
 
 /**
  * Miscellaneous matrix operations.
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class MatrixUtils {
 	/**
 	 * Are any values NaN or Inf?
-	 *
+	 * 
 	 * @param matrix
 	 *            matrix to test
 	 * @return true if any elements are NaN or Inf; false otherwise
 	 */
 	public static boolean anyNaNorInf(Matrix matrix) {
-		for (double[] arrLine : matrix.getArray()) {
-			for (double d : arrLine) {
+		for (final double[] arrLine : matrix.getArray()) {
+			for (final double d : arrLine) {
 				if (Double.isNaN(d) || Double.isInfinite(d))
 					return true;
 			}
@@ -66,7 +66,7 @@ public class MatrixUtils {
 
 	/**
 	 * Get the maximum absolute value of the diagonal.
-	 *
+	 * 
 	 * @param matrix
 	 *            the matrix
 	 * @return the maximum absolute value
@@ -75,7 +75,7 @@ public class MatrixUtils {
 		double max = -1;
 
 		for (int i = 0; i < matrix.getColumnDimension(); i++) {
-			double curr = Math.abs(matrix.get(i, i));
+			final double curr = Math.abs(matrix.get(i, i));
 			if (max < curr) {
 				max = curr;
 			}
@@ -85,7 +85,7 @@ public class MatrixUtils {
 
 	/**
 	 * Get the minimum absolute value of the diagonal.
-	 *
+	 * 
 	 * @param matrix
 	 *            the matrix
 	 * @return the minimum absolute value
@@ -94,7 +94,7 @@ public class MatrixUtils {
 		double min = Double.MAX_VALUE;
 
 		for (int i = 0; i < matrix.getColumnDimension(); i++) {
-			double curr = Math.abs(matrix.get(i, i));
+			final double curr = Math.abs(matrix.get(i, i));
 			if (min > curr) {
 				min = curr;
 			}
@@ -104,16 +104,16 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the principle square root, X, of the matrix A such that A=X*X
-	 *
+	 * 
 	 * @param matrix
 	 *            the matrix
 	 * @return the sqrt of the matrix
 	 */
 	public static Matrix sqrt(Matrix matrix) {
 		// A = V*D*V'
-		EigenvalueDecomposition evd = matrix.eig();
-		Matrix v = evd.getV();
-		Matrix d = evd.getD();
+		final EigenvalueDecomposition evd = matrix.eig();
+		final Matrix v = evd.getV();
+		final Matrix d = evd.getD();
 
 		// sqrt of cells of D and store in-place
 		for (int r = 0; r < d.getRowDimension(); r++)
@@ -122,15 +122,17 @@ public class MatrixUtils {
 
 		// Y = V*D/V
 		// Y = V'.solve(V*D)'
-		Matrix a = v.inverse();
-		Matrix b = v.times(d).inverse();
+		final Matrix a = v.inverse();
+		final Matrix b = v.times(d).inverse();
 		return a.solve(b).inverse();
 	}
 
 	/**
 	 * Computes the Moore-Penrose pseudoinverse. This is just a convenience
 	 * wrapper around {@link PseudoInverse#pseudoInverse(Matrix)}.
-	 * @param matrix the matrix to invert.
+	 * 
+	 * @param matrix
+	 *            the matrix to invert.
 	 * @return the inverted matrix
 	 * @see PseudoInverse#pseudoInverse(Matrix)
 	 */
@@ -140,16 +142,16 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the inverse square root, X, of the symmetric matrix A; A^-(1/2)
-	 *
+	 * 
 	 * @param matrix
 	 *            the symmetric matrix
 	 * @return the inverse sqrt of the matrix
 	 */
 	public static Matrix invSqrtSym(Matrix matrix) {
 		// A = V*D*V'
-		EigenvalueDecomposition evd = matrix.eig();
-		Matrix v = evd.getV();
-		Matrix d = evd.getD();
+		final EigenvalueDecomposition evd = matrix.eig();
+		final Matrix v = evd.getV();
+		final Matrix d = evd.getD();
 
 		// sqrt of cells of D and store in-place
 		for (int r = 0; r < d.getRowDimension(); r++) {
@@ -165,13 +167,13 @@ public class MatrixUtils {
 	/**
 	 * Return a copy of the input matrix with all elements set to their absolute
 	 * value.
-	 *
+	 * 
 	 * @param mat
 	 *            the matrix.
 	 * @return the absolute matrix.
 	 */
 	public static Matrix abs(Matrix mat) {
-		Matrix copy = mat.copy();
+		final Matrix copy = mat.copy();
 		for (int i = 0; i < mat.getRowDimension(); i++) {
 			for (int j = 0; j < mat.getColumnDimension(); j++) {
 				copy.set(i, j, Math.abs(mat.get(i, j)));
@@ -182,7 +184,7 @@ public class MatrixUtils {
 
 	/**
 	 * Check if two matrices are equal
-	 *
+	 * 
 	 * @param m1
 	 *            first matrix
 	 * @param m2
@@ -193,8 +195,8 @@ public class MatrixUtils {
 	 *         eps; false otherwise
 	 */
 	public static boolean equals(Matrix m1, Matrix m2, double eps) {
-		double[][] a1 = m1.getArray();
-		double[][] a2 = m2.getArray();
+		final double[][] a1 = m1.getArray();
+		final double[][] a2 = m2.getArray();
 
 		if (a1.length != a2.length || a1[0].length != a2[0].length)
 			return false;
@@ -209,7 +211,7 @@ public class MatrixUtils {
 
 	/**
 	 * Return a copy of the matrix with all the values raised to a power.
-	 *
+	 * 
 	 * @param mat
 	 *            the matrix.
 	 * @param exp
@@ -217,7 +219,7 @@ public class MatrixUtils {
 	 * @return a matrix.
 	 */
 	public static Matrix pow(Matrix mat, double exp) {
-		Matrix copy = mat.copy();
+		final Matrix copy = mat.copy();
 		for (int i = 0; i < mat.getRowDimension(); i++) {
 			for (int j = 0; j < mat.getColumnDimension(); j++) {
 				copy.set(i, j, Math.pow(mat.get(i, j), exp));
@@ -228,20 +230,20 @@ public class MatrixUtils {
 
 	/**
 	 * Generate a {@link String} representation of a matrix.
-	 *
+	 * 
 	 * @param mat
 	 *            the matrix
 	 * @return a string representation
 	 */
 	public static String toString(Matrix mat) {
-		StringWriter matWriter = new StringWriter();
+		final StringWriter matWriter = new StringWriter();
 		mat.print(new PrintWriter(matWriter), 5, 5);
 		return matWriter.getBuffer().toString();
 	}
 
 	/**
 	 * Compute the sum of all elements of the matrix.
-	 *
+	 * 
 	 * @param mat
 	 *            the matrix.
 	 * @return the sum.
@@ -258,7 +260,7 @@ public class MatrixUtils {
 
 	/**
 	 * Zero the matrix
-	 *
+	 * 
 	 * @param m
 	 *            the matrix
 	 */
@@ -269,24 +271,25 @@ public class MatrixUtils {
 	/**
 	 * Compute the real Eigen decomposition of a symmetric 2x2 matrix. Warning:
 	 * Doesn't check the size or whether the input is symmetric.
-	 *
-	 * @param m the matrix
+	 * 
+	 * @param m
+	 *            the matrix
 	 * @return the Eigen vectors and values.
 	 */
 	public static EigenValueVectorPair symmetricEig2x2(Matrix m) {
-		double a = m.get(0, 0);
-		double b = m.get(0, 1);
-		double c = b;
-		double d = m.get(1, 1);
+		final double a = m.get(0, 0);
+		final double b = m.get(0, 1);
+		final double c = b;
+		final double d = m.get(1, 1);
 
-		double trace = a + d;
-		double det = a * d - b * c;
+		final double trace = a + d;
+		final double det = a * d - b * c;
 
-		Matrix val = new Matrix(2, 2);
+		final Matrix val = new Matrix(2, 2);
 		double sqrtInner = (trace * trace / 4) - det;
 		// FIXME: make it deal with imaginary numbers.
 		if (sqrtInner < 0) {
-			EigenvalueDecomposition e = m.eig();
+			final EigenvalueDecomposition e = m.eig();
 			return new EigenValueVectorPair(e.getD(), e.getV());
 		}
 
@@ -294,7 +297,7 @@ public class MatrixUtils {
 		double firstEig = trace / 2 + sqrtInner;
 		double secondEig = trace / 2 - sqrtInner;
 		if (firstEig > secondEig) {
-			double tmp = firstEig;
+			final double tmp = firstEig;
 			firstEig = secondEig;
 			secondEig = tmp;
 		}
@@ -302,12 +305,12 @@ public class MatrixUtils {
 		val.set(0, 0, firstEig);
 		val.set(1, 1, secondEig);
 
-		Matrix vec = new Matrix(2, 2);
+		final Matrix vec = new Matrix(2, 2);
 
-		double v1 = firstEig - a;
-		double v2 = secondEig - a;
-		double norm1 = Math.sqrt(v1 * v1 + b * b);
-		double norm2 = Math.sqrt(b * b + v2 * v2);
+		final double v1 = firstEig - a;
+		final double v2 = secondEig - a;
+		final double norm1 = Math.sqrt(v1 * v1 + b * b);
+		final double norm2 = Math.sqrt(b * b + v2 * v2);
 		vec.set(0, 0, b / norm1);
 		vec.set(0, 1, b / norm2);
 		vec.set(1, 0, v1 / norm1);
@@ -316,44 +319,44 @@ public class MatrixUtils {
 		// To deal with rounding error
 		vec.set(1, 0, vec.get(0, 1));
 
-		EigenValueVectorPair ret = new EigenValueVectorPair(val, vec);
+		final EigenValueVectorPair ret = new EigenValueVectorPair(val, vec);
 		return ret;
 	}
 
 	/**
 	 * An eigen decomposition that uses a deterministic method if the matrix is
 	 * 2x2.
-	 *
+	 * 
 	 * This function returns values as in {@link EigenvalueDecomposition} i.e.
 	 * the largest eigen value is held in the [m.rows - 1,m.cols-1] (i.e. [1,1])
 	 * location
-	 *
+	 * 
 	 * @param m
 	 * @return the decomposition
 	 */
 	public static EigenValueVectorPair eig2x2(Matrix m) {
 		if (m.getColumnDimension() != 2 || m.getRowDimension() != 2) {
-			EigenvalueDecomposition e = m.eig();
+			final EigenvalueDecomposition e = m.eig();
 			return new EigenValueVectorPair(e.getD(), e.getV());
 		}
 		/**
 		 * A = 1 B = a + d C = ad - bc
-		 *
+		 * 
 		 * x = ( - B (+/-) sqrt(B^2 - 4AC) )/ (2A)
 		 */
-		double a = m.get(0, 0);
-		double b = m.get(0, 1);
-		double c = m.get(1, 0);
-		double d = m.get(1, 1);
+		final double a = m.get(0, 0);
+		final double b = m.get(0, 1);
+		final double c = m.get(1, 0);
+		final double d = m.get(1, 1);
 
-		double trace = a + d;
-		double det = a * d - b * c;
+		final double trace = a + d;
+		final double det = a * d - b * c;
 
-		Matrix val = new Matrix(2, 2);
+		final Matrix val = new Matrix(2, 2);
 		double sqrtInner = (trace * trace / 4) - det;
 		// FIXME: make it deal with imaginary numbers.
 		if (sqrtInner < 0) {
-			EigenvalueDecomposition e = m.eig();
+			final EigenvalueDecomposition e = m.eig();
 			return new EigenValueVectorPair(e.getD(), e.getV());
 		}
 
@@ -361,7 +364,7 @@ public class MatrixUtils {
 		double firstEig = trace / 2 + sqrtInner;
 		double secondEig = trace / 2 - sqrtInner;
 		if (firstEig > secondEig) {
-			double tmp = firstEig;
+			final double tmp = firstEig;
 			firstEig = secondEig;
 			secondEig = tmp;
 		}
@@ -369,25 +372,25 @@ public class MatrixUtils {
 		val.set(0, 0, firstEig);
 		val.set(1, 1, secondEig);
 
-		Matrix vec = new Matrix(2, 2);
+		final Matrix vec = new Matrix(2, 2);
 		if (b == 0 && c == 0) {
 			vec.set(0, 0, 1);
 			vec.set(1, 1, 1);
 		} else {
 			if (c != 0) {
-				double v1 = firstEig - d;
-				double v2 = secondEig - d;
-				double norm1 = Math.sqrt(v1 * v1 + c * c);
-				double norm2 = Math.sqrt(c * c + v2 * v2);
+				final double v1 = firstEig - d;
+				final double v2 = secondEig - d;
+				final double norm1 = Math.sqrt(v1 * v1 + c * c);
+				final double norm2 = Math.sqrt(c * c + v2 * v2);
 				vec.set(0, 0, v1 / norm1);
 				vec.set(0, 1, v2 / norm2);
 				vec.set(1, 0, c / norm1);
 				vec.set(1, 1, c / norm2);
 			} else if (b != 0) {
-				double v1 = firstEig - a;
-				double v2 = secondEig - a;
-				double norm1 = Math.sqrt(v1 * v1 + b * b);
-				double norm2 = Math.sqrt(b * b + v2 * v2);
+				final double v1 = firstEig - a;
+				final double v2 = secondEig - a;
+				final double norm1 = Math.sqrt(v1 * v1 + b * b);
+				final double norm2 = Math.sqrt(b * b + v2 * v2);
 				vec.set(0, 0, b / norm1);
 				vec.set(0, 1, b / norm2);
 				vec.set(1, 0, v1 / norm1);
@@ -395,18 +398,19 @@ public class MatrixUtils {
 			}
 		}
 
-		EigenValueVectorPair ret = new EigenValueVectorPair(val, vec);
+		final EigenValueVectorPair ret = new EigenValueVectorPair(val, vec);
 		return ret;
 	}
 
 	/**
 	 * Construct a matrix from a 2D float array of data.
-	 *
-	 * @param data the data.
+	 * 
+	 * @param data
+	 *            the data.
 	 * @return the matrix.
 	 */
 	public static Matrix matrixFromFloat(float[][] data) {
-		Matrix out = new Matrix(data.length, data[0].length);
+		final Matrix out = new Matrix(data.length, data[0].length);
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[i].length; j++) {
 				out.set(j, i, data[i][j]);
@@ -418,9 +422,11 @@ public class MatrixUtils {
 	/**
 	 * Reduce the rank a matrix by estimating a the best (in a least-squares
 	 * sense) approximation using the thin SVD.
-	 *
-	 * @param m the matrix to reduce.
-	 * @param rank the desired rank.
+	 * 
+	 * @param m
+	 *            the matrix to reduce.
+	 * @param rank
+	 *            the desired rank.
 	 * @return the rank-reduced matrix.
 	 */
 	public static Matrix reduceRank(Matrix m, int rank) {
@@ -428,35 +434,36 @@ public class MatrixUtils {
 			return m;
 		}
 
-		no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(
+		final no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(
 				m.getArray());
 		no.uib.cipr.matrix.SVD svd;
 		try {
 			svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
-		} catch (NotConvergedException e) {
+		} catch (final NotConvergedException e) {
 			throw new RuntimeException(e);
 		}
 
-		DenseMatrix U = svd.getU();
-		DenseMatrix Vt = svd.getVt();
-		double[] svector = svd.getS();
-		DenseMatrix S = new DenseMatrix(U.numColumns(), Vt.numRows());
+		final DenseMatrix U = svd.getU();
+		final DenseMatrix Vt = svd.getVt();
+		final double[] svector = svd.getS();
+		final DenseMatrix S = new DenseMatrix(U.numColumns(), Vt.numRows());
 		for (int i = 0; i < rank; i++)
 			S.set(i, i, svector[i]);
 
-		DenseMatrix C = new DenseMatrix(U.numRows(), S.numColumns());
-		DenseMatrix out = new DenseMatrix(C.numRows(), Vt.numColumns());
+		final DenseMatrix C = new DenseMatrix(U.numRows(), S.numColumns());
+		final DenseMatrix out = new DenseMatrix(C.numRows(), Vt.numColumns());
 		U.mult(S, C);
 		C.mult(Vt, out);
 
-		Matrix outFinal = convert(out);
+		final Matrix outFinal = convert(out);
 		return outFinal;
 	}
 
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
-	 *
-	 * @param mjt {@link DenseMatrix} to convert
+	 * 
+	 * @param mjt
+	 *            {@link DenseMatrix} to convert
 	 * @return converted matrix.
 	 */
 	public static Matrix convert(DenseMatrix mjt) {
@@ -465,16 +472,19 @@ public class MatrixUtils {
 
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
-	 *
-	 * @param mjt {@link DenseMatrix} to convert
-	 * @param nrows number of rows to copy
-	 * @param ncols number of columns to copy
+	 * 
+	 * @param mjt
+	 *            {@link DenseMatrix} to convert
+	 * @param nrows
+	 *            number of rows to copy
+	 * @param ncols
+	 *            number of columns to copy
 	 * @return converted matrix.
 	 */
 	public static Matrix convert(DenseMatrix mjt, int nrows, int ncols) {
-		double[][] d = new double[nrows][ncols];
+		final double[][] d = new double[nrows][ncols];
 
-		double[] mjtd = mjt.getData();
+		final double[] mjtd = mjt.getData();
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++) {
 				d[r][c] = mjtd[r + c * d.length];
@@ -485,8 +495,9 @@ public class MatrixUtils {
 
 	/**
 	 * Create a copy of a matrix with the columns in reverse order.
-	 *
-	 * @param m the input matrix
+	 * 
+	 * @param m
+	 *            the input matrix
 	 * @return a copy with the column order reversed
 	 */
 	public static Matrix reverseColumns(Matrix m) {
@@ -495,8 +506,9 @@ public class MatrixUtils {
 
 	/**
 	 * Reverse the column order of the input matrix inplace.
-	 *
-	 * @param m the input matrix
+	 * 
+	 * @param m
+	 *            the input matrix
 	 * @return the input matrix
 	 */
 	public static Matrix reverseColumnsInplace(Matrix m) {
@@ -507,7 +519,7 @@ public class MatrixUtils {
 
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < halfCols; c++) {
-				double tmp = data[r][c];
+				final double tmp = data[r][c];
 				data[r][c] = data[r][cols - c - 1];
 				data[r][cols - c - 1] = tmp;
 			}
@@ -518,8 +530,9 @@ public class MatrixUtils {
 
 	/**
 	 * Create a copy of a matrix with the rows in reverse order.
-	 *
-	 * @param m the input matrix
+	 * 
+	 * @param m
+	 *            the input matrix
 	 * @return a copy with the row order reversed
 	 */
 	public static Matrix reverseRows(Matrix m) {
@@ -528,8 +541,9 @@ public class MatrixUtils {
 
 	/**
 	 * Reverse the row order of the input matrix inplace.
-	 *
-	 * @param m the input matrix
+	 * 
+	 * @param m
+	 *            the input matrix
 	 * @return the input matrix
 	 */
 	public static Matrix reverseRowsInplace(Matrix m) {
@@ -538,7 +552,7 @@ public class MatrixUtils {
 		final int halfRows = rows / 2;
 
 		for (int r = 0; r < halfRows; r++) {
-			double[] tmp = data[r];
+			final double[] tmp = data[r];
 			data[r] = data[rows - r - 1];
 			data[rows - r - 1] = tmp;
 		}
@@ -548,11 +562,13 @@ public class MatrixUtils {
 
 	/**
 	 * Create a diagonal matrix
-	 * @param s length diagonal numbers
+	 * 
+	 * @param s
+	 *            length diagonal numbers
 	 * @return new Matrix(s.length,s.length) s.t. diagonal element i,i = s[i]
 	 */
 	public static Matrix diag(double[] s) {
-		Matrix r = new Matrix(s.length, s.length);
+		final Matrix r = new Matrix(s.length, s.length);
 		for (int i = 0; i < s.length; i++) {
 			r.set(i, i, s[i]);
 		}
@@ -560,36 +576,42 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Set the values of the elements in a single column
-	 * to a constant value.
-	 * @param m the matrix
-	 * @param c the column
-	 * @param v the constant value
+	 * Set the values of the elements in a single column to a constant value.
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param c
+	 *            the column
+	 * @param v
+	 *            the constant value
 	 * @return the matrix
 	 */
 	public static Matrix setColumn(Matrix m, int c, double v) {
 		final double[][] data = m.getArray();
 		final int rows = m.getRowDimension();
 
-		for (int r=0; r<rows; r++)
+		for (int r = 0; r < rows; r++)
 			data[r][c] = v;
 
 		return m;
 	}
 
 	/**
-	 * Set the values of the elements in a single column
-	 * to a constant value.
-	 * @param m the matrix
-	 * @param r the row
-	 * @param v the constant value
+	 * Set the values of the elements in a single column to a constant value.
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param r
+	 *            the row
+	 * @param v
+	 *            the constant value
 	 * @return the matrix
 	 */
 	public static Matrix setRow(Matrix m, int r, double v) {
 		final double[][] data = m.getArray();
 		final int cols = m.getColumnDimension();
 
-		for (int c=0; c<cols; c++)
+		for (int c = 0; c < cols; c++)
 			data[r][c] = v;
 
 		return m;
@@ -597,8 +619,11 @@ public class MatrixUtils {
 
 	/**
 	 * Fill a matrix with a constant value.
-	 * @param m the matrix
-	 * @param v the constant value
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param v
+	 *            the constant value
 	 * @return the matrix
 	 */
 	public static Matrix fill(Matrix m, double v) {
@@ -607,8 +632,8 @@ public class MatrixUtils {
 		final int rows = m.getRowDimension();
 		final int cols = m.getColumnDimension();
 
-		for (int r=0; r<rows; r++)
-			for (int c=0; c<cols; c++)
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
 				data[r][c] = v;
 
 		return m;
@@ -616,8 +641,11 @@ public class MatrixUtils {
 
 	/**
 	 * Subtract a constant from all values
-	 * @param m the matrix
-	 * @param v the constant value
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param v
+	 *            the constant value
 	 * @return the matrix
 	 */
 	public static Matrix minus(Matrix m, double v) {
@@ -626,8 +654,8 @@ public class MatrixUtils {
 		final int rows = m.getRowDimension();
 		final int cols = m.getColumnDimension();
 
-		for (int r=0; r<rows; r++)
-			for (int c=0; c<cols; c++)
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
 				data[r][c] -= v;
 
 		return m;
@@ -635,8 +663,11 @@ public class MatrixUtils {
 
 	/**
 	 * Add a constant to all values
-	 * @param m the matrix
-	 * @param v the constant value
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param v
+	 *            the constant value
 	 * @return the matrix
 	 */
 	public static Matrix plus(Matrix m, double v) {
@@ -645,8 +676,8 @@ public class MatrixUtils {
 		final int rows = m.getRowDimension();
 		final int cols = m.getColumnDimension();
 
-		for (int r=0; r<rows; r++)
-			for (int c=0; c<cols; c++)
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
 				data[r][c] += v;
 
 		return m;
@@ -654,8 +685,11 @@ public class MatrixUtils {
 
 	/**
 	 * Get a reshaped copy of the input matrix
-	 * @param m the matrix to reshape
-	 * @param newRows the new number of rows
+	 * 
+	 * @param m
+	 *            the matrix to reshape
+	 * @param newRows
+	 *            the new number of rows
 	 * @return new matrix
 	 */
 	public static Matrix reshape(Matrix m, int newRows) {
@@ -664,11 +698,11 @@ public class MatrixUtils {
 		final int newCols = length / newRows;
 		final Matrix mat = new Matrix(newRows, newCols);
 
-		final double [][] m1v = m.getArray();
-		final double [][] m2v = mat.getArray();
+		final double[][] m1v = m.getArray();
+		final double[][] m2v = mat.getArray();
 
 		int r1 = 0, r2 = 0, c1 = 0, c2 = 0;
-		for (int i=0; i<length; i++) {
+		for (int i = 0; i < length; i++) {
 			m2v[r2][c2] = m1v[r1][c1];
 
 			c1++;
@@ -689,24 +723,29 @@ public class MatrixUtils {
 
 	/**
 	 * Get a reshaped copy of the input matrix
-	 * @param m the matrix to reshape
-	 * @param newRows the new number of rows
-	 * @param columnMajor if true, values are drawn and placed down columns first. if false values are drawn and placed across rows first
+	 * 
+	 * @param m
+	 *            the matrix to reshape
+	 * @param newRows
+	 *            the new number of rows
+	 * @param columnMajor
+	 *            if true, values are drawn and placed down columns first. if
+	 *            false values are drawn and placed across rows first
 	 * @return new matrix
 	 */
-	public static Matrix reshape(Matrix m, int newRows,boolean columnMajor) {
+	public static Matrix reshape(Matrix m, int newRows, boolean columnMajor) {
 		final int oldCols = m.getColumnDimension();
 		final int oldRows = m.getRowDimension();
 		final int length = oldCols * m.getRowDimension();
 		final int newCols = length / newRows;
 		final Matrix mat = new Matrix(newRows, newCols);
 
-		final double [][] m1v = m.getArray();
-		final double [][] m2v = mat.getArray();
+		final double[][] m1v = m.getArray();
+		final double[][] m2v = mat.getArray();
 
 		int r1 = 0, r2 = 0, c1 = 0, c2 = 0;
-		if(!columnMajor){
-			for (int i=0; i<length; i++) {
+		if (!columnMajor) {
+			for (int i = 0; i < length; i++) {
 				m2v[r2][c2] = m1v[r1][c1];
 
 				c1++;
@@ -722,8 +761,8 @@ public class MatrixUtils {
 				}
 			}
 		}
-		else{
-			for (int i=0; i<length; i++) {
+		else {
+			for (int i = 0; i < length; i++) {
 				m2v[r2][c2] = m1v[r1][c1];
 
 				r1++;
@@ -740,14 +779,16 @@ public class MatrixUtils {
 			}
 		}
 
-
 		return mat;
 	}
 
 	/**
 	 * Compute the sum of values in a single column
-	 * @param m the matrix
-	 * @param col the column
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param col
+	 *            the column
 	 * @return the sum of values in column col
 	 */
 	public static double sumColumn(Matrix m, int col) {
@@ -755,7 +796,7 @@ public class MatrixUtils {
 		final int rows = m.getRowDimension();
 
 		double sum = 0;
-		for (int r=0; r<rows; r++)
+		for (int r = 0; r < rows; r++)
 			sum += data[r][col];
 
 		return sum;
@@ -763,8 +804,11 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the sum of values in a single row
-	 * @param m the matrix
-	 * @param row the row
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param row
+	 *            the row
 	 * @return the sum of values in row row
 	 */
 	public static double sumRow(Matrix m, int row) {
@@ -772,7 +816,7 @@ public class MatrixUtils {
 		final int cols = m.getColumnDimension();
 
 		double sum = 0;
-		for (int c=0; c<cols; c++)
+		for (int c = 0; c < cols; c++)
 			sum += data[row][c];
 
 		return sum;
@@ -780,16 +824,20 @@ public class MatrixUtils {
 
 	/**
 	 * Increment values in a single column by a constant
-	 * @param m the matrix
-	 * @param col the column
-	 * @param value the constant
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param col
+	 *            the column
+	 * @param value
+	 *            the constant
 	 * @return the matrix
 	 */
 	public static Matrix incrColumn(Matrix m, int col, double value) {
 		final double[][] data = m.getArray();
 		final int rows = m.getRowDimension();
 
-		for (int r=0; r<rows; r++)
+		for (int r = 0; r < rows; r++)
 			data[r][col] += value;
 
 		return m;
@@ -797,16 +845,20 @@ public class MatrixUtils {
 
 	/**
 	 * Increment values in a single column by a constant
-	 * @param m the matrix
-	 * @param row the row
-	 * @param value the constant
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param row
+	 *            the row
+	 * @param value
+	 *            the constant
 	 * @return the sum of values in row row
 	 */
 	public static Matrix incrRow(Matrix m, int row, double value) {
 		final double[][] data = m.getArray();
 		final int cols = m.getColumnDimension();
 
-		for (int c=0; c<cols; c++)
+		for (int c = 0; c < cols; c++)
 			data[row][c] += value;
 
 		return m;
@@ -814,11 +866,12 @@ public class MatrixUtils {
 
 	/**
 	 * round (using {@link Math#round(double)} each value of the matrix
+	 * 
 	 * @param times
 	 * @return same matrix as handed in
 	 */
 	public static Matrix round(Matrix times) {
-		double[][] data = times.getArray();
+		final double[][] data = times.getArray();
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[i].length; j++) {
 				data[i][j] = Math.round(data[i][j]);
@@ -828,17 +881,18 @@ public class MatrixUtils {
 	}
 
 	/**
-	 *  min(A,B) returns an array the same size as A and B with the smallest elements taken from A or B.
-	 *  The dimensions of A and B must match
+	 * min(A,B) returns an array the same size as A and B with the smallest
+	 * elements taken from A or B. The dimensions of A and B must match
+	 * 
 	 * @param A
 	 * @param B
 	 * @return new Matrix filled with min from A and B
 	 */
 	public static Matrix min(Matrix A, Matrix B) {
-		double[][] dataA = A.getArray();
-		double[][] dataB = B.getArray();
-		Matrix ret = A.copy();
-		double[][] dataRet = ret.getArray();
+		final double[][] dataA = A.getArray();
+		final double[][] dataB = B.getArray();
+		final Matrix ret = A.copy();
+		final double[][] dataRet = ret.getArray();
 		for (int i = 0; i < dataA.length; i++) {
 			for (int j = 0; j < dataB[i].length; j++) {
 				dataRet[i][j] = Math.min(dataA[i][j], dataB[i][j]);
@@ -848,38 +902,37 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * d to the power of each value in range.
-	 * as with {@link #range} range is:
-	 * - a single number (a) (0:1:a)
-	 * - two numbers (a,b) (a:1:b)
-	 * - three numbers (a,b,c) (a:b:c)
-	 *
+	 * d to the power of each value in range. as with {@link #range} range is: -
+	 * a single number (a) (0:1:a) - two numbers (a,b) (a:1:b) - three numbers
+	 * (a,b,c) (a:b:c)
+	 * 
 	 * any other amount of range results in a {@link RuntimeException}
+	 * 
 	 * @param d
 	 * @param range
 	 * @return d to the power of each value in range
 	 */
-	public static Matrix rangePow(double d, double ... range) {
-		double start,end,delta;
-		if(range.length == 1){
+	public static Matrix rangePow(double d, double... range) {
+		double start, end, delta;
+		if (range.length == 1) {
 			start = 0;
 			end = range[0];
 			delta = 1;
-		}else if(range.length == 2){
+		} else if (range.length == 2) {
 			start = range[0];
 			end = range[1];
 			delta = 1;
 		}
-		else if(range.length == 3){
+		else if (range.length == 3) {
 			start = range[0];
 			end = range[2];
 			delta = range[1];
 		}
-		else{
+		else {
 			throw new RuntimeException("Invalid range options selected");
 		}
-		int l = (int) ((end-start+1)/delta);
-		double[][] out = new double[1][l];
+		final int l = (int) ((end - start + 1) / delta);
+		final double[][] out = new double[1][l];
 		for (int i = 0; i < l; i++) {
 			out[0][i] = Math.pow(d, start + (i * delta));
 		}
@@ -887,34 +940,33 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * range is:
-	 * - a single number (a) (0:1:a)
-	 * - two numbers (a,b) (a:1:b)
-	 * - three numbers (a,b,c) (a:b:c)
+	 * range is: - a single number (a) (0:1:a) - two numbers (a,b) (a:1:b) -
+	 * three numbers (a,b,c) (a:b:c)
+	 * 
 	 * @param range
 	 * @return the range defined
 	 */
-	public static Matrix range(double ... range) {
-		double start,end,delta;
-		if(range.length == 1){
+	public static Matrix range(double... range) {
+		double start, end, delta;
+		if (range.length == 1) {
 			start = 0;
 			end = range[0];
 			delta = 1;
-		}else if(range.length == 2){
+		} else if (range.length == 2) {
 			start = range[0];
 			end = range[1];
 			delta = 1;
 		}
-		else if(range.length == 3){
+		else if (range.length == 3) {
 			start = range[0];
 			end = range[2];
 			delta = range[1];
 		}
-		else{
+		else {
 			throw new RuntimeException("Invalid range options selected");
 		}
-		int l = (int) Math.floor((end-start)/delta) + 1;
-		double[][] out = new double[1][l];
+		final int l = (int) Math.floor((end - start) / delta) + 1;
+		final double[][] out = new double[1][l];
 		for (int i = 0; i < l; i++) {
 			out[0][i] = start + (i * delta);
 		}
@@ -922,34 +974,33 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * range is:
-	 * - a single number (a) (0:1:a)
-	 * - two numbers (a,b) (a:1:b)
-	 * - three numbers (a,b,c) (a:b:c)
+	 * range is: - a single number (a) (0:1:a) - two numbers (a,b) (a:1:b) -
+	 * three numbers (a,b,c) (a:b:c)
+	 * 
 	 * @param range
 	 * @return the range defined
 	 */
-	public static Matrix range(int ... range) {
-		int start,end,delta;
-		if(range.length == 1){
+	public static Matrix range(int... range) {
+		int start, end, delta;
+		if (range.length == 1) {
 			start = 0;
 			end = range[0];
 			delta = 1;
-		}else if(range.length == 2){
+		} else if (range.length == 2) {
 			start = range[0];
 			end = range[1];
 			delta = 1;
 		}
-		else if(range.length == 3){
+		else if (range.length == 3) {
 			start = range[0];
 			end = range[2];
 			delta = range[1];
 		}
-		else{
+		else {
 			throw new RuntimeException("Invalid range options selected");
 		}
-		int l = (int) Math.floor((end-start)/delta) + 1;
-		double[][] out = new double[1][l];
+		final int l = (int) Math.floor((end - start) / delta) + 1;
+		final double[][] out = new double[1][l];
 		for (int i = 0; i < l; i++) {
 			out[0][i] = start + (i * delta);
 		}
@@ -958,18 +1009,19 @@ public class MatrixUtils {
 
 	/**
 	 * Given two row vectors, construct the power set of rowvector combinations
+	 * 
 	 * @param A
 	 * @param B
 	 * @return a new matrix of size A.cols * B.cols
 	 */
 	public static Matrix ntuples(Matrix A, Matrix B) {
-		double[][] Adata = A.getArray();
-		double[][] Bdata = B.getArray();
+		final double[][] Adata = A.getArray();
+		final double[][] Bdata = B.getArray();
 
-		double[][] out = new double[2][Adata[0].length * Bdata[0].length];
+		final double[][] out = new double[2][Adata[0].length * Bdata[0].length];
 		int i = 0;
-		for (double a : Adata[0]) {
-			for (double b : Bdata[0]) {
+		for (final double a : Adata[0]) {
+			for (final double b : Bdata[0]) {
 				out[0][i] = a;
 				out[1][i] = b;
 				i++;
@@ -980,20 +1032,21 @@ public class MatrixUtils {
 
 	/**
 	 * Given a matrix, repeat the matrix over i rows and j columns
+	 * 
 	 * @param x
 	 * @param i
 	 * @param j
 	 * @return repeated matrix
 	 */
 	public static Matrix repmat(Matrix x, int i, int j) {
-		double[][] xdata = x.getArray();
-		double[][] newmat = new double[xdata.length * i ][xdata[0].length * j];
-		for (int k = 0; k < newmat.length; k+=xdata.length) {
-			for (int l = 0; l < newmat[0].length; l+=xdata[0].length) {
+		final double[][] xdata = x.getArray();
+		final double[][] newmat = new double[xdata.length * i][xdata[0].length * j];
+		for (int k = 0; k < newmat.length; k += xdata.length) {
+			for (int l = 0; l < newmat[0].length; l += xdata[0].length) {
 				int rowcopyindex = 0;
-				for (double[] ds : xdata) {
-					System.arraycopy(ds, 0, newmat[k+rowcopyindex], l, xdata[0].length);
-					rowcopyindex+=1;
+				for (final double[] ds : xdata) {
+					System.arraycopy(ds, 0, newmat[k + rowcopyindex], l, xdata[0].length);
+					rowcopyindex += 1;
 				}
 			}
 		}
@@ -1001,52 +1054,50 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * horizontally stack all the matricies provided. i.e. ret = [x1 x2 x3 x4 ... xn]
+	 * horizontally stack all the matricies provided. i.e. ret = [x1 x2 x3 x4
+	 * ... xn]
+	 * 
 	 * @param x
 	 * @return horizontally stacked
 	 */
-	public static Matrix hstack(Matrix ... x) {
-		int height = x[0].getRowDimension();
+	public static Matrix hstack(Matrix... x) {
+		final int height = x[0].getRowDimension();
 		int width = 0;
-		for (Matrix matrix : x) {
+		for (final Matrix matrix : x) {
 			width += matrix.getColumnDimension();
 		}
-		double[][] newmat = new double[height][width];
+		final double[][] newmat = new double[height][width];
 		int colindex = 0;
-		for (Matrix matrix : x) {
-			double[][] matdata = matrix.getArray();
-			int w = matrix.getColumnDimension();
+		for (final Matrix matrix : x) {
+			final double[][] matdata = matrix.getArray();
+			final int w = matrix.getColumnDimension();
 			for (int i = 0; i < height; i++) {
 				System.arraycopy(matdata[i], 0, newmat[i], colindex, w);
 			}
-			colindex +=w;
+			colindex += w;
 		}
 		return new Matrix(newmat);
 	}
 
-
 	/**
 	 * Add the rows to the mat at rowIndex. Assumes MANY things with no checks:
-	 * rows.rows == rowIndex.length
-	 * mat.cols == rows.cols
-	 * rowIndex.length < mat.rows
-	 * for x in rowIndex: x < mat.rows && x >= 0
-	 * etc.
-	 *
+	 * rows.rows == rowIndex.length mat.cols == rows.cols rowIndex.length <
+	 * mat.rows for x in rowIndex: x < mat.rows && x >= 0 etc.
+	 * 
 	 * @param mat
 	 * @param rows
 	 * @param rowIndex
 	 * @return the input matrix
 	 */
 	public static Matrix plusEqualsRow(Matrix mat, Matrix rows, int[] rowIndex) {
-		double[][] matdata = mat.getArray();
-		double[][] rowdata = rows.getArray();
+		final double[][] matdata = mat.getArray();
+		final double[][] rowdata = rows.getArray();
 		int i = 0;
-		for (int row : rowIndex) {
+		for (final int row : rowIndex) {
 			for (int j = 0; j < rowdata[i].length; j++) {
 				matdata[row][j] += rowdata[i][j];
 			}
-			i ++;
+			i++;
 		}
 		return mat;
 	}
@@ -1057,9 +1108,9 @@ public class MatrixUtils {
 	 * @return a new matrix for x < val
 	 */
 	public static Matrix lessThan(Matrix x, double val) {
-		Matrix retMat = x.copy();
-		double[][] data = x.getArray();
-		double[][] retdata = retMat.getArray();
+		final Matrix retMat = x.copy();
+		final double[][] data = x.getArray();
+		final double[][] retdata = retMat.getArray();
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[i].length; j++) {
 				retdata[i][j] = data[i][j] < val ? 1 : 0;
@@ -1074,9 +1125,9 @@ public class MatrixUtils {
 	 * @return a new matrix for x > val
 	 */
 	public static Matrix greaterThan(Matrix x, double val) {
-		Matrix retMat = x.copy();
-		double[][] data = x.getArray();
-		double[][] retdata = retMat.getArray();
+		final Matrix retMat = x.copy();
+		final double[][] data = x.getArray();
+		final double[][] retdata = retMat.getArray();
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[i].length; j++) {
 				retdata[i][j] = data[i][j] > val ? 1 : 0;
@@ -1089,12 +1140,12 @@ public class MatrixUtils {
 	 * @param x
 	 * @return a new matrix for x1 && x2 && ... && xn where && means "!=0"
 	 */
-	public static Matrix and(Matrix ... x) {
-		Matrix retMat = MatrixUtils.ones(x[0].getRowDimension(),x[0].getColumnDimension());
-		double[][] retdata = retMat.getArray();
+	public static Matrix and(Matrix... x) {
+		final Matrix retMat = MatrixUtils.ones(x[0].getRowDimension(), x[0].getColumnDimension());
+		final double[][] retdata = retMat.getArray();
 
-		for (Matrix matrix : x) {
-			double[][] data = matrix.getArray();
+		for (final Matrix matrix : x) {
+			final double[][] data = matrix.getArray();
 			for (int i = 0; i < data.length; i++) {
 				for (int j = 0; j < data[i].length; j++) {
 					retdata[i][j] = (retdata[i][j] != 0 && data[i][j] != 0) ? 1 : 0;
@@ -1110,7 +1161,7 @@ public class MatrixUtils {
 	 * @return matrix of dimensions filled with ones
 	 */
 	public static Matrix ones(int rowDimension, int columnDimension) {
-		Matrix ret = new Matrix(rowDimension,columnDimension);
+		final Matrix ret = new Matrix(rowDimension, columnDimension);
 		return plus(ret, 1);
 	}
 
@@ -1119,16 +1170,17 @@ public class MatrixUtils {
 	 * @return logical-and each column of x
 	 */
 	public static Matrix all(Matrix x) {
-		int cols = x.getColumnDimension();
-		int rows = x.getRowDimension();
-		Matrix ret = new Matrix(1,cols);
-		double[][] retdata = ret.getArray();
-		double[][] data = x.getArray();
+		final int cols = x.getColumnDimension();
+		final int rows = x.getRowDimension();
+		final Matrix ret = new Matrix(1, cols);
+		final double[][] retdata = ret.getArray();
+		final double[][] data = x.getArray();
 		for (int i = 0; i < cols; i++) {
 			boolean cool = true;
 			for (int j = 0; j < rows; j++) {
 				cool = data[j][i] != 0 && cool;
-				if(!cool) break;
+				if (!cool)
+					break;
 			}
 			retdata[0][i] = cool ? 1 : 0;
 		}
@@ -1139,17 +1191,17 @@ public class MatrixUtils {
 	 * @param vals
 	 * @return given vals, return the array indexes where vals != 0
 	 */
-	public static int[] valsToIndex(double[] vals){
+	public static int[] valsToIndex(double[] vals) {
 		int nindex = 0;
-		for (double d : vals) {
+		for (final double d : vals) {
 			nindex += d != 0 ? 1 : 0;
 		}
 
-		int[] indexes = new int[nindex];
+		final int[] indexes = new int[nindex];
 		nindex = 0;
 		int i = 0;
-		for (double d : vals) {
-			if(d != 0){
+		for (final double d : vals) {
+			if (d != 0) {
 				indexes[i] = nindex;
 				i++;
 			}
@@ -1160,13 +1212,14 @@ public class MatrixUtils {
 
 	/**
 	 * for every value in x greater than val set toset
+	 * 
 	 * @param x
 	 * @param val
 	 * @param toset
 	 * @return same matrix handed in
 	 */
 	public static Matrix greaterThanSet(Matrix x, int val, int toset) {
-		double[][] data = x.getArray();
+		final double[][] data = x.getArray();
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[i].length; j++) {
 				data[i][j] = data[i][j] > val ? toset : data[i][j];
@@ -1177,13 +1230,14 @@ public class MatrixUtils {
 
 	/**
 	 * for every value in x less than val set toset
+	 * 
 	 * @param x
 	 * @param val
 	 * @param toset
 	 * @return same matrix handed in
 	 */
 	public static Matrix lessThanSet(Matrix x, int val, int toset) {
-		double[][] data = x.getArray();
+		final double[][] data = x.getArray();
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[i].length; j++) {
 				data[i][j] = data[i][j] < val ? toset : data[i][j];
@@ -1195,9 +1249,11 @@ public class MatrixUtils {
 	/**
 	 * Subtract the given row vector from every row of the given matrix,
 	 * returning the result in a new matrix.
-	 *
-	 * @param in the matrix
-	 * @param row the row vector
+	 * 
+	 * @param in
+	 *            the matrix
+	 * @param row
+	 *            the row vector
 	 * @return the resultant matrix
 	 */
 	public static Matrix minusRow(Matrix in, double[] row) {
@@ -1206,8 +1262,8 @@ public class MatrixUtils {
 		final int rows = out.getRowDimension();
 		final int cols = out.getColumnDimension();
 
-		for (int r=0; r<rows; r++) {
-			for (int c=0; c<cols; c++) {
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
 				outData[r][c] -= row[c];
 			}
 		}
@@ -1216,11 +1272,13 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Subtract the given col vector (held as a Matrix) from every col of the given matrix,
-	 * returning the result in a new matrix.
-	 *
-	 * @param in the matrix
-	 * @param col the col Matrix (Only the first column is used)
+	 * Subtract the given col vector (held as a Matrix) from every col of the
+	 * given matrix, returning the result in a new matrix.
+	 * 
+	 * @param in
+	 *            the matrix
+	 * @param col
+	 *            the col Matrix (Only the first column is used)
 	 * @return the resultant matrix
 	 */
 	public static Matrix minusCol(Matrix in, Matrix col) {
@@ -1228,10 +1286,10 @@ public class MatrixUtils {
 		final double[][] outData = out.getArray();
 		final int rows = out.getRowDimension();
 		final int cols = out.getColumnDimension();
-		double[][] colArr = col.getArray();
+		final double[][] colArr = col.getArray();
 
-		for (int r=0; r<rows; r++) {
-			for (int c=0; c<cols; c++) {
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
 				outData[r][c] -= colArr[r][0];
 			}
 		}
@@ -1241,8 +1299,11 @@ public class MatrixUtils {
 
 	/**
 	 * Add a matrix to another inline.
-	 * @param result the matrix to add to
-	 * @param add the matrix to add
+	 * 
+	 * @param result
+	 *            the matrix to add to
+	 * @param add
+	 *            the matrix to add
 	 * @return the result matrix
 	 */
 	public static Matrix plusEquals(Matrix result, Matrix add) {
@@ -1252,8 +1313,8 @@ public class MatrixUtils {
 		final double[][] resultData = result.getArray();
 		final double[][] addData = add.getArray();
 
-		for (int r=0; r<rows; r++) {
-			for (int c=0; c<cols; c++) {
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
 				resultData[r][c] += addData[r][c];
 			}
 		}
@@ -1262,11 +1323,12 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Multiply a matrix by a constant inplace, returning the
-	 * matrix.
-	 *
-	 * @param m the matrix
-	 * @param val the value to multiply by
+	 * Multiply a matrix by a constant inplace, returning the matrix.
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param val
+	 *            the value to multiply by
 	 * @return the matrix
 	 */
 	public static Matrix times(Matrix m, double val) {
@@ -1275,24 +1337,24 @@ public class MatrixUtils {
 		final int rows = m.getRowDimension();
 		final int cols = m.getColumnDimension();
 
-		for (int r=0; r<rows; r++)
-			for (int c=0; c<cols; c++)
+		for (int r = 0; r < rows; r++)
+			for (int c = 0; c < cols; c++)
 				data[r][c] *= val;
 
 		return m;
 	}
 
-
 	/**
 	 * Convert an mtj matrix into a 2d double array
+	 * 
 	 * @param mat
 	 * @return a double array
 	 */
 	public static double[][] mtjToDoubleArray(no.uib.cipr.matrix.DenseMatrix mat) {
-		double[][] out = new double[mat.numRows()][mat.numColumns()];
-		double[] data = mat.getData();
+		final double[][] out = new double[mat.numRows()][mat.numColumns()];
+		final double[] data = mat.getData();
 		for (int r = 0; r < out.length; r++) {
-			double[] outr = out[r];
+			final double[] outr = out[r];
 			for (int c = 0; c < out[0].length; c++) {
 				outr[c] = data[r + c * out.length];
 			}
@@ -1302,7 +1364,9 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the sum of values in all rows
-	 * @param m the matrix
+	 * 
+	 * @param m
+	 *            the matrix
 	 * @return the sum of values across all cols in all rows
 	 */
 	public static Matrix sumRows(Matrix m) {
@@ -1310,10 +1374,10 @@ public class MatrixUtils {
 		final int cols = m.getColumnDimension();
 		final int rows = m.getRowDimension();
 
-		Matrix sum = new Matrix(rows,1);
-		double[][] sumArr = sum.getArray();
+		final Matrix sum = new Matrix(rows, 1);
+		final double[][] sumArr = sum.getArray();
 		for (int c = 0; c < cols; c++) {
-			for (int r=0; r<rows; r++)
+			for (int r = 0; r < rows; r++)
 			{
 				sumArr[r][0] += data[r][c];
 			}
@@ -1324,7 +1388,9 @@ public class MatrixUtils {
 
 	/**
 	 * Compute the sum of values in all cols
-	 * @param m the matrix
+	 * 
+	 * @param m
+	 *            the matrix
 	 * @return the sum of values across all rows in all cols
 	 */
 	public static Matrix sumCols(Matrix m) {
@@ -1332,10 +1398,10 @@ public class MatrixUtils {
 		final int cols = m.getColumnDimension();
 		final int rows = m.getRowDimension();
 
-		Matrix sum = new Matrix(1,cols);
-		double[][] sumArr = sum.getArray();
+		final Matrix sum = new Matrix(1, cols);
+		final double[][] sumArr = sum.getArray();
 		for (int c = 0; c < cols; c++) {
-			for (int r=0; r<rows; r++)
+			for (int r = 0; r < rows; r++)
 			{
 				sumArr[0][c] += data[r][c];
 			}
@@ -1345,14 +1411,18 @@ public class MatrixUtils {
 	}
 
 	/**
+	 * Generate a matrix with Gaussian distributed randoms
+	 * 
 	 * @param rows
+	 *            the number of rows
 	 * @param cols
+	 *            the number of columns
 	 * @return a matrix containing values drawn from a 0 mean 1.0 sdev gaussian
 	 */
 	public static Matrix randGaussian(int rows, int cols) {
-		Matrix m = new Matrix(rows,cols);
-		double[][] d = m.getArray();
-		Random r = new Random();
+		final Matrix m = new Matrix(rows, cols);
+		final double[][] d = m.getArray();
+		final Random r = new Random();
 		for (int row = 0; row < d.length; row++) {
 			for (int col = 0; col < d[row].length; col++) {
 				d[row][col] = r.nextGaussian();
@@ -1361,8 +1431,16 @@ public class MatrixUtils {
 		return m;
 	}
 
-	public static double sparcity(SparseMatrix rowmat) {
-		double density = (double)rowmat.used() / ((double)rowmat.rowCount() * (double)rowmat.columnCount()); 
-		return 1-density;
+	/**
+	 * Compute the sparsity (i.e. ratio of non-zero elements to matrix size) of
+	 * the given matrix
+	 * 
+	 * @param matrix
+	 *            the matrix
+	 * @return the sparsity
+	 */
+	public static double sparcity(SparseMatrix matrix) {
+		final double density = matrix.used() / ((double) matrix.rowCount() * (double) matrix.columnCount());
+		return 1 - density;
 	}
 }

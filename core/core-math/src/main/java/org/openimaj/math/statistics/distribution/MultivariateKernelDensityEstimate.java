@@ -1,10 +1,11 @@
 package org.openimaj.math.statistics.distribution;
 
+import gnu.trove.procedure.TObjectDoubleProcedure;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.openimaj.math.statistics.distribution.kernel.StandardUnivariateKernels;
 import org.openimaj.math.statistics.distribution.kernel.UnivariateKernel;
 import org.openimaj.util.pair.ObjectDoublePair;
 import org.openimaj.util.tree.DoubleKDTree;
@@ -19,7 +20,7 @@ import org.openimaj.util.tree.DoubleKDTree;
 public class MultivariateKernelDensityEstimate extends AbstractMultivariateDistribution {
 	double[][] data;
 	UnivariateKernel kernel;
-	double bandwidth;
+	private double bandwidth;
 	DoubleKDTree tree;
 
 	/**
@@ -49,10 +50,10 @@ public class MultivariateKernelDensityEstimate extends AbstractMultivariateDistr
 	 * @param bandwidth
 	 *            the bandwidth
 	 */
-	public MultivariateKernelDensityEstimate(List<double[]> data, StandardUnivariateKernels kernel, double bandwidth)
+	public MultivariateKernelDensityEstimate(List<double[]> data, UnivariateKernel kernel, double bandwidth)
 	{
 		this.data = data.toArray(new double[data.size()][]);
-//		this.tree = new DoubleKDTree(data);
+		this.tree = new DoubleKDTree(this.data);
 		this.kernel = kernel;
 		this.bandwidth = bandwidth;
 	}
@@ -62,7 +63,7 @@ public class MultivariateKernelDensityEstimate extends AbstractMultivariateDistr
 		final double[] pt = data[rng.nextInt(data.length)].clone();
 
 		for (int i = 0; i < pt.length; i++) {
-			pt[i] = pt[i] + kernel.sample(rng) * this.bandwidth;
+			pt[i] = pt[i] + kernel.sample(rng) * this.getBandwidth();
 		}
 
 		return pt;
@@ -70,35 +71,72 @@ public class MultivariateKernelDensityEstimate extends AbstractMultivariateDistr
 
 	@Override
 	public double estimateProbability(double[] sample) {
-//		final List<ObjectDoublePair<double[]>> neighbours = tree.radiusDistanceSearch(sample, kernel.getCutOff()
-//				* bandwidth);
-//
-//		double prob = 0;
-//		for (int i = 0; i < neighbours.size(); i++) {
-//			prob += kernel.evaluate(Math.sqrt(neighbours.get(i).second) / bandwidth);
-//		}
-//
-//		return prob / (bandwidth * data.length);
-		return 0;
+		final double[] prob = new double[1];
+		final int[] count = new int[1];
+
+		tree.coordinateRadiusSearch(sample, kernel.getCutOff() * getBandwidth(), new TObjectDoubleProcedure<double[]>() {
+			@Override
+			public boolean execute(double[] point, double distance) {
+				prob[0] += kernel.evaluate(Math.sqrt(distance) / getBandwidth());
+				count[0]++;
+
+				return true;
+			}
+		});
+
+		return prob[0] / (getBandwidth() * count[0]);
 	}
 
+	/**
+	 * Get the underlying points that support the KDE within the window around
+	 * the given point. Each point is returned together with its own density
+	 * estimate.
+	 * 
+	 * @param sample
+	 *            the point in the centre of the window
+	 * @return the points in the window
+	 */
 	public List<ObjectDoublePair<double[]>> getSupport(double[] sample) {
-//		final List<double[]> neighbours = tree.radiusSearch(sample, kernel.getCutOff() * bandwidth);
-//		final List<ObjectDoublePair<double[]>> support = new ArrayList<ObjectDoublePair<double[]>>(neighbours.size());
-//
-//		for (int i = 0; i < neighbours.size(); i++) {
-//			final double[] ni = neighbours.get(i);
-//
-//			double dist = 0;
-//			for (int j = 0; j < sample.length; j++) {
-//				final double val = (sample[j] - ni[j]);
-//				dist += val * val;
-//			}
-//
-//			support.add(ObjectDoublePair.pair(ni, kernel.evaluate(Math.sqrt(dist) / bandwidth)));
-//		}
-//
-//		return support;
-		return null;
+		final List<ObjectDoublePair<double[]>> support = new ArrayList<ObjectDoublePair<double[]>>();
+
+		tree.coordinateRadiusSearch(sample, kernel.getCutOff() * getBandwidth(), new TObjectDoubleProcedure<double[]>() {
+			@Override
+			public boolean execute(double[] a, double b) {
+				support.add(ObjectDoublePair.pair(a, kernel.evaluate(Math.sqrt(b) / getBandwidth())));
+
+				return true;
+			}
+		});
+
+		return support;
+	}
+
+	/**
+	 * Get the underlying data
+	 * 
+	 * @return the data
+	 */
+	public double[][] getData() {
+		return data;
+	}
+
+	/**
+	 * Get the bandwidth
+	 * 
+	 * @return the bandwidth
+	 */
+	public double getBandwidth() {
+		return bandwidth;
+	}
+
+	/**
+	 * Get the bandwidth scaled by the kernel support.
+	 * 
+	 * @see UnivariateKernel#getCutOff()
+	 * 
+	 * @return the scaled bandwidth
+	 */
+	public double getScaledBandwidth() {
+		return bandwidth * this.kernel.getCutOff();
 	}
 }

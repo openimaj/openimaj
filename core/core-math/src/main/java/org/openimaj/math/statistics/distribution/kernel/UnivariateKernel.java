@@ -3,7 +3,8 @@ package org.openimaj.math.statistics.distribution.kernel;
 import java.util.Random;
 
 /**
- * A Univariate kernel
+ * A Univariate kernel (i.e. a 1-d window function with an underlying
+ * distribution)
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
