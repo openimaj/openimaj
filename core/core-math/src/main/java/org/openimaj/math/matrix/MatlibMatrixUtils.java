@@ -1,6 +1,8 @@
 package org.openimaj.math.matrix;
 
 
+import org.openimaj.util.array.ArrayUtils;
+
 import gov.sandia.cognition.math.matrix.mtj.SparseRowMatrix;
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
 import no.uib.cipr.matrix.sparse.SparseVector;
@@ -128,7 +130,7 @@ public class MatlibMatrixUtils {
 		}
 		return A;
 	}
-
+	
 	/**
 	 * Y = A . Bt
 	 * @param A
@@ -375,6 +377,10 @@ public class MatlibMatrixUtils {
 			}
 		}
 		return mat;
+	}
+
+	public static double sum(DiagonalMatrix d) {
+		return ArrayUtils.sumValues(d.getVals());
 	}
 	
 	

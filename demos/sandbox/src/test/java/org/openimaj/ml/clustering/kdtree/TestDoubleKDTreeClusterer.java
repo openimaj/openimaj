@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.io.FileUtils;
+import org.openimaj.math.matrix.DiagonalMatrix;
 import org.openimaj.math.matrix.JamaDenseMatrix;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.ml.clustering.IndexClusters;
@@ -39,6 +40,18 @@ import ch.akuhn.matrix.eigenvalues.FewEigenvalues;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class TestDoubleKDTreeClusterer {
+	private final class ExtractWD extends GraphLaplacian {
+		DiagonalMatrix D;
+		SparseMatrix W;
+
+		@Override
+		public SparseMatrix laplacian(SparseMatrix adj,DiagonalMatrix degree) {
+			W = adj;
+			D = degree;
+			return null;
+		}
+	}
+
 	private static final int EIGHEIGHT = 100;
 	private static final int EIGWIDTH = 600;
 	private double[][] testData;
@@ -76,12 +89,15 @@ public class TestDoubleKDTreeClusterer {
 		try {
 			MatFileWriter writer = new MatFileWriter(new File("/home/ss/Experiments/python/sim.mat"),tosave);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Failed outputing python");
 		}
 		drawdata();
 		int neigSelect = 5;
-		DoubleKDTreeClusterer spatial = new DoubleKDTreeClusterer(0.01,1,4);
+		
+		ExtractWD gl = new ExtractWD();
+		gl.laplacian(simmat);
+		SplitDetectionMode splitmode = new SplitDetectionMode.OPTIMISED(gl.D,gl.W);
+		DoubleKDTreeClusterer spatial = new DoubleKDTreeClusterer(splitmode,0.01,1,4);
 		
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(spatial);
 		conf.laplacian = new GraphLaplacian.Normalised();

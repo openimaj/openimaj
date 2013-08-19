@@ -1,6 +1,7 @@
 package org.openimaj.math.matrix;
 
 import ch.akuhn.matrix.Matrix;
+import ch.akuhn.matrix.Vector;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -28,7 +29,7 @@ public class DiagonalMatrix extends Matrix{
 			this.vals[i] = arr[i][i];
 		}
 	}
-
+	
 	/**
 	 * @param mat
 	 */
@@ -38,7 +39,30 @@ public class DiagonalMatrix extends Matrix{
 			this.vals[i] = mat.get(i, i);
 		}
 	}
-
+	
+	@Override
+	public Vector mult(Vector x) {
+		double[] y = new double[this.columnCount()];
+		for (int i = 0; i < y.length; i++) {
+			y[i] = this.vals[i] * x.get(i);
+		}
+		return Vector.wrap(y);
+	}
+	
+	@Override
+	public Vector transposeMultiply(Vector x) {
+		return mult(x);
+	}
+	
+	@Override
+	public Vector transposeNonTransposeMultiply(Vector x) {
+		double[] y = new double[this.columnCount()];
+		for (int i = 0; i < y.length; i++) {
+			y[i] = this.vals[i] * this.vals[i] * x.get(i);
+		}
+		return Vector.wrap(y);
+	}
+	
 	@Override
 	public int columnCount() {
 		return this.vals.length;

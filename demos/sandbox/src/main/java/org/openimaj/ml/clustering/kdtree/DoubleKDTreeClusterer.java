@@ -87,12 +87,34 @@ public class DoubleKDTreeClusterer implements SpatialClusterer<KDTreeClusters, d
 		}
 		
 	}
+	
+	/**
+	 * calls: {@link #DoubleKDTreeClusterer()} with 0.01
+	 */
+	public DoubleKDTreeClusterer() {
+		
+	}
+	
 	/**
 	 * @param varprop the proportion of variance change from the root variance before splitting stops
 	 * @param startindex the index to start from
 	 * @param ndims the number of dimensions to split on
 	 */
 	public DoubleKDTreeClusterer(double varprop, int startindex, int ndims) {
+		this.varprop = varprop;
+		this.startindex = startindex;
+		this.ndims = ndims;
+	}
+	
+	/**
+	 * @param detectionMode The {@link SplitDetectionMode} given the feature of highest variance
+	 * @param varprop The minimum proportional variance (compared to the first variance)
+	 * @param startindex the feature start index
+	 * @param ndims the number of features to use
+	 * 
+	 */
+	public DoubleKDTreeClusterer(SplitDetectionMode detectionMode, double varprop, int startindex, int ndims) {
+		this.detectionMode = detectionMode;
 		this.varprop = varprop;
 		this.startindex = startindex;
 		this.ndims = ndims;
