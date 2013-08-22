@@ -17,8 +17,16 @@ import ch.akuhn.matrix.eigenvalues.Eigenvalues;
  *
  */
 public class SpectralClusteringConf<DATATYPE>{
-	
-	protected static class DefaultClustererFunction<DATATYPE> implements Function<IndependentPair<double[], double[][]>, SpatialClusterer<? extends SpatialClusters<DATATYPE>,DATATYPE>>{
+	/**
+	 * A function which can represent itself as a string
+	 *
+	 * @param <DATATYPE>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 */
+	public static interface ClustererProvider<DATATYPE> extends Function<IndependentPair<double[], double[][]>, SpatialClusterer<? extends SpatialClusters<DATATYPE>,DATATYPE>>{
+		public String toString();
+	}
+	protected static class DefaultClustererFunction<DATATYPE> implements ClustererProvider<DATATYPE>{
 
 
 		private SpatialClusterer<? extends SpatialClusters<DATATYPE>, DATATYPE> internal;
@@ -32,12 +40,18 @@ public class SpectralClusteringConf<DATATYPE>{
 			return internal;
 		}
 		
+		@Override
+		public String toString() {
+			return internal.toString();
+		}
+		
 	}
 	
 	/**
 	 * The internal clusterer
 	 */
-	Function<IndependentPair<double[], double[][]>, SpatialClusterer<? extends SpatialClusters<DATATYPE>,DATATYPE>> internal;
+	
+	ClustererProvider<DATATYPE> internal;
 
 	/**
 	 * The graph laplacian creator
@@ -110,7 +124,7 @@ public class SpectralClusteringConf<DATATYPE>{
 	 * @param internal the internal clusterer
 	 *
 	 */
-	public SpectralClusteringConf(Function<IndependentPair<double[], double[][]>, SpatialClusterer<? extends SpatialClusters<DATATYPE>, DATATYPE>> internal) {
+	public SpectralClusteringConf(ClustererProvider<DATATYPE> internal) {
 		this.internal = internal;
 		this.laplacian = new GraphLaplacian.Normalised();
 		this.eigenChooser = new ChangeDetectingEigenChooser(100,0.1);

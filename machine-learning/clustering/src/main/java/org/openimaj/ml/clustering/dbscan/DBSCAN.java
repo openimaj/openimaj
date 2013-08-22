@@ -4,6 +4,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TIntObjectProcedure;
+import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.List;
@@ -30,18 +31,32 @@ public class DBSCAN {
 		TIntObjectHashMap<TIntList> clusters = new TIntObjectHashMap<TIntList>();
 		private RegionMode<IntDoublePair> regionMode;
 		private int length;
+		private boolean noiseAsClusters;
+		
 		/**
+		 * 
 		 * @param length
 		 * @param regionMode
 		 */
-		public State(int length, RegionMode<IntDoublePair> regionMode){
+		public State(int length, RegionMode<IntDoublePair> regionMode)
+		{
+			this(length, regionMode, false);
+		}
+		
+		/**
+		 * @param length
+		 * @param regionMode
+		 * @param noiseAsClusters treat noise as isolated clusters
+		 */
+		public State(int length, RegionMode<IntDoublePair> regionMode, boolean noiseAsClusters){
 			this.regionMode = regionMode;
 			this.length = length;
+			this.noiseAsClusters = noiseAsClusters;
 		}
 	}
 
-	DoubleDBSCANClusters dbscan(State state) {
-		int clusterIndex = 0;
+	DoubleDBSCANClusters dbscan(final State state) {
+		final int[] clusterIndex = new int[]{0};
 		for (int p = 0; p < state.length; p++) {
 			if(state.visited.contains(p))continue;
 			List<IntDoublePair> region = state.regionMode.regionQuery(p);
@@ -50,10 +65,23 @@ public class DBSCAN {
 			}
 			else{
 				TIntList cluster = new TIntArrayList();
-				state.clusters.put(clusterIndex, cluster);
+				state.clusters.put(clusterIndex[0], cluster);
 				expandCluster(p,region,cluster,state);
-				clusterIndex++;
+				clusterIndex[0]++;
 			}
+		}
+		
+		if(state.noiseAsClusters){
+			state.noise.forEach(new TIntProcedure() {
+				
+				@Override
+				public boolean execute(int value) {
+					TIntArrayList arr = new TIntArrayList();
+					arr.add(value);
+					state.clusters.put(clusterIndex[0]++, arr);
+					return true;
+				}
+			});
 		}
 		final int[][] clusterMembers = new int[state.clusters.size()][];
 		final int[] nEntries = new int[1];
@@ -66,6 +94,7 @@ public class DBSCAN {
 			}
 		});
 		int[] noise = state.noise.toArray();
+		
 		final DoubleDBSCANClusters dbscanClusters = new DoubleDBSCANClusters(noise, clusterMembers);
 		return dbscanClusters;
 	}

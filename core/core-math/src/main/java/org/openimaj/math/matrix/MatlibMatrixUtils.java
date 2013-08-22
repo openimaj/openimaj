@@ -3,6 +3,12 @@ package org.openimaj.math.matrix;
 
 import org.openimaj.util.array.ArrayUtils;
 
+import gnu.trove.TIntCollection;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import gov.sandia.cognition.math.matrix.mtj.SparseRowMatrix;
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
 import no.uib.cipr.matrix.sparse.SparseVector;
@@ -272,6 +278,77 @@ public class MatlibMatrixUtils {
 
 		return ret;
 	}
+	
+	/**
+	 * @param mat
+	 * @param rows
+	 * @param cols
+	 * @return 
+	 */
+	public static <T extends Matrix> T subMatrix(final T mat, TIntCollection rows,TIntCollection cols) {
+		final TIntIntHashMap actualCols;
+		if(!(cols instanceof TIntIntHashMap)){
+			actualCols = new TIntIntHashMap();
+			cols.forEach(new TIntProcedure() {
+				int seen = 0;
+				
+				@Override
+				public boolean execute(int value) {
+					actualCols.put(value, seen++);
+					return true;
+				}
+			});
+		}else{
+			actualCols = (TIntIntHashMap) cols;
+		}
+		@SuppressWarnings("unchecked")
+		final T ret = (T) mat.newInstance(rows.size(), cols.size());
+		rows.forEach(new TIntProcedure() {
+			int seenrows = 0;
+			@Override
+			public boolean execute(final int rowIndex) {
+				Vector row = mat.row(rowIndex);
+				for (Entry ent : row.entries()) {
+					if(actualCols.contains(ent.index)){
+						ret.put(seenrows, actualCols.get(ent.index), ent.value);
+					}
+				}
+				seenrows++;
+				return true;
+			}
+		});
+		
+		return ret;
+	}
+	
+	/**
+	 * @param mat
+	 * @param rows 
+	 * @param colstart
+	 * @param colend
+	 * @return the submatrix
+	 */
+	public static <T extends Matrix> T subMatrix(final T mat, TIntArrayList rows, final int colstart, final int colend) {
+		@SuppressWarnings("unchecked")
+		final T ret = (T) mat.newInstance(rows.size(), colend - colstart);
+		rows.forEach(new TIntProcedure() {
+			int seen = 0;
+			@Override
+			public boolean execute(int rowIndex) {
+				Vector row = mat.row(rowIndex);
+				for (Entry ent : row.entries()) {
+					if(ent.index >= colstart && ent.index < colend){
+						ret.put(seen, ent.index-colstart, ent.value);
+					}
+				}
+				seen++;
+				return true;
+			}
+		});
+		
+		return ret;
+		
+	}
 
 	/**
 	 * @param m
@@ -382,6 +459,40 @@ public class MatlibMatrixUtils {
 	public static double sum(DiagonalMatrix d) {
 		return ArrayUtils.sumValues(d.getVals());
 	}
+
+	/**
+	 * @param newSeenMatrix
+	 * @param row 
+	 * @param col 
+	 * @param current
+	 */
+	public static void setSubMatrix(Matrix newSeenMatrix, int row, int col,Matrix current) {
+		for (int i = row; i < row + current.rowCount(); i++) {
+			for (int j = col; j < col +current.columnCount(); j++) {
+				newSeenMatrix.put(i, j, current.get(i, j));
+			}
+		}
+	}
+
+	/**
+	 * @param oldRows
+	 * @return
+	 */
+	public static <T extends Matrix> T transpose(T mat) {
+		@SuppressWarnings("unchecked")
+		T ret = (T) mat.newInstance(mat.columnCount(), mat.rowCount());
+		for (int i = 0; i < mat.columnCount(); i++) {
+			for (int j = 0; j < mat.rowCount(); j++) {
+				ret.put(i, j, mat.get(j, i));
+			}
+		}
+		
+		return ret;
+	}
+
+	
+
+	
 	
 	
 	

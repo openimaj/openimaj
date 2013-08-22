@@ -51,7 +51,7 @@ public class PreparedSpectralClustering implements DataClusterer<Eigenvalues, Sp
 		// if the clusters contain the cluster indexes of the training examples use those
 		if(cluster instanceof IndexClusters){
 			IndexClusters clusters = new IndexClusters(((IndexClusters)cluster).clusters());
-			logger.debug(clusters);
+//			logger.debug(clusters);
 			return new SpectralIndexedClusters(clusters, lowestCols);
 		}
 		// Otherwise attempt to assign values to clusters

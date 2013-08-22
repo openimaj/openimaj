@@ -27,7 +27,7 @@ import ch.akuhn.matrix.eigenvalues.Eigenvalues;
  */
 public class DoubleSpectralClustering implements SimilarityClusterer<SpectralIndexedClusters>{
 	final static Logger logger = Logger.getLogger(DoubleSpectralClustering.class);
-	private SpectralClusteringConf<double[]> conf;
+	protected SpectralClusteringConf<double[]> conf;
 
 	/**
 	 * @param conf

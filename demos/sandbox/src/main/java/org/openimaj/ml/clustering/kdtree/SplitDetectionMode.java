@@ -1,35 +1,22 @@
 package org.openimaj.ml.clustering.kdtree;
 
 import org.apache.commons.math.FunctionEvaluationException;
-import org.apache.commons.math.MaxIterationsExceededException;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
-import org.apache.commons.math.analysis.UnivariateRealFunction;
 import org.apache.commons.math.optimization.GoalType;
-import org.apache.commons.math.optimization.OptimizationException;
-import org.apache.commons.math.optimization.RealConvergenceChecker;
 import org.apache.commons.math.optimization.RealPointValuePair;
 import org.apache.commons.math.optimization.SimpleRealPointChecker;
 import org.apache.commons.math.optimization.direct.NelderMead;
-import org.apache.commons.math.optimization.linear.LinearObjectiveFunction;
-import org.apache.commons.math.optimization.linear.SimplexSolver;
-import org.apache.commons.math.optimization.univariate.BrentOptimizer;
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.openimaj.math.matrix.DiagonalMatrix;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.array.IntArrayView;
 import org.openimaj.util.pair.ObjectDoublePair;
 
-import cc.mallet.optimize.Optimizable;
+import scala.actors.threadpool.Arrays;
 import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.SparseMatrix;
-import ch.akuhn.matrix.Util;
 import ch.akuhn.matrix.Vector;
-import scala.actors.threadpool.Arrays;
-import solver.ResolutionPolicy;
-import solver.Solver;
-import solver.variables.IntVar;
-import solver.variables.RealVar;
-import solver.variables.VariableFactory;
 
 /**
  * Given a vector, tell me the split
@@ -52,6 +39,10 @@ public interface SplitDetectionMode{
 		private SparseMatrix W;
 		private MEAN mean;
 
+		/**
+		 * @param D
+		 * @param W
+		 */
 		public OPTIMISED(DiagonalMatrix D, SparseMatrix W) {
 			this.D = D;
 			this.W = W;
@@ -75,7 +66,6 @@ public interface SplitDetectionMode{
 		public double detect(final double[] vec) {
 			double[] t = {this.mean.detect(vec)};
 			MultivariateRealFunction func = new MultivariateRealFunction() {
-				
 				@Override
 				public double value(double[] x) throws FunctionEvaluationException {
 					ObjectDoublePair<double[]> ind = indicator(vec,x[0]);
@@ -108,6 +98,7 @@ public interface SplitDetectionMode{
 			}
 			return t[0];
 		}
+		
 
 	}
 
@@ -124,6 +115,8 @@ public interface SplitDetectionMode{
 				mid -= Double.MIN_NORMAL;
 			return 0;
 		}
+
+		
 	}
 	
 	/**
@@ -137,6 +130,8 @@ public interface SplitDetectionMode{
 		public double detect(double[] vec) {
 			return new Mean().evaluate(vec);
 		}
+
+		
 		
 	}
 	
@@ -209,7 +204,13 @@ public interface SplitDetectionMode{
 		private boolean withinTol(double a, double d) {
 			return Math.abs(a - d) / Math.abs(a) < this.tolchange;
 		}
+
+		
 		
 	};
+	/**
+	 * @param vec
+	 * @return find the split point
+	 */
 	public abstract double detect(double[] vec);
 }

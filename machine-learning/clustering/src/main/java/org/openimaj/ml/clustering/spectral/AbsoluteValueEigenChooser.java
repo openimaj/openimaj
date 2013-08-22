@@ -59,5 +59,10 @@ public class AbsoluteValueEigenChooser extends EigenChooser{
 		FewEigenvalues eig = FewEigenvalues.of(laplacian);
 		return eig.greatest((int) (total*maxSelect));
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("AbsVal=%2.2f,%2.2f",this.absoluteGap,this.maxSelect);
+	}
 
 }

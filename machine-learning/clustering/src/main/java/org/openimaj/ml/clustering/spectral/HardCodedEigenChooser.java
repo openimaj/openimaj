@@ -33,5 +33,10 @@ public class HardCodedEigenChooser extends EigenChooser{
 		FewEigenvalues eig = FewEigenvalues.of(laplacian);
 		return eig.greatest(count);
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("hardcoded_eig=%d",this.count);
+	}
 
 }

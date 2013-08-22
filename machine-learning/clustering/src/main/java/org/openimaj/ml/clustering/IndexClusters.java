@@ -38,6 +38,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Map.Entry;
@@ -101,6 +102,15 @@ public class IndexClusters implements Clusters {
 		for (Entry<Integer, TIntArrayList> i : clusters.entrySet()) {
 			this.clusters[clustersSeen] = i.getValue().toArray(); 
 			clustersSeen++;
+		}
+	}
+
+	public IndexClusters(List<int[]> completedClusters) {
+		this.nEntries = 0;
+		this.clusters = new int[completedClusters.size()][];
+		for (int i = 0; i < clusters.length; i++) {
+			clusters[i] = completedClusters.get(i);
+			this.nEntries += clusters[i].length;
 		}
 	}
 
