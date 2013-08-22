@@ -69,7 +69,7 @@ import org.openimaj.util.pair.ObjectIntPair;
  * <p>
  * Note: the face detector in any input file is ignored and is replaced by the
  * haarcascade_frontalface_alt2 cascade.
- * 
+ *
  * @author Jason Mora Saragih
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -97,20 +97,20 @@ public class FDet {
 			XMLStreamException
 	{
 		final FileInputStream fis = new FileInputStream(fname);
-		_cascade = OCVHaarLoader.read(fis);
+		this._cascade = OCVHaarLoader.read(fis);
 		fis.close();
 
-		_img_scale = img_scale;
-		_scale_factor = scale_factor;
-		_min_neighbours = min_neighbours;
-		_min_size = min_size;
+		this._img_scale = img_scale;
+		this._scale_factor = scale_factor;
+		this._min_neighbours = min_neighbours;
+		this._min_size = min_size;
 
-		setupDetector();
+		this.setupDetector();
 	}
 
 	FDet() {
 		try {
-			_cascade = OCVHaarLoader.read(OCVHaarLoader.class.getResourceAsStream("haarcascade_frontalface_alt2.xml"));
+			this._cascade = OCVHaarLoader.read(OCVHaarLoader.class.getResourceAsStream("haarcascade_frontalface_alt2.xml"));
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -118,31 +118,31 @@ public class FDet {
 
 	/**
 	 * Detect faces in an image
-	 * 
+	 *
 	 * @param im
 	 *            the image
 	 * @return the detected faces
 	 */
-	public List<Rectangle> detect(FImage im) {
-		final int w = Math.round(im.width / _img_scale);
-		final int h = Math.round(im.height / _img_scale);
+	public List<Rectangle> detect(final FImage im) {
+		final int w = Math.round(im.width / this._img_scale);
+		final int h = Math.round(im.height / this._img_scale);
 
-		small_img_ = ResizeProcessor.resample(im, w, h).processInplace(
+		this.small_img_ = ResizeProcessor.resample(im, w, h).processInplace(
 				new EqualisationProcessor());
 
-		List<Rectangle> rects = detector.detect(small_img_);
-		rects = ObjectIntPair.getFirst(grouping.apply(rects));
+		List<Rectangle> rects = this.detector.detect(this.small_img_);
+		rects = ObjectIntPair.getFirst(this.grouping.apply(rects));
 		for (final Rectangle r : rects) {
-			r.scale(_img_scale);
+			r.scale(this._img_scale);
 		}
 
 		return rects;
 	}
 
 	private void setupDetector() {
-		this.detector = new Detector(_cascade, _scale_factor);
-		this.grouping = new OpenCVGrouping(_min_neighbours);
-		detector.setMinimumDetectionSize(_min_size);
+		this.detector = new Detector(this._cascade, this._scale_factor);
+		this.grouping = new OpenCVGrouping(this._min_neighbours);
+		this.detector.setMinimumDetectionSize(this._min_size);
 	}
 
 	static FDet load(final String fname) throws FileNotFoundException {
@@ -150,7 +150,7 @@ public class FDet {
 		try {
 			br = new BufferedReader(new FileReader(fname));
 			final Scanner sc = new Scanner(br);
-			return read(sc, true);
+			return FDet.read(sc, true);
 		} finally {
 			try {
 				br.close();
@@ -164,7 +164,7 @@ public class FDet {
 		try {
 			bw = new BufferedWriter(new FileWriter(fname));
 
-			write(bw);
+			this.write(bw);
 		} finally {
 			try {
 				if (bw != null)
@@ -174,7 +174,7 @@ public class FDet {
 		}
 	}
 
-	void write(BufferedWriter s) {
+	void write(final BufferedWriter s) {
 		// _cascade.
 		// int i,j,k,l;
 		// s.write(
@@ -219,12 +219,12 @@ public class FDet {
 
 	/**
 	 * Read the Face detector.
-	 * 
+	 *
 	 * @param s
 	 * @param readType
 	 * @return the face detector
 	 */
-	public static FDet read(Scanner s, boolean readType) {
+	public static FDet read(final Scanner s, final boolean readType) {
 		// FIXME: maybe this should actually read the cascade!!
 		if (readType) {
 			final int type = s.nextInt();
@@ -294,7 +294,7 @@ public class FDet {
 					s.next();
 					// >> classifier->haar_feature[k].tilted;
 					s.next();
-					for (int l = 0; l < CV_HAAR_FEATURE_MAX; l++) {
+					for (int l = 0; l < FDet.CV_HAAR_FEATURE_MAX; l++) {
 						// s >> classifier->haar_feature[k].rect[l].weight
 						s.next();
 						// >> classifier->haar_feature[k].rect[l].r.x
@@ -315,5 +315,21 @@ public class FDet {
 		fdet.setupDetector();
 
 		return fdet;
+	}
+
+	/**
+	 *	@return the _min_size
+	 */
+	public int get_min_size()
+	{
+		return this._min_size;
+	}
+
+	/**
+	 *	@param _min_size the _min_size to set
+	 */
+	public void set_min_size( final int _min_size )
+	{
+		this._min_size = _min_size;
 	}
 }
