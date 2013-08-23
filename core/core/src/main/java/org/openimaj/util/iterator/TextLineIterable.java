@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.zip.GZIPInputStream;
 
 /**
  * An {@link Iterable} that can provide access to lines of a text file
@@ -20,11 +21,59 @@ import java.util.Iterator;
  * 
  */
 public class TextLineIterable implements Iterable<String> {
-	interface Provider {
+	/**
+	 * Interface describing things that can provide input for a
+	 * {@link TextLineIterable}
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static interface Provider {
+		/**
+		 * Open a stream to the data
+		 * 
+		 * @return the stream to the data
+		 * @throws IOException
+		 */
 		BufferedReader open() throws IOException;
 	}
 
-	Provider source;
+	/**
+	 * A {@link Provider} for gzipped text files
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static class GZIPFileProvider implements Provider {
+		File f;
+
+		/**
+		 * Construct with the given file
+		 * 
+		 * @param f
+		 *            the file
+		 */
+		public GZIPFileProvider(File f) {
+			this.f = f;
+		}
+
+		@Override
+		public BufferedReader open() throws IOException {
+			return new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(f))));
+		}
+	}
+
+	private Provider source;
+
+	/**
+	 * Construct with the given provider
+	 * 
+	 * @param source
+	 *            the provider
+	 */
+	public TextLineIterable(Provider source) {
+		this.source = source;
+	}
 
 	/**
 	 * Construct with the given file
