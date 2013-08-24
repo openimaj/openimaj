@@ -25,7 +25,7 @@ public class SimilarityDBSCAN extends SparseMatrixDBSCAN implements SimilarityCl
 
 	@Override
 	public DoubleDBSCANClusters clusterSimilarity(SparseMatrix data) {
-		State s = new State(data.rowCount(), new SparseMatrixRegionMode(data, false));
+		State s = new State(data.rowCount(), new SparseMatrixRegionMode(data, false),this.noiseAsClusters);
 		return dbscan(s);
 	}
 

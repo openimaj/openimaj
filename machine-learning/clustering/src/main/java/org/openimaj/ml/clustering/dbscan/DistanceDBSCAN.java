@@ -25,7 +25,7 @@ public class DistanceDBSCAN extends SparseMatrixDBSCAN implements DistanceCluste
 
 	@Override
 	public DoubleDBSCANClusters clusterDistance(SparseMatrix data) {
-		State s = new State(data.rowCount(), new SparseMatrixRegionMode(data, true));
+		State s = new State(data.rowCount(), new SparseMatrixRegionMode(data, true),this.noiseAsClusters);
 		return dbscan(s);
 	}
 

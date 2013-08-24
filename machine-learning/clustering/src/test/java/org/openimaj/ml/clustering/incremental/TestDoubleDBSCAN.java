@@ -61,7 +61,7 @@ public class TestDoubleDBSCAN {
 				mat.put(j, i, d);
 			}
 		}
-		IncrementalSparseClusterer<DoubleDBSCANClusters> isc = new IncrementalSparseClusterer<DoubleDBSCANClusters>(dbscan, 5);
+		IncrementalSparseClusterer isc = new IncrementalSparseClusterer(dbscan, 5);
 		IndexClusters c = isc.cluster(mat);
 		
 		System.out.println(c);

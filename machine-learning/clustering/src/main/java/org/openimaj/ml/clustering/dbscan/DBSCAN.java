@@ -19,6 +19,7 @@ import org.openimaj.util.pair.IntDoublePair;
  *
  */
 public class DBSCAN {
+	protected boolean noiseAsClusters = false;
 	/**
 	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -119,5 +120,13 @@ public class DBSCAN {
 			cluster.add(p);
 			state.addedToCluster.add(p);
 		}
+	}
+	
+	/**
+	 * Treat noise as clusters on their own
+	 * @param b
+	 */
+	public void setNoiseAsClusters(boolean b) {
+		this.noiseAsClusters  = b;
 	}
 }

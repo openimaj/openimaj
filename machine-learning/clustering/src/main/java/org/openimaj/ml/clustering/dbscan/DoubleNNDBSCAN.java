@@ -24,7 +24,7 @@ public class DoubleNNDBSCAN extends DBSCAN implements SpatialClusterer<DoubleDBS
 	private NearestNeighboursFactory<? extends DoubleNearestNeighbours, double[]> nnf;
 	private double eps;
 	private int minPts;
-	private boolean noiseAsClusters = false;
+	
 
 	/**
 	 * Perform a DBScane with this configuration
@@ -102,14 +102,6 @@ public class DoubleNNDBSCAN extends DBSCAN implements SpatialClusterer<DoubleDBS
 	@Override
 	public String toString() {
 		return String.format("%s: eps=%2.2f, minpts=%d, NN=%s",this.getClass().getSimpleName(),eps,minPts,this.nnf.getClass().getSimpleName());
-	}
-	
-	/**
-	 * Treat noise as clusters on their own
-	 * @param b
-	 */
-	public void setNoiseAsClusters(boolean b) {
-		this.noiseAsClusters  = b;
 	}
 
 }

@@ -15,6 +15,7 @@ import org.openimaj.experiment.evaluation.cluster.analyser.FScoreClusterAnalyser
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SparseMatrixClusterer;
+import org.openimaj.util.pair.IntDoublePair;
 
 import ch.akuhn.matrix.SparseMatrix;
 
@@ -27,9 +28,9 @@ import ch.akuhn.matrix.SparseMatrix;
  *  
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class IncrementalSparseClusterer<CLUSTER extends IndexClusters> implements SparseMatrixClusterer<IndexClusters>{
+public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexClusters>{
 	
-	private SparseMatrixClusterer<CLUSTER> clusterer;
+	private SparseMatrixClusterer<? extends IndexClusters> clusterer;
 	private int window;
 	private double threshold;
 	private final static Logger logger = Logger.getLogger(IncrementalSparseClusterer.class);
@@ -39,7 +40,7 @@ public class IncrementalSparseClusterer<CLUSTER extends IndexClusters> implement
 	 * @param clusterer the underlying clusterer
 	 * @param window 
 	 */
-	public IncrementalSparseClusterer(SparseMatrixClusterer<CLUSTER> clusterer, int window) {
+	public IncrementalSparseClusterer(SparseMatrixClusterer<? extends IndexClusters> clusterer, int window) {
 		this.clusterer = clusterer;
 		this.window = window;
 		this.threshold = 1.;
@@ -50,7 +51,7 @@ public class IncrementalSparseClusterer<CLUSTER extends IndexClusters> implement
 	 * @param window 
 	 * @param threshold 
 	 */
-	public IncrementalSparseClusterer(SparseMatrixClusterer<CLUSTER> clusterer, int window, double threshold) {
+	public IncrementalSparseClusterer(SparseMatrixClusterer<? extends IndexClusters> clusterer, int window, double threshold) {
 		this.clusterer = clusterer;
 		this.window = window;
 		this.threshold = threshold;
@@ -85,6 +86,7 @@ public class IncrementalSparseClusterer<CLUSTER extends IndexClusters> implement
 
 	@Override
 	public IndexClusters cluster(SparseMatrix data) {
+		if(window >= data.rowCount()) window = data.rowCount();
 		SparseMatrix seen = MatlibMatrixUtils.subMatrix(data, 0, window, 0, window);
 		int seenrows = window;
 		TIntSet inactiveRows = new TIntHashSet(window);
@@ -100,12 +102,15 @@ public class IncrementalSparseClusterer<CLUSTER extends IndexClusters> implement
 			wsp.correctClusters(newClusters);
 			logger.debug("New clusters:\n" + newClusters);
 			// if stability == 1 for any cluster, it was the same last window, we should not include those items next round
-			Map<Integer, Double> stability = mergeAndDeactivate(oldClusters,newClusters,inactiveRows);
-			for (Entry<Integer, Double> e : stability.entrySet()) {
-				if(e.getValue() >= threshold){
+			Map<Integer, IntDoublePair> stability = mergeAndDeactivate(oldClusters,newClusters,inactiveRows);
+			for (Entry<Integer, IntDoublePair> e : stability.entrySet()) {
+				if(e.getValue().second >= threshold){
 					int[] completedCluster = oldClusters.clusters()[e.getKey()];
 					inactiveRows.addAll(completedCluster);
 					completedClusters.add(completedCluster);
+					if(threshold == 1){
+						newClusters.clusters()[e.getValue().first] = new int[0];
+					}
 				}
 			}
 			
@@ -115,19 +120,22 @@ public class IncrementalSparseClusterer<CLUSTER extends IndexClusters> implement
 			logger.debug("Inactive rows: " + inactiveRows.size());
 		}
 		for (int i = 0; i < oldClusters.clusters().length; i++) {
-			completedClusters.add(oldClusters.clusters()[i]);
+			int[] cluster = oldClusters.clusters()[i];
+			if(cluster.length!=0) completedClusters.add(cluster);
 		}
 		
 		return new IndexClusters(completedClusters);
 	}
 
-	private Map<Integer, Double> mergeAndDeactivate(IndexClusters c1, IndexClusters c2, TIntSet inactiveRows) {
+	private Map<Integer, IntDoublePair> mergeAndDeactivate(IndexClusters c1, IndexClusters c2, TIntSet inactiveRows) {
 		
-		Map<Integer, Double> stability = new HashMap<Integer, Double>();
+		Map<Integer, IntDoublePair> stability = new HashMap<Integer, IntDoublePair>();
 		int[][] clusters1 = c1.clusters();
 		int[][] clusters2 = c2.clusters();
 		for (int i = 0; i < clusters1.length; i++) {
+			if(clusters1[i].length == 0) continue;
 			double maxnmi = 0;
+			int maxj = -1;
 			int[][] correct = new int[][]{clusters1[i]};
 			for (int j = 0; j < clusters2.length; j++) {
 				int[][] estimated = new int[][]{clusters2[j]};
@@ -135,9 +143,14 @@ public class IncrementalSparseClusterer<CLUSTER extends IndexClusters> implement
 //				double score = nmi.nmi;
 				double score = new FScoreClusterAnalyser().analyse(correct, estimated).score();
 				if(!Double.isNaN(score))
-					maxnmi = Math.max(maxnmi, score);
+				{
+					if(score > maxnmi){
+						maxnmi = score;
+						maxj = j;
+					}
+				}
 			}
-			stability.put(i, maxnmi);
+			stability.put(i, IntDoublePair.pair(maxj, maxnmi));
 		}
 		logger.debug(String.format("The stability is:\n%s",stability));
 		return stability;
