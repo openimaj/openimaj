@@ -3,6 +3,7 @@ package org.openimaj.ml.clustering.dbscan;
 import org.openimaj.ml.clustering.SimilarityClusterer;
 
 import ch.akuhn.matrix.SparseMatrix;
+import ch.akuhn.matrix.Vector.Entry;
 
 /**
  * {@link DBSCAN} using a {@link SparseMatrix} of similarities
@@ -20,6 +21,7 @@ public class SimilarityDBSCAN extends SparseMatrixDBSCAN implements SimilarityCl
 
 	@Override
 	public DoubleDBSCANClusters cluster(SparseMatrix data) {
+		
 		return this.clusterSimilarity(data);
 	}
 

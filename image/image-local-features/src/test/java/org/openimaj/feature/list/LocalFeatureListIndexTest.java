@@ -66,6 +66,8 @@ public class LocalFeatureListIndexTest {
 		LocalFeatureList<Keypoint> keys1 = engine.findFeatures(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/cat.jpg")));
 		LocalFeatureList<Keypoint> keys2 = engine.findFeatures(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg")));
 		
+		
+		
 		LocalFeatureListIndex<ReadWriteableInt, Keypoint> index = new LocalFeatureListIndex<ReadWriteableInt, Keypoint>();
 		index.put(new ReadWriteableInt(1), keys1);
 		index.put(new ReadWriteableInt(2), keys2);

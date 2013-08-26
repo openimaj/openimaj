@@ -75,12 +75,13 @@ public class RandomDataTest {
 	 */
 	@Test
 	public void testGetUniqueRandomInts2() {
-		int [] rnd = RandomData.getUniqueRandomIntsA(10000, 0, 100000000);
+		int [] rnd = RandomData.getUniqueRandomIntsA(100, 0, 10000);
 		TIntHashSet set = new TIntHashSet(rnd);
 		assertEquals(rnd.length, set.size());
-		
-		rnd = RandomData.getUniqueRandomIntsS(10000, 0, 100000000);
+		rnd = RandomData.getUniqueRandomIntsS(100, 0, 10000);
 		set = new TIntHashSet(rnd);
+		
 		assertEquals(rnd.length, set.size());
+		
 	}
 }

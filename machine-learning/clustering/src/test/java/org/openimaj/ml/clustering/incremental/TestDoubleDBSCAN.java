@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openimaj.experiment.evaluation.cluster.analyser.FScoreClusterAnalyser;
 import org.openimaj.io.FileUtils;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.ml.clustering.IndexClusters;
@@ -30,6 +31,7 @@ public class TestDoubleDBSCAN {
 	private TestStats testStats;
 	private double[][] testData;
 	private int[][] testClusters;
+	private FScoreClusterAnalyser ann;
 	/**
 	 * @throws IOException
 	 */
@@ -40,13 +42,14 @@ public class TestDoubleDBSCAN {
 		this.testStats = loader.readTestStats(data);
 		this.testData = loader.readTestData(data);
 		this.testClusters = loader.readTestClusters(data);
+		this.ann = new FScoreClusterAnalyser();
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testSimDBSCAN(){
+	public void testSimDBSCANIncremental(){
 		SparseMatrixDBSCAN dbscan = new DistanceDBSCAN(
 			this.testStats.eps,
 			this.testStats.minpts
@@ -64,14 +67,32 @@ public class TestDoubleDBSCAN {
 		IncrementalSparseClusterer isc = new IncrementalSparseClusterer(dbscan, 5);
 		IndexClusters c = isc.cluster(mat);
 		
-		System.out.println(c);
+		assertTrue(ann.analyse(testClusters, c.clusters()).fscore(1) == 1.);
 	}
-	private Set<Integer> toSet(int[] is) {
-		Set<Integer> set = new HashSet<Integer>();
-		for (int i = 0; i < is.length; i++) {
-			set.add(is[i]);
+	
+	/**
+	 *
+	 */
+	@Test
+	public void testSimDBSCANIncrementalLifetime(){
+		SparseMatrixDBSCAN dbscan = new DistanceDBSCAN(
+			this.testStats.eps,
+			this.testStats.minpts
+		);
+		SparseMatrix mat = new SparseMatrix(testData.length,testData.length);
+		for (int i = 0; i < testData.length; i++) {
+			for (int j = i; j < testData.length; j++) {
+				double d = DoubleNearestNeighboursExact.distanceFunc(testData[i], testData[j]);
+				if(d>=this.testStats.eps) continue;
+				if(d==0)d = Double.MIN_VALUE;
+				mat.put(i, j, d);
+				mat.put(j, i, d);
+			}
 		}
-		return set;
+		IncrementalSparseClusterer isc = new IncrementalLifetimeSparseClusterer(dbscan, 20);
+		IndexClusters c = isc.cluster(mat);
+		
+		assertTrue(ann.analyse(testClusters, c.clusters()).fscore(1) == 1.);
 	}
 
 }

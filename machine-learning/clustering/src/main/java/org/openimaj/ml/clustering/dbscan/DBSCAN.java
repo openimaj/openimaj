@@ -109,6 +109,8 @@ public class DBSCAN {
 				List<IntDoublePair> regionPrime = state.regionMode.regionQuery(pprime);
 				if(state.regionMode.validRegion(regionPrime)) 
 					region.addAll(regionPrime);
+				else
+					state.noise.add(pprime);
 			}
 
 			addToCluster(pprime, cluster, state);

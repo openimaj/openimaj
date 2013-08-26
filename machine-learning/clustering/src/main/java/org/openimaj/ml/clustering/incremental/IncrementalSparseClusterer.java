@@ -21,18 +21,21 @@ import ch.akuhn.matrix.SparseMatrix;
 
 /**
  *
- * An incremental clusterer which holds old {@link SparseMatrix} instances internally, only forgetting rows
- * once they have been clustered and are relatively stable
+ * An incremental clusterer which holds old {@link SparseMatrix} instances internally, 
+ * only forgetting rows once they have been clustered and are relatively stable.
  * 
- * @param <CLUSTER>
- *  
+ * The criteria for row removal is cluster stability.
+ * The defenition of cluster stability is maximum f1-score achieving a threshold between
+ * clusters in the previous round and the current round. Once one round of stability is achieved
+ * the cluster is stable and its elements are removed.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexClusters>{
 	
 	private SparseMatrixClusterer<? extends IndexClusters> clusterer;
 	private int window;
-	private double threshold;
+	protected double threshold;
 	private final static Logger logger = Logger.getLogger(IncrementalSparseClusterer.class);
 	
 
@@ -90,7 +93,6 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 		SparseMatrix seen = MatlibMatrixUtils.subMatrix(data, 0, window, 0, window);
 		int seenrows = window;
 		TIntSet inactiveRows = new TIntHashSet(window);
-		
 		IndexClusters oldClusters = clusterer.cluster(seen);
 		List<int[]> completedClusters = new ArrayList<int[]>();
 		while(seenrows < data.rowCount()){
@@ -102,20 +104,10 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 			wsp.correctClusters(newClusters);
 			logger.debug("New clusters:\n" + newClusters);
 			// if stability == 1 for any cluster, it was the same last window, we should not include those items next round
-			Map<Integer, IntDoublePair> stability = mergeAndDeactivate(oldClusters,newClusters,inactiveRows);
-			for (Entry<Integer, IntDoublePair> e : stability.entrySet()) {
-				if(e.getValue().second >= threshold){
-					int[] completedCluster = oldClusters.clusters()[e.getKey()];
-					inactiveRows.addAll(completedCluster);
-					completedClusters.add(completedCluster);
-					if(threshold == 1){
-						newClusters.clusters()[e.getValue().first] = new int[0];
-					}
-				}
-			}
+			detectInactive(oldClusters, newClusters, inactiveRows, completedClusters);
 			
-			seenrows += window;
 			oldClusters = newClusters;
+			seenrows += window;
 			logger.debug("Seen rows: " + seenrows);
 			logger.debug("Inactive rows: " + inactiveRows.size());
 		}
@@ -127,7 +119,26 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 		return new IndexClusters(completedClusters);
 	}
 
-	private Map<Integer, IntDoublePair> mergeAndDeactivate(IndexClusters c1, IndexClusters c2, TIntSet inactiveRows) {
+	/**
+	 * Given the old and new clusters, make a decision as to which rows are now inactive,
+	 * and therefore which clusters are now completed
+	 * @param oldClusters
+	 * @param newClusters
+	 * @param inactiveRows
+	 * @param completedClusters
+	 */
+	protected void detectInactive(IndexClusters oldClusters, IndexClusters newClusters, TIntSet inactiveRows, List<int[]> completedClusters) {
+		Map<Integer, IntDoublePair> stability = calculateStability(oldClusters,newClusters,inactiveRows);
+		for (Entry<Integer, IntDoublePair> e : stability.entrySet()) {
+			if(e.getValue().second >= threshold){
+				int[] completedCluster = oldClusters.clusters()[e.getKey()];
+				inactiveRows.addAll(completedCluster);
+				completedClusters.add(completedCluster);
+			}
+		}
+	}
+
+	protected Map<Integer, IntDoublePair> calculateStability(IndexClusters c1, IndexClusters c2, TIntSet inactiveRows) {
 		
 		Map<Integer, IntDoublePair> stability = new HashMap<Integer, IntDoublePair>();
 		int[][] clusters1 = c1.clusters();
@@ -136,7 +147,13 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 			if(clusters1[i].length == 0) continue;
 			double maxnmi = 0;
 			int maxj = -1;
-			int[][] correct = new int[][]{clusters1[i]};
+			TIntArrayList cluster = new TIntArrayList(clusters1[i].length);
+			for (int j = 0; j < clusters1[i].length; j++) {
+				if(inactiveRows.contains(clusters1[i][j]))
+					continue;
+				cluster.add(clusters1[i][j]);
+			}
+			int[][] correct = new int[][]{cluster.toArray()};
 			for (int j = 0; j < clusters2.length; j++) {
 				int[][] estimated = new int[][]{clusters2[j]};
 //				NMIAnalysis nmi = new NMIClusterAnalyser().analyse(correct, estimated);

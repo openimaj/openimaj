@@ -119,6 +119,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 */
 	public FImage(final int width, final int height) {
 		this.pixels = new float[height][width];
+		
 		this.height = height;
 		this.width = width;
 	}

@@ -62,17 +62,19 @@ public class WikipediaImageDownloadTest {
 	 * @throws IOException
 	 */
 	@Before public void setup() throws IOException{
-		String exampleList = "File:0002MAN-Hermes.jpg" + "\n" + 
-		"File:0002s9rg.jpg" + "\n" + 
-		"File:00-02 Saturn L-Series sedan.jpg" + "\n" + 
-		"File:0002+Sucres+Ecuador+1944.jpg" + "\n" + 
-		"File:00-02 Toyota Echo coupe.jpg" + "\n" + 
-		"File:00031-Trindade-Leal----Gine.jpg" + "\n" + 
-		"File:00-03 BMW X5 3.0si.jpg" + "\n" + 
-		"File:00-03 Chevrolet Malibu.jpg" + "\n" + 
-		"File:0003LON2008HY.JPG" + "\n" + 
-		"File:00-03 Mercury Sable wagon front.jpg" + "\n" + 
-		"File:00040m.jpg";
+		String exampleList = "File:0002MAN-Hermes.jpg" + "\n" 
+//		+ 
+//		"File:0002s9rg.jpg" + "\n" + 
+//		"File:00-02 Saturn L-Series sedan.jpg" + "\n" + 
+//		"File:0002+Sucres+Ecuador+1944.jpg" + "\n" + 
+//		"File:00-02 Toyota Echo coupe.jpg" + "\n" + 
+//		"File:00031-Trindade-Leal----Gine.jpg" + "\n" + 
+//		"File:00-03 BMW X5 3.0si.jpg" + "\n" + 
+//		"File:00-03 Chevrolet Malibu.jpg" + "\n" + 
+//		"File:0003LON2008HY.JPG" + "\n" + 
+//		"File:00-03 Mercury Sable wagon front.jpg" + "\n" + 
+//		"File:00040m.jpg"
+		;
 		
 		exampleFile = folder.newFile("images.txt");
 		

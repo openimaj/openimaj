@@ -89,6 +89,7 @@ public class KeypointTest {
 		k1 = engine.findFeatures(im1);
 		k2 = engine.findFeatures(im2);
 		
+		
 	}
 	
 	private void displayCatKeys() throws IOException{
@@ -152,6 +153,7 @@ public class KeypointTest {
 	@Test public void testIO() throws IOException {
 		File ascii = null;
 		File binary = null;
+		
 		
 		try {
 			ascii = folder.newFile("kpttest.ascii");

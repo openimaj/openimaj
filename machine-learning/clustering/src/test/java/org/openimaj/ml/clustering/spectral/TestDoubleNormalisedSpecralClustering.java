@@ -85,7 +85,7 @@ public class TestDoubleNormalisedSpecralClustering {
 		SparseMatrix mat_norm = normalisedSimilarity(Double.MAX_VALUE);
 		Collection<MLArray> col = new ArrayList<MLArray>();
 		col.add(MatlibMatrixUtils.asMatlab(mat_norm));
-		MatFileWriter writ = new MatFileWriter(new File("/Users/ss/Experiments/python/Whard.mat"), col);
+//		MatFileWriter writ = new MatFileWriter(new File("/Users/ss/Experiments/python/Whard.mat"), col);
 		IndexClusters res = clust.cluster(mat_norm);
 		confirmClusters(res);
 	}
