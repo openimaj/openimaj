@@ -37,7 +37,6 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
-import org.apache.log4j.Logger;
 import org.openimaj.aop.ClassTransformer;
 import org.openimaj.experiment.annotations.Time;
 
@@ -49,8 +48,6 @@ import org.openimaj.experiment.annotations.Time;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class TimeClassTransformer implements ClassTransformer {
-	private static Logger logger = Logger.getLogger(TimeClassTransformer.class);
-
 	@Override
 	public void transform(String className, CtClass ctclz) throws Exception {
 		final CtMethod[] methods = ctclz.getDeclaredMethods();
@@ -59,9 +56,6 @@ public class TimeClassTransformer implements ClassTransformer {
 			final Time ann = (Time) m.getAnnotation(Time.class);
 
 			if (ann != null) {
-				logger.trace(String.format("class file transformer invoked for className: %s\n; method: ", className,
-						m.getLongName()));
-
 				String timerName = ann.identifier();
 
 				if (timerName == null || timerName.length() == 0)
