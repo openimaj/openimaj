@@ -113,7 +113,8 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 		}
 		for (int i = 0; i < oldClusters.clusters().length; i++) {
 			int[] cluster = oldClusters.clusters()[i];
-			if(cluster.length!=0) completedClusters.add(cluster);
+			if(cluster.length!=0) 
+				completedClusters.add(cluster);
 		}
 		
 		return new IndexClusters(completedClusters);
@@ -134,6 +135,9 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 				int[] completedCluster = oldClusters.clusters()[e.getKey()];
 				inactiveRows.addAll(completedCluster);
 				completedClusters.add(completedCluster);
+				if(threshold == 1){
+					newClusters.clusters()[e.getValue().first] = new int[0];
+				}
 			}
 		}
 	}
