@@ -490,6 +490,63 @@ public class MatlibMatrixUtils {
 		return ret;
 	}
 
+	/**
+	 * @param A
+	 * @param B
+	 * @return A = MAX(A,B)
+	 */
+	public static SparseMatrix maxInplace(SparseMatrix A, SparseMatrix B) {
+		for (int i = 0; i < A.rowCount(); i++) {
+			Vector arow = A.row(i);
+			Vector brow = B.row(i);
+			for (Entry br : brow.entries()) {
+				if(arow.get(br.index) < br.value){
+					A.put(i, br.index, br.value);
+				}
+			}
+		}
+		return A;
+	}
+	
+	/**
+	 * @param A
+	 * @param B
+	 * @return A = MIN(A,B)
+	 */
+	public static SparseMatrix minInplace(SparseMatrix A, SparseMatrix B) {
+		for (int i = 0; i < A.rowCount(); i++) {
+			Vector arow = A.row(i);
+			Vector brow = B.row(i);
+			for (Entry br : brow.entries()) {
+				if(arow.get(br.index) > br.value){
+					A.put(i, br.index, br.value);
+				}
+			}
+		}
+		return A;
+	}
+	
+	/**
+	 * @param A
+	 * @param B
+	 * @return A = A.*B
+	 */
+	public static SparseMatrix timesInplace(SparseMatrix A, SparseMatrix B) {
+		for (int i = 0; i < A.rowCount(); i++) {
+			Vector arow = A.row(i);
+			Vector brow = B.row(i);
+			for (Entry br : brow.entries()) {
+				A.put(i, br.index, br.value * arow.get(br.index));
+			}
+			
+			for (Entry ar : arow.entries()) {
+				if(brow.get(ar.index) == 0) // All items in A not in B must be set to 0
+					A.put(i, ar.index, 0);
+			}
+		}
+		return A;
+	}
+
 	
 
 	
