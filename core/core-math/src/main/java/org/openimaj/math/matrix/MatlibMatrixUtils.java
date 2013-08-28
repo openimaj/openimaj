@@ -547,6 +547,17 @@ public class MatlibMatrixUtils {
 		return A;
 	}
 
+	public static <T extends Matrix> T copy(T sparseMatrix) {
+		T t = (T) sparseMatrix.newInstance();
+		for (int r = 0; r < sparseMatrix.rowCount(); r++) {
+			Vector row = sparseMatrix.row(r);
+			for (Entry ent : row.entries()) {
+				t.put(r, ent.index, ent.value);
+			}
+		}
+		return t;
+	}
+
 	
 
 	

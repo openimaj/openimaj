@@ -8,6 +8,25 @@ package org.openimaj.experiment.evaluation.cluster.analyser;
  */
 public class RandomBaselineSMEClusterAnalyser implements ClusterAnalyser<RandomBaselineSMEAnalysis>{
 	
+	private int ntrials;
+
+	
+	/**
+	 * 
+	 */
+	public RandomBaselineSMEClusterAnalyser() {
+		this.ntrials = 10;
+	}
+	/**
+	 * @param ntrails number of random reorderings
+	 * 
+	 */
+	public RandomBaselineSMEClusterAnalyser(int ntrails) {
+		this.ntrials = ntrials;
+	}
+	
+	
+	
 	@Override
 	public RandomBaselineSMEAnalysis analyse(int[][] correct, int[][] estimated) {
 		RandomBaselineSMEAnalysis ret = new RandomBaselineSMEAnalysis(correct,estimated);
