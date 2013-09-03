@@ -32,12 +32,21 @@ public abstract class AbstractStream<T> implements Stream<T> {
 	public void forEach(Operation<T> operation, Predicate<T> stopPredicate) {
 		while (hasNext()) {
 			final T next = next();
-
-			if (stopPredicate.test(next))
-				break;
-
 			operation.perform(next);
+			if (stopPredicate.test(next)) break;
 		}
+	}
+	
+	@Override
+	public int forEach(Operation<T> operation, int limit) {
+		int seen = 0;
+		while (hasNext()) {
+			final T next = next();
+			operation.perform(next);
+			seen ++;
+			if(seen >= limit) break;
+		}
+		return seen;
 	}
 
 	@Override
