@@ -60,6 +60,7 @@ public class DBSCAN {
 		final int[] clusterIndex = new int[]{0};
 		for (int p = 0; p < state.length; p++) {
 			if(state.visited.contains(p))continue;
+			state.visited.add(p);
 			List<IntDoublePair> region = state.regionMode.regionQuery(p);
 			if(!state.regionMode.validRegion(region)){
 				state.noise.add(p);
@@ -119,6 +120,8 @@ public class DBSCAN {
 
 	private void addToCluster(int p, TIntList cluster, State state) {
 		if(!state.addedToCluster.contains(p)){
+			// This point is now certainly at the very least DENSITY reachable and must not be noise
+			state.noise.remove(p); 
 			cluster.add(p);
 			state.addedToCluster.add(p);
 		}
