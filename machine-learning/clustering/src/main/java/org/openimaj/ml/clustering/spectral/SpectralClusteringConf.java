@@ -63,6 +63,10 @@ public class SpectralClusteringConf<DATATYPE>{
 	 */
 	public EigenChooser eigenChooser;
 
+	public int skipEigenVectors = 0;
+
+	public boolean eigenValueScale = false;
+
 	/**
 	 * @param internal the internal clusterer
 	 * @param eigK the value handed to {@link HardCodedEigenChooser}

@@ -64,21 +64,30 @@ public class PreparedSpectralClustering implements DataClusterer<Eigenvalues, Sp
 		
 		
 		int eigenVectorSelect = conf.eigenChooser.nEigenVectors(this.conf.laplacian.eigenIterator(eig), eig.getN());
+		int eigenVectorSkip = this.conf.skipEigenVectors;
 		logger.debug("Selected dimensions: " + eigenVectorSelect);
+		logger.debug("Skipping dimesions: " + eigenVectorSkip);
+		eigenVectorSelect -= eigenVectorSkip;
 
 
 		int nrows = eig.vector[0].size();
 		double[][] ret = new double[nrows][eigenVectorSelect];
 		double[] retSum = new double[nrows];
 		double[] eigvals = new double[eigenVectorSelect];
+		Iterator<DoubleObjectPair<Vector>> iterator = this.conf.laplacian.eigenIterator(eig);
+		// Skip a few at the beggining
+		for (int i = 0; i < eigenVectorSkip; i++) iterator.next();
 		int col = 0;
 		// Calculate U matrix (containing n smallests eigen valued columns)
-		for (Iterator<DoubleObjectPair<Vector>> iterator = this.conf.laplacian.eigenIterator(eig); iterator.hasNext();) {
+		for (; iterator.hasNext();) {
 			DoubleObjectPair<Vector> v = iterator.next();
 			eigvals[col] = v.first;
 			
 			for (Entry d : v.second.entries()) {
 				double elColI = d.value;
+				if(conf.eigenValueScale){
+					elColI *= Math.sqrt(v.first);
+				}
 				ret[d.index][col] = elColI;
 				retSum[d.index] += elColI * elColI;
 			}
@@ -86,11 +95,13 @@ public class PreparedSpectralClustering implements DataClusterer<Eigenvalues, Sp
 			if(col == eigenVectorSelect) break;
 		}
 
-		// normalise rows
-		for (int i = 0; i < ret.length; i++) {
-			double[] row = ret[i];
-			for (int j = 0; j < row.length; j++) {
-				row[j] /= Math.sqrt(retSum[i]);
+		if(!conf.eigenValueScale){			
+			// normalise rows
+			for (int i = 0; i < ret.length; i++) {
+				double[] row = ret[i];
+				for (int j = 0; j < row.length; j++) {
+					row[j] /= Math.sqrt(retSum[i]);
+				}
 			}
 		}
 

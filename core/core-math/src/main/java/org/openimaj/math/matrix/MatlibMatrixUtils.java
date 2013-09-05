@@ -558,6 +558,21 @@ public class MatlibMatrixUtils {
 		return t;
 	}
 
+	public static SparseMatrix threshold(SparseMatrix data, double thresh) {
+		SparseMatrix newdata = (SparseMatrix) data.newInstance();
+		
+		for (int r = 0; r < data.rowCount(); r++) {
+			Vector vec = data.row(r);
+			for (Entry ent : vec.entries()) {
+				if(ent.value > thresh )
+				{
+					newdata.put(r, ent.index, 1);
+				}
+			}
+		}
+		return newdata;
+	}
+
 	
 
 	

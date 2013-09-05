@@ -96,7 +96,8 @@ public class TestDoubleKDTreeClusterer {
 		
 		ExtractWD gl = new ExtractWD();
 		gl.laplacian(simmat);
-		SplitDetectionMode splitmode = new SplitDetectionMode.OPTIMISED(gl.D,gl.W);
+//		SplitDetectionMode splitmode = new SplitDetectionMode.OPTIMISED(gl.D,gl.W);
+		SplitDetectionMode splitmode = new SplitDetectionMode.MEDIAN();
 		DoubleKDTreeClusterer spatial = new DoubleKDTreeClusterer(splitmode,0.01,1,4);
 		
 		SpectralClusteringConf<double[]> conf = new SpectralClusteringConf<double[]>(spatial);

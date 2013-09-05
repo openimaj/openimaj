@@ -29,7 +29,7 @@ public abstract class GraphLaplacian{
 
 		int i = 0;
 		for (Vector row : adj.rows()) {
-			row.put(i, 0);
+//			row.put(i, 0);
 			degree.put(i, i, row.sum());
 			i++;
 		}
