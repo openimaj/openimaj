@@ -123,7 +123,7 @@ public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 
 		sum = new FImage(width + 1, height + 1);
 		sqSum = new FImage(width + 1, height + 1);
-		tiltSum = new FImage(width + 1, height + 1);
+		tiltSum = new FImage(width + 2, height + 2);
 
 		final float[] buffer = new float[width];
 

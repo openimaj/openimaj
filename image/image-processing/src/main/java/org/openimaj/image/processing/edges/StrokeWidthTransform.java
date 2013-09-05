@@ -208,6 +208,9 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 	}
 
 	private void medianFilter(FImage output, List<List<Pixel>> rays) {
+		if (rays.size() == 0)
+			return;
+
 		Collections.sort(rays, new Comparator<List<Pixel>>() {
 			@Override
 			public int compare(List<Pixel> o1, List<Pixel> o2) {
