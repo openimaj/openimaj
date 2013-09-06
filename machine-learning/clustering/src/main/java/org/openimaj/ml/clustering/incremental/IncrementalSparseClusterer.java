@@ -17,6 +17,8 @@ import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SparseMatrixClusterer;
 import org.openimaj.util.pair.IntDoublePair;
 
+import com.sun.xml.internal.ws.util.CompletedFuture;
+
 import ch.akuhn.matrix.SparseMatrix;
 
 /**
@@ -36,6 +38,7 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 	private SparseMatrixClusterer<? extends IndexClusters> clusterer;
 	private int window;
 	protected double threshold;
+	private int maxwindow = -1;
 	private final static Logger logger = Logger.getLogger(IncrementalSparseClusterer.class);
 	
 
@@ -58,6 +61,26 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 		this.clusterer = clusterer;
 		this.window = window;
 		this.threshold = threshold;
+	}
+	
+	/**
+	 * @param clusterer the underlying clusterer
+	 * @param window 
+	 * @param maxwindow 
+	 */
+	@SuppressWarnings("unused")
+	private IncrementalSparseClusterer(SparseMatrixClusterer<? extends IndexClusters> clusterer, int window, int maxwindow) {
+		this.clusterer = clusterer;
+		this.window = window;
+		if(maxwindow>0 ){
+			if(maxwindow < window * 2)
+				maxwindow = window * 2;
+		}
+		if(maxwindow <= 0){
+			maxwindow = -1;
+		}
+		this.maxwindow  = maxwindow;
+		this.threshold = 1.;
 	}
 	
 	class WindowedSparseMatrix{
@@ -93,11 +116,17 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 		SparseMatrix seen = MatlibMatrixUtils.subMatrix(data, 0, window, 0, window);
 		int seenrows = window;
 		TIntSet inactiveRows = new TIntHashSet(window);
+		logger.debug("First clustering!: " + seen.rowCount() + "x" + seen.columnCount());
 		IndexClusters oldClusters = clusterer.cluster(seen);
+		logger.debug("First clusters:\n" + oldClusters);
 		List<int[]> completedClusters = new ArrayList<int[]>();
 		while(seenrows < data.rowCount()){
 			int nextwindow = seenrows + window;
 			if(nextwindow >= data.rowCount()) nextwindow = data.rowCount();
+			if(this.maxwindow > 0 && nextwindow - inactiveRows.size() > this.maxwindow){
+				logger.debug(String.format("Window size (%d) without inactive (%d) = (%d), greater than maximum (%d)",nextwindow, inactiveRows.size(), nextwindow - inactiveRows.size(), this.maxwindow));
+				deactiveOldItemsAsNoise(nextwindow,inactiveRows,completedClusters);
+			}
 			WindowedSparseMatrix wsp = new WindowedSparseMatrix(data, nextwindow, inactiveRows);
 			logger.debug("Clustering: " + wsp.window.rowCount() + "x" + wsp.window.columnCount());
 			IndexClusters newClusters = clusterer.cluster(wsp.window);
@@ -118,6 +147,18 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 		}
 		
 		return new IndexClusters(completedClusters);
+	}
+
+	private void deactiveOldItemsAsNoise(int nextwindow, TIntSet inactiveRows, List<int[]> completedClusters) {
+		int toDeactivate = 0;
+		while(nextwindow - inactiveRows.size() > this.maxwindow){
+			if(!inactiveRows.contains(toDeactivate)){
+				logger.debug("Forcing the deactivation of: " + toDeactivate);
+				inactiveRows.add(toDeactivate);
+				completedClusters.add(new int[]{toDeactivate});
+			}
+			toDeactivate++;
+		}
 	}
 
 	/**
@@ -161,8 +202,14 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 			for (int j = 0; j < clusters2.length; j++) {
 				int[][] estimated = new int[][]{clusters2[j]};
 //				NMIAnalysis nmi = new NMIClusterAnalyser().analyse(correct, estimated);
-//				double score = nmi.nmi;
-				double score = new FScoreClusterAnalyser().analyse(correct, estimated).score();
+				double score = 0;
+				if(correct[0].length == 1 && estimated[0].length == 1){
+					// BOTH 1, either they are the same or not!
+					score = correct[0][0] == estimated[0][0] ? 1 : 0;
+				}
+				else{					
+					score = new FScoreClusterAnalyser().analyse(correct, estimated).score();
+				}
 				if(!Double.isNaN(score))
 				{
 					if(score > maxnmi){
