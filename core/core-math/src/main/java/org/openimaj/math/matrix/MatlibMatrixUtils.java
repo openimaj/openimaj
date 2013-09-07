@@ -2,6 +2,8 @@ package org.openimaj.math.matrix;
 
 
 import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.array.SparseBinSearchDoubleArray;
+import org.openimaj.util.array.SparseDoubleArray;
 
 import gnu.trove.TIntCollection;
 import gnu.trove.list.array.TIntArrayList;
@@ -571,6 +573,11 @@ public class MatlibMatrixUtils {
 			}
 		}
 		return newdata;
+	}
+
+	public static SparseDoubleArray sparseVectorToSparseArray(ch.akuhn.matrix.SparseVector row) {
+		SparseDoubleArray sda = new SparseBinSearchDoubleArray(row.size(),row.used(),row.keys(),row.values());
+		return sda;
 	}
 
 	

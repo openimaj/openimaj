@@ -72,6 +72,24 @@ public class SparseBinSearch#T#Array extends Sparse#T#Array {
 			if (values[i] != 0) set(i, values[i]);
 		}
 	}
+	
+	/**
+	 * Generate a new {@link SparseBinSearch#T#Array} wrapper which works around
+	 * an existing array of keys and values
+	 * @param length
+	 * @param used
+	 * @param keys
+	 * @param values
+	 */
+	public SparseBinSearch#T#Array(int length, int used, int[] keys, #t#[] values){
+		if (length < 0) throw new IllegalArgumentException("length must be >= 0");
+		if (length < values.length) throw new IllegalArgumentException("length is shorter than number of current values!");
+		if (keys.length!=values.length) throw new IllegalArgumentException("Number of keys does not match number of values.");
+		this.length = length;
+		this.used = used;
+		this.keys = keys;
+		this.values = values;
+	}
 
 	/**
 	 * Construct the array with the given length

@@ -171,5 +171,19 @@ public class SparseVector extends Vector {
 	public Vector timesEquals(double scalar) {
 		for (int i = 0; i < values.length; i++) values[i] *= scalar;
 		return this;
-	}	
+	}
+	
+	/**
+	 * @return the current keys
+	 */
+	public int[] keys(){
+		return keys;
+	}
+	
+	/**
+	 * @return the current values
+	 */
+	public double[] values(){
+		return this.values;
+	}
 }
