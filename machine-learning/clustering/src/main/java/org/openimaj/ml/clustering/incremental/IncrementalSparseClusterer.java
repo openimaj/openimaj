@@ -17,8 +17,6 @@ import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SparseMatrixClusterer;
 import org.openimaj.util.pair.IntDoublePair;
 
-import com.sun.xml.internal.ws.util.CompletedFuture;
-
 import ch.akuhn.matrix.SparseMatrix;
 
 /**
