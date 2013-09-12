@@ -22,7 +22,9 @@ import org.apache.log4j.Logger;
 import org.jboss.netty.handler.timeout.ReadTimeoutException;
 import org.openimaj.io.HttpUtils;
 import org.openimaj.io.HttpUtils.MetaRefreshRedirectStrategy;
+import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Operation;
+import org.openimaj.util.function.Predicate;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.AbstractStream;
 
@@ -194,15 +196,36 @@ public class YahooFinanceStream extends AbstractStream<Map<String,Double>>{
 	 */
 	public static void main(String[] args) throws IOException {
 		YahooFinanceStream yfs = new YahooFinanceStream(true,"google", "microsoft","yahoo");
-		yfs.forEach(new Operation<Map<String,Double>>() {
+		yfs.filter(new Predicate<Map<String,Double>>() {
+			
+			@Override
+			public boolean test(Map<String, Double> object) {
+				System.out.println(object.keySet());
+				if(!object.containsKey("GOOG"))return false;
+				return object.get("GOOG") > 10;
+			}
+		}).map(new Function<Map<String,Double>, String>() {
 
 			@Override
-			public void perform(Map<String, Double> object) {
-				for (Entry<String, Double> map : object.entrySet()) {
-					System.out.println(map.getKey() + ": " + map.getValue());
-				}
+			public String apply(Map<String, Double> in) {
+				return in.get("GOOG") + "cheese";
 			}
-		});
+		}).forEach(new Operation<String>() {
+			
+			@Override
+			public void perform(String object) {
+				System.out.println(object);
+			}
+		});;
+//		yfs.forEach(new Operation<Map<String,Double>>() {
+//
+//			@Override
+//			public void perform(Map<String, Double> object) {
+//				for (Entry<String, Double> map : object.entrySet()) {
+//					System.out.println(map.getKey() + ": " + map.getValue());
+//				}
+//			}
+//		});
 	}
 
 }

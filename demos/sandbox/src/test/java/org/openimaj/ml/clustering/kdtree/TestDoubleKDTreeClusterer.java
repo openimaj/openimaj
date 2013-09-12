@@ -1,6 +1,6 @@
 package org.openimaj.ml.clustering.kdtree;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import gnu.trove.list.array.TIntArrayList;
 
 import java.io.File;
@@ -76,11 +76,14 @@ public class TestDoubleKDTreeClusterer {
 		tc.loadTest();
 		tc.doTest();
 	}
-
+	
+	@Test
+	public void testName() throws Exception {
+		
+	}
 	/**
 	 *
 	 */
-	@Test
 	public void doTest(){
 		SparseMatrix simmat = normalisedSimilarity();
 		MLArray arr = MatlibMatrixUtils.asMatlab(simmat);
