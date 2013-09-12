@@ -138,7 +138,11 @@ public class #TT#ArrayValueAnimator implements ValueAnimator<#t#[]> {
 
 	@Override
 	public boolean hasFinished() {
-		return animators[0].hasFinished();
+		for (ValueAnimator<#TT#> a : animators) {
+			if (!a.hasFinished())
+				return false;
+		}
+		return true;
 	}
 
 	@Override

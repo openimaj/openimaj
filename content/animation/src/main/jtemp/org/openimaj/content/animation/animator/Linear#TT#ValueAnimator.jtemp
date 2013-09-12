@@ -85,13 +85,26 @@ public class Linear#TT#ValueAnimator extends AbstractValueAnimator<#TT#> impleme
 	@Override
 	public #TT# makeNextValue() {
 		current += incr;
+		
+		if (start<finish && current > finish) 
+			current = finish;
+		else if (start>finish && current < finish) 
+			current = finish;
+		
 		return current;
 	}
 
 	@Override
 	protected boolean complete() {
+		if (incr == 0) return true;
+		
 		#t# next = (#t#)(current+incr);
-		return next < Math.min(start, finish) || next > Math.max(finish, start);
+		
+		if (start<finish && next-0.0000001 > finish) 
+			return true;
+		else if (start>finish && next+0.0000001 < finish) 
+			return true;
+		return false;
 	}
 
 	@Override
