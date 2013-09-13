@@ -117,6 +117,39 @@ public class WesternScaleNote
 	}
 	
 	/**
+	 * 	Given a note string, returns a new {@link WesternScaleNote} from
+	 * 	which other information can be garnered. A note string is the note name
+	 * 	followed by the octave; e.g. "D3" or "A#5".
+	 *	@param noteString The note string
+	 *	@return A {@link WesternScaleNote} or null if the note string is invalid
+	 */
+	public final static WesternScaleNote createNote( final String noteString )
+	{
+		// Options we have are nO, nAO, nOO, nAOO.
+
+		// Find the longest matching start to the string
+		String startNoteName = null;
+		int length = 0;
+		for( String noteName: noteNames )
+		{
+			if( noteString.startsWith( noteName ) && noteName.length() > length )
+			{
+				startNoteName = noteName;
+				length = noteName.length();
+			}
+		}
+		
+		if( startNoteName == null ) return null;
+		
+		// Parse the octave value
+		int octave = Integer.parseInt( noteString.substring( 
+				startNoteName.length() ) );
+		
+		// Create a new note
+		return WesternScaleNote.createNote( startNoteName, octave ); 
+	}
+	
+	/**
 	 * 	Given a note name and octave, returns a {@link WesternScaleNote} from
 	 * 	which other information can be garnered.
 	 * 
