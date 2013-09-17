@@ -7,17 +7,13 @@ package org.openimaj.tools.twitter;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Map;
+
 import junit.framework.Assert;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.tools.twitter.SentimentExtractor.MockSentiment;
-import org.openimaj.tools.twitter.modes.preprocessing.SentimentExtractionMode;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
-import org.openimaj.twitter.GeneralJSONTwitter;
-import org.openimaj.twitter.USMFStatus;
-import org.openimaj.twitter.collection.FileTwitterStatusList;
-import org.openimaj.twitter.collection.TwitterStatusList;
+import org.openimaj.text.nlp.sentiment.BillMPQASentiment;
 
 /**
  *
@@ -42,13 +38,7 @@ public class SentimentExtractionTest {
             writer.flush(); writer.close();
             return f;
     }
-    @Test
-    public void testSentimentExtraction() throws IOException, Exception{
-        File unanalysed = fileFromStream(SentimentExtractionTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt"));
-        TwitterStatusList<USMFStatus> tweets = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",GeneralJSONTwitter.class);
-        USMFStatus tweet = tweets.get(0);
-        TwitterPreprocessingMode.results(tweet, new SentimentExtractionMode());
-    }
+    
     
     @Test
     public void testSentences() throws IOException, Exception{
@@ -68,7 +58,7 @@ public class SentimentExtractionTest {
         };
         
         for (int i = 0; i < sentences.length; i++){
-            MockSentiment mockSenti = new MockSentiment();
+            BillMPQASentiment mockSenti = new BillMPQASentiment();
             Map<String, Object> mockSentiOut = mockSenti.extract(Arrays.asList(sentences[i]));
             //System.out.println("Sentiment = " + mockSentiOut.get("sentiment") + 
             //        "--- Expected Sentiment = " + sentimentScores[i]);

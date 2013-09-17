@@ -51,6 +51,7 @@ import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
 import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
+import org.openimaj.tools.twitter.modes.preprocessing.SentimentExtractionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StemmingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
@@ -574,4 +575,11 @@ public class TwitterPreprocessingToolTests {
 		System.out.println();
 		return true;
 	}
+	@Test
+    public void testSentimentExtraction() throws IOException, Exception{
+        File unanalysed = fileFromStream(SentimentExtractionTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt"));
+        TwitterStatusList<USMFStatus> tweets = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",GeneralJSONTwitter.class);
+        USMFStatus tweet = tweets.get(0);
+        TwitterPreprocessingMode.results(tweet, new SentimentExtractionMode());
+    }
 }

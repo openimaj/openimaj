@@ -79,6 +79,11 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 	/** Thread for animating colours */
 	private Thread animationThread = null;
 
+	
+	int xmin = -180;
+	int xmax = 180;
+	int ymin = -90;
+	int ymax = 90;
 	/**
 	 *	@param width Width of the visualisation
 	 *	@param height Height of the visualisation
@@ -90,6 +95,22 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		super( width, height, plotter );
 		this.init();
 	}
+	
+	/**
+	 *	@param width Width of the visualisation
+	 *	@param height Height of the visualisation
+	 *	@param plotter The plotter to plot data with
+	 */
+	public WorldMap( final int width, final int height,final ItemPlotter<T, Float[], MBFImage> plotter,
+			int xmin, int xmax, int ymin, int ymax)
+	{
+		super( width, height, plotter );
+		this.xmin = xmin;
+		this.xmax = xmax;
+		this.ymin = ymin;
+		this.ymax = ymax;
+		this.init();
+	}
 
 	/**
 	 * 	Initialise
@@ -99,10 +120,11 @@ public class WorldMap<T> extends XYPlotVisualisation<T>
 		super.setAutoScaleAxes( false );
 		super.setAutoPositionXAxis( true );
 		super.axesRenderer2D.setAutoScaleAxes( false );
-		super.axesRenderer2D.setMinXValue( -180 );
-		super.axesRenderer2D.setMaxXValue( 180 );
-		super.axesRenderer2D.setMinYValue( -90 );
-		super.axesRenderer2D.setMaxYValue( 90 );
+		
+		super.axesRenderer2D.setMinXValue( xmin );
+		super.axesRenderer2D.setMaxXValue( xmax );
+		super.axesRenderer2D.setMinYValue( ymin );
+		super.axesRenderer2D.setMaxYValue( ymax );
 		super.axesRenderer2D.setAxisPaddingLeft( 50 );
 		super.axesRenderer2D.setAxisPaddingBottom( 50 );
 		super.axesRenderer2D.setAxisPaddingRight( 50 );

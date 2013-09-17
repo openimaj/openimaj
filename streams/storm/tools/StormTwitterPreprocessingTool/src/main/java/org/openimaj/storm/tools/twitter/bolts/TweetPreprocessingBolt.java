@@ -76,13 +76,17 @@ public class TweetPreprocessingBolt extends BaseTwitterRichBolt {
 
 	@Override
 	public void prepare() {
-		this.options = new AbstractTwitterPreprocessingToolOptions(args) {
+		try {
+			this.options = new AbstractTwitterPreprocessingToolOptions(args) {
 
-			@Override
-			public boolean validate() throws CmdLineException {
-				return true;
-			}
-		};
+				@Override
+				public boolean validate() throws CmdLineException {
+					return true;
+				}
+			};
+		} catch (CmdLineException e) {
+			throw new RuntimeException(e);
+		}
 		List<KestrelServerSpec> kestrelSpecList = KestrelServerSpec.parseKestrelAddressList(kestrelHosts);
 		this.kestrelServers = KestrelServerSpec.thriftClientIterator(kestrelSpecList);
 	}

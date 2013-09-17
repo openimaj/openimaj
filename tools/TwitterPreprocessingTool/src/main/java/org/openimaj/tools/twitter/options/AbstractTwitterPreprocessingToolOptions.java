@@ -158,7 +158,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 * @param prepare
 	 *            whether prepare should be called now or later
 	 */
-	public AbstractTwitterPreprocessingToolOptions(String[] args, boolean prepare) {
+	public AbstractTwitterPreprocessingToolOptions(String[] args, boolean prepare) throws CmdLineException{
 		this.args = args;
 		if (prepare)
 			this.prepare();
@@ -168,14 +168,14 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 * @param args
 	 *            the arguments, prepared using the prepare method
 	 */
-	public AbstractTwitterPreprocessingToolOptions(String[] args) {
+	public AbstractTwitterPreprocessingToolOptions(String[] args) throws CmdLineException{
 		this(args, true);
 	}
 
 	/**
 	 * prepare the tool for running
 	 */
-	public void prepare() {
+	public void prepare() throws CmdLineException{
 		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			if (veryLoud && quiet) {
@@ -192,7 +192,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
 			parser.printUsage(System.err);
 			System.err.println(this.getExtractUsageInfo());
-			System.exit(1);
+			
 		}
 
 	}
@@ -235,9 +235,8 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 
 	/**
 	 * @return an instance of the selected output mode
-	 * @throws Exception
 	 */
-	public TwitterOutputMode ouputMode() throws Exception {
+	public TwitterOutputMode ouputMode() {
 		outputModeOptionOp.validate(this);
 		return outputModeOptionOp;
 	}

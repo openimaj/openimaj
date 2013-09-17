@@ -101,6 +101,21 @@ public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {
 			}
 		}
 		
+	},
+	/**
+	 * Ascribe sentiment
+	 */
+	SENTIMENT{
+
+		@Override
+		public TwitterPreprocessingMode<?> getOptions() {
+			try {
+				return new SentimentExtractionMode();
+			} catch (IOException e) {
+				return null;
+			}
+		}
+		
 	}
 	;
 

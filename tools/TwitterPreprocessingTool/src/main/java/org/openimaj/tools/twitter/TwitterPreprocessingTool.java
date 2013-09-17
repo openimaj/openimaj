@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
@@ -56,7 +57,11 @@ public class TwitterPreprocessingTool
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		options = new TwitterPreprocessingToolOptions(args);
+		try {
+			options = new TwitterPreprocessingToolOptions(args);
+		} catch (CmdLineException e1) {
+			System.exit(1);
+		}
 		TwitterOutputMode outputMode;
 		final List<TwitterPreprocessingMode<?>> modes;
 		try {

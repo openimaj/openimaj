@@ -1,132 +1,166 @@
 package org.openimaj.webservice.twitter;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.jws.WebService;
 
 import org.apache.log4j.Logger;
-import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
-import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
+import org.kohsuke.args4j.CmdLineException;
+import org.mortbay.io.RuntimeIOException;
+import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
-import org.openimaj.twitter.collection.StreamTwitterStatusList;
-import org.openimaj.twitter.collection.TwitterStatusListUtils;
 import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.routing.Router;
 
-import cern.colt.Arrays;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-
-
+/**
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ */
 @WebService(targetNamespace = "http")
 public class PreProcessApp extends Application {
-	private static final Gson gson = new GsonBuilder().create();
-	private static Logger logger = Logger.getLogger(PreProcessApp.class);
-	public static class PreProcessService extends AppTypedResource<PreProcessApp>{
 
+	private static Logger logger = Logger.getLogger(PreProcessApp.class);
+
+	/**
+	 * 
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 */
+	public static class PreProcessService extends
+			AppTypedResource<PreProcessApp> {
+		class PreProcessAppOptions extends
+				AbstractTwitterPreprocessingToolOptions {
+
+			public Class<? extends GeneralJSON> outputClass;
+			public Class<? extends GeneralJSON> inputClass;
+			private PrintWriter writer = null;
+
+			public PreProcessAppOptions() throws CmdLineException {
+				super(constructArgs(getQuery()));
+				String intype = (String) getRequestAttributes().get("intype");
+				String outtype = (String) getRequestAttributes().get("outtype");
+				logger.info(String.format("Input: %s, Output: %s", intype,outtype));
+				inputClass = getTypeClass(intype);
+				outputClass = getTypeClass(outtype);
+			}
+
+			@Override
+			public boolean validate() throws CmdLineException {
+				return true;
+			}
+
+			public void setOutputWriter(Writer ow) {
+				this.writer  = new PrintWriter(ow);
+			}
+
+			public PrintWriter getOutputWriter() {
+				return writer;
+			}
+		}
+
+		/**
+		 * @param entity
+		 * @return rep
+		 */
 		@Post
-		public Representation level(Representation rep) {
-			
-			List<Map<?,?>> retList = new ArrayList<Map<?,?>>();
+		public Representation represent(Representation entity) {
+			PreProcessAppOptions options;
 			try {
-				String data = rep.getText();
-				String intype = (String) this.getRequestAttributes().get("intype");
-				String outtype = (String) this.getRequestAttributes().get("outtype");
-				logger.info(String.format("Input: %s, Output: %s, Data Len: %d",intype,outtype,data.length()));
-				Class<? extends GeneralJSON> inputClass = getTypeClass(intype);
-				Class<? extends GeneralJSON> outputClass = getTypeClass(outtype);
-				InputStream is = new ByteArrayInputStream( data.getBytes("UTF-8") );
-				List<USMFStatus> list = StreamTwitterStatusList.readUSMF(is, inputClass,"UTF-8");
-				List<TwitterPreprocessingMode<?>> modes  = null;
+				options = new PreProcessAppOptions();
+			} catch (CmdLineException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+				return null;
+			}
+			
+			final PipedInputStream pi = new PipedInputStream();
+			PipedOutputStream po = null;
+			try {
+				po = new PipedOutputStream(pi);
+			} catch (IOException e) {
+				return null;
+			}
+			Representation ir = new OutputRepresentation(MediaType.APPLICATION_JSON) {
+				@Override
+				public void write(OutputStream realOutput) throws IOException {
+					byte[] b = new byte[8];
+					int read;
+					while ((read = pi.read(b)) != -1) {
+						realOutput.write(b, 0, read);
+						realOutput.flush();
+					}
+				}
+			};
+			OutputStreamWriter ow = null;
+			try {
+				ow = new OutputStreamWriter(po,"UTF-8");
+			} catch (UnsupportedEncodingException e) {
 				try {
-					modes = preprocessingModes(this.getQuery().getValuesArray("m"));
-				} catch (Exception e) {
-					logger.error("Could not produce preprocessing modes",e);
+					ow.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				return null;
+			}
+			
+			options.setOutputWriter(ow);
+			if (entity != null) {
+				if (MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(),true)) {
+					new Thread(new PreProcessTask(getRequest(), options)).start();
+				} else {
 					return null;
 				}
-				
-				for (USMFStatus usmfStatus : list) {
-					for (TwitterPreprocessingMode<?> mode: modes) {
-						try {
-							TwitterPreprocessingMode.results(usmfStatus, mode);
-						} catch (Exception e) {
-							logger.error(String.format("Problem producing %s for %s",usmfStatus.id,mode.toString()), e);
-						}
-					}
-					TwitterOutputMode om = null;
-					if(!this.getQuery().contains("om")){
-						om = TwitterOutputModeOption.APPEND.getOptions();
-					}
-					else{						
-						TwitterOutputModeOption.valueOf(this.getQuery().getValues("om")).getOptions();
-					}
-					final GeneralJSON outInstance = TwitterStatusListUtils.newInstance(outputClass);
-					outInstance.fromUSMF(usmfStatus);
-					StringWriter sw = new StringWriter();
-					om.output(outInstance, new PrintWriter(sw));
-					Map<?,?> map = gson.fromJson(sw.toString(), Map.class);
-					retList.add(map);
-				}
-			} catch (IOException e) {
-				logger.error("Problem reading input", e);
+			} else {
+				return null;
 			}
 			
-			JsonRepresentation ret = new JsonRepresentation(gson.toJson(retList));
-			return ret;
+			return ir;
 		}
-		
-		/**
-		 * @return an instance of the selected preprocessing mode
-		 * @throws Exception
-		 */
-		public List<TwitterPreprocessingMode<?>> preprocessingModes(String[] modeStrings) throws Exception {
-			logger.debug("Modes asked for: " + Arrays.toString(modeStrings));
-			ArrayList<TwitterPreprocessingMode<?>> modes = new ArrayList<TwitterPreprocessingMode<?>>();
-			Set<String> validModes = new HashSet<String>();
-			for (TwitterPreprocessingModeOption string : TwitterPreprocessingModeOption.values()) {
-				validModes.add(string.name());
+
+		private String[] constructArgs(Form query) {
+			List<String> arglist = new ArrayList<String>();
+			Set<String> argNames = query.getNames();
+			for (String argName : argNames) {
+				String[] argvals = query.getValuesArray(argName);
+				for (String argval : argvals) {
+					arglist.add(String.format("-%s", argName));
+					arglist.add(String.format("%s", argval));
+				}
 			}
-			for (String modeString: modeStrings) {
-				if(!validModes.contains(modeString)) continue;
-				TwitterPreprocessingModeOption valueOf = TwitterPreprocessingModeOption.valueOf(modeString);
-				modes.add(valueOf.getOptions());
-			}
-			return modes;
+			return arglist.toArray(new String[arglist.size()]);
 		}
 
 		private Class<? extends GeneralJSON> getTypeClass(String intype) {
-			if(intype.equals("twitter")){
+			if (intype.equals("twitter")) {
 				return GeneralJSONTwitter.class;
-			}
-			else if(intype.equals("usmf")){
+			} else if (intype.equals("usmf")) {
 				return USMFStatus.class;
 			}
 			return null;
 		}
 	}
+
 	@Override
 	public Restlet createInboundRoot() {
 		Router router = new Router(getContext());
-		router.attach("/process/{intype}.{outtype}", PreProcessService.class);
+		router.attach("/{intype}.{outtype}", PreProcessService.class);
 		return router;
-	}	
+	}
 }

@@ -73,8 +73,9 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	 * See: {@link AbstractTwitterPreprocessingToolOptions#AbstractTwitterPreprocessingToolOptions(String[])}
 	 * @param args 
 	 */
-	public TwitterPreprocessingToolOptions(String[] args) {
+	public TwitterPreprocessingToolOptions(String[] args) throws CmdLineException{
 		super(args);
+		
 		if(!this.stdin) this.fileIterator = this.inputFiles.iterator();
 	}
 
