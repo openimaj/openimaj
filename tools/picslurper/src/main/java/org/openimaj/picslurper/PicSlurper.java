@@ -26,9 +26,9 @@ import twitter4j.Status;
 
 /**
  * A tool for slurping images off twitter
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>, Iterator<InputStream> {
 
@@ -80,6 +80,39 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	boolean forceTwitter4J = false;
 
 	@Option(
+			name = "--database",
+			aliases = "-d",
+			required = false,
+			usage = "Force the use of a database",
+			metaVar = "URL"
+	)
+	String database = null;
+
+	@Option(
+			name = "--databaseTable",
+			aliases = "-dt",
+			required = false,
+			usage = "When using a database, specify the database table",
+			metaVar = "STRING" )
+	String databaseTable = null;
+
+	@Option(
+			name = "--databaseUser",
+			aliases = "-du",
+			required = false,
+			usage = "When using a database, specify the database username",
+			metaVar = "STRING" )
+	String databaseUser = null;
+
+	@Option(
+			name = "--databasePassword",
+			aliases = "-dp",
+			required = false,
+			usage = "When using a database, specify the database password",
+			metaVar = "STRING" )
+	String databasePW = null;
+
+	@Option(
 			name = "--output-listener",
 			aliases = "-ol",
 			required = false,
@@ -95,7 +128,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * @param args
 	 *            tool arguments
 	 */
-	public PicSlurper(String[] args) {
+	public PicSlurper(final String[] args) {
 		this.args = args;
 	}
 
@@ -112,7 +145,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	public void prepare() {
 		final CmdLineParser parser = new CmdLineParser(this);
 		try {
-			parser.parseArgument(args);
+			parser.parseArgument(this.args);
 			this.validate();
 		} catch (final CmdLineException e) {
 			e.printStackTrace();
@@ -130,6 +163,12 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 
 	void validate() throws CmdLineException {
 		try {
+			if( this.database != null )
+			{
+				this.statusFeeder = new DatabaseStatusFeeder( this.database,
+						this.databaseTable, this.databaseUser, this.databasePW );
+			}
+			else
 			if (this.forceTwitter4J) {
 				this.statusFeeder = new Twitter4JStreamFeeder();
 			} else {
@@ -138,9 +177,9 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			if (FileToolsUtil.isStdout(this)) {
 				this.stdout = true;
 			} else {
-				this.outputLocation = validateLocalOutput(this.getOutput(), this.isForce(), !this.isContinue());
+				this.outputLocation = PicSlurper.validateLocalOutput(this.getOutput(), this.isForce(), !this.isContinue());
 				this.outputLocation.mkdirs();
-				this.globalStatus = new File(outputLocation, STATUS_FILE_NAME);
+				this.globalStatus = new File(this.outputLocation, PicSlurper.STATUS_FILE_NAME);
 				// init the output file
 				PicSlurperUtils.updateStats(this.globalStatus, new StatusConsumption());
 			}
@@ -157,7 +196,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	/**
 	 * Validate the (local) ouput from an String and return the corresponding
 	 * file.
-	 * 
+	 *
 	 * @param out
 	 *            where the file will go
 	 * @param overwrite
@@ -169,7 +208,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * @throws IOException
 	 *             if the file exists, but can't be deleted
 	 */
-	public static File validateLocalOutput(String out, boolean overwrite, boolean contin) throws IOException {
+	public static File validateLocalOutput(final String out, final boolean overwrite, final boolean contin) throws IOException {
 		if (out == null) {
 			throw new IOException("No output specified");
 		}
@@ -188,9 +227,9 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	@Override
 	public boolean hasNext() {
 		if (!this.stdin) {
-			if (fileIterator == null)
+			if (this.fileIterator == null)
 				return false;
-			return fileIterator.hasNext();
+			return this.fileIterator.hasNext();
 		}
 		return true;
 	}
@@ -201,10 +240,10 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			this.stdin = false;
 			return System.in;
 		}
-		if (fileIterator == null)
+		if (this.fileIterator == null)
 			return null;
-		if (fileIterator.hasNext()) {
-			this.inputFile = fileIterator.next();
+		if (this.fileIterator.hasNext()) {
+			this.inputFile = this.fileIterator.next();
 			try {
 				return new FileInputStream(this.inputFile);
 			} catch (final FileNotFoundException e) {
@@ -223,14 +262,14 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * @param status
 	 *            handle this status
 	 */
-	public void handleStatus(Status status) {
+	public void handleStatus(final Status status) {
 		StatusConsumer consumer;
 		try {
 			consumer = new StatusConsumer(this.stats, this.globalStatus, this.outputLocation, this.outputListenerModeOp);
 			consumer.consume(status);
 
 		} catch (final Exception e) {
-			logger.error("Some error with the statusconsumer: " + e.getMessage());
+			PicSlurper.logger.error("Some error with the statusconsumer: " + e.getMessage());
 		}
 	}
 
@@ -245,9 +284,9 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * @throws TweetTokeniserException
 	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws IOException, TweetTokeniserException, InterruptedException {
+	public static void main(final String[] args) throws IOException, TweetTokeniserException, InterruptedException {
 		// Load the config
-		loadConfig();
+		PicSlurper.loadConfig();
 		final PicSlurper slurper = new PicSlurper(args);
 		slurper.prepare();
 		slurper.start();
@@ -262,13 +301,13 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * Load the configuration file which looks for twitter usernames and
 	 * passwords. If this can't be found or the values can't be found then
 	 * System.in is used to get the username and password
-	 * 
+	 *
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
 	public static void loadConfig() throws FileNotFoundException, IOException {
 		final File configFile = new File("config.properties");
-		logger.debug("Looking for config file: " + configFile.getAbsolutePath());
+		PicSlurper.logger.debug("Looking for config file: " + configFile.getAbsolutePath());
 		if (configFile.exists()) {
 			final Properties prop = System.getProperties();
 			prop.load(new FileInputStream(configFile));
