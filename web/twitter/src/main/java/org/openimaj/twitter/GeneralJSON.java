@@ -41,6 +41,8 @@ import java.util.Map;
 
 import org.openimaj.io.ReadWriteable;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -57,7 +59,7 @@ import com.google.gson.GsonBuilder;
  */
 public abstract class GeneralJSON implements ReadWriteable {
 
-	protected transient static Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+	protected transient static Gson gson = new GsonBuilder().serializeNulls().create();
 
 	/**
 	 * This is the method that will be called by USMFStatus to fill itself with

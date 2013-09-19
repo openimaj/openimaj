@@ -41,7 +41,7 @@ public class TwitterStatusListUtils {
 
 			return cls.newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			return null;
 		} 
 	}
 

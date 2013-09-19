@@ -21,6 +21,7 @@ public class TwitterPreprocessingWebService extends Component{
 		this.getContext().getLogger().setLevel(java.util.logging.Level.ALL);
 		getServers().add(Protocol.HTTP,Integer.parseInt("8080"));
 		getDefaultHost().attach("/process", new PreProcessApp());
+		getDefaultHost().attach("/job", new PreProcessJobApp());
 		LoggerUtils.prepareConsoleLogger();
 	}
 	public void loadProps() throws IOException{

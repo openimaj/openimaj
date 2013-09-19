@@ -60,6 +60,9 @@ public class TwitterPreprocessingTool
 		try {
 			options = new TwitterPreprocessingToolOptions(args);
 		} catch (CmdLineException e1) {
+			System.err.println(e1.getMessage());
+			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
+			e1.getParser().printUsage(System.err);
 			System.exit(1);
 		}
 		TwitterOutputMode outputMode;

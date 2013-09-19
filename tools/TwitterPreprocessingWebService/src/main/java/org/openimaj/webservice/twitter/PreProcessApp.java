@@ -6,27 +6,20 @@ import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import javax.jws.WebService;
 
 import org.apache.log4j.Logger;
 import org.kohsuke.args4j.CmdLineException;
-import org.mortbay.io.RuntimeIOException;
-import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
-import org.openimaj.twitter.GeneralJSON;
-import org.openimaj.twitter.GeneralJSONTwitter;
-import org.openimaj.twitter.USMFStatus;
 import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
 import org.restlet.routing.Router;
 
@@ -43,59 +36,33 @@ public class PreProcessApp extends Application {
 	 * 
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
-	public static class PreProcessService extends
-			AppTypedResource<PreProcessApp> {
-		class PreProcessAppOptions extends
-				AbstractTwitterPreprocessingToolOptions {
-
-			public Class<? extends GeneralJSON> outputClass;
-			public Class<? extends GeneralJSON> inputClass;
-			private PrintWriter writer = null;
-
-			public PreProcessAppOptions() throws CmdLineException {
-				super(constructArgs(getQuery()));
-				String intype = (String) getRequestAttributes().get("intype");
-				String outtype = (String) getRequestAttributes().get("outtype");
-				logger.info(String.format("Input: %s, Output: %s", intype,outtype));
-				inputClass = getTypeClass(intype);
-				outputClass = getTypeClass(outtype);
-			}
-
-			@Override
-			public boolean validate() throws CmdLineException {
-				return true;
-			}
-
-			public void setOutputWriter(Writer ow) {
-				this.writer  = new PrintWriter(ow);
-			}
-
-			public PrintWriter getOutputWriter() {
-				return writer;
-			}
-		}
-
+	public static class PreProcessService extends AppTypedResource<PreProcessApp> {
 		/**
 		 * @param entity
 		 * @return rep
 		 */
 		@Post
 		public Representation represent(Representation entity) {
+			logger.debug("Starting request");
+			logger.debug("Parsing options");
 			PreProcessAppOptions options;
 			try {
-				options = new PreProcessAppOptions();
-			} catch (CmdLineException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-				return null;
+				
+				options = new PreProcessAppOptions(getQuery(),getRequestAttributes());
+			} catch (CmdLineException e) {
+				logger.error("Invalid options",e);
+				entity.release();
+				return errorRep(e);
 			}
-			
+			logger.debug("Preparing output pipes");
 			final PipedInputStream pi = new PipedInputStream();
 			PipedOutputStream po = null;
 			try {
 				po = new PipedOutputStream(pi);
 			} catch (IOException e) {
-				return null;
+				this.setStatus(Status.SERVER_ERROR_INTERNAL);
+				logger.error("Failed to create output pipe",e);
+				return new StringRepresentation("Could not open output pipe");
 			}
 			Representation ir = new OutputRepresentation(MediaType.APPLICATION_JSON) {
 				@Override
@@ -115,46 +82,51 @@ public class PreProcessApp extends Application {
 				try {
 					ow.close();
 				} catch (IOException e1) {
-					e1.printStackTrace();
+					logger.error("Failed to create output pipe",e1);
+					return new StringRepresentation("Could not open output pipe");
 				}
-				return null;
+				this.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 			
 			options.setOutputWriter(ow);
+			logger.debug("Preparing input data");
 			if (entity != null) {
+				
 				if (MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(),true)) {
-					new Thread(new PreProcessTask(getRequest(), options)).start();
+					try {
+						logger.debug("Starting input thread");
+						new Thread(new PreProcessTask(getRequest(), options)).start();
+					} catch (IOException e) {
+						logger.error("No input data found");
+						this.setStatus(Status.SERVER_ERROR_INTERNAL);
+						return new StringRepresentation("No valid file provided, use variable 'data'");
+					}
 				} else {
-					return null;
+					logger.error("Not a multipart request");
+					this.setStatus(Status.SERVER_ERROR_INTERNAL);
+					return new StringRepresentation("Not a multipart request, upload a file using variable 'data'");
 				}
 			} else {
-				return null;
+				this.setStatus(Status.SERVER_ERROR_INTERNAL);
+				return new StringRepresentation("No valid file provided, use variable 'data'");
 			}
-			
+			logger.debug("Success! starting output");
+			this.setStatus(Status.SUCCESS_OK);
 			return ir;
 		}
 
-		private String[] constructArgs(Form query) {
-			List<String> arglist = new ArrayList<String>();
-			Set<String> argNames = query.getNames();
-			for (String argName : argNames) {
-				String[] argvals = query.getValuesArray(argName);
-				for (String argval : argvals) {
-					arglist.add(String.format("-%s", argName));
-					arglist.add(String.format("%s", argval));
-				}
-			}
-			return arglist.toArray(new String[arglist.size()]);
+		private Representation errorRep(CmdLineException e) {
+			StringWriter writer = new StringWriter();
+			PrintWriter pw = new PrintWriter(writer);
+			e.printStackTrace(pw);
+			e.getParser().printUsage(pw,null);
+			pw.flush();
+			StringRepresentation stringRepresentation = new StringRepresentation(writer.toString());
+			this.setStatus(Status.SERVER_ERROR_INTERNAL);
+			return stringRepresentation;
 		}
 
-		private Class<? extends GeneralJSON> getTypeClass(String intype) {
-			if (intype.equals("twitter")) {
-				return GeneralJSONTwitter.class;
-			} else if (intype.equals("usmf")) {
-				return USMFStatus.class;
-			}
-			return null;
-		}
+		
 	}
 
 	@Override

@@ -188,11 +188,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 			registerRDFAnalysis();
 			this.validate();
 		} catch (final CmdLineException e) {
-			System.err.println(e.getMessage());
-			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
-			parser.printUsage(System.err);
-			System.err.println(this.getExtractUsageInfo());
-			
+			throw e;
 		}
 
 	}
@@ -324,5 +320,19 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 		final GeneralJSON outInstance = TwitterStatusListUtils.newInstance(this.outputStatusType.type());
 		outInstance.fromUSMF(twitterStatus);
 		return outInstance;
+	}
+	
+	/**
+	 * @return the input status type
+	 */
+	public StatusType  getInputClass() {
+		return this.statusType;
+	}
+	
+	/**
+	 * @return the input status type
+	 */
+	public StatusType getOutputClass() {
+		return this.outputStatusType;
 	}
 }
