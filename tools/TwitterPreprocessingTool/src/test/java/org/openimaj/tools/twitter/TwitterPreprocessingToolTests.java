@@ -577,7 +577,7 @@ public class TwitterPreprocessingToolTests {
 	}
 	@Test
     public void testSentimentExtraction() throws IOException, Exception{
-        File unanalysed = fileFromStream(SentimentExtractionTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt"));
+        File unanalysed = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt"));
         TwitterStatusList<USMFStatus> tweets = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",GeneralJSONTwitter.class);
         USMFStatus tweet = tweets.get(0);
         TwitterPreprocessingMode.results(tweet, new SentimentExtractionMode());
