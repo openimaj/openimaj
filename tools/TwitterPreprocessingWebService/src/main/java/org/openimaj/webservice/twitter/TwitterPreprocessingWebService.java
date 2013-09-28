@@ -1,10 +1,5 @@
 package org.openimaj.webservice.twitter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import org.openimaj.logger.LoggerUtils;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
@@ -16,27 +11,24 @@ import org.restlet.data.Protocol;
  */
 public class TwitterPreprocessingWebService extends Component{
 
+	/**
+	 * Default port 8080
+	 * @throws Exception
+	 */
 	public TwitterPreprocessingWebService() throws Exception {
-		loadProps();
-		this.getContext().getLogger().setLevel(java.util.logging.Level.ALL);
-		getServers().add(Protocol.HTTP,Integer.parseInt("8080"));
+		this(8080);
+	}
+	/**
+	 * @param port
+	 * @throws Exception
+	 */
+	public TwitterPreprocessingWebService(int port) throws Exception {
+		getServers().add(Protocol.HTTP,port);
 		getDefaultHost().attach("/process", new PreProcessApp());
 		getDefaultHost().attach("/job", new PreProcessJobApp());
-		LoggerUtils.prepareConsoleLogger();
-	}
-	public void loadProps() throws IOException{
-		Properties props = new Properties();
-		InputStream res = TwitterPreprocessingWebService.class.getResourceAsStream("smows.properties");
-		if(res==null) return;
-		props.load(res);
-		for (Object key : props.keySet()) {
-			if (!System.getProperties().containsKey(key)) {
-				System.getProperties().setProperty((String) key,(String) props.get(key));
-			}
-		}
 	}
 	
 	public static void main(String[] args) throws Exception {
-		new TwitterPreprocessingWebService().start();
+		new TwitterPreprocessingWebService(8181).start();
 	}
 }

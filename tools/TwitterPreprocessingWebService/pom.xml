@@ -77,6 +77,11 @@
       <version>1.1.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    	<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>2.11.1</version>
+		</dependency>
 		<dependency> 
 	       <groupId>org.restlet.jse</groupId>  
 	       <artifactId>org.restlet</artifactId>  

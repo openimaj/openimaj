@@ -29,13 +29,15 @@ class PreProcessTask implements Runnable {
 	public PreProcessTask(Request request, PreProcessAppOptions options) throws IOException {
 		this.req = request;
 		this.options = options;
+		logger.debug("Creating disk file item factory");
 		// 1/ Create a factory for disk-based file items
         DiskFileItemFactory factory = new DiskFileItemFactory();
         factory.setSizeThreshold(1000240);
-
+        logger.debug("Creating file upload handler");
         // 2/ Create a new file upload handler
         RestletFileUpload upload = new RestletFileUpload(factory);
         // 3/ Request is parsed by the handler which generates a list of FileItems
+        logger.debug("Parsing upload request");
         try {
 			items = upload.parseRequest(req);
 		} catch (FileUploadException e) {
