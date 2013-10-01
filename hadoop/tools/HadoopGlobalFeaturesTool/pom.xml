@@ -52,9 +52,9 @@
         <configuration>
           <finalName>HadoopGlobalFeaturesTool</finalName>
           <appendAssemblyId>false</appendAssemblyId>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
+					<descriptors>
+						<descriptor>src/main/assembly/jar-without-license.xml</descriptor>
+					</descriptors>
           <archive>
             <manifest>
               <mainClass>org.openimaj.hadoop.tools.globalfeature.HadoopGlobalFeaturesTool</mainClass>
