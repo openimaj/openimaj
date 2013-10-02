@@ -47,20 +47,20 @@ import org.openimaj.vis.general.BarVisualisation.Bar;
 /**
  * The {@link BarVisualisation} can be used to draw to an image a bar graph of
  * any data set to an RGBA MBFImage.
- *
+ * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 26 Jul 2012
  * @version $Author$, $Revision$, $Date$
  */
 public class BarVisualisation extends XYPlotVisualisation<Bar>
-	implements ItemPlotter<Bar,Float[],MBFImage>
+		implements ItemPlotter<Bar, Float[], MBFImage>
 {
 	/**
-	 * 	Represents a single bar to draw.
-	 *
-	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *  @created 6 Aug 2013
-	 *	@version $Author$, $Revision$, $Date$
+	 * Represents a single bar to draw.
+	 * 
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * @created 6 Aug 2013
+	 * @version $Author$, $Revision$, $Date$
 	 */
 	public static class Bar
 	{
@@ -80,13 +80,18 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 		public Float[] strokeColour = RGBColour.BLACK;
 
 		/**
-		 * 	Default constructor
-		 * 	@param value Height of the bar
-		 *	@param startX units of the start of the bar
-		 *	@param endX units at the end of the bar
-		 *	@param colour The colour of the bar
+		 * Default constructor
+		 * 
+		 * @param value
+		 *            Height of the bar
+		 * @param startX
+		 *            units of the start of the bar
+		 * @param endX
+		 *            units at the end of the bar
+		 * @param colour
+		 *            The colour of the bar
 		 */
-		public Bar( final double value, final double startX, final double endX, final Float[] colour )
+		public Bar(final double value, final double startX, final double endX, final Float[] colour)
 		{
 			this.value = value;
 			this.startX = startX;
@@ -97,7 +102,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 		@Override
 		public String toString()
 		{
-			return "Bar["+this.startX+" to "+this.endX+" = "+this.value+"]";
+			return "Bar[" + this.startX + " to " + this.endX + " = " + this.value + "]";
 		}
 	}
 
@@ -138,10 +143,10 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	private boolean autoScale = true;
 
 	/** The maximum value of the scale (if autoScale is false) */
-	private double maxValue = 1d;
+	// private double maxValue = 1d;
 
 	/** The minimum value of the scale (if autoScale if false) */
-	private double minValue = 0d;
+	// private double minValue = 0d;
 
 	/** Whether to draw the value of the bar in each bar */
 	private boolean drawValue = false;
@@ -177,15 +182,20 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	private final double yscale = 0;
 
 	/** The range of the data being viewed */
-	private final double axisRangeY = 0;
+	// private final double axisRangeY = 0;
 
-	/** Whether to use a fixed bar width. If so barWidth gives the size in data units */
+	/**
+	 * Whether to use a fixed bar width. If so barWidth gives the size in data
+	 * units
+	 */
 	private boolean useFixedBarWidth = true;
 
 	/** The width of each bar that's drawn */
 	private double barWidth = 1;
 
-	/** Whether to centre the bars on the values (rather than between the values) */
+	/**
+	 * Whether to centre the bars on the values (rather than between the values)
+	 */
 	private boolean centreBarsOnValues = false;
 
 	/** The label transformer used for the data point values */
@@ -201,22 +211,22 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Create a bar visualisation of the given size
-	 *
+	 * 
 	 * @param width
 	 *            The width of the image
 	 * @param height
 	 *            The height of the image
 	 */
-	public BarVisualisation(final int width, final int height )
+	public BarVisualisation(final int width, final int height)
 	{
-		super( width, height );
-		super.setItemPlotter( this );
-		super.setRenderAxesLast( false );
+		super(width, height);
+		super.setItemPlotter(this);
+		super.setRenderAxesLast(false);
 	}
 
 	/**
 	 * Creates the given visualisation with the given data
-	 *
+	 * 
 	 * @param width
 	 *            The width of the image
 	 * @param height
@@ -224,15 +234,16 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 * @param data
 	 *            The data to visualise
 	 */
-	public BarVisualisation(final int width, final int height, final double[] data )
+	public BarVisualisation(final int width, final int height, final double[] data)
 	{
-		this( width, height );
+		this(width, height);
 		this.setData(data);
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.general.ItemPlotter#renderRestarting()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.vis.general.ItemPlotter#renderRestarting()
 	 */
 	@Override
 	public void renderRestarting()
@@ -240,74 +251,81 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 * 	Plots a single bar into the visualisation.
-	 *
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image, org.openimaj.vis.general.XYPlotVisualisation.LocatedObject, org.openimaj.vis.general.AxesRenderer2D)
+	 * Plots a single bar into the visualisation.
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.vis.general.ItemPlotter#plotObject(org.openimaj.image.Image,
+	 *      org.openimaj.vis.general.XYPlotVisualisation.LocatedObject,
+	 *      org.openimaj.vis.general.AxesRenderer2D)
 	 */
 	@Override
-	public void plotObject( final MBFImage visImage, final LocatedObject<Bar> object,
-			final AxesRenderer2D<Float[], MBFImage> renderer )
+	public void plotObject(final MBFImage visImage, final LocatedObject<Bar> object,
+			final AxesRenderer2D<Float[], MBFImage> renderer)
 	{
 		// Position on the x-axis
-		final int[] p = this.axesRenderer2D.calculatePosition( new double[]{ object.x, object.y } );
+		final int[] p = this.axesRenderer2D.calculatePosition(new double[] { object.x, object.y });
 
 		// The position of the x axis and the start of the bar
-		final int[] z = this.axesRenderer2D.calculatePosition( new double[]{ object.object.startX, 0 } );
+		final int[] z = this.axesRenderer2D.calculatePosition(new double[] { object.object.startX, 0 });
 
 		// The position of the end of the bar (y is ignored)
-		final int[] p2 = this.axesRenderer2D.calculatePosition( new double[]{ object.object.endX, 0 } );
+		final int[] p2 = this.axesRenderer2D.calculatePosition(new double[] { object.object.endX, 0 });
 
 		// The width of the bar in pixels
 		final int barWidth = p2[0] - z[0];
 
 		// The height of the bar
-		int barHeight = z[1]-p[1];
+		int barHeight = z[1] - p[1];
 		int y = p[1];
 
-		if( barHeight < 0 ) { barHeight = -barHeight; y = z[1]; }
+		if (barHeight < 0) {
+			barHeight = -barHeight;
+			y = z[1];
+		}
 
 		// The rectangle delimiting the bar
-		final Rectangle rect = new Rectangle( p[0], y, barWidth, barHeight );
+		final Rectangle rect = new Rectangle(p[0], y, barWidth, barHeight);
 
 		// Work out what colour it should be
 		Float[] c = this.getBarColour();
-		if( this.useColourMap )
+		if (this.useColourMap)
 			c = this.colourMap.apply((float) (Math.abs(object.y) / this.axesRenderer2D.getMaxYValue()));
-		if( this.useIndividualBarColours )
+		if (this.useIndividualBarColours)
 			c = object.object.colour;
 
 		// Draw the bar
-		visImage.drawShapeFilled( rect, c );
+		visImage.drawShapeFilled(rect, c);
 
 		// Stroke the bar
-		if( object.object.strokeColour != null )
-			visImage.drawShape( rect, object.object.strokeColour );
+		if (object.object.strokeColour != null)
+			visImage.drawShape(rect, object.object.strokeColour);
 
 		// If we're to draw the value, do that here.
-		if( this.drawValue )
+		if (this.drawValue)
 		{
 			// We'll draw the bar's value
 			String text;
-			if( this.transformer != null )
-					text = this.transformer.transform( object.y );
-			else	text = "" + object.y;
+			if (this.transformer != null)
+				text = this.transformer.transform(object.y);
+			else
+				text = "" + object.y;
 
 			// Find the width and height of the text to draw
 			final HersheyFont f = HersheyFont.TIMES_BOLD;
 			final HersheyFontStyle<Float[]> style = f.createStyle(this.visImage.createRenderer());
-			style.setFontSize( this.textSize );
+			style.setFontSize(this.textSize);
 			final Rectangle r = f.createStyle(this.visImage.createRenderer())
-					.getRenderer( this.visImage.createRenderer() )
-					.getBounds( text, style );
+					.getRenderer(this.visImage.createRenderer())
+					.getBounds(text, style);
 
 			// Work out where to put the text
 			// tx is the centre of the bar minus half the text bounds
-			int tx = (int) (z[0] + barWidth/2 - r.width/2);
+			int tx = (int) (z[0] + barWidth / 2 - r.width / 2);
 
 			// ty is the top of the bar minus a small padding
-			final int ty = (int)((object.y >= 0 ? rect.y : rect.y+rect.height+r.height) -
-					(object.y >= 0 ? this.textBasePad : -this.textBasePad ) );
+			final int ty = (int) ((object.y >= 0 ? rect.y : rect.y + rect.height + r.height) -
+					(object.y >= 0 ? this.textBasePad : -this.textBasePad));
 
 			// Make sure the text will be drawn within the bounds of the image.
 			if (tx < 0)
@@ -331,7 +349,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Sets whether values are drawn to the image.
-	 *
+	 * 
 	 * @param tf
 	 *            TRUE to draw values
 	 */
@@ -342,7 +360,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Set the data from a float array.
-	 *
+	 * 
 	 * @param data
 	 *            The data to set
 	 */
@@ -353,7 +371,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Set the data from a long array.
-	 *
+	 * 
 	 * @param data
 	 *            The data to set
 	 */
@@ -363,39 +381,41 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 *	Set the data to a double array
-	 *	@param data The data
+	 * Set the data to a double array
+	 * 
+	 * @param data
+	 *            The data
 	 */
-	public void setData( final double[] data )
+	public void setData(final double[] data)
 	{
 		super.data.clear();
 
-		if( this.useFixedBarWidth )
-			for( int i = 0; i < data.length; i++ )
-				super.data.add( new LocatedObject<Bar>( i, data[i],
-						new Bar( data[i], i, i+this.barWidth, RGBColour.RED ) ) );
+		if (this.useFixedBarWidth)
+			for (int i = 0; i < data.length; i++)
+				super.data.add(new LocatedObject<Bar>(i, data[i],
+						new Bar(data[i], i, i + this.barWidth, RGBColour.RED)));
 		else
-			for( int i = 0; i < data.length; i++ )
-				super.data.add( new LocatedObject<Bar>( i, data[i],
-					new Bar( data[i], i, i+this.barWidth, RGBColour.RED ) ) );
+			for (int i = 0; i < data.length; i++)
+				super.data.add(new LocatedObject<Bar>(i, data[i],
+						new Bar(data[i], i, i + this.barWidth, RGBColour.RED)));
 
 		super.validateData();
-		this.axesRenderer2D.setMaxXValue( data.length );
-		
+		this.axesRenderer2D.setMaxXValue(data.length);
+
 		// Force the axis to be zero if the axis always visible flag is set
-		if( axisAlwaysVisible )
-			if( getMinValue() > 0 )
-				setMinValue( 0 );
-			else if( getMaxValue() < 0 )
-				setMaxValue( 0 );
-		
+		if (axisAlwaysVisible)
+			if (getMinValue() > 0)
+				setMinValue(0);
+			else if (getMaxValue() < 0)
+				setMaxValue(0);
+
 		super.updateVis();
 	}
 
 	/**
 	 * Fix the x-axis to the given position in pixels. Note that the position is
 	 * given from the bottom of the visualisation window.
-	 *
+	 * 
 	 * @param position
 	 *            The position in pixels
 	 */
@@ -449,7 +469,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Whether to use a colour map and which one.
-	 *
+	 * 
 	 * @param cp
 	 *            The colour map to use
 	 */
@@ -476,7 +496,8 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 * @param row the row
+	 * @param row
+	 *            the row
 	 * @return the strokeColour
 	 */
 	public Float[] getStrokeColour(final int row)
@@ -487,7 +508,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	/**
 	 * @param prov
 	 */
-	public void setStrokeProvider(final StrokeColourProvider<Float[]> prov){
+	public void setStrokeProvider(final StrokeColourProvider<Float[]> prov) {
 		this.strokeColourProvider = prov;
 	}
 
@@ -580,7 +601,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Get the width of the axis being drawn
-	 *
+	 * 
 	 * @return The axis width
 	 */
 	public int getAxisWidth()
@@ -590,7 +611,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Set the axis width
-	 *
+	 * 
 	 * @param axisWidth
 	 *            The new axis width
 	 */
@@ -601,7 +622,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Returns whether the bars are auto scaling
-	 *
+	 * 
 	 * @return TRUE if auto scaling
 	 */
 	public boolean isAutoScale()
@@ -611,7 +632,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Set whether the bars should auto scale to fit all values within the vis.
-	 *
+	 * 
 	 * @param autoScale
 	 *            TRUE to auto scale the values
 	 */
@@ -622,7 +643,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Get the maximum value for the scaling
-	 *
+	 * 
 	 * @return The maximum value
 	 */
 	public double getMaxValue()
@@ -633,19 +654,19 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	/**
 	 * Set the maximum value (in units) for the bars. Automatically sets the
 	 * autoScaling to FALSE.
-	 *
+	 * 
 	 * @param maxValue
 	 *            Set the maximum value to use
 	 */
 	public void setMaxValue(final double maxValue)
 	{
-		axesRenderer2D.getyAxisConfig().setMaxValue( maxValue );
+		axesRenderer2D.getyAxisConfig().setMaxValue(maxValue);
 		this.autoScale = false;
 	}
 
 	/**
 	 * Get the minimum value in use.
-	 *
+	 * 
 	 * @return The minimum value
 	 */
 	public double getMinValue()
@@ -656,19 +677,19 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	/**
 	 * Set the minimum value (in units) to use to plot the bars. Automatically
 	 * sets the auto scaling to FALSE.
-	 *
+	 * 
 	 * @param minValue
 	 *            the minimum value
 	 */
 	public void setMinValue(final double minValue)
 	{
-		axesRenderer2D.getyAxisConfig().setMinValue( minValue );
+		axesRenderer2D.getyAxisConfig().setMinValue(minValue);
 		this.autoScale = false;
 	}
 
 	/**
 	 * Whether the axis is always visible
-	 *
+	 * 
 	 * @return TRUE if the axis is always visible
 	 */
 	public boolean isAxisAlwaysVisible()
@@ -681,7 +702,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	 * 0 or maximum value < 0, then the axis will be made visible (either at the
 	 * bottom or the top of the viewport respectively) if this is TRUE. This has
 	 * no effect if the axis is fixed and set to a point outside the viewport.
-	 *
+	 * 
 	 * @param axisAlwaysVisible
 	 *            TRUE to make the axis always visible
 	 */
@@ -692,17 +713,17 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Returns the last calculated axis location
-	 *
+	 * 
 	 * @return the axisLocation The axis location
 	 */
 	public double getAxisLocation()
 	{
-		return axesRenderer2D.getyAxisRenderer().calculatePosition( 0d )[1];
+		return axesRenderer2D.getyAxisRenderer().calculatePosition(0d)[1];
 	}
 
 	/**
 	 * Set the axis location. Automatically fixes the axis location
-	 *
+	 * 
 	 * @param axisLocation
 	 *            the axisLocation to set
 	 */
@@ -714,7 +735,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Returns whether the axis is fixed or not.
-	 *
+	 * 
 	 * @return the fixAxis TRUE if the axis is fixed; FALSE otherwise
 	 */
 	public boolean isFixAxis()
@@ -724,7 +745,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Set whether the axis should be fixed.
-	 *
+	 * 
 	 * @param fixAxis
 	 *            TRUE to fix the axis; FALSE to allow it to float
 	 */
@@ -735,17 +756,17 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * The y-scale being used to plot the data.
-	 *
+	 * 
 	 * @return the yscale The y-scale
 	 */
 	public double getYscale()
 	{
-		return axesRenderer2D.getyAxisRenderer().scaleDimension( 1d )[0];
+		return axesRenderer2D.getyAxisRenderer().scaleDimension(1d)[0];
 	}
 
 	/**
 	 * The data range being displayed.
-	 *
+	 * 
 	 * @return the axisRangeY
 	 */
 	public double getAxisRangeY()
@@ -756,7 +777,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * The data range being displayed.
-	 *
+	 * 
 	 * @return the axisRangeX
 	 */
 	public double getAxisRangeX()
@@ -767,7 +788,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 
 	/**
 	 * Returns the units value at the given pixel coordinate.
-	 *
+	 * 
 	 * @param x
 	 *            The x pixel coordinate
 	 * @param y
@@ -781,7 +802,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 *	@return the barWidth
+	 * @return the barWidth
 	 */
 	public double getBarWidth()
 	{
@@ -789,15 +810,16 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 *	@param barWidth the barWidth to set
+	 * @param barWidth
+	 *            the barWidth to set
 	 */
-	public void setBarWidth( final double barWidth )
+	public void setBarWidth(final double barWidth)
 	{
 		this.barWidth = barWidth;
 	}
 
 	/**
-	 *	@return the useFixedBarWidth
+	 * @return the useFixedBarWidth
 	 */
 	public boolean isUseFixedBarWidth()
 	{
@@ -805,15 +827,16 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 *	@param useFixedBarWidth the useFixedBarWidth to set
+	 * @param useFixedBarWidth
+	 *            the useFixedBarWidth to set
 	 */
-	public void setUseFixedBarWidth( final boolean useFixedBarWidth )
+	public void setUseFixedBarWidth(final boolean useFixedBarWidth)
 	{
 		this.useFixedBarWidth = useFixedBarWidth;
 	}
 
 	/**
-	 *	@return the centreBarsOnValues
+	 * @return the centreBarsOnValues
 	 */
 	public boolean isCentreBarsOnValues()
 	{
@@ -821,15 +844,16 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 *	@param centreBarsOnValues the centreBarsOnValues to set
+	 * @param centreBarsOnValues
+	 *            the centreBarsOnValues to set
 	 */
-	public void setCentreBarsOnValues( final boolean centreBarsOnValues )
+	public void setCentreBarsOnValues(final boolean centreBarsOnValues)
 	{
 		this.centreBarsOnValues = centreBarsOnValues;
 	}
 
 	/**
-	 *	@return the textBasePad
+	 * @return the textBasePad
 	 */
 	public int getTextBasePad()
 	{
@@ -837,15 +861,16 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 *	@param textBasePad the textBasePad to set
+	 * @param textBasePad
+	 *            the textBasePad to set
 	 */
-	public void setTextBasePad( final int textBasePad )
+	public void setTextBasePad(final int textBasePad)
 	{
 		this.textBasePad = textBasePad;
 	}
 
 	/**
-	 *	@return the transformer
+	 * @return the transformer
 	 */
 	public LabelTransformer getTransformer()
 	{
@@ -853,36 +878,39 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 	}
 
 	/**
-	 *	@param transformer the transformer to set
+	 * @param transformer
+	 *            the transformer to set
 	 */
-	public void setTransformer( final LabelTransformer transformer )
+	public void setTransformer(final LabelTransformer transformer)
 	{
 		this.transformer = transformer;
 	}
 
 	/**
-	 * 	Shows a basic bar visualisation.
-	 *	@param args The bar visualisation.
+	 * Shows a basic bar visualisation.
+	 * 
+	 * @param args
+	 *            The bar visualisation.
 	 */
-	public static void main( final String[] args )
+	public static void main(final String[] args)
 	{
 		final int nPoints = 10;
 
 		final double[] data = new double[nPoints];
-		for( int i = 0; i < nPoints; i++ )
-			data[i] = nPoints*(Math.random()*2-1);
+		for (int i = 0; i < nPoints; i++)
+			data[i] = nPoints * (Math.random() * 2 - 1);
 
-		final BarVisualisation bv = new BarVisualisation( 1000, 600 );
-		bv.setDrawValues( true );
-		bv.setData( data );
-		bv.setTransformer( new LabelTransformer()
+		final BarVisualisation bv = new BarVisualisation(1000, 600);
+		bv.setDrawValues(true);
+		bv.setData(data);
+		bv.setTransformer(new LabelTransformer()
 		{
 			@Override
-			public String transform( final double value )
+			public String transform(final double value)
 			{
-				return String.format("%2.2f",value);
+				return String.format("%2.2f", value);
 			}
-		} );
-		bv.showWindow( "Bar Visualisation Demo" );
+		});
+		bv.showWindow("Bar Visualisation Demo");
 	}
 }
