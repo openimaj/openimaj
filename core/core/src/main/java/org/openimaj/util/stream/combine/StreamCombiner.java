@@ -10,14 +10,16 @@ import org.openimaj.util.stream.AbstractStream;
 import org.openimaj.util.stream.Stream;
 
 /**
- * A stream combiner takes two streams and produces a new stream of syncrhonised
+ * A stream combiner takes two streams and produces a new stream of synchronised
  * pairs of the stream values. The two streams are consumed in two threads which
  * the {@link #next()} method waits to complete before returning
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  * @param <A>
+ *            Type of payload in first stream
  * @param <B>
+ *            Type of payload in second stream
  */
 public class StreamCombiner<A, B> extends AbstractStream<IndependentPair<A, B>> {
 
@@ -75,9 +77,13 @@ public class StreamCombiner<A, B> extends AbstractStream<IndependentPair<A, B>> 
 	}
 
 	/**
+	 * Create a new {@link StreamCombiner} from the given streams
+	 * 
 	 * @param a
+	 *            first stream
 	 * @param b
-	 * @return
+	 *            second stream
+	 * @return the combined stream
 	 */
 	public static <A, B> StreamCombiner<A, B> combine(Stream<A> a, Stream<B> b) {
 		return new StreamCombiner<A, B>(a, b);
