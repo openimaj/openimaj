@@ -39,7 +39,7 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 
 /**
- * An orientated feature with at a location defined by an
+ * An oriented feature with at a location defined by an
  * {@link InterestPointData}.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -57,9 +57,19 @@ public abstract class InterestPointKeypoint<T extends InterestPointData> extends
 	 */
 	public T location;
 
+	/**
+	 * Construct with a <code>null</code> location and default length feature
+	 */
 	public InterestPointKeypoint() {
 	}
 
+	/**
+	 * Construct with a <code>null</code> location and feature of the given
+	 * length
+	 * 
+	 * @param length
+	 *            the feature length
+	 */
 	public InterestPointKeypoint(int length) {
 		super(length);
 	}
@@ -79,6 +89,10 @@ public abstract class InterestPointKeypoint<T extends InterestPointData> extends
 		this.ori = featureVector.orientation;
 	}
 
+	/**
+	 * @return create a new {@link InterestPointData} compatible with this
+	 *         feature
+	 */
 	public abstract T createEmptyLocation();
 
 	@Override

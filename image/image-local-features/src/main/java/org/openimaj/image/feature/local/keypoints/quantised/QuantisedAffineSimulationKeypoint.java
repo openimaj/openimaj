@@ -29,22 +29,49 @@
  */
 package org.openimaj.image.feature.local.keypoints.quantised;
 
-
 import org.openimaj.feature.local.quantised.QuantisedLocalFeature;
-import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
-import org.openimaj.image.feature.local.keypoints.KeypointLocation;
+import org.openimaj.image.feature.local.affine.ASIFT;
+import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint.AffineSimulationKeypointLocation;
 
-
-public class QuantisedAffineSimulationKeypoint extends QuantisedLocalFeature<KeypointLocation> {
+/**
+ * A {@link QuantisedLocalFeature} with a location described by an
+ * {@link AffineSimulationKeypointLocation}. This can be used for representing
+ * quantised local features extracted in combination with the {@link ASIFT}
+ * algorithm.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class QuantisedAffineSimulationKeypoint extends QuantisedLocalFeature<AffineSimulationKeypointLocation> {
+	/**
+	 * Construct an empty {@link QuantisedAffineSimulationKeypoint}, located at
+	 * the origin with an id of 0.
+	 */
 	public QuantisedAffineSimulationKeypoint() {
-		super(new AffineSimulationKeypoint.AffineSimulationKeypointLocation(), 0);
+		super(new AffineSimulationKeypointLocation(), 0);
 	}
 
+	/**
+	 * Construct a {@link QuantisedAffineSimulationKeypoint}, located at the
+	 * origin with the given id.
+	 * 
+	 * @param id
+	 *            the id
+	 */
 	public QuantisedAffineSimulationKeypoint(int id) {
-		super(new AffineSimulationKeypoint.AffineSimulationKeypointLocation(), id);
+		super(new AffineSimulationKeypointLocation(), id);
 	}
-	
-	public QuantisedAffineSimulationKeypoint(AffineSimulationKeypoint.AffineSimulationKeypointLocation location, int id) {
+
+	/**
+	 * Construct a {@link QuantisedAffineSimulationKeypoint}, located at the
+	 * given position and id.
+	 * 
+	 * @param location
+	 *            the position
+	 * @param id
+	 *            the id
+	 */
+	public QuantisedAffineSimulationKeypoint(AffineSimulationKeypointLocation location, int id) {
 		super(location, id);
 	}
 }

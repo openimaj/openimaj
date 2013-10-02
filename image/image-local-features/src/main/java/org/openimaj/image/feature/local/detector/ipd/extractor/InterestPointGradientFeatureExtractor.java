@@ -34,7 +34,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProvider;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProviderFactory;
 import org.openimaj.image.feature.local.detector.dog.extractor.AbstractDominantOrientationExtractor;
-import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
+import org.openimaj.image.feature.local.engine.ipd.InterestPointImageExtractorProperties;
 import org.openimaj.image.feature.local.extraction.FeatureVectorExtractor;
 import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;

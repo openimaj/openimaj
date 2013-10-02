@@ -30,20 +30,49 @@
 package org.openimaj.image.feature.local.keypoints.quantised;
 
 import org.openimaj.feature.local.quantised.QuantisedLocalFeature;
+import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointLocation;
 import org.openimaj.math.geometry.point.Point2d;
 
 import Jama.Matrix;
 
+/**
+ * A {@link QuantisedKeypoint} is a {@link QuantisedLocalFeature} with its
+ * location described by a {@link KeypointLocation}. It is the quantised
+ * equivalent to a {@link Keypoint}, with the feature vector replaced by a
+ * single integer assignment.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> implements Point2d {
+	/**
+	 * Construct an empty {@link QuantisedKeypoint}, located at the origin with
+	 * an id of 0.
+	 */
 	public QuantisedKeypoint() {
 		super(new KeypointLocation(0, 0, 0, 0), 0);
 	}
 
+	/**
+	 * Construct a {@link QuantisedKeypoint}, located at the given position with
+	 * an id of 0.
+	 * 
+	 * @param loc
+	 *            the position
+	 */
 	public QuantisedKeypoint(KeypointLocation loc) {
 		super(loc, 0);
 	}
 
+	/**
+	 * Construct a {@link QuantisedKeypoint}, located at the given position and
+	 * id.
+	 * 
+	 * @param loc
+	 *            the position
+	 * @param id
+	 *            the id
+	 */
 	public QuantisedKeypoint(KeypointLocation loc, int id) {
 		super(loc, id);
 	}

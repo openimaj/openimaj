@@ -10,6 +10,21 @@ import org.openimaj.feature.local.SpatialLocation;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.concatenate.Concatenatable;
 
+/**
+ * A {@link BlockSpatialAggregator} performs spatial pooling of local features
+ * by grouping the local features into non-overlapping, fixed-size spatial
+ * blocks, and applying a {@link VectorAggregator} (i.e. a
+ * {@link BagOfVisualWords}) to the features within each block before combining
+ * the aggregated results into a single vector (by passing through the blocks in
+ * a left-right, top-bottom fashion).
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <T>
+ *            Primitive a type of the backing array of each local feature
+ * @param <AGGREGATE>
+ *            Type of the aggregate {@link FeatureVector} produced
+ */
 public class BlockSpatialAggregator<T, AGGREGATE extends FeatureVector & Concatenatable<AGGREGATE, AGGREGATE>>
 		implements
 		SpatialVectorAggregator<ArrayFeatureVector<T>, SpatialLocation, Rectangle>
@@ -18,6 +33,17 @@ public class BlockSpatialAggregator<T, AGGREGATE extends FeatureVector & Concate
 	protected int blocksX;
 	protected int blocksY;
 
+	/**
+	 * Construct with the given aggregator and number of blocks in the X and Y
+	 * dimensions.
+	 * 
+	 * @param innerAggregator
+	 *            the aggregator
+	 * @param blocksX
+	 *            the number of blocks in X
+	 * @param blocksY
+	 *            the number of blocks in Y
+	 */
 	public BlockSpatialAggregator(VectorAggregator<ArrayFeatureVector<T>, AGGREGATE> innerAggregator, int blocksX,
 			int blocksY)
 	{

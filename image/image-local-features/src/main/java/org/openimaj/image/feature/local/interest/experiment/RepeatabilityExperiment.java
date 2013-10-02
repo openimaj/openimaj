@@ -39,7 +39,6 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
-import org.openimaj.image.feature.validator.IPDRepeatability;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.Polygon;

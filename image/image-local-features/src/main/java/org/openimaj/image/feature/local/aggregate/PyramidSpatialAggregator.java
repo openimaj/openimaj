@@ -11,6 +11,21 @@ import org.openimaj.feature.local.SpatialLocation;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.concatenate.Concatenatable;
 
+/**
+ * A {@link PyramidSpatialAggregator} performs spatial pooling of local features
+ * by grouping the local features into fixed-size spatial blocks within a
+ * pyramid, and applying a {@link VectorAggregator} (i.e. a
+ * {@link BagOfVisualWords}) to the features within each block before combining
+ * the aggregated results into a single vector (by passing through the blocks in
+ * a left-right, top-bottom fashion over the pyramid levels from the top down).
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <T>
+ *            Primitive a type of the backing array of each local feature
+ * @param <AGGREGATE>
+ *            Type of the aggregate {@link FeatureVector} produced
+ */
 public class PyramidSpatialAggregator<T, AGGREGATE extends FeatureVector & Concatenatable<AGGREGATE, AGGREGATE>>
 		implements
 		SpatialVectorAggregator<ArrayFeatureVector<T>, SpatialLocation, Rectangle>
@@ -18,12 +33,29 @@ public class PyramidSpatialAggregator<T, AGGREGATE extends FeatureVector & Conca
 	protected VectorAggregator<ArrayFeatureVector<T>, AGGREGATE> innerAggregator;
 	boolean[][][] levels;
 
+	/**
+	 * Construct with the given aggregator and pyramid description (i.e.
+	 * "1x1-2x2-4x4").
+	 * 
+	 * @param innerAggregator
+	 *            the aggregator
+	 * @param description
+	 *            the pyramid description
+	 */
 	public PyramidSpatialAggregator(VectorAggregator<ArrayFeatureVector<T>, AGGREGATE> innerAggregator, String description)
 	{
 		this.innerAggregator = innerAggregator;
 		this.levels = parseLevelsSimple(description);
 	}
 
+	/**
+	 * Construct with the given aggregator and number of blocks per level.
+	 * 
+	 * @param innerAggregator
+	 *            the aggregator
+	 * @param numBlocks
+	 *            number of blocks (in X and Y) for each level of the pyramid
+	 */
 	public PyramidSpatialAggregator(VectorAggregator<ArrayFeatureVector<T>, AGGREGATE> innerAggregator, int... numBlocks)
 	{
 		this.innerAggregator = innerAggregator;
@@ -60,7 +92,7 @@ public class PyramidSpatialAggregator<T, AGGREGATE extends FeatureVector & Conca
 		return levels;
 	}
 
-	private static boolean[][][] parseLevelsAdvanced(String description) {
+	protected static boolean[][][] parseLevelsAdvanced(String description) {
 		final String[] parts = description.split("[+]");
 		final List<boolean[][]> levels = new ArrayList<boolean[][]>();
 
@@ -100,7 +132,7 @@ public class PyramidSpatialAggregator<T, AGGREGATE extends FeatureVector & Conca
 		return levels.toArray(new boolean[levels.size()][][]);
 	}
 
-	private static String levelsToString(boolean[][][] levels) {
+	protected static String levelsToString(boolean[][][] levels) {
 		final StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < levels.length; i++) {

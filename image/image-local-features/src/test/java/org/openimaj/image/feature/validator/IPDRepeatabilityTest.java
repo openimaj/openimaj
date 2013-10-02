@@ -49,6 +49,7 @@ import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
+import org.openimaj.image.feature.local.interest.experiment.IPDRepeatability;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.transforms.TransformUtilities;

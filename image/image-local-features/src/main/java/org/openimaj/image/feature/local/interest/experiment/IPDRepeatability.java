@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.validator;
+package org.openimaj.image.feature.local.interest.experiment;
 
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -74,26 +74,24 @@ import Jama.Matrix;
 
 /**
  * An interest point repeatability as originally implemented here:
- * 
- * http://www.robots.ox.ac.uk/~vgg/research/affine/evaluation.html
- * 
+ * {@link "http://www.robots.ox.ac.uk/~vgg/research/affine/evaluation.html"}
+ * <p>
  * We find some interest points in two images, and the known homography to go
  * from image 1 to image 2
- * 
+ * <p>
  * We apply this exhaustively to a pairwise matching of each feature to each
  * other feature and compare the distances of the transformed features from the
  * second image to the features in the first image. If the pair distance is
  * below a give threshold they are placed on top of each other and their overlap
  * measured.
- * 
+ * <p>
  * Repeatability is measured at a given overlap threshold, if two feature point
  * ellipses overlap over a certain percentage of their overall size then those
  * features are counted as repeatable. The repeatability of a given IPD for a
  * given pair of images is the proportion of repeatable features for a given
  * maximum distance and a given overlap percentage.
  * 
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
- *         <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  * @param <T>
  *            The type of {@link InterestPointData}
@@ -106,13 +104,21 @@ public class IPDRepeatability<T extends InterestPointData> {
 		logger.setLevel(Level.INFO);
 	}
 
+	/**
+	 * A pair of matching features with a score
+	 * 
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * 
+	 * @param <B>
+	 * @param <T>
+	 */
 	public static class ScoredPair<B extends Comparable<B>, T extends Pair<B>>
 			implements Comparable<ScoredPair<B, T>>
 	{
 		private T pair;
 		private double score;
 
-		public ScoredPair(T pair, double score) {
+		ScoredPair(T pair, double score) {
 			this.pair = pair;
 			this.score = score;
 		}
@@ -141,6 +147,9 @@ public class IPDRepeatability<T extends InterestPointData> {
 	private double maximumDistanceMultiple = 4;
 	private int imageWidth;
 	private int imageHeight;
+
+	public IPDRepeatability() {
+	}
 
 	/**
 	 * Check the repeatability against two imags, two sets of points and a
@@ -260,10 +269,6 @@ public class IPDRepeatability<T extends InterestPointData> {
 		this.validImage1Points = firstImagePoints;
 		this.validImage2Points = secondImagePoints;
 		this.homography = transform;
-	}
-
-	public IPDRepeatability() {
-		// TODO Auto-generated constructor stub
 	}
 
 	private void setup(Image<?, ?> image1, Image<?, ?> image2,
@@ -1909,5 +1914,4 @@ public class IPDRepeatability<T extends InterestPointData> {
 			System.err.println("THERE WAS AN ERROR WITH THE ABOVE ELLIPSE!!");
 		}
 	}
-
 }

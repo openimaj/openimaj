@@ -33,20 +33,39 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 
-public class CircularInterestPointKeypoint extends InterestPointKeypoint<InterestPointData>{
+/**
+ * A keypoint with circular support
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class CircularInterestPointKeypoint extends InterestPointKeypoint<InterestPointData> {
 	private static final long serialVersionUID = 1L;
-	
-	public CircularInterestPointKeypoint(int length){
+
+	/**
+	 * Construct with a feature vector of the given length
+	 * 
+	 * @param length
+	 *            the length
+	 */
+	public CircularInterestPointKeypoint(int length) {
 		super(length);
 	}
-	
-	public CircularInterestPointKeypoint(OrientedFeatureVector feature,InterestPointData point) {
-		super(feature,point);
+
+	/**
+	 * Construct with the given feature and circle
+	 * 
+	 * @param feature
+	 *            the feature
+	 * @param point
+	 *            the support circle
+	 */
+	public CircularInterestPointKeypoint(OrientedFeatureVector feature, InterestPointData point) {
+		super(feature, point);
 	}
 
 	@Override
 	public InterestPointData createEmptyLocation() {
 		return new InterestPointData();
 	}
-	
 }

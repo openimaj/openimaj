@@ -51,7 +51,6 @@ import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
-import org.openimaj.image.feature.validator.IPDRepeatability;
 import org.openimaj.io.IOUtils;
 
 import Jama.Matrix;
