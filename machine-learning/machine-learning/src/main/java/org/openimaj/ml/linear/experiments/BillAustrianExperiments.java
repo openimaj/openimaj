@@ -76,8 +76,8 @@ public class BillAustrianExperiments extends BilinearExperiment {
 				logger.debug(String.format("Saving learner, Fold %d, Item %d", i, j));
 				final File learnerOut = new File(FOLD_ROOT(i), String.format("learner_%d", j));
 				IOUtils.writeBinary(learnerOut, learner);
-				logger.debug("W row sparcity: " + CFMatrixUtils.rowSparcity(w));
-				logger.debug("U row sparcity: " + CFMatrixUtils.rowSparcity(u));
+				logger.debug("W row sparcity: " + CFMatrixUtils.rowSparsity(w));
+				logger.debug("U row sparcity: " + CFMatrixUtils.rowSparsity(u));
 				final Boolean biasMode = learner.getParams().getTyped(BilinearLearnerParameters.BIAS);
 				if (biasMode) {
 					logger.debug("Bias: " + CFMatrixUtils.diag(bias));

@@ -277,7 +277,7 @@ public class GaussianSpectralClusterVis {
 	}
 
 	private IndependentPair<double[], double[][]> extractEigenValues() {
-		System.out.println(MatlibMatrixUtils.sparcity(distanceMat));
+		System.out.println(MatlibMatrixUtils.sparsity(distanceMat));
 		if(LA4JMODE){			
 			CRSMatrix mat = new CRSMatrix(distanceMat.rowCount(),distanceMat.columnCount());
 			int i = 0;

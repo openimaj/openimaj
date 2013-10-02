@@ -79,8 +79,8 @@ public class BilinearSparseOnlineLearnerTest {
 		}
 		logger.info("First half:" + first / dataitems);
 		logger.info("Second half:" + second / dataitems);
-		logger.info("W sparcity:" + CFMatrixUtils.rowSparcity(learner.getW()));
-		logger.info("U sparcity:" + CFMatrixUtils.rowSparcity(learner.getU()));
+		logger.info("W sparcity:" + CFMatrixUtils.rowSparsity(learner.getW()));
+		logger.info("U sparcity:" + CFMatrixUtils.rowSparsity(learner.getU()));
 		assertTrue(first > second);
 	}
 

@@ -106,9 +106,9 @@ public class StreamAustrianDampeningExperiments extends BilinearExperiment {
 				learner.process(next.firstObject(), next.secondObject());
 				final Matrix w = learner.getW();
 				final Matrix u = learner.getU();
-				logger.debug("W row sparcity: " + CFMatrixUtils.rowSparcity(w));
+				logger.debug("W row sparcity: " + CFMatrixUtils.rowSparsity(w));
 				logger.debug(String.format("W range: %2.5f -> %2.5f", CFMatrixUtils.min(w), CFMatrixUtils.max(w)));
-				logger.debug("U row sparcity: " + CFMatrixUtils.rowSparcity(u));
+				logger.debug("U row sparcity: " + CFMatrixUtils.rowSparsity(u));
 				logger.debug(String.format("U range: %2.5f -> %2.5f", CFMatrixUtils.min(u), CFMatrixUtils.max(u)));
 
 				logger.debug(String.format("... loss (post addition): %f", eval.evaluate(asList)));
