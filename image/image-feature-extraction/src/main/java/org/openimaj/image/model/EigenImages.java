@@ -139,14 +139,15 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 	}
 
 	/**
-	 * Draw a principal component as an image
+	 * Draw a principal component as an image. The image will be normalised so
+	 * it can be displayed correctly.
 	 * 
 	 * @param pc
 	 *            the index of the PC to draw.
 	 * @return an image showing the PC.
 	 */
 	public FImage visualisePC(int pc) {
-		return new FImage(ArrayUtils.reshapeFloat(pca.getPrincipalComponent(pc), width, height));
+		return new FImage(ArrayUtils.reshapeFloat(pca.getPrincipalComponent(pc), width, height)).normalise();
 	}
 
 	@Override
