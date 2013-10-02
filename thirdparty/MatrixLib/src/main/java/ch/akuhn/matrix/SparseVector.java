@@ -4,16 +4,22 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * A sparse vector
+ * 
+ * @author Adrian Kuhn
+ */
 public class SparseVector extends Vector {
 
-	/*default*/ int[] keys;
-	/*default*/ int size, used;
-	/*default*/ double[] values;
+	/* default */int[] keys;
+	/* default */int size, used;
+	/* default */double[] values;
 
 	protected SparseVector(double[] values) {
 		this(values.length);
-		for (int n=0; n<values.length; n++) {
-			if (values[n] != 0) put(n, values[n]);
+		for (int n = 0; n < values.length; n++) {
+			if (values[n] != 0)
+				put(n, values[n]);
 		}
 	}
 
@@ -21,6 +27,14 @@ public class SparseVector extends Vector {
 		this(size, 10);
 	}
 
+	/**
+	 * Construct with the given length and capacity
+	 * 
+	 * @param size
+	 *            the length of the vector
+	 * @param capacity
+	 *            the number of expected non-zero elements
+	 */
 	public SparseVector(int size, int capacity) {
 		assert size >= 0;
 		assert capacity >= 0;
@@ -31,9 +45,11 @@ public class SparseVector extends Vector {
 
 	@Override
 	public double add(int key, double value) {
-		if (key < 0 || key >= size) throw new IndexOutOfBoundsException(Integer.toString(key));
-		int spot = Arrays.binarySearch(keys, 0, used, key);
-		if (spot >= 0) return values[spot] += value;
+		if (key < 0 || key >= size)
+			throw new IndexOutOfBoundsException(Integer.toString(key));
+		final int spot = Arrays.binarySearch(keys, 0, used, key);
+		if (spot >= 0)
+			return values[spot] += value;
 		return update(-1 - spot, key, value);
 	}
 
@@ -54,7 +70,8 @@ public class SparseVector extends Vector {
 
 					@Override
 					public Entry next() {
-						if (!hasNext()) throw new NoSuchElementException();
+						if (!hasNext())
+							throw new NoSuchElementException();
 						return new Entry(keys[spot], values[spot++]);
 					}
 
@@ -73,17 +90,24 @@ public class SparseVector extends Vector {
 		return obj instanceof SparseVector && this.equals((SparseVector) obj);
 	}
 
+	/**
+	 * Test for equality
+	 * 
+	 * @param v
+	 * @return true if equal; false otherwise
+	 */
 	public boolean equals(SparseVector v) {
 		return size == v.size &&
-				used == v.used && 
+				used == v.used &&
 				Arrays.equals(keys, v.keys) &&
 				Arrays.equals(values, values);
 	}
 
 	@Override
 	public double get(int key) {
-		if (key < 0 || key >= size) throw new IndexOutOfBoundsException(Integer.toString(key));
-		int spot = Arrays.binarySearch(keys, 0, used, key);
+		if (key < 0 || key >= size)
+			throw new IndexOutOfBoundsException(Integer.toString(key));
+		final int spot = Arrays.binarySearch(keys, 0, used, key);
 		return spot < 0 ? 0 : values[spot];
 	}
 
@@ -92,20 +116,37 @@ public class SparseVector extends Vector {
 		return size ^ Arrays.hashCode(keys) ^ Arrays.hashCode(values);
 	}
 
+	/**
+	 * Test if an index has a set value
+	 * 
+	 * @param key
+	 *            the index
+	 * @return true if index has an associated value
+	 */
 	public boolean isUsed(int key) {
 		return 0 <= Arrays.binarySearch(keys, 0, used, key);
 	}
 
 	@Override
 	public double put(int key, double value) {
-		if (key < 0 || key >= size) throw new IndexOutOfBoundsException(Integer.toString(key));
-		int spot = Arrays.binarySearch(keys, 0, used, key);
-		if (spot >= 0) return values[spot] = (float) value;
-		else return update(-1 - spot, key, value);
+		if (key < 0 || key >= size)
+			throw new IndexOutOfBoundsException(Integer.toString(key));
+		final int spot = Arrays.binarySearch(keys, 0, used, key);
+		if (spot >= 0)
+			return values[spot] = (float) value;
+		else
+			return update(-1 - spot, key, value);
 	}
 
+	/**
+	 * Resize the vector
+	 * 
+	 * @param newSize
+	 *            new size
+	 */
 	public void resizeTo(int newSize) {
-		if (newSize < this.size) throw new UnsupportedOperationException();
+		if (newSize < this.size)
+			throw new UnsupportedOperationException();
 		this.size = newSize;
 	}
 
@@ -117,7 +158,7 @@ public class SparseVector extends Vector {
 	private double update(int spot, int key, double value) {
 		// grow if reaching end of capacity
 		if (used == keys.length) {
-			int capacity = (keys.length * 3) / 2 + 1;
+			final int capacity = (keys.length * 3) / 2 + 1;
 			keys = Arrays.copyOf(keys, capacity);
 			values = Arrays.copyOf(values, capacity);
 		}
@@ -136,6 +177,9 @@ public class SparseVector extends Vector {
 		return used;
 	}
 
+	/**
+	 * Trim the underlying dense arrays to compact space and save memory
+	 */
 	public void trim() {
 		keys = Arrays.copyOf(keys, used);
 		values = Arrays.copyOf(values, used);
@@ -144,13 +188,15 @@ public class SparseVector extends Vector {
 	@Override
 	public double dot(Vector x) {
 		double product = 0;
-		for (int k = 0; k < used; k++) product += x.get(keys[k]) * values[k];
+		for (int k = 0; k < used; k++)
+			product += x.get(keys[k]) * values[k];
 		return product;
 	}
 
 	@Override
 	public void scaleAndAddTo(double a, Vector y) {
-		for (int k = 0; k < used; k++) y.add(keys[k], a * values[k]);
+		for (int k = 0; k < used; k++)
+			y.add(keys[k], a * values[k]);
 	}
 
 	@Override
@@ -160,30 +206,32 @@ public class SparseVector extends Vector {
 
 	@Override
 	public Vector times(double scalar) {
-		SparseVector y = new SparseVector(size);
+		final SparseVector y = new SparseVector(size);
 		y.keys = Arrays.copyOf(keys, size);
 		y.values = Arrays.copyOf(values, size);
-		for (int i = 0; i < values.length; i++) y.values[i] *= scalar;
+		for (int i = 0; i < values.length; i++)
+			y.values[i] *= scalar;
 		return y;
 	}
 
 	@Override
 	public Vector timesEquals(double scalar) {
-		for (int i = 0; i < values.length; i++) values[i] *= scalar;
+		for (int i = 0; i < values.length; i++)
+			values[i] *= scalar;
 		return this;
 	}
-	
+
 	/**
 	 * @return the current keys
 	 */
-	public int[] keys(){
+	public int[] keys() {
 		return keys;
 	}
-	
+
 	/**
 	 * @return the current values
 	 */
-	public double[] values(){
+	public double[] values() {
 		return this.values;
 	}
 }
