@@ -55,7 +55,10 @@ public class Sparse#T#FV implements FeatureVector, Concatenatable<Sparse#T#FV, S
 	 */
 	public Sparse#T#Array values;
 	
-	public Sparse#T#FV(){
+	/**
+	 * Construct an empty FV with zero length
+	 */
+	protected Sparse#T#FV() {
 	}
 
 	/**
