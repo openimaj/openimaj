@@ -32,16 +32,12 @@
   * An API crawler for Flickr
   * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-@GrabResolver(name='octopussy thirdparty', root='http://octopussy.ecs.soton.ac.uk/m2/thirdparty/')
+@GrabResolver(name='openimaj', root='http://maven.openimaj.org')
 @Grab('com.aetrion.flickr:flickrapi:1.2jh.3')
 import com.aetrion.flickr.Flickr
 import com.aetrion.flickr.REST
 import com.aetrion.flickr.photos.SearchParameters
 import com.aetrion.flickr.photos.Extras
-
-@GrabResolver(name='octopussy thirdpary', root='http://octopussy.ecs.soton.ac.uk/m2/thirdparty/')
-@Grab('syslogr:syslogr-java:1.0')
-import syslogr.SysLogR
 
 @GrabResolver(name='jboss', root='http://repository.jboss.org/maven2/')
 @Grab(group='org.codehaus.gpars', module='gpars', version='0.9')
@@ -59,7 +55,6 @@ defaultConf = """
     	maxRetries=3000
     	force=false
     	perpage=500
-    	disableSyslogr=true
     	queryparams {}
     	concurrentDownloads=16
     	pagingLimit=20
@@ -104,7 +99,7 @@ addShutdownHook {
     
     if (currentDirs) {
         currentDirs.each {
-            log("removing unfinished crawl dir: " + it, false)
+            log("removing unfinished crawl dir: " + it)
             it.delete()
         }
     }
@@ -146,9 +141,6 @@ if (!crawlDirectory.exists()) crawlDirectory.mkdirs()
 //setup logger
 logger = new File(crawlDirectory, "crawler-info.log")
 imagelog = new File(crawlDirectory, "images.csv")
-syslog = new SysLogR("FlickrCrawler::" + confFile.getName())
-
-if (crawlConf.crawler.disableSyslogr) syslog.disabled = true
 
 //check for conflicts
 crawlDirConfFile = new File(crawlDirectory, "crawler.config")
@@ -283,7 +275,7 @@ while (true) {
         
             //skip duplicates
             if (imageDir.exists() && !crawlConf.force) {
-                log("skipping duplicate\t" + r.id, false)
+                log("skipping duplicate\t" + r.id)
             } else {
                 synchronized(crawlState) {
                     crawlState.imageCount++
@@ -338,24 +330,7 @@ while (true) {
                     
                     System.out.format("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b") 
                     System.out.format("Crawling: %10d", crawlState.imageCount) 
-                    log("crawling\t" + r.dateTaken + "\t" + r.id + "\t" +crawlState.imageCount, false)
-                    
-                    if (crawlState.imageCount % 10 == 0) {
-                        syslog.info("""\
-                            <table>
-                                <tr>
-                                    <td><img src='http://farm${r.farm}.static.flickr.com/${r.server}/${r.id}_${r.secret}_s.jpg'/></td>
-                                    <td>
-                                        <p><strong>Crawled ${crawlState.imageCount} images<strong></p>
-                                        <table>
-                                            <tr><td>Title:</td><td>${r.title}</td></tr>
-                                            <tr><td>Description:</td><td>${r.description}</td></tr>
-                                            <tr><td>Tags:</td><td>${r.tags?.value}</td></tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>""")
-                    }
+                    log("crawling\t" + r.dateTaken + "\t" + r.id + "\t" +crawlState.imageCount)
                 }
             }
         }
@@ -390,7 +365,7 @@ while (true) {
     
     //run out of images?
     //if (crawlState.perpage != results.size()) {
-    //    log("out of images", false)
+    //    log("out of images")
     //    break
     //}
 }
@@ -423,11 +398,9 @@ boolean saveData(imageDir, imageName, url, retry=0) {
     return true
 }
 
-synchronized void log(str, dosyslogr=true) {
+synchronized void log(str) {
     if (logger)
         logger.append(new Date().toString() + "\t" + str + "\n")
-    if (dosyslogr)
-        syslog.info(str.toString())
 }
 
 boolean saveImageData(imageDir, imageName, url, retry=0) {
