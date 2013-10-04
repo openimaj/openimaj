@@ -38,7 +38,6 @@ public class App {
 						ImageUtilities.FIMAGE_READER);
 
 		final GroupedRandomSplitter<String, FImage> splits = new GroupedRandomSplitter<String, FImage>(dataset, 5, 0, 5);
-
 		final GroupedDataset<String, ListDataset<FImage>, FImage> training = splits.getTrainingDataset();
 		final GroupedDataset<String, ListDataset<FImage>, FImage> testing = splits.getTestDataset();
 
@@ -47,18 +46,17 @@ public class App {
 		 */
 		final List<FImage> basisImages = DatasetAdaptors.asList(training);
 		final int nEigenvectors = 100;
-
 		final EigenImages eigen = new EigenImages(nEigenvectors);
 		eigen.train(basisImages);
 
 		/*
 		 * Display the top 12 eigenimages
 		 */
-		final List<FImage> eigenImages = new ArrayList<FImage>();
+		final List<FImage> eigenFaces = new ArrayList<FImage>();
 		for (int i = 0; i < 12; i++) {
-			eigenImages.add(eigen.visualisePC(i));
+			eigenFaces.add(eigen.visualisePC(i));
 		}
-		DisplayUtilities.display("EigenImages", eigenImages);
+		DisplayUtilities.display("EigenFaces", eigenFaces);
 
 		/*
 		 * Build a map of person->[features] for all the training data

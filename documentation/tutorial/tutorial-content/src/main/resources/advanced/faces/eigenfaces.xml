@@ -2,5 +2,230 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="eigenfaces">
-	
+	  <title>Face recognition 101: Eigenfaces</title>
+	  <para>
+	    Before we get started looking at the rich array of tools OpenIMAJ
+	    offers for working with faces, lets first look at how we can
+	    implement one of the earliest successful face recognition algorithms
+	    called &quot;Eigenfaces&quot;. The basic idea behind the Eigenfaces
+	    algorithm is that face images are &quot;projected&quot; into a low
+	    dimensional space in which they can be compared efficiently. The
+	    hope is that intra-face distances (i.e. distances between images of
+	    the same person) are smaller than inter-face distances (the distance
+	    between pictures of different people) within the projected space
+	    (although there is no algorithmic guarantee of this). Fundamentally,
+	    this projection of the image is a form of feature extraction,
+	    similar to what we've seen in previous chapters of this tutorial.
+	    Unlike the extractors we've looked at previously however, for
+	    Eigenfaces we actually have to &quot;learn&quot; the feature
+	    extractor from the image data. Once we've extracted the features,
+	    classification can be performed using any standard technique,
+	    although 1-nearest-neighbour classification is the standard choice
+	    for the Eigenfaces algorithm.
+	  </para>
+	  <para>
+	    The lower dimensional space used by the Eigenfaces algorithm is
+	    actually learned through a process called Principle Component
+	    Analysis (PCA), although sometimes you'll also see this referred to
+	    as the &quot;discrete Karhunen–Loève transform&quot;. The PCA
+	    algorithm finds a set of orthogonal axes (i.e. axes at right angles)
+	    that best describe the variance of the data such that the first axis
+	    is oriented along the direction of highest variance. It turns out
+	    that computing the PCA boils down to performing a well-know
+	    mathematical technique called the eigendecomposition (hence the name
+	    Eigenfaces) on the covariance matrix of the data. Formally, the
+	    eigendecomposition factorises a matrix, <emphasis>A</emphasis> into
+	    a canonical form such that:
+	    <emphasis>A</emphasis><emphasis>v</emphasis> = <emphasis>λ</emphasis><emphasis>v</emphasis>,
+	    where <emphasis>v</emphasis> is a set of vectors called the
+	    eigenvectors, and each vector is paired with a scalar from
+	    <emphasis>λ</emphasis> called an eigenvalue. The eigenvectors form a
+	    mathematical <emphasis>basis</emphasis>; a set of right-angled
+	    vectors that can be used as axes in a space. By picking a subset of
+	    eigenvectors with the largest eigenvalues it is possible to create a
+	    <emphasis>basis</emphasis> that can approximate the original space
+	    in far fewer dimensions.
+	  </para>
+	  <para>
+	    The Eigenfaces algorithm is simple to implement using OpenIMAJ using
+	    the <literal>EigenImages</literal> class. The
+	    <literal>EigenImages</literal> class automatically deals with
+	    converting the input images into vectors and zero-centering them
+	    (subtracting the mean) before applying PCA.
+	  </para>
+	  <para>
+	    Eigenfaces will really only work well on (near) full-frontal face
+	    images. In addition, because of the way Eigenfaces works, the face
+	    images we use must all be the same size, and must be aligned
+	    (typically such that the eyes of each subject must be in the same
+	    pixel locations). For the purposes of this tutorial we'll use a
+	    dataset of approximately aligned face images from the
+	    <ulink url="http://www.cl.cam.ac.uk/research/dtg/attarchive/facedatabase.html">AT&amp;T
+	    &quot;The Database of Faces&quot; (formerly &quot;The ORL Database
+	    of Faces&quot;)</ulink>. Start by creating a new OpenIMAJ project,
+	    and then load the dataset:
+	  </para>
+	  <programlisting>
+	VFSGroupDataset&lt;FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(&quot;zip:http://datasets.openimaj.org/att_faces.zip&quot;, ImageUtilities.FIMAGE_READER);
+	</programlisting>
+	  <para>
+	    For the purposes of experimentation, we'll need to split the dataset
+	    into two halves; one for training our recogniser, and one for
+	    testing it. Just as in the Caltech 101 classification tutorial, this
+	    can be achieved with a <literal>GroupedRandomSplitter</literal>:
+	  </para>
+	  <programlisting>
+	int nTraining = 5;
+	int nTesting = 5;
+	GroupedRandomSplitter&lt;String, FImage&gt; splits = new GroupedRandomSplitter&lt;String, FImage&gt;(dataset, nTraining, 0, nTesting);
+	GroupedDataset&lt;String, ListDataset&lt;FImage&gt;, FImage&gt; training = splits.getTrainingDataset();
+	GroupedDataset&lt;String, ListDataset&lt;FImage&gt;, FImage&gt; testing = splits.getTestDataset();
+	</programlisting>
+	  <para>
+	    The first step in implementing an Eigenfaces recogniser is to use
+	    the training images to learn the PCA basis which we'll use to
+	    project the images into features we can use for recognition. The
+	    <literal>EigenImages</literal> class needs a list of images from
+	    which to learn the basis (i.e. all the training images from each
+	    person), and also needs to know how many dimensions we want our
+	    features to be (i.e. how many of the eigenvectors corresponding to
+	    the biggest eigenvalues to keep):
+	  </para>
+	  <programlisting>
+	List&lt;FImage&gt; basisImages = DatasetAdaptors.asList(training);
+	int nEigenvectors = 100;
+	EigenImages eigen = new EigenImages(nEigenvectors);
+	eigen.train(basisImages);
+	</programlisting>
+	  <para>
+	    One way of thinking about how we use the basis is that any face
+	    image can literally be decomposed as weighted summation of the basis
+	    vectors, and thus each element of the feature we'll extract
+	    represents the weight of the corresponding basis vector. This of
+	    course implies that it should be possible to visualise the basis
+	    vectors as meaningful images. This is indeed the case, and the
+	    <literal>EigenImages</literal> class makes it easy to do. Let's draw
+	    the first 12 basis vectors (each of these basis images is often
+	    referred to as an EigenFace):
+	  </para>
+	  <programlisting>
+	List&lt;FImage&gt; eigenFaces = new ArrayList&lt;FImage&gt;();
+	for (int i = 0; i &lt; 12; i++) {
+	    eigenFaces.add(eigen.visualisePC(i));
+	}
+	DisplayUtilities.display(&quot;EigenFaces&quot;, eigenImages);
+	</programlisting>
+	  <para>
+	    At this point you can run your code. You should see an image very
+	    similar to the one below displayed:
+	  </para>
+	  <programlisting>
+	![Alt text](/path/to/img.jpg)
+	</programlisting>
+	  <para>
+	    Now we need to build a <emphasis>database</emphasis> of features
+	    from the training images. We'll use a <literal>Map</literal> of
+	    Strings (the person identifier) to an array of features
+	    (corresponding to all the feature of all the training instances of
+	    the respective person):
+	  </para>
+	  <programlisting>
+	Map&lt;String, DoubleFV[]&gt; features = new HashMap&lt;String, DoubleFV[]&gt;();
+	for (final String person : training.getGroups()) {
+	    final DoubleFV[] fvs = new DoubleFV[nTraining];
+
+	    for (int i = 0; i &lt; nTraining; i++) {
+	        final FImage face = training.get(person).get(i);
+	        fvs[i] = eigen.extractFeature(face);
+	    }
+	    features.put(person, fvs);
+	}
+	</programlisting>
+	  <para>
+	    Now we've got all the features stored, in order to estimate the
+	    identity of an unknown face image, all we need to do is extract the
+	    feature from this image, find the database feature with the smallest
+	    distance (i.e. Euclidean distance), and return the identifier of the
+	    corresponding person. Let's loop over all the testing images, and
+	    estimate which person they belong to. As we know the true identity
+	    of these people, we can compute the accuracy of the recognition:
+	  </para>
+	  <programlisting>
+	double correct = 0, incorrect = 0;
+	for (String truePerson : testing.getGroups()) {
+	    for (FImage face : testing.get(truePerson)) {
+	        DoubleFV testFeature = eigen.extractFeature(face);
+
+	        String bestPerson = null;
+	        double minDistance = Double.MAX_VALUE;
+	        for (final String person : features.keySet()) {
+	            for (final DoubleFV fv : features.get(person)) {
+	                double distance = fv.compare(testFeature, DoubleFVComparison.EUCLIDEAN);
+
+	                if (distance &lt; minDistance) {
+	                    minDistance = distance;
+	                    bestPerson = person;
+	                }
+	            }
+	        }
+
+	        System.out.println(&quot;Actual: &quot; + truePerson + &quot;\tguess: &quot; + bestPerson);
+
+	        if (truePerson.equals(bestPerson))
+	            correct++;
+	        else
+	            incorrect++;
+	    }
+	}
+
+	System.out.println(&quot;Accuracy: &quot; + (correct / (correct + incorrect)));
+	</programlisting>
+	  <para>
+	    Now run the code again. You should see the actual person identifier
+	    and predicted identifier printed as each face is recognised. At the
+	    end, the overall performance will be printed and should be close to
+	    93% (there will be some variability as the test and training data is
+	    split randomly each time the program is run).
+	  </para>
+	  <sect1 id="eigenfaces-exercises">
+	    <title>Exercises</title>
+	    <sect2 id="exercise-1-reconstructing-faces">
+	      <title>Exercise 1: Reconstructing faces</title>
+	      <para>
+	        An interesting property of the features extracted by the
+	        Eigenfaces algorithm (specifically from the PCA process) is that
+	        it's possible to reconstruct an estimate of the original image
+	        from the feature. Try doing this by building a PCA basis as
+	        described above, and then extract the feature of a randomly
+	        selected face from the test-set. Use the
+	        <literal>EigenImages#reconstruct()</literal> to convert the
+	        feature back into an image and display it. You will need to
+	        normalise the image (<literal>FImage#normalise()</literal>) to
+	        ensure it displays correctly as the reconstruction might give
+	        pixel values bigger than 1 or smaller than 0.
+	      </para>
+	    </sect2>
+	    <sect2 id="exercise-2-explore-the-effect-of-training-set-size">
+	      <title>Exercise 2: Explore the effect of training set size</title>
+	      <para>
+	        The number of images used for training can have a big effect in
+	        the performance of your recogniser. Try reducing the number of
+	        training images (keep the number of testing images fixed at 5).
+	        What do you observe?
+	      </para>
+	    </sect2>
+	    <sect2 id="exercise-3-apply-a-threshold">
+	      <title>Exercise 3: Apply a threshold</title>
+	      <para>
+	        In the original Eigenfaces paper, a variant of nearest-neighbour
+	        classification was used that incorporated a distance threshold.
+	        If the distance between the query face and closest database face
+	        was greater than a threshold, then an
+	        <emphasis>unknown</emphasis> result would be returned, rather
+	        than just returning the label of the closest person. Can you
+	        alter your code to include such a threshold? What is a good
+	        value for the threshold?
+	      </para>
+	    </sect2>
+	  </sect1>
 </chapter>

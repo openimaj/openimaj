@@ -143,7 +143,7 @@ public class KNNAnnotator<OBJECT, ANNOTATION, FEATURE>
 	 * @param k
 	 *            the number of neighbours
 	 * @param threshold
-	 *            the threshold for successful matches
+	 *            the threshold on distance for successful matches
 	 */
 	public KNNAnnotator(final FeatureExtractor<FEATURE, OBJECT> extractor,
 			final DistanceComparator<? super FEATURE> comparator, final int k,
@@ -269,7 +269,7 @@ public class KNNAnnotator<OBJECT, ANNOTATION, FEATURE>
 	 * @param k
 	 *            the number of neighbours
 	 * @param threshold
-	 *            the threshold for successful matches
+	 *            the threshold on distance for successful matches
 	 * @return new {@link KNNAnnotator}
 	 */
 	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>

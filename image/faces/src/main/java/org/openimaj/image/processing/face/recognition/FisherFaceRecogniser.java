@@ -32,7 +32,7 @@ package org.openimaj.image.processing.face.recognition;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.DoubleFVComparison;
+import org.openimaj.feature.DoubleFVComparator;
 import org.openimaj.feature.FVProviderExtractor;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
@@ -104,13 +104,45 @@ public class FisherFaceRecogniser<FACE extends DetectedFace, PERSON>
 	 *            the number of nearest neighbours
 	 * @param compar
 	 *            the distance comparison function
+	 * @return a new {@link FisherFaceRecogniser}
+	 */
+	public static <FACE extends DetectedFace, PERSON>
+			FisherFaceRecogniser<FACE, PERSON> create(int numComponents, FaceAligner<FACE> aligner, int k,
+					DoubleFVComparator compar)
+	{
+		final Extractor<FACE> extractor = new Extractor<FACE>(numComponents, aligner);
+		final FVProviderExtractor<DoubleFV, FACE> extractor2 = FVProviderExtractor.create(extractor);
+
+		final KNNAnnotator<FACE, PERSON, DoubleFV> knn =
+				KNNAnnotator.create(extractor2, compar, k);
+
+		return new FisherFaceRecogniser<FACE, PERSON>(extractor, knn);
+	}
+
+	/**
+	 * Convenience method to create an {@link FisherFaceRecogniser} with a
+	 * standard KNN classifier, incorporating a threshold on the maximum
+	 * distance (or minimum similarity) to allow a match.
+	 * 
+	 * @param <FACE>
+	 *            The type of {@link DetectedFace}
+	 * @param <PERSON>
+	 *            the type representing a person
+	 * @param numComponents
+	 *            the number of principal components to keep
+	 * @param aligner
+	 *            the face aligner
+	 * @param k
+	 *            the number of nearest neighbours
+	 * @param compar
+	 *            the distance comparison function
 	 * @param threshold
 	 *            a distance threshold to limit matches.
 	 * @return a new {@link FisherFaceRecogniser}
 	 */
 	public static <FACE extends DetectedFace, PERSON>
 			FisherFaceRecogniser<FACE, PERSON> create(int numComponents, FaceAligner<FACE> aligner, int k,
-					DoubleFVComparison compar, float threshold)
+					DoubleFVComparator compar, float threshold)
 	{
 		final Extractor<FACE> extractor = new Extractor<FACE>(numComponents, aligner);
 		final FVProviderExtractor<DoubleFV, FACE> extractor2 = FVProviderExtractor.create(extractor);

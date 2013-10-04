@@ -44,7 +44,7 @@ TwitterStreamDataset stream = new TwitterStreamDataset(token);</programlisting>
 	<para>
 	  Tweets themselves do not contain images; rather tweets might contain
 	  URLs, which might correspond to images, or web-sites where an image is
-	  hosted. URLs can be might be in the textual body of the Tweets and/or
+	  hosted. URLs might be in the textual body of the Tweets and/or
 	  in special fields that form part of the status objects. OpenIMAJ makes
 	  it easy to extract the URLs by <emphasis>mapping</emphasis> a stream
 	  of Twitter <literal>Status</literal> objects to <literal>URL</literal>

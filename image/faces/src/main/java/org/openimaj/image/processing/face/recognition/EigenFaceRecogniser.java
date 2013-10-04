@@ -33,7 +33,7 @@ import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.DoubleFVComparison;
+import org.openimaj.feature.DoubleFVComparator;
 import org.openimaj.feature.FVProviderExtractor;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
@@ -91,7 +91,8 @@ public class EigenFaceRecogniser<FACE extends DetectedFace, PERSON>
 
 	/**
 	 * Convenience method to create an {@link EigenFaceRecogniser} with a
-	 * standard KNN classifier.
+	 * standard KNN classifier, incorporating a threshold on the maximum
+	 * distance (or minimum similarity) to allow a match.
 	 * 
 	 * @param <FACE>
 	 *            The type of {@link DetectedFace}
@@ -111,13 +112,44 @@ public class EigenFaceRecogniser<FACE extends DetectedFace, PERSON>
 	 */
 	public static <FACE extends DetectedFace, PERSON>
 			EigenFaceRecogniser<FACE, PERSON> create(int numComponents, FaceAligner<FACE> aligner, int k,
-					DoubleFVComparison compar, float threshold)
+					DoubleFVComparator compar, float threshold)
 	{
 		final Extractor<FACE> extractor = new Extractor<FACE>(numComponents, aligner);
 		final FVProviderExtractor<DoubleFV, FACE> extractor2 = FVProviderExtractor.create(extractor);
 
 		final KNNAnnotator<FACE, PERSON, DoubleFV> knn =
 				KNNAnnotator.create(extractor2, compar, k, threshold);
+
+		return new EigenFaceRecogniser<FACE, PERSON>(extractor, knn);
+	}
+
+	/**
+	 * Convenience method to create an {@link EigenFaceRecogniser} with a
+	 * standard KNN classifier.
+	 * 
+	 * @param <FACE>
+	 *            The type of {@link DetectedFace}
+	 * @param <PERSON>
+	 *            the type representing a person
+	 * @param numComponents
+	 *            the number of principal components to keep
+	 * @param aligner
+	 *            the face aligner
+	 * @param k
+	 *            the number of nearest neighbours
+	 * @param compar
+	 *            the distance comparison function
+	 * @return a new {@link EigenFaceRecogniser}
+	 */
+	public static <FACE extends DetectedFace, PERSON>
+			EigenFaceRecogniser<FACE, PERSON> create(int numComponents, FaceAligner<FACE> aligner, int k,
+					DoubleFVComparator compar)
+	{
+		final Extractor<FACE> extractor = new Extractor<FACE>(numComponents, aligner);
+		final FVProviderExtractor<DoubleFV, FACE> extractor2 = FVProviderExtractor.create(extractor);
+
+		final KNNAnnotator<FACE, PERSON, DoubleFV> knn =
+				KNNAnnotator.create(extractor2, compar, k);
 
 		return new EigenFaceRecogniser<FACE, PERSON>(extractor, knn);
 	}
