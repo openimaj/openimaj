@@ -27,7 +27,7 @@
 	    The lower dimensional space used by the Eigenfaces algorithm is
 	    actually learned through a process called Principle Component
 	    Analysis (PCA), although sometimes you'll also see this referred to
-	    as the &quot;discrete Karhunen–Loève transform&quot;. The PCA
+	    as the <emphasis>discrete Karhunen–Loève transform</emphasis>. The PCA
 	    algorithm finds a set of orthogonal axes (i.e. axes at right angles)
 	    that best describe the variance of the data such that the first axis
 	    is oriented along the direction of highest variance. It turns out
@@ -35,8 +35,8 @@
 	    mathematical technique called the eigendecomposition (hence the name
 	    Eigenfaces) on the covariance matrix of the data. Formally, the
 	    eigendecomposition factorises a matrix, <emphasis>A</emphasis> into
-	    a canonical form such that:
-	    <emphasis>A</emphasis><emphasis>v</emphasis> = <emphasis>λ</emphasis><emphasis>v</emphasis>,
+	    a canonical form such that 
+	    <emphasis>A</emphasis><emphasis>v</emphasis> = <emphasis>&lambda;</emphasis><emphasis>v</emphasis>,
 	    where <emphasis>v</emphasis> is a set of vectors called the
 	    eigenvectors, and each vector is paired with a scalar from
 	    <emphasis>λ</emphasis> called an eigenvalue. The eigenvectors form a
@@ -66,7 +66,8 @@
 	    and then load the dataset:
 	  </para>
 	  <programlisting>
-	VFSGroupDataset&lt;FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(&quot;zip:http://datasets.openimaj.org/att_faces.zip&quot;, ImageUtilities.FIMAGE_READER);
+	VFSGroupDataset&lt;FImage&gt; dataset = 
+		new VFSGroupDataset&lt;FImage&gt;(&quot;zip:http://datasets.openimaj.org/att_faces.zip&quot;, ImageUtilities.FIMAGE_READER);
 	</programlisting>
 	  <para>
 	    For the purposes of experimentation, we'll need to split the dataset
@@ -77,7 +78,8 @@
 	  <programlisting>
 	int nTraining = 5;
 	int nTesting = 5;
-	GroupedRandomSplitter&lt;String, FImage&gt; splits = new GroupedRandomSplitter&lt;String, FImage&gt;(dataset, nTraining, 0, nTesting);
+	GroupedRandomSplitter&lt;String, FImage&gt; splits = 
+	  new GroupedRandomSplitter&lt;String, FImage&gt;(dataset, nTraining, 0, nTesting);
 	GroupedDataset&lt;String, ListDataset&lt;FImage&gt;, FImage&gt; training = splits.getTrainingDataset();
 	GroupedDataset&lt;String, ListDataset&lt;FImage&gt;, FImage&gt; testing = splits.getTestDataset();
 	</programlisting>

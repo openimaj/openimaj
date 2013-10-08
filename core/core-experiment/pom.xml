@@ -79,6 +79,7 @@
             <exclude>AUTHORS</exclude>
             <exclude>COPYING</exclude>
 						<exclude>**/*.jrxml</exclude>
+						<exclude>**/*.txt</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>

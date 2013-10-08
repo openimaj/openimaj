@@ -305,6 +305,7 @@
 						<exclude>parallelExecutor</exclude>
 						<exclude>segmenting_globalfeatures</exclude>
 						<exclude>segmenting_pairwisecomp</exclude>
+						<exclude>**/*.txt</exclude>
 					</excludes>
 					<mapping>
 						<jtemp>JAVADOC_STYLE</jtemp>

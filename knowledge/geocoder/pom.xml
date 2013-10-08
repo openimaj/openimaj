@@ -93,6 +93,7 @@
           <excludes>
             <exclude>AUTHORS</exclude>
             <exclude>COPYING</exclude>
+						<exclude>**/*.kml</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>
