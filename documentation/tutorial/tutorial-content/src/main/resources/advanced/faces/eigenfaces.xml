@@ -65,24 +65,20 @@
 	    of Faces&quot;)</ulink>. Start by creating a new OpenIMAJ project,
 	    and then load the dataset:
 	  </para>
-	  <programlisting>
-	VFSGroupDataset&lt;FImage&gt; dataset = 
-		new VFSGroupDataset&lt;FImage&gt;(&quot;zip:http://datasets.openimaj.org/att_faces.zip&quot;, ImageUtilities.FIMAGE_READER);
-	</programlisting>
+	  <programlisting>VFSGroupDataset&lt;FImage&gt; dataset = 
+    new VFSGroupDataset&lt;FImage&gt;(&quot;zip:http://datasets.openimaj.org/att_faces.zip&quot;, ImageUtilities.FIMAGE_READER);</programlisting>
 	  <para>
 	    For the purposes of experimentation, we'll need to split the dataset
 	    into two halves; one for training our recogniser, and one for
 	    testing it. Just as in the Caltech 101 classification tutorial, this
 	    can be achieved with a <literal>GroupedRandomSplitter</literal>:
 	  </para>
-	  <programlisting>
-	int nTraining = 5;
-	int nTesting = 5;
-	GroupedRandomSplitter&lt;String, FImage&gt; splits = 
-	  new GroupedRandomSplitter&lt;String, FImage&gt;(dataset, nTraining, 0, nTesting);
-	GroupedDataset&lt;String, ListDataset&lt;FImage&gt;, FImage&gt; training = splits.getTrainingDataset();
-	GroupedDataset&lt;String, ListDataset&lt;FImage&gt;, FImage&gt; testing = splits.getTestDataset();
-	</programlisting>
+	  <programlisting>int nTraining = 5;
+int nTesting = 5;
+GroupedRandomSplitter&lt;String, FImage&gt; splits = 
+    new GroupedRandomSplitter&lt;String, FImage&gt;(dataset, nTraining, 0, nTesting);
+GroupedDataset&lt;String, ListDataset&lt;FImage&gt;, FImage&gt; training = splits.getTrainingDataset();
+GroupedDataset&lt;String, ListDataset&lt;FImage&gt;, FImage&gt; testing = splits.getTestDataset();</programlisting>
 	  <para>
 	    The first step in implementing an Eigenfaces recogniser is to use
 	    the training images to learn the PCA basis which we'll use to
@@ -93,12 +89,10 @@
 	    features to be (i.e. how many of the eigenvectors corresponding to
 	    the biggest eigenvalues to keep):
 	  </para>
-	  <programlisting>
-	List&lt;FImage&gt; basisImages = DatasetAdaptors.asList(training);
-	int nEigenvectors = 100;
-	EigenImages eigen = new EigenImages(nEigenvectors);
-	eigen.train(basisImages);
-	</programlisting>
+	  <programlisting>List&lt;FImage&gt; basisImages = DatasetAdaptors.asList(training);
+int nEigenvectors = 100;
+EigenImages eigen = new EigenImages(nEigenvectors);
+eigen.train(basisImages);</programlisting>
 	  <para>
 	    One way of thinking about how we use the basis is that any face
 	    image can literally be decomposed as weighted summation of the basis
@@ -110,20 +104,20 @@
 	    the first 12 basis vectors (each of these basis images is often
 	    referred to as an EigenFace):
 	  </para>
-	  <programlisting>
-	List&lt;FImage&gt; eigenFaces = new ArrayList&lt;FImage&gt;();
-	for (int i = 0; i &lt; 12; i++) {
-	    eigenFaces.add(eigen.visualisePC(i));
-	}
-	DisplayUtilities.display(&quot;EigenFaces&quot;, eigenImages);
-	</programlisting>
+	  <programlisting>List&lt;FImage&gt; eigenFaces = new ArrayList&lt;FImage&gt;();
+for (int i = 0; i &lt; 12; i++) {
+    eigenFaces.add(eigen.visualisePC(i));
+}
+DisplayUtilities.display(&quot;EigenFaces&quot;, eigenImages);</programlisting>
 	  <para>
 	    At this point you can run your code. You should see an image very
 	    similar to the one below displayed:
 	  </para>
-	  <programlisting>
-	![Alt text](/path/to/img.jpg)
-	</programlisting>
+	  <mediaobject>
+		  <imageobject>
+				<imagedata fileref="../../figs/eigenfaces.png" format="PNG" align="center" contentwidth="12cm"/>
+		  </imageobject>
+		</mediaobject>
 	  <para>
 	    Now we need to build a <emphasis>database</emphasis> of features
 	    from the training images. We'll use a <literal>Map</literal> of
@@ -131,18 +125,16 @@
 	    (corresponding to all the feature of all the training instances of
 	    the respective person):
 	  </para>
-	  <programlisting>
-	Map&lt;String, DoubleFV[]&gt; features = new HashMap&lt;String, DoubleFV[]&gt;();
-	for (final String person : training.getGroups()) {
-	    final DoubleFV[] fvs = new DoubleFV[nTraining];
+	  <programlisting>Map&lt;String, DoubleFV[]&gt; features = new HashMap&lt;String, DoubleFV[]&gt;();
+for (final String person : training.getGroups()) {
+    final DoubleFV[] fvs = new DoubleFV[nTraining];
 
-	    for (int i = 0; i &lt; nTraining; i++) {
-	        final FImage face = training.get(person).get(i);
-	        fvs[i] = eigen.extractFeature(face);
-	    }
-	    features.put(person, fvs);
-	}
-	</programlisting>
+    for (int i = 0; i &lt; nTraining; i++) {
+        final FImage face = training.get(person).get(i);
+        fvs[i] = eigen.extractFeature(face);
+    }
+    features.put(person, fvs);
+}</programlisting>
 	  <para>
 	    Now we've got all the features stored, in order to estimate the
 	    identity of an unknown face image, all we need to do is extract the
@@ -152,36 +144,34 @@
 	    estimate which person they belong to. As we know the true identity
 	    of these people, we can compute the accuracy of the recognition:
 	  </para>
-	  <programlisting>
-	double correct = 0, incorrect = 0;
-	for (String truePerson : testing.getGroups()) {
-	    for (FImage face : testing.get(truePerson)) {
-	        DoubleFV testFeature = eigen.extractFeature(face);
+	  <programlisting>double correct = 0, incorrect = 0;
+for (String truePerson : testing.getGroups()) {
+    for (FImage face : testing.get(truePerson)) {
+        DoubleFV testFeature = eigen.extractFeature(face);
 
-	        String bestPerson = null;
-	        double minDistance = Double.MAX_VALUE;
-	        for (final String person : features.keySet()) {
-	            for (final DoubleFV fv : features.get(person)) {
-	                double distance = fv.compare(testFeature, DoubleFVComparison.EUCLIDEAN);
+        String bestPerson = null;
+        double minDistance = Double.MAX_VALUE;
+        for (final String person : features.keySet()) {
+            for (final DoubleFV fv : features.get(person)) {
+                double distance = fv.compare(testFeature, DoubleFVComparison.EUCLIDEAN);
 
-	                if (distance &lt; minDistance) {
-	                    minDistance = distance;
-	                    bestPerson = person;
-	                }
-	            }
-	        }
+                if (distance &lt; minDistance) {
+                    minDistance = distance;
+                    bestPerson = person;
+                }
+            }
+        }
 
-	        System.out.println(&quot;Actual: &quot; + truePerson + &quot;\tguess: &quot; + bestPerson);
+        System.out.println(&quot;Actual: &quot; + truePerson + &quot;\tguess: &quot; + bestPerson);
 
-	        if (truePerson.equals(bestPerson))
-	            correct++;
-	        else
-	            incorrect++;
-	    }
-	}
+        if (truePerson.equals(bestPerson))
+            correct++;
+        else
+            incorrect++;
+    }
+}
 
-	System.out.println(&quot;Accuracy: &quot; + (correct / (correct + incorrect)));
-	</programlisting>
+System.out.println(&quot;Accuracy: &quot; + (correct / (correct + incorrect)));</programlisting>
 	  <para>
 	    Now run the code again. You should see the actual person identifier
 	    and predicted identifier printed as each face is recognised. At the
