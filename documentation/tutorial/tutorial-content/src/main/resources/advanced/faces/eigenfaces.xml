@@ -34,7 +34,7 @@
 	    that computing the PCA boils down to performing a well-know
 	    mathematical technique called the eigendecomposition (hence the name
 	    Eigenfaces) on the covariance matrix of the data. Formally, the
-	    eigendecomposition factorises a matrix, <emphasis>A</emphasis> into
+	    eigendecomposition factorises a matrix, <emphasis>A</emphasis>, into
 	    a canonical form such that 
 	    <emphasis>A</emphasis><emphasis>v</emphasis> = <emphasis>&lambda;</emphasis><emphasis>v</emphasis>,
 	    where <emphasis>v</emphasis> is a set of vectors called the
@@ -108,7 +108,7 @@ eigen.train(basisImages);</programlisting>
 for (int i = 0; i &lt; 12; i++) {
     eigenFaces.add(eigen.visualisePC(i));
 }
-DisplayUtilities.display(&quot;EigenFaces&quot;, eigenImages);</programlisting>
+DisplayUtilities.display(&quot;EigenFaces&quot;, eigenFaces);</programlisting>
 	  <para>
 	    At this point you can run your code. You should see an image very
 	    similar to the one below displayed:
@@ -122,7 +122,7 @@ DisplayUtilities.display(&quot;EigenFaces&quot;, eigenImages);</programlisting>
 	    Now we need to build a <emphasis>database</emphasis> of features
 	    from the training images. We'll use a <literal>Map</literal> of
 	    Strings (the person identifier) to an array of features
-	    (corresponding to all the feature of all the training instances of
+	    (corresponding to all the features of all the training instances of
 	    the respective person):
 	  </para>
 	  <programlisting>Map&lt;String, DoubleFV[]&gt; features = new HashMap&lt;String, DoubleFV[]&gt;();
