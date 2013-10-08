@@ -164,8 +164,7 @@ public class DatabaseStatusFeeder implements StatusFeeder
 						this.getColumn("created_at",true)+", "+
 						this.getColumn("text",true)+
 						" from "+this.table+
-	//					" ORDER BY "+this.getColumn("created_at",true)+
-						" LIMIT "+pageNumber +","+this.pageSize;
+						" LIMIT "+(pageNumber*this.pageSize) +","+this.pageSize;
 
 				r = s.executeQuery( sql );
 
