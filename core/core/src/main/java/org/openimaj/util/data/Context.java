@@ -53,6 +53,17 @@ public class Context extends HashMap<String, Object> implements Cloneable {
 	public Context() {
 
 	}
+	
+	/**
+	 * A conveniance function where nameval.length % 2 is assumed to  == 0 
+	 * and nameval contains pairs of "key" : value instances
+	 * @param nameval
+	 */
+	public Context(Object ... nameval){
+		for (int i = 0; i < nameval.length; i+=2) {
+			this.put(nameval[i].toString(), nameval[i+1]);
+		}
+	}
 
 	/**
 	 * Construct an empty {@link Context}. The Context can optionally be
