@@ -149,6 +149,7 @@
 		<xi:include href="advanced/faces/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		
 		<xi:include href="advanced/faces/eigenfaces.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="advanced/faces/pipeline-intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="advanced/faces/face-detection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="advanced/faces/face-alignment.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="advanced/faces/face-features.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
