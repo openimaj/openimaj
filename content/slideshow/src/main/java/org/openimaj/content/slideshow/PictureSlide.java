@@ -80,6 +80,10 @@ public class PictureSlide implements Slide {
 		ic.setImage(image);
 		ic.setSize(width, height);
 		ic.setPreferredSize(new Dimension(width, height));
+		ic.setShowPixelColours(false);
+		ic.setShowXYPosition(false);
+		ic.removeMouseListener(ic);
+		ic.removeMouseMotionListener(ic);
 
 		return ic;
 	}
