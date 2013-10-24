@@ -122,25 +122,25 @@ public class XuggleAudio extends AudioStream
 			//				format.getSampleRateKHz();
 			final long timestampMillisecs = TimeUnit.MILLISECONDS.convert(
 					event.getTimeStamp().longValue(), event.getTimeUnit() );
-			
-			XuggleAudio.this.currentTimecode.setTimecodeInMilliseconds( 
+
+			XuggleAudio.this.currentTimecode.setTimecodeInMilliseconds(
 					timestampMillisecs );
-			
-			XuggleAudio.this.currentSamples.setStartTimecode( 
+
+			XuggleAudio.this.currentSamples.setStartTimecode(
 					XuggleAudio.this.currentTimecode );
-			
-			XuggleAudio.this.currentSamples.getFormat().setNumChannels( 
+
+			XuggleAudio.this.currentSamples.getFormat().setNumChannels(
 					XuggleAudio.this.getFormat().getNumChannels() );
-			
-			XuggleAudio.this.currentSamples.getFormat().setSigned( 
+
+			XuggleAudio.this.currentSamples.getFormat().setSigned(
 					XuggleAudio.this.getFormat().isSigned() );
-			
-			XuggleAudio.this.currentSamples.getFormat().setBigEndian( 
+
+			XuggleAudio.this.currentSamples.getFormat().setBigEndian(
 					XuggleAudio.this.getFormat().isBigEndian() );
-			
-			XuggleAudio.this.currentSamples.getFormat().setSampleRateKHz( 
+
+			XuggleAudio.this.currentSamples.getFormat().setSampleRateKHz(
 					XuggleAudio.this.getFormat().getSampleRateKHz() );
-			
+
 			XuggleAudio.this.chunkAvailable = true;
 		}
 	}
@@ -286,6 +286,8 @@ public class XuggleAudio extends AudioStream
 						return;
 					}
 				}
+				else
+					System.out.println( "Opened XuggleAudio stream ok: "+openResult );
 			}
 		}
 		catch( final URISyntaxException e2 )
@@ -325,6 +327,7 @@ public class XuggleAudio extends AudioStream
 			}
 			i++;
 		}
+		System.out.println( "Using audio stream "+this.streamIndex );
 
 		if( container.getDuration() == Global.NO_PTS )
 			this.length = -1;
@@ -334,6 +337,8 @@ public class XuggleAudio extends AudioStream
 		// Get the coder for the audio stream
 		final IStreamCoder aAudioCoder = container.
 				getStream( this.streamIndex ).getStreamCoder();
+
+		System.out.println( "Using stream code: "+aAudioCoder );
 
 		// Create an audio format object suitable for the audio
 		// samples from Xuggle files
@@ -350,6 +355,8 @@ public class XuggleAudio extends AudioStream
 		this.currentSamples = new SampleChunk( af.clone() );
 	}
 
+	protected int retries = 0;
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#nextSampleChunk()
@@ -362,12 +369,16 @@ public class XuggleAudio extends AudioStream
 			IError e = null;
 			while( (e = this.reader.readPacket()) == null && !this.chunkAvailable );
 
-			if( !this.chunkAvailable || e != null )
+			if( !this.chunkAvailable || e != null && this.retries < 5 )
 			{
 				this.reader.close();
 				this.reader = null;
 				if( e != null )
+				{
 					System.err.println( "Got audio demux error "+e.getDescription() );
+					this.create( null );
+					this.retries++;
+				}
 				System.out.println( "Closing audio stream "+this.url );
 				return null;
 			}
@@ -445,5 +456,23 @@ public class XuggleAudio extends AudioStream
 		if( i < 0 )
 			System.err.println( "Audio seek error ("+i+"): "+IError.errorNumberToType( i ) );
 		else	this.nextSampleChunk();
+	}
+
+	/**
+	 * 	Close the audio stream.
+	 */
+	public synchronized void close()
+	{
+		if( this.reader != null )
+		{
+			synchronized( this.reader )
+			{
+				if( this.reader.isOpen() )
+				{
+					this.reader.close();
+					this.reader = null;
+				}
+			}
+		}
 	}
 }
