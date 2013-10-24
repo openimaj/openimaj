@@ -50,9 +50,9 @@ import twitter4j.URLEntity;
  * Twitter JSON, perhaps making it abstract and turning {@link #consume(Status)}
  * into an abstract function that can deal with other types of status would be
  * sensible
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class StatusConsumer {
 
@@ -67,26 +67,26 @@ public class StatusConsumer {
 	 */
 	public final static List<SiteSpecificConsumer> siteSpecific = new ArrayList<SiteSpecificConsumer>();
 	static {
-		siteSpecific.add(new InstagramConsumer());
-		siteSpecific.add(new TwitterPhotoConsumer());
-		siteSpecific.add(new TmblrPhotoConsumer());
-		siteSpecific.add(new TwitPicConsumer());
-		siteSpecific.add(new ImgurConsumer());
-		siteSpecific.add(new FacebookConsumer());
-		siteSpecific.add(new YfrogConsumer());
-		siteSpecific.add(new OwlyImageConsumer());
-		siteSpecific.add(new TwipleConsumer());
-		siteSpecific.add(CommonHTMLConsumers.FOTOLOG);
-		siteSpecific.add(CommonHTMLConsumers.PHOTONUI);
-		siteSpecific.add(CommonHTMLConsumers.PICS_LOCKERZ);
+		StatusConsumer.siteSpecific.add(new InstagramConsumer());
+		StatusConsumer.siteSpecific.add(new TwitterPhotoConsumer());
+		StatusConsumer.siteSpecific.add(new TmblrPhotoConsumer());
+		StatusConsumer.siteSpecific.add(new TwitPicConsumer());
+		StatusConsumer.siteSpecific.add(new ImgurConsumer());
+		StatusConsumer.siteSpecific.add(new FacebookConsumer());
+		StatusConsumer.siteSpecific.add(new YfrogConsumer());
+		StatusConsumer.siteSpecific.add(new OwlyImageConsumer());
+		StatusConsumer.siteSpecific.add(new TwipleConsumer());
+		StatusConsumer.siteSpecific.add(CommonHTMLConsumers.FOTOLOG);
+		StatusConsumer.siteSpecific.add(CommonHTMLConsumers.PHOTONUI);
+		StatusConsumer.siteSpecific.add(CommonHTMLConsumers.PICS_LOCKERZ);
 	}
 	private boolean outputStats;
 	private File globalStats;
 	private File outputLocation;
 
-	private Set<String> toProcess;
+	private final Set<String> toProcess;
 
-	private HashSet<String> previouslySeen;
+	private final HashSet<String> previouslySeen;
 
 	private List<OutputListener> outputModes;
 
@@ -99,9 +99,9 @@ public class StatusConsumer {
 	 *            the output location for this status
 	 * @param outputModes
 	 *            the output modes informed on image downloads
-	 * 
+	 *
 	 */
-	public StatusConsumer(boolean outputStats, File globalStats, File outputLocation, List<OutputListener> outputModes) {
+	public StatusConsumer(final boolean outputStats, final File globalStats, final File outputLocation, final List<OutputListener> outputModes) {
 		this();
 		this.outputStats = outputStats;
 		this.globalStats = globalStats;
@@ -127,7 +127,7 @@ public class StatusConsumer {
 	 * @return the statistics of the consumption
 	 * @throws Exception
 	 */
-	public StatusConsumption consume(Status status) throws Exception {
+	public StatusConsumption consume(final Status status) throws Exception {
 		StatusConsumption cons;
 		// Now add all the entries from entities.urls
 
@@ -143,21 +143,21 @@ public class StatusConsumer {
 				final String eurl = u.toString();
 				if (eurl == null)
 					continue;
-				add(eurl);
+				this.add(eurl);
 			}
 		}
 		// Find the URLs in the raw text
 		final String text = status.getText();
 		if (text != null) { // why was text null?
-			final Matcher matcher = urlPattern.matcher(text);
+			final Matcher matcher = StatusConsumer.urlPattern.matcher(text);
 			while (matcher.find()) {
 				final String urlString = text.substring(matcher.start(), matcher.end());
-				add(urlString);
+				this.add(urlString);
 			}
 		}
 
 		// now go through all the links and process them (i.e. download them)
-		cons = processAll(status);
+		cons = this.processAll(status);
 
 		if (this.outputStats)
 			PicSlurperUtils.updateStats(this.globalStats, cons, true);
@@ -166,20 +166,20 @@ public class StatusConsumer {
 
 	/**
 	 * Process all added URLs
-	 * 
+	 *
 	 * @param status
 	 * @return the {@link StatusConsumption} statistics
 	 * @throws IOException
 	 */
-	public StatusConsumption processAll(Status status) throws IOException {
+	public StatusConsumption processAll(final Status status) throws IOException {
 		final StatusConsumption cons = new StatusConsumption();
 		cons.nTweets = 1;
 		cons.nURLs = 0;
-		while (toProcess.size() > 0) {
-			final String url = toProcess.iterator().next();
-			toProcess.remove(url);
+		while (this.toProcess.size() > 0) {
+			final String url = this.toProcess.iterator().next();
+			this.toProcess.remove(url);
 			cons.nURLs++;
-			final File urlOut = resolveURL(new URL(url), cons);
+			final File urlOut = this.resolveURL(new URL(url), cons);
 			if (urlOut != null) {
 				final File outStats = new File(urlOut, "status.txt");
 				PicSlurperUtils.updateStats(outStats, cons);
@@ -195,23 +195,23 @@ public class StatusConsumer {
 
 	/**
 	 * Add a URL to process without allowing already seen URLs to be added
-	 * 
+	 *
 	 * @param newURL
 	 */
-	public void add(String newURL) {
+	public void add(final String newURL) {
 		boolean add = true;
-		for (final String string : previouslySeen) {
+		for (final String string : this.previouslySeen) {
 			if (string.startsWith(newURL) || newURL.startsWith(string) || newURL.equals(string)) {
 				add = false;
 				break;
 			}
 		}
 		if (add) {
-			logger.debug("New URL added to list: " + newURL);
-			toProcess.add(newURL);
-			previouslySeen.add(newURL);
+			StatusConsumer.logger.debug("New URL added to list: " + newURL);
+			this.toProcess.add(newURL);
+			this.previouslySeen.add(newURL);
 		} else {
-			logger.debug("URL not added, already exists: " + newURL);
+			StatusConsumer.logger.debug("URL not added, already exists: " + newURL);
 		}
 	}
 
@@ -219,21 +219,21 @@ public class StatusConsumer {
 	 * Given a URL, use {@link #urlToImage(URL)} to turn the url into a list of
 	 * images and write the images into the output location using the names
 	 * "image_N.png"
-	 * 
+	 *
 	 * @param url
 	 * @param cons
 	 *            the consumption stats
 	 * @return the root output location
 	 */
-	public File resolveURL(URL url, StatusConsumption cons) {
-		final List<IndependentPair<URL, MBFImage>> image = urlToImage(url);
+	public File resolveURL(final URL url, final StatusConsumption cons) {
+		final List<IndependentPair<URL, MBFImage>> image = this.urlToImage(url);
 		if (image == null)
 			return null;
 		File outputDir;
 		try {
 			if (this.outputLocation == null)
 				return null;
-			outputDir = urlToOutput(url, this.outputLocation);
+			outputDir = StatusConsumer.urlToOutput(url, this.outputLocation);
 			cons.nTweets++;
 			int n = 0;
 			for (final IndependentPair<URL, MBFImage> mbfImage : image) {
@@ -241,14 +241,14 @@ public class StatusConsumer {
 				final MBFImage imageToWrite = mbfImage.secondObject();
 				File outImage = null;
 				if (imageToWrite == null) {
-					logger.debug("Downloading a raw GIF");
+					StatusConsumer.logger.debug("Downloading a raw GIF");
 					// For now this is the signal that we have a GIF. Write the
 					// gif.
 					outImage = new File(outputDir, String.format("image_%d.gif", n++));
 					final byte[] value = HttpUtils.readURLAsBytes(urlReadFrom, false);
 					FileUtils.writeByteArrayToFile(outImage, value);
 				} else {
-					logger.debug("Downloading a normal image");
+					StatusConsumer.logger.debug("Downloading a normal image");
 					outImage = new File(outputDir, String.format("image_%d.png", n++));
 					ImageUtilities.write(imageToWrite, outImage);
 				}
@@ -266,21 +266,21 @@ public class StatusConsumer {
 	/**
 	 * An extention of the {@link MetaRefreshRedirectStrategy} which disallows
 	 * all redirects and instead remembers a redirect for use later on.
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class StatusConsumerRedirectStrategy extends MetaRefreshRedirectStrategy {
 		private boolean wasRedirected = false;
 		private URL redirection;
 
 		@Override
-		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
+		public boolean isRedirected(final HttpRequest request, final HttpResponse response, final HttpContext context)
 				throws ProtocolException
 		{
-			wasRedirected = super.isRedirected(request, response, context);
+			this.wasRedirected = super.isRedirected(request, response, context);
 
-			if (wasRedirected) {
+			if (this.wasRedirected) {
 				try {
 					this.redirection = this.getRedirect(request, response, context).getURI().toURL();
 				} catch (final MalformedURLException e) {
@@ -294,14 +294,14 @@ public class StatusConsumer {
 		 * @return whether a redirect was found
 		 */
 		public boolean wasRedirected() {
-			return wasRedirected;
+			return this.wasRedirected;
 		}
 
 		/**
 		 * @return the redirection
 		 */
 		public URL redirection() {
-			return redirection;
+			return this.redirection;
 		}
 	}
 
@@ -309,28 +309,28 @@ public class StatusConsumer {
 	 * First, try all the {@link SiteSpecificConsumer} instances loaded into
 	 * {@link #siteSpecific}. If any consumer takes control of a link the
 	 * consumer's output is used
-	 * 
+	 *
 	 * if this fails use
 	 * {@link HttpUtils#readURLAsByteArrayInputStream(URL, org.apache.http.client.RedirectStrategy)}
 	 * with a {@link StatusConsumerRedirectStrategy} which specifically
 	 * disallows redirects to be dealt with automatically and forces this
 	 * function to be called for each redirect.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param url
 	 * @return a list of images or null
 	 */
 	@SuppressWarnings("unchecked")
-	public List<IndependentPair<URL, MBFImage>> urlToImage(URL url) {
-		logger.debug("Resolving URL: " + url);
-		logger.debug("Attempting site specific consumers");
+	public List<IndependentPair<URL, MBFImage>> urlToImage(final URL url) {
+		StatusConsumer.logger.debug("Resolving URL: " + url);
+		StatusConsumer.logger.debug("Attempting site specific consumers");
 		List<IndependentPair<URL, MBFImage>> image = null;
-		for (final SiteSpecificConsumer consumer : siteSpecific) {
+		for (final SiteSpecificConsumer consumer : StatusConsumer.siteSpecific) {
 			if (consumer.canConsume(url)) {
-				logger.debug("Site specific consumer: " + consumer.getClass().getName() + " working on link");
+				StatusConsumer.logger.debug("Site specific consumer: " + consumer.getClass().getName() + " working on link");
 				final List<URL> urlList = consumer.consume(url);
 				if (urlList != null && !urlList.isEmpty()) {
-					logger.debug("Site specific consumer returned non-null, adding the URLs");
+					StatusConsumer.logger.debug("Site specific consumer returned non-null, adding the URLs");
 					for (final URL siteSpecific : urlList) {
 						this.add(siteSpecific.toString());
 					}
@@ -339,12 +339,12 @@ public class StatusConsumer {
 			}
 		}
 		try {
-			logger.debug("Site specific consumers failed, trying the raw link");
+			StatusConsumer.logger.debug("Site specific consumers failed, trying the raw link");
 			final StatusConsumerRedirectStrategy redirector = new StatusConsumerRedirectStrategy();
 			final IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils
 					.readURLAsByteArrayInputStream(url, 1000, 1000, redirector, HttpUtils.DEFAULT_USERAGENT);
 			if (redirector.wasRedirected()) {
-				logger.debug("Redirect intercepted, adding redirection to list");
+				StatusConsumer.logger.debug("Redirect intercepted, adding redirection to list");
 				final String redirect = redirector.redirection().toString();
 				if (!redirect.equals(url.toString()))
 					this.add(redirect);
@@ -354,7 +354,7 @@ public class StatusConsumer {
 			final ByteArrayInputStream bais = headersBais.getSecondObject();
 			final String typeValue = headers.getContentType().getValue();
 			if (typeValue.contains("text")) {
-				reportFailedURL(url, "text content");
+				this.reportFailedURL(url, "text content");
 				return null;
 			} else {
 				// Not text? try reading it as an image!
@@ -369,17 +369,17 @@ public class StatusConsumer {
 				}
 				final IndependentPair<URL, MBFImage> pair = IndependentPair.pair(url, readMBF);
 				image = Arrays.asList(pair);
-				logger.debug("Link resolved, returning image.");
+				StatusConsumer.logger.debug("Link resolved, returning image.");
 				return image;
 			}
 		} catch (final Throwable e) { // This input might not be an image! deal
 			// with that
-			reportFailedURL(url, e.getMessage());
+			this.reportFailedURL(url, e.getMessage());
 			return null;
 		}
 	}
 
-	private void reportFailedURL(URL url, String reason) {
+	private void reportFailedURL(final URL url, final String reason) {
 		if (this.outputModes != null) {
 			for (final OutputListener listener : this.outputModes) {
 				listener.failedURL(url, reason);
@@ -389,19 +389,19 @@ public class StatusConsumer {
 
 	/**
 	 * Construct a file in the output location for a given url
-	 * 
+	 *
 	 * @param url
 	 * @param outputLocation
 	 * @return a file that looks like: outputLocation/protocol/path/query/...
 	 * @throws IOException
 	 */
-	public static synchronized File urlToOutput(URL url, File outputLocation) throws IOException {
+	public static synchronized File urlToOutput(final URL url, final File outputLocation) throws IOException {
 		String urlPath = url.getProtocol() + File.separator +
 				url.getHost() + File.separator;
 		if (!url.getPath().equals(""))
-			urlPath += url.getPath() + File.separator;
+			urlPath += StatusConsumer.sanitizeFilename( url.getPath() )+ File.separator;
 		if (url.getQuery() != null)
-			urlPath += url.getQuery() + File.separator;
+			urlPath += StatusConsumer.sanitizeFilename( url.getQuery() ) + File.separator;
 
 		final String outPath = outputLocation.getAbsolutePath() + File.separator + urlPath;
 		final File outFile = new File(outPath);
@@ -409,15 +409,25 @@ public class StatusConsumer {
 			if (outFile.isDirectory()) {
 				return outFile;
 			} else {
-				createURLOutDir(outFile);
+				StatusConsumer.createURLOutDir(outFile);
 			}
 		} else {
-			createURLOutDir(outFile);
+			StatusConsumer.createURLOutDir(outFile);
 		}
 		return outFile;
 	}
 
-	static void createURLOutDir(File outFile) throws IOException {
+	/**
+	  * Replaces illegal characters in a filename with "_"
+	  * illegal characters :
+	  *           : \ / * ? | < >
+	  * @param name
+	  * @return Sanitised filename
+	  */
+	  public static String sanitizeFilename(final String name) {
+	    return name.replaceAll("[:\\\\/*?|<>]", "_");
+	  }
+	static void createURLOutDir(final File outFile) throws IOException {
 		if (!((!outFile.exists() || outFile.delete()) && outFile.mkdirs())) {
 			throw new IOException("Couldn't create URL output: " + outFile.getAbsolutePath());
 		}
