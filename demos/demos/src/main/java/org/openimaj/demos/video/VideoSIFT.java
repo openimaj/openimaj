@@ -158,6 +158,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private final JPanel modelPanel;
 	private final JPanel matchPanel;
 	private RenderMode renderMode = RenderMode.SQUARE;
+	private MBFImage currentFrame;
 
 	/**
 	 * Construct the demo
@@ -207,6 +208,10 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 		this.modelPanel = new JPanel(new GridBagLayout());
 		this.modelPanel.setBorder(BorderFactory.createTitledBorder("Model"));
 		this.modelFrame = new ImageComponent(true, false);
+		this.modelFrame.setShowPixelColours(false);
+		this.modelFrame.setShowXYPosition(false);
+		this.modelFrame.removeMouseListener(this.modelFrame);
+		this.modelFrame.removeMouseMotionListener(this.modelFrame);
 		this.modelFrame.setSize(width, height);
 		this.modelFrame.setPreferredSize(new Dimension(width, height));
 		this.modelPanel.add(this.modelFrame);
@@ -219,6 +224,10 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 		this.matchPanel = new JPanel(new GridBagLayout());
 		this.matchPanel.setBorder(BorderFactory.createTitledBorder("Matches"));
 		this.matchFrame = new ImageComponent(true, false);
+		this.matchFrame.setShowPixelColours(false);
+		this.matchFrame.setShowXYPosition(false);
+		this.matchFrame.removeMouseListener(this.matchFrame);
+		this.matchFrame.removeMouseMotionListener(this.matchFrame);
 		this.matchFrame.setSize(width * 2, height);
 		this.matchFrame.setPreferredSize(new Dimension(width * 2, height));
 		this.matchPanel.add(this.matchFrame);
@@ -244,7 +253,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 			try {
 				final Polygon p = this.polygonListener.getPolygon().clone();
 				this.polygonListener.reset();
-				this.modelImage = this.capture.getCurrentFrame().process(
+				this.modelImage = this.currentFrame.process(
 						new PolygonExtractionProcessor<Float[], MBFImage>(p, RGBColour.BLACK));
 
 				if (this.matcher == null) {
@@ -291,7 +300,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	@Override
 	public synchronized void afterUpdate(final VideoDisplay<MBFImage> display) {
 		if (this.matcher != null && !this.videoFrame.isPaused()) {
-			final MBFImage capImg = this.videoFrame.getVideo().getCurrentFrame();
+			final MBFImage capImg = this.currentFrame;
 			final LocalFeatureList<Keypoint> kpl = this.engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
 
 			final MBFImageRenderer renderer = capImg.createRenderer();
@@ -324,6 +333,11 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 	@Override
 	public void beforeUpdate(final MBFImage frame) {
+		if (!this.videoFrame.isPaused())
+			this.currentFrame = frame.clone();
+		else {
+			frame.drawImage(currentFrame, 0, 0);
+		}
 		this.polygonListener.drawPoints(frame);
 	}
 
