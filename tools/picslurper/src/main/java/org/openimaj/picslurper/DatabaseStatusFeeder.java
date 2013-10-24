@@ -51,6 +51,100 @@ import com.mysql.jdbc.Connection;
  */
 public class DatabaseStatusFeeder implements StatusFeeder
 {
+	protected static class DatabaseFeederStatus implements Status
+	{
+		private final XMLGregorianCalendar cal;
+		private final String text;
+
+		public DatabaseFeederStatus( final String text, final XMLGregorianCalendar cal )
+		{
+			this.text = text;
+			this.cal = cal;
+		}
+
+		/** */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public int compareTo( final Status o ) { return 0; }
+
+		@Override
+		public RateLimitStatus getRateLimitStatus() { return null; }
+
+		@Override
+		public int getAccessLevel() { return 0;	}
+
+		@Override
+		public UserMentionEntity[] getUserMentionEntities() { return null; }
+
+		@Override
+		public URLEntity[] getURLEntities()	{ return null; }
+
+		@Override
+		public HashtagEntity[] getHashtagEntities() { return null; }
+
+		@Override
+		public MediaEntity[] getMediaEntities() { return null; }
+
+		@Override
+		public Date getCreatedAt() { return this.cal.toGregorianCalendar().getTime(); }
+
+		@Override
+		public long getId() { return 0;	}
+
+		@Override
+		public String getText() { return this.text; }
+
+		@Override
+		public String getSource() {	return null; }
+
+		@Override
+		public boolean isTruncated() { return false; }
+
+		@Override
+		public long getInReplyToStatusId() { return 0; }
+
+		@Override
+		public long getInReplyToUserId() { return 0; }
+
+		@Override
+		public String getInReplyToScreenName() { return null; }
+
+		@Override
+		public GeoLocation getGeoLocation()	{ return null; }
+
+		@Override
+		public Place getPlace() { return null; }
+
+		@Override
+		public boolean isFavorited() { return false; }
+
+		@Override
+		public User getUser() { return null; }
+
+		@Override
+		public boolean isRetweet() { return false; }
+
+		@Override
+		public Status getRetweetedStatus() { return null; }
+
+		@Override
+		public long[] getContributors() { return null; }
+
+		@Override
+		public long getRetweetCount() { return 0; }
+
+		@Override
+		public boolean isRetweetedByMe() { return false; }
+
+		@Override
+		public long getCurrentUserRetweetId() { return 0; }
+
+		@Override
+		public boolean isPossiblySensitive() { return false; }
+
+	}
+
 	/** The map of column names */
 	private Map<String,String> columnNames = new HashMap<String,String>();
 
@@ -178,88 +272,7 @@ public class DatabaseStatusFeeder implements StatusFeeder
 									.newXMLGregorianCalendar(createdAt);
 						final String text = r.getString(2);
 
-						final Status status = new Status(){
-
-							@Override
-							public int compareTo( final Status o ) { return 0; }
-
-							@Override
-							public RateLimitStatus getRateLimitStatus() { return null; }
-
-							@Override
-							public int getAccessLevel() { return 0;	}
-
-							@Override
-							public UserMentionEntity[] getUserMentionEntities() { return null; }
-
-							@Override
-							public URLEntity[] getURLEntities()	{ return null; }
-
-							@Override
-							public HashtagEntity[] getHashtagEntities() { return null; }
-
-							@Override
-							public MediaEntity[] getMediaEntities() { return null; }
-
-							@Override
-							public Date getCreatedAt() { return cal.toGregorianCalendar().getTime(); }
-
-							@Override
-							public long getId() { return 0;	}
-
-							@Override
-							public String getText() { return text; }
-
-							@Override
-							public String getSource() {	return null; }
-
-							@Override
-							public boolean isTruncated() { return false; }
-
-							@Override
-							public long getInReplyToStatusId() { return 0; }
-
-							@Override
-							public long getInReplyToUserId() { return 0; }
-
-							@Override
-							public String getInReplyToScreenName() { return null; }
-
-							@Override
-							public GeoLocation getGeoLocation()	{ return null; }
-
-							@Override
-							public Place getPlace() { return null; }
-
-							@Override
-							public boolean isFavorited() { return false; }
-
-							@Override
-							public User getUser() { return null; }
-
-							@Override
-							public boolean isRetweet() { return false; }
-
-							@Override
-							public Status getRetweetedStatus() { return null; }
-
-							@Override
-							public long[] getContributors() { return null; }
-
-							@Override
-							public long getRetweetCount() { return 0; }
-
-							@Override
-							public boolean isRetweetedByMe() { return false; }
-
-							@Override
-							public long getCurrentUserRetweetId() { return 0; }
-
-							@Override
-							public boolean isPossiblySensitive() { return false; }
-
-						};
-
+						final DatabaseFeederStatus status = new DatabaseFeederStatus( text, cal );
 						slurper.handleStatus( status );
 					}
 					catch( final DatatypeConfigurationException e )
