@@ -331,5 +331,6 @@ public class FDet {
 	public void set_min_size( final int _min_size )
 	{
 		this._min_size = _min_size;
+		this.setupDetector();
 	}
 }
