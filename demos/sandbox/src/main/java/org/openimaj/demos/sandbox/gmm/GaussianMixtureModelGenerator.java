@@ -36,5 +36,5 @@ public interface GaussianMixtureModelGenerator {
 		double[] responsibilities;
 	}
 	public Generated generate();
-	public int dimentions();
+	public int dimensions();
 }

@@ -31,9 +31,9 @@ package org.openimaj.ml.sketch.countmin;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import org.openimaj.math.hash.StringMurmurHashFunction;
-import org.openimaj.math.hash.StringMurmurHashFunctionFactory;
 import org.openimaj.ml.sketch.SummarySketcher;
+import org.openimaj.util.hash.StringMurmurHashFunction;
+import org.openimaj.util.hash.StringMurmurHashFunctionFactory;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

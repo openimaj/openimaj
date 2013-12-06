@@ -27,11 +27,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.math.hash;
+package org.openimaj.util.hash;
 
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.openimaj.util.hash.StringMurmurHashFunction;
+import org.openimaj.util.hash.StringMurmurHashFunctionFactory;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)

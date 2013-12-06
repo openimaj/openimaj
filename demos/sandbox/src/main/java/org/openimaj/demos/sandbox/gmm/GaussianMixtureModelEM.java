@@ -99,7 +99,7 @@ public class GaussianMixtureModelEM {
 	}
 
 	public GaussianMixtureModelEM(GaussianMixtureModelGenerator generator, int samples, int nGaus) {
-		this.data = new double[samples][generator.dimentions()];
+		this.data = new double[samples][generator.dimensions()];
 		for (int i = 0; i < data.length; i++) {
 			System.arraycopy(generator.generate().point, 0, data[i], 0, data[i].length);
 		}
@@ -123,7 +123,7 @@ public class GaussianMixtureModelEM {
 		}
 	}
 
-	private void e_step() {
+	private void eStep() {
 		final double[] liklihoods = new double[this.nGaus];
 		// Reset the sum posterior
 		this.sumPosterior = new double[this.nGaus];
@@ -150,7 +150,7 @@ public class GaussianMixtureModelEM {
 		}
 	}
 
-	private void m_step() {
+	private void mStep() {
 		for (int gausIndex = 0; gausIndex < this.nGaus; gausIndex++) {
 			final Matrix newMean = new Matrix(1, this.data[0].length);
 			for (int dataIndex = 0; dataIndex < this.data.length; dataIndex++) {
@@ -159,8 +159,10 @@ public class GaussianMixtureModelEM {
 				final double posterior = this.gausPosterior.get(dataIndex, gausIndex);
 				newMean.plusEquals(dataItemMat.times(posterior));
 			}
+
 			final double sumPosteriorGausIndex = this.sumPosterior[gausIndex];
 			newMean.timesEquals(1d / sumPosteriorGausIndex);
+
 			final Matrix newCovar = this.gaussians.get(gausIndex).getCovar().times(0);
 			for (int dataIndex = 0; dataIndex < this.data.length; dataIndex++) {
 				final double[] dataItem = this.data[dataIndex];
@@ -176,8 +178,8 @@ public class GaussianMixtureModelEM {
 	}
 
 	public void step() {
-		this.e_step();
-		this.m_step();
+		this.eStep();
+		this.mStep();
 	}
 
 	public static void main(String[] args) throws InterruptedException {

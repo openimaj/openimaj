@@ -40,40 +40,41 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 import org.openimaj.io.IOUtils;
 
-
 /**
- * Interface to describe objects that are the result of the clustering where
- * the training data is implicitly clustered
- *
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * Interface to describe objects that are the result of the clustering where the
+ * training data is implicitly clustered
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class IndexClusters implements Clusters {
-	
 	protected int[][] clusters;
 	protected int nEntries;
-	
+
 	/**
-	 * used only to initailise for {@link IOUtils}
+	 * Used only to initailise for {@link IOUtils}
 	 */
 	public IndexClusters() {
 	}
-	
+
 	/**
-	 * @param clusters the clusters
-	 * @param nEntries the number of entries
+	 * @param clusters
+	 *            the clusters
+	 * @param nEntries
+	 *            the number of entries
 	 */
 	public IndexClusters(int[][] clusters, int nEntries) {
 		this.nEntries = nEntries;
 		this.clusters = clusters;
 	}
-	
+
 	/**
-	 * @param clusters the clusters
+	 * @param clusters
+	 *            the clusters
 	 */
 	public IndexClusters(int[][] clusters) {
 		this.nEntries = 0;
@@ -82,25 +83,27 @@ public class IndexClusters implements Clusters {
 			this.nEntries += clusters[i].length;
 		}
 	}
-	
+
 	/**
-	 * @param assignments convert a list of cluster assignments to a 2D array to cluster to assignments
+	 * @param assignments
+	 *            convert a list of cluster assignments to a 2D array to cluster
+	 *            to assignments
 	 */
 	public IndexClusters(int[] assignments) {
 		this.nEntries = assignments.length;
-		Map<Integer,TIntArrayList> clusters = new HashMap<Integer, TIntArrayList>();
+		final Map<Integer, TIntArrayList> clusters = new HashMap<Integer, TIntArrayList>();
 		for (int i = 0; i < assignments.length; i++) {
-			int ass = assignments[i];
+			final int ass = assignments[i];
 			TIntArrayList current = clusters.get(ass);
-			if(current == null){
+			if (current == null) {
 				clusters.put(ass, current = new TIntArrayList());
 			}
 			current.add(i);
 		}
 		int clustersSeen = 0;
 		this.clusters = new int[clusters.size()][];
-		for (Entry<Integer, TIntArrayList> i : clusters.entrySet()) {
-			this.clusters[clustersSeen] = i.getValue().toArray(); 
+		for (final Entry<Integer, TIntArrayList> i : clusters.entrySet()) {
+			this.clusters[clustersSeen] = i.getValue().toArray();
 			clustersSeen++;
 		}
 	}
@@ -116,16 +119,16 @@ public class IndexClusters implements Clusters {
 
 	/**
 	 * Get the number of clusters.
-	 *
+	 * 
 	 * @return number of clusters.
 	 */
-	public int[][] clusters(){
+	public int[][] clusters() {
 		return clusters;
 	}
-	
+
 	/**
 	 * Get the number of data entries
-	 *
+	 * 
 	 * @return the number of data entries.
 	 */
 	public int numEntries() {
@@ -134,10 +137,10 @@ public class IndexClusters implements Clusters {
 
 	/**
 	 * Get the number of clusters.
-	 *
+	 * 
 	 * @return number of clusters.
 	 */
-	public int numClusters(){
+	public int numClusters() {
 		return this.clusters.length;
 	}
 
@@ -146,10 +149,10 @@ public class IndexClusters implements Clusters {
 		this.clusters = new int[in.nextInt()][];
 		this.nEntries = in.nextInt();
 		for (int i = 0; i < this.nEntries;) {
-			int cluster = in.nextInt();
-			int count = in.nextInt();
-			i+=count;
-			this.clusters[cluster] = new int[count]; 
+			final int cluster = in.nextInt();
+			final int count = in.nextInt();
+			i += count;
+			this.clusters[cluster] = new int[count];
 			for (int j = 0; j < count; j++) {
 				this.clusters[cluster][j] = in.nextInt();
 			}
@@ -158,7 +161,7 @@ public class IndexClusters implements Clusters {
 
 	@Override
 	public String asciiHeader() {
-		return "IDX"+CLUSTER_HEADER;
+		return "IDX" + CLUSTER_HEADER;
 	}
 
 	@Override
@@ -166,10 +169,10 @@ public class IndexClusters implements Clusters {
 		this.clusters = new int[in.readInt()][];
 		this.nEntries = in.readInt();
 		for (int i = 0; i < this.nEntries;) {
-			int cluster = in.readInt();
-			int count = in.readInt();
-			i+=count;
-			this.clusters[cluster] = new int[count]; 
+			final int cluster = in.readInt();
+			final int count = in.readInt();
+			i += count;
+			this.clusters[cluster] = new int[count];
 			for (int j = 0; j < count; j++) {
 				this.clusters[cluster][j] = in.readInt();
 			}
@@ -186,7 +189,7 @@ public class IndexClusters implements Clusters {
 		out.println(this.numClusters());
 		out.println(this.nEntries);
 		for (int i = 0; i < this.clusters.length; i++) {
-			int[] cluster = this.clusters[i];
+			final int[] cluster = this.clusters[i];
 			out.println(i);
 			out.println(cluster.length);
 			for (int j = 0; j < cluster.length; j++) {
@@ -200,7 +203,7 @@ public class IndexClusters implements Clusters {
 		out.writeInt(this.numClusters());
 		out.writeInt(nEntries);
 		for (int i = 0; i < this.clusters.length; i++) {
-			int[] cluster = this.clusters[i];
+			final int[] cluster = this.clusters[i];
 			out.writeInt(i);
 			out.writeInt(cluster.length);
 			for (int j = 0; j < cluster.length; j++) {
@@ -208,17 +211,18 @@ public class IndexClusters implements Clusters {
 			}
 		}
 	}
+
 	@Override
 	public String toString() {
-		int[][] clusters = this.clusters();
+		final int[][] clusters = this.clusters();
 		int i = 0;
-		StringWriter sw = new StringWriter();
-		PrintWriter out = new PrintWriter(sw);
+		final StringWriter sw = new StringWriter();
+		final PrintWriter out = new PrintWriter(sw);
 		out.println("N-Clusters: " + this.numClusters());
 		out.println("Entities: " + this.numEntries());
 		String str = sw.toString();
-		for (int[] member : clusters) {
-			str += String.format("%d %s\n",i++,Arrays.toString(member));
+		for (final int[] member : clusters) {
+			str += String.format("%d %s\n", i++, Arrays.toString(member));
 		}
 		return str;
 	}

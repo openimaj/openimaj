@@ -724,13 +724,12 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	/**
 	 * Calculate convex hull using Melkman's algorithm. Based on
 	 * http://softsurfer.com/Archive/algorithm_0203/algorithm_0203.htm
-	 * 
-	 * // Copyright 2001, softSurfer (www.softsurfer.com) This code may be
-	 * freely used and modified for any purpose providing that this copyright
-	 * notice is included with it. SoftSurfer makes no warranty for this code,
-	 * and cannot be held liable for any real or imagined damage resulting from
-	 * its use. Users of this code must verify correctness for their
-	 * application.
+	 * <p>
+	 * Copyright 2001, softSurfer (www.softsurfer.com) This code may be freely
+	 * used and modified for any purpose providing that this copyright notice is
+	 * included with it. SoftSurfer makes no warranty for this code, and cannot
+	 * be held liable for any real or imagined damage resulting from its use.
+	 * Users of this code must verify correctness for their application.
 	 * 
 	 * @param V
 	 *            List of pixels containing within the region

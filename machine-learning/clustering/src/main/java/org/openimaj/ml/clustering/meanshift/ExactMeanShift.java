@@ -53,7 +53,7 @@ public class ExactMeanShift {
 	private int[] assignments;
 
 	private double[][] modes;
-	public int[] counts;
+	private int[] counts;
 
 	/**
 	 * Perform the ExactMeanShift operation on the given KDE.

@@ -27,9 +27,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.math.hash;
+package org.openimaj.util.hash;
 
-import org.openimaj.util.hash.HashFunction;
 
 /**
  * Use MurmurHash (http://murmurhash.googlepages.com/) to generate a random hash
@@ -63,33 +62,47 @@ public class StringMurmurHashFunction implements HashFunction<String> {
 	}
 
 	/**
-	 * @see #murmurhash(byte[])
+	 * Compute the Murmur hash (http://murmurhash.googlepages.com/) of the given
+	 * bytes.
+	 * 
+	 * @see #murmurhash(byte[], int, int)
+	 * 
 	 * @param data
-	 * @return hash
+	 *            the data to hash
+	 * @return the murmur hash
 	 */
 	public static int murmurhash(byte[] data) {
 		return murmurhash(data, data.length, -1);
 	}
 
 	/**
-	 * @see #murmurhash(byte[])
+	 * Compute the Murmur hash (http://murmurhash.googlepages.com/) of the given
+	 * bytes.
+	 * 
+	 * @see #murmurhash(byte[], int, int)
+	 * 
 	 * @param data
+	 *            the data to hash
 	 * @param seed
-	 * @return hash
+	 *            the random seed
+	 * @return the murmur hash
 	 */
 	public static int murmurhash(byte[] data, int seed) {
 		return murmurhash(data, data.length, seed);
 	}
 
 	/**
-	 * A java implementation of Murmur hash (http://murmurhash.googlepages.com/)
-	 * copied with great prejudice from
-	 * https://github.com/clearspring/stream-lib
+	 * Compute the Murmur hash (http://murmurhash.googlepages.com/) of the given
+	 * bytes. Based on the implementation from
+	 * {@link "https://github.com/clearspring/stream-lib"}
 	 * 
 	 * @param data
+	 *            the data to hash
 	 * @param length
+	 *            the length of the data to hash
 	 * @param seed
-	 * @return a hash
+	 *            the random seed
+	 * @return the murmur hash
 	 */
 	public static int murmurhash(byte[] data, int length, int seed) {
 		final int m = 0x5bd1e995;

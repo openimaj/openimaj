@@ -32,14 +32,14 @@ package org.openimaj.ml.clustering.dbscan;
 import org.openimaj.ml.clustering.SimilarityClusterer;
 
 import ch.akuhn.matrix.SparseMatrix;
-import ch.akuhn.matrix.Vector.Entry;
 
 /**
  * {@link DBSCAN} using a {@link SparseMatrix} of similarities
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class SimilarityDBSCAN extends SparseMatrixDBSCAN implements SimilarityClusterer<DoubleDBSCANClusters>{
-	
+public class SimilarityDBSCAN extends SparseMatrixDBSCAN implements SimilarityClusterer<DoubleDBSCANClusters> {
+
 	/**
 	 * @param eps
 	 * @param minPts
@@ -50,13 +50,13 @@ public class SimilarityDBSCAN extends SparseMatrixDBSCAN implements SimilarityCl
 
 	@Override
 	public DoubleDBSCANClusters cluster(SparseMatrix data) {
-		
+
 		return this.clusterSimilarity(data);
 	}
 
 	@Override
 	public DoubleDBSCANClusters clusterSimilarity(SparseMatrix data) {
-		State s = new State(data.rowCount(), new SparseMatrixRegionMode(data, false),this.noiseAsClusters);
+		final State s = new State(data.rowCount(), new SparseMatrixRegionMode(data, false), this.noiseAsClusters);
 		return dbscan(s);
 	}
 

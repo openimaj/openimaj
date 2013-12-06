@@ -31,9 +31,9 @@ package org.openimaj.ml.sketch.bloom;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import org.openimaj.math.hash.StringMurmurHashFunction;
-import org.openimaj.math.hash.StringMurmurHashFunctionFactory;
 import org.openimaj.ml.sketch.SummarySketcher;
+import org.openimaj.util.hash.StringMurmurHashFunction;
+import org.openimaj.util.hash.StringMurmurHashFunctionFactory;
 
 /**
  * The bloom sketch as described by

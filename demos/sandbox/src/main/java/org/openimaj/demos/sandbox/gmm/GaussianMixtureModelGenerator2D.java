@@ -160,7 +160,7 @@ public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGene
 	}
 
 	@Override
-	public int dimentions() {
+	public int dimensions() {
 		return 2;
 	}
 

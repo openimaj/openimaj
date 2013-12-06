@@ -32,19 +32,19 @@
  */
 package org.openimaj.math.geometry.shape;
 
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
- *	
- *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 26 Aug 2011
- *	
+ * 
+ * 
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 26 Aug 2011
+ * 
  */
 public class PolygonTest
 {
@@ -54,127 +54,124 @@ public class PolygonTest
 	@Test
 	public void testPolygonIsInside()
 	{
-		Polygon p = new Rectangle( 100f, 100f, 100f, 100f ).asPolygon();
-		Assert.assertTrue( p.isInside( new Point2dImpl( 150f, 150f ) ) );
+		final Polygon p = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
+		Assert.assertTrue(p.isInside(new Point2dImpl(150f, 150f)));
 	}
-	
+
 	/**
 	 * Tests for the polygon's get centroid (i.e. first moment)
 	 */
 	@Test
-	public void testPolygonCentroid(){
-		Polygon p = new Polygon(new Point2dImpl[]{
-			new Point2dImpl(2, 0),
-			new Point2dImpl(0, 4),
-			new Point2dImpl(8, 8),
-			new Point2dImpl(10, 4),
+	public void testPolygonCentroid() {
+		final Polygon p = new Polygon(new Point2dImpl[] {
+				new Point2dImpl(2, 0),
+				new Point2dImpl(0, 4),
+				new Point2dImpl(8, 8),
+				new Point2dImpl(10, 4),
 		});
-		
-		double[] centroid = p.calculateCentroid();
-		assertEquals(centroid[0],5,0.001);
-		assertEquals(centroid[1],4,0.001);
+
+		final Point2d centroid = p.calculateCentroid();
+		assertEquals(centroid.getX(), 5, 0.001);
+		assertEquals(centroid.getY(), 4, 0.001);
 	}
-	
+
 	/**
 	 * Tests for the polygon's second moments
 	 */
 	@Test
-	public void testPolygonSecondMoment(){
-		Polygon p = new Polygon(new Point2dImpl[]{
-			new Point2dImpl(2, 0),
-			new Point2dImpl(0, 4),
-			new Point2dImpl(8, 8),
-			new Point2dImpl(10, 4),
+	public void testPolygonSecondMoment() {
+		final Polygon p = new Polygon(new Point2dImpl[] {
+				new Point2dImpl(2, 0),
+				new Point2dImpl(0, 4),
+				new Point2dImpl(8, 8),
+				new Point2dImpl(10, 4),
 		});
-		
-		
-		double[] secondMoment = p.calculateSecondMoment();
-		assertEquals(secondMoment[0], 30 + 2f/3f, 0.0001);
+
+		final double[] secondMoment = p.calculateSecondMoment();
+		assertEquals(secondMoment[0], 30 + 2f / 3f, 0.0001);
 		assertEquals(secondMoment[1], 22, 0.0001);
-		assertEquals(secondMoment[2], 18 + 2f/3f, 0.0001);
-		
+		assertEquals(secondMoment[2], 18 + 2f / 3f, 0.0001);
+
 	}
-	
+
 	/**
 	 * Tests for the polygon's second moments
 	 */
 	@Test
-	public void testPolygonSecondMomentCentralised(){
-		Polygon p = new Polygon(new Point2dImpl[]{
-			new Point2dImpl(2, 0),
-			new Point2dImpl(0, 4),
-			new Point2dImpl(8, 8),
-			new Point2dImpl(10, 4),
+	public void testPolygonSecondMomentCentralised() {
+		final Polygon p = new Polygon(new Point2dImpl[] {
+				new Point2dImpl(2, 0),
+				new Point2dImpl(0, 4),
+				new Point2dImpl(8, 8),
+				new Point2dImpl(10, 4),
 		});
-		
-		
-		double[] secondMoment = p.calculateSecondMomentCentralised();
-		assertEquals(secondMoment[0], 17f/3f, 0.0001);
+
+		final double[] secondMoment = p.calculateSecondMomentCentralised();
+		assertEquals(secondMoment[0], 17f / 3f, 0.0001);
 		assertEquals(secondMoment[1], 2, 0.0001);
-		assertEquals(secondMoment[2], 8f/3f, 0.0001);
-		
+		assertEquals(secondMoment[2], 8f / 3f, 0.0001);
+
 	}
-	
+
 	/**
 	 * Tests for the polygon's second moments
 	 */
 	@Test
-	public void testPolygonDirection(){
-		Polygon p = new Polygon(new Point2dImpl[]{
-			new Point2dImpl(2, 0),
-			new Point2dImpl(0, 4),
-			new Point2dImpl(8, 8),
-			new Point2dImpl(10, 4),
+	public void testPolygonDirection() {
+		final Polygon p = new Polygon(new Point2dImpl[] {
+				new Point2dImpl(2, 0),
+				new Point2dImpl(0, 4),
+				new Point2dImpl(8, 8),
+				new Point2dImpl(10, 4),
 		});
-		
-		
-		double direction = p.calculateDirection();
+
+		final double direction = p.calculateDirection();
 		System.out.println(direction);
-		
+
 	}
-	
+
 	/**
 	 * Test checking of point inside polygon with hole
 	 */
 	@Test
 	public void testPolygonWithHoleIsInside()
 	{
-		Polygon p = new Rectangle( 100f, 100f, 100f, 100f ).asPolygon();
-		Polygon hole = new Rectangle( 125f, 125f, 50f, 50f ).asPolygon();
-		hole.setIsHole( true );
-		p.addInnerPolygon( hole );
-		
-		Assert.assertTrue(  p.isInside( new Point2dImpl( 110f, 110f ) ) );
-		Assert.assertTrue( !p.isInside( new Point2dImpl( 150f, 150f ) ) );
+		final Polygon p = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
+		final Polygon hole = new Rectangle(125f, 125f, 50f, 50f).asPolygon();
+		hole.setIsHole(true);
+		p.addInnerPolygon(hole);
+
+		Assert.assertTrue(p.isInside(new Point2dImpl(110f, 110f)));
+		Assert.assertTrue(!p.isInside(new Point2dImpl(150f, 150f)));
 	}
-	
+
 	/**
 	 * Test cloning
 	 */
 	@Test
 	public void testPolygonClone()
 	{
-		Polygon p = new Rectangle( 100f, 100f, 100f, 100f ).asPolygon();
-		Polygon hole = new Rectangle( 125f, 125f, 50f, 50f ).asPolygon();
-		hole.setIsHole( true );
-		p.addInnerPolygon( hole );
+		final Polygon p = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
+		final Polygon hole = new Rectangle(125f, 125f, 50f, 50f).asPolygon();
+		hole.setIsHole(true);
+		p.addInnerPolygon(hole);
 
-		Polygon p2 = p.clone();
-		Assert.assertTrue(  p2.isInside( new Point2dImpl( 110f, 110f ) ) );
-		Assert.assertTrue( !p2.isInside( new Point2dImpl( 150f, 150f ) ) );
+		final Polygon p2 = p.clone();
+		Assert.assertTrue(p2.isInside(new Point2dImpl(110f, 110f)));
+		Assert.assertTrue(!p2.isInside(new Point2dImpl(150f, 150f)));
 	}
-	
+
 	/**
 	 * Test intersection
 	 */
 	@Test
 	public void testPolygonIntersection()
 	{
-		Polygon p1 = new Rectangle( 100f, 100f, 100f, 100f ).asPolygon();
-		Polygon p2 = new Rectangle( 150f, 150f, 100f, 100f ).asPolygon();
-		Polygon p3 = p1.intersect( p2 );
-		Polygon p4 = new Rectangle( 150f, 150f, 50f, 50f ).asPolygon();
-		Assert.assertEquals( p4, p3 );
+		final Polygon p1 = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
+		final Polygon p2 = new Rectangle(150f, 150f, 100f, 100f).asPolygon();
+		final Polygon p3 = p1.intersect(p2);
+		final Polygon p4 = new Rectangle(150f, 150f, 50f, 50f).asPolygon();
+		Assert.assertEquals(p4, p3);
 	}
 
 	/**
@@ -183,36 +180,36 @@ public class PolygonTest
 	@Test
 	public void testPolygonUnion()
 	{
-		Polygon p1 = new Rectangle( 100f, 100f, 100f, 100f ).asPolygon();
-		Polygon p2 = new Rectangle( 200f, 100f, 100f, 100f ).asPolygon();
-		Polygon p3 = p1.union( p2 );
-		Polygon p4 = new Rectangle( 100f, 100f, 200f, 100f ).asPolygon();
-		Assert.assertEquals( p4, p3 );
+		final Polygon p1 = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
+		final Polygon p2 = new Rectangle(200f, 100f, 100f, 100f).asPolygon();
+		final Polygon p3 = p1.union(p2);
+		final Polygon p4 = new Rectangle(100f, 100f, 200f, 100f).asPolygon();
+		Assert.assertEquals(p4, p3);
 	}
-	
+
 	/**
 	 * Test XOR
 	 */
 	@Test
 	public void testPolygonXOR()
 	{
-		Polygon p1 = new Rectangle( 100f, 100f, 100f, 100f ).asPolygon();
-		Polygon p2 = new Rectangle( 200f, 100f, 100f, 100f ).asPolygon();
-		Polygon p3 = p1.union( p2 );
-		Polygon p4 = new Rectangle( 100f, 100f, 200f, 100f ).asPolygon();
-		Assert.assertEquals( p4, p3 );		
+		final Polygon p1 = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
+		final Polygon p2 = new Rectangle(200f, 100f, 100f, 100f).asPolygon();
+		final Polygon p3 = p1.union(p2);
+		final Polygon p4 = new Rectangle(100f, 100f, 200f, 100f).asPolygon();
+		Assert.assertEquals(p4, p3);
 	}
-	
+
 	/**
 	 * Test vertex reduction
 	 */
 	@Test
 	public void testPolygonReduction()
 	{
-		Polygon p1 = new Circle( 100f, 100f, 50f ).asPolygon();
-		Assert.assertEquals( 360, p1.nVertices() );
-		
-		Polygon p2 = p1.reduceVertices( 0.3f );
-		System.out.println( p2.nVertices() );
+		final Polygon p1 = new Circle(100f, 100f, 50f).asPolygon();
+		Assert.assertEquals(360, p1.nVertices());
+
+		final Polygon p2 = p1.reduceVertices(0.3f);
+		System.out.println(p2.nVertices());
 	}
 }
