@@ -36,6 +36,7 @@ import java.io.IOException;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint.FacialKeypointType;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
@@ -85,14 +86,51 @@ public class KEDetectedFace extends DetectedFace {
 	 * @return the keypoint, or null if it wasn't found
 	 */
 	public FacialKeypoint getKeypoint(FacialKeypointType type) {
-		if (keypoints[type.ordinal()].type == type)
-			return keypoints[type.ordinal()];
+		return FacialKeypoint.getKeypoint(keypoints, type);
+	}
 
-		for (final FacialKeypoint part : keypoints)
-			if (part.type == type)
-				return part;
+	/**
+	 * Get a keypoint of the specified type, interpolating the position if the
+	 * internal model doesn't have a matching point. Currently only the
+	 * {@link FacialKeypointType#MOUTH_CENTER},
+	 * {@link FacialKeypointType#EYE_LEFT_CENTER} and
+	 * {@link FacialKeypointType#EYE_RIGHT_CENTER} points are supported iff the
+	 * corresponding left and right points are available.
+	 * 
+	 * @param type
+	 *            the type of keypoint
+	 * @return the keypoint, or null if it wasn't found
+	 */
+	public FacialKeypoint getKeypointInterpolated(FacialKeypointType type) {
+		final FacialKeypoint kpt = getKeypoint(type);
 
+		if (kpt == null) {
+			switch (type) {
+			case EYE_LEFT_CENTER:
+				return createInterpolated(type, getKeypoint(FacialKeypointType.EYE_LEFT_LEFT),
+						getKeypoint(FacialKeypointType.EYE_LEFT_RIGHT));
+			case EYE_RIGHT_CENTER:
+				return createInterpolated(type, getKeypoint(FacialKeypointType.EYE_RIGHT_LEFT),
+						getKeypoint(FacialKeypointType.EYE_RIGHT_RIGHT));
+			case MOUTH_CENTER:
+				return createInterpolated(type, getKeypoint(FacialKeypointType.MOUTH_LEFT),
+						getKeypoint(FacialKeypointType.MOUTH_RIGHT));
+			default:
+				break;
+			}
+		}
 		return null;
+	}
+
+	private FacialKeypoint createInterpolated(FacialKeypointType type, FacialKeypoint left, FacialKeypoint right)
+	{
+		if (left == null || right == null)
+			return null;
+
+		final float x = right.position.x - left.position.x;
+		final float y = right.position.y - left.position.y;
+
+		return new FacialKeypoint(type, new Point2dImpl(x, y));
 	}
 
 	/**
