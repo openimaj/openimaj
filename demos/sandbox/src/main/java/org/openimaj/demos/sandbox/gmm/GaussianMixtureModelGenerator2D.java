@@ -41,6 +41,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.matrix.MatrixUtils;
+import org.openimaj.math.statistics.distribution.CachingMultivariateGaussian;
 import org.openimaj.math.statistics.distribution.MultivariateGaussian;
 
 import Jama.CholeskyDecomposition;
@@ -49,12 +50,12 @@ import Jama.Matrix;
 public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGenerator {
 
 	private static final int N_POINTS = 200;
-	private List<MultivariateGaussian> normList;
+	private List<CachingMultivariateGaussian> normList;
 	private Random random;
 	private double[] pi;
 
 	private GaussianMixtureModelGenerator2D() {
-		normList = new ArrayList<MultivariateGaussian>();
+		normList = new ArrayList<CachingMultivariateGaussian>();
 		this.random = new Random();
 	}
 
@@ -72,7 +73,7 @@ public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGene
 			mean.set(0, 0, cog.getX());
 			mean.set(0, 1, cog.getY());
 
-			normList.add(new MultivariateGaussian(mean, covar));
+			normList.add(new CachingMultivariateGaussian(mean, covar));
 		}
 
 		this.pi = new double[normList.size()];
@@ -97,7 +98,7 @@ public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGene
 
 		final MultivariateGaussian distrib = this.normList.get(g.distribution);
 		final Matrix mean = distrib.getMean().transpose();
-		final Matrix covar = distrib.getCovar();
+		final Matrix covar = distrib.getCovariance();
 		final CholeskyDecomposition decomp = new CholeskyDecomposition(covar);
 		final Matrix r = MatrixUtils.randGaussian(2, 1);
 

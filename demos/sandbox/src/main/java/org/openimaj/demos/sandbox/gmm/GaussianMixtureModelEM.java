@@ -42,6 +42,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
+import org.openimaj.math.statistics.distribution.CachingMultivariateGaussian;
 import org.openimaj.math.statistics.distribution.MultivariateGaussian;
 
 import Jama.Matrix;
@@ -89,7 +90,7 @@ public class GaussianMixtureModelEM {
 	private double[][] data;
 	private Matrix gausPosterior;
 	private double[] gausPrior;
-	private List<MultivariateGaussian> gaussians;
+	private List<CachingMultivariateGaussian> gaussians;
 	private double[] sumPosterior;
 
 	public GaussianMixtureModelEM(double[][] data, int nGaus) {
@@ -111,7 +112,7 @@ public class GaussianMixtureModelEM {
 	private void init() {
 		this.gausPosterior = new Matrix(this.data.length, this.nGaus);
 		this.gausPrior = new double[this.nGaus];
-		this.gaussians = new ArrayList<MultivariateGaussian>();
+		this.gaussians = new ArrayList<CachingMultivariateGaussian>();
 		this.sumPosterior = new double[this.nGaus];
 		final int[] randomData = RandomData.getRandomIntArray(this.nGaus, 0, this.data.length);
 		final Matrix covar = Matrix.identity(data[0].length, data[0].length).times(800f);
@@ -119,7 +120,7 @@ public class GaussianMixtureModelEM {
 			this.gausPrior[i] = 1f / this.nGaus;
 			final double[] dataItem = data[randomData[i]];
 			final Matrix mean = new Matrix(new double[][] { Arrays.copyOf(dataItem, dataItem.length) });
-			this.gaussians.add(new MultivariateGaussian(mean, covar.copy()));
+			this.gaussians.add(new CachingMultivariateGaussian(mean, covar.copy()));
 		}
 	}
 
@@ -163,7 +164,7 @@ public class GaussianMixtureModelEM {
 			final double sumPosteriorGausIndex = this.sumPosterior[gausIndex];
 			newMean.timesEquals(1d / sumPosteriorGausIndex);
 
-			final Matrix newCovar = this.gaussians.get(gausIndex).getCovar().times(0);
+			final Matrix newCovar = this.gaussians.get(gausIndex).getCovariance().times(0);
 			for (int dataIndex = 0; dataIndex < this.data.length; dataIndex++) {
 				final double[] dataItem = this.data[dataIndex];
 				final Matrix dataItemMat = new Matrix(new double[][] { dataItem });
@@ -172,7 +173,7 @@ public class GaussianMixtureModelEM {
 				newCovar.plusEquals(centered.times(centered.transpose()).times(posterior));
 			}
 			newCovar.timesEquals(1d / sumPosteriorGausIndex);
-			this.gaussians.set(gausIndex, new MultivariateGaussian(newMean, newCovar));
+			this.gaussians.set(gausIndex, new CachingMultivariateGaussian(newMean, newCovar));
 			this.gausPrior[gausIndex] = sumPosteriorGausIndex / this.data.length;
 		}
 	}

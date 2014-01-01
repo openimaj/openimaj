@@ -33,11 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.statistics.distribution.MultivariateGaussian;
+import org.openimaj.math.statistics.distribution.CachingMultivariateGaussian;
 
 /**
  * An {@link MBFPixelClassificationModel} that classifies an
- * individual pixel by comparing it to a {@link MultivariateGaussian}. 
+ * individual pixel by comparing it to a {@link CachingMultivariateGaussian}. 
  * The Gaussian is learnt from the values of the positive pixel samples given 
  * in training. The probability returned by the classification
  * is determined from the PDF of the Gaussian at the given pixel.
@@ -46,7 +46,7 @@ import org.openimaj.math.statistics.distribution.MultivariateGaussian;
  */
 public class SingleGaussianPixelModel extends MBFPixelClassificationModel {
 	private static final long serialVersionUID = 1L;
-	protected MultivariateGaussian gauss;
+	protected CachingMultivariateGaussian gauss;
 	
 	/**
 	 * Construct with the given number of dimensions. This 
@@ -84,14 +84,14 @@ public class SingleGaussianPixelModel extends MBFPixelClassificationModel {
 		
 		float [][] arraydata = data.toArray(new float[data.size()][ndims]);
 		
-		gauss = MultivariateGaussian.estimate(arraydata);
+		gauss = CachingMultivariateGaussian.estimate(arraydata);
 	}
 
 	@Override
 	public SingleGaussianPixelModel clone() {
 		SingleGaussianPixelModel model = new SingleGaussianPixelModel(ndims);
 		model.tol = tol;
-		model.gauss = new MultivariateGaussian(gauss.getMean().copy(), gauss.getCovar().copy());
+		model.gauss = new CachingMultivariateGaussian(gauss.getMean().copy(), gauss.getCovariance().copy());
 		
 		return null;
 	}

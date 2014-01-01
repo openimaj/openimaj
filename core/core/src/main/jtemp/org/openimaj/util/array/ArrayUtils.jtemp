@@ -573,6 +573,34 @@ public class ArrayUtils {
 
 		return sum;
 	}
+	
+	/*-- sumValues() --*/
+	/*** 
+    	{ m -> 
+    		if (m['T'] == DOUBLE) {
+    			return (m['R'] == DOUBLE); 		
+    		}
+    		if (m['T'] == LONG) {
+    			return (m['R'] == DOUBLE);
+    		}
+    		return (m['R'] == FLOAT);
+    	}
+    ***/
+	/**
+	 * Compute the sum of values in a 2d array
+	 * 
+	 * @param array
+	 * @return the sum of all values
+	 */
+	public static #r# sumValues(final #t#[][] array) {
+		#r# sum = 0;
+
+		for (int i=0; i<array.length; i++)
+			for (int j=0; j<array[i].length; j++)
+				sum += array[i][j];
+
+		return sum;
+	}
 
     /*-- sumValuesSquared() --*/
 	/*** 
@@ -601,6 +629,92 @@ public class ArrayUtils {
 		return sum;
 	}
 
+	/*-- cumulativeSum() --*/
+	/*** 
+    	{ m -> 
+    		if (m['T'] == DOUBLE) {
+    			return (m['R'] == DOUBLE); 		
+    		}
+    		if (m['T'] == LONG) {
+    			return (m['R'] == DOUBLE);
+    		}
+    		return (m['R'] == FLOAT);
+    	}
+    ***/
+	/**
+	 * Compute the cumulative sum of values in an array
+	 * 
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static #r#[] cumulativeSum(final #t#[] vector) {
+		#r#[] sum = new #r#[vector.length];
+
+		if (vector.length == 0) return sum;
+
+		sum[0] = vector[0];
+		for (int i=1; i<vector.length; i++)
+			sum[i] = vector[i] + sum[i-1];
+
+		return sum;
+	}
+	
+	/*-- rowSum() --*/
+	/*** 
+    	{ m -> 
+    		if (m['T'] == DOUBLE) {
+    			return (m['R'] == DOUBLE); 		
+    		}
+    		if (m['T'] == LONG) {
+    			return (m['R'] == DOUBLE);
+    		}
+    		return (m['R'] == FLOAT);
+    	}
+    ***/
+	/**
+	 * Compute the sum of values in each row of a 2d array
+	 * 
+	 * @param array the array 
+	 * @return the sum of each row
+	 */
+	public static #r#[] rowSum(final #t#[][] array) {
+		#r#[] sum = new #r#[array.length];
+
+		for (int i=0; i<array.length; i++)
+			for (int j=0; j<array[i].length; j++)
+				sum[i] += array[i][j];
+
+		return sum;
+	}
+	
+	/*-- colSum() --*/
+	/*** 
+    	{ m -> 
+    		if (m['T'] == DOUBLE) {
+    			return (m['R'] == DOUBLE); 		
+    		}
+    		if (m['T'] == LONG) {
+    			return (m['R'] == DOUBLE);
+    		}
+    		return (m['R'] == FLOAT);
+    	}
+    ***/
+	/**
+	 * Compute the sum of values in each column of a 2d array
+	 * 
+	 * @param array the array 
+	 * @return the sum of each column
+	 */
+	public static #r#[] colSum(final #t#[][] array) {
+		#r#[] sum = new #r#[array[0].length];
+
+		for (int i=0; i<array.length; i++)
+			for (int j=0; j<array[0].length; j++)
+				sum[j] += array[i][j];
+
+		return sum;
+	}
+
     /*-- range() (not templated) --*/
 	/**
 	 * Extract a range
@@ -615,6 +729,30 @@ public class ArrayUtils {
 			range[i - start] = i;
 		}
 		return range;
+	}
+
+    /*-- search() --*/
+	/**
+	 * Find the given value in the array, and return all indices at which it occurs.
+	 * 
+	 * @param a
+	 *            array to search
+	 * @param value
+	 * 			  value to search for
+	 * @return the found values
+	 */
+	public static int[] search(final #t#[] a, #t# value) {
+		int count = 0;
+
+		for (int i = 0; i < a.length; i++)
+			if (a[i] == value) 
+				count++;
+		
+		int [] ret = new int[count];
+		for (int i = 0, j=0; i < a.length; i++)
+			if (a[i] == value) ret[j++] = i;
+		
+		return ret;
 	}
 
     /*-- reshape() --*/

@@ -29,6 +29,7 @@
  */
 package org.openimaj.math.geometry.shape;
 
+import org.openimaj.math.statistics.distribution.CachingMultivariateGaussian;
 import org.openimaj.math.statistics.distribution.MultivariateGaussian;
 import org.openimaj.math.util.QuadraticEquation;
 
@@ -204,10 +205,10 @@ public class EllipseUtilities {
 
 	/**
 	 * Construct an ellipse that encompasses the shape of a
-	 * {@link MultivariateGaussian}.
+	 * {@link CachingMultivariateGaussian}.
 	 * 
 	 * @param gaussian
-	 *            the {@link MultivariateGaussian}
+	 *            the {@link CachingMultivariateGaussian}
 	 * @param scale
 	 *            the relative size of the ellipse
 	 * @return the ellipse
@@ -216,7 +217,7 @@ public class EllipseUtilities {
 		final Matrix mean = gaussian.getMean();
 		final float x = (float) mean.get(0, 0);
 		final float y = (float) mean.get(0, 1);
-		final Matrix covar = gaussian.getCovar();
+		final Matrix covar = gaussian.getCovariance();
 		return ellipseFromCovariance(x, y, covar, scale);
 	}
 }

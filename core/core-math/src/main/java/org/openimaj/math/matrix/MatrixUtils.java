@@ -47,6 +47,9 @@ import ch.akuhn.matrix.SparseMatrix;
  * 
  */
 public class MatrixUtils {
+	private MatrixUtils() {
+	}
+
 	/**
 	 * Are any values NaN or Inf?
 	 * 
@@ -1442,5 +1445,62 @@ public class MatrixUtils {
 	public static double sparcity(SparseMatrix matrix) {
 		final double density = matrix.used() / ((double) matrix.rowCount() * (double) matrix.columnCount());
 		return 1 - density;
+	}
+
+	/**
+	 * Extract the diagonal component from the given matrix
+	 * 
+	 * @param cv
+	 *            the matrix
+	 * @return a new matrix with the diagonal values from the input matrix and
+	 *         other values set to zero.
+	 */
+	public static Matrix diag(Matrix cv) {
+		final Matrix d = new Matrix(cv.getRowDimension(), cv.getColumnDimension());
+
+		for (int i = 0; i < Math.min(cv.getRowDimension(), cv.getColumnDimension()); i++)
+			d.set(i, i, cv.get(i, i));
+
+		return d;
+	}
+
+	/**
+	 * Extract the diagonal component from the given matrix
+	 * 
+	 * @param cv
+	 *            the matrix
+	 * @return a new matrix with the diagonal values from the input matrix and
+	 *         other values set to zero.
+	 */
+	public static double[] diagVector(Matrix cv) {
+		final double[] d = new double[Math.min(cv.getRowDimension(), cv.getColumnDimension())];
+
+		for (int i = 0; i < Math.min(cv.getRowDimension(), cv.getColumnDimension()); i++)
+			d[i] = cv.get(i, i);
+
+		return d;
+	}
+
+	/**
+	 * Format a matrix as a single-line string suitable for using in matlab or
+	 * octave
+	 * 
+	 * @param mat
+	 *            the matrix to format
+	 * @return the string
+	 */
+	public static String toMatlabString(Matrix mat) {
+		return "[" + toString(mat).trim().replace("\n ", ";").replace(" ", ",") + "]";
+	}
+
+	/**
+	 * Format a matrix as a single-line string suitable for using in python
+	 * 
+	 * @param mat
+	 *            the matrix to format
+	 * @return the string
+	 */
+	public static String toPythonString(Matrix mat) {
+		return "[[" + toString(mat).trim().replace("\n ", "][").replace(" ", ",") + "]]";
 	}
 }
