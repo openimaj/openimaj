@@ -9,7 +9,6 @@ import org.apache.commons.math.util.MathUtils;
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.math.statistics.MeanAndCovariance;
 import org.openimaj.math.statistics.distribution.AbstractMultivariateGaussian;
-import org.openimaj.math.statistics.distribution.CachingMultivariateGaussian;
 import org.openimaj.math.statistics.distribution.DiagonalMultivariateGaussian;
 import org.openimaj.math.statistics.distribution.FullMultivariateGaussian;
 import org.openimaj.math.statistics.distribution.MixtureOfGaussians;
@@ -25,9 +24,11 @@ import Jama.Matrix;
 
 /**
  * Gaussian mixture model learning using the EM algorithm. Supports a range of
- * different shapes Gaussian through different covariance matrix forms.
+ * different shapes Gaussian through different covariance matrix forms. An
+ * initialisation step is used to learn the initial means using K-Means,
+ * although this can be disabled in the constructor.
  * <p>
- * Implementation is inspired by the SciPy "gmm.py" class.
+ * Implementation was originally inspired by the SciPy's "gmm.py".
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -363,6 +364,11 @@ public class GaussianMixtureModelEM {
 		}
 	}
 
+	private static final double DEFAULT_THRESH = 1e-2;
+	private static final double DEFAULT_MIN_COVAR = 1e-3;
+	private static final int DEFAULT_NITERS = 100;
+	private static final int DEFAULT_NINIT = 1;
+
 	CovarianceType ctype;
 	int nComponents;
 	private double thresh;
@@ -374,6 +380,31 @@ public class GaussianMixtureModelEM {
 	private EnumSet<UpdateOptions> initOpts;
 	private EnumSet<UpdateOptions> iterOpts;
 
+	/**
+	 * Construct with the given arguments.
+	 * 
+	 * @param nComponents
+	 *            the number of gaussian components
+	 * @param ctype
+	 *            the form of the covariance matrices
+	 * @param thresh
+	 *            the threshold at which to stop iterating
+	 * @param minCovar
+	 *            the minimum value allowed in the diagonal of the estimated
+	 *            covariance matrices to prevent overfitting
+	 * @param nIters
+	 *            the maximum number of iterations
+	 * @param nInit
+	 *            the number of runs of the algorithm to perform; the best
+	 *            result will be kept.
+	 * @param iterOpts
+	 *            options controlling what is updated during iteration
+	 * @param initOpts
+	 *            options controlling what is updated during initialisation.
+	 *            Enabling the {@link UpdateOptions#Means} option will cause
+	 *            K-Means to be used to generate initial starting points for the
+	 *            means.
+	 */
 	public GaussianMixtureModelEM(int nComponents, CovarianceType ctype, double thresh, double minCovar,
 			int nIters, int nInit, EnumSet<UpdateOptions> iterOpts, EnumSet<UpdateOptions> initOpts)
 	{
@@ -389,16 +420,45 @@ public class GaussianMixtureModelEM {
 		if (nInit < 1) {
 			throw new IllegalArgumentException("GMM estimation requires at least one run");
 		}
-
-		// flag to indicate exit status of #estimate(IndependentPair) method:
-		// converged (true) or n_iter reached (false)
 		this.converged = false;
 	}
 
+	/**
+	 * Construct with the given arguments.
+	 * 
+	 * @param nComponents
+	 *            the number of gaussian components
+	 * @param ctype
+	 *            the form of the covariance matrices
+	 */
+	public GaussianMixtureModelEM(int nComponents, CovarianceType ctype)
+	{
+		this(nComponents, ctype, DEFAULT_THRESH, DEFAULT_MIN_COVAR, DEFAULT_NITERS, DEFAULT_NINIT, EnumSet
+				.allOf(UpdateOptions.class), EnumSet.allOf(UpdateOptions.class));
+	}
+
+	/**
+	 * Get's the convergence state of the algorithm. Will return false if
+	 * {@link #estimate(double[][])} has not been called, or if the last call to
+	 * {@link #estimate(double[][])} failed to reach convergence before running
+	 * out of iterations.
+	 * 
+	 * @return true if the last call to {@link #estimate(double[][])} reached
+	 *         convergence; false otherwise
+	 */
 	public boolean hasConverged() {
 		return converged;
 	}
 
+	/**
+	 * Estimate a new {@link MixtureOfGaussians} from the given data. Use
+	 * {@link #hasConverged()} to check whether the EM algorithm reached
+	 * convergence in the estimation of the returned model.
+	 * 
+	 * @param X
+	 *            the data array.
+	 * @return the generated GMM.
+	 */
 	public MixtureOfGaussians estimate(double[][] X) {
 		final EMGMM gmm = new EMGMM(nComponents, ctype);
 
@@ -526,29 +586,5 @@ public class GaussianMixtureModelEM {
 		} catch (final CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public static void main(String[] args) {
-		final double[][] data = { { 0, 0 }, { 0.5, 1 }, { -0.5, -1 }, { -0.5, 1 }, { 0.5, -1 } };
-
-		final GaussianMixtureModelEM learner = new GaussianMixtureModelEM(1, CovarianceType.Diagonal,
-				1e-2, 1e-3, 100, 1, EnumSet.allOf(UpdateOptions.class), EnumSet.allOf(UpdateOptions.class));
-		final MixtureOfGaussians gmm = learner.estimate(data);
-
-		System.out.println(Arrays.toString(gmm.gaussians));
-
-		System.out.println(gmm.estimateLogProbability(new double[] { 0, 0 }));
-		System.out.println(gmm.estimateProbability(new double[] { 0, 0 }));
-
-		// for (final double[] d : gmm.sample(10000, new Random()))
-		// System.out.println(d[0] + " " + d[1]);
-
-		System.out.println(gmm.gaussians[0].estimateLogProbability(new double[] { 0, 0 }));
-		System.out.println(gmm.gaussians[0].estimateProbability(new double[] { 0, 0 }));
-
-		final CachingMultivariateGaussian g = new CachingMultivariateGaussian(gmm.gaussians[0].getMean(),
-				gmm.gaussians[0].getCovariance());
-		System.out.println(g.estimateLogProbability(new double[] { 0, 0 }));
-		System.out.println(g.estimateProbability(new double[] { 0, 0 }));
 	}
 }
