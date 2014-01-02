@@ -42,4 +42,9 @@ public class FullMultivariateGaussian extends AbstractMultivariateGaussian {
 	public Matrix getCovariance() {
 		return covar;
 	}
+
+	@Override
+	public double getCovariance(int row, int column) {
+		return this.covar.get(row, column);
+	}
 }

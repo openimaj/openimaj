@@ -47,4 +47,14 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 	public Matrix getCovariance() {
 		return MatrixUtils.diag(variance);
 	}
+
+	@Override
+	public double getCovariance(int row, int col) {
+		if (row < 0 || row >= variance.length || col < 0 || col > variance.length)
+			throw new IndexOutOfBoundsException();
+
+		if (row == col)
+			return variance[row];
+		return 0;
+	}
 }

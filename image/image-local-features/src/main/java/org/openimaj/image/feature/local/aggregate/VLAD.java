@@ -49,7 +49,8 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
  * creating a vector of codeword occurances, VLAD accumulates the residual
  * vector between each input vector and its assigned centroid. Fundamentally,
  * VLAD describes the distribution of the image vectors with respect to their
- * assigned centroids.
+ * assigned centroids. VLAD is closely related to the more complex
+ * {@link FisherVector}.
  * <p>
  * For a given number of centroids, K, and vector length, D, the VLAD descriptor
  * has dimension K*D. This is obviously longer than the K-dimensional vector

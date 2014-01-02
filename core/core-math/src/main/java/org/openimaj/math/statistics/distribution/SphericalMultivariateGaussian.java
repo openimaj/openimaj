@@ -42,4 +42,14 @@ public class SphericalMultivariateGaussian extends AbstractMultivariateGaussian 
 		final int d = mean.getColumnDimension();
 		return Matrix.identity(d, d).timesEquals(variance);
 	}
+
+	@Override
+	public double getCovariance(int row, int col) {
+		if (row < 0 || row >= mean.getColumnDimension() || col < 0 || col > mean.getColumnDimension())
+			throw new IndexOutOfBoundsException();
+
+		if (row == col)
+			return variance;
+		return 0;
+	}
 }
