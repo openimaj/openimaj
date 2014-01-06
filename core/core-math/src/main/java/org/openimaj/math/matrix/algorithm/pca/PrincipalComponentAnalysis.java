@@ -254,7 +254,7 @@ public abstract class PrincipalComponentAnalysis {
 	 * Get the principal components. The principal components are the column
 	 * vectors of the returned matrix.
 	 * 
-	 * Syntactic suger for {@link #getBasis()}
+	 * Syntactic sugar for {@link #getBasis()}
 	 * 
 	 * @return the principal components
 	 */
