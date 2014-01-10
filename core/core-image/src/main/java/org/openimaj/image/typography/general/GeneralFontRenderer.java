@@ -40,14 +40,24 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.QuadCurve2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.image.typography.FontRenderer;
+import org.openimaj.image.typography.FontStyle;
+import org.openimaj.image.typography.FontStyle.HorizontalAlignment;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.transforms.TransformUtilities;
+
+
+
+
+import Jama.Matrix;
 
 import com.caffeineowl.graphics.bezier.BezierUtils;
 import com.caffeineowl.graphics.bezier.CubicSegmentConsumer;
@@ -75,8 +85,11 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	public void renderText( final ImageRenderer<T, ?> renderer, final String text,
 			final int x, final int y, final GeneralFontStyle<T> style )
 	{
-		final List<Polygon> p = this.getPolygons( text, x, y, style );
-
+		
+		List<Polygon> p = this.getPolygons( text, x, y, style );
+		
+		p = allignPolygons(p, style);
+		
 		if( style.isOutline() )
 		{
 			for( final Polygon polyOuter : p )
@@ -96,6 +109,39 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 		}
 	}
 
+	private List<Polygon> allignPolygons(List<Polygon> p, FontStyle<GeneralFont, T> sty) {
+		int minx=Integer.MAX_VALUE, miny = Integer.MAX_VALUE, maxx = -minx,maxy = -miny;
+		
+		for (Polygon polygon : p) {
+			for (Point2d point2d : polygon) {
+				minx = (int) Math.min(point2d.getX(),minx);
+				miny = (int) Math.min(point2d.getY(), miny);
+				maxx = (int) Math.max(point2d.getX(),maxx);
+				maxy = (int) Math.max(point2d.getY(), maxy);
+			}
+		}
+		Rectangle bb = new Rectangle(minx,miny,maxx - minx, maxy - miny);
+		// if we have a non-standard horizontal alignment
+		if ((sty.getHorizontalAlignment() != HorizontalAlignment.HORIZONTAL_LEFT)) {
+			// find the length of the string in pixels ...
+			float len = bb.width;
+			Matrix trans  = null;
+			// if we are center aligned
+			if (sty.getHorizontalAlignment() == HorizontalAlignment.HORIZONTAL_CENTER) {
+				trans = TransformUtilities.translateMatrix(-len/2, 0);
+			} else {
+				trans = TransformUtilities.translateMatrix(-len, 0);
+			}
+			
+			List<Polygon> ret = new ArrayList<Polygon>();
+			for (Polygon polygon : p) {
+				ret.add(polygon.transform(trans));
+			}
+			return ret;
+		}
+		return p;
+	}
+
 	/**
 	 * 	Returns a list of polygons that represent the letters in the given
 	 * 	text. If the font style is outline, the holes will be delivered as
@@ -111,26 +157,9 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	public List<Polygon> getPolygons( final String text, final int x, final int y, final GeneralFontStyle<T> style )
 	{
 		final List<Polygon> p = new ArrayList<Polygon>();
-		int spaceOffset = 0;
-		int xx = x;
-		for( final char c : text.toCharArray() )
-		{
-			if( c == ' ' )
-				spaceOffset += style.getFontSize()/2;
-			else
-			{
-				if( c == '\t' )
-					spaceOffset += style.getFontSize()*4;
-				else
-				{
-					final Polygon pp = this.getPolygon( c, xx + spaceOffset, y, style );
-					p.add( pp );
-					xx = (int)pp.maxX();
-					spaceOffset = 0;
-				}
-			}
-		}
-
+		
+		final Polygon pp = this.getPolygon( text.toCharArray(), x, y, style );
+		p.add(pp);
 		return p;
 	}
 
@@ -146,7 +175,7 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	 *	@param style The font's style
 	 *	@return A polygon
 	 */
-	public Polygon getPolygon( final char character,
+	public Polygon getPolygon( final char[] chars,
 			final int x, final int y, final GeneralFontStyle<T> style )
 	{
 		final Font f = new Font(
@@ -156,13 +185,14 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 
 		final FontRenderContext frc = new FontRenderContext(
 				new AffineTransform(), true, true );
-		final GlyphVector g = f.createGlyphVector( frc, new char[]{character} );
+		final GlyphVector g = f.createGlyphVector( frc, chars);
 
 		final Polygon letterPoly = new Polygon();
 		Polygon currentPoly = null;
 		for( int i = 0; i < g.getNumGlyphs(); i++ )
 		{
 			final GeneralPath s = (GeneralPath)g.getGlyphOutline( i, x, y );
+			BufferedImage img = null;
 			final PathIterator pi = s.getPathIterator( new AffineTransform() );
 
 			final float[] ps = new float[6];

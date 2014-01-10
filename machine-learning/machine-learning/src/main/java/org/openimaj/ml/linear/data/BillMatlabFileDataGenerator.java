@@ -208,7 +208,7 @@ public class BillMatlabFileDataGenerator implements DataGenerator<Matrix> {
 		final MLSparse arr = (MLSparse) this.content.get("user_vsr_for_polls");
 		final Double[] realVals = arr.exportReal();
 		final int[] rows = arr.getIR();
-		final int[] cols = arr.getJC();
+		final int[] cols = arr.getIC();
 		this.nwords = this.voc.size();
 		this.nusers = arr.getM() / this.ndays;
 		dayWords = new ArrayList<Matrix>();

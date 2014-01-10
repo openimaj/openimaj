@@ -30,6 +30,10 @@
 package org.openimaj.demos.sandbox.ml.cluster.spectral;
 
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +53,7 @@ import org.la4j.matrix.sparse.CRSMatrix;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.logger.LoggerUtils;
@@ -137,6 +142,25 @@ public class GaussianSpectralClusterVis {
 			
 		}
 	};
+	
+	private KeyListener saveListener = new KeyListener() {
+		
+		@Override
+		public void keyTyped(KeyEvent e) {
+			System.out.println("EVENT");
+			if(e.getKeyChar() == 's'){
+				System.out.println("Saving all comps");
+			}
+		}
+		
+		@Override
+		public void keyReleased(KeyEvent e) { }
+		
+		@Override
+		public void keyPressed(KeyEvent e) { 
+			System.out.println("PRESS EVENT");
+		}
+	};
 	private JSlider meanSlider;
 	private JSlider varSlider;
 	private SparseMatrix distanceMat;
@@ -208,6 +232,7 @@ public class GaussianSpectralClusterVis {
 		JFrame controlFrame = new JFrame();
 		controlFrame.setSize(250, 120);
 		JPanel controlPanel = new JPanel();
+		
 		meanSlider = new JSlider(0, 100, 50);
 		meanSlider.addChangeListener(sliderListener );
 		varSlider = new JSlider(0, 100, 50);
@@ -248,12 +273,33 @@ public class GaussianSpectralClusterVis {
 			for (; i < eigenvis.size(); i++) {
 				eigenvis.get(i).setData(new double[vsize]);
 			}
-			
-			
+			saveAll();
 		}
 		
 		
 	}
+
+
+	private void saveAll() {
+		File outdir = new File("/Users/ss/Experiments/sed2013/spectralvis");
+		outdir.mkdirs();
+		if(!outdir.exists()) return;
+		
+		System.out.println("Saving all vis!");
+		try {
+			ImageUtilities.write(vis.getVisualisationImage(),new File(outdir,"histimg.png"));
+			ImageUtilities.write(evalvis.getVisualisationImage(),new File(outdir,"eigenvalues.png"));
+			ImageUtilities.write(bvb.getVisualisationImage(),new File(outdir,"clustered.png"));
+			int i = 0;
+			for (BarVisualisationBasic ebv: this.eigenvis) {
+				ImageUtilities.write(ebv.getVisualisationImage(),new File(outdir,String.format("eigenvector_%d.png",i++)));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 
 
 	protected void handleClusters(SpectralIndexedClusters clust) {

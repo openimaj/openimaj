@@ -58,11 +58,11 @@ public class Fonts
 	public Fonts()
 	{
 		final MBFImage img = new MBFImage( 800, 600, 3 );
-		img.drawText( "OpenIMAJ", 20, 100,
+		img.drawText( "OOpenIMAJ", 20, 100,
 				new GeneralFont("Arial", Font.PLAIN ), 120, RGBColour.WHITE );
 		img.drawText( "is Awesome!", 20, 220,
 				new GeneralFont("Courier", Font.PLAIN ), 120, RGBColour.WHITE );
-		img.drawText( "Hope you agree", 20, 400,
+		img.drawText( "HHope you agree", 20, 400,
 				new GeneralFont("Comic Sans MS", Font.PLAIN ), 50, RGBColour.WHITE );
 
 		DisplayUtilities.display( img );

@@ -29,6 +29,8 @@
  */
 package org.openimaj.math.geometry.line;
 
+import java.util.Arrays;
+
 import org.openimaj.math.geometry.GeometricObject;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -483,8 +485,8 @@ public class Line2d implements GeometricObject, Cloneable {
 	{
 		float bx = (begin.getX() <= end.getX() ? begin.getX() : end.getX() );
 		float ex = (begin.getX() >  end.getX() ? begin.getX() : end.getX() );
-		return isOnLine(p, tolerance) && p.getX() > bx &&
-	   		p.getX() < ex;
+		return isOnLine(p, tolerance) && p.getX() + tolerance > bx &&
+	   		p.getX() + tolerance < ex;
 	}
 
 	@Override
@@ -585,5 +587,18 @@ public class Line2d implements GeometricObject, Cloneable {
 	@Override
 	public Line2d clone() {
 		return new Line2d(begin.copy(), end.copy());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(new Object[]{this.begin,this.end});
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(!(other instanceof Line2d)) return false;
+		Line2d o = (Line2d) other;
+		if(!(o.begin.equals(begin) && o.end.equals(end))) return false;
+		return true;
 	}
 }

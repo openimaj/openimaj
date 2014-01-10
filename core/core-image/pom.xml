@@ -17,6 +17,11 @@
 		Includes loading, saving and displaying images.
   </description>
   <dependencies>
+    <dependency>
+      <groupId>org.scilab.forge</groupId>
+      <artifactId>jlatexmath</artifactId>
+      <version>0.9.6</version>
+    </dependency>
 		<dependency>
 			<groupId>net.billylieurance.azuresearch</groupId>
 			<artifactId>azure-bing-search-java</artifactId>
