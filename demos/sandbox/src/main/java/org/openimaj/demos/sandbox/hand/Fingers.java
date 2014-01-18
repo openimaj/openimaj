@@ -15,92 +15,11 @@ import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Polygon;
-import org.openimaj.math.geometry.shape.Triangle;
+import org.openimaj.math.geometry.shape.algorithm.ConvexityDefect;
 import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.capture.VideoCaptureException;
 
 public class Fingers {
-	static class ConvexityDefect {
-		Point2d start;
-		Point2d end;
-		Point2d deepestPoint;
-		float depth;
-
-		public Triangle getTriangle() {
-			return new Triangle(start, deepestPoint, end);
-		}
-
-		static List<ConvexityDefect> findDefects(Polygon p, Polygon hull) {
-			// test orientation of hull w.r.t poly
-			final int index1 = p.points.indexOf(hull.points.get(0));
-			final int index2 = p.points.indexOf(hull.points.get(1));
-			final int index3 = p.points.indexOf(hull.points.get(2));
-
-			int sign = 0;
-			sign += (index2 > index1) ? 1 : 0;
-			sign += (index3 > index2) ? 1 : 0;
-			sign += (index1 > index3) ? 1 : 0;
-
-			final boolean reverseOri = (sign == 2) ? false : true;
-
-			final List<ConvexityDefect> defects = new ArrayList<ConvexityDefect>();
-
-			for (int i = 0; i < hull.points.size(); i++) {
-				final ConvexityDefect defect = new ConvexityDefect();
-				defect.start = hull.get(i);
-
-				if (i == hull.points.size() - 1) {
-					defect.end = hull.get(0);
-				} else {
-					defect.end = hull.get(i + 1);
-				}
-
-				final double dx0 = defect.end.getX() - defect.start.getX();
-				final double dy0 = defect.end.getY() - defect.start.getY();
-				final double scale = 1f / Math.sqrt(dx0 * dx0 + dy0 * dy0);
-
-				float depth = 0;
-				boolean isDefect = false;
-				int curi = p.points.indexOf(defect.start);
-				while (true) {
-					if (reverseOri) {
-						curi--;
-						if (curi < 0)
-							curi = p.points.size() - 1;
-					} else {
-						curi++;
-						if (curi >= p.points.size())
-							curi = 0;
-					}
-
-					final Point2d cur = p.points.get(curi);
-					if (cur == defect.end)
-						break;
-
-					final double dx = (double) cur.getX() - (double) defect.start.getX();
-					final double dy = (double) cur.getY() - (double) defect.start.getY();
-
-					/* compute depth */
-					final double dist = Math.abs(-dy0 * dx + dx0 * dy) * scale;
-
-					if (dist > depth)
-					{
-						depth = (float) dist;
-						defect.deepestPoint = cur;
-						defect.depth = depth;
-						isDefect = true;
-					}
-				}
-
-				if (isDefect) {
-					defects.add(defect);
-				}
-			}
-
-			return defects;
-		}
-	}
-
 	public static void main(String[] args) throws VideoCaptureException {
 		final VideoCapture vc = new VideoCapture(320, 240);
 

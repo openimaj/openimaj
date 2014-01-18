@@ -105,7 +105,7 @@ public class Turntable {
 	 * @throws IOException
 	 */
 	public void rotateToDegrees(double degrees) throws IOException {
-		double current = getCurrentAngleDegrees();
+		final double current = getCurrentAngleDegrees();
 		double delta = degrees - current;
 		
 		if (delta > 180)
@@ -147,7 +147,7 @@ public class Turntable {
 	}
 	
 	protected void sendCommand(int ticks, boolean cw) throws IOException {
-		String dir = cw ? "C" : "A";
+		final String dir = cw ? "C" : "A";
 		
 		if (cw) 
 			currentAngleTicks += ticks;
@@ -160,9 +160,9 @@ public class Turntable {
 			currentAngleTicks = TICKS_PER_REVOLUTION + currentAngleTicks;
 		
 		try {	
-			String cmd = ticks + dir + "0\n";
+			final String cmd = ticks + dir + "0\n";
 			turntableDevice.getOutputStream().write(cmd.getBytes("US-ASCII"));
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -185,22 +185,23 @@ public class Turntable {
 		System.out.println("the command \"r 10\" will rotate the turntable to 10 degrees CW relative to the starting point");
 		System.out.println("the command \"i -10\" will rotate the turntable to 10 degrees AW relative to the current point");
 		
-		Turntable t = new Turntable("/dev/tty.usbserial-FTCXE2RA");
+		//Turntable t = new Turntable("/dev/tty.usbserial-FTCXE2RA");
+		final Turntable t = new Turntable("/dev/tty.usbserial");
 
 		System.out.println("Turntable is ready");
 		System.out.println("Current absolute angle is " + t.getCurrentAngleDegrees() + " degrees");
 		
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		String s;
 		while ((s = br.readLine()) != null) {
 			try {
-				String[] parts = s.split("\\s");
+				final String[] parts = s.split("\\s");
 				
 				if (parts[0].equals("q"))
 					break;
 				
-				double ang = Double.parseDouble(parts[1]);
+				final double ang = Double.parseDouble(parts[1]);
 				if (parts[0].equals("i"))
 					t.rotateByDegrees(ang);
 				else if (parts[0].equals("r"))
@@ -209,7 +210,7 @@ public class Turntable {
 					throw new Exception();
 				
 				System.out.println("Rotating to absolute angle of " + t.getCurrentAngleDegrees() + " degrees");
-			} catch (Throwable throwable) {
+			} catch (final Throwable throwable) {
 				System.out.println("invalid command");
 			}
 		}

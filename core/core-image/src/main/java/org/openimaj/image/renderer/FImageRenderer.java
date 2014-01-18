@@ -38,15 +38,15 @@ import org.openimaj.math.geometry.shape.Polygon;
 /**
  * {@link ImageRenderer} for {@link FImage} images. Supports both anti-aliased
  * and fast rendering.
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * Construct with given target image.
-	 *
+	 * 
 	 * @param targetImage
 	 *            the target image.
 	 */
@@ -56,7 +56,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * Construct with given target image and rendering hints.
-	 *
+	 * 
 	 * @param targetImage
 	 *            the target image.
 	 * @param hints
@@ -78,12 +78,14 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, double,
 	 *      int, int, java.lang.Object)
 	 */
 	@Override
-	public void drawLine(final int x1, final int y1, final double theta, final int length, final int thickness, final Float grey) {
+	public void drawLine(final int x1, final int y1, final double theta, final int length, final int thickness,
+			final Float grey)
+	{
 		final int x2 = x1 + (int) Math.round(Math.cos(theta) * length);
 		final int y2 = y1 + (int) Math.round(Math.sin(theta) * length);
 
@@ -92,7 +94,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, int,
 	 *      int, int, java.lang.Object)
 	 */
@@ -105,7 +107,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to the
 	 * coordinates specified by <code>(x1,y1)</code> using the given color and
 	 * thickness. Side-affects this image.
-	 *
+	 * 
 	 * @param x0
 	 *            The x-coordinate at the start of the line.
 	 * @param y0
@@ -119,7 +121,9 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * @param grey
 	 *            The colour in which to draw the line.
 	 */
-	public void drawLine(final float x0, final float y0, final float x1, final float y1, final int thickness, final Float grey) {
+	public void drawLine(final float x0, final float y0, final float x1, final float y1, final int thickness,
+			final Float grey)
+	{
 		switch (this.hints.drawingAlgorithm) {
 		case ANTI_ALIASED:
 			if (thickness <= 1) {
@@ -237,8 +241,9 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 	 */
 	protected void drawLineBresenham(int x0, int y0, int x1, int y1, int thickness, final Float grey) {
-		final Line2d line = new Line2d(new Point2dImpl(x0, y0), new Point2dImpl(x1, y1)).lineWithinSquare(this.targetImage
-				.getBounds());
+		final Line2d line = new Line2d(new Point2dImpl(x0, y0), new Point2dImpl(x1, y1))
+				.lineWithinSquare(this.targetImage
+						.getBounds());
 		if (line == null)
 			return;
 
@@ -319,7 +324,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawPoint(org.openimaj.math.geometry.point.Point2d,
 	 *      java.lang.Object, int)
 	 */
@@ -328,14 +333,14 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 		if (!this.targetImage.getBounds().isInside(p))
 			return;
-		final int halfsize = (size+1)/2; // 3 == 2, 4 = 2, 5 = 3, 6 = 3 etc.
+		final int halfsize = (size + 1) / 2; // 3 == 2, 4 = 2, 5 = 3, 6 = 3 etc.
 		// TODO anti-aliased point rendering
 		final int x = Math.round(p.getX());
 		final int y = Math.round(p.getY());
-		final int startx = Math.max(0, x-(halfsize-1));
-		final int starty = Math.max(0, y-(halfsize-1));
-		final int endx = Math.min(this.targetImage.width,x+halfsize);
-		final int endy = Math.min(this.targetImage.height,y+halfsize);
+		final int startx = Math.max(0, x - (halfsize - 1));
+		final int starty = Math.max(0, y - (halfsize - 1));
+		final int endx = Math.min(this.targetImage.width, x + halfsize);
+		final int endy = Math.min(this.targetImage.height, y + halfsize);
 
 		for (int j = starty; j < endy; j++) {
 			for (int i = startx; i < endx; i++) {
@@ -346,7 +351,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawPolygon(org.openimaj.math.geometry.shape.Polygon,
 	 *      int, java.lang.Object)
 	 */
@@ -365,15 +370,18 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 		p1 = p.getVertices().get(p.nVertices() - 1);
 		p2 = p.getVertices().get(0);
 		this.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), thickness, grey);
+
+		for (final Polygon i : p.getInnerPolys())
+			drawPolygon(i, thickness, grey);
 	}
 
 	@Override
 	protected void drawHorizLine(final int x1, final int x2, final int y, final Float col) {
-		if (y < 0 || y > this.targetImage.getHeight()-1)
+		if (y < 0 || y > this.targetImage.getHeight() - 1)
 			return;
 
 		final int startx = Math.max(0, Math.min(x1, x2));
-		final int stopx = Math.min(Math.max(x1, x2), this.targetImage.getWidth()-1);
+		final int stopx = Math.min(Math.max(x1, x2), this.targetImage.getWidth() - 1);
 		final float[][] img = this.targetImage.pixels;
 		final float c = col;
 
@@ -383,7 +391,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	}
 
 	@Override
-	protected Float sanitise( final Float colour )
+	protected Float sanitise(final Float colour)
 	{
 		return colour;
 	}

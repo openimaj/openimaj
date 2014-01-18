@@ -1,6 +1,5 @@
 package org.openimaj.vis.ternary;
 
-import java.awt.Font;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,26 +8,24 @@ import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.typography.FontStyle;
 import org.openimaj.image.typography.general.GeneralFont;
-import org.openimaj.image.typography.general.latex.LatexFont;
-import org.openimaj.image.typography.general.latex.LatexFontStyle;
 
 /**
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class TernaryParams extends HashMap<String,Object>{
+public class TernaryParams extends HashMap<String, Object> {
 	/**
 	 * 
 	 */
 	public TernaryParams() {
 		this.put(COLOUR_MAP, ColourMap.Greys3);
 		this.put(BG_COLOUR, RGBColour.BLACK);
-		this.put(PADDING,0);
+		this.put(PADDING, 0);
 		Map<Attribute, Object> fontAttrs = new HashMap<Attribute, Object>();
-		fontAttrs.put(FontStyle.FONT, new LatexFont());
+		fontAttrs.put(FontStyle.FONT, new GeneralFont("Arial", 16));
 		fontAttrs.put(FontStyle.FONT_SIZE, 16);
 		fontAttrs.put(FontStyle.HORIZONTAL_ALIGNMENT, FontStyle.HorizontalAlignment.HORIZONTAL_CENTER);
-		
+
 		this.put(LABEL_FONT, fontAttrs);
 		this.put(TRIANGLE_BORDER, false);
 		this.put(TRIANGLE_BORDER_THICKNESS, 3);
@@ -36,14 +33,13 @@ public class TernaryParams extends HashMap<String,Object>{
 		this.put(TRIANGLE_BORDER_TICKS, false);
 		this.put(TRIANGLE_BORDER_COLOUR, RGBColour.BLACK);
 		this.put(DRAW_SCALE, false);
-		
+
 		fontAttrs = new HashMap<Attribute, Object>();
-		fontAttrs.put(FontStyle.FONT, new LatexFont());
+		fontAttrs.put(FontStyle.FONT, new GeneralFont("Arial", 16));
 		fontAttrs.put(FontStyle.FONT_SIZE, 16);
 		fontAttrs.put(FontStyle.COLOUR, RGBColour.BLACK);
 		fontAttrs.put(FontStyle.HORIZONTAL_ALIGNMENT, FontStyle.HorizontalAlignment.HORIZONTAL_RIGHT);
 		fontAttrs.put(FontStyle.VERTICAL_ALIGNMENT, FontStyle.VerticalAlignment.VERTICAL_TOP);
-		fontAttrs.put(LatexFontStyle.TEXT_MODE,true);
 		this.put(SCALE_FONT, fontAttrs);
 		this.put(SCALE_MIN, "min");
 		this.put(SCALE_MAX, "max");
@@ -111,5 +107,5 @@ public class TernaryParams extends HashMap<String,Object>{
 	public <T> T getTyped(String param) {
 		return (T) this.get(param);
 	}
-	
+
 }
