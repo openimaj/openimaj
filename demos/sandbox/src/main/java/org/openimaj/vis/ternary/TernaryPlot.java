@@ -160,10 +160,10 @@ public class TernaryPlot {
 		MBFImage ret = new MBFImage((int)width + padding*2,(int)height + padding*2,ColourSpace.RGB);
 		ret.fill(bgColour);
 		drawTernaryPlot(ret,params);
-		drawLabels(ret,params);
 		drawTriangle(ret,params);
 		drawBorder(ret,params);
 		drawScale(ret,params);
+		drawLabels(ret,params);
 		
 		return ret;
 	}
@@ -248,9 +248,11 @@ public class TernaryPlot {
 		FontStyle<?, Float[]> fs = FontStyle.parseAttributes(typed,ret.createRenderer());
 		if(labels != null){			
 			for (IndependentPair<TernaryData, String> labelPoint: labels) {
-				Point2d point = labelPoint.firstObject().asPoint();
+				TernaryData ternaryData = labelPoint.firstObject();
+				Point2d point = ternaryData.asPoint();
 				point.setX(point.getX() * width + padding );
 				point.setY(height - (point.getY() * width ) + padding);
+				Point2d p = point.copy();
 				if(point.getY() < height/2){
 					point.setY(point.getY() - 10);
 				}
@@ -258,6 +260,8 @@ public class TernaryPlot {
 					point.setY(point.getY() + 35);
 				}
 				ret.drawText(labelPoint.getSecondObject(), point, fs);
+				ret.drawPoint(p , RGBColour.RED, (int) ternaryData.value);
+				
 			}
 		}
 	}
@@ -373,9 +377,9 @@ public class TernaryPlot {
 				
 				double pointValue = linePointInterp(new Line2d(p1,p2), new Point2dImpl(xn,yn),p1Value,p2Value);
 				
-				if((l1.begin.getX() == l1.end.getX() || l2.begin.getX() == l2.end.getX() ) && pointValue <0.5){
-					System.out.println("A vertical line created a 0 value");
-				}
+//				if((l1.begin.getX() == l1.end.getX() || l2.begin.getX() == l2.end.getX() ) && pointValue <0.5){
+//					System.out.println("A vertical line created a 0 value");
+//				}
 				
 				trenData.value = (float) pointValue;
 				
