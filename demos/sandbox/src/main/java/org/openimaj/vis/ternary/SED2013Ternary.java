@@ -23,6 +23,8 @@ import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.typography.FontStyle;
 import org.openimaj.image.typography.general.GeneralFont;
+import org.openimaj.image.typography.mathml.MathMLFont;
+import org.openimaj.image.typography.mathml.MathMLFontStyle;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.vis.ternary.TernaryPlot.TernaryData;
 
@@ -56,7 +58,7 @@ public class SED2013Ternary {
 		for (int i = 0; i < correctRange.length; i++) {
 			String fileroot = fileroots[i];
 			
-			ternaryPlotJSONF(new File(fileroot + ".json"), new File(fileroot + ".png"), correctRange[i]);
+			ternaryPlotJSONF(new File(fileroot + ".json"), new File(fileroot.replace(".", "_") + ".png"), correctRange[i]);
 		}
 		
 		
@@ -85,10 +87,15 @@ public class SED2013Ternary {
 		params.put(TernaryParams.TRIANGLE_BORDER_TICKS, true);
 		Map<Attribute, Object> fontAttrs = params.getTyped(TernaryParams.LABEL_FONT);
 		fontAttrs.put(FontStyle.COLOUR, RGBColour.BLACK);
+		fontAttrs.put(FontStyle.FONT_SIZE, 20);
+		fontAttrs.put(FontStyle.FONT, new MathMLFont());
+		fontAttrs.put(MathMLFontStyle.TEXT_MODE, true);
+		
+		fontAttrs = params.getTyped(TernaryParams.SCALE_FONT);
+		fontAttrs.put(FontStyle.COLOUR, RGBColour.BLACK);
 		fontAttrs.put(FontStyle.FONT_SIZE, 16);
-//		fontAttrs.put(FontStyle.FONT, new LatexFont());
-		fontAttrs.put(FontStyle.FONT, new GeneralFont("Arial", 16));
-//		fontAttrs.put(LatexFontStyle.TEXT_MODE, true);
+		fontAttrs.put(FontStyle.FONT, new MathMLFont());
+		
 		params.put(TernaryParams.BG_COLOUR, RGBColour.WHITE);
 		
 		params.put(TernaryParams.DRAW_SCALE, true);
@@ -141,10 +148,10 @@ public class SED2013Ternary {
 			}
 			data.add(new TernaryData((float)a,(float)b,(float)c,value));
 		}
-		labels.add(IndependentPair.pair(new TernaryData(maxa,maxb,maxc,5),String.format("max(%2.2f)",f1max)));
+		labels.add(IndependentPair.pair(new TernaryData(maxa,maxb,maxc,5),String.format("max_{F_1}(%2.2f)",f1max)));
 		params.put(TernaryParams.LABELS,labels);
-		params.put(TernaryParams.SCALE_MIN,String.format("f1(%2.2f)",f1min));
-		params.put(TernaryParams.SCALE_MAX,String.format("f1(%2.2f)",f1max));
+		params.put(TernaryParams.SCALE_MIN,String.format("\\leq div_{F_1}(%2.2f)",f1min));
+		params.put(TernaryParams.SCALE_MAX,String.format("div_{F_1}(%2.2f)",f1max));
 		return data;
 	}
 

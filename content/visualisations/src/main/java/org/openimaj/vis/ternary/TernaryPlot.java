@@ -1,27 +1,23 @@
 package org.openimaj.vis.ternary;
 
-import java.awt.Font;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.demos.core.Fonts;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.typography.FontStyle;
 import org.openimaj.image.typography.FontStyle.VerticalAlignment;
-import org.openimaj.image.typography.general.GeneralFont;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -32,16 +28,31 @@ import org.openimaj.math.geometry.triangulation.DelaunayTriangulator;
 import org.openimaj.math.util.Interpolation;
 import org.openimaj.util.pair.IndependentPair;
 
-import scala.actors.threadpool.Arrays;
 
 
 /**
- *
+ * A ternary plot draws a triangle simplex. The values of the triangle are interpolated from
+ * a few {@link TernaryData} points provided. 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class TernaryPlot {
 	private static final float ONE_OVER_ROOT3 = (float) (1f/Math.sqrt(3));
+	/**
+	 * Holds an a value for the 3 ternary dimensions and a value
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 */
 	public static class TernaryData extends DoubleFV {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4560404458888209082L;
+
+		/**
+		 * @param a
+		 * @param b
+		 * @param c
+		 * @param value
+		 */
 		public TernaryData(float a, float b, float c, float value) {
 			this.values = new double[]{a,b,c};
 			this.value = value;
@@ -49,7 +60,7 @@ public class TernaryPlot {
 		}
 		
 		/**
-		 * @return
+		 * @return the ternary point projected into 2D
 		 */
 		public Point2d asPoint(){
 			double a = this.values[0]; double b = this.values[1]; double c = this.values[2];
@@ -59,6 +70,9 @@ public class TernaryPlot {
 			return new Point2dImpl((float)x,(float)y);
 		}
 		
+		/**
+		 * the value at a,b,c
+		 */
 		public float value;
 		
 		@Override
@@ -71,7 +85,11 @@ public class TernaryPlot {
 		}
 	}
 	
-	public static class TrenaryDataTriangles {
+	/**
+	 * A hash of triangles created from a list of 
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 */
+	private static class TrenaryDataTriangles {
 		private HashMap<Triangle, List<TernaryData>> triToData;
 		private HashMap<Point2d, TernaryData> pointToTre;
 
@@ -115,7 +133,6 @@ public class TernaryPlot {
 	private TrenaryDataTriangles dataTriangles;
 	/**
 	 * @param width
-	 * @param height
 	 * @param data
 	 */
 	public TernaryPlot(float width, List<TernaryData> data) {
@@ -408,6 +425,9 @@ public class TernaryPlot {
 		return p1Value;
 	}
 
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		List<TernaryData> data = new ArrayList<TernaryData>();
 		data.add(new TernaryData(1/3f+0.1f,1/3f-0.1f,1/3f,0.8f));
@@ -416,7 +436,6 @@ public class TernaryPlot {
 		data.add(new TernaryData(0,1f,0,0));
 		data.add(new TernaryData(0,0,1f,0));
 		TernaryPlot plot = new TernaryPlot(500, data);
-		TernaryParams params = new TernaryParams();
 		DisplayUtilities.display(plot.draw());
 		DisplayUtilities.display(plot.drawTriangles());
 	}

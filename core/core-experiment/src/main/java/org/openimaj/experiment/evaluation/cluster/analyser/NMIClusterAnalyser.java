@@ -113,5 +113,17 @@ public class NMIClusterAnalyser implements ClusterAnalyser<NMIAnalysis>{
 		}
 		return mi;
 	}
+	
+	public static void main(String[] args) {
+		LoggerUtils.prepareConsoleLogger();
+		NMIClusterAnalyser an = new NMIClusterAnalyser();
+		NMIAnalysis res = an.analyse(
+				new int[][]{new int[]{1,2,3},new int[]{4,5,6}},
+//				new int[][]{new int[]{1,2},new int[]{3},new int[]{4,5},new int[]{6}}
+//				new int[][]{new int[]{1},new int[]{2},new int[]{3},new int[]{4},new int[]{5},new int[]{6}}
+				new int[][]{new int[]{7,8,9}}
+		);
+		System.out.println(res);
+	}
 
 }

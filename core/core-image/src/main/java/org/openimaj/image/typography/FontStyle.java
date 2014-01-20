@@ -184,6 +184,15 @@ public class FontStyle<F extends Font<F>, T> {
 		this.colour = renderer.defaultForegroundColour();
 		this.font = font;
 	}
+	
+	/**
+	 * @param font
+	 * @param col
+	 */
+	public FontStyle(final F font, final T col) {
+		this.colour= col;
+		this.font = font;
+	}
 
 	/**
 	 * Parse the attributes map and set this FontStyle accordingly.
