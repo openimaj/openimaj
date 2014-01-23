@@ -941,7 +941,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param f
 	 *            the font style
 	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, FontStyle<F, Q> f) {
+	public <F extends Font<F>> void drawText(String text, int x, int y, FontStyle<Q> f) {
 		createRenderer().drawText(text, x, y, f);
 	}
 
@@ -1014,7 +1014,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param f
 	 *            the font style
 	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, FontStyle<F, Q> f) {
+	public <F extends Font<F>> void drawText(String text, Point2d pt, FontStyle<Q> f) {
 		createRenderer().drawText(text, pt, f);
 	}
 

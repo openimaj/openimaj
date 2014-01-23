@@ -137,7 +137,7 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 					final HersheyFontStyle<Float[]> fs = f.createStyle( r );
 					fs.setFontSize( 12 );
 					final String string = sb.getTimecode().toString();
-					final Rectangle bounds = f.getRenderer( r ).getBounds( string, fs );
+					final Rectangle bounds = f.getRenderer( r ).getSize( string, fs );
 					bounds.translate( x, img.getHeight()+bounds.height );
 
 					// Move the bounds until the text isn't overlapping other text

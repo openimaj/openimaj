@@ -45,12 +45,12 @@ public class MathMLFont implements Font<MathMLFont>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, Q extends FontStyle<MathMLFont, T>> FontRenderer<T, Q> getRenderer(ImageRenderer<T, ?> renderer) {
+	public <T, Q extends FontStyle<T>> FontRenderer<T, Q> getRenderer(ImageRenderer<T, ?> renderer) {
 		return (FontRenderer<T, Q>) new MathMLFontRenderer<T>();
 	}
 
 	@Override
-	public <T> FontStyle<MathMLFont, T> createStyle(ImageRenderer<T, ?> renderer) {
+	public <T> FontStyle<T> createStyle(ImageRenderer<T, ?> renderer) {
 		return new MathMLFontStyle<T>(this, renderer.defaultForegroundColour());
 	}
 

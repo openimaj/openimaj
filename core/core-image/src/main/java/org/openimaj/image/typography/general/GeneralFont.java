@@ -79,7 +79,7 @@ public class GeneralFont implements Font<GeneralFont>
 	 */
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public <T, Q extends FontStyle<GeneralFont, T>> FontRenderer<T, Q>
+	public <T, Q extends FontStyle<T>> FontRenderer<T, Q>
 	getRenderer( final ImageRenderer<T, ?> renderer )
 	{
 		return (FontRenderer<T, Q>)(Object)new GeneralFontRenderer<T>();
@@ -90,7 +90,7 @@ public class GeneralFont implements Font<GeneralFont>
 	 * 	@see org.openimaj.image.typography.Font#createStyle(org.openimaj.image.renderer.ImageRenderer)
 	 */
 	@Override
-	public <T> FontStyle<GeneralFont, T>
+	public <T> FontStyle< T>
 	createStyle( final ImageRenderer<T, ?> renderer )
 	{
 		return new GeneralFontStyle<T>( this, renderer );

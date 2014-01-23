@@ -316,7 +316,7 @@ public class BarVisualisation extends XYPlotVisualisation<Bar>
 			style.setFontSize(this.textSize);
 			final Rectangle r = f.createStyle(this.visImage.createRenderer())
 					.getRenderer(this.visImage.createRenderer())
-					.getBounds(text, style);
+					.getSize(text, style);
 
 			// Work out where to put the text
 			// tx is the centre of the bar minus half the text bounds

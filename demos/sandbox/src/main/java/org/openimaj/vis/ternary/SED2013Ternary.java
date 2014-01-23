@@ -61,7 +61,45 @@ public class SED2013Ternary {
 			ternaryPlotJSONF(new File(fileroot + ".json"), new File(fileroot.replace(".", "_") + ".png"), correctRange[i]);
 		}
 		
+		ternaryPlotSearchGrid(new File("/Users/ss/Experiments/sed2013/searchgrid.png"));
 		
+		
+	}
+
+	private static void ternaryPlotSearchGrid(File file) throws IOException {
+		List<IndependentPair<TernaryData, String>> labels = new ArrayList<IndependentPair<TernaryData,String>>();
+		TernaryParams params = new TernaryParams();
+		List<TernaryData> data = new ArrayList<TernaryData>();
+		data.add(new TernaryData(0.3f, 0.3f, 0.3f, 1f));
+		TernaryPlot plot = preparePlot(params, data );
+		params .put(TernaryParams.DRAW_SCALE, false);
+		
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				for (int k = 0; k < 3; k++) {
+					float sum = i + j + k;
+					if(sum == 0) continue;
+					float ip = i/sum;
+					float jp = j/sum;
+					float kp = k/sum;
+					TernaryData point = new TernaryData(ip, jp, kp, 10);
+					String label = String.format("(%2.1f,%2.1f,%2.1f)",ip,jp,kp);
+					IndependentPair<TernaryData, String> pair = IndependentPair.pair(point, label);
+					labels.add(pair );
+				}
+			}
+		}
+		
+//		labels.add(IndependentPair.pair(new TernaryData(1f,0,0,0),"f_1"));
+//		labels.add(IndependentPair.pair(new TernaryData(0,1,0,0),"f_2"));
+//		labels.add(IndependentPair.pair(new TernaryData(0,0,1,0),"f_3"));
+		params.put(TernaryParams.LABELS,labels);
+		Map<Attribute, Object> fontAttrs = params.getTyped(TernaryParams.LABEL_FONT);
+		fontAttrs.put(MathMLFontStyle.TEXT_MODE, false);
+		fontAttrs.put(MathMLFontStyle.FONT_SIZE, 12);
+		MBFImage draw = plot.draw(params);
+		ImageUtilities.write(draw, file);
+		DisplayUtilities.display(draw);
 	}
 
 	private static void ternaryPlotJSONF(File json, File outfile, boolean correctRange)
@@ -99,6 +137,9 @@ public class SED2013Ternary {
 		params.put(TernaryParams.BG_COLOUR, RGBColour.WHITE);
 		
 		params.put(TernaryParams.DRAW_SCALE, true);
+		params.put(TernaryParams.LABEL_BACKGROUND, RGBColour.WHITE);
+		params.put(TernaryParams.LABEL_BORDER, RGBColour.BLACK);
+		params.put(TernaryParams.LABEL_PADDING, 3);
 		return plot;
 	}
 

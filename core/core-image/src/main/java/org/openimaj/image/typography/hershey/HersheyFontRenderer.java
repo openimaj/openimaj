@@ -73,7 +73,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 	}
 
 	@Override
-	public Rectangle getBounds(final String text, final HersheyFontStyle<T> style) {
+	public Rectangle getSize(final String text, final HersheyFontStyle<T> style) {
 		final Rectangle r = new Rectangle();
 		this.drawText(text, style, 0, 0, false, r, null);
 		return r;
@@ -82,7 +82,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 	protected void drawText(final String text, final HersheyFontStyle<T> sty, final int xc, final int yc,
 			final boolean Draw, final Rectangle r, final ImageRenderer<T, ?> renderer)
 	{
-		final HersheyFontData fnt = sty.getFont().data;
+		final HersheyFontData fnt = ((HersheyFont)sty.getFont()).data;
 		int character;
 		int len;
 		int rotpx = 0, rotpy = 0;

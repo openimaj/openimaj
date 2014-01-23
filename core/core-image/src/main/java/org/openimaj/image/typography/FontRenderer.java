@@ -33,6 +33,8 @@ import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 
 import org.openimaj.image.renderer.ImageRenderer;
+import org.openimaj.image.typography.FontStyle.HorizontalAlignment;
+import org.openimaj.image.typography.FontStyle.VerticalAlignment;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
@@ -44,7 +46,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @param <T> type of image pixels
  * @param <Q> type of {@link FontStyle}
  */
-public abstract class FontRenderer<T, Q extends FontStyle<?, T>> {
+public abstract class FontRenderer<T, Q extends FontStyle<T>> {
 	/**
 	 * Render the given text string to the image starting at (x, y) with the
 	 * given style.
@@ -63,7 +65,48 @@ public abstract class FontRenderer<T, Q extends FontStyle<?, T>> {
 	 * @param style the style
 	 * @return the bounding box
 	 */
-	public abstract Rectangle getBounds(String string, Q style);
+	public abstract Rectangle getSize(String string, Q style);
+	
+	/**
+	 * Calculate the bounding box of the rendered text with the given style. 
+	 * @param string the text
+	 * @param x the x to render the font
+	 * @param y the y to render the font
+	 * @param sty the style
+	 * @return the bounding box
+	 */
+	public Rectangle getBounds(String string, int x, int y, Q sty){
+		Rectangle rect = this.getSize(string, sty);
+		// if we have a non-standard horizontal alignment
+		if ((sty.getHorizontalAlignment() != HorizontalAlignment.HORIZONTAL_LEFT)) {
+			// find the length of the string in pixels ...
+			float len = (float) rect.getWidth();
+			// if we are center aligned
+			if (sty.getHorizontalAlignment() == HorizontalAlignment.HORIZONTAL_CENTER) {
+				x -= len/2;
+			} else {
+				x -= len;
+			}
+			
+		}
+		
+		if(sty.getVerticalAlignment() != VerticalAlignment.VERTICAL_TOP){
+			switch (sty.getVerticalAlignment()) {
+			case VERTICAL_BOTTOM:
+				y -= rect.getHeight();
+				break;
+			case VERTICAL_HALF:
+				y -= rect.getHeight()/2f;
+				break;
+			default:
+				break;
+			}
+		}
+		
+		rect.x = x;
+		rect.y = y;
+		return rect;
+	}
 	
 	
 	/**
@@ -85,7 +128,7 @@ public abstract class FontRenderer<T, Q extends FontStyle<?, T>> {
 			FontStyle sty = FontStyle.parseAttributes(iterator.getAttributes(), renderer);
 			FontRenderer fontRenderer = sty.getRenderer(renderer);
 			
-			Rectangle rect = fontRenderer.getBounds(c.toString(), sty);
+			Rectangle rect = fontRenderer.getSize(c.toString(), sty);
 			fontRenderer.renderText(renderer, c.toString(), x, y, sty);
 			x += rect.width;
 			y += rect.height;
@@ -116,7 +159,7 @@ public abstract class FontRenderer<T, Q extends FontStyle<?, T>> {
 			FontStyle sty = FontStyle.parseAttributes(iterator.getAttributes(), imageRenderer);
 			FontRenderer renderer = sty.getRenderer(imageRenderer);
 			
-			Rectangle rect = renderer.getBounds(c.toString(), sty);
+			Rectangle rect = renderer.getSize(c.toString(), sty);
 			x += rect.width;
 			y += rect.height;
 			

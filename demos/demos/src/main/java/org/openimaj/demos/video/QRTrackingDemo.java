@@ -172,7 +172,7 @@ VideoDisplayListener<MBFImage> {
 						final GeneralFont font = new GeneralFont( "Arial", Font.PLAIN );
 						final GeneralFontStyle<Float[]> gfs = new GeneralFontStyle<Float[]>( font, img.createRenderer(), false );
 						final GeneralFontRenderer<Float[]> gfr = new GeneralFontRenderer<Float[]>();
-						final Rectangle b = gfr.getBounds( this.lastImage, gfs );
+						final Rectangle b = gfr.getSize( this.lastImage, gfs );
 
 						final MBFImage img2 = new MBFImage( (int)b.width, (int)(b.height*1.3), 3 );
 

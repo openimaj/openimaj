@@ -47,7 +47,7 @@ public interface Font<F extends Font<F>> {
 	 * @param renderer the target image renderer.
 	 * @return the FontRenderer
 	 */
-	public <T, Q extends FontStyle<F, T>> FontRenderer<T, Q> getRenderer(ImageRenderer<T,?> renderer);
+	public <T, Q extends FontStyle<T>> FontRenderer<T, Q> getRenderer(ImageRenderer<T,?> renderer);
 	
 	/**
 	 * Create an instance of a FontStyle with the default parameters for the given
@@ -56,7 +56,7 @@ public interface Font<F extends Font<F>> {
 	 * @param renderer the image renderer
 	 * @return the FontStyle
 	 */
-	public <T> FontStyle<F, T> createStyle(ImageRenderer<T, ?> renderer);
+	public <T> FontStyle<T> createStyle(ImageRenderer<T, ?> renderer);
 	
 	/**
 	 * Get the name of this font

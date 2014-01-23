@@ -8,6 +8,7 @@ import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.typography.FontStyle;
 import org.openimaj.image.typography.general.GeneralFont;
+import org.openimaj.image.typography.mathml.MathMLFont;
 
 /**
  * 
@@ -43,6 +44,16 @@ public class TernaryParams extends HashMap<String, Object> {
 		this.put(SCALE_FONT, fontAttrs);
 		this.put(SCALE_MIN, "min");
 		this.put(SCALE_MAX, "max");
+		fontAttrs = new HashMap<Attribute, Object>();
+		fontAttrs.put(FontStyle.FONT, new MathMLFont());
+		fontAttrs.put(FontStyle.FONT_SIZE, 12);
+		fontAttrs.put(FontStyle.COLOUR, RGBColour.BLACK);
+		fontAttrs.put(FontStyle.HORIZONTAL_ALIGNMENT, FontStyle.HorizontalAlignment.HORIZONTAL_CENTER);
+		fontAttrs.put(FontStyle.VERTICAL_ALIGNMENT, FontStyle.VerticalAlignment.VERTICAL_TOP);
+		this.put(TICK_FONT, fontAttrs);
+		this.put(LABEL_BACKGROUND, null);
+		this.put(LABEL_BORDER, null);
+		this.put(LABEL_PADDING, 0);
 	}
 
 	/**
@@ -65,6 +76,20 @@ public class TernaryParams extends HashMap<String, Object> {
 	 * 
 	 */
 	public static final String LABEL_FONT = "ternary.label.font";
+	
+	/**
+	 * 
+	 */
+	public static final String LABEL_BACKGROUND = "ternary.label.background";
+	
+	/**
+	 * 
+	 */
+	public static final String LABEL_BORDER = "ternary.label.border";
+	/**
+	 * 
+	 */
+	public static final String LABEL_PADDING = "ternary.label.padding";
 	/**
 	 * 
 	 */
@@ -89,6 +114,11 @@ public class TernaryParams extends HashMap<String, Object> {
 	 * 
 	 */
 	public static final String TRIANGLE_BORDER_TICK_THICKNESS = "ternary.triangle_border.ticks.thickness";
+	
+	/**
+	 * 
+	 */
+	public static final String TICK_FONT = "ternary.triangle_border.ticks.font";
 	/**
 	 * 
 	 */
@@ -98,6 +128,8 @@ public class TernaryParams extends HashMap<String, Object> {
 	public static final String SCALE_FONT = "ternary.scale.font";
 	public static final String SCALE_MIN = "ternary.scale.min.text";
 	public static final String SCALE_MAX = "ternary.scale.max.text";
+	
+	
 
 	/**
 	 * @param param

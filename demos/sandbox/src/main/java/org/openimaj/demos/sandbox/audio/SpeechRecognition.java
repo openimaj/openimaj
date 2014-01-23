@@ -174,7 +174,7 @@ public class SpeechRecognition
 
 			// The font to plot the words
 			final GeneralFont font = new GeneralFont("Courier", Font.PLAIN );
-			final FontStyle<GeneralFont, Float[]> fontStyle = font.createStyle( awi.createRenderer() );
+			final FontStyle<Float[]> fontStyle = font.createStyle( awi.createRenderer() );
 
 			// Start recognising words from the audio file
 			final Pattern p = Pattern.compile( "([A-Za-z0-9'_]+)\\(([0-9.]+),([0-9.]+)\\)" );
@@ -200,7 +200,7 @@ public class SpeechRecognition
 
 					// Get the bounds of the word polygon
 					final Rectangle bounds = font.getRenderer(
-							awi.createRenderer() ).getBounds(
+							awi.createRenderer() ).getSize(
 									word, fontStyle );
 
 					// Determine the pixel coordinate of the start and end times

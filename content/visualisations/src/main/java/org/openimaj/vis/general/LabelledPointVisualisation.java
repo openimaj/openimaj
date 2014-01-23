@@ -161,7 +161,7 @@ public class LabelledPointVisualisation extends XYPlotVisualisation<LabelledDot>
 		fs.setFontSize( 14 );
 
 		// Calculate the bounding box of the text we're going to draw.
-		final Rectangle b = fs.getRenderer( visImage.createRenderer() ).getBounds(
+		final Rectangle b = fs.getRenderer( visImage.createRenderer() ).getSize(
 				object.object.label, fs );
 
 		// Bounding box is 0,0,width,height, so move it into position.

@@ -199,7 +199,7 @@ public enum HersheyFont implements Font<HersheyFont> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, Q extends FontStyle<HersheyFont, T>> FontRenderer<T, Q> getRenderer(final ImageRenderer<T,?> renderer) {
+	public <T, Q extends FontStyle<T>> FontRenderer<T, Q> getRenderer(final ImageRenderer<T,?> renderer) {
 		return (FontRenderer<T, Q>) ((Object) HersheyFontRenderer.INSTANCE);
 	}
 
@@ -225,7 +225,7 @@ public enum HersheyFont implements Font<HersheyFont> {
 		for (final HersheyFont f : HersheyFont.values()) {
 			final FontRenderer<Float,HersheyFontStyle<Float>> renderer = f.getRenderer(imRenderer);
 			renderer.renderText(imRenderer, f.getName(), 30, (int)(i*30), f.createStyle(imRenderer));
-			final Rectangle bounds = renderer.getBounds( f.getName(), f.createStyle(imRenderer) );
+			final Rectangle bounds = renderer.getSize( f.getName(), f.createStyle(imRenderer) );
 			System.out.println( bounds );
 			image.drawShape( bounds, 1f );
 			i++;

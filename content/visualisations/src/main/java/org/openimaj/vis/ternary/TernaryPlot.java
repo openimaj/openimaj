@@ -16,7 +16,9 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.typography.FontRenderer;
 import org.openimaj.image.typography.FontStyle;
+import org.openimaj.image.typography.FontStyle.HorizontalAlignment;
 import org.openimaj.image.typography.FontStyle.VerticalAlignment;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
@@ -190,8 +192,7 @@ public class TernaryPlot {
 		if(!drawScale) return;
 		
 		Map<? extends Attribute, Object> typed = params.getTyped(TernaryParams.SCALE_FONT);
-		@SuppressWarnings("unchecked")
-		FontStyle<?, Float[]> fs = FontStyle.parseAttributes(typed,ret.createRenderer());
+		FontStyle<Float[]> fs = FontStyle.parseAttributes(typed,ret.createRenderer());
 		
 		int padding = params.getTyped(TernaryParams.PADDING);
 		ColourMap cm = params.getTyped(TernaryParams.COLOUR_MAP);
@@ -218,10 +219,37 @@ public class TernaryPlot {
 	private void drawBorder(MBFImage ret, TernaryParams params) {
 		int padding = params.getTyped(TernaryParams.PADDING);
 		boolean drawTicks = params.getTyped(TernaryParams.TRIANGLE_BORDER_TICKS);
+		Map<Attribute, Object> fontParams = params.getTyped(TernaryParams.TICK_FONT);
+		FontStyle<Float[]> style = FontStyle.parseAttributes(fontParams, ret.createRenderer());
 		if(drawTicks){
 			Triangle drawTri = tri.transform(TransformUtilities.translateMatrix(padding, padding));
 			
+			
 			for (int i = 0; i < 3; i++) {
+				int paddingx = 0;
+				int paddingy = 0;
+				switch (i){
+				case 0:
+					// the bottom line
+					style.setHorizontalAlignment(HorizontalAlignment.HORIZONTAL_CENTER);
+					style.setVerticalAlignment(VerticalAlignment.VERTICAL_TOP);
+					paddingy = 5;
+					break;
+				case 1:
+					// the right line
+					style.setHorizontalAlignment(HorizontalAlignment.HORIZONTAL_LEFT);
+					style.setVerticalAlignment(VerticalAlignment.VERTICAL_HALF);
+					paddingx = 5;
+					paddingy = -5;
+					break;
+				case 2:
+					// the left line
+					style.setHorizontalAlignment(HorizontalAlignment.HORIZONTAL_RIGHT);
+					style.setVerticalAlignment(VerticalAlignment.VERTICAL_HALF);
+					paddingx = -5;
+					paddingy = -5;
+					break;
+				}
 				Point2d start = drawTri.vertices[i];
 				Point2d end = drawTri.vertices[(i+1) % 3];
 				int nTicks = 10;
@@ -232,6 +260,7 @@ public class TernaryPlot {
 					double desired = length - j * (length / nTicks);
 					if(desired == 0) desired = 0.001;
 					double scale = desired / length;
+					double overallScale = scale;
 					tickLine = tickLine.transform(TransformUtilities.scaleMatrixAboutPoint(scale, scale, start));
 					// make it 10 pixels long
 					scale = 5f / tickLine.calculateLength();
@@ -240,7 +269,11 @@ public class TernaryPlot {
 					tickLine = tickLine.transform(TransformUtilities.rotationMatrixAboutPoint(-Math.PI/2, tickLine.end.getX(), tickLine.end.getY()));
 					int thickness = params.getTyped(TernaryParams.TRIANGLE_BORDER_TICK_THICKNESS);
 					Float[] col = params.getTyped(TernaryParams.TRIANGLE_BORDER_COLOUR);
-					ret.drawLine(tickLine, thickness, col);	
+					ret.drawLine(tickLine, thickness, col);
+					
+					Point2d textPoint = tickLine.begin.copy();
+					textPoint.translate(paddingx, paddingy);
+//					ret.drawText(String.format("%2.2f",overallScale), textPoint, style);
 				}
 				
 			}
@@ -261,8 +294,11 @@ public class TernaryPlot {
 		int padding = params.getTyped(TernaryParams.PADDING);
 		List<IndependentPair<TernaryData,String>> labels = params.getTyped(TernaryParams.LABELS);
 		Map<? extends Attribute, Object> typed = params.getTyped(TernaryParams.LABEL_FONT);
-		@SuppressWarnings("unchecked")
-		FontStyle<?, Float[]> fs = FontStyle.parseAttributes(typed,ret.createRenderer());
+		FontStyle<Float[]> fs = FontStyle.parseAttributes(typed,ret.createRenderer());
+		Float[] labelBackground = params.getTyped(TernaryParams.LABEL_BACKGROUND);
+		Float[] labelBorder = params.getTyped(TernaryParams.LABEL_BORDER);
+		int labelPadding = params.getTyped(TernaryParams.LABEL_PADDING);
+		FontRenderer<Float[], FontStyle<Float[]>> fontRenderer = fs.getRenderer(ret.createRenderer());
 		if(labels != null){			
 			for (IndependentPair<TernaryData, String> labelPoint: labels) {
 				TernaryData ternaryData = labelPoint.firstObject();
@@ -276,9 +312,19 @@ public class TernaryPlot {
 				else{
 					point.setY(point.getY() + 35);
 				}
+				Rectangle rect = fontRenderer.getBounds(labelPoint.getSecondObject(), (int)point.getX(), (int)point.getY(), fs);
+				rect.x -= labelPadding;
+				rect.y -= labelPadding;
+				rect.width += labelPadding*2;
+				rect.height += labelPadding*2;
+				if(labelBackground!=null){
+					ret.drawShapeFilled(rect, labelBackground);
+				}
+				if(labelBorder!=null){
+					ret.drawShape(rect, labelBorder);
+				}
 				ret.drawText(labelPoint.getSecondObject(), point, fs);
 				ret.drawPoint(p , RGBColour.RED, (int) ternaryData.value);
-				
 			}
 		}
 	}

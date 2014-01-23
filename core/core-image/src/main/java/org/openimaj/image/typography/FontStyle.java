@@ -41,10 +41,9 @@ import org.openimaj.image.typography.hershey.HersheyFont;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <F> the {@link Font} type
  * @param <T> the pixel type
  */
-public class FontStyle<F extends Font<F>, T> {
+public class FontStyle<T> {
 	/**
 	 * Attributes for styling {@link AttributedString}s.
 	 * 
@@ -148,7 +147,7 @@ public class FontStyle<F extends Font<F>, T> {
 	/**
 	 * The font
 	 */
-	protected F font;
+	protected Font<?> font;
 
 	/**
 	 * should the associated text be rendered in italic?
@@ -180,7 +179,7 @@ public class FontStyle<F extends Font<F>, T> {
 	 */
 	protected int fontSize = 24;
 
-	protected FontStyle(final F font, final ImageRenderer<T, ?> renderer) {
+	protected FontStyle(final Font<?> font, final ImageRenderer<T, ?> renderer) {
 		this.colour = renderer.defaultForegroundColour();
 		this.font = font;
 	}
@@ -189,7 +188,7 @@ public class FontStyle<F extends Font<F>, T> {
 	 * @param font
 	 * @param col
 	 */
-	public FontStyle(final F font, final T col) {
+	public FontStyle(final Font<?> font, final T col) {
 		this.colour= col;
 		this.font = font;
 	}
@@ -202,7 +201,7 @@ public class FontStyle<F extends Font<F>, T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public void parseAttributes(final Map<? extends Attribute,Object> attrs) {
-		if (attrs.containsKey(FontStyle.FONT)) this.font = (F) attrs.get(FontStyle.FONT);
+		if (attrs.containsKey(FontStyle.FONT)) this.font = (Font<?>) attrs.get(FontStyle.FONT);
 		if (attrs.containsKey(FontStyle.ITALIC)) this.italic = (Boolean) attrs.get(FontStyle.ITALIC);
 		if (attrs.containsKey(FontStyle.ANGLE)) this.angle = ((Number) attrs.get(FontStyle.ANGLE)).floatValue();
 		if (attrs.containsKey(FontStyle.COLOUR)) this.colour = (T) attrs.get(FontStyle.COLOUR);
@@ -217,7 +216,7 @@ public class FontStyle<F extends Font<F>, T> {
 	 * @param renderer the image renderer
 	 * @return the renderer
 	 */
-	public FontRenderer<T, FontStyle<F, T>> getRenderer(final ImageRenderer<T, ?> renderer) {
+	public FontRenderer<T, FontStyle<T>> getRenderer(final ImageRenderer<T, ?> renderer) {
 		return this.font.getRenderer(renderer);
 	}
 
@@ -229,14 +228,13 @@ public class FontStyle<F extends Font<F>, T> {
 	 * @param renderer the image renderer
 	 * @return the FontStyle
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> FontStyle parseAttributes(final Map<? extends Attribute,Object> attrs, final ImageRenderer<T,?> renderer) {
+	public static <T> FontStyle<T> parseAttributes(final Map<? extends Attribute,Object> attrs, final ImageRenderer<T,?> renderer) {
 		Font<?> fnt = (Font<?>) attrs.get(FontStyle.FONT);
 
 		if (fnt == null)
 			fnt = FontStyle.DEFAULT_FONT;
 
-		final FontStyle sty = fnt.createStyle(renderer);
+		final FontStyle<T> sty = fnt.createStyle(renderer);
 		sty.parseAttributes(attrs);
 		return sty;
 	}
@@ -244,14 +242,14 @@ public class FontStyle<F extends Font<F>, T> {
 	/**
 	 * @return the font
 	 */
-	public F getFont() {
+	public Font<?> getFont() {
 		return this.font;
 	}
 
 	/**
 	 * @param font the font to set
 	 */
-	public void setFont(final F font) {
+	public void setFont(final Font<?> font) {
 		this.font = font;
 	}
 

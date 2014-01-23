@@ -45,7 +45,7 @@ import org.openimaj.image.typography.FontStyle;
  *
  *	@param <T> The pixel type
  */
-public class GeneralFontStyle<T> extends FontStyle<GeneralFont,T>
+public class GeneralFontStyle<T> extends FontStyle<T>
 {
 	/** Whether to draw the font as outline or not */
 	private boolean outline = false;

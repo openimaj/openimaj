@@ -112,7 +112,7 @@ public class GeneralFontRenderer<T> extends FontRenderer<T, GeneralFontStyle<T>>
 		}
 	}
 
-	private Polygon[] alignPolygons(Polygon[] p, FontStyle<GeneralFont, T> sty) {
+	private Polygon[] alignPolygons(Polygon[] p, FontStyle<T> sty) {
 		int minx = Integer.MAX_VALUE, miny = Integer.MAX_VALUE, maxx = -minx, maxy = -miny;
 
 		for (final Polygon polygon : p) {
@@ -186,7 +186,7 @@ public class GeneralFontRenderer<T> extends FontRenderer<T, GeneralFontStyle<T>>
 	{
 		final Font f = new Font(
 				style.getFont().getName(),
-				style.getFont().getType(),
+				((GeneralFont)style.getFont()).getType(),
 				style.getFontSize());
 
 		final FontRenderContext frc = new FontRenderContext(
@@ -303,11 +303,11 @@ public class GeneralFontRenderer<T> extends FontRenderer<T, GeneralFontStyle<T>>
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.openimaj.image.typography.FontRenderer#getBounds(java.lang.String,
+	 * @see org.openimaj.image.typography.FontRenderer#getSize(java.lang.String,
 	 *      org.openimaj.image.typography.FontStyle)
 	 */
 	@Override
-	public Rectangle getBounds(final String string, final GeneralFontStyle<T> style)
+	public Rectangle getSize(final String string, final GeneralFontStyle<T> style)
 	{
 		final Rectangle bounds = new Rectangle(0, 0, Float.MIN_VALUE, Float.MIN_VALUE);
 

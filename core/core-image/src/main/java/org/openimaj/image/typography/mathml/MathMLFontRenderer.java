@@ -135,7 +135,7 @@ public class MathMLFontRenderer<T> extends FontRenderer<T, MathMLFontStyle<T>>
 	}
 
 	@Override
-	public Rectangle getBounds(String string, MathMLFontStyle<T> style) {
+	public Rectangle getSize(String string, MathMLFontStyle<T> style) {
 		MBFImage mbf = renderToMBFImage(string,style);
 		return mbf.getBounds();
 	}

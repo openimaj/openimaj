@@ -47,7 +47,7 @@ import org.openimaj.image.typography.FontStyle;
  * @param <T> 
  *	
  */
-public class MathMLFontStyle<T> extends FontStyle<MathMLFont,T>
+public class MathMLFontStyle<T> extends FontStyle<T>
 {
 	enum MathInput{
 		MATHML,LATEX;

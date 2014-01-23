@@ -192,7 +192,7 @@ public class FontSimulator<Q,I extends Image<Q,I>>
 		gfs = this.getJitteredFontStyle( gfs );
 
 		final GeneralFontRenderer<Q> gfr = new GeneralFontRenderer<Q>();
-		final Rectangle b = gfr.getBounds( this.textString, gfs );
+		final Rectangle b = gfr.getSize( this.textString, gfs );
 
 		// Create an image into which the text will fit.
 		I img = imgExample.newInstance(

@@ -42,7 +42,7 @@ import org.openimaj.image.typography.FontStyle;
  *
  * @param <T> pixel type of image
  */
-public class HersheyFontStyle<T> extends FontStyle<HersheyFont, T> {
+public class HersheyFontStyle<T> extends FontStyle<T> {
 	/**
 	 * Attribute for the stroke width. Value should be a number in pixels.
 	 */
@@ -163,6 +163,7 @@ public class HersheyFontStyle<T> extends FontStyle<HersheyFont, T> {
 	 * @return the actual width scaling
 	 */
 	public float getActualWidthScale() {
+		HersheyFont font = (HersheyFont) this.font; 
 		float charHeight = font.data.characterSetMaxY - font.data.characterSetMinY;
 		float sizeSF = this.fontSize / charHeight;
 		return sizeSF * widthScale;
@@ -175,6 +176,7 @@ public class HersheyFontStyle<T> extends FontStyle<HersheyFont, T> {
 	 * @return the actual height scaling
 	 */
 	public float getActualHeightScale() {
+		HersheyFont font = (HersheyFont) this.font;
 		float charHeight = font.data.characterSetMaxY - font.data.characterSetMinY;
 		float sizeSF = this.fontSize / charHeight;
 		return sizeSF * heightScale;

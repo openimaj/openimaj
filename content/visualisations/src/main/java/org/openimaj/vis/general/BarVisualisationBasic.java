@@ -330,7 +330,7 @@ public class BarVisualisationBasic extends VisualisationImpl<double[]>
 						final HersheyFont f = HersheyFont.TIMES_BOLD;
 						final Rectangle r = f.createStyle(this.visImage.createRenderer()).getRenderer(
 								this.visImage.createRenderer())
-								.getBounds(text, f.createStyle(this.visImage.createRenderer()));
+								.getSize(text, f.createStyle(this.visImage.createRenderer()));
 
 						// Work out where to put the text
 						int tx = (int) (x + barWidth / 2 - r.width / 2);
