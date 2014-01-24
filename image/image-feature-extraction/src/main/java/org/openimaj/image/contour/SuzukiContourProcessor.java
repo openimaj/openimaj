@@ -13,6 +13,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -130,6 +131,8 @@ public class SuzukiContourProcessor implements ImageAnalyser<FImage> {
 		final float nbd[] = new float[] { 2 };
 		final float lnbd[] = new float[] { 0 };
 		final Border root = new Border(BorderType.HOLE);
+		Rectangle bb = image.getBounds();
+		root.points.addAll(bb.asPolygon().getVertices());
 		final Map<Float, Border> borderMap = new HashMap<Float, Border>();
 		borderMap.put(lnbd[0], root);
 		final BorderFollowingStrategy borderFollow = new MooreNeighborStrategy();
