@@ -12,7 +12,7 @@ import org.openimaj.image.pixel.Pixel;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class TestMooreBorderFollowing {
+public class TestSuzukiBorderFollowing {
 	
 	/**
 	 * @throws Exception
@@ -29,7 +29,7 @@ public class TestMooreBorderFollowing {
 		
 		FImage img = new FImage(pixels);
 		
-		BorderFollowingStrategy strat = new MooreNeighborStrategy();
+		BorderFollowingStrategy strat = new SuzukiNeighborStrategy();
 		Pixel start = new Pixel(1,2);
 		Pixel from  = new Pixel(1,3);
 		List<Pixel> border = strat.border(img, start, from);
@@ -58,7 +58,7 @@ public class TestMooreBorderFollowing {
 		
 		FImage img = new FImage(pixels);
 		
-		MooreNeighborStrategy strat = new MooreNeighborStrategy();
+		SuzukiNeighborStrategy strat = new SuzukiNeighborStrategy();
 		Pixel start = new Pixel(3,4);
 		Pixel from  = new Pixel(3,5);
 		List<Pixel> border = strat.border(img, start, from);

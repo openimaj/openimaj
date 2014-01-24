@@ -15,7 +15,23 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public class MooreNeighborStrategy extends BorderFollowingStrategy {
 
-	@Override
+	public void border(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation) {
+		directedBorder(image, start, from, new Operation<IndependentPair<Pixel, DIRECTION>>() {
+
+			@Override
+			public void perform(IndependentPair<Pixel, DIRECTION> object) {
+				operation.perform(object.firstObject());
+			}
+		});
+	}
+	
+	/**
+	 * 
+	 * @param image
+	 * @param start
+	 * @param from
+	 * @param operation
+	 */
 	public void directedBorder(FImage image, Pixel start, Pixel from,
 			Operation<IndependentPair<Pixel, DIRECTION>> operation)
 	{
@@ -28,8 +44,8 @@ public class MooreNeighborStrategy extends BorderFollowingStrategy {
 		DIRECTION cdir = cdirStart.clockwise();
 		int startCount = 0;
 		while (cdir != cdirStart) {
-			if (cdir.active(image, p)) {
-				final Pixel c = cdir.pixel(p);
+			Pixel c = cdir.active(image, p);
+			if (c != null) {
 				cdirStart = cdir.clockwiseEntryDirection();
 				if (c.equals(start)) {
 					startCount++;

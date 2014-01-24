@@ -1,8 +1,11 @@
 package org.openimaj.image.contour;
 
+import java.util.List;
+
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.contour.ContourAestheticode.Aestheticode;
 import org.openimaj.image.contour.SuzukiContourProcessor.Border;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.video.VideoDisplay;
@@ -25,13 +28,19 @@ public class ContourVideo {
 			@Override
 			public void beforeUpdate(MBFImage frame) {
 				final FImage img = frame.flatten();
-				DisplayUtilities.displayName(img, "Grey");
+//				DisplayUtilities.displayName(img, "Grey");
 				img.processInplace(thresh);
-				DisplayUtilities.displayName(img, "Threshold");
+//				DisplayUtilities.displayName(img, "Threshold");
 				final MBFImage contourFrame = new MBFImage(img.clone(), img.clone(), img.clone());
+				final MBFImage aestheticodeFrame = new MBFImage(img.clone(), img.clone(), img.clone());
 				final Border root = SuzukiContourProcessor.findContours(img);
 				ContourRenderer.drawContours(contourFrame, root);
-				DisplayUtilities.displayName(contourFrame, "Countours");
+//				DisplayUtilities.displayName(contourFrame, "Countours");
+				List<Aestheticode> codes = new FindAestheticode().apply(root);
+				for (Aestheticode ac : codes) {
+					ContourRenderer.drawContours(aestheticodeFrame, ac.root);
+				}
+				DisplayUtilities.displayName(aestheticodeFrame, "Aestheticodes");
 			}
 
 			@Override

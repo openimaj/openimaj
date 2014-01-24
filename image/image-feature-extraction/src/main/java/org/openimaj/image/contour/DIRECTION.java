@@ -16,6 +16,9 @@ public enum DIRECTION {
 	static DIRECTION[] entry = new DIRECTION[] {
 			WEST, WEST, NORTH, NORTH, EAST, EAST, SOUTH, SOUTH
 	};
+	static DIRECTION[] ccentry = new DIRECTION[] {
+		EAST, SOUTH, SOUTH, WEST, WEST, NORTH, NORTH, EAST
+};
 
 	/**
 	 * @return the direction clockwise from this direction
@@ -26,6 +29,16 @@ public enum DIRECTION {
 
 		return dir;
 	}
+	
+	/**
+	 * @return the direction counterClockwise from this direction
+	 */
+	public DIRECTION counterClockwise() {
+		final DIRECTION[] vals = DIRECTION.values();
+		int desired = ordinal() - 1;
+		final DIRECTION dir = vals[desired == -1 ? desired + vals.length : desired];
+		return dir;
+	}
 
 	/**
 	 * @param img
@@ -33,14 +46,14 @@ public enum DIRECTION {
 	 * @return whether the pixel point to from this point on this img in this
 	 *         direction is active
 	 */
-	public boolean active(FImage img, Pixel point) {
+	public Pixel active(FImage img, Pixel point) {
 		final int ord = ordinal();
 		final int yy = point.y + diry[ord];
 		final int xx = point.x + dirx[ord];
 		if (xx < 0 || xx >= img.width || yy < 0 || yy >= img.height)
-			return false;
+			return null;
 		final float pix = img.pixels[yy][xx];
-		return pix != 0;
+		return pix != 0 ? new Pixel(xx,yy) : null;
 	}
 
 	/**
@@ -49,6 +62,14 @@ public enum DIRECTION {
 	 */
 	public DIRECTION clockwiseEntryDirection() {
 		return entry[ordinal()];
+	}
+	
+	/**
+	 * @return the direction which this pixel was entered from if it were
+	 *         entered clockwise
+	 */
+	public DIRECTION counterClockwiseEntryDirection() {
+		return ccentry[ordinal()];
 	}
 
 	/**
@@ -90,4 +111,6 @@ public enum DIRECTION {
 	public Pixel pixel(Pixel from) {
 		return new Pixel(from.x + dirx[ordinal()], from.y + diry[ordinal()]);
 	}
+
+	
 }

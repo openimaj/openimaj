@@ -59,36 +59,6 @@ public abstract class BorderFollowingStrategy {
 	 * @param operation
 	 *            the thing to do for each border pixel found
 	 */
-	public void border(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation) {
-		directedBorder(image, start, from, new Operation<IndependentPair<Pixel, DIRECTION>>() {
-
-			@Override
-			public void perform(IndependentPair<Pixel, DIRECTION> object) {
-				operation.perform(object.firstObject());
-			}
-		});
-	}
-
-	/**
-	 * Given some starting pixel in an image on a border and the direction of a
-	 * non starting image, return each pixel on a border from the start pixel in
-	 * the image. The first pixel returned must be the start pixel. This
-	 * function must be functionally the same as
-	 * {@link #border(FImage, Pixel, Pixel, Operation)} but should return a
-	 * {@link Pixel} {@link DIRECTION} pair such that the {@link DIRECTION}
-	 * defines the location of the background which this pixel is a border
-	 * against.
-	 * 
-	 * @param image
-	 *            the image
-	 * @param start
-	 *            the first point on the border
-	 * @param from
-	 *            the pixel that was not a border
-	 * @param operation
-	 *            the thing to do for each border pixel found
-	 */
-	public abstract void directedBorder(FImage image, Pixel start, Pixel from,
-			Operation<IndependentPair<Pixel, DIRECTION>> operation);
+	public abstract void border(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation);
 
 }
