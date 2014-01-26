@@ -30,57 +30,44 @@
 package org.openimaj.image.processing.threshold;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * Abstract base class for local thresholding operations. Local thresholding
- * operations determine their threshold based on a rectangular image patch.
+ * Adaptive local thresholding using the Gaussian weighted sum of the patch and
+ * an offset.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
  */
-public abstract class AbstractLocalThreshold implements SinglebandImageProcessor<Float, FImage> {
-	protected int sizeX;
-	protected int sizeY;
+public class AdaptiveLocalThresholdGaussian implements SinglebandImageProcessor<Float, FImage> {
+	private float offset;
+	private float sigma;
 
 	/**
-	 * Construct the AbstractLocalThreshold with the given patch size (the patch
-	 * will be square).
+	 * Construct the thresholding operator with the given Gaussian standard
+	 * deviation, sigma, and offset
 	 * 
-	 * @param size
-	 *            the length of the patch side.
+	 * @param sigma
+	 *            Gaussian kernel standard deviation
+	 * @param offset
+	 *            offset from the patch mean at which the threshold occurs
 	 */
-	public AbstractLocalThreshold(int size) {
-		this(size, size);
+	public AdaptiveLocalThresholdGaussian(float sigma, float offset) {
+		this.sigma = sigma;
+		this.offset = offset;
 	}
 
-	/**
-	 * Construct the AbstractLocalThreshold with the given patch size.
-	 * 
-	 * @param size_x
-	 *            the width of the patch.
-	 * @param size_y
-	 *            the height of the patch.
-	 */
-	public AbstractLocalThreshold(int size_x, int size_y) {
-		this.sizeX = size_x;
-		this.sizeY = size_y;
-	}
+	@Override
+	public void processImage(FImage image) {
+		final FImage tmp = image.process(new FGaussianConvolve(sigma));
 
-	/**
-	 * Get the height of the local sampling rectangle
-	 * 
-	 * @return the height of the local sampling rectangle
-	 */
-	public int getKernelHeight() {
-		return sizeY;
-	}
+		final float[][] tpix = tmp.pixels;
+		final float[][] ipix = image.pixels;
+		for (int y = 0; y < image.height; y++)
+			for (int x = 0; x < image.width; x++)
+				tpix[y][x] = ipix[y][x] < (tpix[y][x] - offset) ? 0f : 1f;
 
-	/**
-	 * Get the width of the local sampling rectangle
-	 * 
-	 * @return the width of the local sampling rectangle
-	 */
-	public int getKernelWidth() {
-		return sizeX;
+		image.internalAssign(tmp);
 	}
 }

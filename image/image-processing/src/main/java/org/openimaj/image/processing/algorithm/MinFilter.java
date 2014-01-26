@@ -27,30 +27,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.convolution;
+package org.openimaj.image.processing.algorithm;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * An NxM averaging convolution operator.
+ * Min filter; replaces each pixel with the minimum of its neighbours.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
  */
-public class AverageNxM extends FConvolution {
+public class MinFilter implements SinglebandImageProcessor<Float, FImage> {
+	private int[][] support;
 
 	/**
-	 * Construct the averaging operator with a kernel
-	 * of the given dimensions.
-	 * @param n height of the kernel
-	 * @param m width of the kernel
+	 * Construct with the given support region for selecting pixels to take the
+	 * median from. The support mask is a
+	 * <code>[n][2]<code> array of <code>n</code> relative x, y offsets from the
+	 * pixel currently being processed, and can be created using the methods or
+	 * constants in the {@link FilterSupport} class.
+	 * 
+	 * @param support
+	 *            the support coordinates
 	 */
-	public AverageNxM(int n, int m) {
-		super(constructKernel(n, m));
+	public MinFilter(int[][] support) {
+		this.support = support;
 	}
-	
-	private static FImage constructKernel(int n, int m) {
-		FImage image = new FImage(m, n);
-		image.fill(1f / (n*m));
-		return image;
+
+	@Override
+	public void processImage(FImage image) {
+		final FImage tmpImage = new FImage(image.width, image.height);
+		float min = Float.MAX_VALUE;
+
+		for (int y = 0; y < image.height; y++) {
+			for (int x = 0; x < image.width; x++) {
+				for (int i = 0; i < support.length; i++) {
+					final int xx = x + support[i][0];
+					final int yy = y + support[i][1];
+
+					if (xx >= 0 && xx < image.width - 1 && yy >= 0 && yy < image.height - 1) {
+						min = Math.min(min, image.pixels[yy][xx]);
+					}
+				}
+
+				tmpImage.pixels[y][x] = min;
+			}
+		}
+		image.internalAssign(tmpImage);
 	}
 }

@@ -34,7 +34,7 @@ import java.util.Arrays;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
-import org.openimaj.image.processing.convolution.AverageNxM;
+import org.openimaj.image.processing.convolution.AverageBoxFilter;
 import org.openimaj.image.processing.convolution.FConvolution;
 
 /**
@@ -128,7 +128,7 @@ public class DepthOfFieldEstimator implements SaliencyMapGenerator<FImage> {
 		clearHistograms();
 		
 		for (int i=0; i<maxKernelSize; i+=kernelSizeStep) {
-			FImage blurred = image.process(new AverageNxM(i+1, i+1));
+			FImage blurred = image.process(new AverageBoxFilter(i+1, i+1));
 			FImage dx = blurred.process(DX_FILTER);
 			FImage dy = blurred.process(DY_FILTER);
 			

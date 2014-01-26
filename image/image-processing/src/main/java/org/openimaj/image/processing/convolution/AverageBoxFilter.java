@@ -27,60 +27,55 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.threshold;
+package org.openimaj.image.processing.convolution;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.algorithm.SummedAreaTable;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * Abstract base class for local thresholding operations. Local thresholding
- * operations determine their threshold based on a rectangular image patch.
+ * A rectangular averaging convolution operator (often known as a Box filter).
+ * For efficiency, this is implemented using a {@link SummedAreaTable} rather
+ * than through an actual convolution.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public abstract class AbstractLocalThreshold implements SinglebandImageProcessor<Float, FImage> {
-	protected int sizeX;
-	protected int sizeY;
+public class AverageBoxFilter implements SinglebandImageProcessor<Float, FImage> {
+	private int width;
+	private int height;
 
 	/**
-	 * Construct the AbstractLocalThreshold with the given patch size (the patch
-	 * will be square).
+	 * Construct the averaging operator with a kernel of the given dimensions.
 	 * 
-	 * @param size
-	 *            the length of the patch side.
+	 * @param width
+	 *            width of the kernel
+	 * @param height
+	 *            height of the kernel
 	 */
-	public AbstractLocalThreshold(int size) {
-		this(size, size);
+	public AverageBoxFilter(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
 
-	/**
-	 * Construct the AbstractLocalThreshold with the given patch size.
-	 * 
-	 * @param size_x
-	 *            the width of the patch.
-	 * @param size_y
-	 *            the height of the patch.
-	 */
-	public AbstractLocalThreshold(int size_x, int size_y) {
-		this.sizeX = size_x;
-		this.sizeY = size_y;
-	}
+	@Override
+	public void processImage(FImage image) {
+		final SummedAreaTable sat = new SummedAreaTable();
+		sat.analyseImage(image);
 
-	/**
-	 * Get the height of the local sampling rectangle
-	 * 
-	 * @return the height of the local sampling rectangle
-	 */
-	public int getKernelHeight() {
-		return sizeY;
-	}
+		final int hw = width / 2;
+		final int hh = height / 2;
 
-	/**
-	 * Get the width of the local sampling rectangle
-	 * 
-	 * @return the width of the local sampling rectangle
-	 */
-	public int getKernelWidth() {
-		return sizeX;
+		for (int y = 0; y < image.height; y++) {
+			for (int x = 0; x < image.width; x++) {
+				final int sx = Math.max(0, x - hw);
+				final int sy = Math.max(0, y - hh);
+				final int ex = Math.min(image.width, x + hw + 1);
+				final int ey = Math.min(image.height, y + hh + 1);
+
+				final int area = (ex - sx) * (ey - sy);
+				final float mean = sat.calculateArea(sx, sy, ex, ey) / area;
+				image.pixels[y][x] = mean;
+			}
+		}
 	}
 }

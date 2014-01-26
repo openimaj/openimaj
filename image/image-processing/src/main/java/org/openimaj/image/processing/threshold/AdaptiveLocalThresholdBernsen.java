@@ -30,57 +30,67 @@
 package org.openimaj.image.processing.threshold;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.image.processing.algorithm.FilterSupport;
+import org.openimaj.image.processing.algorithm.LocalContrastFilter;
+import org.openimaj.image.processing.convolution.AverageBoxFilter;
 
 /**
- * Abstract base class for local thresholding operations. Local thresholding
- * operations determine their threshold based on a rectangular image patch.
+ * Bernsen's adaptive local thresholding.
+ * 
+ * @see <a
+ *      href="http://fiji.sc/wiki/index.php/Auto_Local_Threshold">http://fiji.sc/wiki/index.php/Auto_Local_Threshold</a>
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
  */
-public abstract class AbstractLocalThreshold implements SinglebandImageProcessor<Float, FImage> {
-	protected int sizeX;
-	protected int sizeY;
+public class AdaptiveLocalThresholdBernsen extends AbstractLocalThreshold {
+	private float threshold;
 
 	/**
-	 * Construct the AbstractLocalThreshold with the given patch size (the patch
-	 * will be square).
+	 * Construct the thresholding operator with the given patch size (assumed
+	 * square)
 	 * 
+	 * @param threshold
+	 *            the contrast threshold
 	 * @param size
-	 *            the length of the patch side.
+	 *            size of the local image patch
 	 */
-	public AbstractLocalThreshold(int size) {
-		this(size, size);
+	public AdaptiveLocalThresholdBernsen(float threshold, int size) {
+		super(size);
+		this.threshold = threshold;
 	}
 
 	/**
-	 * Construct the AbstractLocalThreshold with the given patch size.
+	 * Construct the thresholding operator with the given patch size
 	 * 
+	 * @param threshold
+	 *            the contrast threshold
 	 * @param size_x
-	 *            the width of the patch.
+	 *            width of patch
 	 * @param size_y
-	 *            the height of the patch.
+	 *            height of patch
 	 */
-	public AbstractLocalThreshold(int size_x, int size_y) {
-		this.sizeX = size_x;
-		this.sizeY = size_y;
+	public AdaptiveLocalThresholdBernsen(float threshold, int size_x, int size_y) {
+		super(size_x, size_y);
+		this.threshold = threshold;
 	}
 
-	/**
-	 * Get the height of the local sampling rectangle
-	 * 
-	 * @return the height of the local sampling rectangle
-	 */
-	public int getKernelHeight() {
-		return sizeY;
-	}
+	@Override
+	public void processImage(FImage image) {
+		final FImage contrast = image.process(new LocalContrastFilter(FilterSupport.createBlockSupport(sizeX, sizeY)));
+		final FImage avg = image.process(new AverageBoxFilter(sizeX, sizeY));
 
-	/**
-	 * Get the width of the local sampling rectangle
-	 * 
-	 * @return the width of the local sampling rectangle
-	 */
-	public int getKernelWidth() {
-		return sizeX;
+		final float[][] cpix = contrast.pixels;
+		final float[][] mpix = avg.pixels;
+		final float[][] ipix = image.pixels;
+
+		for (int y = 0; y < image.height; y++) {
+			for (int x = 0; x < image.width; x++) {
+				if (cpix[y][x] < threshold)
+					ipix[y][x] = (mpix[y][x] >= 128) ? 1 : 0;
+				else
+					ipix[y][x] = (ipix[y][x] >= mpix[y][x]) ? 1 : 0;
+			}
+		}
 	}
 }

@@ -36,7 +36,7 @@ import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.mask.AbstractMaskedObject;
-import org.openimaj.image.processing.convolution.AverageNxM;
+import org.openimaj.image.processing.convolution.AverageBoxFilter;
 import org.openimaj.image.processing.convolution.Laplacian3x3;
 
 /**
@@ -62,7 +62,7 @@ public class Sharpness extends AbstractMaskedObject<FImage>
 			FeatureVectorProvider<DoubleFV>
 {
 	private final Laplacian3x3 laplacian = new Laplacian3x3();
-	private final AverageNxM average = new AverageNxM(3, 3);
+	private final AverageBoxFilter average = new AverageBoxFilter(3, 3);
 
 	protected double sharpness;
 
