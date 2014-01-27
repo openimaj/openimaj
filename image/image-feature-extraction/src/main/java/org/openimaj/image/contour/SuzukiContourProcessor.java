@@ -69,6 +69,7 @@ public class SuzukiContourProcessor implements ImageAnalyser<FImage> {
 		 * where the border starts
 		 */
 		public Pixel start;
+		private Rectangle rect = null;
 
 		/**
 		 * @param type
@@ -126,31 +127,49 @@ public class SuzukiContourProcessor implements ImageAnalyser<FImage> {
 			return border.toString();
 		}
 
+		/**
+		 * 
+		 */
+		public void finish() {
+			this.rect = this.calculateRegularBoundingBox();
+		}
+
 	}
 
 	/**
 	 * the root border detected
 	 */
 	public Border root;
+	private double minRelativeChildProp = -1;
 
 	@Override
 	public void analyseImage(final FImage image) {
-		this.root = findContours(image.clone());
+		this.root = findContours(image,this);
 	}
 
+	
+	/**
+	 * @param image
+	 * @return
+	 */
+	public static Border findContours(final FImage image){
+		return findContours(image,new SuzukiContourProcessor());
+		
+	}
 	/**
 	 * 
 	 * @param image
 	 * @return Detect borders hierarcically in this binary image. Note the image
 	 *         is changed while borders are found
 	 */
-	public static Border findContours(final FImage image) {
+	public static Border findContours(final FImage image, SuzukiContourProcessor proc) {
 		final float nbd[] = new float[] { 1 };
 		final float lnbd[] = new float[] { 1 };
 		// Prepare the special outer frame
 		final Border root = new Border(BorderType.HOLE);
 		Rectangle bb = image.getBounds();
 		root.points.addAll(bb.asPolygon().getVertices());
+		root.finish();
 		
 		final Map<Float, Border> borderMap = new HashMap<Float, Border>();
 		borderMap.put(lnbd[0], root);
@@ -198,14 +217,15 @@ public class SuzukiContourProcessor implements ImageAnalyser<FImage> {
 							break;
 						}
 					}
+					
 					Pixel ij = new Pixel(j, i);
 					borderFollow.directedBorder(image, ij, from,
-						new Operation<IndependentPair<Pixel, Set<Pixel>>>() {
+						new Operation<IndependentPair<Pixel, boolean[]>>() {
 	
 							@Override
-							public void perform(IndependentPair<Pixel, Set<Pixel>> object) {
+							public void perform(IndependentPair<Pixel, boolean[]> object) {
 								final Pixel p = object.firstObject();
-								final Set<Pixel> d = object.secondObject();
+								final boolean[] d = object.secondObject();
 								border.points.add(p);
 								if (crossesEastBorder(image, d, p)) {
 									image.setPixel(p.x, p.y, -nbd[0]);
@@ -221,9 +241,9 @@ public class SuzukiContourProcessor implements ImageAnalyser<FImage> {
 					if(border.points.size() == 0){
 						border.points.add(ij);
 						image.setPixel(j, i, -nbd[0]);
-					} 
-					
-					border.sanityCheck();
+					}
+					border.finish();
+//					if(thisborder.rect.calculateArea())
 					borderMap.put(nbd[0], border);
 				}
 				// This is step (4)
@@ -232,12 +252,29 @@ public class SuzukiContourProcessor implements ImageAnalyser<FImage> {
 
 			}
 		}
+		if(proc.minRelativeChildProp > 0 ){
+			removeSmall(root,proc.minRelativeChildProp);
+		}
 		return root;
 	}
 
-	private static boolean crossesEastBorder(final FImage image, Set<Pixel> d, final Pixel p) {
-		Pixel nextP = new Pixel(p.x + 1, p.y);
-		return image.getPixel(p) != 0 && (p.x == image.width - 1 || (d.contains(nextP)));// this is 3.4(a) with an edge case check
+	private static void removeSmall(Border root, double minRelativeChildProp) {
+		List<Border> toSearch = new ArrayList<Border>();
+		toSearch.add(root);
+		while(toSearch.size()!=0){
+			Border ret = toSearch.remove(0);
+			if(ret.parent!=null && ret.rect.calculateArea() / ret.parent.rect.calculateArea() < minRelativeChildProp){
+				ret.parent.children.remove(ret);
+			} else{
+				toSearch.addAll(ret.children);
+			}
+		}
+	}
+
+
+	private static boolean crossesEastBorder(final FImage image, boolean[] checked, final Pixel p) {
+		boolean b = checked[DIRECTION.fromTo(p, new Pixel(p.x + 1, p.y)).ordinal()];
+		return image.getPixel(p) != 0 && (p.x == image.width - 1 || b);// this is 3.4(a) with an edge case check
 	}
 
 	private static boolean isOuterBorderStart(FImage image, int i, int j) {
@@ -246,6 +283,10 @@ public class SuzukiContourProcessor implements ImageAnalyser<FImage> {
 
 	private static boolean isHoleBorderStart(FImage image, int i, int j) {
 		return (image.pixels[i][j] >= 1 && (j == image.width - 1 || image.pixels[i][j + 1] == 0));
+	}
+
+	public void setMinRelativeChildProp(double d) {
+		this.minRelativeChildProp  = d;
 	}
 
 }

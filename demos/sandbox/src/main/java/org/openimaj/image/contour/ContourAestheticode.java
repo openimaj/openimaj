@@ -10,22 +10,12 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.contour.SuzukiContourProcessor.Border;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
-import org.openimaj.image.processor.KernelProcessor;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ContourAestheticode {
-	
-	static class Aestheticode{
-		public Aestheticode(Border root) {
-			this.root = root;
-		}
-		Border root;
-	}
 	
 	public static void main(String[] args) throws IOException {
 		String code = "/org/openimaj/image/contour/aestheticode/aestheticode.jpg";

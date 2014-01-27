@@ -3,7 +3,6 @@ package org.openimaj.image.contour;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.contour.ContourAestheticode.Aestheticode;
 import org.openimaj.image.contour.SuzukiContourProcessor.Border;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Predicate;

@@ -31,15 +31,14 @@ public class SuzukiNeighborStrategy extends BorderFollowingStrategy {
 
 	
 	public void border(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation) {
-		directedBorder(image, start, from, new Operation<IndependentPair<Pixel, Set<Pixel>>>() {
+		directedBorder(image, start, from, new Operation<IndependentPair<Pixel, boolean[]>>() {
 
 			@Override
-			public void perform(IndependentPair<Pixel, Set<Pixel>> object) {
+			public void perform(IndependentPair<Pixel, boolean[]> object) {
 				operation.perform(object.firstObject());
 			}
 		});
 	}
-	
 	/**
 	 * 
 	 * @param image
@@ -47,7 +46,7 @@ public class SuzukiNeighborStrategy extends BorderFollowingStrategy {
 	 * @param i2j2
 	 * @param operation
 	 */
-	public void directedBorder(FImage image, Pixel ij, Pixel i2j2, Operation<IndependentPair<Pixel, Set<Pixel>>> operation)
+	public void directedBorder(FImage image, Pixel ij, Pixel i2j2, Operation<IndependentPair<Pixel, boolean[]>> operation)
 	{
 		DIRECTION dir = DIRECTION.fromTo(ij, i2j2);
 		DIRECTION trace = dir.clockwise();
@@ -65,21 +64,32 @@ public class SuzukiNeighborStrategy extends BorderFollowingStrategy {
 		
 		i2j2 = i1j1; 
 		Pixel i3j3 = ij; // (3.2)
+		boolean[] checked = new boolean[]{
+			/*
+			N	 , NE  ,E    ,SE   ,S	 ,SW   ,W    ,NW 
+			 */
+			false,false,false,false,false,false,false,false
+		};
 		while(true){
 			dir = DIRECTION.fromTo(i3j3, i2j2);
 			trace = dir.counterClockwise();
 			Pixel i4j4 = null;
-			Set<Pixel> checked = new HashSet<Pixel>();
+			resetChecked(checked);
 			while(true){
 				i4j4 = trace.active(image, i3j3); // 3.3
 				if(i4j4 != null) break;
-				checked.add(trace.pixel(i3j3));
+				checked[trace.ordinal()] = true;
 				trace = trace.counterClockwise();
 			}
 			operation.perform(IndependentPair.pair(i3j3, checked));
 			if(i4j4.equals(ij) && i3j3.equals(i1j1)) break; // 3.5
 			i2j2 = i3j3; // 3.5
 			i3j3 = i4j4; // 3.5
+		}
+	}
+	private void resetChecked(boolean[] checked) {
+		for (int i = 0; i < checked.length; i++) {
+			checked[i] = false;
 		}
 	}
 
