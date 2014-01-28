@@ -31,36 +31,91 @@ package org.openimaj.content.slideshow;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
 
 /**
- * A slideshow that can be used in a Java Swing application. The slideshow
- * is created in a new window (JFrame).
+ * A slideshow that can be used in a Java Swing application. The slideshow is
+ * created in a new window (JFrame).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class SlideshowApplication extends Slideshow {
 	protected FullscreenUtility fsutil;
-	
+
 	/**
 	 * Default constructor.
-	 * @param slides The slides to display.
-	 * @param slideWidth The slide width.
-	 * @param slideHeight The slide height.
-	 * @param background The background image.
+	 * 
+	 * @param slides
+	 *            The slides to display.
+	 * @param slideWidth
+	 *            The slide width.
+	 * @param slideHeight
+	 *            The slide height.
+	 * @param background
+	 *            The background image.
 	 * @throws IOException
 	 */
-	public SlideshowApplication(List<Slide> slides, int slideWidth, int slideHeight, BufferedImage background) throws IOException {
+	public SlideshowApplication(List<Slide> slides, int slideWidth, int slideHeight, BufferedImage background)
+			throws IOException
+	{
 		super(new JFrame(), slides, slideWidth, slideHeight, background);
 		fsutil = new FullscreenUtility((JFrame) container);
 	}
 
+	/**
+	 * Default constructor.
+	 * 
+	 * @param slide
+	 *            The slide to display.
+	 * @param slideWidth
+	 *            The slide width.
+	 * @param slideHeight
+	 *            The slide height.
+	 * @param background
+	 *            The background image.
+	 * @throws IOException
+	 */
+	public SlideshowApplication(Slide slide, int slideWidth, int slideHeight, BufferedImage background)
+			throws IOException
+	{
+		super(new JFrame(), createList(slide), slideWidth, slideHeight, background);
+		fsutil = new FullscreenUtility((JFrame) container);
+	}
+
+	/**
+	 * Default constructor.
+	 * 
+	 * @param slide
+	 *            The slide to display.
+	 * @param slideWidth
+	 *            The slide width.
+	 * @param slideHeight
+	 *            The slide height.
+	 * @throws IOException
+	 */
+	public SlideshowApplication(Slide slide, int slideWidth, int slideHeight)
+			throws IOException
+	{
+		super(new JFrame(), createList(slide), slideWidth, slideHeight, null);
+		fsutil = new FullscreenUtility((JFrame) container);
+	}
+
+	private static List<Slide> createList(Slide... slides) {
+		final List<Slide> slidesl = new ArrayList<Slide>();
+
+		for (final Slide s : slides)
+			slidesl.add(s);
+
+		return slidesl;
+	}
+
 	@Override
 	protected void pack() {
-		((JFrame)container).pack();
+		((JFrame) container).pack();
 	}
 
 	@Override
@@ -71,5 +126,5 @@ public class SlideshowApplication extends Slideshow {
 	@Override
 	protected boolean isFullscreen() {
 		return fsutil.fullscreen;
-	}	
+	}
 }
