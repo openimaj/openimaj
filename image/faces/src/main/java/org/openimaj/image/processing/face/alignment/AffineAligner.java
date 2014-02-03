@@ -56,23 +56,25 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 			{ 25.0347f, 34.1802f, 44.1943f, 53.4623f, 34.1208f, 39.3564f, 44.9156f, 31.1454f, 47.8747f },
 			{ 34.1580f, 34.1659f, 34.0936f, 33.8063f, 45.4179f, 47.0043f, 45.3628f, 53.0275f, 52.7999f } };
 
-	private static final FImage DEFAULT_MASK = loadDefaultMask();
-
 	final static int CANONICAL_SIZE = 80;
 
-	int facePatchSize = 100;
+	int facePatchWidth = 80;
+	int facePatchHeight = 80;
 	float facePatchBorderPercentage = 0.225f;
 
-	private FImage mask = DEFAULT_MASK;
+	private FImage mask;
 
 	/**
-	 * Default Constructor with no mask.
+	 * Default Constructor with the default mask (80x80) and default border
+	 * percentage (0.225).
 	 */
 	public AffineAligner() {
+		this(loadDefaultMask());
 	};
 
 	/**
 	 * Construct with a mask (in the canonical frame) to apply after aligning
+	 * and default border percentage (0.225).
 	 * 
 	 * @param mask
 	 */
@@ -80,8 +82,47 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 		this.mask = mask;
 	}
 
+	/**
+	 * Construct with a mask (in the canonical frame) to apply after aligning
+	 * and default border percentage (0.225).
+	 * 
+	 * @param mask
+	 *            the mask
+	 * @param facePatchBorderPercentage
+	 *            the proportional size (against the detection patch) of the
+	 *            border for the crop. Higher values result in a more zoomed-in
+	 *            face.
+	 */
+	public AffineAligner(FImage mask, float facePatchBorderPercentage) {
+		this.mask = mask;
+		this.facePatchBorderPercentage = facePatchBorderPercentage;
+		this.facePatchHeight = mask.height;
+		this.facePatchWidth = mask.width;
+	}
+
+	/**
+	 * Construct with no mask and the given size and border.
+	 * 
+	 * @param facePatchWidth
+	 *            the width of the desired aligned faces
+	 * @param facePatchHeight
+	 *            the height of the desired aligned faces
+	 * @param facePatchBorderPercentage
+	 *            the proportional size (against the detection patch) of the
+	 *            border for the crop. Higher values result in a more zoomed-in
+	 *            face.
+	 */
+	public AffineAligner(int facePatchWidth, int facePatchHeight, float facePatchBorderPercentage) {
+		this.mask = new FImage(facePatchWidth, facePatchHeight);
+		mask.fill(1f);
+		this.facePatchBorderPercentage = facePatchBorderPercentage;
+		this.facePatchWidth = facePatchWidth;
+		this.facePatchHeight = facePatchHeight;
+	}
+
 	@Override
 	public FImage align(KEDetectedFace descriptor) {
+		final int facePatchSize = Math.max(facePatchWidth, facePatchHeight);
 		final double size = facePatchSize + 2.0 * facePatchSize * facePatchBorderPercentage;
 		final double sc = CANONICAL_SIZE / size;
 
@@ -93,7 +134,11 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 		T.set(1, 0, T.get(1, 0) * sc);
 
 		final FImage J = FKEFaceDetector.pyramidResize(descriptor.getFacePatch(), T);
-		return FKEFaceDetector.extractPatch(J, T, (int) size, (int) (size * facePatchBorderPercentage));
+		final FImage bigPatch = FKEFaceDetector.extractPatch(J, T, (int) size,
+				(int) (facePatchSize * facePatchBorderPercentage));
+
+		return bigPatch.extractCenter(facePatchWidth, facePatchHeight).extractROI(0, 0, facePatchWidth, facePatchHeight)
+				.multiplyInplace(mask);
 	}
 
 	/**
@@ -172,7 +217,8 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		facePatchSize = in.readInt();
+		facePatchWidth = in.readInt();
+		facePatchHeight = in.readInt();
 		facePatchBorderPercentage = in.readFloat();
 		mask = ImageUtilities.readF(in);
 	}
@@ -184,7 +230,8 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		out.writeInt(facePatchSize);
+		out.writeInt(facePatchWidth);
+		out.writeInt(facePatchHeight);
 		out.writeFloat(facePatchBorderPercentage);
 		ImageUtilities.write(mask, "png", out);
 	}

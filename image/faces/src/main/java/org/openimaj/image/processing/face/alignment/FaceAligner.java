@@ -34,29 +34,27 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
 
 /**
- * A FaceAligner produces aligned face patches 
- * (i.e. with the eyes aligned or more). These
- * can be used for building features for 
- * recognition, etc.
+ * A FaceAligner produces aligned face patches (i.e. with the eyes aligned or
+ * more). These can be used for building features for recognition, etc.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <T> the type of {@link DetectedFace}
- *
+ * @param <T>
+ *            the type of {@link DetectedFace}
+ * 
  */
 public interface FaceAligner<T extends DetectedFace> extends ReadWriteableBinary {
 	/**
-	 * For the provided face detection, return an
-	 * aligned version of the face.
+	 * For the provided face detection, return an aligned version of the face.
 	 * 
-	 * @param face the face to align
+	 * @param face
+	 *            the face to align
 	 * @return aligned face
 	 */
 	public FImage align(T face);
-	
+
 	/**
-	 * Return a mask image for aligned faces. 0 pixels
-	 * mark background pixels that should be ignored in 
-	 * further processing of aligned faces produced by 
+	 * Return a mask image for aligned faces. 0 pixels mark background pixels
+	 * that should be ignored in further processing of aligned faces produced by
 	 * this aligner.
 	 * 
 	 * @return a mask image, or null if masking isn't required

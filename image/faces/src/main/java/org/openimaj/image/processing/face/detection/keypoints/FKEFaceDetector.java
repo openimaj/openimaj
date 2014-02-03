@@ -72,6 +72,7 @@ import Jama.SingularValueDecomposition;
 public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	protected FaceDetector<? extends DetectedFace, FImage> faceDetector;
 	protected FacialKeypointExtractor facialKeypointExtractor = new FacialKeypointExtractor();
+	private float patchScale = 1.0f;
 
 	/**
 	 * Default constructor. Uses the standard {@link HaarCascadeDetector} with a
@@ -93,6 +94,34 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	}
 
 	/**
+	 * Default constructor. Uses the standard {@link HaarCascadeDetector} with a
+	 * minimum search size of 80 pixels, and the given scale-factor for
+	 * extracting the face patch.
+	 * 
+	 * @param patchScale
+	 *            the scale of the patch compared to the patch extracted by the
+	 *            internal detector.
+	 */
+	public FKEFaceDetector(float patchScale) {
+		this(new HaarCascadeDetector(80), patchScale);
+	}
+
+	/**
+	 * Construct with a standard {@link HaarCascadeDetector} and the given
+	 * minimum search size, and the given scale-factor for extracting the face
+	 * patch.
+	 * 
+	 * @param patchScale
+	 *            the scale of the patch compared to the patch extracted by the
+	 *            internal detector.
+	 * @param size
+	 *            minimum detection size.
+	 */
+	public FKEFaceDetector(int size, float patchScale) {
+		this(new HaarCascadeDetector(size), patchScale);
+	}
+
+	/**
 	 * Construct with the given underlying (frontal) face detector.
 	 * 
 	 * @param detector
@@ -100,6 +129,22 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	 */
 	public FKEFaceDetector(FaceDetector<? extends DetectedFace, FImage> detector) {
 		this.faceDetector = detector;
+	}
+
+	/**
+	 * Construct with the given underlying (frontal) face detector, and the
+	 * given scale-factor for extracting the face patch.
+	 * 
+	 * @param patchScale
+	 *            the scale of the patch compared to the patch extracted by the
+	 *            internal detector.
+	 * 
+	 * @param detector
+	 *            the face detector.
+	 */
+	public FKEFaceDetector(FaceDetector<? extends DetectedFace, FImage> detector, float patchScale) {
+		this.faceDetector = detector;
+		this.patchScale = patchScale;
 	}
 
 	/**
@@ -201,16 +246,21 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 
 			final float eyeVavg = 0.5f * ((0.5f * (eyeRR.position.y + eyeRL.position.y)) + (0.5f * (eyeLR.position.y + eyeLL.position.y)));
 
-			r.height = 1.2f * r.width;
+			r.height = 1.28f * r.width;
 			final float deltaY = eyeVavg - 0.4f * r.height;
 			r.y = r.y + deltaY;
 
-			FacialKeypoint.updateImagePosition(kpts, TransformUtilities.translateMatrix(-deltaX, -deltaY));
+			float dx = r.x;
+			float dy = r.y;
+			r.scaleCOG(patchScale);
+			dx = dx - r.x;
+			dy = dy - r.y;
+			FacialKeypoint.updateImagePosition(kpts, TransformUtilities.translateMatrix(-deltaX + dx, -deltaY + dy));
 
 			// final KEDetectedFace kedf = new KEDetectedFace(r,
 			// df.getFacePatch(), kpts, df.getConfidence());
+			// final Rectangle scr = r.clone();
 			final KEDetectedFace kedf = new KEDetectedFace(r, image.extractROI(r), kpts, df.getConfidence());
-
 			descriptors.add(kedf);
 		}
 
@@ -222,6 +272,7 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 		final int hashCode = HashCodeUtil.SEED;
 		HashCodeUtil.hash(hashCode, this.faceDetector);
 		HashCodeUtil.hash(hashCode, this.facialKeypointExtractor);
+		HashCodeUtil.hash(hashCode, this.patchScale);
 		return hashCode;
 	}
 
@@ -230,6 +281,7 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 		faceDetector = IOUtils.newInstance(in.readUTF());
 		faceDetector.readBinary(in);
 		// facialKeypointExtractor;
+		this.patchScale = in.readFloat();
 	}
 
 	@Override
@@ -242,6 +294,7 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 		out.writeUTF(faceDetector.getClass().getName());
 		faceDetector.writeBinary(out);
 		// facialKeypointExtractor;
+		out.writeFloat(patchScale);
 	}
 
 	@Override

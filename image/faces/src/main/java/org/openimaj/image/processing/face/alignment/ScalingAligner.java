@@ -38,31 +38,34 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 
 /**
- * A FaceAligner that just scales the face patch held 
- * with the {@link DetectedFace} to a predefined size. 
- * Useful if your faces are already aligned, but have 
- * different sizes.
+ * A FaceAligner that just scales the face patch held with the
+ * {@link DetectedFace} to a predefined size. Useful if your faces are already
+ * aligned, but have different sizes.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
- * @param <T> Type of {@link DetectedFace}. 
- *
+ * @param <T>
+ *            Type of {@link DetectedFace}.
+ * 
  */
 public class ScalingAligner<T extends DetectedFace> implements FaceAligner<T> {
 	private int width;
 	private int height;
-	
+
 	/**
 	 * Construct with the default target size of 100x100.
 	 */
 	public ScalingAligner() {
 		this(100, 100);
 	}
-	
+
 	/**
 	 * Construct the aligner with the given target size
-	 * @param width width of scaled faces
-	 * @param height height of scaled faces
+	 * 
+	 * @param width
+	 *            width of scaled faces
+	 * @param height
+	 *            height of scaled faces
 	 */
 	public ScalingAligner(int width, int height) {
 		this.width = width;
@@ -70,7 +73,7 @@ public class ScalingAligner<T extends DetectedFace> implements FaceAligner<T> {
 	}
 
 	@Override
-	public FImage align(DetectedFace face) {		
+	public FImage align(DetectedFace face) {
 		return ResizeProcessor.resample(face.getFacePatch(), width, height);
 	}
 
