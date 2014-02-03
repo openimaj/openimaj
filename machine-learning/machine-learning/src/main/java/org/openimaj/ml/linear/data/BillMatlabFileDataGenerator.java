@@ -52,7 +52,7 @@ import com.jmatio.types.MLChar;
 import com.jmatio.types.MLDouble;
 import com.jmatio.types.MLSparse;
 
-public class BillMatlabFileDataGenerator implements DataGenerator<Matrix> {
+public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> {
 	private static class Fold {
 		public Fold(int[] training, int[] test, int[] validation) {
 			this.training = training;

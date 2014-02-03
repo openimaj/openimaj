@@ -56,7 +56,7 @@ import org.openimaj.util.pair.Pair;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class BiconvexDataGenerator implements DataGenerator<Matrix> {
+public class BiconvexDataGenerator implements MatrixDataGenerator<Matrix> {
 
 	private int seed;
 	private int nusers;
