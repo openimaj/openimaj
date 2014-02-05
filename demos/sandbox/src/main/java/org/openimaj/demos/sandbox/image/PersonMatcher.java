@@ -277,6 +277,11 @@ public class PersonMatcher
 		final List<? extends IndependentPair<? extends DetectedFace, ScoredAnnotation<String>>> recognisedFaces = this.faceRecogniser
 				.recogniseBest(fi);
 
+		for (final IndependentPair<? extends DetectedFace, ScoredAnnotation<String>> p : recognisedFaces) {
+			if (p.secondObject() == null)
+				p.setSecondObject(new ScoredAnnotation<String>("Unknown", 1.0f));
+		}
+
 		// If we are to ignore blurred faces, we'll remove them here
 		// by using the SharpPixelProportion analyser to detect whether
 		// the image within the face region is blurred or not
@@ -623,7 +628,8 @@ public class PersonMatcher
 			System.out.println("----------- TRAINING ---------- ");
 			new PersonMatcher(
 					new String[] { "Barack Obama", "Arnold Schwarzenegger" },
-					new File(PersonMatcher.RECOGNISER_FILE), true);
+					new File(PersonMatcher.RECOGNISER_FILE),
+					true);
 		} catch (final Exception e)
 		{
 			e.printStackTrace();
@@ -632,21 +638,35 @@ public class PersonMatcher
 		// Load back in the recogniser and try querying using the given image
 		try
 		{
-			PersonMatcher.displayQueryResults(
-					PersonMatcher.class.getResource(
-							"/org/openimaj/demos/sandbox/BarackObama1.jpg"));
+			// PersonMatcher.displayQueryResults(
+			// PersonMatcher.class.getResource(
+			// "/org/openimaj/demos/sandbox/BarackObama1.jpg"));
+			//
+			// PersonMatcher.displayQueryResults(
+			// PersonMatcher.class.getResource(
+			// "/org/openimaj/demos/sandbox/BarackObama2.jpg"));
+			//
+			// PersonMatcher.displayQueryResults(
+			// PersonMatcher.class.getResource(
+			// "/org/openimaj/demos/sandbox/BarackObama5.jpg"));
+			//
+			// PersonMatcher.displayQueryResults(
+			// PersonMatcher.class.getResource(
+			// "/org/openimaj/demos/sandbox/ArnoldSchwarzenegger1.jpg"));
 
-			PersonMatcher.displayQueryResults(
-					PersonMatcher.class.getResource(
-							"/org/openimaj/demos/sandbox/BarackObama2.jpg"));
+			PersonMatcher
+					.displayQueryResults(new URL(
+							"http://www2.pictures.gi.zimbio.com/Barack%2BObama%2BArnold%2BSchwarzenegger%2BBloomberg%2BO6kM6r0LSK-l.jpg"));
 
-			PersonMatcher.displayQueryResults(
-					PersonMatcher.class.getResource(
-							"/org/openimaj/demos/sandbox/BarackObama5.jpg"));
+			PersonMatcher.displayQueryResults(new URL(
+					"http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2008/08/02/Arnie-460x276.jpg"));
 
-			PersonMatcher.displayQueryResults(
-					PersonMatcher.class.getResource(
-							"/org/openimaj/demos/sandbox/ArnoldSchwarzenegger1.jpg"));
+			PersonMatcher.displayQueryResults(new URL(
+					"http://images.politico.com/global/2012/09/120930_arnold_maria_reu.jpg"));
+
+			PersonMatcher
+					.displayQueryResults(new URL(
+							"http://assets-s3.usmagazine.com/uploads/assets/articles/56812-what-do-you-want-to-ask-president-barack-obama/1350336415_barack-obama-467.jpg"));
 
 			// Remove the recogniser (for testing)
 			new File(PersonMatcher.RECOGNISER_FILE).delete();
