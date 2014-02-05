@@ -169,7 +169,7 @@ public class RGBColour {
 	public static Float[][] coloursFromMap(ColourMap cm, int n) {
 		final Float[][] cols = new Float[n][];
 		for (int i = 0; i < n; i++) {
-			final float frac = (float) i / (float) (n + 1);
+			final float frac = (float) i / (float) n;
 			cols[i] = cm.apply(frac);
 		}
 		return cols;
