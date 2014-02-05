@@ -78,7 +78,8 @@ import org.openimaj.util.array.ArrayUtils;
 		number = "",
 		volume = "",
 		customData = {
-				"keywords", "eigenfaces;eigenvectors;face images;face recognition system;face space;feature space;human faces;two-dimensional recognition;unsupervised learning;computerised pattern recognition;eigenvalues and eigenfunctions;",
+				"keywords",
+				"eigenfaces;eigenvectors;face images;face recognition system;face space;feature space;human faces;two-dimensional recognition;unsupervised learning;computerised pattern recognition;eigenvalues and eigenfunctions;",
 				"doi", "10.1109/CVPR.1991.139758"
 		})
 public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<DoubleFV, FImage>, ReadWriteableBinary {
