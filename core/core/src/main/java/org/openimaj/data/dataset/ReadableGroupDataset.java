@@ -74,11 +74,21 @@ public abstract class ReadableGroupDataset<KEY, DATASET extends Dataset<INSTANCE
 		int count = 0;
 
 		for (final KEY key : this.getGroups()) {
-			for (final INSTANCE i : getInstances(key)) {
-				if (index == count)
-					return i;
+			final DATASET group = getInstances(key);
 
-				count++;
+			if (count + group.numInstances() > index) {
+				if (group instanceof ListDataset) {
+					return ((ListDataset<INSTANCE>) group).get(index - count);
+				} else {
+					for (final INSTANCE i : group) {
+						if (index == count)
+							return i;
+
+						count++;
+					}
+				}
+			} else {
+				count += group.numInstances();
 			}
 		}
 		return null;
