@@ -3,11 +3,6 @@ package org.openimaj.ml.linear.learner.perceptron;
 import java.util.ArrayList;
 import java.util.List;
 
-import no.uib.cipr.matrix.DenseVector;
-import no.uib.cipr.matrix.Vector;
-import no.uib.cipr.matrix.io.MatrixVectorReader;
-
-import org.openimaj.math.matrix.GramSchmidtProcess;
 import org.openimaj.ml.linear.kernel.VectorKernel;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -24,8 +19,6 @@ public class MatrixKernelPerceptron extends KernelPerceptron<double[], Perceptro
 	protected List<double[]> supports = new ArrayList<double[]>();
 	protected List<Double> weights = new ArrayList<Double>();
 	
-	double bias = 0;
-	
 	/**
 	 * @param k the kernel
 	 */
@@ -38,7 +31,7 @@ public class MatrixKernelPerceptron extends KernelPerceptron<double[], Perceptro
 	}
 	
 	protected double mapping(double[] in){
-		double ret = bias;
+		double ret = getBias();
 		in = correct(in);
 		for (int i = 0; i < supports.size(); i++) {
 			double alpha = this.weights.get(i);
@@ -56,7 +49,6 @@ public class MatrixKernelPerceptron extends KernelPerceptron<double[], Perceptro
 
 	@Override
 	public void update(double[] xt, PerceptronClass yt, PerceptronClass yt_prime) {
-		bias += yt.v();
 		this.supports.add(xt);
 		this.weights.add((double) yt.v());
 	}
@@ -73,6 +65,10 @@ public class MatrixKernelPerceptron extends KernelPerceptron<double[], Perceptro
 
 	@Override
 	public double getBias() {
+		double bias = 0;
+		for (double d : this.weights) {
+			bias += d;
+		}
 		return bias;
 	}
 

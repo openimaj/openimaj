@@ -24,6 +24,7 @@ import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.ml.linear.data.LinearPerceptronDataGenerator;
 import org.openimaj.ml.linear.kernel.LinearVectorKernel;
 import org.openimaj.ml.linear.learner.perceptron.KernelPerceptron;
+import org.openimaj.ml.linear.learner.perceptron.MarginMeanCenteredPerceptron;
 import org.openimaj.ml.linear.learner.perceptron.MatrixKernelPerceptron;
 import org.openimaj.ml.linear.learner.perceptron.MeanCenteredKernelPerceptron;
 import org.openimaj.ml.linear.learner.perceptron.MeanCenteredProjectron;
@@ -38,6 +39,7 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public class DrawLinearData {
 	
+	private static final int SLEEP_TIME = 0;
 	private static final int SEED = 1;
 
 	/**
@@ -46,7 +48,13 @@ public class DrawLinearData {
 	public static void main(String[] args) {
 		
 		drawPoints();
-		leanrnPoints();
+//		MatrixKernelPerceptron mkp = new MeanCenteredKernelPerceptron(new LinearVectorKernel());
+		MatrixKernelPerceptron mkp = new MarginMeanCenteredPerceptron(new LinearVectorKernel(),10000d);
+//		MatrixKernelPerceptron mkp = new MeanCenteredProjectron(new LinearVectorKernel());
+//		MatrixKernelPerceptron mkp = new Projectron(new LinearVectorKernel());
+//		MatrixKernelPerceptron mkp = new ThresholdMatrixKernelPerceptron(0.1, 0, new LinearVectorKernel());
+//		MatrixKernelPerceptron mkp = new MatrixKernelPerceptron(new LinearVectorKernel());
+		leanrnPoints(mkp);
 //		leanrnPointsProjectron();
 //		leanrnCogFound();
 	}
@@ -75,71 +83,42 @@ public class DrawLinearData {
 		System.out.println("Data created");
 		return ret;
 	}
-	
-	private static void leanrnPointsProjectron() {
-		MBFImage img = new MBFImage(300,300,ColourSpace.RGB);
-		LinearPerceptronDataGenerator dg = new LinearPerceptronDataGenerator(300, 2, 0.3, SEED);
-		dg.setError(0.001);
-		MatrixKernelPerceptron mkp = new MeanCenteredProjectron(new LinearVectorKernel());
-		
-		for (int i = 0; i < 50000; i++) {
-			
-			IndependentPair<double[], PerceptronClass> pointClass = dg.generate();
-			
-			double[] pc = pointClass.firstObject();
-			Point2dImpl point = new Point2dImpl((float)pc[0], (float)pc[1]);
-			PerceptronClass cls = pointClass.getSecondObject();
-			PerceptronClass before = mkp.predict(pc);
-			mkp.process(pc, cls);
-			PerceptronClass after = mkp.predict(pc);
-			if(before!=after){
-				System.out.println(i + " is misclassified!");
-				switch (cls) {
-				case TRUE:
-					img.drawShapeFilled(new Circle(point, 5), RGBColour.GREEN);
-					break;
-				case FALSE:
-					img.drawShape(new Circle(point, 5),3, RGBColour.RED);
-					break;
-				case NONE:
-					throw new RuntimeException("NOPE");
-				}
-				DisplayUtilities.displayName(img,"supports");
-				drawMkpLine(mkp);
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e) {}
-			}
-		}
-		System.out.println(mkp.getSupports().size());
-		
-		
-	}
 
 	private static void drawMkpLine(MatrixKernelPerceptron mkp) {
 		MBFImage img = new MBFImage(300,300,ColourSpace.RGB);
-		Vector origin = LinearVectorKernel.getPlanePoint(mkp.getSupports(),mkp.getWeights(),mkp.getBias());
+
+		List<double[]> sup = mkp.getSupports();
+		List<Double> weights = mkp.getWeights();
+		double bias = mkp.getBias();
+		System.out.println("Bias: " + bias);
+		double[] startD = null;
+		double[] endD = null;
+		
+		double[] mean = new double[2];
 		if(mkp instanceof MeanCenteredKernelPerceptron){
-			double[] mean = ((MeanCenteredKernelPerceptron)mkp).getMean();
-			origin.set(0,origin.get(0) + mean[0]);
-			origin.set(1,origin.get(1) + mean[1]);
+			mean  = ((MeanCenteredKernelPerceptron)mkp).getMean();
+		} else if (mkp instanceof MeanCenteredProjectron){
+			mean = ((MeanCenteredProjectron)mkp).getMean();
 		}
-		Vector dir = LinearVectorKernel.getPlaneDirections(mkp.getSupports(), mkp.getWeights())[0];
-		Point2d lineStart = start(origin,dir);
-		Point2d lineEnd = end(origin,dir);
+		startD=LinearVectorKernel.getPlanePoint(sup,weights,bias,-mean[0],Double.NaN);
+		endD=LinearVectorKernel.getPlanePoint(sup,weights,bias,img.getWidth()-mean[0],Double.NaN);
+		startD[0] += mean[0];
+		startD[1] += mean[1];
+		endD[0] += mean[0];
+		endD[1] += mean[1];
+		Point2d lineStart = new Point2dImpl((float)startD[0], (float)startD[1]);
+		Point2d lineEnd = new Point2dImpl((float)endD[0], (float)endD[1]);
+		
 		Line2d line = new Line2d(lineStart, lineEnd);
+		System.out.println("Drawing: " + line);
 		img.drawLine(line, 3, RGBColour.GREEN);
-		img.drawPoint(new Point2dImpl((float)origin.get(0),(float) origin.get(1)), RGBColour.RED, 5);
+//		img.drawPoint(new Point2dImpl((float)origin.get(0),(float) origin.get(1)), RGBColour.RED, 5);
 		DisplayUtilities.displayName(img,"line");
 	}
 
-	private static void leanrnPoints() {
+	private static void leanrnPoints(MatrixKernelPerceptron mkp ) {
 		MBFImage img = new MBFImage(300,300,ColourSpace.RGB);
 		LinearPerceptronDataGenerator dg = new LinearPerceptronDataGenerator(300, 2, 0.3, SEED);
-		MatrixKernelPerceptron mkp = new MeanCenteredKernelPerceptron(new LinearVectorKernel());
-//		MatrixKernelPerceptron mkp = new PlusOneMatrixKernelPerceptron(new LinearVectorKernel());
-//		MatrixKernelPerceptron mkp = new MatrixKernelPerceptron(new LinearVectorKernel());
-//		MatrixKernelPerceptron mkp = new ThresholdMatrixKernelPerceptron(1,0,new LinearVectorKernel());
 		for (int i = 0; i < 50000; i++) {
 			
 			IndependentPair<double[], PerceptronClass> pointClass = dg.generate();
@@ -151,7 +130,6 @@ public class DrawLinearData {
 			mkp.process(pc, cls);
 			if(errorBefore != mkp.getErrors()){
 				System.out.println(i + " is misclassified!");
-				System.out.println(mkp.getBias());
 				switch (cls) {
 				case TRUE:
 					img.drawShapeFilled(new Circle(point, 5), RGBColour.GREEN);
@@ -164,9 +142,10 @@ public class DrawLinearData {
 				}
 				DisplayUtilities.displayName(img,"supports");
 				drawMkpLine(mkp);
-//				try {
-//					Thread.sleep(500);
-//				} catch (InterruptedException e) {}
+				try {
+					Thread.sleep(SLEEP_TIME);
+				} catch (InterruptedException e) {}
+				System.out.println("Total mistakes: " + mkp.getErrors());
 			}
 		}
 		System.out.println(mkp.getSupports().size());

@@ -28,18 +28,28 @@ public class LinearVectorKernel implements VectorKernel{
 	 * @param supports
 	 * @param weights 
 	 * @param bias
+	 * @param setValues the dimentions of the point set to 0
 	 * @return a point on the plane
 	 */
-	public static Vector getPlanePoint(List<double[]> supports, List<Double> weights, double bias) {
+	public static double[] getPlanePoint(List<double[]> supports, List<Double> weights, double bias, double ... setValues) {
 		if(supports.size() == 0) throw new RuntimeException("Can't estimate plane point without supports");
 		
-		double[] w = new DenseVector(getPlaneDirections(supports, weights)[0]).getData();
-		System.out.println(Arrays.toString(w));
+		double[] w = getDirection(supports, weights);
 		double[] x = new double[w.length];
+		double resid = 0;
 		int index = 0;
-		while(w[index] == 0)index++;
-		x[index] = bias / w[index];
-		return new DenseVector(x,false);
+		for (int i = 0; i < w.length; i++) {
+			
+			if(Double.isNaN(setValues[i])){
+				index = i;
+			} else {
+				resid += (setValues[i] * w[i]);
+				x[i] = setValues[i];
+			}
+		}
+		if(w[index] == 0) return new double[w.length];
+		x[index] = (bias + resid)/ -w[index];
+		return x;
 	}
 
 	/**
@@ -50,11 +60,11 @@ public class LinearVectorKernel implements VectorKernel{
 	public static Vector[] getPlaneDirections(List<double[]> supports, List<Double> weights) {
 		double[] dir = getDirection(supports, weights);
 		int ind = 0;
-		for (int i = 0; i < weights.size(); i++) {
-			double[] ds = supports.get(i);
-			System.out.println("Support " + ind++ + ": " + weights.get(i) + " * " +Arrays.toString(ds) );
-		}
-		System.out.println("Number of supports: " + supports.size() + " direction: " + Arrays.toString(dir));
+//		for (int i = 0; i < weights.size(); i++) {
+//			double[] ds = supports.get(i);
+//			System.out.println("Support " + ind++ + ": " + weights.get(i) + " * " +Arrays.toString(ds) );
+//		}
+//		System.out.println("Number of supports: " + supports.size() + " direction: " + Arrays.toString(dir));
 		Vector[] all = GramSchmidtProcess.perform(dir);
 		Vector[] ret = new Vector[all.length-1];
 		for (int i = 0; i < ret.length; i++) {

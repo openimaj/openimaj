@@ -2,12 +2,10 @@ package org.openimaj.ml.linear.learner.perceptron;
 
 
 import org.openimaj.math.matrix.MatlibMatrixUtils;
-import org.openimaj.ml.linear.kernel.LinearVectorKernel;
 import org.openimaj.ml.linear.kernel.VectorKernel;
 import org.openimaj.util.pair.IndependentPair;
 
 import ch.akuhn.matrix.DenseMatrix;
-import ch.akuhn.matrix.DenseVector;
 import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.Vector;
 /**
@@ -19,9 +17,10 @@ public class Projectron extends MatrixKernelPerceptron{
 	private static final double DEFAULT_ETA = 0.01f;
 	private Matrix Kinv;
 	private double eta;
-
+	private int bias;
 	/**
 	 * @param kernel
+	 * @param eta 
 	 */
 	public Projectron(VectorKernel kernel, double eta) {
 		super(kernel);
@@ -29,6 +28,9 @@ public class Projectron extends MatrixKernelPerceptron{
 		Kinv = DenseMatrix.dense(0, 0);
 	}
 
+	/**
+	 * @param kernel
+	 */
 	public Projectron(VectorKernel kernel) {
 		this(kernel,DEFAULT_ETA);
 	}
@@ -37,12 +39,11 @@ public class Projectron extends MatrixKernelPerceptron{
 	public void update(double[] xt, PerceptronClass yt, PerceptronClass yt_prime) {
 		double kii = this.kernel.apply(IndependentPair.pair(xt,xt));
 		
-		
 		// First calculate optimal weighting vector d
 		Vector kt = calculatekt(xt);
 		Vector d_optimal = Kinv.mult(kt);
 		double delta = Math.max(kii - d_optimal.dot(kt), 0);
-		
+//		this.bias += yt.v();
 		if(delta <= eta){
 			updateWeights(yt,d_optimal);
 		} else{
@@ -57,6 +58,11 @@ public class Projectron extends MatrixKernelPerceptron{
 			this.weights.set(i, this.weights.get(i) + y.v() * d_optimal.get(i));
 		}
 		
+	}
+	
+	@Override
+	public double getBias() {
+		return bias;
 	}
 
 	private void updateKinv(Vector d_optimal, double delta) {

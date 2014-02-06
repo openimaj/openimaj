@@ -1,16 +1,11 @@
 package org.openimaj.ml.linear.learner.perceptron;
 
 
-import org.openimaj.math.matrix.MatlibMatrixUtils;
-import org.openimaj.math.matrix.MeanVector;
-import org.openimaj.ml.linear.kernel.LinearVectorKernel;
-import org.openimaj.ml.linear.kernel.VectorKernel;
-import org.openimaj.util.pair.IndependentPair;
+import java.util.ArrayList;
+import java.util.List;
 
-import ch.akuhn.matrix.DenseMatrix;
-import ch.akuhn.matrix.DenseVector;
-import ch.akuhn.matrix.Matrix;
-import ch.akuhn.matrix.Vector;
+import org.openimaj.math.matrix.MeanVector;
+import org.openimaj.ml.linear.kernel.VectorKernel;
 /**
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -18,12 +13,17 @@ import ch.akuhn.matrix.Vector;
 public class MeanCenteredProjectron extends Projectron{
 	MeanVector mv = new MeanVector();
 	/**
+	 * @param kernel 
 	 * 
 	 */
 	public MeanCenteredProjectron(VectorKernel kernel) {
 		super(kernel);
 	}
 	
+	/**
+	 * @param kernel
+	 * @param eta
+	 */
 	public MeanCenteredProjectron(VectorKernel kernel, double eta) {
 		super(kernel, eta);
 	}
@@ -47,5 +47,19 @@ public class MeanCenteredProjectron extends Projectron{
 			ret[i] = xt[i] - mvec[i];
 		}
 		return ret;
+	}
+	
+	@Override
+	public List<double[]> getSupports() {
+		List<double[]> pre = super.getSupports();
+		List<double[]> ret = new ArrayList<double[]>();
+		for (double[] ds : pre) {
+			ret.add(correct(ds));
+		}
+		return ret;
+	}
+	
+	public double[] getMean() {
+		return mv.vec();
 	}
 }

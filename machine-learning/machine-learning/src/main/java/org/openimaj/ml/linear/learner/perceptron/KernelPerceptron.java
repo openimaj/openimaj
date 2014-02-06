@@ -15,7 +15,7 @@ public abstract class KernelPerceptron<INDEPENDANT, DEPENDANT> implements Online
 
 	
 	Kernel<INDEPENDANT> kernel;
-	private int errors;
+	protected int errors;
 	
 	/**
 	 * 

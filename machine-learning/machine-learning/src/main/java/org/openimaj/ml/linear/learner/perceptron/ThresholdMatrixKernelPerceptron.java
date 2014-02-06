@@ -35,8 +35,6 @@ public class ThresholdMatrixKernelPerceptron extends MatrixKernelPerceptron {
 	
 	@Override
 	public void update(double[] xt, PerceptronClass yt, PerceptronClass yt_prime) {
-		System.out.println("UPDATING!!!");
-		bias += yt.v() * this.weight;
 		this.supports.add(xt);
 		this.weights.add(this.weight * yt.v());
 	}
