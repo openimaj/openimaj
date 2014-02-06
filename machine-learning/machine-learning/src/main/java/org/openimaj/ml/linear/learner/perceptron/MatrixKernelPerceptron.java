@@ -21,8 +21,8 @@ import ch.akuhn.matrix.Matrix;
 public class MatrixKernelPerceptron extends KernelPerceptron<double[], PerceptronClass>{
 
 	
-	protected List<double[]> supports = new ArrayList<>();
-	protected List<Double> weights = new ArrayList<>();
+	protected List<double[]> supports = new ArrayList<double[]>();
+	protected List<Double> weights = new ArrayList<Double>();
 	
 	double bias = 0;
 	
