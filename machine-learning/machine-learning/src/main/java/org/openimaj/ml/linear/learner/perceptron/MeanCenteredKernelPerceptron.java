@@ -1,16 +1,17 @@
 package org.openimaj.ml.linear.learner.perceptron;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import no.uib.cipr.matrix.DenseVector;
+import no.uib.cipr.matrix.Vector;
+
 import org.openimaj.math.matrix.MeanVector;
 import org.openimaj.ml.linear.kernel.VectorKernel;
-import org.openimaj.ml.linear.learner.OnlineLearner;
-import org.openimaj.util.function.Function;
-import org.openimaj.util.function.Operation;
 
 /**
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <INDEPENDANT> 
- * @param <DEPENDANT> 
  */
 public class MeanCenteredKernelPerceptron extends MatrixKernelPerceptron{
 	MeanVector mv = new MeanVector();
@@ -28,8 +29,18 @@ public class MeanCenteredKernelPerceptron extends MatrixKernelPerceptron{
 		super.update(xt, yt, yt_prime);
 	}
 	@Override
-	protected double[] correct(double[] in) {
+	public double[] correct(double[] in) {
 		return center(in);
+	}
+	
+	@Override
+	public List<double[]> getSupports() {
+		List<double[]> pre = super.getSupports();
+		List<double[]> ret = new ArrayList<double[]>();
+		for (double[] ds : pre) {
+			ret.add(correct(ds));
+		}
+		return ret;
 	}
 	
 	private double[] center(double[] xt) {
@@ -42,4 +53,9 @@ public class MeanCenteredKernelPerceptron extends MatrixKernelPerceptron{
 		}
 		return ret;
 	}
+
+	public double[] getMean() {
+		return this.mv.vec();
+	}
+	
 }

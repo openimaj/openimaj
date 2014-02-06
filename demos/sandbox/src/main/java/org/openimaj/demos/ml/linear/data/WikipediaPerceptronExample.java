@@ -19,6 +19,9 @@ import cern.colt.Arrays;
  */
 public class WikipediaPerceptronExample {
 	
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		thresholded(createData());
 		centered(createData());
@@ -38,7 +41,7 @@ public class WikipediaPerceptronExample {
 				PerceptronClass yesta = mkp.predict(x);
 				
 				System.out.println(String.format("x: %s, y: %s, ypred_b: %s, ypred_a: %s",Arrays.toString(x), y, yestb,yesta));
-				System.out.println(mkp.getWeights());
+//				System.out.println(mkp.getWeights());
 			}
 		}
 	}
@@ -69,7 +72,7 @@ public class WikipediaPerceptronExample {
 				PerceptronClass yesta = mkp.predict(x);
 				
 				System.out.println(String.format("x: %s, y: %s, ypred_b: %s, ypred_a: %s",Arrays.toString(x), y, yestb,yesta));
-				System.out.println(mkp.getWeights());
+//				System.out.println(mkp.getWeights());
 			}
 		}
 	}

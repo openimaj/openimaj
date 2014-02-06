@@ -19,7 +19,7 @@ public class PlusOneMatrixKernelPerceptron extends MatrixKernelPerceptron{
 	}
 	
 	@Override
-	protected double[] correct(double[] in) {
+	public double[] correct(double[] in) {
 		double[] out = new double[in.length + 1];
 		out[0] = 1;
 		for (int i = 0; i < in.length; i++) {

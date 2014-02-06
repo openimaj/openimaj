@@ -1,6 +1,7 @@
 package ch.akuhn.matrix;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * A Dense matrix.
@@ -67,7 +68,34 @@ public class DenseMatrix extends Matrix {
 	public double put(int row, int column, double value) {
 		return values[row][column] = value;
 	}
-
+	
+	@Override
+	public Iterable<Vector> rows() {
+		return new Iterable<Vector>() {
+			
+			@Override
+			public Iterator<Vector> iterator() {
+				return new Iterator<Vector>() {
+					int i = 0;
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					
+					@Override
+					public Vector next() {
+						return new DenseVector(DenseMatrix.this.values[i++]);
+					}
+					
+					@Override
+					public boolean hasNext() {
+						return i < DenseMatrix.this.values.length;
+					}
+				};
+			}
+		};
+	}
+	
 	@Override
 	public int rowCount() {
 		return values.length;

@@ -23,6 +23,7 @@ public class LinearPerceptronDataGenerator implements DataGenerator<double[],Per
 	private double range;
 	private int dims;
 	private double prop;
+	private double error = 0;
 
 	
 	/**
@@ -101,6 +102,9 @@ public class LinearPerceptronDataGenerator implements DataGenerator<double[],Per
 			double dot = v.dot(d);
 			double sgn = Math.signum(dot);
 			if(sgn == 0) sgn = 1;
+			if(rng.nextDouble() <this.error){
+				sgn = -sgn; 
+			}
 			PerceptronClass sgnClass = PerceptronClass.fromSign(sgn);
 			if(sgnClass.equals(dec)) {
 				return IndependentPair.pair(randomPoint, sgnClass);
@@ -123,6 +127,10 @@ public class LinearPerceptronDataGenerator implements DataGenerator<double[],Per
 			ret[i] = allInclusive[i+1];
 		}
 		return ret;
+	}
+
+	public void setError(double d) {
+		this.error  = d;
 	}
 
 }

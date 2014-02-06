@@ -72,5 +72,13 @@ public class GramSchmidtProcess implements Function<double[],Vector[]>{
 			System.out.println(vector);
 		}
 	}
+	/**
+	 * @param dir
+	 * @return construct and perform a {@link GramSchmidtProcess}
+	 */
+	public static Vector[] perform(double[] dir) {
+		
+		return new GramSchmidtProcess().apply(dir);
+	}
 	
 }

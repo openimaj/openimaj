@@ -1,5 +1,7 @@
 package org.openimaj.ml.linear.learner.perceptron;
 
+import java.util.List;
+
 import org.openimaj.ml.linear.kernel.Kernel;
 import org.openimaj.ml.linear.learner.OnlineLearner;
 
@@ -13,7 +15,14 @@ public abstract class KernelPerceptron<INDEPENDANT, DEPENDANT> implements Online
 
 	
 	Kernel<INDEPENDANT> kernel;
-
+	private int errors;
+	
+	/**
+	 * 
+	 */
+	public KernelPerceptron() {
+	}
+	
 	/**
 	 * @param kernel
 	 */
@@ -26,6 +35,7 @@ public abstract class KernelPerceptron<INDEPENDANT, DEPENDANT> implements Online
 		DEPENDANT yt_prime = predict(xt);
 		if(!yt_prime.equals(yt)){
 			update(xt,yt,yt_prime);
+			this.errors ++;
 		}
 	}
 
@@ -36,5 +46,27 @@ public abstract class KernelPerceptron<INDEPENDANT, DEPENDANT> implements Online
 	 * @param yt_prime
 	 */
 	public abstract void update(INDEPENDANT xt, DEPENDANT yt, DEPENDANT yt_prime) ;
-
+	
+	/**
+	 * @return the vectors that form the support
+	 */
+	public abstract List<INDEPENDANT> getSupports();
+	/**
+	 * @return the weights of the support vectors
+	 */
+	public abstract List<Double> getWeights();
+	
+	/**
+	 * @return the bias
+	 */
+	public abstract double getBias();
+	
+	/**
+	 * @return number of errors made
+	 */
+	public int getErrors(){
+		return errors;
+		
+	}
+	
 }

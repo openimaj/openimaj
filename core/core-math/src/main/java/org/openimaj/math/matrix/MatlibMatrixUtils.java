@@ -41,6 +41,7 @@ import org.openimaj.util.array.SparseBinSearchDoubleArray;
 import org.openimaj.util.array.SparseDoubleArray;
 
 import ch.akuhn.matrix.DenseMatrix;
+import ch.akuhn.matrix.DenseVector;
 import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.Vector;
@@ -146,9 +147,31 @@ public class MatlibMatrixUtils {
 	 *            matrix to add
 	 * @return A first matrix
 	 */
-	public static SparseMatrix plusInplace(SparseMatrix A, SparseMatrix B) {
+	public static SparseMatrix plusInplace(SparseMatrix A, Matrix B) {
 		for (int i = 0; i < A.rowCount(); i++) {
 			A.addToRow(i, B.row(i));
+		}
+		return A;
+	}
+	
+	/**
+	 * Add two matrices, storing the results in the first:
+	 * <code>A = A + B</code>
+	 * 
+	 * @param A
+	 *            first matrix
+	 * @param B
+	 *            matrix to add
+	 * @return A first matrix
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends Matrix> T plusInplace(T A, Matrix B) {
+		if(A instanceof SparseMatrix) return (T) plusInplace((SparseMatrix)A,B);
+		for (int i = 0; i < A.rowCount(); i++) {
+			Vector brow = B.row(i);
+			for (int j = 0; j < A.columnCount(); j++) {
+				A.row(i).add(j, brow.get(j));
+			}
 		}
 		return A;
 	}
@@ -224,8 +247,9 @@ public class MatlibMatrixUtils {
 	 * @param s
 	 * @return A
 	 */
-	public static SparseMatrix scaleInplace(SparseMatrix A, double s) {
+	public static <T extends Matrix> T scaleInplace(T A, double s) {
 		for (final Vector row : A.rows()) {
+			System.out.println(row);
 			row.timesEquals(s);
 		}
 		return A;
@@ -562,7 +586,7 @@ public class MatlibMatrixUtils {
 	public static void setSubMatrix(Matrix newSeenMatrix, int row, int col, Matrix current) {
 		for (int i = row; i < row + current.rowCount(); i++) {
 			for (int j = col; j < col + current.columnCount(); j++) {
-				newSeenMatrix.put(i, j, current.get(i, j));
+				newSeenMatrix.put(i, j, current.get(i-row, j-col));
 			}
 		}
 	}
@@ -699,6 +723,24 @@ public class MatlibMatrixUtils {
 	public static SparseDoubleArray sparseVectorToSparseArray(ch.akuhn.matrix.SparseVector row) {
 		final SparseDoubleArray sda = new SparseBinSearchDoubleArray(row.size(), row.used(), row.keys(), row.values());
 		return sda;
+	}
+
+	/**
+	 * 
+	 * @param to add items to this
+	 * @param startindex starting index in to
+	 * @param from add items from this
+	 */
+	public static void setSubVector(Vector to, int startindex, Vector from) {
+		if(to instanceof DenseVector && from instanceof DenseVector){
+			double[] tod = ((DenseVector)to).unwrap();
+			double[] fromd = ((DenseVector)from).unwrap();
+			System.arraycopy(fromd, 0, tod, startindex, fromd.length);
+			return;
+		}
+		for (int i = 0; i < from.size(); i++) {
+			to.put(i + startindex, from.get(i));
+		}
 	}
 
 }
