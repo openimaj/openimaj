@@ -323,4 +323,14 @@ public class #T#FV extends ArrayFeatureVector<#t#[]> implements Concatenatable<#
 	public boolean equals(Object obj) {
 		return Arrays.equals(values, ((#T#FV)obj).values);
 	}
+	
+	@Override
+	public #T#FV subvector(int beginIndex) {
+		return new #T#FV(Arrays.copyOfRange(this.values, beginIndex, values.length));
+	}
+
+	@Override
+	public #T#FV subvector(int beginIndex, int endIndex) {
+		return new #T#FV(Arrays.copyOfRange(this.values, beginIndex, endIndex));
+	}
 }

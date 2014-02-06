@@ -86,6 +86,13 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 	private FeatureVectorPCA pca;
 	private int width;
 	private int height;
+	private int numComponents;
+
+	/**
+	 * For serialisation
+	 */
+	protected EigenImages() {
+	}
 
 	/**
 	 * Construct with the given number of principal components.
@@ -94,6 +101,7 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 	 *            the number of PCs
 	 */
 	public EigenImages(int numComponents) {
+		this.numComponents = numComponents;
 		pca = new FeatureVectorPCA(new ThinSvdPrincipalComponentAnalysis(numComponents));
 	}
 
@@ -155,6 +163,7 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 	public void readBinary(DataInput in) throws IOException {
 		width = in.readInt();
 		height = in.readInt();
+		numComponents = in.readInt();
 		pca = IOUtils.read(in);
 	}
 
@@ -167,11 +176,22 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 	public void writeBinary(DataOutput out) throws IOException {
 		out.writeInt(width);
 		out.writeInt(height);
+		out.writeInt(numComponents);
 		IOUtils.write(pca, out);
 	}
 
 	@Override
 	public String toString() {
 		return String.format("EigenImages[width=%d; height=%d; pca=%s]", width, height, pca);
+	}
+
+	/**
+	 * Get the number of PCA components selected by this {@link EigenImages}
+	 * object.
+	 * 
+	 * @return the number of PCA components.
+	 */
+	public int getNumComponents() {
+		return numComponents;
 	}
 }
