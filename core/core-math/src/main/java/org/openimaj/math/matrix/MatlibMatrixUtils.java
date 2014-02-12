@@ -779,6 +779,11 @@ public class MatlibMatrixUtils {
 		}
 	}
 
+	/**
+	 * @param v the value vector 
+	 * @param d the check value
+	 * @return for each item in the vector, returns 1 if the value is less than the check value
+	 */
 	public static Vector lessThan(Vector v, double d) {
 		final Vector out = new SparseVector(v.size(), 1);
 		for (int i = 0; i < v.size(); i++) {
@@ -788,6 +793,10 @@ public class MatlibMatrixUtils {
 		return out;
 	}
 
+	/**
+	 * @param v
+	 * @return any values of the vector are not-zero
+	 */
 	public static boolean any(Vector v) {
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i) != 0)
