@@ -112,7 +112,8 @@
 		<xi:include href="fundamentals/audio/audio-proc.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="fundamentals/audio/audio-features.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
-	
+
+<!--	
 	<part>
 		<title>Text Fundamentals</title>
 		<xi:include href="fundamentals/text/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
@@ -126,12 +127,13 @@
 		
 		<xi:include href="fundamentals/web/web-page-analysis.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
+-->
 	
 	<part>
 		<title>Streaming Data Fundamentals</title>
 		<xi:include href="fundamentals/streaming/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		
-		<xi:include href="fundamentals/streaming/stream-basics.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+<!--		<xi:include href="fundamentals/streaming/stream-basics.xml" xmlns:xi="http://www.w3.org/2001/XInclude" /> -->
 		<xi:include href="fundamentals/streaming/twitter-images.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
@@ -140,8 +142,8 @@
 		<xi:include href="fundamentals/machine-learning/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		
 		<xi:include href="fundamentals/machine-learning/classification101.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		<xi:include href="fundamentals/machine-learning/image-annotation.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		<xi:include href="fundamentals/machine-learning/feature-detector.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+<!--		<xi:include href="fundamentals/machine-learning/image-annotation.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="fundamentals/machine-learning/feature-detector.xml" xmlns:xi="http://www.w3.org/2001/XInclude" /> -->
 	</part>
 	
 	<part>
@@ -149,11 +151,13 @@
 		<xi:include href="advanced/faces/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		
 		<xi:include href="advanced/faces/eigenfaces.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+<!--
 		<xi:include href="advanced/faces/pipeline-intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="advanced/faces/face-detection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="advanced/faces/face-alignment.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="advanced/faces/face-features.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		<xi:include href="advanced/faces/face-annotation.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+-->
 	</part>
 
 	<part>
@@ -161,7 +165,7 @@
 		<xi:include href="advanced/features/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 		
 		<xi:include href="advanced/features/parallel-processing.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-		<xi:include href="advanced/features/referencing-code.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+<!--		<xi:include href="advanced/features/referencing-code.xml" xmlns:xi="http://www.w3.org/2001/XInclude" /> -->
 	</part>
 	
 	<xi:include href="colophon.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
