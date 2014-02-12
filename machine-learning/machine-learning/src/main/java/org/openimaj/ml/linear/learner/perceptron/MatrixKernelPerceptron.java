@@ -1,7 +1,10 @@
 package org.openimaj.ml.linear.learner.perceptron;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openimaj.ml.linear.kernel.VectorKernel;
 import org.openimaj.util.pair.IndependentPair;
@@ -15,9 +18,31 @@ import ch.akuhn.matrix.Matrix;
  */
 public class MatrixKernelPerceptron extends KernelPerceptron<double[], PerceptronClass>{
 
-	
+	class WrappedDouble{
+		private double[] d;
+
+		public WrappedDouble(double[] d) {
+			this.d = d;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if(obj instanceof WrappedDouble){
+				WrappedDouble that = (WrappedDouble) obj;
+				return Arrays.equals(d, that.d);
+			}
+			return false;
+		}
+		
+		 @Override
+		public int hashCode() {
+			return Arrays.hashCode(d);
+		}
+	}
 	protected List<double[]> supports = new ArrayList<double[]>();
 	protected List<Double> weights = new ArrayList<Double>();
+	
+	Map<WrappedDouble,Integer> index = new HashMap<WrappedDouble, Integer>();
+	
 	
 	/**
 	 * @param k the kernel
@@ -49,8 +74,20 @@ public class MatrixKernelPerceptron extends KernelPerceptron<double[], Perceptro
 
 	@Override
 	public void update(double[] xt, PerceptronClass yt, PerceptronClass yt_prime) {
-		this.supports.add(xt);
-		this.weights.add((double) yt.v());
+		WrappedDouble d = new WrappedDouble(xt);
+		double updateAmount = this.getUpdateRate() * (double) yt.v();
+		if(!this.index.containsKey(d)){
+			this.index.put(d, this.supports.size());
+			this.supports.add(xt);
+			this.weights.add(updateAmount);
+		} else {
+			int index = this.index.get(d);
+			this.weights.set(index, this.weights.get(index) + updateAmount);
+		}
+	}
+
+	double getUpdateRate() {
+		return 1;
 	}
 
 	@Override
@@ -71,7 +108,8 @@ public class MatrixKernelPerceptron extends KernelPerceptron<double[], Perceptro
 		}
 		return bias;
 	}
-
+	
+	
 	
 
 }

@@ -74,7 +74,7 @@ public class LinearVectorKernel implements VectorKernel{
 	}
 	
 
-	private static double[] getDirection(List<double[]> supports, List<Double> weights) {
+	public static double[] getDirection(List<double[]> supports, List<Double> weights) {
 		Vector ret = null;
 		for (int i = 0; i < supports.size(); i++) {
 			double[] sup = supports.get(i);

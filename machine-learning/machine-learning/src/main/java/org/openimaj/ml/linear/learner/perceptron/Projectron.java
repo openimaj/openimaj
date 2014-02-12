@@ -17,7 +17,6 @@ public class Projectron extends MatrixKernelPerceptron{
 	private static final double DEFAULT_ETA = 0.01f;
 	private Matrix Kinv;
 	private double eta;
-	private int bias;
 	/**
 	 * @param kernel
 	 * @param eta 
@@ -62,7 +61,7 @@ public class Projectron extends MatrixKernelPerceptron{
 	
 	@Override
 	public double getBias() {
-		return bias;
+		return 0;
 	}
 
 	private void updateKinv(Vector d_optimal, double delta) {

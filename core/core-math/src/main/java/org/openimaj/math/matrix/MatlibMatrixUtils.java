@@ -29,12 +29,13 @@
  */
 package org.openimaj.math.matrix;
 
+import java.util.BitSet;
+
 import gnu.trove.TIntCollection;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
-import no.uib.cipr.matrix.sparse.SparseVector;
 
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.array.SparseBinSearchDoubleArray;
@@ -44,6 +45,7 @@ import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.DenseVector;
 import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
+import ch.akuhn.matrix.SparseVector;
 import ch.akuhn.matrix.Vector;
 import ch.akuhn.matrix.Vector.Entry;
 
@@ -318,7 +320,8 @@ public class MatlibMatrixUtils {
 			final FlexCompRowMatrix fmat = new FlexCompRowMatrix(sol.rowCount(), sol.columnCount());
 			int i = 0;
 			for (final Vector vec : sol.rows()) {
-				final SparseVector x = new SparseVector(vec.size(), vec.used());
+				
+				final no.uib.cipr.matrix.sparse.SparseVector x = new no.uib.cipr.matrix.sparse.SparseVector(vec.size(), vec.used());
 				for (final Entry ve : vec.entries()) {
 					x.set(ve.index, ve.value);
 				}
@@ -741,6 +744,47 @@ public class MatlibMatrixUtils {
 		for (int i = 0; i < from.size(); i++) {
 			to.put(i + startindex, from.get(i));
 		}
+	}
+
+	/**
+	 * Starting from a given column of a row, set the values of a matrix to the values of v 
+	 * @param to
+	 * @param row
+	 * @param col
+	 * @param v
+	 */
+	public static void setSubMatrixRow(Matrix to, int row, int col, Vector v) {
+		for (int i = col, j = 0; i < col + v.size(); i++, j++) {
+			to.put(row, i, v.get(j));
+		}
+	}
+	
+	/**
+	 * Starting from a given row of a column, set the values of a matrix to the values of v 
+	 * @param to
+	 * @param row
+	 * @param col
+	 * @param v
+	 */
+	public static void setSubMatrixCol(Matrix to, int row, int col, Vector v) {
+		for (int i = row, j = 0; i < row + v.size(); i++, j++) {
+			to.put(i, col, v.get(j));
+		}
+	}
+
+	public static Vector lessThan(Vector v, double d) {
+		Vector out = new SparseVector(v.size(), 1);
+		for (int i = 0; i < v.size(); i++) {
+			if(v.get(i) < d) out.put(i,1);
+		}
+		return out;
+	}
+
+	public static boolean any(Vector v) {
+		for (int i = 0; i < v.size(); i++) {
+			if(v.get(i)!=0)return true;
+		}
+		return false;
 	}
 
 }

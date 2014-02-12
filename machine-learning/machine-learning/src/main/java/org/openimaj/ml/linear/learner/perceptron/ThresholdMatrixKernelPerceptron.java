@@ -12,7 +12,7 @@ import ch.akuhn.matrix.Matrix;
  */
 public class ThresholdMatrixKernelPerceptron extends MatrixKernelPerceptron {
 
-	private double weight;
+	private double rate;
 	private double thresh;
 
 	public ThresholdMatrixKernelPerceptron(VectorKernel k) {
@@ -20,7 +20,7 @@ public class ThresholdMatrixKernelPerceptron extends MatrixKernelPerceptron {
 	}
 	public ThresholdMatrixKernelPerceptron(double weight, double threshold, VectorKernel k) {
 		super(k);
-		this.weight = weight;
+		this.rate = weight;
 		this.thresh = threshold;
 		
 	}
@@ -34,10 +34,11 @@ public class ThresholdMatrixKernelPerceptron extends MatrixKernelPerceptron {
 	}
 	
 	@Override
-	public void update(double[] xt, PerceptronClass yt, PerceptronClass yt_prime) {
-		this.supports.add(xt);
-		this.weights.add(this.weight * yt.v());
+	double getUpdateRate() {
+		return rate;
 	}
+	
+	
 	
 	
 	
