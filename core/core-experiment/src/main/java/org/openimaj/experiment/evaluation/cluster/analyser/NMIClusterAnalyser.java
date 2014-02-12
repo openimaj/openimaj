@@ -36,33 +36,36 @@ import org.openimaj.logger.LoggerUtils;
 
 /**
  * The normalised mutual information of a cluster estimate
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class NMIClusterAnalyser implements ClusterAnalyser<NMIAnalysis>{
+public class NMIClusterAnalyser implements ClusterAnalyser<NMIAnalysis> {
 
 	private final static Logger logger = Logger.getLogger(NMIClusterAnalyser.class);
 
 	@Override
 	public NMIAnalysis analyse(int[][] correct, int[][] estimated) {
-		NMIAnalysis ret = new NMIAnalysis();
-		Map<Integer,Integer> invCor = ClusterAnalyserUtils.invert(correct);
-		Map<Integer,Integer> invEst = ClusterAnalyserUtils.invert(estimated);
-		ret.nmi = nmi(correct,estimated,invCor,invEst);
+		final NMIAnalysis ret = new NMIAnalysis();
+		final Map<Integer, Integer> invCor = ClusterAnalyserUtils.invert(correct);
+		final Map<Integer, Integer> invEst = ClusterAnalyserUtils.invert(estimated);
+		ret.nmi = nmi(correct, estimated, invCor, invEst);
 		return ret;
 	}
+
 	private double nmi(int[][] c, int[][] e, Map<Integer, Integer> ic, Map<Integer, Integer> ie) {
-		double N = Math.max(ic.size(), ie.size());
-		double mi = mutualInformation(N, c,e,ic,ie);
-		LoggerUtils.debugFormat(logger ,"Iec = %2.5f",mi);
-		double ent_e = entropy(e,N);
-		LoggerUtils.debugFormat(logger,"He = %2.5f",ent_e);
-		double ent_c = entropy(c,N);
-		LoggerUtils.debugFormat(logger,"Hc = %2.5f",ent_c);
-		return mi / ((ent_e + ent_c)/2);
+		final double N = Math.max(ic.size(), ie.size());
+		final double mi = mutualInformation(N, c, e, ic, ie);
+		LoggerUtils.debugFormat(logger, "Iec = %2.5f", mi);
+		final double ent_e = entropy(e, N);
+		LoggerUtils.debugFormat(logger, "He = %2.5f", ent_e);
+		final double ent_c = entropy(c, N);
+		LoggerUtils.debugFormat(logger, "Hc = %2.5f", ent_c);
+		return mi / ((ent_e + ent_c) / 2);
 	}
 
 	/**
 	 * Maximum liklihood estimate of the entropy
+	 * 
 	 * @param clusters
 	 * @param N
 	 * @return
@@ -70,21 +73,23 @@ public class NMIClusterAnalyser implements ClusterAnalyser<NMIAnalysis>{
 	private double entropy(int[][] clusters, double N) {
 		double total = 0;
 		for (int k = 0; k < clusters.length; k++) {
-			LoggerUtils.debugFormat(logger, "%2.1f/%2.1f * log2 ((%2.1f / %2.1f) )",(double)clusters[k].length,N,(double)clusters[k].length,N);
-			double prop = clusters[k].length / N;
+			LoggerUtils.debugFormat(logger, "%2.1f/%2.1f * log2 ((%2.1f / %2.1f) )", (double) clusters[k].length, N,
+					(double) clusters[k].length, N);
+			final double prop = clusters[k].length / N;
 			total += prop * log2(prop);
 		}
 		return -total;
 	}
 
 	private double log2(double prop) {
-		if(prop == 0) return 0;
-		return Math.log(prop)/Math.log(2);
+		if (prop == 0)
+			return 0;
+		return Math.log(prop) / Math.log(2);
 	}
 
 	/**
 	 * Maximum Liklihood estimate of the mutual information
-	 *
+	 * 
 	 * @param c
 	 * @param e
 	 * @param ic
@@ -94,36 +99,39 @@ public class NMIClusterAnalyser implements ClusterAnalyser<NMIAnalysis>{
 	private double mutualInformation(double N, int[][] c, int[][] e, Map<Integer, Integer> ic, Map<Integer, Integer> ie) {
 		double mi = 0;
 		for (int k = 0; k < e.length; k++) {
-			double n_e = e[k].length;
+			final double n_e = e[k].length;
 			for (int j = 0; j < c.length; j++) {
-				double n_c = c[j].length;
+				final double n_c = c[j].length;
 				double both = 0;
 				for (int i = 0; i < e[k].length; i++) {
-					Integer itemCluster = ic.get(e[k][i]);
-					if(itemCluster == null) continue;
-					if(itemCluster == j) both++;
+					final Integer itemCluster = ic.get(e[k][i]);
+					if (itemCluster == null)
+						continue;
+					if (itemCluster == j)
+						both++;
 				}
-				double normProp = (both * N)/(n_c * n_e);
-//				LoggerUtils.debugFormat(logger,"normprop = %2.5f",normProp);
-				double sum = (both / N) * (log2(normProp));
+				final double normProp = (both * N) / (n_c * n_e);
+				// LoggerUtils.debugFormat(logger,"normprop = %2.5f",normProp);
+				final double sum = (both / N) * (log2(normProp));
 				mi += sum;
 
-//				LoggerUtils.debugFormat(logger,"%2.1f/%2.1f * log2 ((%2.1f * %2.1f) / (%2.1f * %2.1f)) = %2.5f",both,N,both,N,n_c,n_e,sum);
+				// LoggerUtils.debugFormat(logger,"%2.1f/%2.1f * log2 ((%2.1f * %2.1f) / (%2.1f * %2.1f)) = %2.5f",both,N,both,N,n_c,n_e,sum);
 			}
 		}
 		return mi;
 	}
-	
-	public static void main(String[] args) {
-		LoggerUtils.prepareConsoleLogger();
-		NMIClusterAnalyser an = new NMIClusterAnalyser();
-		NMIAnalysis res = an.analyse(
-				new int[][]{new int[]{1,2,3},new int[]{4,5,6}},
-//				new int[][]{new int[]{1,2},new int[]{3},new int[]{4,5},new int[]{6}}
-//				new int[][]{new int[]{1},new int[]{2},new int[]{3},new int[]{4},new int[]{5},new int[]{6}}
-				new int[][]{new int[]{7,8,9}}
-		);
-		System.out.println(res);
-	}
+
+	// public static void main(String[] args) {
+	// LoggerUtils.prepareConsoleLogger();
+	// NMIClusterAnalyser an = new NMIClusterAnalyser();
+	// NMIAnalysis res = an.analyse(
+	// new int[][]{new int[]{1,2,3},new int[]{4,5,6}},
+	// // new int[][]{new int[]{1,2},new int[]{3},new int[]{4,5},new int[]{6}}
+	// // new int[][]{new int[]{1},new int[]{2},new int[]{3},new int[]{4},new
+	// int[]{5},new int[]{6}}
+	// new int[][]{new int[]{7,8,9}}
+	// );
+	// System.out.println(res);
+	// }
 
 }

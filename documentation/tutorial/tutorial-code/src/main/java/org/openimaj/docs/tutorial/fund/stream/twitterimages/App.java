@@ -31,7 +31,6 @@ package org.openimaj.docs.tutorial.fund.stream.twitterimages;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
@@ -51,7 +49,6 @@ import org.openimaj.stream.functions.twitter.TwitterURLExtractor;
 import org.openimaj.stream.provider.twitter.TwitterStreamDataset;
 import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
-import org.openimaj.util.function.Function;
 import org.openimaj.util.function.MultiFunction;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.function.Predicate;
@@ -68,21 +65,21 @@ public class App {
 	 * Main method
 	 * 
 	 * @param args
-	 * @throws FileNotFoundException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
 	 */
 	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 		final String pardir = "/Users/ss/Dropbox/courses/2013/comp2005/tweets";
-		final PrintWriter writer = new PrintWriter(new File(pardir,"tweets.txt"),"UTF-8");
+		final PrintWriter writer = new PrintWriter(new File(pardir, "tweets.txt"), "UTF-8");
 		/*
 		 * Construct a twitter stream with an
 		 */
 		final TwitterAPIToken token = DefaultTokenFactory.get(TwitterAPIToken.class);
-		Stream<Status> stream = new TwitterStreamDataset(token);
+		final Stream<Status> stream = new TwitterStreamDataset(token);
 
 		// Get the URLs
 		final Stream<URL> urlStream = stream.filter(new Predicate<Status>() {
-			
+
 			@Override
 			public boolean test(Status object) {
 				writer.println(object.getText());
@@ -107,8 +104,7 @@ public class App {
 				final List<MBFImage> faces = new ArrayList<MBFImage>();
 				for (final DetectedFace face : detected)
 				{
-//					faces.add(in.extractROI(face.getBounds()));
-					faces.add(in);
+					faces.add(in.extractROI(face.getBounds()));
 				}
 
 				return faces;
@@ -117,10 +113,12 @@ public class App {
 			@Override
 			public void perform(MBFImage image) {
 				try {
-					ImageUtilities.write(image, new File(pardir,String.format("%d.png",new Random().nextInt(1000))));
-				} catch (IOException e) {
+					ImageUtilities.write(image, new File(pardir, String.format("%d.png", new Random().nextInt(1000))));
+				} catch (final IOException e) {
 				}
 			}
 		});
+
+		writer.close();
 	}
 }

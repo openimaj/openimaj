@@ -32,17 +32,13 @@ package org.openimaj.math.geometry.shape;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.line.Line2d.IntersectionResult;
-import org.openimaj.math.geometry.line.Line2d.IntersectionType;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
@@ -103,9 +99,12 @@ public class Triangle implements Shape {
 	 * .point.Point2d)
 	 */
 	/**
-	 * Like {@link #isInside(Point2d)} but counts being "on the line" as being inside also
+	 * Like {@link #isInside(Point2d)} but counts being "on the line" as being
+	 * inside also
+	 * 
 	 * @param point
-	 * @return
+	 *            the point being tested
+	 * @return true if the point is inside or on the line; false otherwise
 	 */
 	public final boolean isInsideOnLine(Point2d point) {
 		final float v1x = vertices[0].getX();
@@ -132,7 +131,7 @@ public class Triangle implements Shape {
 
 		return ((o1 == 0 ? o2 : o1) == (o2 == 0 ? o1 : o2)) && ((o3 == 0 ? o2 : o3) == (o2 == 0 ? o1 : o2));
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -373,51 +372,55 @@ public class Triangle implements Shape {
 				vertices[2].getX(), vertices[2].getY()
 				);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(vertices);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof Triangle)) return false;
-		Triangle tri = (Triangle) obj;
+		if (!(obj instanceof Triangle))
+			return false;
+		final Triangle tri = (Triangle) obj;
 		for (int i = 0; i < 3; i++) {
-			if(!tri.vertices[i].equals(this.vertices[i]))return false;
+			if (!tri.vertices[i].equals(this.vertices[i]))
+				return false;
 		}
 		return true;
 	}
 
 	/**
 	 * The intersection of this triangle with the line defined by y = mx + c.
+	 * The line crosses at either 0, 1 or 2 points.
 	 * 
-	 * @return The line crosses at either 0, 1 or 2 points
+	 * @param line
+	 *            the line
+	 * 
+	 * @return the intersecting edges of the triangle and points of intersection
 	 */
-	public Map<Line2d,Point2d> intersectionSides(Line2d line) {
-		Rectangle bb = this.calculateRegularBoundingBox();
-		Map<Line2d, Point2d> ret = new HashMap<Line2d, Point2d>();
-		Line2d first  = new Line2d(this.vertices[0],this.vertices[1]);
-		Line2d second = new Line2d(this.vertices[1],this.vertices[2]);
-		Line2d third  = new Line2d(this.vertices[2],this.vertices[0]);
-		
-		addIntersect(ret,first,line);
-		addIntersect(ret,second,line);
-		addIntersect(ret,third,line);
-		
-		return ret ;
+	public Map<Line2d, Point2d> intersectionSides(Line2d line) {
+		final Map<Line2d, Point2d> ret = new HashMap<Line2d, Point2d>();
+		final Line2d first = new Line2d(this.vertices[0], this.vertices[1]);
+		final Line2d second = new Line2d(this.vertices[1], this.vertices[2]);
+		final Line2d third = new Line2d(this.vertices[2], this.vertices[0]);
+
+		addIntersect(ret, first, line);
+		addIntersect(ret, second, line);
+		addIntersect(ret, third, line);
+
+		return ret;
 	}
 
-	private void addIntersect(Map<Line2d, Point2d> ret, Line2d line,Line2d otherline) {
-		IntersectionResult inter = line.getIntersection(otherline);
+	private void addIntersect(Map<Line2d, Point2d> ret, Line2d line, Line2d otherline) {
+		final IntersectionResult inter = line.getIntersection(otherline);
 		switch (inter.type) {
-		
 		case INTERSECTING:
 			ret.put(line, inter.intersectionPoint);
 			break;
 		default:
 			break;
-		
+
 		}
 	}
 }

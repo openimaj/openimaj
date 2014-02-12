@@ -29,8 +29,6 @@
  */
 package org.openimaj.math.matrix;
 
-import java.util.BitSet;
-
 import gnu.trove.TIntCollection;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -155,7 +153,7 @@ public class MatlibMatrixUtils {
 		}
 		return A;
 	}
-	
+
 	/**
 	 * Add two matrices, storing the results in the first:
 	 * <code>A = A + B</code>
@@ -168,9 +166,10 @@ public class MatlibMatrixUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Matrix> T plusInplace(T A, Matrix B) {
-		if(A instanceof SparseMatrix) return (T) plusInplace((SparseMatrix)A,B);
+		if (A instanceof SparseMatrix)
+			return (T) plusInplace((SparseMatrix) A, B);
 		for (int i = 0; i < A.rowCount(); i++) {
-			Vector brow = B.row(i);
+			final Vector brow = B.row(i);
 			for (int j = 0; j < A.columnCount(); j++) {
 				A.row(i).add(j, brow.get(j));
 			}
@@ -320,8 +319,9 @@ public class MatlibMatrixUtils {
 			final FlexCompRowMatrix fmat = new FlexCompRowMatrix(sol.rowCount(), sol.columnCount());
 			int i = 0;
 			for (final Vector vec : sol.rows()) {
-				
-				final no.uib.cipr.matrix.sparse.SparseVector x = new no.uib.cipr.matrix.sparse.SparseVector(vec.size(), vec.used());
+
+				final no.uib.cipr.matrix.sparse.SparseVector x = new no.uib.cipr.matrix.sparse.SparseVector(vec.size(),
+						vec.used());
 				for (final Entry ve : vec.entries()) {
 					x.set(ve.index, ve.value);
 				}
@@ -589,7 +589,7 @@ public class MatlibMatrixUtils {
 	public static void setSubMatrix(Matrix newSeenMatrix, int row, int col, Matrix current) {
 		for (int i = row; i < row + current.rowCount(); i++) {
 			for (int j = col; j < col + current.columnCount(); j++) {
-				newSeenMatrix.put(i, j, current.get(i-row, j-col));
+				newSeenMatrix.put(i, j, current.get(i - row, j - col));
 			}
 		}
 	}
@@ -730,14 +730,17 @@ public class MatlibMatrixUtils {
 
 	/**
 	 * 
-	 * @param to add items to this
-	 * @param startindex starting index in to
-	 * @param from add items from this
+	 * @param to
+	 *            add items to this
+	 * @param startindex
+	 *            starting index in to
+	 * @param from
+	 *            add items from this
 	 */
 	public static void setSubVector(Vector to, int startindex, Vector from) {
-		if(to instanceof DenseVector && from instanceof DenseVector){
-			double[] tod = ((DenseVector)to).unwrap();
-			double[] fromd = ((DenseVector)from).unwrap();
+		if (to instanceof DenseVector && from instanceof DenseVector) {
+			final double[] tod = ((DenseVector) to).unwrap();
+			final double[] fromd = ((DenseVector) from).unwrap();
 			System.arraycopy(fromd, 0, tod, startindex, fromd.length);
 			return;
 		}
@@ -747,7 +750,9 @@ public class MatlibMatrixUtils {
 	}
 
 	/**
-	 * Starting from a given column of a row, set the values of a matrix to the values of v 
+	 * Starting from a given column of a row, set the values of a matrix to the
+	 * values of v
+	 * 
 	 * @param to
 	 * @param row
 	 * @param col
@@ -758,9 +763,11 @@ public class MatlibMatrixUtils {
 			to.put(row, i, v.get(j));
 		}
 	}
-	
+
 	/**
-	 * Starting from a given row of a column, set the values of a matrix to the values of v 
+	 * Starting from a given row of a column, set the values of a matrix to the
+	 * values of v
+	 * 
 	 * @param to
 	 * @param row
 	 * @param col
@@ -773,16 +780,18 @@ public class MatlibMatrixUtils {
 	}
 
 	public static Vector lessThan(Vector v, double d) {
-		Vector out = new SparseVector(v.size(), 1);
+		final Vector out = new SparseVector(v.size(), 1);
 		for (int i = 0; i < v.size(); i++) {
-			if(v.get(i) < d) out.put(i,1);
+			if (v.get(i) < d)
+				out.put(i, 1);
 		}
 		return out;
 	}
 
 	public static boolean any(Vector v) {
 		for (int i = 0; i < v.size(); i++) {
-			if(v.get(i)!=0)return true;
+			if (v.get(i) != 0)
+				return true;
 		}
 		return false;
 	}
