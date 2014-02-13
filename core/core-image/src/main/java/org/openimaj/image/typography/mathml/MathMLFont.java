@@ -46,7 +46,7 @@ public class MathMLFont implements Font<MathMLFont>
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T, Q extends FontStyle<T>> FontRenderer<T, Q> getRenderer(ImageRenderer<T, ?> renderer) {
-		return (FontRenderer<T, Q>) new MathMLFontRenderer<T>();
+		return (FontRenderer<T, Q>) (Object) new MathMLFontRenderer<T>();
 	}
 
 	@Override

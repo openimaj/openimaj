@@ -122,6 +122,8 @@ public class TestDoubleNormalisedSpecralClustering {
 
 	private void confirmClusters(IndexClusters res) {
 		for (int i = 0; i < this.testClusters.length; i++) {
+			System.err.println(toSet(this.testClusters[i]));
+			System.err.println(toSet(res.clusters()[i]));
 			assertTrue(toSet(this.testClusters[i]).equals(toSet(res.clusters()[i])));
 		}
 	}

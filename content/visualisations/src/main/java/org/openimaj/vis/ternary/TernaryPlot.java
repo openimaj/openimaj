@@ -201,7 +201,7 @@ public class TernaryPlot {
 	 */
 	public MBFImage draw(TernaryParams params) {
 		
-		int padding = params.getTyped(TernaryParams.PADDING);
+		int padding = (Integer) params.getTyped(TernaryParams.PADDING);
 		Float[] bgColour = params.getTyped(TernaryParams.BG_COLOUR);
 		
 		
@@ -217,13 +217,13 @@ public class TernaryPlot {
 	}
 
 	private void drawScale(MBFImage ret, TernaryParams params) {
-		boolean drawScale = params.getTyped(TernaryParams.DRAW_SCALE);
+		boolean drawScale = (Boolean) params.getTyped(TernaryParams.DRAW_SCALE);
 		if(!drawScale) return;
 		
 		Map<? extends Attribute, Object> typed = params.getTyped(TernaryParams.SCALE_FONT);
 		FontStyle<Float[]> fs = FontStyle.parseAttributes(typed,ret.createRenderer());
 		
-		int padding = params.getTyped(TernaryParams.PADDING);
+		int padding = (Integer) params.getTyped(TernaryParams.PADDING);
 		ColourMap cm = params.getTyped(TernaryParams.COLOUR_MAP);
 		Rectangle r = ret.getBounds();
 		r.width = r.width/2.f;
@@ -246,8 +246,8 @@ public class TernaryPlot {
 	}
 
 	private void drawBorder(MBFImage ret, TernaryParams params) {
-		int padding = params.getTyped(TernaryParams.PADDING);
-		boolean drawTicks = params.getTyped(TernaryParams.TRIANGLE_BORDER_TICKS);
+		int padding = (Integer) params.getTyped(TernaryParams.PADDING);
+		boolean drawTicks = (Boolean) params.getTyped(TernaryParams.TRIANGLE_BORDER_TICKS);
 		Map<Attribute, Object> fontParams = params.getTyped(TernaryParams.TICK_FONT);
 		FontStyle<Float[]> style = FontStyle.parseAttributes(fontParams, ret.createRenderer());
 		if(drawTicks){
@@ -296,7 +296,7 @@ public class TernaryPlot {
 					tickLine = tickLine.transform(TransformUtilities.scaleMatrixAboutPoint(scale, scale, tickLine.end));
 					// Now rotate it by 90 degrees
 					tickLine = tickLine.transform(TransformUtilities.rotationMatrixAboutPoint(-Math.PI/2, tickLine.end.getX(), tickLine.end.getY()));
-					int thickness = params.getTyped(TernaryParams.TRIANGLE_BORDER_TICK_THICKNESS);
+					int thickness = (Integer) params.getTyped(TernaryParams.TRIANGLE_BORDER_TICK_THICKNESS);
 					Float[] col = params.getTyped(TernaryParams.TRIANGLE_BORDER_COLOUR);
 					ret.drawLine(tickLine, thickness, col);
 					
@@ -310,23 +310,23 @@ public class TernaryPlot {
 	}
 
 	private void drawTriangle(MBFImage ret,TernaryParams params) {
-		int padding = params.getTyped(TernaryParams.PADDING);
-		boolean drawTriangle = params.getTyped(TernaryParams.TRIANGLE_BORDER);
+		int padding = (Integer) params.getTyped(TernaryParams.PADDING);
+		boolean drawTriangle = (Boolean) params.getTyped(TernaryParams.TRIANGLE_BORDER);
 		if(drawTriangle){
-			int thickness = params.getTyped(TernaryParams.TRIANGLE_BORDER_THICKNESS);
+			int thickness = (Integer) params.getTyped(TernaryParams.TRIANGLE_BORDER_THICKNESS);
 			Float[] col = params.getTyped(TernaryParams.TRIANGLE_BORDER_COLOUR);
 			ret.drawShape(this.tri.transform(TransformUtilities.translateMatrix(padding, padding)), thickness, col);
 		}
 	}
 
 	private void drawLabels( MBFImage ret, TernaryParams params) {
-		int padding = params.getTyped(TernaryParams.PADDING);
+		int padding = (Integer) params.getTyped(TernaryParams.PADDING);
 		List<IndependentPair<TernaryData,String>> labels = params.getTyped(TernaryParams.LABELS);
 		Map<? extends Attribute, Object> typed = params.getTyped(TernaryParams.LABEL_FONT);
 		FontStyle<Float[]> fs = FontStyle.parseAttributes(typed,ret.createRenderer());
 		Float[] labelBackground = params.getTyped(TernaryParams.LABEL_BACKGROUND);
 		Float[] labelBorder = params.getTyped(TernaryParams.LABEL_BORDER);
-		int labelPadding = params.getTyped(TernaryParams.LABEL_PADDING);
+		int labelPadding = (Integer) params.getTyped(TernaryParams.LABEL_PADDING);
 		FontRenderer<Float[], FontStyle<Float[]>> fontRenderer = fs.getRenderer(ret.createRenderer());
 		if(labels != null){			
 			for (IndependentPair<TernaryData, String> labelPoint: labels) {
@@ -360,7 +360,7 @@ public class TernaryPlot {
 
 	private void drawTernaryPlot(MBFImage ret, TernaryParams params) {
 		ColourMap cm = params.getTyped(TernaryParams.COLOUR_MAP);
-		int padding = params.getTyped(TernaryParams.PADDING);
+		int padding = (Integer) params.getTyped(TernaryParams.PADDING);
 		Float[] bgColour = params.getTyped(TernaryParams.BG_COLOUR);
 		for (int y = 0; y < height + padding; y++) {
 			for (int x = 0; x < width + padding; x++) {
