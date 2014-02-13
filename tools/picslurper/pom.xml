@@ -4,12 +4,12 @@
 	<parent>
 		<artifactId>openimaj-tools</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.2</version>
+		<version>1.3-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
 	<groupId>org.openimaj.tools</groupId>
 	<artifactId>picslurper</artifactId>
-	<version>1.2</version>
+	<version>1.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>picslurper</name>
 	<description>Tool for grabbing all the images from a social media stream and holding on to some simple stats</description>
@@ -20,31 +20,31 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-local-features</artifactId>
-			<version>1.2</version>
+			<version>1.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>data-scraping</artifactId>
-			<version>1.2</version>
+			<version>1.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-processing</artifactId>
-			<version>1.2</version>
+			<version>1.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-feature-extraction</artifactId>
-			<version>1.2</version>
+			<version>1.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>twitter</artifactId>
-			<version>1.2</version>
+			<version>1.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -60,13 +60,13 @@
 		<dependency>
 			<groupId>org.openimaj.tools</groupId>
 			<artifactId>core-tool</artifactId>
-			<version>1.2</version>
+			<version>1.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<artifactId>core-storm</artifactId>
 			<groupId>org.openimaj.storm</groupId>
-			<version>1.2</version>
+			<version>1.3-SNAPSHOT</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>

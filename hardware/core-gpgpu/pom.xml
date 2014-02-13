@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-hardware</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>core-gpgpu</artifactId>
-  <version>1.2</version>
+  <version>1.3-SNAPSHOT</version>
   <name>core-gpgpu</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-image</artifactId>
-      <version>1.2</version>
+      <version>1.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.nativelibs4java</groupId>
