@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-image</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>image-annotation</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2</version>
   <name>The OpenIMAJ Image Feature Extraction Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -23,25 +23,25 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-feature-extraction</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>machine-learning</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-experiment</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-web</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

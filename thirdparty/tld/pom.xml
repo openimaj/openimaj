@@ -4,12 +4,12 @@
   <parent>
     <artifactId>thirdparty</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>tld</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2</version>
   <name>OpenIMAJ TLD tracker</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -53,13 +53,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>klt-tracker</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video-capture</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

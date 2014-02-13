@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-image</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>faces</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2</version>
   <name>The OpenIMAJ Face Detection + Recognition Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -21,19 +21,19 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-processing</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-local-features</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-feature-extraction</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -45,37 +45,37 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>klt-tracker</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>video-processing</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>object-detection</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>FaceTracker</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>machine-learning</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

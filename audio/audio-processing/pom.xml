@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-audio</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>audio-processing</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2</version>
   <name>The OpenIMAJ Audio Processing Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -19,31 +19,31 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-experiment</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-math</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-audio</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>org.openimaj</groupId>
         <artifactId>core-feature</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.2</version>
         <scope>compile</scope>
     </dependency>
     <dependency>
@@ -60,7 +60,7 @@
     <dependency>
     	<groupId>org.openimaj</groupId>
     	<artifactId>xuggle-video</artifactId>
-    	<version>1.1.1-SNAPSHOT</version>
+    	<version>1.2</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
@@ -72,7 +72,7 @@
     <dependency>
     	<groupId>org.openimaj</groupId>
     	<artifactId>machine-learning</artifactId>
-    	<version>1.1.1-SNAPSHOT</version>
+    	<version>1.2</version>
     	<scope>compile</scope>
     </dependency>
   </dependencies>

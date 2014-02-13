@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-demos</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>touchtable</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2</version>
   <name>touchtable</name>
   <description>Playground for the ECS touchtable</description>
   <inceptionYear>2011</inceptionYear>
@@ -20,55 +20,55 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>sandbox</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-local-features</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>faces</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-feature-extraction</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video-capture</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>xuggle-video</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>klt-tracker</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>audio-processing</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>demos</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -80,7 +80,7 @@
     <dependency>
       <artifactId>kinect</artifactId>
       <groupId>org.openimaj.hardware</groupId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

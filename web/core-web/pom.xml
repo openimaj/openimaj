@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-web</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>core-web</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2</version>
   <name>core-web</name>
   <inceptionYear>2011</inceptionYear>
   <description>Implementation of a programatic offscreen web browser and utility functions.</description>
@@ -17,7 +17,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-image</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

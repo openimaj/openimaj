@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>FeatureVisualisation</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2</version>
   <name>FeatureVisualisation</name>
   <description>Tools for visualising certain types of image feature.</description>
   <inceptionYear>2011</inceptionYear>
@@ -20,13 +20,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-local-features</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

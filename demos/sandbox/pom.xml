@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>openimaj-demos</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.1.1-SNAPSHOT</version>
+		<version>1.2</version>
 		<relativePath>../</relativePath>
 	</parent>
 	<groupId>org.openimaj</groupId>
 	<artifactId>sandbox</artifactId>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.2</version>
 	<name>sandbox</name>
 	<description>A project for various tests that don't quite constitute
     demos but might be useful to look at.</description>
@@ -27,17 +26,17 @@
 		<dependency>
 			<groupId>org.openimaj.hardware</groupId>
 			<artifactId>serial-driver</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-indexing-retrieval</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 		  <artifactId>common-stream</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.streamflyer-regex-fast</groupId>
@@ -47,7 +46,7 @@
 		<dependency>
 			<artifactId>core-storm</artifactId>
 			<groupId>org.openimaj.storm</groupId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -63,7 +62,7 @@
 		<dependency>
 			<artifactId>core-rdf</artifactId>
 			<groupId>org.openimaj</groupId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -84,49 +83,49 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-local-features</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj.hadoop.tools</groupId>
 			<artifactId>HadoopTwitterTokenTool</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj.hadoop.tools</groupId>
 			<artifactId>core-hadoop-tool</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>faces</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>FaceTools</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-feature-extraction</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-video-capture</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>xuggle-video</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -138,43 +137,43 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>klt-tracker</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>audio-processing</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>FaceTracker</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>video-processing</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj.content</groupId>
 			<artifactId>animation</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-annotation</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>demos</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -186,19 +185,19 @@
 		<dependency>
 			<artifactId>kinect</artifactId>
 			<groupId>org.openimaj.hardware</groupId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<artifactId>ClusterQuantiserTool</artifactId>
 			<groupId>org.openimaj.tools</groupId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<artifactId>LocalFeaturesTool</artifactId>
 			<groupId>org.openimaj.tools</groupId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>	            
 		<!-- <dependency> <groupId>org.imageterrier</groupId> <artifactId>ImageTerrier</artifactId> 
@@ -228,7 +227,7 @@
 		<dependency>
 			<groupId>org.openimaj.content</groupId>
 			<artifactId>visualisations</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

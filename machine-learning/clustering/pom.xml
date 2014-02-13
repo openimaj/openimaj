@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-machine-learning</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>clustering</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2</version>
   <name>The OpenIMAJ Clustering Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>Various clustering algorithm implementations for all primitive types including random, random forest, K-Means (Exact, Hierarchical and Approximate), ...</description>
@@ -17,25 +17,25 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-experiment</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>nearest-neighbour</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
