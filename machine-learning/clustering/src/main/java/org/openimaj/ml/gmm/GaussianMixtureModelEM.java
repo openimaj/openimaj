@@ -491,7 +491,7 @@ public class GaussianMixtureModelEM {
 	public MixtureOfGaussians estimate(double[][] X) {
 		final EMGMM gmm = new EMGMM(nComponents, ctype);
 
-		if (X[0].length < nComponents)
+		if (X.length < nComponents)
 			throw new IllegalArgumentException(String.format(
 					"GMM estimation with %d components, but got only %d samples", nComponents, X.length));
 
