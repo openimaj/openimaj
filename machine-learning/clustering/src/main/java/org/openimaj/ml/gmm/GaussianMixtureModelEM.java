@@ -113,10 +113,13 @@ public class GaussianMixtureModelEM {
 				final Matrix avgX2uw = responsibilities.transpose().times(X.arrayTimes(X));
 
 				for (int i = 0; i < gmm.gaussians.length; i++) {
-					final Matrix avgX2 = avgX2uw.times(norm[i]);
+					final Matrix weightedXsumi = new Matrix(new double[][] { weightedXsum.getArray()[i] });
+					final Matrix avgX2uwi = new Matrix(new double[][] { avgX2uw.getArray()[i] });
+
+					final Matrix avgX2 = avgX2uwi.times(norm[i]);
 					final Matrix mu = ((AbstractMultivariateGaussian) gmm.gaussians[i]).mean;
 					final Matrix avgMeans2 = MatrixUtils.pow(mu, 2);
-					final Matrix avgXmeans = mu.arrayTimes(weightedXsum).times(norm[i]);
+					final Matrix avgXmeans = mu.arrayTimes(weightedXsumi).times(norm[i]);
 					final Matrix covar = MatrixUtils.plus(avgX2.minus(avgXmeans.times(2)).plus(avgMeans2),
 							learner.minCovar);
 
@@ -161,15 +164,18 @@ public class GaussianMixtureModelEM {
 				final Matrix avgX2uw = responsibilities.transpose().times(X.arrayTimes(X));
 
 				for (int i = 0; i < gmm.gaussians.length; i++) {
-					final Matrix avgX2 = avgX2uw.times(norm[i]);
+					final Matrix weightedXsumi = new Matrix(new double[][] { weightedXsum.getArray()[i] });
+					final Matrix avgX2uwi = new Matrix(new double[][] { avgX2uw.getArray()[i] });
+
+					final Matrix avgX2 = avgX2uwi.times(norm[i]);
 					final Matrix mu = ((AbstractMultivariateGaussian) gmm.gaussians[i]).mean;
 					final Matrix avgMeans2 = MatrixUtils.pow(mu, 2);
-					final Matrix avgXmeans = mu.arrayTimes(weightedXsum).times(norm[i]);
+					final Matrix avgXmeans = mu.arrayTimes(weightedXsumi).times(norm[i]);
 
 					final Matrix covar = MatrixUtils.plus(avgX2.minus(avgXmeans.times(2)).plus(avgMeans2),
 							learner.minCovar);
 
-					((DiagonalMultivariateGaussian) gmm.gaussians[i]).variance = covar.getColumnPackedCopy();
+					((DiagonalMultivariateGaussian) gmm.gaussians[i]).variance = covar.getArray()[0];
 				}
 			}
 		},
@@ -306,7 +312,11 @@ public class GaussianMixtureModelEM {
 				final int nfeatures = X.getColumnDimension();
 
 				final Matrix avgX2 = X.transpose().times(X);
-				final Matrix mu = ((FullMultivariateGaussian) gmm.gaussians[0]).mean;
+				final double[][] mudata = new double[gmm.gaussians.length][];
+				for (int i = 0; i < mudata.length; i++)
+					mudata[i] = ((FullMultivariateGaussian) gmm.gaussians[i]).mean.getArray()[0];
+				final Matrix mu = new Matrix(mudata);
+
 				final Matrix avgMeans2 = mu.transpose().times(weightedXsum);
 				final Matrix covar = avgX2.minus(avgMeans2)
 						.plus(Matrix.identity(nfeatures, nfeatures).times(learner.minCovar))
