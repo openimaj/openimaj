@@ -493,7 +493,7 @@ public class GaussianMixtureModelEM {
 
 		if (X[0].length < nComponents)
 			throw new IllegalArgumentException(String.format(
-					"GMM estimation with %d components, but got only %d samples", nComponents, X[0].length));
+					"GMM estimation with %d components, but got only %d samples", nComponents, X.length));
 
 		double max_log_prob = Double.NEGATIVE_INFINITY;
 
