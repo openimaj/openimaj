@@ -51,7 +51,7 @@ import org.openimaj.util.concatenate.Concatenatable;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <T>
- *            Primitive a type of the backing array of each local feature
+ *            Primitive array type of the backing array of each local feature
  * @param <AGGREGATE>
  *            Type of the aggregate {@link FeatureVector} produced
  */

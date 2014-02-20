@@ -61,8 +61,8 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <T>
- *            Primitive a type of the {@link ArrayFeatureVector}s used by the
- *            {@link LocalFeature}s that will be processed.
+ *            Primitive array type of the {@link ArrayFeatureVector}s used by
+ *            the {@link LocalFeature}s that will be processed.
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
