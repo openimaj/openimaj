@@ -453,4 +453,14 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public boolean printTiming() {
 		return this.printTime;
 	}
+
+	/**
+	 * Set the number of samples
+	 * 
+	 * @param nsamples
+	 *            the number of samples
+	 */
+	public void setSamples(int nsamples) {
+		this.samples = nsamples;
+	}
 }
