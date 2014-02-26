@@ -48,7 +48,7 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 public class PDMDisplay {
 	public static void main(String[] args) throws IOException {
-		final ShapeModelDataset<?> dataset = IMMFaceDatabase.load(null);
+		final ShapeModelDataset<FImage> dataset = IMMFaceDatabase.load(ImageUtilities.FIMAGE_READER);
 
 		final PointListConnections connections = dataset.getConnections();
 		final List<PointList> pointData = dataset.getPointLists();

@@ -76,7 +76,7 @@ public class RandomLinear#TT#ValueAnimator implements ValueAnimator<#TT#> {
 	 * @param duration duration between values
 	 */
 	public RandomLinear#TT#ValueAnimator(#t# min, #t# max, int duration) {
-		seed = (int) System.currentTimeMillis();
+		seed = (int) System.nanoTime();
 
 		this.min = min;
 		this.max = max;

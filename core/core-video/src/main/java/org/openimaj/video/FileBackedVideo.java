@@ -37,16 +37,16 @@ import java.util.List;
 import org.openimaj.image.Image;
 
 /**
- * A video backed by a image files on disk. Each image file
- * is a single frame.
+ * A video backed by a image files on disk. Each image file is a single frame.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *
- * @param <T> the image type of the frames
+ * 
+ * @param <T>
+ *            the image type of the frames
  */
-public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
+public abstract class FileBackedVideo<T extends Image<?, T>> extends Video<T> {
 	private List<File> files;
 	private T heldCurrentFrame;
 	private int heldCurrentFrameIndex = -1;
@@ -54,67 +54,73 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	private double fps = 30;
 
 	/**
-	 * Construct the video from the provided files. Assumes a frame rate
-	 * of 30 FPS
-	 * @param files the image files
+	 * Construct the video from the provided files. Assumes a frame rate of 30
+	 * FPS
+	 * 
+	 * @param files
+	 *            the image files
 	 */
 	public FileBackedVideo(List<File> files) {
 		this.files = files;
 		this.fps = 30;
 		this.loop = false;
 	}
-	
+
 	/**
 	 * Construct the video from the provided files.
-	 * @param files the image files
-	 * @param fps the frame rate
+	 * 
+	 * @param files
+	 *            the image files
+	 * @param fps
+	 *            the frame rate
 	 */
 	public FileBackedVideo(List<File> files, double fps) {
 		this.files = files;
 		this.fps = fps;
 		this.loop = false;
 	}
-	
+
 	/**
 	 * Construct videos from numbered files using the given format string and
 	 * indices. The format string should contain a single %d substitution.
-	 *  
-	 * @param filenameFormat format string
-	 * @param start starting index (inclusive)
-	 * @param stop stop index (exclusive)
+	 * 
+	 * @param filenameFormat
+	 *            format string
+	 * @param start
+	 *            starting index (inclusive)
+	 * @param stop
+	 *            stop index (exclusive)
 	 */
 	public FileBackedVideo(String filenameFormat, int start, int stop) {
 		this(getFilesList(filenameFormat, start, stop));
 	}
-	
+
 	@Override
-	public T getNextFrame() {
-		T frame = getCurrentFrame();
-		incrFrame();
+	public synchronized T getNextFrame() {
+		final T frame = getCurrentFrame();
+		incrementFrame();
 		return frame;
 	}
 
-	private void incrFrame() {
-		if(this.getCurrentFrameIndex() + 1 >= this.files.size()) {
-			if(loop)
-				this.setCurrentFrameIndex(0);
-		}
-		else 
+	private void incrementFrame() {
+		if (this.currentFrame + 1 < this.files.size() || loop) {
 			this.currentFrame++;
+		}
 	}
-	
-	@Override public boolean hasNextFrame() {
+
+	@Override
+	public boolean hasNextFrame() {
 		return loop || this.getCurrentFrameIndex() + 1 < this.files.size();
 	}
 
 	@Override
 	public T getCurrentFrame() {
 		try {
-			if(this.currentFrame != heldCurrentFrameIndex){
-				this.heldCurrentFrame =  loadImage(files.get(currentFrame));
+			if (this.currentFrame != heldCurrentFrameIndex) {
+				this.heldCurrentFrame = loadImage(files.get(currentFrame % this.files.size()));
 				this.heldCurrentFrameIndex = currentFrame;
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			this.heldCurrentFrameIndex = currentFrame;
 			this.heldCurrentFrame = null;
 		}
@@ -122,76 +128,82 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.Video#getWidth()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
 	public int getWidth()
 	{
 		return getCurrentFrame().getWidth();
 	}
-	
+
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.Video#getHeight()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
 	public int getHeight()
 	{
 		return getCurrentFrame().getHeight();
 	}
-	
+
 	protected abstract T loadImage(File f) throws IOException;
-	
+
 	@Override
-	public long countFrames(){
+	public long countFrames() {
 		return this.files.size();
 	}
-	
+
 	@Override
 	public void reset()
 	{
 		this.currentFrame = 0;
 	}
-	
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.Video#getTimeStamp()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
-    public long getTimeStamp()
-    {
-	    return (long)(getCurrentFrameIndex() / this.fps)*1000;
-    }
+	public long getTimeStamp()
+	{
+		return (long) (getCurrentFrameIndex() / this.fps) * 1000;
+	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.Video#getFPS()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override
 	public double getFPS()
 	{
-	    return fps;
+		return fps;
 	}
-	
+
 	/**
-	 * Get a list of numbered files using the given format string and
-	 * indices. The format string should contain a single %d substitution.
-	 *  
-	 * @param filenameFormat format string
-	 * @param start starting index (inclusive)
-	 * @param stop stop index (exclusive)
+	 * Get a list of numbered files using the given format string and indices.
+	 * The format string should contain a single %d substitution.
+	 * 
+	 * @param filenameFormat
+	 *            format string
+	 * @param start
+	 *            starting index (inclusive)
+	 * @param stop
+	 *            stop index (exclusive)
 	 * 
 	 * @return list of files
 	 */
 	public static List<File> getFilesList(String filenameFormat, int start, int stop) {
-		List<File> files = new ArrayList<File>();
-		
-		for (int i=start; i<stop; i++) {
+		final List<File> files = new ArrayList<File>();
+
+		for (int i = start; i < stop; i++) {
 			files.add(new File(String.format(filenameFormat, i)));
 		}
-		
+
 		return files;
 	}
 }

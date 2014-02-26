@@ -32,30 +32,33 @@ package org.openimaj.video;
 import org.openimaj.image.Image;
 
 /**
- * 	A video from an array of frames
+ * A video from an array of frames
  * 
- * 	@author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *
- * 	@param <T> the image type of the frames
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 
+ * @param <T>
+ *            the image type of the frames
  */
-public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> 
+public class ArrayBackedVideo<T extends Image<?, T>> extends Video<T>
 {
 	private T[] frames;
 	private boolean loop;
 	private double fps = 30d;
-	
+
 	/**
-	 * 	Default constructor for creating array backed videos with no frames
-	 * 	for subclasses.
+	 * Default constructor for creating array backed videos with no frames for
+	 * subclasses.
 	 */
 	protected ArrayBackedVideo()
 	{
 	}
-	
+
 	/**
 	 * Construct a video from the provided frames. Assumes a rate of 30 FPS.
-	 * @param frames the frames
+	 * 
+	 * @param frames
+	 *            the frames
 	 */
 	public ArrayBackedVideo(T[] frames) {
 		this.frames = frames;
@@ -63,11 +66,14 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 		this.fps = 30;
 		this.loop = true;
 	}
-	
+
 	/**
 	 * Construct a video from the provided frames.
-	 * @param frames the frames
-	 * @param fps the frame rate
+	 * 
+	 * @param frames
+	 *            the frames
+	 * @param fps
+	 *            the frame rate
 	 */
 	public ArrayBackedVideo(T[] frames, double fps) {
 		this.frames = frames;
@@ -75,12 +81,16 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 		this.fps = fps;
 		this.loop = true;
 	}
-	
+
 	/**
 	 * Construct a video from the provided frames.
-	 * @param frames the frames
-	 * @param fps the frame rate
-	 * @param loop loop the video
+	 * 
+	 * @param frames
+	 *            the frames
+	 * @param fps
+	 *            the frame rate
+	 * @param loop
+	 *            loop the video
 	 */
 	public ArrayBackedVideo(T[] frames, double fps, boolean loop) {
 		this.frames = frames;
@@ -88,45 +98,53 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 		this.fps = fps;
 		this.loop = loop;
 	}
-	
+
 	@Override
-	public T getNextFrame() {
-		T frame = frames[this.getCurrentFrameIndex()];
+	public synchronized T getNextFrame() {
+		final T frame = frames[this.currentFrame % this.frames.length];
 		this.incrementFrame();
 		return frame;
 	}
+
 	@Override
-	public T getCurrentFrame() {
-		T frame = frames[this.getCurrentFrameIndex()];
-		return frame;
+	public synchronized T getCurrentFrame() {
+		return frames[this.currentFrame % this.frames.length];
 	}
-	
-	private void incrementFrame(){
-		if(this.getCurrentFrameIndex() + 1 >= this.frames.length){
-			if(loop) this.setCurrentFrameIndex(0);
+
+	private void incrementFrame() {
+		if (this.currentFrame + 1 < this.frames.length || loop) {
+			this.currentFrame++;
 		}
-		else this.setCurrentFrameIndex(this.getCurrentFrameIndex() + 1);
 	}
-	
+
 	@Override
-	public boolean hasNextFrame() {
-		return loop || this.getCurrentFrameIndex() < this.frames.length;
+	public synchronized void setCurrentFrameIndex(long newFrame) {
+		if (!loop && newFrame >= this.frames.length - 1)
+			this.currentFrame = this.frames.length - 1;
+		else
+			this.currentFrame = (int) newFrame;
 	}
-	
-	
+
+	@Override
+	public synchronized boolean hasNextFrame() {
+		return loop || this.currentFrame < this.frames.length;
+	}
+
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.Video#getWidth()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
 	public int getWidth()
 	{
 		return getCurrentFrame().getWidth();
 	}
-	
+
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.Video#getHeight()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
 	public int getHeight()
@@ -138,7 +156,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 	public long countFrames() {
 		return this.frames.length;
 	}
-	
+
 	@Override
 	public void reset()
 	{
@@ -146,22 +164,24 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.Video#getTimeStamp()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
-    public long getTimeStamp()
-    {
-	    return (long)(getCurrentFrameIndex() / this.fps)*1000;
-    }
-	
+	public long getTimeStamp()
+	{
+		return (long) (1000 * getCurrentFrameIndex() / this.fps);
+	}
+
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.video.Video#getFPS()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override
 	public double getFPS()
 	{
-	    return fps;
+		return fps;
 	}
 }
