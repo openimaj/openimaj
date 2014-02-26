@@ -43,6 +43,7 @@ import java.util.Set;
 
 import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.function.Predicate;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
 import com.jmatio.io.MatFileReader;
@@ -52,8 +53,21 @@ import com.jmatio.types.MLChar;
 import com.jmatio.types.MLDouble;
 import com.jmatio.types.MLSparse;
 
+/**
+ * Read data from bill's matlab file format
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ */
 public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> {
-	private static class Fold {
+	/**
+	 *
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 */
+	public static class Fold {
+		/**
+		 * @param training
+		 * @param test
+		 * @param validation
+		 */
 		public Fold(int[] training, int[] test, int[] validation) {
 			this.training = training;
 			this.test = test;
@@ -65,25 +79,41 @@ public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> 
 		int[] validation;
 	}
 
+	/**
+	 * The modes
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 */
 	public enum Mode {
+		/**
+		 * 
+		 */
 		TRAINING {
 			@Override
 			public int[] indexes(Fold fold) {
 				return fold.training;
 			}
 		},
+		/**
+		 * 
+		 */
 		TEST {
 			@Override
 			public int[] indexes(Fold fold) {
 				return fold.test;
 			}
 		},
+		/**
+		 * 
+		 */
 		VALIDATION {
 			@Override
 			public int[] indexes(Fold fold) {
 				return fold.validation;
 			}
 		},
+		/**
+		 * 
+		 */
 		ALL {
 
 			@Override
@@ -92,6 +122,10 @@ public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> 
 			}
 
 		};
+		/**
+		 * @param fold
+		 * @return the indexes of this fold
+		 */
 		public abstract int[] indexes(Fold fold);
 	}
 
@@ -108,9 +142,18 @@ public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> 
 	private Map<Integer, String> voc;
 	private String[] tasks;
 	private Set<Integer> keepIndex;
-	private Map<Integer, Integer> indexToVoc = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> indexToVoc ;
 	private boolean filter;
 
+	
+	String mainMatrixKey = "user_vsr_for_polls";
+	
+	/**
+	 * @param matfile
+	 * @param ndays
+	 * @param filter
+	 * @throws IOException
+	 */
 	public BillMatlabFileDataGenerator(File matfile, int ndays, boolean filter)
 			throws IOException
 	{
@@ -125,38 +168,110 @@ public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> 
 		prepareDayPolls();
 
 	}
+	
+	/**
+	 * @param matfile
+	 * @param mainMatrixName 
+	 * @param polls 
+	 * @param ndays
+	 * @param filter
+	 * @throws IOException
+	 */
+	public BillMatlabFileDataGenerator(File matfile, String mainMatrixName, File polls, int ndays, boolean filter)
+			throws IOException
+	{
+		MatFileReader reader = new MatFileReader(matfile);
+		this.mainMatrixKey = mainMatrixName;
+		this.ndays = ndays;
+		this.content = reader.getContent();
+		this.currentIndex = 0;
+		this.filter = filter;
+		prepareVocabulary();
+		prepareFolds();
+		prepareDayUserWords();
+		reader = new MatFileReader(polls);
+		this.content = reader.getContent();
+		prepareDayPolls();
+		this.content = null;
 
+	}
+	
+	/**
+	 * @param matfile
+	 * @param mainMatrixName 
+	 * @param polls 
+	 * @param ndays
+	 * @param filter
+	 * @param folds 
+	 * @throws IOException
+	 */
+	public BillMatlabFileDataGenerator(File matfile, String mainMatrixName, File polls, int ndays, boolean filter, List<Fold> folds)
+			throws IOException
+	{
+		MatFileReader reader = new MatFileReader(matfile);
+		this.mainMatrixKey = mainMatrixName;
+		this.ndays = ndays;
+		this.content = reader.getContent();
+		this.currentIndex = 0;
+		this.filter = filter;
+		prepareVocabulary();
+		this.folds = folds;
+		prepareDayUserWords();
+		reader = new MatFileReader(polls);
+		this.content = reader.getContent();
+		prepareDayPolls();
+		this.content = null;
+
+	}
+
+
+
+	/**
+	 * @return the vocabulary
+	 */
 	public Map<Integer, String> getVocabulary() {
 		return voc;
 	}
 
 	private void prepareVocabulary() {
-
-		final MLCell vocLoaded = (MLCell) this.content.get("voc");
-		final MLDouble keepIndex = (MLDouble) this.content.get("voc_keep_terms_index");
-		final double[] filterIndexArr = keepIndex.getArray()[0];
 		this.keepIndex = new HashSet<Integer>();
 
-		final ArrayList<MLArray> vocArr = vocLoaded.cells();
-		for (final double d : filterIndexArr) {
-			this.keepIndex.add((int) d - 1);
-		}
-
-		int index = 0;
-		int vocIndex = 0;
-		this.voc = new HashMap<Integer, String>();
-		for (final MLArray vocArrItem : vocArr) {
-			final MLChar vocChar = (MLChar) vocArrItem;
-			final String vocString = vocChar.getString(0);
-			if (filter && this.keepIndex.contains(index)) {
-				this.voc.put(vocIndex, vocString);
-				this.indexToVoc.put(index, vocIndex);
-				vocIndex++;
+		final MLDouble keepIndex = (MLDouble) this.content.get("voc_keep_terms_index");
+		if(keepIndex != null){
+			final double[] filterIndexArr = keepIndex.getArray()[0];
+			
+			for (final double d : filterIndexArr) {
+				this.keepIndex.add((int) d - 1);
 			}
-			index++;
+			
+		}
+		
+		final MLCell vocLoaded = (MLCell) this.content.get("voc");
+		if(vocLoaded!=null){
+			this.indexToVoc = new HashMap<Integer, Integer>();
+			final ArrayList<MLArray> vocArr = vocLoaded.cells();
+			int index = 0;
+			int vocIndex = 0;
+			this.voc = new HashMap<Integer, String>();
+			for (final MLArray vocArrItem : vocArr) {
+				final MLChar vocChar = (MLChar) vocArrItem;
+				final String vocString = vocChar.getString(0);
+				if (filter && this.keepIndex.contains(index)) {
+					this.voc.put(vocIndex, vocString);
+					this.indexToVoc.put(index, vocIndex);
+					vocIndex++;
+				}
+				index++;
+			}
+		} else {
+			
 		}
 	}
 
+	/**
+	 * @param fold
+	 * @param mode
+	 */
 	public void setFold(int fold, Mode mode) {
 		if (fold == -1) {
 			this.indexes = new int[this.dayWords.size()];
@@ -200,16 +315,25 @@ public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> 
 		}
 	}
 
+	/**
+	 * @return the tasks
+	 */
 	public String[] getTasks() {
 		return this.tasks;
 	}
 
+	
 	private void prepareDayUserWords() {
-		final MLSparse arr = (MLSparse) this.content.get("user_vsr_for_polls");
+		final MLSparse arr = (MLSparse) this.content.get(mainMatrixKey);
 		final Double[] realVals = arr.exportReal();
 		final int[] rows = arr.getIR();
 		final int[] cols = arr.getIC();
-		this.nwords = this.voc.size();
+		if(voc == null){
+			this.nwords = arr.getN();
+		}
+		else{
+			this.nwords = this.voc.size();			
+		}
 		this.nusers = arr.getM() / this.ndays;
 		dayWords = new ArrayList<Matrix>();
 		for (int i = 0; i < ndays; i++) {
@@ -219,7 +343,11 @@ public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> 
 		for (int i = 0; i < rows.length; i++) {
 			if (filter && !this.keepIndex.contains(cols[i]))
 				continue;
-			final int wordIndex = this.indexToVoc.get(cols[i]);
+			
+			int wordIndex = cols[i];
+			if(this.indexToVoc!=null){
+				wordIndex = this.indexToVoc.get(wordIndex);
+			}
 			final int dayIndex = rows[i] / this.nusers;
 			final int userIndex = rows[i] - (dayIndex * this.nusers);
 
@@ -231,6 +359,7 @@ public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> 
 	private void prepareFolds() {
 
 		final MLArray setfolds = this.content.get("set_fold");
+		if(setfolds==null) return;
 		if (setfolds.isCell()) {
 			this.folds = new ArrayList<Fold>();
 			final MLCell foldcells = (MLCell) setfolds;
@@ -268,7 +397,22 @@ public class BillMatlabFileDataGenerator implements MatrixDataGenerator<Matrix> 
 		return pair;
 	}
 
+	/**
+	 * @return number of folds
+	 */
 	public int nFolds() {
 		return this.folds.size();
+	}
+
+	/**
+	 * @return {@link #generate()} until there is nothing to consume
+	 */
+	public List<Pair<Matrix>> generateAll() {
+		List<Pair<Matrix>> ret = new ArrayList<Pair<Matrix>>();
+		Pair<Matrix> pair;
+		while((pair = generate()) != null){
+			ret.add(pair);
+		}
+		return ret;
 	}
 }

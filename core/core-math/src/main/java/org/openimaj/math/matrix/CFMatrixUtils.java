@@ -29,14 +29,25 @@
  */
 package org.openimaj.math.matrix;
 
+import java.util.Iterator;
+import java.util.Random;
+
+import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
+import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
+import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
+import gov.sandia.cognition.math.matrix.mtj.AbstractMTJMatrix;
+import gov.sandia.cognition.math.matrix.mtj.AbstractSparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
+import gov.sandia.cognition.math.matrix.mtj.SparseColumnMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
+import gov.sandia.cognition.math.matrix.mtj.SparseRowMatrix;
+import gov.sandia.cognition.math.matrix.mtj.SparseVector;
 
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLDouble;
@@ -48,6 +59,7 @@ import com.jmatio.types.MLDouble;
  * 
  */
 public class CFMatrixUtils {
+	private static final double EPS = 1e-100;
 
 	/**
 	 * Create a new matrix with the absolute values of the input matrix.
@@ -76,16 +88,52 @@ public class CFMatrixUtils {
 	 * @return the absolute sum
 	 */
 	public static double absSum(Matrix mat) {
+		if(mat instanceof SparseColumnMatrix){
+			return absSumSparse((SparseColumnMatrix)mat);
+		} else if (mat instanceof SparseRowMatrix){
+			return absSumSparse((SparseRowMatrix)mat);
+		}
+		
 		double tot = 0;
 		final int nrows = mat.getNumRows();
 		final int ncols = mat.getNumColumns();
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++) {
-				tot += Math.abs(mat.getElement(r, c));
+				double element = mat.getElement(r, c);
+				if(Double.isNaN(element)){
+					throw new RuntimeException("hmm?");
+				}
+				tot += Math.abs(element);
 			}
 		}
 		return tot;
 	}
+
+	/**
+	 * @param mat
+	 * @return sum of a {@link SparseColumnMatrix}
+	 */
+	public static double absSumSparse(SparseColumnMatrix mat) {
+		double sum = 0;
+		for (int i = 0; i < mat.getNumColumns(); i++) {
+			sum += mat.getColumn(i).sum();
+		}
+		return sum;
+	}
+	
+	/**
+	 * @param mat
+	 * @return sum of a {@link SparseRowMatrix}
+	 */
+	public static double absSumSparse(SparseRowMatrix mat) {
+		double sum = 0;
+		for (int i = 0; i < mat.getNumRows(); i++) {
+			sum += mat.getRow(i).sum();
+		}
+		return sum;
+	}
+	
+	
 
 	/**
 	 * Multiply a matrix by a constant, storing the results in the input matrix.
@@ -97,13 +145,7 @@ public class CFMatrixUtils {
 	 * @return the input matrix
 	 */
 	public static Matrix timesInplace(Matrix mat, double etat) {
-		final int nrows = mat.getNumRows();
-		final int ncols = mat.getNumColumns();
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++) {
-				mat.setElement(r, c, mat.getElement(r, c) * etat);
-			}
-		}
+		mat.scaleEquals(etat);
 		return mat;
 	}
 
@@ -325,14 +367,26 @@ public class CFMatrixUtils {
 	 *            the matrix
 	 * @return the sparsity
 	 */
-	public static double sparsity(SparseMatrix mat) {
-		final double size = mat.getNumRows() * mat.getNumColumns();
-
+	public static double sparsity(Matrix mat) {
 		double count = 0;
-		for (final MatrixEntry matrixEntry : mat) {
-			if (matrixEntry.getValue() != 0)
-				count++;
+		final double size = mat.getNumRows() * mat.getNumColumns();
+		if(mat instanceof SparseRowMatrix){
+			for (int i = 0; i < mat.getNumRows(); i++) {
+				SparseVector row = (SparseVector) mat.getRow(i);
+				count += row.getNumElementsUsed();
+			}
+		} else if (mat instanceof SparseColumnMatrix){
+			for (int i = 0; i < mat.getNumColumns(); i++) {
+				SparseVector col = (SparseVector) mat.getColumn(i);
+				count += col.getNumElementsUsed();
+			}
+		} else {			
+			for (final MatrixEntry matrixEntry : mat) {
+				if (matrixEntry.getValue() != 0)
+					count++;
+			}
 		}
+
 
 		return (size - count) / size;
 	}
@@ -350,6 +404,20 @@ public class CFMatrixUtils {
 		}
 		return degree;
 	}
+	
+	/**
+	 * Bring each element to the power d
+	 * 
+	 * @param degree
+	 * @param d
+	 * @return the input
+	 */
+	public static <T extends Vector> T powInplace(T degree, double d) {
+		for (final VectorEntry ent : degree) {
+			degree.setElement(ent.getIndex(), Math.pow(ent.getValue(), d));
+		}
+		return degree;
+	}
 
 	/**
 	 * @param laplacian
@@ -363,6 +431,263 @@ public class CFMatrixUtils {
 		}
 
 		return ret;
+	}
+
+	/**
+	 * @param vt
+	 * @return mean of each row
+	 */
+	public static Vector rowMean(Matrix vt) {
+		Vector sumOfColumns = vt.sumOfColumns();
+		sumOfColumns.scaleEquals(1./vt.getNumColumns());
+		return sumOfColumns;
+	}
+	
+	/**
+	 * @param vt
+	 * @return mean of each row
+	 */
+	public static Vector colMean(Matrix vt) {
+		Vector sumOfColumns = vt.sumOfRows();
+		sumOfColumns.scaleEquals(1./vt.getNumRows());
+		return sumOfColumns;
+	}
+
+	/**
+	 * @param A
+	 * @param col
+	 */
+	public static void minusEqualsCol(Matrix A, Vector col) {
+		for (int i = 0; i < A.getNumRows(); i++) {
+			for (int j = 0; j < A.getNumColumns(); j++) {
+				A.setElement(i, j, A.getElement(i, j) - col.getElement(i));
+			}
+		}
+	}
+	
+	/**
+	 * @param A
+	 * @param row
+	 */
+	public static void minusEqualsRow(Matrix A, Vector row) {
+		for (int i = 0; i < A.getNumRows(); i++) {
+			for (int j = 0; j < A.getNumColumns(); j++) {
+				A.setElement(i, j, A.getElement(i, j) - row.getElement(j));
+			}
+		}
+	}
+
+	public static SparseColumnMatrix randomSparseCol(int rows, int cols, double min, double max, double density, Random random) {
+		SparseColumnMatrix ret = SparseMatrixFactoryMTJ.INSTANCE.createWrapper(new FlexCompColMatrix(rows, cols));
+		for (int i = 0; i < cols; i++) {
+			Vector v = ret.getColumn(i);
+			for (int j = 0; j < rows; j++) {
+				if(random.nextDouble() <= density){
+					v.setElement(j, random.nextDouble() * (max - min) + min);
+				}
+			}
+		}
+		return ret;
+	}
+	
+	public static SparseRowMatrix randomSparseRow(int rows, int cols, double min, double max, double density, Random random) {
+		SparseRowMatrix ret = SparseMatrixFactoryMTJ.INSTANCE.createWrapper(new FlexCompRowMatrix(rows, cols));
+		for (int i = 0; i < rows; i++) {
+			Vector v = ret.getRow(i);
+			for (int j = 0; j < cols; j++) {
+				if(random.nextDouble() <= density){
+					v.setElement(j, random.nextDouble() * (max - min) + min);
+				}
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * @param a
+	 * @param b
+	 * @return performs a dot product taking advantage of the sparcity in b and a
+	 */
+	public static SparseRowMatrix fastsparsedot(SparseRowMatrix a, SparseColumnMatrix b) {
+		SparseRowMatrix ret = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(a.getNumRows(), b.getNumColumns());
+		if(a.getNumColumns()!=b.getNumRows()){
+			return null;
+		}
+		for (int i = 0; i < a.getNumRows(); i++) {
+			no.uib.cipr.matrix.sparse.SparseVector arow = a.getInternalMatrix().getRow(i);
+			for (int j = 0; j < b.getNumColumns(); j++) {
+				double v = 0;
+				final no.uib.cipr.matrix.sparse.SparseVector bcol = b.getInternalMatrix().getColumn(j);
+				final no.uib.cipr.matrix.sparse.SparseVector leading ;
+				final no.uib.cipr.matrix.sparse.SparseVector other ;
+				if(arow.getUsed() < bcol.getUsed()){
+					leading = arow;
+					other = bcol;
+				} else {
+					leading = bcol;
+					other = arow;
+				}
+				for (no.uib.cipr.matrix.VectorEntry vectorEntry : leading) {
+					v += vectorEntry.get() * other.get(vectorEntry.index());
+				}
+				if(v > EPS){
+					ret.setElement(i, j, v);
+				}
+			}
+		}
+		
+		return ret;
+	}
+
+	/**
+	 * @param a
+	 * @param b
+	 * @return checks for the fastest way to do this dot product
+	 */
+	public static Matrix fastdot(Matrix a, Matrix b) {
+		if(a instanceof SparseRowMatrix && b instanceof SparseColumnMatrix){
+			return fastsparsedot((SparseRowMatrix)a, (SparseColumnMatrix) b);
+		}
+		return a.times(b);
+	}
+	
+	/**
+	 * @param a
+	 * @return turns the provided matrix into a {@link SparseColumnMatrix}
+	 */
+	public static SparseColumnMatrix asSparseColumn(Matrix a) {
+		return SparseMatrixFactoryMTJ.INSTANCE.createWrapper(
+			new FlexCompColMatrix(
+					SparseMatrixFactoryMTJ.INSTANCE.copyMatrix(a).getInternalMatrix()
+			)
+		);
+	}
+	
+	/**
+	 * @param a
+	 * @return
+	 */
+	public static SparseRowMatrix asSparseRow(Matrix a) {
+		return SparseMatrixFactoryMTJ.INSTANCE.copyMatrix(a);
+	}
+
+	/**
+	 * 
+	 * @param ret
+	 * @param c
+	 * @param col
+	 */
+	public static void fastsetcol(Matrix ret, int c, Vector col) {
+		if(ret instanceof SparseColumnMatrix && col instanceof SparseVector){
+			((SparseColumnMatrix)ret).setColumn(c, (SparseVector)col);
+		}
+		else{
+			ret.setColumn(c, col);
+		}
+	}
+
+	
+	/**
+	 * @param A
+	 * @param B
+	 * @return A - B, done using {@link #fastsparseminus(SparseColumnMatrix, SparseColumnMatrix)} if possible 
+	 */
+	public static Matrix fastminusEquals(Matrix A, Matrix B) {
+		if(A instanceof SparseColumnMatrix && B instanceof SparseColumnMatrix){
+			return fastsparseminusEquals((SparseColumnMatrix)A,(SparseColumnMatrix)B);
+		}
+		A.minusEquals(B);
+		return A;
+	}
+	
+	/**
+	 * @param A
+	 * @param B
+	 * @return A - B, done using {@link #fastsparseminus(SparseColumnMatrix, SparseColumnMatrix)} if possible 
+	 */
+	public static Matrix fastminus(Matrix A, Matrix B) {
+		return fastminusEquals(A.clone(),B);
+	}
+
+	/**
+	 * @param A
+	 * @param B
+	 * @return A - B
+	 */
+	public static Matrix fastsparseminusEquals(SparseColumnMatrix A,SparseColumnMatrix B) {
+		if(A.getNumColumns() != B.getNumColumns() || A.getNumRows() != B.getNumRows()){
+			throw new DimensionalityMismatchException();
+		}
+		SparseColumnMatrix ret = A;
+		
+		FlexCompColMatrix retint = ret.getInternalMatrix();
+		FlexCompColMatrix Bint = B.getInternalMatrix();
+		for (int i = 0; i < A.getNumColumns(); i++) {
+			no.uib.cipr.matrix.sparse.SparseVector aCol = retint.getColumn(i);
+			no.uib.cipr.matrix.sparse.SparseVector bCol = Bint.getColumn(i);
+			aCol.add(-1, bCol);
+		}
+		return ret;
+	}
+	
+	/**
+	 * @param A
+	 * @param B
+	 * @return A - B
+	 */
+	public static Matrix fastsparseminusEquals(SparseRowMatrix A,SparseRowMatrix B) {
+		if(A.getNumColumns() != B.getNumColumns() || A.getNumRows() != B.getNumRows()){
+			throw new DimensionalityMismatchException();
+		}
+		SparseRowMatrix ret = A;
+		
+		FlexCompRowMatrix retInt = ret.getInternalMatrix();
+		FlexCompRowMatrix bint = B.getInternalMatrix();
+		for (int i = 0; i < A.getNumRows(); i++) {
+			no.uib.cipr.matrix.sparse.SparseVector aCol = retInt.getRow(i);
+			no.uib.cipr.matrix.sparse.SparseVector bCol = bint.getRow(i);
+			aCol.add(-1, bCol);
+		}
+		return ret;
+	}
+
+	/**
+	 * @param mat
+	 * @return checks elements using {@link Double#isNaN()}
+	 */
+	public static boolean containsNaN(Matrix mat) {
+		for (MatrixEntry matrixEntry : mat) {
+			if(Double.isNaN(matrixEntry.getValue())){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param vec
+	 * @return checks elements using {@link Double#isNaN()}
+	 */
+	public static boolean containsNaN(Vector vec) {
+		for (VectorEntry vectorEntry : vec) {
+			if(Double.isNaN(vectorEntry.getValue())){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param mat
+	 * @return checks elements using {@link Double#isInfinite()}
+	 */
+	public static boolean containsInfinity(Matrix mat) {
+		for (MatrixEntry matrixEntry : mat) {
+			if(Double.isInfinite(matrixEntry.getValue())){
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

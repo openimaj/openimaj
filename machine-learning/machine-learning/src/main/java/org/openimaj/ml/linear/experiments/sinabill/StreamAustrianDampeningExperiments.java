@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.experiments;
+package org.openimaj.ml.linear.experiments.sinabill;
 
 import gov.sandia.cognition.math.matrix.Matrix;
 
@@ -81,7 +81,7 @@ public class StreamAustrianDampeningExperiments extends BilinearExperiment {
 		final HardCodedInitStrat biasInitStrat = new HardCodedInitStrat();
 		params.put(BilinearLearnerParameters.BIASINITSTRAT, biasInitStrat);
 		final BillMatlabFileDataGenerator bmfdg = new BillMatlabFileDataGenerator(
-				new File(BILL_DATA()),
+				new File(MATLAB_DATA()),
 				98,
 				true
 				);
@@ -153,7 +153,7 @@ public class StreamAustrianDampeningExperiments extends BilinearExperiment {
 
 	private Map<Integer, Double> loadBatchLoss() throws IOException {
 		final String[] batchExperimentLines = FileUtils.readlines(new File(
-				BILL_DATA_ROOT(),
+				DATA_ROOT(),
 				BATCH_EXPERIMENT
 				));
 		int seenItems = 0;

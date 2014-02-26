@@ -55,4 +55,5 @@ public abstract class LossFunction {
 	public void setBias(Matrix bias) {
 		this.bias = bias;
 	}
+	public abstract boolean isMatrixLoss() ;
 }

@@ -29,6 +29,9 @@
  */
 package org.openimaj.ml.linear.learner.perceptron;
 
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TIntArrayList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,10 +66,16 @@ import ch.akuhn.matrix.Vector;
 public class OISVM implements OnlineLearner<double[], PerceptronClass>{
 	
 	
+	private static final int DEFAULT_NEWTON_ITER = 20;
+
 	private Kernel<double[]> kernel;
 	
-	// This is Caligraphic Beta (calB), there are I of these
+	// This is Caligraphic Beta (calB), there are B of these
 	protected List<double[]> supports = new ArrayList<double[]>();
+	protected TIntArrayList supportIndex = new TIntArrayList();
+	
+	// This is y, holding the expected y of the supports
+	private List<PerceptronClass> expected = new ArrayList<PerceptronClass>();
 	
 	// This is K^{-1}_{calB,calB} in the paper
 	private Matrix Kinv;
@@ -79,49 +88,122 @@ public class OISVM implements OnlineLearner<double[], PerceptronClass>{
 
 	// the weights, italic Beta (itB) in the paper
 	private Vector beta;
+	
+
+	
+	int newtonMaxIter = DEFAULT_NEWTON_ITER;
+	
+	double C = 1;
+
+	private List<double[]> nonSupports = new ArrayList<double[]>();
+
+	
 
 	/**
 	 * 
 	 * @param kernel
+	 * @param eta 
 	 */
 	public OISVM(Kernel<double[]> kernel, double eta) {
 		this.kernel = kernel;
 		this.eta = eta;
+		this.K = DenseMatrix.dense(0, 0);
+		this.Kinv = DenseMatrix.dense(0, 0);
 	}
 	@Override
 	public void process(double[] x, PerceptronClass y) {
 		double kii = this.kernel.apply(IndependentPair.pair(x,x));
 		
 		// First calculate optimal weighting vector d
-		Vector k = calculatekt(x);
+		Vector kt = calculatekt(x);
+		Vector k = kt.times(y.v());
 		Vector d_optimal = Kinv.mult(k);
 		double delta = kii - d_optimal.dot(k);
 		
 		if(delta > eta){
-			updateSupports(x, k, kii, d_optimal,delta);
+			updateSupports(x, y, k, kii, d_optimal,delta);
+		}
+		else {
+			updateNonSupports(x,y,kt,d_optimal);
 		}
 		
-		Vector outNew = this.K.mult(beta);
-		if(MatlibMatrixUtils.any(MatlibMatrixUtils.lessThan(outNew,1))){
+		double ot = k.dot(beta);
+		if(ot < 1){
+			int newtonIter = 0;
+			TIntArrayList I = new TIntArrayList();
+			while(newtonIter++ < this.newtonMaxIter){				
+				TIntArrayList newI = newtonStep(I);
+				if(newI.equals(I)){
+					break;
+				}
+				I = newI;
+			}
 			
 		}
 		
 	}
 	
-	private void updateSupports(double[] x, Vector k, double kii, Vector d_optimal, double delta) {
+	private void updateSupports(double[] x, PerceptronClass y,Vector k, double kii, Vector d_optimal, double delta) {
 		this.supports.add(x);
+		this.expected.add(y);
+		supportIndex.add(this.K.columnCount()-1);
 		
 		if(this.supports.size() > 1){
 			updateKinv(d_optimal, delta);
 			updateK(k,kii);
+			updateBeta();
 		} else {
 			init();
 		}
 	}
 	
+	private void updateNonSupports(double[] x, PerceptronClass y,Vector kk, Vector d_optimal) {
+		this.nonSupports.add(d_optimal.unwrap());
+		MatlibMatrixUtils.appendColumn(this.K,kk);
+		
+	}
+	private TIntArrayList newtonStep(TIntArrayList currentI) {
+		TIntArrayList Icols = new TIntArrayList(this.K.rowCount());
+		TDoubleArrayList Yvals = new TDoubleArrayList(this.K.rowCount());
+		// K . itB (i.e. kernel weighted by beta)
+		Vector v = this.K.mult(beta);
+		
+		
+		// g = K . itB - K_BI . (y_I - K_BI . itB)
+		for (int i = 0; i < K.rowCount(); i++) {
+			int yi = this.expected.get(i).v();
+			double yioi = v.get(i) * yi;
+			if(1 - yioi > 0) {
+				Icols.add(i);
+				Yvals.add(yi);
+			}
+		}
+		if(currentI.equals(Icols))return Icols;
+		Matrix Kbi = MatlibMatrixUtils.subMatrix(this.K, 0, this.K.rowCount(),Icols);
+		
+		// here we calculate g = K . itB - K_BI (y_I - o_I)
+		Vector g = DenseVector.wrap(Yvals.toArray()); // g = y_I
+		MatlibMatrixUtils.minusInplace(g, Kbi.mult(beta)); // g = y_I - K_BI . itB
+		g = Kbi.mult(g); // g = K_BI . (y_I - K_BI . itB)
+		g = MatlibMatrixUtils.minus(v,g); // g = K . itB - K_BI (y_I - o_I)
+		
+		// Here we calculate: P = K + C * Kbi . Kbi^T, then P^-1
+		Matrix P = new DenseMatrix(K.rowCount(), K.columnCount()); // P = 0
+		MatlibMatrixUtils.dotProductTranspose(Kbi, Kbi, P); // P = Kbi . Kbi^T
+		MatlibMatrixUtils.scaleInplace(P, C); // P = C * Kbi . Kbi^T
+		MatlibMatrixUtils.plusInplace(P, K); // P = K + C * Kbi . Kbi^T
+		Matrix Pinv = MatlibMatrixUtils.fromJama(MatlibMatrixUtils.toJama(P).inverse());
+		
+		// here we update itB = itB - Pinv . g
+		
+		MatlibMatrixUtils.minusInplace(beta, Pinv.mult(g));
+		return Icols;
+	}
+	
+
 	@Override
 	public PerceptronClass predict(double[] x) {
-		return null;
+		return PerceptronClass.fromSign(Math.signum(calculatekt(x).dot(beta)));
 	}
 	
 	private void init() {
@@ -130,17 +212,24 @@ public class OISVM implements OnlineLearner<double[], PerceptronClass>{
 		this.Kinv = DenseMatrix.dense(1, 1);
 		double kv = this.kernel.apply(IndependentPair.pair(only,only));
 		Kinv.put(0, 0, 1/kv);
-		K.put(0, 0, 1/kv);
+		K.put(0, 0, kv);
 		this.beta = DenseVector.dense(1);
 	}
+	
 	private void updateK(Vector kt, double kii) {
 		// We're updating K to: [ K kt; kt' kii]
-		DenseMatrix newK = new DenseMatrix(K.rowCount()+1, K.columnCount() + 1);
-		int lastIndex = newK.rowCount()-1;
-		MatlibMatrixUtils.setSubMatrix(newK, 0, 0, K);
-		MatlibMatrixUtils.setSubMatrixRow(newK, lastIndex, 0, kt);
-		MatlibMatrixUtils.setSubMatrixCol(newK, 0, lastIndex, kt);
-		newK.put(lastIndex, lastIndex, kii);
+		Vector row = DenseVector.dense(K.columnCount());
+		row.put(K.columnCount()-1, kii);
+		// TODO: Fill this row... K[Beta] = kt while K[~Beta] has to be calculated
+		Matrix newK = MatlibMatrixUtils.appendRow(K, row );
+		this.K = newK;
+	}
+	
+	private void updateBeta() {
+		// We're updating itB to: [ K kt; kt' kii]
+		Vector newB = DenseVector.dense(this.beta.size() + 1);
+		MatlibMatrixUtils.setSubVector(newB, 0, beta);
+		this.beta = newB;
 	}
 	
 	private void updateKinv(Vector d_optimal, double delta) {

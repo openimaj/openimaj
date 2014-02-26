@@ -27,29 +27,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.learner.matlib.regul;
 
-import gov.sandia.cognition.math.matrix.Matrix;
+import org.apache.log4j.Logger;
+import org.openimaj.math.matrix.MatlibMatrixUtils;
 
-public class SquareLossFunction extends LossFunction{
+import ch.akuhn.matrix.Matrix;
+import ch.akuhn.matrix.Vector;
+
+public class L1L2Regulariser implements Regulariser{
+
+	private static final Logger logger = Logger.getLogger(L1L2Regulariser.class);
 
 	@Override
-	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
-	}
-
-	@Override
-	public double eval(Matrix W) {
+	public Matrix prox(Matrix W, double lambda) {
+		int nrows = W.rowCount();
+		Matrix ret = W.newInstance();
 		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
+		for (int r = 0; r < nrows; r++) {
+			Vector row = W.row(r);
+			double rownorm = MatlibMatrixUtils.norm2(row);
+			if(rownorm > lambda){
+				double scal = (rownorm - lambda)/rownorm;
+				MatlibMatrixUtils.setSubMatrixRow(ret, r, 0, row.times(scal));
+			}
+		}
+		return ret;
 	}
 
-	@Override
-	public boolean isMatrixLoss() {
-		return false;
-	}
-	
 }

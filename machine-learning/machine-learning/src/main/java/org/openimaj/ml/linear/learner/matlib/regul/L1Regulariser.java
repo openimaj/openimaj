@@ -27,29 +27,42 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.learner.matlib.regul;
 
-import gov.sandia.cognition.math.matrix.Matrix;
+import ch.akuhn.matrix.Matrix;
+import ch.akuhn.matrix.Vector;
+import ch.akuhn.matrix.Vector.Entry;
 
-public class SquareLossFunction extends LossFunction{
+
+/**
+ *
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ */
+public class L1Regulariser implements Regulariser{
 
 	@Override
-	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
+	public Matrix prox(Matrix W, double lambda) {
+		return softThreshold(W,lambda);
 	}
 
-	@Override
-	public double eval(Matrix W) {
+	private Matrix softThreshold(Matrix w, double lambda) {
+		Matrix ret = w.newInstance();
 		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
-	}
-
-	@Override
-	public boolean isMatrixLoss() {
-		return false;
+		int rowi = 0;
+		for (Vector row : w.rows()) {
+			for (Entry ent : row.entries()) {
+				if(ent.value < -lambda){
+					ret.put(rowi, ent.index, ent.value + lambda);
+				}
+				else if(ent.value > lambda){
+					ret.put(rowi, ent.index, ent.value - lambda);
+				}
+			}
+			rowi++;
+		}
+		return ret;
 	}
 	
+	
+
 }

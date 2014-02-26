@@ -27,29 +27,64 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.learner.matlib.loss;
 
-import gov.sandia.cognition.math.matrix.Matrix;
+import org.openimaj.math.matrix.MatlibMatrixUtils;
 
-public class SquareLossFunction extends LossFunction{
+import ch.akuhn.matrix.Matrix;
+import ch.akuhn.matrix.SparseMatrix;
 
+
+public class MatLossFunction extends LossFunction{
+	
+	private LossFunction f;
+	public MatLossFunction(LossFunction f) {
+		this.f = f;
+	}
+	
+	@Override
+	public void setX(Matrix X) {
+		super.setX(X);
+		f.setX(X);
+	}
+	
+	@Override
+	public void setY(Matrix Y) {
+		super.setY(Y);
+		f.setY(Y);
+	}
+	
+	@Override
+	public void setBias(Matrix bias) {
+		super.setBias(bias);
+		f.setBias(bias);
+	}
 	@Override
 	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
+		SparseMatrix ret = SparseMatrix.sparse(W.rowCount(), W.columnCount());
+		int allRowsY = Y.rowCount()-1;
+		int allRowsW = W.rowCount()-1;
+		for (int i = 0; i < Y.columnCount(); i++) {
+			this.f.setY(MatlibMatrixUtils.subMatrix(Y, 0, allRowsY, i, i));
+			if(bias!=null) this.f.setBias(MatlibMatrixUtils.subMatrix(bias, 0, allRowsY, i, i));
+			Matrix w = MatlibMatrixUtils.subMatrix(W, 0, allRowsW, i, i);
+			Matrix submatrix = f.gradient(w);
+			MatlibMatrixUtils.setSubMatrix(ret, 0, i, submatrix);
+		}
+		return ret;
 	}
 
 	@Override
 	public double eval(Matrix W) {
-		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
+		double total = 0;
+		f.setBias(this.bias);
+		total += f.eval(W);
+		return total;
 	}
 
 	@Override
 	public boolean isMatrixLoss() {
-		return false;
+		return true;
 	}
-	
+
 }

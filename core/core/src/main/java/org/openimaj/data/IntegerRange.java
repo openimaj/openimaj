@@ -29,7 +29,9 @@
  */
 package org.openimaj.data;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A range of doubles
@@ -77,6 +79,19 @@ public class IntegerRange implements Iterable<Integer>{
 	@Override
 	public Iterator<Integer> iterator() {
 		return new IntegerRangeIterator();
+	}
+	
+	public int[] asArray(){
+		List<Integer> iarr = new ArrayList<Integer>();
+		for (Integer i : this) {
+			iarr.add(i);
+		}
+		int[] intarr = new int[iarr.size()];
+		Iterator<Integer> iter = iarr.iterator();
+		for (int i = 0; i < intarr.length; i++) {
+			intarr[i] = iter.next();
+		}
+		return intarr;
 	}
 
 }

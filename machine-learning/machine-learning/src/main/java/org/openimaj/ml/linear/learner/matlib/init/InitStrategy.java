@@ -27,29 +27,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.learner.matlib.init;
 
-import gov.sandia.cognition.math.matrix.Matrix;
+import ch.akuhn.matrix.Matrix;
 
-public class SquareLossFunction extends LossFunction{
+/**
+ * Initialise a matrix to some dimension
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
+public interface InitStrategy {
 
-	@Override
-	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
-	}
-
-	@Override
-	public double eval(Matrix W) {
-		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
-	}
-
-	@Override
-	public boolean isMatrixLoss() {
-		return false;
-	}
-	
+	/**
+	 * @param rows
+	 * @param cols
+	 * @return a matrix of the requested dimensions
+	 */
+	public Matrix init(int rows, int cols);
 }

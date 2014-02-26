@@ -27,29 +27,66 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.learner.matlib.loss;
 
-import gov.sandia.cognition.math.matrix.Matrix;
+import org.apache.log4j.Logger;
+import org.openimaj.math.matrix.MatlibMatrixUtils;
 
-public class SquareLossFunction extends LossFunction{
+import ch.akuhn.matrix.Matrix;
+import ch.akuhn.matrix.Vector;
 
+
+public class MatSquareLossFunction extends LossFunction{
+	Logger logger = Logger.getLogger(MatSquareLossFunction.class);
+	public MatSquareLossFunction() {
+	}
 	@Override
 	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
+		Matrix ret = W.newInstance();
+		Matrix resid = MatlibMatrixUtils.dotProduct(X, W);
+		if(this.bias!=null)
+		{
+			MatlibMatrixUtils.plusInplace(resid, this.bias);
+		}
+		MatlibMatrixUtils.minusInplace(resid, Y);
+		for (int t = 0; t < resid.columnCount(); t++) {
+			Vector row = this.X.row(t);
+			row.times(resid.get(t, t));
+			MatlibMatrixUtils.setSubMatrixCol(ret, 0, t, row);
+		}
+		return ret;
 	}
-
 	@Override
 	public double eval(Matrix W) {
+		Matrix resid = null;
+		if(W == null){
+			resid = X;
+		} else {
+			resid = MatlibMatrixUtils.dotProduct(X,W);
+		}
+		Matrix vnobias = MatlibMatrixUtils.copy(X);
+		if(this.bias!=null)
+		{
+			MatlibMatrixUtils.plusInplace(resid, bias);
+		}
+		Matrix v =  MatlibMatrixUtils.copy(resid);
+		MatlibMatrixUtils.minusInplace(resid,Y);
+		double retval = 0;
 		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
+		for (int t = 0; t < resid.columnCount(); t++) {
+			double loss = resid.get(t, t);
+			retval += loss * loss;
+			logger.debug(
+					String.format(
+							"yr=%d,y=%3.2f,v=%3.2f,v(no bias)=%2.5f,error=%2.5f,serror=%2.5f",
+							t, Y.get(t, t), v.get(t, t), vnobias.get(t,t), loss, loss*loss
+							)
+					);
+		}
+		return retval;
 	}
-
 	@Override
 	public boolean isMatrixLoss() {
-		return false;
+		return true;
 	}
-	
 }

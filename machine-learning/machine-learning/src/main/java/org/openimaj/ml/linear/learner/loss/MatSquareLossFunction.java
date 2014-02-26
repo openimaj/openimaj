@@ -29,62 +29,79 @@
  */
 package org.openimaj.ml.linear.learner.loss;
 
+import org.apache.log4j.Logger;
+import org.openimaj.math.matrix.CFMatrixUtils;
+
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
-public class MatLossFunction extends LossFunction{
-	
-	private LossFunction f;
+public class MatSquareLossFunction extends LossFunction{
+	Logger logger = Logger.getLogger(MatSquareLossFunction.class);
 	private SparseMatrixFactoryMTJ spf;
-	public MatLossFunction(LossFunction f) {
-		this.f = f;
+	public MatSquareLossFunction() {
 		spf = SparseMatrixFactoryMTJ.INSTANCE;
-	}
-	
-	@Override
-	public void setX(Matrix X) {
-		super.setX(X);
-		f.setX(X);
-	}
-	
-	@Override
-	public void setY(Matrix Y) {
-		super.setY(Y);
-		f.setY(Y);
-	}
-	
-	@Override
-	public void setBias(Matrix bias) {
-		super.setBias(bias);
-		f.setBias(bias);
 	}
 	@Override
 	public Matrix gradient(Matrix W) {
-		SparseMatrix ret = spf.createMatrix(W.getNumRows(), W.getNumColumns());
-		int allRowsY = Y.getNumRows()-1;
-		int allRowsW = W.getNumRows()-1;
-		for (int i = 0; i < Y.getNumColumns(); i++) {
-			this.f.setY(Y.getSubMatrix(0, allRowsY, i, i));
-			if(bias!=null) this.f.setBias(bias.getSubMatrix(0, allRowsY, i, i));
-			Matrix w = W.getSubMatrix(0, allRowsW, i, i);
-			Matrix submatrix = f.gradient(w);
-			ret.setSubMatrix(0, i, submatrix);
+		Matrix ret = W.clone();
+		if(CFMatrixUtils.containsInfinity(X)){
+			throw new RuntimeException();
+		}
+		if(CFMatrixUtils.containsInfinity(W)){
+			throw new RuntimeException();
+		}
+		Matrix resid = CFMatrixUtils.fastdot(X,W);
+		if(CFMatrixUtils.containsInfinity(resid)){
+			CFMatrixUtils.fastdot(X,W);
+			throw new RuntimeException();
+		}
+		if(this.bias!=null)
+		{
+			resid.plusEquals(this.bias);
+		}
+		CFMatrixUtils.fastminusEquals(resid, Y);
+		if(CFMatrixUtils.containsInfinity(resid)){
+			throw new RuntimeException();
+		}
+		for (int t = 0; t < resid.getNumColumns(); t++) {
+			Vector xcol = this.X.getRow(t).scale(resid.getElement(t, t)).clone();
+			CFMatrixUtils.fastsetcol(ret,t, xcol);
 		}
 		return ret;
 	}
-
 	@Override
 	public double eval(Matrix W) {
-		double total = 0;
-		f.setBias(this.bias);
-		total += f.eval(W);
-		return total;
+		Matrix resid = null;
+		if(W == null){
+			resid = X.clone();
+		} else {
+			resid = X.times(W);
+		}
+		Matrix vnobias = resid.clone();
+		if(this.bias!=null)
+		{
+			resid.plusEquals(this.bias);
+		}
+		Matrix v = resid.clone();
+		resid.minusEquals(Y);
+		double retval = 0;
+		
+		for (int t = 0; t < resid.getNumColumns(); t++) {
+			double loss = resid.getElement(t, t);
+			retval += loss * loss;
+			logger.debug(
+					String.format(
+							"yr=%d,y=%3.2f,v=%3.2f,v(no bias)=%2.5f,error=%2.5f,serror=%2.5f",
+							t, Y.getElement(t, t), v.getElement(t, t), vnobias.getElement(t,t), loss, loss*loss
+							)
+					);
+		}
+		return retval;
 	}
-
 	@Override
 	public boolean isMatrixLoss() {
 		return true;
 	}
-
 }

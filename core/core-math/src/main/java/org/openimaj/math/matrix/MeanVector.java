@@ -14,7 +14,7 @@ public class MeanVector {
 	 * 
 	 */
 	public MeanVector() {
-		this.mean = null;
+		reset();
 	}
 	
 	/**
@@ -60,6 +60,14 @@ public class MeanVector {
 	 */
 	public double[] vec() {
 		return this.mean;
+	}
+
+	/**
+	 * 
+	 */
+	public void reset() {
+		this.mean = null;
+		this.n = 0;
 	}
 
 }

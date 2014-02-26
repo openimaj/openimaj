@@ -83,4 +83,9 @@ public class SquareMissingLossFunction extends LossFunction {
 		return sum;
 	}
 
+	@Override
+	public boolean isMatrixLoss() {
+		return false;
+	}
+
 }

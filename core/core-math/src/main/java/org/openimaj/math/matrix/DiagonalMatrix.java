@@ -47,6 +47,18 @@ public class DiagonalMatrix extends Matrix{
 	public DiagonalMatrix(int rowcol) {
 		this.vals = new double[rowcol];
 	}
+	
+	/**
+	 * New empty matrix with val down the diagonals
+	 * @param rowcol
+	 * @param val 
+	 */
+	public DiagonalMatrix(int rowcol, double val) {
+		this.vals = new double[rowcol];
+		for (int i = 0; i < vals.length; i++) {
+			vals[i] = val;
+		}
+	}
 
 	/**
 	 * Diagonal version of the matrix handed

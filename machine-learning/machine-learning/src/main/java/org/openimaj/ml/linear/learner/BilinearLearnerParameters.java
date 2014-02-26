@@ -33,6 +33,7 @@ import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -148,6 +149,12 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	 * * (1.0 - DAMPENING). The default value is 0
 	 */
 	public static final String DAMPENING = "dampening";
+	
+	
+	/**
+	 * Whether the Vprime and Dprime matrices should be zscore standardised
+	 */
+	public static final String Z_STANDARDISE ="z_standardise";
 	/**
 	 *
 	 */
@@ -177,6 +184,7 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 		this.defaults.put(ETASTEPS, 3);
 		this.defaults.put(FORCE_SPARCITY, true);
 		this.defaults.put(DAMPENING, 0d);
+		this.defaults.put(Z_STANDARDISE, false);
 	}
 
 	@Override
@@ -187,10 +195,31 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 			out.printf("%s: %s\n", key, this.getTyped(key));
 		}
 	}
+	
+	@Override
+	public String toString() {
+		StringWriter writer = new StringWriter();
+		PrintWriter pw = new PrintWriter(writer, true);
+		try {
+			writeASCII(pw);
+		} catch (IOException e) {
+		}
+		pw.flush();
+		return writer.toString();
+	}
 
 	@Override
 	public String asciiHeader() {
 		return "Bilinear Learner Params";
+	}
+	
+	@Override
+	public BilinearLearnerParameters clone() {
+		BilinearLearnerParameters ret = new BilinearLearnerParameters();
+		for (java.util.Map.Entry<String, Object> ent : this.entrySet()) {
+			ret.put(ent.getKey(), ent.getValue());
+		}
+		return ret;
 	}
 
 }

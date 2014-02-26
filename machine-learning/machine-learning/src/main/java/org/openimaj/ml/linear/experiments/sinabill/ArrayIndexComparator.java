@@ -27,29 +27,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.experiments.sinabill;
 
-import gov.sandia.cognition.math.matrix.Matrix;
+import java.util.Comparator;
 
-public class SquareLossFunction extends LossFunction{
+public class ArrayIndexComparator implements Comparator<Integer>{
 
-	@Override
-	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
+	private double[] arr;
+
+	public ArrayIndexComparator(double[] wordWeights) {
+		arr = wordWeights;
 	}
 
 	@Override
-	public double eval(Matrix W) {
-		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
+	public int compare(Integer arg0, Integer arg1) {
+		return Double.compare(Math.abs(arr[arg0]), Math.abs(arr[arg1]));
 	}
 
-	@Override
-	public boolean isMatrixLoss() {
-		return false;
+	public static Integer[] integerRange(double[] wordWeights) {
+		Integer[] rng = new Integer[wordWeights.length];
+		for (int i = 0; i < rng.length; i++) {
+			rng[i] = i;
+		}
+		return rng;
 	}
-	
+
 }

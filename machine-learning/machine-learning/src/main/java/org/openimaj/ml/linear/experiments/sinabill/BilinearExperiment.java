@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.experiments;
+package org.openimaj.ml.linear.experiments.sinabill;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -50,7 +50,7 @@ public abstract class BilinearExperiment {
 	private static final String BILL_DATA_ROOT = "%s/TrendMiner/deliverables/year2-18month/Austrian Data/";
 	private static final String BILL_DATA = "%s/data.mat";
 	
-	static Logger logger = Logger.getLogger(BillAustrianExperiments.class);
+	Logger logger = Logger.getLogger(getClass());
 	private static long experimentTime = -1;
 	
 	protected void prepareExperimentLog(BilinearLearnerParameters params) throws IOException {
@@ -77,7 +77,7 @@ public abstract class BilinearExperiment {
 	}
 	
 	public File prepareExperimentRoot() throws IOException {
-		String experimentRoot = String.format(EXPERIMENT_NAME,BILL_DATA_ROOT(),getExperimentSetName(),getExperimentName(),""+currentExperimentTime());
+		String experimentRoot = String.format(EXPERIMENT_NAME,DATA_ROOT(),getExperimentSetName(),getExperimentName(),""+currentExperimentTime());
 		File expRoot = new File(experimentRoot);
 		if(expRoot.exists() && expRoot.isDirectory()) return expRoot;
 		logger.debug("Experiment root: " + expRoot);
@@ -98,12 +98,17 @@ public abstract class BilinearExperiment {
 		return foldRoot.getAbsolutePath();
 	}
 	
-	protected String BILL_DATA() {
+	protected String MATLAB_DATA() {
 		
-		return String.format(BILL_DATA,BILL_DATA_ROOT());
+		return String.format(BILL_DATA,DATA_ROOT());
 	}
 	
-	protected String BILL_DATA_ROOT() {
+	protected String MATLAB_DATA(String data) {
+		
+		return String.format(data,DATA_ROOT());
+	}
+	
+	protected String DATA_ROOT() {
 		
 		return String.format(BILL_DATA_ROOT,DROPBOX_HOME());
 	}

@@ -27,33 +27,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner;
-
-import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.mtj.AbstractMTJMatrix;
-import gov.sandia.cognition.math.matrix.mtj.AbstractSparseMatrix;
-import gov.sandia.cognition.math.matrix.mtj.SparseColumnMatrix;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
+package org.openimaj.ml.linear.learner.matlib;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import javax.media.jai.ColorModelFactory;
-
-import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
-
 import org.apache.log4j.Logger;
 import org.openimaj.io.ReadWriteableBinary;
-import org.openimaj.math.matrix.CFMatrixUtils;
-import org.openimaj.ml.linear.learner.init.ContextAwareInitStrategy;
-import org.openimaj.ml.linear.learner.init.InitStrategy;
-import org.openimaj.ml.linear.learner.init.SparseSingleValueInitStrat;
-import org.openimaj.ml.linear.learner.loss.LossFunction;
-import org.openimaj.ml.linear.learner.loss.MatLossFunction;
-import org.openimaj.ml.linear.learner.regul.Regulariser;
+import org.openimaj.math.matrix.DiagonalMatrix;
+import org.openimaj.math.matrix.MatlibMatrixUtils;
+import org.openimaj.ml.linear.learner.BilinearLearnerParameters;
+import org.openimaj.ml.linear.learner.OnlineLearner;
+import org.openimaj.ml.linear.learner.matlib.init.InitStrategy;
+import org.openimaj.ml.linear.learner.matlib.init.SparseSingleValueInitStrat;
+import org.openimaj.ml.linear.learner.matlib.loss.LossFunction;
+import org.openimaj.ml.linear.learner.matlib.loss.MatLossFunction;
+import org.openimaj.ml.linear.learner.matlib.regul.Regulariser;
+
+import ch.akuhn.matrix.Matrix;
+import ch.akuhn.matrix.SparseMatrix;
 
 
 /**
@@ -82,14 +75,13 @@ import org.openimaj.ml.linear.learner.regul.Regulariser;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>, ReadWriteableBinary{
+public class MatlibBilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>, ReadWriteableBinary{
 
-	static Logger logger = Logger.getLogger(BilinearSparseOnlineLearner.class);
+	static Logger logger = Logger.getLogger(MatlibBilinearSparseOnlineLearner.class);
 
 	protected BilinearLearnerParameters params;
 	protected Matrix w;
 	protected Matrix u;
-	protected SparseMatrixFactoryMTJ smf = SparseMatrixFactoryMTJ.INSTANCE;
 	protected LossFunction loss;
 	protected Regulariser regul;
 	protected Double lambda_w,lambda_u;
@@ -108,13 +100,13 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	/**
 	 * The default parameters. These won't work with your dataset, i promise.
 	 */
-	public BilinearSparseOnlineLearner() {
+	public MatlibBilinearSparseOnlineLearner() {
 		this(new BilinearLearnerParameters());
 	}
 	/**
 	 * @param params the parameters used by this learner
 	 */
-	public BilinearSparseOnlineLearner(BilinearLearnerParameters params) {
+	public MatlibBilinearSparseOnlineLearner(BilinearLearnerParameters params) {
 		this.params = params;
 		reinitParams();
 	}
@@ -141,38 +133,25 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 		final InitStrategy ustrat = getInitStrat(BilinearLearnerParameters.UINITSTRAT,x,y);
 		this.w = wstrat.init(xrows, ycols);
 		this.u = ustrat.init(xcols, ycols);
-		if(this.forceSparcity)
-		{
-			this.u = CFMatrixUtils.asSparseColumn(this.u);
-			this.w = CFMatrixUtils.asSparseColumn(this.w);
-		}
 
-		this.bias = smf.createMatrix(ycols,ycols);
+		this.bias = SparseMatrix.sparse(ycols,ycols);
 		if(this.biasMode){
 			final InitStrategy bstrat = getInitStrat(BilinearLearnerParameters.BIASINITSTRAT,x,y);
 			this.bias = bstrat.init(ycols, ycols);
-			this.diagX = smf.createIdentity(ycols, ycols);
+			this.diagX = new DiagonalMatrix(ycols,1);
 		}
 	}
-	
-	
 
 	private InitStrategy getInitStrat(String initstrat, Matrix x, Matrix y) {
 		final InitStrategy strat = this.params.getTyped(initstrat);
-		if(strat instanceof ContextAwareInitStrategy){
-			final ContextAwareInitStrategy<Matrix, Matrix> cwStrat = this.params.getTyped(initstrat);
-			cwStrat.setLearner(this);
-			cwStrat.setContext(x, y);
-			return cwStrat;
-		}
 		return strat;
 	}
 	@Override
 	public void process(Matrix X, Matrix Y){
-		final int nfeatures = X.getNumRows();
-		final int nusers = X.getNumColumns();
-		final int ntasks = Y.getNumColumns();
-//		int ninstances = Y.getNumRows(); // Assume 1 instance!
+		final int nfeatures = X.rowCount();
+		final int nusers = X.columnCount();
+		final int ntasks = Y.columnCount();
+//		int ninstances = Y.rowCount(); // Assume 1 instance!
 		
 		// only inits when the current params is null
 		if (this.w == null){
@@ -185,21 +164,16 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 		logger.debug("... dampening w, u and bias by: " + weighting);
 
 		// Adjust for weighting
-		this.w.scaleEquals(weighting);
-		this.u.scaleEquals(weighting);
+		MatlibMatrixUtils.scaleInplace(this.w,weighting);
+		MatlibMatrixUtils.scaleInplace(this.u,weighting);
 		if(this.biasMode){
-			this.bias.scaleEquals(weighting);
+			MatlibMatrixUtils.scaleInplace(this.bias,weighting);
 		}
 		// First expand Y s.t. blocks of rows contain the task values for each row of Y.
 		// This means Yexp has (n * t x t)
 		final SparseMatrix Yexp = expandY(Y);
 		loss.setY(Yexp);
 		int iter = 0;
-		Matrix xt = X.transpose();
-		Matrix xtrows = xt;
-		if(xt instanceof AbstractSparseMatrix){
-			xtrows = CFMatrixUtils.asSparseRow(xt);
-		}
 		while(true) {
 			// We need to set the bias here because it is used in the loss calculation of U and W
 			if(this.biasMode) loss.setBias(this.bias);
@@ -211,40 +185,33 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 			final double weightedLambda_w = lambdat(iter,lambda_w);
 			// Dprime is tasks x nwords
 			Matrix Dprime = null;
-			Matrix ut = this.u.transpose();				
 			if(this.nodataseen){
 				this.nodataseen = false;
-				Matrix fakeu = new SparseSingleValueInitStrat(1).init(this.u.getNumColumns(), this.u.getNumRows());
-				Dprime = CFMatrixUtils.fastdot(fakeu,xt);
+				Matrix fakeut = new SparseSingleValueInitStrat(1).init(this.u.columnCount(),this.u.rowCount());
+				Dprime = MatlibMatrixUtils.dotProductTranspose(fakeut, X); // i.e. fakeut . X^T
 			} else {
-				Dprime = CFMatrixUtils.fastdot(ut, xt);
+				Dprime = MatlibMatrixUtils.dotProductTransposeTranspose(u, X); // i.e. u^T . X^T
 			}
 			
 			// ... as is the cost function's X
 			if(zStandardise){
-				Vector rowMean = CFMatrixUtils.rowMean(Dprime);
-				CFMatrixUtils.minusEqualsCol(Dprime,rowMean);
+//				Vector rowMean = CFMatrixUtils.rowMean(Dprime);
+//				CFMatrixUtils.minusEqualsCol(Dprime,rowMean);
 			}
 			loss.setX(Dprime);
 			final Matrix neww = updateW(this.w,wLossWeighted, weightedLambda_w);
 
 			// Vprime is nusers x tasks
-			final Matrix Vprime = CFMatrixUtils.fastdot(xtrows,neww);
+			final Matrix Vt = MatlibMatrixUtils.transposeDotProduct(neww,X); // i.e. (X^T.neww)^T X.transpose().times(neww);
 			// ... so the loss function's X is (tasks x nusers)
-			Matrix Vt = CFMatrixUtils.asSparseRow(Vprime.transpose());
-			if(zStandardise){
-				Vector rowMean = CFMatrixUtils.rowMean(Vt);
-				CFMatrixUtils.minusEqualsCol(Vt,rowMean);
-			}
 			loss.setX(Vt);
 			final Matrix newu = updateU(this.u,uLossWeight, weightedLambda_u);
 			
-			
-			final double sumchangew = CFMatrixUtils.absSum(neww.minus(this.w));
-			final double totalw = CFMatrixUtils.absSum(this.w);
+			final double sumchangew = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(neww, this.w));
+			final double totalw = MatlibMatrixUtils.normF(this.w);
 
-			final double sumchangeu = CFMatrixUtils.absSum(newu.minus(this.u));
-			final double totalu = CFMatrixUtils.absSum(this.u);
+			final double sumchangeu = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(newu, this.u));
+			final double totalu = MatlibMatrixUtils.normF(this.u);
 
 			double ratioU = 0;
 			if(totalu!=0) ratioU = sumchangeu/totalu;
@@ -254,10 +221,9 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 			double ratio = ratioU + ratioW;
 			double totalbias = 0;
 			if(this.biasMode){
-				Matrix newut = newu.transpose();
-				Matrix utxt = CFMatrixUtils.fastdot(newut,xt);
-				Matrix utxtw = CFMatrixUtils.fastdot(utxt,neww);
-				final Matrix mult = utxtw.plus(this.bias);
+				Matrix mult = MatlibMatrixUtils.dotProductTransposeTranspose(newu, X);
+				mult = MatlibMatrixUtils.dotProduct(mult, neww);				
+				MatlibMatrixUtils.plusInplace(mult, bias);
 				// We must set bias to null!
 				loss.setBias(null);
 				loss.setX(diagX);
@@ -266,8 +232,8 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 				final double biasLossWeight = biasEtat(iter);
 				final Matrix newbias = updateBias(biasGrad, biasLossWeight);
 
-				final double sumchangebias = CFMatrixUtils.absSum(newbias.minus(this.bias));
-				totalbias = CFMatrixUtils.absSum(this.bias);
+				final double sumchangebias = MatlibMatrixUtils.normF(MatlibMatrixUtils.minus(newbias, bias));
+				totalbias = MatlibMatrixUtils.normF(this.bias);
 				if(totalbias!=0) ratioB = (sumchangebias/totalbias) ;
 				this.bias = newbias;
 				ratio += ratioB;
@@ -277,35 +243,20 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 				ratio/=2;
 			}
 
-			/**
-			 * This is not a matter of simply type
-			 * The 0 values of the sparse matrix are also removed. very important.
-			 */
-			if(this.forceSparcity)
-			{
-				this.u = CFMatrixUtils.asSparseColumn(newu);
-				this.w = CFMatrixUtils.asSparseColumn(neww);
-			}
-			else{
-
-				this.w = neww;
-				this.u = newu;
-			}
-
 			final Double biconvextol = this.params.getTyped("biconvex_tol");
 			final Integer maxiter = this.params.getTyped("biconvex_maxiter");
 			if(iter%3 == 0){
 				logger.debug(String.format("Iter: %d. Last Ratio: %2.3f",iter,ratio));
-				logger.debug("W row sparcity: " + CFMatrixUtils.rowSparsity(w));
-				logger.debug("U row sparcity: " + CFMatrixUtils.rowSparsity(u));
+				logger.debug("W row sparcity: " + MatlibMatrixUtils.sparsity(w));
+				logger.debug("U row sparcity: " + MatlibMatrixUtils.sparsity(u));
 				logger.debug("Total U magnitude: " + totalu);
 				logger.debug("Total W magnitude: " + totalw);
 				logger.debug("Total Bias: " + totalbias);
 			}
 			if(biconvextol  < 0 || ratio < biconvextol || iter >= maxiter) {
 				logger.debug("tolerance reached after iteration: " + iter);
-				logger.debug("W row sparcity: " + CFMatrixUtils.rowSparsity(w));
-				logger.debug("U row sparcity: " + CFMatrixUtils.rowSparsity(u));
+				logger.debug("W row sparcity: " + MatlibMatrixUtils.sparsity(w));
+				logger.debug("U row sparcity: " + MatlibMatrixUtils.sparsity(u));
 				logger.debug("Total U magnitude: " + totalu);
 				logger.debug("Total W magnitude: " + totalw);
 				logger.debug("Total Bias: " + totalbias);
@@ -315,8 +266,9 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	}
 	
 	protected Matrix updateBias(Matrix biasGrad, double biasLossWeight) {
-		final Matrix newbias = this.bias.minus(
-				CFMatrixUtils.timesInplace(
+		final Matrix newbias = MatlibMatrixUtils.minus(
+				this.bias,
+				MatlibMatrixUtils.scaleInplace(
 						biasGrad,
 						biasLossWeight
 				)
@@ -325,18 +277,16 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	}
 	protected Matrix updateW(Matrix currentW, double wLossWeighted, double weightedLambda) {
 		final Matrix gradW = loss.gradient(currentW);
-		logger.debug("Abs w_grad: " + CFMatrixUtils.absSum(gradW));
-		CFMatrixUtils.timesInplace(gradW,wLossWeighted);
+		MatlibMatrixUtils.scaleInplace(gradW,wLossWeighted);
 
-		Matrix neww = CFMatrixUtils.fastminus(currentW,gradW);
+		Matrix neww = MatlibMatrixUtils.minus(currentW,gradW);
 		neww = regul.prox(neww, weightedLambda);
 		return neww;
 	}
 	protected Matrix updateU(Matrix currentU, double uLossWeight, double uWeightedLambda) {
 		final Matrix gradU = loss.gradient(currentU);
-		logger.debug("Abs u_grad: " + CFMatrixUtils.absSum(gradU));
-		CFMatrixUtils.timesInplace(gradU,uLossWeight);
-		Matrix newu = CFMatrixUtils.fastminus(currentU,gradU);
+		MatlibMatrixUtils.scaleInplace(gradU,uLossWeight);
+		Matrix newu = MatlibMatrixUtils.minus(currentU,gradU);
 		newu = regul.prox(newu, uWeightedLambda);
 		return newu;
 	}
@@ -349,15 +299,15 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	 * @return the diagonalised Y
 	 */
 	public static SparseMatrix expandY(Matrix Y) {
-		final int ntasks = Y.getNumColumns();
-		final SparseMatrix Yexp = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(ntasks, ntasks);
+		final int ntasks = Y.columnCount();
+		final SparseMatrix Yexp = SparseMatrix.sparse(ntasks, ntasks);
 		for (int touter = 0; touter < ntasks; touter++) {
 			for (int tinner = 0; tinner < ntasks; tinner++) {
 				if(tinner == touter){
-					Yexp.setElement(touter, tinner, Y.getElement(0, tinner));
+					Yexp.put(touter, tinner, Y.get(0, tinner));
 				}
 				else{
-					Yexp.setElement(touter, tinner, Double.NaN);
+					Yexp.put(touter, tinner, Double.NaN);
 				}
 			}
 		}
@@ -419,8 +369,8 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	public void addU(int newUsers) {
 		if(this.u == null) return; // If u has not be inited, then it will be on first process
 		final InitStrategy ustrat = this.getInitStrat(BilinearLearnerParameters.EXPANDEDUINITSTRAT,null,null);
-		final Matrix newU = ustrat.init(newUsers, this.u.getNumColumns());
-		this.u = CFMatrixUtils.vstack(this.u,newU);
+		final Matrix newU = ustrat.init(newUsers, this.u.columnCount());
+		this.u = MatlibMatrixUtils.vstack(this.u,newU);
 	}
 
 	/**
@@ -432,17 +382,17 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	public void addW(int newWords) {
 		if(this.w == null) return; // If w has not be inited, then it will be on first process
 		final InitStrategy wstrat = this.getInitStrat(BilinearLearnerParameters.EXPANDEDWINITSTRAT,null,null);
-		final Matrix newW = wstrat.init(newWords, this.w.getNumColumns());
-		this.w = CFMatrixUtils.vstack(this.w,newW);
+		final Matrix newW = wstrat.init(newWords, this.w.columnCount());
+		this.w = MatlibMatrixUtils.vstack(this.w,newW);
 	}
 
 	@Override
-	public BilinearSparseOnlineLearner clone(){
-		final BilinearSparseOnlineLearner ret = new BilinearSparseOnlineLearner(this.getParams());
-		ret.u = this.u.clone();
-		ret.w = this.w.clone();
+	public MatlibBilinearSparseOnlineLearner clone(){
+		final MatlibBilinearSparseOnlineLearner ret = new MatlibBilinearSparseOnlineLearner(this.getParams());
+		ret.u = MatlibMatrixUtils.copy(this.u);
+		ret.w = MatlibMatrixUtils.copy(this.w);
 		if(this.biasMode){
-			ret.bias = this.bias.clone();
+			ret.bias = MatlibMatrixUtils.copy(this.bias);
 		}
 		return ret;
 	}
@@ -466,32 +416,32 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 		final int ntasks = in.readInt();
 
 
-		this.w = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(nwords, ntasks);
+		this.w = SparseMatrix.sparse(nwords, ntasks);
 		for (int t = 0; t < ntasks; t++) {
 			for (int r = 0; r < nwords; r++) {
 				final double readDouble = in.readDouble();
 				if(readDouble != 0){
-					this.w.setElement(r, t, readDouble);
+					this.w.put(r, t, readDouble);
 				}
 			}
 		}
 
-		this.u = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(nusers, ntasks);
+		this.u = SparseMatrix.sparse(nusers, ntasks);
 		for (int t = 0; t < ntasks; t++) {
 			for (int r = 0; r < nusers; r++) {
 				final double readDouble = in.readDouble();
 				if(readDouble != 0){
-					this.u.setElement(r, t, readDouble);
+					this.u.put(r, t, readDouble);
 				}
 			}
 		}
 
-		this.bias = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(ntasks, ntasks);
+		this.bias = SparseMatrix.sparse(ntasks, ntasks);
 		for (int t1 = 0; t1 < ntasks; t1++) {
 			for (int t2 = 0; t2 < ntasks; t2++) {
 				final double readDouble = in.readDouble();
 				if(readDouble != 0){
-					this.bias.setElement(t1, t2, readDouble);
+					this.bias.put(t1, t2, readDouble);
 				}
 			}
 		}
@@ -502,18 +452,18 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 	}
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		out.writeInt(w.getNumRows());
-		out.writeInt(u.getNumRows());
-		out.writeInt(u.getNumColumns());
-		final double[] wdata = CFMatrixUtils.getData(w);
+		out.writeInt(w.rowCount());
+		out.writeInt(u.rowCount());
+		out.writeInt(u.columnCount());
+		final double[] wdata = w.asColumnMajorArray();
 		for (int i = 0; i < wdata.length; i++) {
 			out.writeDouble(wdata[i]);
 		}
-		final double[] udata = CFMatrixUtils.getData(u);
+		final double[] udata = u.asColumnMajorArray();
 		for (int i = 0; i < udata.length; i++) {
 			out.writeDouble(udata[i]);
 		}
-		final double[] biasdata = CFMatrixUtils.getData(bias);
+		final double[] biasdata = bias.asColumnMajorArray();
 		for (int i = 0; i < biasdata.length; i++) {
 			out.writeDouble(biasdata[i]);
 		}
@@ -522,11 +472,10 @@ public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>
 
 	@Override
 	public Matrix predict(Matrix x) {
-		final Matrix mult = this.u.transpose().times(x.transpose()).times(this.w);
-		if(this.biasMode)mult.plusEquals(this.bias);
-		final Vector ydiag = CFMatrixUtils.diag(mult);
-		final Matrix createIdentity = SparseMatrixFactoryMTJ.INSTANCE.createIdentity(1, ydiag.getDimensionality());
-		createIdentity.setRow(0, ydiag);
-		return createIdentity;
+		Matrix xt = MatlibMatrixUtils.transpose(x);
+		final Matrix mult = MatlibMatrixUtils.dotProduct(MatlibMatrixUtils.dotProduct(MatlibMatrixUtils.transpose(u), xt),this.w);
+		if(this.biasMode) MatlibMatrixUtils.plusInplace(mult,this.bias);
+		Matrix ydiag = new DiagonalMatrix(mult);
+		return ydiag;
 	}
 }

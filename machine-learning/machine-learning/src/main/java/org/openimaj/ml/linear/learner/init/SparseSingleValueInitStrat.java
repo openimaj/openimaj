@@ -27,29 +27,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.learner.init;
 
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
+import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
-public class SquareLossFunction extends LossFunction{
+import org.openimaj.math.matrix.CFMatrixUtils;
 
-	@Override
-	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
+public class SparseSingleValueInitStrat implements InitStrategy {
+
+	private double val;
+
+	public SparseSingleValueInitStrat(double val) {
+		this.val = val;
 	}
 
 	@Override
-	public double eval(Matrix W) {
-		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
+	public Matrix init(int rows, int cols) {
+		return CFMatrixUtils.plusInplace(
+				SparseMatrixFactoryMTJ.INSTANCE.createMatrix(rows, cols)
+				, val
+				);
 	}
 
-	@Override
-	public boolean isMatrixLoss() {
-		return false;
-	}
-	
 }

@@ -27,29 +27,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.learner.matlib.loss;
 
-import gov.sandia.cognition.math.matrix.Matrix;
+import ch.akuhn.matrix.Matrix;
 
-public class SquareLossFunction extends LossFunction{
 
-	@Override
-	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
+/**
+ * With a held Y and X, return gradient and evaluations of
+ * a loss function of some parameters s.t.
+ * 
+ * J(W) = F(Y,X,W)
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
+public abstract class LossFunction {
+	protected Matrix X;
+	protected Matrix Y;
+	protected Matrix bias;
+	public void setX(Matrix X){
+		this.X = X;
 	}
-
-	@Override
-	public double eval(Matrix W) {
-		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
+	public void setY(Matrix Y){
+		this.Y = Y;
 	}
-
-	@Override
-	public boolean isMatrixLoss() {
-		return false;
+	public abstract Matrix gradient(Matrix W);
+	public abstract double eval(Matrix W);
+	public void setBias(Matrix bias) {
+		this.bias = bias;
 	}
-	
+	public abstract boolean isMatrixLoss() ;
 }

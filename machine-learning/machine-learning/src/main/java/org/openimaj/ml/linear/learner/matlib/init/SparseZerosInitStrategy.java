@@ -27,29 +27,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.linear.learner.loss;
+package org.openimaj.ml.linear.learner.matlib.init;
 
-import gov.sandia.cognition.math.matrix.Matrix;
+import ch.akuhn.matrix.Matrix;
+import ch.akuhn.matrix.SparseMatrix;
 
-public class SquareLossFunction extends LossFunction{
 
-	@Override
-	public Matrix gradient(Matrix W) {
-		return X.transpose().times(X.times(W).minus(Y));
-	}
+public class SparseZerosInitStrategy extends SingleValueInitStrat{
 
-	@Override
-	public double eval(Matrix W) {
-		
-		Matrix v = (X.times(W).minus(Y));
-		if(this.bias!=null) v.plus(this.bias);
-		v.dotTimesEquals(v);
-		return v.sumOfRows().sum();
-	}
-
-	@Override
-	public boolean isMatrixLoss() {
-		return false;
+	public SparseZerosInitStrategy() {
+		super(0f);
 	}
 	
+	@Override
+	public Matrix init(int rows, int cols) {
+		return SparseMatrix.sparse(rows, cols);
+	}
+
 }
