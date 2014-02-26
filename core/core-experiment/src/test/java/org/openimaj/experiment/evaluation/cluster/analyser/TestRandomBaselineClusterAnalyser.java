@@ -35,7 +35,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.experiment.dataset.cluster.ClusertEvalDataset;
+import org.openimaj.experiment.dataset.cluster.ClusterEvalDataset;
 import org.openimaj.logger.LoggerUtils;
 
 
@@ -53,8 +53,8 @@ public class TestRandomBaselineClusterAnalyser{
 	private static final String GROUNDTRUTH = "/org/openimaj/experiment/dataset/cluster/clusters.txt";
 	private static final String ESTIMATES = "/org/openimaj/experiment/dataset/cluster/estimates.txt";
 	private final static Logger logger = Logger.getLogger(TestRandomBaselineClusterAnalyser.class);
-	private ClusertEvalDataset groundTruth;
-	private ClusertEvalDataset estimate;
+	private ClusterEvalDataset groundTruth;
+	private ClusterEvalDataset estimate;
 
 	/**
 	 * @throws IOException 
@@ -65,9 +65,9 @@ public class TestRandomBaselineClusterAnalyser{
 		LoggerUtils.prepareConsoleLogger();
 		Logger.getLogger(NMIClusterAnalyser.class).setLevel(Level.ERROR);
 		logger.debug("Loading groundtruth");
-		this.groundTruth = new ClusertEvalDataset(TestRandomBaselineClusterAnalyser.class.getResourceAsStream(GROUNDTRUTH));
+		this.groundTruth = new ClusterEvalDataset(TestRandomBaselineClusterAnalyser.class.getResourceAsStream(GROUNDTRUTH));
 		logger.debug("Loading estimate");
-		this.estimate = new ClusertEvalDataset(TestRandomBaselineClusterAnalyser.class.getResourceAsStream(ESTIMATES));
+		this.estimate = new ClusterEvalDataset(TestRandomBaselineClusterAnalyser.class.getResourceAsStream(ESTIMATES));
 	}
 	
 	/**

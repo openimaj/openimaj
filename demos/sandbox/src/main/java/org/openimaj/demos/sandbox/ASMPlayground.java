@@ -29,17 +29,17 @@
  */
 package org.openimaj.demos.sandbox;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.model.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.image.model.asm.MultiResolutionActiveShapeModel;
+import org.openimaj.image.model.asm.datasets.ShapeModelDataset;
+import org.openimaj.image.model.asm.datasets.ShapeModelDatasets;
 import org.openimaj.image.model.landmark.FNormalLandmarkModel;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.line.Line2d;
@@ -49,7 +49,6 @@ import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.NumberComponentSelector;
-import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
@@ -59,25 +58,21 @@ public class ASMPlayground {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		// File dir = new
-		// File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
-		final File dir = new File("/Users/jsh2/Downloads/imm_face_db");
-		final ASFDataset dataset = new ASFDataset(dir);
-
-		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
+		final ShapeModelDataset<FImage> dataset = ShapeModelDatasets.loadASFDataset("/Users/jsh2/Downloads/imm_face_db",
+				ImageUtilities.FIMAGE_READER);
 		final PointListConnections conns = dataset.getConnections();
 
 		final float scale = 0.02f;
 		final FNormalLandmarkModel.Factory factory = new FNormalLandmarkModel.Factory(conns,
 				FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
 		final MultiResolutionActiveShapeModel<FImage> asm = MultiResolutionActiveShapeModel.trainModel(3,
-				new NumberComponentSelector(19), data, new PointDistributionModel.BoxConstraint(3), factory);
+				new NumberComponentSelector(19), dataset, new PointDistributionModel.BoxConstraint(3), factory);
 
 		final Matrix pose = TransformUtilities.translateMatrix(300, 300).times(TransformUtilities.scaleMatrix(70, 70));
 		PointList shape = asm.getPDM().getMean().transform(pose);
 		// PointList shape = ASFDataset.readASF(new File(dir,
 		// "01-1m.asf")).firstObject();
-		final FImage img = ASFDataset.readASF(new File(dir, "01-1m.asf")).secondObject();
+		final FImage img = dataset.get(0).secondObject();
 		// PointList shape = ASFDataset.readASF(new File(dir,
 		// "16-6m.asf")).firstObject();
 		// FImage img = ASFDataset.readASF(new File(dir,

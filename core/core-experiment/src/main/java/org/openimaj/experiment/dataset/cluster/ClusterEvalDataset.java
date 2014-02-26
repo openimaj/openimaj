@@ -49,14 +49,14 @@ import org.openimaj.data.dataset.MapBackedDataset;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class ClusertEvalDataset extends MapBackedDataset<String, ListBackedDataset<Integer>, Integer> {
+public class ClusterEvalDataset extends MapBackedDataset<String, ListBackedDataset<Integer>, Integer> {
 	
 	/**
 	 * Read from this file location
 	 * @param loc
 	 * @throws IOException
 	 */
-	public ClusertEvalDataset(String loc) throws IOException {
+	public ClusterEvalDataset(String loc) throws IOException {
 		this(new File(loc));
 	}
 	/**
@@ -64,7 +64,7 @@ public class ClusertEvalDataset extends MapBackedDataset<String, ListBackedDatas
 	 * @param f
 	 * @throws IOException 
 	 */
-	public ClusertEvalDataset(File f) throws IOException {
+	public ClusterEvalDataset(File f) throws IOException {
 		this(new FileInputStream(f));
 	}
 
@@ -73,7 +73,7 @@ public class ClusertEvalDataset extends MapBackedDataset<String, ListBackedDatas
 	 * @param is
 	 * @throws IOException 
 	 */
-	public ClusertEvalDataset(InputStream is) throws IOException {
+	public ClusterEvalDataset(InputStream is) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		String line = null;
 		while((line = reader.readLine())!=null){

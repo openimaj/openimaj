@@ -35,46 +35,47 @@ import java.util.List;
 
 import org.openimaj.content.animation.animator.DoubleArrayValueAnimator;
 import org.openimaj.content.animation.animator.ValueAnimator;
-import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.model.asm.datasets.IMMFaceDatabase;
+import org.openimaj.image.model.asm.datasets.ShapeModelDataset;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.util.pair.IndependentPair;
 
 public class PDMDisplay {
 	public static void main(String[] args) throws IOException {
-		ASFDataset dataset = new ASFDataset(new File("/Users/jsh2/Downloads/imm_face_db"));
+		final ShapeModelDataset<?> dataset = IMMFaceDatabase.load(null);
 
-		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
 		final PointListConnections connections = dataset.getConnections();
+		final List<PointList> pointData = dataset.getPointLists();
+
 		final int width = 200, height = 200;
-		
-		List<PointList> pointData = IndependentPair.getFirst(data);
 
 		final PointDistributionModel pdm = new PointDistributionModel(pointData);
 		pdm.setNumComponents(15);
 
-		FImage images = new FImage(4*width, 4*height);
-		for (int j=0; j<4; j++) {
-			for (int i=0; i<4; i++) {
-				ValueAnimator<double[]> a = DoubleArrayValueAnimator.makeRandomLinear(0, pdm.getStandardDeviations(3));
-				FImage image = new FImage(width, height);
+		final FImage images = new FImage(4 * width, 4 * height);
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < 4; i++) {
+				final ValueAnimator<double[]> a = DoubleArrayValueAnimator.makeRandomLinear(0,
+						pdm.getStandardDeviations(3));
+				final FImage image = new FImage(width, height);
 				image.fill(1);
-				PointList newShape = pdm.generateNewShape( a.nextValue() );
-				PointList tfShape = newShape.transform(TransformUtilities.translateMatrix(100, 100).times(TransformUtilities.scaleMatrix(50, 50)));
+				final PointList newShape = pdm.generateNewShape(a.nextValue());
+				final PointList tfShape = newShape.transform(TransformUtilities.translateMatrix(100, 100).times(
+						TransformUtilities.scaleMatrix(50, 50)));
 
-				List<Line2d> lines = connections.getLines(tfShape);
+				final List<Line2d> lines = connections.getLines(tfShape);
 				image.drawLines(lines, 1, 0f);
-			
-				images.drawImage(image, i*width, j*height);
+
+				images.drawImage(image, i * width, j * height);
 			}
 		}
-		
+
 		DisplayUtilities.display(images);
 		ImageUtilities.write(images, new File("/Users/jsh2/Desktop/faces.png"));
 	}

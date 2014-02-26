@@ -29,16 +29,16 @@
  */
 package org.openimaj.demos.sandbox;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.model.asm.ActiveShapeModel;
 import org.openimaj.image.model.asm.ActiveShapeModel.IterationResult;
+import org.openimaj.image.model.asm.datasets.ShapeModelDataset;
+import org.openimaj.image.model.asm.datasets.ShapeModelDatasets;
 import org.openimaj.image.model.landmark.FNormalLandmarkModel;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
@@ -56,12 +56,8 @@ public class ASMFitAnimation {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		// final File dir = new
-		// File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
-		final File dir = new File("/Users/jsh2/Downloads/imm_face_db");
-		final ASFDataset dataset = new ASFDataset(dir);
-
-		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
+		final ShapeModelDataset<FImage> dataset = ShapeModelDatasets.loadASFDataset("/Users/jsh2/Downloads/imm_face_db",
+				ImageUtilities.FIMAGE_READER);
 		final PointListConnections conns = dataset.getConnections();
 
 		final float scale = 0.02f;
@@ -70,10 +66,10 @@ public class ASMFitAnimation {
 		// BlockLandmarkModel.Factory factory = new
 		// BlockLandmarkModel.Factory();
 		final ActiveShapeModel<FImage> asm = ActiveShapeModel.trainModel(new PercentageEnergyComponentSelector(0.95),
-				data,
+				dataset,
 				new PointDistributionModel.BoxConstraint(3), factory);
 
-		final IndependentPair<PointList, FImage> initial = ASFDataset.readASF(new File(dir, "16-6m.asf"));
+		final IndependentPair<PointList, FImage> initial = dataset.get(0);
 		// final IndependentPair<PointList, FImage> initial =
 		// ASFDataset.readASF(new File(dir, "01-1m.asf"));
 
