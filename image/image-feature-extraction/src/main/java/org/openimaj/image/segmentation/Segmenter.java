@@ -33,20 +33,24 @@ import java.util.List;
 
 import org.openimaj.image.Image;
 import org.openimaj.image.pixel.ConnectedComponent;
+import org.openimaj.image.pixel.PixelSet;
 
 /**
- * The Segmenter interface defines an object capable of segmenting
- * an image into {@link ConnectedComponent}s.
+ * The Segmenter interface defines an object capable of segmenting an image into
+ * {@link PixelSet}s (or subclasses thereof).
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <I> The type of image
+ * 
+ * @param <I>
+ *            The type of image
  */
-public interface Segmenter<I extends Image<?,I>> {
+public interface Segmenter<I extends Image<?, I>> {
 	/**
 	 * Segment an image into {@link ConnectedComponent}s.
-	 * @param image the to segment
+	 * 
+	 * @param image
+	 *            the to segment
 	 * @return list of extracted {@link ConnectedComponent}s.
 	 */
-	List<ConnectedComponent> segment(I image);
+	List<? extends PixelSet> segment(I image);
 }

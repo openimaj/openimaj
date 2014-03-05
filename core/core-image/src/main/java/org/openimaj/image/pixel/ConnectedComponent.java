@@ -32,48 +32,35 @@ package org.openimaj.image.pixel;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 import org.openimaj.image.renderer.ScanRasteriser;
 import org.openimaj.image.renderer.ScanRasteriser.ScanLineListener;
-import org.openimaj.io.ReadWriteable;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
-import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
-import org.openimaj.math.matrix.MatrixUtils;
-
-import Jama.Matrix;
 
 /**
  * This class represents a connected region within an image and provides methods
  * for accessing and manipulating that region.
  * <p>
- * Some of the methods within this class allow for pixels to be added to this
- * {@link ConnectedComponent} that are not adjacent to other pixels within the
- * connected component (i.e. unconnected). It is important to realise that some
- * methods may return unexpected results (e.g. boundary tracing), but the class
- * continues to allows this mainly for performance.
+ * Nothing stops an unconnected component being constructed, but it is important
+ * to realise that some methods may return unexpected results (e.g. boundary
+ * tracing). If you are only dealing with unconnected pixel sets, use the
+ * {@link PixelSet} superclass instead.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
-public class ConnectedComponent implements Cloneable, ReadWriteable {
+public class ConnectedComponent extends PixelSet {
 	/**
 	 * For boundary representations of {@link ConnectedComponent}s, this enum
 	 * determines and specifies how the boundary is calculated; either using a
@@ -88,14 +75,11 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 		CONNECT_8;
 	}
 
-	/** The set of pixels within this connected component */
-	public Set<Pixel> pixels = new HashSet<Pixel>();
-
 	/**
 	 * Default constructor. Has an empty implementation.
 	 */
 	public ConnectedComponent() {
-		// Intentionally left blank!
+		super();
 	}
 
 	/**
@@ -109,21 +93,6 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	 */
 	public ConnectedComponent(Shape shape) {
 		fromShape(shape);
-	}
-
-	private void fromShape(Shape shape) {
-		final int minx = (int) Math.round(shape.minX());
-		final int maxx = (int) Math.round(shape.maxX());
-		final int miny = (int) Math.round(shape.minY());
-		final int maxy = (int) Math.round(shape.maxY());
-
-		for (int y = miny; y <= maxy; y++) {
-			for (int x = minx; x <= maxx; x++) {
-				final Pixel p = new Pixel(x, y);
-				if (shape.isInside(p))
-					addPixel(p);
-			}
-		}
 	}
 
 	/**
@@ -166,11 +135,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	 *            The height of the rectangle
 	 */
 	public ConnectedComponent(int x, int y, int w, int h) {
-		this();
-
-		for (int j = y; j < h + y; j++)
-			for (int i = x; i < w + x; i++)
-				pixels.add(new Pixel(i, j));
+		super(x, y, w, h);
 	}
 
 	/**
@@ -183,12 +148,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	 *            The mask image to construct a connected component from.
 	 */
 	public ConnectedComponent(int[][] img) {
-		for (int j = 0; j < img.length; j++) {
-			for (int i = 0; i < img[j].length; i++) {
-				if (img[j][i] > 0)
-					pixels.add(new Pixel(i, j));
-			}
-		}
+		super(img);
 	}
 
 	/**
@@ -203,12 +163,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	 *            the threshold value.
 	 */
 	public ConnectedComponent(FImage mask, float thresh) {
-		for (int j = 0; j < mask.height; j++) {
-			for (int i = 0; i < mask.width; i++) {
-				if (mask.pixels[j][i] >= thresh)
-					pixels.add(new Pixel(i, j));
-			}
-		}
+		super(mask, thresh);
 	}
 
 	/**
@@ -221,374 +176,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	 *            A {@link Set} of {@link Pixel}s.
 	 */
 	public ConnectedComponent(Set<Pixel> pixels) {
-		this.pixels.addAll(pixels);
-	}
-
-	/**
-	 * Add a pixel into this connected component. If the pixel is not adjacent
-	 * to another pixel within this connected component, then some methods may
-	 * return unexpected results. Side-affects this object.
-	 * 
-	 * @param x
-	 *            The x-coordinate of the pixel to add
-	 * @param y
-	 *            The y-coordinate of the pixel to add
-	 */
-	public void addPixel(int x, int y) {
-		addPixel(new Pixel(x, y));
-	}
-
-	/**
-	 * Add a pixel into this connected component. If the pixel is not adjacent
-	 * to another pixel within this connected component, then some methods may
-	 * return unexpected results. Side-affects this object.
-	 * 
-	 * @param p
-	 *            The pixel to add
-	 */
-	public void addPixel(Pixel p) {
-		pixels.add(p);
-	}
-
-	/**
-	 * Returns the set of {@link Pixel}s that are within this component.
-	 * 
-	 * @return the set of {@link Pixel}s that are within this component.
-	 */
-	public Set<Pixel> getPixels() {
-		return pixels;
-	}
-
-	/**
-	 * Shallow copies the pixels from the given {@link ConnectedComponent} into
-	 * this object. If the pixels that are added are not adjacent to other
-	 * pixels within the component some methods may return unexpected results.
-	 * Side-affects this object.
-	 * 
-	 * @param c
-	 *            The {@link ConnectedComponent} to copy pixels from.
-	 */
-	public void merge(ConnectedComponent c) {
-		pixels.addAll(c.pixels);
-	}
-
-	/**
-	 * Returns whether the given pixel is within this connected component. This
-	 * is synonymous to
-	 * <code>{@link #getPixels() getPixels}().contains(p)</code>.
-	 * 
-	 * @param p
-	 *            The pixel to find.
-	 * @return TRUE if the pixel is contained within this component; FALSE
-	 *         otherwise
-	 */
-	public boolean find(Pixel p) {
-		return pixels.contains(p);
-	}
-
-	/**
-	 * Returns whether the given coordinates are within this connected
-	 * component. This is synonymous with
-	 * <code>{@link #find(Pixel) find}( new Pixel(x,y) )</code>.
-	 * 
-	 * @param x
-	 *            The x-coordinate of the pixel to find
-	 * @param y
-	 *            The y-coordinate of the pixel to find
-	 * @return TRUE if the pixel is contained within this component; FALSE
-	 *         otherwise
-	 */
-	public boolean find(int x, int y) {
-		return find(new Pixel(x, y));
-	}
-
-	/**
-	 * Calculate the area of this connected component in pixels. This is
-	 * synonymous with <code>{@link #getPixels() getPixels}.size()</code>
-	 * 
-	 * @return the number of pixels covered by this connected component.
-	 */
-	public int calculateArea() {
-		return pixels.size();
-	}
-
-	/**
-	 * Calculate the pq moment, M<sub>pq</sub> around the given centroid. From
-	 * Equation 6.43 in Sonka, Hlavac and Boyle.
-	 * 
-	 * @param p
-	 *            The P moment to calculate
-	 * @param q
-	 *            The Q moment to calculate
-	 * @param xc
-	 *            x-coordinate of centroid
-	 * @param yc
-	 *            y-coordinate of centroid
-	 * @return The pq moment, M<sub>pq</sub>.
-	 */
-	public double calculateMoment(int p, int q, double xc, double yc) {
-		if (p == 0 && q == 0)
-			return calculateArea();
-
-		double mpq = 0;
-		for (final Pixel pix : pixels) {
-			mpq += Math.pow(pix.x - xc, p) * Math.pow(pix.y - yc, q);
-		}
-		return mpq;
-	}
-
-	/**
-	 * Calculate the pq moment, M<sub>pq</sub> for this region. From Equation
-	 * 6.43 in Sonka, Hlavac and Boyle.
-	 * 
-	 * @param p
-	 *            The P moment to calculate
-	 * @param q
-	 *            The Q moment to calculate
-	 * @return The pq moment, M<sub>pq</sub>.
-	 */
-	public double calculateMoment(int p, int q) {
-		if (p == 0 && q == 0)
-			return calculateArea();
-
-		final double[] centroid = calculateCentroid();
-
-		double mpq = 0;
-		for (final Pixel pix : pixels) {
-			mpq += Math.pow(pix.x - centroid[0], p) * Math.pow(pix.y - centroid[1], q);
-		}
-		return mpq;
-	}
-
-	/**
-	 * Calculate the normalized, unscaled, central moments for M<sub>pq</sub>.
-	 * From Equation 6.47 in Sonka, Hlavac and Boyle [1st Ed.]. Normalised
-	 * central moments are invariant to scale and translation.
-	 * 
-	 * @param p
-	 *            The P moment to calculate
-	 * @param q
-	 *            The Q moment to calculate
-	 * @return The normalised, unscaled central moment, M<sub>pq</sub>.
-	 */
-	public double calculateMomentNormalised(int p, int q) {
-		final double gamma = ((p + q) / 2) + 1;
-		return calculateMoment(p, q) / Math.pow(pixels.size(), gamma);
-	}
-
-	/**
-	 * Calculates the principle direction of the connected component. This is
-	 * given by
-	 * <code>0.5 * atan( (M<sub>20</sub>-M<sub>02</sub>) / 2 * M<sub>11</sub> )</code>
-	 * so results in an angle between -PI and +PI.
-	 * 
-	 * @return The principle direction (-PI/2 to +PI/2 radians) of the connected
-	 *         component.
-	 */
-	public double calculateDirection() {
-		final double[] centroid = calculateCentroid();
-		final double u11 = calculateMoment(1, 1, centroid[0], centroid[1]);
-		final double u20 = calculateMoment(2, 0, centroid[0], centroid[1]);
-		final double u02 = calculateMoment(0, 2, centroid[0], centroid[1]);
-
-		final double theta = 0.5 * Math.atan2((2 * u11), (u20 - u02));
-
-		return theta;
-	}
-
-	/**
-	 * Calculate the centroid of the connected component. This is the average of
-	 * all the pixel coordinates in the component. The result is returned in a
-	 * double array where the the first index is the x-coordinate and second is
-	 * the y-coordinate.
-	 * 
-	 * @return The centroid point as a double array (x then y).
-	 */
-	public double[] calculateCentroid() {
-		final double[] centroid = new double[2];
-		final double m00 = calculateMoment(0, 0, 0, 0);
-		centroid[0] = calculateMoment(1, 0, 0, 0) / m00;
-		centroid[1] = calculateMoment(0, 1, 0, 0) / m00;
-
-		return centroid;
-	}
-
-	/**
-	 * Calculates the centroid pixel of the connected component. That is, the
-	 * centroid value is rounded to the nearest pixel.
-	 * 
-	 * @return A {@link Pixel} at the centroid.
-	 */
-	public Pixel calculateCentroidPixel() {
-		final double[] centroid = calculateCentroid();
-		return new Pixel((int) Math.round(centroid[0]), (int) Math.round(centroid[1]));
-	}
-
-	/**
-	 * Calculate the height and width of a box surrounding the component by
-	 * averaging the distances of pixels above and below the centroid. The
-	 * result is a double array where the first index is the height and the
-	 * second is the width.
-	 * 
-	 * @param centroid
-	 *            The centroid of the component.
-	 * @return average height and width as a double array.
-	 */
-	public double[] calculateAverageHeightWidth(double[] centroid) {
-		double height, width, accumPosH = 0, accumNegH = 0, accumPosW = 0, accumNegW = 0;
-		int nPosH = 0, nNegH = 0, nPosW = 0, nNegW = 0;
-
-		for (final Pixel p : pixels) {
-			final double x = p.getX() - centroid[0];
-			final double y = p.getY() - centroid[1];
-
-			if (x >= 0) {
-				accumPosW += x;
-				nPosW++;
-			} else {
-				accumNegW += x;
-				nNegW++;
-			}
-
-			if (y >= 0) {
-				accumPosH += y;
-				nPosH++;
-			} else {
-				accumNegH += y;
-				nNegH++;
-			}
-		}
-		height = 2 * ((accumPosH / nPosH) + Math.abs(accumNegH / nNegH));
-		width = 2 * ((accumPosW / nPosW) + Math.abs(accumNegW / nNegW));
-
-		return new double[] { height, width };
-	}
-
-	/**
-	 * Calculate the height and width of a box surrounding the component by
-	 * averaging the distances of pixels above and below the centroid. The
-	 * result is a double array where the first index is the height and the
-	 * second is the width.
-	 * 
-	 * @return average height and width as a double array.
-	 */
-	public double[] calculateAverageHeightWidth() {
-		return calculateAverageHeightWidth(calculateCentroid());
-	}
-
-	/**
-	 * Calculates the width and height of the bounding box that best fits the
-	 * component, at whatever angle that may be. The result is returned as a
-	 * double array, where the first index is the height and the second index
-	 * the width.
-	 * 
-	 * @return A double array containing the height and width of the best
-	 *         fitting bounding box.
-	 */
-	public double[] calculateOrientatedBoundingBoxHeightWidth() {
-		final List<Pixel> bound = getInnerBoundary(ConnectMode.CONNECT_8);
-		final double theta = calculateDirection();
-
-		double alphaMax = -Double.MAX_VALUE, alphaMin = Double.MAX_VALUE;
-		double betaMax = -Double.MAX_VALUE, betaMin = Double.MAX_VALUE;
-		double alpha, beta;
-
-		for (final Pixel p : bound) {
-			alpha = p.x * Math.cos(theta) + p.y * Math.sin(theta);
-			beta = -1.0 * p.x * Math.sin(theta) + p.y * Math.cos(theta);
-
-			if (alpha > alphaMax)
-				alphaMax = alpha;
-			if (alpha < alphaMin)
-				alphaMin = alpha;
-
-			if (beta > betaMax)
-				betaMax = beta;
-			if (beta < betaMin)
-				betaMin = beta;
-		}
-
-		return new double[] { betaMax - betaMin + 1, alphaMax - alphaMin + 1 };
-	}
-
-	/**
-	 * Compute the aspect ratio of the oriented bounding box.
-	 * 
-	 * @return the aspect ratio of the oriented bounding box.
-	 */
-	public double calculateOrientatedBoundingBoxAspectRatio() {
-		final double[] bbhw = calculateOrientatedBoundingBoxHeightWidth();
-
-		return bbhw[1] / bbhw[0];
-	}
-
-	/**
-	 * Compute the aspect ratio of the regular bounding box.
-	 * 
-	 * @return the aspect ratio of the regular bounding box.
-	 */
-	public double calculateRegularBoundingBoxAspectRatio() {
-		final Rectangle bb = calculateRegularBoundingBox();
-
-		return bb.width / bb.height;
-	}
-
-	/**
-	 * Calculates the polygon that defines the bounding box that best fits the
-	 * connected component, at whatever angle that may be.
-	 * 
-	 * @return A {@link Polygon} that defines the bounding box.
-	 */
-	public Polygon calculateOrientatedBoundingBox() {
-		final double[] centroid = calculateCentroid();
-		final double[] hw = calculateOrientatedBoundingBoxHeightWidth();
-		final double theta = calculateDirection();
-
-		final Point2d p1 = new Point2dImpl((float) (centroid[0] - (hw[1] / 2.0)), (float) (centroid[1] - (hw[0] / 2.0)));
-		final Point2d p2 = new Point2dImpl((float) (centroid[0] + (hw[1] / 2.0)), (float) (centroid[1] - (hw[0] / 2.0)));
-		final Point2d p3 = new Point2dImpl((float) (centroid[0] + (hw[1] / 2.0)), (float) (centroid[1] + (hw[0] / 2.0)));
-		final Point2d p4 = new Point2dImpl((float) (centroid[0] - (hw[1] / 2.0)), (float) (centroid[1] + (hw[0] / 2.0)));
-
-		final Polygon p = new Polygon(p1, p4, p3, p2);
-		final Point2d origin = new Point2dImpl((float) centroid[0], (float) centroid[1]);
-		p.rotate(origin, theta);
-
-		return p;
-	}
-
-	/**
-	 * Draws the oriented bounding box for this component into the given image
-	 * in the given colour.
-	 * 
-	 * @param image
-	 *            The {@link FImage} into which to draw the box
-	 * @param grey
-	 *            The colour in which to draw the box
-	 */
-	public void drawOrientatedBoundingBox(FImage image, float grey) {
-		image.createRenderer().drawPolygon(calculateOrientatedBoundingBox(), grey);
-	}
-
-	/**
-	 * Calculates the distance from the centroid of every pixel on the
-	 * 8-connected boundary of this component. Returns a {@link TFloatArrayList}
-	 * that contains the list of distances (in order of the boundary).
-	 * 
-	 * @return A list ({@link TFloatArrayList}) of distances of boundary points
-	 *         to the centroid.
-	 */
-	public TFloatArrayList calculateBoundaryDistanceFromCentre() {
-		final TFloatArrayList distances = new TFloatArrayList();
-		final List<Pixel> bound = getInnerBoundary(ConnectMode.CONNECT_8);
-		final double[] centroid = calculateCentroid();
-
-		for (final Pixel p : bound) {
-			final float dist = (float) Math.sqrt(((centroid[0] - p.x) * ((centroid[0] - p.x))) +
-					((centroid[1] - p.y) * ((centroid[1] - p.y))));
-			distances.add(dist);
-		}
-
-		return distances;
+		super(pixels);
 	}
 
 	/**
@@ -897,105 +485,6 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	}
 
 	/**
-	 * Calculate the regular bounding box of the region by calculating the
-	 * maximum and minimum x and y coordinates of the pixels contained within
-	 * the region. The result is an integer array containing the (x,y)
-	 * coordinate of the top-left of the bounding box, and the width and height
-	 * of the bounding box.
-	 * 
-	 * @return an {@link Rectangle} describing the bounds
-	 */
-	public Rectangle calculateRegularBoundingBox() {
-		int xmin = Integer.MAX_VALUE, xmax = 0, ymin = Integer.MAX_VALUE, ymax = 0;
-
-		for (final Pixel p : pixels) {
-			if (p.x < xmin)
-				xmin = p.x;
-			if (p.x > xmax)
-				xmax = p.x;
-			if (p.y < ymin)
-				ymin = p.y;
-			if (p.y > ymax)
-				ymax = p.y;
-		}
-
-		return new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin);
-	}
-
-	/**
-	 * Translates the region's pixels by x and y. This method side-affects the
-	 * pixels in this object.
-	 * 
-	 * @param x
-	 *            The offset in the horizontal direction
-	 * @param y
-	 *            The offset in the vertical direction.
-	 */
-	public void translate(int x, int y) {
-		// Note: changing the position changes the hashcode, so you need to
-		// rehash the set!
-		final Set<Pixel> newPixels = new HashSet<Pixel>();
-
-		for (final Pixel p : pixels) {
-			p.x += x;
-			p.y += y;
-			newPixels.add(p);
-		}
-
-		pixels = newPixels;
-	}
-
-	/**
-	 * Gets the top-left most pixel within the connected component.
-	 * 
-	 * @return the top-left most pixel within the connected component.
-	 */
-	public Pixel topLeftMostPixel() {
-		int top = Integer.MAX_VALUE;
-		Pixel pix = null;
-		for (final Pixel p : pixels) {
-			if (p.y < top) {
-				top = p.y;
-				pix = p;
-			}
-		}
-
-		for (final Pixel p : pixels) {
-			if (p.y == top) {
-				if (p.x < pix.x)
-					pix = p;
-			}
-		}
-
-		return pix;
-	}
-
-	/**
-	 * Gets the bottom-right most pixel in the connected component.
-	 * 
-	 * @return the bottom-right most pixel in the connected component.
-	 */
-	public Pixel bottomRightMostPixel() {
-		int bottom = Integer.MIN_VALUE;
-		Pixel pix = null;
-		for (final Pixel p : pixels) {
-			if (p.y > bottom) {
-				bottom = p.y;
-				pix = p;
-			}
-		}
-
-		for (final Pixel p : pixels) {
-			if (p.y == bottom) {
-				if (p.x > pix.x)
-					pix = p;
-			}
-		}
-
-		return pix;
-	}
-
-	/**
 	 * Returns the next edge pixel when tracing a boundary in a 4-connected
 	 * system.
 	 * 
@@ -1285,16 +774,6 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "ConnectedComponent(" + "area=" + calculateArea() + ")";
-	}
-
-	/**
 	 * Process the given set of connected components with the given
 	 * {@link ConnectedComponentProcessor}.
 	 * 
@@ -1431,250 +910,25 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	}
 
 	/**
-	 * Extract a 1xarea image with all the pixels from the region in it. Useful
-	 * for analysing the colour for example
+	 * Calculates the distance from the centroid of every pixel on the
+	 * 8-connected boundary of this component. Returns a {@link TFloatArrayList}
+	 * that contains the list of distances (in order of the boundary).
 	 * 
-	 * @param input
-	 *            input image to extract samples from
-	 * @return new image with pixels set from samples
+	 * @return A list ({@link TFloatArrayList}) of distances of boundary points
+	 *         to the centroid.
 	 */
-	public MBFImage extractPixels1d(MBFImage input) {
-		final MBFImage out = new MBFImage(pixels.size(), 1, input.numBands());
+	public TFloatArrayList calculateBoundaryDistanceFromCentre() {
+		final TFloatArrayList distances = new TFloatArrayList();
+		final List<Pixel> bound = getInnerBoundary(ConnectMode.CONNECT_8);
+		final double[] centroid = calculateCentroid();
 
-		int j = 0;
-		for (final Pixel p : pixels) {
-			for (int i = 0; i < input.numBands(); i++) {
-				out.setPixel(j, 0, input.getPixel(p.x, p.y));
-			}
-			j++;
+		for (final Pixel p : bound) {
+			final float dist = (float) Math.sqrt(((centroid[0] - p.x) * ((centroid[0] - p.x))) +
+					((centroid[1] - p.y) * ((centroid[1] - p.y))));
+			distances.add(dist);
 		}
 
-		return out;
-	}
-
-	/**
-	 * Extract a 1 x area image with all the pixels from the region in it.
-	 * Useful for analysing the colour for example
-	 * 
-	 * @param input
-	 *            image to extract pixel values from
-	 * @return new image filled with pixel values
-	 */
-	public FImage extractPixels1d(FImage input) {
-		final FImage out = new FImage(pixels.size(), 1);
-
-		int j = 0;
-		for (final Pixel p : pixels) {
-			out.pixels[0][j] = input.pixels[p.y][p.x];
-			j++;
-		}
-
-		return out;
-	}
-
-	/**
-	 * Returns an image containing just the connected component cropped from the
-	 * original image. Although that the result image is necessarily
-	 * rectangular, the pixels which are not part of the connected component
-	 * will be transparent.
-	 * 
-	 * @param input
-	 *            The input image from which to take the pixels
-	 * @param blackout
-	 *            Whether to blackout pixels that are not part of the region or
-	 *            whether to mark them as transparent
-	 * @return An image with the component's pixels cropped
-	 */
-	public MBFImage crop(MBFImage input, boolean blackout) {
-		final Rectangle bb = this.calculateRegularBoundingBox();
-
-		final MBFImage output = new MBFImage((int) bb.width, (int) bb.height, input.numBands());
-
-		Polygon p = null;
-
-		// We only need to get the polygon if we're going to black
-		// out the region
-		if (blackout)
-			p = this.toPolygon();
-
-		for (int y = 0; y < (int) bb.height; y++) {
-			for (int x = 0; x < (int) bb.width; x++) {
-				for (int b = 0; b < input.numBands(); b++) {
-					if (!blackout || p.isInside(new Point2dImpl(x + (int) bb.x, y + (int) bb.y)))
-						output.getBand(b).setPixel(x, y, input.getBand(b).getPixel(x + (int) bb.x, y + (int) bb.y));
-					else
-						output.getBand(b).setPixel(x, y, 0f);
-				}
-			}
-		}
-
-		return output;
-	}
-
-	/**
-	 * This is a convenience method that simply calls
-	 * {@link #crop(MBFImage, boolean)}
-	 * 
-	 * @param input
-	 *            The input image from which to take the pixels
-	 * @param blackout
-	 *            Whether to blackout pixels that are not part of the region or
-	 *            whether to mark them as transparent
-	 * @return An image with the component's pixels cropped
-	 */
-	public MBFImage extractPixels2d(MBFImage input, boolean blackout) {
-		return this.crop(input, blackout);
-	}
-
-	/**
-	 * Returns an image where the connected component is masked in the image.
-	 * The image is the same size as the image that is passed in.
-	 * 
-	 * @param input
-	 *            The input image from which to take the size.
-	 * @return An {@link FImage} containing a binary mask; pixels within the
-	 *         connected component will have value 1, outside with have value 0
-	 */
-	public FImage calculateBinaryMask(Image<?, ?> input) {
-		final FImage n = new FImage(input.getWidth(), input.getHeight());
-
-		for (final Pixel p : pixels)
-			n.pixels[p.y][p.x] = 1;
-
-		return n;
-	}
-
-	/**
-	 * Returns an ASCII representation of the connected component as a mask;
-	 * where the output is "1" for a pixel within the mask and "0" for a pixel
-	 * outside of the mask.
-	 * 
-	 * @return An image string.
-	 */
-	public String toStringImage() {
-		final Rectangle bb = this.calculateRegularBoundingBox();
-
-		String s = "";
-		for (int j = (int) bb.y - 1; j <= bb.y + bb.height + 1; j++) {
-			for (int i = (int) bb.x - 1; i <= bb.x + bb.width + 1; i++) {
-				if (pixels.contains(new Pixel(i, j)))
-					s += "1";
-				else
-					s += "0";
-			}
-			s += "\n";
-		}
-		return s;
-	}
-
-	/**
-	 * Repositions the connected component so that its bounding box has its
-	 * origin at (0,0). Side-affects this connected component.
-	 */
-	public void reposition() {
-		final Rectangle bb = this.calculateRegularBoundingBox();
-		translate(-(int) bb.x, -(int) bb.y);
-	}
-
-	/**
-	 * Returns a mask image for this connected component that will be the size
-	 * of this component's bounding box. Pixels within the component will be set
-	 * to value 1.0, while pixels outside of the component will retain their
-	 * initial value.
-	 * 
-	 * @return An {@link FImage} mask image
-	 */
-	public FImage toFImage() {
-		final Rectangle bb = this.calculateRegularBoundingBox();
-
-		final FImage img = new FImage((int) (bb.x + bb.width + 1), (int) (bb.y + bb.height + 1));
-
-		for (final Pixel p : pixels)
-			img.pixels[p.y][p.x] = 1;
-
-		return img;
-	}
-
-	/**
-	 * Returns a mask image for this connected component that will be the size
-	 * of this component's bounding box plus a border of the given amount of
-	 * padding. Pixels within the component will be set to value 1.0, while
-	 * pixels outside of the component will retain their initial value.
-	 * 
-	 * @param padding
-	 *            The number of pixels padding to add around the outside of the
-	 *            mask.
-	 * @return An {@link FImage} mask image
-	 */
-	public FImage toFImage(int padding) {
-		final Rectangle bb = this.calculateRegularBoundingBox();
-
-		final FImage img = new FImage((int) (bb.x + bb.width + 1 + 2 * padding),
-				(int) (bb.y + bb.height + 1 + 2 * padding));
-
-		for (final Pixel p : pixels)
-			img.pixels[p.y + padding][p.x + padding] = 1;
-
-		return img;
-	}
-
-	/**
-	 * Affine transform the shape with the given transform matrix. Side-affects
-	 * this component.
-	 * 
-	 * @param transform
-	 *            The matrix containing the transform.
-	 */
-	public void transform(Matrix transform) {
-		final Matrix p1 = new Matrix(3, 1);
-
-		for (final Pixel p : pixels) {
-			p1.set(0, 0, p.getX());
-			p1.set(1, 0, p.getY());
-			p1.set(2, 0, 1);
-
-			final Matrix p2_est = transform.times(p1);
-
-			p.x = (int) Math.rint(p2_est.get(0, 0));
-			p.y = (int) Math.rint(p2_est.get(1, 0));
-		}
-	}
-
-	/**
-	 * Returns a normalisation matrix for this component.
-	 * 
-	 * @return A normalisation matrix.
-	 */
-	public Matrix normMatrix() {
-		final double u20 = calculateMoment(2, 0);
-		final double u02 = calculateMoment(0, 2);
-		final double u11 = -calculateMoment(1, 1);
-
-		Matrix tf = new Matrix(3, 3);
-		tf.set(0, 0, u20);
-		tf.set(1, 1, u02);
-		tf.set(0, 1, u11);
-		tf.set(1, 0, u11);
-		tf.set(2, 2, 1);
-
-		tf = tf.inverse();
-		tf = tf.times(1 / Math.sqrt(tf.det()));
-		tf = MatrixUtils.sqrt(tf);
-
-		tf.set(2, 2, 1);
-
-		return tf;
-	}
-
-	@Override
-	public void readASCII(Scanner in) throws IOException {
-		final int count = in.nextInt();
-
-		for (int i = 0; i < count; i++) {
-			final Pixel p = new Pixel();
-			p.readASCII(in);
-			pixels.add(p);
-		}
+		return distances;
 	}
 
 	@Override
@@ -1683,34 +937,89 @@ public class ConnectedComponent implements Cloneable, ReadWriteable {
 	}
 
 	@Override
-	public void readBinary(DataInput in) throws IOException {
-		final int count = in.readInt();
-
-		for (int i = 0; i < count; i++) {
-			final Pixel p = new Pixel();
-			p.readBinary(in);
-			pixels.add(p);
-		}
-	}
-
-	@Override
 	public byte[] binaryHeader() {
 		return "CC".getBytes();
 	}
 
-	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		out.println(pixels.size());
-		for (final Pixel p : pixels) {
-			p.writeASCII(out);
-			out.println();
+	/**
+	 * Calculates the width and height of the bounding box that best fits the
+	 * component, at whatever angle that may be. The result is returned as a
+	 * double array, where the first index is the height and the second index
+	 * the width.
+	 * 
+	 * @return A double array containing the height and width of the best
+	 *         fitting bounding box.
+	 */
+	public double[] calculateOrientatedBoundingBoxHeightWidth() {
+		final List<Pixel> bound = getInnerBoundary(ConnectMode.CONNECT_8);
+		final double theta = calculateDirection();
+
+		double alphaMax = -Double.MAX_VALUE, alphaMin = Double.MAX_VALUE;
+		double betaMax = -Double.MAX_VALUE, betaMin = Double.MAX_VALUE;
+		double alpha, beta;
+
+		for (final Pixel p : bound) {
+			alpha = p.x * Math.cos(theta) + p.y * Math.sin(theta);
+			beta = -1.0 * p.x * Math.sin(theta) + p.y * Math.cos(theta);
+
+			if (alpha > alphaMax)
+				alphaMax = alpha;
+			if (alpha < alphaMin)
+				alphaMin = alpha;
+
+			if (beta > betaMax)
+				betaMax = beta;
+			if (beta < betaMin)
+				betaMin = beta;
 		}
+
+		return new double[] { betaMax - betaMin + 1, alphaMax - alphaMin + 1 };
 	}
 
-	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		out.writeInt(pixels.size());
-		for (final Pixel p : pixels)
-			p.writeBinary(out);
+	/**
+	 * Compute the aspect ratio of the oriented bounding box.
+	 * 
+	 * @return the aspect ratio of the oriented bounding box.
+	 */
+	public double calculateOrientatedBoundingBoxAspectRatio() {
+		final double[] bbhw = calculateOrientatedBoundingBoxHeightWidth();
+
+		return bbhw[1] / bbhw[0];
+	}
+
+	/**
+	 * Calculates the polygon that defines the bounding box that best fits the
+	 * connected component, at whatever angle that may be.
+	 * 
+	 * @return A {@link Polygon} that defines the bounding box.
+	 */
+	public Polygon calculateOrientatedBoundingBox() {
+		final double[] centroid = calculateCentroid();
+		final double[] hw = calculateOrientatedBoundingBoxHeightWidth();
+		final double theta = calculateDirection();
+
+		final Point2d p1 = new Point2dImpl((float) (centroid[0] - (hw[1] / 2.0)), (float) (centroid[1] - (hw[0] / 2.0)));
+		final Point2d p2 = new Point2dImpl((float) (centroid[0] + (hw[1] / 2.0)), (float) (centroid[1] - (hw[0] / 2.0)));
+		final Point2d p3 = new Point2dImpl((float) (centroid[0] + (hw[1] / 2.0)), (float) (centroid[1] + (hw[0] / 2.0)));
+		final Point2d p4 = new Point2dImpl((float) (centroid[0] - (hw[1] / 2.0)), (float) (centroid[1] + (hw[0] / 2.0)));
+
+		final Polygon p = new Polygon(p1, p4, p3, p2);
+		final Point2d origin = new Point2dImpl((float) centroid[0], (float) centroid[1]);
+		p.rotate(origin, theta);
+
+		return p;
+	}
+
+	/**
+	 * Draws the oriented bounding box for this component into the given image
+	 * in the given colour.
+	 * 
+	 * @param image
+	 *            The {@link FImage} into which to draw the box
+	 * @param grey
+	 *            The colour in which to draw the box
+	 */
+	public void drawOrientatedBoundingBox(FImage image, float grey) {
+		image.createRenderer().drawPolygon(calculateOrientatedBoundingBox(), grey);
 	}
 }

@@ -40,6 +40,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.connectedcomponent.GreyscaleConnectedComponentLabeler;
 import org.openimaj.image.pixel.ConnectedComponent;
+import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.ml.clustering.FloatCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
@@ -89,7 +90,7 @@ public class App {
 		final List<ConnectedComponent> components = labeler.findComponents(input.flatten());
 
 		int i = 0;
-		for (final ConnectedComponent comp : components) {
+		for (final PixelSet comp : components) {
 			if (comp.calculateArea() < 50)
 				continue;
 			input.drawText("Point:" + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM, 20);

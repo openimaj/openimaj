@@ -41,6 +41,7 @@ import org.openimaj.image.analysis.colour.CIEDE2000;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 
 /**
@@ -124,8 +125,8 @@ public class ColourContrast implements ImageAnalyser<MBFImage>, FeatureVectorPro
 
 		for (int i = 0; i < avgs.length; i++) {
 			for (int j = i + 1; j < avgs.length; j++) {
-				final ConnectedComponent ci = ccs.get(i);
-				final ConnectedComponent cj = ccs.get(i);
+				final PixelSet ci = ccs.get(i);
+				final PixelSet cj = ccs.get(i);
 				final float C = CIEDE2000.calculateDeltaE(avgs[i], avgs[j]);
 
 				contrast += (1 - distance(ci, cj, w, h)) * (C / (ci.calculateArea() * cj.calculateArea()));
@@ -133,7 +134,7 @@ public class ColourContrast implements ImageAnalyser<MBFImage>, FeatureVectorPro
 		}
 	}
 
-	float distance(ConnectedComponent c1, ConnectedComponent c2, int w, int h) {
+	float distance(PixelSet c1, PixelSet c2, int w, int h) {
 		final double[] cen1 = c1.calculateCentroid();
 		final double[] cen2 = c2.calculateCentroid();
 

@@ -35,6 +35,7 @@ import java.io.IOException;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.ConnectedComponent;
+import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 
@@ -78,7 +79,7 @@ public class CCDetectedFace extends DetectedFace {
 	/**
 	 * @return Get the connected component representing the face.
 	 */
-	public ConnectedComponent getConnectedComponent() {
+	public PixelSet getConnectedComponent() {
 		return connectedComponent;
 	}
 

@@ -33,18 +33,18 @@ import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.image.FImage;
-import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 public class LetterCandidate {
-	ConnectedComponent cc;
+	PixelSet cc;
 	float averageBrightness;
 	Pixel centroid;
 	float medianStrokeWidth;
 	Rectangle regularBoundingBox;
 
-	public LetterCandidate(ConnectedComponent cc, float medianStrokeWidth, FImage image) {
+	public LetterCandidate(PixelSet cc, float medianStrokeWidth, FImage image) {
 		this.cc = cc;
 		this.medianStrokeWidth = medianStrokeWidth;
 

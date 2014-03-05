@@ -39,6 +39,7 @@ import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
+import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.image.saliency.AchantaSaliency;
 import org.openimaj.image.saliency.YehSaliency;
 import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
@@ -135,7 +136,7 @@ public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvi
 		});
 	}
 
-	private double closestDistance(ConnectedComponent cc, int width, int height) {
+	private double closestDistance(PixelSet cc, int width, int height) {
 		final double centroid[] = cc.calculateCentroid();
 		double minDistance = Double.MAX_VALUE;
 

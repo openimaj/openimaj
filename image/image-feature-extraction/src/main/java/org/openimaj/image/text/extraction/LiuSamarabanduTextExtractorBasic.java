@@ -47,6 +47,7 @@ import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass0;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass135;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass45;
@@ -421,7 +422,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 		// Heuristics:
 		//    Area(region) >= (1/20).max
 		int maxArea = 0;
-		for( ConnectedComponent cc : ccs )
+		for( PixelSet cc : ccs )
 			maxArea = Math.max( maxArea, cc.calculateArea() );
 		
 		//     - Remove regions that are too small
@@ -433,7 +434,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 		// 		- Remove regions that aren't square enough.
 		for( Iterator<ConnectedComponent> cci = ccs.iterator(); cci.hasNext(); )
 		{
-			ConnectedComponent cc = cci.next();
+			PixelSet cc = cci.next();
 			Rectangle r = cc.calculateRegularBoundingBox();
 			if( r.width / r.height < 0.2 )
 				cci.remove();
@@ -450,7 +451,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 		}
 		
 		// Extract the text regions from the original image
-		for( ConnectedComponent cc : ccs )
+		for( PixelSet cc : ccs )
 		{
 			if( cc.getPixels().size() < 20 ) continue;
 			

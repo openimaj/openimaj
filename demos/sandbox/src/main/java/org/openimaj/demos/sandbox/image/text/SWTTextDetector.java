@@ -40,6 +40,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.image.processing.edges.StrokeWidthTransform;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.set.DisjointSetForest;
@@ -140,7 +141,7 @@ public class SWTTextDetector {
 		return output;
 	}
 
-	private static void computeStats(DescriptiveStatistics stats, ConnectedComponent cc, FImage swt) {
+	private static void computeStats(DescriptiveStatistics stats, PixelSet cc, FImage swt) {
 		stats.clear();
 		for (final Pixel p : cc.pixels) {
 			stats.addValue(swt.pixels[p.y][p.x]);
