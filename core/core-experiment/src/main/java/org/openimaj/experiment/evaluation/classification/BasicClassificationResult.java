@@ -55,10 +55,10 @@ import org.openimaj.util.pair.ObjectDoublePair;
  */
 public class BasicClassificationResult<CLASS> implements ClassificationResult<CLASS> {
 	private final TObjectDoubleHashMap<CLASS> data = new TObjectDoubleHashMap<CLASS>();
-	private double threshold = 0.5;
+	private double threshold = 0;
 
 	/**
-	 * Construct with a default threshold of 0.5.
+	 * Construct with a default threshold of 0.
 	 */
 	public BasicClassificationResult() {
 
@@ -71,7 +71,7 @@ public class BasicClassificationResult<CLASS> implements ClassificationResult<CL
 	 *            the threshold
 	 */
 	public BasicClassificationResult(double threshold) {
-		this.threshold = 0.5;
+		this.threshold = threshold;
 	}
 
 	/**

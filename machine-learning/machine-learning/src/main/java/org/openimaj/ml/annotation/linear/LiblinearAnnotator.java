@@ -484,6 +484,8 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	 *            the C parameter (usually 1 or larger)
 	 * @param eps
 	 *            the epsilon value
+	 * @param bias
+	 *            the bias
 	 * @param dense
 	 *            are the features dense? If so the dense variant of liblinear
 	 *            will be used to drastically reduce memory usage
