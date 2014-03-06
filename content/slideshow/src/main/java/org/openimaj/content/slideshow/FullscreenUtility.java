@@ -29,7 +29,6 @@
  */
 package org.openimaj.content.slideshow;
 
-import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
@@ -43,7 +42,6 @@ import javax.swing.JFrame;
  */
 public class FullscreenUtility {
 	protected JFrame window;
-	protected DisplayMode dispModeOld;
 	protected boolean fullscreen = false;
 
 	/**
@@ -68,9 +66,6 @@ public class FullscreenUtility {
 	{
 		// get a reference to the device.
 		final GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		final DisplayMode dispMode = device.getDisplayMode();
-		// save the old display mode before changing it.
-		dispModeOld = device.getDisplayMode();
 
 		if (this.fullscreen != fullscreen)
 		{ // are we actually changing modes.
@@ -79,10 +74,6 @@ public class FullscreenUtility {
 			// toggle fullscreen mode
 			if (!fullscreen)
 			{
-				// change to windowed mode.
-				// set the display mode back to the what it was when
-				// the program was launched.
-				device.setDisplayMode(dispModeOld);
 				// hide the frame so we can change it.
 				window.setVisible(false);
 				// remove the frame from being displayable.
@@ -107,14 +98,11 @@ public class FullscreenUtility {
 				window.dispose();
 				// remove borders around the frame
 				window.setUndecorated(true);
-				// make the window fullscreen.
-				device.setFullScreenWindow(window);
-				window.setVisible(false);
-
 				// attempt to change the screen resolution.
-				device.setDisplayMode(dispMode);
 				window.setResizable(false);
 				window.setAlwaysOnTop(false);
+				// make the window fullscreen.
+				device.setFullScreenWindow(window);
 				// show the frame
 				window.setVisible(true);
 			}

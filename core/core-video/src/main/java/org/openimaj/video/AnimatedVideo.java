@@ -32,53 +32,58 @@ package org.openimaj.video;
 import org.openimaj.image.Image;
 
 /**
- * A basic abstract implementation of a video that displays an image and provides
- * double-buffering
+ * A basic abstract implementation of a video that displays an image and
+ * provides double-buffering
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  * @param <I>
  */
-public abstract class AnimatedVideo<I extends Image<?, I>> extends Video<I> 
+public abstract class AnimatedVideo<I extends Image<?, I>> extends Video<I>
 {
 	private I currentFrame;
 	private I nextFrame;
 	private double fps;
-	
+
 	/**
-	 * Default video constructor with a rate of 30 fps
-	 * using the given image as a basis.
-	 * @param blankFrame blank video frame to pass to the update method
+	 * Default video constructor with a rate of 30 fps using the given image as
+	 * a basis.
+	 * 
+	 * @param blankFrame
+	 *            blank video frame to pass to the update method
 	 */
 	public AnimatedVideo(I blankFrame) {
 		this(blankFrame, 30);
 	}
-	
+
 	/**
-	 * Default video constructor with the given rate 
-	 * using the given image as a basis.
-	 * @param blankFrame blank video frame to pass to the update method
-	 * @param fps the frame rate
+	 * Default video constructor with the given rate using the given image as a
+	 * basis.
+	 * 
+	 * @param blankFrame
+	 *            blank video frame to pass to the update method
+	 * @param fps
+	 *            the frame rate
 	 */
 	public AnimatedVideo(I blankFrame, double fps) {
 		currentFrame = blankFrame;
 		nextFrame = blankFrame.clone();
 		this.fps = fps;
-		
+
 		init();
 	}
-	
+
 	protected abstract void updateNextFrame(I frame);
-	
+
 	@Override
 	public I getNextFrame() {
 		updateNextFrame(nextFrame);
-		I tmp = currentFrame;
+		final I tmp = currentFrame;
 		currentFrame = nextFrame;
 		nextFrame = tmp;
-		
+
 		super.currentFrame++;
-		
+
 		return currentFrame;
 	}
 
@@ -99,7 +104,7 @@ public abstract class AnimatedVideo<I extends Image<?, I>> extends Video<I>
 
 	@Override
 	public long getTimeStamp() {
-		return (long)(super.currentFrame * 1000 / this.fps);
+		return (long) (super.currentFrame * 1000 / this.fps);
 	}
 
 	@Override
@@ -119,13 +124,14 @@ public abstract class AnimatedVideo<I extends Image<?, I>> extends Video<I>
 
 	@Override
 	public void reset() {
-		//do nothing by default, but might be overridden to do things with animators
+		super.currentFrame = 0;
 	}
 
 	/**
 	 * Called by the constructor. Does nothing by default.
 	 */
 	protected void init() {
-		//do nothing by default, but might be overridden to do things with animators
+		// do nothing by default, but might be overridden to do things with
+		// animators
 	}
 }

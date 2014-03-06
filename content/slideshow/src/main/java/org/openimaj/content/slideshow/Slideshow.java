@@ -34,6 +34,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
@@ -45,6 +46,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.RootPaneContainer;
+import javax.swing.UIManager;
 
 /**
  * Implementation of a slideshow made up of {@link Slide}s. Binds the left and
@@ -88,12 +90,22 @@ public abstract class Slideshow implements KeyListener {
 	 *             if the first slide can't be loaded
 	 */
 	public Slideshow(RootPaneContainer container, List<Slide> slides, final int slideWidth, final int slideHeight,
-			final BufferedImage background) throws IOException
+			BufferedImage background) throws IOException
 	{
 		this.container = container;
 
 		this.slideWidth = slideWidth;
 		this.slideHeight = slideHeight;
+
+		final BufferedImage bg;
+		if (background == null) {
+			bg = new BufferedImage(slideWidth, slideHeight, BufferedImage.TYPE_3BYTE_BGR);
+			final Graphics2D g = bg.createGraphics();
+			g.setColor(UIManager.getColor("Panel.background"));
+			g.fillRect(0, 0, bg.getWidth(), bg.getHeight());
+		} else {
+			bg = background;
+		}
 
 		contentPanel = new JPanel() {
 			private static final long serialVersionUID = 1L;
@@ -101,11 +113,11 @@ public abstract class Slideshow implements KeyListener {
 			@Override
 			public void paintComponent(Graphics g)
 			{
-				setOpaque(false);
-				g.drawImage(background, 0, 0, slideWidth, slideHeight, null);
 				super.paintComponent(g);
+				g.drawImage(bg, 0, 0, slideWidth, slideHeight, null);
 			};
 		};
+		contentPanel.setOpaque(false);
 		contentPanel.setSize(slideWidth, slideHeight);
 		contentPanel.setPreferredSize(new Dimension(slideWidth, slideHeight));
 		contentPanel.setLayout(new GridBagLayout());
@@ -172,6 +184,10 @@ public abstract class Slideshow implements KeyListener {
 		currentSlideComp.setMaximumSize(new Dimension(slideWidth, slideHeight));
 
 		contentPanel.add(currentSlideComp, new GridBagConstraints());
+
+		currentSlideComp.setFocusable(true);
+		currentSlideComp.requestFocus();
+		currentSlideComp.addKeyListener(this);
 
 		contentPanel.validate();
 		((Component) container).repaint();
