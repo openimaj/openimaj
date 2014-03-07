@@ -34,6 +34,8 @@ import java.awt.GraphicsEnvironment;
 
 import javax.swing.JFrame;
 
+import org.apache.commons.lang.SystemUtils;
+
 /**
  * Utility class for dealing with fullscreen Swing applications.
  * 
@@ -103,6 +105,14 @@ public class FullscreenUtility {
 				window.setAlwaysOnTop(false);
 				// make the window fullscreen.
 				device.setFullScreenWindow(window);
+
+				if (SystemUtils.IS_JAVA_1_7 && SystemUtils.IS_OS_MAC_OSX) {
+					System.err.println("Applying first responder fix");
+					// OSX first responder bug:
+					// http://mail.openjdk.java.net/pipermail/macosx-port-dev/2012-November/005109.html
+					// unfortunately this might not be a complete fix...
+					window.setVisible(false);
+				}
 				// show the frame
 				window.setVisible(true);
 			}

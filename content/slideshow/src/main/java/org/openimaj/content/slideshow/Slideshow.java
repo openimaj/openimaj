@@ -39,6 +39,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -188,6 +190,12 @@ public abstract class Slideshow implements KeyListener {
 		currentSlideComp.setFocusable(true);
 		currentSlideComp.requestFocus();
 		currentSlideComp.addKeyListener(this);
+		currentSlideComp.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				currentSlideComp.requestFocus();
+			}
+		});
 
 		contentPanel.validate();
 		((Component) container).repaint();
