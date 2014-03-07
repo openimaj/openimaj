@@ -149,20 +149,6 @@ public class MixtureOfGaussians extends AbstractMultivariateDistribution {
 		return logprob;
 	}
 
-	protected double[][] computeWeightedLogProb(double[][] samples) {
-		final double[][] lpr = logProbability(samples, gaussians);
-
-		for (int j = 0; j < lpr[0].length; j++) {
-			final double logw = Math.log(this.weights[j]);
-
-			for (int i = 0; i < lpr.length; i++) {
-				lpr[i][j] += logw;
-			}
-		}
-
-		return lpr;
-	}
-
 	/**
 	 * Compute the log probability of the given data points belonging to each of
 	 * the given gaussians
@@ -217,6 +203,44 @@ public class MixtureOfGaussians extends AbstractMultivariateDistribution {
 		}
 
 		return log_prob;
+	}
+
+	protected double[][] computeWeightedLogProb(double[][] samples) {
+		final double[][] lpr = logProbability(samples);
+
+		for (int j = 0; j < lpr[0].length; j++) {
+			final double logw = Math.log(this.weights[j]);
+
+			for (int i = 0; i < lpr.length; i++) {
+				lpr[i][j] += logw;
+			}
+		}
+
+		return lpr;
+	}
+
+	/**
+	 * Compute the log probability of the given data points belonging to each of
+	 * the gaussians
+	 * 
+	 * @param x
+	 *            the points
+	 * @return the log probability of each point belonging to each gaussian
+	 *         distribution
+	 */
+	public double[][] logProbability(double[][] x) {
+		// final int nmix = gaussians.length;
+		// final int nsamples = x.length;
+		//
+		// final double[][] log_prob = new double[nsamples][nmix];
+		// for (int j = 0; j < nsamples; j++) {
+		// for (int i = 0; i < nmix; i++) {
+		// log_prob[j][i] = gaussians[i].estimateLogProbability(x[j]);
+		// }
+		// }
+		//
+		// return log_prob;
+		return logProbability(x, gaussians);
 	}
 
 	/**

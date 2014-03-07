@@ -160,9 +160,18 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 
 		final float[] vector = new float[2 * K * D];
 
-		for (final LocalFeature<?, ? extends ArrayFeatureVector<T>> f : features) {
-			final double[] x = f.getFeatureVector().asDoubleVector();
-			final double[] logPost = gmm.predictLogPosterior(x);
+		final double[][] X = new double[features.size()][];
+
+		for (int i = 0; i < X.length; i++) {
+			final LocalFeature<?, ? extends ArrayFeatureVector<T>> f = features.get(i);
+			X[i] = f.getFeatureVector().asDoubleVector();
+		}
+
+		final double[][] logPosts = gmm.predictLogPosterior(X);
+
+		for (int i = 0; i < X.length; i++) {
+			final double[] logPost = logPosts[i];
+			final double[] x = X[i];
 
 			for (int k = 0; k < K; k++) {
 				final double posterior = Math.exp(logPost[k]);
