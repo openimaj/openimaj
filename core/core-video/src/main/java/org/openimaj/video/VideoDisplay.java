@@ -1149,7 +1149,46 @@ public class VideoDisplay<T extends Image<?, T>> implements Runnable
 
 		new Thread(dv).start();
 		return dv;
+	}
 
+	/**
+	 * Convenience function to create a VideoDisplay from a video in an existing
+	 * component.
+	 * 
+	 * @param <T>
+	 *            the image type of the video frames
+	 * @param video
+	 *            The video
+	 * @param audio
+	 *            The audio
+	 * @param comp
+	 *            The {@link JComponent} to draw into
+	 * @return a VideoDisplay
+	 */
+	public static <T extends Image<?, T>> VideoDisplay<T> createVideoDisplay(final Video<T> video, AudioStream audio,
+			final JComponent comp)
+	{
+		final ImageComponent ic;
+		if (video.getWidth() > comp.getPreferredSize().width || video.getHeight() > comp.getPreferredSize().height) {
+			ic = new DisplayUtilities.ScalingImageComponent();
+			ic.setSize(comp.getSize());
+			ic.setPreferredSize(comp.getPreferredSize());
+		} else {
+			ic = new ImageComponent();
+			ic.setSize(video.getWidth(), video.getHeight());
+			ic.setPreferredSize(new Dimension(video.getWidth(), video.getHeight()));
+		}
+		ic.setAllowZoom(false);
+		ic.setAllowPanning(false);
+		ic.setTransparencyGrid(false);
+		ic.setShowPixelColours(false);
+		ic.setShowXYPosition(false);
+		comp.add(ic);
+
+		final VideoDisplay<T> dv = new VideoDisplay<T>(video, audio, ic);
+
+		new Thread(dv).start();
+		return dv;
 	}
 
 	/**

@@ -49,78 +49,89 @@ import org.openimaj.video.xuggle.XuggleVideo;
 import Jama.Matrix;
 
 /**
- * Slide that shows a video. Number keys are bound to seek to
- * different points in the video.
+ * Slide that shows a video. Number keys are bound to seek to different points
+ * in the video.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
 	URL url;
 	VideoDisplay<MBFImage> display;
 	private URL background;
-	private PictureSlide pictureSlide;
+	protected PictureSlide pictureSlide;
 	private final Matrix transform;
 	private ImageComponent panel;
 	private BufferedImage bimg;
 	private MBFImage mbfImage;
 	private XuggleVideo video;
-	
+	private EndAction endAction = EndAction.LOOP;
+
 	/**
 	 * Default constructor.
+	 * 
 	 * @param video
 	 * @param background
 	 * @param transform
+	 * @param endAction
 	 * @throws IOException
 	 */
-	public VideoSlide(final URL video, final URL background, final Matrix transform) throws IOException {
+	public VideoSlide(final URL video, final URL background, final Matrix transform, EndAction endAction)
+			throws IOException
+	{
 		this.url = video;
 		this.background = background;
 		this.pictureSlide = new PictureSlide(this.background);
 		this.transform = transform;
+		this.endAction = endAction;
 	}
 
 	/**
 	 * Default constructor.
+	 * 
 	 * @param video
 	 * @param transform
+	 * @param endAction
 	 * @throws IOException
 	 */
-	public VideoSlide(final URL video, final Matrix transform) throws IOException {
+	public VideoSlide(final URL video, final Matrix transform, EndAction endAction) throws IOException {
 		this.url = video;
 		this.transform = transform;
+		this.endAction = endAction;
 	}
-	
+
 	/**
 	 * Default constructor.
+	 * 
 	 * @param video
 	 * @param background
+	 * @param endAction
 	 * @throws IOException
 	 */
-	public VideoSlide(final URL video, final URL background) throws IOException {
-		this(video, background, null);
+	public VideoSlide(final URL video, final URL background, EndAction endAction) throws IOException {
+		this(video, background, null, endAction);
 	}
 
 	@Override
 	public Component getComponent(final int width, final int height) throws IOException {
-		if(this.pictureSlide == null){
-			this.mbfImage = new MBFImage(width,height,3);
+		if (this.pictureSlide == null) {
+			this.mbfImage = new MBFImage(width, height, 3);
 			this.panel = (ImageComponent) new PictureSlide(this.mbfImage).getComponent(width, height);
 		}
-		else{
+		else {
 			this.panel = (ImageComponent) this.pictureSlide.getComponent(width, height);
 			this.mbfImage = this.pictureSlide.mbfImage.clone();
 		}
-		
+
 		this.panel.setSize(width, height);
 		this.panel.setPreferredSize(new Dimension(width, height));
 
-		this.video = new XuggleVideo(this.url,true);
+		this.video = new XuggleVideo(this.url, true);
 		this.display = VideoDisplay.createOffscreenVideoDisplay(this.video);
-		this.display.setEndAction( EndAction.LOOP );
-		
+		this.display.setEndAction(this.endAction);
+
 		this.display.addVideoListener(this);
-		
+
 		return this.panel;
 	}
 
@@ -131,43 +142,43 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 
 	@Override
 	public void afterUpdate(final VideoDisplay<MBFImage> display) {
-		//do nothing
+		// do nothing
 	}
 
 	@Override
 	public void beforeUpdate(final MBFImage frame) {
-		if(this.transform != null){
+		if (this.transform != null) {
 			final MBFImage bgCopy = this.mbfImage.clone();
 			final MBFProjectionProcessor proj = new MBFProjectionProcessor();
 			proj.setMatrix(this.transform);
 			proj.accumulate(frame);
 			proj.performProjection(0, 0, bgCopy);
-			this.panel.setImage(this.bimg = ImageUtilities.createBufferedImageForDisplay( bgCopy, this.bimg ));
+			this.panel.setImage(this.bimg = ImageUtilities.createBufferedImageForDisplay(bgCopy, this.bimg));
 		}
 		else
-			this.panel.setImage(this.bimg = ImageUtilities.createBufferedImageForDisplay( frame, this.bimg ));
+			this.panel.setImage(this.bimg = ImageUtilities.createBufferedImageForDisplay(frame, this.bimg));
 	}
 
 	@Override
 	public void keyPressed(final KeyEvent key) {
 		final int code = key.getKeyCode();
-		if(code >= KeyEvent.VK_0 && code <= KeyEvent.VK_9){
-			final double prop = (code - KeyEvent.VK_0)/10.0;
+		if (code >= KeyEvent.VK_0 && code <= KeyEvent.VK_9) {
+			final double prop = (code - KeyEvent.VK_0) / 10.0;
 			final long dur = this.video.getDuration();
-			this.display.seek((long)(dur * prop));
+			this.display.seek((long) (dur * prop));
 		}
-		if(code == KeyEvent.VK_SPACE){
+		if (code == KeyEvent.VK_SPACE) {
 			this.display.togglePause();
 		}
 	}
 
 	@Override
 	public void keyReleased(final KeyEvent arg0) {
-		//do nothing
+		// do nothing
 	}
 
 	@Override
 	public void keyTyped(final KeyEvent arg0) {
-		//do nothing
+		// do nothing
 	}
 }
