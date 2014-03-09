@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-tutorial-parent</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.2.1</version>
+    <version>1.3-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>tutorial-code</artifactId>
-  <version>1.2.1</version>
+  <version>1.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>tutorial-code</name>
 	<inceptionYear>2011</inceptionYear>
@@ -21,67 +21,67 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>common-stream</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-local-features</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-feature-extraction</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-annotation</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>xuggle-video</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>faces</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>clustering</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 		<dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>nearest-neighbour</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>org.openimaj</groupId>
     	<artifactId>audio-processing</artifactId>
-    	<version>1.2.1</version>
+    	<version>1.3-SNAPSHOT</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>org.openimaj.content</groupId>
     	<artifactId>visualisations</artifactId>
-    	<version>1.2.1</version>
+    	<version>1.3-SNAPSHOT</version>
     	<scope>compile</scope>
     </dependency>
   </dependencies>

@@ -4,12 +4,12 @@
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj-content-libs</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.1</version>
+  <version>1.3-SNAPSHOT</version>
   <name>OpenIMAJ Content Creation Libraries</name>
   <parent>
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.2.1</version>
+    <version>1.3-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <inceptionYear>2011</inceptionYear>

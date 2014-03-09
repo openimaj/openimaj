@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-content-libs</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.2.1</version>
+    <version>1.3-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj.content</groupId>
   <artifactId>animation</artifactId>
-  <version>1.2.1</version>
+  <version>1.3-SNAPSHOT</version>
   <name>The OpenIMAJ Animation Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-image</artifactId>
-      <version>1.2.1</version>
+      <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
