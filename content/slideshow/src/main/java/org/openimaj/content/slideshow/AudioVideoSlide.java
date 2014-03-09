@@ -31,11 +31,11 @@ public class AudioVideoSlide implements Slide {
 	/**
 	 * Construct with the given video and {@link EndAction}
 	 * 
-	 * @param video
+	 * @param url
 	 * @param endAction
 	 * @throws IOException
 	 */
-	public AudioVideoSlide(URL video, EndAction endAction) throws IOException {
+	public AudioVideoSlide(URL url, EndAction endAction) throws IOException {
 		if (url.getProtocol().startsWith("jar:")) {
 			final File tmp = File.createTempFile("movie", ".tmp");
 			tmp.deleteOnExit();
@@ -43,7 +43,7 @@ public class AudioVideoSlide implements Slide {
 			url = tmp.toURI().toURL();
 		}
 
-		this.url = video;
+		this.url = url;
 		this.endAction = endAction;
 	}
 
