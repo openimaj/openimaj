@@ -3,11 +3,13 @@ package org.openimaj.content.slideshow;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.JPanel;
 
+import org.apache.commons.io.FileUtils;
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplay.EndAction;
@@ -34,6 +36,13 @@ public class AudioVideoSlide implements Slide {
 	 * @throws IOException
 	 */
 	public AudioVideoSlide(URL video, EndAction endAction) throws IOException {
+		if (url.getProtocol().startsWith("jar:")) {
+			final File tmp = File.createTempFile("movie", ".tmp");
+			tmp.deleteOnExit();
+			FileUtils.copyURLToFile(url, tmp);
+			url = tmp.toURI().toURL();
+		}
+
 		this.url = video;
 		this.endAction = endAction;
 	}

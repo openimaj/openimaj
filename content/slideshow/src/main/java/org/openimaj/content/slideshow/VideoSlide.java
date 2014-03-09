@@ -34,9 +34,11 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
 import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -79,7 +81,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 	public VideoSlide(final URL video, final URL background, final Matrix transform, EndAction endAction)
 			throws IOException
 	{
-		this.url = video;
+		this.url = makeURL(video);
 		this.background = background;
 		this.pictureSlide = new PictureSlide(this.background);
 		this.transform = transform;
@@ -95,9 +97,19 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 	 * @throws IOException
 	 */
 	public VideoSlide(final URL video, final Matrix transform, EndAction endAction) throws IOException {
-		this.url = video;
+		this.url = makeURL(video);
 		this.transform = transform;
 		this.endAction = endAction;
+	}
+
+	private URL makeURL(URL url) throws IOException {
+		if (url.getProtocol().startsWith("jar:")) {
+			final File tmp = File.createTempFile("movie", ".tmp");
+			tmp.deleteOnExit();
+			FileUtils.copyURLToFile(url, tmp);
+			url = tmp.toURI().toURL();
+		}
+		return url;
 	}
 
 	/**
