@@ -36,7 +36,7 @@ public class AudioVideoSlide implements Slide {
 	 * @throws IOException
 	 */
 	public AudioVideoSlide(URL url, EndAction endAction) throws IOException {
-		if (url.getProtocol().startsWith("jar:")) {
+		if (url.getProtocol().startsWith("jar")) {
 			final File tmp = File.createTempFile("movie", ".tmp");
 			tmp.deleteOnExit();
 			FileUtils.copyURLToFile(url, tmp);

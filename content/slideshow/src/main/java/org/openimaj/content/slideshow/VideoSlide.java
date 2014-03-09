@@ -103,7 +103,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 	}
 
 	private URL makeURL(URL url) throws IOException {
-		if (url.getProtocol().startsWith("jar:")) {
+		if (url.getProtocol().startsWith("jar")) {
 			final File tmp = File.createTempFile("movie", ".tmp");
 			tmp.deleteOnExit();
 			FileUtils.copyURLToFile(url, tmp);
