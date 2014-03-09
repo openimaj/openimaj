@@ -4,11 +4,11 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.2.1</version>
   </parent>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>CBIRTools</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.2.1</version>
   <packaging>jar</packaging>
   <name>CBIRTools</name>
 	<inceptionYear>2011</inceptionYear>
@@ -20,19 +20,19 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-indexing-retrieval</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj.tools</groupId>
       <artifactId>LocalFeaturesTool</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

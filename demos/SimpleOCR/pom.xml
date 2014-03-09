@@ -4,11 +4,11 @@
   <parent>
     <artifactId>openimaj-demos</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.2.1</version>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>SimpleOCR</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.2.1</version>
   <packaging>jar</packaging>
   <name>SimpleOCR</name>
 	<inceptionYear>2011</inceptionYear>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-processing</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
