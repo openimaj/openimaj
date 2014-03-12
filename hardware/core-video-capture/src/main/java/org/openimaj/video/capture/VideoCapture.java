@@ -433,4 +433,14 @@ public class VideoCapture extends Video<MBFImage> {
 	{
 		this.fps = fps;
 	}
+
+	@Override
+	public void close() {
+		this.stopCapture();
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		this.close();
+	}
 }
