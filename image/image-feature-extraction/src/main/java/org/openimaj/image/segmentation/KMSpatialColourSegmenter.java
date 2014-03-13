@@ -126,7 +126,7 @@ public class KMSpatialColourSegmenter extends KMColourSegmenter {
 		final int width = image.getWidth();
 		final int bands = image.numBands();
 
-		final float[][] f = new float[height * width][bands];
+		final float[][] f = new float[height * width][bands + 2];
 		for (int b = 0; b < bands; b++) {
 			final float[][] band = image.getBand(b).pixels;
 			final float w = scaling == null ? 1 : scaling[b];
