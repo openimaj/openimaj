@@ -170,9 +170,9 @@ public class KMColourSegmenter implements Segmenter<MBFImage> {
 		final HardAssigner<float[], ?, ?> assigner = result.defaultHardAssigner();
 		final int height = image.getHeight();
 		final int width = image.getWidth();
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				final float[] pixel = input.getPixelNative(x, y);
+		for (int y = 0, i = 0; y < height; y++) {
+			for (int x = 0; x < width; x++, i++) {
+				final float[] pixel = imageData[i];
 				final int centroid = assigner.assign(pixel);
 
 				out.get(centroid).addPixel(x, y);
