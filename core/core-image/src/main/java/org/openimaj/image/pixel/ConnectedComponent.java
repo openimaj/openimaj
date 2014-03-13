@@ -73,6 +73,48 @@ public class ConnectedComponent extends PixelSet {
 		CONNECT_4,
 		/** 8-connected edges in the boundary representation */
 		CONNECT_8;
+
+		/**
+		 * Get the neighbouring pixels
+		 * 
+		 * @param image
+		 *            the image
+		 * @param x
+		 *            the x ordinate
+		 * @param y
+		 *            the y ordinate
+		 * @param bgThreshold
+		 *            the threshold for below which pixels should be ignored
+		 * @return the neighbouring pixels
+		 */
+		public List<Pixel> getNeighbours(FImage image, int x, int y, float bgThreshold) {
+			final List<Pixel> neighbours = new ArrayList<Pixel>(this == CONNECT_8 ? 8 : 4);
+
+			switch (this) {
+			case CONNECT_8:
+				if (x > 0 && y > 0 && image.pixels[y - 1][x - 1] > bgThreshold)
+					neighbours.add(new Pixel(x - 1, y - 1));
+				if (x + 1 < image.width && y > 0 && image.pixels[y - 1][x + 1] > bgThreshold)
+					neighbours.add(new Pixel(x + 1, y - 1));
+				if (x > 0 && y + 1 < image.height && image.pixels[y + 1][x - 1] > bgThreshold)
+					neighbours.add(new Pixel(x - 1, y + 1));
+				if (x + 1 < image.width && y + 1 < image.height && image.pixels[y + 1][x + 1] > bgThreshold)
+					neighbours.add(new Pixel(x + 1, y + 1));
+				// Note : no break, so we fall through...
+			case CONNECT_4:
+				if (x > 0 && image.pixels[y][x - 1] > bgThreshold)
+					neighbours.add(new Pixel(x - 1, y));
+				if (x + 1 < image.width && image.pixels[y][x + 1] > bgThreshold)
+					neighbours.add(new Pixel(x + 1, y));
+				if (y > 0 && image.pixels[y - 1][x] > bgThreshold)
+					neighbours.add(new Pixel(x, y - 1));
+				if (y + 1 < image.height && image.pixels[y + 1][x] > bgThreshold)
+					neighbours.add(new Pixel(x, y + 1));
+				break;
+			}
+
+			return neighbours;
+		}
 	}
 
 	/**

@@ -74,7 +74,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 						final float element = image.pixels[y][x];
 
 						if (element > bgThreshold) {
-							final List<Pixel> neighbours = getNeighbours(image, x, y, bgThreshold, mode);
+							final List<Pixel> neighbours = mode.getNeighbours(image, x, y, bgThreshold);
 
 							ConnectedComponent currentComponent = null;
 							for (final Pixel p : neighbours) {
@@ -129,7 +129,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 						final float element = image.pixels[y][x];
 
 						if (element > bgThreshold) {
-							final List<Pixel> neighbours = getNeighbours(image, x, y, bgThreshold, mode);
+							final List<Pixel> neighbours = mode.getNeighbours(image, x, y, bgThreshold);
 							final List<Integer> L = new ArrayList<Integer>();
 
 							for (final Pixel p : neighbours)
@@ -304,35 +304,6 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 		 * @return the connected components
 		 */
 		public abstract List<ConnectedComponent> findComponents(FImage image, float bgThreshold, ConnectMode mode);
-
-		private static List<Pixel> getNeighbours(FImage image, int x, int y, float bgThreshold, ConnectMode mode) {
-			final List<Pixel> neighbours = new ArrayList<Pixel>();
-
-			switch (mode) {
-			case CONNECT_8:
-				if (x > 0 && y > 0 && image.pixels[y - 1][x - 1] > bgThreshold)
-					neighbours.add(new Pixel(x - 1, y - 1));
-				if (x + 1 < image.getWidth() && y > 0 && image.pixels[y - 1][x + 1] > bgThreshold)
-					neighbours.add(new Pixel(x + 1, y - 1));
-				if (x > 0 && y + 1 < image.getHeight() && image.pixels[y + 1][x - 1] > bgThreshold)
-					neighbours.add(new Pixel(x - 1, y + 1));
-				if (x + 1 < image.getWidth() && y + 1 < image.getHeight() && image.pixels[y + 1][x + 1] > bgThreshold)
-					neighbours.add(new Pixel(x + 1, y + 1));
-				// Note : no break, so we fall through...
-			case CONNECT_4:
-				if (x > 0 && image.pixels[y][x - 1] > bgThreshold)
-					neighbours.add(new Pixel(x - 1, y));
-				if (x + 1 < image.getWidth() && image.pixels[y][x + 1] > bgThreshold)
-					neighbours.add(new Pixel(x + 1, y));
-				if (y > 0 && image.pixels[y - 1][x] > bgThreshold)
-					neighbours.add(new Pixel(x, y - 1));
-				if (y + 1 < image.getHeight() && image.pixels[y + 1][x] > bgThreshold)
-					neighbours.add(new Pixel(x, y + 1));
-				break;
-			}
-
-			return neighbours;
-		}
 	}
 
 	protected float bgThreshold = 0;
