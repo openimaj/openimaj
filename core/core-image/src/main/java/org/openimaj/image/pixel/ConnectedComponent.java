@@ -567,9 +567,9 @@ public class ConnectedComponent extends PixelSet {
 			if (dir >= 4)
 				dir -= 4;
 
-			if (pixels.contains(target[dir]))
+			if (pixels.contains(target[dir])) {
 				return target[dir];
-			else if (outer != null)
+			} else if (outer != null)
 				outer.add(target[dir]);
 		}
 
@@ -747,7 +747,7 @@ public class ConnectedComponent extends PixelSet {
 	 */
 	public List<Pixel> getOuterBoundary() {
 		final List<Pixel> pset = new ArrayList<Pixel>();
-		final List<Pixel> outer = new ArrayList<Pixel>();
+		List<Pixel> outer = new ArrayList<Pixel>();
 
 		final Pixel start = topLeftMostPixel();
 		Pixel current = start;
@@ -759,10 +759,29 @@ public class ConnectedComponent extends PixelSet {
 			if (pset.size() >= 2 && next.equals(pset.get(1)) && current.equals(start)) {
 				break;
 			}
+			if (this.pixels.size() == 1)
+				break;
 
 			dir = code4(current, next);
 			pset.add(current);
 			current = next;
+		}
+
+		if (outer.size() > 4) {
+			for (int i = 3; i > 0; i--) {
+				boolean found = true;
+				for (int j = 0; j < i; j++) {
+					if (!outer.get(j).equals(outer.get(outer.size() - i + j))) {
+						found = false;
+						break;
+					}
+				}
+
+				if (found) {
+					outer = outer.subList(0, outer.size() - i);
+					break;
+				}
+			}
 		}
 
 		return outer;

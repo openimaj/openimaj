@@ -242,8 +242,10 @@ public class PixelSet implements Cloneable, ReadWriteable {
 	}
 
 	/**
-	 * Calculate the pq moment, M<sub>pq</sub> around the given centroid. From
-	 * Equation 6.43 in Sonka, Hlavac and Boyle.
+	 * Calculate the pq moment, μ<sub>pq</sub> around the given centroid. From
+	 * Equation 6.44 in Sonka, Hlavac and Boyle. If instead of giving the
+	 * centroid (xc, yc), you give (0,0), then this will return the standard
+	 * moments m<sub>pq</sub> about the origin.
 	 * 
 	 * @param p
 	 *            The P moment to calculate
@@ -267,8 +269,8 @@ public class PixelSet implements Cloneable, ReadWriteable {
 	}
 
 	/**
-	 * Calculate the pq moment, M<sub>pq</sub> for this region. From Equation
-	 * 6.43 in Sonka, Hlavac and Boyle.
+	 * Calculate the pq central moment, μ<sub>pq</sub> for this region. From
+	 * Equation 6.44 in Sonka, Hlavac and Boyle.
 	 * 
 	 * @param p
 	 *            The P moment to calculate
@@ -290,9 +292,9 @@ public class PixelSet implements Cloneable, ReadWriteable {
 	}
 
 	/**
-	 * Calculate the normalized, unscaled, central moments for M<sub>pq</sub>.
-	 * From Equation 6.47 in Sonka, Hlavac and Boyle [1st Ed.]. Normalised
-	 * central moments are invariant to scale and translation.
+	 * Calculate the normalized, unscaled, central moments η<sub>pq</sub>. From
+	 * Equation 6.47 in Sonka, Hlavac and Boyle [1st Ed.]. Normalised central
+	 * moments are invariant to scale and translation.
 	 * 
 	 * @param p
 	 *            The P moment to calculate
