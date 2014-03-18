@@ -2091,7 +2091,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I shiftDown(int nPixels) {
 		final I output = this.newInstance(getWidth(), getHeight());
-		final I img = this.extractROI(getWidth(), getHeight() - nPixels, getWidth(), nPixels);
+		final I img = this.extractROI(0, getHeight() - nPixels, getWidth(), nPixels);
 		output.createRenderer().drawImage(
 				this.extractROI(0, 0, getWidth(), getHeight() - nPixels), 0, nPixels);
 		output.createRenderer().drawImage(img, 0, 0);
