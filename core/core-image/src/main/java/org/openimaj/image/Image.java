@@ -930,8 +930,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * yourself and use it to draw if you need more control.
 	 * </p>
 	 * 
-	 * @param <F>
-	 *            the font
 	 * @param text
 	 *            the text
 	 * @param x
@@ -1005,8 +1003,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * yourself and use it to draw if you need more control.
 	 * </p>
 	 * 
-	 * @param <F>
-	 *            the font
 	 * @param text
 	 *            the text
 	 * @param pt
@@ -1932,7 +1928,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * 
 	 * @return A reference to this image.
 	 */
-	public abstract I shiftLeftInplace(int count);
+	public I shiftLeftInplace(int count) {
+		return this.internalAssign(this.shiftLeft(count));
+	}
 
 	/**
 	 * Shifts all the pixels to the right by count pixel
@@ -1942,7 +1940,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * 
 	 * @return A reference to this image.
 	 */
-	public abstract I shiftRightInplace(int count);
+	public I shiftRightInplace(int count) {
+		return this.internalAssign(this.shiftRight(count));
+	}
 
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by one
@@ -1996,6 +1996,104 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		final I img = this.extractROI(getWidth() - nPixels, 0, nPixels, getHeight());
 		output.createRenderer().drawImage(
 				this.extractROI(0, 0, getWidth() - nPixels, getHeight()), nPixels, 0);
+		output.createRenderer().drawImage(img, 0, 0);
+		return output;
+	}
+
+	/**
+	 * Shifts all the pixels up by one pixel
+	 * 
+	 * @return A reference to this image.
+	 */
+	public I shiftUpInplace() {
+		return shiftUpInplace(1);
+	}
+
+	/**
+	 * Shifts all the pixels down by one pixels
+	 * 
+	 * @return A reference to this image.
+	 */
+	public I shiftDownInplace() {
+		return shiftDownInplace(1);
+	}
+
+	/**
+	 * Shifts all the pixels up by count pixels
+	 * 
+	 * @param count
+	 *            The number of pixels
+	 * 
+	 * @return A reference to this image.
+	 */
+	public I shiftUpInplace(int count) {
+		return this.internalAssign(this.shiftUp(count));
+	}
+
+	/**
+	 * Shifts all the pixels down by count pixels
+	 * 
+	 * @param count
+	 *            The number of pixels
+	 * 
+	 * @return A reference to this image.
+	 */
+	public I shiftDownInplace(int count) {
+		return this.internalAssign(this.shiftDown(count));
+	}
+
+	/**
+	 * Returns a new image that is it shifted around the x-ordinates by one
+	 * pixel
+	 * 
+	 * @return A new image shifted around up by one pixel
+	 */
+	public I shiftUp() {
+		return shiftUp(1);
+	}
+
+	/**
+	 * Returns a new image that is it shifted around the x-ordinates by the
+	 * number of pixels given.
+	 * 
+	 * @param nPixels
+	 *            The number of pixels
+	 * 
+	 * @return A new image shifted around up by the number of pixels
+	 */
+	public I shiftUp(int nPixels) {
+		final I output = this.newInstance(getWidth(), getHeight());
+		final I img = this.extractROI(0, 0, getWidth(), nPixels);
+		output.createRenderer().drawImage(
+				this.extractROI(0, nPixels, getWidth(), getHeight() - nPixels), 0, 0);
+		output.createRenderer().drawImage(img, 0, getHeight() - nPixels);
+		return output;
+	}
+
+	/**
+	 * Returns a new image that is it shifted around the x-ordinates by one
+	 * pixel
+	 * 
+	 * @return A new image shifted around down by one pixel
+	 */
+	public I shiftDown() {
+		return shiftDown(1);
+	}
+
+	/**
+	 * Returns a new image that is it shifted around the x-ordinates by the
+	 * number of pixels given.
+	 * 
+	 * @param nPixels
+	 *            the number of pixels
+	 * 
+	 * @return A new image shifted around down by the number of pixels
+	 */
+	public I shiftDown(int nPixels) {
+		final I output = this.newInstance(getWidth(), getHeight());
+		final I img = this.extractROI(getWidth(), getHeight() - nPixels, getWidth(), nPixels);
+		output.createRenderer().drawImage(
+				this.extractROI(0, 0, getWidth(), getHeight() - nPixels), 0, nPixels);
 		output.createRenderer().drawImage(img, 0, 0);
 		return output;
 	}

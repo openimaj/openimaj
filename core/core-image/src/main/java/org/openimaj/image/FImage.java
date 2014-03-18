@@ -119,7 +119,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 */
 	public FImage(final int width, final int height) {
 		this.pixels = new float[height][width];
-		
+
 		this.height = height;
 		this.width = width;
 	}
@@ -1678,36 +1678,6 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 */
 	public void setPixelNative(final int x, final int y, final float val) {
 		this.pixels[y][x] = val;
-	}
-
-	@Override
-	public FImage shiftLeftInplace(final int n) {
-		if (n < 0)
-			return this.shiftRightInplace(-n);
-		for (int y = 0; y < this.height; y++)
-			for (int x = 0; x < this.width - n; x++)
-				this.pixels[y][x] = this.pixels[y][x + n];
-
-		for (int y = 0; y < this.height; y++)
-			for (int x = this.width - n; x < this.width; x++)
-				this.pixels[y][x] = 0;
-
-		return this;
-	}
-
-	@Override
-	public FImage shiftRightInplace(final int n) {
-		if (n < 0)
-			return this.shiftLeftInplace(-n);
-		for (int y = 0; y < this.height; y++)
-			for (int x = this.width - 1; x >= n; x--)
-				this.pixels[y][x] = this.pixels[y][x - n];
-
-		for (int y = 0; y < this.height; y++)
-			for (int x = 0; x < n; x++)
-				this.pixels[y][x] = 0;
-
-		return this;
 	}
 
 	/**
