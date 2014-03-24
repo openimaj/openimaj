@@ -79,4 +79,14 @@ public interface MultivariateDistribution {
 	 * @return the log-probability
 	 */
 	public double estimateLogProbability(double[] sample);
+
+	/**
+	 * Get the log probability for a given point in space relative to the PDF
+	 * represented by this distribution.
+	 * 
+	 * @param x
+	 *            the samples
+	 * @return the log-probability
+	 */
+	public abstract double[] estimateLogProbability(double[][] x);
 }

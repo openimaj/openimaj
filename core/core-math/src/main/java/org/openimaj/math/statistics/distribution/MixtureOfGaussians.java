@@ -130,6 +130,7 @@ public class MixtureOfGaussians extends AbstractMultivariateDistribution {
 	 *            the points
 	 * @return the probability
 	 */
+	@Override
 	public double[] estimateLogProbability(double[][] samples) {
 		if (samples[0].length != this.gaussians[0].getMean().getColumnDimension()) {
 			throw new IllegalArgumentException(
@@ -229,18 +230,20 @@ public class MixtureOfGaussians extends AbstractMultivariateDistribution {
 	 *         distribution
 	 */
 	public double[][] logProbability(double[][] x) {
-		// final int nmix = gaussians.length;
-		// final int nsamples = x.length;
-		//
-		// final double[][] log_prob = new double[nsamples][nmix];
-		// for (int j = 0; j < nsamples; j++) {
-		// for (int i = 0; i < nmix; i++) {
-		// log_prob[j][i] = gaussians[i].estimateLogProbability(x[j]);
-		// }
-		// }
-		//
-		// return log_prob;
-		return logProbability(x, gaussians);
+		final int nmix = gaussians.length;
+		final int nsamples = x.length;
+
+		final double[][] log_prob = new double[nsamples][nmix];
+		for (int i = 0; i < nmix; i++) {
+			final double[] lp = gaussians[i].estimateLogProbability(x);
+
+			for (int j = 0; j < nsamples; j++) {
+				log_prob[j][i] = lp[j];
+			}
+		}
+
+		return log_prob;
+		// return logProbability(x, gaussians);
 	}
 
 	/**
@@ -266,12 +269,29 @@ public class MixtureOfGaussians extends AbstractMultivariateDistribution {
 	 * @return the log-probability for each gaussian
 	 */
 	public double[][] predictLogPosterior(double[][] samples) {
-		return scoreSamples(samples).secondObject();
+		if (samples[0].length != this.gaussians[0].getMean().getColumnDimension()) {
+			throw new IllegalArgumentException(
+					"The number of dimensions of the given data is not compatible with the model");
+		}
+
+		final double[][] lpr = computeWeightedLogProb(samples);
+		final double[] logprob = logsumexp(lpr);
+
+		final double[][] responsibilities = new double[samples.length][gaussians.length];
+		for (int i = 0; i < samples.length; i++) {
+			for (int j = 0; j < gaussians.length; j++) {
+				responsibilities[i][j] = lpr[i][j] - logprob[i]; // note no exp
+																	// as want
+																	// log prob
+			}
+		}
+
+		return responsibilities;
 	}
 
 	/**
-	 * Compute the log-posterior of the samples, and the overall log probability
-	 * of each sample as belonging to the model.
+	 * Compute the posterior distribution of the samples, and the overall log
+	 * probability of each sample as belonging to the model.
 	 * 
 	 * @param samples
 	 *            the samples
@@ -285,13 +305,7 @@ public class MixtureOfGaussians extends AbstractMultivariateDistribution {
 
 		final double[][] lpr = computeWeightedLogProb(samples);
 
-		final double[] logprob = new double[samples.length];
-		for (int i = 0; i < samples.length; i++) {
-			for (int j = 0; j < gaussians.length; j++) {
-				logprob[i] += Math.exp(lpr[i][j]);
-			}
-			logprob[i] = Math.log(logprob[i]);
-		}
+		final double[] logprob = logsumexp(lpr);
 
 		final double[][] responsibilities = new double[samples.length][gaussians.length];
 		for (int i = 0; i < samples.length; i++) {
@@ -301,6 +315,19 @@ public class MixtureOfGaussians extends AbstractMultivariateDistribution {
 		}
 
 		return IndependentPair.pair(logprob, responsibilities);
+	}
+
+	private double[] logsumexp(double[][] data) {
+		final double[] lse = new double[data.length];
+		for (int i = 0; i < data.length; i++) {
+			final double max = ArrayUtils.maxValue(data[i]);
+
+			for (int j = 0; j < data[0].length; j++) {
+				lse[i] += Math.exp(data[i][j] - max);
+			}
+			lse[i] = max + Math.log(lse[i]);
+		}
+		return lse;
 	}
 
 	/**

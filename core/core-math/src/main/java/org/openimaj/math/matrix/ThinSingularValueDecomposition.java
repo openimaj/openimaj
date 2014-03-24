@@ -35,64 +35,67 @@ import ch.akuhn.matrix.Vector;
 import ch.akuhn.matrix.eigenvalues.SingularValues;
 
 /**
- * Thin SVD based on Adrian Kuhn's wrapper around ARPACK.
- * This can scale to really large matrices (bigger than RAM), given
- * an implementation of {@link ch.akuhn.matrix.Matrix} that
- * is backed by disk.
+ * Thin SVD based on Adrian Kuhn's wrapper around ARPACK. This can scale to
+ * really large matrices (bigger than RAM), given an implementation of
+ * {@link ch.akuhn.matrix.Matrix} that is backed by disk.
  * <p>
- * Note that the current version of (Java)ARPACK is not thread-safe.
- * Allowances have been made in this implementation to synchronize
- * the call to {@link SingularValues#decompose()} against the
- * {@link ThinSingularValueDecomposition} class. Care must be
- * taken if you are using JARPACK outside this class in a multi-threaded
- * application.
- *
+ * Note that the current version of (Java)ARPACK is not thread-safe. Allowances
+ * have been made in this implementation to synchronize the call to
+ * {@link SingularValues#decompose()} against the
+ * {@link ThinSingularValueDecomposition} class. Care must be taken if you are
+ * using JARPACK outside this class in a multi-threaded application.
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ThinSingularValueDecomposition {
 	/** The U matrix */
 	public Matrix U;
 	/** The singular values */
-	public double [] S;
+	public double[] S;
 	/** The transpose of the V matrix */
 	public Matrix Vt;
 
 	/**
-	 * Perform thin SVD on matrix, calculating at most
-	 * ndims dimensions.
-	 *
-	 * @param matrix the matrix
-	 * @param ndims the number of singular values/vectors to calculate; actual number may be less.
+	 * Perform thin SVD on matrix, calculating at most ndims dimensions.
+	 * 
+	 * @param matrix
+	 *            the matrix
+	 * @param ndims
+	 *            the number of singular values/vectors to calculate; actual
+	 *            number may be less.
 	 */
 	public ThinSingularValueDecomposition(Matrix matrix, int ndims) {
 		this(new JamaDenseMatrix(matrix), ndims);
 	}
 
 	/**
-	 * Perform thin SVD on matrix, calculating at most
-	 * ndims dimensions.
-	 *
-	 * @param matrix the matrix
-	 * @param ndims the number of singular values/vectors to calculate; actual number may be less.
+	 * Perform thin SVD on matrix, calculating at most ndims dimensions.
+	 * 
+	 * @param matrix
+	 *            the matrix
+	 * @param ndims
+	 *            the number of singular values/vectors to calculate; actual
+	 *            number may be less.
 	 */
 	public ThinSingularValueDecomposition(ch.akuhn.matrix.Matrix matrix, int ndims) {
-		if (ndims >= matrix.rowCount()) {
+		if (ndims >= Math.min(matrix.rowCount(), matrix.columnCount())) {
 			try {
-				no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(matrix.asArray());
+				final no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(matrix.asArray());
 				no.uib.cipr.matrix.SVD svd;
 				svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
 				this.S = svd.getS();
 				this.U = MatrixUtils.convert(svd.getU());
 				this.Vt = MatrixUtils.convert(svd.getVt());
-			} catch (NotConvergedException e) {
+			} catch (final NotConvergedException e) {
 				throw new RuntimeException(e);
 			}
 		} else {
-			SingularValues sv = new SingularValues(matrix, ndims);
+			final SingularValues sv = new SingularValues(matrix, ndims);
 
-			//Note: SingularValues uses JARPACK which isn't currently thread-safe :-(
-			synchronized(ThinSingularValueDecomposition.class) {
+			// Note: SingularValues uses JARPACK which isn't currently
+			// thread-safe :-(
+			synchronized (ThinSingularValueDecomposition.class) {
 				sv.decompose();
 			}
 
@@ -102,9 +105,9 @@ public class ThinSingularValueDecomposition {
 		}
 	}
 
-	protected double[] reverse(double [] vector) {
-		for (int i=0; i<vector.length/2; i++) {
-			double tmp = vector[i];
+	protected double[] reverse(double[] vector) {
+		for (int i = 0; i < vector.length / 2; i++) {
+			final double tmp = vector[i];
 			vector[i] = vector[vector.length - i - 1];
 			vector[vector.length - i - 1] = tmp;
 		}
@@ -114,9 +117,9 @@ public class ThinSingularValueDecomposition {
 	protected Matrix vectorArrayToMatrix(Vector[] vectors, boolean rows) {
 		final int m = vectors.length;
 
-		double [][] data = new double[m][];
+		final double[][] data = new double[m][];
 
-		for (int i=0; i<m; i++)
+		for (int i = 0; i < m; i++)
 			data[m - i - 1] = vectors[i].unwrap();
 
 		Matrix mat = new Matrix(data);
@@ -131,9 +134,9 @@ public class ThinSingularValueDecomposition {
 	 * @return The S matrix
 	 */
 	public Matrix getSmatrix() {
-		Matrix Smat = new Matrix(S.length, S.length);
+		final Matrix Smat = new Matrix(S.length, S.length);
 
-		for (int r=0; r<S.length; r++)
+		for (int r = 0; r < S.length; r++)
 			Smat.set(r, r, S[r]);
 
 		return Smat;
@@ -143,27 +146,30 @@ public class ThinSingularValueDecomposition {
 	 * @return The sqrt of the singular vals as a matrix.
 	 */
 	public Matrix getSmatrixSqrt() {
-		Matrix Smat = new Matrix(S.length, S.length);
+		final Matrix Smat = new Matrix(S.length, S.length);
 
-		for (int r=0; r<S.length; r++)
+		for (int r = 0; r < S.length; r++)
 			Smat.set(r, r, Math.sqrt(S[r]));
 
 		return Smat;
 	}
 
 	/**
-	 * Reduce the rank of the input matrix using the thin SVD to
-	 * get a lower rank least-squares estimate of the input.
-	 * @param m matrix to reduce the rank of
-	 * @param rank the desired rank
+	 * Reduce the rank of the input matrix using the thin SVD to get a lower
+	 * rank least-squares estimate of the input.
+	 * 
+	 * @param m
+	 *            matrix to reduce the rank of
+	 * @param rank
+	 *            the desired rank
 	 * @return the rank-reduced matrix
 	 */
 	public static Matrix reduceRank(Matrix m, int rank) {
-		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())) {
+		if (rank > Math.min(m.getColumnDimension(), m.getRowDimension())) {
 			return m;
 		}
 
-		ThinSingularValueDecomposition t = new ThinSingularValueDecomposition(m,rank);
+		final ThinSingularValueDecomposition t = new ThinSingularValueDecomposition(m, rank);
 		return t.U.times(t.getSmatrix()).times(t.Vt);
 	}
 }

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.pixel.Pixel;
@@ -44,14 +45,15 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
 import Jama.Matrix;
 
 /**
- * An interest point detector which uses derivatives in some way
+ * Abstract base class for an interest point detector which uses derivatives or
+ * the (multiscale) structure tensor.
  * 
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
- *         <ss@ecs.soton.ac.uk>
- * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public abstract class AbstractStructureTensorIPD implements
-		InterestPointDetector<InterestPointData> {
+		InterestPointDetector<InterestPointData>
+{
 
 	protected int borderSkip;
 	FImage originalImage;
@@ -87,41 +89,44 @@ public abstract class AbstractStructureTensorIPD implements
 	 * @param integrationScale
 	 */
 	public AbstractStructureTensorIPD(float detectionScale,
-			float integrationScale) {
+			float integrationScale)
+	{
 		this(detectionScale, integrationScale, 2, false);
 	}
 
 	/**
 	 * Abstract structure tensor detected at a given scale, the first
 	 * derivatives found and a structure tensor combined from these first
-	 * derivatives with a gaussian window of sigma = integrationScale.
-	 * Also state whether the image in from which features are extracted is
-	 * already blurred to the detection scale, if not it will be blurred to the
-	 * correct level
+	 * derivatives with a gaussian window of sigma = integrationScale. Also
+	 * state whether the image in from which features are extracted is already
+	 * blurred to the detection scale, if not it will be blurred to the correct
+	 * level
 	 * 
 	 * @param detectionScale
 	 * @param integrationScale
 	 * @param blurred
 	 */
 	public AbstractStructureTensorIPD(float detectionScale,
-			float integrationScale, boolean blurred) {
+			float integrationScale, boolean blurred)
+	{
 		this(detectionScale, integrationScale, 2, blurred);
 	}
 
 	/**
 	 * Abstract structure tensor detected at a given scale, the first
 	 * derivatives found and a structure tensor combined from these first
-	 * derivatives with a gaussian window of sigma = integrationScale.
-	 * Also specify how many pixels to skip around the edge of the image. The
-	 * kernel used to extract edges results in a black border so some pixels are
-	 * better ignored in terms of corner detection.
+	 * derivatives with a gaussian window of sigma = integrationScale. Also
+	 * specify how many pixels to skip around the edge of the image. The kernel
+	 * used to extract edges results in a black border so some pixels are better
+	 * ignored in terms of corner detection.
 	 * 
 	 * @param detectionScale
 	 * @param integrationScale
 	 * @param borderSkip
 	 */
 	public AbstractStructureTensorIPD(float detectionScale,
-			float integrationScale, int borderSkip) {
+			float integrationScale, int borderSkip)
+	{
 		this(detectionScale, integrationScale, borderSkip,
 				false);
 	}
@@ -129,11 +134,11 @@ public abstract class AbstractStructureTensorIPD implements
 	/**
 	 * Abstract structure tensor detected at a given scale, the first
 	 * derivatives found and a structure tensor combined from these first
-	 * derivatives with a gaussian window of sigma = integrationScale.
-	 * Also specify how many pixels to skip around the edge of the image. The
-	 * kernel used to extract edges results in a black border so some pixels are
-	 * better ignored in terms of corner detection. Also state whether the image
-	 * in from which features are extracted is already blurred to the detection
+	 * derivatives with a gaussian window of sigma = integrationScale. Also
+	 * specify how many pixels to skip around the edge of the image. The kernel
+	 * used to extract edges results in a black border so some pixels are better
+	 * ignored in terms of corner detection. Also state whether the image in
+	 * from which features are extracted is already blurred to the detection
 	 * scale, if not it will be blurred to the correct level
 	 * 
 	 * @param detectionScale
@@ -142,7 +147,8 @@ public abstract class AbstractStructureTensorIPD implements
 	 * @param blurred
 	 */
 	public AbstractStructureTensorIPD(float detectionScale,
-			float integrationScale, int borderSkip, boolean blurred) {
+			float integrationScale, int borderSkip, boolean blurred)
+	{
 		this.blurred = blurred;
 		if (borderSkip < 1)
 			borderSkip = 1;
@@ -167,7 +173,7 @@ public abstract class AbstractStructureTensorIPD implements
 		// this.originalImage.getHeight()).multiplyInplace((float)Math.sqrt(detectionScale));
 
 		l = image;
-		if (!this.blurred) 
+		if (!this.blurred)
 			l = l.processInplace(new FGaussianConvolve(detectionScale));
 		lx = l.process(BasicDerivativeKernels.DX_KERNEL).multiplyInplace(this.detectionScale);
 		ly = l.process(BasicDerivativeKernels.DY_KERNEL).multiplyInplace(this.detectionScale);
@@ -175,7 +181,7 @@ public abstract class AbstractStructureTensorIPD implements
 		lxmx = lx.multiply(lx);
 		lymy = ly.multiply(ly);
 		lxmy = lx.multiply(ly);
-		FGaussianConvolve intConv = new FGaussianConvolve(integrationScale);
+		final FGaussianConvolve intConv = new FGaussianConvolve(integrationScale);
 		lxmxblur = lxmx.clone().processInplace(intConv);
 		lymyblur = lymy.clone().processInplace(intConv);
 		lxmyblur = lxmy.clone().processInplace(intConv);
@@ -205,7 +211,7 @@ public abstract class AbstractStructureTensorIPD implements
 	public void findInterestPoints(FImage image) {
 
 		this.prepareInterestPoints(image);
-		FImage cornerImage = createInterestPointMap();
+		final FImage cornerImage = createInterestPointMap();
 
 		detectMaxima(cornerImage, image.getBounds());
 	}
@@ -214,7 +220,7 @@ public abstract class AbstractStructureTensorIPD implements
 	public void findInterestPoints(FImage image, Rectangle window) {
 
 		this.prepareInterestPoints(image);
-		FImage cornerImage = createInterestPointMap();
+		final FImage cornerImage = createInterestPointMap();
 		System.out.format(
 				"corner image mean/std = %4.2e/%4.2e max/min = %4.2e/%4.2e\n",
 				FloatArrayStatsUtils.mean(cornerImage.pixels),
@@ -225,8 +231,8 @@ public abstract class AbstractStructureTensorIPD implements
 	}
 
 	public FValuePixel findMaximum(Rectangle window) {
-		FImage cornerImage = createInterestPointMap();
-		FValuePixel c = cornerImage.extractROI(window).maxPixel();
+		final FImage cornerImage = createInterestPointMap();
+		final FValuePixel c = cornerImage.extractROI(window).maxPixel();
 		c.translate(window.x, window.y);
 		return c;
 	}
@@ -249,7 +255,7 @@ public abstract class AbstractStructureTensorIPD implements
 			for (int x = borderSkip; x < image.width - borderSkip; x++) {
 				if (!window.isInside(new Pixel(x, y)))
 					continue;
-				float curr = image.pixels[y][x];
+				final float curr = image.pixels[y][x];
 				if (curr > image.pixels[y - 1][x - 1]
 						&& curr >= image.pixels[y - 1][x]
 						&& curr >= image.pixels[y - 1][x + 1]
@@ -257,7 +263,8 @@ public abstract class AbstractStructureTensorIPD implements
 						&& curr >= image.pixels[y][x + 1]
 						&& curr >= image.pixels[y + 1][x - 1]
 						&& curr >= image.pixels[y + 1][x]
-						&& curr >= image.pixels[y + 1][x + 1]) {
+						&& curr >= image.pixels[y + 1][x + 1])
+				{
 					maxima.add(new Maxima(x, y, curr));
 				}
 			}
@@ -279,10 +286,10 @@ public abstract class AbstractStructureTensorIPD implements
 	public List<InterestPointData> getInterestPoints(int npoints) {
 		if (npoints < 0 || npoints > maxima.size())
 			npoints = maxima.size();
-		List<InterestPointData> ipdata = new ArrayList<InterestPointData>();
+		final List<InterestPointData> ipdata = new ArrayList<InterestPointData>();
 
 		for (int i = 0; i < npoints; i++) {
-			InterestPointData ipd = new InterestPointData();
+			final InterestPointData ipd = new InterestPointData();
 
 			ipd.x = maxima.get(i).x;
 			ipd.y = maxima.get(i).y;
@@ -324,7 +331,7 @@ public abstract class AbstractStructureTensorIPD implements
 	@Override
 	public void setIntegrationScale(float integrationScale) {
 		this.integrationScale = integrationScale;
-		this.detectionScale = integrationScale * (1f/this.detIntScaleFactor);
+		this.detectionScale = integrationScale * (1f / this.detIntScaleFactor);
 	}
 
 	@Override
@@ -338,13 +345,13 @@ public abstract class AbstractStructureTensorIPD implements
 	}
 
 	public List<InterestPointData> getInterestPointsThresh(float thresh) {
-		List<InterestPointData> ipdata = new ArrayList<InterestPointData>();
+		final List<InterestPointData> ipdata = new ArrayList<InterestPointData>();
 
-		for (Maxima m : maxima) {
+		for (final Maxima m : maxima) {
 			if (m.val < thresh)
 				continue;
 
-			InterestPointData ipd = new InterestPointData();
+			final InterestPointData ipd = new InterestPointData();
 
 			ipd.x = m.x;
 			ipd.y = m.y;
@@ -358,7 +365,7 @@ public abstract class AbstractStructureTensorIPD implements
 	}
 
 	public Matrix getSecondMomentsAt(int x, int y) {
-		Matrix secondMoments = new Matrix(2, 2);
+		final Matrix secondMoments = new Matrix(2, 2);
 		secondMoments.set(0, 0, lxmxblur.pixels[y][x]);
 		secondMoments.set(0, 1, lxmyblur.pixels[y][x]);
 		secondMoments.set(1, 0, lxmyblur.pixels[y][x]);
@@ -371,7 +378,7 @@ public abstract class AbstractStructureTensorIPD implements
 		AbstractStructureTensorIPD a = null;
 		try {
 			a = (AbstractStructureTensorIPD) super.clone();
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			return null;
 		}
 		return a;

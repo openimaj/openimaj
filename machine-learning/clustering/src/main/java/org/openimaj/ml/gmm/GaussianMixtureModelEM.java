@@ -48,7 +48,6 @@ import org.openimaj.ml.clustering.kmeans.DoubleKMeans;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.IndependentPair;
 
-import Jama.CholeskyDecomposition;
 import Jama.Matrix;
 
 /**
@@ -74,12 +73,6 @@ public class GaussianMixtureModelEM {
 		 * across-axes.
 		 */
 		Spherical {
-			@Override
-			protected double[][] logProbability(double[][] x, MultivariateGaussian[] gaussians)
-			{
-				return Full.logProbability(x, gaussians);
-			}
-
 			@Override
 			protected void setCovariances(MultivariateGaussian[] gaussians, Matrix cv)
 			{
@@ -133,12 +126,6 @@ public class GaussianMixtureModelEM {
 		 */
 		Diagonal {
 			@Override
-			protected double[][] logProbability(double[][] x, MultivariateGaussian[] gaussians)
-			{
-				return Full.logProbability(x, gaussians);
-			}
-
-			@Override
 			protected void setCovariances(MultivariateGaussian[] gaussians, Matrix cv)
 			{
 				for (final MultivariateGaussian mg : gaussians) {
@@ -183,11 +170,6 @@ public class GaussianMixtureModelEM {
 		 * Gaussians with full covariance
 		 */
 		Full {
-			@Override
-			protected double[][] logProbability(double[][] x, MultivariateGaussian[] gaussians) {
-				return MixtureOfGaussians.logProbability(x, gaussians);
-			}
-
 			@Override
 			protected MultivariateGaussian[] createGaussians(int ngauss, int ndims) {
 				final MultivariateGaussian[] arr = new MultivariateGaussian[ngauss];
@@ -236,52 +218,56 @@ public class GaussianMixtureModelEM {
 		 * is shared by all the gaussians.
 		 */
 		Tied {
-			@Override
-			protected double[][] logProbability(double[][] x, MultivariateGaussian[] gaussians)
-			{
-				final int ndim = x[0].length;
-				final int nmix = gaussians.length;
-				final int nsamples = x.length;
-				final Matrix X = new Matrix(x);
-
-				final double[][] logProb = new double[nsamples][nmix];
-				final Matrix cv = ((FullMultivariateGaussian) gaussians[0]).covar;
-
-				final CholeskyDecomposition chol = cv.chol();
-				Matrix cvChol;
-				if (chol.isSPD()) {
-					cvChol = chol.getL();
-				} else {
-					// covar probably doesn't have enough samples, so
-					// recondition it
-					final Matrix m = cv.plus(Matrix.identity(ndim, ndim).timesEquals(
-							MixtureOfGaussians.MIN_COVAR_RECONDITION));
-					cvChol = m.chol().getL();
-				}
-
-				double cvLogDet = 0;
-				final double[][] cvCholD = cvChol.getArray();
-				for (int j = 0; j < ndim; j++) {
-					cvLogDet += Math.log(cvCholD[j][j]);
-				}
-				cvLogDet *= 2;
-
-				for (int i = 0; i < nmix; i++) {
-					final Matrix mu = ((FullMultivariateGaussian) gaussians[i]).mean;
-					final Matrix cvSol = cvChol.solve(MatrixUtils.minusRow(X, mu.getArray()[0]).transpose())
-							.transpose();
-					for (int k = 0; k < nsamples; k++) {
-						double sum = 0;
-						for (int j = 0; j < ndim; j++) {
-							sum += cvSol.get(k, j) * cvSol.get(k, j);
-						}
-
-						logProb[k][i] = -0.5 * (sum + cvLogDet + ndim * Math.log(2 * Math.PI));
-					}
-				}
-
-				return logProb;
-			}
+			// @Override
+			// protected double[][] logProbability(double[][] x,
+			// MultivariateGaussian[] gaussians)
+			// {
+			// final int ndim = x[0].length;
+			// final int nmix = gaussians.length;
+			// final int nsamples = x.length;
+			// final Matrix X = new Matrix(x);
+			//
+			// final double[][] logProb = new double[nsamples][nmix];
+			// final Matrix cv = ((FullMultivariateGaussian)
+			// gaussians[0]).covar;
+			//
+			// final CholeskyDecomposition chol = cv.chol();
+			// Matrix cvChol;
+			// if (chol.isSPD()) {
+			// cvChol = chol.getL();
+			// } else {
+			// // covar probably doesn't have enough samples, so
+			// // recondition it
+			// final Matrix m = cv.plus(Matrix.identity(ndim, ndim).timesEquals(
+			// MixtureOfGaussians.MIN_COVAR_RECONDITION));
+			// cvChol = m.chol().getL();
+			// }
+			//
+			// double cvLogDet = 0;
+			// final double[][] cvCholD = cvChol.getArray();
+			// for (int j = 0; j < ndim; j++) {
+			// cvLogDet += Math.log(cvCholD[j][j]);
+			// }
+			// cvLogDet *= 2;
+			//
+			// for (int i = 0; i < nmix; i++) {
+			// final Matrix mu = ((FullMultivariateGaussian) gaussians[i]).mean;
+			// final Matrix cvSol = cvChol.solve(MatrixUtils.minusRow(X,
+			// mu.getArray()[0]).transpose())
+			// .transpose();
+			// for (int k = 0; k < nsamples; k++) {
+			// double sum = 0;
+			// for (int j = 0; j < ndim; j++) {
+			// sum += cvSol.get(k, j) * cvSol.get(k, j);
+			// }
+			//
+			// logProb[k][i] = -0.5 * (sum + cvLogDet + ndim * Math.log(2 *
+			// Math.PI));
+			// }
+			// }
+			//
+			// return logProb;
+			// }
 
 			@Override
 			protected void setCovariances(MultivariateGaussian[] gaussians,
@@ -326,8 +312,6 @@ public class GaussianMixtureModelEM {
 					((FullMultivariateGaussian) gmm.gaussians[i]).covar = covar;
 			}
 		};
-
-		protected abstract double[][] logProbability(double[][] x, MultivariateGaussian[] gaussians);
 
 		protected abstract MultivariateGaussian[] createGaussians(int ngauss, int ndims);
 
@@ -376,30 +360,11 @@ public class GaussianMixtureModelEM {
 	}
 
 	private static class EMGMM extends MixtureOfGaussians {
-		protected CovarianceType ctype;
-
-		EMGMM(int nComponents, CovarianceType ctype) {
+		EMGMM(int nComponents) {
 			super(null, null);
 
 			this.weights = new double[nComponents];
 			Arrays.fill(this.weights, 1.0 / nComponents);
-
-			this.ctype = ctype;
-		}
-
-		@Override
-		protected double[][] computeWeightedLogProb(double[][] samples) {
-			final double[][] lpr = this.ctype.logProbability(samples, gaussians);
-
-			for (int j = 0; j < lpr[0].length; j++) {
-				final double logw = Math.log(this.weights[j]);
-
-				for (int i = 0; i < lpr.length; i++) {
-					lpr[i][j] += logw;
-				}
-			}
-
-			return lpr;
 		}
 	}
 
@@ -499,7 +464,7 @@ public class GaussianMixtureModelEM {
 	 * @return the generated GMM.
 	 */
 	public MixtureOfGaussians estimate(double[][] X) {
-		final EMGMM gmm = new EMGMM(nComponents, ctype);
+		final EMGMM gmm = new EMGMM(nComponents);
 
 		if (X.length < nComponents)
 			throw new IllegalArgumentException(String.format(

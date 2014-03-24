@@ -38,6 +38,7 @@ import org.openimaj.feature.ArrayFeatureVector;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.math.statistics.distribution.MixtureOfGaussians;
+import org.openimaj.math.statistics.distribution.MultivariateGaussian;
 import org.openimaj.ml.gmm.GaussianMixtureModelEM;
 import org.openimaj.ml.gmm.GaussianMixtureModelEM.CovarianceType;
 
@@ -160,29 +161,36 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 
 		final float[] vector = new float[2 * K * D];
 
+		// cache all the features in an array
 		final double[][] X = new double[features.size()][];
-
 		for (int i = 0; i < X.length; i++) {
 			final LocalFeature<?, ? extends ArrayFeatureVector<T>> f = features.get(i);
 			X[i] = f.getFeatureVector().asDoubleVector();
 		}
 
-		final double[][] logPosts = gmm.predictLogPosterior(X);
+		// compute posterior probabilities of all features at once (more
+		// efficient than
+		// doing it for each one at a time)
+		final double[][] posteriors = gmm.scoreSamples(X).secondObject();
 
-		for (int i = 0; i < X.length; i++) {
-			final double[] logPost = logPosts[i];
-			final double[] x = X[i];
+		for (int p = 0; p < X.length; p++) {
+			final double[] xp = X[p];
 
 			for (int k = 0; k < K; k++) {
-				final double posterior = Math.exp(logPost[k]);
-				final double[] mean = gmm.gaussians[k].getMean().getArray()[0];
+				final double apk = posteriors[p][k];
+
+				if (apk < 1e-6)
+					continue; // speed-up: ignore really small terms...
+
+				final MultivariateGaussian gauss = gmm.gaussians[k];
+				final double[] mean = gauss.getMean().getArray()[0];
 
 				for (int j = 0; j < D; j++) {
-					final double var = gmm.gaussians[k].getCovariance(j, j);
-					final double diff = (x[j] - mean[j]) / var;
+					final double var = gauss.getCovariance(j, j);
+					final double diff = (xp[j] - mean[j]) / Math.sqrt(var);
 
-					vector[k * 2 + j * D] += posterior * diff;
-					vector[k * 2 + 1 + j * D] += posterior * ((diff * diff) - 1);
+					vector[k * 2 * D + j] += apk * diff;
+					vector[k * 2 * D + j + D] += apk * ((diff * diff) - 1);
 				}
 			}
 		}
@@ -192,8 +200,8 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 			final double wt2 = 1.0 / (features.size() * Math.sqrt(2 * gmm.weights[k]));
 
 			for (int j = 0; j < D; j++) {
-				vector[k * 2 + j * D] *= wt1;
-				vector[k * 2 + 1 + j * D] *= wt2;
+				vector[k * 2 * D + j] *= wt1;
+				vector[k * 2 * D + j + D] *= wt2;
 			}
 		}
 

@@ -129,4 +129,12 @@ public abstract class AbstractMultivariateGaussian implements MultivariateGaussi
 		return String.format("MultivariateGaussian[mean=%s,covar=%s]", MatrixUtils.toMatlabString(mean).trim(),
 				MatrixUtils.toMatlabString(getCovariance()));
 	}
+
+	@Override
+	public double[] estimateLogProbability(double[][] x) {
+		final double[] lps = new double[x.length];
+		for (int i = 0; i < x.length; i++)
+			lps[i] = estimateLogProbability(x[i]);
+		return lps;
+	}
 }

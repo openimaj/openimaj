@@ -86,4 +86,65 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 			return variance[row];
 		return 0;
 	}
+
+	@Override
+	public double estimateProbability(double[] sample) {
+		final int N = this.variance.length;
+		final double[] meanvector = mean.getArray()[0];
+
+		double det = variance[0];
+		for (int i = 1; i < N; i++)
+			det *= variance[i];
+		final double pdf_const_factor = 1.0 / Math.sqrt((Math.pow((2 * Math.PI), N) * det));
+
+		double v = 0;
+		for (int i = 0; i < N; i++) {
+			final double diff = sample[i] - meanvector[i];
+			v += diff * diff / variance[i];
+		}
+
+		return pdf_const_factor * Math.exp(-0.5 * v);
+	}
+
+	@Override
+	public double estimateLogProbability(double[] sample) {
+		final int N = this.variance.length;
+		final double[] meanvector = mean.getArray()[0];
+
+		double det = variance[0];
+		for (int i = 1; i < N; i++)
+			det *= variance[i];
+		final double pdf_const_factor = 1.0 / Math.sqrt((Math.pow((2 * Math.PI), N) * det));
+
+		double v = 0;
+		for (int i = 0; i < N; i++) {
+			final double diff = sample[i] - meanvector[i];
+			v += diff * diff / variance[i];
+		}
+
+		return Math.log(pdf_const_factor) + (-0.5 * v);
+	}
+
+	@Override
+	public double[] estimateLogProbability(double[][] samples) {
+		final int N = this.variance.length;
+		final double[] meanvector = mean.getArray()[0];
+
+		double det = variance[0];
+		for (int i = 1; i < N; i++)
+			det *= variance[i];
+		final double pdf_const_factor = 1.0 / Math.sqrt((Math.pow((2 * Math.PI), N) * det));
+
+		final double[] lp = new double[samples.length];
+		for (int j = 0; j < samples.length; j++) {
+			double v = 0;
+			for (int i = 0; i < N; i++) {
+				final double diff = samples[j][i] - meanvector[i];
+				v += diff * diff / variance[i];
+			}
+			lp[j] = Math.log(pdf_const_factor) + (-0.5 * v);
+		}
+
+		return lp;
+	}
 }

@@ -168,4 +168,12 @@ public class MultivariateKernelDensityEstimate extends AbstractMultivariateDistr
 	public double getScaledBandwidth() {
 		return bandwidth * this.kernel.getCutOff();
 	}
+
+	@Override
+	public double[] estimateLogProbability(double[][] x) {
+		final double[] lps = new double[x.length];
+		for (int i = 0; i < x.length; i++)
+			lps[i] = estimateLogProbability(x[i]);
+		return lps;
+	}
 }

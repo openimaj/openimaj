@@ -63,7 +63,6 @@ public class LargeMarginDimensionalityReduction {
 	public double bLearnRate = 0;
 	public Matrix W;
 	public double b;
-	public Matrix WtW;
 
 	public LargeMarginDimensionalityReduction(int ndims) {
 		this.ndims = ndims;
@@ -75,7 +74,6 @@ public class LargeMarginDimensionalityReduction {
 
 		W = pca.getBasis()
 				.times(MatrixUtils.diag(pca.getEigenValues()).inverse()).transpose().times(100);
-		WtW = W.transpose().times(W);
 
 		double sum = 0;
 		int count = 0;
@@ -96,7 +94,7 @@ public class LargeMarginDimensionalityReduction {
 			diff.set(i, 0, phii[i] - phij[i]);
 		}
 
-		return diff.transpose().times(WtW).times(diff).get(0, 0);
+		return diff.transpose().times(W.transpose()).times(W).times(diff).get(0, 0);
 	}
 
 	public boolean step(double[] phii, double[] phij, boolean same) {
@@ -116,7 +114,6 @@ public class LargeMarginDimensionalityReduction {
 		final Matrix updateW = W.times(psi).times(wLearnRate * yij);
 
 		W.minusEquals(updateW);
-		WtW = W.transpose().times(W);
 
 		b -= yij * bLearnRate;
 
