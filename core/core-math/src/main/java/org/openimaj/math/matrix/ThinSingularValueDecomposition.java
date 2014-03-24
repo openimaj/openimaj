@@ -79,7 +79,7 @@ public class ThinSingularValueDecomposition {
 	 *            number may be less.
 	 */
 	public ThinSingularValueDecomposition(ch.akuhn.matrix.Matrix matrix, int ndims) {
-		if (ndims >= Math.min(matrix.rowCount(), matrix.columnCount())) {
+		if (ndims > Math.min(matrix.rowCount(), matrix.columnCount())) {
 			try {
 				final no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(matrix.asArray());
 				no.uib.cipr.matrix.SVD svd;
