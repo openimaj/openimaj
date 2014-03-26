@@ -103,24 +103,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 		this.drawLine((float) x0, (float) y0, (float) x1, (float) y1, thickness, grey);
 	}
 
-	/**
-	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to the
-	 * coordinates specified by <code>(x1,y1)</code> using the given color and
-	 * thickness. Side-affects this image.
-	 * 
-	 * @param x0
-	 *            The x-coordinate at the start of the line.
-	 * @param y0
-	 *            The y-coordinate at the start of the line.
-	 * @param x1
-	 *            The x-coordinate at the end of the line.
-	 * @param y1
-	 *            The y-coordinate at the end of the line.
-	 * @param thickness
-	 *            The thickness which to draw the line.
-	 * @param grey
-	 *            The colour in which to draw the line.
-	 */
+	@Override
 	public void drawLine(final float x0, final float y0, final float x1, final float y1, final int thickness,
 			final Float grey)
 	{
@@ -166,7 +149,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 			y = b;
 		}
 
-		if (x >= 0 && x < this.targetImage.width && y >= 0 && y < this.targetImage.height) {
+		if (x >= 0 && x < this.targetImage.width && y >= 0 && y < this.targetImage.height && !Float.isNaN(c)) {
 			this.targetImage.pixels[y][x] = c * grey + (1 - c) * this.targetImage.pixels[y][x];
 		}
 	}

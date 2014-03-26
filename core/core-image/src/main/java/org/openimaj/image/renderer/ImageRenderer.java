@@ -230,6 +230,27 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	public abstract void drawLine(int x0, int y0, int x1, int y1, int thickness, Q col);
 
 	/**
+	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to the
+	 * coordinates specified by <code>(x1,y1)</code> using the given color and
+	 * thickness.
+	 * 
+	 * @param x0
+	 *            The x-coordinate at the start of the line.
+	 * @param y0
+	 *            The y-coordinate at the start of the line.
+	 * @param x1
+	 *            The x-coordinate at the end of the line.
+	 * @param y1
+	 *            The y-coordinate at the end of the line.
+	 * @param thickness
+	 *            The thickness which to draw the line.
+	 * @param col
+	 *            The colour in which to draw the line.
+	 */
+	public abstract void drawLine(final float x0, final float y0, final float x1, final float y1, final int thickness,
+			final Q col);
+
+	/**
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to
 	 * <code>(x1,y1)</code> using the given colour. The line thickness will be 1
 	 * pixel.
@@ -536,7 +557,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 *            the size
 	 */
 	public <F extends Font<F>> void drawText(final String text, final Point2d pt, final F f, final int sz) {
-		final FontStyle< Q> sty = f.createStyle(this);
+		final FontStyle<Q> sty = f.createStyle(this);
 		sty.setFontSize(sz);
 		f.getRenderer(this).renderText(this, text, (int) pt.getX(), (int) pt.getY(), sty);
 	}
@@ -568,8 +589,6 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Render the text with the given {@link FontStyle}.
 	 * 
-	 * @param <F>
-	 *            the font
 	 * @param text
 	 *            the text
 	 * @param x
@@ -586,8 +605,6 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Render the text with the given {@link FontStyle}.
 	 * 
-	 * @param <F>
-	 *            the font
 	 * @param text
 	 *            the text
 	 * @param pt

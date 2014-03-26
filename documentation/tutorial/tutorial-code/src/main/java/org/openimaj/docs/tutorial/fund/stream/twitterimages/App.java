@@ -29,17 +29,13 @@
  */
 package org.openimaj.docs.tutorial.fund.stream.twitterimages;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
@@ -51,7 +47,6 @@ import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
 import org.openimaj.util.function.MultiFunction;
 import org.openimaj.util.function.Operation;
-import org.openimaj.util.function.Predicate;
 import org.openimaj.util.stream.Stream;
 
 import twitter4j.Status;
@@ -69,8 +64,6 @@ public class App {
 	 * @throws UnsupportedEncodingException
 	 */
 	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
-		final String pardir = "/Users/ss/Dropbox/courses/2013/comp2005/tweets";
-		final PrintWriter writer = new PrintWriter(new File(pardir, "tweets.txt"), "UTF-8");
 		/*
 		 * Construct a twitter stream with an
 		 */
@@ -78,15 +71,7 @@ public class App {
 		final Stream<Status> stream = new TwitterStreamDataset(token);
 
 		// Get the URLs
-		final Stream<URL> urlStream = stream.filter(new Predicate<Status>() {
-
-			@Override
-			public boolean test(Status object) {
-				writer.println(object.getText());
-				writer.flush();
-				return true;
-			}
-		}).map(new TwitterURLExtractor());
+		final Stream<URL> urlStream = stream.map(new TwitterURLExtractor());
 
 		// Transform/filter to get potential image URLs
 		final Stream<URL> imageUrlStream = urlStream.map(new ImageSiteURLExtractor(false));
@@ -112,13 +97,8 @@ public class App {
 		}).forEach(new Operation<MBFImage>() {
 			@Override
 			public void perform(MBFImage image) {
-				try {
-					ImageUtilities.write(image, new File(pardir, String.format("%d.png", new Random().nextInt(1000))));
-				} catch (final IOException e) {
-				}
+				DisplayUtilities.displayName(image, "image", true);
 			}
 		});
-
-		writer.close();
 	}
 }

@@ -86,6 +86,21 @@ import com.google.common.collect.Lists;
 public class ImageSiteURLExtractor extends SiteSpecificURLExtractor {
 	private static final Logger logger = Logger.getLogger(ImageSiteURLExtractor.class);
 
+	private boolean fallback = false;
+
+	/**
+	 * Construct with or without Tumblr support
+	 * 
+	 * @param tumblr
+	 *            true if tumblr is required.
+	 * @param fallback
+	 *            true if should try to download directly
+	 */
+	public ImageSiteURLExtractor(boolean tumblr, boolean fallback) {
+		this(tumblr);
+		this.fallback = fallback;
+	}
+
 	/**
 	 * Construct with or without Tumblr support
 	 * 
@@ -192,49 +207,53 @@ public class ImageSiteURLExtractor extends SiteSpecificURLExtractor {
 			}
 		}
 
-		try {
-			logger.debug("Site specific consumers failed, trying the raw link");
+		if (fallback) {
+			try {
+				logger.debug("Site specific consumers failed, trying the raw link");
 
-			final StatusConsumerRedirectStrategy redirector = new StatusConsumerRedirectStrategy();
-			final IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils
-					.readURLAsByteArrayInputStream(url, 1000, 1000, redirector, HttpUtils.DEFAULT_USERAGENT);
+				final StatusConsumerRedirectStrategy redirector = new StatusConsumerRedirectStrategy();
+				final IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils
+						.readURLAsByteArrayInputStream(url, 1000, 1000, redirector, HttpUtils.DEFAULT_USERAGENT);
 
-			if (redirector.wasRedirected()) {
-				logger.debug("Redirect intercepted, adding redirection to list");
+				if (redirector.wasRedirected()) {
+					logger.debug("Redirect intercepted, adding redirection to list");
 
-				final URL redirect = redirector.redirection();
-				if (!redirect.toString().equals(url.toString()))
-					return processURLs(redirect);
-			}
-
-			// at this point any redirects have been resolved and the content
-			// can't be handled by any of the SSCs
-			// we now check to see if it's image data
-
-			final HttpEntity headers = headersBais.firstObject();
-			final ByteArrayInputStream bais = headersBais.getSecondObject();
-
-			final String typeValue = headers.getContentType().getValue();
-			if (typeValue.contains("text")) {
-				logger.debug(url + " ignored -- text content");
-				return null;
-			} else {
-				// Not text? try reading it as an image!
-				if (typeValue.contains("gif")) {
-					// It is a gif! just download it normally (i.e. null image
-					// but not null URL)
-					return Lists.newArrayList(url);
-				} else {
-					// otherwise just try to read the damn image
-					ImageUtilities.readMBF(bais);
-					return Lists.newArrayList(url);
+					final URL redirect = redirector.redirection();
+					if (!redirect.toString().equals(url.toString()))
+						return processURLs(redirect);
 				}
-			}
-		} catch (final Throwable e) {
-			// This input is probably not an image!
-			logger.debug(url + " ignored -- exception", e);
 
-			return null;
+				// at this point any redirects have been resolved and the
+				// content
+				// can't be handled by any of the SSCs
+				// we now check to see if it's image data
+
+				final HttpEntity headers = headersBais.firstObject();
+				final ByteArrayInputStream bais = headersBais.getSecondObject();
+
+				final String typeValue = headers.getContentType().getValue();
+				if (typeValue.contains("text")) {
+					logger.debug(url + " ignored -- text content");
+					return null;
+				} else {
+					// Not text? try reading it as an image!
+					if (typeValue.contains("gif")) {
+						// It is a gif! just download it normally (i.e. null
+						// image
+						// but not null URL)
+						return Lists.newArrayList(url);
+					} else {
+						// otherwise just try to read the damn image
+						ImageUtilities.readMBF(bais);
+						return Lists.newArrayList(url);
+					}
+				}
+			} catch (final Throwable e) {
+				// This input is probably not an image!
+				logger.debug(url + " ignored -- exception", e);
+			}
 		}
+
+		return null;
 	}
 }

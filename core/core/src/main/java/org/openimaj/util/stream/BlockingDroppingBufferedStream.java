@@ -32,7 +32,7 @@ package org.openimaj.util.stream;
 import org.openimaj.util.concurrent.BlockingDroppingQueue;
 
 /**
- * Abstract base for a {@link Stream} with an internal buffer based on a
+ * Base for a {@link Stream} with an internal buffer based on a
  * {@link BlockingDroppingQueue}. The use of the {@link BlockingDroppingQueue}
  * allows the stream to potentially drop items that are not consumed at a fast
  * enough rate (although this depends on the actual
@@ -48,11 +48,17 @@ import org.openimaj.util.concurrent.BlockingDroppingQueue;
  * @param <T>
  *            The type of data item in the stream
  */
-public abstract class BlockingDroppingBufferedStream<T> extends AbstractStream<T> {
+public class BlockingDroppingBufferedStream<T> extends AbstractStream<T> {
 	BlockingDroppingQueue<T> buffer;
 	private boolean isClosed = false;
 
-	protected BlockingDroppingBufferedStream(BlockingDroppingQueue<T> buffer) {
+	/**
+	 * Construct with the given backing queue
+	 * 
+	 * @param buffer
+	 *            the backing buffer
+	 */
+	public BlockingDroppingBufferedStream(BlockingDroppingQueue<T> buffer) {
 		this.buffer = buffer;
 	}
 
