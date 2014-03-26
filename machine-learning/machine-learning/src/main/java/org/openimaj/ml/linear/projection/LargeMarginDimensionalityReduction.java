@@ -110,8 +110,9 @@ public class LargeMarginDimensionalityReduction {
 			diff.set(i, 0, phii[i] - phij[i]);
 		}
 
-		final Matrix psi = diff.times(diff.transpose());
-		final Matrix updateW = W.times(psi).times(wLearnRate * yij);
+		// final Matrix psi = diff.times(diff.transpose());
+		// final Matrix updateW = W.times(psi).times(wLearnRate * yij);
+		final Matrix updateW = W.times(diff).times(diff.transpose()).times(wLearnRate * yij);
 
 		W.minusEquals(updateW);
 
