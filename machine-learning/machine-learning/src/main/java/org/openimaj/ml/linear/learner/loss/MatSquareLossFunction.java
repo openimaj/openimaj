@@ -77,7 +77,7 @@ public class MatSquareLossFunction extends LossFunction{
 		if(W == null){
 			resid = X.clone();
 		} else {
-			resid = X.times(W);
+			resid = CFMatrixUtils.fastdot(X,W);
 		}
 		Matrix vnobias = resid.clone();
 		if(this.bias!=null)
@@ -100,6 +100,18 @@ public class MatSquareLossFunction extends LossFunction{
 		}
 		return retval;
 	}
+	
+	@Override
+	public boolean test_backtrack(Matrix W, Matrix grad, Matrix prox, double eta) {
+		Matrix tmp = prox.minus(W);
+        double evalW = eval(W);
+		double evalProx = eval(prox);
+		Matrix fastdotGradTmp = CFMatrixUtils.fastdot(grad.transpose(),tmp);
+		double normGradProx = CFMatrixUtils.sum(fastdotGradTmp);
+		double normTmp = 0.5*eta*tmp.normFrobenius();
+		return (evalProx <= evalW + normGradProx + normTmp);
+	}
+	
 	@Override
 	public boolean isMatrixLoss() {
 		return true;

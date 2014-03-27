@@ -27,52 +27,70 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.contour;
+package org.openimaj.image.feature.astheticode;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
 
-import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.contour.SuzukiContourProcessor.Border;
-import org.openimaj.image.feature.astheticode.Aestheticode;
-import org.openimaj.image.feature.astheticode.FindAestheticode;
-import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.image.processing.threshold.OtsuThreshold;
 
 /**
+ * A detected Aestheticode
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
  */
-public class ContourAestheticode {
-	
-	public static void main(String[] args) throws IOException {
-		String code = "/org/openimaj/image/contour/aestheticode/aestheticode.jpg";
-		MBFImage img = ImageUtilities.readMBF(ContourAestheticode.class.getResource(code));
-		
-		final OtsuThreshold thresh = new OtsuThreshold();
-		
-		ResizeProcessor resize = new ResizeProcessor(0.3f);
-		FImage threshImg = img.flatten().process(resize ).process(thresh);
-		DisplayUtilities.display(threshImg);
-		Border root = SuzukiContourProcessor.findContours(threshImg);
-		MBFImage contourImage = MBFImage.createRGB(threshImg);
-		MBFImage detectedImage = MBFImage.createRGB(threshImg);
-		ContourRenderer.drawContours(contourImage, root);
-		DisplayUtilities.display(contourImage);
-		DisplayUtilities.display(img.process(resize));
-		
-		List<Aestheticode> detected = new FindAestheticode().apply(root);
-		
-		for (Aestheticode aestheticode : detected) {
-			ContourRenderer.drawContours(detectedImage, aestheticode.root);
-		}
-		DisplayUtilities.display(detectedImage);
+public class Aestheticode{
+	private int[] code;
+	public Border root;
+	/**
+	 * @param code the code
+	 */
+	public Aestheticode(int[] code) {
+		this.code = code;
+		Arrays.sort(code);
 	}
-
 	
+	/**
+	 * @param acode copy this {@link Aestheticode}
+	 */
+	public Aestheticode(Aestheticode acode) {
+		this.code = Arrays.copyOf(acode.code, acode.code.length);
+	}
 	
+	/**
+	 * @param root the detected borders to construct a code from
+	 */
+	public Aestheticode(Border root) {
+		this.root = root;
+		
+		this.code = new int[root.children.size()];
+		int i = 0;
+		for (Border child : root.children) {
+			this.code[i++] = child.children.size();
+		}
+		Arrays.sort(code);
+	}
+	
+	public int hashCode() {
+		return Arrays.hashCode(this.code);
+	};
+	
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Aestheticode)){
+			return false;
+		}
+		Aestheticode that = (Aestheticode) obj;
+		if(that.code.length!= this.code.length) return false;
+		for (int i = 0; i < this.code.length; i++) {
+			if(this.code[i] != that.code[i])return false;
+		}
+		return true;
+	};
+	
+	public String toString() {
+		String ret = "" + this.code[0];
+		for (int i = 1; i < code.length; i++) {
+			ret += ":" + code[i];
+		}
+		return ret;
+	};
 	
 }

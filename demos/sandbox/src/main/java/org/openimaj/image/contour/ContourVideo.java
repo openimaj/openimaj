@@ -39,6 +39,8 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.contour.SuzukiContourProcessor.Border;
+import org.openimaj.image.feature.astheticode.Aestheticode;
+import org.openimaj.image.feature.astheticode.FindAestheticode;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FSobel;
 import org.openimaj.image.processing.edges.CannyEdgeDetector;
@@ -66,7 +68,7 @@ import org.openimaj.video.capture.VideoCaptureException;
 public class ContourVideo {
 
 	public static void main(String[] args) throws VideoCaptureException {
-		final VideoCapture cap = new VideoCapture(640, 480);
+		final VideoCapture cap = new VideoCapture(320, 240);
 		final VideoDisplay<MBFImage> disp = VideoDisplay.createVideoDisplay(cap);
 		final ImageProcessor<FImage> thresh = new AdaptiveLocalThresholdGaussian(5, 0.05f);
 //		final ImageProcessor<FImage> thresh = new AdaptiveLocalThresholdMean(20,0.05f);
@@ -92,8 +94,8 @@ public class ContourVideo {
 				img.processInplace(thresh);
 				proc.analyseImage(img);
 				final Border root = proc.root;
-//				displayThreshold(img);
-//				displayContours(img, root);
+				displayThreshold(img);
+				displayContours(img, root);
 				List<Aestheticode> codes = new FindAestheticode().apply(root);
 				for (Aestheticode ac : codes) {
 					ContourRenderer.drawContours(frame, ac.root);

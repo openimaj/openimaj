@@ -113,13 +113,13 @@ public class BilinearUnmixedSparseOnlineLearner extends BilinearSparseOnlineLear
 	}
 
 	@Override
-	protected Matrix updateU(Matrix currentU, double uLossWeighted, double weightedLambda) {
+	protected Matrix updateU(Matrix currentU, Matrix neww, double uLossWeighted, double weightedLambda) {
 		Matrix current = currentU;
 		int iter = 0;
 		final Double biconvextol = this.params.getTyped(BilinearLearnerParameters.BICONVEX_TOL);
 		final Integer maxiter = this.params.getTyped(BilinearLearnerParameters.BICONVEX_MAXITER);
 		while (true) {
-			final Matrix newcurrent = super.updateU(current, uLossWeighted, weightedLambda);
+			final Matrix newcurrent = super.updateU(current, neww, uLossWeighted, weightedLambda);
 			final double sumchange = CFMatrixUtils.absSum(current.minus(newcurrent));
 			final double total = CFMatrixUtils.absSum(current);
 			final double ratio = sumchange / total;

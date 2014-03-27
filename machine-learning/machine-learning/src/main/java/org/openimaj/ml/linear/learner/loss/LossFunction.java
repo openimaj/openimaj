@@ -30,6 +30,7 @@
 package org.openimaj.ml.linear.learner.loss;
 
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.Vector;
 
 /**
  * With a held Y and X, return gradient and evaluations of
@@ -56,4 +57,13 @@ public abstract class LossFunction {
 		this.bias = bias;
 	}
 	public abstract boolean isMatrixLoss() ;
+	
+	public boolean test_backtrack(Matrix W, Matrix grad, Matrix prox, double eta){
+		Matrix tmp = prox.clone();
+        tmp.minusEquals(W);
+        Vector tmpvec = tmp.getColumn(0);
+		return (
+			eval(prox) <= eval(W) + grad.getColumn(0).dotProduct(tmpvec) + 0.5*eta*tmpvec.norm2());
+		
+	}
 }

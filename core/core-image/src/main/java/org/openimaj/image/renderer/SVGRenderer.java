@@ -31,22 +31,38 @@ package org.openimaj.image.renderer;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.batik.ext.awt.image.spi.ImageWriter;
+import org.apache.batik.ext.awt.image.spi.ImageWriterRegistry;
+import org.apache.batik.svggen.CachedImageHandlerBase64Encoder;
+import org.apache.batik.svggen.DefaultStyleHandler;
+import org.apache.batik.svggen.GenericImageHandler;
+import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.SVGImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.svg.SVGSVGElement;
 
 /**
  * {@link ImageRenderer} for {@link FImage} images. Supports both anti-aliased
@@ -55,7 +71,7 @@ import org.w3c.dom.Document;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class SVGRenderer extends ImageRenderer<Float[], MBFImage> {
+public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 
 	private SVGGraphics2D svgGen;
 
@@ -65,7 +81,7 @@ public class SVGRenderer extends ImageRenderer<Float[], MBFImage> {
 	 * @param targetImage
 	 *            the target image.
 	 */
-	public SVGRenderer(final MBFImage targetImage) {
+	public SVGRenderer(final SVGImage targetImage) {
 		super(targetImage);
 		prepareSVG();
 	}
@@ -78,7 +94,7 @@ public class SVGRenderer extends ImageRenderer<Float[], MBFImage> {
 	 * @param hints
 	 *            the render hints
 	 */
-	public SVGRenderer(final MBFImage targetImage, final SVGRenderHints hints) {
+	public SVGRenderer(final SVGImage targetImage, final SVGRenderHints hints) {
 		super(targetImage, hints);
 		prepareSVG();
 	}
@@ -96,11 +112,31 @@ public class SVGRenderer extends ImageRenderer<Float[], MBFImage> {
 		prepareSVG();
 	}
 
+	/**
+	 * @param create
+	 */
+	public SVGRenderer(SVGImage img, Graphics create) {
+		super(img);
+		this.svgGen = (SVGGraphics2D) create;
+	}
+
+	public SVGRenderer(SVGImage img, RenderHints renderHints, Graphics create) {
+		super(img,renderHints);
+		this.svgGen = (SVGGraphics2D) create;
+	}
+
 	private void prepareSVG() {
 		DOMImplementation impl = GenericDOMImplementation.getDOMImplementation();
 		String svgNS = "http://www.w3.org/2000/svg";
 		Document myFactory = impl.createDocument(svgNS, "svg", null);
-		this.svgGen = new SVGGraphics2D(myFactory);
+		// Create an instance of the SVG Generator
+	    SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(myFactory);
+	    
+	 
+	    // Reuse our embedded base64-encoded image data.
+	    GenericImageHandler ihandler = new CachedImageHandlerBase64Encoder();
+	    ctx.setGenericImageHandler(ihandler);
+		this.svgGen = new SVGGraphics2D(ctx,false);
 		
 		if(this.targetImage != null){
 			int w = targetImage.getWidth();
@@ -226,5 +262,31 @@ public class SVGRenderer extends ImageRenderer<Float[], MBFImage> {
 	 */
 	public void write(Writer out) throws SVGGraphics2DIOException{
 		this.svgGen.stream(out, true);
+	}
+
+	public void drawOIImage(Image<?,?> im) {
+		BufferedImage createBufferedImage = ImageUtilities.createBufferedImage(im);
+		this.svgGen.drawImage(createBufferedImage, 0, 0, this.colorFromFloats(this.defaultBackgroundColour()), new ImageObserver() {
+			
+			@Override
+			public boolean imageUpdate(java.awt.Image img, int infoflags, int x, int y,int width, int height) {
+				return true;
+			}
+		});
+	}
+	
+	@Override
+	public void drawImage(SVGImage image, int x, int y) {
+		// TODO: fix this...
+//		throw new UnsupportedOperationException();
+//		Element root = this.svgGen.getRoot();
+//		System.out.println(root);
+//		Node node = this.svgGen.getDOMFactory().importNode(image.createRenderer().svgGen.getRoot(), true);
+//		image.createRenderer().svgGen.getRoot((Element) node);
+//		root.appendChild(node);
+	}
+
+	public SVGGraphics2D getGraphics2D() {
+		return this.svgGen;
 	}
 }

@@ -152,22 +152,26 @@ public class SED2013Ternary {
 		params.put(TernaryParams.TRIANGLE_BORDER, true);
 		params.put(TernaryParams.TRIANGLE_BORDER_THICKNESS, 3);
 		params.put(TernaryParams.TRIANGLE_BORDER_TICKS, true);
+		params.put(TernaryParams.TRIANGLE_BORDER_COLOUR, RGBColour.WHITE);
 		Map<Attribute, Object> fontAttrs = params.getTyped(TernaryParams.LABEL_FONT);
-		fontAttrs.put(FontStyle.COLOUR, RGBColour.BLACK);
+		fontAttrs.put(FontStyle.COLOUR, RGBColour.WHITE);
 		fontAttrs.put(FontStyle.FONT_SIZE, 20);
 		fontAttrs.put(FontStyle.FONT, new MathMLFont());
 		fontAttrs.put(MathMLFontStyle.TEXT_MODE, true);
 		
 		fontAttrs = params.getTyped(TernaryParams.SCALE_FONT);
-		fontAttrs.put(FontStyle.COLOUR, RGBColour.BLACK);
+		fontAttrs.put(FontStyle.COLOUR, RGBColour.WHITE);
 		fontAttrs.put(FontStyle.FONT_SIZE, 16);
 		fontAttrs.put(FontStyle.FONT, new MathMLFont());
 		
-		params.put(TernaryParams.BG_COLOUR, RGBColour.WHITE);
+//		params.put(TernaryParams.BG_COLOUR, RGBColour.WHITE);
+		params.put(TernaryParams.BG_COLOUR,RGBColour.BLACK);
 		
 		params.put(TernaryParams.DRAW_SCALE, true);
-		params.put(TernaryParams.LABEL_BACKGROUND, RGBColour.WHITE);
-		params.put(TernaryParams.LABEL_BORDER, RGBColour.BLACK);
+//		params.put(TernaryParams.LABEL_BACKGROUND, RGBColour.WHITE);
+//		params.put(TernaryParams.LABEL_BORDER, RGBColour.BLACK);
+		params.put(TernaryParams.LABEL_BACKGROUND, RGBColour.BLACK);
+		params.put(TernaryParams.LABEL_BORDER, RGBColour.WHITE);
 		params.put(TernaryParams.LABEL_PADDING, 3);
 		return plot;
 	}

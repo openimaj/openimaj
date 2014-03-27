@@ -146,7 +146,8 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	public static final String FORCE_SPARCITY = "forcesparcity";
 	/**
 	 * The value of w, u and beta are updated each time data is added s.t. w = w
-	 * * (1.0 - DAMPENING). The default value is 0
+	 * * (1.0 - DAM
+	 * PENING). The default value is 0
 	 */
 	public static final String DAMPENING = "dampening";
 	
@@ -159,6 +160,12 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	 *
 	 */
 	private static final long serialVersionUID = -2059819246888686435L;
+	
+	
+	/**
+	 * The ammount by which ETA is made to increase each iteration 
+	 */
+	public static final String ETA_GAMMA = "gamma";
 
 	/**
 	 * sets up the defaults
@@ -185,6 +192,7 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 		this.defaults.put(FORCE_SPARCITY, true);
 		this.defaults.put(DAMPENING, 0d);
 		this.defaults.put(Z_STANDARDISE, false);
+		this.defaults.put(ETA_GAMMA,1.5);
 	}
 
 	@Override

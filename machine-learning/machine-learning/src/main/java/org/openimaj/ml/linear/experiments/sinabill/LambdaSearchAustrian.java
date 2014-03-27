@@ -34,6 +34,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.ConsoleAppender;
@@ -48,6 +49,7 @@ import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.ml.linear.data.BillMatlabFileDataGenerator;
 import org.openimaj.ml.linear.data.BillMatlabFileDataGenerator.Fold;
 import org.openimaj.ml.linear.data.BillMatlabFileDataGenerator.Mode;
+import org.openimaj.ml.linear.data.MatlabFileDataGenerator;
 import org.openimaj.ml.linear.evaluation.BilinearEvaluator;
 import org.openimaj.ml.linear.evaluation.RootMeanSumLossEvaluator;
 import org.openimaj.ml.linear.learner.BilinearLearnerParameters;
@@ -58,6 +60,8 @@ import org.openimaj.util.array.DoubleArrayView;
 import org.openimaj.util.pair.Pair;
 
 import com.google.common.primitives.Doubles;
+import com.jmatio.io.MatFileWriter;
+import com.jmatio.types.MLArray;
 
 /**
  * Optimise lambda and eta0 and learning rates with a line search
@@ -65,6 +69,7 @@ import com.google.common.primitives.Doubles;
  */
 public class LambdaSearchAustrian {
 	
+	private static final int NFOLDS = 1;
 	private static final String ROOT = "/Users/ss/Experiments/bilinear/austrian/";
 	private static final String OUTPUT_ROOT = "/Users/ss/Dropbox/TrendMiner/Collaboration/StreamingBilinear2014/experiments";
 	private final Logger logger = Logger.getLogger(getClass());
@@ -138,7 +143,7 @@ public class LambdaSearchAustrian {
 				bestScore = loss;
 				best = learner;
 				logger.info("New Best Config:\n" + best.getParams());
-				logger.info("New Best Loss:\n" + loss);
+				logger.info("New Best Loss:" + loss);
 				saveFoldParameterLearner(fold, j, learner);
 			}
 			j++;
@@ -151,9 +156,17 @@ public class LambdaSearchAustrian {
 	private void saveFoldParameterLearner(int fold, int j, BilinearSparseOnlineLearner learner) {
 		// save the state
 		final File learnerOut = new File(String.format("%s/fold_%d",currentOutputRoot(),fold), String.format("learner_%d", j));
+		final File learnerOutMat = new File(String.format("%s/fold_%d",currentOutputRoot(),fold), String.format("learner_%d.mat", j));
 		learnerOut.getParentFile().mkdirs();
 		try {
 			IOUtils.writeBinary(learnerOut, learner);
+			Collection<MLArray> data = new ArrayList<MLArray>();
+			data.add(CFMatrixUtils.toMLArray("u", learner.getU()));
+			data.add(CFMatrixUtils.toMLArray("w", learner.getW()));
+			if(learner.getBias()!=null){
+				data.add(CFMatrixUtils.toMLArray("b", learner.getBias()));
+			}
+			MatFileWriter writer = new MatFileWriter(learnerOutMat, data);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -165,11 +178,11 @@ public class LambdaSearchAustrian {
 		final BilinearLearnerParameters params = prepareParams();
 		BilinearLearnerParametersLineSearch iter = new BilinearLearnerParametersLineSearch(params);
 		
-		iter.addIteration(BilinearLearnerParameters.ETA0_U, Doubles.asList(new double[]{5,1,0.1,0.01}));
-		iter.addIteration(BilinearLearnerParameters.ETA0_W, Doubles.asList(new double[]{5,1,0.1,0.01}));
-		iter.addIteration(BilinearLearnerParameters.ETA0_BIAS, Doubles.asList(new double[]{5,1,0.1,0.01}));
-		iter.addIteration(BilinearLearnerParameters.LAMBDA_U, Doubles.asList(new double[]{0.1,0.01,0.001,0.0001}));
-		iter.addIteration(BilinearLearnerParameters.LAMBDA_W, Doubles.asList(new double[]{0.1,0.01,0.001,0.0001}));
+		iter.addIteration(BilinearLearnerParameters.ETA0_U, Doubles.asList(new double[]{0.0001}));
+		iter.addIteration(BilinearLearnerParameters.ETA0_W, Doubles.asList(new double[]{0.005}));
+		iter.addIteration(BilinearLearnerParameters.ETA0_BIAS, Doubles.asList(new double[]{50}));
+		iter.addIteration(BilinearLearnerParameters.LAMBDA_U, Doubles.asList(new double[]{0.00001}));
+		iter.addIteration(BilinearLearnerParameters.LAMBDA_W, Doubles.asList(new double[]{0.00001}));
 		
 		List<BilinearLearnerParameters> ret = new ArrayList<BilinearLearnerParameters>();
 		for (BilinearLearnerParameters param : iter) {
@@ -187,7 +200,7 @@ public class LambdaSearchAustrian {
 		int step = 5;               // % test_size
 		int t_size = 48;            // % training_size
 		int v_size = 8;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < NFOLDS; i++) {
 			int total = i * step + t_size;
 			int[] training = new int[total - v_size];
 			int[] test = new int[step];
