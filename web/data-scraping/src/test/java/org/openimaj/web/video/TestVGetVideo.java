@@ -3,6 +3,7 @@ package org.openimaj.web.video;
 import java.net.MalformedURLException;
 
 import org.junit.Test;
+import org.openimaj.image.DisplayUtilities;
 
 import com.github.axet.vget.info.VideoInfo.VideoQuality;
 import com.github.axet.vget.info.VideoInfoUser;
@@ -37,7 +38,8 @@ public class TestVGetVideo {
         int newframes = 0;
         while (v.hasNextFrame()) {
 			newframes++;
-			v.getNextFrame();
+//			v.getNextFrame();
+			DisplayUtilities.displayName(v.getNextFrame(), "frame");
 		}
 		System.out.println("Low Quality frames: " + newframes);
 	}
