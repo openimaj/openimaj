@@ -41,10 +41,12 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -52,6 +54,10 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
+import org.apache.batik.transcoder.Transcoder;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.sanselan.ImageFormat;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.byteSources.ByteSource;
@@ -266,6 +272,25 @@ public class ImageUtilities {
 		format = format.toLowerCase().trim();
 
 		ImageIO.write(ImageUtilities.createBufferedImageForDisplay(image), format, output);
+	}
+	
+	/**
+	 * @param image
+	 * @param output
+	 * @throws IOException
+	 * @throws TranscoderException 
+	 */
+	public static void write(final SVGImage image, final File output, Transcoder trans) throws IOException, TranscoderException {
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		image.createRenderer().write(new OutputStreamWriter(baos));
+		baos.flush();
+		baos.close();
+		byte[] streamBytes = baos .toByteArray();
+		TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(streamBytes ));
+        TranscoderOutput toutput = new TranscoderOutput(new FileOutputStream(output));
+
+        trans.transcode(input, toutput);
 	}
 
 	/**

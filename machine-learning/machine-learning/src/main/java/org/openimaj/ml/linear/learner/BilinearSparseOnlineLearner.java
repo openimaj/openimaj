@@ -41,8 +41,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import javax.media.jai.ColorModelFactory;
-
 import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
 
 import org.apache.log4j.Logger;

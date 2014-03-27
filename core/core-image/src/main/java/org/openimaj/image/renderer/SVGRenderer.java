@@ -276,6 +276,12 @@ public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 	}
 	
 	@Override
+	public SVGRenderer clone() {
+		SVGRenderer ret = new SVGRenderer((SVGRenderHints)this.getRenderHints());
+		return ret;
+	}
+	
+	@Override
 	public void drawImage(SVGImage image, int x, int y) {
 		// TODO: fix this...
 //		throw new UnsupportedOperationException();
