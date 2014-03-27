@@ -31,7 +31,7 @@ public class TestSVGRenderer {
 	public TemporaryFolder folder = new TemporaryFolder();
 	
 	@Before
-	private void before() throws IOException {
+	public void before() throws IOException {
 		folder.create();
 	}
 	/**
