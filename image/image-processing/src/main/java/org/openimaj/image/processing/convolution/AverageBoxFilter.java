@@ -57,8 +57,23 @@ public class AverageBoxFilter implements SinglebandImageProcessor<Float, FImage>
 		this.height = height;
 	}
 
+	/**
+	 * Construct the averaging operator with a square kernel of the given
+	 * dimension.
+	 * 
+	 * @param dim
+	 *            The width and height of the box
+	 */
+	public AverageBoxFilter(int dim) {
+		this(dim, dim);
+	}
+
 	@Override
 	public void processImage(FImage image) {
+		// shortcut trivial case
+		if (this.height == 1 && this.width == 1)
+			return;
+
 		final SummedAreaTable sat = new SummedAreaTable();
 		sat.analyseImage(image);
 

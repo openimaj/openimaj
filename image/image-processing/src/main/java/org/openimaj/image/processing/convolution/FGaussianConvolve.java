@@ -33,7 +33,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * Image processor for FImage capable of performing convolutions with Gaussians. 
+ * Image processor for FImage capable of performing convolutions with Gaussians.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -43,21 +43,26 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 	 * when building a kernel
 	 */
 	public static final float DEFAULT_GAUSS_TRUNCATE = 4.0f;
-	
-	protected float [] kernel;
-	
+
+	protected float[] kernel;
+
 	/**
-	 * Construct an FGaussianBlur with a Gaussian of standard deviation sigma. 
-	 * @param sigma Gaussian kernel standard deviation
+	 * Construct an {@link FGaussianConvolve} with a Gaussian of standard
+	 * deviation sigma.
+	 * 
+	 * @param sigma
+	 *            Gaussian kernel standard deviation
 	 */
 	public FGaussianConvolve(float sigma) {
 		this(sigma, DEFAULT_GAUSS_TRUNCATE);
 	}
 
 	/**
-	 * Construct an FGaussianBlur with a Gaussian of standard deviation sigma. The 
-	 * truncate parameter defines how many sigmas wide the kernel is.
-	 * @param sigma 
+	 * Construct an {@link FGaussianConvolve} with a Gaussian of standard
+	 * deviation sigma. The truncate parameter defines how many sigmas wide the
+	 * kernel is.
+	 * 
+	 * @param sigma
 	 * @param truncate
 	 */
 	public FGaussianConvolve(float sigma, float truncate) {
@@ -66,47 +71,58 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 
 	/**
 	 * Construct a zero-mean Gaussian with the specified standard deviation.
-	 * @param sigma the standard deviation of the Gaussian
+	 * 
+	 * @param sigma
+	 *            the standard deviation of the Gaussian
 	 * @return an array representing a Gaussian function
 	 */
-	public static float [] makeKernel(float sigma) {
+	public static float[] makeKernel(float sigma) {
 		return makeKernel(sigma, DEFAULT_GAUSS_TRUNCATE);
 	}
-	
+
 	/**
 	 * Construct a zero-mean Gaussian with the specified standard deviation.
-	 * @param sigma the standard deviation of the Gaussian
-	 * @param truncate the number of sigmas from the centre at which to
-	 * 				truncate the Gaussian 
+	 * 
+	 * @param sigma
+	 *            the standard deviation of the Gaussian
+	 * @param truncate
+	 *            the number of sigmas from the centre at which to truncate the
+	 *            Gaussian
 	 * @return an array representing a Gaussian function
 	 */
-	public static float [] makeKernel(float sigma, float truncate) {
-		if(sigma == 0) return new float[]{1f};
-		//The kernel is truncated at truncate sigmas from center.
+	public static float[] makeKernel(float sigma, float truncate) {
+		if (sigma == 0)
+			return new float[] { 1f };
+		// The kernel is truncated at truncate sigmas from center.
 		int ksize = (int) (2.0f * truncate * sigma + 1.0f);
-//		ksize = Math.max(1, ksize); // size must be at least 3
-		if( ksize % 2 == 0 ) ksize++;  // size must be odd
+		// ksize = Math.max(1, ksize); // size must be at least 3
+		if (ksize % 2 == 0)
+			ksize++; // size must be odd
 
-		float [] kernel = new float[ksize];
+		final float[] kernel = new float[ksize];
 
-		//build kernel
+		// build kernel
 		float sum = 0.0f;
-		for(int i = 0; i < ksize; i++) {
-			float x = i - ksize / 2;
-			kernel[i] = (float) Math.exp( -x * x / (2.0 * sigma * sigma) );
+		for (int i = 0; i < ksize; i++) {
+			final float x = i - ksize / 2;
+			kernel[i] = (float) Math.exp(-x * x / (2.0 * sigma * sigma));
 			sum += kernel[i];
 		}
 
-		//normalise area to 1
-		for(int i = 0; i < ksize; i++) {
+		// normalise area to 1
+		for (int i = 0; i < ksize; i++) {
 			kernel[i] /= sum;
 		}
-		
+
 		return kernel;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
+	 * .image.Image)
 	 */
 	@Override
 	public void processImage(FImage image) {
