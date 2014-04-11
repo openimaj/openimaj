@@ -29,7 +29,6 @@
  */
 package org.openimaj.image.processing.resize;
 
-
 /**
  * A triangle filter for the resample function
  * 
@@ -38,6 +37,11 @@ package org.openimaj.image.processing.resize;
  */
 public class TriangleFilter implements ResizeFilterFunction
 {
+	/**
+	 * The singleton instance of the filter
+	 */
+	public static ResizeFilterFunction INSTANCE = new TriangleFilter();
+
 	private double defaultSupport = 1;
 
 	/**
@@ -55,10 +59,12 @@ public class TriangleFilter implements ResizeFilterFunction
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter( double t )
+	public double filter(double t)
 	{
-		if( t < 0.0 ) t = -t;
-		if( t < 1.0 ) return (1.0 - t);
+		if (t < 0.0)
+			t = -t;
+		if (t < 1.0)
+			return (1.0 - t);
 		return (0.0);
 	}
 }

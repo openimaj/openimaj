@@ -37,6 +37,11 @@ package org.openimaj.image.processing.resize;
  */
 public class BellFilter implements ResizeFilterFunction
 {
+	/**
+	 * The singleton instance of the filter
+	 */
+	public static ResizeFilterFunction INSTANCE = new BellFilter();
+
 	private double defaultSupport = 1.5;
 
 	/**
@@ -54,11 +59,13 @@ public class BellFilter implements ResizeFilterFunction
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter( double t )
+	public double filter(double t)
 	{
-		if( t < 0 ) t = -t;
-		if( t < .5 ) return (.75 - (t * t));
-		if( t < 1.5 )
+		if (t < 0)
+			t = -t;
+		if (t < .5)
+			return (.75 - (t * t));
+		if (t < 1.5)
 		{
 			t = (t - 1.5);
 			return (.5 * (t * t));

@@ -37,6 +37,11 @@ package org.openimaj.image.processing.resize;
  */
 public class BSplineFilter implements ResizeFilterFunction
 {
+	/**
+	 * The singleton instance of the filter
+	 */
+	public static ResizeFilterFunction INSTANCE = new BSplineFilter();
+
 	private double defaultSupport = 2;
 
 	/**
@@ -54,17 +59,18 @@ public class BSplineFilter implements ResizeFilterFunction
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter( double t ) /* box (*) box (*) box (*) box */
+	public double filter(double t) /* box (*) box (*) box (*) box */
 	{
 		double tt;
 
-		if( t < 0 ) t = -t;
-		if( t < 1 )
+		if (t < 0)
+			t = -t;
+		if (t < 1)
 		{
 			tt = t * t;
 			return ((.5 * tt * t) - tt + (2.0 / 3.0));
 		}
-		else if( t < 2 )
+		else if (t < 2)
 		{
 			t = 2 - t;
 			return ((1.0 / 6.0) * (t * t * t));

@@ -29,7 +29,6 @@
  */
 package org.openimaj.image.processing.resize;
 
-
 /**
  * A Lanczos3 filter for the resample function.
  * 
@@ -38,6 +37,11 @@ package org.openimaj.image.processing.resize;
  */
 public class Lanczos3Filter implements ResizeFilterFunction
 {
+	/**
+	 * The singleton instance of the filter
+	 */
+	public static ResizeFilterFunction INSTANCE = new Lanczos3Filter();
+
 	private double defaultSupport = 3;
 
 	/**
@@ -51,10 +55,11 @@ public class Lanczos3Filter implements ResizeFilterFunction
 		return this.defaultSupport;
 	}
 
-	private double sinc( double x )
+	private double sinc(double x)
 	{
 		x *= Math.PI;
-		if( x != 0 ) return (Math.sin( x ) / x);
+		if (x != 0)
+			return (Math.sin(x) / x);
 		return (1.0);
 	}
 
@@ -62,10 +67,12 @@ public class Lanczos3Filter implements ResizeFilterFunction
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter( double t )
+	public double filter(double t)
 	{
-		if( t < 0 ) t = -t;
-		if( t < 3.0 ) return (sinc( t ) * sinc( t / 3.0 ));
+		if (t < 0)
+			t = -t;
+		if (t < 3.0)
+			return (sinc(t) * sinc(t / 3.0));
 		return (0.0);
 	}
 }

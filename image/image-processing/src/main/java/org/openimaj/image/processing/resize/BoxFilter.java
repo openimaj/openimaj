@@ -37,6 +37,11 @@ package org.openimaj.image.processing.resize;
  */
 public class BoxFilter implements ResizeFilterFunction
 {
+	/**
+	 * The singleton instance of the filter
+	 */
+	public static ResizeFilterFunction INSTANCE = new BoxFilter();
+
 	private double defaultSupport = 0.5;
 
 	/**
@@ -54,9 +59,10 @@ public class BoxFilter implements ResizeFilterFunction
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter( double t )
+	public double filter(double t)
 	{
-		if( (t > -0.5) && (t <= 0.5) ) return (1.0);
+		if ((t > -0.5) && (t <= 0.5))
+			return (1.0);
 		return (0.0);
 	}
 }

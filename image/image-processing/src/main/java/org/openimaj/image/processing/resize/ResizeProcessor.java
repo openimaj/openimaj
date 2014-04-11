@@ -89,7 +89,13 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	private float newY;
 
 	/** The resize filter function to use */
-	private ResizeFilterFunction filterFunction = new BasicFilter();
+	private ResizeFilterFunction filterFunction;
+
+	/**
+	 * The default filter used by instances of {@link ResizeProcessor}, unless
+	 * otherwise specified.
+	 */
+	public static ResizeFilterFunction DEFAULT_FILTER = BasicFilter.INSTANCE;
 
 	/**
 	 * Constructor that takes the resize mode. Use this function if you only
@@ -101,6 +107,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 */
 	public ResizeProcessor(Mode mode) {
 		this.mode = mode;
+		this.filterFunction = DEFAULT_FILTER;
 	}
 
 	/**
@@ -145,7 +152,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            The amount to scale the image by
 	 */
 	public ResizeProcessor(float amount) {
-		this(amount, null);
+		this(amount, DEFAULT_FILTER);
 	}
 
 	/**
@@ -160,7 +167,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            The new height of the image.
 	 */
 	public ResizeProcessor(float newX, float newY) {
-		this(newX, newY, null);
+		this(newX, newY, DEFAULT_FILTER);
 	}
 
 	/**
@@ -176,6 +183,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		this.mode = Mode.MAX;
 		this.newX = maxSize;
 		this.newY = maxSize;
+		this.filterFunction = DEFAULT_FILTER;
 	}
 
 	/**
@@ -213,7 +221,33 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            Whether to maintain the aspect ratio or not
 	 */
 	public ResizeProcessor(int newX, int newY, boolean aspectRatio) {
-		this(newX, newY, (ResizeFilterFunction) null);
+		this(newX, newY, DEFAULT_FILTER);
+
+		if (aspectRatio)
+			this.mode = Mode.ASPECT_RATIO;
+		else
+			this.mode = Mode.FIT;
+	}
+
+	/**
+	 * Construct a resize processor that will rescale the image to the given
+	 * width and height (optionally maintaining aspect ratio) with the given
+	 * filter function. If <code>aspectRatio</code> is false the image will be
+	 * stretched to fit within the new width and height. If
+	 * <code>aspectRatio</code> is set to true, the resulting images may have
+	 * dimensions less than those specified here.
+	 * 
+	 * @param newX
+	 *            The new width of the image.
+	 * @param newY
+	 *            The new height of the image.
+	 * @param aspectRatio
+	 *            Whether to maintain the aspect ratio or not
+	 * @param filterf
+	 *            The filter function
+	 */
+	public ResizeProcessor(int newX, int newY, boolean aspectRatio, ResizeFilterFunction filterf) {
+		this(newX, newY, filterf);
 
 		if (aspectRatio)
 			this.mode = Mode.ASPECT_RATIO;
@@ -236,25 +270,103 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 			internalHalfSize(image);
 			break;
 		case FIT:
-			zoom(image, (int) newX, (int) newY);
+			zoom(image, (int) newX, (int) newY, filterFunction, filterFunction.getDefaultSupport());
 			break;
 		case SCALE:
 			newX = image.width * amount;
 			newY = image.height * amount;
 		case ASPECT_RATIO:
-			resample(image, (int) newX, (int) newY, true);
+			resample(image, (int) newX, (int) newY, true, filterFunction, filterFunction.getDefaultSupport());
 			break;
 		case MAX:
-			resizeMax(image, (int) newX);
+			resizeMax(image, (int) newX, filterFunction, filterFunction.getDefaultSupport());
 			break;
 		case MAX_AREA:
-			resizeMaxArea(image, (int) newX);
+			resizeMaxArea(image, (int) newX, filterFunction, filterFunction.getDefaultSupport());
 			break;
 		case NONE:
 			return;
 		default:
 			zoom(image, (int) newX, (int) newY, this.filterFunction,
 					this.filterFunction.getDefaultSupport());
+		}
+	}
+
+	/**
+	 * Set the filter function used by the filter
+	 * 
+	 * @param filterFunction
+	 *            the filter function
+	 */
+	public void setFilterFunction(ResizeFilterFunction filterFunction) {
+		this.filterFunction = filterFunction;
+	}
+
+	/**
+	 * Resize an image such that its biggest size is at most as big as the given
+	 * size. Images whose sides are smaller than the given size are untouched.
+	 * 
+	 * @param image
+	 *            the image to resize
+	 * @param maxDim
+	 *            the maximum allowable length for the longest side.
+	 * @param filterf
+	 *            The filter function
+	 * @param fwidth
+	 *            The width of the filter
+	 * @return the resized image.
+	 */
+	public static FImage resizeMax(FImage image, int maxDim, ResizeFilterFunction filterf, double fwidth) {
+		final int width = image.width;
+		final int height = image.height;
+
+		int newWidth, newHeight;
+		if (width < maxDim && height < maxDim) {
+			return image;
+		} else if (width < height) {
+			newHeight = maxDim;
+			final float resizeRatio = ((float) maxDim / (float) height);
+			newWidth = (int) (width * resizeRatio);
+		} else {
+			newWidth = maxDim;
+			final float resizeRatio = ((float) maxDim / (float) width);
+			newHeight = (int) (height * resizeRatio);
+		}
+
+		zoom(image, newWidth, newHeight, filterf, fwidth);
+
+		return image;
+	}
+
+	/**
+	 * Resize an image such that its area size is at most as big as the given
+	 * area. Images whose ares are smaller than the given area are untouched.
+	 * 
+	 * @param image
+	 *            the image to resize
+	 * @param maxArea
+	 *            the maximum allowable area.
+	 * @param filterf
+	 *            The filter function
+	 * @param fwidth
+	 *            The width of the filter
+	 * @return the resized image.
+	 */
+	public static FImage resizeMaxArea(FImage image, int maxArea, ResizeFilterFunction filterf, double fwidth) {
+		final int width = image.width;
+		final int height = image.height;
+		final int area = width * height;
+
+		if (area < maxArea) {
+			return image;
+		} else {
+			final float whRatio = width / height;
+			final int newWidth = (int) Math.sqrt(maxArea * whRatio);
+			final int newHeight = maxArea / newWidth;
+
+			zoom(image, newWidth, newHeight, filterf, fwidth);
+
+			return image;
 		}
 	}
 
@@ -460,6 +572,45 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	}
 
 	/**
+	 * Resamples the given image returning it as a reference. If
+	 * <code>aspect</code> is true, the aspect ratio of the image will be
+	 * retained, which means newX or newY could be smaller than given here. The
+	 * dimensions of the new image will not be larger than newX or newY.
+	 * Side-affects the given image.
+	 * 
+	 * @param in
+	 *            The source image
+	 * @param newX
+	 *            The new width of the image
+	 * @param newY
+	 *            The new height of the image
+	 * @param aspect
+	 *            Whether to maintain the aspect ratio
+	 * @param filterf
+	 *            The filter function
+	 * @param fwidth
+	 *            The width of the filter
+	 * @return A new resampled image
+	 */
+	public static FImage resample(FImage in, int newX, int newY, boolean aspect, ResizeFilterFunction filterf,
+			double fwidth)
+	{
+		// Work out the size of the resampled image
+		// if the aspect ratio is set to true
+		int nx = newX;
+		int ny = newY;
+		if (aspect) {
+			if (ny > nx)
+				nx = (int) Math.round((in.width * ny) / (double) in.height);
+			else
+				ny = (int) Math.round((in.height * nx) / (double) in.width);
+		}
+
+		zoom(in, nx, ny, filterf, fwidth);
+		return in;
+	}
+
+	/**
 	 * For the port of the zoom function
 	 * 
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
@@ -598,7 +749,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * @return -1 if error, 0 if success
 	 */
 	public static int zoom(FImage in, int newX, int newY) {
-		final ResizeFilterFunction filter = new BasicFilter();
+		final ResizeFilterFunction filter = DEFAULT_FILTER;
 		return zoom(in, newX, newY, filter, filter.getDefaultSupport());
 	}
 
@@ -780,7 +931,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * calls
 	 * {@link #zoom(FImage, Rectangle, FImage, Rectangle, ResizeFilterFunction, double)}
-	 * with the {@link BasicFilter}
+	 * with the {@link #DEFAULT_FILTER}
 	 * 
 	 * @param in
 	 * @param inRect
@@ -790,7 +941,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *         {@link #zoom(FImage, Rectangle, FImage, Rectangle, ResizeFilterFunction, double)}
 	 */
 	public static int zoom(FImage in, Rectangle inRect, FImage dst, Rectangle dstRect) {
-		final BasicFilter filter = new BasicFilter();
+		final ResizeFilterFunction filter = DEFAULT_FILTER;
 		return zoom(in, inRect, dst, dstRect, filter, filter.getDefaultSupport());
 	}
 
