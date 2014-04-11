@@ -450,9 +450,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		int ny = newY;
 		if (aspect) {
 			if (ny > nx)
-				nx = (int) ((in.width * ((double) ny / (double) in.height)));
+				nx = (int) Math.round((in.width * ny) / (double) in.height);
 			else
-				ny = (int) ((in.height * ((double) nx / (double) in.width)));
+				ny = (int) Math.round((in.height * nx) / (double) in.width);
 		}
 
 		zoom(in, nx, ny);
