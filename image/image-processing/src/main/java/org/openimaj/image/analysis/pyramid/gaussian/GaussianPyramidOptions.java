@@ -32,65 +32,64 @@ package org.openimaj.image.analysis.pyramid.gaussian;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.analysis.pyramid.PyramidOptions;
+import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * Options for constructing a Gaussian pyramid in the style
- * of Lowe's SIFT paper.
+ * Options for constructing a Gaussian pyramid in the style of Lowe's SIFT
+ * paper.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <IMAGE> type of underlying image.
+ * 
+ * @param <IMAGE>
+ *            type of underlying image.
  */
-public class GaussianPyramidOptions<
-		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>> 
-	extends 
-		PyramidOptions<GaussianOctave<IMAGE>, IMAGE> 
+public class GaussianPyramidOptions<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
+		extends
+		PyramidOptions<GaussianOctave<IMAGE>, IMAGE>
 {
 	/**
-	 * Number of pixels of border for processors to ignore. Also
-	 * used in calculating the minimum image size for the last
-	 * octave.
+	 * Number of pixels of border for processors to ignore. Also used in
+	 * calculating the minimum image size for the last octave.
 	 */
 	protected int borderPixels = 5;
-	
+
 	/**
-	 * Should the starting image of the pyramid be stretched to
-	 * twice its size?
+	 * Should the starting image of the pyramid be stretched to twice its size?
 	 */
 	protected boolean doubleInitialImage = true;
-	
+
 	/**
-	 * The number of extra scale steps taken beyond scales. 
+	 * The number of extra scale steps taken beyond scales.
 	 */
-	protected int extraScaleSteps = 2; //number of extra steps to take beyond doubling sigma
-	
+	protected int extraScaleSteps = 2; // number of extra steps to take beyond
+										// doubling sigma
+
 	/**
-	 * Assumed initial scale of the first image in each octave.
-	 * For SIFT, Lowe suggested 1.6 (for optimal repeatability;
-	 * see Lowe's IJCV paper, P.10).
+	 * Assumed initial scale of the first image in each octave. For SIFT, Lowe
+	 * suggested 1.6 (for optimal repeatability; see Lowe's IJCV paper, P.10).
 	 */
 	protected float initialSigma = 1.6f;
-	
+
 	/**
-	 * The number of scales in this octave minus extraScaleSteps. 
-	 * Levels are constructed so that level[scales] has twice the 
-	 * sigma of level[0].
+	 * The number of scales in this octave minus extraScaleSteps. Levels are
+	 * constructed so that level[scales] has twice the sigma of level[0].
 	 */
 	protected int scales = 3;
-	
+
 	/**
 	 * Default constructor.
 	 */
 	public GaussianPyramidOptions() {
-		
+
 	}
-	
+
 	/**
-	 * Construct the pyramid options by copying the non-processor
-	 * options from the given options object.
+	 * Construct the pyramid options by copying the non-processor options from
+	 * the given options object.
 	 * 
-	 * @param options options to copy from
+	 * @param options
+	 *            options to copy from
 	 */
 	public GaussianPyramidOptions(GaussianPyramidOptions<?> options) {
 		this.borderPixels = options.borderPixels;
@@ -102,15 +101,15 @@ public class GaussianPyramidOptions<
 	}
 
 	/**
-	 * Get the number of pixels used for a border that processors
-	 * shouldn't touch.
+	 * Get the number of pixels used for a border that processors shouldn't
+	 * touch.
 	 * 
 	 * @return number of border pixels.
 	 */
 	public int getBorderPixels() {
 		return borderPixels;
 	}
-	
+
 	/**
 	 * Get the number of extra scale steps taken beyond scales.
 	 * 
@@ -121,7 +120,7 @@ public class GaussianPyramidOptions<
 	public int getExtraScaleSteps() {
 		return extraScaleSteps;
 	}
-	
+
 	/**
 	 * Get the assumed initial scale of the first image in each octave.
 	 * 
@@ -132,9 +131,9 @@ public class GaussianPyramidOptions<
 	}
 
 	/**
-	 * Get the number of scales in this octave minus extraScaleSteps. 
-	 * Levels of each octave are constructed so that level[scales] has 
-	 * twice the sigma of level[0].
+	 * Get the number of scales in this octave minus extraScaleSteps. Levels of
+	 * each octave are constructed so that level[scales] has twice the sigma of
+	 * level[0].
 	 * 
 	 * @return the scales
 	 */
@@ -143,8 +142,7 @@ public class GaussianPyramidOptions<
 	}
 
 	/**
-	 * Should the starting image of the pyramid be stretched to
-	 * twice its size?
+	 * Should the starting image of the pyramid be stretched to twice its size?
 	 * 
 	 * @return the doubleInitialImage
 	 */
@@ -153,21 +151,24 @@ public class GaussianPyramidOptions<
 	}
 
 	/**
-	 * Set the number of pixels used for a border that processors
-	 * shouldn't touch. Also affects the minimum image size for the 
-	 * last octave, which must be at least 2 + 2*borderPixels.
-	 * @param borderPixels number of pixels to leave as border
+	 * Set the number of pixels used for a border that processors shouldn't
+	 * touch. Also affects the minimum image size for the last octave, which
+	 * must be at least 2 + 2*borderPixels.
+	 * 
+	 * @param borderPixels
+	 *            number of pixels to leave as border
 	 */
 	public void setBorderPixels(int borderPixels) {
-		if (borderPixels < 2) throw new IllegalArgumentException("BorderDistance must be >= 2");
+		if (borderPixels < 2)
+			throw new IllegalArgumentException("BorderDistance must be >= 2");
 		this.borderPixels = borderPixels;
 	}
 
 	/**
-	 * Set whether starting image of the pyramid be stretched to
-	 * twice its size?
+	 * Set whether starting image of the pyramid be stretched to twice its size?
 	 * 
-	 * @param doubleInitialImage the doubleInitialImage to set
+	 * @param doubleInitialImage
+	 *            the doubleInitialImage to set
 	 */
 	public void setDoubleInitialImage(boolean doubleInitialImage) {
 		this.doubleInitialImage = doubleInitialImage;
@@ -178,31 +179,49 @@ public class GaussianPyramidOptions<
 	 * 
 	 * @see #setScales(int)
 	 * 
-	 * @param extraScaleSteps the extraScaleSteps to set
+	 * @param extraScaleSteps
+	 *            the extraScaleSteps to set
 	 */
 	public void setExtraScaleSteps(int extraScaleSteps) {
 		this.extraScaleSteps = extraScaleSteps;
 	}
 
 	/**
-	 * Set the assumed initial scale of the first image in each octave.
-	 * For SIFT, Lowe suggested 1.6 (for optimal repeatability;
-	 * see Lowe's IJCV paper, P.10).
+	 * Set the assumed initial scale of the first image in each octave. For
+	 * SIFT, Lowe suggested 1.6 (for optimal repeatability; see Lowe's IJCV
+	 * paper, P.10).
 	 * 
-	 * @param initialSigma the initialSigma to set
+	 * @param initialSigma
+	 *            the initialSigma to set
 	 */
 	public void setInitialSigma(float initialSigma) {
 		this.initialSigma = initialSigma;
 	}
 
 	/**
-	 * Set the number of scales in this octave minus extraScaleSteps. 
-	 * Levels of each octave are constructed so that level[scales] has 
-	 * twice the sigma of level[0].
+	 * Set the number of scales in this octave minus extraScaleSteps. Levels of
+	 * each octave are constructed so that level[scales] has twice the sigma of
+	 * level[0].
 	 * 
-	 * @param scales the scales to set
+	 * @param scales
+	 *            the scales to set
 	 */
 	public void setScales(int scales) {
 		this.scales = scales;
+	}
+
+	/**
+	 * Create a {@link SinglebandImageProcessor} that performs a Gaussian
+	 * blurring with a standard deviation given by sigma. This method is used by
+	 * the {@link GaussianOctave} and {@link GaussianPyramid} to create filters
+	 * for performing the blurring. By overriding in subclasses, you can control
+	 * the exact filter implementation (i.e. for speed).
+	 * 
+	 * @param sigma
+	 *            the gaussian standard deviation
+	 * @return the image processor to apply the blur
+	 */
+	public SinglebandImageProcessor<Float, FImage> createGaussianBlur(float sigma) {
+		return new FGaussianConvolve(sigma);
 	}
 }

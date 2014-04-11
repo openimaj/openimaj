@@ -26,8 +26,8 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 public class FFastGaussianConvolve implements SinglebandImageProcessor<Float, FImage> {
 	private final int n;
 	private final int m;
-	private AverageBoxFilter wlBox;
-	private AverageBoxFilter wuBox;
+	private SinglebandImageProcessor<Float, FImage> wlBox;
+	private SinglebandImageProcessor<Float, FImage> wuBox;
 
 	/**
 	 * Construct an {@link FFastGaussianConvolve} to approximate blurring with a
@@ -40,17 +40,23 @@ public class FFastGaussianConvolve implements SinglebandImageProcessor<Float, FI
 	 *            and 6)
 	 */
 	public FFastGaussianConvolve(float sigma, int n) {
+		if (sigma < 1.8) {
+			// std.devs of less than 1.8 are not well approximated.
+			this.m = 1;
+			this.n = 1;
+			this.wlBox = new FGaussianConvolve(sigma);
+		} else {
+			final float ss = sigma * sigma;
+			final double wIdeal = Math.sqrt((12.0 * ss / n) + 1.0);
+			final int wl = (((int) wIdeal) % 2 == 0) ? (int) wIdeal - 1 : (int) wIdeal;
+			final int wu = wl + 2;
 
-		final float ss = sigma * sigma;
-		final double wIdeal = Math.sqrt((12.0 * ss / n) + 1.0);
-		final int wl = (((int) wIdeal) % 2 == 0) ? (int) wIdeal - 1 : (int) wIdeal;
-		final int wu = wl + 2;
+			this.n = n;
+			this.m = Math.round((12 * ss - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4));
 
-		this.n = n;
-		this.m = Math.round((12 * ss - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4));
-
-		this.wlBox = new AverageBoxFilter(wl);
-		this.wuBox = new AverageBoxFilter(wu);
+			this.wlBox = new AverageBoxFilter(wl);
+			this.wuBox = new AverageBoxFilter(wu);
+		}
 	}
 
 	@Override

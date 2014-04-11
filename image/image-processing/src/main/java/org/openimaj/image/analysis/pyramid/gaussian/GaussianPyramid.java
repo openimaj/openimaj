@@ -33,58 +33,63 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.analysis.pyramid.Pyramid;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * A Gaussian image pyramid consisting of a stack of octaves where the 
- * image halves its size. The pyramid is of the style described in Lowe's
- * SIFT paper.
+ * A Gaussian image pyramid consisting of a stack of octaves where the image
+ * halves its size. The pyramid is of the style described in Lowe's SIFT paper.
  * 
- * Octaves are processed by an OctaveProcessor as they are created
- * if the processor is set in the options object.
+ * Octaves are processed by an OctaveProcessor as they are created if the
+ * processor is set in the options object.
  * 
- * The pyramid will only hold onto its octaves if either the 
- * keepOctaves option is set to true, or if a PyramidProcessor is
- * set in the options. The PyramidProcessor will called after all
- * the octaves are created.
+ * The pyramid will only hold onto its octaves if either the keepOctaves option
+ * is set to true, or if a PyramidProcessor is set in the options. The
+ * PyramidProcessor will called after all the octaves are created.
  * 
- * Pyramids are Iterable for easy access to the octaves; however this
- * will only work if the pyramid has already been populated with the
- * octaves retained.
+ * Pyramids are Iterable for easy access to the octaves; however this will only
+ * work if the pyramid has already been populated with the octaves retained.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <I> Type of underlying image
+ * 
+ * @param <I>
+ *            Type of underlying image
  */
-public class GaussianPyramid<
-		I extends Image<?,I> & SinglebandImageProcessor.Processable<Float,FImage,I>> 
-	extends 
+public class GaussianPyramid<I extends Image<?, I> & SinglebandImageProcessor.Processable<Float, FImage, I>>
+		extends
 		Pyramid<GaussianPyramidOptions<I>, GaussianOctave<I>, I>
-	implements 
-		ImageAnalyser<I>, Iterable<GaussianOctave<I>> 
+		implements
+		ImageAnalyser<I>, Iterable<GaussianOctave<I>>
 {
 	/**
 	 * Construct a Pyramid with the given options.
-	 * @param options the options
+	 * 
+	 * @param options
+	 *            the options
 	 */
 	public GaussianPyramid(GaussianPyramidOptions<I> options) {
 		super(options);
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processing.pyramid.AbstractPyramid#process(org.openimaj.image.Image)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processing.pyramid.AbstractPyramid#process(org.openimaj
+	 * .image.Image)
 	 */
 	@Override
 	public void process(I img) {
-		if (img.getWidth() <= 1 || img.getHeight() <= 1) throw new IllegalArgumentException("Image is too small");
+		if (img.getWidth() <= 1 || img.getHeight() <= 1)
+			throw new IllegalArgumentException("Image is too small");
 
-		//the octave image size: 1 means same as input, 0.5 is twice as big as input, 2 is half input, 4 is quarter input, etc
+		// the octave image size: 1 means same as input, 0.5 is twice as big as
+		// input, 2 is half input, 4 is quarter input, etc
 		float octaveSize = 1.0f;
-		
-		//if doubleInitialImage is set, then the initial image should be scaled to
-		//twice its original size and the 
+
+		// if doubleInitialImage is set, then the initial image should be scaled
+		// to
+		// twice its original size and the
 		I image;
 		if (options.doubleInitialImage) {
 			image = ResizeProcessor.doubleSize(img);
@@ -92,45 +97,48 @@ public class GaussianPyramid<
 		} else
 			image = img.clone();
 
-		//Lowe's IJCV paper (P.10) suggests that if you double the size of the
-		//initial image then it has a sigma of 1.0; if the image is not doubled
-		//the sigma is 0.5
-		float currentSigma = (options.doubleInitialImage ? 1.0f : 0.5f);
+		// Lowe's IJCV paper (P.10) suggests that if you double the size of the
+		// initial image then it has a sigma of 1.0; if the image is not doubled
+		// the sigma is 0.5
+		final float currentSigma = (options.doubleInitialImage ? 1.0f : 0.5f);
 		if (options.initialSigma > currentSigma) {
-			//we now need to bring the starting image to a sigma of initialSigma
-			//in order to start building the pyramid (every octave starts at 
-			//initialSigma sigmas).
-			float sigma = (float) Math.sqrt(options.initialSigma * options.initialSigma - currentSigma * currentSigma);
-			image.processInplace(new FGaussianConvolve(sigma));
+			// we now need to bring the starting image to a sigma of
+			// initialSigma
+			// in order to start building the pyramid (every octave starts at
+			// initialSigma sigmas).
+			final float sigma = (float) Math.sqrt(options.initialSigma * options.initialSigma - currentSigma
+					* currentSigma);
+			image.processInplace(this.options.createGaussianBlur(sigma));
 		}
 
-		//the minimum size image in the pyramid must be bigger than
-		//two pixels + whatever border is required by the options
-		//(on both sides).
-		int minImageSize = 2 + (2 * options.getBorderPixels());
-		
+		// the minimum size image in the pyramid must be bigger than
+		// two pixels + whatever border is required by the options
+		// (on both sides).
+		final int minImageSize = 2 + (2 * options.getBorderPixels());
+
 		while (image.getHeight() > minImageSize && image.getWidth() > minImageSize) {
-			//construct empty octave
-			GaussianOctave<I> currentOctave = new GaussianOctave<I>(this, octaveSize);
-			
-			//populate the octave with images; once the octave
-			//is complete any OctaveProcessor specified in the 
-			//options will be applied.
+			// construct empty octave
+			final GaussianOctave<I> currentOctave = new GaussianOctave<I>(this, octaveSize);
+
+			// populate the octave with images; once the octave
+			// is complete any OctaveProcessor specified in the
+			// options will be applied.
 			currentOctave.process(image);
-			
-			//get the image with 2*sigma from the octave and
-			//half its size ready for the next octave
+
+			// get the image with 2*sigma from the octave and
+			// half its size ready for the next octave
 			image = ResizeProcessor.halfSize(currentOctave.getNextOctaveImage());
-			
-			octaveSize *= 2.0; //the size of the octave increases by a factor of two each iteration
-			
-			//if the octaves array is not null we want to retain each octave.
+
+			octaveSize *= 2.0; // the size of the octave increases by a factor
+								// of two each iteration
+
+			// if the octaves array is not null we want to retain each octave.
 			if (octaves != null)
 				octaves.add(currentOctave);
 		}
-		
-		//if a PyramidProcessor was specified in the options it should
-		//be applied now all the octaves are complete.
+
+		// if a PyramidProcessor was specified in the options it should
+		// be applied now all the octaves are complete.
 		if (options.getPyramidProcessor() != null) {
 			options.getPyramidProcessor().process(this);
 		}
