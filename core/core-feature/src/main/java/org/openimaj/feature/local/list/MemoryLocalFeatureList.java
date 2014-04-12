@@ -250,11 +250,13 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?, ?>> extends ArrayL
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
+		resetVecLength();
 		LocalFeatureListUtils.writeBinary(out, this);
 	}
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
+		resetVecLength();
 		LocalFeatureListUtils.writeASCII(out, this);
 	}
 
@@ -268,14 +270,30 @@ public class MemoryLocalFeatureList<T extends LocalFeature<?, ?>> extends ArrayL
 		return "";
 	}
 
+	/*
+	 * @see org.openimaj.feature.local.list.LocalFeatureList#vecLength()
+	 */
 	@Override
 	public int vecLength() {
+		resetVecLength();
+
 		if (cached_veclen == -1) {
 			if (size() > 0) {
 				cached_veclen = get(0).getFeatureVector().length();
 			}
 		}
 		return cached_veclen;
+	}
+
+	/**
+	 * Reset the internal feature vector length to the length of the first
+	 * feature. You must call this if you change the length of the features
+	 * within the list.
+	 */
+	public void resetVecLength() {
+		if (size() > 0) {
+			cached_veclen = get(0).getFeatureVector().length();
+		}
 	}
 
 	/**
