@@ -460,6 +460,19 @@ public class GaussianMixtureModelEM {
 	 * convergence in the estimation of the returned model.
 	 * 
 	 * @param X
+	 *            the data matrix.
+	 * @return the generated GMM.
+	 */
+	public MixtureOfGaussians estimate(Matrix X) {
+		return estimate(X.getArray());
+	}
+
+	/**
+	 * Estimate a new {@link MixtureOfGaussians} from the given data. Use
+	 * {@link #hasConverged()} to check whether the EM algorithm reached
+	 * convergence in the estimation of the returned model.
+	 * 
+	 * @param X
 	 *            the data array.
 	 * @return the generated GMM.
 	 */
