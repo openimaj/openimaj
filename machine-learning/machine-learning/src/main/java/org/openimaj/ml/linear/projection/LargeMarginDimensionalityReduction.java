@@ -29,6 +29,8 @@
  */
 package org.openimaj.ml.linear.projection;
 
+import gnu.trove.list.array.TDoubleArrayList;
+
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.math.matrix.algorithm.pca.ThinSvdPrincipalComponentAnalysis;
 
@@ -59,8 +61,8 @@ import Jama.Matrix;
  */
 public class LargeMarginDimensionalityReduction {
 	public int ndims;
-	public double wLearnRate = 0.01;
-	public double bLearnRate = 0;
+	public double wLearnRate = 1; // gamma
+	public double bLearnRate = 0; // bias gamma
 	public Matrix W;
 	public double b;
 
@@ -68,58 +70,119 @@ public class LargeMarginDimensionalityReduction {
 		this.ndims = ndims;
 	}
 
-	public void initialise(double[][] data) {
+	public void initialise(double[][] datai, double[][] dataj, boolean[] same) {
+		final double[][] data = new double[2 * datai.length][];
+		for (int i = 0; i < datai.length; i++) {
+			data[2 * i] = datai[i];
+			data[2 * i + 1] = dataj[i];
+		}
+
 		final ThinSvdPrincipalComponentAnalysis pca = new ThinSvdPrincipalComponentAnalysis(ndims);
 		pca.learnBasis(data);
+		W = pca.getBasis().times(MatrixUtils.diag(pca.getEigenValues()).inverse()).transpose();
 
-		W = pca.getBasis()
-				.times(MatrixUtils.diag(pca.getEigenValues()).inverse()).transpose().times(100);
-
-		double sum = 0;
-		int count = 0;
-		for (int i = 0; i < data.length; i++) {
-			for (int j = i + 1; j < data.length; j++) {
-				sum += computeDistance(data[i], data[j]);
-				count++;
+		final TDoubleArrayList posDistances = new TDoubleArrayList();
+		final TDoubleArrayList negDistances = new TDoubleArrayList();
+		for (int i = 0; i < datai.length; i++) {
+			if (same[i]) {
+				posDistances.add(computeDistance(datai[i], dataj[i]));
+			} else {
+				negDistances.add(computeDistance(datai[i], dataj[i]));
 			}
 		}
 
-		b = 1000;// margin + sum / count;
+		b = computeOptimal(posDistances, negDistances);
+	}
+
+	private double computeOptimal(TDoubleArrayList posDistances, TDoubleArrayList negDistances) {
+		double bestAcc = 0;
+		double bestThresh = -Double.MAX_VALUE;
+		for (int i = 0; i < posDistances.size(); i++) {
+			final double thresh = posDistances.get(i);
+
+			final double acc = computeAccuracy(posDistances, negDistances, thresh);
+
+			if (acc > bestAcc) {
+				bestAcc = acc;
+				bestThresh = thresh;
+			}
+		}
+
+		for (int i = 0; i < negDistances.size(); i++) {
+			final double thresh = negDistances.get(i);
+
+			final double acc = computeAccuracy(posDistances, negDistances, thresh);
+
+			if (acc > bestAcc) {
+				bestAcc = acc;
+				bestThresh = thresh;
+			}
+		}
+
+		return bestThresh;
+	}
+
+	private double computeAccuracy(TDoubleArrayList posDistances, TDoubleArrayList negDistances, double thresh) {
+		int correct = 0;
+		for (int i = 0; i < posDistances.size(); i++) {
+			if (posDistances.get(i) < thresh)
+				correct++;
+		}
+
+		for (int i = 0; i < negDistances.size(); i++) {
+			if (negDistances.get(i) >= thresh)
+				correct++;
+		}
+
+		return (double) correct / (double) (posDistances.size() + negDistances.size());
 	}
 
 	private double computeDistance(double[] phii, double[] phij) {
-		final Matrix diff = new Matrix(phii.length, 1);
-
-		for (int i = 0; i < phii.length; i++) {
-			diff.set(i, 0, phii[i] - phij[i]);
-		}
+		final Matrix diff = diff(phii, phij);
 
 		return diff.transpose().times(W.transpose()).times(W).times(diff).get(0, 0);
+	}
+
+	private Matrix diff(double[] phii, double[] phij) {
+		final Matrix diff = new Matrix(phii.length, 1);
+		final double[][] diffv = diff.getArray();
+
+		for (int i = 0; i < phii.length; i++) {
+			diffv[i][0] = phii[i] - phij[i];
+		}
+		return diff;
+	}
+
+	private double sumsq(Matrix diffProj) {
+		final double[][] v = diffProj.getArray();
+
+		if (v[0].length != 1)
+			throw new RuntimeException();
+
+		double sumsq = 0;
+		for (int i = 0; i < v.length; i++) {
+			sumsq += v[i][0] * v[i][0];
+		}
+
+		return sumsq;
 	}
 
 	public boolean step(double[] phii, double[] phij, boolean same) {
 		final int yij = same ? 1 : -1;
 
-		if (yij * (b - computeDistance(phii, phij)) > 1)
+		final Matrix diff = diff(phii, phij);
+		final Matrix diffProj = W.times(diff);
+		final double sumsq = sumsq(diffProj);
+
+		if (yij * (b - sumsq) > 1)
 			return false;
 
-		System.out.println(same + " " + computeDistance(phii, phij));
-
-		final Matrix diff = new Matrix(phii.length, 1);
-		for (int i = 0; i < phii.length; i++) {
-			diff.set(i, 0, phii[i] - phij[i]);
-		}
-
-		// final Matrix psi = diff.times(diff.transpose());
-		// final Matrix updateW = W.times(psi).times(wLearnRate * yij);
-		final Matrix updateW = W.times(diff).times(diff.transpose()).times(wLearnRate * yij);
+		final Matrix updateW = diffProj.times(wLearnRate * yij).times(diff.transpose());
 
 		W.minusEquals(updateW);
 
-		b -= yij * bLearnRate;
+		b += yij * bLearnRate;
 
-		System.out.println(MatrixUtils.toMatlabString(W));
-		System.out.println(b);
 		return true;
 	}
 

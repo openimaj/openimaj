@@ -58,7 +58,15 @@ public class FVFWDSift {
 							sift.analyseImage(i);
 							// System.out.println(i.width + " " + i.height + " "
 							// + sift.getFloatKeypoints().size());
-							allKeys.addAll(sift.getFloatKeypoints());
+
+							final double scale = 160.0 / i.height;
+							final LocalFeatureList<FloatDSIFTKeypoint> kps = sift.getFloatKeypoints();
+							for (final FloatDSIFTKeypoint kp : kps) {
+								kp.x *= scale;
+								kp.y *= scale;
+							}
+
+							allKeys.addAll(kps);
 						}
 						for (final FloatDSIFTKeypoint kp : allKeys) {
 							for (int i = 0; i < 128; i++) {
