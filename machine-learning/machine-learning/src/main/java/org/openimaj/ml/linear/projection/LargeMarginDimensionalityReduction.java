@@ -60,16 +60,59 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class LargeMarginDimensionalityReduction {
-	public int ndims;
-	public double wLearnRate = 1; // gamma
-	public double bLearnRate = 0; // bias gamma
-	public Matrix W;
-	public double b;
+	protected int ndims;
+	protected double wLearnRate = 1; // gamma
+	protected double bLearnRate = 0; // bias gamma
+	protected Matrix W;
+	protected double b;
 
+	/**
+	 * Construct with the given target dimensionality and default values for the
+	 * other parameters (learning rate of 1.0 for W; learning rate of 0 for
+	 * bias).
+	 * 
+	 * @param ndims
+	 *            target number of dimensions
+	 */
 	public LargeMarginDimensionalityReduction(int ndims) {
 		this.ndims = ndims;
 	}
 
+	/**
+	 * Construct with the given target dimensionality learning rates.
+	 * 
+	 * @param ndims
+	 *            target number of dimensions
+	 * @param wLearnRate
+	 *            learning rate for the transform matrix, W.
+	 * @param bLearnRate
+	 *            learning rate for the bias, b.
+	 */
+	public LargeMarginDimensionalityReduction(int ndims, double wLearnRate, double bLearnRate) {
+		this.ndims = ndims;
+	}
+
+	/**
+	 * Initialise the LMDR with the given data in three parallel data arrays.
+	 * The first two arrays together store pairs of vectors, and the third array
+	 * indicate whether the vectors in each pair represent the same class or
+	 * different classes. All three arrays should obviously have the same
+	 * length, and approximately equal numbers of true and false pairs.
+	 * <p>
+	 * Internally, this method gathers together all the vectors and performs
+	 * {@link ThinSvdPrincipalComponentAnalysis} to get a starting estimate for
+	 * the transform matrix. The distance in the projected space between all
+	 * true pairs and false pairs is computed and used to select an optimal
+	 * initial threshold.
+	 * 
+	 * @param datai
+	 *            array of the first vectors of the pairs
+	 * @param dataj
+	 *            array of the second vectors of the pairs
+	 * @param same
+	 *            array indicating where pairs are true (from the same class) or
+	 *            false (from different classes)
+	 */
 	public void initialise(double[][] datai, double[][] dataj, boolean[] same) {
 		final double[][] data = new double[2 * datai.length][];
 		for (int i = 0; i < datai.length; i++) {
@@ -84,10 +127,14 @@ public class LargeMarginDimensionalityReduction {
 		final TDoubleArrayList posDistances = new TDoubleArrayList();
 		final TDoubleArrayList negDistances = new TDoubleArrayList();
 		for (int i = 0; i < datai.length; i++) {
+			final Matrix diff = diff(datai[i], dataj[i]);
+			final Matrix diffProj = W.times(diff);
+			final double dist = sumsq(diffProj);
+
 			if (same[i]) {
-				posDistances.add(computeDistance(datai[i], dataj[i]));
+				posDistances.add(dist);
 			} else {
-				negDistances.add(computeDistance(datai[i], dataj[i]));
+				negDistances.add(dist);
 			}
 		}
 
@@ -137,12 +184,6 @@ public class LargeMarginDimensionalityReduction {
 		return (double) correct / (double) (posDistances.size() + negDistances.size());
 	}
 
-	private double computeDistance(double[] phii, double[] phij) {
-		final Matrix diff = diff(phii, phij);
-
-		return diff.transpose().times(W.transpose()).times(W).times(diff).get(0, 0);
-	}
-
 	private Matrix diff(double[] phii, double[] phij) {
 		final Matrix diff = new Matrix(phii.length, 1);
 		final double[][] diffv = diff.getArray();
@@ -164,6 +205,18 @@ public class LargeMarginDimensionalityReduction {
 		return sumsq;
 	}
 
+	/**
+	 * Perform a single update step of the SGD optimisation. Alternate calls to
+	 * this method should swap between true and false pairs.
+	 * 
+	 * @param phii
+	 *            first vector
+	 * @param phij
+	 *            second vector
+	 * @param same
+	 *            true if the vectors are from the same class; false otherwise
+	 * @return true if the transform matrix was changed; false otherwise
+	 */
 	public boolean step(double[] phii, double[] phij, boolean same) {
 		final int yij = same ? 1 : -1;
 
@@ -207,6 +260,61 @@ public class LargeMarginDimensionalityReduction {
 		}
 	}
 
+	/**
+	 * Get the transform matrix W
+	 * 
+	 * @return the transform matrix
+	 */
+	public Matrix getTransform() {
+		return W;
+	}
+
+	/**
+	 * Get the bias, b
+	 * 
+	 * @return the bias
+	 */
+	public double getBias() {
+		return b;
+	}
+
+	/**
+	 * Compute the matching score between a pair of (high dimensional) features.
+	 * Scores >=0 indicate a matching pair.
+	 * 
+	 * @param phii
+	 *            first vector
+	 * @param phij
+	 *            second vector
+	 * @return the matching score
+	 */
+	public double score(double[] phii, double[] phij) {
+		final Matrix diff = diff(phii, phij);
+		final Matrix diffProj = W.times(diff);
+
+		return b - sumsq(diffProj);
+	}
+
+	/**
+	 * Determine if two features are from the same class or different classes.
+	 * 
+	 * @param phii
+	 *            first vector
+	 * @param phij
+	 *            second vector
+	 * @return the classification (true if same class; false if different)
+	 */
+	public boolean classify(double[] phii, double[] phij) {
+		return score(phii, phij) >= 0;
+	}
+
+	/**
+	 * Compute the low rank estimate of the given vector
+	 * 
+	 * @param in
+	 *            the vector
+	 * @return the low-rank projection of the vector
+	 */
 	public double[] project(double[] in) {
 		return W.times(new Matrix(new double[][] { in }).transpose()).getColumnPackedCopy();
 	}
