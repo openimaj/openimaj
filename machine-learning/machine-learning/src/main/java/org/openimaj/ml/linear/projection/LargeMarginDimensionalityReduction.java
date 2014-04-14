@@ -156,9 +156,6 @@ public class LargeMarginDimensionalityReduction {
 	private double sumsq(Matrix diffProj) {
 		final double[][] v = diffProj.getArray();
 
-		if (v[0].length != 1)
-			throw new RuntimeException();
-
 		double sumsq = 0;
 		for (int i = 0; i < v.length; i++) {
 			sumsq += v[i][0] * v[i][0];
@@ -177,13 +174,37 @@ public class LargeMarginDimensionalityReduction {
 		if (yij * (b - sumsq) > 1)
 			return false;
 
-		final Matrix updateW = diffProj.times(wLearnRate * yij).times(diff.transpose());
-
-		W.minusEquals(updateW);
+		// final Matrix updateW = diffProj.times(wLearnRate *
+		// yij).times(diff.transpose());
+		// W.minusEquals(updateW);
+		fastUpdate(diffProj, wLearnRate * yij, diff);
 
 		b += yij * bLearnRate;
 
 		return true;
+	}
+
+	/**
+	 * This efficiently computes the update in place without creating loads of
+	 * temporary matrices, and does so in a single pass!
+	 * 
+	 * @param diffProj
+	 * @param weight
+	 * @param diff
+	 */
+	private void fastUpdate(Matrix diffProj, double weight, Matrix diff) {
+		// final Matrix updateW = diffProj.times(wLearnRate *
+		// yij).times(diff.transpose());
+		// W.minusEquals(updateW);
+
+		final double[][] dp = diffProj.getArray();
+		final double[][] d = diff.getArray();
+		final double[][] Wdata = W.getArray();
+		for (int r = 0; r < Wdata.length; r++) {
+			for (int c = 0; c < Wdata.length; c++) {
+				Wdata[r][c] -= weight * dp[r][0] * d[c][0];
+			}
+		}
 	}
 
 	public double[] project(double[] in) {
