@@ -61,8 +61,8 @@ import Jama.Matrix;
  */
 public class LargeMarginDimensionalityReduction {
 	protected int ndims;
-	protected double wLearnRate = 1; // gamma
-	protected double bLearnRate = 0; // bias gamma
+	protected double wLearnRate = 0.25; // gamma
+	protected double bLearnRate = 1; // bias gamma
 	protected Matrix W;
 	protected double b;
 
@@ -122,7 +122,13 @@ public class LargeMarginDimensionalityReduction {
 
 		final ThinSvdPrincipalComponentAnalysis pca = new ThinSvdPrincipalComponentAnalysis(ndims);
 		pca.learnBasis(data);
-		W = pca.getBasis().times(MatrixUtils.diag(pca.getEigenValues()).inverse()).transpose();
+
+		final double[] evs = pca.getEigenValues();
+		final double[] invStdDev = new double[ndims];
+		for (int i = 0; i < ndims; i++)
+			invStdDev[i] = 1.0 / Math.sqrt(evs[i]);
+
+		W = MatrixUtils.diag(invStdDev).times(pca.getBasis().transpose());
 
 		final TDoubleArrayList posDistances = new TDoubleArrayList();
 		final TDoubleArrayList negDistances = new TDoubleArrayList();

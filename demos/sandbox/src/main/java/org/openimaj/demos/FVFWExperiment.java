@@ -29,7 +29,7 @@ public class FVFWExperiment {
 		}
 
 		FloatFV loadSecond() throws IOException {
-			return IOUtils.read(firstFV, FloatFV.class);
+			return IOUtils.read(secondFV, FloatFV.class);
 		}
 	}
 
@@ -188,29 +188,50 @@ public class FVFWExperiment {
 		final List<Subset> subsets = loadSubsets();
 		final Subset fold = createExperimentalFold(subsets, 1);
 
-		/*
-		 * final LargeMarginDimensionalityReduction lmdr = new
-		 * LargeMarginDimensionalityReduction(128);
-		 * 
-		 * final double[][] fInit = new double[1000][]; final double[][] sInit =
-		 * new double[1000][]; final boolean[] same = new boolean[1000]; for
-		 * (int i = 0; i < 1000; i++) { final FacePair p =
-		 * fold.trainingPairs.get(i); fInit[i] = p.loadFirst().asDoubleVector();
-		 * sInit[i] = p.loadSecond().asDoubleVector(); same[i] = p.same; }
-		 * 
-		 * System.out.println("LMDR Init"); lmdr.initialise(fInit, sInit, same);
-		 * IOUtils.writeToFile(lmdr, new
-		 * File("/Users/jon/Data/lfw/lmdr-init.bin"));
-		 */
+		// final LargeMarginDimensionalityReduction lmdr = new
+		// LargeMarginDimensionalityReduction(128);
+		//
+		// final double[][] fInit = new double[1000][];
+		// final double[][] sInit = new double[1000][];
+		// final boolean[] same = new boolean[1000];
+		// for (int i = 0; i < 1000; i++) {
+		// final FacePair p =
+		// fold.trainingPairs.get(i);
+		// fInit[i] = p.loadFirst().asDoubleVector();
+		// sInit[i] = p.loadSecond().asDoubleVector();
+		// same[i] = p.same;
+		// }
+		//
+		// System.out.println("LMDR Init");
+		// lmdr.initialise(fInit, sInit, same);
+		// IOUtils.writeToFile(lmdr, new
+		// File("/Users/jon/Data/lfw/lmdr-init.bin"));
+		// // final LargeMarginDimensionalityReduction lmdr = IOUtils
+		// // .readFromFile(new File("/Users/jon/Data/lfw/lmdr-init.bin"));
+		//
+		// for (int i = 0; i < 1e6; i++) {
+		// if (i % 100 == 0)
+		// System.out.println("Iter " + i);
+		// final FacePair p = fold.trainingPairs.get(i);
+		// lmdr.step(p.loadFirst().asDoubleVector(),
+		// p.loadSecond().asDoubleVector(), p.same);
+		// }
+		// IOUtils.writeToFile(lmdr, new File("/Users/jon/Data/lfw/lmdr.bin"));
+
 		final LargeMarginDimensionalityReduction lmdr = IOUtils
 				.readFromFile(new File("/Users/jon/Data/lfw/lmdr-init.bin"));
+		double correct = 0;
+		double count = 0;
+		for (final FacePair p : fold.testPairs) {
+			final boolean pred = lmdr.classify(p.loadFirst().asDoubleVector(), p.loadSecond().asDoubleVector());
+			final double score = lmdr.score(p.loadFirst().asDoubleVector(), p.loadSecond().asDoubleVector());
 
-		for (int i = 0; i < 1e6; i++) {
-			if (i % 10 == 0)
-				System.out.println("Iter " + i);
-			final FacePair p = fold.trainingPairs.get(i);
-			lmdr.step(p.loadFirst().asDoubleVector(), p.loadSecond().asDoubleVector(), p.same);
+			System.out.println(p.same + " " + pred + " " + score);
+
+			if (pred == p.same)
+				correct++;
+			count++;
 		}
-		IOUtils.writeToFile(lmdr, new File("/Users/jon/Data/lfw/lmdr.bin"));
+		System.out.println(correct / count);
 	}
 }

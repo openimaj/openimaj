@@ -2,8 +2,7 @@ package org.openimaj.demos;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
@@ -17,8 +16,6 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.Parallel;
 
-import scala.actors.threadpool.Arrays;
-
 public class FVFWDSift {
 	static interface DSFactory {
 		DenseSIFT create();
@@ -27,8 +24,6 @@ public class FVFWDSift {
 	@SuppressWarnings("unchecked")
 	private static void extractPDSift(final File indir, final File outDir, final DSFactory factory) throws IOException
 	{
-		final List<String> skipped = new ArrayList<String>();
-
 		Parallel.forEach(Arrays.asList(indir.listFiles()), new Operation<File>() {
 
 			@Override
@@ -69,10 +64,15 @@ public class FVFWDSift {
 							allKeys.addAll(kps);
 						}
 						for (final FloatDSIFTKeypoint kp : allKeys) {
+							// rootsift
+							double norm = 0;
 							for (int i = 0; i < 128; i++) {
-								// rootsift
-								final int sgn = kp.descriptor[i] >= 0 ? 1 : -1;
-								kp.descriptor[i] = (float) (sgn * Math.sqrt(kp.descriptor[i] * sgn));
+								kp.descriptor[i] = (float) (Math.sqrt(kp.descriptor[i]));
+								norm += kp.descriptor[i] * kp.descriptor[i];
+							}
+							norm = Math.max(Math.sqrt(norm), Double.MIN_NORMAL);
+							for (int i = 0; i < 128; i++) {
+								kp.descriptor[i] /= norm;
 							}
 						}
 
@@ -101,7 +101,7 @@ public class FVFWDSift {
 		};
 
 		extractPDSift(
-				new File("/Volumes/Raid/face_databases/lfw-centre-affine/"),
+				new File("/Volumes/Raid/face_databases/lfw-centre-affine-matlab/"),
 				new File("/Volumes/Raid/face_databases/lfw-centre-affine-pdsift/"),
 				factory);
 	}

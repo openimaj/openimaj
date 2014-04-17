@@ -18,7 +18,7 @@ public class FVFWDSiftPCAAugmentGMM {
 	public static void main(String[] args) throws IOException {
 		final File indir = new File("/Volumes/Raid/face_databases/lfw-centre-affine-pdsift-pca64-augm/");
 
-		final Matrix samples = FVFWDSiftPCA.sample(indir, 100000);
+		final Matrix samples = FVFWDSiftPCAAugment.sample(indir, 100000);
 
 		final GaussianMixtureModelEM gmmem = new GaussianMixtureModelEM(512, CovarianceType.Diagonal);
 		final MixtureOfGaussians mog = gmmem.estimate(samples);
