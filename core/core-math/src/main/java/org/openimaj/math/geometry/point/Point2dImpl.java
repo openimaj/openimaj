@@ -100,6 +100,21 @@ public class Point2dImpl implements Point2d, Cloneable {
 		y = coord.getOrdinate(1).floatValue();
 	}
 
+	/**
+	 * Construct a Point2dImpl with the given (x, y) coordinates. The values
+	 * will be cast to single precision.
+	 * 
+	 * @param x
+	 *            x-coordinate
+	 * @param y
+	 *            y-coordinate
+	 */
+	public Point2dImpl(double x, double y)
+	{
+		this.x = (float) x;
+		this.y = (float) y;
+	}
+
 	@Override
 	public float getX() {
 		return x;

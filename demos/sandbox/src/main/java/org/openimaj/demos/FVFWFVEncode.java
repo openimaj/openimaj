@@ -27,7 +27,7 @@ public class FVFWFVEncode {
 		IOUtils.writeToFile(fisher, new File(
 				"/Volumes/Raid/face_databases/lfw-centre-affine-pdsift-pca64-augm-gmm512-fisher.bin"));
 
-		final File indir = new File("/Volumes/Raid/face_databases/lfw-centre-affine-pdsift-pca64-augm/");
+		final File indir = new File("/Volumes/Raid/face_databases/lfw-centre-affine-pdsift-pca64/");
 		final File outdir = new File("/Volumes/Raid/face_databases/lfw-centre-affine-pdsift-pca64-augm-fv512/");
 
 		Parallel.forEach(Arrays.asList(indir.listFiles()), new Operation<File>() {

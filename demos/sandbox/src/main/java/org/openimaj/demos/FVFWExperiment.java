@@ -200,6 +200,13 @@ public class FVFWExperiment {
 		// fInit[i] = p.loadFirst().asDoubleVector();
 		// sInit[i] = p.loadSecond().asDoubleVector();
 		// same[i] = p.same;
+		//
+		// for (int j = 0; j < fInit[i].length; j++) {
+		// if (Double.isInfinite(fInit[i][j]) || Double.isNaN(fInit[i][j]))
+		// throw new RuntimeException("" + fold.trainingPairs.get(i).firstFV);
+		// if (Double.isInfinite(sInit[i][j]) || Double.isNaN(sInit[i][j]))
+		// throw new RuntimeException("" + fold.trainingPairs.get(i).secondFV);
+		// }
 		// }
 		//
 		// System.out.println("LMDR Init");
@@ -219,12 +226,14 @@ public class FVFWExperiment {
 		// IOUtils.writeToFile(lmdr, new File("/Users/jon/Data/lfw/lmdr.bin"));
 
 		final LargeMarginDimensionalityReduction lmdr = IOUtils
-				.readFromFile(new File("/Users/jon/Data/lfw/lmdr-init.bin"));
+				.readFromFile(new File("/Users/jon/Data/lfw/lmdr.bin"));
 		double correct = 0;
 		double count = 0;
 		for (final FacePair p : fold.testPairs) {
-			final boolean pred = lmdr.classify(p.loadFirst().asDoubleVector(), p.loadSecond().asDoubleVector());
-			final double score = lmdr.score(p.loadFirst().asDoubleVector(), p.loadSecond().asDoubleVector());
+			final boolean pred = lmdr.classify(p.loadFirst().asDoubleVector(),
+					p.loadSecond().asDoubleVector());
+			final double score = lmdr.score(p.loadFirst().asDoubleVector(),
+					p.loadSecond().asDoubleVector());
 
 			System.out.println(p.same + " " + pred + " " + score);
 
