@@ -18,11 +18,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-		<dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.2.5</version>
-    </dependency>
+			<dependency>
+		        <groupId>org.geotools</groupId>
+		        <artifactId>gt-referencing</artifactId>
+		        <version>12-SNAPSHOT</version>
+		    </dependency>
+			<dependency>
+		      <groupId>org.apache.httpcomponents</groupId>
+		      <artifactId>httpclient</artifactId>
+		      <version>4.2.5</version>
+		    </dependency>
 		<dependency>
 			<groupId>org.openimaj.hardware</groupId>
 			<artifactId>serial-driver</artifactId>

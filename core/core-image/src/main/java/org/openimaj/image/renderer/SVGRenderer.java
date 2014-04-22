@@ -32,6 +32,9 @@ package org.openimaj.image.renderer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.geom.Area;
+import java.awt.geom.Path2D;
+import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.Writer;
@@ -44,6 +47,7 @@ import org.apache.batik.ext.awt.image.spi.ImageWriterRegistry;
 import org.apache.batik.svggen.CachedImageHandlerBase64Encoder;
 import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.GenericImageHandler;
+import org.apache.batik.svggen.SVGCSSStyler;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.svggen.SVGGraphics2DIOException;
@@ -60,9 +64,11 @@ import org.openimaj.math.geometry.shape.Shape;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGSVGElement;
+import org.xml.sax.XMLReader;
 
 /**
  * {@link ImageRenderer} for {@link FImage} images. Supports both anti-aliased
@@ -128,14 +134,14 @@ public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 	private void prepareSVG() {
 		DOMImplementation impl = GenericDOMImplementation.getDOMImplementation();
 		String svgNS = "http://www.w3.org/2000/svg";
-		Document myFactory = impl.createDocument(svgNS, "svg", null);
+		Document doc = impl.createDocument(svgNS, "svg", null);
 		// Create an instance of the SVG Generator
-	    SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(myFactory);
+	    SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(doc);
 	    
 	 
 	    // Reuse our embedded base64-encoded image data.
-	    GenericImageHandler ihandler = new CachedImageHandlerBase64Encoder();
-	    ctx.setGenericImageHandler(ihandler);
+//	    GenericImageHandler ihandler = new CachedImageHandlerBase64Encoder();
+//	    ctx.setGenericImageHandler(ihandler);
 		this.svgGen = new SVGGraphics2D(ctx,false);
 		
 		if(this.targetImage != null){
@@ -192,15 +198,18 @@ public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 	@Override
 	public void drawPoint(Point2d p, Float[] col, int size) {
 		this.svgGen.setColor(colorFromFloats(col));
-		this.svgGen.drawOval((int)p.getX(), (int)p.getY(), size, size);
+		Path2D.Double path = new Path2D.Double();
+		path.moveTo(p.getX(), p.getY());
+		path.lineTo(p.getX(), p.getY());
+		this.svgGen.draw(path );
 	}
 
 	@Override
 	public void drawPolygon(Polygon p, int thickness, Float[] col) {
 		this.svgGen.setColor(colorFromFloats(col));
-		List<java.awt.Polygon> a = jPolyFromPolygon(p);
-		for (java.awt.Polygon polygon : a) {
-			this.svgGen.drawPolygon(polygon);
+		List<Area> a = jPolyFromPolygon(p);
+		for (Area polygon : a) {
+			this.svgGen.draw(polygon);
 		}
 		
 	}
@@ -208,9 +217,9 @@ public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 	@Override
 	public void drawPolygonFilled(Polygon p, Float[] col) {
 		this.svgGen.setColor(colorFromFloats(col));
-		List<java.awt.Polygon> a = jPolyFromPolygon(p);
-		for (java.awt.Polygon polygon : a) {
-			this.svgGen.fillPolygon(polygon);
+		List<Area> a = jPolyFromPolygon(p);
+		for (Area polygon : a) {
+			this.svgGen.fill(polygon);
 		}
 	}
 	
@@ -219,20 +228,22 @@ public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 		super.drawPolygonFilled(s.asPolygon(), col);
 	}
 
-	private List<java.awt.Polygon> jPolyFromPolygon(Polygon p) {
-		List<java.awt.Polygon> ret = new ArrayList<java.awt.Polygon>();
-		
-		int[] xpoints = new int[p.nVertices()];
-		int[] ypoints = new int[p.nVertices()];
-		int npoints = p.nVertices();
-		int i = 0;
+	private List<java.awt.geom.Area> jPolyFromPolygon(Polygon p) {
+		List<java.awt.geom.Area> ret = new ArrayList<java.awt.geom.Area>();
+		Path2D path = new Path2D.Double();
+		boolean start = true;
 		for (Point2d p2d : p.getVertices()) {
-			xpoints[i] = (int) p2d.getX();
-			ypoints[i] = (int) p2d.getY();
-			i++;
+			if(start){
+				path.moveTo(p2d.getX(), p2d.getY());
+				start = false;
+			}
+			else{
+				path.lineTo(p2d.getX(), p2d.getY());
+			}
+			
 		}
-		java.awt.Polygon pp = new java.awt.Polygon(xpoints, ypoints, npoints);
-		ret.add(pp );
+		java.awt.geom.Area pp = new java.awt.geom.Area();
+		ret.add(new java.awt.geom.Area(path));
 		return ret;
 	}
 
@@ -294,5 +305,37 @@ public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 
 	public SVGGraphics2D getGraphics2D() {
 		return this.svgGen;
+	}
+
+	public Document getDocument() {
+		Element root = svgGen.getRoot();
+		//
+        // Enforce that the default and xlink namespace
+        // declarations appear on the root element
+        //
+        
+        Document doc = null;
+        try {
+            //
+            // Enforce that the default and xlink namespace
+            // declarations appear on the root element
+            //
+        	root.setAttributeNS(SVGGraphics2D.XMLNS_NAMESPACE_URI,
+            		SVGGraphics2D.XMLNS_PREFIX,
+            		SVGGraphics2D.SVG_NAMESPACE_URI);
+
+            root.setAttributeNS(SVGGraphics2D.XMLNS_NAMESPACE_URI,
+            		SVGGraphics2D.XMLNS_PREFIX + ":" + SVGGraphics2D.XLINK_PREFIX,
+            		SVGGraphics2D.XLINK_NAMESPACE_URI);
+//            DOMImplementation impl = GenericDOMImplementation.getDOMImplementation();
+//            String svgNS = "http://www.w3.org/2000/svg";
+//    		doc = impl.createDocument(svgNS, "svg", null);
+//            doc.appendChild(root);
+        }
+        catch (Exception e){
+        	
+        }
+		return root.getOwnerDocument();
+		
 	}
 }

@@ -1,8 +1,12 @@
 package org.openimaj.demos.sandbox.twitter.images;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+
+import javax.swing.JFrame;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
@@ -68,31 +72,38 @@ public class DisplayTwitterImages {
 				});
 			}
 		}).start();
-
+		final int N_ROWS = 10; 
+		final int IMAGE_WH= 50;
+		final MBFImage b = new MBFImage(IMAGE_WH * N_ROWS, IMAGE_WH * N_ROWS, ColourSpace.RGB);
+		final ResizeProcessor rp = new ResizeProcessor(IMAGE_WH);
+		final JFrame f = DisplayUtilities.displaySimple(b, "image");
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice dev = env.getScreenDevices()[1];
+		dev.setFullScreenWindow(f);
+		final MBFImage base = new MBFImage(f.getWidth(), f.getHeight(), ColourSpace.RGB);
 		imageStream.forEach(new Operation<MBFImage>() {
+			
 			int currentX = 0;
 			int currentY = 0;
-			MBFImage base = new MBFImage(320 * 3, 320 * 3, ColourSpace.RGB);
-			ResizeProcessor rp = new ResizeProcessor(320);
-
 			@Override
 			public void perform(MBFImage object) {
 				MBFImage r = object.process(rp);
 
-				final int dx = (320 - r.getWidth()) / 2;
-				final int dy = (320 - r.getHeight()) / 2;
+				final int dx = (IMAGE_WH - r.getWidth()) / 2;
+				final int dy = (IMAGE_WH - r.getHeight()) / 2;
 
 				r = r.padding(dx, dy, RGBColour.WHITE);
-				base.drawImage(r, currentX * 320, currentY * 320);
+				base.drawImage(r, currentX * IMAGE_WH, currentY * IMAGE_WH);
 				currentX++;
-				if (currentX == 3) {
+				if (currentX == base.getWidth()/IMAGE_WH) {
 					currentY++;
 					currentX = 0;
 				}
-				if (currentY == 3)
+				if (currentY == base.getHeight()/IMAGE_WH)
 					currentY = 0;
 
-				DisplayUtilities.displayName(base, "image");
+				DisplayUtilities.display(base, f);
+				
 			}
 		});
 	}

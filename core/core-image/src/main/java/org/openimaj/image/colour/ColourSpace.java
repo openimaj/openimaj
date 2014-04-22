@@ -799,6 +799,32 @@ public enum ColourSpace {
 	 * @return image in the current colour space
 	 */
 	public abstract MBFImage convertFromRGB(MBFImage input);
+	
+	/**
+	 * Convert the given RGB image to the current colour space
+	 * 
+	 * @param input
+	 *            RGB image
+	 * @return image in the current colour space
+	 */
+	public Float[] convertFromRGB(Float[] input){
+		MBFImage singlePixel = new MBFImage(1,1,ColourSpace.RGB);
+		singlePixel.setPixel(0, 0, input);
+		return convertFromRGB(singlePixel).getPixel(0,0);
+	};
+	
+	/**
+	 * Convert the given RGB image to the current colour space
+	 * 
+	 * @param input
+	 *            RGB image
+	 * @return image in the current colour space
+	 */
+	public Float[] convertToRGB(Float[] input){
+		MBFImage singlePixel = new MBFImage(1,1,this);
+		singlePixel.setPixel(0, 0, input);
+		return convertToRGB(singlePixel).getPixel(0,0);
+	};
 
 	/**
 	 * Convert the image in this color space to RGB

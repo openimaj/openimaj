@@ -105,6 +105,7 @@ public abstract class AbstractTwitterSearchDataset<T> extends BlockingDroppingBu
 		public void run() {
 			while (true) {
 				try {
+					logger.debug("Querying...");
 					final Query query = AbstractTwitterSearchDataset.this.getQuery();
 
 					QueryMetaInfo metaInfo = metaInfoMap.get(query);
@@ -119,6 +120,7 @@ public abstract class AbstractTwitterSearchDataset<T> extends BlockingDroppingBu
 					if (res.getCount() == 0) {
 						metaInfo.backoff++;
 						Thread.sleep(ZERO_RESULT_BACKOFF * metaInfo.backoff);
+						logger.error("Backing off");
 					} else {
 						metaInfo.backoff = 0;
 					}
@@ -152,8 +154,8 @@ public abstract class AbstractTwitterSearchDataset<T> extends BlockingDroppingBu
 	}
 
 	private static final long DEFAULT_ERROR_BUT_NO_WAIT_TIME = 5000;
-	private static final long SLEEP_PER_SEARCH = (1000 * 60) / 10l;
-	private static final int ZERO_RESULT_BACKOFF = 2000;
+	private static final long SLEEP_PER_SEARCH = (1000 * 60) / 30l;
+	private static final int ZERO_RESULT_BACKOFF = 1000;
 
 	protected Query query;
 	protected Logger logger = Logger.getLogger(TwitterSearchDataset.class);

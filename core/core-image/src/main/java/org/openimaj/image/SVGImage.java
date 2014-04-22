@@ -21,7 +21,6 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.fop.svg.PDFTranscoder;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
@@ -351,7 +350,7 @@ public class SVGImage extends Image<Float[], SVGImage> {
 	public static void main(String[] args) throws IOException, TranscoderException {
 		SVGImage img = new SVGImage(10000,10000);
 		img.drawShape(new Circle(50, 50, 30), RGBColour.RED);
-		ImageUtilities.write(img, new File("/home/ss/out.pdf"), new PDFTranscoder());
+//		ImageUtilities.write(img, new File("/home/ss/out.pdf"), new PDFTranscoder());
 	}
 
 }

@@ -281,13 +281,7 @@ public class ImageUtilities {
 	 * @throws TranscoderException 
 	 */
 	public static void write(final SVGImage image, final File output, Transcoder trans) throws IOException, TranscoderException {
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		image.createRenderer().write(new OutputStreamWriter(baos));
-		baos.flush();
-		baos.close();
-		byte[] streamBytes = baos .toByteArray();
-		TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(streamBytes ));
+		TranscoderInput input = new TranscoderInput(image.createRenderer().getDocument());
         TranscoderOutput toutput = new TranscoderOutput(new FileOutputStream(output));
 
         trans.transcode(input, toutput);
