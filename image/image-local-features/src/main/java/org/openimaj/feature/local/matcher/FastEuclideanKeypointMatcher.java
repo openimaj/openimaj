@@ -36,13 +36,14 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.knn.approximate.ByteNearestNeighboursKDTree;
 import org.openimaj.util.pair.Pair;
 
-
 /**
  * 
- * Uses a ByteKDTree to estimate approximate nearest neighbours more efficiently.
+ * Uses a ByteKDTree to estimate approximate nearest neighbours more
+ * efficiently.
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  * @param <T>
  */
 public class FastEuclideanKeypointMatcher<T extends Keypoint> implements LocalFeatureMatcher<T> {
@@ -50,46 +51,47 @@ public class FastEuclideanKeypointMatcher<T extends Keypoint> implements LocalFe
 	private int threshold;
 	protected List<Pair<T>> matches;
 	private List<T> modelKeypoints;
-	
+
 	/**
-	 * @param threshold threshold for determining matching keypoints
+	 * @param threshold
+	 *            threshold for determining matching keypoints
 	 */
 	public FastEuclideanKeypointMatcher(int threshold) {
 		this.threshold = threshold;
 	}
-	
+
 	@Override
 	public void setModelFeatures(List<T> modelkeys) {
 		modelKeypoints = modelkeys;
-		
-		byte [][] data = new byte[modelkeys.size()][];
-		for (int i=0; i<modelkeys.size(); i++)
+
+		final byte[][] data = new byte[modelkeys.size()][];
+		for (int i = 0; i < modelkeys.size(); i++)
 			data[i] = modelkeys.get(i).ivec;
-		
+
 		modelKeypointsKNN = new ByteNearestNeighboursKDTree(data, 8, 768);
 	}
 
 	@Override
 	public boolean findMatches(List<T> keys1) {
 		matches = new ArrayList<Pair<T>>();
-		
-		byte [][] data = new byte[keys1.size()][];
-		for (int i=0; i<keys1.size(); i++)
+
+		final byte[][] data = new byte[keys1.size()][];
+		for (int i = 0; i < keys1.size(); i++)
 			data[i] = keys1.get(i).ivec;
-		
-		int [] argmins = new int[keys1.size()];
-		float [] mins = new float[keys1.size()];
+
+		final int[] argmins = new int[keys1.size()];
+		final float[] mins = new float[keys1.size()];
 		modelKeypointsKNN.searchNN(data, argmins, mins);
-		
-		for (int i=0; i<keys1.size(); i++) {
-			float distsq = mins[i];
-			
+
+		for (int i = 0; i < keys1.size(); i++) {
+			final float distsq = mins[i];
+
 			if (distsq < threshold) {
 				matches.add(new Pair<T>(keys1.get(i), modelKeypoints.get(argmins[i])));
-		    }
+			}
 		}
-		
-	    return true;
+
+		return true;
 	}
 
 	@Override
@@ -97,4 +99,13 @@ public class FastEuclideanKeypointMatcher<T extends Keypoint> implements LocalFe
 		return this.matches;
 	}
 
+	/**
+	 * Set the matching threshold
+	 * 
+	 * @param threshold
+	 *            the threshold
+	 */
+	public void setThreshold(int threshold) {
+		this.threshold = threshold;
+	}
 }

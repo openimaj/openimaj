@@ -148,4 +148,14 @@ public class BasicMatcher<T extends LocalFeature<?, ?>> implements LocalFeatureM
 	public void setModelFeatures(List<T> modelkeys) {
 		modelKeypoints = modelkeys;
 	}
+
+	/**
+	 * Set the matching threshold
+	 * 
+	 * @param thresh
+	 *            the threshold
+	 */
+	public void setThreshold(int thresh) {
+		this.thresh = thresh;
+	}
 }

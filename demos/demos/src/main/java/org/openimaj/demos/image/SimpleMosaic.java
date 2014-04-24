@@ -29,6 +29,7 @@
  */
 package org.openimaj.demos.image;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -52,125 +53,126 @@ import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.model.fit.RANSAC;
 
 /**
- * 	Demonstrates using the SIFT keypoint matching and automatic
- * 	homography transform calculation to project 3 photos into a basic 
- * 	stitched panorama.
+ * Demonstrates using the SIFT keypoint matching and automatic homography
+ * transform calculation to project 3 photos into a basic stitched panorama.
  * 
- *  @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *	
- *	@created 15 Feb 2012
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ * @created 15 Feb 2012
  */
 @Demo(
-	author = "Sina Samangooei", 
-	description = "Demonstrates using the SIFT keypoint matching and automatic "
-		+ "homography transform calculation to project 3 photos into a basic stitched "
-		+ "panorama.", 
-	keywords = { "image", "photo", "mosaic", "stitch", "panorama" }, 
-	title = "Simple Photo Mosaic",
-	icon = "/org/openimaj/demos/icons/image/mosaic-icon.png",
-	screenshot = "/org/openimaj/demos/screens/image/mosaic-screen.png",
-	vmArguments = "-Xmx1G"
-)
-public class SimpleMosaic 
+		author = "Sina Samangooei",
+		description = "Demonstrates using the SIFT keypoint matching and automatic "
+				+ "homography transform calculation to project 3 photos into a basic stitched "
+				+ "panorama.",
+		keywords = { "image", "photo", "mosaic", "stitch", "panorama" },
+		title = "Simple Photo Mosaic",
+		icon = "/org/openimaj/demos/icons/image/mosaic-icon.png",
+		screenshot = "/org/openimaj/demos/screens/image/mosaic-screen.png",
+		vmArguments = "-Xmx1G")
+public class SimpleMosaic
 {
 	/**
-	 * 	Default main
-	 *  @param args Command-line arguments
-	 *  @throws IOException
+	 * Default main
+	 * 
+	 * @param args
+	 *            Command-line arguments
+	 * @throws IOException
 	 */
-	public static void main( String args[] ) throws IOException 
+	public static void main(String args[]) throws IOException
 	{
 		final JLabel l = new JLabel();
-		l.setHorizontalAlignment( JLabel.CENTER );
-		final JFrame f = new JFrame( "Mosaic Progress" );
-		f.getContentPane().add( l );
-		f.setSize( 500, 80 );
-		f.setVisible( true );
-		
-		new Thread( new Runnable() 
+		l.setHorizontalAlignment(JLabel.CENTER);
+		final JFrame f = new JFrame("Mosaic Progress");
+		f.getContentPane().add(l);
+		f.setSize(500, 80);
+		f.setVisible(true);
+
+		new Thread(new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
-				try 
+				try
 				{
 					// Set up all the various processors
-					l.setText( "Setting up processors" );
-					ResizeProcessor rp = new ResizeProcessor(800, 600);
-					DoGSIFTEngine engine = new DoGSIFTEngine();
+					l.setText("Setting up processors");
+					final ResizeProcessor rp = new ResizeProcessor(800, 600);
+					final DoGSIFTEngine engine = new DoGSIFTEngine();
 
-					ConsistentLocalFeatureMatcher2d<Keypoint> matcher = 
-						new ConsistentLocalFeatureMatcher2d<Keypoint>(
-							new FastBasicKeypointMatcher<Keypoint>(8));
-					HomographyModel model = new HomographyModel(8);
-					RANSAC<Point2d, Point2d> modelFitting = new RANSAC<Point2d, Point2d>(
+					final ConsistentLocalFeatureMatcher2d<Keypoint> matcher =
+							new ConsistentLocalFeatureMatcher2d<Keypoint>(
+									new FastBasicKeypointMatcher<Keypoint>(8));
+					final HomographyModel model = new HomographyModel(8);
+					final RANSAC<Point2d, Point2d> modelFitting = new RANSAC<Point2d, Point2d>(
 							model, 1600, new RANSAC.BestFitStoppingCondition(), true);
 					matcher.setFittingModel(modelFitting);
 
-					// Load in the first (middle) image and calculate the SIFT features
-					MBFImage imageMiddle = ImageUtilities.readMBF( SimpleMosaic.class
+					// Load in the first (middle) image and calculate the SIFT
+					// features
+					final MBFImage imageMiddle = ImageUtilities.readMBF(SimpleMosaic.class
 							.getResource("/org/openimaj/demos/image/mosaic/trento-view-1.jpg"));
 					imageMiddle.processInplace(rp);
-					FImage workingImageMiddle = Transforms.calculateIntensityNTSC(imageMiddle);
-					l.setText( "Calculating features on middle image" );
-					LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
+					final FImage workingImageMiddle = Transforms.calculateIntensityNTSC(imageMiddle);
+					l.setText("Calculating features on middle image");
+					final LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
 					matcher.setModelFeatures(middleKP);
 
-					// Calculate the projection for the first image 
-					ProjectionProcessor<Float[], MBFImage> ptp = 
-						new ProjectionProcessor<Float[], MBFImage>();
+					// Calculate the projection for the first image
+					final ProjectionProcessor<Float[], MBFImage> ptp =
+							new ProjectionProcessor<Float[], MBFImage>();
 					imageMiddle.accumulateWith(ptp);
 
 					// Load in the right-hand image and calculate its features
-					MBFImage imageRight = ImageUtilities.readMBF( SimpleMosaic.class
+					final MBFImage imageRight = ImageUtilities.readMBF(SimpleMosaic.class
 							.getResource("/org/openimaj/demos/image/mosaic/trento-view-0.jpg"));
 					imageRight.processInplace(rp);
-					FImage workingImageRight = Transforms.calculateIntensityNTSC(imageRight);
-					l.setText( "Calculating features on right image" );
-					LocalFeatureList<Keypoint> rightKP = engine.findFeatures(workingImageRight);
-					
+					final FImage workingImageRight = Transforms.calculateIntensityNTSC(imageRight);
+					l.setText("Calculating features on right image");
+					final LocalFeatureList<Keypoint> rightKP = engine.findFeatures(workingImageRight);
+
 					// Find matches with the middle image
-					l.setText( "Finding matches with middle image and right image" );
-					matcher.findMatches( rightKP );
-					ptp.setMatrix( model.getTransform() );
-					l.setText( "Projecting right image" );
-					imageRight.accumulateWith( ptp );
+					l.setText("Finding matches with middle image and right image");
+					matcher.findMatches(rightKP);
+					ptp.setMatrix(model.getTransform());
+					l.setText("Projecting right image");
+					imageRight.accumulateWith(ptp);
 
 					// Load in the left-hand image and calculate its features
-					MBFImage imageLeft = ImageUtilities.readMBF( SimpleMosaic.class
+					final MBFImage imageLeft = ImageUtilities.readMBF(SimpleMosaic.class
 							.getResource("/org/openimaj/demos/image/mosaic/trento-view-2.jpg"));
 					imageLeft.processInplace(rp);
-					FImage workingImageLeft = Transforms.calculateIntensityNTSC(imageLeft);
-					l.setText( "Calculating features on left image" );
-					LocalFeatureList<Keypoint> leftKP = engine.findFeatures(workingImageLeft);
-					
+					final FImage workingImageLeft = Transforms.calculateIntensityNTSC(imageLeft);
+					l.setText("Calculating features on left image");
+					final LocalFeatureList<Keypoint> leftKP = engine.findFeatures(workingImageLeft);
+
 					// Find the matches with the middle image
-					l.setText( "Finding matches with middle image and left image" );
+					l.setText("Finding matches with middle image and left image");
 					matcher.findMatches(leftKP);
-					ptp.setMatrix( model.getTransform() );
-					l.setText( "Projecting left image" );
+					ptp.setMatrix(model.getTransform());
+					l.setText("Projecting left image");
 					imageLeft.accumulateWith(ptp);
 
-					l.setText( "Projecting final image" );
-					MBFImage projected = ptp.performBlendedProjection(
-							(int) (-imageMiddle.getWidth()),
-							(int) (imageMiddle.getWidth() + imageMiddle.getWidth()),
+					l.setText("Projecting final image");
+					final MBFImage projected = ptp.performBlendedProjection(
+							(-imageMiddle.getWidth()),
+							imageMiddle.getWidth() + imageMiddle.getWidth(),
 							-imageMiddle.getHeight() / 2, 3 * imageMiddle.getHeight() / 2,
 							(Float[]) null);
-					
+
 					// Display the result
-					f.setVisible( false );
-					DisplayUtilities.display( projected.process( rp ) );
-					
+					f.setVisible(false);
+					DisplayUtilities.display(projected.process(rp));
+
 					// Write the result
-//					ImageUtilities.write(projected, "png", new File(
-//						"/Users/jsh2/Desktop/mosaic.png"));
-				} 
-				catch( IOException e ) 
+					ImageUtilities.write(projected, "png", new File(
+							"/Users/jsh2/Desktop/mosaic.png"));
+				}
+				catch (final IOException e)
 				{
 					e.printStackTrace();
 				}
 			}
-		} ).start();
+		}).start();
 	}
 }
