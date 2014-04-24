@@ -126,8 +126,11 @@ public abstract class AbstractMultivariateGaussian implements MultivariateGaussi
 
 	@Override
 	public String toString() {
-		return String.format("MultivariateGaussian[mean=%s,covar=%s]", MatrixUtils.toMatlabString(mean).trim(),
-				MatrixUtils.toMatlabString(getCovariance()));
+		// only pretty print with low dimensionality
+		if (this.numDims() < 5)
+			return String.format("MultivariateGaussian[mean=%s,covar=%s]", MatrixUtils.toMatlabString(mean).trim(),
+					MatrixUtils.toMatlabString(getCovariance()));
+		return super.toString();
 	}
 
 	@Override

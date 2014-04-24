@@ -25,38 +25,38 @@ import com.jmatio.types.MLSingle;
 import com.jmatio.types.MLStructure;
 
 /**
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class FVFWCheckPCAGMM {
-	
+
 	private static final String GMM_MATLAB_FILE = "/Users/ss/Experiments/FVFW/data/gmm_512.mat";
 	private static final String PCA_MATLAB_FILE = "/Users/ss/Experiments/FVFW/data/PCA_64.mat";
-	private static final String[] FACE_DSIFTS = new String[]{
-		"/Users/ss/Experiments/FVFW/data/Aaron_Eckhart_0001-pdfsift.bin"
+	private static final String[] FACE_DSIFTS = new String[] {
+			"/Users/ss/Experiments/FVFW/data/Aaron_Eckhart_0001-pdfsift.bin"
 	};
-	
 
 	public static void main(String[] args) throws IOException {
-		MixtureOfGaussians mog = loadMoG();
-		PrincipalComponentAnalysis pca = loadPCA();
-		FisherVector<float[]> fisher = new FisherVector<float[]>(mog,true,true);
-		for (String faceFile : FACE_DSIFTS) {
-			MemoryLocalFeatureList<FloatDSIFTKeypoint> loadDSIFT = MemoryLocalFeatureList.read(new File(faceFile), FloatDSIFTKeypoint.class);
-			projectPCA(loadDSIFT,pca);
-			
-			FloatFV fvec = fisher .aggregate(loadDSIFT);
-			System.out.println(String.format("%s: %s",faceFile,fvec));
+		final MixtureOfGaussians mog = loadMoG(new File(GMM_MATLAB_FILE));
+		final PrincipalComponentAnalysis pca = loadPCA(new File(PCA_MATLAB_FILE));
+		final FisherVector<float[]> fisher = new FisherVector<float[]>(mog, true, true);
+		for (final String faceFile : FACE_DSIFTS) {
+			final MemoryLocalFeatureList<FloatDSIFTKeypoint> loadDSIFT = MemoryLocalFeatureList.read(new File(faceFile),
+					FloatDSIFTKeypoint.class);
+			projectPCA(loadDSIFT, pca);
+
+			final FloatFV fvec = fisher.aggregate(loadDSIFT);
+			System.out.println(String.format("%s: %s", faceFile, fvec));
 			System.out.println("Writing...");
-			
-			File out = new File(faceFile + ".fisher.mat");
-			MLArray data = toMLArray(fvec);
+
+			final File out = new File(faceFile + ".fisher.mat");
+			final MLArray data = toMLArray(fvec);
 			new MatFileWriter(out, Arrays.asList(data));
 		}
 	}
 
 	private static MLArray toMLArray(FloatFV fvec) {
-		MLDouble data = new MLDouble("fisherface", new int[]{fvec.values.length,1});
+		final MLDouble data = new MLDouble("fisherface", new int[] { fvec.values.length, 1 });
 		for (int i = 0; i < fvec.values.length; i++) {
 			data.set((double) fvec.values[i], i, 0);
 		}
@@ -65,72 +65,68 @@ public class FVFWCheckPCAGMM {
 
 	private static void projectPCA(
 			MemoryLocalFeatureList<FloatDSIFTKeypoint> loadDSIFT,
-			PrincipalComponentAnalysis pca) {
-		for (FloatDSIFTKeypoint kp : loadDSIFT) {
+			PrincipalComponentAnalysis pca)
+	{
+		for (final FloatDSIFTKeypoint kp : loadDSIFT) {
 			kp.descriptor = ArrayUtils.convertToFloat(pca.project(ArrayUtils.convertToDouble(kp.descriptor)));
-			int nf = kp.descriptor.length;
-			kp.descriptor = Arrays.copyOf(kp.descriptor, nf+2);
+			final int nf = kp.descriptor.length;
+			kp.descriptor = Arrays.copyOf(kp.descriptor, nf + 2);
 			kp.descriptor[nf] = (kp.x / 125f) - 0.5f;
-			kp.descriptor[nf+1] = (kp.y / 160f) - 0.5f;
+			kp.descriptor[nf + 1] = (kp.y / 160f) - 0.5f;
 		}
 		loadDSIFT.resetVecLength();
 	}
 
-	static class LoadedPCA extends ThinSvdPrincipalComponentAnalysis{
+	static class LoadedPCA extends ThinSvdPrincipalComponentAnalysis {
 
 		public LoadedPCA(Matrix basis, double[] mean) {
 			super(basis.getRowDimension());
 			this.basis = basis;
 			this.mean = mean;
 		}
-		
-		
+
 	}
 
-	private static PrincipalComponentAnalysis loadPCA() throws IOException {
-		File f = new File(PCA_MATLAB_FILE);
-		MatFileReader reader = new MatFileReader(f);
-		MLSingle mean = (MLSingle) reader.getContent().get("mu");
-		MLSingle eigvec = (MLSingle) reader.getContent().get("proj");
-		Matrix basis = new Matrix(eigvec.getM(), eigvec.getN());
-		double[] meand = new double[eigvec.getN()];
+	public static PrincipalComponentAnalysis loadPCA(File f) throws IOException {
+		final MatFileReader reader = new MatFileReader(f);
+		final MLSingle mean = (MLSingle) reader.getContent().get("mu");
+		final MLSingle eigvec = (MLSingle) reader.getContent().get("proj");
+		final Matrix basis = new Matrix(eigvec.getM(), eigvec.getN());
+		final double[] meand = new double[eigvec.getN()];
 		for (int j = 0; j < eigvec.getN(); j++) {
-//			meand[i] = mean.get(i,0); ignore the means
+			// meand[i] = mean.get(i,0); ignore the means
 			meand[j] = 0;
 			for (int i = 0; i < eigvec.getM(); i++) {
-				basis.set(i, j, eigvec.get(i,j));
+				basis.set(i, j, eigvec.get(i, j));
 			}
 		}
-		PrincipalComponentAnalysis ret = new LoadedPCA(basis.transpose() ,meand);
-		return ret ;
+		final PrincipalComponentAnalysis ret = new LoadedPCA(basis.transpose(), meand);
+		return ret;
 	}
 
+	public static MixtureOfGaussians loadMoG(File f) throws IOException {
+		final MatFileReader reader = new MatFileReader(f);
+		final MLStructure codebook = (MLStructure) reader.getContent().get("codebook");
 
+		final MLSingle mean = (MLSingle) codebook.getField("mean");
+		final MLSingle variance = (MLSingle) codebook.getField("variance");
+		final MLSingle coef = (MLSingle) codebook.getField("coef");
 
-	private static MixtureOfGaussians loadMoG() throws IOException {
-		File f = new File(GMM_MATLAB_FILE);
-		MatFileReader reader = new MatFileReader(f);
-		MLStructure codebook = (MLStructure) reader.getContent().get("codebook");
-		
-		MLSingle mean = (MLSingle) codebook.getField("mean");
-		MLSingle variance = (MLSingle) codebook.getField("variance");
-		MLSingle coef = (MLSingle) codebook.getField("coef");
-		
-		int n_gaussians = mean.getN();
-		int n_dims = mean.getM();
-		
-		MultivariateGaussian[] ret = new MultivariateGaussian[n_gaussians];
-		double[] weights = new double[n_gaussians];
+		final int n_gaussians = mean.getN();
+		final int n_dims = mean.getM();
+
+		final MultivariateGaussian[] ret = new MultivariateGaussian[n_gaussians];
+		final double[] weights = new double[n_gaussians];
 		for (int i = 0; i < n_gaussians; i++) {
 			weights[i] = coef.get(i, 0);
-			DiagonalMultivariateGaussian d = new DiagonalMultivariateGaussian(n_dims);
+			final DiagonalMultivariateGaussian d = new DiagonalMultivariateGaussian(n_dims);
 			for (int j = 0; j < n_dims; j++) {
 				d.mean.set(0, j, mean.get(j, i));
 				d.variance[j] = variance.get(j, i);
 			}
 			ret[i] = d;
 		}
-		
+
 		return new MixtureOfGaussians(ret, weights);
 	}
 

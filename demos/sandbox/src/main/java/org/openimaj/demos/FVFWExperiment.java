@@ -12,7 +12,17 @@ import org.openimaj.feature.FloatFV;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.linear.projection.LargeMarginDimensionalityReduction;
 
+import Jama.Matrix;
+
+import com.jmatio.io.MatFileReader;
+import com.jmatio.types.MLSingle;
+
 public class FVFWExperiment {
+	// private static final String FOLDER =
+	// "lfw-centre-affine-pdsift-pca64-augm-fv512/";
+	// private static final String FOLDER = "lfw-centre-affine-matlab-fisher/";
+	private static final String FOLDER = "matlab-fvs/";
+
 	static class FacePair {
 		boolean same;
 		File firstFV;
@@ -65,9 +75,9 @@ public class FVFWExperiment {
 				final int firstIdx = sc.nextInt();
 				final int secondIdx = sc.nextInt();
 
-				final File first = new File(file.getParentFile(), "lfw-centre-affine-pdsift-pca64-augm-fv512/" + name
+				final File first = new File(file.getParentFile(), FOLDER + name
 						+ "/" + name + String.format("_%04d.bin", firstIdx));
-				final File second = new File(file.getParentFile(), "lfw-centre-affine-pdsift-pca64-augm-fv512/" + name
+				final File second = new File(file.getParentFile(), FOLDER + name
 						+ "/" + name + String.format("_%04d.bin", secondIdx));
 
 				subsets.get(s).testPairs.add(new FacePair(first, second, true));
@@ -79,10 +89,10 @@ public class FVFWExperiment {
 				final String secondName = sc.next();
 				final int secondIdx = sc.nextInt();
 
-				final File first = new File(file.getParentFile(), "lfw-centre-affine-pdsift-pca64-augm-fv512/"
+				final File first = new File(file.getParentFile(), FOLDER
 						+ firstName
 						+ "/" + firstName + String.format("_%04d.bin", firstIdx));
-				final File second = new File(file.getParentFile(), "lfw-centre-affine-pdsift-pca64-augm-fv512/"
+				final File second = new File(file.getParentFile(), FOLDER
 						+ secondName
 						+ "/" + secondName + String.format("_%04d.bin", secondIdx));
 
@@ -108,7 +118,7 @@ public class FVFWExperiment {
 				final String name = sc.next();
 				final int numPeople = sc.nextInt();
 				for (int j = 1; j <= numPeople; j++) {
-					final File f = new File(file.getParentFile(), "lfw-centre-affine-pdsift-pca64-augm-fv512/" + name
+					final File f = new File(file.getParentFile(), FOLDER + name
 							+ "/" + name + String.format("_%04d.bin", j));
 
 					files.add(f);
@@ -188,8 +198,9 @@ public class FVFWExperiment {
 		final List<Subset> subsets = loadSubsets();
 		final Subset fold = createExperimentalFold(subsets, 1);
 
-		// final LargeMarginDimensionalityReduction lmdr = new
-		// LargeMarginDimensionalityReduction(128);
+		// // final LargeMarginDimensionalityReduction lmdr = new
+		// // LargeMarginDimensionalityReduction(128);
+		// final LargeMarginDimensionalityReduction lmdr = loadMatlabPCAW();
 		//
 		// final double[][] fInit = new double[1000][];
 		// final double[][] sInit = new double[1000][];
@@ -210,9 +221,10 @@ public class FVFWExperiment {
 		// }
 		//
 		// System.out.println("LMDR Init");
-		// lmdr.initialise(fInit, sInit, same);
+		// lmdr.recomputeBias(fInit, sInit, same);
+		// // lmdr.initialise(fInit, sInit, same);
 		// IOUtils.writeToFile(lmdr, new
-		// File("/Users/jon/Data/lfw/lmdr-init.bin"));
+		// File("/Users/jon/Data/lfw/lmdr-matlabfvs-pcaw-init.bin"));
 		// // final LargeMarginDimensionalityReduction lmdr = IOUtils
 		// // .readFromFile(new File("/Users/jon/Data/lfw/lmdr-init.bin"));
 		//
@@ -223,24 +235,92 @@ public class FVFWExperiment {
 		// lmdr.step(p.loadFirst().asDoubleVector(),
 		// p.loadSecond().asDoubleVector(), p.same);
 		// }
-		// IOUtils.writeToFile(lmdr, new File("/Users/jon/Data/lfw/lmdr.bin"));
+		// IOUtils.writeToFile(lmdr, new
+		// File("/Users/jon/Data/lfw/lmdr-matlabfvs-pcaw.bin"));
 
-		final LargeMarginDimensionalityReduction lmdr = IOUtils
-				.readFromFile(new File("/Users/jon/Data/lfw/lmdr.bin"));
+		final LargeMarginDimensionalityReduction lmdr =
+				IOUtils.readFromFile(new
+						File("/Users/jon/Data/lfw/lmdr-matlabfvs-pcaw.bin"));
+		// final LargeMarginDimensionalityReduction lmdr = loadMatlabLMDR();
+		// final LargeMarginDimensionalityReduction lmdr = loadMatlabPCAW();
+
+		final double[][] first = new double[fold.testPairs.size()][];
+		final double[][] second = new double[fold.testPairs.size()][];
+		final boolean[] same = new boolean[fold.testPairs.size()];
+		for (int j = 0; j < same.length; j++) {
+			final FacePair p = fold.testPairs.get(j);
+			first[j] = p.loadFirst().asDoubleVector();
+			second[j] = p.loadSecond().asDoubleVector();
+			same[j] = p.same;
+		}
+		// System.out.println("Current bias: " + lmdr.getBias());
+		// lmdr.recomputeBias(first, second, same);
+		// System.out.println("Best bias: " + lmdr.getBias());
+
 		double correct = 0;
 		double count = 0;
-		for (final FacePair p : fold.testPairs) {
-			final boolean pred = lmdr.classify(p.loadFirst().asDoubleVector(),
-					p.loadSecond().asDoubleVector());
-			final double score = lmdr.score(p.loadFirst().asDoubleVector(),
-					p.loadSecond().asDoubleVector());
+		for (int j = 0; j < same.length; j++) {
+			final boolean pred = lmdr.classify(first[j],
+					second[j]);
 
-			System.out.println(p.same + " " + pred + " " + score);
-
-			if (pred == p.same)
+			if (pred == same[j])
 				correct++;
 			count++;
 		}
-		System.out.println(correct / count);
+		System.out.println(lmdr.getBias() + " " + (correct / count));
+	}
+
+	// private static double[] reorder(double[] in) {
+	// final double[] out = new double[in.length];
+	// final int D = 64;
+	// final int K = 512;
+	// for (int k = 0; k < K; k++) {
+	// for (int j = 0; j < D; j++) {
+	// out[k * D + j] = in[k * 2 * D + j];
+	// out[k * D + j + D * K] = in[k * 2 * D + j + D];
+	// }
+	// }
+	// return out;
+	// }
+
+	private static LargeMarginDimensionalityReduction loadMatlabLMDR() throws IOException {
+		final LargeMarginDimensionalityReduction lmdr = new LargeMarginDimensionalityReduction(128);
+
+		final MatFileReader reader = new MatFileReader(new File("/Users/jon/lmdr.mat"));
+		final MLSingle W = (MLSingle) reader.getContent().get("W");
+		final MLSingle b = (MLSingle) reader.getContent().get("b");
+
+		lmdr.setBias(b.get(0, 0));
+
+		final Matrix proj = new Matrix(W.getM(), W.getN());
+		for (int j = 0; j < W.getN(); j++) {
+			for (int i = 0; i < W.getM(); i++) {
+				proj.set(i, j, W.get(i, j));
+			}
+		}
+
+		lmdr.setTransform(proj);
+
+		return lmdr;
+	}
+
+	private static LargeMarginDimensionalityReduction loadMatlabPCAW() throws IOException {
+		final LargeMarginDimensionalityReduction lmdr = new LargeMarginDimensionalityReduction(128);
+
+		final MatFileReader reader = new MatFileReader(new File("/Users/jon/pcaw.mat"));
+		final MLSingle W = (MLSingle) reader.getContent().get("proj");
+
+		lmdr.setBias(169.6264190673828);
+
+		final Matrix proj = new Matrix(W.getM(), W.getN());
+		for (int j = 0; j < W.getN(); j++) {
+			for (int i = 0; i < W.getM(); i++) {
+				proj.set(i, j, W.get(i, j));
+			}
+		}
+
+		lmdr.setTransform(proj);
+
+		return lmdr;
 	}
 }

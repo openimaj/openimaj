@@ -130,6 +130,10 @@ public class LargeMarginDimensionalityReduction {
 
 		W = MatrixUtils.diag(invStdDev).times(pca.getBasis().transpose());
 
+		recomputeBias(datai, dataj, same);
+	}
+
+	public void recomputeBias(double[][] datai, double[][] dataj, boolean[] same) {
 		final TDoubleArrayList posDistances = new TDoubleArrayList();
 		final TDoubleArrayList negDistances = new TDoubleArrayList();
 		for (int i = 0; i < datai.length; i++) {
@@ -323,5 +327,13 @@ public class LargeMarginDimensionalityReduction {
 	 */
 	public double[] project(double[] in) {
 		return W.times(new Matrix(new double[][] { in }).transpose()).getColumnPackedCopy();
+	}
+
+	public void setBias(double d) {
+		this.b = d;
+	}
+
+	public void setTransform(Matrix proj) {
+		this.W = proj;
 	}
 }
