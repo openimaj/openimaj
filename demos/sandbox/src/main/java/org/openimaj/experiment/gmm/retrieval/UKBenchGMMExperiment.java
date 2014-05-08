@@ -3,7 +3,11 @@ package org.openimaj.experiment.gmm.retrieval;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -22,6 +26,10 @@ import org.openimaj.math.statistics.distribution.MixtureOfGaussians;
 import org.openimaj.math.statistics.distribution.metrics.SampledMultivariateDistanceComparator;
 import org.openimaj.ml.gmm.GaussianMixtureModelEM.CovarianceType;
 import org.openimaj.util.function.Function;
+import org.openimaj.util.function.Operation;
+import org.openimaj.util.parallel.GlobalExecutorPool;
+import org.openimaj.util.parallel.Parallel;
+import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
 
 
 /**
@@ -90,26 +98,36 @@ public class UKBenchGMMExperiment {
 		}
 	}
 
-	private static final String UKBENCH_ROOT = "/Users/ss/Experiments/ukbench";
+	private String ukbenchRoot = "/Users/ss/Experiments/ukbench";
 	private ResizeProcessor resize;
 	private UKBenchGroupDataset<IRecord<FImage>> dataset;
 	private DiskCachingFeatureExtractor<MixtureOfGaussians, IRecord<FImage>> gmmExtract;
 	
 	public UKBenchGMMExperiment() {
+		setup();
+	}
+	
+	public UKBenchGMMExperiment(String root) {
+		this.ukbenchRoot = root;
+		setup();
+	}
+
+	private void setup() {
 		this.dataset = new UKBenchGroupDataset<IRecord<FImage>>(
-				UKBENCH_ROOT + "/full", 
+				ukbenchRoot + "/full", 
 				new FileObjectReader<FImage>(ImageUtilities.FIMAGE_READER)
 		);
 		
 		
-		final DSiftFeatureExtractor feature = new DSiftFeatureExtractor();
-		final GMMFromFeatures gmmFunc = new GMMFromFeatures(3,CovarianceType.Diagonal);
+		
 		resize = new ResizeProcessor(640, 480);
 		
 		Function<FImage, MixtureOfGaussians> combined = new Function<FImage,MixtureOfGaussians>(){
 			
 			@Override
 			public MixtureOfGaussians apply(FImage in) {
+				final DSiftFeatureExtractor feature = new DSiftFeatureExtractor();
+				final GMMFromFeatures gmmFunc = new GMMFromFeatures(3,CovarianceType.Diagonal);
 				System.out.println("... resize");
 				FImage process = in.process(resize);
 				System.out.println("... dsift");
@@ -127,11 +145,9 @@ public class UKBenchGMMExperiment {
 			MixtureOfGaussians,
 			IRecord<FImage>
 		>(
-			new File(UKBENCH_ROOT + "/gmm/dsift"), 
+			new File(ukbenchRoot + "/gmm/dsift"), 
 			FeatureExtractionFunction.wrap(IRecordWrapper.wrap(combined))
 		);
-		
-		
 	}
 	
 	/**
@@ -139,25 +155,47 @@ public class UKBenchGMMExperiment {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		UKBenchGMMExperiment exp = new UKBenchGMMExperiment();
-		List<MixtureOfGaussians> gaus1 = exp.extractGroupGaussians(0);
-		List<MixtureOfGaussians> gaus2 = exp.extractGroupGaussians(1);
-		
-		SampledMultivariateDistanceComparator dist = new SampledMultivariateDistanceComparator();
-		
-		System.out.printf("o0i0 vs self = %2.5f\n",dist.compare(gaus1.get(0), gaus1.get(0)));
-		System.out.printf("o0i0 vs o0i1 = %2.5f\n",dist.compare(gaus1.get(0), gaus1.get(1)));
-		System.out.printf("o0i0 vs o0i2 = %2.5f\n",dist.compare(gaus1.get(0), gaus1.get(2)));
-		System.out.printf("o0i0 vs o0i3 = %2.5f\n",dist.compare(gaus1.get(0), gaus1.get(3)));
-		System.out.printf("o0i0 vs o1i0 = %2.5f\n",dist.compare(gaus1.get(0), gaus2.get(0)));
-		System.out.printf("o0i0 vs o1i1 = %2.5f\n",dist.compare(gaus1.get(0), gaus2.get(1)));
-		System.out.printf("o0i0 vs o1i2 = %2.5f\n",dist.compare(gaus1.get(0), gaus2.get(2)));
-		System.out.printf("o0i0 vs o1i3 = %2.5f\n",dist.compare(gaus1.get(0), gaus2.get(3)));
+		String root = "/home/ss/Experiments/ukbench";
+		if(args.length != 0){
+			root = args[0];
+		}
+		UKBenchGMMExperiment exp = new UKBenchGMMExperiment(root);
+		exp.extractGroupGaussians();
+//		List<MixtureOfGaussians> gaus1 = exp.extractGroupGaussians(0);
+//		List<MixtureOfGaussians> gaus2 = exp.extractGroupGaussians(1);
+//		
+//		SampledMultivariateDistanceComparator dist = new SampledMultivariateDistanceComparator();
+//		
+//		System.out.printf("o0i0 vs self = %2.5f\n",dist.compare(gaus1.get(0), gaus1.get(0)));
+//		System.out.printf("o0i0 vs o0i1 = %2.5f\n",dist.compare(gaus1.get(0), gaus1.get(1)));
+//		System.out.printf("o0i0 vs o0i2 = %2.5f\n",dist.compare(gaus1.get(0), gaus1.get(2)));
+//		System.out.printf("o0i0 vs o0i3 = %2.5f\n",dist.compare(gaus1.get(0), gaus1.get(3)));
+//		System.out.printf("o0i0 vs o1i0 = %2.5f\n",dist.compare(gaus1.get(0), gaus2.get(0)));
+//		System.out.printf("o0i0 vs o1i1 = %2.5f\n",dist.compare(gaus1.get(0), gaus2.get(1)));
+//		System.out.printf("o0i0 vs o1i2 = %2.5f\n",dist.compare(gaus1.get(0), gaus2.get(2)));
+//		System.out.printf("o0i0 vs o1i3 = %2.5f\n",dist.compare(gaus1.get(0), gaus2.get(3)));
 		
 		
 	}
-
-	private List<MixtureOfGaussians> extractGroupGaussians(int i) {
+	
+	/**
+	 * @return the mixture of gaussians for each group
+	 */
+	public Map<Integer,List<MixtureOfGaussians>> extractGroupGaussians() {
+		final Map<Integer,List<MixtureOfGaussians>> groups = new HashMap<Integer, List<MixtureOfGaussians>>();
+		ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), new DaemonThreadFactory());
+		Parallel.forIndex(0, this.dataset.size(), 1, new Operation<Integer>() {
+			
+			@Override
+			public void perform(Integer i) {
+				groups.put(i, extractGroupGaussians(i));
+			}
+		},pool);
+		
+		return groups;
+	}
+	
+	public List<MixtureOfGaussians> extractGroupGaussians(int i) {
 		System.out.printf("Extracting features for object %d...\n",i);
 		return this.extractGroupGaussians(this.dataset.get(i));
 	}
