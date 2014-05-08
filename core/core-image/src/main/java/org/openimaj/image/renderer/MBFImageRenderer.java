@@ -120,21 +120,85 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 		 * pixel on top dominates (i.e. the image being added)
 		 */
 //		final float thisA = 1.0f, thatA = 1.0f, thisR, thisG, thisB, thatR, thatG, thatB, a, r, g, b;
+		if(thisPixels.length == 4 && thatPixels.length == 4){
+			drawBothAlpha(x, y, stopx, stopy, startx, starty, thisPixels, thatPixels);
+		} else if (thisPixels.length == 4){
+			drawThisAlpha(x, y, stopx, stopy, startx, starty, thisPixels, thatPixels);
+		} else{
+			drawThatAlpha(x, y, stopx, stopy, startx, starty, thisPixels, thatPixels);
+		}
+	}
+
+	private void drawBothAlpha(final int x, final int y, final int stopx,
+			final int stopy, final int startx, final int starty,
+			final float[][][] thisPixels, final float[][][] thatPixels) {
+		float[] out = new float[4];
 		for (int yy = starty; yy < stopy; yy++) {
 			final int thatY = yy - y;
 
 			for (int xx = startx; xx < stopx; xx++) {
 
 				final int thatX = xx - x;
+				float thisA = thisPixels[3][yy][xx] ;
+				float thatA = thatPixels[3][thatY][thatX] ;
+				ImageUtilities.alphaCompositePixel(out,
+					thisPixels[0][yy][xx], thisPixels[1][yy][xx], thisPixels[2][yy][xx], thisA,
+					thatPixels[0][thatY][thatX], thatPixels[1][thatY][thatX], thatPixels[2][thatY][thatX], thatA
+				);
 
-				final float[] p = ImageUtilities.alphaCompositePixel(
-					this.targetImage.getPixel( xx,yy ), image.getPixel( thatX, thatY ) );
+				thisPixels[0][yy][xx] = out[0];
+				thisPixels[1][yy][xx] = out[1];
+				thisPixels[2][yy][xx] = out[2];
+				thisPixels[3][yy][xx] = out[3];
+			}
+		}
+	}
+	
+	private void drawThisAlpha(final int x, final int y, final int stopx,
+			final int stopy, final int startx, final int starty,
+			final float[][][] thisPixels, final float[][][] thatPixels) {
+		float[] out = new float[4];
+		for (int yy = starty; yy < stopy; yy++) {
+			final int thatY = yy - y;
 
-				thisPixels[0][yy][xx] = p[0];
-				thisPixels[1][yy][xx] = p[1];
-				thisPixels[2][yy][xx] = p[2];
-				if( p.length == 4 )
-					thisPixels[3][yy][xx] = p[3];
+			for (int xx = startx; xx < stopx; xx++) {
+
+				final int thatX = xx - x;
+				float thisA = thisPixels[3][yy][xx] ;
+				float thatA = 1f ;
+				ImageUtilities.alphaCompositePixel(out,
+					thisPixels[0][yy][xx], thisPixels[1][yy][xx], thisPixels[2][yy][xx], thisA,
+					thatPixels[0][thatY][thatX], thatPixels[1][thatY][thatX], thatPixels[2][thatY][thatX], thatA
+				);
+
+				thisPixels[0][yy][xx] = out[0];
+				thisPixels[1][yy][xx] = out[1];
+				thisPixels[2][yy][xx] = out[2];
+				thisPixels[3][yy][xx] = out[3];
+			}
+		}
+	}
+	
+	private void drawThatAlpha(final int x, final int y, final int stopx,
+			final int stopy, final int startx, final int starty,
+			final float[][][] thisPixels, final float[][][] thatPixels) {
+		float[] out = new float[4];
+		for (int yy = starty; yy < stopy; yy++) {
+			final int thatY = yy - y;
+
+			for (int xx = startx; xx < stopx; xx++) {
+
+				final int thatX = xx - x;
+				float thisA = 1f ;
+				float thatA = thatPixels[3][thatY][thatX] ;
+				ImageUtilities.alphaCompositePixel(out,
+					thisPixels[0][yy][xx], thisPixels[1][yy][xx], thisPixels[2][yy][xx], thisA,
+					thatPixels[0][thatY][thatX], thatPixels[1][thatY][thatX], thatPixels[2][thatY][thatX], thatA
+				);
+
+				thisPixels[0][yy][xx] = out[0];
+				thisPixels[1][yy][xx] = out[1];
+				thisPixels[2][yy][xx] = out[2];
 			}
 		}
 	}

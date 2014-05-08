@@ -1,7 +1,9 @@
 package org.openimaj.demos.twitter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -12,6 +14,8 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.Font;
 import org.openimaj.image.typography.FontStyle;
 import org.openimaj.image.typography.FontStyle.HorizontalAlignment;
@@ -21,8 +25,10 @@ import org.openimaj.image.typography.general.GeneralFontStyle;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Operation;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.parallel.GlobalExecutorPool;
 import org.openimaj.util.parallel.Parallel;
 import org.openimaj.video.AnimatedVideo;
@@ -44,8 +50,7 @@ public class PrettyTagRenderer implements Operation<Context> {
 	
 	private Video<MBFImage> video;
 	private Random rand = new Random();
-	private GeneralFontStyle<Float[]> fs;
-	private MBFImage textLayer;
+	private List<IndependentPair<Point2dImpl,MBFImage>> textLayers = new ArrayList<IndependentPair<Point2dImpl, MBFImage>>();
 	static class HashAggregation{
 		int total;
 		long lastSeen;
@@ -54,14 +59,9 @@ public class PrettyTagRenderer implements Operation<Context> {
 		int index = 0;
 		int nx = WIDTH/GRID_WH; 
 		int[] randCols = RandomData.getUniqueRandomInts(hashStrings.length, 0, hashStrings.length);
-		this.textLayer = new MBFImage(WIDTH,HEIGHT,ColourSpace.RGBA);
-		this.textLayer.fill(new Float[]{0f,0f,0f,0f});
-		GeneralFont f = new GeneralFont( "Ariel", java.awt.Font.PLAIN);
-		this.fs = new GeneralFontStyle<Float[]>(f, textLayer.createRenderer());
-		fs.setColour(RGBColour.WHITE);
-		fs.setHorizontalAlignment(HorizontalAlignment.HORIZONTAL_CENTER);
-		fs.setVerticalAlignment(VerticalAlignment.VERTICAL_TOP);
-		fs.setFontSize(16);
+		GeneralFont f = new GeneralFont( "Helvetica", java.awt.Font.PLAIN);
+		
+		MBFImageRenderer tmpRenderer = new MBFImage(0,0,ColourSpace.RGBA).createRenderer();
 		for (String hash : hashStrings) {
 			float y = (index / nx) * GRID_WH;
 			float x = (index - (index / nx) * nx) * GRID_WH;
@@ -73,9 +73,19 @@ public class PrettyTagRenderer implements Operation<Context> {
 			x += GRID_WH/2 + offset;
 			float rad = GRID_WH*GRID_CIRCLE/2;
 			this.hashCircles.put(hash, new Circle(x,y,rad));
-			this.hashColours.put(hash, ColourMap.Rainbow.apply(randCols[index] / (float)hashStrings.length));
+			this.hashColours.put(hash, ColourMap.Autumn.apply(randCols[index] / (float)hashStrings.length));
 			this.hashAggregations.put(hash,new HashAggregation());
-			this.textLayer.drawText(hash, new Point2dImpl(x, y), fs);
+			GeneralFontStyle<Float[]> fs = new GeneralFontStyle<Float[]>(f, tmpRenderer);
+			Rectangle textSize = fs.getRenderer(tmpRenderer).getSize(hash, fs);
+			MBFImage textLayer = new MBFImage((int)textSize.width,(int)textSize.height,ColourSpace.RGBA);
+			MBFImageRenderer aaTextRend = textLayer.createRenderer(RenderHints.ANTI_ALIASED);
+			fs = new GeneralFontStyle<Float[]>(f, aaTextRend);
+			fs.setColour(new Float[]{1f,1f,1f,1f});
+			fs.setHorizontalAlignment(HorizontalAlignment.HORIZONTAL_LEFT);
+			fs.setVerticalAlignment(VerticalAlignment.VERTICAL_TOP);
+			fs.setFontSize(16);
+			aaTextRend.drawText(hash, new Point2dImpl(0, textSize.height*2/3), fs);
+			this.textLayers.add(IndependentPair.pair(new Point2dImpl(x-textSize.width*1/3, y-textSize.height/3),textLayer));
 			index++;
 		}
 		
@@ -152,6 +162,8 @@ public class PrettyTagRenderer implements Operation<Context> {
 
 	private void redrawCircles(MBFImage output) {
 		long now = System.currentTimeMillis();
+		output.fill(RGBColour.WHITE);
+		MBFImageRenderer rend = output.createRenderer(RenderHints.ANTI_ALIASED);
 		for (String hash: this.hashCircles.keySet()) {
 			Circle circle = this.hashCircles.get(hash);
 			Float[] col = this.hashColours.get(hash);
@@ -165,14 +177,20 @@ public class PrettyTagRenderer implements Operation<Context> {
 			}
 			Float[] offCircleColour = dark(col,level);
 			
-			drawHashCircle(output, hash, circle, offCircleColour);
+			drawHashCircle(rend , hash, circle, offCircleColour);
 		}
-//		output.drawImage(textLayer, 0, 0);
+		for (IndependentPair<Point2dImpl, MBFImage> pTextLayer : this.textLayers) {
+			
+			MBFImage textLayer = pTextLayer.getSecondObject();
+			Point2d p = pTextLayer.firstObject();
+			output.drawImage(textLayer , (int)p.getX(), (int)p.getY());
+		}
 	}
 
-	private void drawHashCircle(MBFImage output, String hash, Circle circle, Float[] colour) {
+	private void drawHashCircle(MBFImageRenderer rend, String hash, Circle circle, Float[] colour) {
 		
-		output.drawShapeFilled(circle, colour);
+		rend.drawShapeFilled(circle, colour);
+		rend.drawShape(circle, 3, RGBColour.BLACK);
 			
 	}
 

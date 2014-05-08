@@ -1503,4 +1503,16 @@ public class MatrixUtils {
 	public static String toPythonString(Matrix mat) {
 		return "[[" + toString(mat).trim().replace("\n ", "][").replace(" ", ",") + "]]";
 	}
+
+	/**
+	 * @param mat
+	 * @return trace of the matrix
+	 */
+	public static double trace(Matrix mat) {
+		double sum = 0;
+		for (int i = 0; i < mat.getRowDimension(); i++) {
+			sum += mat.get(i, i);
+		}
+		return sum;
+	}
 }

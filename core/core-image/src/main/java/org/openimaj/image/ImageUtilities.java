@@ -881,6 +881,44 @@ public class ImageUtilities {
 
 		return p1;
 	}
+	
+	/**
+	 * @param out where the write the composition
+	 * @param thisR
+	 * @param thisG
+	 * @param thisB
+	 * @param thisA
+	 * 
+	 * @param thatR
+	 * @param thatG
+	 * @param thatB
+	 * @param thatA
+	 * 
+	 * @return returns out
+	 */
+	public static float[] alphaCompositePixel(
+			float[] out,
+			float thisR, float thisG, float thisB, float thisA,
+			float thatR, float thatG, float thatB, float thatA 
+		)
+	{
+
+		float a = thatA + thisA * (1 - thatA);
+		a = a > 1.0f ? 1.0f : a;
+		float r = thatR * thatA + (thisR * thisA) * (1 - thatA);
+		r = r > 1.0f ? 1.0f : r;
+		float g = thatG * thatA + (thisG * thisA) * (1 - thatA);
+		g = g > 1.0f ? 1.0f : g;
+		float b = thatB * thatA + (thisB * thisA) * (1 - thatA);
+		b = b > 1.0f ? 1.0f : b;
+
+		out[0] = r;
+		out[1] = g;
+		out[2] = b;
+		out[3] = a;
+
+		return out;
+	}
 
 	/**
 	 * 	Alpha composites the pixel p1 with the pixel p2, returning the value
@@ -899,4 +937,5 @@ public class ImageUtilities {
 			p2p[b] = p2[b];
 		return ImageUtilities.alphaCompositePixel( p1p, p2p );
 	}
+	
 }
