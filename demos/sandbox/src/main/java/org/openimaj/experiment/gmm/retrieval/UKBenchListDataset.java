@@ -63,11 +63,20 @@ public class UKBenchListDataset<IMAGE> extends ReadableListDataset<IMAGE, FileOb
 	}
 	@Override
 	public IMAGE getInstance(int index) {
-		
+		FileObject fo = null; 
 		try {
-			return this.reader.read(createFileObject(this.ids.get(index)));
+			fo = createFileObject(this.ids.get(index));
+			return this.reader.read(fo);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		} finally {
+			if(fo!=null){
+				try {
+					fo.close();
+				} catch (FileSystemException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
 	}
 
