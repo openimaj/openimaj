@@ -18,5 +18,6 @@
     <module>clustering</module>
     <module>nearest-neighbour</module>
     <module>machine-learning</module>
+    <module>neural-network</module>
   </modules>
 </project>

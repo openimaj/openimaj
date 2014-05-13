@@ -20,38 +20,18 @@ import org.openimaj.io.ObjectReader;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class UKBenchListDataset<IMAGE> extends ReadableListDataset<IMAGE, FileObject> implements Identifiable{
-	List<Integer> objects;
+	private int object;
 	private List<String> ids;
 	private FileObject base;
-	/**
-	 * @param path 
-	 * @param objects
-	 * @param reader
-	 */
-	public UKBenchListDataset(String path, List<Integer> objects, ObjectReader<IMAGE, FileObject> reader) {
-		super(reader);
-		this.objects = objects;
-		
-		this.ids = heldIDs();
-		FileSystemManager fsManager;
-		try {
-			fsManager = VFS.getManager();
-			this.base = fsManager.resolveFile(path);
-		} catch (FileSystemException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	
 	/**
 	 * @param path
 	 * @param reader
-	 * @param objects
+	 * @param object
 	 */
-	public UKBenchListDataset(String path, ObjectReader<IMAGE, FileObject> reader, int ... objects) {
+	public UKBenchListDataset(String path, ObjectReader<IMAGE, FileObject> reader, int object) {
 		super(reader);
-		this.objects = new ArrayList<Integer>();
-		for (int i : objects) {
-			this.objects.add(i);
-		}
+		this.object = object;
 		this.ids = heldIDs();
 		FileSystemManager fsManager;
 		try {
@@ -90,7 +70,7 @@ public class UKBenchListDataset<IMAGE> extends ReadableListDataset<IMAGE, FileOb
 	}
 	@Override
 	public int numInstances() {
-		return this.objects.size() * 4;
+		return  4;
 	}
 
 	@Override
@@ -100,13 +80,17 @@ public class UKBenchListDataset<IMAGE> extends ReadableListDataset<IMAGE, FileOb
 	}
 	private List<String> heldIDs() {
 		List<String> ids = new ArrayList<String>();
-		for (int object : this.objects) {
-			ids.add(String.format("ukbench%05d.jpg",object * 4 + 0));
-			ids.add(String.format("ukbench%05d.jpg",object * 4 + 1));
-			ids.add(String.format("ukbench%05d.jpg",object * 4 + 2));
-			ids.add(String.format("ukbench%05d.jpg",object * 4 + 3));
-		}
+		ids.add(String.format("ukbench%05d.jpg",object * 4 + 0));
+		ids.add(String.format("ukbench%05d.jpg",object * 4 + 1));
+		ids.add(String.format("ukbench%05d.jpg",object * 4 + 2));
+		ids.add(String.format("ukbench%05d.jpg",object * 4 + 3));
 		return ids;
+	}
+	/**
+	 * @return the objects this group represents
+	 */
+	public int getObject() {
+		return object;
 	}
 	
 	
