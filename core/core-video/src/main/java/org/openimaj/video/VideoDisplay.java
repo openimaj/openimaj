@@ -360,7 +360,7 @@ public class VideoDisplay<T extends Image<?, T>> implements Runnable
 	private TimeKeeper<? extends Timecode> timeKeeper = null;
 
 	/** This is the calculated FPS that the video player is playing at */
-	private double calcualtedFPS = 0;
+	private double calculatedFPS = 0;
 
 	/** Whether to fire video updates or not */
 	private final boolean fireUpdates = true;
@@ -461,7 +461,7 @@ public class VideoDisplay<T extends Image<?, T>> implements Runnable
 				if (this.calculateFPS)
 				{
 					currentTimestamp = System.currentTimeMillis();
-					this.calcualtedFPS = 1000d / (currentTimestamp - lastTimestamp);
+					this.calculatedFPS = 1000d / (currentTimestamp - lastTimestamp);
 					lastTimestamp = currentTimestamp;
 				}
 
@@ -1270,7 +1270,7 @@ public class VideoDisplay<T extends Image<?, T>> implements Runnable
 	 */
 	public double getDisplayFPS()
 	{
-		return this.calcualtedFPS;
+		return this.calculatedFPS;
 	}
 
 	/**
