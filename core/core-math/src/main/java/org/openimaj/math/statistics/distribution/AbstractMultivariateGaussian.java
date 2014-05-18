@@ -112,7 +112,7 @@ public abstract class AbstractMultivariateGaussian implements MultivariateGaussi
 	public double estimateLogProbability(double[] sample) {
 		final int N = mean.getColumnDimension();
 		final Matrix inv_covar = getCovariance().inverse();
-		double cov_det = getCovariance().det();
+		final double cov_det = getCovariance().det();
 		final double pdf_const_factor = 1.0 / Math.sqrt((Math.pow((2 * Math.PI), N) * cov_det));
 
 		final Matrix xm = new Matrix(1, N);
