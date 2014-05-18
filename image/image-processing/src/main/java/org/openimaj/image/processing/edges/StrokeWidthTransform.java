@@ -310,7 +310,7 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 	 * 
 	 * @return the direction
 	 */
-	public boolean isDirection() {
+	public boolean getDirection() {
 		return direction;
 	}
 
