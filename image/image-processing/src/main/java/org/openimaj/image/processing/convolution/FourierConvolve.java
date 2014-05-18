@@ -39,27 +39,31 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
  * {@link FImage} convolution performed in the fourier domain.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> {
-	private float [][] kernel;
+	private float[][] kernel;
 
 	/**
 	 * Construct the convolution operator with the given kernel
-	 * @param kernel the kernel
+	 * 
+	 * @param kernel
+	 *            the kernel
 	 */
-	public FourierConvolve(float [][] kernel) {
+	public FourierConvolve(float[][] kernel) {
 		this.kernel = kernel;
 	}
-	
+
 	/**
 	 * Construct the convolution operator with the given kernel
-	 * @param kernel the kernel
+	 * 
+	 * @param kernel
+	 *            the kernel
 	 */
 	public FourierConvolve(FImage kernel) {
 		this.kernel = kernel.pixels;
 	}
-	
+
 	@Override
 	public void processImage(FImage image) {
 		convolve(image, kernel, true);
@@ -67,47 +71,102 @@ public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Convolve an image with a kernel using an FFT.
-	 * @param image The image to convolve
-	 * @param kernel The kernel
-	 * @param inplace if true, then output overwrites the input, otherwise a new image is created.
+	 * 
+	 * @param image
+	 *            The image to convolve
+	 * @param kernel
+	 *            The kernel
+	 * @param inplace
+	 *            if true, then output overwrites the input, otherwise a new
+	 *            image is created.
 	 * @return convolved image
 	 */
 	public static FImage convolve(FImage image, float[][] kernel, boolean inplace) {
-		int cols = image.getCols();
-		int rows = image.getRows();
+		final int cols = image.getCols();
+		final int rows = image.getRows();
 
-		FloatFFT_2D fft = new FloatFFT_2D(rows,cols);
+		final FloatFFT_2D fft = new FloatFFT_2D(rows, cols);
 
-		float[][] preparedImage = FourierTransform.prepareData(image.pixels, rows, cols, false);
+		final float[][] preparedImage = FourierTransform.prepareData(image.pixels, rows, cols, false);
 		fft.complexForward(preparedImage);
 
-		float[][] preparedKernel = FourierTransform.prepareData(kernel, rows, cols, false);
+		final float[][] preparedKernel = FourierTransform.prepareData(kernel, rows, cols, false);
 		fft.complexForward(preparedKernel);
 
-		for(int y = 0; y < rows; y++){
-			for(int x = 0; x < cols; x++){
-				float reImage = preparedImage[y][x*2];
-				float imImage = preparedImage[y][1 + x*2];
+		for (int y = 0; y < rows; y++) {
+			for (int x = 0; x < cols; x++) {
+				final float reImage = preparedImage[y][x * 2];
+				final float imImage = preparedImage[y][1 + x * 2];
 
-				float reKernel = preparedKernel[y][x*2];
-				float imKernel = preparedKernel[y][1 + x*2];
+				final float reKernel = preparedKernel[y][x * 2];
+				final float imKernel = preparedKernel[y][1 + x * 2];
 
-				float re = reImage * reKernel - imImage * imKernel;
-				float im = reImage * imKernel + imImage * reKernel;
+				final float re = reImage * reKernel - imImage * imKernel;
+				final float im = reImage * imKernel + imImage * reKernel;
 
-				preparedImage[y][x*2] = re;
-				preparedImage[y][1 + x*2] = im;
+				preparedImage[y][x * 2] = re;
+				preparedImage[y][1 + x * 2] = im;
 			}
 		}
 
 		fft.complexInverse(preparedImage, true);
 
 		FImage out = image;
-		if (!inplace) 
+		if (!inplace)
 			out = new FImage(cols, rows);
 
 		FourierTransform.unprepareData(preparedImage, out, false);
-		
+
+		return out;
+	}
+
+	/**
+	 * Convolve an image with a pre-prepared frequency domain filter. The filter
+	 * must have the same height as the image and twice the width (to account
+	 * for the imaginary components). Real and imaginary components should be
+	 * interlaced across the rows.
+	 * 
+	 * @param image
+	 *            The image to convolve
+	 * @param filter
+	 *            the prepared frequency domain filter
+	 * @param centered
+	 *            true if the prepared filter has the highest frequency in the
+	 *            centre.
+	 * @return convolved image
+	 */
+	public static FImage convolvePrepared(FImage image, FImage filter, boolean centered) {
+		final int cols = image.getCols();
+		final int rows = image.getRows();
+
+		final FloatFFT_2D fft = new FloatFFT_2D(rows, cols);
+
+		final float[][] preparedImage =
+				FourierTransform.prepareData(image.pixels, rows, cols, centered);
+		fft.complexForward(preparedImage);
+
+		final float[][] preparedKernel = filter.pixels;
+
+		for (int y = 0; y < rows; y++) {
+			for (int x = 0; x < cols; x++) {
+				final float reImage = preparedImage[y][x * 2];
+				final float imImage = preparedImage[y][1 + x * 2];
+
+				final float reKernel = preparedKernel[y][x * 2];
+				final float imKernel = preparedKernel[y][1 + x * 2];
+
+				final float re = reImage * reKernel - imImage * imKernel;
+				final float im = reImage * imKernel + imImage * reKernel;
+
+				preparedImage[y][x * 2] = re;
+				preparedImage[y][1 + x * 2] = im;
+			}
+		}
+
+		fft.complexInverse(preparedImage, true);
+
+		final FImage out = new FImage(cols, rows);
+		FourierTransform.unprepareData(preparedImage, out, centered);
 		return out;
 	}
 }
