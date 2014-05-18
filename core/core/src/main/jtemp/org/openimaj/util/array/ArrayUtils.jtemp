@@ -554,7 +554,16 @@ public class ArrayUtils {
     			return (m['R'] == DOUBLE); 		
     		}
     		if (m['T'] == LONG) {
-    			return (m['R'] == DOUBLE);
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == INT) {
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == SHORT) {
+    			return (m['R'] == INT);
+    		}
+    		if (m['T'] == BYTE) {
+    			return (m['R'] == INT);
     		}
     		return (m['R'] == FLOAT);
     	}
@@ -581,7 +590,16 @@ public class ArrayUtils {
     			return (m['R'] == DOUBLE); 		
     		}
     		if (m['T'] == LONG) {
-    			return (m['R'] == DOUBLE);
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == INT) {
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == SHORT) {
+    			return (m['R'] == INT);
+    		}
+    		if (m['T'] == BYTE) {
+    			return (m['R'] == INT);
     		}
     		return (m['R'] == FLOAT);
     	}
@@ -609,7 +627,16 @@ public class ArrayUtils {
     			return (m['R'] == DOUBLE); 		
     		}
     		if (m['T'] == LONG) {
-    			return (m['R'] == DOUBLE);
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == INT) {
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == SHORT) {
+    			return (m['R'] == INT);
+    		}
+    		if (m['T'] == BYTE) {
+    			return (m['R'] == INT);
     		}
     		return (m['R'] == FLOAT);
     	}
@@ -636,7 +663,16 @@ public class ArrayUtils {
     			return (m['R'] == DOUBLE); 		
     		}
     		if (m['T'] == LONG) {
-    			return (m['R'] == DOUBLE);
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == INT) {
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == SHORT) {
+    			return (m['R'] == INT);
+    		}
+    		if (m['T'] == BYTE) {
+    			return (m['R'] == INT);
     		}
     		return (m['R'] == FLOAT);
     	}
@@ -666,7 +702,16 @@ public class ArrayUtils {
     			return (m['R'] == DOUBLE); 		
     		}
     		if (m['T'] == LONG) {
-    			return (m['R'] == DOUBLE);
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == INT) {
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == SHORT) {
+    			return (m['R'] == INT);
+    		}
+    		if (m['T'] == BYTE) {
+    			return (m['R'] == INT);
     		}
     		return (m['R'] == FLOAT);
     	}
@@ -694,7 +739,16 @@ public class ArrayUtils {
     			return (m['R'] == DOUBLE); 		
     		}
     		if (m['T'] == LONG) {
-    			return (m['R'] == DOUBLE);
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == INT) {
+    			return (m['R'] == LONG);
+    		}
+    		if (m['T'] == SHORT) {
+    			return (m['R'] == INT);
+    		}
+    		if (m['T'] == BYTE) {
+    			return (m['R'] == INT);
     		}
     		return (m['R'] == FLOAT);
     	}
