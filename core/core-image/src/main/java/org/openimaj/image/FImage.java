@@ -331,7 +331,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 				if (this.pixels[r][c] < min)
 					this.pixels[r][c] = 0;
 				if (this.pixels[r][c] > max)
-					this.pixels[r][c] = 0;
+					this.pixels[r][c] = 1;
 			}
 		}
 
@@ -352,7 +352,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 			for (int c = 0; c < this.width; c++)
 			{
 				if (this.pixels[r][c] > fthresh)
-					this.pixels[r][c] = 0;
+					this.pixels[r][c] = 1;
 			}
 		}
 		return this;

@@ -42,9 +42,9 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * A base class for multi-band images.
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  * @param <T>
  *            The pixel type
  * @param <I>
@@ -78,7 +78,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Default constructor for a multiband image.
-	 *
+	 * 
 	 * @param colourSpace
 	 *            the colour space
 	 */
@@ -90,7 +90,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Construct a multiband image using each of the given images as the bands
 	 * (in order).
-	 *
+	 * 
 	 * @param colourSpace
 	 *            the colour space
 	 * @param images
@@ -108,7 +108,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#abs()
 	 */
 	@SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Add the given scalar to each pixel of each band and return result as a
 	 * new image.
-	 *
+	 * 
 	 * @param num
 	 *            The value to add to each pixel in every band.
 	 * @return A new image containing the result.
@@ -136,7 +136,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Adds a new band image to the multiband image. The given image must be the
 	 * same size as the images already in this image.
-	 *
+	 * 
 	 * @param img
 	 *            The image to add as a new band.
 	 */
@@ -152,7 +152,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * {@inheritDoc} The input image must be a {@link MultiBandImage} or a
 	 * {@link SingleBandImage}.
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#addInplace(org.openimaj.image.Image)
 	 * @throws UnsupportedOperationException
 	 *             if the given image is neither a {@link MultiBandImage} nor a
@@ -172,7 +172,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Adds to each pixel the value of the corresponding pixel in the
 	 * corresponding band in the given image. Side-affects this image.
-	 *
+	 * 
 	 * @param im
 	 *            The image to add to this image.
 	 * @return A reference to this image containing the result.
@@ -192,7 +192,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Adds to each pixel (in all bandS) the value of corresponding pixel in the
 	 * given image. Side-affects this image.
-	 *
+	 * 
 	 * @param im
 	 *            The image to add to this image.
 	 * @return A reference to this image containing the result.
@@ -211,7 +211,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Add the given value to each pixel in every band. Side-affects this image.
-	 *
+	 * 
 	 * @param num
 	 *            The value to add to each pixel
 	 * @return A reference to this image containing the result.
@@ -227,7 +227,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#addInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -244,9 +244,10 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	}
 
 	/**
-	 * Clips each band in this image to the same range. Values outside of the
-	 * range are set to zero. Side-affects this image.
-	 *
+	 * Sets any pixels that are below min to zero or above max to the highest
+	 * normal value that the image allows (usually 1 for floating-point images).
+	 * This method may side-affect this image.
+	 * 
 	 * @param min
 	 *            The minimum value to clip to
 	 * @param max
@@ -265,7 +266,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#clip(java.lang.Object, java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -285,7 +286,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * For all bands, sets any values above the given threshold to zero.
 	 * Side-affects this image.
-	 *
+	 * 
 	 * @param thresh
 	 *            The threshold above which values are clipped
 	 * @return A reference to this image containing the result.
@@ -300,7 +301,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#clipMax(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -319,7 +320,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Sets all pixels in all bands that have a value below the given threshold
 	 * to zero. Side-affects this image.
-	 *
+	 * 
 	 * @param thresh
 	 *            The threshold below which pixels will be set to zero.
 	 * @return A reference to this image containing the result.
@@ -334,7 +335,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#clipMin(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -352,7 +353,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#clone()
 	 */
 	@Override
@@ -369,7 +370,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Delete the band at the given index.
-	 *
+	 * 
 	 * @param index
 	 *            The index of the band to remove.
 	 */
@@ -380,7 +381,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Divides all pixels of each band by the given value and returns result as
 	 * a new image.
-	 *
+	 * 
 	 * @param val
 	 *            The value to divide every pixel by.
 	 * @return A new image containing the result.
@@ -393,7 +394,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#divideInplace(org.openimaj.image.Image)
 	 */
 	@Override
@@ -410,7 +411,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Divides the pixels in every band of this image by the corresponding pixel
 	 * in the corresponding band of the given image. Side-affects this image.
-	 *
+	 * 
 	 * @param im
 	 *            The image to divide into this image.
 	 * @return A reference to this image containing the result.
@@ -430,7 +431,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Divides the pixels in every band of this image by the corresponding pixel
 	 * in the given image. Side-affects this image.
-	 *
+	 * 
 	 * @param im
 	 *            The image to divide into this image.
 	 * @return A reference to this image containing the result.
@@ -450,7 +451,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Divide all pixels of every band by the given value. Side-affects this
 	 * image.
-	 *
+	 * 
 	 * @param val
 	 *            The value to divide by
 	 * @return A reference to this image containing the result.
@@ -465,7 +466,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#divideInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -483,7 +484,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#extractROI(int, int,
 	 *      org.openimaj.image.Image)
 	 */
@@ -499,7 +500,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#extractROI(int, int, int, int)
 	 */
 	@Override
@@ -514,7 +515,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#fill(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -528,7 +529,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Flatten the bands into a single band using the average value of the
 	 * pixels at each location.
-	 *
+	 * 
 	 * @return A new single-band image containing the result.
 	 */
 	public S flatten() {
@@ -543,14 +544,14 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Flatten the bands into a single band by selecting the maximum value pixel
 	 * from each band.
-	 *
+	 * 
 	 * @return A new flattened image
 	 */
 	public abstract S flattenMax();
 
 	/**
 	 * Get the band at index i.
-	 *
+	 * 
 	 * @param i
 	 *            the index
 	 * @return the specified colour band
@@ -561,7 +562,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Get the colour space of this image
-	 *
+	 * 
 	 * @return the colour space
 	 */
 	public ColourSpace getColourSpace() {
@@ -570,7 +571,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#getContentArea()
 	 */
 	@Override
@@ -593,7 +594,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#getField(org.openimaj.image.Image.Field)
 	 */
 	@Override
@@ -608,7 +609,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#getFieldCopy(org.openimaj.image.Image.Field)
 	 */
 	@Override
@@ -623,7 +624,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#getFieldInterpolate(org.openimaj.image.Image.Field)
 	 */
 	@Override
@@ -639,7 +640,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#getHeight()
 	 */
 	@Override
@@ -651,7 +652,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#getWidth()
 	 */
 	@Override
@@ -663,7 +664,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */
 	@SuppressWarnings("unchecked")
@@ -679,7 +680,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */
 	@SuppressWarnings("unchecked")
@@ -691,7 +692,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Converts the given integer to a value that can be used as a pixel value.
-	 *
+	 * 
 	 * @param n
 	 *            The integer to convert.
 	 * @return A value that can be used as a pixel value.
@@ -700,7 +701,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#inverse()
 	 */
 	@SuppressWarnings("unchecked")
@@ -714,7 +715,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see java.lang.Iterable#iterator()
 	 */
 	@Override
@@ -724,7 +725,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#max()
 	 */
 	@SuppressWarnings("unchecked")
@@ -741,7 +742,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#min()
 	 */
 	@SuppressWarnings("unchecked")
@@ -759,7 +760,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Multiplies each pixel of every band by the given value and returns the
 	 * result as a new image.
-	 *
+	 * 
 	 * @param num
 	 *            The value to multiply by.
 	 * @return A new image containing the result.
@@ -772,7 +773,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#multiplyInplace(org.openimaj.image.Image)
 	 */
 	@Override
@@ -789,7 +790,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Multiplies every pixel in this image by the corresponding pixel in the
 	 * corresponding band in the given image. Side-affects this image.
-	 *
+	 * 
 	 * @param im
 	 *            The image to multiply with this image.
 	 * @return A reference to this image containing the result.
@@ -809,7 +810,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Multiplies every pixel in this image by the corresponding pixel in the
 	 * given image. Side-affects this image.
-	 *
+	 * 
 	 * @param im
 	 *            The image to multiply with this image.
 	 * @return A reference to this image containing the result.
@@ -829,7 +830,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Multiplies each pixel of every band by the given value. Side-affects this
 	 * image.
-	 *
+	 * 
 	 * @param num
 	 *            The value to multiply this image by
 	 * @return A reference to this image containing the result.
@@ -844,7 +845,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#multiplyInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -862,7 +863,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Returns a new instance of an image that represents each band.
-	 *
+	 * 
 	 * @param width
 	 *            The width of the image
 	 * @param height
@@ -873,14 +874,14 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Returns a new instance of a this image type.
-	 *
+	 * 
 	 * @return A new {@link MBFImage} subclass type.
 	 */
 	public abstract I newInstance();
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#newInstance(int, int)
 	 */
 	@Override
@@ -888,7 +889,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#normalise()
 	 */
 	@SuppressWarnings("unchecked")
@@ -902,7 +903,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * Returns the number of bands in this image.
-	 *
+	 * 
 	 * @return the number of bands in this image.
 	 */
 	public int numBands() {
@@ -911,7 +912,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor)
 	 */
 	@Override
@@ -925,7 +926,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
@@ -935,7 +936,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor,
 	 *      boolean)
 	 */
@@ -951,7 +952,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Processes this image with the given {@link SinglebandImageProcessor} for
 	 * every band.
-	 *
+	 * 
 	 * @param pp
 	 *            The pixel process to apply to each band in turn.
 	 * @return A new image containing the result.
@@ -966,7 +967,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandImageProcessor)
 	 */
 	@Override
@@ -980,7 +981,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
@@ -990,7 +991,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor,
 	 *      boolean)
 	 */
@@ -1006,7 +1007,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Process this image with the given {@link SinglebandImageProcessor} for
 	 * every band. Side-affects this image.
-	 *
+	 * 
 	 * @param pp
 	 *            The pixel processor to apply to each band in turn.
 	 * @return A reference to this image containing the result.
@@ -1021,7 +1022,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#setPixel(int, int, java.lang.Object)
 	 */
 	@Override
@@ -1041,7 +1042,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Subtracts the given value from every pixel in every band and returns the
 	 * result as a new image.
-	 *
+	 * 
 	 * @param num
 	 *            The value to subtract from this image.
 	 * @return A new image containing the result.
@@ -1054,7 +1055,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#subtractInplace(org.openimaj.image.Image)
 	 */
 	@Override
@@ -1071,7 +1072,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Subtracts from every pixel in every band the corresponding pixel value in
 	 * the corresponding band of the given image. Side-affects this image.
-	 *
+	 * 
 	 * @param im
 	 *            The image to subtract from this image
 	 * @return A reference to this image containing the result.
@@ -1091,7 +1092,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Subtracts from every pixel in every band the corresponding pixel value in
 	 * the given image. Side-affects this image.
-	 *
+	 * 
 	 * @param im
 	 *            The image to subtract from this image.
 	 * @return A reference to this image containing the result.
@@ -1111,7 +1112,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Subtracts the given value from every pixel in every band. Side-affects
 	 * this image.
-	 *
+	 * 
 	 * @param num
 	 *            The value to subtract from this image
 	 * @return A reference to this image containing the result.
@@ -1126,7 +1127,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#subtractInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -1145,7 +1146,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	/**
 	 * Sets the value of any pixel below the given threshold to zero and all
 	 * others to 1 for all bands. Side-affects this image.
-	 *
+	 * 
 	 * @param thresh
 	 *            The threshold above which pixels will be set to 1.
 	 * @return A reference to this image containing the result.
@@ -1160,7 +1161,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#threshold(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
@@ -1178,7 +1179,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#toByteImage()
 	 */
 	@Override
@@ -1203,7 +1204,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#toPackedARGBPixels()
 	 */
 	@Override
@@ -1265,7 +1266,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.image.Image#zero()
 	 */
 	@SuppressWarnings("unchecked")

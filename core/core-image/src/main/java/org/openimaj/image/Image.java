@@ -203,8 +203,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 
 	/**
-	 * Sets any pixels that are below <code>min</code> or above <code>max</code>
-	 * to zero. This method may side-affect this image.
+	 * Sets any pixels that are below <code>min</code> to zero or above
+	 * <code>max</code> to the highest normal value that the image allows
+	 * (usually 1 for floating-point images). This method may side-affect this
+	 * image.
 	 * 
 	 * @param min
 	 *            The minimum value
@@ -215,8 +217,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I clip(Q min, Q max);
 
 	/**
-	 * Set all values greater than the given value to zero. This method may
-	 * side-affect this image.
+	 * Set all values greater than the given value to the highest normal value
+	 * that the image allows (usually 1 for floating-point images). This method
+	 * may side-affect this image.
 	 * 
 	 * @param thresh
 	 *            The value over which pixels are clipped to zero.
@@ -1426,8 +1429,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I normalise();
 
 	/**
-	 * Adds padding as in {@link FImage#padding}. The padding colour is the
-	 * colour of the closest border pixel.
+	 * Adds padding as in {@link Image#padding(int, int, Object)}. The padding
+	 * colour is the colour of the closest border pixel.
 	 * 
 	 * @param paddingWidth
 	 *            padding in the x direction
@@ -1495,6 +1498,77 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 					}
 				}
 			}
+
+		return out;
+	}
+
+	/**
+	 * Adds pixels to around the image such that the new image width =
+	 * paddingLeft + width + paddingRight with the original image in the middle.
+	 * The values of the padding pixels are formed from repeated symmetric
+	 * reflections of the original image.
+	 * 
+	 * @param paddingLeft
+	 *            left padding width
+	 * @param paddingRight
+	 *            right padding width
+	 * @param paddingTop
+	 *            top padding width
+	 * @param paddingBottom
+	 *            bottom padding width
+	 * @return padded image
+	 */
+	public I paddingSymmetric(int paddingLeft, int paddingRight, int paddingTop, int paddingBottom) {
+		final I out = this.newInstance(paddingLeft + this.getWidth() + paddingRight, paddingTop + this.getHeight()
+				+ paddingBottom);
+		final I clone = this.clone();
+		final I hflip = clone.clone().flipX();
+
+		final ImageRenderer<Q, I> rend = out.createRenderer();
+		rend.drawImage(clone, paddingLeft, paddingTop);
+
+		// left
+		for (int i = paddingLeft - this.getWidth(), c = 0; i > -this.getWidth(); i -= this.getWidth(), c++) {
+			if (c % 2 == 0) {
+				rend.drawImage(hflip, i, paddingTop);
+			} else {
+				rend.drawImage(clone, i, paddingTop);
+			}
+		}
+
+		// right
+		for (int i = paddingLeft + this.getWidth(), c = 0; i < paddingLeft + paddingRight + this.getWidth(); i += this
+				.getWidth(), c++)
+		{
+			if (c % 2 == 0) {
+				rend.drawImage(hflip, i, paddingTop);
+			} else {
+				rend.drawImage(clone, i, paddingTop);
+			}
+		}
+
+		final I centre = out.extractROI(0, paddingTop, paddingLeft + this.getWidth() + paddingRight, this.getHeight());
+		final I yflip = centre.clone().flipY();
+
+		// up
+		for (int i = paddingTop - this.getHeight(), c = 0; i > -this.getHeight(); i -= this.getHeight(), c++) {
+			if (c % 2 == 0) {
+				rend.drawImage(yflip, 0, i);
+			} else {
+				rend.drawImage(centre, 0, i);
+			}
+		}
+
+		// down
+		for (int i = paddingTop + this.getHeight(), c = 0; i < paddingTop + paddingBottom + this.getHeight(); i += this
+				.getHeight(), c++)
+		{
+			if (c % 2 == 0) {
+				rend.drawImage(yflip, 0, i);
+			} else {
+				rend.drawImage(centre, 0, i);
+			}
+		}
 
 		return out;
 	}
