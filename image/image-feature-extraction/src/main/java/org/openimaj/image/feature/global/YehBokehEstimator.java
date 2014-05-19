@@ -63,7 +63,7 @@ public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorPr
 		}
 
 		@Override
-		public int getVericalGridElements() {
+		public int getVerticalGridElements() {
 			return nBlocksY;
 		}
 
@@ -81,7 +81,7 @@ public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorPr
 		}
 
 		@Override
-		public int getVericalGridElements() {
+		public int getVerticalGridElements() {
 			return nBlocksY;
 		}
 

@@ -533,6 +533,9 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	 * @return A new single-band image containing the result.
 	 */
 	public S flatten() {
+		if (this.bands.size() == 1)
+			return bands.get(0).clone();
+
 		final S out = this.newBandInstance(this.getWidth(), this.getHeight());
 
 		for (final S sbm : this)
@@ -728,7 +731,6 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	 * 
 	 * @see org.openimaj.image.Image#max()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public T[] max() {
 		final List<T> pixels = new ArrayList<T>();
@@ -737,7 +739,7 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 			pixels.add(sbm.max());
 		}
 
-		return (T[]) pixels.toArray();
+		return pixels.toArray(createPixelArray(this.numBands()));
 	}
 
 	/**
@@ -745,7 +747,6 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 	 * 
 	 * @see org.openimaj.image.Image#min()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public T[] min() {
 		final List<T> pixels = new ArrayList<T>();
@@ -754,8 +755,17 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 			pixels.add(sbm.min());
 		}
 
-		return (T[]) pixels.toArray();
+		return pixels.toArray(createPixelArray(this.numBands()));
 	}
+
+	/**
+	 * Create an array of n pixels
+	 * 
+	 * @param n
+	 *            number of pixels
+	 * @return the array
+	 */
+	protected abstract T[] createPixelArray(int n);
 
 	/**
 	 * Multiplies each pixel of every band by the given value and returns the

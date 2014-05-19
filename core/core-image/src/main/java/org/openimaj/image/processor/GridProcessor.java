@@ -55,7 +55,7 @@ public interface GridProcessor<T,I extends Image<T,I>> extends Processor<I>
 	 * 	Returns the number of rows in the grid.
 	 *  @return the number of rows in the grid.
 	 */
-	public abstract int getVericalGridElements();
+	public abstract int getVerticalGridElements();
 	
 	/**
 	 * 	Process the given grid element (<code>patch</code>) and returns

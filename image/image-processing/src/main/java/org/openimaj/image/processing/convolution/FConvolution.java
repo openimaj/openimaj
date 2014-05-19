@@ -37,8 +37,8 @@ import Jama.SingularValueDecomposition;
 
 /**
  * Base class for implementation of classes that perform convolution operations
- * on @link{FImage}s as a @link{KernelProcessor}, with the kernel itself formed
- * from and @link{FImage}.
+ * on @link{FImage}s as a @link{SinglebandImageProcessor}, with the kernel
+ * itself formed from and @link{FImage}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */

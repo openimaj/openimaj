@@ -1582,7 +1582,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A new image containing the result.
 	 */
 	public I process(GridProcessor<Q, I> p) {
-		final int height = p.getVericalGridElements();
+		final int height = p.getVerticalGridElements();
 		final int width = p.getHorizontalGridElements();
 		final I newImage = this.newInstance(width, height);
 		newImage.zero();
