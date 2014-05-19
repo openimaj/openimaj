@@ -53,9 +53,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>edu.emory.mathcs</groupId>
-      <artifactId>jtransforms</artifactId>
-      <version>2.3</version>
+      <groupId>org.openimaj</groupId>
+      <artifactId>JTransforms</artifactId>
+      <version>2.4-r29-OI</version>
     </dependency>
     <dependency>
     	<groupId>org.openimaj</groupId>
