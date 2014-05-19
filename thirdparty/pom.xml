@@ -26,5 +26,6 @@
     <module>FaceTracker</module>
     <module>processing-core</module>
     <module>MatrixLib</module>
+    <module>JTransforms</module>
   </modules>
 </project>
