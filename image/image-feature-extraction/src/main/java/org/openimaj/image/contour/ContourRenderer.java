@@ -34,31 +34,51 @@ import java.util.List;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.contour.SuzukiContourProcessor.Border;
 import org.openimaj.image.renderer.MBFImageRenderer;
 
 /**
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * {@link MBFImageRenderer} for drawing {@link Contour}s.
+ * 
+ * @author Sina Samnagooei (ss@ecs.soton.ac.uk)
  * 
  */
 public class ContourRenderer extends MBFImageRenderer {
 
 	/**
+	 * Construct with the given target image.
+	 * 
 	 * @param targetImage
+	 *            the target image
 	 */
 	public ContourRenderer(MBFImage targetImage) {
 		super(targetImage);
 	}
 
-	public static void drawContours(MBFImage imgC, Border root) {
+	/**
+	 * Utility function to quickly draw the contour to the image.
+	 * 
+	 * @param imgC
+	 *            the target image
+	 * @param root
+	 *            the contour
+	 * @return the target image
+	 */
+	public static MBFImage drawContours(MBFImage imgC, Contour root) {
 		new ContourRenderer(imgC).drawContours(root);
+		return imgC;
 	}
 
-	public void drawContours(Border root) {
-		final List<Border> toDraw = new ArrayList<Border>();
+	/**
+	 * Draw the given contour.
+	 * 
+	 * @param root
+	 *            the contour.
+	 */
+	public void drawContours(Contour root) {
+		final List<Contour> toDraw = new ArrayList<Contour>();
 		toDraw.add(root);
 		while (!toDraw.isEmpty()) {
-			final Border next = toDraw.remove(toDraw.size() - 1);
+			final Contour next = toDraw.remove(toDraw.size() - 1);
 			Float[] c = null;
 			switch (next.type) {
 			case HOLE:
@@ -73,5 +93,4 @@ public class ContourRenderer extends MBFImageRenderer {
 			toDraw.addAll(next.children);
 		}
 	}
-
 }

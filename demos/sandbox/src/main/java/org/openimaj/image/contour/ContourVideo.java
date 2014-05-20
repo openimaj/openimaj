@@ -38,9 +38,8 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.contour.SuzukiContourProcessor.Border;
 import org.openimaj.image.feature.astheticode.Aestheticode;
-import org.openimaj.image.feature.astheticode.FindAestheticode;
+import org.openimaj.image.feature.astheticode.AestheticodeDetector;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FSobel;
 import org.openimaj.image.processing.edges.CannyEdgeDetector;
@@ -93,10 +92,10 @@ public class ContourVideo {
 //				DisplayUtilities.displayName(img, "Grey");
 				img.processInplace(thresh);
 				proc.analyseImage(img);
-				final Border root = proc.root;
+				final Contour root = proc.root;
 				displayThreshold(img);
 				displayContours(img, root);
-				List<Aestheticode> codes = new FindAestheticode().apply(root);
+				List<Aestheticode> codes = new AestheticodeDetector().apply(root);
 				for (Aestheticode ac : codes) {
 					ContourRenderer.drawContours(frame, ac.root);
 				}
@@ -109,7 +108,7 @@ public class ContourVideo {
 				DisplayUtilities.displayName(img, "Threshold");
 			}
 
-			private void displayContours(final FImage img, final Border root) {
+			private void displayContours(final FImage img, final Contour root) {
 				final MBFImage contourFrame = new MBFImage(img.clone(), img.clone(), img.clone());
 				ContourRenderer.drawContours(contourFrame, root);
 				DisplayUtilities.displayName(contourFrame, "Countours");

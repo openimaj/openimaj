@@ -32,15 +32,17 @@ package org.openimaj.image.feature.astheticode;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.contour.SuzukiContourProcessor.Border;
+import org.openimaj.image.contour.Contour;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Predicate;
 
 /**
- *
+ * Aestheticode detection algorithm. Only supports simple codes (one parent,
+ * many children, many grandchildren with no children of their own).
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class FindAestheticode implements Function<Border, List<Aestheticode>>, Predicate<Border>{
+public class AestheticodeDetector implements Function<Contour, List<Aestheticode>>, Predicate<Contour> {
 
 	private static final int MAX_CHILDLESS_CHILDREN_DEFAULT = 0;
 	private static final int MAX_CHILDREN_DEFAULT = 5;
@@ -48,55 +50,71 @@ public class FindAestheticode implements Function<Border, List<Aestheticode>>, P
 	private int minChildren;
 	private int maxChildren;
 	private int maxChildlessChildren;
-	
+
 	/**
-	 * Sets the min and max children to the default (bot are 5) and max childless children to 0
+	 * Constructs with the min and max children to the default (both are 5) and
+	 * max childless children to 0
 	 */
-	public FindAestheticode() {
+	public AestheticodeDetector() {
 		this.minChildren = MIN_CHILDREN_DEFAULT;
 		this.maxChildren = MAX_CHILDREN_DEFAULT;
 		this.maxChildlessChildren = MAX_CHILDLESS_CHILDREN_DEFAULT;
 	}
-	
-	public FindAestheticode(int minChildren, int maxChildren, int maxChildless){
+
+	/**
+	 * Construct with the given parameters
+	 * 
+	 * @param minChildren
+	 *            the minimum number of children allowed in a root
+	 * @param maxChildren
+	 *            the maximum number of children allowed in a root
+	 * @param maxChildless
+	 *            the maximum number of childless children
+	 */
+	public AestheticodeDetector(int minChildren, int maxChildren, int maxChildless) {
 		this.minChildren = minChildren;
 		this.maxChildren = maxChildren;
 		this.maxChildlessChildren = maxChildless;
 	}
+
 	@Override
-	public List<Aestheticode> apply(Border in) {
-		List<Aestheticode> found = new ArrayList<Aestheticode>();
-		detectCode(in,found);
+	public List<Aestheticode> apply(Contour in) {
+		final List<Aestheticode> found = new ArrayList<Aestheticode>();
+		detectCode(in, found);
 		return found;
 	}
-	
-	private void detectCode(Border root, List<Aestheticode> found) {
-		if(test(root)){
+
+	private void detectCode(Contour root, List<Aestheticode> found) {
+		if (test(root)) {
 			found.add(new Aestheticode(root));
 		}
-		else{
-			for (Border child : root.children) {
+		else {
+			for (final Contour child : root.children) {
 				detectCode(child, found);
 			}
 		}
 	}
+
 	@Override
-	public boolean test(Border in) {
+	public boolean test(Contour in) {
 		// has at least one child
-		if(in.children.size() < minChildren || in.children.size() > maxChildren ){
+		if (in.children.size() < minChildren || in.children.size() > maxChildren) {
 			return false;
 		}
+
 		int childlessChild = 0;
 		// all grandchildren have no children
-		for (Border child : in.children) {
-			if(child.children.size() == 0) childlessChild++;
-			
-			if(childlessChild > maxChildlessChildren) return false;
-			for (Border grandchildren : child.children) {
-				if(grandchildren.children.size() != 0) return false;
+		for (final Contour child : in.children) {
+			if (child.children.size() == 0)
+				childlessChild++;
+
+			if (childlessChild > maxChildlessChildren)
+				return false;
+			for (final Contour grandchildren : child.children) {
+				if (grandchildren.children.size() != 0)
+					return false;
 			}
 		}
 		return true;
 	}
-	
 }

@@ -32,7 +32,6 @@ package org.openimaj.image.contour;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.contour.SuzukiContourProcessor.Border;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Predicate;
 
@@ -40,44 +39,44 @@ import org.openimaj.util.function.Predicate;
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class FindAestheticode implements Function<Border, List<Aestheticode>>, Predicate<Border> {
+public class FindAestheticode implements Function<Contour, List<Aestheticode>>, Predicate<Contour> {
 	private static final int MAX_CHILDLESS_CHILDREN = 0;
 	private static final int MAX_CHILDREN = 5;
 	private static final int MIN_CHILDREN = 5;
 
 	@Override
-	public List<Aestheticode> apply(Border in) {
+	public List<Aestheticode> apply(Contour in) {
 		final List<Aestheticode> found = new ArrayList<Aestheticode>();
 		detectCode(in, found);
 		return found;
 	}
 
-	private void detectCode(Border root, List<Aestheticode> found) {
+	private void detectCode(Contour root, List<Aestheticode> found) {
 		if (test(root)) {
 			found.add(new Aestheticode(root));
 		}
 		else {
-			for (final Border child : root.children) {
+			for (final Contour child : root.children) {
 				detectCode(child, found);
 			}
 		}
 	}
 
 	@Override
-	public boolean test(Border in) {
+	public boolean test(Contour in) {
 		// has at least one child
 		if (in.children.size() < MIN_CHILDREN || in.children.size() > MAX_CHILDREN) {
 			return false;
 		}
 		int childlessChild = 0;
 		// all grandchildren have no children
-		for (final Border child : in.children) {
+		for (final Contour child : in.children) {
 			if (child.children.size() == 0)
 				childlessChild++;
 
 			if (childlessChild > MAX_CHILDLESS_CHILDREN)
 				return false;
-			for (final Border grandchildren : child.children) {
+			for (final Contour grandchildren : child.children) {
 				if (grandchildren.children.size() != 0)
 					return false;
 			}

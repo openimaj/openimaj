@@ -42,27 +42,20 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.operation.DefaultMathTransformFactory;
 import org.geotools.referencing.operation.projection.HotineObliqueMercator;
 import org.opengis.geometry.DirectPosition;
-import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchIdentifierException;
 import org.opengis.referencing.operation.MathTransformFactory;
 import org.opengis.referencing.operation.TransformException;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.SVGImage;
-import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.image.VectorImageUtilities;
 import org.openimaj.image.renderer.ImageRenderer;
-import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
-import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
-import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.util.Interpolation;
 import org.openimaj.vis.world.WorldPlace;
 import org.openimaj.vis.world.WorldPolygons;
 
@@ -77,7 +70,8 @@ public class DrawMap {
 	private static final Float[] COUNTRY_BORDER_COLOUR = new Float[] { 90 / 255f, 90 / 255f, 140 / 255f };
 	private static final Float[] GRID_COLOUR = new Float[] { 70 / 255f, 70 / 255f, 78 / 255f };
 
-	public static void main(String[] args) throws FileNotFoundException, IOException, TransformException, FactoryException, TranscoderException
+	public static void main(String[] args) throws FileNotFoundException, IOException, TransformException,
+			FactoryException, TranscoderException
 	{
 		System.out.println("Reading latlong");
 		final List<GeoLocation> lls = Utils.readLatLng(DEFAULT_LAT_LNG_FILE, new TLongArrayList());
@@ -96,7 +90,6 @@ public class DrawMap {
 		params.parameter("rectified_grid_angle").setValue(0.0); // 45
 
 		final HotineObliqueMercator transform = (HotineObliqueMercator) fact.createParameterizedTransform(params);
-		
 
 		double minx = 0;
 		double maxx = 0;
@@ -105,9 +98,9 @@ public class DrawMap {
 		for (int y = -90; y <= 90; y += 10) {
 			for (int x = -180; x <= 180; x += 10) {
 				final DirectPosition2D dp = new DirectPosition2D(x, y);
-//				final DirectPosition dp =null;
+				// final DirectPosition dp =null;
 				final double[] pt = transform.transform(dp, (DirectPosition) null).getCoordinate();
-//				double[] pt = transform.transform(dp, null);
+				// double[] pt = transform.transform(dp, null);
 				if (pt[0] > maxx)
 					maxx = pt[0];
 				if (pt[0] < minx)
@@ -119,7 +112,8 @@ public class DrawMap {
 			}
 		}
 
-//		final MBFImage img = new MBFImage(10000, (int) (10000 * ((maxy - miny) / (maxx - minx))), 3);
+		// final MBFImage img = new MBFImage(10000, (int) (10000 * ((maxy -
+		// miny) / (maxx - minx))), 3);
 		final SVGImage img = new SVGImage(10000, (int) (10000 * ((maxy - miny) / (maxx - minx))));
 		img.fill(BG_COLOUR);
 		final ImageRenderer<Float[], SVGImage> r = img.createRenderer(RenderHints.ANTI_ALIASED);
@@ -167,66 +161,72 @@ public class DrawMap {
 			}
 		}
 		// heatmap.processInplace(new FGaussianConvolve(10.0f));
-//		heatmap.normalise();
-//
-//		System.out.println("Drawing points");
-//		for (int y = 0; y < heatmap.height; y++) {
-//			for (int x = 0; x < heatmap.width; x++) {
-//				float val = heatmap.pixels[y][x];
-//				if (val > 0) {
-//					val = 0.5f + 0.5f * val;
-//					final float red = Interpolation.lerp(val, 0, BG_COLOUR[0], 1, 1);
-//					final float green = Interpolation.lerp(val, 0, BG_COLOUR[1], 1, 1);
-//					final float blue = Interpolation.lerp(val, 0, BG_COLOUR[2], 1, 1);
-//
-//					for (int yy = -1; yy <= 1; yy++)
-//						for (int xx = -1; xx <= 1; xx++)
-//							img.setPixel(x + xx, y + yy, new Float[] { red, green, blue });
-//				}
-//			}
-//		}
-//		System.out.println("Drawing grid lines");
-//		for (int y = -90; y <= 90; y += 15) {
-//			Point2dImpl last = transform(transform, minx, maxx, miny, maxy, img.getWidth(), img.getHeight(),
-//					new Point2dImpl(-180, y));
-//
-//			for (float x = -180; x <= 180; x += 0.1) {
-//				final Point2dImpl pt = transform(transform, minx, maxx, miny, maxy, img.getWidth(), img.getHeight(),
-//						new Point2dImpl(x, y));
-//				if (Line2d.distance(last, pt) < img.getHeight() / 2)
-//					r.drawLine(last, pt, GRID_WIDTH, GRID_COLOUR);
-//				last = pt;
-//			}
-//		}
+		// heatmap.normalise();
+		//
+		// System.out.println("Drawing points");
+		// for (int y = 0; y < heatmap.height; y++) {
+		// for (int x = 0; x < heatmap.width; x++) {
+		// float val = heatmap.pixels[y][x];
+		// if (val > 0) {
+		// val = 0.5f + 0.5f * val;
+		// final float red = Interpolation.lerp(val, 0, BG_COLOUR[0], 1, 1);
+		// final float green = Interpolation.lerp(val, 0, BG_COLOUR[1], 1, 1);
+		// final float blue = Interpolation.lerp(val, 0, BG_COLOUR[2], 1, 1);
+		//
+		// for (int yy = -1; yy <= 1; yy++)
+		// for (int xx = -1; xx <= 1; xx++)
+		// img.setPixel(x + xx, y + yy, new Float[] { red, green, blue });
+		// }
+		// }
+		// }
+		// System.out.println("Drawing grid lines");
+		// for (int y = -90; y <= 90; y += 15) {
+		// Point2dImpl last = transform(transform, minx, maxx, miny, maxy,
+		// img.getWidth(), img.getHeight(),
+		// new Point2dImpl(-180, y));
+		//
+		// for (float x = -180; x <= 180; x += 0.1) {
+		// final Point2dImpl pt = transform(transform, minx, maxx, miny, maxy,
+		// img.getWidth(), img.getHeight(),
+		// new Point2dImpl(x, y));
+		// if (Line2d.distance(last, pt) < img.getHeight() / 2)
+		// r.drawLine(last, pt, GRID_WIDTH, GRID_COLOUR);
+		// last = pt;
+		// }
+		// }
 
-//		for (int x = -180; x <= 180; x += 15) {
-//			Point2dImpl last = transform(transform, minx, maxx, miny, maxy, img.getWidth(), img.getHeight(),
-//					new Point2dImpl(x, -90));
-//
-//			for (float y = -90; y <= 90; y += 0.1f) {
-//				final Point2dImpl pt = transform(transform, minx, maxx, miny, maxy, img.getWidth(), img.getHeight(),
-//						new Point2dImpl(x, y));
-//				if (Line2d.distance(last, pt) < img.getHeight() / 2)
-//					r.drawLine(last, pt, GRID_WIDTH, GRID_COLOUR);
-//				last = pt;
-//			}
-//		}
+		// for (int x = -180; x <= 180; x += 15) {
+		// Point2dImpl last = transform(transform, minx, maxx, miny, maxy,
+		// img.getWidth(), img.getHeight(),
+		// new Point2dImpl(x, -90));
+		//
+		// for (float y = -90; y <= 90; y += 0.1f) {
+		// final Point2dImpl pt = transform(transform, minx, maxx, miny, maxy,
+		// img.getWidth(), img.getHeight(),
+		// new Point2dImpl(x, y));
+		// if (Line2d.distance(last, pt) < img.getHeight() / 2)
+		// r.drawLine(last, pt, GRID_WIDTH, GRID_COLOUR);
+		// last = pt;
+		// }
+		// }
 		System.out.println("Writing image..");
 
-//		MBFImage bigimg = new MBFImage(img.getWidth(), (int) (img.getHeight() * 1.5), 3);
-//		bigimg.drawImage(img, 0, -img.getHeight() / 2);
-//		bigimg.drawImage(img, 0, img.getHeight() / 2);
-//
-//		bigimg = ProjectionProcessor.project(bigimg, TransformUtilities.rotationMatrix(Math.PI / 4), BG_COLOUR);
-//
-//		bigimg = bigimg.extractROI(new Rectangle(
-//				(int) (bigimg.getWidth() / 3.15),
-//				(int) (bigimg.getHeight() / 3.5),
-//				(int) (0.65f * img.getWidth()),
-//				(int) (0.65f * img.getWidth() * Math.sqrt(2))));
+		// MBFImage bigimg = new MBFImage(img.getWidth(), (int) (img.getHeight()
+		// * 1.5), 3);
+		// bigimg.drawImage(img, 0, -img.getHeight() / 2);
+		// bigimg.drawImage(img, 0, img.getHeight() / 2);
+		//
+		// bigimg = ProjectionProcessor.project(bigimg,
+		// TransformUtilities.rotationMatrix(Math.PI / 4), BG_COLOUR);
+		//
+		// bigimg = bigimg.extractROI(new Rectangle(
+		// (int) (bigimg.getWidth() / 3.15),
+		// (int) (bigimg.getHeight() / 3.5),
+		// (int) (0.65f * img.getWidth()),
+		// (int) (0.65f * img.getWidth() * Math.sqrt(2))));
 
-//		ImageUtilities.write(bigimg, new File("/Users/jsh2/map.png"));
-		ImageUtilities.write(img, new File("/Users/ss/out.pdf"), new PDFTranscoder());
+		// ImageUtilities.write(bigimg, new File("/Users/jsh2/map.png"));
+		VectorImageUtilities.write(img, new File("/Users/ss/out.pdf"), new PDFTranscoder());
 	}
 
 	private static Shape transform(Polygon asPolygon, HotineObliqueMercator transform, double minx, double maxx,

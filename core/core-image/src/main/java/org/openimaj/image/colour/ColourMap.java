@@ -9176,8 +9176,28 @@ public enum ColourMap {
 	 */
 	public Float[][] generateColours(int ncolours) {
 		final Float[][] cm = new Float[ncolours][];
-		for (int i = 0; i < ncolours; i++) {
-			cm[i] = this.apply(i / (float) (ncolours - 1));
+
+		// if the colourmap is cyclic, we don't want the generated colours to
+		// wrap
+		cm[0] = this.apply(0);
+		cm[ncolours - 1] = this.apply(1);
+
+		boolean same = false;
+		for (int i = 0; i < cm[0].length; i++) {
+			if (Math.abs(cm[0][i] - cm[ncolours - 1][i]) < 0.00001) {
+				same = true;
+				break;
+			}
+		}
+
+		if (same) {
+			for (int i = 1; i < ncolours; i++) {
+				cm[i] = this.apply(i / (float) (ncolours));
+			}
+		} else {
+			for (int i = 1; i < ncolours - 1; i++) {
+				cm[i] = this.apply(i / (float) (ncolours - 1));
+			}
 		}
 		return cm;
 	}

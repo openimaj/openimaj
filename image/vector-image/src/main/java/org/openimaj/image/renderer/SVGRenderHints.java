@@ -27,72 +27,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.contour;
-
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import org.junit.Test;
-import org.openimaj.image.FImage;
-import org.openimaj.image.pixel.Pixel;
+package org.openimaj.image.renderer;
 
 /**
- * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * Hints for {@link ImageRenderer} implementations to (optionally) 
+ * use when drawing.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class TestMooreBorderFollowing {
+public class SVGRenderHints extends RenderHints{
+	protected int width = 0;
+	protected int height = 0;
 	
 	/**
-	 * @throws Exception
+	 * @param width
+	 * @param height
 	 */
-	@Test
-	public void testSimple() throws Exception {
-		float[][] pixels = new float[][]{
-			new float[]{0,0,0,0,0,0},
-			new float[]{0,0,1,1,1,0},
-			new float[]{0,1,0,0,1,0},
-			new float[]{0,0,1,1,1,0},
-			new float[]{0,0,0,0,0,0}
-		};
-		
-		FImage img = new FImage(pixels);
-		
-		BorderFollowingStrategy strat = new MooreNeighborStrategy();
-		Pixel start = new Pixel(1,2);
-		Pixel from  = new Pixel(1,3);
-		List<Pixel> border = strat.border(img, start, from);
-		assertTrue(border.size() == img.sum());
-		System.out.println(border);
-		from  = new Pixel(2,2);
-		border = strat.border(img, start, from);
-		assertTrue(border.size() == img.sum()-2);
-		System.out.println(border);
-		
+	public SVGRenderHints(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
-	/**
-	 * @throws Exception
-	 */
-	@Test
-	public void testOpenLoop() throws Exception {
-		float[][] pixels = new float[][]{
-			new float[]{0,0,0,0,0,0,0,0},
-			new float[]{0,0,0,0,0,0,0,0},
-			new float[]{0,0,0,0,0,1,1,0},
-			new float[]{0,0,0,1,0,0,1,0},
-			new float[]{0,0,0,1,0,1,1,0},
-			new float[]{0,0,0,0,1,1,0,0},
-			new float[]{0,0,0,0,0,0,0,0}
-		};
-		
-		FImage img = new FImage(pixels);
-		
-		MooreNeighborStrategy strat = new MooreNeighborStrategy();
-		Pixel start = new Pixel(3,4);
-		Pixel from  = new Pixel(3,5);
-		List<Pixel> border = strat.border(img, start, from);
-		System.out.println(border);
-		
-	}
-
 }

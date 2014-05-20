@@ -32,6 +32,8 @@ package org.openimaj.image.feature.global;
 import java.io.File;
 import java.io.IOException;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
@@ -40,16 +42,59 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.ColourMap;
+import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.algorithm.FourierTransform;
 import org.openimaj.image.processing.convolution.FourierConvolve;
 import org.openimaj.image.processing.convolution.GaborFilters;
 import org.openimaj.image.processing.resize.BilinearInterpolation;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
-import org.openimaj.util.array.ArrayUtils;
 
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
+/**
+ * Implementation of the "Gist" spatial envolope feature. Based on the original
+ * matlab implementation from
+ * {@link "http://people.csail.mit.edu/torralba/code/spatialenvelope/"}, and
+ * designed to produce comparable features.
+ * <p>
+ * The Gist or Spatial Envelope is a very low dimensional representation of the
+ * scene. Gist encodes a set of perceptual dimensions (naturalness, openness,
+ * roughness, expansion, ruggedness) that represents the dominant spatial
+ * structure of a scene. These perceptual dimensions are reliably estimated
+ * using coarsely localized spectral information from the image.
+ * <p>
+ * <b>Implementation notes:<b> This class is abstract, and it is intended that
+ * the {@link FixedSizeGist} or {@link VariableSizeGist} are actually used in
+ * practice (normally {@link FixedSizeGist} will be used).
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <IMAGE>
+ *            The type of image. {@link MBFImage} and {@link FImage} are
+ *            supported; other types might not work.
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Oliva, Aude", "Torralba, Antonio" },
+		title = "Modeling the Shape of the Scene: A Holistic Representation of the Spatial Envelope",
+		year = "2001",
+		journal = "Int. J. Comput. Vision",
+		pages = { "145", "", "175" },
+		url = "http://dx.doi.org/10.1023/A:1011139631724",
+		month = "May",
+		number = "3",
+		publisher = "Kluwer Academic Publishers",
+		volume = "42",
+		customData = {
+				"issn", "0920-5691",
+				"numpages", "31",
+				"doi", "10.1023/A:1011139631724",
+				"acmid", "598462",
+				"address", "Hingham, MA, USA",
+				"keywords", "energy spectrum, natural images, principal components, scene recognition, spatial layout"
+		})
 public abstract class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
 		implements
 		ImageAnalyser<IMAGE>
@@ -354,39 +399,65 @@ public abstract class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProces
 		return out;
 	}
 
-	public MBFImage visualiseDescriptor(int width, int height) {
-		final int nBlocks = numberOfBlocks;
-		final int nFilters = (int) ArrayUtils.sumValues(orientationsPerScale);
-		final int nScales = orientationsPerScale.length;
-
-		final Float[][] C = ColourMap.HSV.generateColours(nScales);
+	/**
+	 * Compute the descriptor visualisation in the same form as the original
+	 * matlab code. The resultant image illustrates the dominant filter
+	 * responses for each spatial bin. The filter scales are drawn with
+	 * differing hues, and brightness is proportional to response value.
+	 * 
+	 * @param width
+	 *            the desired width of the produced image
+	 * @return the visualisation TODO: colour descriptors
+	 */
+	public MBFImage visualiseDescriptor(int width) {
+		final Float[][] C = ColourMap.HSV.generateColours(orientationsPerScale.length);
 
 		final FImage[] G = new FImage[this.gaborFilters.length];
 		for (int i = 0; i < gaborFilters.length; i++) {
-			G[i] = ResizeProcessor.halfSize(gaborFilters[i]);
+			G[i] = new FImage(this.gaborFilters[i].width / 2, this.gaborFilters[i].height);
+			FourierTransform.unprepareData(gaborFilters[i].pixels, G[i], false);
+			G[i] = ResizeProcessor.halfSize(G[i]);
 			G[i].addInplace(G[i].clone().flipY().flipX());
-			DisplayUtilities.display(G[i]);
 		}
 
-		for (int x = 0; x < nBlocks; x++) {
-			for (int y = 0; y < nBlocks; y++) {
-				final MBFImage tmp = new MBFImage(G[0].width, G[0].height, 3);
+		float max = 0;
+		final MBFImage[] blockImages = new MBFImage[numberOfBlocks * numberOfBlocks];
+		for (int y = 0, k = 0; y < numberOfBlocks; y++) {
+			for (int x = 0; x < numberOfBlocks; x++, k++) {
+				blockImages[k] = new MBFImage(G[0].width, G[0].height, 3);
 
-				for (int s = 0, j = 0; s < nScales; s++) {
+				for (int s = 0, j = 0; s < orientationsPerScale.length; s++) {
 					for (int i = 0; i < orientationsPerScale[s]; i++, j++) {
 						final MBFImage col = new MBFImage(G[0].width, G[0].height, 3);
-						col.fill(C[s]).multiplyInplace(this.response.values[x * nBlocks + y + j]);
-						// col.divideInplace(col.max());
+						col.fill(C[s]).multiplyInplace(
+								this.response.values[y + x * numberOfBlocks + j * numberOfBlocks * numberOfBlocks]);
 
-						tmp.addInplace(G[j].toRGB().multiply(col));
-						// DisplayUtilities.displayName(G[j].toRGB().multiply(col),
-						// "col");
+						blockImages[k].addInplace(G[j].toRGB().multiply(col));
 					}
 				}
-				DisplayUtilities.display(tmp.normalise());
+
+				for (int i = 0; i < blockImages[k].numBands(); i++)
+					max = Math.max(max, blockImages[k].bands.get(i).max());
 			}
 		}
-		return null;
+
+		final MBFImage output = new MBFImage(width, width, ColourSpace.RGB);
+		output.fill(RGBColour.WHITE);
+		final int ts = (width / 4);
+		final ResizeProcessor rp = new ResizeProcessor(ts, ts, true);
+		for (int y = 0, k = 0; y < numberOfBlocks; y++) {
+			for (int x = 0; x < numberOfBlocks; x++, k++) {
+				blockImages[k].divideInplace(max);
+				final MBFImage tmp = blockImages[k].process(rp);
+				tmp.drawLine(0, 0, 0, ts - 1, 1, RGBColour.WHITE);
+				tmp.drawLine(0, 0, ts - 1, 0, 1, RGBColour.WHITE);
+				tmp.drawLine(ts - 1, 0, ts - 1, ts - 1, 1, RGBColour.WHITE);
+				tmp.drawLine(0, ts - 1, ts - 1, ts - 1, 1, RGBColour.WHITE);
+				output.drawImage(tmp, x * ts, y * ts);
+			}
+		}
+
+		return output;
 	}
 
 	/**
@@ -400,6 +471,6 @@ public abstract class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProces
 		final FixedSizeGist<FImage> fsg = new FixedSizeGist<FImage>(256, 256, new int[] { 8, 8, 8, 8 });
 		fsg.analyseImage(gimg);
 		System.out.println(fsg.response);
-		fsg.visualiseDescriptor(100, 100);
+		DisplayUtilities.display(fsg.visualiseDescriptor(500));
 	}
 }

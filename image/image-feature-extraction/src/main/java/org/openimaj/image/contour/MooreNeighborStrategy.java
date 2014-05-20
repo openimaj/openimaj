@@ -35,45 +35,49 @@ import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * The Moore Neighborhood border tracing strategy as described by
- * http://www.imageprocessingplace.com/downloads_V3/root_downloads/tutorials/
- * contour_tracing_Abeer_George_Ghuneim/moore.html
+ * The Moore Neighborhood contour tracing strategy as described by
+ * {@link "http://www.imageprocessingplace.com/downloads_V3/root_downloads/tutorials/contour_tracing_Abeer_George_Ghuneim/moore.html"}
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class MooreNeighborStrategy extends BorderFollowingStrategy {
+public class MooreNeighborStrategy extends ContourFollowingStrategy {
 
-	public void border(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation) {
-		directedBorder(image, start, from, new Operation<IndependentPair<Pixel, DIRECTION>>() {
-
+	@Override
+	public void contour(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation) {
+		directedContour(image, start, from, new Operation<IndependentPair<Pixel, Direction>>() {
 			@Override
-			public void perform(IndependentPair<Pixel, DIRECTION> object) {
+			public void perform(IndependentPair<Pixel, Direction> object) {
 				operation.perform(object.firstObject());
 			}
 		});
 	}
-	
+
 	/**
+	 * Directed contour following.
 	 * 
 	 * @param image
+	 *            the image
 	 * @param start
+	 *            the starting point on the contour
 	 * @param from
+	 *            the pixel that was not a contour
 	 * @param operation
+	 *            the operation to perform
 	 */
-	public void directedBorder(FImage image, Pixel start, Pixel from,
-			Operation<IndependentPair<Pixel, DIRECTION>> operation)
+	public void directedContour(FImage image, Pixel start, Pixel from,
+			Operation<IndependentPair<Pixel, Direction>> operation)
 	{
 		Pixel p = start;
 		if (image.pixels[start.y][start.x] == 0)
 			return;
-		DIRECTION cdirStart = DIRECTION.fromTo(p, from);
+		Direction cdirStart = Direction.fromTo(p, from);
 		operation.perform(IndependentPair.pair(start, cdirStart));
-		final DIRECTION firstCdir = cdirStart;
-		DIRECTION cdir = cdirStart.clockwise();
+		final Direction firstCdir = cdirStart;
+		Direction cdir = cdirStart.clockwise();
 		int startCount = 0;
 		while (cdir != cdirStart) {
-			Pixel c = cdir.active(image, p);
+			final Pixel c = cdir.active(image, p);
 			if (c != null) {
 				cdirStart = cdir.clockwiseEntryDirection();
 				if (c.equals(start)) {

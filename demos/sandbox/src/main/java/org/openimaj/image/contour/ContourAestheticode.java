@@ -36,9 +36,8 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.contour.SuzukiContourProcessor.Border;
 import org.openimaj.image.feature.astheticode.Aestheticode;
-import org.openimaj.image.feature.astheticode.FindAestheticode;
+import org.openimaj.image.feature.astheticode.AestheticodeDetector;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
 
@@ -57,14 +56,14 @@ public class ContourAestheticode {
 		ResizeProcessor resize = new ResizeProcessor(0.3f);
 		FImage threshImg = img.flatten().process(resize ).process(thresh);
 		DisplayUtilities.display(threshImg);
-		Border root = SuzukiContourProcessor.findContours(threshImg);
+		Contour root = SuzukiContourProcessor.findContours(threshImg);
 		MBFImage contourImage = MBFImage.createRGB(threshImg);
 		MBFImage detectedImage = MBFImage.createRGB(threshImg);
 		ContourRenderer.drawContours(contourImage, root);
 		DisplayUtilities.display(contourImage);
 		DisplayUtilities.display(img.process(resize));
 		
-		List<Aestheticode> detected = new FindAestheticode().apply(root);
+		List<Aestheticode> detected = new AestheticodeDetector().apply(root);
 		
 		for (Aestheticode aestheticode : detected) {
 			ContourRenderer.drawContours(detectedImage, aestheticode.root);

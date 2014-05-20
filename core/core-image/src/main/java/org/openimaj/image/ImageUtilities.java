@@ -41,12 +41,10 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -54,10 +52,6 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
-import org.apache.batik.transcoder.Transcoder;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.sanselan.ImageFormat;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.byteSources.ByteSource;
@@ -67,7 +61,7 @@ import org.openimaj.io.InputStreamObjectReader;
 
 /**
  * A static utility class with methods for dealing with images.
- *
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ImageUtilities {
@@ -131,7 +125,7 @@ public class ImageUtilities {
 	 * Calculate normalised RGB planes. Extracts the planes from the given RGB
 	 * BufferedImage and returns an array of FImage of length 3. The images are
 	 * ordered Red, Green and Blue.
-	 *
+	 * 
 	 * @param bimg
 	 *            A {@link BufferedImage} from which the planes are extracted.
 	 * @return An array of {@link FImage}.
@@ -178,7 +172,7 @@ public class ImageUtilities {
 	/**
 	 * Returns a ARGB BufferedImage, even if the input BufferedImage is not ARGB
 	 * format.
-	 *
+	 * 
 	 * @param bimg
 	 *            The {@link BufferedImage} to normalise to ARGB
 	 * @return An ARGB {@link BufferedImage}
@@ -201,7 +195,7 @@ public class ImageUtilities {
 	 * Write the given image to the given file with the given format name.
 	 * Format names are the same as used by
 	 * {@link ImageIO#write(java.awt.image.RenderedImage, String, File)}.
-	 *
+	 * 
 	 * @param image
 	 *            The image to write.
 	 * @param formatName
@@ -220,7 +214,7 @@ public class ImageUtilities {
 	 * Format names are the same as used by
 	 * {@link ImageIO#write(java.awt.image.RenderedImage, String, OutputStream)}
 	 * .
-	 *
+	 * 
 	 * @param image
 	 *            The image to write.
 	 * @param formatName
@@ -230,7 +224,9 @@ public class ImageUtilities {
 	 * @throws IOException
 	 *             If the image cannot be written to the file.
 	 */
-	public static void write(final Image<?, ?> image, final String formatName, final OutputStream output) throws IOException {
+	public static void write(final Image<?, ?> image, final String formatName, final OutputStream output)
+			throws IOException
+	{
 		ImageIO.write(ImageUtilities.createBufferedImageForDisplay(image), formatName, output);
 	}
 
@@ -239,7 +235,7 @@ public class ImageUtilities {
 	 * Format names are the same as used by
 	 * {@link ImageIO#write(java.awt.image.RenderedImage, String, ImageOutputStream)}
 	 * .
-	 *
+	 * 
 	 * @param image
 	 *            The image to write.
 	 * @param formatName
@@ -249,7 +245,9 @@ public class ImageUtilities {
 	 * @throws IOException
 	 *             If the image cannot be written to the file.
 	 */
-	public static void write(final Image<?, ?> image, final String formatName, final ImageOutputStream output) throws IOException {
+	public static void write(final Image<?, ?> image, final String formatName, final ImageOutputStream output)
+			throws IOException
+	{
 		ImageIO.write(ImageUtilities.createBufferedImageForDisplay(image), formatName, output);
 	}
 
@@ -257,7 +255,7 @@ public class ImageUtilities {
 	 * Write the given image to the given file, guessing the format name from
 	 * the extension. Format names are the same as used by
 	 * {@link ImageIO#write(java.awt.image.RenderedImage, String, File)}.
-	 *
+	 * 
 	 * @param image
 	 *            The image to write.
 	 * @param output
@@ -273,23 +271,10 @@ public class ImageUtilities {
 
 		ImageIO.write(ImageUtilities.createBufferedImageForDisplay(image), format, output);
 	}
-	
-	/**
-	 * @param image
-	 * @param output
-	 * @throws IOException
-	 * @throws TranscoderException 
-	 */
-	public static void write(final SVGImage image, final File output, Transcoder trans) throws IOException, TranscoderException {
-		TranscoderInput input = new TranscoderInput(image.createRenderer().getDocument());
-        TranscoderOutput toutput = new TranscoderOutput(new FileOutputStream(output));
-
-        trans.transcode(input, toutput);
-	}
 
 	/**
 	 * Create an FImage from a buffered image.
-	 *
+	 * 
 	 * @param image
 	 *            the image
 	 * @return an FImage representation of the input image
@@ -303,7 +288,7 @@ public class ImageUtilities {
 
 	/**
 	 * Create an MBFImage from a buffered image.
-	 *
+	 * 
 	 * @param image
 	 *            the image
 	 * @param alpha
@@ -319,7 +304,7 @@ public class ImageUtilities {
 
 	/**
 	 * Reads an {@link FImage} from the given file.
-	 *
+	 * 
 	 * @param input
 	 *            The file to read the {@link FImage} from.
 	 * @return An {@link FImage}
@@ -332,7 +317,7 @@ public class ImageUtilities {
 
 	/**
 	 * Reads an {@link FImage} from the given input stream.
-	 *
+	 * 
 	 * @param input
 	 *            The input stream to read the {@link FImage} from.
 	 * @return An {@link FImage}
@@ -345,7 +330,7 @@ public class ImageUtilities {
 
 	/**
 	 * Reads an {@link FImage} from the given URL.
-	 *
+	 * 
 	 * @param input
 	 *            The URL to read the {@link FImage} from.
 	 * @return An {@link FImage}
@@ -358,7 +343,7 @@ public class ImageUtilities {
 
 	/**
 	 * Reads an {@link MBFImage} from the given file.
-	 *
+	 * 
 	 * @param input
 	 *            The file to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
@@ -371,7 +356,7 @@ public class ImageUtilities {
 
 	/**
 	 * Reads an {@link MBFImage} from the given input stream.
-	 *
+	 * 
 	 * @param input
 	 *            The input stream to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
@@ -384,7 +369,7 @@ public class ImageUtilities {
 
 	/**
 	 * Reads an {@link MBFImage} from the given URL.
-	 *
+	 * 
 	 * @param input
 	 *            The URL to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
@@ -398,7 +383,7 @@ public class ImageUtilities {
 	/**
 	 * Reads an {@link MBFImage} from the given file. The resultant MBImage will
 	 * contain an alpha channel
-	 *
+	 * 
 	 * @param input
 	 *            The file to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
@@ -412,7 +397,7 @@ public class ImageUtilities {
 	/**
 	 * Reads an {@link MBFImage} from the given input stream. The resultant
 	 * MBImage will contain an alpha channel
-	 *
+	 * 
 	 * @param input
 	 *            The input stream to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
@@ -426,7 +411,7 @@ public class ImageUtilities {
 	/**
 	 * Reads an {@link MBFImage} from the given URL. The resultant MBImage will
 	 * contain an alpha channel
-	 *
+	 * 
 	 * @param input
 	 *            The URL to read the {@link MBFImage} from.
 	 * @return An {@link MBFImage}
@@ -439,7 +424,7 @@ public class ImageUtilities {
 
 	/**
 	 * Checks whether the width and height of all the given images match.
-	 *
+	 * 
 	 * @param images
 	 *            The images to compare sizes.
 	 * @return TRUE if all the images are the same size; FALSE otherwise
@@ -458,7 +443,7 @@ public class ImageUtilities {
 	/**
 	 * Checks whether the width and height of all the given images match the
 	 * given width and height.
-	 *
+	 * 
 	 * @param h
 	 *            The height to match against all the images
 	 * @param w
@@ -478,7 +463,7 @@ public class ImageUtilities {
 	/**
 	 * Checks whether the width and height of all the given images match the
 	 * given width and height.
-	 *
+	 * 
 	 * @param h
 	 *            The height to match against all the images
 	 * @param w
@@ -499,7 +484,7 @@ public class ImageUtilities {
 	 * Reads a PNM header from the byte array containing the PNM binary data.
 	 * The <code>headerData</code> variable will be populated with the header
 	 * information. Returns the number of bytes read from the array.
-	 *
+	 * 
 	 * @param data
 	 *            The PNM binary data.
 	 * @param headerData
@@ -549,7 +534,7 @@ public class ImageUtilities {
 
 	/**
 	 * Returns the contents of a file in a byte array.
-	 *
+	 * 
 	 * @param file
 	 *            The file to read
 	 * @return A byte array representation of the file.
@@ -600,7 +585,7 @@ public class ImageUtilities {
 	/**
 	 * Converts the input stream to a byte array. The input stream is fully
 	 * read.
-	 *
+	 * 
 	 * @param stream
 	 *            The {@link InputStream} to convert to byte array
 	 * @return A byte array representation of the {@link InputStream} data.
@@ -619,7 +604,7 @@ public class ImageUtilities {
 
 	/**
 	 * Convert any image to a {@link BufferedImage}.
-	 *
+	 * 
 	 * @param img
 	 *            image to convert
 	 * @return BufferedImage representation
@@ -630,7 +615,7 @@ public class ImageUtilities {
 
 	/**
 	 * Convert any image to a {@link BufferedImage}.
-	 *
+	 * 
 	 * @param img
 	 *            image to convert
 	 * @param bimg
@@ -649,7 +634,7 @@ public class ImageUtilities {
 
 	/**
 	 * Convert any image to a {@link BufferedImage}.
-	 *
+	 * 
 	 * @param img
 	 *            image to convert
 	 * @return BufferedImage representation
@@ -664,7 +649,7 @@ public class ImageUtilities {
 
 	/**
 	 * Convert any image to a {@link BufferedImage}.
-	 *
+	 * 
 	 * @param img
 	 *            image to convert
 	 * @param bimg
@@ -684,7 +669,7 @@ public class ImageUtilities {
 	 * typically much faster than to create and display than an ARGB buffered
 	 * image. If the input image is not in RGB format, then the ARGB form will
 	 * be returned instead.
-	 *
+	 * 
 	 * @param img
 	 *            the image to convert
 	 * @return the converted image
@@ -698,7 +683,7 @@ public class ImageUtilities {
 	 * typically much faster than to create and display than an ARGB buffered
 	 * image. If the input image is not in RGB format, then the ARGB form will
 	 * be returned instead.
-	 *
+	 * 
 	 * @param img
 	 *            the image to convert
 	 * @param ret
@@ -742,7 +727,7 @@ public class ImageUtilities {
 	/**
 	 * Efficiently create a TYPE_BYTE_GRAY for display. This is typically much
 	 * faster than to create and display than an ARGB buffered image.
-	 *
+	 * 
 	 * @param img
 	 *            the image to convert
 	 * @return the converted image
@@ -754,7 +739,7 @@ public class ImageUtilities {
 	/**
 	 * Efficiently create a TYPE_BYTE_GRAY for display. This is typically much
 	 * faster than to create and display than an ARGB buffered image.
-	 *
+	 * 
 	 * @param img
 	 *            the image to convert
 	 * @param ret
@@ -790,7 +775,7 @@ public class ImageUtilities {
 
 	/**
 	 * Write an image to a {@link DataOutput}.
-	 *
+	 * 
 	 * @param img
 	 *            the image
 	 * @param formatName
@@ -809,7 +794,7 @@ public class ImageUtilities {
 
 	/**
 	 * Read an {@link FImage} from a DataInput
-	 *
+	 * 
 	 * @param in
 	 *            input
 	 * @return new FImage
@@ -826,7 +811,7 @@ public class ImageUtilities {
 
 	/**
 	 * Assign the contents of a {@link BufferedImage} to an {@link Image}.
-	 *
+	 * 
 	 * @param <I>
 	 *            the type of {@link Image}
 	 * @param img
@@ -843,22 +828,25 @@ public class ImageUtilities {
 	}
 
 	/**
-	 * 	Alpha composites the pixel p1 with the pixel p2, returning the value
-	 * 	in pixel p1
-	 *	@param p1 The first pixel
-	 *	@param p2 The second pixel
-	 *	@return The updates first pixel p1
+	 * Alpha composites the pixel p1 with the pixel p2, returning the value in
+	 * pixel p1
+	 * 
+	 * @param p1
+	 *            The first pixel
+	 * @param p2
+	 *            The second pixel
+	 * @return The updates first pixel p1
 	 */
-	public static float[] alphaCompositePixel( final float[] p1, final float[] p2 )
+	public static float[] alphaCompositePixel(final float[] p1, final float[] p2)
 	{
 		final float thisR = p1[0];
 		final float thisG = p1[1];
 		final float thisB = p1[2];
 		float thisA = 1f;
-		if( p1.length == 4 )
+		if (p1.length == 4)
 			thisA = p1[3];
 		float thatA = 1f;
-		if( p2.length == 4 )
+		if (p2.length == 4)
 			thatA = p2[3];
 		final float thatR = p2[0];
 		final float thatG = p2[1];
@@ -876,14 +864,15 @@ public class ImageUtilities {
 		p1[0] = r;
 		p1[1] = g;
 		p1[2] = b;
-		if( p1.length == 4 )
+		if (p1.length == 4)
 			p1[3] = a;
 
 		return p1;
 	}
-	
+
 	/**
-	 * @param out where the write the composition
+	 * @param out
+	 *            where the write the composition
 	 * @param thisR
 	 * @param thisG
 	 * @param thisB
@@ -899,8 +888,8 @@ public class ImageUtilities {
 	public static float[] alphaCompositePixel(
 			float[] out,
 			float thisR, float thisG, float thisB, float thisA,
-			float thatR, float thatG, float thatB, float thatA 
-		)
+			float thatR, float thatG, float thatB, float thatA
+			)
 	{
 
 		float a = thatA + thisA * (1 - thatA);
@@ -921,21 +910,24 @@ public class ImageUtilities {
 	}
 
 	/**
-	 * 	Alpha composites the pixel p1 with the pixel p2, returning the value
-	 * 	in pixel p1
-	 *	@param p1 The first pixel
-	 *	@param p2 The second pixel
-	 *	@return The updates first pixel p1
+	 * Alpha composites the pixel p1 with the pixel p2, returning the value in
+	 * pixel p1
+	 * 
+	 * @param p1
+	 *            The first pixel
+	 * @param p2
+	 *            The second pixel
+	 * @return The updates first pixel p1
 	 */
-	public static float[] alphaCompositePixel( final Float[] p1, final Float[] p2 )
+	public static float[] alphaCompositePixel(final Float[] p1, final Float[] p2)
 	{
 		final float[] p1p = new float[p1.length];
-		for( int b = 0; b < p1.length; b++ )
+		for (int b = 0; b < p1.length; b++)
 			p1p[b] = p1[b];
 		final float[] p2p = new float[p2.length];
-		for( int b = 0; b < p2.length; b++ )
+		for (int b = 0; b < p2.length; b++)
 			p2p[b] = p2[b];
-		return ImageUtilities.alphaCompositePixel( p1p, p2p );
+		return ImageUtilities.alphaCompositePixel(p1p, p2p);
 	}
-	
+
 }

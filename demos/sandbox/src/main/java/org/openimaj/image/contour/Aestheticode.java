@@ -31,7 +31,6 @@ package org.openimaj.image.contour;
 
 import java.util.Arrays;
 
-import org.openimaj.image.contour.SuzukiContourProcessor.Border;
 
 /**
  * A detected Aestheticode
@@ -57,12 +56,12 @@ public class Aestheticode{
 	/**
 	 * @param root the detected borders to construct a code from
 	 */
-	public Aestheticode(Border root) {
+	public Aestheticode(Contour root) {
 		this.root = root;
 		
 		this.code = new int[root.children.size()];
 		int i = 0;
-		for (Border child : root.children) {
+		for (Contour child : root.children) {
 			this.code[i++] = child.children.size();
 		}
 		Arrays.sort(code);
@@ -91,5 +90,5 @@ public class Aestheticode{
 		}
 		return ret;
 	};
-	Border root;
+	Contour root;
 }

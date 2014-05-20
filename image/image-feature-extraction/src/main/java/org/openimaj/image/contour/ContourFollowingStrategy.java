@@ -35,59 +35,56 @@ import java.util.List;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.util.function.Operation;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
- * A Border Following strategy implements a Contour Tracing algorithm that
+ * A contour Following strategy implements a Contour Tracing algorithm that
  * extracts a boundary from an image
- * 
+ * <p>
  * Many examples can be found here:
- * http://www.imageprocessingplace.com/downloads_V3
- * /root_downloads/tutorials/contour_tracing_Abeer_George_Ghuneim/index.html
+ * {@link "http://www.imageprocessingplace.com/downloads_V3/root_downloads/tutorials/contour_tracing_Abeer_George_Ghuneim/index.html"}
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
  */
-public abstract class BorderFollowingStrategy {
-
+public abstract class ContourFollowingStrategy {
 	/**
-	 * Follow the border, adding each pixel to a list. The first pixel in the
+	 * Follow the contour, adding each pixel to a list. The first pixel in the
 	 * list is guaranteed to the be equal to start
 	 * 
 	 * @param image
+	 *            the image
 	 * @param start
+	 *            the starting point on the contour
 	 * @param from
-	 * @return a list of border pixels in the image starting from the start
+	 *            the pixel that was not a contour
+	 * @return a list of contour pixels in the image starting from the start
 	 *         pixel
 	 */
-	public List<Pixel> border(FImage image, Pixel start, Pixel from) {
+	public List<Pixel> contour(FImage image, Pixel start, Pixel from) {
 		final List<Pixel> ret = new ArrayList<Pixel>();
-		border(image, start, from, new Operation<Pixel>() {
-
+		contour(image, start, from, new Operation<Pixel>() {
 			@Override
 			public void perform(Pixel object) {
 				ret.add(object);
 			}
-
 		});
 		return ret;
 	}
 
 	/**
 	 * 
-	 * Given some starting pixel in an image on a border and the direction of a
-	 * non starting image, return each pixel on a border from the start pixel in
-	 * the image. The first pixel returned must be the start pixel
+	 * Given some starting pixel in an image on a contour and the direction of a
+	 * non starting image, return each pixel on a contour from the start pixel
+	 * in the image. The first pixel returned must be the start pixel
 	 * 
 	 * @param image
 	 *            the image
 	 * @param start
-	 *            the first point on the border
+	 *            the first point on the contour
 	 * @param from
-	 *            the pixel that was not a border
+	 *            the pixel that was not a contour
 	 * @param operation
-	 *            the thing to do for each border pixel found
+	 *            the thing to do for each contour pixel found
 	 */
-	public abstract void border(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation);
+	public abstract void contour(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation);
 
 }

@@ -29,15 +29,67 @@
  */
 package org.openimaj.image.contour;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.openimaj.image.FImage;
+import org.openimaj.image.pixel.Pixel;
+
 /**
+ * Tests for the {@link SuzukiNeighborStrategy}
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class BorderFollowingException extends Exception {
+public class TestSuzukiNeighborStrategy {
 
 	/**
-	 * 
+	 * @throws Exception
 	 */
-	private static final long serialVersionUID = -3537652747564357809L;
+	@Test
+	public void testSimple() throws Exception {
+		final float[][] pixels = new float[][] {
+				new float[] { 0, 0, 0, 0, 0, 0 },
+				new float[] { 0, 0, 1, 1, 1, 0 },
+				new float[] { 0, 1, 0, 0, 1, 0 },
+				new float[] { 0, 0, 1, 1, 1, 0 },
+				new float[] { 0, 0, 0, 0, 0, 0 }
+		};
 
+		final FImage img = new FImage(pixels);
+
+		final ContourFollowingStrategy strat = new SuzukiNeighborStrategy();
+		final Pixel start = new Pixel(1, 2);
+		Pixel from = new Pixel(1, 3);
+		List<Pixel> contour = strat.contour(img, start, from);
+		assertTrue(contour.size() == img.sum());
+		from = new Pixel(2, 2);
+		contour = strat.contour(img, start, from);
+		assertTrue(contour.size() == img.sum() - 2);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void testOpenLoop() throws Exception {
+		final float[][] pixels = new float[][] {
+				new float[] { 0, 0, 0, 0, 0, 0, 0, 0 },
+				new float[] { 0, 0, 0, 0, 0, 0, 0, 0 },
+				new float[] { 0, 0, 0, 0, 0, 1, 1, 0 },
+				new float[] { 0, 0, 0, 1, 0, 0, 1, 0 },
+				new float[] { 0, 0, 0, 1, 0, 1, 1, 0 },
+				new float[] { 0, 0, 0, 0, 1, 1, 0, 0 },
+				new float[] { 0, 0, 0, 0, 0, 0, 0, 0 }
+		};
+
+		final FImage img = new FImage(pixels);
+
+		final SuzukiNeighborStrategy strat = new SuzukiNeighborStrategy();
+		final Pixel start = new Pixel(3, 4);
+		final Pixel from = new Pixel(3, 5);
+		strat.contour(img, start, from);
+	}
 }

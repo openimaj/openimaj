@@ -24,5 +24,6 @@
     <module>image-annotation</module>
     <module>object-detection</module>
     <module>image-indexing-retrieval</module>
+    <module>vector-image</module>
   </modules>
 </project>

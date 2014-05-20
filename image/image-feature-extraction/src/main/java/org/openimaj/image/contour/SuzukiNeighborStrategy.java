@@ -29,9 +29,6 @@
  */
 package org.openimaj.image.contour;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
@@ -40,7 +37,7 @@ import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * The neighbourhood border tracing algorithm described in Appendix 1 of 
+ * The neighbourhood border/contour tracing algorithm described in Appendix 1 of
  * the Suzuki contour detection algorithm
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -56,11 +53,10 @@ import org.openimaj.util.pair.IndependentPair;
 		month = "January",
 		number = "1",
 		volume = "30")
-public class SuzukiNeighborStrategy extends BorderFollowingStrategy {
-
-	
-	public void border(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation) {
-		directedBorder(image, start, from, new Operation<IndependentPair<Pixel, boolean[]>>() {
+public class SuzukiNeighborStrategy extends ContourFollowingStrategy {
+	@Override
+	public void contour(FImage image, Pixel start, Pixel from, final Operation<Pixel> operation) {
+		directedContour(image, start, from, new Operation<IndependentPair<Pixel, boolean[]>>() {
 
 			@Override
 			public void perform(IndependentPair<Pixel, boolean[]> object) {
@@ -68,54 +64,66 @@ public class SuzukiNeighborStrategy extends BorderFollowingStrategy {
 			}
 		});
 	}
+
 	/**
+	 * Directed contour following.
 	 * 
 	 * @param image
+	 *            the image
 	 * @param ij
+	 *            the first pixel
 	 * @param i2j2
+	 *            the second pixel
 	 * @param operation
+	 *            the operation to perform
 	 */
-	public void directedBorder(FImage image, Pixel ij, Pixel i2j2, Operation<IndependentPair<Pixel, boolean[]>> operation)
+	public void
+			directedContour(FImage image, Pixel ij, Pixel i2j2, Operation<IndependentPair<Pixel, boolean[]>> operation)
 	{
-		DIRECTION dir = DIRECTION.fromTo(ij, i2j2);
-		DIRECTION trace = dir.clockwise();
+		Direction dir = Direction.fromTo(ij, i2j2);
+		Direction trace = dir.clockwise();
 		// find i1j1 (3.1)
 		Pixel i1j1 = null;
-		while(trace!=dir){
-			Pixel activePixel = trace.active(image, ij);
-			if(activePixel != null){
+		while (trace != dir) {
+			final Pixel activePixel = trace.active(image, ij);
+			if (activePixel != null) {
 				i1j1 = activePixel;
 				break;
 			}
 			trace = trace.clockwise();
 		}
-		if(i1j1 == null) return; //operation never called, signals the starting pixel is alone! (3.1)
-		
-		i2j2 = i1j1; 
+		if (i1j1 == null)
+			return; // operation never called, signals the starting pixel is
+					// alone! (3.1)
+
+		i2j2 = i1j1;
 		Pixel i3j3 = ij; // (3.2)
-		boolean[] checked = new boolean[]{
-			/*
-			N	 , NE  ,E    ,SE   ,S	 ,SW   ,W    ,NW 
-			 */
-			false,false,false,false,false,false,false,false
+		final boolean[] checked = new boolean[] {
+				/*
+				 * N , NE ,E ,SE ,S ,SW ,W ,NW
+				 */
+				false, false, false, false, false, false, false, false
 		};
-		while(true){
-			dir = DIRECTION.fromTo(i3j3, i2j2);
+		while (true) {
+			dir = Direction.fromTo(i3j3, i2j2);
 			trace = dir.counterClockwise();
 			Pixel i4j4 = null;
 			resetChecked(checked);
-			while(true){
+			while (true) {
 				i4j4 = trace.active(image, i3j3); // 3.3
-				if(i4j4 != null) break;
+				if (i4j4 != null)
+					break;
 				checked[trace.ordinal()] = true;
 				trace = trace.counterClockwise();
 			}
 			operation.perform(IndependentPair.pair(i3j3, checked));
-			if(i4j4.equals(ij) && i3j3.equals(i1j1)) break; // 3.5
+			if (i4j4.equals(ij) && i3j3.equals(i1j1))
+				break; // 3.5
 			i2j2 = i3j3; // 3.5
 			i3j3 = i4j4; // 3.5
 		}
 	}
+
 	private void resetChecked(boolean[] checked) {
 		for (int i = 0; i < checked.length; i++) {
 			checked[i] = false;
