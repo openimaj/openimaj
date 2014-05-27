@@ -27,22 +27,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.resize;
+package org.openimaj.image.processing.resize.filters;
+
+import org.openimaj.image.processing.resize.ResizeFilterFunction;
 
 /**
- * Box filter for the resampling function
+ * B-Spline (cubic) filter for the resample function.
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 
  */
-public class BoxFilter implements ResizeFilterFunction
+public class BSplineFilter implements ResizeFilterFunction
 {
 	/**
 	 * The singleton instance of the filter
 	 */
-	public static ResizeFilterFunction INSTANCE = new BoxFilter();
-
-	private double defaultSupport = 0.5;
+	public static ResizeFilterFunction INSTANCE = new BSplineFilter();
 
 	/**
 	 * Returns the defaultSupport
@@ -50,19 +50,31 @@ public class BoxFilter implements ResizeFilterFunction
 	 * @return the defaultSupport
 	 */
 	@Override
-	public double getDefaultSupport()
+	public double getSupport()
 	{
-		return this.defaultSupport;
+		return 2;
 	}
 
 	/**
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter(double t)
+	public double filter(double t) /* box (*) box (*) box (*) box */
 	{
-		if ((t > -0.5) && (t <= 0.5))
-			return (1.0);
+		double tt;
+
+		if (t < 0)
+			t = -t;
+		if (t < 1)
+		{
+			tt = t * t;
+			return ((.5 * tt * t) - tt + (2.0 / 3.0));
+		}
+		else if (t < 2)
+		{
+			t = 2 - t;
+			return ((1.0 / 6.0) * (t * t * t));
+		}
 		return (0.0);
 	}
 }

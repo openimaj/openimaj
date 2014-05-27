@@ -27,7 +27,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.resize;
+package org.openimaj.image.processing.resize.filters;
+
+import org.openimaj.image.processing.resize.ResizeFilterFunction;
 
 /**
  * Basic filtering for the resampling function
@@ -35,14 +37,12 @@ package org.openimaj.image.processing.resize;
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 
  */
-public class BasicFilter implements ResizeFilterFunction
+public class HermiteFilter implements ResizeFilterFunction
 {
 	/**
 	 * The singleton instance of the filter
 	 */
-	public static ResizeFilterFunction INSTANCE = new BasicFilter();
-
-	private double defaultSupport = 1;
+	public static ResizeFilterFunction INSTANCE = new HermiteFilter();
 
 	/**
 	 * Returns the defaultSupport
@@ -50,9 +50,9 @@ public class BasicFilter implements ResizeFilterFunction
 	 * @return the defaultSupport
 	 */
 	@Override
-	public double getDefaultSupport()
+	public double getSupport()
 	{
-		return this.defaultSupport;
+		return 1;
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class BasicFilter implements ResizeFilterFunction
 		if (t < 0.0)
 			t = -t;
 		if (t < 1.0)
-			return (((2.0 * t - 3.0) * t * t) + 1.0);
+			return (2.0 * t - 3.0) * t * t + 1.0;
 		return (0.0);
 	}
 }

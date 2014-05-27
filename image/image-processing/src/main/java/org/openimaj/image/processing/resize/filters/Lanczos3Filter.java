@@ -27,54 +27,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.resize;
+package org.openimaj.image.processing.resize.filters;
+
+import org.openimaj.image.processing.resize.ResizeFilterFunction;
 
 /**
- * B-Spline filter for the resample function.
+ * A Lanczos3 filter for the resample function.
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 
  */
-public class BSplineFilter implements ResizeFilterFunction
+public class Lanczos3Filter implements ResizeFilterFunction
 {
 	/**
 	 * The singleton instance of the filter
 	 */
-	public static ResizeFilterFunction INSTANCE = new BSplineFilter();
+	public static ResizeFilterFunction INSTANCE = new Lanczos3Filter();
 
-	private double defaultSupport = 2;
-
-	/**
-	 * Returns the defaultSupport
-	 * 
-	 * @return the defaultSupport
-	 */
 	@Override
-	public double getDefaultSupport()
+	public double getSupport()
 	{
-		return this.defaultSupport;
+		return 3;
+	}
+
+	private double sinc(double x)
+	{
+		x *= Math.PI;
+		if (x != 0)
+			return (Math.sin(x) / x);
+		return (1.0);
 	}
 
 	/**
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter(double t) /* box (*) box (*) box (*) box */
+	public double filter(double t)
 	{
-		double tt;
-
 		if (t < 0)
 			t = -t;
-		if (t < 1)
-		{
-			tt = t * t;
-			return ((.5 * tt * t) - tt + (2.0 / 3.0));
-		}
-		else if (t < 2)
-		{
-			t = 2 - t;
-			return ((1.0 / 6.0) * (t * t * t));
-		}
+		if (t < 3.0)
+			return (sinc(t) * sinc(t / 3.0));
 		return (0.0);
 	}
 }

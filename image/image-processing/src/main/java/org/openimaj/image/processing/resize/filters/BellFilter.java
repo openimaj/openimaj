@@ -27,40 +27,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.resize;
+package org.openimaj.image.processing.resize.filters;
+
+import org.openimaj.image.processing.resize.ResizeFilterFunction;
 
 /**
- * A Lanczos3 filter for the resample function.
+ * Bell (quadratic) filter for the resample function.
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 
  */
-public class Lanczos3Filter implements ResizeFilterFunction
+public class BellFilter implements ResizeFilterFunction
 {
 	/**
 	 * The singleton instance of the filter
 	 */
-	public static ResizeFilterFunction INSTANCE = new Lanczos3Filter();
+	public static ResizeFilterFunction INSTANCE = new BellFilter();
 
-	private double defaultSupport = 3;
-
-	/**
-	 * Returns the defaultSupport
-	 * 
-	 * @return the defaultSupport
-	 */
 	@Override
-	public double getDefaultSupport()
+	public double getSupport()
 	{
-		return this.defaultSupport;
-	}
-
-	private double sinc(double x)
-	{
-		x *= Math.PI;
-		if (x != 0)
-			return (Math.sin(x) / x);
-		return (1.0);
+		return 1.5;
 	}
 
 	/**
@@ -71,8 +58,13 @@ public class Lanczos3Filter implements ResizeFilterFunction
 	{
 		if (t < 0)
 			t = -t;
-		if (t < 3.0)
-			return (sinc(t) * sinc(t / 3.0));
+		if (t < .5)
+			return (.75 - (t * t));
+		if (t < 1.5)
+		{
+			t = (t - 1.5);
+			return (.5 * (t * t));
+		}
 		return (0.0);
 	}
 }

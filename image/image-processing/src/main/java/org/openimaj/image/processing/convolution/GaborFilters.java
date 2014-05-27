@@ -56,7 +56,8 @@ public class GaborFilters {
 	 * @param height
 	 *            the height of the image that will be filtered
 	 * @param orientationsPerScale
-	 *            the number of filter orientations for each scale
+	 *            the number of filter orientations for each scale (from HF to
+	 *            LF)
 	 * @return the jet of filters
 	 */
 	public static FImage[] createGaborJets(int width, int height, int... orientationsPerScale) {

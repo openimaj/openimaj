@@ -29,18 +29,41 @@
  */
 package org.openimaj.image.processing.resize;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.processing.resize.filters.TriangleFilter;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Image processor and utility methods that can resize images.
+ * <p>
+ * Based on <code>filter_rcg.c</code> by Dale Schumacher and Ray Gardener from
+ * Graphics Gems III, with improvements from TwelveMonkeys and ImageMagick,
+ * which in-particular fix normalisation problems.
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
+@Reference(
+		type = ReferenceType.Incollection,
+		author = { "Schumacher, Dale" },
+		title = "Graphics Gems III",
+		year = "1992",
+		pages = { "8", "", "16" },
+		chapter = "General Filtered Image Rescaling",
+		url = "http://dl.acm.org/citation.cfm?id=130745.130747",
+		editor = { "Kirk, David" },
+		publisher = "Academic Press Professional, Inc.",
+		customData = {
+				"isbn", "0-12-409671-9",
+				"numpages", "9",
+				"acmid", "130747",
+				"address", "San Diego, CA, USA"
+		})
 public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> {
 	/**
 	 * The resize mode to use.
@@ -92,10 +115,10 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	private ResizeFilterFunction filterFunction;
 
 	/**
-	 * The default filter used by instances of {@link ResizeProcessor}, unless
-	 * otherwise specified.
+	 * The default {@link TriangleFilter} (bilinear-interpolation filter) used
+	 * by instances of {@link ResizeProcessor}, unless otherwise specified.
 	 */
-	public static ResizeFilterFunction DEFAULT_FILTER = BasicFilter.INSTANCE;
+	public static final ResizeFilterFunction DEFAULT_FILTER = TriangleFilter.INSTANCE;
 
 	/**
 	 * Constructor that takes the resize mode. Use this function if you only
@@ -270,25 +293,24 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 			internalHalfSize(image);
 			break;
 		case FIT:
-			zoom(image, (int) newX, (int) newY, filterFunction, filterFunction.getDefaultSupport());
+			zoomInplace(image, (int) newX, (int) newY, filterFunction);
 			break;
 		case SCALE:
 			newX = image.width * amount;
 			newY = image.height * amount;
 		case ASPECT_RATIO:
-			resample(image, (int) newX, (int) newY, true, filterFunction, filterFunction.getDefaultSupport());
+			resample(image, (int) newX, (int) newY, true, filterFunction);
 			break;
 		case MAX:
-			resizeMax(image, (int) newX, filterFunction, filterFunction.getDefaultSupport());
+			resizeMax(image, (int) newX, filterFunction);
 			break;
 		case MAX_AREA:
-			resizeMaxArea(image, (int) newX, filterFunction, filterFunction.getDefaultSupport());
+			resizeMaxArea(image, (int) newX, filterFunction);
 			break;
 		case NONE:
 			return;
 		default:
-			zoom(image, (int) newX, (int) newY, this.filterFunction,
-					this.filterFunction.getDefaultSupport());
+			zoomInplace(image, (int) newX, (int) newY, this.filterFunction);
 		}
 	}
 
@@ -312,11 +334,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            the maximum allowable length for the longest side.
 	 * @param filterf
 	 *            The filter function
-	 * @param fwidth
-	 *            The width of the filter
-	 * @return the resized image.
+	 * @return the input image, appropriately resized.
 	 */
-	public static FImage resizeMax(FImage image, int maxDim, ResizeFilterFunction filterf, double fwidth) {
+	public static FImage resizeMax(FImage image, int maxDim, ResizeFilterFunction filterf) {
 		final int width = image.width;
 		final int height = image.height;
 
@@ -333,7 +353,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 			newHeight = (int) (height * resizeRatio);
 		}
 
-		zoom(image, newWidth, newHeight, filterf, fwidth);
+		zoomInplace(image, newWidth, newHeight, filterf);
 
 		return image;
 	}
@@ -348,11 +368,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            the maximum allowable area.
 	 * @param filterf
 	 *            The filter function
-	 * @param fwidth
-	 *            The width of the filter
-	 * @return the resized image.
+	 * @return the input image, appropriately resized.
 	 */
-	public static FImage resizeMaxArea(FImage image, int maxArea, ResizeFilterFunction filterf, double fwidth) {
+	public static FImage resizeMaxArea(FImage image, int maxArea, ResizeFilterFunction filterf) {
 		final int width = image.width;
 		final int height = image.height;
 		final int area = width * height;
@@ -364,7 +382,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 			final int newWidth = (int) Math.sqrt(maxArea * whRatio);
 			final int newHeight = maxArea / newWidth;
 
-			zoom(image, newWidth, newHeight, filterf, fwidth);
+			zoomInplace(image, newWidth, newHeight, filterf);
 
 			return image;
 		}
@@ -378,7 +396,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            the image to resize
 	 * @param maxDim
 	 *            the maximum allowable length for the longest side.
-	 * @return the resized image.
+	 * @return the input image, resized appropriately
 	 */
 	public static FImage resizeMax(FImage image, int maxDim) {
 		final int width = image.width;
@@ -397,7 +415,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 			newHeight = (int) (height * resizeRatio);
 		}
 
-		zoom(image, newWidth, newHeight);
+		zoomInplace(image, newWidth, newHeight);
 
 		return image;
 	}
@@ -410,7 +428,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            the image to resize
 	 * @param maxArea
 	 *            the maximum allowable area.
-	 * @return the resized image.
+	 * @return the input image, resized appropriately
 	 */
 	public static FImage resizeMaxArea(FImage image, int maxArea) {
 		final int width = image.width;
@@ -424,7 +442,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 			final int newWidth = (int) Math.sqrt(maxArea * whRatio);
 			final int newHeight = maxArea / newWidth;
 
-			zoom(image, newWidth, newHeight);
+			zoomInplace(image, newWidth, newHeight);
 
 			return image;
 		}
@@ -553,7 +571,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            The new height of the image
 	 * @param aspect
 	 *            Whether to maintain the aspect ratio
-	 * @return A new resampled image
+	 * @return the input image, resized appropriately
 	 */
 	public static FImage resample(FImage in, int newX, int newY, boolean aspect) {
 		// Work out the size of the resampled image
@@ -567,7 +585,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 				ny = (int) Math.round((in.height * nx) / (double) in.width);
 		}
 
-		zoom(in, nx, ny);
+		zoomInplace(in, nx, ny);
 		return in;
 	}
 
@@ -588,12 +606,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            Whether to maintain the aspect ratio
 	 * @param filterf
 	 *            The filter function
-	 * @param fwidth
-	 *            The width of the filter
-	 * @return A new resampled image
+	 * @return the input image, resized appropriately
 	 */
-	public static FImage resample(FImage in, int newX, int newY, boolean aspect, ResizeFilterFunction filterf,
-			double fwidth)
+	public static FImage resample(FImage in, int newX, int newY, boolean aspect, ResizeFilterFunction filterf)
 	{
 		// Work out the size of the resampled image
 		// if the aspect ratio is set to true
@@ -606,7 +621,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 				ny = (int) Math.round((in.height * nx) / (double) in.width);
 		}
 
-		zoom(in, nx, ny, filterf, fwidth);
+		zoomInplace(in, nx, ny, filterf);
 		return in;
 	}
 
@@ -636,21 +651,6 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	}
 
 	/**
-	 * Ensures that the return result is between h and l.
-	 * 
-	 * @param v
-	 *            The value to clamp
-	 * @param l
-	 *            The minimum value
-	 * @param h
-	 *            The maximum value
-	 * @return h < v < l
-	 */
-	private static float clamp(float v, float l, float h) {
-		return ((v) < (l) ? (l) : (v) > (h) ? (h) : v);
-	}
-
-	/**
 	 * Calculates the filter weights for a single target column. contribX->p
 	 * must be freed afterwards.
 	 * 
@@ -671,74 +671,118 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * 
 	 * @returns -1 if error, 0 otherwise.
 	 */
-	private static int calc_x_contrib(PixelContributions contribX, double xscale, double fwidth, int dstwidth,
+	private static void calc_x_contrib(PixelContributions contribX, double xscale, double fwidth, int dstwidth,
 			int srcwidth, ResizeFilterFunction filterf, int i)
 	{
 		double width;
 		double fscale;
-		double center, left, right;
+		double center;
 		double weight;
-		int j, k, n;
 
 		if (xscale < 1.0) {
 			/* Shrinking image */
 			width = fwidth / xscale;
 			fscale = 1.0 / xscale;
 
-			contribX.numberOfContributors = 0;
-			contribX.contributions = new PixelContribution[(int) Math.round(width * 2 + 1)];
-
-			center = i / xscale;
-			left = Math.ceil(center - width);
-			right = Math.floor(center + width);
-			for (j = (int) left; j <= right; ++j) {
-				weight = center - j;
-				weight = filterf.filter(weight / fscale) / fscale;
-				if (j < 0)
-					n = -j;
-				else if (j >= srcwidth)
-					n = (srcwidth - j) + srcwidth - 1;
-				else
-					n = j;
-
-				k = contribX.numberOfContributors++;
-				contribX.contributions[k] = new PixelContribution();
-				contribX.contributions[k].pixel = n;
-				contribX.contributions[k].weight = weight;
+			if (width <= .5) {
+				// Reduce to point sampling.
+				width = .5 + 1.0e-6;
+				fscale = 1.0;
 			}
 
-		} else {
-			/* Expanding image */
 			contribX.numberOfContributors = 0;
-			contribX.contributions = new PixelContribution[(int) Math.round(fwidth * 2 + 1)];
+			contribX.contributions = new PixelContribution[(int) (width * 2.0 + 1.0)];
 
 			center = i / xscale;
-			left = Math.ceil(center - fwidth);
-			right = Math.floor(center + fwidth);
+			final int left = (int) Math.ceil(center - width);// Note: Assumes
+																// width <= .5
+			final int right = (int) Math.floor(center + width);
 
-			for (j = (int) left; j <= right; ++j) {
+			double density = 0.0;
+
+			for (int j = left; j <= right; j++) {
 				weight = center - j;
-				weight = filterf.filter(weight);
-
+				weight = filterf.filter(weight / fscale) / fscale;
+				int n;
 				if (j < 0) {
 					n = -j;
-				} else if (j >= srcwidth) {
+				}
+				else if (j >= srcwidth) {
 					n = (srcwidth - j) + srcwidth - 1;
-				} else {
+				}
+				else {
 					n = j;
 				}
 
-				k = contribX.numberOfContributors++;
+				/**/
+				if (n >= srcwidth) {
+					n = n % srcwidth;
+				}
+				else if (n < 0) {
+					n = srcwidth - 1;
+				}
+				/**/
+
+				final int k = contribX.numberOfContributors++;
+				contribX.contributions[k] = new PixelContribution();
+				contribX.contributions[k].pixel = n;
+				contribX.contributions[k].weight = weight;
+
+				density += weight;
+
+			}
+
+			if ((density != 0.0) && (density != 1.0)) {
+				// Normalize.
+				density = 1.0 / density;
+				for (int k = 0; k < contribX.numberOfContributors; k++) {
+					contribX.contributions[k].weight *= density;
+				}
+			}
+		}
+		else {
+			/* Expanding image */
+			contribX.numberOfContributors = 0;
+			contribX.contributions = new PixelContribution[(int) (fwidth * 2.0 + 1.0)];
+
+			center = i / xscale;
+			final int left = (int) Math.ceil(center - fwidth);
+			final int right = (int) Math.floor(center + fwidth);
+
+			for (int j = left; j <= right; j++) {
+				weight = center - j;
+				weight = filterf.filter(weight);
+
+				int n;
+				if (j < 0) {
+					n = -j;
+				}
+				else if (j >= srcwidth) {
+					n = (srcwidth - j) + srcwidth - 1;
+				}
+				else {
+					n = j;
+				}
+
+				/**/
+				if (n >= srcwidth) {
+					n = n % srcwidth;
+				}
+				else if (n < 0) {
+					n = srcwidth - 1;
+				}
+				/**/
+
+				final int k = contribX.numberOfContributors++;
 				contribX.contributions[k] = new PixelContribution();
 				contribX.contributions[k].pixel = n;
 				contribX.contributions[k].weight = weight;
 			}
 		}
-		return 0;
-	} /* calc_x_contrib */
+	}/* calcXContrib */
 
 	/**
-	 * Simple zoom function that resizes image while resampling.
+	 * Resizes an image.
 	 * 
 	 * @param in
 	 *            The source image
@@ -746,15 +790,15 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            The desired width of the image
 	 * @param newY
 	 *            The desired height of the image
-	 * @return -1 if error, 0 if success
+	 * @return the input image, resized appropriately
 	 */
-	public static int zoom(FImage in, int newX, int newY) {
+	public static FImage zoomInplace(FImage in, int newX, int newY) {
 		final ResizeFilterFunction filter = DEFAULT_FILTER;
-		return zoom(in, newX, newY, filter, filter.getDefaultSupport());
+		return zoomInplace(in, newX, newY, filter);
 	}
 
 	/**
-	 * Resizes bitmaps while resampling them.
+	 * Resizes an image.
 	 * 
 	 * @param newX
 	 *            New width of the image
@@ -764,22 +808,17 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            The source image
 	 * @param filterf
 	 *            The filter function
-	 * @param fwidth
-	 *            The width of the filter
-	 * @return -1 if error, 0 if success
+	 * @return the input image, resized appropriately
 	 */
-	public static int zoom(FImage in, int newX, int newY, ResizeFilterFunction filterf, double fwidth) {
+	public static FImage zoomInplace(FImage in, int newX, int newY, ResizeFilterFunction filterf) {
 		final FImage dst = new FImage(newX, newY);
-		final int val = zoom(in, dst, filterf, fwidth);
-		if (val != -1)
-			in.internalAssign(dst);
-		return val;
+		zoom(in, dst, filterf);
+		in.internalAssign(dst);
+		return in;
 	}
 
 	/**
 	 * Resizes bitmaps while resampling them.
-	 * 
-	 * Added by David Dupplaw, ported from Graphics Gems III
 	 * 
 	 * @param dst
 	 *            Destination Image
@@ -787,85 +826,121 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            Source Image
 	 * @param filterf
 	 *            Filter to use
-	 * @param fwidth
-	 *            Filter width
 	 * 
-	 * @return -1 if error, 0 if success.
+	 * @return the destination image
 	 */
-	public static int zoom(FImage in, FImage dst, ResizeFilterFunction filterf, double fwidth) {
-		double xscale, yscale; /* zoom scale factors */
-		int n; /* pixel number */
-		double center, left, right; /* filter calculation variables */
-		double width, fscale;
-		double weight; /* filter calculation variables */
-		boolean bPelDelta;
-		float pel, pel2;
-		PixelContributions contribX;
-		int nRet = -1;
+	public static FImage zoom(FImage in, FImage dst, ResizeFilterFunction filterf) {
+		final int dstWidth = dst.getWidth();
+		final int dstHeight = dst.getHeight();
 
-		// This is a convenience
-		final FImage src = in;
+		final int srcWidth = in.getWidth();
+		final int srcHeight = in.getHeight();
+
+		final double xscale = (double) dstWidth / (double) srcWidth;
+		final double yscale = (double) dstHeight / (double) srcHeight;
 
 		/* create intermediate column to hold horizontal dst column zoom */
-		final Float[] tmp = new Float[src.height];
+		final float[] work = new float[in.height];
 
-		xscale = (double) dst.width / (double) src.width;
+		final PixelContributions[] contribY = new PixelContributions[dstHeight];
+		for (int i = 0; i < contribY.length; i++) {
+			contribY[i] = new PixelContributions();
+		}
 
-		/* Build y weights */
-		/* pre-calculate filter contributions for a column */
-		final PixelContributions[] contribY = new PixelContributions[dst.height];
+		final float maxValue = in.max();
 
-		yscale = (double) dst.height / (double) src.height;
-
+		// TODO: What to do when fwidth > srcHeight or dstHeight
+		final double fwidth = filterf.getSupport();
 		if (yscale < 1.0) {
-			width = fwidth / yscale;
-			fscale = 1.0 / yscale;
-			for (int i = 0; i < dst.height; ++i) {
-				contribY[i] = new PixelContributions();
+			double width = fwidth / yscale;
+			double fscale = 1.0 / yscale;
+
+			if (width <= .5) {
+				// Reduce to point sampling.
+				width = .5 + 1.0e-6;
+				fscale = 1.0;
+			}
+
+			for (int i = 0; i < dstHeight; i++) {
+				contribY[i].contributions = new PixelContribution[(int) (width * 2.0 + 1)];
 				contribY[i].numberOfContributors = 0;
-				contribY[i].contributions = new PixelContribution[(int) Math.round(width * 2 + 1)];
 
-				center = i / yscale;
-				left = Math.ceil(center - width);
-				right = Math.floor(center + width);
-				for (int j = (int) left; j <= right; ++j) {
-					weight = center - j;
+				final double center = i / yscale;
+				final int left = (int) Math.ceil(center - width);
+				final int right = (int) Math.floor(center + width);
+
+				double density = 0.0;
+
+				for (int j = left; j <= right; j++) {
+					double weight = center - j;
 					weight = filterf.filter(weight / fscale) / fscale;
-
+					int n;
 					if (j < 0) {
 						n = -j;
-					} else if (j >= src.height) {
-						n = (src.height - j) + src.height - 1;
-					} else {
+					}
+					else if (j >= srcHeight) {
+						n = (srcHeight - j) + srcHeight - 1;
+					}
+					else {
 						n = j;
 					}
+
+					/**/
+					if (n >= srcHeight) {
+						n = n % srcHeight;
+					}
+					else if (n < 0) {
+						n = srcHeight - 1;
+					}
+					/**/
 
 					final int k = contribY[i].numberOfContributors++;
 					contribY[i].contributions[k] = new PixelContribution();
 					contribY[i].contributions[k].pixel = n;
 					contribY[i].contributions[k].weight = weight;
+
+					density += weight;
+				}
+
+				if ((density != 0.0) && (density != 1.0)) {
+					// Normalize.
+					density = 1.0 / density;
+					for (int k = 0; k < contribY[i].numberOfContributors; k++) {
+						contribY[i].contributions[k].weight *= density;
+					}
 				}
 			}
-		} else {
-			for (int i = 0; i < dst.height; ++i) {
-				contribY[i] = new PixelContributions();
+		}
+		else {
+			for (int i = 0; i < dstHeight; ++i) {
+				contribY[i].contributions = new PixelContribution[(int) (fwidth * 2 + 1)];
 				contribY[i].numberOfContributors = 0;
-				contribY[i].contributions = new PixelContribution[(int) Math.round(fwidth * 2 + 1)];
 
-				center = i / yscale;
-				left = Math.ceil(center - fwidth);
-				right = Math.floor(center + fwidth);
+				final double center = i / yscale;
+				final double left = Math.ceil(center - fwidth);
+				final double right = Math.floor(center + fwidth);
 				for (int j = (int) left; j <= right; ++j) {
-					weight = center - j;
+					double weight = center - j;
 					weight = filterf.filter(weight);
-
+					int n;
 					if (j < 0) {
 						n = -j;
-					} else if (j >= src.height) {
-						n = (src.height - j) + src.height - 1;
-					} else {
+					}
+					else if (j >= srcHeight) {
+						n = (srcHeight - j) + srcHeight - 1;
+					}
+					else {
 						n = j;
 					}
+
+					/**/
+					if (n >= srcHeight) {
+						n = n % srcHeight;
+					}
+					else if (n < 0) {
+						n = srcHeight - 1;
+					}
+					/**/
 
 					final int k = contribY[i].numberOfContributors++;
 					contribY[i].contributions[k] = new PixelContribution();
@@ -875,82 +950,90 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 			}
 		}
 
-		for (int xx = 0; xx < dst.width; xx++) {
-			contribX = new PixelContributions();
-			if (0 != calc_x_contrib(contribX, xscale, fwidth, dst.width, src.width, filterf, xx))
-				return 0;
+		for (int xx = 0; xx < dstWidth; xx++) {
+			final PixelContributions contribX = new PixelContributions();
+			calc_x_contrib(contribX, xscale, fwidth, dst.width, in.width, filterf, xx);
 
-			/* Apply horz filter to make dst column in tmp. */
-			for (int k = 0; k < src.height; ++k) {
-				weight = 0.0;
-				bPelDelta = false;
-
-				pel = src.pixels[k][contribX.contributions[0].pixel];
-
-				for (int j = 0; j < contribX.numberOfContributors; ++j) {
-					pel2 = src.pixels[k][contribX.contributions[j].pixel];
-					if (pel2 != pel)
+			/* Apply horiz filter to make dst column in tmp. */
+			for (int k = 0; k < srcHeight; k++) {
+				double weight = 0.0;
+				boolean bPelDelta = false;
+				// TODO: This line throws index out of bounds, if the image
+				// is smaller than filter.support()
+				final double pel = in.pixels[k][contribX.contributions[0].pixel];
+				for (int j = 0; j < contribX.numberOfContributors; j++) {
+					final double pel2 = j == 0 ? pel : in.pixels[k][contribX.contributions[j].pixel];
+					if (pel2 != pel) {
 						bPelDelta = true;
+					}
 					weight += pel2 * contribX.contributions[j].weight;
 				}
-				weight = bPelDelta ? Math.round(weight * 255f) / 255f : pel;
+				weight = bPelDelta ? Math.round(weight * 255) / 255f : pel;
 
-				// 0 is black, 1 is white
-				tmp[k] = clamp((float) weight, 0f, 1f);
-			} /* next row in temp column */
+				if (weight < 0) {
+					weight = 0;
+				}
+				else if (weight > maxValue) {
+					weight = maxValue;
+				}
+
+				work[k] = (float) weight;
+			}/* next row in temp column */
 
 			/*
 			 * The temp column has been built. Now stretch it vertically into
 			 * dst column.
 			 */
-			for (int i = 0; i < dst.height; ++i) {
-				weight = 0.0;
-				bPelDelta = false;
-				pel = tmp[contribY[i].contributions[0].pixel];
+			for (int i = 0; i < dstHeight; i++) {
+				double weight = 0.0;
+				boolean bPelDelta = false;
+				final double pel = work[contribY[i].contributions[0].pixel];
 
-				for (int j = 0; j < contribY[i].numberOfContributors; ++j) {
-					pel2 = tmp[contribY[i].contributions[j].pixel];
-					if (pel2 != pel)
+				for (int j = 0; j < contribY[i].numberOfContributors; j++) {
+					// TODO: This line throws index out of bounds, if the
+					// image is smaller than filter.support()
+					final double pel2 = j == 0 ? pel : work[contribY[i].contributions[j].pixel];
+					if (pel2 != pel) {
 						bPelDelta = true;
+					}
 					weight += pel2 * contribY[i].contributions[j].weight;
 				}
+				weight = bPelDelta ? Math.round(weight * 255) / 255f : pel;
 
-				weight = bPelDelta ? Math.round(weight * 255f) / 255f : pel;
+				if (weight < 0) {
+					weight = 0;
+				}
+				else if (weight > maxValue) {
+					weight = maxValue;
+				}
 
-				// 0 is black, 1 is white
-				dst.pixels[i][xx] = clamp((float) weight, 0f, 1f);
-
+				dst.pixels[i][xx] = (float) weight;
 			} /* next dst row */
 		} /* next dst column */
 
-		nRet = 0; /* success */
-		return nRet;
-
-	} /* zoom */
-
-	/**
-	 * calls
-	 * {@link #zoom(FImage, Rectangle, FImage, Rectangle, ResizeFilterFunction, double)}
-	 * with the {@link #DEFAULT_FILTER}
-	 * 
-	 * @param in
-	 * @param inRect
-	 * @param dst
-	 * @param dstRect
-	 * @return result of
-	 *         {@link #zoom(FImage, Rectangle, FImage, Rectangle, ResizeFilterFunction, double)}
-	 */
-	public static int zoom(FImage in, Rectangle inRect, FImage dst, Rectangle dstRect) {
-		final ResizeFilterFunction filter = DEFAULT_FILTER;
-		return zoom(in, inRect, dst, dstRect, filter, filter.getDefaultSupport());
+		return dst;
 	}
 
 	/**
-	 * Resizes bitmaps while resampling them. A literal port of
-	 * {@link #zoom(FImage, int, int, ResizeFilterFunction, double)} using a
-	 * rectangle in the destination and source images
+	 * Draws one portion of an image into another, resampling as necessary using
+	 * the default filter function.
 	 * 
-	 * Added by David Dupplaw, ported from Graphics Gems III
+	 * @param dst
+	 *            Destination Image
+	 * @param in
+	 *            Source Image
+	 * @param inRect
+	 *            the location of pixels in the source image
+	 * @param dstRect
+	 *            the destination of pixels in the destination image
+	 * @return the destination image
+	 */
+	public static FImage zoom(FImage in, Rectangle inRect, FImage dst, Rectangle dstRect) {
+		return zoom(in, inRect, dst, dstRect, DEFAULT_FILTER);
+	}
+
+	/**
+	 * Draws one portion of an image into another, resampling as necessary.
 	 * 
 	 * @param dst
 	 *            Destination Image
@@ -962,18 +1045,15 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            the destination of pixels in the destination image
 	 * @param filterf
 	 *            Filter to use
-	 * @param fwidth
-	 *            Filter width
 	 * 
-	 * @return -1 if error, 0 if success.
+	 * @return the destination image
 	 */
-	public static int zoom(FImage in, Rectangle inRect, FImage dst, Rectangle dstRect, ResizeFilterFunction filterf,
-			double fwidth)
+	public static FImage zoom(FImage in, Rectangle inRect, FImage dst, Rectangle dstRect, ResizeFilterFunction filterf)
 	{
-
 		// First some sanity checking!
 		if (!in.getBounds().isInside(inRect) || !dst.getBounds().isInside(dstRect))
-			return -1;
+			throw new IllegalArgumentException("Bad bounds");
+
 		double xscale, yscale; /* zoom scale factors */
 		int n; /* pixel number */
 		double center, left, right; /* filter calculation variables */
@@ -982,7 +1062,6 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		boolean bPelDelta;
 		float pel, pel2;
 		PixelContributions contribX;
-		int nRet = -1;
 
 		// This is a convenience
 		final FImage src = in;
@@ -996,8 +1075,10 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		final int dstWidth = (int) dstRect.width;
 		final int dstHeight = (int) dstRect.height;
 
+		final float maxValue = in.max();
+
 		/* create intermediate column to hold horizontal dst column zoom */
-		final Float[] tmp = new Float[srcHeight];
+		final Float[] work = new Float[srcHeight];
 
 		xscale = (double) dstWidth / (double) srcWidth;
 
@@ -1006,10 +1087,12 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		final PixelContributions[] contribY = new PixelContributions[dstHeight];
 
 		yscale = (double) dstHeight / (double) srcHeight;
+		final double fwidth = filterf.getSupport();
 
 		if (yscale < 1.0) {
 			width = fwidth / yscale;
 			fscale = 1.0 / yscale;
+			double density = 0;
 			for (int i = 0; i < dstHeight; ++i) {
 				contribY[i] = new PixelContributions();
 				contribY[i].numberOfContributors = 0;
@@ -1034,6 +1117,15 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 					contribY[i].contributions[k] = new PixelContribution();
 					contribY[i].contributions[k].pixel = n;
 					contribY[i].contributions[k].weight = weight;
+					density += weight;
+				}
+
+				if ((density != 0.0) && (density != 1.0)) {
+					// Normalize.
+					density = 1.0 / density;
+					for (int k = 0; k < contribY[i].numberOfContributors; k++) {
+						contribY[i].contributions[k].weight *= density;
+					}
 				}
 			}
 		} else {
@@ -1067,8 +1159,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 		for (int xx = 0; xx < dstWidth; xx++) {
 			contribX = new PixelContributions();
-			if (0 != calc_x_contrib(contribX, xscale, fwidth, dstWidth, srcWidth, filterf, xx))
-				return 0;
+			calc_x_contrib(contribX, xscale, fwidth, dstWidth, srcWidth, filterf, xx);
 
 			/* Apply horz filter to make dst column in tmp. */
 			for (int k = 0; k < srcHeight; ++k) {
@@ -1085,8 +1176,14 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 				}
 				weight = bPelDelta ? Math.round(weight * 255f) / 255f : pel;
 
-				// 0 is black, 1 is white
-				tmp[k] = clamp((float) weight, 0f, 1f);
+				if (weight < 0) {
+					weight = 0;
+				}
+				else if (weight > maxValue) {
+					weight = maxValue;
+				}
+
+				work[k] = (float) weight;
 			} /* next row in temp column */
 
 			/*
@@ -1096,10 +1193,10 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 			for (int i = 0; i < dstHeight; ++i) {
 				weight = 0.0;
 				bPelDelta = false;
-				pel = tmp[contribY[i].contributions[0].pixel];
+				pel = work[contribY[i].contributions[0].pixel];
 
 				for (int j = 0; j < contribY[i].numberOfContributors; ++j) {
-					pel2 = tmp[contribY[i].contributions[j].pixel];
+					pel2 = work[contribY[i].contributions[j].pixel];
 					if (pel2 != pel)
 						bPelDelta = true;
 					weight += pel2 * contribY[i].contributions[j].weight;
@@ -1107,15 +1204,18 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 				weight = bPelDelta ? Math.round(weight * 255f) / 255f : pel;
 
-				// 0 is black, 1 is white
-				dst.pixels[i + dstY][xx + dstX] = clamp((float) weight, 0f, 1f);
+				if (weight < 0) {
+					weight = 0;
+				}
+				else if (weight > maxValue) {
+					weight = maxValue;
+				}
+
+				dst.pixels[i + dstY][xx + dstX] = (float) weight;
 
 			} /* next dst row */
 		} /* next dst column */
 
-		nRet = 0; /* success */
-		return nRet;
-
+		return dst;
 	} /* zoom */
-
 }

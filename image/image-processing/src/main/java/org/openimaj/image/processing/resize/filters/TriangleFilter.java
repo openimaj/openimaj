@@ -27,7 +27,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.resize;
+package org.openimaj.image.processing.resize.filters;
+
+import org.openimaj.image.processing.resize.ResizeFilterFunction;
 
 /**
  * A triangle filter for the resample function
@@ -42,17 +44,10 @@ public class TriangleFilter implements ResizeFilterFunction
 	 */
 	public static ResizeFilterFunction INSTANCE = new TriangleFilter();
 
-	private double defaultSupport = 1;
-
-	/**
-	 * Returns the defaultSupport
-	 * 
-	 * @return the defaultSupport
-	 */
 	@Override
-	public double getDefaultSupport()
+	public double getSupport()
 	{
-		return this.defaultSupport;
+		return 1;
 	}
 
 	/**

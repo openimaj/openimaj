@@ -30,7 +30,7 @@
 package org.openimaj.image.processing.resize;
 
 /**
- * The filter function used for the resampling function.
+ * The interpolation filter function used for the resampling function.
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 
@@ -40,15 +40,16 @@ public interface ResizeFilterFunction
 	/**
 	 * The filter function.
 	 * 
-	 * @param d The weight to filter
+	 * @param d
+	 *            The weight to filter
 	 * @return the filter value
 	 */
-	double filter( double d );
+	double filter(double d);
 
 	/**
-	 * Returns a default width for the filter function.
+	 * Returns the support width for the filter function.
 	 * 
-	 * @return The default width for the filter function.
+	 * @return The the support width for the filter function.
 	 */
-	double getDefaultSupport();
+	double getSupport();
 }

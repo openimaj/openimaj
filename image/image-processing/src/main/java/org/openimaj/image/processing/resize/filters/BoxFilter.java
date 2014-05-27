@@ -27,22 +27,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.resize;
+package org.openimaj.image.processing.resize.filters;
+
+import org.openimaj.image.processing.resize.ResizeFilterFunction;
 
 /**
- * Bell filter for the resample function.
+ * Box filter for the resampling function
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 
  */
-public class BellFilter implements ResizeFilterFunction
+public class BoxFilter implements ResizeFilterFunction
 {
 	/**
 	 * The singleton instance of the filter
 	 */
-	public static ResizeFilterFunction INSTANCE = new BellFilter();
-
-	private double defaultSupport = 1.5;
+	public static ResizeFilterFunction INSTANCE = new BoxFilter();
 
 	/**
 	 * Returns the defaultSupport
@@ -50,9 +50,9 @@ public class BellFilter implements ResizeFilterFunction
 	 * @return the defaultSupport
 	 */
 	@Override
-	public double getDefaultSupport()
+	public double getSupport()
 	{
-		return this.defaultSupport;
+		return 0.5;
 	}
 
 	/**
@@ -61,15 +61,9 @@ public class BellFilter implements ResizeFilterFunction
 	@Override
 	public double filter(double t)
 	{
-		if (t < 0)
-			t = -t;
-		if (t < .5)
-			return (.75 - (t * t));
-		if (t < 1.5)
-		{
-			t = (t - 1.5);
-			return (.5 * (t * t));
-		}
+		// if ((t > -0.5) && (t <= 0.5))
+		if ((t >= -0.5) && (t < 0.5)) // ImageMagick resample.c
+			return (1.0);
 		return (0.0);
 	}
 }
