@@ -29,17 +29,11 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.FloatFV;
-import org.openimaj.feature.FloatFVComparison;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.ColourMap;
@@ -48,7 +42,6 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.algorithm.FourierTransform;
 import org.openimaj.image.processing.convolution.FourierConvolve;
 import org.openimaj.image.processing.convolution.GaborFilters;
-import org.openimaj.image.processing.resize.BilinearInterpolation;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
@@ -89,6 +82,10 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
  * double d = FloatFVComparison.SUM_SQUARE.compare(f1, f2);
  * </pre>
  * </code>
+ * <p>
+ * The ability to generate a visualisation of the current descriptor in the same
+ * way as provided by the original Matlab code is given by the
+ * {@link #visualiseDescriptor(int)} method.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
@@ -258,14 +255,8 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 			final double sc = Math.max((double) imageWidth / (double) image.getWidth(), (double) imageHeight
 					/ (double) image.getHeight());
 
-			// FIXME: Matlab does some funky resizing
-			final BilinearInterpolation bil = new BilinearInterpolation((int) (sc * image.getWidth()),
-					(int) (sc * image.getHeight()), (float) (1f / sc));
-			final IMAGE resized = image.process(bil);
-
-			final int sw = (int) Math.floor((resized.getWidth() - imageWidth) / 2);
-			final int sh = (int) Math.floor((resized.getHeight() - imageHeight) / 2);
-			final IMAGE roi = resized.extractROI(sw, sh, imageWidth, imageHeight);
+			final IMAGE resized = image.process(new ResizeProcessor((float) sc));
+			final IMAGE roi = resized.extractCenter(imageWidth, imageHeight);
 			extractGist(roi);
 		} else {
 			if (gaborFilters == null || gaborFilters[0].width != image.getWidth()
@@ -551,23 +542,5 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	 */
 	public FloatFV getResponse() {
 		return response;
-	}
-
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-		final FImage i1 = ImageUtilities.readMBF(new File("/Users/jon/Downloads/gistdescriptor/demo1.jpg")).flatten();
-		final FImage i2 = ImageUtilities.readMBF(new File("/Users/jon/Downloads/gistdescriptor/demo2.jpg")).flatten();
-
-		final Gist<FImage> fsg = new Gist<FImage>(256, 256);
-		fsg.analyseImage(i1);
-		final FloatFV f1 = fsg.getResponse();
-		fsg.analyseImage(i2);
-		final FloatFV f2 = fsg.getResponse();
-		final double d = FloatFVComparison.SUM_SQUARE.compare(f1, f2);
-		System.out.println(d);
-		DisplayUtilities.display(fsg.visualiseDescriptor(500));
 	}
 }

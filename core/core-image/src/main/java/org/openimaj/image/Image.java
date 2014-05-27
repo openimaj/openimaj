@@ -1031,10 +1031,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A new image centred around the centre of the image.
 	 */
 	public I extractCenter(int w, int h) {
-		final int selectedX = (int) Math.floor(this.getWidth() / 2.0);
-		final int selectedY = (int) Math.floor(this.getHeight() / 2.0);
+		final int sw = (int) Math.floor((this.getWidth() - w) / 2);
+		final int sh = (int) Math.floor((this.getHeight() - h) / 2);
 
-		return this.extractCenter(selectedX, selectedY, w, h);
+		return this.extractROI(sw, sh, w, h);
 	}
 
 	/**
@@ -1054,21 +1054,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A new image centred around the centre of the image.
 	 */
 	public I extractCenter(int x, int y, int w, int h) {
-		if (w % 2 == 0)
-			w += 1;
-		if (h % 2 == 0)
-			h += 1;
+		final int sw = (int) Math.floor(x - (w / 2));
+		final int sh = (int) Math.floor(y - (h / 2));
 
-		final int roiX = Math.max(0, x - (int) (w / 2.0));
-		final int roiY = Math.max(0, y - (int) (h / 2.0));
-
-		final int newWidth = (int) (w / 2.0) + 1 + (x - roiX);
-		final int newHeight = (int) (h / 2.0) + 1 + (y - roiY);
-
-		final int roiW = roiX + newWidth > this.getWidth() ? this.getWidth() - roiX : newWidth;
-		final int roiH = roiY + newHeight > this.getHeight() ? this.getHeight() - roiY : newHeight;
-
-		return this.extractROI(roiX, roiY, roiW, roiH);
+		return this.extractROI(sw, sh, w, h);
 	}
 
 	/**
