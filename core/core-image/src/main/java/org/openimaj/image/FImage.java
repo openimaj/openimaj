@@ -1500,7 +1500,8 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 		for (int r = 0; r < this.height; r++) {
 			for (int c = 0; c < this.width; c++) {
-				final int v = (int) (255.0f * this.pixels[r][c]);
+				final int v = (Math.max(0, Math.min(255, (int) (this.pixels[r][c] * 255))));
+
 				final int rgb = 0xff << 24 | v << 16 | v << 8 | v;
 				bimg[c + this.width * r] = rgb;
 			}

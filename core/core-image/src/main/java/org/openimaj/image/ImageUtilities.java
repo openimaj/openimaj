@@ -715,9 +715,12 @@ public class ImageUtilities {
 		final byte[] data = db.getData();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				data[y * scanlineStride + x * pixelStride + 2] = (byte) (r[y][x] * 255);
-				data[y * scanlineStride + x * pixelStride + 1] = (byte) (g[y][x] * 255);
-				data[y * scanlineStride + x * pixelStride] = (byte) (b[y][x] * 255);
+				data[y * scanlineStride + x * pixelStride + 2] = (byte)
+						Math.max(0, Math.min(255, (int) (r[y][x] * 255)));
+				data[y * scanlineStride + x * pixelStride + 1] = (byte)
+						Math.max(0, Math.min(255, (int) (g[y][x] * 255)));
+				data[y * scanlineStride + x * pixelStride] = (byte)
+						Math.max(0, Math.min(255, (int) (b[y][x] * 255)));
 			}
 		}
 
@@ -766,7 +769,7 @@ public class ImageUtilities {
 		final byte[] data = db.getData();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				data[y * scanlineStride + x * pixelStride] = (byte) (p[y][x] * 255);
+				data[y * scanlineStride + x * pixelStride] = (byte) (Math.max(0, Math.min(255, (int) (p[y][x] * 255))));
 			}
 		}
 
