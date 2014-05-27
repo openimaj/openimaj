@@ -75,11 +75,11 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * @created 4 Apr 2011
 	 */
 	public static enum Mode {
-		/** Double the size of the image */
+		/** Double the size of the image using bilinear interpolation */
 		DOUBLE,
-		/** Halve the size of the image */
+		/** Halve the size of the image, by sampling alternate pixels */
 		HALF,
-		/** The amount to scale the image by */
+		/** Scale the image using the given factors */
 		SCALE,
 		/** Resize the image preserving aspect ratio */
 		ASPECT_RATIO,
@@ -511,7 +511,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	}
 
 	/**
-	 * Halve the size of the image.
+	 * Halve the size of the image. Note that this method just samples every
+	 * other pixel and will produce aliasing unless the image has been
+	 * pre-filtered.
 	 * 
 	 * @param image
 	 *            The image halve in size
