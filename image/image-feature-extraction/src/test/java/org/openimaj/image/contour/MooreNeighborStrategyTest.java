@@ -31,45 +31,67 @@ package org.openimaj.image.contour;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.openimaj.image.FImage;
+import org.openimaj.image.pixel.Pixel;
 
 /**
- * Tests for the {@link SuzukiContourProcessor} direct from the paper
+ * Tests for the {@link MooreNeighborStrategy}
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class TestSuzukiContourProcessor {
+public class MooreNeighborStrategyTest {
+
 	/**
-	 * Tests fig3
-	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testFig3() throws Exception {
-		final FImage img = new FImage(new float[][] {
-				new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				new float[] { 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
-				new float[] { 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0 },
-				new float[] { 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0 },
-				new float[] { 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
-				new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-		});
+	public void testSimple() throws Exception {
+		final float[][] pixels = new float[][] {
+				new float[] { 0, 0, 0, 0, 0, 0 },
+				new float[] { 0, 0, 1, 1, 1, 0 },
+				new float[] { 0, 1, 0, 0, 1, 0 },
+				new float[] { 0, 0, 1, 1, 1, 0 },
+				new float[] { 0, 0, 0, 0, 0, 0 }
+		};
 
-		final FImage imgC = img.clone();
-		final Contour root = SuzukiContourProcessor.findContours(imgC);
+		final FImage img = new FImage(pixels);
 
-		final FImage expected = new FImage(new float[][] {
-				new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				new float[] { 0, 0, 2, 2, 2, 2, 2, 2, -2, 0, 0, 0 },
-				new float[] { 0, 0, -3, 0, 0, -4, 0, 0, -2, 0, -5, 0 },
-				new float[] { 0, 0, -3, 0, 0, -4, 0, 0, -2, 0, 0, 0 },
-				new float[] { 0, 0, 2, 2, 2, 2, 2, 2, -2, 0, 0, 0 },
-				new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-		});
+		final ContourFollowingStrategy strat = new MooreNeighborStrategy();
+		final Pixel start = new Pixel(1, 2);
+		Pixel from = new Pixel(1, 3);
+		List<Pixel> contour = strat.contour(img, start, from);
+		assertTrue(contour.size() == img.sum());
+		from = new Pixel(2, 2);
+		contour = strat.contour(img, start, from);
+		assertTrue(contour.size() == img.sum() - 2);
 
-		assertTrue(imgC.equals(expected));
-		System.out.println(root);
 	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void testOpenLoop() throws Exception {
+		final float[][] pixels = new float[][] {
+				new float[] { 0, 0, 0, 0, 0, 0, 0, 0 },
+				new float[] { 0, 0, 0, 0, 0, 0, 0, 0 },
+				new float[] { 0, 0, 0, 0, 0, 1, 1, 0 },
+				new float[] { 0, 0, 0, 1, 0, 0, 1, 0 },
+				new float[] { 0, 0, 0, 1, 0, 1, 1, 0 },
+				new float[] { 0, 0, 0, 0, 1, 1, 0, 0 },
+				new float[] { 0, 0, 0, 0, 0, 0, 0, 0 }
+		};
+
+		final FImage img = new FImage(pixels);
+
+		final MooreNeighborStrategy strat = new MooreNeighborStrategy();
+		final Pixel start = new Pixel(3, 4);
+		final Pixel from = new Pixel(3, 5);
+		strat.contour(img, start, from);
+	}
+
 }

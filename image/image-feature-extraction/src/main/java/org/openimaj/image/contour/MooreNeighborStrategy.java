@@ -35,8 +35,9 @@ import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * The Moore Neighborhood contour tracing strategy as described by
- * {@link "http://www.imageprocessingplace.com/downloads_V3/root_downloads/tutorials/contour_tracing_Abeer_George_Ghuneim/moore.html"}
+ * The Moore Neighborhood contour tracing strategy as described by <a href=
+ * "http://www.imageprocessingplace.com/downloads_V3/root_downloads/tutorials/contour_tracing_Abeer_George_Ghuneim/moore.html"
+ * >this tutorial</a>.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 

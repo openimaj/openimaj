@@ -73,8 +73,9 @@ import org.openimaj.util.pair.Pair;
 import Jama.Matrix;
 
 /**
- * An interest point repeatability as originally implemented here:
- * {@link "http://www.robots.ox.ac.uk/~vgg/research/affine/evaluation.html"}
+ * An interest point repeatability as originally implemented <a
+ * href="http://www.robots.ox.ac.uk/~vgg/research/affine/evaluation.html"
+ * >here</a>.
  * <p>
  * We find some interest points in two images, and the known homography to go
  * from image 1 to image 2

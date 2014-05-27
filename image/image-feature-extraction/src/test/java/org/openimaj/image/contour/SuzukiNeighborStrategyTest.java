@@ -38,12 +38,12 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 
 /**
- * Tests for the {@link MooreNeighborStrategy}
+ * Tests for the {@link SuzukiNeighborStrategy}
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class TestMooreNeighborStrategy {
+public class SuzukiNeighborStrategyTest {
 
 	/**
 	 * @throws Exception
@@ -60,7 +60,7 @@ public class TestMooreNeighborStrategy {
 
 		final FImage img = new FImage(pixels);
 
-		final ContourFollowingStrategy strat = new MooreNeighborStrategy();
+		final ContourFollowingStrategy strat = new SuzukiNeighborStrategy();
 		final Pixel start = new Pixel(1, 2);
 		Pixel from = new Pixel(1, 3);
 		List<Pixel> contour = strat.contour(img, start, from);
@@ -68,7 +68,6 @@ public class TestMooreNeighborStrategy {
 		from = new Pixel(2, 2);
 		contour = strat.contour(img, start, from);
 		assertTrue(contour.size() == img.sum() - 2);
-
 	}
 
 	/**
@@ -88,10 +87,9 @@ public class TestMooreNeighborStrategy {
 
 		final FImage img = new FImage(pixels);
 
-		final MooreNeighborStrategy strat = new MooreNeighborStrategy();
+		final SuzukiNeighborStrategy strat = new SuzukiNeighborStrategy();
 		final Pixel start = new Pixel(3, 4);
 		final Pixel from = new Pixel(3, 5);
 		strat.contour(img, start, from);
 	}
-
 }

@@ -52,8 +52,10 @@ import org.openimaj.util.hash.HashCodeUtil;
 import org.openimaj.util.pair.IntFloatPair;
 
 /**
- * An implementation of the RandomForest clustering algorithm found in:
- * {@link "http://users.info.unicaen.fr/~jurie/papers/moosman-nowak-jurie-pami08.pdf"}
+ * An implementation of the RandomForest clustering algorithm proposed by <a
+ * href
+ * ="http://users.info.unicaen.fr/~jurie/papers/moosman-nowak-jurie-pami08.pdf"
+ * >Jurie et al</a>.
  * <p>
  * In this implementation the training phase is used to identify the limits of
  * the data (for which a very small subset may be provided). Once this is known

@@ -29,7 +29,6 @@
  */
 package org.openimaj.util.hash;
 
-
 /**
  * Use MurmurHash (http://murmurhash.googlepages.com/) to generate a random hash
  * for a string.
@@ -93,8 +92,9 @@ public class StringMurmurHashFunction implements HashFunction<String> {
 
 	/**
 	 * Compute the Murmur hash (http://murmurhash.googlepages.com/) of the given
-	 * bytes. Based on the implementation from
-	 * {@link "https://github.com/clearspring/stream-lib"}
+	 * bytes. Based on the implementation from <a
+	 * href="https://github.com/clearspring/stream-lib">
+	 * https://github.com/clearspring/stream-lib</a>.
 	 * 
 	 * @param data
 	 *            the data to hash

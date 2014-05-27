@@ -35,6 +35,7 @@ import java.io.IOException;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.FloatFV;
+import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
@@ -54,10 +55,11 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 /**
- * Implementation of the "Gist" spatial envolope feature. Based on the original
- * matlab implementation from
- * {@link "http://people.csail.mit.edu/torralba/code/spatialenvelope/"}, and
- * designed to produce comparable features.
+ * Implementation of the "Gist" spatial envelope feature. Based on (and tested
+ * against) the original Matlab implementation from <a
+ * href="http://people.csail.mit.edu/torralba/code/spatialenvelope/"
+ * >http://people.csail.mit.edu/torralba/code/spatialenvelope/</a>, and designed
+ * to produce comparable features.
  * <p>
  * The Gist or Spatial Envelope is a very low dimensional representation of the
  * scene. Gist encodes a set of perceptual dimensions (naturalness, openness,
@@ -65,9 +67,28 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
  * structure of a scene. These perceptual dimensions are reliably estimated
  * using coarsely localized spectral information from the image.
  * <p>
- * <b>Implementation notes:<b> This class is abstract, and it is intended that
- * the {@link FixedSizeGist} or {@link VariableSizeGist} are actually used in
- * practice (normally {@link FixedSizeGist} will be used).
+ * <b>Implementation notes:</b> This class supports both fixed and variable size
+ * Gist. In the fixed size mode, the image is resized and centre-cropped to a
+ * pre-defined size (allowing the Gabor filters to be pre-computed and reused).
+ * In the variable size mode the Gabor filters will be re-computed as necessary
+ * if the image size changes. For computing features to compare images, fixed
+ * size mode makes more sense.
+ * <p>
+ * <b>Example usage for image comparison:</b><br/>
+ * <code>
+ * <pre>
+ * FImage i1, i2 = ...
+ * Gist<FImage> fsg = new Gist<FImage>(256, 256);
+ * 
+ * fsg.analyseImage(i1);
+ * FloatFV f1 = fsg.getResponse();
+ * 
+ * fsg.analyseImage(i2);
+ * FloatFV f2 = fsg.getResponse();
+ * 
+ * double d = FloatFVComparison.SUM_SQUARE.compare(f1, f2);
+ * </pre>
+ * </code>
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
@@ -95,12 +116,12 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 				"address", "Hingham, MA, USA",
 				"keywords", "energy spectrum, natural images, principal components, scene recognition, spatial layout"
 		})
-public abstract class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
+public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
 		implements
 		ImageAnalyser<IMAGE>
 {
 	/**
-	 * The default number of filter orientations per scale
+	 * The default number of filter orientations per scale (from HF to LF)
 	 */
 	public static final int[] DEFAULT_ORIENTATIONS_PER_SCALE = { 8, 8, 8, 8 };
 
@@ -135,63 +156,118 @@ public abstract class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProces
 	 */
 	public int boundaryExtension = DEFAULT_BOUNDARY_EXTENSION;
 
+	/**
+	 * Default image size (both height and width) for fixed size Gist
+	 */
+	public static final int DEFAULT_SIZE = 128;
+
 	protected FImage[] gaborFilters;
 	protected FloatFV response;
 	protected int[] orientationsPerScale;
+	protected boolean fixedSize;
+	protected int imageWidth;
+	protected int imageHeight;
 
-	public static class FixedSizeGist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
-			extends
-			Gist<IMAGE>
-	{
-		/**
-		 * Default image size (both height and width)
-		 */
-		public static final int DEFAULT_SIZE = 128;
-
-		protected int imageWidth;
-		protected int imageHeight;
-
-		public FixedSizeGist() {
-			this(DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_ORIENTATIONS_PER_SCALE);
-		}
-
-		public FixedSizeGist(int width, int height) {
-			this(width, height, DEFAULT_ORIENTATIONS_PER_SCALE);
-		}
-
-		public FixedSizeGist(int width, int height, int[] orientationsPerScale) {
-			super(orientationsPerScale);
-			this.imageWidth = width;
-			this.imageHeight = height;
-			this.gaborFilters = GaborFilters.createGaborJets(width + 2 * this.boundaryExtension, height + 2
-					* this.boundaryExtension, orientationsPerScale);
-		}
-
-		@Override
-		public void analyseImage(IMAGE image) {
-			final double sc = Math.max(imageWidth / image.getWidth(), imageHeight / image.getHeight());
-			final BilinearInterpolation bil = new BilinearInterpolation(imageWidth, imageHeight, (float) (1f / sc));
-			final IMAGE resized = image.process(bil);
-			final IMAGE roi = resized.extractCenter(imageWidth, imageHeight);
-
-			extractGist(roi);
-		}
+	/**
+	 * Construct a fixed size Gist extractor using the default values.
+	 */
+	public Gist() {
+		this(true);
 	}
 
-	public static class VariableSizeGist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
-			extends
-			Gist<IMAGE>
-	{
-		public VariableSizeGist() {
-			super(DEFAULT_ORIENTATIONS_PER_SCALE);
-		}
+	/**
+	 * Construct a variable or fixed size Gist extractor using the default
+	 * values.
+	 * 
+	 * @param fixedSize
+	 *            if true the images should be resized and cropped
+	 */
+	public Gist(boolean fixedSize) {
+		this(DEFAULT_SIZE, DEFAULT_SIZE, DEFAULT_ORIENTATIONS_PER_SCALE, fixedSize);
+	}
 
-		public VariableSizeGist(int[] orientationsPerScale) {
-			super(orientationsPerScale);
-		}
+	/**
+	 * Construct a fixed-size Gist extractor, with the given image size and the
+	 * default number of orientations per scale for the Gabor jet.
+	 * 
+	 * @param width
+	 *            the image width
+	 * @param height
+	 *            the image height
+	 */
+	public Gist(int width, int height) {
+		this(width, height, DEFAULT_ORIENTATIONS_PER_SCALE);
+	}
 
-		@Override
-		public void analyseImage(IMAGE image) {
+	/**
+	 * Construct a fixed-size Gist extractor, with the given image size and
+	 * number of orientations per scale for the Gabor jet.
+	 * 
+	 * @param width
+	 *            the image width
+	 * @param height
+	 *            the image height
+	 * @param orientationsPerScale
+	 *            the number of Gabor orientations per scale (from HF to LF)
+	 */
+	public Gist(int width, int height, int[] orientationsPerScale) {
+		this(width, height, orientationsPerScale, true);
+	}
+
+	/**
+	 * Construct a variable or fixed size Gist extractor with the given number
+	 * of orientations per scale for the Gabor jet.
+	 * 
+	 * @param orientationsPerScale
+	 *            the number of Gabor orientations per scale (from HF to LF)
+	 * @param fixedSize
+	 *            if true the images should be resized and cropped
+	 */
+	public Gist(int[] orientationsPerScale, boolean fixedSize) {
+		this(DEFAULT_SIZE, DEFAULT_SIZE, orientationsPerScale, fixedSize);
+	}
+
+	/**
+	 * Construct a variable or fixed size Gist extractor with the given number
+	 * of orientations per scale for the Gabor jet. The given height and width
+	 * are ignored in variable size mode.
+	 * 
+	 * @param width
+	 *            the image width
+	 * @param height
+	 *            the image height
+	 * @param orientationsPerScale
+	 *            the number of Gabor orientations per scale (from HF to LF)
+	 * @param fixedSize
+	 *            if true the images should be resized and cropped
+	 */
+	public Gist(int width, int height, int[] orientationsPerScale, boolean fixedSize) {
+		this.fixedSize = fixedSize;
+		this.orientationsPerScale = orientationsPerScale;
+		this.imageWidth = width;
+		this.imageHeight = height;
+
+		if (fixedSize)
+			this.gaborFilters = GaborFilters.createGaborJets(width + 2 * this.boundaryExtension, height + 2
+					* this.boundaryExtension, orientationsPerScale);
+	}
+
+	@Override
+	public void analyseImage(IMAGE image) {
+		if (fixedSize) {
+			final double sc = Math.max((double) imageWidth / (double) image.getWidth(), (double) imageHeight
+					/ (double) image.getHeight());
+
+			// FIXME: Matlab does some funky resizing
+			final BilinearInterpolation bil = new BilinearInterpolation((int) (sc * image.getWidth()),
+					(int) (sc * image.getHeight()), (float) (1f / sc));
+			final IMAGE resized = image.process(bil);
+
+			final int sw = (int) Math.floor((resized.getWidth() - imageWidth) / 2);
+			final int sh = (int) Math.floor((resized.getHeight() - imageHeight) / 2);
+			final IMAGE roi = resized.extractROI(sw, sh, imageWidth, imageHeight);
+			extractGist(roi);
+		} else {
 			if (gaborFilters == null || gaborFilters[0].width != image.getWidth()
 					|| gaborFilters[0].height != image.getHeight())
 			{
@@ -405,11 +481,11 @@ public abstract class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProces
 	 * responses for each spatial bin. The filter scales are drawn with
 	 * differing hues, and brightness is proportional to response value.
 	 * 
-	 * @param width
-	 *            the desired width of the produced image
+	 * @param height
+	 *            the desired height of the produced image
 	 * @return the visualisation TODO: colour descriptors
 	 */
-	public MBFImage visualiseDescriptor(int width) {
+	public MBFImage visualiseDescriptor(int height) {
 		final Float[][] C = ColourMap.HSV.generateColours(orientationsPerScale.length);
 
 		final FImage[] G = new FImage[this.gaborFilters.length];
@@ -420,40 +496,47 @@ public abstract class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProces
 			G[i].addInplace(G[i].clone().flipY().flipX());
 		}
 
-		float max = 0;
-		final MBFImage[] blockImages = new MBFImage[numberOfBlocks * numberOfBlocks];
-		for (int y = 0, k = 0; y < numberOfBlocks; y++) {
-			for (int x = 0; x < numberOfBlocks; x++, k++) {
-				blockImages[k] = new MBFImage(G[0].width, G[0].height, 3);
+		final int blocksPerFilter = computeNumberOfSamplingBlocks();
+		final int nFeaturesPerBand = gaborFilters.length * blocksPerFilter;
+		final int nBands = this.response.values.length / nFeaturesPerBand;
 
-				for (int s = 0, j = 0; s < orientationsPerScale.length; s++) {
-					for (int i = 0; i < orientationsPerScale[s]; i++, j++) {
-						final MBFImage col = new MBFImage(G[0].width, G[0].height, 3);
-						col.fill(C[s]).multiplyInplace(
-								this.response.values[y + x * numberOfBlocks + j * numberOfBlocks * numberOfBlocks]);
-
-						blockImages[k].addInplace(G[j].toRGB().multiply(col));
-					}
-				}
-
-				for (int i = 0; i < blockImages[k].numBands(); i++)
-					max = Math.max(max, blockImages[k].bands.get(i).max());
-			}
-		}
-
-		final MBFImage output = new MBFImage(width, width, ColourSpace.RGB);
+		final MBFImage output = new MBFImage(nBands * height, height, ColourSpace.RGB);
 		output.fill(RGBColour.WHITE);
-		final int ts = (width / 4);
-		final ResizeProcessor rp = new ResizeProcessor(ts, ts, true);
-		for (int y = 0, k = 0; y < numberOfBlocks; y++) {
-			for (int x = 0; x < numberOfBlocks; x++, k++) {
-				blockImages[k].divideInplace(max);
-				final MBFImage tmp = blockImages[k].process(rp);
-				tmp.drawLine(0, 0, 0, ts - 1, 1, RGBColour.WHITE);
-				tmp.drawLine(0, 0, ts - 1, 0, 1, RGBColour.WHITE);
-				tmp.drawLine(ts - 1, 0, ts - 1, ts - 1, 1, RGBColour.WHITE);
-				tmp.drawLine(0, ts - 1, ts - 1, ts - 1, 1, RGBColour.WHITE);
-				output.drawImage(tmp, x * ts, y * ts);
+
+		for (int b = 0; b < nBands; b++) {
+			float max = 0;
+			final MBFImage[] blockImages = new MBFImage[numberOfBlocks * numberOfBlocks];
+			for (int y = 0, k = 0; y < numberOfBlocks; y++) {
+				for (int x = 0; x < numberOfBlocks; x++, k++) {
+					blockImages[k] = new MBFImage(G[0].width, G[0].height, 3);
+
+					for (int s = 0, j = 0; s < orientationsPerScale.length; s++) {
+						for (int i = 0; i < orientationsPerScale[s]; i++, j++) {
+							final MBFImage col = new MBFImage(G[0].width, G[0].height, 3);
+							col.fill(C[s]).multiplyInplace(
+									this.response.values[y + x * numberOfBlocks + j * numberOfBlocks * numberOfBlocks]);
+
+							blockImages[k].addInplace(G[j].toRGB().multiply(col));
+						}
+					}
+
+					for (int i = 0; i < blockImages[k].numBands(); i++)
+						max = Math.max(max, blockImages[k].bands.get(i).max());
+				}
+			}
+
+			final int ts = (height / 4);
+			final ResizeProcessor rp = new ResizeProcessor(ts, ts, true);
+			for (int y = 0, k = 0; y < numberOfBlocks; y++) {
+				for (int x = 0; x < numberOfBlocks; x++, k++) {
+					blockImages[k].divideInplace(max);
+					final MBFImage tmp = blockImages[k].process(rp);
+					tmp.drawLine(0, 0, 0, ts - 1, 1, RGBColour.WHITE);
+					tmp.drawLine(0, 0, ts - 1, 0, 1, RGBColour.WHITE);
+					tmp.drawLine(ts - 1, 0, ts - 1, ts - 1, 1, RGBColour.WHITE);
+					tmp.drawLine(0, ts - 1, ts - 1, ts - 1, 1, RGBColour.WHITE);
+					output.drawImage(tmp, x * ts + b * height, y * ts);
+				}
 			}
 		}
 
@@ -461,16 +544,30 @@ public abstract class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProces
 	}
 
 	/**
+	 * Get the response vector from the previous call to
+	 * {@link #analyseImage(Image)}.
+	 * 
+	 * @return the response
+	 */
+	public FloatFV getResponse() {
+		return response;
+	}
+
+	/**
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		final MBFImage img = ImageUtilities.readMBF(new File("/Users/jon/Downloads/gistdescriptor/demo1.jpg"));
-		final FImage gimg = img.flatten();
+		final FImage i1 = ImageUtilities.readMBF(new File("/Users/jon/Downloads/gistdescriptor/demo1.jpg")).flatten();
+		final FImage i2 = ImageUtilities.readMBF(new File("/Users/jon/Downloads/gistdescriptor/demo2.jpg")).flatten();
 
-		final FixedSizeGist<FImage> fsg = new FixedSizeGist<FImage>(256, 256, new int[] { 8, 8, 8, 8 });
-		fsg.analyseImage(gimg);
-		System.out.println(fsg.response);
+		final Gist<FImage> fsg = new Gist<FImage>(256, 256);
+		fsg.analyseImage(i1);
+		final FloatFV f1 = fsg.getResponse();
+		fsg.analyseImage(i2);
+		final FloatFV f2 = fsg.getResponse();
+		final double d = FloatFVComparison.SUM_SQUARE.compare(f1, f2);
+		System.out.println(d);
 		DisplayUtilities.display(fsg.visualiseDescriptor(500));
 	}
 }

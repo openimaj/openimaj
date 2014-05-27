@@ -36,8 +36,9 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
 
 /**
  * Results of applying a RandomBaselineSMEAnalysis to evaluate clustering. These
- * metrics are taken from:
- * {@link "http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-clustering-1.html"}
+ * metrics are taken from the <a href=
+ * "http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-clustering-1.html"
+ * >Introduction to Information Retrieval</a>.
  * 
  * Sina Samangooei (ss@ecs.soton.ac.uk)
  * 

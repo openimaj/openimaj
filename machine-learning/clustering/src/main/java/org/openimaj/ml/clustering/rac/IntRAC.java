@@ -53,8 +53,8 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.util.pair.IntFloatPair;
 
 /**
- * An implementation of the RAC algorithm proposed by Ramanan and Niranjan:
- * {@link "http://eprints.ecs.soton.ac.uk/21401/"}.
+ * An implementation of the RAC algorithm proposed by <a
+ * href="http://eprints.ecs.soton.ac.uk/21401/">Ramanan and Niranjan</a>.
  * <p>
  * During training, data points are selected at random. The first data point is
  * chosen as a centroid. Every following data point is set as a new centroid if

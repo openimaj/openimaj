@@ -47,8 +47,9 @@ import org.openimaj.util.stream.Stream;
  * Parallel processing utilities for looping.
  * <p>
  * Inspired by the .NET Task Parallel Library. Allows control over the way data
- * is partitioned using inspiration from
- * {@link "http://reedcopsey.com/2010/01/26/parallelism-in-net-part-5-partitioning-of-work/"}.
+ * is partitioned using inspiration from <a href=
+ * "http://reedcopsey.com/2010/01/26/parallelism-in-net-part-5-partitioning-of-work/"
+ * >Reed Copsey's blog</a>.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */

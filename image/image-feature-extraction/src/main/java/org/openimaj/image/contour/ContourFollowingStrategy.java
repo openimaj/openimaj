@@ -40,8 +40,9 @@ import org.openimaj.util.function.Operation;
  * A contour Following strategy implements a Contour Tracing algorithm that
  * extracts a boundary from an image
  * <p>
- * Many examples can be found here:
- * {@link "http://www.imageprocessingplace.com/downloads_V3/root_downloads/tutorials/contour_tracing_Abeer_George_Ghuneim/index.html"}
+ * Many examples can be found in <a href=
+ * "http://www.imageprocessingplace.com/downloads_V3/root_downloads/tutorials/contour_tracing_Abeer_George_Ghuneim/index.html"
+ * >this tutorial</a>.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */

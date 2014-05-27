@@ -30,8 +30,10 @@
 package org.openimaj.experiment.evaluation.cluster.analyser;
 
 /**
- * A set of measures used to evaluate clustering. These metrics are taken from:
- * {@link "http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-clustering-1.html"}
+ * A set of measures used to evaluate clustering. These metrics are taken from
+ * the <a href=
+ * "http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-clustering-1.html"
+ * >Introduction to Information Retrieval</a>.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
