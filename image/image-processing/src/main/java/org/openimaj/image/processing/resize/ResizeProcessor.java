@@ -633,7 +633,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * 
 	 */
-	private static class PixelContribution {
+	static class PixelContribution {
 		/** Index of the pixel */
 		int pixel;
 
@@ -646,7 +646,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * 
 	 */
-	private static class PixelContributions {
+	static class PixelContributions {
 		int numberOfContributors;
 
 		PixelContribution[] contributions;
