@@ -16,8 +16,8 @@
   <dependencies>
     <dependency>
       <groupId>xuggle</groupId>
-      <artifactId>xuggle-xuggler</artifactId>
-      <version>5.4</version>
+      <artifactId>xuggle-xuggler-lgpl</artifactId>
+      <version>5.5-20140603</version>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>

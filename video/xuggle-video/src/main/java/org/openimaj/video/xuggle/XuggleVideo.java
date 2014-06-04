@@ -33,15 +33,16 @@
 package org.openimaj.video.xuggle;
 
 import java.awt.image.BufferedImage;
+import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.log4j.Logger;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
@@ -62,6 +63,7 @@ import com.xuggle.xuggler.IError;
 import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IVideoPicture;
+import com.xuggle.xuggler.io.URLProtocolManager;
 import com.xuggle.xuggler.video.AConverter;
 import com.xuggle.xuggler.video.BgrConverter;
 import com.xuggle.xuggler.video.ConverterFactory;
@@ -88,15 +90,27 @@ import com.xuggle.xuggler.video.ConverterFactory;
  * contrast to setting the {@link VideoDisplay} end action (using
  * {@link VideoDisplay#setEndAction(org.openimaj.video.VideoDisplay.EndAction)}
  * where the looping will reset all timestamps when the video loops.
- *
+ * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  * @created 1 Jun 2011
  */
 public class XuggleVideo extends Video<MBFImage>
 {
+	private final static Logger logger = Logger.getLogger(XuggleVideo.class);
+
+	static {
+		// This allows us to read videos from jar: urls
+		URLProtocolManager.getManager().registerFactory("jar", new JarURLProtocolHandlerFactory());
+
+		// This converter converts the frames into MBFImages for us
+		ConverterFactory.registerConverter(new ConverterFactory.Type(
+				ConverterFactory.XUGGLER_BGR_24, MBFImageConverter.class,
+				IPixelFormat.Type.BGR24, BufferedImage.TYPE_3BYTE_BGR));
+	}
+
 	/** The reader used to read the video */
 	private IMediaReader reader = null;
 
@@ -122,10 +136,10 @@ public class XuggleVideo extends Video<MBFImage>
 	private long totalFrames = -1;
 
 	/** A cache of the url of the video */
-	private String url = null;
+	private final String url;
 
 	/** A cache of whether the video should be looped or not */
-	private boolean loop = false;
+	private final boolean loop;
 
 	/** The timestamp of the frame currently being decoded */
 	private long timestamp;
@@ -150,18 +164,18 @@ public class XuggleVideo extends Video<MBFImage>
 	 * time a video picture has been decoded from the stream. This class creates
 	 * a BufferedImage for each video frame and updates the currentFrameUpdated
 	 * boolean when one arrives.
-	 *
+	 * 
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 * @created 1 Jun 2011
 	 */
 	protected class FrameGetter extends MediaListenerAdapter
 	{
 		/**
 		 * {@inheritDoc}
-		 *
+		 * 
 		 * @see com.xuggle.mediatool.MediaToolAdapter#onVideoPicture(com.xuggle.mediatool.event.IVideoPictureEvent)
 		 */
 		@Override
@@ -182,9 +196,9 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Wrapper that created an MBFImage from a BufferedImage.
-	 *
+	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 * @created 1 Nov 2011
 	 */
 	protected static final class MBFImageWrapper extends BufferedImage
@@ -200,9 +214,9 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Converter for converting IVideoPictures directly to MBFImages.
-	 *
+	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 * @created 1 Nov 2011
 	 */
 	protected static final class MBFImageConverter extends BgrConverter
@@ -265,7 +279,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Default constructor that takes the video file to read.
-	 *
+	 * 
 	 * @param videoFile
 	 *            The video file to read.
 	 */
@@ -276,7 +290,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Default constructor that takes the video file to read.
-	 *
+	 * 
 	 * @param videoFile
 	 *            The video file to read.
 	 * @param loop
@@ -290,7 +304,7 @@ public class XuggleVideo extends Video<MBFImage>
 	/**
 	 * Default constructor that takes the location of a video file to read. This
 	 * can either be a filename or a URL.
-	 *
+	 * 
 	 * @param url
 	 *            The URL of the file to read
 	 */
@@ -301,7 +315,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Default constructor that takes the URL of a video file to read.
-	 *
+	 * 
 	 * @param url
 	 *            The URL of the file to read
 	 */
@@ -316,7 +330,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * whether the video will loop indefinitely. If so, {@link #getNextFrame()}
 	 * will never return null; otherwise this method will return null at the end
 	 * of the video.
-	 *
+	 * 
 	 * @param url
 	 *            The URL of the file to read
 	 * @param loop
@@ -333,7 +347,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * whether the video will loop indefinitely. If so, {@link #getNextFrame()}
 	 * will never return null; otherwise this method will return null at the end
 	 * of the video.
-	 *
+	 * 
 	 * @param url
 	 *            The URL of the file to read
 	 * @param loop
@@ -343,12 +357,40 @@ public class XuggleVideo extends Video<MBFImage>
 	{
 		this.url = url;
 		this.loop = loop;
-		this.create();
+		this.create(url);
+	}
+
+	/**
+	 * Default constructor that takes an input stream. Note that only
+	 * "streamable" video codecs can be used in this way.
+	 * 
+	 * @param stream
+	 *            The video data stream
+	 */
+	public XuggleVideo(final InputStream stream)
+	{
+		this.url = null;
+		this.loop = false;
+		this.create(stream);
+	}
+
+	/**
+	 * Default constructor that takes a data input. Note that only "streamable"
+	 * video codecs can be used in this way.
+	 * 
+	 * @param input
+	 *            The video data
+	 */
+	public XuggleVideo(final DataInput input)
+	{
+		this.url = null;
+		this.loop = false;
+		this.create(input);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#countFrames()
 	 */
 	@Override
@@ -359,7 +401,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#getNextFrame()
 	 */
 	@Override
@@ -383,13 +425,6 @@ public class XuggleVideo extends Video<MBFImage>
 		{
 			// Increment frame counter
 			this.currentFrame++;
-			// System.out.println(
-			// "Current frame: "+this.currentFrame+" @ "+this.timestamp+
-			// (this.currentFrameIsKeyFrame?" (key frame)":"") );
-		}
-		else
-		{
-			// System.out.println( "No current frame.");
 		}
 
 		return this.currentMBFImage;
@@ -405,7 +440,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * have unexpected results as it does not swap current and next back. See
 	 * {@link #getNextFrame()} which swaps back when a frame has been pre-read
 	 * from the stream.
-	 *
+	 * 
 	 * @param preserveCurrent
 	 *            Whether to preserve the current frame
 	 * @return The frame that was read, or NULL if no frame could be read.
@@ -459,7 +494,7 @@ public class XuggleVideo extends Video<MBFImage>
 		// Check if we're at the end of the file
 		if (!this.currentFrameUpdated || e != null)
 		{
-			// System.err.println( "Got video demux error: "+e.getType() );
+			// Logger.error( "Got video demux error: "+e.getType() );
 			return null;
 		}
 
@@ -486,7 +521,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Returns a video timecode for the current frame.
-	 *
+	 * 
 	 * @return A video timecode for the current frame.
 	 */
 	public VideoTimecode getCurrentTimecode()
@@ -496,7 +531,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#getCurrentFrame()
 	 */
 	@Override
@@ -509,7 +544,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
@@ -520,7 +555,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
@@ -531,7 +566,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#hasNextFrame()
 	 */
 	@Override
@@ -548,16 +583,23 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * <p>
+	 * Note: if you created the video from a {@link DataInput} or
+	 * {@link InputStream}, there is no way that it can be reset.
+	 * 
 	 * @see org.openimaj.video.Video#reset()
 	 */
 	@Override
 	synchronized public void reset()
 	{
-		if (this.reader == null)
-			this.create();
-		else
+		if (this.reader == null) {
+			if (this.url == null)
+				return;
+
+			this.create(url);
+		} else {
 			this.seekToBeginning();
+		}
 	}
 
 	/**
@@ -566,9 +608,16 @@ public class XuggleVideo extends Video<MBFImage>
 	 * in Xuggle, we'll try and use a few different methods to get us back to
 	 * the beginning. That means that this method may be slower than seek(0) if
 	 * it needs to try multiple methods.
+	 * <p>
+	 * Note: if you created the video from a {@link DataInput} or
+	 * {@link InputStream}, there is no way that it can be reset.
 	 */
 	synchronized public void seekToBeginning()
 	{
+		// if the video came from a stream, there is no chance of returning!
+		if (this.url == null)
+			return;
+
 		// Try to seek to byte 0. That's the start of the file.
 		this.reader.getContainer().seekKeyFrame(this.streamIndex,
 				0, 0, 0, IContainer.SEEK_FLAG_BYTE);
@@ -605,7 +654,7 @@ public class XuggleVideo extends Video<MBFImage>
 		// So, try recreating the whole reader again.
 		this.reader.close();
 		this.reader = null;
-		this.create();
+		this.create(url);
 
 		this.getNextFrame();
 
@@ -616,13 +665,91 @@ public class XuggleVideo extends Video<MBFImage>
 	/**
 	 * Create the necessary reader
 	 */
-	synchronized private void create()
+	synchronized private void create(String urlstring)
 	{
-		// This converter converts the frames into MBFImages for us
-		ConverterFactory.registerConverter(new ConverterFactory.Type(
-				ConverterFactory.XUGGLER_BGR_24, MBFImageConverter.class,
-				IPixelFormat.Type.BGR24, BufferedImage.TYPE_3BYTE_BGR));
+		setupReader();
 
+		// Check whether the string we have is a valid URI
+		IContainer container = null;
+		int openResult = 0;
+		try
+		{
+			// If it's a valid URI, we'll try to open the container using the
+			// URI string.
+			container = IContainer.make();
+			openResult = container.open(urlstring, IContainer.Type.READ, null, true, true);
+
+			// If there was an error trying to open the container in this way,
+			// it may be that we have a resource URL (which ffmpeg doesn't
+			// understand), so we'll try opening an InputStream to the resource.
+			if (openResult < 0)
+			{
+				logger.info("URL " + urlstring + " could not be opened by ffmpeg. " +
+						"Trying to open a stream to the URL instead.");
+				final InputStream is = new DataInputStream(new URL(urlstring).openStream());
+				openResult = container.open(is, null, true, true);
+
+				if (openResult < 0)
+				{
+					logger.error("Error opening container. Error " + openResult +
+							" (" + IError.errorNumberToType(openResult).toString() + ")");
+					return;
+				}
+			}
+		} catch (final MalformedURLException e) {
+			e.printStackTrace();
+			return;
+		} catch (final IOException e) {
+			e.printStackTrace();
+			return;
+		}
+
+		setupReader(container);
+	}
+
+	/**
+	 * Create the necessary reader
+	 */
+	synchronized private void create(InputStream stream)
+	{
+		setupReader();
+
+		// Check whether the string we have is a valid URI
+		final IContainer container = IContainer.make();
+		final int openResult = container.open(stream, null, true, true);
+
+		if (openResult < 0)
+		{
+			logger.error("Error opening container. Error " + openResult +
+					" (" + IError.errorNumberToType(openResult).toString() + ")");
+			return;
+		}
+
+		setupReader(container);
+	}
+
+	/**
+	 * Create the necessary reader
+	 */
+	synchronized private void create(DataInput input)
+	{
+		setupReader();
+
+		// Check whether the string we have is a valid URI
+		final IContainer container = IContainer.make();
+		final int openResult = container.open(input, null, true, true);
+
+		if (openResult < 0)
+		{
+			logger.error("Error opening container. Error " + openResult +
+					" (" + IError.errorNumberToType(openResult).toString() + ")");
+			return;
+		}
+
+		setupReader(container);
+	}
+
+	private void setupReader() {
 		// Assume we'll start at the beginning again
 		this.currentFrame = 0;
 
@@ -633,56 +760,9 @@ public class XuggleVideo extends Video<MBFImage>
 			this.reader.close();
 			this.reader = null;
 		}
+	}
 
-		// Check whether the string we have is a valid URI
-		IContainer container = null;
-		int openResult = 0;
-		try
-		{
-			URI uri = new URI(this.url);
-
-			if( uri.toString().contains( "file:/") && !uri.toString().contains("file://") )
-				uri = new URI("file://"+uri.getPath() );
-
-			System.out.println( uri.toString() );
-
-			// If it's a valid URI, we'll try to open the container using the
-			// URI string.
-			container = IContainer.make();
-			openResult = container.open(uri.toString(),
-						IContainer.Type.READ, null, true, true);
-
-			// If there was an error trying to open the container in this way,
-			// it may be that we have a resource URL (which ffmpeg doesn't
-			// understand), so we'll try opening an InputStream to the resource.
-			if (openResult < 0)
-			{
-				System.out.println("URL " + uri.toString() + " could not be opened by ffmpeg. " +
-						"Trying to open a stream to the URL instead.");
-				final InputStream is = uri.toURL().openStream();
-				openResult = container.open(is, null, true, true);
-
-				if (openResult < 0)
-				{
-					System.out.println("Error opening container. Error " + openResult +
-							" (" + IError.errorNumberToType(openResult).toString() + ")");
-					return;
-				}
-			}
-		} catch (final URISyntaxException e2)
-		{
-			e2.printStackTrace();
-			return;
-		} catch (final MalformedURLException e)
-		{
-			e.printStackTrace();
-			return;
-		} catch (final IOException e)
-		{
-			e.printStackTrace();
-			return;
-		}
-
+	private void setupReader(IContainer container) {
 		// Set up a new reader using the container that reads the images.
 		this.reader = ToolFactory.makeReader(container);
 		this.reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
@@ -727,7 +807,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -738,7 +818,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override
@@ -749,7 +829,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#getCurrentFrameIndex()
 	 */
 	@Override
@@ -760,7 +840,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#setCurrentFrameIndex(long)
 	 */
 	@Override
@@ -772,7 +852,10 @@ public class XuggleVideo extends Video<MBFImage>
 	/**
 	 * Implements a precise seeking mechanism based on the Xuggle seek method
 	 * and the naive seek method which simply reads frames.
-	 *
+	 * <p>
+	 * Note: if you created the video from a {@link DataInput} or
+	 * {@link InputStream}, you can only seek forwards.
+	 * 
 	 * @param timestamp
 	 *            The timestamp to get, in seconds.
 	 */
@@ -799,7 +882,10 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * <p>
+	 * Note: if you created the video from a {@link DataInput} or
+	 * {@link InputStream}, you can only seek forwards.
+	 * 
 	 * @see org.openimaj.video.Video#seek(double)
 	 */
 	@Override
@@ -809,8 +895,12 @@ public class XuggleVideo extends Video<MBFImage>
 		// http://www.google.com/codesearch#DzBPmFOZfmA/trunk/0.5/unstable/videoplayer/src/classes/org/jdesktop/wonderland/modules/videoplayer/client/VideoPlayerImpl.java&q=seekKeyFrame%20position&type=cs
 		// using the timebase, calculate the time in timebase units requested
 		// Check we've actually got a container
-		if (this.reader == null)
-			this.create();
+		if (this.reader == null) {
+			if (this.url == null)
+				return;
+
+			this.create(url);
+		}
 
 		// Convert between milliseconds and stream timestamps
 		final double timebase = this.reader.getContainer().getStream(
@@ -826,13 +916,13 @@ public class XuggleVideo extends Video<MBFImage>
 		if (ret >= 0)
 			this.getNextFrame();
 		else
-			System.out.println("Seek returned an error value: " + ret + ": "
+			logger.error("Seek returned an error value: " + ret + ": "
 					+ IError.errorNumberToType(ret));
 	}
 
 	/**
 	 * Returns the duration of the video in seconds.
-	 *
+	 * 
 	 * @return The duraction of the video in seconds.
 	 */
 	public synchronized long getDuration()
@@ -847,17 +937,17 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.openimaj.video.Video#close()
 	 */
 	@Override
 	public synchronized void close()
 	{
-		if( this.reader != null )
+		if (this.reader != null)
 		{
-			synchronized( this.reader )
+			synchronized (this.reader)
 			{
-				if( this.reader.isOpen() )
+				if (this.reader.isOpen())
 				{
 					this.reader.close();
 					this.reader = null;
