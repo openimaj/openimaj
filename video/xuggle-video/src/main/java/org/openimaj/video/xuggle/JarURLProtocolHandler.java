@@ -64,7 +64,7 @@ public class JarURLProtocolHandler extends FileProtocolHandler {
 			return extractedVideos.get(url);
 
 		final File tmp = File.createTempFile("movie", ".tmp");
-		final String filename = tmp.getAbsolutePath();
+		final String filename = tmp.toURI().toString();
 		// log.debug("Mapping url " + urlString + " to  file " + tmp);
 		tmp.deleteOnExit();
 		FileUtils.copyURLToFile(url, tmp);
