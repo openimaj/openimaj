@@ -1443,11 +1443,12 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *            colour of padding, if null the closes border pixel is used
 	 * @return padded image
 	 */
+	@SuppressWarnings("unchecked")
 	public I padding(int paddingWidth, int paddingHeight, Q paddingColour) {
 		final I out = this.newInstance(paddingWidth + this.getWidth() + paddingWidth, paddingHeight + this.getHeight()
 				+ paddingHeight);
-		final I clone = this.clone();
-		out.createRenderer().drawImage(clone, paddingWidth, paddingHeight);
+
+		out.createRenderer().drawImage((I) this, paddingWidth, paddingHeight);
 		final int rightLimit = paddingWidth + this.getWidth();
 		final int bottomLimit = paddingHeight + this.getHeight();
 		// Fill the padding with a colour if it isn't null
