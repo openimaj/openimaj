@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.convolution.filterbank;
 
 import org.openimaj.feature.FloatFV;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.processing.algorithm.FourierTransform;
@@ -82,7 +81,6 @@ public abstract class FilterBank implements ImageAnalyser<FImage> {
 		responses = new FImage[filters.length];
 
 		final FImage image = in.padding(paddingX, paddingY);
-		DisplayUtilities.display(image);
 		final int cols = image.getCols();
 		final int rows = image.getRows();
 
@@ -204,5 +202,28 @@ public abstract class FilterBank implements ImageAnalyser<FImage> {
 				image.drawImage(filters[count++].kernel.clone().normalise(), w * i + border, h * j + border);
 
 		return image;
+	}
+
+	/**
+	 * Build an array of responses for every pixel. The response for each pixel
+	 * is added in scan order (left-right, top-bottom).
+	 * 
+	 * @return the responses for each pixel.
+	 */
+	public float[][] getResponses() {
+		final int width = this.responses[0].width;
+		final int height = this.responses[0].height;
+
+		final float[][] resp = new float[width * height][this.responses.length];
+
+		for (int i = 0; i < responses.length; i++) {
+			for (int y = 0; y < responses[0].height; y++) {
+				for (int x = 0; x < responses[0].width; x++) {
+					resp[x + width * y][i] = responses[i].pixels[y][x];
+				}
+			}
+		}
+
+		return resp;
 	}
 }
