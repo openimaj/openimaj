@@ -118,7 +118,7 @@ public abstract class MotionEstimatorAlgorithm
 			// current.frame.height/2);
 			// // searchRectDraw.drawPoint(bestRespose, RGBColour.BLUE, 3);
 			// }
-			final Point2d centerOfGrid = img1sub.roi.getCOG();
+			final Point2d centerOfGrid = img1sub.roi.calculateCentroid();
 			// System.out.println("First reponse: " + firstBest );
 			// System.out.println("Center of template: " + centerOfGrid);
 

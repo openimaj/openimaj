@@ -34,12 +34,11 @@ import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 
-
 /**
  * Basic descriptors of the shape of a connected component.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class BasicShapeDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	/**
@@ -48,177 +47,193 @@ public class BasicShapeDescriptor implements ConnectedComponentProcessor, Featur
 	public enum BasicShapeDescriptorType {
 		/**
 		 * The area of the component
+		 * 
 		 * @see ConnectedComponent#calculateArea()
 		 */
 		AREA {
 			@Override
 			public DoubleFV getFeatureVector(BasicShapeDescriptor desc) {
-				return new DoubleFV(new double[] {desc.area});
+				return new DoubleFV(new double[] { desc.area });
 			}
 		},
 		/**
 		 * The centroid of the component
+		 * 
 		 * @see ConnectedComponent#calculateCentroid()
 		 */
 		CENTROID {
 			@Override
 			public DoubleFV getFeatureVector(BasicShapeDescriptor desc) {
-				return new DoubleFV(new double[] {desc.cx, desc.cy});
+				return new DoubleFV(new double[] { desc.cx, desc.cy });
 			}
 		},
 		/**
 		 * The primary orientation of the component
+		 * 
 		 * @see ConnectedComponent#calculateDirection()
 		 */
 		DIRECTION {
 			@Override
 			public DoubleFV getFeatureVector(BasicShapeDescriptor desc) {
-				return new DoubleFV(new double[] {desc.direction});
+				return new DoubleFV(new double[] { desc.direction });
 			}
 		},
 		/**
-		 * The elongatedness of the component. Elongatedness is defined
-		 * as the ratio of the height to width of the oriented bounding 
-		 * box of the component.
-		 * @see ConnectedComponent#calculateOrientatedBoundingBoxHeightWidth()
+		 * The elongatedness of the component. Elongatedness is defined as the
+		 * ratio of the height to width of the oriented bounding box of the
+		 * component.
+		 * 
+		 * @see ConnectedComponent#calculateOrientatedBoundingBoxAspectRatio()
 		 */
 		ELONGATEDNESS {
 			@Override
 			public DoubleFV getFeatureVector(BasicShapeDescriptor desc) {
-				return new DoubleFV(new double[] {desc.elongatedness});
+				return new DoubleFV(new double[] { desc.elongatedness });
 			}
 		},
 		/**
-		 * The compactness of the component. Compactness is defined
-		 * as the ratio of the squared edge length of the component 
-		 * to its area.
+		 * The compactness of the component. Compactness is defined as the ratio
+		 * of the squared edge length of the component to its area.
 		 */
 		COMPACTNESS {
 			@Override
 			public DoubleFV getFeatureVector(BasicShapeDescriptor desc) {
-				return new DoubleFV(new double[] {desc.compactness});
+				return new DoubleFV(new double[] { desc.compactness });
 			}
 		},
 		/**
-		 * The ratio of the area of the component to the area of 
-		 * its convex hull
+		 * The ratio of the area of the component to the area of its convex hull
+		 * 
 		 * @see ConnectedComponent#calculatePercentageConvexHullFit()
 		 */
 		CHFIT {
 			@Override
 			public DoubleFV getFeatureVector(BasicShapeDescriptor desc) {
-				return new DoubleFV(new double[] {desc.chfit});
+				return new DoubleFV(new double[] { desc.chfit });
 			}
 		},
 		/**
 		 * The estimated number of corners of the component
+		 * 
 		 * @see ConnectedComponent#estimateNumberOfVertices(int, int)
 		 */
 		CORNERS {
 			@Override
 			public DoubleFV getFeatureVector(BasicShapeDescriptor desc) {
-				return new DoubleFV(new double[] {desc.cornerEst});
+				return new DoubleFV(new double[] { desc.cornerEst });
 			}
 		};
-		
+
 		/**
-		 * Create a @link{FeatureVector} representation of the
-		 * specified description
-		 * @param desc the descriptor
+		 * Create a @link{FeatureVector} representation of the specified
+		 * description
+		 * 
+		 * @param desc
+		 *            the descriptor
 		 * @return the feature vector representation
 		 */
 		public abstract DoubleFV getFeatureVector(BasicShapeDescriptor desc);
 	}
-	
+
 	/**
 	 * The area of the component
+	 * 
 	 * @see ConnectedComponent#calculateArea()
 	 */
 	public double area;
-	
+
 	/**
 	 * The x coordinate of the component centroid
+	 * 
 	 * @see ConnectedComponent#calculateCentroid()
 	 */
-	public double cx; //centroid x
-	
+	public double cx; // centroid x
+
 	/**
 	 * The y coordinate of the component centroid
+	 * 
 	 * @see ConnectedComponent#calculateCentroid()
 	 */
-	public double cy; //y
-	
+	public double cy; // y
+
 	/**
 	 * The primary orientation of the component
+	 * 
 	 * @see ConnectedComponent#calculateDirection()
 	 */
 	public double direction;
-	
+
 	/**
-	 * The elongatedness of the component. Elongatedness is defined
-	 * as the ratio of the height to width of the oriented bounding 
-	 * box of the component.
-	 * @see ConnectedComponent#calculateOrientatedBoundingBoxHeightWidth()
+	 * The elongatedness of the component. Elongatedness is defined as the ratio
+	 * of the height to width of the oriented bounding box of the component.
+	 * 
+	 * @see ConnectedComponent#calculateOrientatedBoundingBoxAspectRatio()
 	 */
 	public double elongatedness;
-	
+
 	/**
-	 * The compactness of the component. Compactness is defined
-	 * as the ratio of the squared edge length of the component 
-	 * to its area.
+	 * The compactness of the component. Compactness is defined as the ratio of
+	 * the squared edge length of the component to its area.
 	 */
 	public double compactness;
-	
+
 	/**
-	 * The ratio of the area of the component to the area of 
-	 * its convex hull
+	 * The ratio of the area of the component to the area of its convex hull
+	 * 
 	 * @see ConnectedComponent#calculatePercentageConvexHullFit()
 	 */
 	public double chfit;
-	
+
 	/**
 	 * The estimated number of corners of the component
+	 * 
 	 * @see ConnectedComponent#estimateNumberOfVertices(int, int)
 	 */
 	public double cornerEst;
-	
+
 	@Override
 	public void process(ConnectedComponent cc) {
 		area = cc.calculateArea();
-		
-		double [] c = cc.calculateCentroid();
+
+		final double[] c = cc.calculateCentroid();
 		cx = c[0];
 		cy = c[1];
-		
+
 		direction = cc.calculateDirection();
-		
-		double[] ohw = cc.calculateOrientatedBoundingBoxHeightWidth();
-		elongatedness =(float) (ohw[0] / ohw[1]);
-		
-		float edge_length = cc.getOuterBoundary().size();
+
+		elongatedness = cc.calculateOrientatedBoundingBoxAspectRatio();
+
+		final float edge_length = cc.getOuterBoundary().size();
 		compactness = (edge_length * edge_length) / new ConnectedComponent(cc.toPolygon()).calculateArea();
-		
-		if (area>4)
-			chfit = new ConnectedComponent(cc.toPolygon()).calculatePercentageConvexHullFit(); //chfit won't work for really small regions
-		else 
+
+		if (area > 4)
+			chfit = new ConnectedComponent(cc.toPolygon()).calculatePercentageConvexHullFit(); // chfit
+																								// won't
+																								// work
+																								// for
+																								// really
+																								// small
+																								// regions
+		else
 			chfit = 1;
-		
-		if (area>100)
+
+		if (area > 100)
 			cornerEst = cc.estimateNumberOfVertices(3, 10);
-		else 
+		else
 			cornerEst = area;
 	}
 
 	/**
-	 * Get all the values of the descriptor as an array in the order
-	 * area, centroid_x, centroid_y, direction, elongatedness, compactness
+	 * Get all the values of the descriptor as an array in the order area,
+	 * centroid_x, centroid_y, direction, elongatedness, compactness
 	 * convex_hull_fit, corner_count
+	 * 
 	 * @return an array of descriptor values
 	 */
 	public double[] getFeatureVectorArray() {
-		return new double[] {area, cx, cy, direction, elongatedness, compactness, chfit, cornerEst};
+		return new double[] { area, cx, cy, direction, elongatedness, compactness, chfit, cornerEst };
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(getFeatureVectorArray());

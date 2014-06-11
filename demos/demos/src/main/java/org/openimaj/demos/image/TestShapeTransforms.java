@@ -94,11 +94,11 @@ public class TestShapeTransforms {
 //		int dy = 100;
 //		float x = (float) (Math.cos(rotation) * dx + Math.sin(rotation) * dy);
 //		float y = (float) (-Math.sin(rotation) * dx + Math.cos(rotation) * dy);
-		Matrix rotMat = TransformUtilities.rotationMatrixAboutPoint(rotation, ellipse.getCOG().getX(), ellipse.getCOG().getY());
+		Matrix rotMat = TransformUtilities.rotationMatrixAboutPoint(rotation, ellipse.calculateCentroid().getX(), ellipse.calculateCentroid().getY());
 //		Matrix transMat = TransformUtilities.translateMatrix(x, y);
 		Matrix scaleMat = TransformUtilities.scaleMatrix(Math.abs(0.5 * Math.cos(rotation)) + 1, Math.abs(0.5 * Math.sin(rotation))+ 1);
-		Matrix scaledTrans = scaleMat.times(TransformUtilities.translateMatrix(-ellipse.getCOG().getX(), -ellipse.getCOG().getY()));
-		scaledTrans = TransformUtilities.translateMatrix(ellipse.getCOG().getX(), ellipse.getCOG().getY()).times(scaledTrans);
+		Matrix scaledTrans = scaleMat.times(TransformUtilities.translateMatrix(-ellipse.calculateCentroid().getX(), -ellipse.calculateCentroid().getY()));
+		scaledTrans = TransformUtilities.translateMatrix(ellipse.calculateCentroid().getX(), ellipse.calculateCentroid().getY()).times(scaledTrans);
 		Matrix transform = Matrix.identity(3, 3);
 		transform = rotMat.times(transform);
 //		transform = transMat.times(transform);

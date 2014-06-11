@@ -57,6 +57,13 @@ public interface Shape extends GeometricObject, Cloneable {
 	public double calculateArea();
 
 	/**
+	 * Calculate the perimeter of the shape
+	 * 
+	 * @return the perimeter of the shape
+	 */
+	public double calculatePerimeter();
+
+	/**
 	 * Convert the shape to a polygon representation
 	 * 
 	 * @return a polygon representation of the shape
@@ -106,4 +113,12 @@ public interface Shape extends GeometricObject, Cloneable {
 	 * @return a copy of the shape
 	 */
 	public Shape clone();
+
+	/**
+	 * Compute the minimum size rotated bounding rectangle that contains this
+	 * shape.
+	 * 
+	 * @return the minimum bounding box
+	 */
+	public RotatedRectangle minimumBoundingRectangle();
 }

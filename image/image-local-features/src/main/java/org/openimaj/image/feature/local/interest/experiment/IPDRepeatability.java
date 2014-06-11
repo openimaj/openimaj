@@ -357,8 +357,8 @@ public class IPDRepeatability<T extends InterestPointData> {
 		int j = 0;
 		for (Ellipse ellipse2 : this.validImage2Points) {
 			ellipse2 = ellipse2.transformAffine(this.homography.inverse());
-			final ScaleSpaceLocation ep = new ScaleSpaceLocation(ellipse2.getCOG()
-					.getX(), ellipse2.getCOG().getY(), (float) getRadius(
+			final ScaleSpaceLocation ep = new ScaleSpaceLocation(ellipse2.calculateCentroid()
+					.getX(), ellipse2.calculateCentroid().getY(), (float) getRadius(
 					ellipse2, this.maximumDistanceMultiple));
 			tree.insert(PayloadCoordinate.payload(ep,
 					new IndependentPair<Integer, Ellipse>(j, ellipse2)));
@@ -373,9 +373,9 @@ public class IPDRepeatability<T extends InterestPointData> {
 					this.maximumDistanceMultiple);
 
 			final List<PayloadCoordinate<ScaleSpaceLocation, IndependentPair<Integer, Ellipse>>> possible = new ArrayList<PayloadCoordinate<ScaleSpaceLocation, IndependentPair<Integer, Ellipse>>>();
-			final Point2d left = ellipse1.getCOG();
+			final Point2d left = ellipse1.calculateCentroid();
 			left.translate(-radius, -radius);
-			final Point2d right = ellipse1.getCOG();
+			final Point2d right = ellipse1.calculateCentroid();
 			right.translate(radius, radius);
 
 			final float scaleRadius = (float) (radius * 0.5);
@@ -481,7 +481,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 						midzoomx, midzoomy)));
 		translateE1 = translateE1.times(scaleMatrix);
 		translateE1 = translateE1.times(TransformUtilities
-				.translateToPointMatrix(ellipse1.getCOG(),
+				.translateToPointMatrix(ellipse1.calculateCentroid(),
 						new Point2dImpl(0, 0)));
 
 		final Ellipse expandedTranslated1 = ellipse1.transformAffine(translateE1);
@@ -614,8 +614,8 @@ public class IPDRepeatability<T extends InterestPointData> {
 		final List<Ellipse> valid = new ArrayList<Ellipse>();
 		final Rectangle validArea = sourceImage.getBounds();
 		for (final Ellipse data : allPoints) {
-			if (data.getCOG().getX() == 294.079f
-					&& data.getCOG().getY() == 563.356f)
+			if (data.calculateCentroid().getX() == 294.079f
+					&& data.calculateCentroid().getY() == 563.356f)
 			{
 				System.out.println();
 			}
@@ -701,12 +701,12 @@ public class IPDRepeatability<T extends InterestPointData> {
 		// normalised space
 		final double scaleFactor = getScaleFactor(e1);
 		// System.out.println("Maximum distance was: " + maxDistance);
-		if (new Line2d(e1.getCOG(), e2.getCOG()).calculateLength() >= maxDistance)
+		if (new Line2d(e1.calculateCentroid(), e2.calculateCentroid()).calculateLength() >= maxDistance)
 			return 0;
 		final Matrix scaleMatrix1 = TransformUtilities.scaleMatrixAboutPoint(
-				scaleFactor, scaleFactor, e1.getCOG());
+				scaleFactor, scaleFactor, e1.calculateCentroid());
 		final Matrix scaleMatrix2 = TransformUtilities.scaleMatrixAboutPoint(
-				scaleFactor, scaleFactor, e2.getCOG());
+				scaleFactor, scaleFactor, e2.calculateCentroid());
 		// Matrix scaleMatrix = TransformUtilities.scaleMatrix(1.0f, 1.0f);
 
 		// Matrix e1Trans =
@@ -755,11 +755,11 @@ public class IPDRepeatability<T extends InterestPointData> {
 		double scaleFactor = 30 / maxDistance;
 		scaleFactor = 1 / (scaleFactor * scaleFactor);
 		maxDistance *= multiplier;
-		if (new Line2d(e1.getCOG(), e2.getCOG()).calculateLength() >= maxDistance)
+		if (new Line2d(e1.calculateCentroid(), e2.calculateCentroid()).calculateLength() >= maxDistance)
 			return -1;
 		// System.out.println(maxDistance);
-		final float dx = e2.getCOG().getX() - e1.getCOG().getX();
-		final float dy = e2.getCOG().getY() - e1.getCOG().getY();
+		final float dx = e2.calculateCentroid().getX() - e1.calculateCentroid().getX();
+		final float dy = e2.calculateCentroid().getY() - e1.calculateCentroid().getY();
 
 		final double yy1 = e1Mat.get(1, 1) * scaleFactor;
 		final double xx1 = e1Mat.get(0, 0) * scaleFactor;

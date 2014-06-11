@@ -74,7 +74,7 @@ public class ProcrustesAnalysis {
 	public ProcrustesAnalysis(PointList reference, boolean normalise) {
 		this.reference = reference;
 
-		referenceCog = reference.getCOG();
+		referenceCog = reference.calculateCentroid();
 		scaling = computeScale(reference, referenceCog.getX(), referenceCog.getY());
 
 		if (normalise) {
@@ -117,7 +117,7 @@ public class ProcrustesAnalysis {
 			throw new IllegalArgumentException("Point lists are different lengths");
 
 		//translation
-		Point2d cog = toAlign.getCOG();
+		Point2d cog = toAlign.calculateCentroid();
 		Matrix trans = TransformUtilities.translateToPointMatrix(cog, this.referenceCog);
 		toAlign.translate((float)trans.get(0,2), (float)trans.get(1,2));
 

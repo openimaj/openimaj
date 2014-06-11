@@ -3,6 +3,7 @@ package org.openimaj.image.contour;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.pixel.Pixel;
@@ -109,5 +110,60 @@ public class Contour extends Polygon {
 	 */
 	public void finish() {
 		this.rect = this.calculateRegularBoundingBox();
+	}
+
+	private class ContourIterator implements Iterator<Contour> {
+		final List<Contour> toProcess = new ArrayList<Contour>();
+
+		ContourIterator() {
+			toProcess.add(Contour.this);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !toProcess.isEmpty();
+		}
+
+		@Override
+		public Contour next() {
+			final Contour next = toProcess.remove(toProcess.size() - 1);
+			toProcess.addAll(next.children);
+			return next;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Removal not supported");
+		}
+	}
+
+	/**
+	 * Get an iterator over the complete set of contours (including the root
+	 * itself)
+	 * 
+	 * @return the iterator
+	 */
+	public Iterator<Contour> contourIterator() {
+		return new ContourIterator();
+	}
+
+	/**
+	 * Get an {@link Iterable} over all the contours belonging to this root
+	 * (including the root itself)
+	 * 
+	 * @return the iterable
+	 */
+	public Iterable<Contour> contourIterable() {
+		return new Iterable<Contour>() {
+			@Override
+			public Iterator<Contour> iterator() {
+				return contourIterator();
+			}
+		};
+	}
+
+	@Override
+	public boolean isHole() {
+		return type != null && type.equals(ContourType.HOLE);
 	}
 }

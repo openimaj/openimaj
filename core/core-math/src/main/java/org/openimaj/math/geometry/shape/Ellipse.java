@@ -181,13 +181,13 @@ public class Ellipse implements Shape, Cloneable {
 	}
 
 	@Override
-	public void scaleCOG(float sc) {
+	public void scaleCentroid(float sc) {
 		this.major *= sc;
 		this.minor *= sc;
 	}
 
 	@Override
-	public Point2d getCOG() {
+	public Point2d calculateCentroid() {
 		return new Point2dImpl((float) x, (float) y);
 	}
 
@@ -259,7 +259,7 @@ public class Ellipse implements Shape, Cloneable {
 	 * @return transformed ellipse
 	 */
 	public Ellipse transformAffine(Matrix transform) {
-		final Point2d newCOG = this.getCOG().transform(transform);
+		final Point2d newCOG = this.calculateCentroid().transform(transform);
 		return EllipseUtilities
 				.ellipseFromCovariance(newCOG.getX(), newCOG.getY(), transformAffineCovar(transform), 1.0f);
 	}
@@ -492,5 +492,21 @@ public class Ellipse implements Shape, Cloneable {
 	public String toString() {
 		return String.format("Ellipse(x=%4.2f,y=%4.2f,major=%4.2f,minor=%4.2f,rot=%4.2f(%4.2f))", this.x, this.y,
 				this.major, this.minor, this.rotation, this.rotation * (180.0 / Math.PI));
+	}
+
+	@Override
+	public double calculatePerimeter() {
+		// Ramanujan's second approximation
+
+		final double a = major;
+		final double b = minor;
+		final double h = ((a - b) * (a - b)) / ((a + b) * (a + b));
+
+		return Math.PI * (a + b) * (1 + ((3 * h) / (10 + Math.sqrt(4 - 3 * h))));
+	}
+
+	@Override
+	public RotatedRectangle minimumBoundingRectangle() {
+		return new RotatedRectangle(x, y, 2 * major, 2 * minor, rotation);
 	}
 }

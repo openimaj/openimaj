@@ -76,7 +76,7 @@ public class OrientedPolygonExtractionProcessor implements ImageProcessor<FImage
 		trans = trans.times(TransformUtilities.rotationMatrix(-this.polygonEllipse.getRotation()));
 		trans = trans.times(
 			TransformUtilities.translateToPointMatrix(
-					this.polygonEllipse.getCOG(),
+					this.polygonEllipse.calculateCentroid(),
 					new Point2dImpl(0,0))
 		);
 		pp.setMatrix(trans);

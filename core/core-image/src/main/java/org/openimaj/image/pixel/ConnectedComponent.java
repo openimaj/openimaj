@@ -44,8 +44,8 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
 import org.openimaj.image.renderer.ScanRasteriser;
 import org.openimaj.image.renderer.ScanRasteriser.ScanLineListener;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.math.geometry.shape.RotatedRectangle;
 import org.openimaj.math.geometry.shape.Shape;
 
 /**
@@ -1003,84 +1003,23 @@ public class ConnectedComponent extends PixelSet {
 	}
 
 	/**
-	 * Calculates the width and height of the bounding box that best fits the
-	 * component, at whatever angle that may be. The result is returned as a
-	 * double array, where the first index is the height and the second index
-	 * the width.
-	 * 
-	 * @return A double array containing the height and width of the best
-	 *         fitting bounding box.
-	 */
-	public double[] calculateOrientatedBoundingBoxHeightWidth() {
-		final List<Pixel> bound = getInnerBoundary(ConnectMode.CONNECT_8);
-		final double theta = calculateDirection();
-
-		double alphaMax = -Double.MAX_VALUE, alphaMin = Double.MAX_VALUE;
-		double betaMax = -Double.MAX_VALUE, betaMin = Double.MAX_VALUE;
-		double alpha, beta;
-
-		for (final Pixel p : bound) {
-			alpha = p.x * Math.cos(theta) + p.y * Math.sin(theta);
-			beta = -1.0 * p.x * Math.sin(theta) + p.y * Math.cos(theta);
-
-			if (alpha > alphaMax)
-				alphaMax = alpha;
-			if (alpha < alphaMin)
-				alphaMin = alpha;
-
-			if (beta > betaMax)
-				betaMax = beta;
-			if (beta < betaMin)
-				betaMin = beta;
-		}
-
-		return new double[] { betaMax - betaMin + 1, alphaMax - alphaMin + 1 };
-	}
-
-	/**
 	 * Compute the aspect ratio of the oriented bounding box.
 	 * 
 	 * @return the aspect ratio of the oriented bounding box.
 	 */
 	public double calculateOrientatedBoundingBoxAspectRatio() {
-		final double[] bbhw = calculateOrientatedBoundingBoxHeightWidth();
+		RotatedRectangle r = toPolygon().minimumBoundingRectangle();
 
-		return bbhw[1] / bbhw[0];
+		return r.height / r.width;
 	}
 
 	/**
-	 * Calculates the polygon that defines the bounding box that best fits the
-	 * connected component, at whatever angle that may be.
+	 * Calculates the polygon that defines the minimum bounding box that best
+	 * fits the connected component, at whatever angle that may be.
 	 * 
-	 * @return A {@link Polygon} that defines the bounding box.
+	 * @return A {@link RotatedRectangle} that defines the minimum bounding box.
 	 */
-	public Polygon calculateOrientatedBoundingBox() {
-		final double[] centroid = calculateCentroid();
-		final double[] hw = calculateOrientatedBoundingBoxHeightWidth();
-		final double theta = calculateDirection();
-
-		final Point2d p1 = new Point2dImpl((float) (centroid[0] - (hw[1] / 2.0)), (float) (centroid[1] - (hw[0] / 2.0)));
-		final Point2d p2 = new Point2dImpl((float) (centroid[0] + (hw[1] / 2.0)), (float) (centroid[1] - (hw[0] / 2.0)));
-		final Point2d p3 = new Point2dImpl((float) (centroid[0] + (hw[1] / 2.0)), (float) (centroid[1] + (hw[0] / 2.0)));
-		final Point2d p4 = new Point2dImpl((float) (centroid[0] - (hw[1] / 2.0)), (float) (centroid[1] + (hw[0] / 2.0)));
-
-		final Polygon p = new Polygon(p1, p4, p3, p2);
-		final Point2d origin = new Point2dImpl((float) centroid[0], (float) centroid[1]);
-		p.rotate(origin, theta);
-
-		return p;
-	}
-
-	/**
-	 * Draws the oriented bounding box for this component into the given image
-	 * in the given colour.
-	 * 
-	 * @param image
-	 *            The {@link FImage} into which to draw the box
-	 * @param grey
-	 *            The colour in which to draw the box
-	 */
-	public void drawOrientatedBoundingBox(FImage image, float grey) {
-		image.createRenderer().drawPolygon(calculateOrientatedBoundingBox(), grey);
+	public RotatedRectangle calculateOrientatedBoundingBox() {
+		return this.toPolygon().minimumBoundingRectangle();
 	}
 }

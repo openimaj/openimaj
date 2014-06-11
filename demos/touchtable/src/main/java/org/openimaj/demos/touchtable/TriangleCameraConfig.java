@@ -108,7 +108,7 @@ public class TriangleCameraConfig implements CameraConfig {
 
 	@Override
 	public Touch transformTouch(Touch point) {
-		int matching = this.nlp.getMatchingShapeIndex(point.getCOG());
+		int matching = this.nlp.getMatchingShapeIndex(point.calculateCentroid());
 		if(matching == -1) return null;
 		float ptx = point.getX();
 		float pty = point.getY();

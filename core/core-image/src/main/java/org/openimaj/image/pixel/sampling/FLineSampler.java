@@ -58,7 +58,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 		@Override
 		public Line2d getSampleLine(Line2d line, FImage image, int numSamples) {
 			Line2d scaled = line.clone();
-			scaled.scaleCOG((float) (numSamples / line.calculateLength()));
+			scaled.scaleCentroid((float) (numSamples / line.calculateLength()));
 			return scaled;
 		}
 	},
@@ -119,7 +119,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 		@Override
 		public Line2d getSampleLine(Line2d line, FImage image, int numSamples) {
 			Line2d scaled = line.clone();
-			scaled.scaleCOG((float) (numSamples / line.calculateLength()));
+			scaled.scaleCentroid((float) (numSamples / line.calculateLength()));
 			return scaled;
 		}
 	},
@@ -174,7 +174,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 		@Override
 		public Line2d getSampleLine(Line2d line, FImage image, int numSamples) {
 			Line2d scaled = line.clone();
-			scaled.scaleCOG((float) (numSamples / line.calculateLength()));
+			scaled.scaleCentroid((float) (numSamples / line.calculateLength()));
 			return scaled;
 		}
 	},
@@ -216,7 +216,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 		@Override
 		public Line2d getSampleLine(Line2d line, FImage image, int numSamples) {
 			Line2d scaled = line.clone();
-			scaled.scaleCOG((float) (numSamples / line.calculateLength()));
+			scaled.scaleCentroid((float) (numSamples / line.calculateLength()));
 			return scaled;
 		}
 	},

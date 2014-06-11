@@ -72,8 +72,8 @@ public class EllipticalDetectedFace extends DetectedFace {
 	}
 
 	private FImage extractPatch(final FImage image, final Ellipse ellipse) {
-		final float x = ellipse.getCOG().getX();
-		final float y = ellipse.getCOG().getY();
+		final float x = ellipse.calculateCentroid().getX();
+		final float y = ellipse.calculateCentroid().getY();
 		final double major = ellipse.getMajor();
 		final double minor = ellipse.getMinor();
 

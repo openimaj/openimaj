@@ -69,7 +69,7 @@ public class FaceTrack {
 					frame.drawShape(faces.get(0).getBounds(), RGBColour.RED);
 
 					// move towards face
-					final Point2d pt = faces.get(0).getBounds().getCOG();
+					final Point2d pt = faces.get(0).getBounds().calculateCentroid();
 
 					final Point2d delta = pt.minus(frameCentre);
 

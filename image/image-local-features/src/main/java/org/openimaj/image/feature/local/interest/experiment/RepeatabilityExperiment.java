@@ -80,7 +80,7 @@ public class RepeatabilityExperiment {
 		transform = transform.times(scale);
 		transform = transform.times(rot);
 		
-		Point2d e2Pos = e1.transform(transform).getCOG();
+		Point2d e2Pos = e1.transform(transform).calculateCentroid();
 		e2Image.drawPoint(e2Pos, RGBColour.GREEN, 3);
 		Matrix mrot = TransformUtilities.rotationMatrixAboutPoint(0.4, (int)(e2Pos.getX()), (int)(e2Pos.getY()));
 		Matrix mscale = TransformUtilities.scaleMatrixAboutPoint(1.02, 1.01,(int)e2Pos.getX(),(int)e2Pos.getY());
@@ -99,7 +99,7 @@ public class RepeatabilityExperiment {
 		
 		Shape e2Untransform = e1.transform(pert.times(transform)).transform(transform.inverse());
 		e1Image.drawShape(e2Untransform, RGBColour.GREEN);
-		e1Image.drawPoint(e2Untransform.getCOG(), RGBColour.GREEN, 3);
+		e1Image.drawPoint(e2Untransform.calculateCentroid(), RGBColour.GREEN, 3);
 		
 		ArrayList<Ellipse> e1List = new ArrayList<Ellipse>();
 		e1List.add(e1);

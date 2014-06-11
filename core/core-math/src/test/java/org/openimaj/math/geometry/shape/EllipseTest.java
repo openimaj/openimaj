@@ -52,8 +52,8 @@ public class EllipseTest {
 		Matrix covar = EllipseUtilities.ellipseToCovariance(a);
 		Ellipse b = EllipseUtilities.ellipseFromCovariance(1, 1, covar, 1.0f);
 		
-		assertEquals(a.getCOG().getX(),b.getCOG().getX(),0.01f);
-		assertEquals(a.getCOG().getY(),b.getCOG().getY(),0.01f);
+		assertEquals(a.calculateCentroid().getX(),b.calculateCentroid().getX(),0.01f);
+		assertEquals(a.calculateCentroid().getY(),b.calculateCentroid().getY(),0.01f);
 		
 		assertEquals(a.getMajor(),b.getMajor(),0.01f);
 		assertEquals(a.getMinor(),b.getMinor(),0.01f);

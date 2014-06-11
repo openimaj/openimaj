@@ -182,7 +182,7 @@ public class MomentFeature implements ComponentFeature
 	 */
 	public Circle getCircle(float sf) {
 		Ellipse e = getEllipse(sf);
-		Point2d p = e.getCOG();
+		Point2d p = e.calculateCentroid();
 		return new Circle(p.getX(),p.getY(),(float)(e.getMajor() + e.getMinor())/2);
 	}
 

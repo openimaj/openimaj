@@ -134,7 +134,7 @@ public enum FaceDetectorFeatures {
 			int i = 0;
 
 			for (final DetectedFace df : faces) {
-				final Polygon p = getConnectedComponent(df).calculateOrientatedBoundingBox();
+				final Polygon p = getConnectedComponent(df).calculateOrientatedBoundingBox().asPolygon();
 
 				final int[] fv = new int[p.getVertices().size() * 2];
 

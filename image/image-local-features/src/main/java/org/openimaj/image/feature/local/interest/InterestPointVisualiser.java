@@ -123,7 +123,7 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 		
 		for (Ellipse k : interestPoints) {
 			if(pointCol!=null){
-				renderer.drawPoint(k.getCOG(), pointCol, 3);
+				renderer.drawPoint(k.calculateCentroid(), pointCol, 3);
 			}
 			if (borderCol != null) {
 				renderer.drawShape(k,borderCol);
@@ -138,7 +138,7 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 		ImageRenderer<T, Q> renderer = output.createRenderer();
 		
 		for(Ellipse e : interestPoints){
-			renderer.drawPoint(e.getCOG(), col,2);
+			renderer.drawPoint(e.calculateCentroid(), col,2);
 		}
 		return output;
 	}

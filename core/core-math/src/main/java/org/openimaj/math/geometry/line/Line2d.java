@@ -526,12 +526,12 @@ public class Line2d implements GeometricObject, Cloneable {
 	}
 
 	@Override
-	public void scaleCOG(float sc) {
-		scale(this.getCOG(), sc);
+	public void scaleCentroid(float sc) {
+		scale(this.calculateCentroid(), sc);
 	}
 
 	@Override
-	public Point2d getCOG() {
+	public Point2d calculateCentroid() {
 		float xSum = begin.getX() + end.getX();
 		float ySum = begin.getY() + end.getY();
 

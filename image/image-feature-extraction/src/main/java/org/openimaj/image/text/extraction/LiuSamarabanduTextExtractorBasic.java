@@ -457,7 +457,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 			
 			// Extract from the image the text region
 			Rectangle r = cc.calculateRegularBoundingBox();
-			r.scaleCOG( boundingBoxPaddingPc );
+			r.scaleCentroid( boundingBoxPaddingPc );
 			FImage textArea = image.extractROI( r );
 
 			// Threshold of the image make it easier to extract MSERs

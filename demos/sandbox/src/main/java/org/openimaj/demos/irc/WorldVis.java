@@ -111,7 +111,7 @@ public class WorldVis extends AnimatedVideo<MBFImage>{
 
 	private MBFImage create(){
 		this.img.fill(WorldVis.SEA_COLOUR);
-		final Point2d mid = this.img.getBounds().getCOG();
+		final Point2d mid = this.img.getBounds().calculateCentroid();
 		Matrix trans = Matrix.identity(3, 3);
 		trans = trans.times(
 			TransformUtilities.scaleMatrixAboutPoint(

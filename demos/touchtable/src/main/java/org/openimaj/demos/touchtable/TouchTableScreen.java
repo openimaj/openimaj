@@ -379,7 +379,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 
 			@Override
 			public void acceptTouch(List<Touch> filtered) {
-				Point2d pixelToAdd = filtered.get(0).getCOG();
+				Point2d pixelToAdd = filtered.get(0).calculateCentroid();
 				Point2d lastPointAdded = null;
 				if(this.touchArray.size() != 0) lastPointAdded = this.touchArray.get(this.touchArray.size() - 1);
 				if(
@@ -464,7 +464,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 			}
 			@Override
 			public void acceptTouch(List<Touch> filtered) {
-				Point2d pixelToAdd = filtered.get(0).getCOG();
+				Point2d pixelToAdd = filtered.get(0).calculateCentroid();
 				Point2d lastPointAdded = null;
 				if(this.touchArray.size() != 0) lastPointAdded = this.touchArray.get(this.touchArray.size() - 1);
 				if(

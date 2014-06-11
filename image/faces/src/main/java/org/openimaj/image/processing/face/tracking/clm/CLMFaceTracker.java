@@ -196,7 +196,7 @@ public class CLMFaceTracker {
 			if (drawSearchArea) {
 				// Draw the search area size
 				final Rectangle r = f.lastMatchBounds.clone();
-				r.scaleCOG(this.searchAreaSize);
+				r.scaleCentroid(this.searchAreaSize);
 				image.createRenderer().drawShape(r, RGBColour.YELLOW);
 			}
 

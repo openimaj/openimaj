@@ -53,16 +53,18 @@ public class Dilate implements ConnectedComponentProcessor, KernelProcessor<Floa
 
 	/**
 	 * Construct the dilate operator with the given structuring element
-	 * @param se the structuring element
+	 * 
+	 * @param se
+	 *            the structuring element
 	 */
 	public Dilate(StructuringElement se) {
 		this.element = se;
 
-		int [] sz = se.size();
+		final int[] sz = se.size();
 		sw = sz[0];
 		sh = sz[1];
-		cx = sw/2;
-		cy = sh/2;
+		cx = sw / 2;
+		cy = sh / 2;
 	}
 
 	/**
@@ -74,13 +76,13 @@ public class Dilate implements ConnectedComponentProcessor, KernelProcessor<Floa
 
 	@Override
 	public void process(ConnectedComponent cc) {
-		//Dilate a connected component
-		Rectangle cc_bb = cc.calculateRegularBoundingBox();
+		// Dilate a connected component
+		final Rectangle cc_bb = cc.calculateRegularBoundingBox();
 
-		Set<Pixel> newPixels = new HashSet<Pixel>();
-		for (int j=(int) (cc_bb.y-sh); j<=cc_bb.y+sh+cc_bb.height; j++) {
-			for (int i=(int) (cc_bb.x-sw); i<=cc_bb.x+sw+cc_bb.width; i++) {
-				Pixel p = new Pixel(i, j);
+		final Set<Pixel> newPixels = new HashSet<Pixel>();
+		for (int j = (int) (cc_bb.y - sh); j <= cc_bb.y + sh + cc_bb.height; j++) {
+			for (int i = (int) (cc_bb.x - sw); i <= cc_bb.x + sw + cc_bb.width; i++) {
+				final Pixel p = new Pixel(i, j);
 
 				if (element.intersect(p, cc.getPixels()).size() >= 1) {
 					newPixels.add(p);
@@ -103,21 +105,36 @@ public class Dilate implements ConnectedComponentProcessor, KernelProcessor<Floa
 
 	@Override
 	public Float processKernel(FImage patch) {
-		for (Pixel p : element.positive) {
-			int px = cx - p.x;
-			int py = cy - p.y;
-			if (px>=0 && py>=0 && px<sw && py<sh && patch.pixels[py][px] == 1) {
+		for (final Pixel p : element.positive) {
+			final int px = cx - p.x;
+			final int py = cy - p.y;
+			if (px >= 0 && py >= 0 && px < sw && py < sh && patch.pixels[py][px] == 1) {
 				return 1f;
 			}
 		}
 
-		for (Pixel p : element.negative) {
-			int px = cx - p.x;
-			int py = cy - p.y;
-			if (px>=0 && py>=0 && px<sw && py<sh && patch.pixels[py][px] == 0)
+		for (final Pixel p : element.negative) {
+			final int px = cx - p.x;
+			final int py = cy - p.y;
+			if (px >= 0 && py >= 0 && px < sw && py < sh && patch.pixels[py][px] == 0)
 				return 1f;
 		}
-		
+
 		return patch.pixels[cy][cx];
+	}
+
+	/**
+	 * Apply dilation some number of times to an image with the default
+	 * {@link StructuringElement#BOX} element
+	 * 
+	 * @param img
+	 *            the image
+	 * @param times
+	 *            the number of times to apply the dilation
+	 */
+	public static void dilate(FImage img, int times) {
+		final Dilate d = new Dilate();
+		for (int i = 0; i < times; i++)
+			img.processInplace(d);
 	}
 }

@@ -155,15 +155,15 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	}
 
 	@Override
-	public void scaleCOG(float sc) {
-		final Point2d centre = this.getCOG();
+	public void scaleCentroid(float sc) {
+		final Point2d centre = this.calculateCentroid();
 		translate(-centre.getX(), -centre.getY());
 		scale(sc);
 		translate(centre.getX(), centre.getY());
 	}
 
 	@Override
-	public Point2d getCOG() {
+	public Point2d calculateCentroid() {
 		return new Point2dImpl(x + width / 2, y + height / 2);
 	}
 
@@ -471,4 +471,41 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		return true;
 	}
 
+	@Override
+	public double calculatePerimeter() {
+		return 2 * (width + height);
+	}
+
+	@Override
+	public RotatedRectangle minimumBoundingRectangle() {
+		return new RotatedRectangle(this, 0);
+	}
+
+	/**
+	 * Rotate the {@link Rectangle} about the given pivot with the given angle
+	 * (in radians)
+	 * 
+	 * @param p
+	 *            the pivot of the rotation
+	 * @param angle
+	 *            the angle in radians
+	 * @return the rotated rectangle
+	 */
+	public RotatedRectangle rotate(Point2d p, double angle) {
+		final Point2dImpl c = (Point2dImpl) this.calculateCentroid();
+		final float sin = (float) Math.sin(angle);
+		final float cos = (float) Math.cos(angle);
+
+		c.translate(-p.getX(), -p.getY());
+
+		final float xnew = c.x * cos - c.y * sin;
+		final float ynew = c.x * sin + c.y * cos;
+
+		c.x = xnew;
+		c.y = ynew;
+
+		c.translate(p);
+
+		return new RotatedRectangle(c.x, c.y, width, height, angle);
+	}
 }

@@ -143,7 +143,7 @@ public class GeneralisedProcrustesAnalysis {
 		PointList mean = PointList.computeMean(shapes);
 		
 		//normalise translation to reference
-		Point2d cog = mean.getCOG();
+		Point2d cog = mean.calculateCentroid();
 		Matrix trans = TransformUtilities.translateToPointMatrix(cog, referenceCog);
 		mean.translate((float)trans.get(0,2), (float)trans.get(1,2));
 				

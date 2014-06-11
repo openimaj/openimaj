@@ -410,7 +410,7 @@ public class MultiTracker {
 			// Get the new search area nearby to the last match
 			Rectangle searchAreaBounds = f.lastMatchBounds.clone();
 			searchAreaBounds.scale((float) MultiTracker.TSCALE);
-			searchAreaBounds.scaleCOG(searchAreaSize);
+			searchAreaBounds.scaleCentroid(searchAreaSize);
 			searchAreaBounds = searchAreaBounds.overlapping(this.small_.getBounds());
 
 			// Get the search image

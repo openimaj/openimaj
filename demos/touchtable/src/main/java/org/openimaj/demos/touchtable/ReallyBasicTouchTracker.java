@@ -58,7 +58,7 @@ public class ReallyBasicTouchTracker {
 				
 				lastPoints.remove(matched);
 				
-				Point2dImpl mv = new Point2dImpl(pt.getCOG());
+				Point2dImpl mv = new Point2dImpl(pt.calculateCentroid());
 				mv.x -= matched.getX();
 				mv.y -= matched.getY();
 				
@@ -80,7 +80,7 @@ public class ReallyBasicTouchTracker {
 		Touch best = null;
 		
 		for (Touch pt : lastPoints) {
-			double dist = Line2d.distance(query.getCOG(), pt.getCOG());
+			double dist = Line2d.distance(query.calculateCentroid(), pt.calculateCentroid());
 			
 			if (dist < minDist) {
 				minDist = dist;

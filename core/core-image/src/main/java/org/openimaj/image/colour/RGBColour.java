@@ -174,4 +174,35 @@ public class RGBColour {
 		}
 		return cols;
 	}
+
+	/**
+	 * Create a colour from an RGB triplet with integer values in the range
+	 * 0..255.
+	 * 
+	 * @param r
+	 *            red value 0..255
+	 * @param g
+	 *            green value 0..255
+	 * @param b
+	 *            blue value 0..255
+	 * @return the colour value
+	 */
+	public static Float[] RGB(int r, int g, int b) {
+		return new Float[] { r / 255f, g / 255f, b / 255f };
+	}
+
+	/**
+	 * Create a colour from an RGB triplet with float values in the range 0..1.
+	 * 
+	 * @param r
+	 *            red value 0..1
+	 * @param g
+	 *            green value 0..1
+	 * @param b
+	 *            blue value 0..1
+	 * @return the colour value
+	 */
+	public static Float[] RGB(float r, float g, float b) {
+		return new Float[] { r, g, b };
+	}
 }

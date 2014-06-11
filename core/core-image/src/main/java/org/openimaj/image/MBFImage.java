@@ -180,6 +180,39 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		return out;
 	}
 
+	@Override
+	public FImage flatten() {
+		// overly optimised flatten
+
+		final int width = this.getWidth();
+		final int height = this.getHeight();
+
+		final FImage out = new FImage(width, height);
+		final float[][] outp = out.pixels;
+		final int nb = this.numBands();
+
+		for (int i = 1; i < nb; i++) {
+			final float[][] bnd = this.bands.get(i).pixels;
+
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					outp[y][x] += bnd[y][x];
+
+				}
+			}
+		}
+
+		final float norm = 1f / nb;
+		final float[][] bnd = this.bands.get(0).pixels;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				outp[y][x] = (outp[y][x] + bnd[y][x]) * norm;
+			}
+		}
+
+		return out;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

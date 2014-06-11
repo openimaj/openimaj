@@ -73,7 +73,7 @@ public class SpinningImageVideo extends Video<MBFImage> {
 		this.step = step;
 		this.start = start;
 		
-		translate = TransformUtilities.translateToPointMatrix(image.getBounds().getCOG(), canvas.getBounds().getCOG());
+		translate = TransformUtilities.translateToPointMatrix(image.getBounds().calculateCentroid(), canvas.getBounds().calculateCentroid());
 	}
 
 	@Override

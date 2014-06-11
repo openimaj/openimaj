@@ -246,7 +246,7 @@ public class MBFStatisticalPixelProfileModel implements PixelProfileModel<MBFIma
 
 		if (resp[offset] == resp[minIdx]) // prefer the centre over another
 											// value if same response
-			return line.getCOG();
+			return line.calculateCentroid();
 
 		// the sample line might be different, so we need to measure relative to
 		// it...
@@ -264,7 +264,7 @@ public class MBFStatisticalPixelProfileModel implements PixelProfileModel<MBFIma
 	public float computeMovementDistance(MBFImage image, Line2d line, int numSamples, Point2d pt) {
 		final Line2d sampleLine = sampler.getSampleLine(line, image.getBand(0), numSamples);
 
-		return (float) (2 * Line2d.distance(sampleLine.getCOG(), pt) / sampleLine.calculateLength());
+		return (float) (2 * Line2d.distance(sampleLine.calculateCentroid(), pt) / sampleLine.calculateLength());
 	}
 
 	/**

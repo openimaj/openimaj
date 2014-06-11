@@ -196,15 +196,15 @@ public class Triangle implements Shape {
 	}
 
 	@Override
-	public void scaleCOG(float sc) {
-		final Point2d centre = this.getCOG();
+	public void scaleCentroid(float sc) {
+		final Point2d centre = this.calculateCentroid();
 		translate(-centre.getX(), -centre.getY());
 		scale(sc);
 		translate(centre.getX(), centre.getY());
 	}
 
 	@Override
-	public Point2d getCOG() {
+	public Point2d calculateCentroid() {
 		return new Point2dImpl(
 				(vertices[0].getX() + vertices[1].getX() + vertices[2].getX()) / 3,
 				(vertices[0].getY() + vertices[1].getY() + vertices[2].getY()) / 3);
@@ -422,5 +422,17 @@ public class Triangle implements Shape {
 			break;
 
 		}
+	}
+
+	@Override
+	public double calculatePerimeter() {
+		return Line2d.distance(vertices[0], vertices[1]) +
+				Line2d.distance(vertices[1], vertices[2]) +
+				Line2d.distance(vertices[2], vertices[0]);
+	}
+
+	@Override
+	public RotatedRectangle minimumBoundingRectangle() {
+		return asPolygon().minimumBoundingRectangle();
 	}
 }

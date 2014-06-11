@@ -33,42 +33,50 @@ import org.openimaj.image.Image;
 import org.openimaj.image.pixel.ConnectedComponent;
 
 /**
- * 	Renders the oriented bounding box into the image.
+ * Renders the oriented bounding box into the image.
  * 
- *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *	
- *  @param <T> The type of image into which to draw 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <T>
+ *            The type of image into which to draw
  */
-public class OrientatedBoundingBoxRenderer<T> extends AbstractRenderer<T> 
+public class OrientatedBoundingBoxRenderer<T> extends AbstractRenderer<T>
 {
 	/**
-	 * 	Default constructor that takes the image to draw into and the colour
-	 * 	in which to draw the bounding box.
+	 * Default constructor that takes the image to draw into and the colour in
+	 * which to draw the bounding box.
 	 * 
-	 *  @param image The image into which to draw
-	 *  @param colour The colour in which to draw the box.
+	 * @param image
+	 *            The image into which to draw
+	 * @param colour
+	 *            The colour in which to draw the box.
 	 */
-	public OrientatedBoundingBoxRenderer(Image<T,?> image, T colour) {
+	public OrientatedBoundingBoxRenderer(Image<T, ?> image, T colour) {
 		super(image, colour);
 	}
-	
+
 	/**
-	 * 	Constructor that creates an image to draw into and takes the colour
-	 * 	in which to draw the bounding box.
-	 * @param width The width of the image to create
-	 * @param height The height of the image to create
-	 * @param colour The colour in which to draw the box.
+	 * Constructor that creates an image to draw into and takes the colour in
+	 * which to draw the bounding box.
+	 * 
+	 * @param width
+	 *            The width of the image to create
+	 * @param height
+	 *            The height of the image to create
+	 * @param colour
+	 *            The colour in which to draw the box.
 	 */
 	public OrientatedBoundingBoxRenderer(int width, int height, T colour) {
 		super(width, height, colour);
 	}
-	
+
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor#process(org.openimaj.image.pixel.ConnectedComponent)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor#process(org.openimaj.image.pixel.ConnectedComponent)
 	 */
 	@Override
 	public void process(ConnectedComponent cc) {
-		image.createRenderer().drawPolygon(cc.calculateOrientatedBoundingBox(), colour);		
+		image.createRenderer().drawShape(cc.calculateOrientatedBoundingBox(), colour);
 	}
 }

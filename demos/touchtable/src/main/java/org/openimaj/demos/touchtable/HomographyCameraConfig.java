@@ -118,7 +118,7 @@ public class HomographyCameraConfig implements CameraConfig {
 		point.setY((float) y);
 		point.translate((float)cx, (float)cy);
 		
-		Point2d newc = point.getCOG().transform(homography);
+		Point2d newc = point.calculateCentroid().transform(homography);
 		
         return new Touch(newc.getX(),newc.getY(),point.getRadius(), point.touchID, point.motionVector);
 

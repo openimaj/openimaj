@@ -31,6 +31,7 @@ package org.openimaj.math.geometry.shape;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -160,7 +161,7 @@ public class Polygon extends PointList implements Shape
 	 * Open the polygon if it's closed
 	 */
 	public void open() {
-		if (isClosed() && points.size() > 0)
+		if (isClosed() && points.size() > 1)
 			points.remove(points.size() - 1);
 	}
 
@@ -248,14 +249,18 @@ public class Polygon extends PointList implements Shape
 		return p2;
 	}
 
+	@Override
+	public double calculateArea() {
+		return Math.abs(calculateSignedArea());
+	}
+
 	/**
 	 * Calculate the area of the polygon. This does not take into account holes
 	 * in the polygon.
 	 * 
 	 * @return the area of the polygon
 	 */
-	@Override
-	public double calculateArea() {
+	public double calculateSignedArea() {
 		final boolean closed = isClosed();
 		double area = 0;
 
@@ -276,7 +281,7 @@ public class Polygon extends PointList implements Shape
 		if (!closed)
 			open();
 
-		return 0.5 * Math.abs(area);
+		return 0.5 * area;
 	}
 
 	/**
@@ -630,59 +635,154 @@ public class Polygon extends PointList implements Shape
 	}
 
 	/**
-	 * Reduce the number of vertices in a polygon
+	 * Reduce the number of vertices in a polygon. This implementation is based
+	 * on a modified Ramer-Douglas–Peucker algorithm that is designed to work
+	 * with polygons rather than polylines. The implementation searches for two
+	 * initialisation points that are approximatatly maximally distant, then
+	 * performs the polyline algorithm on the two segments, and finally ensures
+	 * that the joins in the segments are consistent with the given epsilon
+	 * value.
 	 * 
-	 * @param dist
+	 * @param eps
+	 *            distance value below which a vertex can be ignored
 	 * @return new polygon that approximates this polygon, but with fewer
 	 *         vertices
 	 */
-	public Polygon reduceVertices(double dist)
+	public Polygon reduceVertices(double eps)
 	{
-		if (this.nVertices() < 3)
+		if (eps == 0 || nVertices() <= 3)
 			return this.clone();
 
-		final Polygon p = new Polygon();
-		final Iterator<Point2d> it = this.iterator();
-		final List<Point2d> points = new ArrayList<Point2d>();
-		points.add(it.next());
-		points.add(it.next());
-		p.addVertex(points.get(0));
-		Point2d pp = null;
-		while (it.hasNext())
-		{
-			pp = it.next();
-			points.add(pp);
+		int prevStartIndex = 0;
+		int startIndex = 0;
+		for (int init = 0; init < 3; init++) {
+			double dmax = 0;
+			prevStartIndex = startIndex;
 
-			double maxDist = 0;
-			final Line2d l = new Line2d(points.get(0), pp);
-			for (int i = 1; i < points.size() - 1; i++)
-			{
-				final Point2d p1 = points.get(i);
-				final Line2d norm = l.getNormal(p1);
-				final Point2d p2 = l.getIntersection(norm).intersectionPoint;
-				if (p2 != null)
-					maxDist = Math.max(maxDist, Line2d.distance(p1, p2));
-			}
+			final Point2d first = points.get(startIndex);
+			for (int i = 0; i < points.size(); i++) {
+				final double d;
+				d = Line2d.distance(first, points.get(i));
 
-			// If the distance is too great....
-			if (maxDist > dist)
-			{
-				// Add the PREVIOUS point to the output polygon.
-				// We don't add this one, of course because it is the point
-				// that caused the excessive distance.
-				p.addVertex(points.get(points.size() - 2));
-				points.clear();
-				points.add(pp);
-				p.addVertex(pp);
+				if (d > dmax) {
+					startIndex = i;
+					dmax = d;
+				}
 			}
 		}
 
-		p.addVertex(pp);
+		if (prevStartIndex > startIndex) {
+			final int tmp = prevStartIndex;
+			prevStartIndex = startIndex;
+			startIndex = tmp;
+		}
+
+		final List<Point2d> l1 = new ArrayList<Point2d>();
+		l1.addAll(points.subList(prevStartIndex, startIndex + 1));
+
+		final List<Point2d> l2 = new ArrayList<Point2d>();
+		l2.addAll(points.subList(startIndex, points.size()));
+		l2.addAll(points.subList(0, prevStartIndex + 1));
+
+		final Polygon newPoly = new Polygon();
+		final List<Point2d> line1 = ramerDouglasPeucker(l1, eps);
+		final List<Point2d> line2 = ramerDouglasPeucker(l2, eps);
+		newPoly.points.addAll(line1.subList(0, line1.size() - 1));
+		newPoly.points.addAll(line2.subList(0, line2.size() - 1));
+
+		// deal with the joins
+		// if (newPoly.nVertices() > 3) {
+		// Point2d r1 = null, r2 = null;
+		// Point2d p0 = newPoly.points.get(newPoly.points.size() - 1);
+		// Point2d p1 = newPoly.points.get(0);
+		// Point2d p2 = newPoly.points.get(1);
+		//
+		// Line2d l = new Line2d(p0, p2);
+		// Line2d norm = l.getNormal(p1);
+		// Point2d intersect = l.getIntersection(norm).intersectionPoint;
+		// if (intersect != null && Line2d.distance(p1, intersect) <= eps) {
+		// // remove p1
+		// r1 = p1;
+		// }
+		//
+		// p0 = newPoly.points.get(line1.size() - 1);
+		// p1 = newPoly.points.get(line1.size());
+		// p2 = newPoly.points.get((line1.size() + 1) >= newPoly.size() ? 0 :
+		// (line1.size() + 1));
+		//
+		// l = new Line2d(p0, p2);
+		// norm = l.getNormal(p1);
+		// intersect = l.getIntersection(norm).intersectionPoint;
+		// if (intersect != null && Line2d.distance(p1, intersect) <= eps) {
+		// // remove p2
+		// r2 = p2;
+		// }
+		//
+		// if (r1 != null) {
+		// newPoly.points.remove(r1);
+		// }
+		// if (newPoly.nVertices() > 3 && r2 != null) {
+		// newPoly.points.remove(r2);
+		// }
+		// }
+
+		if (!newPoly.isClockwise()) {
+			Collections.reverse(newPoly.points);
+		}
 
 		for (final Polygon ppp : innerPolygons)
-			p.addInnerPolygon(ppp.reduceVertices(dist));
+			newPoly.addInnerPolygon(ppp.reduceVertices(eps));
 
-		return p;
+		return newPoly;
+	}
+
+	/**
+	 * Ramer Douglas Peucker polyline algorithm
+	 * 
+	 * @param p
+	 *            the polyline to simplify
+	 * @param eps
+	 *            distance value below which a vertex can be ignored
+	 * @return the simplified polyline
+	 */
+	private static List<Point2d> ramerDouglasPeucker(List<Point2d> p, double eps) {
+		// Find the point with the maximum distance
+		double dmax = 0;
+		int index = 0;
+		final int end = p.size() - 1;
+		final Line2d l = new Line2d(p.get(0), p.get(end));
+		for (int i = 1; i < end - 1; i++) {
+			final double d;
+
+			final Point2d p1 = p.get(i);
+			final Line2d norm = l.getNormal(p1);
+			final Point2d p2 = l.getIntersection(norm).intersectionPoint;
+			if (p2 == null)
+				continue;
+			d = Line2d.distance(p1, p2);
+
+			if (d > dmax) {
+				index = i;
+				dmax = d;
+			}
+		}
+
+		final List<Point2d> newPoly = new ArrayList<Point2d>();
+
+		// If max distance is greater than epsilon, recursively simplify
+		if (dmax > eps) {
+			// Recursively call RDP
+			final List<Point2d> line1 = ramerDouglasPeucker(p.subList(0, index + 1), eps);
+			final List<Point2d> line2 = ramerDouglasPeucker(p.subList(index, end + 1), eps);
+			newPoly.addAll(line1.subList(0, line1.size() - 1));
+			newPoly.addAll(line2);
+		} else {
+			newPoly.add(p.get(0));
+			newPoly.add(p.get(end));
+		}
+
+		// Return the result
+		return newPoly;
 	}
 
 	/**
@@ -723,20 +823,23 @@ public class Polygon extends PointList implements Shape
 	 */
 	@Override
 	public Rectangle calculateRegularBoundingBox() {
-		int xmin = Integer.MAX_VALUE, xmax = 0, ymin = Integer.MAX_VALUE, ymax = 0;
+		float xmin = Float.MAX_VALUE, xmax = -Float.MAX_VALUE, ymin = Float.MAX_VALUE, ymax = -Float.MAX_VALUE;
 
 		for (int pp = 0; pp < getNumInnerPoly(); pp++)
 		{
 			final Polygon ppp = getInnerPoly(pp);
 			for (final Point2d p : ppp.getVertices()) {
-				if (p.getX() < xmin)
-					xmin = (int) Math.floor(p.getX());
-				if (p.getX() > xmax)
-					xmax = (int) Math.ceil(p.getX());
-				if (p.getY() < ymin)
-					ymin = (int) Math.floor(p.getY());
-				if (p.getY() > ymax)
-					ymax = (int) Math.ceil(p.getY());
+				final float px = p.getX();
+				final float py = p.getY();
+				if (px < xmin)
+					xmin = px;
+				if (px > xmax)
+					xmax = px;
+				if (py < ymin)
+					ymin = py;
+				if (py > ymax)
+					ymax = py;
+
 			}
 		}
 
@@ -872,45 +975,18 @@ public class Polygon extends PointList implements Shape
 	}
 
 	/**
-	 * Get the centre of gravity of the polygon
-	 * 
-	 * @return the centre of gravity of the polygon
-	 */
-	@Override
-	public Point2d getCOG()
-	{
-		float xSum = 0;
-		float ySum = 0;
-
-		int n = 0;
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
-			final Polygon ppp = getInnerPoly(pp);
-			for (final Point2d p : ppp.getVertices()) {
-				xSum += p.getX();
-				ySum += p.getY();
-				n++;
-			}
-		}
-
-		xSum /= n;
-		ySum /= n;
-
-		return new Point2dImpl(xSum, ySum);
-	}
-
-	/**
 	 * Calculate the centroid of the polygon.
 	 * 
 	 * @return calls {@link #calculateFirstMoment()};
 	 */
+	@Override
 	public Point2d calculateCentroid() {
 		final double[] pt = calculateFirstMoment();
 		return new Point2dImpl((float) pt[0], (float) pt[1]);
 	}
 
 	/**
-	 * Treating the polygon as a continuous peicewise function, calculate
+	 * Treating the polygon as a continuous piecewise function, calculate
 	 * exactly the first moment. This follows working presented by Carsten
 	 * Steger in "On the Calculation of Moments of Polygons" ,
 	 * 
@@ -922,7 +998,7 @@ public class Polygon extends PointList implements Shape
 			type = ReferenceType.Techreport,
 			month = "August",
 			year = "1996",
-			url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
+			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
 			)
 			public double[] calculateFirstMoment() {
 		final boolean closed = isClosed();
@@ -949,11 +1025,11 @@ public class Polygon extends PointList implements Shape
 		if (!closed)
 			open();
 
-		return new double[] { Math.abs(ax / (6 * area)), Math.abs(ay / (6 * area)) };
+		return new double[] { ax / (6 * area), ay / (6 * area) };
 	}
 
 	/**
-	 * Treating the polygon as a continuous peicewise function, calculate
+	 * Treating the polygon as a continuous piecewise function, calculate
 	 * exactly the second moment. This follows working presented by Carsten
 	 * Steger in "On the Calculation of Moments of Polygons" ,
 	 * 
@@ -965,7 +1041,7 @@ public class Polygon extends PointList implements Shape
 			type = ReferenceType.Techreport,
 			month = "August",
 			year = "1996",
-			url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
+			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
 			)
 			public double[] calculateSecondMoment() {
 		final boolean closed = isClosed();
@@ -995,14 +1071,14 @@ public class Polygon extends PointList implements Shape
 			open();
 
 		return new double[] {
-				Math.abs(axx / (12 * area)),
-				Math.abs(axy / (24 * area)),
-				Math.abs(ayy / (12 * area))
+				axx / (12 * area),
+				axy / (24 * area),
+				ayy / (12 * area)
 		};
 	}
 
 	/**
-	 * Treating the polygon as a continuous peicewise function, calculate
+	 * Treating the polygon as a continuous piecewise function, calculate
 	 * exactly the centralised second moment. This follows working presented by
 	 * Carsten Steger in "On the Calculation of Moments of Polygons" ,
 	 * 
@@ -1014,7 +1090,7 @@ public class Polygon extends PointList implements Shape
 			type = ReferenceType.Techreport,
 			month = "August",
 			year = "1996",
-			url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
+			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
 			)
 			public double[] calculateSecondMomentCentralised() {
 		final double[] firstMoment = this.calculateFirstMoment();
@@ -1076,61 +1152,184 @@ public class Polygon extends PointList implements Shape
 	}
 
 	/**
-	 * Calculate convex hull using Melkman's algorithm. Based on
-	 * http://softsurfer.com/Archive/algorithm_0203/algorithm_0203.htm
-	 * <p>
-	 * Copyright 2001, softSurfer (www.softsurfer.com) This code may be freely
-	 * used and modified for any purpose providing that this copyright notice is
-	 * included with it. SoftSurfer makes no warranty for this code, and cannot
-	 * be held liable for any real or imagined damage resulting from its use.
-	 * Users of this code must verify correctness for their application.
+	 * Test if the outer polygon is convex.
 	 * 
-	 * @return A polygon defining the shape of the convex hull
+	 * @return true if the outer polygon is convex; false if non-convex or less
+	 *         than two vertices
 	 */
-	public Polygon calculateConvexHull() {
-		// initialize a deque D[] from bottom to top so that the
-		// 1st three vertices of V[] are a counterclockwise triangle
-		final int n = this.points.size();
-		final Point2d[] D = new Point2d[2 * n + 1];
-		int bot = n - 2, top = bot + 3; // initial bottom and top deque indices
-		D[bot] = D[top] = points.get(2); // 3rd vertex is at both bot and top
-		if (isLeft(points.get(0), points.get(1), points.get(2)) > 0) {
-			D[bot + 1] = points.get(0);
-			D[bot + 2] = points.get(1); // ccw vertices are: 2,0,1,2
-		} else {
-			D[bot + 1] = points.get(1);
-			D[bot + 2] = points.get(0); // ccw vertices are: 2,1,0,2
+	public boolean isConvex() {
+		final boolean isOriginallyClosed = this.isClosed();
+		if (isOriginallyClosed)
+			this.open();
+
+		final int size = size();
+
+		if (size < 3)
+			return false;
+
+		float res = 0;
+		for (int i = 0; i < size; i++) {
+			final Point2d p = points.get(i);
+			final Point2d tmp = points.get((i + 1) % size);
+			final Point2dImpl v = new Point2dImpl();
+			v.x = tmp.getX() - p.getX();
+			v.y = tmp.getY() - p.getY();
+			final Point2d u = points.get((i + 2) % size);
+
+			if (i == 0) // in first loop direction is unknown, so save it in res
+				res = u.getX() * v.y - u.getY() * v.x + v.x * p.getY() - v.y * p.getX();
+			else
+			{
+				final float newres = u.getX() * v.y - u.getY() * v.x + v.x * p.getY() - v.y * p.getX();
+				if ((newres > 0 && res < 0) || (newres < 0 && res > 0))
+					return false;
+			}
 		}
 
-		// compute the hull on the deque D[]
-		for (int i = 3; i < n; i++) { // process the rest of vertices
-			// test if next vertex is inside the deque hull
-			if ((isLeft(D[bot], D[bot + 1], points.get(i)) > 0) &&
-					(isLeft(D[top - 1], D[top], points.get(i)) > 0))
-				continue; // skip an interior vertex
+		if (isOriginallyClosed)
+			close();
 
-			// incrementally add an exterior vertex to the deque hull
-			// get the rightmost tangent at the deque bot
-			while (isLeft(D[bot], D[bot + 1], points.get(i)) <= 0)
-				++bot; // remove bot of deque
-			D[--bot] = points.get(i); // insert V[i] at bot of deque
-
-			// get the leftmost tangent at the deque top
-			while (isLeft(D[top - 1], D[top], points.get(i)) <= 0)
-				--top; // pop top of deque
-			D[++top] = points.get(i); // push V[i] onto top of deque
-		}
-
-		// transcribe deque D[] to the output hull array H[]
-		final Polygon H = new Polygon();
-		final List<Point2d> vertices = H.getVertices();
-		for (int h = 0; h <= (top - bot); h++)
-			vertices.add(D[bot + h]);
-
-		return H;
+		return true;
 	}
 
-	private float isLeft(Point2d P0, Point2d P1, Point2d P2) {
-		return (P1.getX() - P0.getX()) * (P2.getY() - P0.getY()) - (P2.getX() - P0.getX()) * (P1.getY() - P0.getY());
+	/**
+	 * Test if this is a simple polygon (i.e. one that doesn't have wholes or
+	 * sub-parts). Simple polygons have no <code>innerPolygons</code>.
+	 * 
+	 * @see Polygon#getInnerPolys()
+	 * 
+	 * @return true if this is a simple polygon; false otherwise.
+	 */
+	public boolean isSimple() {
+		return innerPolygons == null || innerPolygons.size() == 0;
+	}
+
+	@Override
+	public double calculatePerimeter() {
+
+		final Point2d p1 = points.get(0);
+		float p1x = p1.getX();
+		float p1y = p1.getY();
+
+		Point2d p2 = points.get(points.size() - 1);
+		float p2x = p2.getX();
+		float p2y = p2.getY();
+
+		double peri = Line2d.distance(p1x, p1y, p2x, p2y);
+		for (int i = 1; i < this.points.size(); i++) {
+			p2 = points.get(i);
+			p2x = p2.getX();
+			p2y = p2.getY();
+			peri += Line2d.distance(p1x, p1y, p2x, p2y);
+			p1x = p2x;
+			p1y = p2y;
+		}
+
+		return peri;
+	}
+
+	/**
+	 * Test (outer) polygon path direction
+	 * 
+	 * @return true is the outer path direction is clockwise w.r.t OpenIMAJ
+	 *         coordinate system
+	 */
+	public boolean isClockwise() {
+		double signedArea = 0;
+		for (int i = 0; i < this.points.size() - 1; i++) {
+			final float x1 = points.get(i).getX();
+			final float y1 = points.get(i).getY();
+			final float x2 = points.get(i + 1).getX();
+			final float y2 = points.get(i + 1).getY();
+
+			signedArea += (x1 * y2 - x2 * y1);
+		}
+
+		final float x1 = points.get(points.size() - 1).getX();
+		final float y1 = points.get(points.size() - 1).getY();
+		final float x2 = points.get(0).getX();
+		final float y2 = points.get(0).getY();
+		signedArea += (x1 * y2 - x2 * y1);
+
+		return signedArea >= 0;
+	}
+
+	@Override
+	public RotatedRectangle minimumBoundingRectangle() {
+		final Polygon convHull = this.isConvex() ? this.clone() : this.calculateConvexHull();
+		convHull.close();
+
+		final Point2d c = this.calculateCentroid();
+		Rectangle ssr = null;
+		double minArea = Double.MAX_VALUE, minAngle = 0.0;
+
+		Point2d ci = convHull.points.get(0);
+		for (int i = 0; i < convHull.points.size() - 1; i++) {
+			final Point2d cii = convHull.points.get(i + 1);
+			final double angle = Math.atan2(cii.getY() - ci.getY(), cii.getX() - ci.getX());
+
+			final Rectangle rect = computeRegularBoundingBoxRotated(convHull, c, -1.0 * angle);
+			final double area = rect.calculateArea();
+
+			if (area < minArea) {
+				minArea = area;
+				ssr = rect;
+				minAngle = angle;
+			}
+			ci = cii;
+		}
+
+		if (ssr == null) {
+			ssr = new Rectangle(c.getX(), c.getY(), 0, 0);
+		}
+
+		return ssr.rotate(c, minAngle);
+	}
+
+	/**
+	 * Optimised computation of the regular bounding box of a rotated polygon
+	 * 
+	 * @param polygon
+	 *            the polygon
+	 * @param origin
+	 *            the rotation point
+	 * @param angle
+	 *            the rotation angle
+	 * @return the bounds
+	 */
+	private static final Rectangle computeRegularBoundingBoxRotated(Polygon polygon, Point2d origin, double angle) {
+		float xmin = Float.MAX_VALUE, xmax = -Float.MAX_VALUE, ymin = Float.MAX_VALUE, ymax = -Float.MAX_VALUE;
+
+		final float ox = origin.getX();
+		final float oy = origin.getY();
+		final double sin = Math.sin(angle);
+		final double cos = Math.cos(angle);
+
+		final int inSize = polygon.getNumInnerPoly();
+		for (int pp = 0; pp < inSize; pp++)
+		{
+			final Polygon ppp = polygon.getInnerPoly(pp);
+			final int pppSize = ppp.points.size();
+
+			for (int i = 0; i < pppSize; i++) {
+				final Point2d p = ppp.points.get(i);
+				final float px = p.getX();
+				final float py = p.getY();
+				final float rx = (float) (ox + ((px - ox) * cos - (py - oy) * sin));
+				final float ry = (float) (oy + ((px - ox) * sin + (py - oy) * cos));
+
+				if (rx < xmin)
+					xmin = rx;
+				if (rx > xmax)
+					xmax = rx;
+				if (ry < ymin)
+					ymin = ry;
+				if (ry > ymax)
+					ymax = ry;
+
+			}
+		}
+
+		return new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin);
 	}
 }

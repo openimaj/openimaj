@@ -118,7 +118,7 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 				// Create a new tracker for this face
 				final BasicObjectTracker faceTracker = new BasicObjectTracker();
 				final Rectangle r = face.getBounds();
-				r.scaleCOG( this.detectionScalar );
+				r.scaleCentroid( this.detectionScalar );
 				faceTracker.initialiseTracking( r, img);
 				this.trackers.add(faceTracker);
 

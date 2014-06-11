@@ -252,7 +252,7 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 
 			float dx = r.x;
 			float dy = r.y;
-			r.scaleCOG(patchScale);
+			r.scaleCentroid(patchScale);
 			dx = dx - r.x;
 			dy = dy - r.y;
 			FacialKeypoint.updateImagePosition(kpts, TransformUtilities.translateMatrix(-deltaX + dx, -deltaY + dy));

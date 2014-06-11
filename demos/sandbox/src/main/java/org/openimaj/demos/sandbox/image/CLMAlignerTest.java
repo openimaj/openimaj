@@ -52,7 +52,7 @@ public class CLMAlignerTest {
 
 		final MBFImage img = new MBFImage(image.clone(), image.clone(), image.clone());
 		for (final Rectangle r : rects) {
-			r.scaleCOG(1.2f);
+			r.scaleCentroid(1.2f);
 			img.drawShape(r, RGBColour.RED);
 		}
 		DisplayUtilities.display(img);

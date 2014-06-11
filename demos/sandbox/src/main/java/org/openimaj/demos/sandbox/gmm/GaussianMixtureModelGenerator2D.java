@@ -66,7 +66,7 @@ public class GaussianMixtureModelGenerator2D implements GaussianMixtureModelGene
 		this();
 		for (final Ellipse ellipse : ellipses) {
 			final Matrix mean = new Matrix(1, 2);
-			final Point2d cog = ellipse.getCOG();
+			final Point2d cog = ellipse.calculateCentroid();
 			final Ellipse corrected = new Ellipse(cog.getX(), cog.getY(), ellipse.getMajor() / 2, ellipse.getMinor() / 2,
 					ellipse.getRotation());
 			final Matrix covar = EllipseUtilities.ellipseToCovariance(corrected);

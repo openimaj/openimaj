@@ -53,16 +53,18 @@ public class Erode implements ConnectedComponentProcessor, KernelProcessor<Float
 
 	/**
 	 * Construct the erode operator with the given structuring element
-	 * @param se the structuring element
+	 * 
+	 * @param se
+	 *            the structuring element
 	 */
 	public Erode(StructuringElement se) {
 		this.element = se;
 
-		int [] sz = se.size();
+		final int[] sz = se.size();
 		sw = sz[0];
 		sh = sz[1];
-		cx = sw/2;
-		cy = sh/2;
+		cx = sw / 2;
+		cy = sh / 2;
 	}
 
 	/**
@@ -74,14 +76,14 @@ public class Erode implements ConnectedComponentProcessor, KernelProcessor<Float
 
 	@Override
 	public void process(ConnectedComponent cc) {
-		//Erode a connected component
-		Set<Pixel> retain = new HashSet<Pixel>();
-		Set<Pixel> pixels = cc.getPixels();
-		int [] se_size = element.size();
-		Rectangle cc_bb = cc.calculateRegularBoundingBox();
-		for (int j=(int) (cc_bb.y-se_size[1]); j<=cc_bb.y+se_size[1]+cc_bb.height; j++) {
-			for (int i=(int) (cc_bb.x-se_size[0]); i<=cc_bb.x+se_size[0]+cc_bb.width; i++) {
-				Pixel p = new Pixel(i, j);
+		// Erode a connected component
+		final Set<Pixel> retain = new HashSet<Pixel>();
+		final Set<Pixel> pixels = cc.getPixels();
+		final int[] se_size = element.size();
+		final Rectangle cc_bb = cc.calculateRegularBoundingBox();
+		for (int j = (int) (cc_bb.y - se_size[1]); j <= cc_bb.y + se_size[1] + cc_bb.height; j++) {
+			for (int i = (int) (cc_bb.x - se_size[0]); i <= cc_bb.x + se_size[0] + cc_bb.width; i++) {
+				final Pixel p = new Pixel(i, j);
 
 				if (element.matches(p, pixels)) {
 					retain.add(p);
@@ -105,21 +107,36 @@ public class Erode implements ConnectedComponentProcessor, KernelProcessor<Float
 	@Override
 	public Float processKernel(FImage patch) {
 		int count = 0;
-		
-		for (Pixel p : element.positive) {
-			int px = cx - p.x;
-			int py = cy - p.y;
-			if (px>=0 && py>=0 && px<sw && py<sh && patch.pixels[py][px] == 1)
+
+		for (final Pixel p : element.positive) {
+			final int px = cx - p.x;
+			final int py = cy - p.y;
+			if (px >= 0 && py >= 0 && px < sw && py < sh && patch.pixels[py][px] == 1)
 				count++;
 		}
 
-		for (Pixel p : element.negative) {
-			int px = cx - p.x;
-			int py = cy - p.y;
-			if (px>=0 && py>=0 && px<sw && py<sh && patch.pixels[py][px] == 0)
+		for (final Pixel p : element.negative) {
+			final int px = cx - p.x;
+			final int py = cy - p.y;
+			if (px >= 0 && py >= 0 && px < sw && py < sh && patch.pixels[py][px] == 0)
 				count++;
 		}
-		
-		return (count == element.positive.size()+element.negative.size() ? patch.pixels[cy][cx] : 0);
+
+		return (count == element.positive.size() + element.negative.size() ? patch.pixels[cy][cx] : 0);
+	}
+
+	/**
+	 * Apply erosion some number of times to an image with the default
+	 * {@link StructuringElement#BOX} element
+	 * 
+	 * @param img
+	 *            the image
+	 * @param times
+	 *            the number of times to apply the erosion
+	 */
+	public static void erode(FImage img, int times) {
+		final Erode e = new Erode();
+		for (int i = 0; i < times; i++)
+			img.processInplace(e);
 	}
 }

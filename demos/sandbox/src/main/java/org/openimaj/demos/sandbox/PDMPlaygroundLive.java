@@ -126,7 +126,7 @@ public class PDMPlaygroundLive {
 				{
 					frame.drawShape(face.getBounds(), RGBColour.GREEN);
 
-					final Point2d cog = face.getBounds().getCOG();
+					final Point2d cog = face.getBounds().calculateCentroid();
 					final double facescale = face.getBounds().height / 3.5;
 
 					if (!tracking[0]) {
