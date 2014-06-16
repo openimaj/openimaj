@@ -12,8 +12,8 @@ import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.contour.Contour;
 import org.openimaj.image.contour.SuzukiContourProcessor;
-import org.openimaj.image.processing.morphology.GreyscaleDilate;
-import org.openimaj.image.processing.morphology.GreyscaleErode;
+import org.openimaj.image.processing.algorithm.FilterSupport;
+import org.openimaj.image.processing.algorithm.MinMaxAnalyser;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.shape.RotatedRectangle;
 import org.openimaj.util.pair.FloatIntPair;
@@ -28,6 +28,11 @@ import org.openimaj.video.capture.VideoCapture;
 // Returns 1 if a chessboard can be in this image and findChessboardCorners should be called, 
 // 0 if there is no chessboard, -1 in case of error
 public class FastChessboardDetector implements ImageAnalyser<FImage> {
+	static int erosion_count = 1;
+	static float black_level = 20.f / 255f;
+	static float white_level = 130.f / 255f;
+	static float black_white_gap = 70.f / 255f;
+
 	private int patternHeight;
 	private int patternWidth;
 	private boolean result;
@@ -55,45 +60,26 @@ public class FastChessboardDetector implements ImageAnalyser<FImage> {
 
 	@Override
 	public void analyseImage(FImage src) {
-		final int erosion_count = 1;
-		final float black_level = 20.f / 255f;
-		final float white_level = 130.f / 255f;
-		final float black_white_gap = 70.f / 255f;
-
-		// #if defined(DEBUG_WINDOWS)
-		// cvNamedWindow("1", 1);
-		// cvShowImage("1", src);
-		// cvWaitKey(0);
-		// #endif //DEBUG_WINDOWS
-
-		final FImage white = src.clone();
-		final FImage black = src.clone();
 		final FImage thresh = new FImage(src.width, src.height);
 
-		GreyscaleErode.erode(white, erosion_count);
-		GreyscaleDilate.dilate(black, erosion_count);
+		final MinMaxAnalyser mma = new MinMaxAnalyser(FilterSupport.BLOCK_3x3);
+		src.analyseWith(mma);
+
+		final FImage white = mma.min;
+		final FImage black = mma.max;
 
 		result = false;
 		for (float thresh_level = black_level; thresh_level < white_level && !result; thresh_level += (20.0f / 255f))
 		{
 			final List<FloatIntPair> quads = new ArrayList<FloatIntPair>();
 
-			// cvThreshold(white, thresh, thresh_level + black_white_gap, 255,
-			// CV_THRESH_BINARY);
 			quickThresh(white, thresh, thresh_level + black_white_gap, false);
-			// cvFindContours(thresh, storage, &first, sizeof(CvContour),
-			// CV_RETR_CCOMP);
-			icvGetQuadrangleHypotheses(SuzukiContourProcessor.findContours(thresh), quads, 1);
+			getQuadrangleHypotheses(SuzukiContourProcessor.findContours(thresh), quads, 1);
 
-			// cvThreshold(black, thresh, thresh_level, 255,
-			// CV_THRESH_BINARY_INV);
 			quickThresh(black, thresh, thresh_level, true);
-			// cvFindContours(thresh, storage, &first, sizeof(CvContour),
-			// CV_RETR_CCOMP);
-			icvGetQuadrangleHypotheses(SuzukiContourProcessor.findContours(thresh), quads, 0);
+			getQuadrangleHypotheses(SuzukiContourProcessor.findContours(thresh), quads, 0);
 
 			final int min_quads_count = patternWidth * patternHeight / 2;
-			// std::sort(quads.begin(), quads.end(), less_pred);
 			Collections.sort(quads, FloatIntPair.FIRST_ITEM_ASCENDING_COMPARATOR);
 
 			// now check if there are many hypotheses with similar sizes
@@ -125,7 +111,6 @@ public class FastChessboardDetector implements ImageAnalyser<FImage> {
 					{
 						continue;
 					}
-					System.out.println("found");
 					result = true;
 					break;
 				}
@@ -143,13 +128,16 @@ public class FastChessboardDetector implements ImageAnalyser<FImage> {
 		}
 	}
 
-	void icvGetQuadrangleHypotheses(Contour contours, List<FloatIntPair> quads, int class_id) {
+	void getQuadrangleHypotheses(Contour contours, List<FloatIntPair> quads, int class_id) {
 		final float min_aspect_ratio = 0.3f;
 		final float max_aspect_ratio = 3.0f;
 		final float min_box_size = 10.0f;
 
 		for (final Contour seq : contours.contourIterable()) {
-			final RotatedRectangle box = seq.minimumBoundingRectangle();
+			// can assume the the contour is simple, thus making convex hull
+			// computation much faster
+			final RotatedRectangle box = seq.minimumBoundingRectangle(true);
+
 			final float box_size = Math.max(box.width, box.height);
 			if (box_size < min_box_size)
 			{
@@ -161,7 +149,6 @@ public class FastChessboardDetector implements ImageAnalyser<FImage> {
 			{
 				continue;
 			}
-
 			quads.add(new FloatIntPair(box_size, class_id));
 		}
 	}
@@ -172,13 +159,16 @@ public class FastChessboardDetector implements ImageAnalyser<FImage> {
 
 	public static void main(String[] args) throws MalformedURLException, IOException {
 		final FastChessboardDetector fcd = new FastChessboardDetector(9, 6);
-		VideoDisplay.createVideoDisplay(new VideoCapture(320,
-				240)).addVideoListener(new VideoDisplayAdapter<MBFImage>() {
+		final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(new VideoCapture(640,
+				480));
+		vd.setCalculateFPS(true);
+		vd.addVideoListener(new VideoDisplayAdapter<MBFImage>() {
 			@Override
 			public void beforeUpdate(MBFImage frame) {
 				fcd.analyseImage(frame.flatten());
 				frame.drawText(fcd.result + "", 100, 100, HersheyFont.FUTURA_LIGHT,
 						20, RGBColour.RED);
+				System.out.println(vd.getDisplayFPS());
 			}
 		});
 		// final FImage chessboard = ImageUtilities.readF(new

@@ -26,21 +26,24 @@ import com.github.axet.vget.info.VideoInfoUser;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class TestVGetVideo {
-	
+
+	/**
+	 * @throws Exception
+	 */
 	@Test
 	public void testVget() throws Exception {
-		try{
+		try {
 			tryDuelingCarl();
-		} catch(Exception e){
+		} catch (final Exception e) {
 			System.out.println("Problem downloading video...");
 		}
 	}
 
 	private void tryDuelingCarl() throws MalformedURLException {
-		String testVideo = "https://www.youtube.com/watch?v=t-7mQhSZRgM";
+		final String testVideo = "https://www.youtube.com/watch?v=t-7mQhSZRgM";
 		VGetVideo v = new VGetVideo(testVideo);
 		int frames = 0;
 		while (v.hasNextFrame()) {
@@ -48,13 +51,13 @@ public class TestVGetVideo {
 			v.getNextFrame();
 		}
 		System.out.println("Seen frames: " + frames);
-		VideoInfoUser user = new VideoInfoUser();
-        user.setUserQuality(VideoQuality.p144);
-        v = new VGetVideo(testVideo, user);
-        int newframes = 0;
-        while (v.hasNextFrame()) {
+		final VideoInfoUser user = new VideoInfoUser();
+		user.setUserQuality(VideoQuality.p144);
+		v = new VGetVideo(testVideo, user);
+		int newframes = 0;
+		while (v.hasNextFrame()) {
 			newframes++;
-//			v.getNextFrame();
+			// v.getNextFrame();
 			DisplayUtilities.displayName(v.getNextFrame(), "frame");
 		}
 		System.out.println("Low Quality frames: " + newframes);

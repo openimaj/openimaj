@@ -441,7 +441,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 			}
 
 			// test polygon for correctness
-			if (p != null && p.nVertices() == 4 && p.isConvex() && p.isSimple()) {
+			if (p != null && p.nVertices() == 4 && p.isConvex() && p.hasNoInnerPolygons()) {
 				final double perimeter = p.calculatePerimeter();
 				final double area = p.calculateArea();
 

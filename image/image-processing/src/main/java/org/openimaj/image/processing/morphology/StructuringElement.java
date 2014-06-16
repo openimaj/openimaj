@@ -35,205 +35,238 @@ import java.util.Set;
 
 import org.openimaj.image.pixel.Pixel;
 
-
 /**
  * Morphological structuring element
  * 
- * The central element is the pixel 0,0.
- * Other s.e. pixels are relative to this.
+ * The central element is the pixel 0,0. Other s.e. pixels are relative to this.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class StructuringElement {
 	/**
 	 * Standard 3x3 box structuring element
 	 */
 	public final static StructuringElement BOX;
-	
+
 	/**
 	 * Standard 3x3 cross structuring element
 	 */
 	public final static StructuringElement CROSS;
-	
+
 	/**
 	 * Standard horizontal pit structuring element [x . x]
 	 */
 	public final static StructuringElement HPIT;
+
+	// build the elements
 	static {
 		BOX = new StructuringElement();
-		BOX.positive.add(new Pixel(-1,-1)); BOX.positive.add(new Pixel(0,-1)); BOX.positive.add(new Pixel(1,-1));
-		BOX.positive.add(new Pixel(-1, 0)); BOX.positive.add(new Pixel(0, 0)); BOX.positive.add(new Pixel(1, 0));
-		BOX.positive.add(new Pixel(-1, 1)); BOX.positive.add(new Pixel(0, 1)); BOX.positive.add(new Pixel(1, 1));
-		
+		BOX.positive.add(new Pixel(-1, -1));
+		BOX.positive.add(new Pixel(0, -1));
+		BOX.positive.add(new Pixel(1, -1));
+		BOX.positive.add(new Pixel(-1, 0));
+		BOX.positive.add(new Pixel(0, 0));
+		BOX.positive.add(new Pixel(1, 0));
+		BOX.positive.add(new Pixel(-1, 1));
+		BOX.positive.add(new Pixel(0, 1));
+		BOX.positive.add(new Pixel(1, 1));
+
 		CROSS = new StructuringElement();
-		CROSS.positive.add(new Pixel(0,-1));
-		CROSS.positive.add(new Pixel(-1, 0)); CROSS.positive.add(new Pixel(0, 0)); CROSS.positive.add(new Pixel(1, 0));
+		CROSS.positive.add(new Pixel(0, -1));
+		CROSS.positive.add(new Pixel(-1, 0));
+		CROSS.positive.add(new Pixel(0, 0));
+		CROSS.positive.add(new Pixel(1, 0));
 		CROSS.positive.add(new Pixel(0, 1));
-		
+
 		HPIT = new StructuringElement();
-		HPIT.positive.add(new Pixel(-1, 0)); HPIT.positive.add(new Pixel(1, 0));
+		HPIT.positive.add(new Pixel(-1, 0));
+		HPIT.positive.add(new Pixel(1, 0));
 	}
-	
+
 	/**
 	 * Set of positive pixels in the structuring element
 	 */
 	public Set<Pixel> positive = new HashSet<Pixel>();
-	
+
 	/**
 	 * Set of negative pixels in the structuring element
 	 */
 	public Set<Pixel> negative = new HashSet<Pixel>();
-	
+
 	/**
 	 * Construct an empty structuring element
 	 */
 	public StructuringElement() {
-		
+
 	}
-	
+
 	/**
-	 * Construct a structuring element with the given positive and
-	 * negative pixels
-	 * @param positive the positive pixels
-	 * @param negative the negative pixels
+	 * Construct a structuring element with the given positive and negative
+	 * pixels
+	 * 
+	 * @param positive
+	 *            the positive pixels
+	 * @param negative
+	 *            the negative pixels
 	 */
 	public StructuringElement(Set<Pixel> positive, Set<Pixel> negative) {
-		if (positive != null) this.positive.addAll(positive);
-		if (negative != null) this.negative.addAll(negative);
+		if (positive != null)
+			this.positive.addAll(positive);
+		if (negative != null)
+			this.negative.addAll(negative);
 	}
-	
+
 	/**
-	 * Construct a structuring element with the given positive and
-	 * negative pixels
-	 * @param positive the positive pixels
-	 * @param negative the negative pixels
+	 * Construct a structuring element with the given positive and negative
+	 * pixels
+	 * 
+	 * @param positive
+	 *            the positive pixels
+	 * @param negative
+	 *            the negative pixels
 	 */
-	public StructuringElement(Pixel [] positive, Pixel [] negative) {
-		if (positive != null) this.positive.addAll(Arrays.asList(positive));
-		if (negative != null) this.negative.addAll(Arrays.asList(negative));
+	public StructuringElement(Pixel[] positive, Pixel[] negative) {
+		if (positive != null)
+			this.positive.addAll(Arrays.asList(positive));
+		if (negative != null)
+			this.negative.addAll(Arrays.asList(negative));
 	}
-	
+
 	/**
-	 * Get the size of the structuring element in the form 
-	 * [width, height, x, y]
+	 * Get the size of the structuring element in the form [width, height, x, y]
+	 * 
 	 * @return the size of the structuring element
 	 */
-	public int [] size() {
+	public int[] size() {
 		int xmin = Integer.MAX_VALUE;
 		int xmax = -Integer.MAX_VALUE;
 		int ymin = Integer.MAX_VALUE;
 		int ymax = -Integer.MAX_VALUE;
-		
-		for (Pixel p : positive) {
-			if (p.x < xmin) xmin = p.x;
-			if (p.x > xmax) xmax = p.x;
-			if (p.y < ymin) ymin = p.y;
-			if (p.y > ymax) ymax = p.y;
+
+		for (final Pixel p : positive) {
+			if (p.x < xmin)
+				xmin = p.x;
+			if (p.x > xmax)
+				xmax = p.x;
+			if (p.y < ymin)
+				ymin = p.y;
+			if (p.y > ymax)
+				ymax = p.y;
 		}
-		for (Pixel p : negative) {
-			if (p.x < xmin) xmin = p.x;
-			if (p.x > xmax) xmax = p.x;
-			if (p.y < ymin) ymin = p.y;
-			if (p.y > ymax) ymax = p.y;
+		for (final Pixel p : negative) {
+			if (p.x < xmin)
+				xmin = p.x;
+			if (p.x > xmax)
+				xmax = p.x;
+			if (p.y < ymin)
+				ymin = p.y;
+			if (p.y > ymax)
+				ymax = p.y;
 		}
-		
-		return new int[] {1+xmax-xmin, 1+ymax-ymin, xmin, ymin};
+
+		return new int[] { 1 + xmax - xmin, 1 + ymax - ymin, xmin, ymin };
 	}
-	
+
 	/**
-	 * Construct a structuring element from a @link{String} of the
-	 * form produced by @link{#toString()}.
+	 * Construct a structuring element from a @link{String} of the form produced
+	 * by @link{#toString()}.
 	 * 
 	 * @see #toString()
 	 * 
-	 * @param ele the string defining the element
-	 * @param cx the top-left x-coordinate
-	 * @param cy the top-left y-coordinate
+	 * @param ele
+	 *            the string defining the element
+	 * @param cx
+	 *            the top-left x-coordinate
+	 * @param cy
+	 *            the top-left y-coordinate
 	 * @return a new structuring element
 	 */
 	public static StructuringElement parseElement(String ele, int cx, int cy) {
-		String[] lines = ele.split("\\n");
-		int height = lines.length;
-		int width = lines[0].length();
-		
-		StructuringElement se = new StructuringElement();
-		
-		for (int j=0; j<height; j++) {
-			for (int i=0; i<width; i++) {
-				char c = lines[j].charAt(i);
-				
+		final String[] lines = ele.split("\\n");
+		final int height = lines.length;
+		final int width = lines[0].length();
+
+		final StructuringElement se = new StructuringElement();
+
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				final char c = lines[j].charAt(i);
+
 				if (c == '*') {
-					se.positive.add(new Pixel(i-cx,j-cy));
+					se.positive.add(new Pixel(i - cx, j - cy));
 				} else if (c == 'o') {
-					se.negative.add(new Pixel(i-cx,j-cy));
+					se.negative.add(new Pixel(i - cx, j - cy));
 				}
 			}
 		}
-		
+
 		return se;
 	}
-	
+
 	@Override
 	public String toString() {
-		int [] sz = size();
+		final int[] sz = size();
 		String s = "";
-		
-		for (int j=0; j<sz[1]; j++) {
-			for (int i=0; i<sz[0]; i++) {
-				Pixel p = new Pixel(i+sz[2], j+sz[3]);
-				
+
+		for (int j = 0; j < sz[1]; j++) {
+			for (int i = 0; i < sz[0]; i++) {
+				final Pixel p = new Pixel(i + sz[2], j + sz[3]);
+
 				if (positive.contains(p))
-					s+="*";
+					s += "*";
 				else if (negative.contains(p))
-					s+="o";
+					s += "o";
 				else
-					s+=".";
+					s += ".";
 			}
-			s+="\n";
+			s += "\n";
 		}
-		
+
 		return s;
 	}
-	
+
 	/**
-	 * Determine if this structuring element is completely 
-	 * contained in the pixels centered at p.
+	 * Determine if this structuring element is completely contained in the
+	 * pixels centered at p.
 	 * 
-	 * @param p the centre
-	 * @param pixels the pixels
+	 * @param p
+	 *            the centre
+	 * @param pixels
+	 *            the pixels
 	 * @return true if completely contained, false otherwise
 	 */
 	public boolean matches(Pixel p, Set<Pixel> pixels) {
 		// is the s.e completely contained in the pixels centered at p?
 		return (intersect(p, pixels).size() == countActive());
 	}
-	
-	Set<Pixel> intersect(Pixel p, Set<Pixel> pixels) {
-		Set<Pixel> intersect = new HashSet<Pixel>();
 
-		//positive
-		for (Pixel sep : positive) {
-			Pixel imp = new Pixel(p.x + sep.x, p.y + sep.y);
-			
+	Set<Pixel> intersect(Pixel p, Set<Pixel> pixels) {
+		final Set<Pixel> intersect = new HashSet<Pixel>();
+
+		// positive
+		for (final Pixel sep : positive) {
+			final Pixel imp = new Pixel(p.x + sep.x, p.y + sep.y);
+
 			if (pixels.contains(imp))
 				intersect.add(imp);
 		}
-		
-		//negative
-		for (Pixel sep : negative) {
-			Pixel imp = new Pixel(p.x + sep.x, p.y + sep.y);
-			
+
+		// negative
+		for (final Pixel sep : negative) {
+			final Pixel imp = new Pixel(p.x + sep.x, p.y + sep.y);
+
 			if (!pixels.contains(imp))
 				intersect.add(imp);
 		}
-		
+
 		return intersect;
 	}
-	
+
 	/**
-	 * Count the total (positive and negative) number of 
-	 * pixels in this structuring element
+	 * Count the total (positive and negative) number of pixels in this
+	 * structuring element
+	 * 
 	 * @return the total number of pixels
 	 */
 	public int countActive() {

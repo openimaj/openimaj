@@ -35,12 +35,14 @@ import java.util.Set;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.processing.algorithm.MinFilter;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Morphological erosion of connected components and (assumed binary) FImages.
+ * See {@link MinFilter} for greyscale erosion.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */

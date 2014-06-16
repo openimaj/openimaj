@@ -29,7 +29,10 @@
  */
 package org.openimaj.image.processing.algorithm;
 
+import java.util.Set;
+
 import org.openimaj.image.FImage;
+import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
@@ -40,19 +43,18 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * 
  */
 public class LocalContrastFilter implements SinglebandImageProcessor<Float, FImage> {
-	private int[][] support;
+	private Set<Pixel> support;
 
 	/**
 	 * Construct with the given support region for selecting pixels to take the
-	 * median from. The support mask is a
-	 * <code>[n][2]<code> array of <code>n</code> relative x, y offsets from the
-	 * pixel currently being processed, and can be created using the methods or
-	 * constants in the {@link FilterSupport} class.
+	 * median from. The support mask is a set of <code>n</code> relative x, y
+	 * offsets from the pixel currently being processed, and can be created
+	 * using the methods or constants in the {@link FilterSupport} class.
 	 * 
 	 * @param support
 	 *            the support coordinates
 	 */
-	public LocalContrastFilter(int[][] support) {
+	public LocalContrastFilter(Set<Pixel> support) {
 		this.support = support;
 	}
 
@@ -64,9 +66,9 @@ public class LocalContrastFilter implements SinglebandImageProcessor<Float, FIma
 
 		for (int y = 0; y < image.height; y++) {
 			for (int x = 0; x < image.width; x++) {
-				for (int i = 0; i < support.length; i++) {
-					final int xx = x + support[i][0];
-					final int yy = y + support[i][1];
+				for (final Pixel sp : support) {
+					final int xx = x + sp.x;
+					final int yy = y + sp.y;
 
 					if (xx >= 0 && xx < image.width - 1 && yy >= 0 && yy < image.height - 1) {
 						min = Math.min(min, image.pixels[yy][xx]);

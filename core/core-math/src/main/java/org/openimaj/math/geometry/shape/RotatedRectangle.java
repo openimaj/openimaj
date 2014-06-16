@@ -236,4 +236,10 @@ public class RotatedRectangle implements Shape, Cloneable {
 			throw new RuntimeException(e);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return String.format("RotatedRect[angle=%2.2f, cx=%2.2f, cy=%2.2f, width=%2.2f, height=%2.2f]", rotation, cx, cy,
+				width, height);
+	}
 }

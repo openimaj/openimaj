@@ -41,6 +41,7 @@ import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.util.PolygonUtils;
+import org.openimaj.math.geometry.shape.util.RotatingCalipers;
 
 import Jama.Matrix;
 
@@ -1193,20 +1194,18 @@ public class Polygon extends PointList implements Shape
 	}
 
 	/**
-	 * Test if this is a simple polygon (i.e. one that doesn't have wholes or
-	 * sub-parts). Simple polygons have no <code>innerPolygons</code>.
+	 * Test if this has no inner polygons or sub-parts
 	 * 
 	 * @see Polygon#getInnerPolys()
 	 * 
-	 * @return true if this is a simple polygon; false otherwise.
+	 * @return true if this is polygon has no inner polygons; false otherwise.
 	 */
-	public boolean isSimple() {
+	public boolean hasNoInnerPolygons() {
 		return innerPolygons == null || innerPolygons.size() == 0;
 	}
 
 	@Override
 	public double calculatePerimeter() {
-
 		final Point2d p1 = points.get(0);
 		float p1x = p1.getX();
 		float p1y = p1.getY();
@@ -1254,82 +1253,109 @@ public class Polygon extends PointList implements Shape
 		return signedArea >= 0;
 	}
 
-	@Override
-	public RotatedRectangle minimumBoundingRectangle() {
-		final Polygon convHull = this.isConvex() ? this.clone() : this.calculateConvexHull();
-		convHull.close();
+	/**
+	 * Calculate convex hull using Melkman's algorithm. This is faster than the
+	 * {@link #calculateConvexHull()} method, but will only work for simple
+	 * polygons (those that don't self-intersect)
+	 * <p>
+	 * Based on http://softsurfer.com/Archive/algorithm_0203/algorithm_0203.htm,
+	 * but modified (fixed) to deal with the problem of the initialisation
+	 * points potentially being co-linear.
+	 * <p>
+	 * Copyright 2001, softSurfer (www.softsurfer.com) This code may be freely
+	 * used and modified for any purpose providing that this copyright notice is
+	 * included with it. SoftSurfer makes no warranty for this code, and cannot
+	 * be held liable for any real or imagined damage resulting from its use.
+	 * Users of this code must verify correctness for their application.
+	 * 
+	 * @return A polygon defining the shape of the convex hull
+	 */
+	public Polygon calculateConvexHullMelkman() {
+		if (this.points.size() <= 3)
+			return new Polygon(this.points);
 
-		final Point2d c = this.calculateCentroid();
-		Rectangle ssr = null;
-		double minArea = Double.MAX_VALUE, minAngle = 0.0;
+		final int n = this.points.size();
+		int i = 1;
+		while (i + 1 < n && isLeft(points.get(0), points.get(i), points.get(i + 1)) == 0)
+			i++;
 
-		Point2d ci = convHull.points.get(0);
-		for (int i = 0; i < convHull.points.size() - 1; i++) {
-			final Point2d cii = convHull.points.get(i + 1);
-			final double angle = Math.atan2(cii.getY() - ci.getY(), cii.getX() - ci.getX());
+		if (n - i <= 3)
+			return new Polygon(this.points);
 
-			final Rectangle rect = computeRegularBoundingBoxRotated(convHull, c, -1.0 * angle);
-			final double area = rect.calculateArea();
-
-			if (area < minArea) {
-				minArea = area;
-				ssr = rect;
-				minAngle = angle;
-			}
-			ci = cii;
+		// initialize a deque D[] from bottom to top so that the
+		// 1st three vertices of V[] are a counterclockwise triangle
+		final Point2d[] D = new Point2d[2 * n + 1];
+		int bot = n - 2, top = bot + 3; // initial bottom and top deque indices
+		D[bot] = D[top] = points.get(i + 1); // 3rd vertex is at both bot and
+												// top
+		if (isLeft(points.get(0), points.get(i), points.get(i + 1)) > 0) {
+			D[bot + 1] = points.get(0);
+			D[bot + 2] = points.get(i); // ccw vertices are: 2,0,1,2
+		} else {
+			D[bot + 1] = points.get(i);
+			D[bot + 2] = points.get(0); // ccw vertices are: 2,1,0,2
 		}
 
-		if (ssr == null) {
-			ssr = new Rectangle(c.getX(), c.getY(), 0, 0);
+		i += 2;
+
+		// compute the hull on the deque D[]
+		for (; i < n; i++) { // process the rest of vertices
+			// test if next vertex is inside the deque hull
+			if ((isLeft(D[bot], D[bot + 1], points.get(i)) > 0) &&
+					(isLeft(D[top - 1], D[top], points.get(i)) > 0))
+				continue; // skip an interior vertex
+
+			// incrementally add an exterior vertex to the deque hull
+			// get the rightmost tangent at the deque bot
+			while (isLeft(D[bot], D[bot + 1], points.get(i)) <= 0)
+				++bot; // remove bot of deque
+			D[--bot] = points.get(i); // insert V[i] at bot of deque
+
+			// get the leftmost tangent at the deque top
+			while (isLeft(D[top - 1], D[top], points.get(i)) <= 0)
+				--top; // pop top of deque
+			D[++top] = points.get(i); // push V[i] onto top of deque
 		}
 
-		return ssr.rotate(c, minAngle);
+		// transcribe deque D[] to the output hull array H[]
+		final Polygon H = new Polygon();
+		final List<Point2d> vertices = H.getVertices();
+		for (int h = 0; h <= (top - bot); h++)
+			vertices.add(D[bot + h]);
+
+		return H;
+	}
+
+	private float isLeft(Point2d P0, Point2d P1, Point2d P2) {
+		return (P1.getX() - P0.getX()) * (P2.getY() - P0.getY()) - (P2.getX() -
+				P0.getX()) * (P1.getY() - P0.getY());
 	}
 
 	/**
-	 * Optimised computation of the regular bounding box of a rotated polygon
+	 * Compute the minimum size rotated bounding rectangle that contains this
+	 * shape using the rotating calipers approach.
 	 * 
-	 * @param polygon
-	 *            the polygon
-	 * @param origin
-	 *            the rotation point
-	 * @param angle
-	 *            the rotation angle
-	 * @return the bounds
+	 * @see org.openimaj.math.geometry.shape.Shape#minimumBoundingRectangle()
+	 * @see RotatingCalipers#getMinimumBoundingRectangle(Polygon, boolean)
 	 */
-	private static final Rectangle computeRegularBoundingBoxRotated(Polygon polygon, Point2d origin, double angle) {
-		float xmin = Float.MAX_VALUE, xmax = -Float.MAX_VALUE, ymin = Float.MAX_VALUE, ymax = -Float.MAX_VALUE;
+	@Override
+	public RotatedRectangle minimumBoundingRectangle() {
+		return RotatingCalipers.getMinimumBoundingRectangle(this, false);
+	}
 
-		final float ox = origin.getX();
-		final float oy = origin.getY();
-		final double sin = Math.sin(angle);
-		final double cos = Math.cos(angle);
-
-		final int inSize = polygon.getNumInnerPoly();
-		for (int pp = 0; pp < inSize; pp++)
-		{
-			final Polygon ppp = polygon.getInnerPoly(pp);
-			final int pppSize = ppp.points.size();
-
-			for (int i = 0; i < pppSize; i++) {
-				final Point2d p = ppp.points.get(i);
-				final float px = p.getX();
-				final float py = p.getY();
-				final float rx = (float) (ox + ((px - ox) * cos - (py - oy) * sin));
-				final float ry = (float) (oy + ((px - ox) * sin + (py - oy) * cos));
-
-				if (rx < xmin)
-					xmin = rx;
-				if (rx > xmax)
-					xmax = rx;
-				if (ry < ymin)
-					ymin = ry;
-				if (ry > ymax)
-					ymax = ry;
-
-			}
-		}
-
-		return new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin);
+	/**
+	 * Compute the minimum size rotated bounding rectangle that contains this
+	 * shape using the rotating calipers approach.
+	 * 
+	 * @see RotatingCalipers#getMinimumBoundingRectangle(Polygon, boolean)
+	 * 
+	 * @param assumeSimple
+	 *            can the algorithm assume the polygon is simple and use an
+	 *            optimised (Melkman's) convex hull?
+	 * 
+	 * @return the minimum bounding box
+	 */
+	public RotatedRectangle minimumBoundingRectangle(boolean assumeSimple) {
+		return RotatingCalipers.getMinimumBoundingRectangle(this, assumeSimple);
 	}
 }

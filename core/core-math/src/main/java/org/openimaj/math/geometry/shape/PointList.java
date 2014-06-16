@@ -38,6 +38,7 @@ import org.openimaj.math.geometry.GeometricObject;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.util.GrahamScan;
 
 import Jama.Matrix;
 
@@ -501,64 +502,12 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	}
 
 	/**
-	 * Calculate convex hull using Melkman's algorithm. Based on
-	 * http://softsurfer.com/Archive/algorithm_0203/algorithm_0203.htm
-	 * <p>
-	 * Copyright 2001, softSurfer (www.softsurfer.com) This code may be freely
-	 * used and modified for any purpose providing that this copyright notice is
-	 * included with it. SoftSurfer makes no warranty for this code, and cannot
-	 * be held liable for any real or imagined damage resulting from its use.
-	 * Users of this code must verify correctness for their application.
+	 * Calculate the convext hull of the points using the Graham Scan algorithm.
 	 * 
-	 * @return A polygon defining the shape of the convex hull
+	 * @see GrahamScan
+	 * @return the convex hull
 	 */
 	public Polygon calculateConvexHull() {
-		if (this.points.size() <= 3)
-			return new Polygon(this.points);
-
-		// initialize a deque D[] from bottom to top so that the
-		// 1st three vertices of V[] are a counterclockwise triangle
-		final int n = this.points.size();
-		final Point2d[] D = new Point2d[2 * n + 1];
-		int bot = n - 2, top = bot + 3; // initial bottom and top deque indices
-		D[bot] = D[top] = points.get(2); // 3rd vertex is at both bot and top
-		if (isLeft(points.get(0), points.get(1), points.get(2)) > 0) {
-			D[bot + 1] = points.get(0);
-			D[bot + 2] = points.get(1); // ccw vertices are: 2,0,1,2
-		} else {
-			D[bot + 1] = points.get(1);
-			D[bot + 2] = points.get(0); // ccw vertices are: 2,1,0,2
-		}
-
-		// compute the hull on the deque D[]
-		for (int i = 3; i < n; i++) { // process the rest of vertices
-			// test if next vertex is inside the deque hull
-			if ((isLeft(D[bot], D[bot + 1], points.get(i)) > 0) &&
-					(isLeft(D[top - 1], D[top], points.get(i)) > 0))
-				continue; // skip an interior vertex
-
-			// incrementally add an exterior vertex to the deque hull
-			// get the rightmost tangent at the deque bot
-			while (isLeft(D[bot], D[bot + 1], points.get(i)) <= 0)
-				++bot; // remove bot of deque
-			D[--bot] = points.get(i); // insert V[i] at bot of deque
-
-			// get the leftmost tangent at the deque top
-			while (isLeft(D[top - 1], D[top], points.get(i)) <= 0)
-				--top; // pop top of deque
-			D[++top] = points.get(i); // push V[i] onto top of deque
-		}
-
-		// transcribe deque D[] to the output hull array H[]
-		final Polygon H = new Polygon();
-		final List<Point2d> vertices = H.getVertices();
-		for (int h = 0; h <= (top - bot); h++)
-			vertices.add(D[bot + h]);
-
-		return H;
-	}
-
-	private float isLeft(Point2d P0, Point2d P1, Point2d P2) {
-		return (P1.getX() - P0.getX()) * (P2.getY() - P0.getY()) - (P2.getX() - P0.getX()) * (P1.getY() - P0.getY());
+		return GrahamScan.getConvexHull(this.points);
 	}
 }

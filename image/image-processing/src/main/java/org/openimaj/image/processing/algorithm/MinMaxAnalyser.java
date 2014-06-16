@@ -29,12 +29,16 @@
  */
 package org.openimaj.image.processing.algorithm;
 
+import java.util.Set;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.image.pixel.Pixel;
 
 /**
  * Analyser that computes for every pixel the minimum and maximum of its
- * neighbours.
+ * neighbours. This is equivalent to greyscale morphological erosion and
+ * dilation.
  * 
  * @see MinFilter
  * @see MaxFilter
@@ -43,7 +47,9 @@ import org.openimaj.image.analyser.ImageAnalyser;
  * 
  */
 public class MinMaxAnalyser implements ImageAnalyser<FImage> {
-	private int[][] support;
+	private Set<Pixel> support;
+	private int blockWidth = -1;
+	private int blockHeight = -1;
 
 	/**
 	 * The min filtered image computed from the last call to
@@ -59,16 +65,20 @@ public class MinMaxAnalyser implements ImageAnalyser<FImage> {
 
 	/**
 	 * Construct with the given support region for selecting pixels to take the
-	 * median from. The support mask is a
-	 * <code>[n][2]<code> array of <code>n</code> relative x, y offsets from the
-	 * pixel currently being processed, and can be created using the methods or
-	 * constants in the {@link FilterSupport} class.
+	 * median from. The support mask is a set of <code>n</code> relative x, y
+	 * offsets from the pixel currently being processed, and can be created
+	 * using the methods or constants in the {@link FilterSupport} class.
 	 * 
 	 * @param support
 	 *            the support coordinates
 	 */
-	public MinMaxAnalyser(int[][] support) {
+	public MinMaxAnalyser(Set<Pixel> support) {
 		this.support = support;
+
+		if (FilterSupport.isBlockSupport(support)) {
+			blockWidth = FilterSupport.getSupportWidth(support);
+			blockHeight = FilterSupport.getSupportHeight(support);
+		}
 	}
 
 	@Override
@@ -76,23 +86,107 @@ public class MinMaxAnalyser implements ImageAnalyser<FImage> {
 		min = new FImage(image.width, image.height);
 		max = new FImage(image.width, image.height);
 
-		float minv = Float.MAX_VALUE;
-		float maxv = -Float.MAX_VALUE;
+		if (blockHeight >= 1 && blockWidth >= 1) {
+			processBlock(image, blockWidth, blockHeight);
+		} else {
+			for (int y = 0; y < image.height; y++) {
+				for (int x = 0; x < image.width; x++) {
+					float minv = Float.MAX_VALUE;
+					float maxv = -Float.MAX_VALUE;
 
-		for (int y = 0; y < image.height; y++) {
-			for (int x = 0; x < image.width; x++) {
-				for (int i = 0; i < support.length; i++) {
-					final int xx = x + support[i][0];
-					final int yy = y + support[i][1];
+					for (final Pixel sp : support) {
+						final int xx = x + sp.x;
+						final int yy = y + sp.y;
 
-					if (xx >= 0 && xx < image.width - 1 && yy >= 0 && yy < image.height - 1) {
-						minv = Math.min(minv, min.pixels[yy][xx]);
-						maxv = Math.max(maxv, max.pixels[yy][xx]);
+						if (xx >= 0 && xx < image.width - 1 && yy >= 0 && yy < image.height -
+								1)
+						{
+							minv = Math.min(minv, image.pixels[yy][xx]);
+							maxv = Math.max(maxv, image.pixels[yy][xx]);
+						}
 					}
+
+					min.pixels[y][x] = minv;
+					max.pixels[y][x] = maxv;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Efficient processing of block support regions through separable passes
+	 * over the data.
+	 * 
+	 * @param image
+	 *            the image
+	 * @param width
+	 *            the width
+	 * @param height
+	 *            the height
+	 */
+	private void processBlock(FImage image, int width, int height) {
+		final int halfWidth = width / 2;
+		final float buffer[] = new float[image.width + width];
+
+		for (int r = 0; r < image.height; r++) {
+			for (int i = 0; i < halfWidth; i++)
+				buffer[i] = image.pixels[r][0];
+			for (int i = 0; i < image.width; i++)
+				buffer[halfWidth + i] = image.pixels[r][i];
+			for (int i = 0; i < halfWidth; i++)
+				buffer[halfWidth + image.width + i] = image.pixels[r][image.width - 1];
+
+			final int l = buffer.length - width;
+			for (int i = 0; i < l; i++) {
+				float min = Float.MAX_VALUE;
+				float max = -Float.MAX_VALUE;
+
+				for (int j = 0; j < width; j++) {
+					min = Math.min(buffer[i + j], min);
+					max = Math.max(buffer[i + j], max);
 				}
 
-				min.pixels[y][x] = minv;
-				max.pixels[y][x] = maxv;
+				this.min.pixels[r][i] = min;
+				this.max.pixels[r][i] = max;
+			}
+		}
+
+		final int halfHeight = height / 2;
+
+		final float minbuffer[] = new float[min.height + height];
+		final float maxbuffer[] = new float[max.height + height];
+
+		for (int c = 0; c < min.width; c++) {
+			for (int i = 0; i < halfHeight; i++) {
+				minbuffer[i] = min.pixels[0][c];
+				maxbuffer[i] = max.pixels[0][c];
+			}
+			for (int i = 0; i < min.height; i++) {
+				minbuffer[halfHeight + i] = min.pixels[i][c];
+				maxbuffer[halfHeight + i] = max.pixels[i][c];
+			}
+			for (int i = 0; i < halfHeight; i++) {
+				minbuffer[halfHeight + min.height + i] = min.pixels[min.height - 1][c];
+				maxbuffer[halfHeight + min.height + i] = max.pixels[max.height - 1][c];
+			}
+
+			final int l = minbuffer.length - height;
+			for (int i = 0; i < l; i++) {
+				float minv = Float.MAX_VALUE;
+				float maxv = -Float.MAX_VALUE;
+
+				for (int j = 0; j < height; j++) {
+					minv = Math.min(minbuffer[i + j], minv);
+					maxv = Math.max(maxbuffer[i + j], maxv);
+				}
+
+				minbuffer[i] = minv;
+				maxbuffer[i] = maxv;
+			}
+
+			for (int r = 0; r < min.height; r++) {
+				min.pixels[r][c] = minbuffer[r];
+				max.pixels[r][c] = maxbuffer[r];
 			}
 		}
 	}

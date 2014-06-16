@@ -35,12 +35,14 @@ import java.util.Set;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.processing.algorithm.MaxFilter;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Morphological dilation of connected components and (assumed binary) FImages.
+ * See {@link MaxFilter} for greyscale dilation.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
