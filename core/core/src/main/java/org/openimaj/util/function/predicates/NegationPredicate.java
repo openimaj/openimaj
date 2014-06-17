@@ -27,7 +27,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.util.function;
+package org.openimaj.util.function.predicates;
+
+import org.openimaj.util.function.Predicate;
 
 /**
  * Negates the result of another {@link Predicate}.
