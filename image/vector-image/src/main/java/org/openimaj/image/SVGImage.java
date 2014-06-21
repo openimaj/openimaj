@@ -153,6 +153,11 @@ public class SVGImage extends Image<Float[], SVGImage> {
 	}
 
 	@Override
+	public SVGImage extractCentreSubPix(float cx, float cy, SVGImage out) {
+		return extractCenter((int) cx, (int) cy, out.getWidth(), out.getHeight());
+	}
+
+	@Override
 	public SVGImage fill(Float[] colour) {
 		final SVGRenderHints hint = (SVGRenderHints) this.renderer.getRenderHints();
 		this.renderer = new SVGRenderer(hint);
