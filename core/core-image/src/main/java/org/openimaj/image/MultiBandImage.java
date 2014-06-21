@@ -1348,4 +1348,11 @@ public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBan
 			this.bands.get(b).replace(target[b], replacement[b]);
 		return (I) this;
 	}
+
+	@Override
+	public I extractCentreSubPix(float cx, float cy, I out) {
+		for (int b = 0; b < this.bands.size(); b++)
+			this.bands.get(b).extractCentreSubPix(cx, cy, out.bands.get(b));
+		return out;
+	}
 }

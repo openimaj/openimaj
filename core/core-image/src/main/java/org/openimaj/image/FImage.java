@@ -1850,4 +1850,18 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 		return this;
 	}
+
+	@Override
+	public FImage extractCentreSubPix(float cx, float cy, FImage out) {
+		final int width = out.width;
+		final int height = out.height;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				final float ix = (float) (x + cx - (width - 1) * 0.5);
+				final float iy = (float) (y + cy - (height - 1) * 0.5);
+				out.pixels[y][x] = this.getPixelInterpNative(ix, iy, 0f);
+			}
+		}
+		return out;
+	}
 }

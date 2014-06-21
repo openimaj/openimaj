@@ -80,6 +80,18 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	}
 
 	/**
+	 * Construct an empty RGB image (3 bands)
+	 * 
+	 * @param width
+	 *            Width of image
+	 * @param height
+	 *            Height of image
+	 */
+	public MBFImage(final int width, final int height) {
+		this(width, height, ColourSpace.RGB);
+	}
+
+	/**
 	 * Construct an empty image
 	 * 
 	 * @param width

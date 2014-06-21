@@ -2211,4 +2211,79 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A reference to this image.
 	 */
 	public abstract I replace(Q target, Q replacement);
+
+	/**
+	 * Sub-pixel sampling of a centred rectangular region such that
+	 * <code>dst(x, y) = src(x + center.x   (width(dst)   1) ⇤ 0.5, y + center.y   (height(dst)   1) ⇤ 0.5)</code>
+	 * . Sub-pixels values are estimated using bilinear interpolation.
+	 * 
+	 * @see #getPixelInterp(double, double)
+	 * 
+	 * @param centre
+	 *            the centre
+	 * @param width
+	 *            the region width
+	 * @param height
+	 *            the region height
+	 * @return the extracted sub-pixel region
+	 */
+	public I extractCentreSubPix(Point2d centre, int width, int height) {
+		return extractCentreSubPix(centre.getX(), centre.getY(), width, height);
+	}
+
+	/**
+	 * Sub-pixel sampling of a centred rectangular region such that
+	 * <code>dst(x, y) = src(x + center.x   (width(dst)   1) ⇤ 0.5, y + center.y   (height(dst)   1) ⇤ 0.5)</code>
+	 * . Sub-pixels values are estimated using bilinear interpolation.
+	 * 
+	 * @see #getPixelInterp(double, double)
+	 * @param cx
+	 *            the x-ordinate of the centre
+	 * @param cy
+	 *            the y-ordinate of the centre
+	 * @param width
+	 *            the region width
+	 * @param height
+	 *            the region height
+	 * @return the extracted sub-pixel region
+	 */
+	public I extractCentreSubPix(float cx, float cy, int width, int height) {
+		final I out = newInstance(width, height);
+		return extractCentreSubPix(cx, cy, out);
+	}
+
+	/**
+	 * Sub-pixel sampling of a centred rectangular region such that
+	 * <code>dst(x, y) = src(x + center.x   (width(dst)   1) ⇤ 0.5, y + center.y   (height(dst)   1) ⇤ 0.5)</code>
+	 * . Sub-pixels values are estimated using bilinear interpolation.
+	 * 
+	 * @see #getPixelInterp(double, double)
+	 * 
+	 * @param centre
+	 *            the centre
+	 * @param out
+	 *            the output image (also defines the size of the extracted
+	 *            region)
+	 * @return <code>out</code>
+	 */
+	public I extractCentreSubPix(Point2d centre, I out) {
+		return extractCentreSubPix(centre.getX(), centre.getY(), out);
+	}
+
+	/**
+	 * Sub-pixel sampling of a centred rectangular region such that
+	 * <code>dst(x, y) = src(x + center.x   (width(dst)   1) ⇤ 0.5, y + center.y   (height(dst)   1) ⇤ 0.5)</code>
+	 * . Sub-pixels values are estimated using bilinear interpolation.
+	 * 
+	 * @see #getPixelInterp(double, double)
+	 * @param cx
+	 *            the x-ordinate of the centre
+	 * @param cy
+	 *            the y-ordinate of the centre
+	 * @param out
+	 *            the output image (also defines the size of the extracted
+	 *            region)
+	 * @return <code>out</code>
+	 */
+	public abstract I extractCentreSubPix(float cx, float cy, I out);
 }

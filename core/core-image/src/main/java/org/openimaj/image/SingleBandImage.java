@@ -34,32 +34,33 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.image.processor.SinglebandKernelProcessor;
 
 /**
- *	A base class for representing a single band image of any pixel type.  		
+ * A base class for representing a single band image of any pixel type.
  * 
- *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *  @param <Q> The pixel type
- *  @param <I> The concrete image subclass type.
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @param <Q>
+ *            The pixel type
+ * @param <I>
+ *            The concrete image subclass type.
  */
-public abstract class SingleBandImage<
-		Q extends Comparable<Q>, 
-		I extends SingleBandImage<Q,I>> 
-	extends 
-		Image<Q,I> 
-	implements 
-		SinglebandImageProcessor.Processable<Q,I,I>, 
-		SinglebandKernelProcessor.Processable<Q,I,I> 
+public abstract class SingleBandImage<Q extends Comparable<Q>, I extends SingleBandImage<Q, I>>
+		extends
+		Image<Q, I>
+		implements
+		SinglebandImageProcessor.Processable<Q, I, I>,
+		SinglebandKernelProcessor.Processable<Q, I, I>
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	/** The image height */
 	public int height;
-	
+
 	/** The image width */
 	public int width;
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#getHeight()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.Image#getHeight()
 	 */
 	@Override
 	public int getHeight() {
@@ -67,8 +68,9 @@ public abstract class SingleBandImage<
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#getWidth()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.Image#getWidth()
 	 */
 	@Override
 	public int getWidth() {
@@ -76,157 +78,170 @@ public abstract class SingleBandImage<
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#process(org.openimaj.image.processor.KernelProcessor)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.Image#process(org.openimaj.image.processor.KernelProcessor)
 	 */
 	@Override
-	public I process(KernelProcessor<Q,I> p) {
+	public I process(KernelProcessor<Q, I> p) {
 		return process(p, false);
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#process(org.openimaj.image.processor.KernelProcessor, boolean)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.Image#process(org.openimaj.image.processor.KernelProcessor,
+	 *      boolean)
 	 */
 	@Override
-	public I process(KernelProcessor<Q,I> p, boolean pad) {
-		I newImage = newInstance(width, height);
-		I tmp = newInstance(p.getKernelWidth(), p.getKernelHeight());
-		
-		int hh = p.getKernelHeight() / 2;
-		int hw = p.getKernelWidth() / 2;
-		
+	public I process(KernelProcessor<Q, I> p, boolean pad) {
+		final I newImage = newInstance(width, height);
+		final I tmp = newInstance(p.getKernelWidth(), p.getKernelHeight());
+
+		final int hh = p.getKernelHeight() / 2;
+		final int hw = p.getKernelWidth() / 2;
+
 		if (!pad) {
-			for (int y=hh; y<getHeight() - (p.getKernelHeight() - hh); y++) {
-				for (int x=hw; x<getWidth() - (p.getKernelWidth() - hw); x++) {
+			for (int y = hh; y < getHeight() - (p.getKernelHeight() - hh); y++) {
+				for (int x = hw; x < getWidth() - (p.getKernelWidth() - hw); x++) {
 					newImage.setPixel(x, y, p.processKernel(this.extractROI(x, y, tmp)));
 				}
 			}
 		} else {
-			for (int y=0; y<getHeight(); y++) {
-				for (int x=0; x<getWidth(); x++) {
+			for (int y = 0; y < getHeight(); y++) {
+				for (int x = 0; x < getWidth(); x++) {
 					newImage.setPixel(x, y, p.processKernel(this.extractROI(x, y, tmp)));
 				}
 			}
 		}
-		
+
 		return newImage;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
-	public I process(SinglebandKernelProcessor<Q,I> p) {
+	public I process(SinglebandKernelProcessor<Q, I> p) {
 		return process(p, false);
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor,
+	 *      boolean)
 	 */
 	@Override
-	public I process(SinglebandKernelProcessor<Q,I> p, boolean pad) {
-		I newImage = newInstance(width, height);
-		I tmp = newInstance(p.getKernelWidth(), p.getKernelHeight());
-		
-		int hh = p.getKernelHeight() / 2;
-		int hw = p.getKernelWidth() / 2;
-		
+	public I process(SinglebandKernelProcessor<Q, I> p, boolean pad) {
+		final I newImage = newInstance(width, height);
+		final I tmp = newInstance(p.getKernelWidth(), p.getKernelHeight());
+
+		final int hh = p.getKernelHeight() / 2;
+		final int hw = p.getKernelWidth() / 2;
+
 		if (!pad) {
-			for (int y=hh; y<getHeight() - (p.getKernelHeight() - hh); y++) {
-				for (int x=hw; x<getWidth() - (p.getKernelWidth() - hw); x++) {
+			for (int y = hh; y < getHeight() - (p.getKernelHeight() - hh); y++) {
+				for (int x = hw; x < getWidth() - (p.getKernelWidth() - hw); x++) {
 					newImage.setPixel(x, y, p.processKernel(this.extractROI(x, y, tmp)));
 				}
 			}
 		} else {
-			for (int y=0; y<getHeight(); y++) {
-				for (int x=0; x<getWidth(); x++) {
+			for (int y = 0; y < getHeight(); y++) {
+				for (int x = 0; x < getWidth(); x++) {
 					newImage.setPixel(x, y, p.processKernel(this.extractROI(x, y, tmp)));
 				}
 			}
 		}
-		
+
 		return newImage;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
-	public I processInplace(SinglebandKernelProcessor<Q,I> p) {
+	public I processInplace(SinglebandKernelProcessor<Q, I> p) {
 		return processInplace(p, false);
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor,
+	 *      boolean)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public I processInplace(SinglebandKernelProcessor<Q,I> p, boolean pad) {
-		I newImage = process(p, pad);
+	public I processInplace(SinglebandKernelProcessor<Q, I> p, boolean pad) {
+		final I newImage = process(p, pad);
 		this.internalAssign(newImage);
-		return (I)this;
+		return (I) this;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor)
 	 */
 	@Override
 	public I process(SinglebandImageProcessor<Q, I> p) {
-		I newImage = this.clone();
+		final I newImage = this.clone();
 		newImage.processInplace(p);
 		return newImage;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandImageProcessor)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandImageProcessor)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public I processInplace(SinglebandImageProcessor<Q, I> p) {
-		p.processImage((I)this);
-		return (I)this;
+		p.processImage((I) this);
+		return (I) this;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#fill(java.lang.Object)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.Image#fill(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public I fill(Q colour) {
-		for( int y = 0; y < getHeight(); y++ )
-			for( int x = 0; x < getWidth(); x++ )
+		for (int y = 0; y < getHeight(); y++)
+			for (int x = 0; x < getWidth(); x++)
 				this.setPixel(x, y, colour);
-		
-		return (I)this;
+
+		return (I) this;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#clone()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.image.Image#clone()
 	 */
 	@Override
-	public abstract I clone();	
-	
+	public abstract I clone();
+
 	@Override
 	public boolean equals(Object obj) {
 		@SuppressWarnings("unchecked")
-		I that = (I)obj;
-		for( int y = 0; y < getHeight(); y++ )
-			for( int x = 0; x < getWidth(); x++ )
+		final I that = (I) obj;
+		for (int y = 0; y < getHeight(); y++)
+			for (int x = 0; x < getWidth(); x++)
 			{
-				boolean fail = !this.getPixel(x, y).equals(that.getPixel(x, y));
-				if(fail) return false;
+				final boolean fail = !this.getPixel(x, y).equals(that.getPixel(x, y));
+				if (fail)
+					return false;
 			}
-		
+
 		return true;
 	}
 }
-
