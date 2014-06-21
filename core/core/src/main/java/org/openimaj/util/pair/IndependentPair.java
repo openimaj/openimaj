@@ -217,4 +217,55 @@ public class IndependentPair<A, B> {
 			}
 		};
 	}
+
+	/**
+	 * Create a pair list from the given objects.
+	 * 
+	 * @param <T>
+	 *            Type of objects.
+	 * @param t
+	 *            The list of first objects.
+	 * @param q
+	 *            The list of second objects.
+	 * @return The list of pairs.
+	 */
+	public static <T, Q> List<IndependentPair<T, Q>> pairList(final List<T> t, final List<Q> q) {
+		final List<IndependentPair<T, Q>> list = new ArrayList<IndependentPair<T, Q>>(t.size());
+
+		for (int i = 0; i < t.size(); i++) {
+			list.add(new IndependentPair<T, Q>(t.get(i), q.get(i)));
+		}
+
+		return list;
+	}
+
+	/**
+	 * Create a new {@link IndependentPair} from this one with the elements
+	 * swapped
+	 * 
+	 * @return the swapped pair
+	 */
+	public IndependentPair<B, A> swap() {
+		return new IndependentPair<B, A>(o2, o1);
+	}
+
+	/**
+	 * Swap the order of the pairs
+	 * 
+	 * @param data
+	 *            the input
+	 * @return the swapped data
+	 */
+	public static <T, Q> List<IndependentPair<? extends Q, ? extends T>> swapList(
+			List<? extends IndependentPair<? extends T, ? extends Q>> data)
+	{
+		final List<IndependentPair<? extends Q, ? extends T>> list = new ArrayList<IndependentPair<? extends Q, ? extends T>>(
+				data.size());
+
+		for (int i = 0; i < data.size(); i++) {
+			list.add(data.get(i).swap());
+		}
+
+		return list;
+	}
 }
