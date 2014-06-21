@@ -36,76 +36,86 @@ import Jama.Matrix;
  * Methods for calculating the Moore-Penrose Pseudo-Inverse
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class PseudoInverse {
 	/**
 	 * Compute the Moore-Penrose Pseudo-Inverse.
-	 * @param matrix The matrix to invert.
+	 * 
+	 * @param matrix
+	 *            The matrix to invert.
 	 * @return the pseudo-inverse.
 	 */
 	public static Matrix pseudoInverse(Matrix matrix) {
-		no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(matrix.getArray());
+		final no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(matrix.getArray());
 		no.uib.cipr.matrix.SVD svd;
-		
+
 		try {
 			svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
-		} catch (NotConvergedException e) {
+		} catch (final NotConvergedException e) {
 			throw new RuntimeException(e);
 		}
 
-		Matrix Sinv = new Matrix(matrix.getColumnDimension(), matrix.getRowDimension());
-		
-		double[] Sarr = svd.getS();
-		for (int i=0; i<svd.getS().length; i++) {
-			Sinv.set(i, i, 1.0 / Sarr[i]);  
+		final Matrix Sinv = new Matrix(matrix.getColumnDimension(), matrix.getRowDimension());
+
+		final double[] Sarr = svd.getS();
+		for (int i = 0; i < svd.getS().length; i++) {
+			if (Sarr[i] != 0)
+				Sinv.set(i, i, 1.0 / Sarr[i]);
 		}
-		
-		Matrix Vt = new Matrix(svd.getVt().numRows(), svd.getVt().numColumns());
-		for (int r=0; r<svd.getVt().numRows(); r++) {
-			for (int c=0; c<svd.getVt().numColumns(); c++) {
-				Vt.set(r,c, svd.getVt().get(r, c));
+
+		final Matrix Vt = new Matrix(svd.getVt().numRows(), svd.getVt().numColumns());
+		for (int r = 0; r < svd.getVt().numRows(); r++) {
+			for (int c = 0; c < svd.getVt().numColumns(); c++) {
+				Vt.set(r, c, svd.getVt().get(r, c));
 			}
 		}
-		
-		Matrix U = new Matrix(svd.getU().numRows(), svd.getU().numColumns());
-		for (int r=0; r<svd.getU().numRows(); r++) {
-			for (int c=0; c<svd.getU().numColumns(); c++) {
-				U.set(r,c, svd.getU().get(r, c));
+
+		final Matrix U = new Matrix(svd.getU().numRows(), svd.getU().numColumns());
+		for (int r = 0; r < svd.getU().numRows(); r++) {
+			for (int c = 0; c < svd.getU().numColumns(); c++) {
+				U.set(r, c, svd.getU().get(r, c));
 			}
 		}
-		
-		Matrix pinv = Vt.transpose().times(Sinv).times(U.transpose());
-		
+
+		final Matrix pinv = Vt.transpose().times(Sinv).times(U.transpose());
+
 		return pinv;
 	}
 
 	/**
 	 * Compute the lower-rank approximation of the Moore-Penrose Pseudo-Inverse.
-	 * @param matrix The matrix to invert.
-	 * @param rank the desired rank.
+	 * 
+	 * @param matrix
+	 *            The matrix to invert.
+	 * @param rank
+	 *            the desired rank.
 	 * @return the pseudo-inverse.
 	 */
 	public static Matrix pseudoInverse(Matrix matrix, int rank) {
 		return pseudoInverse(new JamaDenseMatrix(matrix), rank);
 	}
-	
+
 	/**
 	 * Compute the lower-rank approximation of the Moore-Penrose Pseudo-Inverse.
-	 * @param matrix The matrix to invert.
-	 * @param rank the desired rank.
+	 * 
+	 * @param matrix
+	 *            The matrix to invert.
+	 * @param rank
+	 *            the desired rank.
 	 * @return the pseudo-inverse.
 	 */
 	public static Matrix pseudoInverse(ch.akuhn.matrix.Matrix matrix, int rank) {
-		ThinSingularValueDecomposition tsvd = new ThinSingularValueDecomposition(matrix, rank);
-		
-		Matrix Sinv = new Matrix(tsvd.S.length, tsvd.S.length);
-		for (int i=0; i<tsvd.S.length; i++) {
-			Sinv.set(i, i, 1.0 / tsvd.S[i]);  
+		final ThinSingularValueDecomposition tsvd = new ThinSingularValueDecomposition(matrix, rank);
+
+		final Matrix Sinv = new Matrix(tsvd.S.length, tsvd.S.length);
+		for (int i = 0; i < tsvd.S.length; i++) {
+			if (tsvd.S[i] != 0)
+				Sinv.set(i, i, 1.0 / tsvd.S[i]);
 		}
-		
-		Matrix pinv = tsvd.Vt.transpose().times(Sinv).times(tsvd.U.transpose());
-		
+
+		final Matrix pinv = tsvd.Vt.transpose().times(Sinv).times(tsvd.U.transpose());
+
 		return pinv;
 	}
 }

@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import odk.lang.FastMath;
+
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 
@@ -91,7 +93,7 @@ public final class GrahamScan {
 
 		final List<Point2d> sorted = new ArrayList<Point2d>(getSortedPoint2dSet(Point2ds));
 
-		if (sorted.size() < 3) {
+		if (sorted.size() <= 3) {
 			return new Polygon(Point2ds);
 		}
 
@@ -181,8 +183,8 @@ public final class GrahamScan {
 					return 0;
 				}
 
-				final double thetaA = Math.atan2((long) a.getY() - lowest.getY(), (long) a.getX() - lowest.getX());
-				final double thetaB = Math.atan2((long) b.getY() - lowest.getY(), (long) b.getX() - lowest.getX());
+				final double thetaA = FastMath.atan2(a.getY() - lowest.getY(), a.getX() - lowest.getX());
+				final double thetaB = FastMath.atan2(b.getY() - lowest.getY(), b.getX() - lowest.getX());
 
 				if (thetaA < thetaB) {
 					return -1;
@@ -192,16 +194,13 @@ public final class GrahamScan {
 				}
 				else {
 					// collinear with the 'lowest' Point2d, let the Point2d
-					// closest
-					// to it come first
-
-					// use longs to guard against int-over/underflow
-					final double distanceA = Math.sqrt((((long) lowest.getX() - a.getX()) * ((long) lowest.getX() - a
+					// closest to it come first
+					final double distanceA = FastMath.sqrt(((lowest.getX() - a.getX()) * (lowest.getX() - a
 							.getX())) +
-							(((long) lowest.getY() - a.getY()) * ((long) lowest.getY() - a.getY())));
-					final double distanceB = Math.sqrt((((long) lowest.getX() - b.getX()) * ((long) lowest.getX() - b
+							((lowest.getY() - a.getY()) * (lowest.getY() - a.getY())));
+					final double distanceB = FastMath.sqrt(((lowest.getX() - b.getX()) * (lowest.getX() - b
 							.getX())) +
-							(((long) lowest.getY() - b.getY()) * ((long) lowest.getY() - b.getY())));
+							((lowest.getY() - b.getY()) * (lowest.getY() - b.getY())));
 
 					if (distanceA < distanceB) {
 						return -1;
@@ -240,8 +239,6 @@ public final class GrahamScan {
 	 *         Point2ds <code>a</code>, <code>b</code> and <code>c</code>.
 	 */
 	protected static Turn getTurn(Point2d a, Point2d b, Point2d c) {
-
-		// use longs to guard against int-over/underflow
 		final double crossProduct = ((b.getX() - a.getX()) * (c.getY() - a.getY())) -
 				((b.getY() - a.getY()) * (c.getX() - a.getX()));
 

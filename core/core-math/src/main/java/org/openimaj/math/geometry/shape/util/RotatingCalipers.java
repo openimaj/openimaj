@@ -25,6 +25,8 @@ ng without limitation the rights to use,
  */
 package org.openimaj.math.geometry.shape.util;
 
+import odk.lang.FastMath;
+
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -60,8 +62,8 @@ public final class RotatingCalipers {
 		final double deltaXBC = rectangle[1].x - rectangle[2].x;
 		final double deltaYBC = rectangle[1].y - rectangle[2].y;
 
-		final double lengthAB = Math.sqrt((deltaXAB * deltaXAB) + (deltaYAB * deltaYAB));
-		final double lengthBC = Math.sqrt((deltaXBC * deltaXBC) + (deltaYBC * deltaYBC));
+		final double lengthAB = FastMath.sqrt((deltaXAB * deltaXAB) + (deltaYAB * deltaYAB));
+		final double lengthBC = FastMath.sqrt((deltaXBC * deltaXBC) + (deltaYBC * deltaYBC));
 
 		return lengthAB * lengthBC;
 	}
@@ -126,8 +128,8 @@ public final class RotatingCalipers {
 		final double deltaXBC = rectangle[1].x - rectangle[2].x;
 		final double deltaYBC = rectangle[1].y - rectangle[2].y;
 
-		final double lengthAB = Math.sqrt((deltaXAB * deltaXAB) + (deltaYAB * deltaYAB));
-		final double lengthBC = Math.sqrt((deltaXBC * deltaXBC) + (deltaYBC * deltaYBC));
+		final double lengthAB = FastMath.sqrt((deltaXAB * deltaXAB) + (deltaYAB * deltaYAB));
+		final double lengthBC = FastMath.sqrt((deltaXBC * deltaXBC) + (deltaYBC * deltaYBC));
 
 		final double cx = (rectangle[0].x + rectangle[1].x + rectangle[2].x + rectangle[3].x) / 4;
 		final double cy = (rectangle[0].y + rectangle[1].y + rectangle[2].y + rectangle[3].y) / 4;
@@ -217,7 +219,7 @@ public final class RotatingCalipers {
 			final double deltaX = p2.getX() - p1.getX();
 			final double deltaY = p2.getY() - p1.getY();
 
-			final double angle = Math.atan2(deltaY, deltaX);
+			final double angle = FastMath.atan2(deltaY, deltaX);
 
 			return angle < 0 ? ANGLE_360DEG_IN_RADS + angle : angle;
 		}

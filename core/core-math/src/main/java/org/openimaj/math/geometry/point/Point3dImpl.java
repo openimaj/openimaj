@@ -37,10 +37,9 @@ import java.util.Scanner;
 
 import Jama.Matrix;
 
-
 /**
  * Simple concrete implementation of a three dimensional point.
- *  
+ * 
  * @author Jonathon Hare
  */
 public class Point3dImpl implements Point3d, Cloneable {
@@ -48,22 +47,26 @@ public class Point3dImpl implements Point3d, Cloneable {
 	 * The x-ordinate
 	 */
 	public double x;
-	
+
 	/**
-	 * The y-ordinate 
+	 * The y-ordinate
 	 */
 	public double y;
-	
+
 	/**
-	 * The z-ordinate 
+	 * The z-ordinate
 	 */
 	public double z;
-	
+
 	/**
-	 * Construct a Point3dImpl with the given (x, y) coordinates
-	 * @param x x-ordinate
-	 * @param y y-ordinate
-	 * @param z z-ordinate
+	 * Construct a Point3dImpl with the given (x, y, z) coordinates
+	 * 
+	 * @param x
+	 *            x-ordinate
+	 * @param y
+	 *            y-ordinate
+	 * @param z
+	 *            z-ordinate
 	 */
 	public Point3dImpl(double x, double y, double z)
 	{
@@ -71,23 +74,39 @@ public class Point3dImpl implements Point3d, Cloneable {
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	/**
-	 * 	Construct a Point3dImpl with the (x,y,z) coordinates
-	 * 	given via another point.
-	 *  @param p The point to copy from.
+	 * Construct a Point3dImpl with the given (x, y, z) coordinates packed into
+	 * an array
+	 * 
+	 * @param array
+	 *            the coordinates ([x, y, z])
 	 */
-	public Point3dImpl( Point3d p )
+	public Point3dImpl(double[] array)
 	{
-		this.copyFrom( p );
+		this.x = array[0];
+		this.y = array[1];
+		this.z = array[2];
 	}
-	
+
 	/**
-	 * 	Construct a Point3dImpl at the origin.
+	 * Construct a Point3dImpl with the (x,y,z) coordinates given via another
+	 * point.
+	 * 
+	 * @param p
+	 *            The point to copy from.
+	 */
+	public Point3dImpl(Point3d p)
+	{
+		this.copyFrom(p);
+	}
+
+	/**
+	 * Construct a Point3dImpl at the origin.
 	 */
 	public Point3dImpl()
 	{
-		//do nothing
+		// do nothing
 	}
 
 	@Override
@@ -109,7 +128,7 @@ public class Point3dImpl implements Point3d, Cloneable {
 	public void setY(double y) {
 		this.y = y;
 	}
-	
+
 	@Override
 	public double getZ() {
 		return z;
@@ -121,24 +140,24 @@ public class Point3dImpl implements Point3d, Cloneable {
 	}
 
 	@Override
-	public void copyFrom( Point3d p )
+	public void copyFrom(Point3d p)
 	{
 		this.x = p.getX();
 		this.y = p.getY();
 		this.z = p.getZ();
 	}
-	
+
 	@Override
 	public String toString() {
-		return "("+x+","+y+","+z+")";
+		return "(" + x + "," + y + "," + z + ")";
 	}
-	
+
 	@Override
 	public Point3dImpl clone() {
 		Point3dImpl clone;
 		try {
 			clone = (Point3dImpl) super.clone();
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			return null;
 		}
 		return clone;
@@ -146,8 +165,10 @@ public class Point3dImpl implements Point3d, Cloneable {
 
 	@Override
 	public Double getOrdinate(int dimension) {
-		if (dimension == 0) return x;
-		if (dimension == 1) return y;
+		if (dimension == 0)
+			return x;
+		if (dimension == 1)
+			return y;
 		return z;
 	}
 
@@ -162,7 +183,7 @@ public class Point3dImpl implements Point3d, Cloneable {
 		this.y += y;
 		this.z += z;
 	}
-	
+
 	@Override
 	public void translate(Point3d v) {
 		this.x += v.getX();
@@ -173,27 +194,32 @@ public class Point3dImpl implements Point3d, Cloneable {
 	@Override
 	public Point3dImpl transform(Matrix transform) {
 		if (transform.getRowDimension() == 4) {
-			double xt = transform.get(0, 0) * getX() + transform.get(0, 1) * getY() + transform.get(0, 2) * getZ() + transform.get(0, 3);
-			double yt = transform.get(1, 0) * getX() + transform.get(1, 1) * getY() + transform.get(1, 2) * getZ() + transform.get(1, 3);
-			double zt = transform.get(2, 0) * getX() + transform.get(2, 1) * getY() + transform.get(2, 2) * getZ() + transform.get(2, 3);
-			double ft = transform.get(3, 0) * getX() + transform.get(3, 1) * getY() + transform.get(3, 2) * getZ() + transform.get(3, 3);
-			
+			double xt = transform.get(0, 0) * getX() + transform.get(0, 1) * getY() + transform.get(0, 2) * getZ()
+					+ transform.get(0, 3);
+			double yt = transform.get(1, 0) * getX() + transform.get(1, 1) * getY() + transform.get(1, 2) * getZ()
+					+ transform.get(1, 3);
+			double zt = transform.get(2, 0) * getX() + transform.get(2, 1) * getY() + transform.get(2, 2) * getZ()
+					+ transform.get(2, 3);
+			final double ft = transform.get(3, 0) * getX() + transform.get(3, 1) * getY() + transform.get(3, 2) * getZ()
+					+ transform.get(3, 3);
+
 			xt /= ft;
 			yt /= ft;
 			zt /= ft;
-			
-			return new Point3dImpl(xt,yt, zt);
+
+			return new Point3dImpl(xt, yt, zt);
 		}
 		throw new IllegalArgumentException("Transform matrix has unexpected size");
 	}
-	
+
 	@Override
-	public boolean equals(Object o){
-		if(!(o instanceof Point3d)) return false;
-		Point3d p = (Point3d) o;
+	public boolean equals(Object o) {
+		if (!(o instanceof Point3d))
+			return false;
+		final Point3d p = (Point3d) o;
 		return p.getX() == this.x && p.getY() == this.y && p.getZ() == this.getZ();
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
@@ -202,7 +228,7 @@ public class Point3dImpl implements Point3d, Cloneable {
 
 	@Override
 	public Point3d minus(Point3d a) {
-		return new Point3dImpl(this.x - a.getX(),this.y - a.getY(), this.z - a.getZ());
+		return new Point3dImpl(this.x - a.getX(), this.y - a.getY(), this.z - a.getZ());
 	}
 
 	@Override
@@ -248,9 +274,10 @@ public class Point3dImpl implements Point3d, Cloneable {
 
 	/**
 	 * Create a random point in ([0..1], [0..1], [0..1]).
+	 * 
 	 * @return random point.
 	 */
 	public static Point3d createRandomPoint() {
 		return new Point3dImpl(Math.random(), Math.random(), Math.random());
-	}	
+	}
 }

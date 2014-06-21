@@ -29,7 +29,7 @@
  */
 package org.openimaj.math.matrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import no.uib.cipr.matrix.Matrix.Norm;
 
 import org.junit.Test;
@@ -37,20 +37,29 @@ import org.junit.Test;
 import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.Matrix;
 
-
+/**
+ * Tests for {@link MatlibMatrixUtils}
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ */
 public class TestMatlibMatrixUtils {
+	/**
+	 * Test dot product
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testDotProduct() throws Exception {
-		Matrix X = new DenseMatrix( new double[][] {
+		final Matrix X = new DenseMatrix(new double[][] {
 				{ 1, 1, },
 				{ 2, 2, },
 		});
-		Matrix expected = new DenseMatrix( new double[][] {
+		final Matrix expected = new DenseMatrix(new double[][] {
 				{ 3, 3, },
 				{ 6, 6, },
 		});
-		Matrix m = MatlibMatrixUtils.dotProduct(X, X);
-		double[][] asArray = MatlibMatrixUtils.minusInplace(m, expected).asArray();
+		final Matrix m = MatlibMatrixUtils.dotProduct(X, X);
+		final double[][] asArray = MatlibMatrixUtils.minusInplace(m, expected).asArray();
 		assertTrue(new no.uib.cipr.matrix.DenseMatrix(asArray).norm(Norm.Frobenius) == 0);
 	}
 }

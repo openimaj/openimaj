@@ -34,8 +34,6 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
-import gov.sandia.cognition.math.matrix.MatrixFactory;
-import no.uib.cipr.matrix.VectorEntry;
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
 
 import org.openimaj.util.array.ArrayUtils;
@@ -73,8 +71,6 @@ public class MatlibMatrixUtils {
 	public static double sparsity(Matrix mat) {
 		return 1 - mat.density();
 	}
-	
-	
 
 	/**
 	 * Raise each element to the power d, operating on the matrix itself
@@ -183,16 +179,14 @@ public class MatlibMatrixUtils {
 	}
 
 	/**
-	 * Add two matrices, storing the results in the first:
-	 * <code>A = A + B</code>
+	 * Add a constant inplace <code>A = A + d</code>
 	 * 
 	 * @param A
 	 *            first matrix
-	 * @param B
-	 *            matrix to add
+	 * @param d
+	 *            the constant to add
 	 * @return A first matrix
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends Matrix> T plusInplace(T A, double d) {
 		for (int i = 0; i < A.rowCount(); i++) {
 			for (int j = 0; j < A.columnCount(); j++) {
@@ -226,14 +220,14 @@ public class MatlibMatrixUtils {
 	}
 
 	/**
-	 * Subtract two matrices, storing the result in the second:
-	 * <code>A = D - A</code>
+	 * Subtract two matrices, storing the result in the first:
+	 * <code>A = A - B</code>
 	 * 
-	 * @param D
-	 *            first matrix
 	 * @param A
+	 *            first matrix
+	 * @param B
 	 *            second matrix
-	 * @return second matrix
+	 * @return first matrix
 	 * 
 	 */
 	public static Matrix minusInplace(Matrix A, Matrix B) {
@@ -302,27 +296,28 @@ public class MatlibMatrixUtils {
 	public static Matrix transposeDotProduct(Matrix A, Matrix B) {
 		final int mA = A.columnCount();
 		final int nB = B.columnCount();
-		Matrix ret = A.newInstance(mA, nB);
+		final Matrix ret = A.newInstance(mA, nB);
 		for (int i = 0; i < mA; i++) {
-			Vector column = A.column(i);
+			final Vector column = A.column(i);
 			for (int j = 0; j < nB; j++) {
 				final double dot = column.dot(B.column(j));
 				if (Math.abs(dot) > EPS)
 					ret.put(i, j, dot);
 			}
 		}
-		return null;
+		return ret;
 	}
 
 	public static Matrix dotProductTranspose(Matrix A, Matrix B) {
-		Matrix ret = A.newInstance(A.rowCount(), B.rowCount());
+		final Matrix ret = A.newInstance(A.rowCount(), B.rowCount());
 		return dotProductTranspose(A, B, ret);
 	}
 
 	/**
-	 * Perform: A.T.dot(B.T) without performing the transpose. This is fine
-	 * for dense matricies but is very inefficient for sparse matrices, consider
+	 * Perform: A.T.dot(B.T) without performing the transpose. This is fine for
+	 * dense matricies but is very inefficient for sparse matrices, consider
 	 * performing the transpose manually.
+	 * 
 	 * @param A
 	 * @param B
 	 * @return A.T.dot(B.T)
@@ -330,9 +325,9 @@ public class MatlibMatrixUtils {
 	public static Matrix dotProductTransposeTranspose(Matrix A, Matrix B) {
 		final int mA = A.columnCount();
 		final int nB = B.rowCount();
-		Matrix ret = A.newInstance(mA, nB);
+		final Matrix ret = A.newInstance(mA, nB);
 		for (int i = 0; i < mA; i++) {
-			Vector column = A.column(i);
+			final Vector column = A.column(i);
 			for (int j = 0; j < nB; j++) {
 				final double dot = column.dot(B.row(j));
 				if (Math.abs(dot) > EPS)
@@ -351,10 +346,12 @@ public class MatlibMatrixUtils {
 	 * @return Y
 	 */
 	public static <T extends Matrix> T dotProductTranspose(Matrix A, Matrix B,
-			T Y) {
-		if(A.columnCount()!=B.columnCount()) throw new RuntimeException(
-				String.format("Matrix size mismatch, A.cols == %d and B.T.cols == %d",A.columnCount(),B.columnCount())
-		);
+			T Y)
+	{
+		if (A.columnCount() != B.columnCount())
+			throw new RuntimeException(
+					String.format("Matrix size mismatch, A.cols == %d and B.T.cols == %d", A.columnCount(),
+							B.columnCount()));
 		final int mA = A.rowCount();
 		final int nB = B.rowCount();
 		for (int i = 0; i < mA; i++) {
@@ -441,7 +438,7 @@ public class MatlibMatrixUtils {
 		// mat.put(i, j, sol.get(i, j));
 		// }
 		// }
-		Matrix mat = new DenseMatrix(sol.getArray());
+		final Matrix mat = new DenseMatrix(sol.getArray());
 		return mat;
 	}
 
@@ -489,7 +486,8 @@ public class MatlibMatrixUtils {
 	 * @return new instance
 	 */
 	public static <T extends Matrix> T subMatrix(T mat, int rowstart,
-			int rowend, int colstart, int colend) {
+			int rowend, int colstart, int colend)
+	{
 		@SuppressWarnings("unchecked")
 		final T ret = (T) mat.newInstance(rowend - rowstart, colend - colstart);
 
@@ -517,7 +515,8 @@ public class MatlibMatrixUtils {
 	 * @return the extracted matrix
 	 */
 	public static <T extends Matrix> T subMatrix(final T mat,
-			TIntCollection rows, TIntCollection cols) {
+			TIntCollection rows, TIntCollection cols)
+	{
 		final TIntIntHashMap actualCols;
 		if (!(cols instanceof TIntIntHashMap)) {
 			actualCols = new TIntIntHashMap();
@@ -562,7 +561,8 @@ public class MatlibMatrixUtils {
 	 * @return the submatrix
 	 */
 	public static <T extends Matrix> T subMatrix(final T mat,
-			TIntArrayList rows, final int colstart, final int colend) {
+			TIntArrayList rows, final int colstart, final int colend)
+	{
 		@SuppressWarnings("unchecked")
 		final T ret = (T) mat.newInstance(rows.size(), colend - colstart);
 		rows.forEach(new TIntProcedure() {
@@ -593,7 +593,8 @@ public class MatlibMatrixUtils {
 	 * @return the submatrix
 	 */
 	public static <T extends Matrix> T subMatrix(final T mat,
-			final int rowstart, final int rowend, TIntArrayList cols) {
+			final int rowstart, final int rowend, TIntArrayList cols)
+	{
 		@SuppressWarnings("unchecked")
 		final T ret = (T) mat.newInstance(rowend - rowstart, cols.size());
 		cols.forEach(new TIntProcedure() {
@@ -705,7 +706,7 @@ public class MatlibMatrixUtils {
 	 * @return performs l - v returning a matrix of type T
 	 */
 	public static Vector minus(Vector l, Vector v) {
-		Vector ret = DenseVector.dense(l.size());
+		final Vector ret = DenseVector.dense(l.size());
 		for (int i = 0; i < l.size(); i++) {
 			ret.put(i, l.get(i) - v.get(i));
 		}
@@ -788,14 +789,14 @@ public class MatlibMatrixUtils {
 	public static <T extends Matrix> T transpose(T mat) {
 		@SuppressWarnings("unchecked")
 		final T ret = (T) mat.newInstance(mat.columnCount(), mat.rowCount());
-//		for (int i = 0; i < mat.columnCount(); i++) {
-//			for (int j = 0; j < mat.rowCount(); j++) {
-//				ret.put(i, j, mat.get(j, i));
-//			}
-//		}
+		// for (int i = 0; i < mat.columnCount(); i++) {
+		// for (int j = 0; j < mat.rowCount(); j++) {
+		// ret.put(i, j, mat.get(j, i));
+		// }
+		// }
 		for (int i = 0; i < mat.rowCount(); i++) {
-			Vector v = mat.row(i);
-			for (Entry ent : v.entries()) {
+			final Vector v = mat.row(i);
+			for (final Entry ent : v.entries()) {
 				ret.put(ent.index, i, ent.value);
 			}
 		}
@@ -860,7 +861,7 @@ public class MatlibMatrixUtils {
 		}
 		return A;
 	}
-	
+
 	/**
 	 * @param A
 	 * @param B
@@ -935,7 +936,8 @@ public class MatlibMatrixUtils {
 	 * @return the converted vector
 	 */
 	public static SparseDoubleArray sparseVectorToSparseArray(
-			ch.akuhn.matrix.SparseVector row) {
+			ch.akuhn.matrix.SparseVector row)
+	{
 		final SparseDoubleArray sda = new SparseBinSearchDoubleArray(
 				row.size(), row.used(), row.keys(), row.values());
 		return sda;
@@ -1028,7 +1030,7 @@ public class MatlibMatrixUtils {
 	 */
 	public static <T extends Matrix> T appendColumn(T m, Vector col) {
 		@SuppressWarnings("unchecked")
-		T ret = (T) m.newInstance(m.rowCount(), m.columnCount() + 1);
+		final T ret = (T) m.newInstance(m.rowCount(), m.columnCount() + 1);
 		setSubMatrixCol(ret, 0, m.columnCount(), col);
 		return ret;
 	}
@@ -1040,7 +1042,7 @@ public class MatlibMatrixUtils {
 	 */
 	public static <T extends Matrix> T appendRow(T m, Vector row) {
 		@SuppressWarnings("unchecked")
-		T ret = (T) m.newInstance(m.rowCount() + 1, m.columnCount());
+		final T ret = (T) m.newInstance(m.rowCount() + 1, m.columnCount());
 		setSubMatrixRow(ret, m.rowCount(), 0, row);
 		return ret;
 	}
@@ -1051,14 +1053,14 @@ public class MatlibMatrixUtils {
 	 */
 	public static Matrix fromCF(gov.sandia.cognition.math.matrix.Matrix init) {
 		Matrix ret;
-		int m = init.getNumRows();
-		int n = init.getNumColumns();
+		final int m = init.getNumRows();
+		final int n = init.getNumColumns();
 		if (init instanceof gov.sandia.cognition.math.matrix.mtj.SparseMatrix) {
 			ret = SparseMatrix.sparse(init.getNumRows(), init.getNumColumns());
 		} else {
 			ret = DenseMatrix.dense(m, n);
 		}
-		for (MatrixEntry ent : init) {
+		for (final MatrixEntry ent : init) {
 			ret.put(ent.getRowIndex(), ent.getColumnIndex(), ent.getValue());
 		}
 		return ret;
@@ -1070,9 +1072,9 @@ public class MatlibMatrixUtils {
 	 * @return dot product
 	 */
 	public static Matrix dotProduct(Matrix X, Matrix W) {
-		Matrix ret = X.newInstance(X.rowCount(), W.columnCount());
+		final Matrix ret = X.newInstance(X.rowCount(), W.columnCount());
 		for (int j = 0; j < ret.columnCount(); j++) {
-			Vector column = W.column(j);
+			final Vector column = W.column(j);
 			for (int i = 0; i < ret.rowCount(); i++) {
 				ret.put(i, j, X.row(i).dot(column));
 			}
@@ -1082,24 +1084,24 @@ public class MatlibMatrixUtils {
 
 	public static double norm2(Vector row) {
 		double norm = 0;
-		for (Entry e : row.entries())
+		for (final Entry e : row.entries())
 			norm += e.value * e.value;
 		return Math.sqrt(norm);
 	}
 
 	public static Matrix minus(Matrix neww, Matrix w) {
-		Matrix ret = copy(neww);
+		final Matrix ret = copy(neww);
 		minusInplace(ret, w);
 		return ret;
 	}
 
 	public static double normF(Matrix A) {
 		double scale = 0, ssq = 1;
-		for (Vector v : A.rows()) {
-			for (Entry e : v.entries()) {
-				double Aval = e.value;
+		for (final Vector v : A.rows()) {
+			for (final Entry e : v.entries()) {
+				final double Aval = e.value;
 				if (Aval != 0) {
-					double absxi = Math.abs(Aval);
+					final double absxi = Math.abs(Aval);
 					if (scale < absxi) {
 						ssq = 1 + ssq * Math.pow(scale / absxi, 2);
 						scale = absxi;
@@ -1111,8 +1113,6 @@ public class MatlibMatrixUtils {
 		}
 		return scale * Math.sqrt(ssq);
 	}
-
-
 
 	/**
 	 * Stack matrices vertically
@@ -1133,7 +1133,7 @@ public class MatlibMatrixUtils {
 		final Matrix ret = matricies[0].newInstance(nrows, ncols);
 		int currentRow = 0;
 		for (final Matrix matrix : matricies) {
-			setSubMatrix(ret,currentRow, 0, matrix);
+			setSubMatrix(ret, currentRow, 0, matrix);
 			currentRow += matrix.rowCount();
 		}
 		return ret;

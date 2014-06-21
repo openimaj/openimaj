@@ -35,6 +35,7 @@ import java.util.Random;
 
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.SVD;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
@@ -1057,8 +1058,8 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * horizontally stack all the matricies provided. i.e. ret = [x1 x2 x3 x4
-	 * ... xn]
+	 * horizontally stack all the matrices provided. i.e. ret = [x1 x2 x3 x4 ...
+	 * xn]
 	 * 
 	 * @param x
 	 * @return horizontally stacked
@@ -1514,5 +1515,90 @@ public class MatrixUtils {
 			sum += mat.get(i, i);
 		}
 		return sum;
+	}
+
+	/**
+	 * Solves the system <code>Ax = 0</code>, returning the vector x as an
+	 * array. Internally computes the least-squares solution using the SVD of
+	 * <code>A</code>.
+	 * 
+	 * @param A
+	 *            the matrix describing the system
+	 * @return the solution vector
+	 */
+	public static double[] solveHomogeneousSystem(Matrix A) {
+		return solveHomogeneousSystem(new DenseMatrix(A.getArray()));
+	}
+
+	/**
+	 * Solves the system <code>Ax = 0</code>, returning the vector x as an
+	 * array. Internally computes the least-squares solution using the SVD of
+	 * <code>A</code>.
+	 * 
+	 * @param A
+	 *            the matrix describing the system
+	 * @return the solution vector
+	 */
+	public static double[] solveHomogeneousSystem(double[][] A) {
+		return solveHomogeneousSystem(new DenseMatrix(A));
+	}
+
+	/**
+	 * Solves the system <code>Ax = 0</code>, returning the vector x as an
+	 * array. Internally computes the least-squares solution using the SVD of
+	 * <code>A</code>.
+	 * 
+	 * @param A
+	 *            the matrix describing the system
+	 * @return the solution vector
+	 */
+	public static double[] solveHomogeneousSystem(DenseMatrix A) {
+		try {
+			final SVD svd = SVD.factorize(A);
+
+			final double[] x = new double[svd.getVt().numRows()];
+			final int c = svd.getVt().numColumns() - 1;
+
+			for (int i = 0; i < x.length; i++) {
+				x[i] = svd.getVt().get(c, i);
+			}
+
+			return x;
+		} catch (final NotConvergedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Format a matrix as a single-line string suitable for using in java
+	 * 
+	 * @param mat
+	 *            the matrix to format
+	 * @return the string
+	 */
+	public static String toJavaString(Matrix mat) {
+		return "{" + toString(mat).trim().replaceAll("^", "{").replace("\n ", "},{").replace(" ", ",") + "}}";
+	}
+
+	/**
+	 * Construct a matrix from a row-packed (i.e. row-by-row) vector of the
+	 * data.
+	 * 
+	 * @param vector
+	 *            the row-packed vector
+	 * @param ncols
+	 *            the number of columns
+	 * @return the reconstructed matrix
+	 */
+	public static Matrix fromRowPacked(double[] vector, int ncols) {
+		final int nrows = vector.length / ncols;
+
+		final Matrix a = new Matrix(nrows, ncols);
+		final double[][] ad = a.getArray();
+		for (int r = 0, i = 0; r < nrows; r++)
+			for (int c = 0; c < ncols; c++, i++)
+				ad[r][c] = vector[i];
+
+		return a;
 	}
 }
