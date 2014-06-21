@@ -25,5 +25,6 @@
     <module>object-detection</module>
     <module>image-indexing-retrieval</module>
     <module>vector-image</module>
+    <module>camera-calibration</module>
   </modules>
 </project>
