@@ -144,4 +144,19 @@ public class MaxFilter implements SinglebandImageProcessor<Float, FImage> {
 				image.pixels[r][c] = buffer[r];
 		}
 	}
+
+	/**
+	 * Apply the filter some number of times to an image with the default 3x3
+	 * block support
+	 * 
+	 * @param img
+	 *            the image
+	 * @param times
+	 *            the number of times to apply the dilation
+	 */
+	public static void filter(FImage img, int times) {
+		final MaxFilter d = new MaxFilter(FilterSupport.BLOCK_3x3);
+		for (int i = 0; i < times; i++)
+			img.processInplace(d);
+	}
 }

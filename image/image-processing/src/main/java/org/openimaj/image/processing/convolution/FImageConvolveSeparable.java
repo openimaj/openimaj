@@ -177,4 +177,51 @@ public class FImageConvolveSeparable implements SinglebandImageProcessor<Float, 
 				image.pixels[r][c] = buffer[r];
 		}
 	}
+
+	/**
+	 * Fast convolution for separated 3x3 kernels. Only valid pixels are
+	 * considered, so the output image bounds will be two pixels smaller than
+	 * the input image on all sides (the response of the kernel to the source
+	 * pixel at 1,1 is stored in the destination image at 0,0)
+	 * 
+	 * @param source
+	 *            the source image
+	 * @param dest
+	 *            the destination image
+	 * @param kx
+	 *            the x-kernel (can be null, implying [0 1 0] )
+	 * @param ky
+	 *            the y-kernel (can be null, implying [0 1 0])
+	 * @param buffer
+	 *            the working buffer (can be null, but ideally the same width as
+	 *            the source image)
+	 */
+	public static void fastConvolve3(FImage source, FImage dest, float[] kx, float[] ky, float[] buffer)
+	{
+		final int dst_width = source.width - 2;
+
+		if (kx == null)
+			kx = new float[] { 0, 1, 0 };
+		if (ky == null)
+			ky = new float[] { 0, 1, 0 };
+
+		if (buffer == null || buffer.length < source.width)
+			buffer = new float[source.width];
+
+		for (int y = 0; y <= source.height - 3; y++) {
+			final float[] src = source.pixels[y];
+			final float[] src2 = source.pixels[y + 1];
+			final float[] src3 = source.pixels[y + 2];
+
+			for (int x = 0; x < source.width; x++)
+			{
+				buffer[x] = ky[0] * src[x] + ky[1] * src2[x] + ky[2] * src3[x];
+			}
+
+			for (int x = 0; x < dst_width; x++)
+			{
+				dest.pixels[y][x] = kx[0] * buffer[x] + kx[1] * buffer[x + 1] + kx[2] * buffer[x + 2];
+			}
+		}
+	}
 }
