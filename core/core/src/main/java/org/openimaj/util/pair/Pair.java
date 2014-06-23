@@ -29,8 +29,6 @@
  */
 package org.openimaj.util.pair;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Pair represents a generic pair of objects.
@@ -61,41 +59,5 @@ public class Pair<T> extends IndependentPair<T, T> {
 	@Override
 	public String toString() {
 		return o1 + " -> " + o2;
-	}
-
-	/**
-	 * Create a pair from the given objects.
-	 * 
-	 * @param <T>
-	 *            Type of objects.
-	 * @param t
-	 *            The first object.
-	 * @param q
-	 *            The second object.
-	 * @return The pair.
-	 */
-	public static <T> Pair<T> pair(final T t, final T q) {
-		return new Pair<T>(t, q);
-	}
-
-	/**
-	 * Create a pair list from the given objects.
-	 * 
-	 * @param <T>
-	 *            Type of objects.
-	 * @param t
-	 *            The list of first objects.
-	 * @param q
-	 *            The list of second objects.
-	 * @return The list of pairs.
-	 */
-	public static <T> List<Pair<T>> pairList(final List<T> t, final List<T> q) {
-		final List<Pair<T>> list = new ArrayList<Pair<T>>(t.size());
-
-		for (int i = 0; i < t.size(); i++) {
-			list.add(new Pair<T>(t.get(i), q.get(i)));
-		}
-
-		return list;
 	}
 }
