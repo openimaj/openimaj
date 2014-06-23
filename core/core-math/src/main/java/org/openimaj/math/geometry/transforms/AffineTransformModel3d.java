@@ -38,13 +38,13 @@ import org.openimaj.util.pair.IndependentPair;
 import Jama.Matrix;
 
 /**
- * Concrete implementation of a model of an Affine transform.
- * Capable of least-squares estimate of model parameters.
+ * Concrete implementation of a model of an Affine transform. Capable of
+ * least-squares estimate of model parameters.
  * 
  * @see TransformUtilities#affineMatrixND(List)
  * 
  * @author Jonathon Hare
- *
+ * 
  */
 public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTransformProvider {
 	protected Matrix transform;
@@ -52,13 +52,15 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 
 	/**
 	 * Create an AffineTransformModel with a given tolerance for validation
-	 * @param tolerance value specifying how close (Euclidean distance) a point
-	 * must be from its predicted position to successfully validate.
+	 * 
+	 * @param tolerance
+	 *            value specifying how close (Euclidean distance) a point must
+	 *            be from its predicted position to successfully validate.
 	 */
 	public AffineTransformModel3d(double tolerance)
 	{
 		tol = tolerance;
-		transform = new Matrix(3,3);
+		transform = new Matrix(3, 3);
 
 		transform.set(2, 0, 0);
 		transform.set(2, 1, 0);
@@ -67,7 +69,7 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 
 	@Override
 	public AffineTransformModel3d clone() {
-		AffineTransformModel3d atm = new AffineTransformModel3d(tol);
+		final AffineTransformModel3d atm = new AffineTransformModel3d(tol);
 		atm.transform = transform.copy();
 		return atm;
 	}
@@ -77,9 +79,12 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 		return transform;
 	}
 
-	/* 
-	 * SVD least-squares estimation of affine transform matrix for a set of 2d points
-	 * @see uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#estimate(java.util.List)
+	/*
+	 * SVD least-squares estimation of affine transform matrix for a set of 2d
+	 * points
+	 * 
+	 * @see
+	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#estimate(java.util.List)
 	 */
 	@Override
 	public void estimate(List<? extends IndependentPair<Point3d, Point3d>> data) {
@@ -87,21 +92,25 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 	}
 
 	/*
-	 * Validation based on euclidean distance between actual and predicted points. 
-	 * Success if distance is less than threshold
-	 * @see uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#validate(uk.ac.soton.ecs.iam.jsh2.util.IPair)
+	 * Validation based on euclidean distance between actual and predicted
+	 * points. Success if distance is less than threshold
+	 * 
+	 * @see
+	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#validate(uk.ac.soton.ecs
+	 * .iam.jsh2.util.IPair)
 	 */
 	@Override
 	public boolean validate(IndependentPair<Point3d, Point3d> data) {
-		Point3d p2_est = data.firstObject().transform(transform);
+		final Point3d p2_est = data.firstObject().transform(transform);
 
-		double dx = data.secondObject().getX() - (float)p2_est.getX();
-		double dy = data.secondObject().getY() - (float)p2_est.getY();
-		double dz = data.secondObject().getZ() - (float)p2_est.getZ();
+		final double dx = data.secondObject().getX() - (float) p2_est.getX();
+		final double dy = data.secondObject().getY() - (float) p2_est.getY();
+		final double dz = data.secondObject().getZ() - (float) p2_est.getZ();
 
-		double dist = (dx*dx + dy*dy + dz*dz);
-		
-		if (dist <= tol*tol) return true;
+		final double dist = (dx * dx + dy * dy + dz * dz);
+
+		if (dist <= tol * tol)
+			return true;
 
 		return false;
 	}
@@ -116,34 +125,48 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 		return 6;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openimaj.math.model.Model#calculateError(java.util.List)
 	 */
 	@Override
 	public double calculateError(List<? extends IndependentPair<Point3d, Point3d>> alldata)
 	{
-		double error=0;
+		double error = 0;
 
-		for (IndependentPair<Point3d, Point3d> data : alldata) {
-			Point3d p2_est = data.firstObject().transform(transform);
+		for (final IndependentPair<Point3d, Point3d> data : alldata) {
+			final Point3d p2_est = data.firstObject().transform(transform);
 
-			double dx = data.secondObject().getX() - p2_est.getX();
-			double dy = data.secondObject().getY() - p2_est.getY();
-			double dz = data.secondObject().getZ() - p2_est.getZ();
+			final double dx = data.secondObject().getX() - p2_est.getX();
+			final double dy = data.secondObject().getY() - p2_est.getY();
+			final double dz = data.secondObject().getZ() - p2_est.getZ();
 
-			error += (dx*dx + dy*dy + dz*dz);
+			error += (dx * dx + dy * dy + dz * dz);
 		}
-		
+
 		return error;
+	}
+
+	@Override
+	public double calculateError(IndependentPair<Point3d, Point3d> data)
+	{
+		final Point3d p2_est = data.firstObject().transform(transform);
+
+		final double dx = data.secondObject().getX() - p2_est.getX();
+		final double dy = data.secondObject().getY() - p2_est.getY();
+		final double dz = data.secondObject().getZ() - p2_est.getZ();
+
+		return (dx * dx + dy * dy + dz * dz);
 	}
 
 	@Override
 	public String toString() {
 		String str = "";
-		double [][] mat = transform.getArray();
-		for (double [] r : mat) {
-			for (double v : r) {
-				str += " "+v;
+		final double[][] mat = transform.getArray();
+		for (final double[] r : mat) {
+			for (final double v : r) {
+				str += " " + v;
 			}
 			str += "\n";
 		}

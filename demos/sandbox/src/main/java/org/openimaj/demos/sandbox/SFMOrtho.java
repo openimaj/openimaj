@@ -300,7 +300,7 @@ public class SFMOrtho {
 
 	public static void main(String[] args) throws IOException {
 		final FImageFileBackedVideo video = new FImageFileBackedVideo(
-				"/Users/jon/Downloads/assignment4_part2_data/frame%08d.jpg", 1, 102);
+				"/Users/jsh2/Downloads/assignment4_part2_data/frame%08d.jpg", 1, 102);
 
 		final SFMOrtho o = new SFMOrtho(video, 200);
 

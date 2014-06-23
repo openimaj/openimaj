@@ -33,60 +33,80 @@ import java.util.List;
 
 import org.openimaj.util.pair.IndependentPair;
 
-
 /**
- * The Model interface defines a mathematical model which links dependent and 
+ * The Model interface defines a mathematical model which links dependent and
  * independent variables. A model can be estimated from a series of observations
- * of both the independent and dependent variables. The model can then be used 
+ * of both the independent and dependent variables. The model can then be used
  * to create predictions of the dependent variables given the independent ones.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <I> type of independent data
- * @param <D> type of dependent data
+ * 
+ * @param <I>
+ *            type of independent data
+ * @param <D>
+ *            type of dependent data
  */
 public interface Model<I, D> extends Cloneable {
 	/**
 	 * Estimates the model from the observations in the list of data. The data
-	 * must contain at least {@link #numItemsToEstimate()} pairs of dependent and 
-	 * independent data. It may contain more, in which case the estimate method
-	 * may choose to make use of this data for validation, or obtaining a better
-	 * model by a least squares method for example.
-	 * @param data Data with which to estimate the model
+	 * must contain at least {@link #numItemsToEstimate()} pairs of dependent
+	 * and independent data. It may contain more, in which case the estimate
+	 * method may choose to make use of this data for validation, or obtaining a
+	 * better model by a least squares method for example.
+	 * 
+	 * @param data
+	 *            Data with which to estimate the model
 	 * @see #numItemsToEstimate()
 	 */
-	public void estimate(List<? extends IndependentPair<I, D>>data);
-	
+	public void estimate(List<? extends IndependentPair<I, D>> data);
+
 	/**
-	 * Determines whether a single data observation pair validates against the model. 
-	 * @param data Data which to test the model against.
+	 * Determines whether a single data observation pair validates against the
+	 * model.
+	 * 
+	 * @param data
+	 *            Data which to test the model against.
 	 * @return true if data validates against the model, false otherwise.
 	 */
 	public boolean validate(IndependentPair<I, D> data);
-	
+
 	/**
 	 * Uses the model to predict dependent data from an independent value.
-	 * @param data the data (independent variable)
+	 * 
+	 * @param data
+	 *            the data (independent variable)
 	 * @return Dependent variable(s) predicted from the independent ones.
 	 */
 	public D predict(I data);
-	
-	/** 
-	 * @return The minimum number of observations required to estimate the model. 
+
+	/**
+	 * @return The minimum number of observations required to estimate the
+	 *         model.
 	 */
-	public int numItemsToEstimate(); //N 
-	
+	public int numItemsToEstimate(); // N
+
 	/**
 	 * Estimate the relative error between a data pair and the model parameters.
-	 * @param data the data (independent variable)
+	 * 
+	 * @param data
+	 *            the data (independent variable)
 	 * @return The relative error between the model and data.
 	 */
 	public double calculateError(List<? extends IndependentPair<I, D>> data);
-	
+
+	/**
+	 * Estimate the relative error between a data pair and the model parameters.
+	 * 
+	 * @param data
+	 *            the data (independent variable)
+	 * @return The relative error between the model and data.
+	 */
+	public double calculateError(IndependentPair<I, D> data);
+
 	/**
 	 * Clone the model
+	 * 
 	 * @return a cloned copy
 	 */
 	public Model<I, D> clone();
 }
-

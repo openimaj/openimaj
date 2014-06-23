@@ -29,61 +29,62 @@
  */
 package org.openimaj.math.model.fit;
 
-import gnu.trove.list.array.TIntArrayList;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
 
-
 /**
- * Example robust fitting, that simply wraps the models estimate method.
- * Inliers and outliers are estimated by verifying the model against the
- * data.
+ * Example robust fitting, that simply wraps the models estimate method. Inliers
+ * and outliers are estimated by verifying the model against the data.
  * 
  * @author Jonathon Hare
- *
- * @param <I> type of independent data
- * @param <D> type of dependent data
+ * 
+ * @param <I>
+ *            type of independent data
+ * @param <D>
+ *            type of dependent data
  */
 public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
-	TIntArrayList inl;
-	TIntArrayList outl;
+	List<IndependentPair<I, D>> inl;
+	List<IndependentPair<I, D>> outl;
 	Model<I, D> model;
-	
+
 	/**
-	 * Creates a SimpleModelFitting object to fit data to a model 
-	 * @param m model to fit data to
+	 * Creates a SimpleModelFitting object to fit data to a model
+	 * 
+	 * @param m
+	 *            model to fit data to
 	 */
-	public SimpleModelFitting(Model<I, D>m) {
+	public SimpleModelFitting(Model<I, D> m) {
 		model = m;
 	}
-	
+
 	@Override
-	public TIntArrayList getInliers() {
+	public List<? extends IndependentPair<I, D>> getInliers() {
 		return inl;
 	}
 
 	@Override
-	public TIntArrayList getOutliers() {
+	public List<? extends IndependentPair<I, D>> getOutliers() {
 		return outl;
 	}
 
 	@Override
-	public boolean fitData(List<? extends IndependentPair<I,D>> data) {
+	public boolean fitData(List<? extends IndependentPair<I, D>> data) {
 		model.estimate(data);
-		
-		inl = new TIntArrayList();
-		outl = new TIntArrayList();
-		
-		for (int i=0; i<data.size(); i++) {
+
+		inl = new ArrayList<IndependentPair<I, D>>();
+		outl = new ArrayList<IndependentPair<I, D>>();
+
+		for (int i = 0; i < data.size(); i++) {
 			if (model.validate(data.get(i)))
-				inl.add(i);
+				inl.add(data.get(i));
 			else
-				outl.add(i);
+				outl.add(data.get(i));
 		}
-		
+
 		return true;
 	}
 

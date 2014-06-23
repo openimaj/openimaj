@@ -42,26 +42,29 @@ import java.util.List;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * An implementation of a {@link Model} that uses a {@link VectorNaiveBayesCategorizer} to associate
- * vectors (actually double[]) with a category.
+ * An implementation of a {@link Model} that uses a
+ * {@link VectorNaiveBayesCategorizer} to associate vectors (actually double[])
+ * with a category.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> The type of class/category predicted by the model
+ * 
+ * @param <T>
+ *            The type of class/category predicted by the model
  */
 public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
 	VectorNaiveBayesCategorizer.BatchGaussianLearner<T> learner = new VectorNaiveBayesCategorizer.BatchGaussianLearner<T>();
 	private VectorNaiveBayesCategorizer<T, PDF> model;
-	
+
 	@Override
 	public void estimate(List<? extends IndependentPair<double[], T>> data) {
-		List<InputOutputPair<Vector,T>> cfdata = new ArrayList<InputOutputPair<Vector,T>>();
-		
-		for (IndependentPair<double[],T> d : data) {
-			InputOutputPair<Vector,T> iop = new DefaultInputOutputPair<Vector,T>(VectorFactory.getDefault().copyArray(d.firstObject()) , d.secondObject());
+		final List<InputOutputPair<Vector, T>> cfdata = new ArrayList<InputOutputPair<Vector, T>>();
+
+		for (final IndependentPair<double[], T> d : data) {
+			final InputOutputPair<Vector, T> iop = new DefaultInputOutputPair<Vector, T>(VectorFactory.getDefault()
+					.copyArray(d.firstObject()), d.secondObject());
 			cfdata.add(iop);
 		}
-		
+
 		model = learner.learn(cfdata);
 	}
 
@@ -83,55 +86,63 @@ public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
 	@Override
 	public double calculateError(List<? extends IndependentPair<double[], T>> data) {
 		int count = 0;
-		
-		for (IndependentPair<double[], T> d : data) {
+
+		for (final IndependentPair<double[], T> d : data) {
 			if (!validate(d))
 				count++;
 		}
-		
-		return (double)count / (double)data.size();
+
+		return (double) count / (double) data.size();
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public GaussianVectorNaiveBayesModel<T> clone() {
 		try {
 			return (GaussianVectorNaiveBayesModel<T>) super.clone();
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Testing
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		GaussianVectorNaiveBayesModel<Boolean> model = new GaussianVectorNaiveBayesModel<Boolean>();
-		
-		List<IndependentPair<double[], Boolean>> data = new ArrayList<IndependentPair<double[], Boolean>>();
-		
-		data.add(IndependentPair.pair(new double[]{0}, true));
-		data.add(IndependentPair.pair(new double[]{0.1}, true));
-		data.add(IndependentPair.pair(new double[]{-0.1}, true));
-		
-		data.add(IndependentPair.pair(new double[]{9.9}, false));
-		data.add(IndependentPair.pair(new double[]{10}, false));
-		data.add(IndependentPair.pair(new double[]{10.1}, false));
-		
+		final GaussianVectorNaiveBayesModel<Boolean> model = new GaussianVectorNaiveBayesModel<Boolean>();
+
+		final List<IndependentPair<double[], Boolean>> data = new ArrayList<IndependentPair<double[], Boolean>>();
+
+		data.add(IndependentPair.pair(new double[] { 0 }, true));
+		data.add(IndependentPair.pair(new double[] { 0.1 }, true));
+		data.add(IndependentPair.pair(new double[] { -0.1 }, true));
+
+		data.add(IndependentPair.pair(new double[] { 9.9 }, false));
+		data.add(IndependentPair.pair(new double[] { 10 }, false));
+		data.add(IndependentPair.pair(new double[] { 10.1 }, false));
+
 		model.estimate(data);
-		
-		
-		double[] q = new double[] {5.0};
-		
+
+		final double[] q = new double[] { 5.0 };
+
 		System.out.println(model.predict(q));
-		
-		System.out.println(" logP(true): " + model.model.computeLogPosterior(VectorFactory.getDefault().copyArray(q), true));
-		System.out.println("logP(false): " + model.model.computeLogPosterior(VectorFactory.getDefault().copyArray(q), false));
-		
+
+		System.out.println(" logP(true): "
+				+ model.model.computeLogPosterior(VectorFactory.getDefault().copyArray(q), true));
+		System.out.println("logP(false): "
+				+ model.model.computeLogPosterior(VectorFactory.getDefault().copyArray(q), false));
+
 		System.out.println("    P(true): " + model.model.computePosterior(VectorFactory.getDefault().copyArray(q), true));
-		System.out.println("   P(false): " + model.model.computePosterior(VectorFactory.getDefault().copyArray(q), false));
-	
+		System.out
+				.println("   P(false): " + model.model.computePosterior(VectorFactory.getDefault().copyArray(q), false));
+
 		System.out.println(model.model.getPriors());
+	}
+
+	@Override
+	public double calculateError(IndependentPair<double[], T> data) {
+		return validate(data) ? 0 : 1;
 	}
 }

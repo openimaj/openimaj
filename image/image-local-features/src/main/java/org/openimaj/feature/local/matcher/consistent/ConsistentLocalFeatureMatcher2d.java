@@ -29,8 +29,6 @@
  */
 package org.openimaj.feature.local.matcher.consistent;
 
-import gnu.trove.procedure.TIntProcedure;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +37,7 @@ import org.openimaj.feature.local.matcher.LocalFeatureMatcher;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.model.Model;
 import org.openimaj.math.model.fit.RobustModelFitting;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
 /**
@@ -57,7 +56,7 @@ import org.openimaj.util.pair.Pair;
  */
 public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?, ?> & Point2d>
 		implements
-			ModelFittingLocalFeatureMatcher<T>
+		ModelFittingLocalFeatureMatcher<T>
 {
 	protected LocalFeatureMatcher<T> innerMatcher;
 	protected RobustModelFitting<Point2d, Point2d> modelfit;
@@ -112,6 +111,7 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?, ?> & Poin
 		return modelfit.getModel();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean findMatches(List<T> keys1)
 	{
@@ -137,13 +137,8 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?, ?> & Poin
 		final boolean didfit = modelfit.fitData(li_p2d);
 
 		// get the inliers and build the list of consistent matches
-		modelfit.getInliers().forEach(new TIntProcedure() {
-			@Override
-			public boolean execute(int value) {
-				consistentMatches.add(matches.get(value));
-				return true;
-			}
-		});
+		for (final IndependentPair<Point2d, Point2d> p : modelfit.getInliers())
+			consistentMatches.add((Pair<T>) p);
 
 		return didfit;
 	}

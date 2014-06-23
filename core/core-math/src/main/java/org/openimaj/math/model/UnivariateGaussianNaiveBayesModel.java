@@ -46,42 +46,47 @@ import java.util.Map;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * An implementation of a {@link Model} that uses a {@link VectorNaiveBayesCategorizer} to associate
- * a univariate (a {@link Double}) with a category.
+ * An implementation of a {@link Model} that uses a
+ * {@link VectorNaiveBayesCategorizer} to associate a univariate (a
+ * {@link Double}) with a category.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <T> The type of class/category predicted by the model
+ * 
+ * @param <T>
+ *            The type of class/category predicted by the model
  */
 
 public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 	private VectorNaiveBayesCategorizer<T, PDF> model;
-	
+
 	/**
 	 * Default constructor.
 	 */
 	public UnivariateGaussianNaiveBayesModel() {
-		
+
 	}
-	
+
 	/**
 	 * Construct with a pre-trained model.
-	 * @param model the pre-trained model.
+	 * 
+	 * @param model
+	 *            the pre-trained model.
 	 */
 	public UnivariateGaussianNaiveBayesModel(VectorNaiveBayesCategorizer<T, PDF> model) {
 		this.model = model;
 	}
-	
+
 	@Override
 	public void estimate(List<? extends IndependentPair<Double, T>> data) {
-		VectorNaiveBayesCategorizer.BatchGaussianLearner<T> learner = new VectorNaiveBayesCategorizer.BatchGaussianLearner<T>();
-		List<InputOutputPair<Vector,T>> cfdata = new ArrayList<InputOutputPair<Vector,T>>();
-		
-		for (IndependentPair<Double,T> d : data) {
-			InputOutputPair<Vector,T> iop = new DefaultInputOutputPair<Vector,T>(VectorFactory.getDefault().createVector1D(d.firstObject()) , d.secondObject());
+		final VectorNaiveBayesCategorizer.BatchGaussianLearner<T> learner = new VectorNaiveBayesCategorizer.BatchGaussianLearner<T>();
+		final List<InputOutputPair<Vector, T>> cfdata = new ArrayList<InputOutputPair<Vector, T>>();
+
+		for (final IndependentPair<Double, T> d : data) {
+			final InputOutputPair<Vector, T> iop = new DefaultInputOutputPair<Vector, T>(VectorFactory.getDefault()
+					.createVector1D(d.firstObject()), d.secondObject());
 			cfdata.add(iop);
 		}
-		
+
 		model = learner.learn(cfdata);
 	}
 
@@ -103,84 +108,93 @@ public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 	@Override
 	public double calculateError(List<? extends IndependentPair<Double, T>> data) {
 		int count = 0;
-		
-		for (IndependentPair<Double, T> d : data) {
+
+		for (final IndependentPair<Double, T> d : data) {
 			if (!validate(d))
 				count++;
 		}
-		
-		return (double)count / (double)data.size();
+
+		return (double) count / (double) data.size();
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public UnivariateGaussianNaiveBayesModel<T> clone() {
 		try {
 			return (UnivariateGaussianNaiveBayesModel<T>) super.clone();
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Get the class distribution for the given class.
-	 * @param clz the class
+	 * 
+	 * @param clz
+	 *            the class
 	 * @return the univariate gaussian distribution.
 	 */
 	public UnivariateGaussian getClassDistribution(T clz) {
 		return model.getConditionals().get(clz).get(0);
 	}
-	
+
 	/**
 	 * Get the class distribution for all classes.
+	 * 
 	 * @return a map of classes to distributions
 	 */
 	public Map<T, UnivariateGaussian> getClassDistribution() {
-		Map<T, UnivariateGaussian> clzs = new HashMap<T, UnivariateGaussian>();
-		
-		for (T c : model.getCategories()) {
+		final Map<T, UnivariateGaussian> clzs = new HashMap<T, UnivariateGaussian>();
+
+		for (final T c : model.getCategories()) {
 			clzs.put(c, model.getConditionals().get(c).get(0));
 		}
-		
+
 		return clzs;
 	}
-	
+
 	/**
 	 * @return The priors for each class
 	 */
 	public DataHistogram<T> getClassPriors() {
 		return model.getPriors();
 	}
-	
+
 	/**
 	 * Testing
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		UnivariateGaussianNaiveBayesModel<Boolean> model = new UnivariateGaussianNaiveBayesModel<Boolean>();
-		
-		List<IndependentPair<Double, Boolean>> data = new ArrayList<IndependentPair<Double, Boolean>>();
-		
+		final UnivariateGaussianNaiveBayesModel<Boolean> model = new UnivariateGaussianNaiveBayesModel<Boolean>();
+
+		final List<IndependentPair<Double, Boolean>> data = new ArrayList<IndependentPair<Double, Boolean>>();
+
 		data.add(IndependentPair.pair(0.0, true));
 		data.add(IndependentPair.pair(0.1, true));
 		data.add(IndependentPair.pair(-0.1, true));
-		
+
 		data.add(IndependentPair.pair(9.9, false));
 		data.add(IndependentPair.pair(10.0, false));
 		data.add(IndependentPair.pair(10.1, false));
-		
+
 		model.estimate(data);
-		
+
 		System.out.println(model.predict(5.1));
-		
+
 		System.out.println(model.model.getConditionals().get(true));
 		System.out.println(model.model.getConditionals().get(false));
-		
+
 		System.out.println(model.model.getConditionals().get(true).get(0).getMean());
 		System.out.println(model.model.getConditionals().get(true).get(0).getVariance());
 		System.out.println(model.model.getConditionals().get(false).get(0).getMean());
 		System.out.println(model.model.getConditionals().get(false).get(0).getVariance());
-		
+
 		System.out.println(model.model.getPriors());
+	}
+
+	@Override
+	public double calculateError(IndependentPair<Double, T> data) {
+		return validate(data) ? 0 : 1;
 	}
 }

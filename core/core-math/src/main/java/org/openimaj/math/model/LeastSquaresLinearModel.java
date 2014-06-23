@@ -34,39 +34,46 @@ import java.util.List;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * Model of mapping between pairs of integers learned from
- * a least-squares regression.
+ * Model of mapping between pairs of integers learned from a least-squares
+ * regression.
  * 
- * Basically this class learns the parameters m and c in
- * y = mx + c.
+ * Basically this class learns the parameters m and c in y = mx + c.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class LeastSquaresLinearModel implements Model<Integer, Integer> {
 	private double c;
 	private double m;
 	private double tol;
 	private int nEstimates = 10;
-	
+
 	/**
 	 * Construct model with given tolerance
-	 * @param tol tolerance
+	 * 
+	 * @param tol
+	 *            tolerance
 	 */
 	public LeastSquaresLinearModel(double tol) {
 		this.tol = tol;
 		this.nEstimates = 2;
 	}
-	
+
 	/**
 	 * Construct model with given tolerance
-	 * @param tol tolerance
-	 * @param nEstimates minimum number of samples required for estimating model when fitting
+	 * 
+	 * @param tol
+	 *            tolerance
+	 * @param nEstimates
+	 *            minimum number of samples required for estimating model when
+	 *            fitting
 	 */
 	public LeastSquaresLinearModel(double tol, int nEstimates) {
 		this.tol = tol;
-		if (nEstimates < 2) nEstimates = 2;
-		else this.nEstimates = nEstimates;
+		if (nEstimates < 2)
+			nEstimates = 2;
+		else
+			this.nEstimates = nEstimates;
 	}
 
 	/***
@@ -75,7 +82,8 @@ public class LeastSquaresLinearModel implements Model<Integer, Integer> {
 	 * 
 	 * calculate the m and c of a line of best fit given the data.
 	 * 
-	 * @param data Observed data
+	 * @param data
+	 *            Observed data
 	 * 
 	 */
 	@Override
@@ -85,69 +93,78 @@ public class LeastSquaresLinearModel implements Model<Integer, Integer> {
 		double sumXiXi = 0;
 		double sumXiYi = 0;
 		int n = 0;
-		
-		for(IndependentPair<Integer, Integer> pair : data){
-			int xi = pair.firstObject();
-			int yi = pair.secondObject();
-			
+
+		for (final IndependentPair<Integer, Integer> pair : data) {
+			final int xi = pair.firstObject();
+			final int yi = pair.secondObject();
+
 			sumXi += xi;
 			sumYi += yi;
 			sumXiXi += (xi * xi);
 			sumXiYi += xi * yi;
-			
+
 			n++;
 		}
-		
+
 		c = (sumYi * sumXiXi - sumXi * sumXiYi) / (n * sumXiXi - sumXi * sumXi);
 		m = (n * sumXiYi - sumXi * sumYi) / (n * sumXiXi - sumXi * sumXi);
 	}
 
 	@Override
 	public boolean validate(IndependentPair<Integer, Integer> data) {
-		double y = (m * data.firstObject()) + c;
-		
-		if (Math.abs(y-data.secondObject()) < tol) return true;
+		final double y = (m * data.firstObject()) + c;
+
+		if (Math.abs(y - data.secondObject()) < tol)
+			return true;
 		return false;
 	}
 
 	@Override
 	public Integer predict(Integer data) {
-		return (int)Math.round((m * data) + c);
+		return (int) Math.round((m * data) + c);
 	}
 
 	@Override
 	public int numItemsToEstimate() {
-		return nEstimates ;
+		return nEstimates;
 	}
 
 	@Override
 	public double calculateError(List<? extends IndependentPair<Integer, Integer>> alldata) {
-		double error=0;
-		
-		for (IndependentPair<Integer, Integer> data : alldata) {
-			double y = (m * data.firstObject()) + c;
-			
-			error += (y-data.secondObject())*(y-data.secondObject());
+		double error = 0;
+
+		for (final IndependentPair<Integer, Integer> data : alldata) {
+			final double y = (m * data.firstObject()) + c;
+
+			error += (y - data.secondObject()) * (y - data.secondObject());
 		}
-		
+
 		return error;
 	}
-	
+
+	@Override
+	public double calculateError(IndependentPair<Integer, Integer> data) {
+		final double y = (m * data.firstObject()) + c;
+
+		return (y - data.secondObject()) * (y - data.secondObject());
+	}
+
 	@Override
 	public LeastSquaresLinearModel clone() {
-		LeastSquaresLinearModel model = new LeastSquaresLinearModel(tol,nEstimates);
+		final LeastSquaresLinearModel model = new LeastSquaresLinearModel(tol, nEstimates);
 		model.c = c;
 		model.m = m;
 		return model;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return "Least Squares Fit: (m,c) = (" + m + "," + c + ")";
 	}
 
 	/**
 	 * Get the gradient (m in y=mx+c)
+	 * 
 	 * @return the gradient
 	 */
 	public double getM() {
@@ -156,6 +173,7 @@ public class LeastSquaresLinearModel implements Model<Integer, Integer> {
 
 	/**
 	 * Get the offset (c in y=mx+c)
+	 * 
 	 * @return the offset
 	 */
 	public double getC() {

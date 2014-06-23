@@ -33,28 +33,28 @@ import java.util.List;
 
 import org.openimaj.util.pair.IndependentPair;
 
-
 /**
- * Example model that models the linear relationship between a set of integer ordinates.
- * Basically it calculates a straight line between a set of data points. This is
- * NOT the line of best fit however (i.e. we don't do least squares)... Only the first
- * two datapoint pairs are used to estimate the model.   
+ * Example model that models the linear relationship between a set of integer
+ * ordinates. Basically it calculates a straight line between a set of data
+ * points. This is NOT the line of best fit however (i.e. we don't do least
+ * squares)... Only the first two datapoint pairs are used to estimate the
+ * model.
  * 
  * @author Jonathon Hare
- *
+ * 
  */
 public class SampleLinearModel implements Model<Integer, Integer> {
 	float m, c;
 	float tol;
-	
+
 	SampleLinearModel(float tolerence)
 	{
 		tol = tolerence;
 	}
-	
+
 	@Override
 	public SampleLinearModel clone() {
-		SampleLinearModel slm = new SampleLinearModel(tol);
+		final SampleLinearModel slm = new SampleLinearModel(tol);
 		slm.m = m;
 		slm.c = c;
 		return slm;
@@ -63,10 +63,10 @@ public class SampleLinearModel implements Model<Integer, Integer> {
 	@Override
 	public void estimate(List<? extends IndependentPair<Integer, Integer>> data) {
 		float dy, dx;
-		
+
 		dy = data.get(0).secondObject() - data.get(1).secondObject();
 		dx = data.get(0).firstObject() - data.get(1).firstObject();
-			
+
 		m = dy / dx;
 		c = data.get(0).secondObject() - (m * data.get(0).firstObject());
 	}
@@ -78,28 +78,35 @@ public class SampleLinearModel implements Model<Integer, Integer> {
 
 	@Override
 	public boolean validate(IndependentPair<Integer, Integer> data) {
-		float y = (m * data.firstObject()) + c;
-		
-		if (Math.abs(y-data.secondObject()) < tol) return true;
+		final float y = (m * data.firstObject()) + c;
+
+		if (Math.abs(y - data.secondObject()) < tol)
+			return true;
 		return false;
 	}
 
 	@Override
 	public double calculateError(List<? extends IndependentPair<Integer, Integer>> alldata)
 	{
-		double error=0;
-		
-		for (IndependentPair<Integer, Integer> data : alldata) {
-			double y = (m * data.firstObject()) + c;
-			
-			error += (y-data.secondObject())*(y-data.secondObject());
+		double error = 0;
+
+		for (final IndependentPair<Integer, Integer> data : alldata) {
+			final double y = (m * data.firstObject()) + c;
+
+			error += (y - data.secondObject()) * (y - data.secondObject());
 		}
-		
+
 		return error;
 	}
 
 	@Override
 	public Integer predict(Integer data) {
-		return (int)Math.round((m * data) + c);
+		return (int) Math.round((m * data) + c);
+	}
+
+	@Override
+	public double calculateError(IndependentPair<Integer, Integer> data) {
+		final double y = (m * data.firstObject()) + c;
+		return (y - data.secondObject()) * (y - data.secondObject());
 	}
 }

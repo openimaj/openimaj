@@ -30,8 +30,8 @@
 package org.openimaj.image.processing.resize;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.algorithm.ImageInterpolation;
 import org.openimaj.image.processor.SinglebandImageProcessor;
-import org.openimaj.math.util.Interpolation;
 
 /**
  * Bi-cubic interpolation to resize images.
@@ -70,28 +70,9 @@ public class BicubicInterpolation implements SinglebandImageProcessor<Float, FIm
 
 		for (int y = 0; y < height; y++)
 			for (int x = 0; x < width; x++)
-				newimage.pixels[y][x] = interp(x * scale, y * scale, image, working);
+				newimage.pixels[y][x] = ImageInterpolation.InterpolationType.BICUBIC.interpolate(x * scale, y * scale,
+						image, working);
 
 		image.internalAssign(newimage);
-	}
-
-	private float interp(float x, float y, FImage image, float[][] working) {
-		final int sx = (int) Math.floor(x) - 1;
-		final int sy = (int) Math.floor(y) - 1;
-		final int ex = sx + 3;
-		final int ey = sy + 3;
-
-		for (int yy = sy, i = 0; yy <= ey; yy++, i++) {
-			for (int xx = sx, j = 0; xx <= ex; xx++, j++) {
-				final int px = xx < 0 ? 0 : xx >= image.width ? image.width - 1 : xx;
-				final int py = yy < 0 ? 0 : yy >= image.height ? image.height - 1 : yy;
-
-				working[i][j] = image.pixels[py][px];
-			}
-		}
-
-		final float dx = (float) (x - Math.floor(x));
-		final float dy = (float) (y - Math.floor(y));
-		return Interpolation.bicubicInterp(dx, dy, working);
 	}
 }

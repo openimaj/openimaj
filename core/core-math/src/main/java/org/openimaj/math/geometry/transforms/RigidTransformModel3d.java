@@ -32,26 +32,29 @@ package org.openimaj.math.geometry.transforms;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point3d;
-import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
 /**
- * Concrete implementation of a model of an rigid transform with
- * only rotation and translation allowed. Capable of least-squares 
- * estimate of model parameters.
+ * Concrete implementation of a model of an rigid transform with only rotation
+ * and translation allowed. Capable of least-squares estimate of model
+ * parameters.
  * 
  * @see TransformUtilities#rigidMatrix(List)
  * 
  * @author Jonathon Hare
- *
+ * 
  */
-public class RigidTransformModel3d extends AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTransformProvider {
+public class RigidTransformModel3d extends AffineTransformModel3d
+		implements MatrixTransformProvider
+{
 	/**
 	 * Create an RigidTransformModel3d with a given tolerance for validation
-	 * @param tolerance value specifying how close (Euclidean distance) a point
-	 * must be from its predicted position to successfully validate.
+	 * 
+	 * @param tolerance
+	 *            value specifying how close (Euclidean distance) a point must
+	 *            be from its predicted position to successfully validate.
 	 */
 	public RigidTransformModel3d(double tolerance)
 	{
@@ -60,7 +63,7 @@ public class RigidTransformModel3d extends AffineTransformModel3d implements Mod
 
 	@Override
 	public RigidTransformModel3d clone() {
-		RigidTransformModel3d atm = new RigidTransformModel3d(tol);
+		final RigidTransformModel3d atm = new RigidTransformModel3d(tol);
 		atm.transform = transform.copy();
 		return atm;
 	}
@@ -68,14 +71,14 @@ public class RigidTransformModel3d extends AffineTransformModel3d implements Mod
 	@Override
 	public void estimate(List<? extends IndependentPair<Point3d, Point3d>> data) {
 		this.transform = TransformUtilities.rigidMatrix(data);
-		
+
 		try {
 			transform.inverse();
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			transform = Matrix.identity(4, 4);
 		}
 	}
-	
+
 	@Override
 	public int numItemsToEstimate() {
 		return 6;

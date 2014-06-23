@@ -39,152 +39,165 @@ import org.openimaj.util.pair.Pair;
 import Jama.Matrix;
 
 /**
- * Implementation of a Fundamental matrix model that estimates the
- * epipolar geometry.
+ * Implementation of a Fundamental matrix model that estimates the epipolar
+ * geometry.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransformProvider {
 	/**
-	 * Interface for classes able to test whether a point pair
-	 * satisifies the epipolar geometry.
+	 * Interface for classes able to test whether a point pair satisifies the
+	 * epipolar geometry.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static interface ValidationCondition {
 		/**
 		 * Test if a point pair satisifies the epipolar geometry.
-		 * @param data The point pair
-		 * @param fundamental The fundamental matrix
+		 * 
+		 * @param data
+		 *            The point pair
+		 * @param fundamental
+		 *            The fundamental matrix
 		 * @return true if satisfied; false otherwise.
 		 */
 		public boolean validate(IndependentPair<Point2d, Point2d> data, Matrix fundamental);
 	}
-	
+
 	/**
-	 * {@link ValidationCondition} that calculates the distance of the
-	 * two points from the closest epipolar line.
+	 * {@link ValidationCondition} that calculates the distance of the two
+	 * points from the closest epipolar line.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class EpipolarDistanceCondition implements ValidationCondition {
 		float tol;
-		
+
 		/**
-		 * Construct with tolerance distance. Distance from epipolar line
-		 * of both points in the validate method must be less than
-		 * the tolerance for the validation to succeed.
+		 * Construct with tolerance distance. Distance from epipolar line of
+		 * both points in the validate method must be less than the tolerance
+		 * for the validation to succeed.
+		 * 
 		 * @param tol
 		 */
 		public EpipolarDistanceCondition(float tol) {
 			this.tol = tol;
 		}
-		
+
 		@Override
 		public boolean validate(IndependentPair<Point2d, Point2d> data, Matrix fundamental) {
-			Matrix p1Mat = new Matrix(3,1);
-			Matrix p2Mat = new Matrix(3,1);
-			
+			final Matrix p1Mat = new Matrix(3, 1);
+			final Matrix p2Mat = new Matrix(3, 1);
+
 			// x
 			p1Mat.set(0, 0, data.firstObject().getX());
 			p1Mat.set(1, 0, data.firstObject().getY());
 			p1Mat.set(2, 0, 1);
-			
+
 			// x'
 			p2Mat.set(0, 0, data.secondObject().getX());
 			p2Mat.set(1, 0, data.secondObject().getY());
 			p2Mat.set(2, 0, 1);
-			
-			Matrix l1 = fundamental.times(p1Mat);
-			double n1 = Math.sqrt(l1.get(0, 0) * l1.get(0, 0) + l1.get(1, 0) * l1.get(1, 0));
-			double d1 = Math.abs((l1.get(0, 0)*p2Mat.get(0, 0) + l1.get(1, 0)*p2Mat.get(1, 0) + l1.get(2, 0)*p2Mat.get(2, 0)) / n1); 
-			
-			Matrix l2 = fundamental.transpose().times(p2Mat);
-			double n2 = Math.sqrt(l2.get(0, 0) * l2.get(0, 0) + l2.get(1, 0) * l2.get(1, 0));
-			double d2 = Math.abs((l2.get(0, 0)*p1Mat.get(0, 0) + l2.get(1, 0)*p1Mat.get(1, 0) + l2.get(2, 0)*p1Mat.get(2, 0)) / n2);
-			
+
+			final Matrix l1 = fundamental.times(p1Mat);
+			final double n1 = Math.sqrt(l1.get(0, 0) * l1.get(0, 0) + l1.get(1, 0) * l1.get(1, 0));
+			final double d1 = Math.abs((l1.get(0, 0) * p2Mat.get(0, 0) + l1.get(1, 0) * p2Mat.get(1, 0) + l1.get(2, 0)
+					* p2Mat.get(2, 0))
+					/ n1);
+
+			final Matrix l2 = fundamental.transpose().times(p2Mat);
+			final double n2 = Math.sqrt(l2.get(0, 0) * l2.get(0, 0) + l2.get(1, 0) * l2.get(1, 0));
+			final double d2 = Math.abs((l2.get(0, 0) * p1Mat.get(0, 0) + l2.get(1, 0) * p1Mat.get(1, 0) + l2.get(2, 0)
+					* p1Mat.get(2, 0))
+					/ n2);
+
 			return d1 < tol && d2 < tol;
 		}
 	}
-	
+
 	/**
 	 * {@link ValidationCondition} based on Sampson's geometric error.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class SampsonGeometricErrorCondition implements ValidationCondition {
 		double tol;
-		
+
 		/**
 		 * @param tol
 		 */
 		public SampsonGeometricErrorCondition(double tol) {
 			this.tol = tol;
 		}
-		
+
 		@Override
 		public boolean validate(IndependentPair<Point2d, Point2d> data, Matrix fundamental) {
-			Matrix p1 = new Matrix(3,1);
-			Matrix p2 = new Matrix(3,1);
-			
+			final Matrix p1 = new Matrix(3, 1);
+			final Matrix p2 = new Matrix(3, 1);
+
 			// x
 			p1.set(0, 0, data.firstObject().getX());
 			p1.set(1, 0, data.firstObject().getY());
 			p1.set(2, 0, 1);
-			
+
 			// x'
 			p2.set(0, 0, data.secondObject().getX());
 			p2.set(1, 0, data.secondObject().getY());
 			p2.set(2, 0, 1);
-			
-			double p2tFp1 = p2.transpose().times(fundamental).times(p1).get(0, 0);
-			Matrix Fp1 = fundamental.times(p1);
-			Matrix Ftp2 = fundamental.transpose().times(p2);     
-			
-			double dist =  (p2tFp1*p2tFp1) / (Fp1.get(0, 0)*Fp1.get(0, 0) + Fp1.get(1,0)*Fp1.get(1,0) + Ftp2.get(0,0)*Ftp2.get(0,0) + Ftp2.get(1,0)*Ftp2.get(1,0));
-			
+
+			final double p2tFp1 = p2.transpose().times(fundamental).times(p1).get(0, 0);
+			final Matrix Fp1 = fundamental.times(p1);
+			final Matrix Ftp2 = fundamental.transpose().times(p2);
+
+			final double dist = (p2tFp1 * p2tFp1)
+					/ (Fp1.get(0, 0) * Fp1.get(0, 0) + Fp1.get(1, 0) * Fp1.get(1, 0) + Ftp2.get(0, 0) * Ftp2.get(0, 0) + Ftp2
+							.get(1, 0) * Ftp2.get(1, 0));
+
 			return Math.abs(dist) < tol;
 		}
 	}
-	
+
 	protected Matrix normFundamental;
 	protected Matrix fundamental;
 	protected ValidationCondition condition;
 	protected Pair<Matrix> norms;
-	
+
 	/**
 	 * Create an {@link FundamentalModel} with a given validation condition
-	 * @param condition Condition to determine whether a point is an inlier
+	 * 
+	 * @param condition
+	 *            Condition to determine whether a point is an inlier
 	 */
 	public FundamentalModel(ValidationCondition condition)
 	{
 		this.condition = condition;
-		normFundamental = new Matrix(3,3);
+		normFundamental = new Matrix(3, 3);
 	}
-	
+
 	@Override
 	public Matrix getTransform() {
 		return this.fundamental;
 	}
-	
+
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		this.norms = TransformUtilities.getNormalisations(data);
-		List<? extends IndependentPair<Point2d, Point2d>> normData = TransformUtilities.normalise(data, norms);
-		
+		final List<? extends IndependentPair<Point2d, Point2d>> normData = TransformUtilities.normalise(data, norms);
+
 		this.normFundamental = TransformUtilities.fundamentalMatrix8Pt(normData);
 		this.fundamental = norms.secondObject().transpose().times(normFundamental).times(norms.firstObject());
 	}
 
 	@Override
 	public boolean validate(IndependentPair<Point2d, Point2d> data) {
-		if(normFundamental == null) return false;
-		
-		IndependentPair<Point2d, Point2d> normData = TransformUtilities.normalise(data, norms);
-		
+		if (normFundamental == null)
+			return false;
+
+		final IndependentPair<Point2d, Point2d> normData = TransformUtilities.normalise(data, norms);
+
 		return condition.validate(normData, normFundamental);
 	}
 
@@ -200,24 +213,34 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 
 	@Override
 	public double calculateError(List<? extends IndependentPair<Point2d, Point2d>> data) {
-		double totalCheck = data.size();
+		final double totalCheck = data.size();
 		double correct = 0;
-		for (IndependentPair<Point2d, Point2d> independentPair : data) {
-			if(this.validate(independentPair)) correct += 1;
+		for (final IndependentPair<Point2d, Point2d> independentPair : data) {
+			if (this.validate(independentPair))
+				correct += 1;
 		}
 		return correct / totalCheck;
 	}
-	
+
 	/**
 	 * Clone the model
+	 * 
 	 * @return a cloned copy
 	 */
 	@Override
-	public FundamentalModel clone(){
-		FundamentalModel model = new FundamentalModel(condition);
-		if (model.normFundamental != null) model.normFundamental = normFundamental.copy();
-		if (model.fundamental != null) model.fundamental = fundamental.copy();
-		if (model.norms != null) model.norms = new Pair<Matrix>(norms.firstObject().copy(), norms.secondObject().copy());
+	public FundamentalModel clone() {
+		final FundamentalModel model = new FundamentalModel(condition);
+		if (model.normFundamental != null)
+			model.normFundamental = normFundamental.copy();
+		if (model.fundamental != null)
+			model.fundamental = fundamental.copy();
+		if (model.norms != null)
+			model.norms = new Pair<Matrix>(norms.firstObject().copy(), norms.secondObject().copy());
 		return model;
+	}
+
+	@Override
+	public double calculateError(IndependentPair<Point2d, Point2d> data) {
+		return validate(data) ? 0 : 1;
 	}
 }

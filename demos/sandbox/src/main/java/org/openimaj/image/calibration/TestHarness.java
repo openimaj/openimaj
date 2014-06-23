@@ -9,6 +9,8 @@ import java.util.List;
 import no.uib.cipr.matrix.NotConvergedException;
 
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.camera.calibration.CameraCalibrationZhang;
 import org.openimaj.image.colour.RGBColour;
@@ -31,7 +33,7 @@ public class TestHarness {
 			pointMatches.add(data);
 		}
 
-		final CameraCalibrationZhang calib = new CameraCalibrationZhang(pointMatches);
+		final CameraCalibrationZhang calib = new CameraCalibrationZhang(pointMatches, 640, 480);
 		// final CameraCalibrationZhang calib = new
 		// CameraCalibration(pointMatches);
 
@@ -49,6 +51,12 @@ public class TestHarness {
 			img.drawPoint(observed, RGBColour.GREEN, 1);
 		}
 		DisplayUtilities.display(img);
+
+		final FImage img1 = ImageUtilities.readF(new URL(
+				"http://research.microsoft.com/en-us/um/people/zhang/Calib/Calibration/CalibIm1.gif"));
+		DisplayUtilities.display(img1);
+		final FImage img2 = calib.getIntrisics().undistort(img1);
+		DisplayUtilities.display(img2);
 	}
 
 	private static List<Point2dImpl> loadModelPoints() throws MalformedURLException {

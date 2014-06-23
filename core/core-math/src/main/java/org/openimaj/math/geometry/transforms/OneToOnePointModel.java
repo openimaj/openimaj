@@ -39,43 +39,46 @@ import org.openimaj.math.util.distance.ThresholdDistanceCheck;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * A OneToOnePointModel models a one-to-one mapping of points
- * in a 2d space. For purposes of validation and error calculation,
- * a {@link DistanceCheck} object must be provided to test the
- * distance between a pair of points for point-equality.
+ * A OneToOnePointModel models a one-to-one mapping of points in a 2d space. For
+ * purposes of validation and error calculation, a {@link DistanceCheck} object
+ * must be provided to test the distance between a pair of points for
+ * point-equality.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class OneToOnePointModel implements Model<Point2d, Point2d> {
 	protected DistanceCheck check;
-	
+
 	/**
-	 * Convenience constructor that makes the underlying 
-	 * {@link DistanceCheck} a {@link ThresholdDistanceCheck} with the
-	 * given threshold. 
-	 * @param threshold the threshold
+	 * Convenience constructor that makes the underlying {@link DistanceCheck} a
+	 * {@link ThresholdDistanceCheck} with the given threshold.
+	 * 
+	 * @param threshold
+	 *            the threshold
 	 */
 	public OneToOnePointModel(float threshold) {
 		this.check = new ThresholdDistanceCheck(threshold);
 	}
-	
+
 	/**
 	 * Construct with given DistanceCheck
-	 * @param check the DistanceCheck
+	 * 
+	 * @param check
+	 *            the DistanceCheck
 	 */
 	public OneToOnePointModel(DistanceCheck check) {
 		this.check = check;
 	}
-	
+
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
-		//OneToOnePointModel doesn't need estimating
+		// OneToOnePointModel doesn't need estimating
 	}
 
 	@Override
 	public boolean validate(IndependentPair<Point2d, Point2d> data) {
-		double distance = Line2d.distance(data.firstObject(), data.secondObject());
+		final double distance = Line2d.distance(data.firstObject(), data.secondObject());
 		return check.check(distance);
 	}
 
@@ -92,19 +95,25 @@ public class OneToOnePointModel implements Model<Point2d, Point2d> {
 	@Override
 	public double calculateError(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		double error = 0;
-		
-		for (IndependentPair<Point2d, Point2d> d : data) {
-			if (!validate(d)) error++;
+
+		for (final IndependentPair<Point2d, Point2d> d : data) {
+			if (!validate(d))
+				error++;
 		}
-		
+
 		return error / data.size();
 	}
-	
+
+	@Override
+	public double calculateError(IndependentPair<Point2d, Point2d> data) {
+		return validate(data) ? 0 : 1;
+	}
+
 	@Override
 	public OneToOnePointModel clone() {
 		try {
 			return (OneToOnePointModel) super.clone();
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
 	}

@@ -29,41 +29,54 @@
  */
 package org.openimaj.demos.facestuff;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
-import org.openimaj.image.processing.face.alignment.MeshWarpAligner;
-import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 public class Alignment {
 	public static void main(String[] args) throws MalformedURLException, IOException {
-		final FImage img = ImageUtilities.readF(new URL("http://www.topnews.in/files/Barack-Obama_81.jpg"));
-		final FKEFaceDetector detector = new FKEFaceDetector();
-		final FaceAligner<KEDetectedFace> aligner = new MeshWarpAligner();
-		// final FaceAligner<KEDetectedFace> aligner = new
-		// RotateScaleAligner(200);
+		final FImage img = ImageUtilities.readF(new File(
+				"/Volumes/Raid/face_databases/lfw/Aaron_Peirsol/Aaron_Peirsol_0002.jpg"));
+		final FKEFaceDetector detector = new FKEFaceDetector(1.6f);
+		final FaceAligner<KEDetectedFace> aligner = new AffineAligner(125, 160, 0.1f);
 
 		final KEDetectedFace face = detector.detectFaces(img).get(0);
-		// DisplayUtilities.display(face.getFacePatch());
+
+		final int facePatchSize = Math.max(160, 125);
+		final double size = facePatchSize + 2.0 * facePatchSize * 0.1f;
+		final double sc = 80 / size;
+
+		final float[][] Pmu = {
+				{ 25.0347f, 34.1802f, 44.1943f, 53.4623f, 34.1208f, 39.3564f, 44.9156f, 31.1454f, 47.8747f },
+				{ 34.1580f, 34.1659f, 34.0936f, 33.8063f, 45.4179f, 47.0043f, 45.3628f, 53.0275f, 52.7999f } };
+
+		FImage model = new FImage(125, 160);
+		for (int i = 0; i < Pmu[0].length; i++) {
+			Point2dImpl pt = new Point2dImpl(Pmu[0][i], Pmu[1][i]);
+
+			pt = pt.transform(TransformUtilities.scaleMatrixAboutPoint(1 / sc, 1 / sc, new Point2dImpl(Pmu[0][0],
+					Pmu[1][0])));
+
+			model.drawPoint(pt, 1f, 3);
+		}
 
 		for (final FacialKeypoint kpt : face.getKeypoints())
 			img.drawPoint(
 					kpt.position.transform(TransformUtilities.translateMatrix(face.getBounds().x, face.getBounds().y)),
 					1f, 3);
-
-		img.drawShape(new HaarCascadeDetector(80).detectFaces(img).get(0).getBounds(), 1F);
-		img.drawShape(face.getBounds(), 0.8F);
-
-		DisplayUtilities.display(img);
-		DisplayUtilities.display(aligner.align(face));
+		model = model.inverse();
+		ImageUtilities.write(img, new File("/Users/jsh2/keypoints.png"));
+		ImageUtilities.write(model, new File("/Users/jsh2/model.png"));
+		ImageUtilities.write(aligner.align(face), new File("/Users/jsh2/aligned.png"));
 	}
 }

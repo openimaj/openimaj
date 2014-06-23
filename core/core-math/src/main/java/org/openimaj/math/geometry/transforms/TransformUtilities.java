@@ -500,7 +500,8 @@ public class TransformUtilities {
 	}
 
 	/**
-	 * Construct a scaling transform with the given amounts of scaling.
+	 * Construct a homogeneous scaling transform with the given amounts of
+	 * scaling.
 	 * 
 	 * @param d
 	 *            Scaling in the x-direction.

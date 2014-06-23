@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.processing.transform.RemapProcessor;
 
 import Jama.Matrix;
 
@@ -308,21 +309,7 @@ public class PAW {
 
 		warpRegion(_mapx, _mapy);
 
-		cvremap(src, dst, _mapx, _mapy);
-	}
-
-	private void cvremap(FImage src, FImage dst, FImage mx, FImage my) {
-		// FIXME move elsewhere
-
-		final float[][] dpix = dst.pixels;
-		final float[][] mxp = mx.pixels;
-		final float[][] myp = my.pixels;
-
-		for (int y = 0; y < dst.height; y++) {
-			for (int x = 0; x < dst.width; x++) {
-				dpix[y][x] = src.getPixelInterpNative(mxp[y][x], myp[y][x], 0);
-			}
-		}
+		RemapProcessor.remap(src, dst, _mapx, _mapy);
 	}
 
 	void calcCoeff() {

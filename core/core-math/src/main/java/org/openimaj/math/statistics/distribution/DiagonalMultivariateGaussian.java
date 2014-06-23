@@ -30,10 +30,13 @@
 package org.openimaj.math.statistics.distribution;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.Matrix;
+import cern.jet.random.Normal;
+import cern.jet.random.engine.MersenneTwister;
 
 /**
  * Implementation of a {@link MultivariateGaussian} with a diagonal covariance
@@ -146,5 +149,27 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 		}
 
 		return lp;
+	}
+
+	@Override
+	public double[][] sample(int nsamples, Random rng) {
+		if (nsamples == 0)
+			return new double[0][0];
+
+		final Normal rng2 = new Normal(0, 1, new MersenneTwister());
+
+		final int N = mean.getColumnDimension();
+		final double[][] out = new double[nsamples][N];
+
+		final double[] meanv = mean.getArray()[0];
+		for (int i = 0; i < N; i++) {
+			final double choli = Math.sqrt(this.variance[i]);
+
+			for (int j = 0; j < nsamples; j++) {
+				out[j][i] = choli * rng2.nextDouble() + meanv[i];
+			}
+		}
+
+		return out;
 	}
 }

@@ -118,9 +118,7 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 	 * Relative error is sum of squared euclidean distance between actual and
 	 * predicted positions
 	 * 
-	 * @see
-	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#calculateError(java.util
-	 * .List)
+	 * @seeModel#calculateError(java.util.List)
 	 */
 	@Override
 	public double calculateError(List<? extends IndependentPair<Point2d, Point2d>> alldata)
@@ -137,6 +135,17 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 		}
 
 		return error;
+	}
+
+	@Override
+	public double calculateError(IndependentPair<Point2d, Point2d> data)
+	{
+		final Point2d p2_est = data.firstObject().transform(homography);
+
+		final double dx = data.secondObject().getX() - p2_est.getX();
+		final double dy = data.secondObject().getY() - p2_est.getY();
+
+		return (dx * dx + dy * dy);
 	}
 
 	@Override

@@ -32,67 +32,80 @@ package org.openimaj.math.geometry.point;
 import Jama.Matrix;
 
 /**
- * Interface representing a point in 2d space with x and y coordinates 
- * @author jon
- *
+ * Interface representing a point in 3d space with x and y coordinates
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface Point3d extends Coordinate {
 	/**
-	 * @return x coordinate of point 
+	 * @return x coordinate of point
 	 */
 	public double getX();
-	
+
 	/**
-	 * Set x coordinate of point 
-	 * @param x x-coordinate
+	 * Set x coordinate of point
+	 * 
+	 * @param x
+	 *            x-coordinate
 	 */
 	public void setX(double x);
-	
+
 	/**
 	 * @return y coordinate of point
 	 */
 	public double getY();
-	
+
 	/**
 	 * Set y coordinate of point
-	 * @param y y-coordinate
+	 * 
+	 * @param y
+	 *            y-coordinate
 	 */
 	public void setY(double y);
-	
+
 	/**
 	 * @return z coordinate of point
 	 */
 	public double getZ();
-	
+
 	/**
 	 * Set z coordinate of point
-	 * @param z z-coordinate
+	 * 
+	 * @param z
+	 *            z-coordinate
 	 */
 	public void setZ(double z);
-	
+
 	/**
-	 * 	Copy the values of the given point
-	 * 	into this point.
-	 *  @param p The point to copy values from.
+	 * Copy the values of the given point into this point.
+	 * 
+	 * @param p
+	 *            The point to copy values from.
 	 */
-	public void copyFrom( Point3d p );
-	
+	public void copyFrom(Point3d p);
+
 	/**
 	 * Clone the point
+	 * 
 	 * @return a copy of the point
 	 */
 	public Point3d copy();
 
 	/**
 	 * Translate the position of the point by the given amounts
-	 * @param x x-amount
-	 * @param y y-amount
-	 * @param z z-amount
+	 * 
+	 * @param x
+	 *            x-amount
+	 * @param y
+	 *            y-amount
+	 * @param z
+	 *            z-amount
 	 */
 	public void translate(double x, double y, double z);
-	
+
 	/**
 	 * Transform the point by the given matrix
+	 * 
 	 * @param m
 	 * @return a copy
 	 */
@@ -100,6 +113,7 @@ public interface Point3d extends Coordinate {
 
 	/**
 	 * Take point point from another point such that return = this - a
+	 * 
 	 * @param a
 	 * @return a new point
 	 */
@@ -107,8 +121,9 @@ public interface Point3d extends Coordinate {
 
 	/**
 	 * Translate the position of the point by the given amounts
-	 * @param v the vector to translate by
+	 * 
+	 * @param v
+	 *            the vector to translate by
 	 */
 	void translate(Point3d v);
 }
-

@@ -27,12 +27,14 @@ import Jama.Matrix;
 
 public class CameraCalibration extends CameraCalibrationZhang {
 
-	public CameraCalibration(List<List<? extends IndependentPair<? extends Point2d, ? extends Point2d>>> points) {
-		super(points);
+	public CameraCalibration(List<List<? extends IndependentPair<? extends Point2d, ? extends Point2d>>> points,
+			int width, int height)
+	{
+		super(points, width, height);
 	}
 
 	@Override
-	protected void performCalibration() {
+	protected void performCalibration(int width, int height) {
 		// compute the homographies
 		final List<Matrix> homographies = new ArrayList<Matrix>();
 		for (int i = 0; i < points.size(); i++) {
@@ -44,7 +46,7 @@ public class CameraCalibration extends CameraCalibrationZhang {
 		}
 
 		// intial estimate of intrisics and extrinsics
-		estimateIntrisicAndExtrinsics(homographies);
+		estimateIntrisicAndExtrinsics(homographies, width, height);
 
 		// non-linear optimisation using analytic jacobian
 		refine();

@@ -46,7 +46,7 @@ public class CameraCalibrationZhangTest {
 			pointMatches.add(data);
 		}
 
-		final CameraCalibrationZhang calib = new CameraCalibrationZhang(pointMatches);
+		final CameraCalibrationZhang calib = new CameraCalibrationZhang(pointMatches, 640, 480);
 		final CameraIntrinsics intrisics = calib.getIntrisics();
 
 		assertEquals(832.5, intrisics.getFocalLengthX(), EPS_PIX);

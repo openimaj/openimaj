@@ -37,103 +37,122 @@ import org.openimaj.image.Image;
 import org.openimaj.image.model.ImageClassificationModel;
 import org.openimaj.util.pair.IndependentPair;
 
-
 /**
- * An {@link ImageClassificationModel} based on the idea of
- * determining the probability of a class of a pixel given the
- * local patch of pixels surrounding the pixel in question. A
- * sliding window of a given size is moved across the image 
- * (with overlap), and the contents of the window are analysed
- * to determine the probability belonging to the pixel at the
- * centre of the window. 
+ * An {@link ImageClassificationModel} based on the idea of determining the
+ * probability of a class of a pixel given the local patch of pixels surrounding
+ * the pixel in question. A sliding window of a given size is moved across the
+ * image (with overlap), and the contents of the window are analysed to
+ * determine the probability belonging to the pixel at the centre of the window.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <Q> Type of pixel
- * @param <T> Type of {@link Image}
+ * 
+ * @param <Q>
+ *            Type of pixel
+ * @param <T>
+ *            Type of {@link Image}
  */
 public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> implements ImageClassificationModel<T> {
 	private static final long serialVersionUID = 1L;
 
 	protected float tol = 100;
 	protected int patchHeight, patchWidth;
-	
+
 	/**
-	 * Construct with the given dimensions for the sampling
-	 * patch.
+	 * Construct with the given dimensions for the sampling patch.
 	 * 
-	 * @param patchWidth the width of the sampling patch
-	 * @param patchHeight the height of the sampling patch
+	 * @param patchWidth
+	 *            the width of the sampling patch
+	 * @param patchHeight
+	 *            the height of the sampling patch
 	 */
 	public PatchClassificationModel(int patchWidth, int patchHeight) {
 		this.patchHeight = patchHeight;
 		this.patchWidth = patchWidth;
 	}
-	
+
 	@Override
 	public float getTolerance() {
 		return tol;
 	}
-	
+
 	@Override
 	public void setTolerance(float tol) {
 		this.tol = tol;
 	}
-	
+
 	/**
-	 * Classify a patch, returning the probability of
-	 * the central pixel belonging to the class.
-	 * @param patch the patch.
+	 * Classify a patch, returning the probability of the central pixel
+	 * belonging to the class.
+	 * 
+	 * @param patch
+	 *            the patch.
 	 * @return the probability of the central pixel belonging to the class.
 	 */
 	public abstract float classifyPatch(T patch);
-	
+
 	@Override
 	public FImage classifyImage(T im) {
-		FImage out = new FImage(im.getWidth(), im.getHeight());
-		T roi = im.newInstance(patchWidth, patchHeight);
-		
-		int hh = patchHeight / 2;
-		int hw = patchWidth / 2;
-		
-		for (int y=hh; y<im.getHeight() - (patchHeight - hh); y++) {
-			for (int x=hw; x<im.getWidth() - (patchWidth - hw); x++) {
-				im.extractROI(x-hw, y-hh, roi);
+		final FImage out = new FImage(im.getWidth(), im.getHeight());
+		final T roi = im.newInstance(patchWidth, patchHeight);
+
+		final int hh = patchHeight / 2;
+		final int hw = patchWidth / 2;
+
+		for (int y = hh; y < im.getHeight() - (patchHeight - hh); y++) {
+			for (int x = hw; x < im.getWidth() - (patchWidth - hw); x++) {
+				im.extractROI(x - hw, y - hh, roi);
 				out.pixels[y][x] = this.classifyPatch(roi);
 			}
 		}
-		
+
 		return out;
 	}
-	
+
 	@Override
-	public abstract PatchClassificationModel<Q,T> clone();
+	public abstract PatchClassificationModel<Q, T> clone();
 
 	@Override
 	public double calculateError(List<? extends IndependentPair<T, FImage>> data) {
 		double error = 0;
-		
-		for (IndependentPair<T, FImage> pair : data) {
-			FImage classif = this.classifyImage(pair.firstObject());
-			
-			for (int y=0; y<classif.getHeight(); y++) {
-				for (int x=0; x<classif.getWidth(); x++) {
-					
-					float diff =  classif.pixels[y][x] - pair.secondObject().pixels[y][x];
+
+		for (final IndependentPair<T, FImage> pair : data) {
+			final FImage classif = this.classifyImage(pair.firstObject());
+
+			for (int y = 0; y < classif.getHeight(); y++) {
+				for (int x = 0; x < classif.getWidth(); x++) {
+
+					final float diff = classif.pixels[y][x] - pair.secondObject().pixels[y][x];
 					error += (diff * diff);
 				}
 			}
 		}
-		
+
+		return error;
+	}
+
+	@Override
+	public double calculateError(IndependentPair<T, FImage> pair) {
+		double error = 0;
+
+		final FImage classif = this.classifyImage(pair.firstObject());
+
+		for (int y = 0; y < classif.getHeight(); y++) {
+			for (int x = 0; x < classif.getWidth(); x++) {
+
+				final float diff = classif.pixels[y][x] - pair.secondObject().pixels[y][x];
+				error += (diff * diff);
+			}
+		}
+
 		return error;
 	}
 
 	protected abstract T[] getArray(int length);
-	
+
 	@Override
-	public void estimate(List<? extends IndependentPair<T, FImage>> data) {		
-		T[] samples = getArray(data.size());
-		for (int i=0; i<data.size(); i++) {
+	public void estimate(List<? extends IndependentPair<T, FImage>> data) {
+		final T[] samples = getArray(data.size());
+		for (int i = 0; i < data.size(); i++) {
 			samples[i] = data.get(i).firstObject();
 		}
 		learnModel(samples);
@@ -141,7 +160,7 @@ public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> impleme
 
 	@Override
 	public int numItemsToEstimate() {
-		return 1; //need a minimum of 1 sample
+		return 1; // need a minimum of 1 sample
 	}
 
 	@Override
@@ -151,12 +170,12 @@ public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> impleme
 
 	@Override
 	public boolean validate(IndependentPair<T, FImage> data) {
-		List<IndependentPair<T, FImage>> dl = new ArrayList<IndependentPair<T, FImage>>();
+		final List<IndependentPair<T, FImage>> dl = new ArrayList<IndependentPair<T, FImage>>();
 		dl.add(data);
-		
-		if (calculateError(dl) < tol) return true;
-		
-		return false;
-	}	
-}
 
+		if (calculateError(dl) < tol)
+			return true;
+
+		return false;
+	}
+}

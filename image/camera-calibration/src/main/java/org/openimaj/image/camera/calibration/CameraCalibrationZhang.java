@@ -65,14 +65,20 @@ public class CameraCalibrationZhang {
 	 * 
 	 * @param points
 	 *            the pairs of model-image points to calibrate the camera with
+	 * @param width
+	 *            the image width of the camera in pixels
+	 * @param height
+	 *            the image height of the camera in pixels
 	 */
-	public CameraCalibrationZhang(List<List<? extends IndependentPair<? extends Point2d, ? extends Point2d>>> points) {
+	public CameraCalibrationZhang(List<List<? extends IndependentPair<? extends Point2d, ? extends Point2d>>> points,
+			int width, int height)
+	{
 		this.points = points;
 
-		performCalibration();
+		performCalibration(width, height);
 	}
 
-	protected void performCalibration() {
+	protected void performCalibration(int width, int height) {
 		// compute the homographies
 		final List<Matrix> homographies = new ArrayList<Matrix>();
 		for (int i = 0; i < points.size(); i++) {
@@ -84,14 +90,13 @@ public class CameraCalibrationZhang {
 		}
 
 		// intial estimate of intrisics and extrinsics
-		estimateIntrisicAndExtrinsics(homographies);
+		estimateIntrisicAndExtrinsics(homographies, width, height);
 
 		// initial estimate of radial distortion
 		estimateRadialDistortion();
 
 		// non-linear optimisation using analytic jacobian
 		refine();
-
 	}
 
 	/**
@@ -133,9 +138,11 @@ public class CameraCalibrationZhang {
 	 * 
 	 * @param homographies
 	 *            the homographies
+	 * @param height
+	 * @param width
 	 * @return the intrinsics
 	 */
-	private CameraIntrinsics estimateIntrinsics(List<Matrix> homographies) {
+	private CameraIntrinsics estimateIntrinsics(List<Matrix> homographies, int width, int height) {
 		final double[][] V = new double[homographies.size() == 2 ? 5 : 2 * homographies.size()][];
 
 		for (int i = 0, j = 0; i < homographies.size(); i++, j += 2) {
@@ -163,7 +170,7 @@ public class CameraCalibrationZhang {
 				{ 0, 0, 1 }
 		});
 
-		return new CameraIntrinsics(A);
+		return new CameraIntrinsics(A, width, height);
 	}
 
 	/**
@@ -222,10 +229,12 @@ public class CameraCalibrationZhang {
 	 * 
 	 * @param homographies
 	 *            the homographies
+	 * @param height
+	 * @param width
 	 */
-	protected void estimateIntrisicAndExtrinsics(List<Matrix> homographies) {
+	protected void estimateIntrisicAndExtrinsics(List<Matrix> homographies, int width, int height) {
 		cameras = new ArrayList<Camera>(homographies.size());
-		final CameraIntrinsics intrinsic = estimateIntrinsics(homographies);
+		final CameraIntrinsics intrinsic = estimateIntrinsics(homographies, width, height);
 
 		for (int i = 0; i < homographies.size(); i++) {
 			cameras.add(estimateExtrinsics(homographies.get(i), intrinsic));

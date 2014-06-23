@@ -29,25 +29,29 @@
  */
 package org.openimaj.math.model.fit;
 
-import gnu.trove.list.array.TIntArrayList;
+import java.util.List;
+
+import org.openimaj.util.pair.IndependentPair;
 
 /**
- * RobustModelFitting is an interface for fitting models that are able
- * to distinguish between inliers and outliers in the training data.
+ * RobustModelFitting is an interface for fitting models that are able to
+ * distinguish between inliers and outliers in the training data.
  * 
  * @author Jonathon Hare
- *
- * @param <I> type of independent data
- * @param <D> type of dependent data
+ * 
+ * @param <I>
+ *            type of independent data
+ * @param <D>
+ *            type of dependent data
  */
-public interface RobustModelFitting <I, D> extends ModelFitting <I, D> {
+public interface RobustModelFitting<I, D> extends ModelFitting<I, D> {
 	/**
-	 * @return list of indices of the inliers in the original data 
+	 * @return list of the inliers in the original data
 	 */
-	TIntArrayList getInliers();
-	
+	List<? extends IndependentPair<I, D>> getInliers();
+
 	/**
-	 * @return list of indices of the outliers in the original data
+	 * @return list of the outliers in the original data
 	 */
-	TIntArrayList getOutliers();
+	List<? extends IndependentPair<I, D>> getOutliers();
 }
