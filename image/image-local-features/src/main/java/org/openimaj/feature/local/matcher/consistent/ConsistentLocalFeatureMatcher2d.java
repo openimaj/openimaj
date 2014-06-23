@@ -137,8 +137,10 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?, ?> & Poin
 		final boolean didfit = modelfit.fitData(li_p2d);
 
 		// get the inliers and build the list of consistent matches
-		for (final IndependentPair<Point2d, Point2d> p : modelfit.getInliers())
-			consistentMatches.add((Pair<T>) p);
+		for (final IndependentPair<Point2d, Point2d> p : modelfit.getInliers()) {
+			final Object op = p;
+			consistentMatches.add((Pair<T>) op);
+		}
 
 		return didfit;
 	}

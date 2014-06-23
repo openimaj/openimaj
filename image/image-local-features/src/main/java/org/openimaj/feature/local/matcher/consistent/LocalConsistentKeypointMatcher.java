@@ -53,7 +53,7 @@ import org.openimaj.util.pair.Pair;
  */
 public class LocalConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeypointMatcher<T>
 		implements
-			ModelFittingLocalFeatureMatcher<T>
+		ModelFittingLocalFeatureMatcher<T>
 {
 	RobustModelFitting<Point2d, Point2d> modelfit;
 	List<Pair<T>> consistentMatches;
@@ -189,8 +189,10 @@ public class LocalConsistentKeypointMatcher<T extends Keypoint> extends FastBasi
 
 		if (modelfit.fitData(li_p2d)) {
 			model = modelfit.getModel();
-			for (final IndependentPair<Point2d, Point2d> p : modelfit.getInliers())
-				consistentMatches.add((Pair<T>) p);
+			for (final IndependentPair<Point2d, Point2d> p : modelfit.getInliers()) {
+				final Object op = p;
+				consistentMatches.add((Pair<T>) op);
+			}
 		}
 		return true;
 	}
