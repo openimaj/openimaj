@@ -33,52 +33,52 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 
 /**
- * An {@link MBFPixelClassificationModel} that classifies an
- * individual pixel by comparing it to a joint (colour) histogram. 
- * The histogram is learnt from the positive pixel samples given 
- * in training. The probability returned by the classification
- * is determined from the value of the histogram bin in which the 
+ * An {@link MBFPixelClassificationModel} that classifies an individual pixel by
+ * comparing it to a joint (colour) histogram. The histogram is learnt from the
+ * positive pixel samples given in training. The probability returned by the
+ * classification is determined from the value of the histogram bin in which the
  * pixel being classified falls.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HistogramPixelModel extends MBFPixelClassificationModel {
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
-	 * The model histogram; public for speed. 
+	 * The model histogram; public for speed.
 	 */
 	public HistogramModel model;
-	
+
 	/**
-	 * Construct with the given number of histogram bins
-	 * per dimension. 
+	 * Construct with the given number of histogram bins per dimension.
 	 * 
-	 * @param nbins number of bins per dimension.
+	 * @param nbins
+	 *            number of bins per dimension.
 	 */
 	public HistogramPixelModel(int... nbins) {
 		super(nbins.length);
 		model = new HistogramModel(nbins);
 	}
-	
+
 	@Override
 	protected float classifyPixel(Float[] pix) {
 		int bin = 0;
-		
-		for (int i=0; i<ndims; i++) {
-			int b = (int)(pix[i] * (model.histogram.nbins[i]));
-			if (b >= model.histogram.nbins[i]) b = model.histogram.nbins[i] - 1;
-		
+
+		for (int i = 0; i < ndims; i++) {
+			int b = (int) (pix[i] * (model.histogram.nbins[i]));
+			if (b >= model.histogram.nbins[i])
+				b = model.histogram.nbins[i] - 1;
+
 			int f = 1;
-			for (int j=0; j<i; j++)
+			for (int j = 0; j < i; j++)
 				f *= model.histogram.nbins[j];
-			
+
 			bin += f * b;
 		}
-		
+
 		return (float) model.histogram.values[bin];
 	}
-	
+
 	@Override
 	public String toString() {
 		return model.toString();
@@ -86,15 +86,14 @@ public class HistogramPixelModel extends MBFPixelClassificationModel {
 
 	@Override
 	public HistogramPixelModel clone() {
-		HistogramPixelModel newmodel = new HistogramPixelModel();
+		final HistogramPixelModel newmodel = new HistogramPixelModel();
 		newmodel.model = model.clone();
-		newmodel.tol = tol;
 		newmodel.ndims = ndims;
 		return newmodel;
 	}
 
 	@Override
 	public void learnModel(MBFImage... images) {
-		model.estimateModel(images);		
+		model.estimateModel(images);
 	}
 }

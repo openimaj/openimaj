@@ -42,16 +42,16 @@ import java.util.List;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * An implementation of a {@link Model} that uses a
+ * An implementation of a {@link EstimatableModel} that uses a
  * {@link VectorNaiveBayesCategorizer} to associate vectors (actually double[])
- * with a category.
+ * with a category based on the naive bayes model.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <T>
  *            The type of class/category predicted by the model
  */
-public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
+public class GaussianVectorNaiveBayesModel<T> implements EstimatableModel<double[], T> {
 	VectorNaiveBayesCategorizer.BatchGaussianLearner<T> learner = new VectorNaiveBayesCategorizer.BatchGaussianLearner<T>();
 	private VectorNaiveBayesCategorizer<T, PDF> model;
 
@@ -69,11 +69,6 @@ public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
 	}
 
 	@Override
-	public boolean validate(IndependentPair<double[], T> data) {
-		return predict(data.firstObject()).equals(data.secondObject());
-	}
-
-	@Override
 	public T predict(double[] data) {
 		return model.evaluate(VectorFactory.getDefault().copyArray(data));
 	}
@@ -81,18 +76,6 @@ public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
 	@Override
 	public int numItemsToEstimate() {
 		return 0;
-	}
-
-	@Override
-	public double calculateError(List<? extends IndependentPair<double[], T>> data) {
-		int count = 0;
-
-		for (final IndependentPair<double[], T> d : data) {
-			if (!validate(d))
-				count++;
-		}
-
-		return (double) count / (double) data.size();
 	}
 
 	@Override
@@ -139,10 +122,5 @@ public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
 				.println("   P(false): " + model.model.computePosterior(VectorFactory.getDefault().copyArray(q), false));
 
 		System.out.println(model.model.getPriors());
-	}
-
-	@Override
-	public double calculateError(IndependentPair<double[], T> data) {
-		return validate(data) ? 0 : 1;
 	}
 }

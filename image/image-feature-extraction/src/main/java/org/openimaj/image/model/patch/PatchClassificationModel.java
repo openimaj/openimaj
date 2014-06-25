@@ -29,7 +29,6 @@
  */
 package org.openimaj.image.model.patch;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.FImage;
@@ -54,7 +53,6 @@ import org.openimaj.util.pair.IndependentPair;
 public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> implements ImageClassificationModel<T> {
 	private static final long serialVersionUID = 1L;
 
-	protected float tol = 100;
 	protected int patchHeight, patchWidth;
 
 	/**
@@ -68,16 +66,6 @@ public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> impleme
 	public PatchClassificationModel(int patchWidth, int patchHeight) {
 		this.patchHeight = patchHeight;
 		this.patchWidth = patchWidth;
-	}
-
-	@Override
-	public float getTolerance() {
-		return tol;
-	}
-
-	@Override
-	public void setTolerance(float tol) {
-		this.tol = tol;
 	}
 
 	/**
@@ -111,42 +99,6 @@ public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> impleme
 	@Override
 	public abstract PatchClassificationModel<Q, T> clone();
 
-	@Override
-	public double calculateError(List<? extends IndependentPair<T, FImage>> data) {
-		double error = 0;
-
-		for (final IndependentPair<T, FImage> pair : data) {
-			final FImage classif = this.classifyImage(pair.firstObject());
-
-			for (int y = 0; y < classif.getHeight(); y++) {
-				for (int x = 0; x < classif.getWidth(); x++) {
-
-					final float diff = classif.pixels[y][x] - pair.secondObject().pixels[y][x];
-					error += (diff * diff);
-				}
-			}
-		}
-
-		return error;
-	}
-
-	@Override
-	public double calculateError(IndependentPair<T, FImage> pair) {
-		double error = 0;
-
-		final FImage classif = this.classifyImage(pair.firstObject());
-
-		for (int y = 0; y < classif.getHeight(); y++) {
-			for (int x = 0; x < classif.getWidth(); x++) {
-
-				final float diff = classif.pixels[y][x] - pair.secondObject().pixels[y][x];
-				error += (diff * diff);
-			}
-		}
-
-		return error;
-	}
-
 	protected abstract T[] getArray(int length);
 
 	@Override
@@ -166,16 +118,5 @@ public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> impleme
 	@Override
 	public FImage predict(T data) {
 		return classifyImage(data);
-	}
-
-	@Override
-	public boolean validate(IndependentPair<T, FImage> data) {
-		final List<IndependentPair<T, FImage>> dl = new ArrayList<IndependentPair<T, FImage>>();
-		dl.add(data);
-
-		if (calculateError(dl) < tol)
-			return true;
-
-		return false;
 	}
 }

@@ -37,7 +37,7 @@ import org.openimaj.util.pair.IndependentPair;
 import Jama.Matrix;
 
 /**
- * Concrete implementation of a model of an rigid transform with only rotation
+ * Concrete implementation of a model of a 3D rigid transform with only rotation
  * and translation allowed. Capable of least-squares estimate of model
  * parameters.
  * 
@@ -50,20 +50,16 @@ public class RigidTransformModel3d extends AffineTransformModel3d
 		implements MatrixTransformProvider
 {
 	/**
-	 * Create an RigidTransformModel3d with a given tolerance for validation
-	 * 
-	 * @param tolerance
-	 *            value specifying how close (Euclidean distance) a point must
-	 *            be from its predicted position to successfully validate.
+	 * Create a {@link RigidTransformModel3d}
 	 */
-	public RigidTransformModel3d(double tolerance)
+	public RigidTransformModel3d()
 	{
-		super(tolerance);
+		super();
 	}
 
 	@Override
 	public RigidTransformModel3d clone() {
-		final RigidTransformModel3d atm = new RigidTransformModel3d(tol);
+		final RigidTransformModel3d atm = new RigidTransformModel3d();
 		atm.transform = transform.copy();
 		return atm;
 	}

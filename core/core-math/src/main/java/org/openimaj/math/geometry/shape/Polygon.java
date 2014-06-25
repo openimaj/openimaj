@@ -1003,28 +1003,31 @@ public class Polygon extends PointList implements Shape
 			)
 			public double[] calculateFirstMoment() {
 		final boolean closed = isClosed();
-		final double area = calculateArea();
 
 		if (!closed)
 			close();
 
+		double area = 0;
 		double ax = 0;
 		double ay = 0;
 		// TODO: This does not take into account the winding
 		// rule and therefore holes
 		for (int k = 0; k < points.size() - 1; k++) {
-			final float xk1 = points.get(k).getX();
-			final float yk1 = points.get(k).getY();
-			final float xk = points.get(k + 1).getX();
-			final float yk = points.get(k + 1).getY();
+			final float xk = points.get(k).getX();
+			final float yk = points.get(k).getY();
+			final float xk1 = points.get(k + 1).getX();
+			final float yk1 = points.get(k + 1).getY();
 
 			final float shared = xk * yk1 - xk1 * yk;
+			area += shared;
 			ax += (xk + xk1) * shared;
 			ay += (yk + yk1) * shared;
 		}
 
 		if (!closed)
 			open();
+
+		area *= 0.5;
 
 		return new double[] { ax / (6 * area), ay / (6 * area) };
 	}
@@ -1046,7 +1049,7 @@ public class Polygon extends PointList implements Shape
 			)
 			public double[] calculateSecondMoment() {
 		final boolean closed = isClosed();
-		final double area = calculateArea();
+		final double area = calculateSignedArea();
 
 		if (!closed)
 			close();
@@ -1057,10 +1060,10 @@ public class Polygon extends PointList implements Shape
 		// TODO: This does not take into account the winding
 		// rule and therefore holes
 		for (int k = 0; k < points.size() - 1; k++) {
-			final float xk1 = points.get(k).getX();
-			final float yk1 = points.get(k).getY();
-			final float xk = points.get(k + 1).getX();
-			final float yk = points.get(k + 1).getY();
+			final float xk = points.get(k).getX();
+			final float yk = points.get(k).getY();
+			final float xk1 = points.get(k + 1).getX();
+			final float yk1 = points.get(k + 1).getY();
 
 			final float shared = xk * yk1 - xk1 * yk;
 			axx += (xk * xk + xk * xk1 + xk1 * xk1) * shared;

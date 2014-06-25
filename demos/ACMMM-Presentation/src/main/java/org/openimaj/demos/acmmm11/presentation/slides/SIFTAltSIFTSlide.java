@@ -56,6 +56,7 @@ import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.AffineTransformModel;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.Pair;
 import org.openimaj.video.VideoDisplay;
@@ -67,7 +68,7 @@ import Jama.Matrix;
  * Slide illustrating two sift implementation
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
 
@@ -85,49 +86,50 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 	@Override
 	public Component getComponent(int width, int height) throws IOException {
 		carpet = ImageUtilities.readMBF(SIFTAltSIFTSlide.class.getResource("rabbit.jpeg"));
-		double wh = Math.sqrt(carpet.getWidth()*carpet.getWidth() +  carpet.getHeight()*carpet.getHeight());
-		if(wh * 2 > Math.min(width, height)){
-			float prop = (float) (Math.min(width, height)/(wh*2));
+		final double wh = Math.sqrt(carpet.getWidth() * carpet.getWidth() + carpet.getHeight() * carpet.getHeight());
+		if (wh * 2 > Math.min(width, height)) {
+			final float prop = (float) (Math.min(width, height) / (wh * 2));
 			carpet.processInplace(new ResizeProcessor(prop));
 		}
-		
+
 		this.carpetGrey = carpet.flatten();
-		
-		spinning = new SpinningImageVideo(carpet,-0.5f,0.005f);
-		
-		outFrame = new MBFImage(spinning.getWidth() * 2, spinning.getHeight() * 2,3);
+
+		spinning = new SpinningImageVideo(carpet, -0.5f, 0.005f);
+
+		outFrame = new MBFImage(spinning.getWidth() * 2, spinning.getHeight() * 2, 3);
 		normalEngine = new DoGSIFTEngine();
 		normalEngine.getOptions().setDoubleInitialImage(false);
 		altEngine = new ALTDoGSIFTEngine();
 		altEngine.getOptions().setDoubleInitialImage(false);
-		
-		LocalFeatureList<Keypoint> carpetNormalKPTs = normalEngine.findFeatures(carpetGrey);
+
+		final LocalFeatureList<Keypoint> carpetNormalKPTs = normalEngine.findFeatures(carpetGrey);
 		normalmatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8),
-				new RANSAC<Point2d, Point2d>(new AffineTransformModel(5), 100, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true)
-		);
+				new RANSAC<Point2d, Point2d>(new AffineTransformModel(), new TransformError2d(), 5.0, 100,
+						new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true)
+				);
 		normalmatcher.setModelFeatures(carpetNormalKPTs);
-		
-		
-		LocalFeatureList<Keypoint> carpetAltKPTs = altEngine.findFeatures(carpetGrey);
+
+		final LocalFeatureList<Keypoint> carpetAltKPTs = altEngine.findFeatures(carpetGrey);
 		altmatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8),
-				new RANSAC<Point2d, Point2d>(new AffineTransformModel(5), 100, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true)
-		);
+				new RANSAC<Point2d, Point2d>(new AffineTransformModel(), new TransformError2d(), 5.0, 100,
+						new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true)
+				);
 		altmatcher.setModelFeatures(carpetAltKPTs);
-		
+
 		display = VideoDisplay.createOffscreenVideoDisplay(spinning);
 		display.addVideoListener(this);
-		
-		JPanel c = new JPanel();
+
+		final JPanel c = new JPanel();
 		c.setOpaque(false);
 		c.setPreferredSize(new Dimension(width, height));
 		c.setLayout(new GridBagLayout());
-		ic = new ImageComponent(true,false);
+		ic = new ImageComponent(true, false);
 		c.add(ic);
-		for (Component cc : c.getComponents()) {
+		for (final Component cc : c.getComponents()) {
 			if (cc instanceof JPanel) {
-				((JPanel)cc).setOpaque( false );
+				((JPanel) cc).setOpaque(false);
 			}
 		}
 		return c;
@@ -141,64 +143,63 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		//do nothing
+		// do nothing
 	}
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
 		outFrame.fill(RGBColour.BLACK);
-		FImage fGrey = frame.flatten();
-		LocalFeatureList<Keypoint> normalKPTs = normalEngine.findFeatures(fGrey);
-		LocalFeatureList<Keypoint> altKPTs = altEngine.findFeatures(fGrey);
-		
-		Matrix carpetOffset = TransformUtilities.translateMatrix(frame.getWidth()/4,frame.getHeight()*2/3);
-		Matrix normalOffset = TransformUtilities.translateMatrix(frame.getWidth(),0);
-		Matrix altOffset = TransformUtilities.translateMatrix(frame.getWidth(), frame.getHeight());
-		
-		outFrame.drawImage(carpet,frame.getWidth()/4,frame.getHeight()*2/3);
+		final FImage fGrey = frame.flatten();
+		final LocalFeatureList<Keypoint> normalKPTs = normalEngine.findFeatures(fGrey);
+		final LocalFeatureList<Keypoint> altKPTs = altEngine.findFeatures(fGrey);
+
+		final Matrix carpetOffset = TransformUtilities.translateMatrix(frame.getWidth() / 4, frame.getHeight() * 2 / 3);
+		final Matrix normalOffset = TransformUtilities.translateMatrix(frame.getWidth(), 0);
+		final Matrix altOffset = TransformUtilities.translateMatrix(frame.getWidth(), frame.getHeight());
+
+		outFrame.drawImage(carpet, frame.getWidth() / 4, frame.getHeight() * 2 / 3);
 		outFrame.drawImage(frame, frame.getWidth(), 0);
 		outFrame.drawImage(frame, frame.getWidth(), frame.getHeight());
-		
-		if(normalmatcher.findMatches(normalKPTs))
+
+		if (normalmatcher.findMatches(normalKPTs))
 		{
-			List<Pair<Keypoint>> normalMatches = normalmatcher.getMatches();
-			for(Pair<Keypoint> kps : normalMatches){
-				Keypoint p1 = kps.firstObject().transform(normalOffset);
-				Keypoint p2 = kps.secondObject().transform(carpetOffset);
-				
+			final List<Pair<Keypoint>> normalMatches = normalmatcher.getMatches();
+			for (final Pair<Keypoint> kps : normalMatches) {
+				final Keypoint p1 = kps.firstObject().transform(normalOffset);
+				final Keypoint p2 = kps.secondObject().transform(carpetOffset);
+
 				outFrame.drawPoint(p1, RGBColour.RED, 3);
 				outFrame.drawPoint(p2, RGBColour.RED, 3);
-				
-				outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.GREEN);
+
+				outFrame.drawLine(new Line2d(p1, p2), 3, RGBColour.GREEN);
 			}
 		}
-		
-		if(altmatcher.findMatches(altKPTs)){
-			List<Pair<Keypoint>> altMatches = altmatcher.getMatches();
-			for(Pair<Keypoint> kps : altMatches){
-				Keypoint p1 = kps.firstObject().transform(altOffset);
-				Keypoint p2 = kps.secondObject().transform(carpetOffset);
-				
+
+		if (altmatcher.findMatches(altKPTs)) {
+			final List<Pair<Keypoint>> altMatches = altmatcher.getMatches();
+			for (final Pair<Keypoint> kps : altMatches) {
+				final Keypoint p1 = kps.firstObject().transform(altOffset);
+				final Keypoint p2 = kps.secondObject().transform(carpetOffset);
+
 				outFrame.drawPoint(p1, RGBColour.RED, 3);
 				outFrame.drawPoint(p2, RGBColour.RED, 3);
-				
-				outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.BLUE);
+
+				outFrame.drawLine(new Line2d(p1, p2), 3, RGBColour.BLUE);
 			}
 		}
-		
-		
+
 		this.ic.setImage(ImageUtilities.createBufferedImageForDisplay(outFrame));
 	}
 
 	@Override
 	public void keyPressed(KeyEvent key) {
-		if(key.getKeyChar() == 'x'){
+		if (key.getKeyChar() == 'x') {
 			this.spinning.adjustSpeed(0.005f);
 		}
-		else if(key.getKeyChar() == 'z'){
+		else if (key.getKeyChar() == 'z') {
 			this.spinning.adjustSpeed(-0.005f);
 		}
-		else if(key.getKeyCode() == KeyEvent.VK_SPACE){
+		else if (key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.display.togglePause();
 			this.spinning.togglePause();
 		}
@@ -206,12 +207,12 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		//do nothing
+		// do nothing
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		//do nothing
+		// do nothing
 	}
 
 }

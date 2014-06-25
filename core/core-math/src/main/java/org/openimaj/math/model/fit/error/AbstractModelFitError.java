@@ -12,12 +12,14 @@ import org.openimaj.util.pair.IndependentPair;
  *            type of independent data
  * @param <D>
  *            type of dependent data
+ * @param <M>
+ *            type of model
  */
-public abstract class AbstractModelFitError<I, D> implements ModelFitError<I, D> {
-	protected Model<I, D> model;
+public abstract class AbstractModelFitError<I, D, M extends Model<I, D>> implements ModelFitError<I, D, M> {
+	protected M model;
 
 	@Override
-	public void setModel(Model<I, D> model) {
+	public void setModel(M model) {
 		this.model = model;
 	}
 

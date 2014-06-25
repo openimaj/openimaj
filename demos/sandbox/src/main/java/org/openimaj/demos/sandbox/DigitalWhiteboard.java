@@ -327,7 +327,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 			this.mode = MODE.MODEL;
 			this.calibrationPointIndex = 0;
 			homographyPoints.clear();
-			this.homography = new HomographyModel(8);
+			this.homography = new HomographyModel();
 
 			System.out.println("CURRENTLY EXPECTING POINT: "
 					+ this.calibrationPoints.get(this.calibrationPointIndex).firstObject());

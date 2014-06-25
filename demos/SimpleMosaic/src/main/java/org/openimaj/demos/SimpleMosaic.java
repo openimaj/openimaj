@@ -46,60 +46,63 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 
 /**
  * Demonstration of building an image mosiac
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class SimpleMosaic {
 	/**
 	 * Build a mosaic
 	 * 
-	 * @param args ignored
+	 * @param args
+	 *            ignored
 	 * @throws IOException
 	 */
 	public static void main(String args[]) throws IOException {
-		ResizeProcessor rp = new ResizeProcessor(800,600);
-		DoGSIFTEngine engine = new DoGSIFTEngine();
+		final ResizeProcessor rp = new ResizeProcessor(800, 600);
+		final DoGSIFTEngine engine = new DoGSIFTEngine();
 
-		MBFImage imageMiddle = ImageUtilities.readMBF(new File("data/trento-view-1.jpg"));
+		final MBFImage imageMiddle = ImageUtilities.readMBF(new File("data/trento-view-1.jpg"));
 		imageMiddle.processInplace(rp);
-		FImage workingImageMiddle = Transforms.calculateIntensityNTSC(imageMiddle);
-		LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
-		
-		ConsistentLocalFeatureMatcher2d<Keypoint> matcher = 
-			new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
-		HomographyModel model = new HomographyModel(8);
-		RANSAC<Point2d,Point2d> modelFitting = 
-			new RANSAC<Point2d,Point2d>(model, 1600, new RANSAC.BestFitStoppingCondition(), true);
+		final FImage workingImageMiddle = Transforms.calculateIntensityNTSC(imageMiddle);
+		final LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
+
+		final ConsistentLocalFeatureMatcher2d<Keypoint> matcher =
+				new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
+		final HomographyModel model = new HomographyModel();
+		final RANSAC<Point2d, Point2d> modelFitting =
+				new RANSAC<Point2d, Point2d>(model, new TransformError2d(), 8.0, 1600,
+						new RANSAC.BestFitStoppingCondition(), true);
 		matcher.setFittingModel(modelFitting);
 		matcher.setModelFeatures(middleKP);
-		ProjectionProcessor<Float[],MBFImage> ptp = new ProjectionProcessor<Float[],MBFImage>();
+		final ProjectionProcessor<Float[], MBFImage> ptp = new ProjectionProcessor<Float[], MBFImage>();
 		imageMiddle.accumulateWith(ptp);
-		
-		MBFImage imageRight = ImageUtilities.readMBF(new File("data/trento-view-0.jpg"));
+
+		final MBFImage imageRight = ImageUtilities.readMBF(new File("data/trento-view-0.jpg"));
 		imageRight.processInplace(rp);
-		FImage workingImageRight = Transforms.calculateIntensityNTSC(imageRight);
-		LocalFeatureList<Keypoint> rightKP = engine.findFeatures(workingImageRight);
+		final FImage workingImageRight = Transforms.calculateIntensityNTSC(imageRight);
+		final LocalFeatureList<Keypoint> rightKP = engine.findFeatures(workingImageRight);
 		matcher.findMatches(rightKP);
 		ptp.setMatrix(model.getTransform());
 		imageRight.accumulateWith(ptp);
-		
-		MBFImage imageLeft = ImageUtilities.readMBF(new File("data/trento-view-2.jpg"));
+
+		final MBFImage imageLeft = ImageUtilities.readMBF(new File("data/trento-view-2.jpg"));
 		imageLeft.processInplace(rp);
-		FImage workingImageLeft= Transforms.calculateIntensityNTSC(imageLeft);
-		LocalFeatureList<Keypoint> leftKP = engine.findFeatures(workingImageLeft);
+		final FImage workingImageLeft = Transforms.calculateIntensityNTSC(imageLeft);
+		final LocalFeatureList<Keypoint> leftKP = engine.findFeatures(workingImageLeft);
 		matcher.findMatches(leftKP);
 		ptp.setMatrix(model.getTransform());
 		imageLeft.accumulateWith(ptp);
-		
-		MBFImage projected = ptp.performBlendedProjection(
-				(int)(-imageMiddle.getWidth()),
-				(int)(imageMiddle.getWidth() + imageMiddle.getWidth()),
-				-imageMiddle.getHeight()/2,3*imageMiddle.getHeight()/2,(Float[])null);
+
+		final MBFImage projected = ptp.performBlendedProjection(
+				(-imageMiddle.getWidth()),
+				imageMiddle.getWidth() + imageMiddle.getWidth(),
+				-imageMiddle.getHeight() / 2, 3 * imageMiddle.getHeight() / 2, (Float[]) null);
 		DisplayUtilities.display(projected);
 		ImageUtilities.write(projected, "png", new File("/Users/jsh2/Desktop/mosaic.png"));
 	}

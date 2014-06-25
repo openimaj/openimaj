@@ -15,15 +15,19 @@ import org.openimaj.util.pair.IndependentPair;
  *            type of independent data
  * @param <D>
  *            type of dependent data
+ * @param <M>
+ *            type of model
  */
-public interface ModelFitError<I, D> {
+public interface ModelFitError<I, D, M extends Model<I, D>> {
 	/**
-	 * Set the current model being evaluated
+	 * Set the current model being evaluated. This should be called every time
+	 * the model has changed internally, as the {@link ModelFitError} might
+	 * pre-cache variables based on the model for error computation.
 	 * 
 	 * @param model
 	 *            the model
 	 */
-	public void setModel(Model<I, D> model);
+	public void setModel(M model);
 
 	/**
 	 * Compute the error for a single point

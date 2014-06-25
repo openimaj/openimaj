@@ -30,15 +30,17 @@
 package org.openimaj.math.util.distance;
 
 /**
- * Interface for a class that can perform a check on the
- * distance between a pair of items to see if they matches.
+ * Interface for a class that can perform a check on the distance or error
+ * between a pair of items to see if they match.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface DistanceCheck {
 	/**
 	 * Test the distance
-	 * @param distance the distance
+	 * 
+	 * @param distance
+	 *            the distance
 	 * @return true if the distance is small enough for a match, false otherwise
 	 */
 	public boolean check(double distance);

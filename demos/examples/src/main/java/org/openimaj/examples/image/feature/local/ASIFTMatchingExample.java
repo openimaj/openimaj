@@ -46,6 +46,7 @@ import org.openimaj.image.feature.local.engine.asift.ASIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.Pair;
 
@@ -105,9 +106,9 @@ public class ASIFTMatchingExample {
 	 * @return a matcher with a homographic constraint
 	 */
 	private static LocalFeatureMatcher<Keypoint> createConsistentRANSACHomographyMatcher() {
-		final HomographyModel model = new HomographyModel(10);
+		final HomographyModel model = new HomographyModel();
 
-		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1000,
+		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, new TransformError2d(), 10.0, 1000,
 				new RANSAC.BestFitStoppingCondition(), true);
 
 		final ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(

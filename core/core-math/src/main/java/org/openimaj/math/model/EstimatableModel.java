@@ -27,11 +27,48 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox.tld;
+package org.openimaj.math.model;
 
-import Jama.Matrix;
+import java.util.List;
 
-public class TLDFernFeatures {
-	public Matrix x;
-	public String type;
+import org.openimaj.util.pair.IndependentPair;
+
+/**
+ * An extension to a {@link Model} that allows the model to be estimated from a
+ * series of observations of both the independent and dependent variables.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <I>
+ *            type of independent data
+ * @param <D>
+ *            type of dependent data
+ */
+public interface EstimatableModel<I, D> extends Model<I, D> {
+	/**
+	 * Estimates the model from the observations in the list of data. The data
+	 * must contain at least {@link #numItemsToEstimate()} pairs of dependent
+	 * and independent data. It may contain more, in which case the estimate
+	 * method may choose to make use of this data for validation, or obtaining a
+	 * better model by a least squares method for example.
+	 * 
+	 * @param data
+	 *            Data with which to estimate the model
+	 * @see #numItemsToEstimate()
+	 */
+	public void estimate(List<? extends IndependentPair<I, D>> data);
+
+	/**
+	 * @return The minimum number of observations required to estimate the
+	 *         model.
+	 */
+	public int numItemsToEstimate(); // N
+
+	/**
+	 * Clone the model
+	 * 
+	 * @return a cloned copy
+	 */
+	@Override
+	public EstimatableModel<I, D> clone();
 }

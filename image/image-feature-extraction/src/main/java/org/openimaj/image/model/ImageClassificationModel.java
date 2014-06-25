@@ -34,52 +34,41 @@ import java.io.Serializable;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.model.Model;
-
+import org.openimaj.math.model.EstimatableModel;
 
 /**
- * An ImageClassificationModel is a {@link Model}
- * constructed between an generic image and a probability 
- * map in the form of an FImage.
+ * An ImageClassificationModel is a {@link EstimatableModel} constructed between
+ * an generic image and a probability map in the form of an FImage.
  * 
- * Potential uses for such a model are for the prediction
- * of certain classes of pixels in an image. For example,
- * a model could be constructed that predicted skin-tones
- * in an image based on hue and saturation values of pixels.
- * With such a model, a colour image could be presented,
- * and a probability map would be returned. 
+ * Potential uses for such a model are for the prediction of certain classes of
+ * pixels in an image. For example, a model could be constructed that predicted
+ * skin-tones in an image based on hue and saturation values of pixels. With
+ * such a model, a colour image could be presented, and a probability map would
+ * be returned.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <T> the type of image that the model can be applied to
- *
+ * @param <T>
+ *            the type of image that the model can be applied to
+ * 
  */
-public interface ImageClassificationModel<T extends Image<?,T>> extends Model<T, FImage>, Serializable {
-	/**
-	 * Get the models tolerance value
-	 * @return the tolerance value
-	 */
-	public abstract float getTolerance();
-	
-	/**
-	 * Set the models tolerance value
-	 * @param tol the tolerance value
-	 */
-	public abstract void setTolerance(float tol);
-	
+public interface ImageClassificationModel<T extends Image<?, T>> extends EstimatableModel<T, FImage>, Serializable {
 	/**
 	 * Learn the model from the given {@link MBFImage}s.
-	 * @param images the images to learn from
+	 * 
+	 * @param images
+	 *            the images to learn from
 	 */
 	public abstract void learnModel(T... images);
-	
+
 	/**
 	 * Classify the given image and return the corresponding probability map
-	 * @param im the image to classify
+	 * 
+	 * @param im
+	 *            the image to classify
 	 * @return the probability map
 	 */
 	public abstract FImage classifyImage(T im);
-	
+
 	@Override
 	public abstract ImageClassificationModel<T> clone();
 }
-

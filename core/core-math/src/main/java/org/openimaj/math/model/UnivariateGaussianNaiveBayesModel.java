@@ -46,7 +46,7 @@ import java.util.Map;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * An implementation of a {@link Model} that uses a
+ * An implementation of a {@link EstimatableModel} that uses a
  * {@link VectorNaiveBayesCategorizer} to associate a univariate (a
  * {@link Double}) with a category.
  * 
@@ -56,7 +56,7 @@ import org.openimaj.util.pair.IndependentPair;
  *            The type of class/category predicted by the model
  */
 
-public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
+public class UnivariateGaussianNaiveBayesModel<T> implements EstimatableModel<Double, T> {
 	private VectorNaiveBayesCategorizer<T, PDF> model;
 
 	/**
@@ -91,11 +91,6 @@ public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 	}
 
 	@Override
-	public boolean validate(IndependentPair<Double, T> data) {
-		return predict(data.firstObject()).equals(data.secondObject());
-	}
-
-	@Override
 	public T predict(Double data) {
 		return model.evaluate(VectorFactory.getDefault().createVector1D(data));
 	}
@@ -103,18 +98,6 @@ public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 	@Override
 	public int numItemsToEstimate() {
 		return 0;
-	}
-
-	@Override
-	public double calculateError(List<? extends IndependentPair<Double, T>> data) {
-		int count = 0;
-
-		for (final IndependentPair<Double, T> d : data) {
-			if (!validate(d))
-				count++;
-		}
-
-		return (double) count / (double) data.size();
 	}
 
 	@Override
@@ -191,10 +174,5 @@ public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 		System.out.println(model.model.getConditionals().get(false).get(0).getVariance());
 
 		System.out.println(model.model.getPriors());
-	}
-
-	@Override
-	public double calculateError(IndependentPair<Double, T> data) {
-		return validate(data) ? 0 : 1;
 	}
 }

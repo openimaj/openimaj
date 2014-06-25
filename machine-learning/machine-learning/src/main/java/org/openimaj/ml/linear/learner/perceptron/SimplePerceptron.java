@@ -32,7 +32,7 @@ package org.openimaj.ml.linear.learner.perceptron;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openimaj.math.model.Model;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.ml.linear.learner.OnlineLearner;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -40,7 +40,7 @@ import org.openimaj.util.pair.IndependentPair;
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class SimplePerceptron implements OnlineLearner<double[], Integer>, Model<double[], Integer> {
+public class SimplePerceptron implements OnlineLearner<double[], Integer>, EstimatableModel<double[], Integer> {
 	private static final double DEFAULT_LEARNING_RATE = 0.01;
 	private static final int DEFAULT_ITERATIONS = 1000;
 	double alpha = DEFAULT_LEARNING_RATE;
@@ -114,17 +114,11 @@ public class SimplePerceptron implements OnlineLearner<double[], Integer>, Model
 	}
 
 	@Override
-	public boolean validate(IndependentPair<double[], Integer> data) {
-		return predict(data.firstObject()) == data.secondObject();
-	}
-
-	@Override
 	public int numItemsToEstimate() {
 		return 1;
 	}
 
-	@Override
-	public double calculateError(List<? extends IndependentPair<double[], Integer>> pts) {
+	protected double calculateError(List<? extends IndependentPair<double[], Integer>> pts) {
 		double error = 0;
 
 		for (int i = 0; i < pts.size(); i++) {
@@ -173,10 +167,5 @@ public class SimplePerceptron implements OnlineLearner<double[], Integer>, Model
 
 	public double[] getWeights() {
 		return this.w;
-	}
-
-	@Override
-	public double calculateError(IndependentPair<double[], Integer> data) {
-		return Math.abs(predict(data.firstObject()) - data.secondObject());
 	}
 }

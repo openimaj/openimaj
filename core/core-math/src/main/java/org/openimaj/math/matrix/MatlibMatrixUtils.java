@@ -293,6 +293,13 @@ public class MatlibMatrixUtils {
 		return A;
 	}
 
+	/**
+	 * Compute A^T . B
+	 * 
+	 * @param A
+	 * @param B
+	 * @return A^T . B
+	 */
 	public static Matrix transposeDotProduct(Matrix A, Matrix B) {
 		final int mA = A.columnCount();
 		final int nB = B.columnCount();
@@ -308,6 +315,13 @@ public class MatlibMatrixUtils {
 		return ret;
 	}
 
+	/**
+	 * Compute Y = A . B^T
+	 * 
+	 * @param A
+	 * @param B
+	 * @return Y
+	 */
 	public static Matrix dotProductTranspose(Matrix A, Matrix B) {
 		final Matrix ret = A.newInstance(A.rowCount(), B.rowCount());
 		return dotProductTranspose(A, B, ret);
@@ -1048,8 +1062,11 @@ public class MatlibMatrixUtils {
 	}
 
 	/**
+	 * Create a {@link Matrix} from the Cognitive Foundry equivalent
+	 * 
 	 * @param init
-	 * @return
+	 *            the matrix
+	 * @return the converted matrix
 	 */
 	public static Matrix fromCF(gov.sandia.cognition.math.matrix.Matrix init) {
 		Matrix ret;
@@ -1067,6 +1084,8 @@ public class MatlibMatrixUtils {
 	}
 
 	/**
+	 * Compute the dot product X.W
+	 * 
 	 * @param X
 	 * @param W
 	 * @return dot product
@@ -1082,6 +1101,13 @@ public class MatlibMatrixUtils {
 		return ret;
 	}
 
+	/**
+	 * Compute the 2-norm (Euclidean norm) of the vector
+	 * 
+	 * @param row
+	 *            the vector
+	 * @return the Euclidean norm
+	 */
 	public static double norm2(Vector row) {
 		double norm = 0;
 		for (final Entry e : row.entries())
@@ -1089,12 +1115,26 @@ public class MatlibMatrixUtils {
 		return Math.sqrt(norm);
 	}
 
-	public static Matrix minus(Matrix neww, Matrix w) {
-		final Matrix ret = copy(neww);
-		minusInplace(ret, w);
+	/**
+	 * Subtract matrices A-B
+	 * 
+	 * @param A
+	 * @param B
+	 * @return A-B
+	 */
+	public static Matrix minus(Matrix A, Matrix B) {
+		final Matrix ret = copy(A);
+		minusInplace(ret, B);
 		return ret;
 	}
 
+	/**
+	 * Compute the Frobenius norm
+	 * 
+	 * @param A
+	 *            the matrix
+	 * @return the F norm
+	 */
 	public static double normF(Matrix A) {
 		double scale = 0, ssq = 1;
 		for (final Vector v : A.rows()) {
@@ -1117,8 +1157,6 @@ public class MatlibMatrixUtils {
 	/**
 	 * Stack matrices vertically
 	 * 
-	 * @param matrixFactory
-	 *            factory to create output matrix
 	 * @param matricies
 	 *            matrices to stack
 	 * @return matrix created from the stacking

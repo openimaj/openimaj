@@ -62,6 +62,7 @@ import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
@@ -83,108 +84,116 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 	private ConsistentLocalFeatureMatcher2d<InterestPointKeypoint<InterestPointData>> matcher;
 	private IPDSIFTEngine engine;
 	private PolygonDrawingListener polygonListener;
-	private FeatureClickListener<Float[],MBFImage> featureClickListener;
+	private FeatureClickListener<Float[], MBFImage> featureClickListener;
 
 	public VideoIPD() throws Exception {
-		
+
 		engine = getNewEngine();
-		
+
 		capture = new VideoCapture(320, 240);
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 		videoFrame.getScreen().addMouseListener(polygonListener);
-		this.featureClickListener = new FeatureClickListener<Float[],MBFImage>();
+		this.featureClickListener = new FeatureClickListener<Float[], MBFImage>();
 		videoFrame.getScreen().addMouseListener(featureClickListener);
 		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
-		
+
 	}
 
 	private IPDSIFTEngine getNewEngine() {
-		int derScale = 1;
-		int intScale = 3;
-		HarrisIPD ipd = new HarrisIPD(derScale,intScale);
+		final int derScale = 1;
+		final int intScale = 3;
+		final HarrisIPD ipd = new HarrisIPD(derScale, intScale);
 		engine = new IPDSIFTEngine(ipd);
 		engine.setSelectionMode(new IPDSelectionMode.Threshold(10000f));
 		engine.setFinderMode(new FinderMode.Characteristic<InterestPointData>());
-//		engine.setSelectionMode(new IPDSelectionMode.Count(10));
+		// engine.setSelectionMode(new IPDSelectionMode.Count(10));
 		engine.setAcrossScales(true);
-		
+
 		return engine;
 	}
 
 	@Override
 	public void keyPressed(KeyEvent key) {
-		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
+		if (key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.videoFrame.togglePause();
 		} else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
 			try {
-				Polygon p = this.polygonListener.getPolygon().clone();
+				final Polygon p = this.polygonListener.getPolygon().clone();
 				this.polygonListener.reset();
-				modelImage = capture.getCurrentFrame().process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
+				modelImage = capture.getCurrentFrame().process(
+						new PolygonExtractionProcessor<Float[], MBFImage>(p, RGBColour.BLACK));
 
 				if (modelFrame == null) {
 					modelFrame = DisplayUtilities.display(modelImage, "model");
 					modelFrame.addKeyListener(this);
 
-					//move the frame
-					Point pt = modelFrame.getLocation();
+					// move the frame
+					final Point pt = modelFrame.getLocation();
 					modelFrame.setLocation(pt.x + this.videoFrame.getScreen().getWidth(), pt.y);
 
-					//configure the matcher
-					HomographyModel model = new HomographyModel(10.0f);
-					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
-					matcher = new ConsistentLocalFeatureMatcher2d<InterestPointKeypoint<InterestPointData>>(new FastBasicKeypointMatcher<InterestPointKeypoint<InterestPointData>>(8));
+					// configure the matcher
+					final HomographyModel model = new HomographyModel();
+					final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, new TransformError2d(),
+							10.0, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
+					matcher = new ConsistentLocalFeatureMatcher2d<InterestPointKeypoint<InterestPointData>>(
+							new FastBasicKeypointMatcher<InterestPointKeypoint<InterestPointData>>(8));
 					matcher.setFittingModel(ransac);
 				} else {
 					DisplayUtilities.display(modelImage, modelFrame);
 				}
 
-				FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
+				final FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
 				matcher.setModelFeatures(getNewEngine().findFeatures(modelF));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
-			} 
+			}
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) { }
+	public void keyReleased(KeyEvent arg0) {
+	}
 
 	@Override
-	public void keyTyped(KeyEvent arg0) { }
+	public void keyTyped(KeyEvent arg0) {
+	}
 
-	public static void main(String [] args) throws Exception {		
+	public static void main(String[] args) throws Exception {
 		new VideoIPD();
 	}
 
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
 		if (matcher != null && !videoFrame.isPaused()) {
-			MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
-			LocalFeatureList<InterestPointKeypoint<InterestPointData>> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
+			final MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
+			final LocalFeatureList<InterestPointKeypoint<InterestPointData>> kpl = engine.findFeatures(Transforms
+					.calculateIntensityNTSC(capImg));
 
-			MBFImageRenderer renderer = capImg.createRenderer();
+			final MBFImageRenderer renderer = capImg.createRenderer();
 			renderer.drawPoints(kpl, RGBColour.MAGENTA, 3);
-			
+
 			MBFImage matches;
 			if (matcher.findMatches(kpl)) {
 				try {
-					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
-					renderer.drawShape(sh, 3, RGBColour.BLUE);				
-				} catch (RuntimeException e) {}
-				
+					final Shape sh = modelImage.getBounds().transform(
+							((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
+					renderer.drawShape(sh, 3, RGBColour.BLUE);
+				} catch (final RuntimeException e) {
+				}
+
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
 			} else {
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, null, RGBColour.RED);
 			}
-			
+
 			if (matchFrame == null) {
 				matchFrame = DisplayUtilities.display(matches, "matches");
 				matchFrame.addKeyListener(this);
 
-				Point pt = matchFrame.getLocation();
+				final Point pt = matchFrame.getLocation();
 				matchFrame.setLocation(pt.x, pt.y + matchFrame.getHeight());
 			} else {
 				DisplayUtilities.display(matches, matchFrame);
@@ -198,11 +207,13 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 	}
 
 	private void drawKeypoints(MBFImage frame) {
-		MBFImage capImg = frame;
-		LocalFeatureList<InterestPointKeypoint<InterestPointData>> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
+		final MBFImage capImg = frame;
+		final LocalFeatureList<InterestPointKeypoint<InterestPointData>> kpl = engine.findFeatures(Transforms
+				.calculateIntensityNTSC(capImg));
 		this.featureClickListener.setImage(kpl, frame.clone());
-		KeypointVisualizer<Float[],MBFImage> kpv = new KeypointVisualizer<Float[],MBFImage>(capImg, kpl);
-		InterestPointVisualiser<Float[],MBFImage> ipv = InterestPointVisualiser.visualiseKeypoints(kpv.drawPatches(null, RGBColour.GREEN), kpl);
+		final KeypointVisualizer<Float[], MBFImage> kpv = new KeypointVisualizer<Float[], MBFImage>(capImg, kpl);
+		final InterestPointVisualiser<Float[], MBFImage> ipv = InterestPointVisualiser.visualiseKeypoints(
+				kpv.drawPatches(null, RGBColour.GREEN), kpl);
 		frame.internalAssign(ipv.drawPatches(RGBColour.GREEN, RGBColour.BLUE));
 	}
 }

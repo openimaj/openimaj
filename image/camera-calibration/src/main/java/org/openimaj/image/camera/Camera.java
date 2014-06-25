@@ -8,12 +8,11 @@ import org.openimaj.math.matrix.MatrixUtils;
 import Jama.Matrix;
 
 /**
- * A model of the extrinsic parameters of a pinhole camera (translation in 3d
- * space, and 3d rotation matrix), coupled with the camera's intrinsic
- * parameters.
+ * A model of the extrinsic parameters of a pinhole (projective) camera
+ * (translation in 3d space, and 3d rotation matrix), coupled with the camera's
+ * intrinsic parameters.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
  */
 public class Camera {
 	/**

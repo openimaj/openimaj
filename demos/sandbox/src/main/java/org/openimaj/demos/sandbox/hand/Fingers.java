@@ -41,6 +41,7 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
+import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -58,11 +59,13 @@ public class Fingers {
 		while (true) {
 			final MBFImage cimg = vc.getNextFrame();
 			final FImage gimg = cimg.flatten();
-			// gimg.processInplace(new OtsuThreshold());
-			gimg.threshold(0.4f);
+			gimg.processInplace(new OtsuThreshold());
+			// gimg.threshold(0.4f);
 
 			ccl.analyseImage(gimg);
 			final ConnectedComponent hand = findBiggest(ccl.getComponents());
+
+			cimg.drawPoints(hand, RGBColour.WHITE, 1);
 
 			if (hand != null) {
 				Polygon poly = hand.toPolygon();
@@ -78,6 +81,8 @@ public class Fingers {
 				final List<Point2d> tips = findTips(defects);
 
 				final Point2d centroid = poly.calculateCentroid();
+				System.out.println(centroid);
+
 				for (final Point2d pt : tips) {
 					cimg.drawLine(centroid, pt, RGBColour.RED);
 					cimg.drawShape(new Circle(pt, 5), RGBColour.CYAN);

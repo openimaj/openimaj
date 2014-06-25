@@ -42,34 +42,26 @@ import org.openimaj.util.pair.IndependentPair;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class LeastSquaresLinearModel implements Model<Integer, Integer> {
+public class LeastSquaresLinearModel implements EstimatableModel<Integer, Integer> {
 	private double c;
 	private double m;
-	private double tol;
 	private int nEstimates = 10;
 
 	/**
-	 * Construct model with given tolerance
-	 * 
-	 * @param tol
-	 *            tolerance
+	 * Construct model
 	 */
-	public LeastSquaresLinearModel(double tol) {
-		this.tol = tol;
+	public LeastSquaresLinearModel() {
 		this.nEstimates = 2;
 	}
 
 	/**
-	 * Construct model with given tolerance
+	 * Construct model
 	 * 
-	 * @param tol
-	 *            tolerance
 	 * @param nEstimates
 	 *            minimum number of samples required for estimating model when
 	 *            fitting
 	 */
-	public LeastSquaresLinearModel(double tol, int nEstimates) {
-		this.tol = tol;
+	public LeastSquaresLinearModel(int nEstimates) {
 		if (nEstimates < 2)
 			nEstimates = 2;
 		else
@@ -111,15 +103,6 @@ public class LeastSquaresLinearModel implements Model<Integer, Integer> {
 	}
 
 	@Override
-	public boolean validate(IndependentPair<Integer, Integer> data) {
-		final double y = (m * data.firstObject()) + c;
-
-		if (Math.abs(y - data.secondObject()) < tol)
-			return true;
-		return false;
-	}
-
-	@Override
 	public Integer predict(Integer data) {
 		return (int) Math.round((m * data) + c);
 	}
@@ -130,28 +113,8 @@ public class LeastSquaresLinearModel implements Model<Integer, Integer> {
 	}
 
 	@Override
-	public double calculateError(List<? extends IndependentPair<Integer, Integer>> alldata) {
-		double error = 0;
-
-		for (final IndependentPair<Integer, Integer> data : alldata) {
-			final double y = (m * data.firstObject()) + c;
-
-			error += (y - data.secondObject()) * (y - data.secondObject());
-		}
-
-		return error;
-	}
-
-	@Override
-	public double calculateError(IndependentPair<Integer, Integer> data) {
-		final double y = (m * data.firstObject()) + c;
-
-		return (y - data.secondObject()) * (y - data.secondObject());
-	}
-
-	@Override
 	public LeastSquaresLinearModel clone() {
-		final LeastSquaresLinearModel model = new LeastSquaresLinearModel(tol, nEstimates);
+		final LeastSquaresLinearModel model = new LeastSquaresLinearModel(nEstimates);
 		model.c = c;
 		model.m = m;
 		return model;

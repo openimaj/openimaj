@@ -47,28 +47,33 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 
 import Jama.Matrix;
 
 public class KeypointMatchSiteDemo {
 	static File monaLisaSource = new File("/Users/ss/Desktop/Van-Gogh-Starry-Nights.jpg");
-	static File monaLisaTarget = new File("/Users/ss/Desktop/4172349-A_SPECIAL_EXHIBITION_VAN_GOGHS_STARRY_NIGHT_New_Haven.jpg");
+	static File monaLisaTarget = new File(
+			"/Users/ss/Desktop/4172349-A_SPECIAL_EXHIBITION_VAN_GOGHS_STARRY_NIGHT_New_Haven.jpg");
 
 	public static void main(String[] args) throws IOException {
-		MBFImage sourceC = ImageUtilities.readMBF(monaLisaSource);
-		MBFImage targetC = ImageUtilities.readMBF(monaLisaTarget);
-		FImage source = sourceC.flatten();
-		FImage target = targetC.flatten();
+		final MBFImage sourceC = ImageUtilities.readMBF(monaLisaSource);
+		final MBFImage targetC = ImageUtilities.readMBF(monaLisaTarget);
+		final FImage source = sourceC.flatten();
+		final FImage target = targetC.flatten();
 
-		DoGSIFTEngine eng = new DoGSIFTEngine();
+		final DoGSIFTEngine eng = new DoGSIFTEngine();
 
-		LocalFeatureList<Keypoint> sourceFeats = eng.findFeatures(source);
-		LocalFeatureList<Keypoint> targetFeats = eng.findFeatures(target);
+		final LocalFeatureList<Keypoint> sourceFeats = eng.findFeatures(source);
+		final LocalFeatureList<Keypoint> targetFeats = eng.findFeatures(target);
 
-		final HomographyModel model = new HomographyModel(5f);
-		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.BestFitStoppingCondition(), true);
-		ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
+		final HomographyModel model = new HomographyModel();
+		final TransformError2d errorModel = new TransformError2d();
+		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, errorModel, 5f, 1500,
+				new RANSAC.BestFitStoppingCondition(), true);
+		final ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
+				new FastBasicKeypointMatcher<Keypoint>(8));
 		matcher.setFittingModel(ransac);
 
 		matcher.setModelFeatures(sourceFeats);
@@ -76,9 +81,9 @@ public class KeypointMatchSiteDemo {
 
 		final Matrix boundsToPoly = model.getTransform().inverse();
 
-		Shape s = source.getBounds().transform(boundsToPoly);
+		final Shape s = source.getBounds().transform(boundsToPoly);
 		targetC.drawShape(s, 10, RGBColour.BLUE);
-		MBFImage matches = MatchingUtilities.drawMatches(sourceC, targetC, matcher.getMatches(), RGBColour.RED);
+		final MBFImage matches = MatchingUtilities.drawMatches(sourceC, targetC, matcher.getMatches(), RGBColour.RED);
 
 		matches.processInplace(new ResizeProcessor(640, 480));
 		DisplayUtilities.display(matches);

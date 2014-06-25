@@ -1,5 +1,6 @@
 package org.openimaj.math.model.fit.error;
 
+import org.openimaj.math.model.Model;
 import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -16,8 +17,10 @@ import org.openimaj.util.pair.IndependentPair;
  *            type of independent data
  * @param <D>
  *            type of dependent data
+ * @param <M>
+ *            type of model
  */
-public class DistanceComparatorError<I, D> extends AbstractModelFitError<I, D> {
+public class DistanceComparatorError<I, D, M extends Model<I, D>> extends AbstractModelFitError<I, D, M> {
 	protected DistanceComparator<D> comparator;
 	private int multiplier = 1;
 

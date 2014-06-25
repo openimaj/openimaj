@@ -29,7 +29,6 @@
  */
 package org.openimaj.image.model.pixel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.FImage;
@@ -52,18 +51,6 @@ import org.openimaj.util.pair.IndependentPair;
 public abstract class PixelClassificationModel<Q, T extends Image<Q, T>> implements ImageClassificationModel<T> {
 	private static final long serialVersionUID = 1L;
 
-	protected float tol = 100;
-
-	@Override
-	public float getTolerance() {
-		return tol;
-	}
-
-	@Override
-	public void setTolerance(float tol) {
-		this.tol = tol;
-	}
-
 	protected abstract float classifyPixel(Q pix);
 
 	@Override
@@ -77,42 +64,6 @@ public abstract class PixelClassificationModel<Q, T extends Image<Q, T>> impleme
 		}
 
 		return out;
-	}
-
-	@Override
-	public double calculateError(List<? extends IndependentPair<T, FImage>> data) {
-		double error = 0;
-
-		for (final IndependentPair<T, FImage> pair : data) {
-			final FImage classif = this.classifyImage(pair.firstObject());
-
-			for (int r = 0; r < classif.getHeight(); r++) {
-				for (int c = 0; c < classif.getWidth(); c++) {
-
-					final float diff = classif.pixels[r][c] - pair.secondObject().pixels[r][c];
-					error += (diff * diff);
-				}
-			}
-		}
-
-		return error;
-	}
-
-	@Override
-	public double calculateError(IndependentPair<T, FImage> pair) {
-		double error = 0;
-
-		final FImage classif = this.classifyImage(pair.firstObject());
-
-		for (int r = 0; r < classif.getHeight(); r++) {
-			for (int c = 0; c < classif.getWidth(); c++) {
-
-				final float diff = classif.pixels[r][c] - pair.secondObject().pixels[r][c];
-				error += (diff * diff);
-			}
-		}
-
-		return error;
 	}
 
 	protected abstract T[] getArray(int length);
@@ -134,17 +85,6 @@ public abstract class PixelClassificationModel<Q, T extends Image<Q, T>> impleme
 	@Override
 	public FImage predict(T data) {
 		return classifyImage(data);
-	}
-
-	@Override
-	public boolean validate(IndependentPair<T, FImage> data) {
-		final List<IndependentPair<T, FImage>> dl = new ArrayList<IndependentPair<T, FImage>>();
-		dl.add(data);
-
-		if (calculateError(dl) < tol)
-			return true;
-
-		return false;
 	}
 
 	@Override

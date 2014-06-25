@@ -34,14 +34,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.openimaj.feature.FeatureExtractor;
-import org.openimaj.math.model.Model;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * An {@link BatchAnnotator} backed by a {@link Model}. This only really makes
+ * An {@link BatchAnnotator} backed by a {@link EstimatableModel}. This only really makes
  * sense if the dependent variable of the model can take a set of discrete
  * values.
  * 
@@ -59,7 +59,7 @@ public class ModelAnnotator<OBJECT, ANNOTATION, FEATURE>
 		extends
 		BatchAnnotator<OBJECT, ANNOTATION>
 {
-	Model<FEATURE, ANNOTATION> model;
+	EstimatableModel<FEATURE, ANNOTATION> model;
 	Set<ANNOTATION> annotations;
 	private FeatureExtractor<FEATURE, OBJECT> extractor;
 
@@ -73,7 +73,7 @@ public class ModelAnnotator<OBJECT, ANNOTATION, FEATURE>
 	 * @param annotations
 	 *            The set of annotations that the model can produce
 	 */
-	public ModelAnnotator(FeatureExtractor<FEATURE, OBJECT> extractor, Model<FEATURE, ANNOTATION> model,
+	public ModelAnnotator(FeatureExtractor<FEATURE, OBJECT> extractor, EstimatableModel<FEATURE, ANNOTATION> model,
 			Set<ANNOTATION> annotations)
 	{
 		this.extractor = extractor;

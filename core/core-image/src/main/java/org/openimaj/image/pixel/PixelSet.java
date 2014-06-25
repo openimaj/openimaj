@@ -34,6 +34,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -55,7 +56,7 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class PixelSet implements Cloneable, ReadWriteable {
+public class PixelSet implements Cloneable, ReadWriteable, Iterable<Pixel> {
 
 	/** The set of pixels within this connected component */
 	public Set<Pixel> pixels = new HashSet<Pixel>();
@@ -802,6 +803,11 @@ public class PixelSet implements Cloneable, ReadWriteable {
 		out.writeInt(pixels.size());
 		for (final Pixel p : pixels)
 			p.writeBinary(out);
+	}
+
+	@Override
+	public Iterator<Pixel> iterator() {
+		return this.pixels.iterator();
 	}
 
 }

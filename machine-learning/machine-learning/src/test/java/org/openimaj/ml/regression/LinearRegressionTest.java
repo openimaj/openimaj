@@ -43,42 +43,39 @@ import Jama.Matrix;
 public class LinearRegressionTest {
 	@Test
 	public void testLinearRegression() throws Exception {
-		double[][] xt = new double[][]{new double[]{0,1,2,3,4,5,6,7,8,9}};
+		final double[][] xt = new double[][] { new double[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } };
 		// function params
-		double m = 2;
-		double c = -2;
-		
-		double[][] perfectyt = new double[1][xt[0].length];
+		final double m = 2;
+		final double c = -2;
+
+		final double[][] perfectyt = new double[1][xt[0].length];
 		for (int i = 0; i < perfectyt[0].length; i++) {
 			perfectyt[0][i] = xt[0][i] * m + c;
 		}
-		
-		Matrix x = new Matrix(xt).transpose();
-		Matrix perfecty = new Matrix(perfectyt).transpose();
-		
-		Matrix noise = new Matrix(RandomData.getRandomDoubleArray(perfecty.getRowDimension(), 1, -1, 1, 1));
-		Matrix y = perfecty.plus(noise);
-		
-		List<IndependentPair<double[], double[]>> ipairs = aspairs(x,y);
-		
-		LinearRegression lr = new LinearRegression();
+
+		final Matrix x = new Matrix(xt).transpose();
+		final Matrix perfecty = new Matrix(perfectyt).transpose();
+
+		final Matrix noise = new Matrix(RandomData.getRandomDoubleArray(perfecty.getRowDimension(), 1, -1, 1, 1));
+		final Matrix y = perfecty.plus(noise);
+
+		final List<IndependentPair<double[], double[]>> ipairs = aspairs(x, y);
+
+		final LinearRegression lr = new LinearRegression();
 		lr.estimate(y, x);
-		
-		LinearRegression lr2 = new LinearRegression();
+
+		final LinearRegression lr2 = new LinearRegression();
 		lr2.estimate(ipairs);
 		assertTrue(lr.equals(lr2));
-		
-		System.out.println("Error: " + lr.calculateError(ipairs));
-		assertTrue(lr.calculateError(ipairs) < 5);
 	}
 
 	private List<IndependentPair<double[], double[]>> aspairs(Matrix x, Matrix y) {
-		List<IndependentPair<double[], double[]>> ret = new ArrayList<IndependentPair<double[], double[]>>();
-		double[][] xd = x.getArray();
-		double[][] yd = y.getArray();
+		final List<IndependentPair<double[], double[]>> ret = new ArrayList<IndependentPair<double[], double[]>>();
+		final double[][] xd = x.getArray();
+		final double[][] yd = y.getArray();
 		for (int i = 0; i < xd.length; i++) {
 			ret.add(IndependentPair.pair(xd[i], yd[i]));
 		}
-		return ret ;
+		return ret;
 	}
 }

@@ -46,6 +46,7 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 
 /**
@@ -76,9 +77,10 @@ public class App {
 
 		// final AffineTransformModel fittingModel = new
 		// AffineTransformModel(5);
-		final HomographyModel fittingModel = new HomographyModel(5);
+		final HomographyModel fittingModel = new HomographyModel();
 		final RANSAC<Point2d, Point2d> ransac =
-				new RANSAC<Point2d, Point2d>(fittingModel, 1500, new RANSAC.PercentageInliersStoppingCondition(0.5), true);
+				new RANSAC<Point2d, Point2d>(fittingModel, new TransformError2d(), 5.0, 1500,
+						new RANSAC.PercentageInliersStoppingCondition(0.5), true);
 		matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8), ransac);
 		matcher.setModelFeatures(queryKeypoints);

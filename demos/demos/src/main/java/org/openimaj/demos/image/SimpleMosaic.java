@@ -50,6 +50,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 
 /**
@@ -103,9 +104,9 @@ public class SimpleMosaic
 					final ConsistentLocalFeatureMatcher2d<Keypoint> matcher =
 							new ConsistentLocalFeatureMatcher2d<Keypoint>(
 									new FastBasicKeypointMatcher<Keypoint>(8));
-					final HomographyModel model = new HomographyModel(8);
+					final HomographyModel model = new HomographyModel();
 					final RANSAC<Point2d, Point2d> modelFitting = new RANSAC<Point2d, Point2d>(
-							model, 1600, new RANSAC.BestFitStoppingCondition(), true);
+							model, new TransformError2d(), 8.0, 1600, new RANSAC.BestFitStoppingCondition(), true);
 					matcher.setFittingModel(modelFitting);
 
 					// Load in the first (middle) image and calculate the SIFT

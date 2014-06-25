@@ -32,7 +32,7 @@ package org.openimaj.math.geometry.transforms;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.model.Model;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
@@ -44,26 +44,20 @@ import Jama.Matrix;
  * @author Jonathon Hare
  * 
  */
-public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransformProvider {
+public class HomographyModel implements EstimatableModel<Point2d, Point2d>, MatrixTransformProvider {
 	protected Matrix homography;
-	protected float tol;
 
 	/**
-	 * Create an HomographyModel with a given tolerence for validation
-	 * 
-	 * @param tolerance
-	 *            value specifying how close (euclidean distance) a point must
-	 *            be from its predicted position to sucessfully validate.
+	 * Create an {@link HomographyModel}
 	 */
-	public HomographyModel(float tolerance)
+	public HomographyModel()
 	{
-		tol = tolerance;
 		homography = new Matrix(3, 3);
 	}
 
 	@Override
 	public HomographyModel clone() {
-		final HomographyModel hm = new HomographyModel(tol);
+		final HomographyModel hm = new HomographyModel();
 		hm.homography = homography.copy();
 		return hm;
 	}
@@ -73,79 +67,19 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 		return homography;
 	}
 
-	/*
-	 * SVD estimation of least-squares solution of 3D homogeneous homography
+	/**
+	 * DLT estimation of least-squares solution of 3D homogeneous homography
 	 * 
-	 * @see
-	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#estimate(java.util.List)
+	 * @see org.openimaj.math.model.EstimatableModel#estimate(java.util.List)
 	 */
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		homography = TransformUtilities.homographyMatrix(data);
 	}
 
-	/*
-	 * Validation based on euclidean distance between actual and predicted
-	 * points. Success if distance is less than threshold
-	 * 
-	 * @see
-	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#validate(uk.ac.soton.ecs
-	 * .iam.jsh2.util.IPair)
-	 */
-	@Override
-	public boolean validate(IndependentPair<Point2d, Point2d> data) {
-		if (homography == null)
-			return false;
-		final Point2d p2_est = data.firstObject().transform(homography);
-
-		final float dx = data.secondObject().getX() - p2_est.getX();
-		final float dy = data.secondObject().getY() - p2_est.getY();
-
-		final float dist = (dx * dx + dy * dy);
-
-		if (dist <= tol * tol)
-			return true;
-
-		return false;
-	}
-
 	@Override
 	public int numItemsToEstimate() {
 		return 4;
-	}
-
-	/*
-	 * Relative error is sum of squared euclidean distance between actual and
-	 * predicted positions
-	 * 
-	 * @seeModel#calculateError(java.util.List)
-	 */
-	@Override
-	public double calculateError(List<? extends IndependentPair<Point2d, Point2d>> alldata)
-	{
-		double error = 0;
-
-		for (final IndependentPair<Point2d, Point2d> data : alldata) {
-			final Point2d p2_est = data.firstObject().transform(homography);
-
-			final double dx = data.secondObject().getX() - p2_est.getX();
-			final double dy = data.secondObject().getY() - p2_est.getY();
-
-			error += (dx * dx + dy * dy);
-		}
-
-		return error;
-	}
-
-	@Override
-	public double calculateError(IndependentPair<Point2d, Point2d> data)
-	{
-		final Point2d p2_est = data.firstObject().transform(homography);
-
-		final double dx = data.secondObject().getX() - p2_est.getX();
-		final double dy = data.secondObject().getY() - p2_est.getY();
-
-		return (dx * dx + dy * dy);
 	}
 
 	@Override

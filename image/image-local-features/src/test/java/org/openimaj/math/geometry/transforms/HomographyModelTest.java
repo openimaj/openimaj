@@ -46,6 +46,7 @@ import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -54,7 +55,6 @@ import Jama.Matrix;
 /**
  * Test the homography model
  * 
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
@@ -123,11 +123,14 @@ public class HomographyModelTest {
 			pallet = new MBFImage(new FImage[] { new FImage(500, 500), new FImage(500, 500), new FImage(500, 500) });
 			final MBFImageRenderer renderer = pallet.createRenderer();
 
-			final HomographyModel model = new HomographyModel(((float) Math.sqrt(2 * error * error) * 2) + 1);
+			final HomographyModel model = new HomographyModel();
+			final TransformError2d errorModel = new TransformError2d();
+			final float errorThresh = ((float) Math.sqrt(2 * error * error) * 2) + 1;
+
 			model.estimate(pairs);
 			renderer.drawPolygon(this.square.asPolygon().transform(model.getTransform()), 1, RGBColour.ORANGE);
-			final RANSAC<Point2d, Point2d> fitterNormal = new RANSAC<Point2d, Point2d>(model, 1500,
-					new RANSAC.PercentageInliersStoppingCondition(stoppingCondition), false);
+			final RANSAC<Point2d, Point2d> fitterNormal = new RANSAC<Point2d, Point2d>(model, errorModel, errorThresh,
+					1500, new RANSAC.PercentageInliersStoppingCondition(stoppingCondition), false);
 			Matrix fitterNormalTransform = null;
 			renderer.drawPolygon(this.square.asPolygon(), 1, RGBColour.RED);
 			renderer.drawPolygon(this.square.asPolygon().transform(trans), 1, RGBColour.RED);
@@ -196,9 +199,7 @@ public class HomographyModelTest {
 			System.out.println(p.secondObject().getX() + " " + p.secondObject().getY());
 		}
 
-		final float error = 0.5f;
-
-		final HomographyModel model = new HomographyModel(((float) Math.sqrt(2 * error * error) * 2) + 1);
+		final HomographyModel model = new HomographyModel();
 		model.estimate(data);
 		model.getTransform().print(5, 5);
 		renderer.drawPolygon(squareA.asPolygon(), 1, RGBColour.RED);

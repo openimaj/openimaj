@@ -27,43 +27,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox;
+package org.openimaj.math.geometry.transforms;
 
-import java.io.IOException;
+import java.util.List;
 
-import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
-import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
-import org.openimaj.video.VideoDisplay;
-import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.capture.VideoCapture;
+import org.openimaj.math.model.EstimatableModel;
+import org.openimaj.util.pair.IndependentPair;
 
-public class VideoSIFTVisualisation implements VideoDisplayListener<MBFImage> {
-	private DoGSIFTEngine engine;
-
-	public VideoSIFTVisualisation() throws IOException {
-		VideoDisplay.createVideoDisplay(new VideoCapture(320, 240)).addVideoListener(this);
-		
-		engine = new DoGSIFTEngine();
-	}
-	
-	@Override
-	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		// TODO Auto-generated method stub
-		
-	}
+/**
+ * A {@link NullModel} models a one-to-one mapping of data. For convenience the
+ * {@link EstimatableModel} interface is implemented, although estimating does
+ * absolutely nothing!
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @param <T>
+ *            The type of data
+ * 
+ */
+public class NullModel<T> implements EstimatableModel<T, T> {
 
 	@Override
-	public void beforeUpdate(MBFImage frame) {
-		LocalFeatureList<Keypoint> kpts = engine.findFeatures(frame.flatten());
-		engine.getOptions().setDoubleInitialImage(false);
-		KeypointVisualizer.drawPatchesInplace(frame, kpts, RGBColour.RED, RGBColour.GREEN);
+	public T predict(T data) {
+		return data;
 	}
-	
-	public static void main(String[] args) throws IOException {
-		new VideoSIFTVisualisation();
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public NullModel<T> clone() {
+		try {
+			return (NullModel<T>) super.clone();
+		} catch (final CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void estimate(List<? extends IndependentPair<T, T>> data) {
+		// do nothing
+	}
+
+	@Override
+	public int numItemsToEstimate() {
+		return 0;
 	}
 }

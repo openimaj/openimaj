@@ -35,7 +35,7 @@ import java.util.List;
 import no.uib.cipr.matrix.NotConvergedException;
 
 import org.openimaj.math.matrix.MatrixUtils;
-import org.openimaj.math.model.Model;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
@@ -71,30 +71,14 @@ import Jama.Matrix;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class LinearRegression implements Model<double[], double[]> {
+public class LinearRegression implements EstimatableModel<double[], double[]> {
 
-	/**
-	 * the default error which a point may be from the line to be considered
-	 * acceptable
-	 */
-	public static final double DEFAULT_ERROR = 5d;
 	private Matrix weights;
-	private double error;
 
 	/**
-	 * linear regression model validated on DEFAULT_ERROR
+	 * linear regression model
 	 */
 	public LinearRegression() {
-		this(DEFAULT_ERROR);
-	}
-
-	/**
-	 * the error to validate against
-	 * 
-	 * @param error
-	 */
-	public LinearRegression(double error) {
-		this.error = error;
 	}
 
 	@Override
@@ -168,13 +152,6 @@ public class LinearRegression implements Model<double[], double[]> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean validate(IndependentPair<double[], double[]> data) {
-		final double diff = calculateError(Arrays.asList(data));
-		return diff <= error;
-	}
-
-	@Override
 	public double[] predict(double[] data) {
 		final double[][] corrected = new double[][] { new double[data.length + 1] };
 		corrected[0][0] = 1;
@@ -202,34 +179,8 @@ public class LinearRegression implements Model<double[], double[]> {
 	}
 
 	@Override
-	public double calculateError(List<? extends IndependentPair<double[], double[]>> data) {
-		double SSE = 0;
-		for (final IndependentPair<double[], double[]> independentPair : data) {
-			final double[] predicted = predict(independentPair.firstObject());
-			final double[] actual = independentPair.secondObject();
-			for (int i = 0; i < predicted.length; i++) {
-				final double diff = predicted[i] - actual[i];
-				SSE += diff * diff;
-			}
-		}
-		return SSE;
-	}
-
-	@Override
-	public double calculateError(IndependentPair<double[], double[]> independentPair) {
-		double SSE = 0;
-		final double[] predicted = predict(independentPair.firstObject());
-		final double[] actual = independentPair.secondObject();
-		for (int i = 0; i < predicted.length; i++) {
-			final double diff = predicted[i] - actual[i];
-			SSE += diff * diff;
-		}
-		return SSE;
-	}
-
-	@Override
 	public LinearRegression clone() {
-		return new LinearRegression(this.error);
+		return new LinearRegression();
 	}
 
 	@Override

@@ -32,7 +32,11 @@ package org.openimaj.math.model.fit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.math.model.Model;
+import org.openimaj.math.model.fit.error.ModelFitError;
+import org.openimaj.math.util.distance.DistanceCheck;
+import org.openimaj.math.util.distance.ThresholdDistanceCheck;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -49,16 +53,46 @@ import org.openimaj.util.pair.IndependentPair;
 public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
 	List<IndependentPair<I, D>> inl;
 	List<IndependentPair<I, D>> outl;
-	Model<I, D> model;
+	EstimatableModel<I, D> model;
+
+	ModelFitError<I, D, Model<I, D>> errorModel;
+	DistanceCheck dc;
 
 	/**
 	 * Creates a SimpleModelFitting object to fit data to a model
 	 * 
 	 * @param m
 	 *            model to fit data to
+	 * @param errorModel
+	 *            the error model
+	 * @param errorThreshold
+	 *            the error threshold
 	 */
-	public SimpleModelFitting(Model<I, D> m) {
+	public SimpleModelFitting(EstimatableModel<I, D> m, ModelFitError<I, D, Model<I, D>> errorModel,
+			double errorThreshold)
+	{
 		model = m;
+		this.errorModel = errorModel;
+		this.dc = new ThresholdDistanceCheck(errorThreshold);
+	}
+
+	/**
+	 * Creates a SimpleModelFitting object to fit data to a model
+	 * 
+	 * @param m
+	 *            model to fit data to
+	 * @param errorModel
+	 *            the error model
+	 * @param dc
+	 *            the error/distance check that determines whether a point is
+	 *            valid
+	 */
+	public SimpleModelFitting(EstimatableModel<I, D> m, ModelFitError<I, D, Model<I, D>> errorModel,
+			DistanceCheck dc)
+	{
+		model = m;
+		this.errorModel = errorModel;
+		this.dc = dc;
 	}
 
 	@Override
@@ -79,7 +113,7 @@ public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
 		outl = new ArrayList<IndependentPair<I, D>>();
 
 		for (int i = 0; i < data.size(); i++) {
-			if (model.validate(data.get(i)))
+			if (dc.check(errorModel.computeError(data.get(i))))
 				inl.add(data.get(i));
 			else
 				outl.add(data.get(i));
@@ -91,5 +125,10 @@ public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
 	@Override
 	public Model<I, D> getModel() {
 		return model;
+	}
+
+	@Override
+	public int numItemsToEstimate() {
+		return model.numItemsToEstimate();
 	}
 }

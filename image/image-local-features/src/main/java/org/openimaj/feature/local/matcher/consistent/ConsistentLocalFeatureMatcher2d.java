@@ -122,7 +122,7 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?, ?> & Poin
 		innerMatcher.findMatches(keys1);
 		final List<Pair<T>> matches = innerMatcher.getMatches();
 
-		if (matches.size() < modelfit.getModel().numItemsToEstimate()) {
+		if (matches.size() < modelfit.numItemsToEstimate()) {
 			consistentMatches.clear();
 			consistentMatches.addAll(matches);
 			return false;

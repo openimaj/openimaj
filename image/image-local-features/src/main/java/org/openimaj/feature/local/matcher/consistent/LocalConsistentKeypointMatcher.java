@@ -180,9 +180,7 @@ public class LocalConsistentKeypointMatcher<T extends Keypoint> extends FastBasi
 			}
 		}
 
-		System.out.println("Found " + matches.size() + " unchecked matches");
-
-		if (matches.size() < modelfit.getModel().numItemsToEstimate()) {
+		if (matches.size() < modelfit.numItemsToEstimate()) {
 			System.out.println("Not enough matches to check consistency!");
 			return false;
 		}

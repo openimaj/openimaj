@@ -34,26 +34,35 @@ import java.util.List;
 import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
 
-
 /**
- * An interface that describes an object capable of fitting data to a model
- * in a more generic way than through the Model's estimate method.
+ * An interface that describes an object capable of fitting data to a model in a
+ * more generic way than through the Model's estimate method.
+ * 
  * @author Jonathon Hare
- *
- * @param <I> type of independent data
- * @param <D> type of dependent data
+ * 
+ * @param <I>
+ *            type of independent data
+ * @param <D>
+ *            type of dependent data
  */
-public interface ModelFitting <I, D>{
+public interface ModelFitting<I, D> {
 	/**
 	 * Attempt to fit the given data to the model.
-	 * @param data Data to be fitted
+	 * 
+	 * @param data
+	 *            Data to be fitted
 	 * @return true on success, false otherwise
 	 */
-	boolean fitData(List <? extends IndependentPair<I, D>> data);
-	
+	boolean fitData(List<? extends IndependentPair<I, D>> data);
+
+	/**
+	 * @return The minimum number of observations required to estimate the
+	 *         model.
+	 */
+	public int numItemsToEstimate();
+
 	/**
 	 * @return the trained model object
 	 */
 	Model<I, D> getModel();
 }
-

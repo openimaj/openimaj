@@ -32,7 +32,7 @@ package org.openimaj.math.geometry.transforms;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.model.Model;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
@@ -44,20 +44,14 @@ import Jama.Matrix;
  * @author Jonathon Hare
  * 
  */
-public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTransformProvider {
+public class AffineTransformModel implements EstimatableModel<Point2d, Point2d>, MatrixTransformProvider {
 	protected Matrix transform;
-	protected float tol;
 
 	/**
-	 * Create an AffineTransformModel with a given tolerance for validation
-	 * 
-	 * @param tolerance
-	 *            value specifying how close (Euclidean distance) a point must
-	 *            be from its predicted position to successfully validate.
+	 * Create an {@link AffineTransformModel}
 	 */
-	public AffineTransformModel(float tolerance)
+	public AffineTransformModel()
 	{
-		tol = tolerance;
 		transform = new Matrix(3, 3);
 
 		transform.set(2, 0, 0);
@@ -67,7 +61,7 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 
 	@Override
 	public AffineTransformModel clone() {
-		final AffineTransformModel atm = new AffineTransformModel(tol);
+		final AffineTransformModel atm = new AffineTransformModel();
 		atm.transform = transform.copy();
 		return atm;
 	}
@@ -80,36 +74,10 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 	/*
 	 * SVD least-squares estimation of affine transform matrix for a set of 2d
 	 * points
-	 * 
-	 * @see
-	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#estimate(java.util.List)
 	 */
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		this.transform = TransformUtilities.affineMatrix(data);
-	}
-
-	/*
-	 * Validation based on euclidean distance between actual and predicted
-	 * points. Success if distance is less than threshold
-	 * 
-	 * @see
-	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#validate(uk.ac.soton.ecs
-	 * .iam.jsh2.util.IPair)
-	 */
-	@Override
-	public boolean validate(IndependentPair<Point2d, Point2d> data) {
-		final Point2d p2_est = data.firstObject().transform(transform);
-
-		final float dx = data.secondObject().getX() - p2_est.getX();
-		final float dy = data.secondObject().getY() - p2_est.getY();
-
-		final float dist = (dx * dx + dy * dy);
-
-		if (dist <= tol * tol)
-			return true;
-
-		return false;
 	}
 
 	@Override
@@ -120,39 +88,6 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 	@Override
 	public int numItemsToEstimate() {
 		return 3;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openimaj.math.model.Model#calculateError(java.util.List)
-	 */
-	@Override
-	public double calculateError(List<? extends IndependentPair<Point2d, Point2d>> alldata)
-	{
-		double error = 0;
-
-		for (final IndependentPair<Point2d, Point2d> data : alldata) {
-			final Point2d p2_est = data.firstObject().transform(transform);
-
-			final double dx = data.secondObject().getX() - p2_est.getX();
-			final double dy = data.secondObject().getY() - p2_est.getY();
-
-			error += (dx * dx + dy * dy);
-		}
-
-		return error;
-	}
-
-	@Override
-	public double calculateError(IndependentPair<Point2d, Point2d> data)
-	{
-		final Point2d p2_est = data.firstObject().transform(transform);
-
-		final double dx = data.secondObject().getX() - p2_est.getX();
-		final double dy = data.secondObject().getY() - p2_est.getY();
-
-		return (dx * dx + dy * dy);
 	}
 
 	@Override

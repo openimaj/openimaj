@@ -33,7 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.data.RandomData;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.math.model.Model;
+import org.openimaj.math.model.fit.error.ModelFitError;
+import org.openimaj.math.util.distance.DistanceCheck;
+import org.openimaj.math.util.distance.ThresholdDistanceCheck;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -44,9 +48,10 @@ import org.openimaj.util.pair.IndependentPair;
  * Assume: M data items required to estimate parameter x N data items in total
  * 
  * 1.) select M data items at random 2.) estimate parameter x 3.) find how many
- * of the N data items fit x within tolerence tol, call this K 4.) if K is large
- * enough (bigger than numItems) accept x and exit with success 5.) repeat 1..4
- * nIter times 6.) fail - no good x fit of data
+ * of the N data items fit (i.e. have an error less than a threshold or pass
+ * some check) x within tolerence tol, call this K 4.) if K is large enough
+ * (bigger than numItems) accept x and exit with success 5.) repeat 1..4 nIter
+ * times 6.) fail - no good x fit of data
  * 
  * In this implementation, the conditions that control the iterations are
  * configurable. In addition, the best matching model is always stored, even if
@@ -74,7 +79,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		 *            The model to fit
 		 * @return true if initialisation is successful, false otherwise.
 		 */
-		public abstract boolean init(final List<?> data, Model<?, ?> model);
+		public abstract boolean init(final List<?> data, EstimatableModel<?, ?> model);
 
 		/**
 		 * Should we stop iterating and return the model?
@@ -116,7 +121,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 
 		@Override
-		public boolean init(List<?> data, Model<?, ?> model) {
+		public boolean init(List<?> data, EstimatableModel<?, ?> model) {
 			if (limit < model.numItemsToEstimate()) {
 				limit = model.numItemsToEstimate();
 			}
@@ -160,7 +165,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 
 		@Override
-		public boolean init(List<?> data, Model<?, ?> model) {
+		public boolean init(List<?> data, EstimatableModel<?, ?> model) {
 			this.limit = (int) Math.rint(percentageLimit * data.size());
 			return super.init(data, model);
 		}
@@ -215,7 +220,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 
 		@Override
-		public boolean init(List<?> data, Model<?, ?> model) {
+		public boolean init(List<?> data, EstimatableModel<?, ?> model) {
 			numItemsToEstimate = model.numItemsToEstimate();
 			numDataItems = data.size();
 			this.limit = calculateMinInliers();
@@ -291,7 +296,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		int required;
 
 		@Override
-		public boolean init(List<?> data, Model<?, ?> model) {
+		public boolean init(List<?> data, EstimatableModel<?, ?> model) {
 			required = model.numItemsToEstimate();
 			return true;
 		}
@@ -308,7 +313,10 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 	}
 
-	protected Model<I, D> model;
+	protected EstimatableModel<I, D> model;
+	protected ModelFitError<I, D, Model<I, D>> errorModel;
+	protected DistanceCheck dc;
+
 	protected int nIter;
 	protected boolean improveEstimate;
 	protected List<IndependentPair<I, D>> inliers;
@@ -323,6 +331,10 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 * 
 	 * @param model
 	 *            Model object with which to fit data
+	 * @param errorModel
+	 *            object to compute the error of the model
+	 * @param errorThreshold
+	 *            the threshold below which error is deemed acceptable for a fit
 	 * @param nIterations
 	 *            Maximum number of allowed iterations (L)
 	 * @param stoppingCondition
@@ -331,10 +343,47 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 *            True if we want to perform a final fitting of the model with
 	 *            all inliers, false otherwise
 	 */
-	public RANSAC(Model<I, D> model, int nIterations, StoppingCondition stoppingCondition, boolean impEst)
+	public RANSAC(EstimatableModel<I, D> model, ModelFitError<I, D, Model<I, D>> errorModel,
+			double errorThreshold, int nIterations,
+			StoppingCondition stoppingCondition, boolean impEst)
 	{
 		this.stoppingCondition = stoppingCondition;
 		this.model = model;
+		this.errorModel = errorModel;
+		this.dc = new ThresholdDistanceCheck(errorThreshold);
+		nIter = nIterations;
+		improveEstimate = impEst;
+
+		inliers = new ArrayList<IndependentPair<I, D>>();
+		outliers = new ArrayList<IndependentPair<I, D>>();
+	}
+
+	/**
+	 * Create a RANSAC object
+	 * 
+	 * @param model
+	 *            Model object with which to fit data
+	 * @param errorModel
+	 *            object to compute the error of the model
+	 * @param dc
+	 *            the distance check that tests whether a point with given error
+	 *            from the error model should be considered an inlier
+	 * @param nIterations
+	 *            Maximum number of allowed iterations (L)
+	 * @param stoppingCondition
+	 *            the stopping condition
+	 * @param impEst
+	 *            True if we want to perform a final fitting of the model with
+	 *            all inliers, false otherwise
+	 */
+	public RANSAC(EstimatableModel<I, D> model, ModelFitError<I, D, Model<I, D>> errorModel,
+			DistanceCheck dc, int nIterations,
+			StoppingCondition stoppingCondition, boolean impEst)
+	{
+		this.stoppingCondition = stoppingCondition;
+		this.model = model;
+		this.errorModel = errorModel;
+		this.dc = dc;
 		nIter = nIterations;
 		improveEstimate = impEst;
 
@@ -362,13 +411,14 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 			this.setModelConstructionData(rnd);
 			// 2
 			model.estimate(rnd);
+			errorModel.setModel(model);
 
 			// 3
 			int K = 0;
 			inliers.clear();
 			outliers.clear();
 			for (final IndependentPair<I, D> dp : data) {
-				if (model.validate(dp))
+				if (dc.check(errorModel.computeError(dp)))
 				{
 					K++;
 					inliers.add(dp);
@@ -465,7 +515,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 * @param model
 	 *            the model
 	 */
-	public void setModel(Model<I, D> model) {
+	public void setModel(EstimatableModel<I, D> model) {
 		this.model = model;
 	}
 
@@ -503,5 +553,10 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 */
 	public List<? extends IndependentPair<I, D>> getModelConstructionData() {
 		return modelConstructionData;
+	}
+
+	@Override
+	public int numItemsToEstimate() {
+		return model.numItemsToEstimate();
 	}
 }

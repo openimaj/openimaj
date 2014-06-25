@@ -32,7 +32,7 @@ package org.openimaj.math.geometry.transforms;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point3d;
-import org.openimaj.math.model.Model;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
@@ -46,20 +46,14 @@ import Jama.Matrix;
  * @author Jonathon Hare
  * 
  */
-public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTransformProvider {
+public class AffineTransformModel3d implements EstimatableModel<Point3d, Point3d>, MatrixTransformProvider {
 	protected Matrix transform;
-	protected double tol;
 
 	/**
-	 * Create an AffineTransformModel with a given tolerance for validation
-	 * 
-	 * @param tolerance
-	 *            value specifying how close (Euclidean distance) a point must
-	 *            be from its predicted position to successfully validate.
+	 * Create an {@link AffineTransformModel3d}
 	 */
-	public AffineTransformModel3d(double tolerance)
+	public AffineTransformModel3d()
 	{
-		tol = tolerance;
 		transform = new Matrix(3, 3);
 
 		transform.set(2, 0, 0);
@@ -69,7 +63,7 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 
 	@Override
 	public AffineTransformModel3d clone() {
-		final AffineTransformModel3d atm = new AffineTransformModel3d(tol);
+		final AffineTransformModel3d atm = new AffineTransformModel3d();
 		atm.transform = transform.copy();
 		return atm;
 	}
@@ -91,30 +85,6 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 		this.transform = TransformUtilities.affineMatrixND(data);
 	}
 
-	/*
-	 * Validation based on euclidean distance between actual and predicted
-	 * points. Success if distance is less than threshold
-	 * 
-	 * @see
-	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#validate(uk.ac.soton.ecs
-	 * .iam.jsh2.util.IPair)
-	 */
-	@Override
-	public boolean validate(IndependentPair<Point3d, Point3d> data) {
-		final Point3d p2_est = data.firstObject().transform(transform);
-
-		final double dx = data.secondObject().getX() - (float) p2_est.getX();
-		final double dy = data.secondObject().getY() - (float) p2_est.getY();
-		final double dz = data.secondObject().getZ() - (float) p2_est.getZ();
-
-		final double dist = (dx * dx + dy * dy + dz * dz);
-
-		if (dist <= tol * tol)
-			return true;
-
-		return false;
-	}
-
 	@Override
 	public Point3d predict(Point3d p) {
 		return p.transform(transform);
@@ -123,41 +93,6 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 	@Override
 	public int numItemsToEstimate() {
 		return 6;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openimaj.math.model.Model#calculateError(java.util.List)
-	 */
-	@Override
-	public double calculateError(List<? extends IndependentPair<Point3d, Point3d>> alldata)
-	{
-		double error = 0;
-
-		for (final IndependentPair<Point3d, Point3d> data : alldata) {
-			final Point3d p2_est = data.firstObject().transform(transform);
-
-			final double dx = data.secondObject().getX() - p2_est.getX();
-			final double dy = data.secondObject().getY() - p2_est.getY();
-			final double dz = data.secondObject().getZ() - p2_est.getZ();
-
-			error += (dx * dx + dy * dy + dz * dz);
-		}
-
-		return error;
-	}
-
-	@Override
-	public double calculateError(IndependentPair<Point3d, Point3d> data)
-	{
-		final Point3d p2_est = data.firstObject().transform(transform);
-
-		final double dx = data.secondObject().getX() - p2_est.getX();
-		final double dy = data.secondObject().getY() - p2_est.getY();
-		final double dz = data.secondObject().getZ() - p2_est.getZ();
-
-		return (dx * dx + dy * dy + dz * dz);
 	}
 
 	@Override

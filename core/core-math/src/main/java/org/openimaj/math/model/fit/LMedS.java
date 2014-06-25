@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.math.model.Model;
-import org.openimaj.math.model.fit.error.DefaultModelRelativeError;
 import org.openimaj.math.model.fit.error.ModelFitError;
 import org.openimaj.math.util.DoubleArrayStatsUtils;
 import org.openimaj.util.pair.IndependentPair;
@@ -27,18 +27,22 @@ public class LMedS<I, D> implements RobustModelFitting<I, D> {
 	 */
 	double outlierProportion = 0.4;
 
-	protected ModelFitError<I, D> errorEstimator = new DefaultModelRelativeError<I, D>();
+	/**
+	 * Number of degrees of freedom of the model; used in conjunction with
+	 * inlierNoiseLevel if set to estimate the inliers.
+	 */
+	private double degreesOfFreedom;
 
-	protected Model<I, D> model;
-	protected Model<I, D> bestModel;
+	protected ModelFitError<I, D, EstimatableModel<I, D>> errorEstimator;
+
+	protected EstimatableModel<I, D> model;
+	protected EstimatableModel<I, D> bestModel;
 	protected List<IndependentPair<I, D>> inliers = new ArrayList<IndependentPair<I, D>>();
 	protected List<IndependentPair<I, D>> outliers = new ArrayList<IndependentPair<I, D>>();
 
-	private double degreesOfFreedom;
-
 	private double bestMedianError;
 
-	public LMedS(Model<I, D> model) {
+	public LMedS(EstimatableModel<I, D> model) {
 		this.model = model;
 		this.bestModel = model.clone();
 	}
@@ -59,8 +63,8 @@ public class LMedS<I, D> implements RobustModelFitting<I, D> {
 
 		for (int i = 0; i < numSamples; i++) {
 			final List<? extends IndependentPair<I, D>> sample = RANSAC.getRandomItems(data, sampleSize);
-			errorEstimator.setModel(model);
 			model.estimate(sample);
+			errorEstimator.setModel(model);
 
 			errorEstimator.computeError(data, errors);
 
@@ -69,7 +73,7 @@ public class LMedS<I, D> implements RobustModelFitting<I, D> {
 				bestMedianError = medianError;
 
 				// swap working model and best model
-				final Model<I, D> tmp = bestModel;
+				final EstimatableModel<I, D> tmp = bestModel;
 				bestModel = model;
 				model = tmp;
 
@@ -121,5 +125,10 @@ public class LMedS<I, D> implements RobustModelFitting<I, D> {
 	@Override
 	public List<? extends IndependentPair<I, D>> getOutliers() {
 		return outliers;
+	}
+
+	@Override
+	public int numItemsToEstimate() {
+		return model.numItemsToEstimate();
 	}
 }

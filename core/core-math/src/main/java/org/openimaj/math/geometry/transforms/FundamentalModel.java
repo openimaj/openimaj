@@ -32,7 +32,7 @@ package org.openimaj.math.geometry.transforms;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.model.Model;
+import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
@@ -45,9 +45,9 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransformProvider {
+public class FundamentalModel implements EstimatableModel<Point2d, Point2d>, MatrixTransformProvider {
 	/**
-	 * Interface for classes able to test whether a point pair satisifies the
+	 * Interface for classes able to test whether a point pair satisfies the
 	 * epipolar geometry.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -154,7 +154,8 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 
 			final double dist = (p2tFp1 * p2tFp1)
 					/ (Fp1.get(0, 0) * Fp1.get(0, 0) + Fp1.get(1, 0) * Fp1.get(1, 0) + Ftp2.get(0, 0) * Ftp2.get(0, 0) + Ftp2
-							.get(1, 0) * Ftp2.get(1, 0));
+							.get(1, 0)
+							* Ftp2.get(1, 0));
 
 			return Math.abs(dist) < tol;
 		}
@@ -191,15 +192,16 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 		this.fundamental = norms.secondObject().transpose().times(normFundamental).times(norms.firstObject());
 	}
 
-	@Override
-	public boolean validate(IndependentPair<Point2d, Point2d> data) {
-		if (normFundamental == null)
-			return false;
-
-		final IndependentPair<Point2d, Point2d> normData = TransformUtilities.normalise(data, norms);
-
-		return condition.validate(normData, normFundamental);
-	}
+	// @Override
+	// public boolean validate(IndependentPair<Point2d, Point2d> data) {
+	// if (normFundamental == null)
+	// return false;
+	//
+	// final IndependentPair<Point2d, Point2d> normData =
+	// TransformUtilities.normalise(data, norms);
+	//
+	// return condition.validate(normData, normFundamental);
+	// }
 
 	@Override
 	public Point2d predict(Point2d data) {
@@ -211,16 +213,17 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 		return 8;
 	}
 
-	@Override
-	public double calculateError(List<? extends IndependentPair<Point2d, Point2d>> data) {
-		final double totalCheck = data.size();
-		double correct = 0;
-		for (final IndependentPair<Point2d, Point2d> independentPair : data) {
-			if (this.validate(independentPair))
-				correct += 1;
-		}
-		return correct / totalCheck;
-	}
+	// @Override
+	// public double calculateError(List<? extends IndependentPair<Point2d,
+	// Point2d>> data) {
+	// final double totalCheck = data.size();
+	// double correct = 0;
+	// for (final IndependentPair<Point2d, Point2d> independentPair : data) {
+	// if (this.validate(independentPair))
+	// correct += 1;
+	// }
+	// return correct / totalCheck;
+	// }
 
 	/**
 	 * Clone the model
@@ -239,8 +242,8 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 		return model;
 	}
 
-	@Override
-	public double calculateError(IndependentPair<Point2d, Point2d> data) {
-		return validate(data) ? 0 : 1;
-	}
+	// @Override
+	// public double calculateError(IndependentPair<Point2d, Point2d> data) {
+	// return validate(data) ? 0 : 1;
+	// }
 }

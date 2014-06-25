@@ -48,183 +48,197 @@ import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.error.TransformError2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
 public class Mosaic {
-	public static void main(String [] args) throws IOException {
-		ProjectionProcessor<Float[],MBFImage> bpp = new ProjectionProcessor<Float[],MBFImage>();
-		File[] imagesToCombineInOrder = new File[]{
+	public static void main(String[] args) throws IOException {
+		final ProjectionProcessor<Float[], MBFImage> bpp = new ProjectionProcessor<Float[], MBFImage>();
+		final File[] imagesToCombineInOrder = new File[] {
 				new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-0.jpg"),
 				new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-1.jpg"),
 				new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-2.jpg"),
 				new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-3.jpg"),
 		};
-//		AffineTransformModel model = new AffineTransformModel(6.0f);
-		HomographyModel model = new HomographyModel(12.0f);
-		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 600, new RANSAC.BestFitStoppingCondition(), true);
-		ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
+		// AffineTransformModel model = new AffineTransformModel(6.0f);
+		final HomographyModel model = new HomographyModel();
+		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, new TransformError2d(), 12.0, 600,
+				new RANSAC.BestFitStoppingCondition(), true);
+		final ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
+				new FastBasicKeypointMatcher<Keypoint>(8));
 		matcher.setFittingModel(ransac);
-		int centerImageIndex=1;
-//		double scaleFactor = 1;
-		ResizeProcessor displayResize = new ResizeProcessor(800,600,false);
-		ResizeProcessor analysisResize = new ResizeProcessor(800,600);
-		
-		MBFImage centerImage = ImageUtilities.readMBF(imagesToCombineInOrder[centerImageIndex]).process(analysisResize);
-		FImage centerImagef = Transforms.calculateIntensityNTSC(centerImage);
-		
-		DoGSIFTEngine engine = new DoGSIFTEngine();
-		List<Keypoint> centerKeys = engine.findFeatures(centerImagef);
-		
+		final int centerImageIndex = 1;
+		// double scaleFactor = 1;
+		final ResizeProcessor displayResize = new ResizeProcessor(800, 600, false);
+		final ResizeProcessor analysisResize = new ResizeProcessor(800, 600);
+
+		final MBFImage centerImage = ImageUtilities.readMBF(imagesToCombineInOrder[centerImageIndex]).process(
+				analysisResize);
+		final FImage centerImagef = Transforms.calculateIntensityNTSC(centerImage);
+
+		final DoGSIFTEngine engine = new DoGSIFTEngine();
+		final List<Keypoint> centerKeys = engine.findFeatures(centerImagef);
+
 		// GO LEFT
 		MBFImage currentImage = centerImage;
 		FImage currentImagef = centerImagef;
 		List<Keypoint> currentKeys = centerKeys;
-		bpp.setMatrix(new Matrix(new double[][]{{1,0,0},{0,1,0},{0,0,1}}));
+		bpp.setMatrix(new Matrix(new double[][] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }));
 		bpp.accumulate(centerImage);
 		int steps = 1;
-		for(int i = centerImageIndex - 1; i >= 0; i--){
+		for (int i = centerImageIndex - 1; i >= 0; i--) {
 
-			MBFImage nextImage = ImageUtilities.readMBF(imagesToCombineInOrder[i]).process(analysisResize);
-			FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);
-			
-			List<Keypoint> keys2 = engine.findFeatures(nextImagef);
+			final MBFImage nextImage = ImageUtilities.readMBF(imagesToCombineInOrder[i]).process(analysisResize);
+			final FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);
+
+			final List<Keypoint> keys2 = engine.findFeatures(nextImagef);
 			matcher.setModelFeatures(currentKeys);
 			matcher.findMatches(keys2);
-			
-			//FIXME: there should be a class/method for drawing matches
-			MBFImage tmp = new MBFImage(currentImagef.width + nextImagef.width, Math.max(currentImagef.height, nextImagef.height), 3);
-			MBFImageRenderer r = tmp.createRenderer();
+
+			// FIXME: there should be a class/method for drawing matches
+			final MBFImage tmp = new MBFImage(currentImagef.width + nextImagef.width, Math.max(currentImagef.height,
+					nextImagef.height), 3);
+			final MBFImageRenderer r = tmp.createRenderer();
 			r.drawImage(currentImage, 0, 0);
 			r.drawImage(nextImage, currentImagef.width, 0);
-			for (Pair<Keypoint> m : matcher.getMatches()) {
-				r.drawLine((int)m.secondObject().x, (int)m.secondObject().y, 
-							 (int)m.firstObject().x + currentImagef.width, (int)m.firstObject().y, 
-							 RGBColour.RED);
+			for (final Pair<Keypoint> m : matcher.getMatches()) {
+				r.drawLine((int) m.secondObject().x, (int) m.secondObject().y,
+						(int) m.firstObject().x + currentImagef.width, (int) m.firstObject().y,
+						RGBColour.RED);
 			}
-			
+
 			DisplayUtilities.display(tmp);
 			System.out.println("GOING LEFT");
-			Matrix transform = model.getTransform();
-			model.getTransform().print(5,5);
-			
-			
+			final Matrix transform = model.getTransform();
+			model.getTransform().print(5, 5);
+
 			bpp.setMatrix(bpp.getMatrix().times(transform));
-			int propWidth = (int)(nextImage.getWidth() * Math.pow(0.5, 0));
+			final int propWidth = (int) (nextImage.getWidth() * Math.pow(0.5, 0));
 			bpp.accumulate(nextImage.extractROI(nextImage.getWidth() - propWidth, 0, propWidth, nextImage.getHeight()));
 			currentImage = nextImage;
 			currentImagef = nextImagef;
 			currentKeys = keys2;
 			steps++;
-			
+
 		}
-		
+
 		// GO RIGHT
 		currentImage = centerImage;
 		currentImagef = centerImagef;
 		currentKeys = centerKeys;
-		bpp.setMatrix(new Matrix(new double[][]{{1,0,0},{0,1,0},{0,0,1}}));
+		bpp.setMatrix(new Matrix(new double[][] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }));
 		steps = 1;
-		for(int i = centerImageIndex + 1; i < imagesToCombineInOrder.length; i++){
-			MBFImage nextImage = ImageUtilities.readMBF(imagesToCombineInOrder[i]).process(analysisResize);
-			FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);
-			
-			
-			List<Keypoint> keys2 = engine.findFeatures(nextImagef);
+		for (int i = centerImageIndex + 1; i < imagesToCombineInOrder.length; i++) {
+			final MBFImage nextImage = ImageUtilities.readMBF(imagesToCombineInOrder[i]).process(analysisResize);
+			final FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);
+
+			final List<Keypoint> keys2 = engine.findFeatures(nextImagef);
 			matcher.setModelFeatures(currentKeys);
 			matcher.findMatches(keys2);
-			
-			//FIXME: there should be a class/method for drawing matches
-			MBFImage tmp = new MBFImage(currentImagef.width + nextImagef.width, Math.max(currentImagef.height, nextImagef.height), 3);
-			MBFImageRenderer r = tmp.createRenderer();
+
+			// FIXME: there should be a class/method for drawing matches
+			final MBFImage tmp = new MBFImage(currentImagef.width + nextImagef.width, Math.max(currentImagef.height,
+					nextImagef.height), 3);
+			final MBFImageRenderer r = tmp.createRenderer();
 			r.drawImage(currentImage, 0, 0);
 			r.drawImage(nextImage, currentImagef.width, 0);
-			for (Pair<Keypoint> m : matcher.getMatches()) {
-				r.drawLine((int)m.secondObject().x, (int)m.secondObject().y, 
-							 (int)m.firstObject().x + currentImagef.width, (int)m.firstObject().y, 
-							 RGBColour.RED);
+			for (final Pair<Keypoint> m : matcher.getMatches()) {
+				r.drawLine((int) m.secondObject().x, (int) m.secondObject().y,
+						(int) m.firstObject().x + currentImagef.width, (int) m.firstObject().y,
+						RGBColour.RED);
 			}
-			
+
 			DisplayUtilities.display(tmp);
-			
-			Matrix transform = model.getTransform();
+
+			final Matrix transform = model.getTransform();
 			System.out.println("GOING RIGHT");
-			transform.print(5,5);
-			
+			transform.print(5, 5);
+
 			bpp.setMatrix(bpp.getMatrix().times(transform));
-			int propWidth = (int)(nextImage.getWidth() * Math.pow(0.5, steps));
+			final int propWidth = (int) (nextImage.getWidth() * Math.pow(0.5, steps));
 			bpp.accumulate(nextImage.extractROI(0, 0, propWidth, nextImage.getHeight()));
 			currentImage = nextImage;
 			currentImagef = nextImagef;
 			currentKeys = keys2;
 			steps++;
-			
+
 		}
-		
+
 		DisplayUtilities.display(bpp.performProjection().process(displayResize));
-		
-//		MBFImage image1 = ImageUtilities.readMBF(new File("/Users/ss/Desktop/trento-view-0.jpg")).halfImageSize();
-//		MBFImage image2 = ImageUtilities.readMBF(new File("/Users/ss/Desktop/trento-view-1.jpg")).halfImageSize();
-//		
-//		FImage image1f = Transforms.calculateIntensityNTSC(image1);
-//		FImage image2f = Transforms.calculateIntensityNTSC(image2);
-//		
-//		KeypointEngine engine = new KeypointEngine();
-//		List<Keypoint> keys1 = engine.findKeypoints(image1f);
-//		List<Keypoint> keys2 = engine.findKeypoints(image2f);
-//				
-////		HomographyModel model = new HomographyModel(6.0f);
-////		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 100, 10, false);
-////		
-////		ConsistentKeypointMatcher<Keypoint> matcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
-//		matcher.setFittingModel(ransac);
-//		matcher.setModelKeypoints(keys1);
-//		matcher.findMatches(keys2);
-//		
-//		//FIXME: there should be a class/method for drawing matches
-//		MBFImage tmp = new MBFImage(Math.max(image1f.rows, image2f.rows), image1f.cols + image2f.cols, 3);
-//		tmp.drawImage(image1, 0, 0);
-//		tmp.drawImage(image2, image1f.cols, 0);
-//		// It is not drawing any matches??
-//		for (Pair<Keypoint> m : matcher.getMatches()) {
-//			tmp.drawLine((int)m.secondObject().col, (int)m.secondObject().row, (int)m.firstObject().col + image1f.cols, (int)m.firstObject().row, RGBColour.RED);
-//		}
-//		
-//		DisplayUtilities.display(tmp);
-//		
-//		Matrix transform = model.getTransform();
-//		model.getTransform().print(5,5);
-//		
-//		BackProjectionProcessor<Float[],MBFImage> bpp = new BackProjectionProcessor<Float[],MBFImage>();
-//		bpp.processImage(image1);
-//		bpp.setMatrix(transform);
-//		bpp.processImage(image2);
-//		//FIXME: there should be a class to do back-projection...
-//		MBFImage img = new MBFImage(4000,2524,3);
-//		for(int x = 0 ; x < img.getWidth(); x ++ ) {
-//			for(int y = 0 ; y < img.getHeight(); y ++ ) {
-//				int xx = x - 1500;
-//				int yy = y - 1500;
-//				
-//				double xt = transform.get(0, 0) * xx + transform.get(0, 1) * yy + transform.get(0, 2);
-//				double yt = transform.get(1, 0) * xx + transform.get(1, 1) * yy + transform.get(1, 2);
-//				
-//				double zt = transform.get(2, 0) * xx + transform.get(2, 1) * yy + transform.get(2, 2);
-//				xt /= zt;
-//				yt /= zt;
-//				
-//				if (xt >=0 && yt>=0 && xt<=image1.getCols() && yt<= image1.getRows())
-//					img.setPixel(x, y, image1.getPixelInterp(xt, yt));
-//			}
-//		}
-//		img.drawImage(image2, 1500, 1500);
-//		MBFImage img = bpp.performBackProjection();
-//		img = img.trim();
-		
-		
-//		DisplayUtilities.display(img.process(displayResize));
-		//DisplayUtilities.display(img.halfImageSize());
+
+		// MBFImage image1 = ImageUtilities.readMBF(new
+		// File("/Users/ss/Desktop/trento-view-0.jpg")).halfImageSize();
+		// MBFImage image2 = ImageUtilities.readMBF(new
+		// File("/Users/ss/Desktop/trento-view-1.jpg")).halfImageSize();
+		//
+		// FImage image1f = Transforms.calculateIntensityNTSC(image1);
+		// FImage image2f = Transforms.calculateIntensityNTSC(image2);
+		//
+		// KeypointEngine engine = new KeypointEngine();
+		// List<Keypoint> keys1 = engine.findKeypoints(image1f);
+		// List<Keypoint> keys2 = engine.findKeypoints(image2f);
+		//
+		// // HomographyModel model = new HomographyModel(6.0f);
+		// // RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d,
+		// Point2d>(model, 100, 10, false);
+		// //
+		// // ConsistentKeypointMatcher<Keypoint> matcher = new
+		// ConsistentKeypointMatcher<Keypoint>(8,0);
+		// matcher.setFittingModel(ransac);
+		// matcher.setModelKeypoints(keys1);
+		// matcher.findMatches(keys2);
+		//
+		// //FIXME: there should be a class/method for drawing matches
+		// MBFImage tmp = new MBFImage(Math.max(image1f.rows, image2f.rows),
+		// image1f.cols + image2f.cols, 3);
+		// tmp.drawImage(image1, 0, 0);
+		// tmp.drawImage(image2, image1f.cols, 0);
+		// // It is not drawing any matches??
+		// for (Pair<Keypoint> m : matcher.getMatches()) {
+		// tmp.drawLine((int)m.secondObject().col, (int)m.secondObject().row,
+		// (int)m.firstObject().col + image1f.cols, (int)m.firstObject().row,
+		// RGBColour.RED);
+		// }
+		//
+		// DisplayUtilities.display(tmp);
+		//
+		// Matrix transform = model.getTransform();
+		// model.getTransform().print(5,5);
+		//
+		// BackProjectionProcessor<Float[],MBFImage> bpp = new
+		// BackProjectionProcessor<Float[],MBFImage>();
+		// bpp.processImage(image1);
+		// bpp.setMatrix(transform);
+		// bpp.processImage(image2);
+		// //FIXME: there should be a class to do back-projection...
+		// MBFImage img = new MBFImage(4000,2524,3);
+		// for(int x = 0 ; x < img.getWidth(); x ++ ) {
+		// for(int y = 0 ; y < img.getHeight(); y ++ ) {
+		// int xx = x - 1500;
+		// int yy = y - 1500;
+		//
+		// double xt = transform.get(0, 0) * xx + transform.get(0, 1) * yy +
+		// transform.get(0, 2);
+		// double yt = transform.get(1, 0) * xx + transform.get(1, 1) * yy +
+		// transform.get(1, 2);
+		//
+		// double zt = transform.get(2, 0) * xx + transform.get(2, 1) * yy +
+		// transform.get(2, 2);
+		// xt /= zt;
+		// yt /= zt;
+		//
+		// if (xt >=0 && yt>=0 && xt<=image1.getCols() && yt<= image1.getRows())
+		// img.setPixel(x, y, image1.getPixelInterp(xt, yt));
+		// }
+		// }
+		// img.drawImage(image2, 1500, 1500);
+		// MBFImage img = bpp.performBackProjection();
+		// img = img.trim();
+
+		// DisplayUtilities.display(img.process(displayResize));
+		// DisplayUtilities.display(img.halfImageSize());
 	}
 }

@@ -36,23 +36,24 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.math.statistics.distribution.CachingMultivariateGaussian;
 
 /**
- * An {@link MBFPixelClassificationModel} that classifies an
- * individual pixel by comparing it to a {@link CachingMultivariateGaussian}. 
- * The Gaussian is learnt from the values of the positive pixel samples given 
- * in training. The probability returned by the classification
- * is determined from the PDF of the Gaussian at the given pixel.
+ * An {@link MBFPixelClassificationModel} that classifies an individual pixel by
+ * comparing it to a {@link CachingMultivariateGaussian}. The Gaussian is learnt
+ * from the values of the positive pixel samples given in training. The
+ * probability returned by the classification is determined from the PDF of the
+ * Gaussian at the given pixel.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SingleGaussianPixelModel extends MBFPixelClassificationModel {
 	private static final long serialVersionUID = 1L;
 	protected CachingMultivariateGaussian gauss;
-	
+
 	/**
-	 * Construct with the given number of dimensions. This 
-	 * should be equal to the number of bands in the {@link MBFImage}s
-	 * you wish to classify.
-	 * @param ndims the number of dimensions.
+	 * Construct with the given number of dimensions. This should be equal to
+	 * the number of bands in the {@link MBFImage}s you wish to classify.
+	 * 
+	 * @param ndims
+	 *            the number of dimensions.
 	 */
 	public SingleGaussianPixelModel(int ndims) {
 		super(ndims);
@@ -65,34 +66,33 @@ public class SingleGaussianPixelModel extends MBFPixelClassificationModel {
 
 	@Override
 	public void learnModel(MBFImage... images) {
-		List<float[]> data = new ArrayList<float[]>();
-		
-		for (int i=0; i<images.length; i++) {
-				
-			for (int y=0; y<images[i].getHeight(); y++) {
-				for (int x=0; x<images[i].getWidth(); x++) {
-					float [] d = new float[ndims];
-					
-					for (int j=0; j<ndims; j++) {
+		final List<float[]> data = new ArrayList<float[]>();
+
+		for (int i = 0; i < images.length; i++) {
+
+			for (int y = 0; y < images[i].getHeight(); y++) {
+				for (int x = 0; x < images[i].getWidth(); x++) {
+					final float[] d = new float[ndims];
+
+					for (int j = 0; j < ndims; j++) {
 						d[j] = images[i].getBand(j).pixels[y][x];
 					}
-					
+
 					data.add(d);
 				}
 			}
 		}
-		
-		float [][] arraydata = data.toArray(new float[data.size()][ndims]);
-		
+
+		final float[][] arraydata = data.toArray(new float[data.size()][ndims]);
+
 		gauss = CachingMultivariateGaussian.estimate(arraydata);
 	}
 
 	@Override
 	public SingleGaussianPixelModel clone() {
-		SingleGaussianPixelModel model = new SingleGaussianPixelModel(ndims);
-		model.tol = tol;
+		final SingleGaussianPixelModel model = new SingleGaussianPixelModel(ndims);
 		model.gauss = new CachingMultivariateGaussian(gauss.getMean().copy(), gauss.getCovariance().copy());
-		
+
 		return null;
 	}
 }
