@@ -50,9 +50,9 @@ import twitter4j.URLEntity;
  * Twitter JSON, perhaps making it abstract and turning {@link #consume(Status)}
  * into an abstract function that can deal with other types of status would be
  * sensible
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class StatusConsumer {
 
@@ -69,7 +69,7 @@ public class StatusConsumer {
 	static {
 		StatusConsumer.siteSpecific.add(new InstagramConsumer());
 		StatusConsumer.siteSpecific.add(new TwitterPhotoConsumer());
-		StatusConsumer.siteSpecific.add(new TmblrPhotoConsumer());
+		// StatusConsumer.siteSpecific.add(new TmblrPhotoConsumer());
 		StatusConsumer.siteSpecific.add(new TwitPicConsumer());
 		StatusConsumer.siteSpecific.add(new ImgurConsumer());
 		StatusConsumer.siteSpecific.add(new FacebookConsumer());
@@ -99,9 +99,11 @@ public class StatusConsumer {
 	 *            the output location for this status
 	 * @param outputModes
 	 *            the output modes informed on image downloads
-	 *
+	 * 
 	 */
-	public StatusConsumer(final boolean outputStats, final File globalStats, final File outputLocation, final List<OutputListener> outputModes) {
+	public StatusConsumer(final boolean outputStats, final File globalStats, final File outputLocation,
+			final List<OutputListener> outputModes)
+	{
 		this();
 		this.outputStats = outputStats;
 		this.globalStats = globalStats;
@@ -166,7 +168,7 @@ public class StatusConsumer {
 
 	/**
 	 * Process all added URLs
-	 *
+	 * 
 	 * @param status
 	 * @return the {@link StatusConsumption} statistics
 	 * @throws IOException
@@ -195,7 +197,7 @@ public class StatusConsumer {
 
 	/**
 	 * Add a URL to process without allowing already seen URLs to be added
-	 *
+	 * 
 	 * @param newURL
 	 */
 	public void add(final String newURL) {
@@ -219,7 +221,7 @@ public class StatusConsumer {
 	 * Given a URL, use {@link #urlToImage(URL)} to turn the url into a list of
 	 * images and write the images into the output location using the names
 	 * "image_N.png"
-	 *
+	 * 
 	 * @param url
 	 * @param cons
 	 *            the consumption stats
@@ -266,9 +268,9 @@ public class StatusConsumer {
 	/**
 	 * An extention of the {@link MetaRefreshRedirectStrategy} which disallows
 	 * all redirects and instead remembers a redirect for use later on.
-	 *
+	 * 
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class StatusConsumerRedirectStrategy extends MetaRefreshRedirectStrategy {
 		private boolean wasRedirected = false;
@@ -309,14 +311,14 @@ public class StatusConsumer {
 	 * First, try all the {@link SiteSpecificConsumer} instances loaded into
 	 * {@link #siteSpecific}. If any consumer takes control of a link the
 	 * consumer's output is used
-	 *
+	 * 
 	 * if this fails use
 	 * {@link HttpUtils#readURLAsByteArrayInputStream(URL, org.apache.http.client.RedirectStrategy)}
 	 * with a {@link StatusConsumerRedirectStrategy} which specifically
 	 * disallows redirects to be dealt with automatically and forces this
 	 * function to be called for each redirect.
-	 *
-	 *
+	 * 
+	 * 
 	 * @param url
 	 * @return a list of images or null
 	 */
@@ -327,7 +329,8 @@ public class StatusConsumer {
 		List<IndependentPair<URL, MBFImage>> image = null;
 		for (final SiteSpecificConsumer consumer : StatusConsumer.siteSpecific) {
 			if (consumer.canConsume(url)) {
-				StatusConsumer.logger.debug("Site specific consumer: " + consumer.getClass().getName() + " working on link");
+				StatusConsumer.logger.debug("Site specific consumer: " + consumer.getClass().getName()
+						+ " working on link");
 				final List<URL> urlList = consumer.consume(url);
 				if (urlList != null && !urlList.isEmpty()) {
 					StatusConsumer.logger.debug("Site specific consumer returned non-null, adding the URLs");
@@ -389,7 +392,7 @@ public class StatusConsumer {
 
 	/**
 	 * Construct a file in the output location for a given url
-	 *
+	 * 
 	 * @param url
 	 * @param outputLocation
 	 * @return a file that looks like: outputLocation/protocol/path/query/...
@@ -399,9 +402,9 @@ public class StatusConsumer {
 		String urlPath = url.getProtocol() + File.separator +
 				url.getHost() + File.separator;
 		if (!url.getPath().equals(""))
-			urlPath += StatusConsumer.sanitizeFilename( url.getPath() )+ File.separator;
+			urlPath += StatusConsumer.sanitizeFilename(url.getPath()) + File.separator;
 		if (url.getQuery() != null)
-			urlPath += StatusConsumer.sanitizeFilename( url.getQuery() ) + File.separator;
+			urlPath += StatusConsumer.sanitizeFilename(url.getQuery()) + File.separator;
 
 		final String outPath = outputLocation.getAbsolutePath() + File.separator + urlPath;
 		final File outFile = new File(outPath);
@@ -418,15 +421,16 @@ public class StatusConsumer {
 	}
 
 	/**
-	  * Replaces illegal characters in a filename with "_"
-	  * illegal characters :
-	  *           : \ / * ? | < >
-	  * @param name
-	  * @return Sanitised filename
-	  */
-	  public static String sanitizeFilename(final String name) {
-	    return name.replaceAll("[:\\\\/*?|<>]", "_");
-	  }
+	 * Replaces illegal characters in a filename with "_" illegal characters : :
+	 * \ / * ? | < >
+	 * 
+	 * @param name
+	 * @return Sanitised filename
+	 */
+	public static String sanitizeFilename(final String name) {
+		return name.replaceAll("[:\\\\/*?|<>]", "_");
+	}
+
 	static void createURLOutDir(final File outFile) throws IOException {
 		if (!((!outFile.exists() || outFile.delete()) && outFile.mkdirs())) {
 			throw new IOException("Couldn't create URL output: " + outFile.getAbsolutePath());
