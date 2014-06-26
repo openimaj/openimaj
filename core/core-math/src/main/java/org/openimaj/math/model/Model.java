@@ -12,7 +12,7 @@ package org.openimaj.math.model;
  * @param <D>
  *            type of dependent data
  */
-public interface Model<I, D> extends Cloneable {
+public interface Model<I, D> {
 
 	/**
 	 * Uses the model to predict dependent data from an independent value.
@@ -22,11 +22,4 @@ public interface Model<I, D> extends Cloneable {
 	 * @return Dependent variable(s) predicted from the independent ones.
 	 */
 	public abstract D predict(I data);
-
-	/**
-	 * Clone the model
-	 * 
-	 * @return a cloned copy
-	 */
-	public Model<I, D> clone();
 }

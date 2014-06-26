@@ -44,8 +44,10 @@ import org.openimaj.util.pair.IndependentPair;
  *            type of independent data
  * @param <D>
  *            type of dependent data
+ * @param <M>
+ *            concrete type of model learned
  */
-public interface ModelFitting<I, D> {
+public interface ModelFitting<I, D, M extends Model<I, D>> {
 	/**
 	 * Attempt to fit the given data to the model.
 	 * 
@@ -64,5 +66,5 @@ public interface ModelFitting<I, D> {
 	/**
 	 * @return the trained model object
 	 */
-	Model<I, D> getModel();
+	M getModel();
 }

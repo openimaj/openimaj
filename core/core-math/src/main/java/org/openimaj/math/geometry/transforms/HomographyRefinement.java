@@ -33,6 +33,34 @@ import Jama.Matrix;
 		publisher = "Cambridge University Press, ISBN: 0521540518")
 public enum HomographyRefinement {
 	/**
+	 * Don't perform any refinement and just return the initial input matrix
+	 */
+	NONE {
+		@Override
+		protected MultivariateVectorFunction getValueFunction(
+				List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data)
+		{
+			return null;
+		}
+
+		@Override
+		public double computeError(Matrix h, List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data) {
+			return 0; // points are ideal!
+		}
+
+		@Override
+		protected MultivariateMatrixFunction getJacobianFunction(
+				List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data)
+		{
+			return null;
+		}
+
+		@Override
+		public Matrix refine(Matrix initial, List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data) {
+			return initial; // initial is the result
+		}
+	},
+	/**
 	 * The points in the first image are projected by the homography matrix to
 	 * produce new estimates of the second image points from which the residuals
 	 * are computed and minimised by the optimiser. The assumption is that there
@@ -528,6 +556,9 @@ public enum HomographyRefinement {
 	protected abstract MultivariateVectorFunction getValueFunction(
 			final List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data);
 
+	protected abstract MultivariateMatrixFunction getJacobianFunction(
+			final List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data);
+
 	/**
 	 * Compute the error value being optimised between the two point sets.
 	 * Actual computation depends on the specific {@link HomographyRefinement}
@@ -541,9 +572,6 @@ public enum HomographyRefinement {
 	 */
 	public abstract double computeError(Matrix h,
 			List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data);
-
-	protected abstract MultivariateMatrixFunction getJacobianFunction(
-			final List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data);
 
 	private static RealVector toRealVector(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data,
 			boolean first)

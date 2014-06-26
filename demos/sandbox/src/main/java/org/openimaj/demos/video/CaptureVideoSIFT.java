@@ -45,11 +45,10 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
-import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.HomographyRefinement;
 import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.estimation.RobustHomographyEstimator;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
@@ -93,12 +92,9 @@ public class CaptureVideoSIFT implements KeyListener, VideoDisplayListener<MBFIm
 						new PolygonExtractionProcessor<Float[], MBFImage>(p, RGBColour.BLACK));
 
 				// configure the matcher
-				final HomographyModel model = new HomographyModel();
-				final TransformError2d errorModel = new TransformError2d();
-				final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, errorModel, 3.0, 1500,
-						new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true);
 				matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
-				matcher.setFittingModel(ransac);
+				matcher.setFittingModel(new RobustHomographyEstimator(3.0, 1500,
+						new RANSAC.PercentageInliersStoppingCondition(0.01), HomographyRefinement.NONE));
 
 				final DoGSIFTEngine engine = new DoGSIFTEngine();
 				engine.getOptions().setDoubleInitialImage(false);

@@ -44,9 +44,9 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.HomographyRefinement;
+import org.openimaj.math.geometry.transforms.estimation.RobustHomographyEstimator;
 import org.openimaj.math.model.fit.RANSAC;
 
 /**
@@ -75,14 +75,11 @@ public class App {
 		final MBFImage basicMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
 		DisplayUtilities.display(basicMatches);
 
-		// final AffineTransformModel fittingModel = new
-		// AffineTransformModel(5);
 		final HomographyModel fittingModel = new HomographyModel();
-		final RANSAC<Point2d, Point2d> ransac =
-				new RANSAC<Point2d, Point2d>(fittingModel, new TransformError2d(), 5.0, 1500,
-						new RANSAC.PercentageInliersStoppingCondition(0.5), true);
-		matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
-				new FastBasicKeypointMatcher<Keypoint>(8), ransac);
+		matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8),
+				new RobustHomographyEstimator(5.0, 1500,
+						new RANSAC.PercentageInliersStoppingCondition(0.5), HomographyRefinement.NONE));
+
 		matcher.setModelFeatures(queryKeypoints);
 		matcher.findMatches(targetKeypoints);
 		final MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target,

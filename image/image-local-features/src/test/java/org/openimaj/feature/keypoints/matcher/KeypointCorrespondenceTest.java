@@ -43,9 +43,8 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.transforms.HomographyModel;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.HomographyRefinement;
+import org.openimaj.math.geometry.transforms.estimation.RobustHomographyEstimator;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.Pair;
 
@@ -126,8 +125,8 @@ public class KeypointCorrespondenceTest {
 
 		final ConsistentLocalFeatureMatcher2d<Keypoint> mat = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8));
-		mat.setFittingModel(new RANSAC<Point2d, Point2d>(new HomographyModel(), new TransformError2d(), 10.0, 10000,
-				new RANSAC.PercentageInliersStoppingCondition(0.5), true));
+		mat.setFittingModel(new RobustHomographyEstimator(10.0, 1500,
+				new RANSAC.PercentageInliersStoppingCondition(0.5), HomographyRefinement.NONE));
 		mat.setModelFeatures(dizzykpl);
 		mat.findMatches(catkpl);
 		final List<Pair<Keypoint>> matches = mat.getMatches();

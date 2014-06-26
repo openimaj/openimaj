@@ -56,7 +56,7 @@ import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.AffineTransformModel;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.residuals.SingleImageTransferResidual2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.Pair;
 import org.openimaj.video.VideoDisplay;
@@ -105,7 +105,8 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 		final LocalFeatureList<Keypoint> carpetNormalKPTs = normalEngine.findFeatures(carpetGrey);
 		normalmatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8),
-				new RANSAC<Point2d, Point2d>(new AffineTransformModel(), new TransformError2d(), 5.0, 100,
+				new RANSAC<Point2d, Point2d, AffineTransformModel>(new AffineTransformModel(),
+						new SingleImageTransferResidual2d<AffineTransformModel>(), 5.0, 100,
 						new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true)
 				);
 		normalmatcher.setModelFeatures(carpetNormalKPTs);
@@ -113,7 +114,8 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 		final LocalFeatureList<Keypoint> carpetAltKPTs = altEngine.findFeatures(carpetGrey);
 		altmatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8),
-				new RANSAC<Point2d, Point2d>(new AffineTransformModel(), new TransformError2d(), 5.0, 100,
+				new RANSAC<Point2d, Point2d, AffineTransformModel>(new AffineTransformModel(),
+						new SingleImageTransferResidual2d<AffineTransformModel>(), 5.0, 100,
 						new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true)
 				);
 		altmatcher.setModelFeatures(carpetAltKPTs);

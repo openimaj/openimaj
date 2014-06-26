@@ -55,7 +55,7 @@ public interface ModelFittingLocalFeatureMatcher<T extends LocalFeature<?, ?> /*
 	 * @param mf
 	 *            fitting model
 	 */
-	public void setFittingModel(RobustModelFitting<Point2d, Point2d> mf);
+	public void setFittingModel(RobustModelFitting<Point2d, Point2d, ?> mf);
 
 	/**
 	 * Attempt to find matches between the model features from the database, and

@@ -1,11 +1,11 @@
-package org.openimaj.math.model.fit.error;
+package org.openimaj.math.model.fit.residuals;
 
 import org.openimaj.math.model.Model;
 import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * An implementation of a {@link ModelFitError} that uses a
+ * An implementation of a {@link ResidualCalculator} that uses a
  * {@link DistanceComparator} to compute the error between the predicted and
  * observed data point. In the case that the given {@link DistanceComparator} is
  * a similarity measure, the similarities will be multiplied by -1 to ensure
@@ -20,7 +20,7 @@ import org.openimaj.util.pair.IndependentPair;
  * @param <M>
  *            type of model
  */
-public class DistanceComparatorError<I, D, M extends Model<I, D>> extends AbstractModelFitError<I, D, M> {
+public class DistanceComparatorResidual<I, D, M extends Model<I, D>> extends AbstractResidualCalculator<I, D, M> {
 	protected DistanceComparator<D> comparator;
 	private int multiplier = 1;
 
@@ -30,7 +30,7 @@ public class DistanceComparatorError<I, D, M extends Model<I, D>> extends Abstra
 	 * @param comparator
 	 *            the {@link DistanceComparator}
 	 */
-	public DistanceComparatorError(DistanceComparator<D> comparator) {
+	public DistanceComparatorResidual(DistanceComparator<D> comparator) {
 		this.comparator = comparator;
 
 		if (!comparator.isDistance())
@@ -38,7 +38,7 @@ public class DistanceComparatorError<I, D, M extends Model<I, D>> extends Abstra
 	}
 
 	@Override
-	public double computeError(IndependentPair<I, D> data) {
+	public double computeResidual(IndependentPair<I, D> data) {
 		final D predicted = model.predict(data.firstObject());
 
 		return multiplier * comparator.compare(data.getSecondObject(), predicted);

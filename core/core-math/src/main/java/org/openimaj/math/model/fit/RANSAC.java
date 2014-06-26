@@ -34,25 +34,27 @@ import java.util.List;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.math.model.EstimatableModel;
-import org.openimaj.math.model.Model;
-import org.openimaj.math.model.fit.error.ModelFitError;
+import org.openimaj.math.model.fit.residuals.ResidualCalculator;
 import org.openimaj.math.util.distance.DistanceCheck;
 import org.openimaj.math.util.distance.ThresholdDistanceCheck;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
  * The RANSAC Algorithm (RANdom SAmple Consensus)
- * 
+ * <p>
  * For fitting noisy data consisting of inliers and outliers to a model.
- * 
+ * <p>
  * Assume: M data items required to estimate parameter x N data items in total
- * 
- * 1.) select M data items at random 2.) estimate parameter x 3.) find how many
- * of the N data items fit (i.e. have an error less than a threshold or pass
- * some check) x within tolerence tol, call this K 4.) if K is large enough
- * (bigger than numItems) accept x and exit with success 5.) repeat 1..4 nIter
- * times 6.) fail - no good x fit of data
- * 
+ * <p>
+ * 1.) select M data items at random <br/>
+ * 2.) estimate parameter x <br/>
+ * 3.) find how many of the N data items fit (i.e. have an error less than a
+ * threshold or pass some check) x within tolerence tol, call this K <br/>
+ * 4.) if K is large enough (bigger than numItems) accept x and exit with
+ * success <br/>
+ * 5.) repeat 1..4 nIter times <br/>
+ * 6.) fail - no good x fit of data
+ * <p>
  * In this implementation, the conditions that control the iterations are
  * configurable. In addition, the best matching model is always stored, even if
  * the fitData() method returns false.
@@ -63,8 +65,10 @@ import org.openimaj.util.pair.IndependentPair;
  *            type of independent data
  * @param <D>
  *            type of dependent data
+ * @param <M>
+ *            concrete type of model learned
  */
-public class RANSAC<I, D> implements RobustModelFitting<I, D> {
+public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustModelFitting<I, D, M> {
 	/**
 	 * Interface for classes that can control RANSAC iterations
 	 */
@@ -313,8 +317,8 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 	}
 
-	protected EstimatableModel<I, D> model;
-	protected ModelFitError<I, D, Model<I, D>> errorModel;
+	protected M model;
+	protected ResidualCalculator<I, D, M> errorModel;
 	protected DistanceCheck dc;
 
 	protected int nIter;
@@ -343,7 +347,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 *            True if we want to perform a final fitting of the model with
 	 *            all inliers, false otherwise
 	 */
-	public RANSAC(EstimatableModel<I, D> model, ModelFitError<I, D, Model<I, D>> errorModel,
+	public RANSAC(M model, ResidualCalculator<I, D, M> errorModel,
 			double errorThreshold, int nIterations,
 			StoppingCondition stoppingCondition, boolean impEst)
 	{
@@ -376,7 +380,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 *            True if we want to perform a final fitting of the model with
 	 *            all inliers, false otherwise
 	 */
-	public RANSAC(EstimatableModel<I, D> model, ModelFitError<I, D, Model<I, D>> errorModel,
+	public RANSAC(M model, ResidualCalculator<I, D, M> errorModel,
 			DistanceCheck dc, int nIterations,
 			StoppingCondition stoppingCondition, boolean impEst)
 	{
@@ -418,7 +422,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 			inliers.clear();
 			outliers.clear();
 			for (final IndependentPair<I, D> dp : data) {
-				if (dc.check(errorModel.computeError(dp)))
+				if (dc.check(errorModel.computeResidual(dp)))
 				{
 					K++;
 					inliers.add(dp);
@@ -505,7 +509,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	}
 
 	@Override
-	public Model<I, D> getModel() {
+	public M getModel() {
 		return model;
 	}
 
@@ -515,7 +519,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 * @param model
 	 *            the model
 	 */
-	public void setModel(EstimatableModel<I, D> model) {
+	public void setModel(M model) {
 		this.model = model;
 	}
 

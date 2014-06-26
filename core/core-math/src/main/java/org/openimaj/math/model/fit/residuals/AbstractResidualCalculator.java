@@ -1,4 +1,4 @@
-package org.openimaj.math.model.fit.error;
+package org.openimaj.math.model.fit.residuals;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import org.openimaj.util.pair.IndependentPair;
  * @param <M>
  *            type of model
  */
-public abstract class AbstractModelFitError<I, D, M extends Model<I, D>> implements ModelFitError<I, D, M> {
+public abstract class AbstractResidualCalculator<I, D, M extends Model<I, D>> implements ResidualCalculator<I, D, M> {
 	protected M model;
 
 	@Override
@@ -24,9 +24,9 @@ public abstract class AbstractModelFitError<I, D, M extends Model<I, D>> impleme
 	}
 
 	@Override
-	public void computeError(List<? extends IndependentPair<I, D>> data, double[] errors) {
+	public void computeResiduals(List<? extends IndependentPair<I, D>> data, double[] errors) {
 		for (int i = 0; i < data.size(); i++) {
-			errors[i] = this.computeError(data.get(i));
+			errors[i] = this.computeResidual(data.get(i));
 		}
 	}
 }

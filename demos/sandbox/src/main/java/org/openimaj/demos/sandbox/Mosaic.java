@@ -48,7 +48,7 @@ import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.residuals.SingleImageTransferResidual2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.Pair;
 
@@ -65,7 +65,8 @@ public class Mosaic {
 		};
 		// AffineTransformModel model = new AffineTransformModel(6.0f);
 		final HomographyModel model = new HomographyModel();
-		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, new TransformError2d(), 12.0, 600,
+		final RANSAC<Point2d, Point2d, HomographyModel> ransac = new RANSAC<Point2d, Point2d, HomographyModel>(model,
+				new SingleImageTransferResidual2d<HomographyModel>(), 12.0, 600,
 				new RANSAC.BestFitStoppingCondition(), true);
 		final ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8));

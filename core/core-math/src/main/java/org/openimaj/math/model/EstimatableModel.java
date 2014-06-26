@@ -44,7 +44,7 @@ import org.openimaj.util.pair.IndependentPair;
  * @param <D>
  *            type of dependent data
  */
-public interface EstimatableModel<I, D> extends Model<I, D> {
+public interface EstimatableModel<I, D> extends Model<I, D>, Cloneable {
 	/**
 	 * Estimates the model from the observations in the list of data. The data
 	 * must contain at least {@link #numItemsToEstimate()} pairs of dependent
@@ -62,13 +62,12 @@ public interface EstimatableModel<I, D> extends Model<I, D> {
 	 * @return The minimum number of observations required to estimate the
 	 *         model.
 	 */
-	public int numItemsToEstimate(); // N
+	public int numItemsToEstimate();
 
 	/**
 	 * Clone the model
 	 * 
 	 * @return a cloned copy
 	 */
-	@Override
 	public EstimatableModel<I, D> clone();
 }

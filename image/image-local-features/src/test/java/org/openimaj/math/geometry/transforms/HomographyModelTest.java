@@ -46,7 +46,7 @@ import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.residuals.SingleImageTransferResidual2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -124,12 +124,13 @@ public class HomographyModelTest {
 			final MBFImageRenderer renderer = pallet.createRenderer();
 
 			final HomographyModel model = new HomographyModel();
-			final TransformError2d errorModel = new TransformError2d();
+			final SingleImageTransferResidual2d<HomographyModel> errorModel = new SingleImageTransferResidual2d<HomographyModel>();
 			final float errorThresh = ((float) Math.sqrt(2 * error * error) * 2) + 1;
 
 			model.estimate(pairs);
 			renderer.drawPolygon(this.square.asPolygon().transform(model.getTransform()), 1, RGBColour.ORANGE);
-			final RANSAC<Point2d, Point2d> fitterNormal = new RANSAC<Point2d, Point2d>(model, errorModel, errorThresh,
+			final RANSAC<Point2d, Point2d, HomographyModel> fitterNormal = new RANSAC<Point2d, Point2d, HomographyModel>(
+					model, errorModel, errorThresh,
 					1500, new RANSAC.PercentageInliersStoppingCondition(stoppingCondition), false);
 			Matrix fitterNormalTransform = null;
 			renderer.drawPolygon(this.square.asPolygon(), 1, RGBColour.RED);

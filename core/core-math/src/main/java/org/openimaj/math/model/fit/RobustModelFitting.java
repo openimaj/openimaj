@@ -31,6 +31,7 @@ package org.openimaj.math.model.fit;
 
 import java.util.List;
 
+import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -43,8 +44,10 @@ import org.openimaj.util.pair.IndependentPair;
  *            type of independent data
  * @param <D>
  *            type of dependent data
+ * @param <M>
+ *            concrete type of model learned
  */
-public interface RobustModelFitting<I, D> extends ModelFitting<I, D> {
+public interface RobustModelFitting<I, D, M extends Model<I, D>> extends ModelFitting<I, D, M> {
 	/**
 	 * @return list of the inliers in the original data
 	 */

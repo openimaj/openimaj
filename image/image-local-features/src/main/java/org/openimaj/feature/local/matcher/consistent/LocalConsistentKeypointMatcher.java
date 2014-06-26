@@ -55,7 +55,7 @@ public class LocalConsistentKeypointMatcher<T extends Keypoint> extends FastBasi
 		implements
 		ModelFittingLocalFeatureMatcher<T>
 {
-	RobustModelFitting<Point2d, Point2d> modelfit;
+	RobustModelFitting<Point2d, Point2d, ?> modelfit;
 	List<Pair<T>> consistentMatches;
 	Model<Point2d, Point2d> model;
 	CoordinateKDTree<T> tree;
@@ -196,7 +196,7 @@ public class LocalConsistentKeypointMatcher<T extends Keypoint> extends FastBasi
 	}
 
 	@Override
-	public void setFittingModel(RobustModelFitting<Point2d, Point2d> mf) {
+	public void setFittingModel(RobustModelFitting<Point2d, Point2d, ?> mf) {
 		modelfit = mf;
 	}
 

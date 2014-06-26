@@ -56,9 +56,11 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.HomographyRefinement;
 import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.estimation.RobustHomographyEstimator;
+import org.openimaj.math.geometry.transforms.residuals.SingleImageTransferResidual2d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.VideoDisplay;
@@ -275,7 +277,9 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 		final List<? extends IndependentPair<Point2d, Point2d>> pairs = findAllMatchedPairs();
 		final HomographyModel model = new HomographyModel();
 		// model.estimate(pairs);
-		final RANSAC<Point2d, Point2d> fitter = new RANSAC<Point2d, Point2d>(model, new TransformError2d(), 10.0, 1500,
+		final RANSAC<Point2d, Point2d, HomographyModel> fitter = new RANSAC<Point2d, Point2d, HomographyModel>(model,
+				new SingleImageTransferResidual2d<HomographyModel>(),
+				10.0, 1500,
 				new RANSAC.PercentageInliersStoppingCondition(0.5), false);
 		if (!fitter.fitData(pairs))
 			return null;
@@ -345,11 +349,9 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 		modelImage = frame.process(new PolygonExtractionProcessor<Float[], MBFImage>(p, RGBColour.BLACK));
 
 		// configure the matcher
-		final HomographyModel model = new HomographyModel();
-		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, new TransformError2d(), 10.0, 1500,
-				new RANSAC.PercentageInliersStoppingCondition(0.50), true);
 		siftMatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
-		siftMatcher.setFittingModel(ransac);
+		siftMatcher.setFittingModel(new RobustHomographyEstimator(10.0, 1500,
+				new RANSAC.PercentageInliersStoppingCondition(0.5), HomographyRefinement.NONE));
 
 		engine = new DoGSIFTEngine();
 		engine.getOptions().setDoubleInitialImage(true);

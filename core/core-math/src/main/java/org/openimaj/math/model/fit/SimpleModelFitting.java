@@ -33,8 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.math.model.EstimatableModel;
-import org.openimaj.math.model.Model;
-import org.openimaj.math.model.fit.error.ModelFitError;
+import org.openimaj.math.model.fit.residuals.ResidualCalculator;
 import org.openimaj.math.util.distance.DistanceCheck;
 import org.openimaj.math.util.distance.ThresholdDistanceCheck;
 import org.openimaj.util.pair.IndependentPair;
@@ -49,13 +48,15 @@ import org.openimaj.util.pair.IndependentPair;
  *            type of independent data
  * @param <D>
  *            type of dependent data
+ * @param <M>
+ *            concrete type of model learned
  */
-public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
+public class SimpleModelFitting<I, D, M extends EstimatableModel<I, D>> implements RobustModelFitting<I, D, M> {
 	List<IndependentPair<I, D>> inl;
 	List<IndependentPair<I, D>> outl;
-	EstimatableModel<I, D> model;
+	M model;
 
-	ModelFitError<I, D, Model<I, D>> errorModel;
+	ResidualCalculator<I, D, M> errorModel;
 	DistanceCheck dc;
 
 	/**
@@ -68,7 +69,7 @@ public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
 	 * @param errorThreshold
 	 *            the error threshold
 	 */
-	public SimpleModelFitting(EstimatableModel<I, D> m, ModelFitError<I, D, Model<I, D>> errorModel,
+	public SimpleModelFitting(M m, ResidualCalculator<I, D, M> errorModel,
 			double errorThreshold)
 	{
 		model = m;
@@ -87,8 +88,7 @@ public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
 	 *            the error/distance check that determines whether a point is
 	 *            valid
 	 */
-	public SimpleModelFitting(EstimatableModel<I, D> m, ModelFitError<I, D, Model<I, D>> errorModel,
-			DistanceCheck dc)
+	public SimpleModelFitting(M m, ResidualCalculator<I, D, M> errorModel, DistanceCheck dc)
 	{
 		model = m;
 		this.errorModel = errorModel;
@@ -113,7 +113,7 @@ public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
 		outl = new ArrayList<IndependentPair<I, D>>();
 
 		for (int i = 0; i < data.size(); i++) {
-			if (dc.check(errorModel.computeError(data.get(i))))
+			if (dc.check(errorModel.computeResidual(data.get(i))))
 				inl.add(data.get(i));
 			else
 				outl.add(data.get(i));
@@ -123,7 +123,7 @@ public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
 	}
 
 	@Override
-	public Model<I, D> getModel() {
+	public M getModel() {
 		return model;
 	}
 

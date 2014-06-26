@@ -33,6 +33,8 @@ import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.model.EstimatableModel;
+import org.openimaj.math.model.fit.residuals.AbstractResidualCalculator;
+import org.openimaj.math.model.fit.residuals.ResidualCalculator;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
@@ -45,49 +47,51 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
-public class FundamentalModel implements EstimatableModel<Point2d, Point2d>, MatrixTransformProvider {
+public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 	/**
-	 * Interface for classes able to test whether a point pair satisfies the
-	 * epipolar geometry.
+	 * Computes the algebraic residual of the point pairs applied to the F
+	 * matrix
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
 	 */
-	public static interface ValidationCondition {
-		/**
-		 * Test if a point pair satisifies the epipolar geometry.
-		 * 
-		 * @param data
-		 *            The point pair
-		 * @param fundamental
-		 *            The fundamental matrix
-		 * @return true if satisfied; false otherwise.
-		 */
-		public boolean validate(IndependentPair<Point2d, Point2d> data, Matrix fundamental);
+	public static class Fundamental8PtResidual extends AbstractResidualCalculator<Point2d, Point2d, FundamentalModel> {
+		@Override
+		public double computeResidual(IndependentPair<Point2d, Point2d> data) {
+			final Matrix F = model.fundamental;
+
+			final Point2d p1 = data.firstObject();
+			final Point2d p2 = data.secondObject();
+
+			final float x1_1 = p1.getX(); // u
+			final float x1_2 = p1.getY(); // v
+			final float x2_1 = p2.getX(); // u'
+			final float x2_2 = p2.getY(); // v'
+
+			double res = 0;
+			res += F.get(0, 0) * x2_1 * x1_1; // u' * u
+			res += F.get(0, 1) * x2_1 * x1_2; // u' * v
+			res += F.get(0, 2) * x2_1; // u'
+			res += F.get(1, 0) * x2_2 * x1_1; // v' * u
+			res += F.get(1, 1) * x2_2 * x1_2; // v' * v
+			res += F.get(1, 2) * x2_2; // v'
+			res += F.get(2, 0) * x1_1; // u
+			res += F.get(2, 1) * x1_2; // v
+			res += F.get(2, 2); // 1
+
+			return res;
+		}
 	}
 
 	/**
-	 * {@link ValidationCondition} that calculates the distance of the two
-	 * points from the closest epipolar line.
+	 * Geometric residual that sums the distance of points from the closest
+	 * epipolar line.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
-	public static class EpipolarDistanceCondition implements ValidationCondition {
-		float tol;
-
-		/**
-		 * Construct with tolerance distance. Distance from epipolar line of
-		 * both points in the validate method must be less than the tolerance
-		 * for the validation to succeed.
-		 * 
-		 * @param tol
-		 */
-		public EpipolarDistanceCondition(float tol) {
-			this.tol = tol;
-		}
-
+	public static class EpipolarResidual extends AbstractResidualCalculator<Point2d, Point2d, FundamentalModel> {
 		@Override
-		public boolean validate(IndependentPair<Point2d, Point2d> data, Matrix fundamental) {
+		public double computeResidual(IndependentPair<Point2d, Point2d> data) {
 			final Matrix p1Mat = new Matrix(3, 1);
 			final Matrix p2Mat = new Matrix(3, 1);
 
@@ -101,40 +105,31 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d>, Mat
 			p2Mat.set(1, 0, data.secondObject().getY());
 			p2Mat.set(2, 0, 1);
 
-			final Matrix l1 = fundamental.times(p1Mat);
+			final Matrix l1 = model.fundamental.times(p1Mat);
 			final double n1 = Math.sqrt(l1.get(0, 0) * l1.get(0, 0) + l1.get(1, 0) * l1.get(1, 0));
 			final double d1 = Math.abs((l1.get(0, 0) * p2Mat.get(0, 0) + l1.get(1, 0) * p2Mat.get(1, 0) + l1.get(2, 0)
 					* p2Mat.get(2, 0))
 					/ n1);
 
-			final Matrix l2 = fundamental.transpose().times(p2Mat);
+			final Matrix l2 = model.fundamental.transpose().times(p2Mat);
 			final double n2 = Math.sqrt(l2.get(0, 0) * l2.get(0, 0) + l2.get(1, 0) * l2.get(1, 0));
 			final double d2 = Math.abs((l2.get(0, 0) * p1Mat.get(0, 0) + l2.get(1, 0) * p1Mat.get(1, 0) + l2.get(2, 0)
 					* p1Mat.get(2, 0))
 					/ n2);
 
-			return d1 < tol && d2 < tol;
+			return d1 + d2;
 		}
 	}
 
 	/**
-	 * {@link ValidationCondition} based on Sampson's geometric error.
+	 * {@link ResidualCalculator} based on Sampson's geometric error.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
 	 */
-	public static class SampsonGeometricErrorCondition implements ValidationCondition {
-		double tol;
-
-		/**
-		 * @param tol
-		 */
-		public SampsonGeometricErrorCondition(double tol) {
-			this.tol = tol;
-		}
-
+	public static class SampsonGeometricResidual extends AbstractResidualCalculator<Point2d, Point2d, FundamentalModel> {
 		@Override
-		public boolean validate(IndependentPair<Point2d, Point2d> data, Matrix fundamental) {
+		public double computeResidual(IndependentPair<Point2d, Point2d> data) {
 			final Matrix p1 = new Matrix(3, 1);
 			final Matrix p2 = new Matrix(3, 1);
 
@@ -148,39 +143,29 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d>, Mat
 			p2.set(1, 0, data.secondObject().getY());
 			p2.set(2, 0, 1);
 
-			final double p2tFp1 = p2.transpose().times(fundamental).times(p1).get(0, 0);
-			final Matrix Fp1 = fundamental.times(p1);
-			final Matrix Ftp2 = fundamental.transpose().times(p2);
+			final double p2tFp1 = p2.transpose().times(model.fundamental).times(p1).get(0, 0);
+			final Matrix Fp1 = model.fundamental.times(p1);
+			final Matrix Ftp2 = model.fundamental.transpose().times(p2);
 
 			final double dist = (p2tFp1 * p2tFp1)
 					/ (Fp1.get(0, 0) * Fp1.get(0, 0) + Fp1.get(1, 0) * Fp1.get(1, 0) + Ftp2.get(0, 0) * Ftp2.get(0, 0) + Ftp2
 							.get(1, 0)
 							* Ftp2.get(1, 0));
 
-			return Math.abs(dist) < tol;
+			return Math.abs(dist);
 		}
 	}
 
 	protected Matrix normFundamental;
 	protected Matrix fundamental;
-	protected ValidationCondition condition;
 	protected Pair<Matrix> norms;
 
 	/**
-	 * Create an {@link FundamentalModel} with a given validation condition
-	 * 
-	 * @param condition
-	 *            Condition to determine whether a point is an inlier
+	 * Create a {@link FundamentalModel}
 	 */
-	public FundamentalModel(ValidationCondition condition)
+	public FundamentalModel()
 	{
-		this.condition = condition;
 		normFundamental = new Matrix(3, 3);
-	}
-
-	@Override
-	public Matrix getTransform() {
-		return this.fundamental;
 	}
 
 	@Override
@@ -192,17 +177,6 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d>, Mat
 		this.fundamental = norms.secondObject().transpose().times(normFundamental).times(norms.firstObject());
 	}
 
-	// @Override
-	// public boolean validate(IndependentPair<Point2d, Point2d> data) {
-	// if (normFundamental == null)
-	// return false;
-	//
-	// final IndependentPair<Point2d, Point2d> normData =
-	// TransformUtilities.normalise(data, norms);
-	//
-	// return condition.validate(normData, normFundamental);
-	// }
-
 	@Override
 	public Point2d predict(Point2d data) {
 		throw new UnsupportedOperationException();
@@ -213,18 +187,6 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d>, Mat
 		return 8;
 	}
 
-	// @Override
-	// public double calculateError(List<? extends IndependentPair<Point2d,
-	// Point2d>> data) {
-	// final double totalCheck = data.size();
-	// double correct = 0;
-	// for (final IndependentPair<Point2d, Point2d> independentPair : data) {
-	// if (this.validate(independentPair))
-	// correct += 1;
-	// }
-	// return correct / totalCheck;
-	// }
-
 	/**
 	 * Clone the model
 	 * 
@@ -232,7 +194,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d>, Mat
 	 */
 	@Override
 	public FundamentalModel clone() {
-		final FundamentalModel model = new FundamentalModel(condition);
+		final FundamentalModel model = new FundamentalModel();
 		if (model.normFundamental != null)
 			model.normFundamental = normFundamental.copy();
 		if (model.fundamental != null)
@@ -242,8 +204,21 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d>, Mat
 		return model;
 	}
 
-	// @Override
-	// public double calculateError(IndependentPair<Point2d, Point2d> data) {
-	// return validate(data) ? 0 : 1;
-	// }
+	/**
+	 * Set the Fundamental matrix
+	 * 
+	 * @param optimised
+	 */
+	public void setF(Matrix optimised) {
+		this.fundamental = optimised;
+	}
+
+	/**
+	 * Get the fundamental matrix
+	 * 
+	 * @return the F matrix
+	 */
+	public Matrix getF() {
+		return fundamental;
+	}
 }

@@ -57,12 +57,11 @@ import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 import org.openimaj.image.renderer.MBFImageRenderer;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
-import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.HomographyRefinement;
 import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.estimation.RobustHomographyEstimator;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
@@ -135,12 +134,10 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 					modelFrame.setLocation(pt.x + this.videoFrame.getScreen().getWidth(), pt.y);
 
 					// configure the matcher
-					final HomographyModel model = new HomographyModel();
-					final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, new TransformError2d(),
-							10.0, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
 					matcher = new ConsistentLocalFeatureMatcher2d<InterestPointKeypoint<InterestPointData>>(
 							new FastBasicKeypointMatcher<InterestPointKeypoint<InterestPointData>>(8));
-					matcher.setFittingModel(ransac);
+					matcher.setFittingModel(new RobustHomographyEstimator(10.0, 1500,
+							new RANSAC.PercentageInliersStoppingCondition(0.5), HomographyRefinement.NONE));
 				} else {
 					DisplayUtilities.display(modelImage, modelFrame);
 				}

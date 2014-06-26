@@ -47,7 +47,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.HomographyModel;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.residuals.SingleImageTransferResidual2d;
 import org.openimaj.math.model.fit.RANSAC;
 
 import Jama.Matrix;
@@ -69,9 +69,9 @@ public class KeypointMatchSiteDemo {
 		final LocalFeatureList<Keypoint> targetFeats = eng.findFeatures(target);
 
 		final HomographyModel model = new HomographyModel();
-		final TransformError2d errorModel = new TransformError2d();
-		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, errorModel, 5f, 1500,
-				new RANSAC.BestFitStoppingCondition(), true);
+		final SingleImageTransferResidual2d<HomographyModel> errorModel = new SingleImageTransferResidual2d<HomographyModel>();
+		final RANSAC<Point2d, Point2d, HomographyModel> ransac = new RANSAC<Point2d, Point2d, HomographyModel>(model,
+				errorModel, 5f, 1500, new RANSAC.BestFitStoppingCondition(), true);
 		final ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8));
 		matcher.setFittingModel(ransac);

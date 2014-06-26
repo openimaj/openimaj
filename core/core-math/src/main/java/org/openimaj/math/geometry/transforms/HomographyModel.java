@@ -68,6 +68,16 @@ public class HomographyModel implements EstimatableModel<Point2d, Point2d>, Matr
 	}
 
 	/**
+	 * Set the transform matrix to the new one
+	 * 
+	 * @param matrix
+	 *            the new matrix
+	 */
+	public void setTransform(Matrix matrix) {
+		homography = matrix;
+	}
+
+	/**
 	 * DLT estimation of least-squares solution of 3D homogeneous homography
 	 * 
 	 * @see org.openimaj.math.model.EstimatableModel#estimate(java.util.List)

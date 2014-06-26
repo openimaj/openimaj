@@ -52,7 +52,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.NullModel;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.geometry.transforms.error.TransformedTransformError2d;
+import org.openimaj.math.geometry.transforms.residuals.TransformedSITR2d;
 import org.openimaj.math.model.Model;
 import org.openimaj.math.model.UnivariateGaussianNaiveBayesModel;
 import org.openimaj.math.model.fit.RobustModelFitting;
@@ -136,12 +136,14 @@ public class DoGSIFTFeatureComparator implements FacialFeatureComparator<DoGSIFT
 	public double compare(DoGSIFTFeature query, DoGSIFTFeature target) {
 		final Rectangle unit = new Rectangle(0, 0, 1, 1);
 
-		final TransformedTransformError2d tte = new TransformedTransformError2d(TransformUtilities.makeTransform(
-				query.getBounds(), unit), TransformUtilities.makeTransform(target.getBounds(), unit));
+		final TransformedSITR2d<NullModel<Point2d>> tte = new TransformedSITR2d<NullModel<Point2d>>(
+				TransformUtilities.makeTransform(
+						query.getBounds(), unit), TransformUtilities.makeTransform(target.getBounds(), unit));
 		final ModelDistanceCheck dt = buildDefaultDistanceCheck();
 
 		final NullModel<Point2d> model = new NullModel<Point2d>();
-		final RobustModelFitting<Point2d, Point2d> fitting = new SimpleModelFitting<Point2d, Point2d>(model, tte, dt);
+		final RobustModelFitting<Point2d, Point2d, ?> fitting =
+				new SimpleModelFitting<Point2d, Point2d, NullModel<Point2d>>(model, tte, dt);
 		final BasicTwoWayMatcher<Keypoint> innerMatcher = new BasicTwoWayMatcher<Keypoint>();
 		final ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				innerMatcher, fitting);

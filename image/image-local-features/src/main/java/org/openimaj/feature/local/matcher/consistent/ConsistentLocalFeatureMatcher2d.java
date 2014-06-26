@@ -59,7 +59,7 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?, ?> & Poin
 		ModelFittingLocalFeatureMatcher<T>
 {
 	protected LocalFeatureMatcher<T> innerMatcher;
-	protected RobustModelFitting<Point2d, Point2d> modelfit;
+	protected RobustModelFitting<Point2d, Point2d, ?> modelfit;
 	protected List<Pair<T>> consistentMatches;
 
 	/**
@@ -83,7 +83,8 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?, ?> & Poin
 	 * @param fit
 	 *            the points against which to test consistency
 	 */
-	public ConsistentLocalFeatureMatcher2d(LocalFeatureMatcher<T> innerMatcher, RobustModelFitting<Point2d, Point2d> fit)
+	public ConsistentLocalFeatureMatcher2d(LocalFeatureMatcher<T> innerMatcher,
+			RobustModelFitting<Point2d, Point2d, ?> fit)
 	{
 		this(innerMatcher);
 
@@ -146,7 +147,7 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?, ?> & Poin
 	}
 
 	@Override
-	public void setFittingModel(RobustModelFitting<Point2d, Point2d> mf) {
+	public void setFittingModel(RobustModelFitting<Point2d, Point2d, ?> mf) {
 		modelfit = mf;
 	}
 

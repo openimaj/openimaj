@@ -46,7 +46,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
-import org.openimaj.math.geometry.transforms.error.TransformError2d;
+import org.openimaj.math.geometry.transforms.residuals.SingleImageTransferResidual2d;
 import org.openimaj.math.model.fit.RANSAC;
 
 /**
@@ -75,8 +75,9 @@ public class SimpleMosaic {
 		final ConsistentLocalFeatureMatcher2d<Keypoint> matcher =
 				new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 		final HomographyModel model = new HomographyModel();
-		final RANSAC<Point2d, Point2d> modelFitting =
-				new RANSAC<Point2d, Point2d>(model, new TransformError2d(), 8.0, 1600,
+		final RANSAC<Point2d, Point2d, HomographyModel> modelFitting =
+				new RANSAC<Point2d, Point2d, HomographyModel>(model,
+						new SingleImageTransferResidual2d<HomographyModel>(), 8.0, 1600,
 						new RANSAC.BestFitStoppingCondition(), true);
 		matcher.setFittingModel(modelFitting);
 		matcher.setModelFeatures(middleKP);
