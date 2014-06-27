@@ -8,8 +8,11 @@ import org.apache.commons.math3.fitting.leastsquares.LeastSquaresFactory;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer.Optimum;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.MultivariateJacobianFunction;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.util.Pair;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.pair.IndependentPair;
@@ -23,7 +26,28 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum FundamentalRefinement {
-	// NONE,
+	NONE {
+
+		@Override
+		protected MultivariateVectorFunction getValueFunction(
+				List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data, Parameterisation p)
+		{
+			return null;
+		}
+
+		@Override
+		protected MultivariateMatrixFunction getJacobianFunction(
+				List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data, Parameterisation p)
+		{
+			return null;
+		}
+
+		@Override
+		public Matrix refine(Matrix initial, List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data) {
+			// just return the initial estimate
+			return initial;
+		}
+	},
 	EPIPOLAR {
 		@Override
 		protected MultivariateVectorFunction getValueFunction(
@@ -55,8 +79,37 @@ public enum FundamentalRefinement {
 			return null;
 		}
 	},
-	// SAMPSON
-	;
+	SAMPSON {
+		@Override
+		protected MultivariateVectorFunction getValueFunction(
+				List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data, Parameterisation p)
+		{
+			switch (p) {
+			case F12:
+				break;
+			case F13:
+				break;
+			case F23:
+				break;
+			}
+			return null;
+		}
+
+		@Override
+		protected MultivariateMatrixFunction getJacobianFunction(
+				List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data, Parameterisation p)
+		{
+			switch (p) {
+			case F12:
+				break;
+			case F13:
+				break;
+			case F23:
+				break;
+			}
+			return null;
+		}
+	};
 
 	protected abstract MultivariateVectorFunction getValueFunction(
 			final List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data, Parameterisation p);
@@ -274,6 +327,85 @@ public enum FundamentalRefinement {
 			s.s = (-b * d + a * e) / det;
 
 			return s;
+		}
+	}
+
+	private abstract static class Base implements MultivariateJacobianFunction {
+		List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data;
+
+		public Base(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data) {
+			this.data = data;
+		}
+
+		@Override
+		public Pair<RealVector, RealMatrix> value(RealVector point) {
+			final double[] params = point.toArray();
+			return new Pair<RealVector, RealMatrix>(value(params), jacobian(params));
+		}
+
+		RealVector value(double[] params) {
+			final double[] result = new double[data.size()];
+
+			for (int i = 0; i < data.size(); i++) {
+				final IndependentPair<? extends Point2d, ? extends Point2d> pair = data.get(i);
+				final Point2d p1 = pair.firstObject();
+				final Point2d p2 = pair.secondObject();
+				final double x = p1.getX();
+				final double y = p1.getY();
+				final double X = p2.getX();
+				final double Y = p2.getY();
+
+				result[i] = computeValue(x, y, X, Y, params[0], params[1], params[2], params[3], params[4], params[5],
+						params[6], params[7]);
+			}
+
+			return new ArrayRealVector(result, false);
+		}
+
+		abstract double computeValue(double x, double y, double X, double Y, double f1, double f2, double f3, double f4,
+				double f5, double f6, double r, double s);
+
+		RealMatrix jacobian(double[] params) {
+			final double[][] result = new double[data.size()][];
+
+			for (int i = 0; i < data.size(); i++) {
+				final IndependentPair<? extends Point2d, ? extends Point2d> pair = data.get(i);
+				final Point2d p1 = pair.firstObject();
+				final Point2d p2 = pair.secondObject();
+				final double x = p1.getX();
+				final double y = p1.getY();
+				final double X = p2.getX();
+				final double Y = p2.getY();
+
+				result[i] = computeJacobian(x, y, X, Y, params[0], params[1], params[2], params[3], params[4], params[5],
+						params[6], params[7]);
+			}
+
+			return new Array2DRowRealMatrix(result, false);
+		}
+
+		abstract double[] computeJacobian(double x, double y, double X, double Y, double f1, double f2,
+				double f3, double f4, double f5, double f6, double r, double s);
+	}
+
+	private static class F12Epipolar extends Base {
+		public F12Epipolar(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data) {
+			super(data);
+		}
+
+		@Override
+		double computeValue(double x, double y, double X, double Y, double f1, double f2, double f3, double f4,
+				double f5, double f6, double r, double s)
+		{
+			return 0;
+		}
+
+		@Override
+		double[] computeJacobian(double x, double y, double X, double Y, double f1, double f2, double f3, double f4,
+				double f5, double f6, double r, double s)
+		{
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 }
