@@ -1,5 +1,6 @@
 package org.openimaj.math.geometry.transforms.estimation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
@@ -12,6 +13,7 @@ import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.math.model.fit.RANSAC.StoppingCondition;
 import org.openimaj.math.model.fit.RobustModelFitting;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
@@ -36,6 +38,9 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 	private RobustModelFitting<Point2d, Point2d, FundamentalModel> robustFitter;
 	private FundamentalRefinement refinement;
 
+	List<IndependentPair<Point2d, Point2d>> inliers = new ArrayList<IndependentPair<Point2d, Point2d>>();
+	List<IndependentPair<Point2d, Point2d>> outliers = new ArrayList<IndependentPair<Point2d, Point2d>>();
+
 	/**
 	 * Construct using the {@link LMedS} algorithm with the given expected
 	 * outlier percentage
@@ -47,7 +52,7 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 	 */
 	public RobustFundamentalEstimator(double outlierProportion, FundamentalRefinement refinement) {
 		robustFitter = new LMedS<Point2d, Point2d, FundamentalModel>(
-				new FundamentalModel(),
+				new FundamentalModel(false),
 				new FundamentalModel.Fundamental8PtResidual(),
 				outlierProportion, true);
 
@@ -70,7 +75,7 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 	public RobustFundamentalEstimator(double threshold, int nIterations, StoppingCondition stoppingCondition,
 			FundamentalRefinement refinement)
 	{
-		robustFitter = new RANSAC<Point2d, Point2d, FundamentalModel>(new FundamentalModel(),
+		robustFitter = new RANSAC<Point2d, Point2d, FundamentalModel>(new FundamentalModel(false),
 				new FundamentalModel.Fundamental8PtResidual(), threshold, nIterations, stoppingCondition, true);
 
 		this.refinement = refinement;
@@ -78,17 +83,35 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 
 	@Override
 	public boolean fitData(List<? extends IndependentPair<Point2d, Point2d>> data) {
+		final Pair<Matrix> norms = TransformUtilities.getNormalisations(data);
+		final List<? extends IndependentPair<Point2d, Point2d>> normData = TransformUtilities.normalise(data, norms);
+
 		// Use a robust fitting technique to find the inliers and estimate a
 		// model using DLT
-		if (!robustFitter.fitData(data)) {
+		if (!robustFitter.fitData(normData)) {
 			// just go with full-on DLT estimate rather than a robust one
-			robustFitter.getModel().estimate(data);
+			robustFitter.getModel().estimate(normData);
+			robustFitter.getModel().denormaliseFundamental(norms);
 
 			return false;
 		}
 
+		// remap the inliers and outliers from the normalised ones to the
+		// original space
+		inliers.clear();
+		for (final IndependentPair<Point2d, Point2d> pair : robustFitter.getInliers()) {
+			inliers.add(data.get(normData.indexOf(pair)));
+		}
+		outliers.clear();
+		for (final IndependentPair<Point2d, Point2d> pair : robustFitter.getOutliers()) {
+			outliers.add(data.get(normData.indexOf(pair)));
+		}
+
+		// denormalise the estimated matrix before the non-linear step
+		robustFitter.getModel().denormaliseFundamental(norms);
+
 		// Now apply non-linear optimisation to get a better estimate
-		final Matrix optimised = refinement.refine(robustFitter.getModel().getF(), robustFitter.getInliers());
+		final Matrix optimised = refinement.refine(robustFitter.getModel().getF(), inliers);
 		robustFitter.getModel().setF(optimised);
 
 		return true;
@@ -106,11 +129,11 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 
 	@Override
 	public List<? extends IndependentPair<Point2d, Point2d>> getInliers() {
-		return robustFitter.getInliers();
+		return inliers;
 	}
 
 	@Override
 	public List<? extends IndependentPair<Point2d, Point2d>> getOutliers() {
-		return robustFitter.getOutliers();
+		return outliers;
 	}
 }

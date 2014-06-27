@@ -611,7 +611,7 @@ public enum HomographyRefinement {
 	 * Refine an initial guess at the homography that takes the first points in
 	 * data to the second using non-linear Levenberg Marquardt optimisation. The
 	 * initial guess would normally be computed using the direct linear
-	 * transform ({@link TransformUtilities#homographyMatrix(List)}).
+	 * transform ({@link TransformUtilities#homographyMatrixNorm(List)}).
 	 * 
 	 * @param initial
 	 *            the initial estimate (probably from the DLT technique)

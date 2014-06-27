@@ -338,7 +338,7 @@ public class FontSimulator<Q,I extends Image<Q,I>>
 			d.add( new IndependentPair<Point2d,Point2d>( p3, p3p ) );
 			d.add( new IndependentPair<Point2d,Point2d>( p4, p4p ) );
 
-			final Matrix hm = TransformUtilities.homographyMatrix( d );
+			final Matrix hm = TransformUtilities.homographyMatrixNorm( d );
 			m = m.times( hm );
 		}
 

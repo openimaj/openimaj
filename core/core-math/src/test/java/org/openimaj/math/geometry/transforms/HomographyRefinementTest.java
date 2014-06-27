@@ -36,7 +36,7 @@ public class HomographyRefinementTest {
 
 		final List<IndependentPair<Point2d, Point2d>> data = IndependentPair.pairList(image1, image2);
 
-		final Matrix initial = TransformUtilities.homographyMatrix(data);
+		final Matrix initial = TransformUtilities.homographyMatrixNorm(data);
 		for (final HomographyRefinement type : HomographyRefinement.values()) {
 			final Matrix improved = type.refine(initial, data);
 

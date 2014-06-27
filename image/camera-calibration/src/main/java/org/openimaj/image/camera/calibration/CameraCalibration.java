@@ -40,7 +40,7 @@ public class CameraCalibration extends CameraCalibrationZhang {
 		for (int i = 0; i < points.size(); i++) {
 			final List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data = points.get(i);
 			final Matrix h = HomographyRefinement.SINGLE_IMAGE_TRANSFER.refine(
-					TransformUtilities.homographyMatrix(data), data);
+					TransformUtilities.homographyMatrixNorm(data), data);
 
 			homographies.add(h);
 		}

@@ -1,5 +1,6 @@
 package org.openimaj.math.geometry.transforms.estimation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
@@ -12,6 +13,7 @@ import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.math.model.fit.RANSAC.StoppingCondition;
 import org.openimaj.math.model.fit.RobustModelFitting;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
@@ -22,7 +24,8 @@ import Jama.Matrix;
  * <p>
  * An initial estimate of the inliers and an algebraically optimal homography is
  * computed using {@link RANSAC} or {@link LMedS}. In both cases, the normalised
- * DLT algorithm is used (see {@link TransformUtilities#homographyMatrix(List)}
+ * DLT algorithm is used (see
+ * {@link TransformUtilities#homographyMatrixNorm(List)}
  * <p>
  * If an reasonable initial estimate was found, non-linear optimisation using
  * Levenburg-Marquardt is performed to on the inliers using the initial estimate
@@ -34,6 +37,9 @@ import Jama.Matrix;
 public class RobustHomographyEstimator implements RobustModelFitting<Point2d, Point2d, HomographyModel> {
 	private RobustModelFitting<Point2d, Point2d, HomographyModel> robustFitter;
 	private HomographyRefinement refinement;
+
+	List<IndependentPair<Point2d, Point2d>> inliers = new ArrayList<IndependentPair<Point2d, Point2d>>();
+	List<IndependentPair<Point2d, Point2d>> outliers = new ArrayList<IndependentPair<Point2d, Point2d>>();
 
 	/**
 	 * Construct using the {@link LMedS} algorithm with the given expected
@@ -77,17 +83,35 @@ public class RobustHomographyEstimator implements RobustModelFitting<Point2d, Po
 
 	@Override
 	public boolean fitData(List<? extends IndependentPair<Point2d, Point2d>> data) {
+		final Pair<Matrix> norms = TransformUtilities.getNormalisations(data);
+		final List<? extends IndependentPair<Point2d, Point2d>> normData = TransformUtilities.normalise(data, norms);
+
 		// Use a robust fitting technique to find the inliers and estimate a
 		// model using DLT
-		if (!robustFitter.fitData(data)) {
+		if (!robustFitter.fitData(normData)) {
 			// just go with full-on DLT estimate rather than a robust one
-			robustFitter.getModel().estimate(data);
+			robustFitter.getModel().estimate(normData);
+			robustFitter.getModel().denormaliseHomography(norms);
 
 			return false;
 		}
 
+		// remap the inliers and outliers from the normalised ones to the
+		// original space
+		inliers.clear();
+		for (final IndependentPair<Point2d, Point2d> pair : robustFitter.getInliers()) {
+			inliers.add(data.get(normData.indexOf(pair)));
+		}
+		outliers.clear();
+		for (final IndependentPair<Point2d, Point2d> pair : robustFitter.getOutliers()) {
+			outliers.add(data.get(normData.indexOf(pair)));
+		}
+
+		// denormalise the estimated matrix before the non-linear step
+		robustFitter.getModel().denormaliseHomography(norms);
+
 		// Now apply non-linear optimisation to get a better estimate
-		final Matrix optimised = refinement.refine(robustFitter.getModel().getTransform(), robustFitter.getInliers());
+		final Matrix optimised = refinement.refine(robustFitter.getModel().getTransform(), inliers);
 		robustFitter.getModel().setTransform(optimised);
 
 		return true;
@@ -105,11 +129,11 @@ public class RobustHomographyEstimator implements RobustModelFitting<Point2d, Po
 
 	@Override
 	public List<? extends IndependentPair<Point2d, Point2d>> getInliers() {
-		return robustFitter.getInliers();
+		return inliers;
 	}
 
 	@Override
 	public List<? extends IndependentPair<Point2d, Point2d>> getOutliers() {
-		return robustFitter.getOutliers();
+		return outliers;
 	}
 }

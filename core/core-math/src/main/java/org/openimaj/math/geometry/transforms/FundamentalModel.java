@@ -79,7 +79,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 			res += F.get(2, 1) * x1_2; // v
 			res += F.get(2, 2); // 1
 
-			return res;
+			return res * res;
 		}
 	}
 
@@ -156,25 +156,52 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 		}
 	}
 
-	protected Matrix normFundamental;
+	protected boolean normalise;
 	protected Matrix fundamental;
-	protected Pair<Matrix> norms;
 
 	/**
-	 * Create a {@link FundamentalModel}
+	 * Create a {@link FundamentalModel}, automatically normalising data when
+	 * estimating the model
 	 */
 	public FundamentalModel()
 	{
-		normFundamental = new Matrix(3, 3);
+		this(true);
+	}
+
+	/**
+	 * Create a {@link FundamentalModel} with optional automatic normalisation.
+	 * 
+	 * @param norm
+	 *            true if the data should be automatically normalised before
+	 *            running the 8-point algorithm
+	 */
+	public FundamentalModel(boolean norm)
+	{
+		this.normalise = norm;
 	}
 
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
-		this.norms = TransformUtilities.getNormalisations(data);
-		final List<? extends IndependentPair<Point2d, Point2d>> normData = TransformUtilities.normalise(data, norms);
+		if (normalise) {
+			final Pair<Matrix> norms = TransformUtilities.getNormalisations(data);
+			final List<? extends IndependentPair<Point2d, Point2d>> normData = TransformUtilities.normalise(data, norms);
 
-		this.normFundamental = TransformUtilities.fundamentalMatrix8Pt(normData);
-		this.fundamental = norms.secondObject().transpose().times(normFundamental).times(norms.firstObject());
+			final Matrix normFundamental = TransformUtilities.fundamentalMatrix8Pt(normData);
+			this.fundamental = norms.secondObject().transpose().times(normFundamental).times(norms.firstObject());
+		} else {
+			this.fundamental = TransformUtilities.fundamentalMatrix8Pt(data);
+		}
+	}
+
+	/**
+	 * De-normalise a fundamental estimate. Use when {@link #estimate(List)} was
+	 * called with pre-normalised data.
+	 * 
+	 * @param norms
+	 *            the normalisation transforms
+	 */
+	public void denormaliseFundamental(Pair<Matrix> norms) {
+		this.fundamental = norms.secondObject().transpose().times(fundamental).times(norms.firstObject());
 	}
 
 	@Override
@@ -194,13 +221,9 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 	 */
 	@Override
 	public FundamentalModel clone() {
-		final FundamentalModel model = new FundamentalModel();
-		if (model.normFundamental != null)
-			model.normFundamental = normFundamental.copy();
+		final FundamentalModel model = new FundamentalModel(this.normalise);
 		if (model.fundamental != null)
 			model.fundamental = fundamental.copy();
-		if (model.norms != null)
-			model.norms = new Pair<Matrix>(norms.firstObject().copy(), norms.secondObject().copy());
 		return model;
 	}
 

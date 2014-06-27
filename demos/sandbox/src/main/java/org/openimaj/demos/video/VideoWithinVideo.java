@@ -119,7 +119,7 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 
 		proc.accumulate(nextCaptureFrame);
 		if (this.targetArea != null) {
-			final Matrix transform = TransformUtilities.homographyMatrix(pointList);
+			final Matrix transform = TransformUtilities.homographyMatrixNorm(pointList);
 			proc.setMatrix(transform);
 			proc.accumulate(frame.clone());
 		}

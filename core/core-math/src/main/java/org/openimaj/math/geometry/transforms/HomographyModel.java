@@ -32,8 +32,10 @@ package org.openimaj.math.geometry.transforms;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
@@ -46,18 +48,32 @@ import Jama.Matrix;
  */
 public class HomographyModel implements EstimatableModel<Point2d, Point2d>, MatrixTransformProvider {
 	protected Matrix homography;
+	protected boolean normalise;
 
 	/**
-	 * Create an {@link HomographyModel}
+	 * Create an {@link HomographyModel} that automatically normalises the data
+	 * given to {@link #estimate(List)} to get a numerically stable estimate.
 	 */
 	public HomographyModel()
 	{
-		homography = new Matrix(3, 3);
+		this(true);
+	}
+
+	/**
+	 * Create a {@link HomographyModel} with optional automatic normalisation.
+	 * 
+	 * @param norm
+	 *            true if the data should be automatically normalised before
+	 *            running the DLT algorithm
+	 */
+	public HomographyModel(boolean norm)
+	{
+		this.normalise = norm;
 	}
 
 	@Override
 	public HomographyModel clone() {
-		final HomographyModel hm = new HomographyModel();
+		final HomographyModel hm = new HomographyModel(normalise);
 		hm.homography = homography.copy();
 		return hm;
 	}
@@ -84,7 +100,25 @@ public class HomographyModel implements EstimatableModel<Point2d, Point2d>, Matr
 	 */
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
-		homography = TransformUtilities.homographyMatrix(data);
+		if (normalise) {
+			homography = TransformUtilities.homographyMatrixNorm(data);
+		} else {
+			homography = TransformUtilities.homographyMatrix(data);
+		}
+	}
+
+	/**
+	 * De-normalise a homography estimate. Use when {@link #estimate(List)} was
+	 * called with pre-normalised data.
+	 * 
+	 * @param normalisations
+	 *            the normalisation transforms
+	 */
+	public void denormaliseHomography(Pair<Matrix> normalisations) {
+		homography = normalisations.secondObject().inverse().times(homography).times(normalisations.firstObject());
+		if (Math.abs(homography.get(2, 2)) > 0.000001) {
+			MatrixUtils.times(homography, 1.0 / homography.get(2, 2));
+		}
 	}
 
 	@Override

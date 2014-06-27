@@ -88,7 +88,7 @@ public enum FundamentalRefinement {
 	 * Refine an initial guess at the homography that takes the first points in
 	 * data to the second using non-linear Levenberg Marquardt optimisation. The
 	 * initial guess would normally be computed using the direct linear
-	 * transform ({@link TransformUtilities#homographyMatrix(List)}).
+	 * transform ({@link TransformUtilities#homographyMatrixNorm(List)}).
 	 * 
 	 * @param initial
 	 *            the initial estimate (probably from the DLT technique)
@@ -115,7 +115,9 @@ public enum FundamentalRefinement {
 				observed, start, null, maxEvaluations, maxIterations));
 
 		final Matrix improved = p.paramsToMatrix(result.getPoint().toArray());
-		MatrixUtils.times(improved, 1.0 / improved.get(2, 2));
+
+		// normalise
+		MatrixUtils.times(improved, 1.0 / improved.normInf());
 
 		return improved;
 	}

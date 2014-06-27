@@ -725,7 +725,8 @@ public class TransformUtilities {
 	 *            the matching points
 	 * @return the estimated homography
 	 */
-	public static Matrix homographyMatrix(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data) {
+	public static Matrix homographyMatrixNorm(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data)
+	{
 		final Pair<Matrix> normalisations = getNormalisations(data);
 
 		final Matrix A = new Matrix(data.size() * 2, 9);
@@ -773,20 +774,76 @@ public class TransformUtilities {
 		homography.set(2, 2, W[8]);
 
 		homography = normalisations.secondObject().inverse().times(homography).times(normalisations.firstObject());
-		// it probably makes sense to rescale the matrix here by 1 / tf[2][2],
+
+		// it makes sense to rescale the matrix here by 1 / tf[2][2],
 		// unless tf[2][2] == 0
 		if (Math.abs(homography.get(2, 2)) > 0.000001) {
-			final double tmp = homography.get(2, 2);
+			MatrixUtils.times(homography, 1.0 / homography.get(2, 2));
+		}
 
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					if (Math.abs(homography.get(i, j)) < 10e-10) {
-						homography.set(i, j, 0.0);
-					} else {
-						homography.set(i, j, homography.get(i, j) / tmp);
-					}
-				}
-			}
+		return homography;
+	}
+
+	/**
+	 * Compute the least-squares estimate (the normalised Direct Linear
+	 * Transform approach) of the homography between a set of matching data
+	 * points. This method is potentially numerically unstable if the data has
+	 * not been pre-normalised (using {@link #normalise(List, Pair)}). For
+	 * un-normalised data, use {@link #homographyMatrixNorm(List)} instead.
+	 * 
+	 * @param data
+	 *            the matching points
+	 * @return the estimated homography
+	 */
+	public static Matrix homographyMatrix(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data) {
+		final Matrix A = new Matrix(data.size() * 2, 9);
+
+		for (int i = 0, j = 0; i < data.size(); i++, j += 2) {
+			final Point2d p1 = data.get(i).firstObject();
+			final Point2d p2 = data.get(i).secondObject();
+			final float x1 = p1.getX();
+			final float y1 = p1.getY();
+			final float x2 = p2.getX();
+			final float y2 = p2.getY();
+
+			A.set(j, 0, x1); // x
+			A.set(j, 1, y1); // y
+			A.set(j, 2, 1); // 1
+			A.set(j, 3, 0); // 0
+			A.set(j, 4, 0); // 0
+			A.set(j, 5, 0); // 0
+			A.set(j, 6, -(x2 * x1)); // -x'*x
+			A.set(j, 7, -(x2 * y1)); // -x'*y
+			A.set(j, 8, -(x2)); // -x'
+
+			A.set(j + 1, 0, 0); // 0
+			A.set(j + 1, 1, 0); // 0
+			A.set(j + 1, 2, 0); // 0
+			A.set(j + 1, 3, x1); // x
+			A.set(j + 1, 4, y1); // y
+			A.set(j + 1, 5, 1); // 1
+			A.set(j + 1, 6, -(y2 * x1)); // -y'*x
+			A.set(j + 1, 7, -(y2 * y1)); // -y'*y
+			A.set(j + 1, 8, -(y2)); // -y'
+		}
+
+		final double[] W = MatrixUtils.solveHomogeneousSystem(A);
+
+		final Matrix homography = new Matrix(3, 3);
+		homography.set(0, 0, W[0]);
+		homography.set(0, 1, W[1]);
+		homography.set(0, 2, W[2]);
+		homography.set(1, 0, W[3]);
+		homography.set(1, 1, W[4]);
+		homography.set(1, 2, W[5]);
+		homography.set(2, 0, W[6]);
+		homography.set(2, 1, W[7]);
+		homography.set(2, 2, W[8]);
+
+		// it makes sense to rescale the matrix here by 1 / tf[2][2],
+		// unless tf[2][2] == 0
+		if (Math.abs(homography.get(2, 2)) > 0.000001) {
+			MatrixUtils.times(homography, 1.0 / homography.get(2, 2));
 		}
 
 		return homography;

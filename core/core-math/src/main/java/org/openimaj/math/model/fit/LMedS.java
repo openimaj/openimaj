@@ -196,7 +196,8 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 		else {
 			final double sigmahat = 1.4826 * (1 + 5 / (data.size() - model.numItemsToEstimate()))
 					* Math.sqrt(bestMedianError);
-			threshold = 2.0 * sigmahat;
+			// http://research.microsoft.com/en-us/um/people/zhang/INRIA/Publis/Tutorial-Estim/node25.html
+			threshold = (2.5 * sigmahat) * (2.5 * sigmahat);
 		}
 
 		for (int i = 0; i < data.size(); i++) {

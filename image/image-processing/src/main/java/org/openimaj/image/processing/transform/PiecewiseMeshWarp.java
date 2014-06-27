@@ -159,7 +159,7 @@ public class PiecewiseMeshWarp<T, I extends Image<T, I>> implements ImageProcess
 	}
 
 	protected Matrix getTransform4(List<Pair<Point2d>> pts) {
-		return TransformUtilities.homographyMatrix(pts);
+		return TransformUtilities.homographyMatrixNorm(pts);
 	}
 
 	protected Matrix getTransform3(List<Pair<Point2d>> pts) {
