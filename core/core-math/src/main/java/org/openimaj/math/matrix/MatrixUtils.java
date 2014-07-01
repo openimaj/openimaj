@@ -1601,4 +1601,63 @@ public class MatrixUtils {
 
 		return a;
 	}
+
+	/**
+	 * Compute the covariance matrix of the given samples (assumed each sample
+	 * is a row).
+	 * 
+	 * @param m
+	 *            the samples matrix
+	 * @return the covariance matrix
+	 */
+	public static Matrix covariance(Matrix m) {
+		return times(m.transpose().times(m), 1.0 / m.getRowDimension());
+	}
+
+	/**
+	 * For each element of X, sign(X) returns 1 if the element is greater than
+	 * zero, 0 if it equals zero and -1 if it is less than zero.
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @return the sign matrix
+	 */
+	public static Matrix sign(Matrix m) {
+		final Matrix o = new Matrix(m.getRowDimension(), m.getColumnDimension());
+		final double[][] md = m.getArray();
+		final double[][] od = o.getArray();
+
+		for (int r = 0; r < o.getRowDimension(); r++) {
+			for (int c = 0; c < o.getColumnDimension(); c++) {
+				if (md[r][c] > 0)
+					od[r][c] = 1;
+				if (md[r][c] < 0)
+					od[r][c] = -1;
+			}
+		}
+
+		return o;
+	}
+
+	/**
+	 * Return a copy of the input matrix where every value is the exponential of
+	 * the elements, e to the X.
+	 * 
+	 * @param m
+	 *            the input matrix
+	 * @return the exponential matrix
+	 */
+	public static Matrix exp(Matrix m) {
+		final Matrix o = new Matrix(m.getRowDimension(), m.getColumnDimension());
+		final double[][] md = m.getArray();
+		final double[][] od = o.getArray();
+
+		for (int r = 0; r < o.getRowDimension(); r++) {
+			for (int c = 0; c < o.getColumnDimension(); c++) {
+				od[r][c] = Math.exp(md[r][c]);
+			}
+		}
+
+		return o;
+	}
 }
