@@ -34,7 +34,9 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -43,6 +45,7 @@ import javax.swing.SwingUtilities;
 import org.openimaj.demos.Demo;
 import org.openimaj.hardware.kinect.KinectController;
 import org.openimaj.hardware.kinect.KinectException;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
@@ -82,6 +85,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	private final VideoDisplay<MBFImage> videoFrame;
 	private boolean rdepth = true;
 	private boolean printCloud = false;
+	private MBFImage v3d;
 
 	/**
 	 * Default constructor
@@ -99,6 +103,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		((JFrame) SwingUtilities.getRoot(videoFrame.getScreen())).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 
+		v3d = new MBFImage(640, 480);
 	}
 
 	@Override
@@ -115,13 +120,15 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		renderer.drawImage(vid, 0, 0);
 
 		tmp = controller.depthStream.getNextFrame();
+		drawPointCloud((FImage) tmp, vid, 0, 0, 640, 440, 100, 80);
+
 		MBFImage depth = null;
 		if (this.rdepth) {
 			final FImage fdepth = ((FImage) tmp).clone();
 			if (printCloud) {
 				printCloud = false;
 				try {
-					pointCloudOut(fdepth, "pointcloud.txt", 0, 0, 640, 440, 100, 80);
+					pointCloudOut(fdepth, "pointcloud.txt", 0, 0, 640, 440, 400, 320);
 					System.out.println("Point cloud written!");
 				} catch (final FileNotFoundException e) {
 					System.err.println("failed to write pointcloud");
@@ -170,6 +177,45 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 			writer.flush();
 		}
 		writer.close();
+	}
+
+	private void drawPointCloud(FImage depth, MBFImage frame, int xmin, int ymin, int xmax, int ymax, float xdiv,
+			float ydiv)
+	{
+		v3d.fill(RGBColour.BLACK);
+		final List<Simple3D.Primative> points = new ArrayList<Simple3D.Primative>();
+
+		final float stepx = 1;// (xmax - xmin) / xdiv;
+		final float stepy = 1;// (ymax - ymin) / ydiv;
+
+		float meanDepth = 0;
+		int count = 0;
+
+		final float[] xyz = new float[3];
+		final double factor = controller.computeScalingFactor();
+		for (int y = ymin; y < ymax; y += stepy) {
+			for (int x = xmin; x < xmax; x += stepx) {
+				final int d = (int) depth.pixels[y][x];
+				if (d > 0) {
+					// double[] xyz = controller.cameraToWorld(x, y, d);
+					controller.cameraToWorld(x, y, d, factor, xyz);
+
+					// writer.printf("%4.2f %4.2f %4.2f\n", xyz[0], xyz[1],
+					// xyz[2]);
+					points.add(new Simple3D.Point3D(xyz[0], -xyz[1], -xyz[2], frame.getPixel(x, y), 1));
+					meanDepth -= xyz[2];
+					count++;
+				}
+			}
+		}
+
+		meanDepth /= count;
+
+		final double ax = Math.PI / 4;
+		final Simple3D.Scene scene = new Simple3D.Scene(points);
+		scene.translate(0, (int) (Math.tan(ax) * meanDepth), 0);
+		scene.renderOrtho(Simple3D.euler2Rot(ax, 0, 0), v3d);
+		DisplayUtilities.displayName(v3d, "3d");
 	}
 
 	@Override

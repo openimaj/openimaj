@@ -162,6 +162,8 @@ public class MatrixUtils {
 			for (int c = 0; c < d.getColumnDimension(); c++) {
 				if (d.get(r, c) > 0)
 					d.set(r, c, 1 / Math.sqrt(d.get(r, c)));
+				else
+					d.set(r, c, 0);
 			}
 		}
 
@@ -1611,7 +1613,8 @@ public class MatrixUtils {
 	 * @return the covariance matrix
 	 */
 	public static Matrix covariance(Matrix m) {
-		return times(m.transpose().times(m), 1.0 / m.getRowDimension());
+		final int N = m.getRowDimension();
+		return times(m.transpose().times(m), 1.0 / (N > 1 ? N - 1 : N));
 	}
 
 	/**
@@ -1655,6 +1658,28 @@ public class MatrixUtils {
 		for (int r = 0; r < o.getRowDimension(); r++) {
 			for (int c = 0; c < o.getColumnDimension(); c++) {
 				od[r][c] = Math.exp(md[r][c]);
+			}
+		}
+
+		return o;
+	}
+
+	/**
+	 * Return a copy of the input matrix where every value is the hyerbolic
+	 * tangent of the elements.
+	 * 
+	 * @param m
+	 *            the input matrix
+	 * @return the tanh matrix
+	 */
+	public static Matrix tanh(Matrix m) {
+		final Matrix o = new Matrix(m.getRowDimension(), m.getColumnDimension());
+		final double[][] md = m.getArray();
+		final double[][] od = o.getArray();
+
+		for (int r = 0; r < o.getRowDimension(); r++) {
+			for (int c = 0; c < o.getColumnDimension(); c++) {
+				od[r][c] = Math.tanh(md[r][c]);
 			}
 		}
 
