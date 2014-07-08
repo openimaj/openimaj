@@ -138,7 +138,7 @@ PyramidDenseSIFT&lt;FImage&gt; pdsift = new PyramidDenseSIFT&lt;FImage&gt;(dsift
     if (allkeys.size() &gt; 10000)
         allkeys = allkeys.subList(0, 10000);
 
-    ByteKMeans km = ByteKMeans.createKDTreeEnsemble(128, 300);
+    ByteKMeans km = ByteKMeans.createKDTreeEnsemble(300);
     DataSource&lt;byte[]&gt; datasource = new LocalFeatureListDataSource&lt;ByteDSIFTKeypoint, byte[]&gt;(allkeys);
     ByteCentroidsResult result = km.cluster(datasource);
 
