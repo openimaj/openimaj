@@ -32,11 +32,12 @@ package org.openimaj.math.model.fit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.data.RandomData;
 import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.math.model.fit.residuals.ResidualCalculator;
 import org.openimaj.math.util.distance.DistanceCheck;
 import org.openimaj.math.util.distance.ThresholdDistanceCheck;
+import org.openimaj.util.CollectionSampler;
+import org.openimaj.util.UniformSampler;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -328,10 +329,12 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 	protected List<IndependentPair<I, D>> bestModelInliers;
 	protected List<IndependentPair<I, D>> bestModelOutliers;
 	protected StoppingCondition stoppingCondition;
-	private List<? extends IndependentPair<I, D>> modelConstructionData;
+	protected List<? extends IndependentPair<I, D>> modelConstructionData;
+	protected CollectionSampler<IndependentPair<I, D>> sampler;
 
 	/**
-	 * Create a RANSAC object
+	 * Create a RANSAC object with uniform random sampling for creating the
+	 * subsets
 	 * 
 	 * @param model
 	 *            Model object with which to fit data
@@ -351,19 +354,12 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 			double errorThreshold, int nIterations,
 			StoppingCondition stoppingCondition, boolean impEst)
 	{
-		this.stoppingCondition = stoppingCondition;
-		this.model = model;
-		this.errorModel = errorModel;
-		this.dc = new ThresholdDistanceCheck(errorThreshold);
-		nIter = nIterations;
-		improveEstimate = impEst;
-
-		inliers = new ArrayList<IndependentPair<I, D>>();
-		outliers = new ArrayList<IndependentPair<I, D>>();
+		this(model, errorModel, new ThresholdDistanceCheck(errorThreshold), nIterations, stoppingCondition, impEst);
 	}
 
 	/**
-	 * Create a RANSAC object
+	 * Create a RANSAC object with uniform random sampling for creating the
+	 * subsets
 	 * 
 	 * @param model
 	 *            Model object with which to fit data
@@ -384,6 +380,60 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 			DistanceCheck dc, int nIterations,
 			StoppingCondition stoppingCondition, boolean impEst)
 	{
+		this(model, errorModel, dc, nIterations, stoppingCondition, impEst, new UniformSampler<IndependentPair<I, D>>());
+	}
+
+	/**
+	 * Create a RANSAC object
+	 * 
+	 * @param model
+	 *            Model object with which to fit data
+	 * @param errorModel
+	 *            object to compute the error of the model
+	 * @param errorThreshold
+	 *            the threshold below which error is deemed acceptable for a fit
+	 * @param nIterations
+	 *            Maximum number of allowed iterations (L)
+	 * @param stoppingCondition
+	 *            the stopping condition
+	 * @param impEst
+	 *            True if we want to perform a final fitting of the model with
+	 *            all inliers, false otherwise
+	 * @param sampler
+	 *            the sampling algorithm for selecting random subsets
+	 */
+	public RANSAC(M model, ResidualCalculator<I, D, M> errorModel,
+			double errorThreshold, int nIterations,
+			StoppingCondition stoppingCondition, boolean impEst, CollectionSampler<IndependentPair<I, D>> sampler)
+	{
+		this(model, errorModel, new ThresholdDistanceCheck(errorThreshold), nIterations, stoppingCondition, impEst,
+				sampler);
+	}
+
+	/**
+	 * Create a RANSAC object
+	 * 
+	 * @param model
+	 *            Model object with which to fit data
+	 * @param errorModel
+	 *            object to compute the error of the model
+	 * @param dc
+	 *            the distance check that tests whether a point with given error
+	 *            from the error model should be considered an inlier
+	 * @param nIterations
+	 *            Maximum number of allowed iterations (L)
+	 * @param stoppingCondition
+	 *            the stopping condition
+	 * @param impEst
+	 *            True if we want to perform a final fitting of the model with
+	 *            all inliers, false otherwise
+	 * @param sampler
+	 *            the sampling algorithm for selecting random subsets
+	 */
+	public RANSAC(M model, ResidualCalculator<I, D, M> errorModel,
+			DistanceCheck dc, int nIterations,
+			StoppingCondition stoppingCondition, boolean impEst, CollectionSampler<IndependentPair<I, D>> sampler)
+	{
 		this.stoppingCondition = stoppingCondition;
 		this.model = model;
 		this.errorModel = errorModel;
@@ -393,6 +443,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 		inliers = new ArrayList<IndependentPair<I, D>>();
 		outliers = new ArrayList<IndependentPair<I, D>>();
+		this.sampler = sampler;
 	}
 
 	@Override
@@ -409,12 +460,17 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 							// init failed
 		}
 
+		sampler.setCollection(data);
+
 		for (l = 0; l < nIter; l++) {
 			// 1
-			final List<? extends IndependentPair<I, D>> rnd = getRandomItems(data, M);
+			final List<? extends IndependentPair<I, D>> rnd = sampler.sample(M);
 			this.setModelConstructionData(rnd);
+
 			// 2
-			model.estimate(rnd);
+			if (!model.estimate(rnd))
+				continue; // bad estimate
+
 			errorModel.setModel(model);
 
 			// 3
@@ -445,7 +501,8 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 				if (improveEstimate) {
 					if (inliers.size() >= model.numItemsToEstimate())
-						model.estimate(inliers);
+						if (!model.estimate(inliers))
+							return false;
 				}
 				final boolean stopping = stoppingCondition.finalFitCondition(inliers.size());
 				// System.err.format("done: %b\n",stopping);
@@ -456,27 +513,20 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 		}
 
 		// generate "best" fit from all the iterations
+		if (bestModelInliers == null) {
+			bestModelInliers = new ArrayList<IndependentPair<I, D>>();
+			bestModelOutliers = new ArrayList<IndependentPair<I, D>>();
+		}
+
 		inliers = bestModelInliers;
 		outliers = bestModelOutliers;
 
 		if (bestModelInliers.size() >= M)
-			model.estimate(bestModelInliers);
+			if (!model.estimate(bestModelInliers))
+				return false;
 
 		// 6 - fail
 		return stoppingCondition.finalFitCondition(inliers.size());
-	}
-
-	protected static <I, D> List<? extends IndependentPair<I, D>> getRandomItems(
-			List<? extends IndependentPair<I, D>> data, int nItems)
-	{
-		final int[] rints = RandomData.getUniqueRandomInts(nItems, 0, data.size());
-		final List<IndependentPair<I, D>> out = new ArrayList<IndependentPair<I, D>>(nItems);
-
-		for (final int i : rints) {
-			out.add(data.get(i));
-		}
-
-		return out;
 	}
 
 	@Override

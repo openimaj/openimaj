@@ -56,7 +56,7 @@ public class GaussianVectorNaiveBayesModel<T> implements EstimatableModel<double
 	private VectorNaiveBayesCategorizer<T, PDF> model;
 
 	@Override
-	public void estimate(List<? extends IndependentPair<double[], T>> data) {
+	public boolean estimate(List<? extends IndependentPair<double[], T>> data) {
 		final List<InputOutputPair<Vector, T>> cfdata = new ArrayList<InputOutputPair<Vector, T>>();
 
 		for (final IndependentPair<double[], T> d : data) {
@@ -66,6 +66,8 @@ public class GaussianVectorNaiveBayesModel<T> implements EstimatableModel<double
 		}
 
 		model = learner.learn(cfdata);
+
+		return true;
 	}
 
 	@Override

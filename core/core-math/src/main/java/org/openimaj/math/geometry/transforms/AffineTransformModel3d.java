@@ -81,8 +81,9 @@ public class AffineTransformModel3d implements EstimatableModel<Point3d, Point3d
 	 * uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#estimate(java.util.List)
 	 */
 	@Override
-	public void estimate(List<? extends IndependentPair<Point3d, Point3d>> data) {
+	public boolean estimate(List<? extends IndependentPair<Point3d, Point3d>> data) {
 		this.transform = TransformUtilities.affineMatrixND(data);
+		return true;
 	}
 
 	@Override

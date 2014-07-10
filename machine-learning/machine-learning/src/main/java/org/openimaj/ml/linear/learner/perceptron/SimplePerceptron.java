@@ -94,7 +94,7 @@ public class SimplePerceptron implements OnlineLearner<double[], Integer>, Estim
 	}
 
 	@Override
-	public void estimate(List<? extends IndependentPair<double[], Integer>> data) {
+	public boolean estimate(List<? extends IndependentPair<double[], Integer>> data) {
 		this.w = new double[] { 1, 0, 0 };
 
 		for (int i = 0; i < iterations; i++) {
@@ -104,6 +104,7 @@ public class SimplePerceptron implements OnlineLearner<double[], Integer>, Estim
 			if (error < 0.01)
 				break;
 		}
+		return true;
 	}
 
 	private void iteration(List<? extends IndependentPair<double[], Integer>> pts) {

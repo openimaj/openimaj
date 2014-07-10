@@ -102,12 +102,14 @@ public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> impleme
 	protected abstract T[] getArray(int length);
 
 	@Override
-	public void estimate(List<? extends IndependentPair<T, FImage>> data) {
+	public boolean estimate(List<? extends IndependentPair<T, FImage>> data) {
 		final T[] samples = getArray(data.size());
 		for (int i = 0; i < data.size(); i++) {
 			samples[i] = data.get(i).firstObject();
 		}
 		learnModel(samples);
+
+		return true;
 	}
 
 	@Override

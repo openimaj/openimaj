@@ -26,5 +26,6 @@
     <module>image-indexing-retrieval</module>
     <module>vector-image</module>
     <module>camera-calibration</module>
+    <module>multiview</module>
   </modules>
 </project>

@@ -1,6 +1,7 @@
 package org.openimaj.math.model.fit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
@@ -9,6 +10,8 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.math.model.fit.residuals.ResidualCalculator;
 import org.openimaj.math.util.DoubleArrayStatsUtils;
+import org.openimaj.util.CollectionSampler;
+import org.openimaj.util.UniformSampler;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -65,13 +68,14 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	protected M bestModel;
 	protected List<IndependentPair<I, D>> inliers = new ArrayList<IndependentPair<I, D>>();
 	protected List<IndependentPair<I, D>> outliers = new ArrayList<IndependentPair<I, D>>();
-
+	protected CollectionSampler<IndependentPair<I, D>> sampler;
 	private double bestMedianError;
 
 	/**
 	 * Construct with the given model and residual calculator. The proportion of
 	 * outliers is assumed to be 0.4. The threshold for determining inliers and
-	 * outliers is automatically computed.
+	 * outliers is automatically computed. Uniform random sampling is used for
+	 * creating the subsets.
 	 * 
 	 * @param model
 	 *            the model to estimate
@@ -81,18 +85,15 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	 *            True if we want to perform a final fitting of the model with
 	 *            all inliers, false otherwise
 	 */
-	@SuppressWarnings("unchecked")
 	public LMedS(M model, ResidualCalculator<I, D, M> residualEstimator, boolean impEst) {
-		this.model = model;
-		this.residualEstimator = residualEstimator;
-		this.bestModel = (M) model.clone();
-		this.improveEstimate = impEst;
+		this(model, residualEstimator, impEst, new UniformSampler<IndependentPair<I, D>>());
 	}
 
 	/**
 	 * Construct with the given model, residual calculator and estimated
 	 * proportion of outliers. The threshold for determining inliers and
-	 * outliers is automatically computed.
+	 * outliers is automatically computed. Uniform random sampling is used for
+	 * creating the subsets.
 	 * 
 	 * @param model
 	 *            the model to estimate
@@ -113,7 +114,8 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	 * Construct with the given model, residual calculator and estimated
 	 * proportion of outliers. The given inlier noise level and number of
 	 * degrees of freedom of the model are used to estimate the optimal
-	 * threshold for determining inliers versus outliers.
+	 * threshold for determining inliers versus outliers. Uniform random
+	 * sampling is used for creating the subsets.
 	 * 
 	 * @param model
 	 *            the model to estimate
@@ -138,6 +140,88 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 		this.degreesOfFreedom = degreesOfFreedom;
 	}
 
+	/**
+	 * Construct with the given model and residual calculator. The proportion of
+	 * outliers is assumed to be 0.4. The threshold for determining inliers and
+	 * outliers is automatically computed.
+	 * 
+	 * @param model
+	 *            the model to estimate
+	 * @param residualEstimator
+	 *            the algorithm to compute residuals of the model
+	 * @param impEst
+	 *            True if we want to perform a final fitting of the model with
+	 *            all inliers, false otherwise
+	 * @param sampler
+	 *            the sampling algorithm for selecting random subsets
+	 */
+	@SuppressWarnings("unchecked")
+	public LMedS(M model, ResidualCalculator<I, D, M> residualEstimator, boolean impEst,
+			CollectionSampler<IndependentPair<I, D>> sampler)
+	{
+		this.model = model;
+		this.residualEstimator = residualEstimator;
+		this.bestModel = (M) model.clone();
+		this.improveEstimate = impEst;
+		this.sampler = sampler;
+	}
+
+	/**
+	 * Construct with the given model, residual calculator and estimated
+	 * proportion of outliers. The threshold for determining inliers and
+	 * outliers is automatically computed.
+	 * 
+	 * @param model
+	 *            the model to estimate
+	 * @param residualEstimator
+	 *            the algorithm to compute residuals of the model
+	 * @param outlierProportion
+	 *            Expected proportion of outliers
+	 * @param impEst
+	 *            True if we want to perform a final fitting of the model with
+	 *            all inliers, false otherwise
+	 * @param sampler
+	 *            the sampling algorithm for selecting random subsets
+	 */
+	public LMedS(M model, ResidualCalculator<I, D, M> residualEstimator, double outlierProportion, boolean impEst,
+			CollectionSampler<IndependentPair<I, D>> sampler)
+	{
+		this(model, residualEstimator, impEst, sampler);
+		this.outlierProportion = outlierProportion;
+	}
+
+	/**
+	 * Construct with the given model, residual calculator and estimated
+	 * proportion of outliers. The given inlier noise level and number of
+	 * degrees of freedom of the model are used to estimate the optimal
+	 * threshold for determining inliers versus outliers.
+	 * 
+	 * @param model
+	 *            the model to estimate
+	 * @param residualEstimator
+	 *            the algorithm to compute residuals of the model
+	 * @param outlierProportion
+	 *            Expected proportion of outliers
+	 * @param inlierNoiseLevel
+	 *            The level of inlier noise (standard deviation of Gaussian
+	 *            noise inherent in the data).
+	 * @param degreesOfFreedom
+	 *            Number of degrees of freedom of the model
+	 * @param impEst
+	 *            True if we want to perform a final fitting of the model with
+	 *            all inliers, false otherwise
+	 * @param sampler
+	 *            the sampling algorithm for selecting random subsets
+	 */
+	public LMedS(M model, ResidualCalculator<I, D, M> residualEstimator, double outlierProportion,
+			double inlierNoiseLevel, double degreesOfFreedom, boolean impEst,
+			CollectionSampler<IndependentPair<I, D>> sampler)
+	{
+		this(model, residualEstimator, outlierProportion, impEst, sampler);
+		this.inlierNoiseLevel = inlierNoiseLevel;
+		this.degreesOfFreedom = degreesOfFreedom;
+	}
+
 	@Override
 	public boolean fitData(List<? extends IndependentPair<I, D>> data) {
 		final int sampleSize = model.numItemsToEstimate();
@@ -150,11 +234,16 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 
 		double[] errors = new double[data.size()];
 		double[] bestErrors = new double[data.size()];
+		Arrays.fill(bestErrors, Double.MAX_VALUE);
 		bestMedianError = Double.MAX_VALUE;
 
+		sampler.setCollection(data);
+
 		for (int i = 0; i < numSamples; i++) {
-			final List<? extends IndependentPair<I, D>> sample = RANSAC.getRandomItems(data, sampleSize);
-			model.estimate(sample);
+			final List<? extends IndependentPair<I, D>> sample = sampler.sample(sampleSize);
+
+			if (!model.estimate(sample))
+				continue;
 
 			residualEstimator.setModel(model);
 			residualEstimator.computeResiduals(data, errors);
@@ -177,7 +266,8 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 		findInliersOutliers(data, bestErrors);
 
 		if (improveEstimate) {
-			bestModel.estimate(inliers);
+			if (!bestModel.estimate(inliers))
+				return false;
 		}
 
 		final double outlierProp = (double) outliers.size() / (double) data.size();

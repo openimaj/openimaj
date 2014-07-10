@@ -63,9 +63,11 @@ import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.geometry.transforms.HomographyRefinement;
 import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.geometry.transforms.check.TransformMatrixConditionCheck;
 import org.openimaj.math.geometry.transforms.estimation.RobustHomographyEstimator;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
@@ -257,11 +259,13 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 						new PolygonExtractionProcessor<Float[], MBFImage>(p, RGBColour.BLACK));
 
 				if (this.matcher == null) {
-					// configure the matcher
+					final RobustHomographyEstimator ransac = new RobustHomographyEstimator(0.5, 1500,
+							new RANSAC.PercentageInliersStoppingCondition(0.6), HomographyRefinement.NONE,
+							new TransformMatrixConditionCheck<HomographyModel>(10000));
+
 					this.matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 							new FastBasicKeypointMatcher<Keypoint>(8));
-					this.matcher.setFittingModel(new RobustHomographyEstimator(1.0, 1500,
-							new RANSAC.PercentageInliersStoppingCondition(0.6), HomographyRefinement.NONE));
+					this.matcher.setFittingModel(ransac);
 
 					this.modelPanel.setPreferredSize(this.modelPanel.getSize());
 				}
@@ -305,15 +309,16 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 			renderer.drawPoints(kpl, RGBColour.MAGENTA, 3);
 
 			MBFImage matches;
-			if (this.matcher.findMatches(kpl)) {
+			if (this.matcher.findMatches(kpl)
+					&& ((MatrixTransformProvider) this.matcher.getModel()).getTransform().cond() < 1e6)
+			{
 				try {
-					// Shape sh =
-					// modelImage.getBounds().transform(((MatrixTransformProvider)
-					// matcher.getModel()).getTransform().inverse());
-					// renderer.drawShape(sh, 3, RGBColour.BLUE);
 					final Matrix boundsToPoly = ((MatrixTransformProvider) this.matcher.getModel()).getTransform()
 							.inverse();
-					this.renderMode.render(renderer, boundsToPoly, this.modelImage.getBounds());
+
+					if (modelImage.getBounds().transform(boundsToPoly).isConvex()) {
+						this.renderMode.render(renderer, boundsToPoly, this.modelImage.getBounds());
+					}
 				} catch (final RuntimeException e) {
 				}
 

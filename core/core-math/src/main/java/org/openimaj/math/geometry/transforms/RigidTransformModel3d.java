@@ -65,7 +65,7 @@ public class RigidTransformModel3d extends AffineTransformModel3d
 	}
 
 	@Override
-	public void estimate(List<? extends IndependentPair<Point3d, Point3d>> data) {
+	public boolean estimate(List<? extends IndependentPair<Point3d, Point3d>> data) {
 		this.transform = TransformUtilities.rigidMatrix(data);
 
 		try {
@@ -73,6 +73,7 @@ public class RigidTransformModel3d extends AffineTransformModel3d
 		} catch (final RuntimeException e) {
 			transform = Matrix.identity(4, 4);
 		}
+		return true;
 	}
 
 	@Override

@@ -62,8 +62,9 @@ public class NullModel<T> implements EstimatableModel<T, T> {
 	}
 
 	@Override
-	public void estimate(List<? extends IndependentPair<T, T>> data) {
+	public boolean estimate(List<? extends IndependentPair<T, T>> data) {
 		// do nothing
+		return true;
 	}
 
 	@Override

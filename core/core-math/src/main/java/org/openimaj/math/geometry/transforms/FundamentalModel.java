@@ -181,7 +181,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 	}
 
 	@Override
-	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
+	public boolean estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		if (normalise) {
 			final Pair<Matrix> norms = TransformUtilities.getNormalisations(data);
 			final List<? extends IndependentPair<Point2d, Point2d>> normData = TransformUtilities.normalise(data, norms);
@@ -191,6 +191,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 		} else {
 			this.fundamental = TransformUtilities.fundamentalMatrix8Pt(data);
 		}
+		return true;
 	}
 
 	/**

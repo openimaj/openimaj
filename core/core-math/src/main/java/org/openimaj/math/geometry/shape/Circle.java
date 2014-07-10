@@ -301,4 +301,9 @@ public class Circle implements Shape {
 	public RotatedRectangle minimumBoundingRectangle() {
 		return new RotatedRectangle(this.calculateRegularBoundingBox(), 0);
 	}
+
+	@Override
+	public boolean isConvex() {
+		return true;
+	}
 }

@@ -82,9 +82,9 @@ public class LinearRegression implements EstimatableModel<double[], double[]> {
 	}
 
 	@Override
-	public void estimate(List<? extends IndependentPair<double[], double[]>> data) {
+	public boolean estimate(List<? extends IndependentPair<double[], double[]>> data) {
 		if (data.size() == 0)
-			return;
+			return false;
 
 		final int correctedx = data.get(0).firstObject().length + 1;
 		final int correctedy = data.get(0).secondObject().length;
@@ -100,6 +100,8 @@ public class LinearRegression implements EstimatableModel<double[], double[]> {
 		}
 
 		estimate_internal(new Matrix(y), new Matrix(x));
+
+		return true;
 	}
 
 	/**

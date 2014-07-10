@@ -77,7 +77,7 @@ public class UnivariateGaussianNaiveBayesModel<T> implements EstimatableModel<Do
 	}
 
 	@Override
-	public void estimate(List<? extends IndependentPair<Double, T>> data) {
+	public boolean estimate(List<? extends IndependentPair<Double, T>> data) {
 		final VectorNaiveBayesCategorizer.BatchGaussianLearner<T> learner = new VectorNaiveBayesCategorizer.BatchGaussianLearner<T>();
 		final List<InputOutputPair<Vector, T>> cfdata = new ArrayList<InputOutputPair<Vector, T>>();
 
@@ -88,6 +88,8 @@ public class UnivariateGaussianNaiveBayesModel<T> implements EstimatableModel<Do
 		}
 
 		model = learner.learn(cfdata);
+
+		return true;
 	}
 
 	@Override

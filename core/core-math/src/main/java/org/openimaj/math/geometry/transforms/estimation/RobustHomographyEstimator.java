@@ -7,11 +7,14 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.geometry.transforms.HomographyRefinement;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.geometry.transforms.estimation.sampling.BucketingSampler2d;
 import org.openimaj.math.geometry.transforms.residuals.AlgebraicResidual2d;
+import org.openimaj.math.geometry.transforms.residuals.SymmetricTransferResidual2d;
 import org.openimaj.math.model.fit.LMedS;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.math.model.fit.RANSAC.StoppingCondition;
 import org.openimaj.math.model.fit.RobustModelFitting;
+import org.openimaj.util.function.Predicate;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
@@ -23,8 +26,9 @@ import Jama.Matrix;
  * overall robust estimation process is as follows:
  * <p>
  * An initial estimate of the inliers and an algebraically optimal homography is
- * computed using {@link RANSAC} or {@link LMedS}. In both cases, the normalised
- * DLT algorithm is used (see
+ * computed using {@link RANSAC} or {@link LMedS} with a
+ * {@link BucketingSampler2d} sampling strategy for selecting subsets. In both
+ * cases, the normalised DLT algorithm is used (see
  * {@link TransformUtilities#homographyMatrixNorm(List)}
  * <p>
  * If an reasonable initial estimate was found, non-linear optimisation using
@@ -52,9 +56,9 @@ public class RobustHomographyEstimator implements RobustModelFitting<Point2d, Po
 	 */
 	public RobustHomographyEstimator(double outlierProportion, HomographyRefinement refinement) {
 		robustFitter = new LMedS<Point2d, Point2d, HomographyModel>(
-				new HomographyModel(),
-				new AlgebraicResidual2d<HomographyModel>(),
-				outlierProportion, true);
+				new HomographyModel(false),
+				new SymmetricTransferResidual2d<HomographyModel>(),
+				outlierProportion, true, new BucketingSampler2d());
 
 		this.refinement = refinement;
 	}
@@ -75,8 +79,56 @@ public class RobustHomographyEstimator implements RobustModelFitting<Point2d, Po
 	public RobustHomographyEstimator(double threshold, int nIterations, StoppingCondition stoppingCondition,
 			HomographyRefinement refinement)
 	{
-		robustFitter = new RANSAC<Point2d, Point2d, HomographyModel>(new HomographyModel(),
-				new AlgebraicResidual2d<HomographyModel>(), threshold, nIterations, stoppingCondition, true);
+		robustFitter = new RANSAC<Point2d, Point2d, HomographyModel>(new HomographyModel(false),
+				new SymmetricTransferResidual2d<HomographyModel>(), threshold, nIterations, stoppingCondition, true,
+				new BucketingSampler2d());
+
+		this.refinement = refinement;
+	}
+
+	/**
+	 * Construct using the {@link LMedS} algorithm with the given expected
+	 * outlier percentage
+	 * 
+	 * @param outlierProportion
+	 *            expected proportion of outliers (between 0 and 1)
+	 * @param refinement
+	 *            the refinement technique
+	 * @param modelCheck
+	 *            the predicate to test whether an estimated model is sane
+	 */
+	public RobustHomographyEstimator(double outlierProportion, HomographyRefinement refinement,
+			Predicate<HomographyModel> modelCheck)
+	{
+		robustFitter = new LMedS<Point2d, Point2d, HomographyModel>(
+				new HomographyModel(false, modelCheck),
+				new SymmetricTransferResidual2d<HomographyModel>(),
+				outlierProportion, true, new BucketingSampler2d());
+
+		this.refinement = refinement;
+	}
+
+	/**
+	 * Construct using the {@link RANSAC} algorithm with the given options.
+	 * 
+	 * @param threshold
+	 *            the threshold on the {@link AlgebraicResidual2d} at which to
+	 *            consider a point as an inlier
+	 * @param nIterations
+	 *            the maximum number of iterations
+	 * @param stoppingCondition
+	 *            the {@link StoppingCondition} for RANSAC
+	 * @param refinement
+	 *            the refinement technique
+	 * @param modelCheck
+	 *            the predicate to test whether an estimated model is sane
+	 */
+	public RobustHomographyEstimator(double threshold, int nIterations, StoppingCondition stoppingCondition,
+			HomographyRefinement refinement, Predicate<HomographyModel> modelCheck)
+	{
+		robustFitter = new RANSAC<Point2d, Point2d, HomographyModel>(new HomographyModel(false, modelCheck),
+				new SymmetricTransferResidual2d<HomographyModel>(), threshold, nIterations, stoppingCondition, true,
+				new BucketingSampler2d());
 
 		this.refinement = refinement;
 	}

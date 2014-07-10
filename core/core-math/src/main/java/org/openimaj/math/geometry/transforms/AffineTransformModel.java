@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.model.EstimatableModel;
+import org.openimaj.util.function.Predicate;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
@@ -45,6 +46,7 @@ import Jama.Matrix;
  * 
  */
 public class AffineTransformModel implements EstimatableModel<Point2d, Point2d>, MatrixTransformProvider {
+	protected Predicate<AffineTransformModel> modelCheck;
 	protected Matrix transform;
 
 	/**
@@ -59,9 +61,28 @@ public class AffineTransformModel implements EstimatableModel<Point2d, Point2d>,
 		transform.set(2, 2, 1);
 	}
 
+	/**
+	 * Create an {@link AffineTransformModel}. The given {@link Predicate} is
+	 * used by the {@link #estimate(List)} method to test whether the estimated
+	 * affine transform is sensible.
+	 * 
+	 * @param mc
+	 *            the test function for sensible affine transforms
+	 */
+	public AffineTransformModel(Predicate<AffineTransformModel> mc)
+	{
+		this.modelCheck = mc;
+		transform = new Matrix(3, 3);
+
+		transform.set(2, 0, 0);
+		transform.set(2, 1, 0);
+		transform.set(2, 2, 1);
+	}
+
 	@Override
 	public AffineTransformModel clone() {
 		final AffineTransformModel atm = new AffineTransformModel();
+		atm.modelCheck = modelCheck;
 		atm.transform = transform.copy();
 		return atm;
 	}
@@ -76,8 +97,13 @@ public class AffineTransformModel implements EstimatableModel<Point2d, Point2d>,
 	 * points
 	 */
 	@Override
-	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
+	public boolean estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		this.transform = TransformUtilities.affineMatrix(data);
+
+		if (modelCheck == null)
+			return true;
+
+		return modelCheck.test(this);
 	}
 
 	@Override

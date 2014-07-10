@@ -79,7 +79,7 @@ public class LeastSquaresLinearModel implements EstimatableModel<Integer, Intege
 	 * 
 	 */
 	@Override
-	public void estimate(List<? extends IndependentPair<Integer, Integer>> data) {
+	public boolean estimate(List<? extends IndependentPair<Integer, Integer>> data) {
 		double sumXi = 0;
 		double sumYi = 0;
 		double sumXiXi = 0;
@@ -100,6 +100,8 @@ public class LeastSquaresLinearModel implements EstimatableModel<Integer, Intege
 
 		c = (sumYi * sumXiXi - sumXi * sumXiYi) / (n * sumXiXi - sumXi * sumXi);
 		m = (n * sumXiYi - sumXi * sumYi) / (n * sumXiXi - sumXi * sumXi);
+
+		return true;
 	}
 
 	@Override

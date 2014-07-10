@@ -1161,6 +1161,7 @@ public class Polygon extends PointList implements Shape
 	 * @return true if the outer polygon is convex; false if non-convex or less
 	 *         than two vertices
 	 */
+	@Override
 	public boolean isConvex() {
 		final boolean isOriginallyClosed = this.isClosed();
 		if (isOriginallyClosed)

@@ -34,6 +34,7 @@ import java.util.List;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.math.model.EstimatableModel;
+import org.openimaj.util.function.Predicate;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
@@ -47,7 +48,8 @@ import Jama.Matrix;
  * 
  */
 public class HomographyModel implements EstimatableModel<Point2d, Point2d>, MatrixTransformProvider {
-	protected Matrix homography;
+	protected Predicate<HomographyModel> modelCheck;
+	protected Matrix homography = Matrix.identity(3, 3);
 	protected boolean normalise;
 
 	/**
@@ -69,6 +71,37 @@ public class HomographyModel implements EstimatableModel<Point2d, Point2d>, Matr
 	public HomographyModel(boolean norm)
 	{
 		this.normalise = norm;
+	}
+
+	/**
+	 * Create an {@link HomographyModel} that automatically normalises the data
+	 * given to {@link #estimate(List)} to get a numerically stable estimate.
+	 * The given {@link Predicate} is used by the {@link #estimate(List)} method
+	 * to test whether the estimated homography is sensible.
+	 * 
+	 * @param mc
+	 *            the test function for sensible homographies
+	 */
+	public HomographyModel(Predicate<HomographyModel> mc)
+	{
+		this(true, mc);
+	}
+
+	/**
+	 * Create a {@link HomographyModel} with optional automatic normalisation.
+	 * The given {@link Predicate} is used by the {@link #estimate(List)} method
+	 * to test whether the estimated homography is sensible
+	 * 
+	 * @param norm
+	 *            true if the data should be automatically normalised before
+	 *            running the DLT algorithm
+	 * @param mc
+	 *            the test function for sensible homographies
+	 */
+	public HomographyModel(boolean norm, Predicate<HomographyModel> mc)
+	{
+		this.normalise = norm;
+		this.modelCheck = mc;
 	}
 
 	@Override
@@ -99,12 +132,16 @@ public class HomographyModel implements EstimatableModel<Point2d, Point2d>, Matr
 	 * @see org.openimaj.math.model.EstimatableModel#estimate(java.util.List)
 	 */
 	@Override
-	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
+	public boolean estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		if (normalise) {
 			homography = TransformUtilities.homographyMatrixNorm(data);
 		} else {
 			homography = TransformUtilities.homographyMatrix(data);
 		}
+		if (this.modelCheck == null)
+			return true;
+
+		return this.modelCheck.test(this);
 	}
 
 	/**

@@ -5,11 +5,13 @@ import java.util.List;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.AffineTransformModel;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.geometry.transforms.estimation.sampling.BucketingSampler2d;
 import org.openimaj.math.geometry.transforms.residuals.AlgebraicResidual2d;
 import org.openimaj.math.model.fit.LMedS;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.math.model.fit.RANSAC.StoppingCondition;
 import org.openimaj.math.model.fit.RobustModelFitting;
+import org.openimaj.util.function.Predicate;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -17,7 +19,8 @@ import org.openimaj.util.pair.IndependentPair;
  * having to deal with the nuts and bolts of the underlying robust model
  * fitters, etc. The overall robust estimation process uses the normalised DLT
  * algorithm (see {@link TransformUtilities#affineMatrix(List)}) coupled with
- * either {@link RANSAC} or {@link LMedS}.
+ * either {@link RANSAC} or {@link LMedS} with a {@link BucketingSampler2d}
+ * sampling strategy for selecting subsets.
  * <p>
  * Non-linear optimisation is unncessary as the algebraic and geometric
  * distances are equal in the affine case.
@@ -38,7 +41,7 @@ public class RobustAffineTransformEstimator implements RobustModelFitting<Point2
 		robustFitter = new LMedS<Point2d, Point2d, AffineTransformModel>(
 				new AffineTransformModel(),
 				new AlgebraicResidual2d<AffineTransformModel>(),
-				outlierProportion, true);
+				outlierProportion, true, new BucketingSampler2d());
 	}
 
 	/**
@@ -55,7 +58,45 @@ public class RobustAffineTransformEstimator implements RobustModelFitting<Point2
 	public RobustAffineTransformEstimator(double threshold, int nIterations, StoppingCondition stoppingCondition)
 	{
 		robustFitter = new RANSAC<Point2d, Point2d, AffineTransformModel>(new AffineTransformModel(),
-				new AlgebraicResidual2d<AffineTransformModel>(), threshold, nIterations, stoppingCondition, true);
+				new AlgebraicResidual2d<AffineTransformModel>(), threshold, nIterations, stoppingCondition, true,
+				new BucketingSampler2d());
+	}
+
+	/**
+	 * Construct using the {@link LMedS} algorithm with the given expected
+	 * outlier percentage
+	 * 
+	 * @param outlierProportion
+	 *            expected proportion of outliers (between 0 and 1)
+	 * @param modelCheck
+	 *            the predicate to test whether an estimated model is sane
+	 */
+	public RobustAffineTransformEstimator(double outlierProportion, Predicate<AffineTransformModel> modelCheck) {
+		robustFitter = new LMedS<Point2d, Point2d, AffineTransformModel>(
+				new AffineTransformModel(modelCheck),
+				new AlgebraicResidual2d<AffineTransformModel>(),
+				outlierProportion, true, new BucketingSampler2d());
+	}
+
+	/**
+	 * Construct using the {@link RANSAC} algorithm with the given options.
+	 * 
+	 * @param threshold
+	 *            the threshold on the {@link AlgebraicResidual2d} at which to
+	 *            consider a point as an inlier
+	 * @param nIterations
+	 *            the maximum number of iterations
+	 * @param stoppingCondition
+	 *            the {@link StoppingCondition} for RANSAC
+	 * @param modelCheck
+	 *            the predicate to test whether an estimated model is sane
+	 */
+	public RobustAffineTransformEstimator(double threshold, int nIterations, StoppingCondition stoppingCondition,
+			Predicate<AffineTransformModel> modelCheck)
+	{
+		robustFitter = new RANSAC<Point2d, Point2d, AffineTransformModel>(new AffineTransformModel(modelCheck),
+				new AlgebraicResidual2d<AffineTransformModel>(), threshold, nIterations, stoppingCondition, true,
+				new BucketingSampler2d());
 	}
 
 	@Override

@@ -508,4 +508,9 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 		return new RotatedRectangle(c.x, c.y, width, height, angle);
 	}
+
+	@Override
+	public boolean isConvex() {
+		return true;
+	}
 }

@@ -7,6 +7,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.FundamentalModel;
 import org.openimaj.math.geometry.transforms.FundamentalRefinement;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.geometry.transforms.estimation.sampling.BucketingSampler2d;
 import org.openimaj.math.geometry.transforms.residuals.AlgebraicResidual2d;
 import org.openimaj.math.model.fit.LMedS;
 import org.openimaj.math.model.fit.RANSAC;
@@ -23,8 +24,9 @@ import Jama.Matrix;
  * fitters, etc. The overall robust estimation process is as follows:
  * <p>
  * An initial estimate of the inliers and an algebraically optimal Fundamental
- * matrix is computed using {@link RANSAC} or {@link LMedS}. In both cases, the
- * normalised 8-point algorithm is used (see
+ * matrix is computed using {@link RANSAC} or {@link LMedS} with a
+ * {@link BucketingSampler2d} sampling strategy for selecting subsets. In both
+ * cases, the normalised 8-point algorithm is used (see
  * {@link TransformUtilities#fundamentalMatrix8PtNorm(List)}
  * <p>
  * If an reasonable initial estimate was found, non-linear optimisation using
@@ -54,7 +56,7 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 		robustFitter = new LMedS<Point2d, Point2d, FundamentalModel>(
 				new FundamentalModel(false),
 				new FundamentalModel.Fundamental8PtResidual(),
-				outlierProportion, true);
+				outlierProportion, true, new BucketingSampler2d());
 
 		this.refinement = refinement;
 	}
@@ -76,7 +78,8 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 			FundamentalRefinement refinement)
 	{
 		robustFitter = new RANSAC<Point2d, Point2d, FundamentalModel>(new FundamentalModel(false),
-				new FundamentalModel.Fundamental8PtResidual(), threshold, nIterations, stoppingCondition, true);
+				new FundamentalModel.Fundamental8PtResidual(), threshold, nIterations, stoppingCondition, true,
+				new BucketingSampler2d());
 
 		this.refinement = refinement;
 	}

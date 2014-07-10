@@ -435,4 +435,9 @@ public class Triangle implements Shape {
 	public RotatedRectangle minimumBoundingRectangle() {
 		return asPolygon().minimumBoundingRectangle();
 	}
+
+	@Override
+	public boolean isConvex() {
+		return true;
+	}
 }

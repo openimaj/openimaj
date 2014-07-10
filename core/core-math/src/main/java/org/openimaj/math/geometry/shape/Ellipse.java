@@ -509,4 +509,9 @@ public class Ellipse implements Shape, Cloneable {
 	public RotatedRectangle minimumBoundingRectangle() {
 		return new RotatedRectangle(x, y, 2 * major, 2 * minor, rotation);
 	}
+
+	@Override
+	public boolean isConvex() {
+		return true;
+	}
 }

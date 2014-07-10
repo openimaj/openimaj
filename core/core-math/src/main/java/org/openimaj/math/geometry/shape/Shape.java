@@ -121,4 +121,11 @@ public interface Shape extends GeometricObject, Cloneable {
 	 * @return the minimum bounding box
 	 */
 	public RotatedRectangle minimumBoundingRectangle();
+
+	/**
+	 * Test if the shape is convex.
+	 * 
+	 * @return true if the shape is convex; false if non-convex
+	 */
+	public boolean isConvex();
 }

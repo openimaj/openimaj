@@ -54,9 +54,10 @@ public interface EstimatableModel<I, D> extends Model<I, D>, Cloneable {
 	 * 
 	 * @param data
 	 *            Data with which to estimate the model
+	 * @return true if a successful estimate was made, false otherwise
 	 * @see #numItemsToEstimate()
 	 */
-	public void estimate(List<? extends IndependentPair<I, D>> data);
+	public boolean estimate(List<? extends IndependentPair<I, D>> data);
 
 	/**
 	 * @return The minimum number of observations required to estimate the

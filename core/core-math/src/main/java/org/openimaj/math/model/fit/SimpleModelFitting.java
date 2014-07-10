@@ -107,7 +107,8 @@ public class SimpleModelFitting<I, D, M extends EstimatableModel<I, D>> implemen
 
 	@Override
 	public boolean fitData(List<? extends IndependentPair<I, D>> data) {
-		model.estimate(data);
+		if (!model.estimate(data))
+			return false;
 
 		inl = new ArrayList<IndependentPair<I, D>>();
 		outl = new ArrayList<IndependentPair<I, D>>();
