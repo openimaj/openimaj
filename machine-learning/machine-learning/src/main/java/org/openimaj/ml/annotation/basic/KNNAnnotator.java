@@ -65,14 +65,14 @@ public class KNNAnnotator<OBJECT, ANNOTATION, FEATURE>
 		extends
 		IncrementalAnnotator<OBJECT, ANNOTATION>
 {
-	private int k = 1;
-	private final List<FEATURE> features = new ArrayList<FEATURE>();
-	private final List<Collection<ANNOTATION>> annotations = new ArrayList<Collection<ANNOTATION>>();
-	private final Set<ANNOTATION> annotationsSet = new HashSet<ANNOTATION>();
-	private ObjectNearestNeighbours<FEATURE> nn;
-	private DistanceComparator<? super FEATURE> comparator;
-	private float threshold = 0;
-	private FeatureExtractor<FEATURE, OBJECT> extractor;
+	protected int k = 1;
+	protected final List<FEATURE> features = new ArrayList<FEATURE>();
+	protected final List<Collection<ANNOTATION>> annotations = new ArrayList<Collection<ANNOTATION>>();
+	protected final Set<ANNOTATION> annotationsSet = new HashSet<ANNOTATION>();
+	protected ObjectNearestNeighbours<FEATURE> nn;
+	protected DistanceComparator<? super FEATURE> comparator;
+	protected final float threshold;
+	protected FeatureExtractor<FEATURE, OBJECT> extractor;
 
 	/**
 	 * Construct with the given extractor, comparator and threshold. The number
@@ -108,7 +108,7 @@ public class KNNAnnotator<OBJECT, ANNOTATION, FEATURE>
 	public KNNAnnotator(final FeatureExtractor<FEATURE, OBJECT> extractor,
 			final DistanceComparator<? super FEATURE> comparator)
 	{
-		this(extractor, comparator, 1, comparator.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE);
+		this(extractor, comparator, 1, Float.MAX_VALUE);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class KNNAnnotator<OBJECT, ANNOTATION, FEATURE>
 	public KNNAnnotator(final FeatureExtractor<FEATURE, OBJECT> extractor,
 			final DistanceComparator<? super FEATURE> comparator, final int k)
 	{
-		this(extractor, comparator, k, comparator.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE);
+		this(extractor, comparator, k, Float.MAX_VALUE);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class KNNAnnotator<OBJECT, ANNOTATION, FEATURE>
 		this.extractor = extractor;
 		this.comparator = comparator;
 		this.k = k;
-		this.threshold = threshold;
+		this.threshold = comparator.isDistance() ? threshold : -threshold;
 	}
 
 	/**
@@ -322,14 +322,8 @@ public class KNNAnnotator<OBJECT, ANNOTATION, FEATURE>
 		int count = 0;
 		for (int i = 0; i < this.k; i++) {
 			// Distance check
-			if (this.comparator.isDistance()) {
-				if (distances[0][i] > this.threshold) {
-					continue;
-				}
-			} else {
-				if (distances[0][i] < this.threshold) {
-					continue;
-				}
+			if (distances[0][i] > this.threshold) {
+				continue;
 			}
 
 			final Collection<ANNOTATION> anns = this.annotations.get(indices[0][i]);
