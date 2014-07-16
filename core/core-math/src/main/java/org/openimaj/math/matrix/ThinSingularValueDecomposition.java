@@ -29,6 +29,8 @@
  */
 package org.openimaj.math.matrix;
 
+import java.util.Arrays;
+
 import no.uib.cipr.matrix.NotConvergedException;
 import Jama.Matrix;
 import ch.akuhn.matrix.Vector;
@@ -87,6 +89,10 @@ public class ThinSingularValueDecomposition {
 				this.S = svd.getS();
 				this.U = MatrixUtils.convert(svd.getU());
 				this.Vt = MatrixUtils.convert(svd.getVt());
+
+				this.S = Arrays.copyOf(this.S, Math.min(ndims, this.S.length));
+				this.U = U.getMatrix(0, U.getRowDimension() - 1, 0, Math.min(ndims, U.getColumnDimension()) - 1);
+				this.Vt = Vt.getMatrix(0, Math.min(Vt.getRowDimension(), ndims) - 1, 0, Vt.getColumnDimension() - 1);
 			} catch (final NotConvergedException e) {
 				throw new RuntimeException(e);
 			}
