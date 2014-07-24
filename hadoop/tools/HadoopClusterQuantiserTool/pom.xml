@@ -25,6 +25,12 @@
       <artifactId>ClusterQuantiserTool</artifactId>
       <version>1.3-SNAPSHOT</version>
       <scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+			</exclusions>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>

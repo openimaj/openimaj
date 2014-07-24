@@ -31,11 +31,12 @@ package org.openimaj.demos.sandbox.kestrel;
 
 import net.lag.kestrel.thrift.Item;
 
-import org.apache.hadoop.thirdparty.guava.common.collect.Sets;
 import org.apache.thrift7.TException;
 import org.openimaj.kestrel.SimpleKestrelClient;
 
 import backtype.storm.spout.KestrelThriftClient;
+
+import com.google.common.collect.Sets;
 
 public class KestrelPlay {
 	public static void main(String[] args) throws TException {
