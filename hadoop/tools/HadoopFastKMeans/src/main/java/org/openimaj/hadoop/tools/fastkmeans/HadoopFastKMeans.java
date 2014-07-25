@@ -34,6 +34,7 @@ import java.net.URI;
 import java.util.HashMap;
 
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
@@ -144,7 +145,10 @@ public class HadoopFastKMeans extends Configured implements Tool {
 
 		fs.delete(p, true); // Delete the sequence file of this name
 
-		IOUtils.writeBinary(fs.create(p), cluster); // Write the cluster
+		final FSDataOutputStream stream = fs.create(p);
+		IOUtils.writeBinary(stream, cluster); // Write the cluster
+		stream.flush();
+		stream.close();
 	}
 
 	/**
