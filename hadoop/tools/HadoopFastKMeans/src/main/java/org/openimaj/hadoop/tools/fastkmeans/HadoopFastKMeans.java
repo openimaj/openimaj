@@ -145,10 +145,14 @@ public class HadoopFastKMeans extends Configured implements Tool {
 
 		fs.delete(p, true); // Delete the sequence file of this name
 
-		final FSDataOutputStream stream = fs.create(p);
-		IOUtils.writeBinary(stream, cluster); // Write the cluster
-		stream.flush();
-		stream.close();
+		FSDataOutputStream stream = null;
+		try {
+			stream = fs.create(p);
+			IOUtils.writeBinary(stream, cluster); // Write the cluster
+		} finally {
+			if (stream != null)
+				stream.close();
+		}
 	}
 
 	/**
