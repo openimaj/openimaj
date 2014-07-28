@@ -31,6 +31,7 @@ package org.openimaj.hadoop.tools.fastkmeans;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.hadoop.conf.Configured;
@@ -100,7 +101,18 @@ public class HadoopFastKMeans extends Configured implements Tool {
 		final String initialCentroids = sfbs.getRandomFeatures(options.k);
 
 		ByteCentroidsResult cluster = AKMeans.sequenceFileToCluster(initialCentroids + "/part-r-00000", options.k);
+
+		// at this point there might be fewer centroids than we wanted as a
+		// result of having fewer features than centroids... this should
+		// probably be considered to be an error.
+		cluster.centroids = trimNullClusters(cluster.centroids);
 		replaceSequenceFileWithCluster(initialCentroids, cluster);
+		if (cluster.centroids.length < options.k) {
+			System.err.println("More clusters were requested than there are features. K-Means cannot be performed.");
+			replaceSequenceFileWithCluster(initialCentroids, cluster);
+			replaceSequenceFileWithCluster(base + "/final", cluster);
+			return 1;
+		}
 
 		// Prepare the AKM procedure
 		String currentCompletePath = initialCentroids;
@@ -137,6 +149,15 @@ public class HadoopFastKMeans extends Configured implements Tool {
 			cluster = null;
 		}
 		return 0;
+	}
+
+	static byte[][] trimNullClusters(byte[][] bytes) {
+		int i = 0;
+		while (i < bytes.length && bytes[i] != null) {
+			i++;
+		}
+
+		return Arrays.copyOf(bytes, i);
 	}
 
 	private void replaceSequenceFileWithCluster(String sequenceFile, ByteCentroidsResult cluster) throws IOException {
