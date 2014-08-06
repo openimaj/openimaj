@@ -52,6 +52,7 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.sanselan.ImageFormat;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.byteSources.ByteSource;
@@ -933,4 +934,31 @@ public class ImageUtilities {
 		return ImageUtilities.alphaCompositePixel(p1p, p2p);
 	}
 
+	/**
+	 * Test if a given image output format name is supported
+	 * 
+	 * @param fmt
+	 *            the format name
+	 * @return true if supported; false otherwise
+	 */
+	public static boolean isWriteFormatSupported(String fmt) {
+		return ArrayUtils.contains(ImageIO.getWriterFormatNames(), fmt);
+	}
+
+	/**
+	 * Test if the image output format suggested by the extension of the given
+	 * filename is supported
+	 * 
+	 * @param file
+	 *            the file
+	 * @return true if supported; false otherwise
+	 */
+	public static boolean isWriteFormatSupported(File file) {
+		final String name = file.getName();
+		String format = name.substring(name.lastIndexOf(".") + 1);
+
+		format = format.toLowerCase().trim();
+
+		return ArrayUtils.contains(ImageIO.getWriterFormatNames(), format);
+	}
 }
