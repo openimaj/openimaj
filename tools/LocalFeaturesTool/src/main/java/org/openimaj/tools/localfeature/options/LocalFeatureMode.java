@@ -318,7 +318,6 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Option(
 				name = "--n-tilts",
-				aliases = "-nt",
 				required = false,
 				usage = "The number of tilts for the affine simulation")
 		public int ntilts = 5;
@@ -372,7 +371,6 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Option(
 				name = "--n-tilts",
-				aliases = "-nt",
 				required = false,
 				usage = "The number of tilts for the affine simulation")
 		public int ntilts = 5;
