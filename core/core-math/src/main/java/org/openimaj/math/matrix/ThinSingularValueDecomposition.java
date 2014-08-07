@@ -29,9 +29,6 @@
  */
 package org.openimaj.math.matrix;
 
-import java.util.Arrays;
-
-import no.uib.cipr.matrix.NotConvergedException;
 import Jama.Matrix;
 import ch.akuhn.matrix.Vector;
 import ch.akuhn.matrix.eigenvalues.SingularValues;
@@ -81,34 +78,39 @@ public class ThinSingularValueDecomposition {
 	 *            number may be less.
 	 */
 	public ThinSingularValueDecomposition(ch.akuhn.matrix.Matrix matrix, int ndims) {
-		if (ndims > Math.min(matrix.rowCount(), matrix.columnCount())) {
-			try {
-				final no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(matrix.asArray());
-				no.uib.cipr.matrix.SVD svd;
-				svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
-				this.S = svd.getS();
-				this.U = MatrixUtils.convert(svd.getU());
-				this.Vt = MatrixUtils.convert(svd.getVt());
+		// FIXME: I'm (Jon) not sure why this was added, but it causes problems
+		// with big matrices... commented it out for the time being
+		// if (ndims > Math.min(matrix.rowCount(), matrix.columnCount())) {
+		// try {
+		// final no.uib.cipr.matrix.DenseMatrix mjtA = new
+		// no.uib.cipr.matrix.DenseMatrix(matrix.asArray());
+		// no.uib.cipr.matrix.SVD svd;
+		// svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
+		// this.S = svd.getS();
+		// this.U = MatrixUtils.convert(svd.getU());
+		// this.Vt = MatrixUtils.convert(svd.getVt());
+		//
+		// this.S = Arrays.copyOf(this.S, Math.min(ndims, this.S.length));
+		// this.U = U.getMatrix(0, U.getRowDimension() - 1, 0, Math.min(ndims,
+		// U.getColumnDimension()) - 1);
+		// this.Vt = Vt.getMatrix(0, Math.min(Vt.getRowDimension(), ndims) - 1,
+		// 0, Vt.getColumnDimension() - 1);
+		// } catch (final NotConvergedException e) {
+		// throw new RuntimeException(e);
+		// }
+		// } else {
+		final SingularValues sv = new SingularValues(matrix, ndims);
 
-				this.S = Arrays.copyOf(this.S, Math.min(ndims, this.S.length));
-				this.U = U.getMatrix(0, U.getRowDimension() - 1, 0, Math.min(ndims, U.getColumnDimension()) - 1);
-				this.Vt = Vt.getMatrix(0, Math.min(Vt.getRowDimension(), ndims) - 1, 0, Vt.getColumnDimension() - 1);
-			} catch (final NotConvergedException e) {
-				throw new RuntimeException(e);
-			}
-		} else {
-			final SingularValues sv = new SingularValues(matrix, ndims);
-
-			// Note: SingularValues uses JARPACK which isn't currently
-			// thread-safe :-(
-			synchronized (ThinSingularValueDecomposition.class) {
-				sv.decompose();
-			}
-
-			S = reverse(sv.value);
-			U = vectorArrayToMatrix(sv.vectorLeft, false);
-			Vt = vectorArrayToMatrix(sv.vectorRight, true);
+		// Note: SingularValues uses JARPACK which isn't currently
+		// thread-safe :-(
+		synchronized (ThinSingularValueDecomposition.class) {
+			sv.decompose();
 		}
+
+		S = reverse(sv.value);
+		U = vectorArrayToMatrix(sv.vectorLeft, false);
+		Vt = vectorArrayToMatrix(sv.vectorRight, true);
+		// }
 	}
 
 	protected double[] reverse(double[] vector) {
