@@ -80,19 +80,15 @@
 #define COLOR_ELEM "videoconvert"
 
 #ifdef NDEBUG
-#define CV_WARN(message)
+#define WARN(message)
 #else
-#define CV_WARN(message) fprintf(stderr, "warning: %s (%s:%d)\n", message, __FILE__, __LINE__)
+#define WARN(message) fprintf(stderr, "warning: %s (%s:%d)\n", message, __FILE__, __LINE__)
 #endif
 
 static bool isInited = false;
 
 void toFraction(double decimal, double &numerator, double &denominator);
 void handleMessage(GstElement * pipeline);
-
-
-OpenIMAJCapGStreamer::OpenIMAJCapGStreamer() { init(); }
-OpenIMAJCapGStreamer::~OpenIMAJCapGStreamer() { close(); }
 
 /*!
  * \brief OpenIMAJCapGStreamer::init
@@ -312,7 +308,7 @@ void OpenIMAJCapGStreamer::startPipeline()
     //fprintf(stderr, "relinked, pausing\n");
     if(gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING) ==
        GST_STATE_CHANGE_FAILURE) {
-        //CV_ERROR(1, "GStreamer: unable to start pipeline\n");
+        //ERROR(1, "GStreamer: unable to start pipeline\n");
         gst_object_unref(pipeline);
         return;
     }
@@ -331,7 +327,7 @@ void OpenIMAJCapGStreamer::stopPipeline()
     //fprintf(stderr, "restarting pipeline, going to ready\n");
     if(gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_NULL) ==
        GST_STATE_CHANGE_FAILURE) {
-        //CV_ERROR(1, "GStreamer: unable to stop pipeline\n");
+        //ERROR(1, "GStreamer: unable to stop pipeline\n");
         gst_object_unref(pipeline);
         return;
     }
@@ -433,11 +429,11 @@ void OpenIMAJCapGStreamer::newPad(GstElement * /*elem*/,
 
 /*!
  * \brief OpenIMAJCapGStreamer::open Open the given file with gstreamer
- * \param type CvCapture type. One of CV_CAP_GSTREAMER_*
- * \param filename Filename to open in case of CV_CAP_GSTREAMER_FILE
+ * \param type CvCapture type. One of CAP_GSTREAMER_*
+ * \param filename Filename to open in case of CAP_GSTREAMER_FILE
  * \return boolean. Specifies if opening was succesful.
  *
- * In case of CV_CAP_GSTREAMER_V4L(2), a pipelin is constructed as follows:
+ * In case of CAP_GSTREAMER_V4L(2), a pipelin is constructed as follows:
  *    v4l2src ! autoconvert ! appsink
  *
  *
@@ -485,7 +481,7 @@ bool OpenIMAJCapGStreamer::open(const char* filename )
         {
             uri = g_filename_to_uri(uri, NULL, NULL);
             if(!uri) {
-                CV_WARN("GStreamer: Error opening file\n");
+                WARN("GStreamer: Error opening file\n");
                 close();
                 return false;
             }
@@ -571,7 +567,7 @@ bool OpenIMAJCapGStreamer::open(const char* filename )
         
         
         if (!sink){
-            //CV_ERROR(1, "GStreamer: cannot find appsink in manual pipeline\n");
+            //ERROR(1, "GStreamer: cannot find appsink in manual pipeline\n");
             return false;
         }
         
@@ -589,7 +585,7 @@ bool OpenIMAJCapGStreamer::open(const char* filename )
         
         if(element_from_uri) {
             if(!gst_element_link(uridecodebin, color)) {
-                //CV_ERROR(1, "GStreamer: cannot link color -> sink\n");
+                //ERROR(1, "GStreamer: cannot link color -> sink\n");
                 gst_object_unref(pipeline);
                 return false;
             }
@@ -598,7 +594,7 @@ bool OpenIMAJCapGStreamer::open(const char* filename )
         }
         
         if(!gst_element_link(color, sink)) {
-            //CV_ERROR(1, "GStreamer: cannot link color -> sink\n");
+            //ERROR(1, "GStreamer: cannot link color -> sink\n");
             gst_object_unref(pipeline);
             return false;
         }
@@ -639,85 +635,85 @@ double OpenIMAJCapGStreamer::getProperty( int propId )
 #define FORMAT format
     
     if(!pipeline) {
-        CV_WARN("GStreamer: no pipeline");
+        WARN("GStreamer: no pipeline");
         return false;
     }
     
     switch(propId) {
-        case CV_CAP_PROP_POS_MSEC:
+        case CAP_PROP_POS_MSEC:
             format = GST_FORMAT_TIME;
             status = gst_element_query_position(sink, FORMAT, &value);
             if(!status) {
-                CV_WARN("GStreamer: unable to query position of stream");
+                WARN("GStreamer: unable to query position of stream");
                 return false;
             }
             return value * 1e-6; // nano seconds to milli seconds
-        case CV_CAP_PROP_POS_FRAMES:
+        case CAP_PROP_POS_FRAMES:
             format = GST_FORMAT_DEFAULT;
             status = gst_element_query_position(sink, FORMAT, &value);
             if(!status) {
-                CV_WARN("GStreamer: unable to query position of stream");
+                WARN("GStreamer: unable to query position of stream");
                 return false;
             }
             return value;
-        case CV_CAP_PROP_POS_AVI_RATIO:
+        case CAP_PROP_POS_AVI_RATIO:
             format = GST_FORMAT_PERCENT;
             status = gst_element_query_position(sink, FORMAT, &value);
             if(!status) {
-                CV_WARN("GStreamer: unable to query position of stream");
+                WARN("GStreamer: unable to query position of stream");
                 return false;
             }
             return ((double) value) / GST_FORMAT_PERCENT_MAX;
-        case CV_CAP_PROP_FRAME_WIDTH: {
+        case CAP_PROP_FRAME_WIDTH: {
             if (!buffer_caps){
-                CV_WARN("GStreamer: unable to query width of frame; no frame grabbed yet");
+                WARN("GStreamer: unable to query width of frame; no frame grabbed yet");
                 return 0;
             }
             GstStructure* structure = gst_caps_get_structure(buffer_caps, 0);
             gint width = 0;
             if(!gst_structure_get_int(structure, "width", &width)){
-                CV_WARN("GStreamer: unable to query width of frame");
+                WARN("GStreamer: unable to query width of frame");
                 return 0;
             }
             return width;
             break;
         }
-        case CV_CAP_PROP_FRAME_HEIGHT: {
+        case CAP_PROP_FRAME_HEIGHT: {
             if (!buffer_caps){
-                CV_WARN("GStreamer: unable to query height of frame; no frame grabbed yet");
+                WARN("GStreamer: unable to query height of frame; no frame grabbed yet");
                 return 0;
             }
             GstStructure* structure = gst_caps_get_structure(buffer_caps, 0);
             gint height = 0;
             if(!gst_structure_get_int(structure, "height", &height)){
-                CV_WARN("GStreamer: unable to query height of frame");
+                WARN("GStreamer: unable to query height of frame");
                 return 0;
             }
             return height;
             break;
         }
-        case CV_CAP_PROP_FPS: {
+        case CAP_PROP_FPS: {
             if (!buffer_caps){
-                CV_WARN("GStreamer: unable to query framerate of stream; no frame grabbed yet");
+                WARN("GStreamer: unable to query framerate of stream; no frame grabbed yet");
                 return 0;
             }
             GstStructure* structure = gst_caps_get_structure(buffer_caps, 0);
             gint num = 0, denom=1;
             if(!gst_structure_get_fraction(structure, "framerate", &num, &denom)){
-                CV_WARN("GStreamer: unable to query framerate of stream");
+                WARN("GStreamer: unable to query framerate of stream");
                 return 0;
             }
             return (double)num/(double)denom;
             break;
         }
-        case CV_CAP_GSTREAMER_QUEUE_LENGTH:
+        case CAP_GSTREAMER_QUEUE_LENGTH:
             if(!sink) {
-                CV_WARN("GStreamer: there is no sink yet");
+                WARN("GStreamer: there is no sink yet");
                 return false;
             }
             return gst_app_sink_get_max_buffers(GST_APP_SINK(sink));
         default:
-            CV_WARN("GStreamer: unhandled property");
+            WARN("GStreamer: unhandled property");
             break;
     }
     
@@ -740,7 +736,7 @@ bool OpenIMAJCapGStreamer::setProperty( int propId, double value )
     GstSeekFlags flags;
     
     if(!pipeline) {
-        CV_WARN("GStreamer: no pipeline");
+        WARN("GStreamer: no pipeline");
         return false;
     }
     
@@ -750,43 +746,43 @@ bool OpenIMAJCapGStreamer::setProperty( int propId, double value )
     
     
     switch(propId) {
-        case CV_CAP_PROP_POS_MSEC:
+        case CAP_PROP_POS_MSEC:
             format = GST_FORMAT_TIME;
             flags = (GstSeekFlags) (GST_SEEK_FLAG_FLUSH|GST_SEEK_FLAG_ACCURATE);
             if(!gst_element_seek_simple(GST_ELEMENT(pipeline), format,
                                         flags, (gint64) (value * GST_MSECOND))) {
-                CV_WARN("GStreamer: unable to seek");
+                WARN("GStreamer: unable to seek");
             }
             break;
-        case CV_CAP_PROP_POS_FRAMES:
+        case CAP_PROP_POS_FRAMES:
             format = GST_FORMAT_DEFAULT;
             flags = (GstSeekFlags) (GST_SEEK_FLAG_FLUSH|GST_SEEK_FLAG_ACCURATE);
             if(!gst_element_seek_simple(GST_ELEMENT(pipeline), format,
                                         flags, (gint64) value)) {
-                CV_WARN("GStreamer: unable to seek");
+                WARN("GStreamer: unable to seek");
             }
             break;
-        case CV_CAP_PROP_POS_AVI_RATIO:
+        case CAP_PROP_POS_AVI_RATIO:
             format = GST_FORMAT_PERCENT;
             flags = (GstSeekFlags) (GST_SEEK_FLAG_FLUSH|GST_SEEK_FLAG_ACCURATE);
             if(!gst_element_seek_simple(GST_ELEMENT(pipeline), format,
                                         flags, (gint64) (value * GST_FORMAT_PERCENT_MAX))) {
-                CV_WARN("GStreamer: unable to seek");
+                WARN("GStreamer: unable to seek");
             }
             break;
-        case CV_CAP_PROP_FRAME_WIDTH:
+        case CAP_PROP_FRAME_WIDTH:
             if(value > 0)
                 setFilter("width", G_TYPE_INT, (int) value, 0);
             else
                 removeFilter("width");
             break;
-        case CV_CAP_PROP_FRAME_HEIGHT:
+        case CAP_PROP_FRAME_HEIGHT:
             if(value > 0)
                 setFilter("height", G_TYPE_INT, (int) value, 0);
             else
                 removeFilter("height");
             break;
-        case CV_CAP_PROP_FPS:
+        case CAP_PROP_FPS:
             if(value > 0) {
                 double num=0, denom = 1;
                 toFraction(value, num,  denom);
@@ -794,13 +790,13 @@ bool OpenIMAJCapGStreamer::setProperty( int propId, double value )
             } else
                 removeFilter("framerate");
             break;
-        case CV_CAP_GSTREAMER_QUEUE_LENGTH:
+        case CAP_GSTREAMER_QUEUE_LENGTH:
             if(!sink)
                 break;
             gst_app_sink_set_max_buffers(GST_APP_SINK(sink), (guint) value);
             break;
         default:
-            CV_WARN("GStreamer: unhandled property");
+            WARN("GStreamer: unhandled property");
     }
     
     if (wasPlaying)
@@ -870,7 +866,7 @@ void handleMessage(GstElement * pipeline)
         
         if(gst_is_missing_plugin_message(msg))
         {
-            //CV_ERROR(1, "GStreamer: your gstreamer installation is missing a required plugin\n");
+            //ERROR(1, "GStreamer: your gstreamer installation is missing a required plugin\n");
             fprintf(stderr, "GStreamer: your gstreamer installation is missing a required plugin\n");
         }
         else

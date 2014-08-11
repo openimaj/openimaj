@@ -85,22 +85,20 @@
 
 enum
 {
-    // modes of the controlling registers (can be: auto, manual, auto single push, absolute Latter allowed with any other mode)
-    // every feature can have only one mode turned on at a time
-	CV_CAP_PROP_POS_MSEC       =0,
-	CV_CAP_PROP_POS_FRAMES     =1,
-	CV_CAP_PROP_POS_AVI_RATIO  =2,
-	CV_CAP_PROP_FRAME_WIDTH    =3,
-	CV_CAP_PROP_FRAME_HEIGHT   =4,
-	CV_CAP_PROP_FPS            =5,
-    CV_CAP_GSTREAMER_QUEUE_LENGTH	= 200
+	CAP_PROP_POS_MSEC       =0,
+	CAP_PROP_POS_FRAMES     =1,
+	CAP_PROP_POS_AVI_RATIO  =2,
+	CAP_PROP_FRAME_WIDTH    =3,
+	CAP_PROP_FRAME_HEIGHT   =4,
+	CAP_PROP_FPS            =5,
+    CAP_GSTREAMER_QUEUE_LENGTH	= 200
 };
 
 class OpenIMAJCapGStreamer
 {
 public:
-    OpenIMAJCapGStreamer();// { init(); }
-    virtual ~OpenIMAJCapGStreamer();// { close(); }
+    OpenIMAJCapGStreamer() { init(); }
+    virtual ~OpenIMAJCapGStreamer() { close(); }
     
     virtual bool open( const char* filename );
     virtual void close();
@@ -109,8 +107,8 @@ public:
     virtual bool setProperty(int, double);
     
     virtual bool nextFrame();
-    virtual int getWidth() { return getProperty(CV_CAP_PROP_FRAME_WIDTH); };
-    virtual int getHeight() { return getProperty(CV_CAP_PROP_FRAME_HEIGHT); };
+    virtual int getWidth() { return getProperty(CAP_PROP_FRAME_WIDTH); };
+    virtual int getHeight() { return getProperty(CAP_PROP_FRAME_HEIGHT); };
     virtual unsigned char* getImage();
     
 protected:
