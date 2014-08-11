@@ -90,6 +90,9 @@ static bool isInited = false;
 void toFraction(double decimal, double &numerator, double &denominator);
 void handleMessage(GstElement * pipeline);
 
+OpenIMAJCapGStreamer::OpenIMAJCapGStreamer() { init(); }
+OpenIMAJCapGStreamer::~OpenIMAJCapGStreamer() { close(); }
+
 /*!
  * \brief OpenIMAJCapGStreamer::init
  * inits the class
@@ -457,6 +460,8 @@ void OpenIMAJCapGStreamer::newPad(GstElement * /*elem*/,
  */
 bool OpenIMAJCapGStreamer::open(const char* filename )
 {
+    printf("file: %s\n", filename);
+    
     if(!isInited) {
         //FIXME: threadsafety
         gst_init (NULL, NULL);
@@ -907,3 +912,6 @@ void handleMessage(GstElement * pipeline)
     
     gst_object_unref(GST_OBJECT(bus));
 }
+
+int OpenIMAJCapGStreamer::getWidth() { return getProperty(CAP_PROP_FRAME_WIDTH); };
+int OpenIMAJCapGStreamer::getHeight() { return getProperty(CAP_PROP_FRAME_HEIGHT); };

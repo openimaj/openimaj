@@ -97,19 +97,19 @@ enum
 class OpenIMAJCapGStreamer
 {
 public:
-    OpenIMAJCapGStreamer() { init(); }
-    virtual ~OpenIMAJCapGStreamer() { close(); }
+    OpenIMAJCapGStreamer();
+    ~OpenIMAJCapGStreamer();
     
-    virtual bool open( const char* filename );
-    virtual void close();
+    bool open( const char* filename );
+    void close();
     
-    virtual double getProperty(int);
-    virtual bool setProperty(int, double);
+    double getProperty(int);
+    bool setProperty(int, double);
     
-    virtual bool nextFrame();
-    virtual int getWidth() { return getProperty(CAP_PROP_FRAME_WIDTH); };
-    virtual int getHeight() { return getProperty(CAP_PROP_FRAME_HEIGHT); };
-    virtual unsigned char* getImage();
+    bool nextFrame();
+    int getWidth();
+    int getHeight();
+    unsigned char* getImage();
     
 protected:
     void init();
