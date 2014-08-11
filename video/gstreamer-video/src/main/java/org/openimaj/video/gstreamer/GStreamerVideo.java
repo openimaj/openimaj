@@ -5,6 +5,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.video.Video;
+import org.openimaj.video.VideoDisplay;
 
 public class GStreamerVideo extends Video<MBFImage> {
 	private OpenIMAJCapGStreamer gstreamer;
@@ -107,13 +108,28 @@ public class GStreamerVideo extends Video<MBFImage> {
 	public void reset() {
 		gstreamer.close();
 
+		System.out.println("Opening");
 		if (!gstreamer.open(Pointer.pointerToCString(pipeline))) {
 			throw new RuntimeException(new GStreamerException("Error"));
 		}
+		System.out.println("Opened");
 
 		isStopped = false;
+
+		System.out.println("nf1");
+		System.out.println("nf: " + gstreamer.nextFrame());
+		gstreamer.getImage();
+		System.out.println("nf2");
+
 		width = gstreamer.getWidth();
 		height = gstreamer.getHeight();
 		frame = new MBFImage(width, height, ColourSpace.RGB);
+	}
+
+	public static void main(String[] args) {
+		final GStreamerVideo gsv = new GStreamerVideo("videotestsrc ! appsink");
+		System.out.println("here");
+
+		VideoDisplay.createVideoDisplay(gsv);
 	}
 }

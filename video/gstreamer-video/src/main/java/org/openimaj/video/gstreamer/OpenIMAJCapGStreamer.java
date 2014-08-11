@@ -5,7 +5,6 @@ import org.bridj.Platform;
 import org.bridj.Pointer;
 import org.bridj.ann.Library;
 import org.bridj.ann.Runtime;
-import org.bridj.ann.Virtual;
 import org.bridj.cpp.CPPObject;
 import org.bridj.cpp.CPPRuntime;
 
@@ -45,56 +44,48 @@ class OpenIMAJCapGStreamer extends CPPObject {
 	 * Original signature : <code>bool open(const char*)</code><br>
 	 * <i>native declaration : line 30</i>
 	 */
-	@Virtual(1)
 	native public boolean open(Pointer<Byte> filename);
 
 	/**
 	 * Original signature : <code>void close()</code><br>
 	 * <i>native declaration : line 31</i>
 	 */
-	@Virtual(2)
 	native public void close();
 
 	/**
 	 * Original signature : <code>double getProperty(int)</code><br>
 	 * <i>native declaration : line 33</i>
 	 */
-	@Virtual(3)
 	native public double getProperty(int int1);
 
 	/**
 	 * Original signature : <code>bool setProperty(int, double)</code><br>
 	 * <i>native declaration : line 34</i>
 	 */
-	@Virtual(4)
 	native public boolean setProperty(int int1, double double1);
 
 	/**
 	 * Original signature : <code>bool nextFrame()</code><br>
 	 * <i>native declaration : line 36</i>
 	 */
-	@Virtual(5)
 	native public boolean nextFrame();
 
 	/**
 	 * Original signature : <code>int getWidth()</code><br>
 	 * <i>native declaration : line 37</i>
 	 */
-	@Virtual(6)
 	native public int getWidth();
 
 	/**
 	 * Original signature : <code>int getHeight()</code><br>
 	 * <i>native declaration : line 38</i>
 	 */
-	@Virtual(7)
 	native public int getHeight();
 
 	/**
 	 * Original signature : <code>char* getImage()</code><br>
 	 * <i>native declaration : line 39</i>
 	 */
-	@Virtual(8)
 	native public Pointer<Byte> getImage();
 
 	public OpenIMAJCapGStreamer(Pointer pointer) {

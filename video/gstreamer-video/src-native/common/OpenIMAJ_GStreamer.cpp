@@ -166,6 +166,8 @@ void OpenIMAJCapGStreamer::close()
  */
 bool OpenIMAJCapGStreamer::nextFrame()
 {
+    printf("nextframe\n");
+    
     if(!pipeline)
         return false;
     
@@ -204,64 +206,65 @@ unsigned char* OpenIMAJCapGStreamer::getImage()
         return 0;
     
     //construct a frame header if we did not have any yet
-//    if(!frame)
-//    {
-//        gint height, width;
-//        
-//        //reuse the caps ptr
-//        if (buffer_caps)
-//            gst_caps_unref(buffer_caps);
-//        
-//        buffer_caps = gst_sample_get_caps(sample);
-//
-//        // bail out in no caps
-//        assert(gst_caps_get_size(buffer_caps) == 1);
-//        GstStructure* structure = gst_caps_get_structure(buffer_caps, 0);
-//        
-//        // bail out if width or height are 0
-//        if(!gst_structure_get_int(structure, "width", &width) ||
-//           !gst_structure_get_int(structure, "height", &height))
-//        {
-//            return 0;
-//        }
-//        
-//        
-//        int depth = 3;
-//
-//        depth = 0;
-//        const gchar* name = gst_structure_get_name(structure);
-//        const gchar* format = gst_structure_get_string(structure, "format");
-//        
-//        if (!name || !format)
-//            return 0;
-//        
-//        // we support 3 types of data:
-//        //     video/x-raw, format=BGR   -> 8bit, 3 channels
-//        //     video/x-raw, format=GRAY8 -> 8bit, 1 channel
-//        //     video/x-bayer             -> 8bit, 1 channel
-//        // bayer data is never decoded, the user is responsible for that
-//        // everything is 8 bit, so we just test the caps for bit depth
-//        
-//        if (strcasecmp(name, "video/x-raw") == 0)
-//        {
-//            if (strcasecmp(format, "BGR") == 0) {
-//                depth = 3;
-//            }
-//            else if(strcasecmp(format, "GRAY8") == 0){
-//                depth = 1;
-//            }
-//        }
-//        else if (strcasecmp(name, "video/x-bayer") == 0)
-//        {
-//            depth = 1;
-//        }
-//
-//        if (depth > 0) {
-//            frame = cvCreateImageHeader(cvSize(width, height), IPL_DEPTH_8U, depth);
-//        }else{
-//            return 0;
-//        }
-//    }
+    if(!frame)
+    {
+        gint height, width;
+        
+        //reuse the caps ptr
+        if (buffer_caps)
+            gst_caps_unref(buffer_caps);
+        
+        buffer_caps = gst_sample_get_caps(sample);
+    
+
+        // bail out in no caps
+        assert(gst_caps_get_size(buffer_caps) == 1);
+        GstStructure* structure = gst_caps_get_structure(buffer_caps, 0);
+        
+        // bail out if width or height are 0
+        if(!gst_structure_get_int(structure, "width", &width) ||
+           !gst_structure_get_int(structure, "height", &height))
+        {
+            return 0;
+        }
+        
+        
+        int depth = 3;
+
+        depth = 0;
+        const gchar* name = gst_structure_get_name(structure);
+        const gchar* format = gst_structure_get_string(structure, "format");
+        
+        if (!name || !format)
+            return 0;
+        
+        // we support 3 types of data:
+        //     video/x-raw, format=BGR   -> 8bit, 3 channels
+        //     video/x-raw, format=GRAY8 -> 8bit, 1 channel
+        //     video/x-bayer             -> 8bit, 1 channel
+        // bayer data is never decoded, the user is responsible for that
+        // everything is 8 bit, so we just test the caps for bit depth
+        
+        if (strcasecmp(name, "video/x-raw") == 0)
+        {
+            if (strcasecmp(format, "BGR") == 0) {
+                depth = 3;
+            }
+            else if(strcasecmp(format, "GRAY8") == 0){
+                depth = 1;
+            }
+        }
+        else if (strcasecmp(name, "video/x-bayer") == 0)
+        {
+            depth = 1;
+        }
+
+        if (depth > 0) {
+            frame = cvCreateImageHeader(cvSize(width, height), IPL_DEPTH_8U, depth);
+        }else{
+            return 0;
+        }
+    }
     
     // gstreamer expects us to handle the memory at this point
     // so we can just wrap the raw buffer and be done with it
