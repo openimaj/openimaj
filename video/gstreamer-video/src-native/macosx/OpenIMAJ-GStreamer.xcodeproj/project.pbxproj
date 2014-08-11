@@ -1,0 +1,427 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FC79A71F19938FE0006D94FD /* OpenIMAJ_GStreamer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC79A71D19938FE0006D94FD /* OpenIMAJ_GStreamer.cpp */; };
+		FC79A72019938FE0006D94FD /* OpenIMAJ_GStreamer.h in Headers */ = {isa = PBXBuildFile; fileRef = FC79A71E19938FE0006D94FD /* OpenIMAJ_GStreamer.h */; };
+		FC79A7271994F553006D94FD /* libgstapp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7211994F553006D94FD /* libgstapp-1.0.0.dylib */; };
+		FC79A7281994F553006D94FD /* libgstbase-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7221994F553006D94FD /* libgstbase-1.0.0.dylib */; };
+		FC79A7291994F553006D94FD /* libgstpbutils-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7231994F553006D94FD /* libgstpbutils-1.0.0.dylib */; };
+		FC79A72A1994F553006D94FD /* libgstreamer-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7241994F553006D94FD /* libgstreamer-1.0.0.dylib */; };
+		FC79A72B1994F553006D94FD /* libgstriff-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7251994F553006D94FD /* libgstriff-1.0.0.dylib */; };
+		FC79A72C1994F553006D94FD /* libgstvideo-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7261994F553006D94FD /* libgstvideo-1.0.0.dylib */; };
+		FC79A72F1994F5D5006D94FD /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A72D1994F5D5006D94FD /* libglib-2.0.0.dylib */; };
+		FC79A7301994F5D5006D94FD /* libgobject-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A72E1994F5D5006D94FD /* libgobject-2.0.0.dylib */; };
+		FC79A738199546F0006D94FD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC79A737199546F0006D94FD /* main.cpp */; };
+		FC79A73A199546F0006D94FD /* Test.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = FC79A739199546F0006D94FD /* Test.1 */; };
+		FC79A74019954FA7006D94FD /* OpenIMAJ_GStreamer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC79A71D19938FE0006D94FD /* OpenIMAJ_GStreamer.cpp */; };
+		FC79A74119954FA7006D94FD /* OpenIMAJ_GStreamer.h in Sources */ = {isa = PBXBuildFile; fileRef = FC79A71E19938FE0006D94FD /* OpenIMAJ_GStreamer.h */; };
+		FC79A74219955061006D94FD /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A72D1994F5D5006D94FD /* libglib-2.0.0.dylib */; };
+		FC79A74319955061006D94FD /* libgobject-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A72E1994F5D5006D94FD /* libgobject-2.0.0.dylib */; };
+		FC79A74419955061006D94FD /* libgstapp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7211994F553006D94FD /* libgstapp-1.0.0.dylib */; };
+		FC79A74519955061006D94FD /* libgstbase-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7221994F553006D94FD /* libgstbase-1.0.0.dylib */; };
+		FC79A74619955061006D94FD /* libgstpbutils-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7231994F553006D94FD /* libgstpbutils-1.0.0.dylib */; };
+		FC79A74719955061006D94FD /* libgstreamer-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7241994F553006D94FD /* libgstreamer-1.0.0.dylib */; };
+		FC79A74819955061006D94FD /* libgstriff-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7251994F553006D94FD /* libgstriff-1.0.0.dylib */; };
+		FC79A74919955061006D94FD /* libgstvideo-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FC79A7261994F553006D94FD /* libgstvideo-1.0.0.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FC79A733199546F0006D94FD /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				FC79A73A199546F0006D94FD /* Test.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		FC79A71619938FA7006D94FD /* libOpenIMAJ-GStreamer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libOpenIMAJ-GStreamer.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC79A71D19938FE0006D94FD /* OpenIMAJ_GStreamer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OpenIMAJ_GStreamer.cpp; sourceTree = "<group>"; };
+		FC79A71E19938FE0006D94FD /* OpenIMAJ_GStreamer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenIMAJ_GStreamer.h; sourceTree = "<group>"; };
+		FC79A7211994F553006D94FD /* libgstapp-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgstapp-1.0.0.dylib"; path = "../../../../../../../../../usr/local/Cellar/gst-plugins-base/1.4.0/lib/libgstapp-1.0.0.dylib"; sourceTree = "<group>"; };
+		FC79A7221994F553006D94FD /* libgstbase-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgstbase-1.0.0.dylib"; path = "../../../../../../../../../usr/local/Cellar/gstreamer/1.4.0/lib/libgstbase-1.0.0.dylib"; sourceTree = "<group>"; };
+		FC79A7231994F553006D94FD /* libgstpbutils-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgstpbutils-1.0.0.dylib"; path = "../../../../../../../../../usr/local/Cellar/gst-plugins-base/1.4.0/lib/libgstpbutils-1.0.0.dylib"; sourceTree = "<group>"; };
+		FC79A7241994F553006D94FD /* libgstreamer-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgstreamer-1.0.0.dylib"; path = "../../../../../../../../../usr/local/Cellar/gstreamer/1.4.0/lib/libgstreamer-1.0.0.dylib"; sourceTree = "<group>"; };
+		FC79A7251994F553006D94FD /* libgstriff-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgstriff-1.0.0.dylib"; path = "../../../../../../../../../usr/local/Cellar/gst-plugins-base/1.4.0/lib/libgstriff-1.0.0.dylib"; sourceTree = "<group>"; };
+		FC79A7261994F553006D94FD /* libgstvideo-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgstvideo-1.0.0.dylib"; path = "../../../../../../../../../usr/local/Cellar/gst-plugins-base/1.4.0/lib/libgstvideo-1.0.0.dylib"; sourceTree = "<group>"; };
+		FC79A72D1994F5D5006D94FD /* libglib-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.0.dylib"; path = "../../../../../../../../../usr/local/Cellar/glib/2.40.0_1/lib/libglib-2.0.0.dylib"; sourceTree = "<group>"; };
+		FC79A72E1994F5D5006D94FD /* libgobject-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgobject-2.0.0.dylib"; path = "../../../../../../../../../usr/local/Cellar/glib/2.40.0_1/lib/libgobject-2.0.0.dylib"; sourceTree = "<group>"; };
+		FC79A735199546F0006D94FD /* Test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Test; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC79A737199546F0006D94FD /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		FC79A739199546F0006D94FD /* Test.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Test.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FC79A71319938FA7006D94FD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC79A72F1994F5D5006D94FD /* libglib-2.0.0.dylib in Frameworks */,
+				FC79A7301994F5D5006D94FD /* libgobject-2.0.0.dylib in Frameworks */,
+				FC79A7271994F553006D94FD /* libgstapp-1.0.0.dylib in Frameworks */,
+				FC79A7281994F553006D94FD /* libgstbase-1.0.0.dylib in Frameworks */,
+				FC79A7291994F553006D94FD /* libgstpbutils-1.0.0.dylib in Frameworks */,
+				FC79A72A1994F553006D94FD /* libgstreamer-1.0.0.dylib in Frameworks */,
+				FC79A72B1994F553006D94FD /* libgstriff-1.0.0.dylib in Frameworks */,
+				FC79A72C1994F553006D94FD /* libgstvideo-1.0.0.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FC79A732199546F0006D94FD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC79A74219955061006D94FD /* libglib-2.0.0.dylib in Frameworks */,
+				FC79A74319955061006D94FD /* libgobject-2.0.0.dylib in Frameworks */,
+				FC79A74419955061006D94FD /* libgstapp-1.0.0.dylib in Frameworks */,
+				FC79A74519955061006D94FD /* libgstbase-1.0.0.dylib in Frameworks */,
+				FC79A74619955061006D94FD /* libgstpbutils-1.0.0.dylib in Frameworks */,
+				FC79A74719955061006D94FD /* libgstreamer-1.0.0.dylib in Frameworks */,
+				FC79A74819955061006D94FD /* libgstriff-1.0.0.dylib in Frameworks */,
+				FC79A74919955061006D94FD /* libgstvideo-1.0.0.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FC79A70D19938FA7006D94FD = {
+			isa = PBXGroup;
+			children = (
+				FC79A72D1994F5D5006D94FD /* libglib-2.0.0.dylib */,
+				FC79A72E1994F5D5006D94FD /* libgobject-2.0.0.dylib */,
+				FC79A7211994F553006D94FD /* libgstapp-1.0.0.dylib */,
+				FC79A7221994F553006D94FD /* libgstbase-1.0.0.dylib */,
+				FC79A7231994F553006D94FD /* libgstpbutils-1.0.0.dylib */,
+				FC79A7241994F553006D94FD /* libgstreamer-1.0.0.dylib */,
+				FC79A7251994F553006D94FD /* libgstriff-1.0.0.dylib */,
+				FC79A7261994F553006D94FD /* libgstvideo-1.0.0.dylib */,
+				FC79A71D19938FE0006D94FD /* OpenIMAJ_GStreamer.cpp */,
+				FC79A71E19938FE0006D94FD /* OpenIMAJ_GStreamer.h */,
+				FC79A736199546F0006D94FD /* Test */,
+				FC79A71719938FA7006D94FD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FC79A71719938FA7006D94FD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FC79A71619938FA7006D94FD /* libOpenIMAJ-GStreamer.dylib */,
+				FC79A735199546F0006D94FD /* Test */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FC79A736199546F0006D94FD /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				FC79A737199546F0006D94FD /* main.cpp */,
+				FC79A739199546F0006D94FD /* Test.1 */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FC79A71419938FA7006D94FD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC79A72019938FE0006D94FD /* OpenIMAJ_GStreamer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FC79A71519938FA7006D94FD /* OpenIMAJ-GStreamer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC79A71A19938FA7006D94FD /* Build configuration list for PBXNativeTarget "OpenIMAJ-GStreamer" */;
+			buildPhases = (
+				FC79A71219938FA7006D94FD /* Sources */,
+				FC79A71319938FA7006D94FD /* Frameworks */,
+				FC79A71419938FA7006D94FD /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OpenIMAJ-GStreamer";
+			productName = "OpenIMAJ-GStreamer";
+			productReference = FC79A71619938FA7006D94FD /* libOpenIMAJ-GStreamer.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		FC79A734199546F0006D94FD /* Test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC79A73D199546F0006D94FD /* Build configuration list for PBXNativeTarget "Test" */;
+			buildPhases = (
+				FC79A731199546F0006D94FD /* Sources */,
+				FC79A732199546F0006D94FD /* Frameworks */,
+				FC79A733199546F0006D94FD /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Test;
+			productName = Test;
+			productReference = FC79A735199546F0006D94FD /* Test */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FC79A70E19938FA7006D94FD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Jonathon Hare";
+			};
+			buildConfigurationList = FC79A71119938FA7006D94FD /* Build configuration list for PBXProject "OpenIMAJ-GStreamer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FC79A70D19938FA7006D94FD;
+			productRefGroup = FC79A71719938FA7006D94FD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FC79A71519938FA7006D94FD /* OpenIMAJ-GStreamer */,
+				FC79A734199546F0006D94FD /* Test */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FC79A71219938FA7006D94FD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC79A71F19938FE0006D94FD /* OpenIMAJ_GStreamer.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FC79A731199546F0006D94FD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC79A74019954FA7006D94FD /* OpenIMAJ_GStreamer.cpp in Sources */,
+				FC79A74119954FA7006D94FD /* OpenIMAJ_GStreamer.h in Sources */,
+				FC79A738199546F0006D94FD /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FC79A71819938FA7006D94FD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		FC79A71919938FA7006D94FD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		FC79A71B19938FA7006D94FD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/usr/local/include/gstreamer-1.0/",
+					"/usr/local/include/glib-2.0",
+					/usr/local/opt/gettext/include,
+					"/usr/local/lib/glib-2.0/include",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/usr/local/Cellar/gst-plugins-base/1.4.0/lib",
+					/usr/local/Cellar/gstreamer/1.4.0/lib,
+					/usr/local/Cellar/glib/2.40.0_1/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.8;
+			};
+			name = Debug;
+		};
+		FC79A71C19938FA7006D94FD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/usr/local/include/gstreamer-1.0/",
+					"/usr/local/include/glib-2.0",
+					/usr/local/opt/gettext/include,
+					"/usr/local/lib/glib-2.0/include",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/usr/local/Cellar/gst-plugins-base/1.4.0/lib",
+					/usr/local/Cellar/gstreamer/1.4.0/lib,
+					/usr/local/Cellar/glib/2.40.0_1/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.8;
+			};
+			name = Release;
+		};
+		FC79A73B199546F0006D94FD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/usr/local/include/gstreamer-1.0/",
+					"/usr/local/include/glib-2.0",
+					/usr/local/opt/gettext/include,
+					"/usr/local/lib/glib-2.0/include",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/usr/local/Cellar/gst-plugins-base/1.4.0/lib",
+					/usr/local/Cellar/gstreamer/1.4.0/lib,
+					/usr/local/Cellar/glib/2.40.0_1/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FC79A73C199546F0006D94FD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/usr/local/include/gstreamer-1.0/",
+					"/usr/local/include/glib-2.0",
+					/usr/local/opt/gettext/include,
+					"/usr/local/lib/glib-2.0/include",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/usr/local/Cellar/gst-plugins-base/1.4.0/lib",
+					/usr/local/Cellar/gstreamer/1.4.0/lib,
+					/usr/local/Cellar/glib/2.40.0_1/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FC79A71119938FA7006D94FD /* Build configuration list for PBXProject "OpenIMAJ-GStreamer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC79A71819938FA7006D94FD /* Debug */,
+				FC79A71919938FA7006D94FD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FC79A71A19938FA7006D94FD /* Build configuration list for PBXNativeTarget "OpenIMAJ-GStreamer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC79A71B19938FA7006D94FD /* Debug */,
+				FC79A71C19938FA7006D94FD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FC79A73D199546F0006D94FD /* Build configuration list for PBXNativeTarget "Test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC79A73B199546F0006D94FD /* Debug */,
+				FC79A73C199546F0006D94FD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FC79A70E19938FA7006D94FD /* Project object */;
+}

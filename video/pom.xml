@@ -17,5 +17,6 @@
   <modules>
     <module>video-processing</module>
     <module>xuggle-video</module>
+    <module>gstreamer-video</module>
   </modules>
 </project>

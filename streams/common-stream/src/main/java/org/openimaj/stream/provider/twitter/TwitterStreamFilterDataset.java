@@ -47,33 +47,40 @@ public class TwitterStreamFilterDataset extends AbstractTwitterStatusesFilterDat
 	 * Construct the dataset from the given API token. The stream is backed by
 	 * an {@link ArrayBlockingDroppingQueue} with a single item capacity.
 	 * 
+	 * @param query
+	 *            the query
 	 * @param token
 	 *            the Twitter api authentication credentials
 	 */
-	public TwitterStreamFilterDataset(FilterQuery query,final TwitterAPIToken token) {
-		this(query,token, new ArrayBlockingDroppingQueue<Status>(1));
+	public TwitterStreamFilterDataset(FilterQuery query, final TwitterAPIToken token) {
+		this(query, token, new ArrayBlockingDroppingQueue<Status>(1));
 	}
-	
+
 	/**
 	 * Construct the dataset from the given API token. The stream is backed by
 	 * an {@link ArrayBlockingDroppingQueue} with a single item capacity.
 	 * 
+	 * @param words
+	 *            the query terms
 	 * @param token
 	 *            the Twitter api authentication credentials
 	 */
-	public TwitterStreamFilterDataset(String[] words,final TwitterAPIToken token) {
-		this(new FilterQuery(0,null,words),token);
+	public TwitterStreamFilterDataset(String[] words, final TwitterAPIToken token) {
+		this(new FilterQuery(0, null, words), token);
 	}
 
 	/**
 	 * Construct the dataset from the given API token and buffer.
 	 * 
+	 * @param query
+	 *            the query
 	 * @param token
 	 *            the Twitter api authentication credentials
 	 * @param buffer
 	 *            the buffer to hold {@link Status}s before they are consumed.
 	 */
-	public TwitterStreamFilterDataset(FilterQuery query, final TwitterAPIToken token, BlockingDroppingQueue<Status> buffer) {
+	public TwitterStreamFilterDataset(FilterQuery query, final TwitterAPIToken token, BlockingDroppingQueue<Status> buffer)
+	{
 		super(query, token, buffer);
 	}
 

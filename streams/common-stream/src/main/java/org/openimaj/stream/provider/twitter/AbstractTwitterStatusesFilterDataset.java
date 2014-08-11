@@ -65,18 +65,20 @@ public abstract class AbstractTwitterStatusesFilterDataset<T> extends BlockingDr
 	/**
 	 * Construct with the given Twitter API credentials and buffer
 	 * 
+	 * @param query
+	 *            the query
 	 * @param token
 	 *            the Twitter api authentication credentials
 	 * @param buffer
 	 *            the backing buffer for storing data before consumption from
 	 *            the stream
 	 */
-	public AbstractTwitterStatusesFilterDataset(FilterQuery query, TwitterAPIToken token, BlockingDroppingQueue<T> buffer) {
+	public AbstractTwitterStatusesFilterDataset(FilterQuery query, TwitterAPIToken token, BlockingDroppingQueue<T> buffer)
+	{
 		super(buffer);
 
 		final TwitterStream twitterStream = new TwitterStreamFactory(makeConfiguration(token)).getInstance();
-		
-		
+
 		twitterStream.addListener(new StatusAdapter() {
 			@Override
 			public void onStatus(Status status) {

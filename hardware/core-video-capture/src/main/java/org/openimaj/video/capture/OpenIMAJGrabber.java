@@ -47,7 +47,7 @@ import org.bridj.cpp.CPPRuntime;
 @Library("OpenIMAJGrabber")
 @Runtime(CPPRuntime.class)
 @SuppressWarnings("all")
-public class OpenIMAJGrabber extends CPPObject {
+class OpenIMAJGrabber extends CPPObject {
 	static {
 		Platform.addEmbeddedLibraryResourceRoot("org/openimaj/video/capture/nativelib/");
 		BridJ.register();
