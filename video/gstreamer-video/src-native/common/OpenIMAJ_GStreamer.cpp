@@ -228,7 +228,7 @@ unsigned char* OpenIMAJCapGStreamer::getImage()
             return 0;
         }
         
-        
+        /*
         int depth = 3;
 
         depth = 0;
@@ -264,6 +264,7 @@ unsigned char* OpenIMAJCapGStreamer::getImage()
         }else{
             return 0;
         }
+        */
     }
     
     // gstreamer expects us to handle the memory at this point
