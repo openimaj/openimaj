@@ -395,6 +395,45 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 			</plugins>
 		</pluginManagement>
 	</build>
+	<profiles>
+		<profile>
+			<id>doclint-java8-disable</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9</version>
+						<configuration>
+							<bottom><![CDATA[
+								<div style="display:none">
+									<link rel="stylesheet" type="text/css" href="{@docRoot}/../css/reference.css" />
+									<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+									<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
+									<script type="text/javascript">
+										var _gaq = _gaq || [];
+										_gaq.push(['_setAccount', 'UA-38338744-1']);
+										_gaq.push(['_trackPageview']);
+
+						      	(function() {
+						        	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+						        	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+						        	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+						      	})();
+						    	</script>
+								</div>
+								]]></bottom>
+							<linksource>true</linksource>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<reporting>
 		<plugins>
 			<plugin>
