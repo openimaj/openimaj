@@ -138,7 +138,7 @@ for( URL u : imageURLs ) {
       <para>
         Which images are most similar? Does that match with what you
         expect if you look at the images? Can you make the application
-        display the two most similar images that aren’t the same?
+        display the two most similar images that are not the same?
       </para>
     </sect2>
     <sect2 id="exercise-2-exploring-comparison-measures">

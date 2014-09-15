@@ -69,21 +69,16 @@
   <para>
     We can then construct the K-Means algorithm:
   </para>
-  <programlisting>FloatKMeans cluster = FloatKMeans.createExact(3, 2);</programlisting>
+  <programlisting>FloatKMeans cluster = FloatKMeans.createExact(2);</programlisting>
   <para>
-    The first parameter is the dimensionality of the space (3 in this
-    case corresponding to the <emphasis role="strong">L</emphasis>,
-    <emphasis role="strong">a</emphasis>, and
-    <emphasis role="strong">b</emphasis> dimensions of the colour
-    vectors). The second argument is the number of clusters or classes
-    we wish the algorithm to generate. 
+    The parameter (2) is the number of clusters or classes we wish the algorithm to generate. We can optionally provide a second integer argument that controls the maximum number of iterations of the algorithm (the default is 30 iterations if we don't specify otherwise).
 	</para>
 	<tip>
 		<para>
 			There are a number of different static factory methods on the 
 			<code>FloatKMeans</code> class, as well as constructors that allow 
 			various flavours of the K-Means algorithm to be instantiated. In 
-			particular, the <code>FloatKMeans.createKDTreeEnsemble(int, int)</code>
+			particular, the <code>FloatKMeans.createKDTreeEnsemble(int)</code>
 			method creates an <emphasis>approximate</emphasis> K-means implementation
 			using a technique based on an ensemble of KD-Trees. The approximate 
 			algorithm is much faster than the exact algorithm
@@ -200,7 +195,7 @@ List&lt;ConnectedComponent&gt; components = labeler.findComponents(input.flatten
 for (ConnectedComponent comp : components) {
     if (comp.calculateArea() &lt; 50) 
         continue;
-    input.drawText(&quot;Point:&quot; + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM,20);
+    input.drawText(&quot;Point:&quot; + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM, 20);
 }</programlisting>
   <para>
     Finally, we can display the image with the labels:

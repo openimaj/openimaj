@@ -453,7 +453,7 @@
 		<xsl:template name="user.footer.navigation">
 			<footer>
 				<div class="container">
-			  	<div class="row span12">Copyright © 2011-2013 <a href="http://www.soton.ac.uk">The University of Southampton</a>. All Rights Reserved.
+			  	<div class="row span12">Copyright © 2011-2014 <a href="http://www.soton.ac.uk">The University of Southampton</a>. All Rights Reserved.
   				</div>
 					<p id="poweredBy" class="pull-right">
 			  		<a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">

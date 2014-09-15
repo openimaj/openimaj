@@ -91,7 +91,7 @@ DisplayUtilities.display(basicMatches);</programlisting>
     matches based on a given geometric model. One way of achieving this
     in OpenIMAJ is to use a
     <code>ConsistentLocalFeatureMatcher</code> which given an
-    internal matcher, a geometric model and a model fitter, finds which
+    internal matcher and a model fitter configured to fit a geometric model, finds which
     matches given by the internal matcher are consistent with respect to
     the model and are therefore likely to be correct.
   </para>
@@ -105,21 +105,18 @@ DisplayUtilities.display(basicMatches);</programlisting>
   </para>
 <tip>An Affine transform models the transformation between two parallelograms.</tip>
   <para>
-    We’ll now set up our model, our RANSAC model fitter and our
-    consistent matcher:
+    We’ll now set up a RANSAC model fitter configured to find Affine Transforms (using the <code>RobustAffineTransformEstimator</code> helper class) and our consistent matcher:
   </para>
-  <programlisting>AffineTransformModel fittingModel = new AffineTransformModel(5);
-RANSAC&lt;Point2d, Point2d&gt; ransac = 
-	new RANSAC&lt;Point2d, Point2d&gt;(fittingModel, 1500, new RANSAC.PercentageInliersStoppingCondition(0.5), true);
-
+  <programlisting>RobustAffineTransformEstimator modelFitter = new RobustAffineTransformEstimator(5.0, 1500,
+  new RANSAC.PercentageInliersStoppingCondition(0.5));
 matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(
-  new FastBasicKeypointMatcher&lt;Keypoint&gt;(8), ransac);
+  new FastBasicKeypointMatcher&lt;Keypoint&gt;(8), modelFitter);
 
 matcher.setModelFeatures(queryKeypoints);
 matcher.findMatches(targetKeypoints);
 
-MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, 
-	matcher.getMatches(), RGBColour.RED);
+MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), 
+  RGBColour.RED);
 
 DisplayUtilities.display(consistentMatches);</programlisting>
 <mediaobject>
@@ -129,16 +126,19 @@ DisplayUtilities.display(consistentMatches);</programlisting>
 </mediaobject>
   <para>
     The <code>AffineTransformModel</code> class models a
-    two-dimensional Affine transform in OpenIMAJ. An interesting
-    byproduct of this technique is that the
-    <code>AffineTransformModel</code> contains the best transform
+    two-dimensional Affine transform in OpenIMAJ. The <code>RobustAffineTransformEstimator</code> 
+    class provides a method <code>getModel()</code> which returns the internal Affine Transform model 
+    whose parameters are optimised during the fitting process driven by the <code>ConsistentLocalFeatureMatcher2d</code>.
+    An interesting byproduct of using the <code>ConsistentLocalFeatureMatcher2d</code> is that the
+    <code>AffineTransformModel</code> returned by <code>getModel()</code> contains the best transform
     matrix to go from the query to the target. We can take advantage of
     this by transforming the bounding box of our query with the
     transform estimated in the <code>AffineTransformModel</code>,
     therefore we can draw a polygon around the estimated location of the
     query within the target:
   </para>
-  <programlisting>target.drawShape(query.getBounds().transform(fittingModel.getTransform().inverse()), 3,RGBColour.BLUE);
+  <programlisting>target.drawShape(
+  query.getBounds().transform(modelFitter.getModel().getTransform().inverse()), 3,RGBColour.BLUE);
 DisplayUtilities.display(target); </programlisting>
 <mediaobject>
   <imageobject>
@@ -158,7 +158,8 @@ DisplayUtilities.display(target); </programlisting>
       <title>Exercise 2: Different models</title>
       <para>
         Experiment with different models (such as a
-        <code>HomographyModel</code>) in the consistent matcher.
+        <code>HomographyModel</code>) in the consistent matcher. The <code>RobustHomographyEstimator</code> helper class can be used 
+        to construct an object that fits the <code>HomographyModel</code> model. You can also experiment with an alternative robust fitting algorithm to RANSAC called Least Median of Squares (LMedS) through the <code>RobustHomographyEstimator</code>.
       </para>
 			<tip>A HomographyModel models a planar Homography between two planes. Planar Homographies are more general than Affine transforms and map quadrilaterals to quadrilaterals.</tip>
     </sect2>
