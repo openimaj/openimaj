@@ -4,12 +4,12 @@
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj-storm-tools</artifactId>
   <packaging>pom</packaging>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
   <name>OpenIMAJ Storm Tools</name>
   <parent>
     <artifactId>openimaj-storm</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <relativePath>../</relativePath>
   </parent>
   <inceptionYear>2011</inceptionYear>

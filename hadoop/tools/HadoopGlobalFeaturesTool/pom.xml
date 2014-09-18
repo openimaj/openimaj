@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-hadoop-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>HadoopGlobalFeaturesTool</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
   <name>HadoopGlobalFeaturesTool</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -19,19 +19,19 @@
     <dependency>
       <groupId>org.openimaj.tools</groupId>
       <artifactId>GlobalFeaturesTool</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-hadoop</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj.hadoop.tools</groupId>
       <artifactId>core-hadoop-tool</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

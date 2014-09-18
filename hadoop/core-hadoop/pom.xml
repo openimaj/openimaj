@@ -3,13 +3,13 @@
   <parent>
     <artifactId>openimaj-hadoop</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj</groupId>
   <artifactId>core-hadoop</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
   <packaging>jar</packaging>
   <name>The OpenIMAJ Core Hadoop Library</name>
   <inceptionYear>2011</inceptionYear>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.3</version>
       <scope>compile</scope>
     </dependency>
     <!--

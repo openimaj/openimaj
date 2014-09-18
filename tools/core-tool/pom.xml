@@ -3,14 +3,14 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>core-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
   <name>core-tool</name>
   <inceptionYear>2012</inceptionYear>
   <description>Core library for building openimaj tools</description>
@@ -21,13 +21,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
