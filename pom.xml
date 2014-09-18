@@ -219,7 +219,8 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 			<plugin>
 			    <groupId>org.codehaus.gmaven</groupId>
 			    <artifactId>gmaven-plugin</artifactId>
-					<inherited>false</inherited>
+				<inherited>false</inherited>
+				<version>1.4</version>
 			    <executions>
 			        <execution>
 			            <id>inject-main</id>
