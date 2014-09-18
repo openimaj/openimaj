@@ -226,7 +226,9 @@ public class VideoCapture extends Video<MBFImage> {
 	protected synchronized boolean startSession(final int requestedWidth, final int requestedHeight, double requestedFPS,
 			Device device)
 	{
-		if (grabber.startSession(requestedWidth, requestedHeight, requestedFPS, Pointer.pointerTo(device))) {
+		final int millisPerFrame = (int) (1000 / requestedFPS);
+
+		if (grabber.startSession(requestedWidth, requestedHeight, millisPerFrame, Pointer.getPointer(device))) {
 			width = grabber.getWidth();
 			height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);
@@ -238,7 +240,9 @@ public class VideoCapture extends Video<MBFImage> {
 	}
 
 	protected synchronized boolean startSession(int requestedWidth, int requestedHeight, double requestedFPS) {
-		if (grabber.startSession(requestedWidth, requestedHeight, requestedFPS)) {
+		final int millisPerFrame = (int) (1000 / requestedFPS);
+
+		if (grabber.startSession(requestedWidth, requestedHeight, millisPerFrame)) {
 			width = grabber.getWidth();
 			height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);

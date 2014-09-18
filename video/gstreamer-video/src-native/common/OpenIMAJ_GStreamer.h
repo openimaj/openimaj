@@ -107,6 +107,7 @@ public:
     bool setProperty(int, double);
     
     bool nextFrame();
+    int getBands();
     int getWidth();
     int getHeight();
     unsigned char* getImage();

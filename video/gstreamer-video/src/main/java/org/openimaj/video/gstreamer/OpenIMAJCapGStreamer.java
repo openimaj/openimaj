@@ -91,4 +91,9 @@ class OpenIMAJCapGStreamer extends CPPObject {
 	public OpenIMAJCapGStreamer(Pointer pointer) {
 		super(pointer);
 	}
+
+	/**
+	 * Original signature : <code>int getBands()</code>
+	 */
+	public native int getBands();
 }

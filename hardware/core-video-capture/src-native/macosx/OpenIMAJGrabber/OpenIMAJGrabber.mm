@@ -183,15 +183,15 @@ unsigned char* OpenIMAJGrabberPriv::getImage() {
     return [delegate getOutput];
 }
 
-bool OpenIMAJGrabber::startSession(int width, int height, double reqFPS) {
-    return ((OpenIMAJGrabberPriv*)data)->startSession(width, height, 0, NULL);
+bool OpenIMAJGrabber::startSession(int width, int height, int reqMillisPerFrame) {
+    return ((OpenIMAJGrabberPriv*)data)->startSession(width, height, reqMillisPerFrame, NULL);
 }
 
-bool OpenIMAJGrabber::startSession(int w, int h, double reqFPS, Device * dev) {
-    return ((OpenIMAJGrabberPriv*)data)->startSession(w, h, reqFPS, dev);
+bool OpenIMAJGrabber::startSession(int w, int h, int reqMillisPerFrame, Device * dev) {
+    return ((OpenIMAJGrabberPriv*)data)->startSession(w, h, reqMillisPerFrame, dev);
 }
 
-bool OpenIMAJGrabberPriv::startSession(int w, int h, double reqFPS, Device * dev) {
+bool OpenIMAJGrabberPriv::startSession(int w, int h, int reqMillisPerFrame, Device * dev) {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     QTCaptureDevice* device = NULL;
     
@@ -266,8 +266,8 @@ bool OpenIMAJGrabberPriv::startSession(int w, int h, double reqFPS, Device * dev
     
     [mCaptureDecompressedVideoOutput setAutomaticallyDropsLateVideoFrames:YES];
 
-    if (reqFPS > 0)
-        [mCaptureDecompressedVideoOutput setMinimumVideoFrameInterval:1.0 / reqFPS];
+    if (reqMillisPerFrame > 0)
+        [mCaptureDecompressedVideoOutput setMinimumVideoFrameInterval: ((double)reqMillisPerFrame / 1000.0)];
     
 	if (![mCaptureSession addOutput:mCaptureDecompressedVideoOutput error:&err]) {
 		error( "Could not create decompressed output.\n");

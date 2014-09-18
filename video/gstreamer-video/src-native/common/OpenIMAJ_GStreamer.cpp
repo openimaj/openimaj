@@ -79,7 +79,7 @@
 
 #define COLOR_ELEM "videoconvert"
 
-#ifdef NDEBUG
+#ifdef DEBUG
 #define WARN(message)
 #else
 #define WARN(message) fprintf(stderr, "warning: %s (%s:%d)\n", message, __FILE__, __LINE__)
@@ -161,13 +161,11 @@ void OpenIMAJCapGStreamer::close()
 /*!
  * \brief OpenIMAJCapGStreamer::grabFrame
  * \return
- * Grabs a sample from the pipeline, awaiting consumation by retreiveFrame.
+ * Grabs a sample from the pipeline, awaiting consumation by getImage.
  * The pipeline is started if it was not running yet
  */
 bool OpenIMAJCapGStreamer::nextFrame()
 {
-    printf("nextframe\n");
-    
     if(!pipeline)
         return false;
     
@@ -195,10 +193,35 @@ bool OpenIMAJCapGStreamer::nextFrame()
     return true;
 }
 
+int OpenIMAJCapGStreamer::getBands() {
+    if(!buffer)
+        return 0;
+
+    if (!buffer_caps)
+        buffer_caps = gst_sample_get_caps(sample);
+    
+    
+    GstStructure* structure = gst_caps_get_structure(buffer_caps, 0);
+    const gchar* name = gst_structure_get_name(structure);
+    const gchar* format = gst_structure_get_string(structure, "format");
+    
+    if (strcasecmp(name, "video/x-raw") == 0) {
+        if (strcasecmp(format, "BGR") == 0) {
+            return 3;
+        } else if(strcasecmp(format, "GRAY8") == 0) {
+            return 1;
+        } else if (strcasecmp(name, "video/x-bayer") == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
 /*!
- * \brief OpenIMAJCapGStreamer::retrieveFrame
- * \return IplImage pointer. [Transfer Full]
- *  Retreive the previously grabbed buffer, and wrap it in an IPLImage structure
+ * \brief OpenIMAJCapGStreamer::getImage
+ * \return pointer to image bytes
+ *  Retreive the previously grabbed buffer and return it
  */
 unsigned char* OpenIMAJCapGStreamer::getImage()
 {
@@ -216,9 +239,7 @@ unsigned char* OpenIMAJCapGStreamer::getImage()
         
         buffer_caps = gst_sample_get_caps(sample);
     
-
         // bail out in no caps
-        assert(gst_caps_get_size(buffer_caps) == 1);
         GstStructure* structure = gst_caps_get_structure(buffer_caps, 0);
         
         // bail out if width or height are 0
@@ -227,53 +248,14 @@ unsigned char* OpenIMAJCapGStreamer::getImage()
         {
             return 0;
         }
-        
-        /*
-        int depth = 3;
-
-        depth = 0;
-        const gchar* name = gst_structure_get_name(structure);
-        const gchar* format = gst_structure_get_string(structure, "format");
-        
-        if (!name || !format)
-            return 0;
-        
-        // we support 3 types of data:
-        //     video/x-raw, format=BGR   -> 8bit, 3 channels
-        //     video/x-raw, format=GRAY8 -> 8bit, 1 channel
-        //     video/x-bayer             -> 8bit, 1 channel
-        // bayer data is never decoded, the user is responsible for that
-        // everything is 8 bit, so we just test the caps for bit depth
-        
-        if (strcasecmp(name, "video/x-raw") == 0)
-        {
-            if (strcasecmp(format, "BGR") == 0) {
-                depth = 3;
-            }
-            else if(strcasecmp(format, "GRAY8") == 0){
-                depth = 1;
-            }
-        }
-        else if (strcasecmp(name, "video/x-bayer") == 0)
-        {
-            depth = 1;
-        }
-
-        if (depth > 0) {
-            frame = cvCreateImageHeader(cvSize(width, height), IPL_DEPTH_8U, depth);
-        }else{
-            return 0;
-        }
-        */
     }
     
     // gstreamer expects us to handle the memory at this point
     // so we can just wrap the raw buffer and be done with it
     // the data ptr in GstMapInfo is only valid throughout the mapifo objects life.
     // TODO: check if reusing the mapinfo object is ok.
-    
     gboolean success = gst_buffer_map(buffer,info, (GstMapFlags)GST_MAP_READ);
-    if (!success){
+    if (!success) {
         //something weird went wrong here. abort. abort.
         //fprintf(stderr,"GStreamer: unable to map buffer");
         return 0;
@@ -283,7 +265,6 @@ unsigned char* OpenIMAJCapGStreamer::getImage()
     
     return frame;
 }
-
 
 /*!
  * \brief OpenIMAJCapGStreamer::isPipelinePlaying
@@ -464,8 +445,6 @@ void OpenIMAJCapGStreamer::newPad(GstElement * /*elem*/,
  */
 bool OpenIMAJCapGStreamer::open(const char* filename )
 {
-    printf("file: %s\n", filename);
-    
     if(!isInited) {
         //FIXME: threadsafety
         gst_init (NULL, NULL);

@@ -20,6 +20,7 @@ public class GStreamerVideo extends Video<MBFImage> {
 	/** The timestamp of the current image */
 	private long currentTimestamp = 0;
 	private String pipeline;
+	private double fps;
 
 	public GStreamerVideo(String pipeline) {
 		this.pipeline = pipeline;
@@ -43,19 +44,30 @@ public class GStreamerVideo extends Video<MBFImage> {
 			return frame;
 		}
 
-		final byte[] d = data.getBytes(width * height * 3);
-		final float[][] r = frame.bands.get(0).pixels;
-		final float[][] g = frame.bands.get(1).pixels;
-		final float[][] b = frame.bands.get(2).pixels;
+		if (gstreamer.getBands() == 3) {
+			final byte[] d = data.getBytes(width * height * 3);
+			final float[][] r = frame.bands.get(0).pixels;
+			final float[][] g = frame.bands.get(1).pixels;
+			final float[][] b = frame.bands.get(2).pixels;
 
-		for (int i = 0, y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++, i += 3) {
-				final int red = d[i + 0] & 0xFF;
-				final int green = d[i + 1] & 0xFF;
-				final int blue = d[i + 2] & 0xFF;
-				r[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
-				g[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
-				b[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
+			for (int i = 0, y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++, i += 3) {
+					final int blue = d[i + 0] & 0xFF;
+					final int green = d[i + 1] & 0xFF;
+					final int red = d[i + 2] & 0xFF;
+					r[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
+					g[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
+					b[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
+				}
+			}
+		} else {
+			final byte[] d = data.getBytes(width * height * 3);
+			final float[][] g = frame.bands.get(0).pixels;
+
+			for (int i = 0, y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++, i++) {
+					g[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[d[i] & 0xFF];
+				}
 			}
 		}
 
@@ -90,7 +102,7 @@ public class GStreamerVideo extends Video<MBFImage> {
 
 	@Override
 	public double getFPS() {
-		return gstreamer.getProperty(OpenIMAJCapGStreamer.PROP_FPS);
+		return fps;
 	}
 
 	@Override
@@ -108,26 +120,35 @@ public class GStreamerVideo extends Video<MBFImage> {
 	public void reset() {
 		gstreamer.close();
 
-		System.out.println("Opening");
-		if (!gstreamer.open(Pointer.pointerToCString(pipeline))) {
+		// final Pointer<Byte> cpipeline = Pointer.pointerToCString(pipeline +
+		// "\0");
+		final byte[] b = pipeline.getBytes();
+		final byte[] b1 = new byte[b.length + 1];
+		System.arraycopy(b, 0, b1, 0, b.length);
+		b1[b.length] = 0;
+		final Pointer<Byte> cpipeline = Pointer.pointerToBytes(b1);
+		if (!gstreamer.open(cpipeline)) {
+			// cpipeline.release();
 			throw new RuntimeException(new GStreamerException("Error"));
 		}
-		System.out.println("Opened");
+		// cpipeline.release();
 
 		isStopped = false;
 
-		System.out.println("nf1");
-		System.out.println("nf: " + gstreamer.nextFrame());
+		gstreamer.nextFrame();
 		gstreamer.getImage();
-		System.out.println("nf2");
 
 		width = gstreamer.getWidth();
 		height = gstreamer.getHeight();
-		frame = new MBFImage(width, height, ColourSpace.RGB);
+		final int bands = gstreamer.getBands();
+		this.fps = gstreamer.getProperty(OpenIMAJCapGStreamer.PROP_FPS);
+		frame = new MBFImage(width, height, bands == 3 ? ColourSpace.RGB : ColourSpace.LUMINANCE_AVG);
+		System.out.println("here11");
 	}
 
 	public static void main(String[] args) {
-		final GStreamerVideo gsv = new GStreamerVideo("videotestsrc ! appsink");
+		final GStreamerVideo gsv = new GStreamerVideo(
+				"videotestsrc ! video/x-raw,format=GRAY8 ! videoconvert ! appsink");
 		System.out.println("here");
 
 		VideoDisplay.createVideoDisplay(gsv);

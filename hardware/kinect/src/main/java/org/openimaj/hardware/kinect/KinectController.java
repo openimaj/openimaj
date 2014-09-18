@@ -82,74 +82,83 @@ public class KinectController {
 	protected volatile static List<KinectController> ACTIVE_CONTROLLERS = new ArrayList<KinectController>();
 
 	protected Pointer<freenect_device> device;
-	
+
 	/**
 	 * The RGB or IR video stream
 	 */
 	public KinectStream<?> videoStream;
-	
+
 	/**
-	 * The depth stream 
+	 * The depth stream
 	 */
 	public KinectDepthStream depthStream;
 
 	/**
 	 * Construct with given device
-	 * @param deviceId the device id
+	 * 
+	 * @param deviceId
+	 *            the device id
 	 * @throws KinectException
 	 */
 	public KinectController(int deviceId) throws KinectException {
-		this(deviceId, false,false);
+		this(deviceId, false, false);
 	}
 
 	/**
 	 * Construct with the first device in the given mode.
-	 * @param irmode if true then the camera is set to IR mode; otherwise its in RGB mode
+	 * 
+	 * @param irmode
+	 *            if true then the camera is set to IR mode; otherwise its in
+	 *            RGB mode
 	 * @throws KinectException
 	 */
 	public KinectController(boolean irmode) throws KinectException {
-		this(0, irmode,false);
+		this(0, irmode, false);
 	}
 
 	/**
-	 * Default constructor. Uses the first device in RGB mode. 
+	 * Default constructor. Uses the first device in RGB mode.
+	 * 
 	 * @throws KinectException
 	 */
 	public KinectController() throws KinectException {
-		this(0, false,false);
+		this(0, false, false);
 	}
 
 	/**
 	 * Construct with the given device and mode.
 	 * 
-	 * @param deviceId the device identifier. 0 for the first one.
-	 * @param irmode whether to use infra-red mode or rgb mode.
-	 * @param registeredDepthMode whether to register the depth image. If true, depth measurements are in millimeters.
-	 * @throws KinectException 
+	 * @param deviceId
+	 *            the device identifier. 0 for the first one.
+	 * @param irmode
+	 *            whether to use infra-red mode or rgb mode.
+	 * @param registeredDepthMode
+	 *            whether to register the depth image. If true, depth
+	 *            measurements are in millimeters.
+	 * @throws KinectException
 	 */
 	public KinectController(int deviceId, boolean irmode, boolean registeredDepthMode) throws KinectException {
 		// init the context and start thread if necessary
 		init();
 
-		int cd = connectedDevices();
+		final int cd = connectedDevices();
 		if (deviceId >= cd || deviceId < 0) {
 			throw new IllegalArgumentException("Invalid device id");
 		}
-		
+
 		ACTIVE_CONTROLLERS.add(this);
 
-		//init device
-		@SuppressWarnings("unchecked")
-		Pointer<Pointer<freenect_device>> devicePtr = Pointer.pointerToPointer(Pointer.NULL);
+		// init device
+		final Pointer<Pointer<freenect_device>> devicePtr = Pointer.pointerToPointer(null);
 		libfreenectLibrary.freenect_open_device(CONTEXT, devicePtr, deviceId);
 		device = devicePtr.get();
 
-		//setup listeners
+		// setup listeners
 		if (irmode)
 			videoStream = new KinectIRVideoStream(this);
 		else
 			videoStream = new KinectRGBVideoStream(this);
-		depthStream = new KinectDepthStream(this,registeredDepthMode);
+		depthStream = new KinectDepthStream(this, registeredDepthMode);
 	}
 
 	@Override
@@ -159,12 +168,12 @@ public class KinectController {
 
 	/**
 	 * Init the freenect library. This only has to be done once.
-	 * @throws KinectException 
+	 * 
+	 * @throws KinectException
 	 */
 	private static synchronized void init() throws KinectException {
 		if (KinectController.CONTEXT == null) {
-			@SuppressWarnings("unchecked")
-			Pointer<Pointer<freenect_context>> ctxPointer = Pointer.pointerToPointer(Pointer.NULL);
+			final Pointer<Pointer<freenect_context>> ctxPointer = Pointer.pointerToPointer(null);
 			libfreenectLibrary.freenect_init(ctxPointer, Pointer.NULL);
 
 			if (ctxPointer == null)
@@ -174,16 +183,16 @@ public class KinectController {
 
 			if (CONTEXT == null)
 				throw new KinectException("Unable to initialise libfreenect.");
-			
+
 			if (libfreenectLibrary.freenect_num_devices(CONTEXT) == 0) {
 				libfreenectLibrary.freenect_shutdown(CONTEXT);
 				throw new KinectException("Unable to initialise libfreenect; No devices found.");
 			}
-			
+
 			EVENT_THREAD = new EventThread();
 			EVENT_THREAD.start();
 
-			//turn off the devices on shutdown
+			// turn off the devices on shutdown
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
 				public synchronized void run() {
@@ -192,11 +201,10 @@ public class KinectController {
 			});
 		}
 	}
-	
+
 	/**
-	 * Completely shutdown the context. This turns
-	 * off all cameras. The context will be restarted
-	 * upon creation of a new KinectController.
+	 * Completely shutdown the context. This turns off all cameras. The context
+	 * will be restarted upon creation of a new KinectController.
 	 */
 	public synchronized static void shutdownFreenect() {
 		while (ACTIVE_CONTROLLERS.size() > 0) {
@@ -215,13 +223,16 @@ public class KinectController {
 	}
 
 	/**
-	 * Switch the main camera between InfraRed and RGB modes. 
-	 * @param irmode if true, then switches to IR mode, otherwise switches to RGB mode.
+	 * Switch the main camera between InfraRed and RGB modes.
+	 * 
+	 * @param irmode
+	 *            if true, then switches to IR mode, otherwise switches to RGB
+	 *            mode.
 	 */
 	public void setIRMode(boolean irmode) {
 		if (device == null)
 			return;
-		
+
 		if (irmode) {
 			if (!(videoStream instanceof KinectIRVideoStream)) {
 				videoStream.stop();
@@ -234,25 +245,29 @@ public class KinectController {
 			}
 		}
 	}
-	
+
 	/**
 	 * Set whether depth should be registered
-	 * @param rdepth if true, then switches to depth registered mode, otherwise depth is not registered
+	 * 
+	 * @param rdepth
+	 *            if true, then switches to depth registered mode, otherwise
+	 *            depth is not registered
 	 */
 	public void setRegisteredDepth(boolean rdepth) {
 		if (device == null)
 			return;
-		
-		if(depthStream.registered != rdepth){
+
+		if (depthStream.registered != rdepth) {
 			depthStream.stop();
-			depthStream = new KinectDepthStream(this,rdepth);
+			depthStream = new KinectDepthStream(this, rdepth);
 		}
 	}
 
 	/**
 	 * Get the number of connected devices.
+	 * 
 	 * @return the number of devices connected.
-	 * @throws KinectException 
+	 * @throws KinectException
 	 */
 	public static synchronized int connectedDevices() throws KinectException {
 		init();
@@ -270,218 +285,256 @@ public class KinectController {
 		depthStream.stop();
 		libfreenectLibrary.freenect_close_device(device);
 		device = null;
-		
+
 		ACTIVE_CONTROLLERS.remove(this);
 	}
 
 	/**
 	 * Get the current angle in degrees
+	 * 
 	 * @return the angle or 0 if the device is closed
 	 */
 	public synchronized double getTilt() {
 		if (device == null)
 			return 0;
-		
+
 		libfreenectLibrary.freenect_update_tilt_state(device);
-		Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
+		final Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
 		return libfreenectLibrary.freenect_get_tilt_degs(state);
 	}
 
 	/**
 	 * Set the tilt to the given angle in degrees
-	 * @param angle the angle
+	 * 
+	 * @param angle
+	 *            the angle
 	 */
 	public synchronized void setTilt(double angle) {
 		if (device == null)
 			return;
-		
-		if (angle < -30) angle = -30;
-		if (angle > 30) angle = 30;
-		libfreenectLibrary.freenect_set_tilt_degs(device, angle);		
+
+		if (angle < -30)
+			angle = -30;
+		if (angle > 30)
+			angle = 30;
+		libfreenectLibrary.freenect_set_tilt_degs(device, angle);
 	}
 
 	/**
 	 * Determine the current tilt status of the device
+	 * 
 	 * @return the tilt status or null if the device is closed
 	 */
 	public synchronized KinectTiltStatus getTiltStatus() {
 		if (device == null)
 			return null;
-		
-		libfreenectLibrary.freenect_update_tilt_state(device);
-		Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
-		ValuedEnum<freenect_tilt_status_code> v = libfreenectLibrary.freenect_get_tilt_status(state);
 
-		for (freenect_tilt_status_code c : freenect_tilt_status_code.values())
-			if (c.value == v.value()) return KinectTiltStatus.valueOf(c.name()); 
+		libfreenectLibrary.freenect_update_tilt_state(device);
+		final Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
+		final ValuedEnum<freenect_tilt_status_code> v = libfreenectLibrary.freenect_get_tilt_status(state);
+
+		for (final freenect_tilt_status_code c : freenect_tilt_status_code.values())
+			if (c.value == v.value())
+				return KinectTiltStatus.valueOf(c.name());
 
 		return null;
 	}
 
 	/**
 	 * Set the device status LEDs
-	 * @param option the LED status to set
+	 * 
+	 * @param option
+	 *            the LED status to set
 	 */
 	public synchronized void setLED(KinectLEDMode option) {
 		if (device == null)
 			return;
-		
-		ValuedEnum<freenect_led_options> o = freenect_led_options.valueOf(option.name());
-		libfreenectLibrary.freenect_set_led(device, o);		
+
+		final ValuedEnum<freenect_led_options> o = freenect_led_options.valueOf(option.name());
+		libfreenectLibrary.freenect_set_led(device, o);
 	}
 
 	/**
-	 * Sets the LEDs to blink red and yellow for five seconds
-	 * before resetting to green.
+	 * Sets the LEDs to blink red and yellow for five seconds before resetting
+	 * to green.
 	 */
 	public synchronized void identify() {
 		if (device == null)
 			return;
-		
+
 		setLED(KinectLEDMode.LED_BLINK_RED_YELLOW);
-		try { Thread.sleep(5000); } catch (InterruptedException e) { }
+		try {
+			Thread.sleep(5000);
+		} catch (final InterruptedException e) {
+		}
 		setLED(KinectLEDMode.LED_GREEN);
 	}
 
 	/**
 	 * Get the current acceleration values from the device
+	 * 
 	 * @return the acceleration or null if the device is closed
 	 */
 	public synchronized KinectAcceleration getAcceleration() {
 		if (device == null)
 			return null;
-		
-		Pointer<Double> px = Pointer.pointerToDouble(0);
-		Pointer<Double> py = Pointer.pointerToDouble(0);
-		Pointer<Double> pz = Pointer.pointerToDouble(0);
+
+		final Pointer<Double> px = Pointer.pointerToDouble(0);
+		final Pointer<Double> py = Pointer.pointerToDouble(0);
+		final Pointer<Double> pz = Pointer.pointerToDouble(0);
 
 		libfreenectLibrary.freenect_update_tilt_state(device);
-		Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
+		final Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
 		libfreenectLibrary.freenect_get_mks_accel(state, px, py, pz);
 
 		return new KinectAcceleration(px.getDouble(), py.getDouble(), pz.getDouble());
 	}
 
 	/**
-	 * Compute the world coordinates from the pixel location and
-	 * registered depth.
+	 * Compute the world coordinates from the pixel location and registered
+	 * depth.
 	 * 
-	 * @param x pixel x-ordinate
-	 * @param y pixel y-ordinate
-	 * @param depth the depth
+	 * @param x
+	 *            pixel x-ordinate
+	 * @param y
+	 *            pixel y-ordinate
+	 * @param depth
+	 *            the depth
 	 * @return the (x,y,z) coordinate in world space
 	 */
 	public double[] cameraToWorld(int x, int y, int depth) {
-		Pointer<Double> wx = Pointer.allocateDouble();
-		Pointer<Double> wy = Pointer.allocateDouble();
+		final Pointer<Double> wx = Pointer.allocateDouble();
+		final Pointer<Double> wy = Pointer.allocateDouble();
 		libfreenectLibrary.freenect_camera_to_world(device, x, y, depth, wx, wy);
-		
-		return new double[] {wx.get(), wy.get(), depth};
+
+		return new double[] { wx.get(), wy.get(), depth };
 	}
-	
+
 	/**
 	 * Compute the scaling factor for computing world coordinates.
+	 * 
 	 * @see #cameraToWorld(int, int, int, double)
 	 * 
 	 * @return the scaling factor
 	 */
 	public double computeScalingFactor() {
-		//Struct-by-value isn't currently working in bridj. When it is
-		//we can do:
-		//freenect_registration regInfo = libfreenectLibrary.freenect_copy_registration(device);
-		//double ref_pix_size = regInfo.zero_plane_info().reference_pixel_size();
-		//double ref_distance = regInfo.zero_plane_info().reference_distance();
-		//return 2 * ref_pix_size / ref_distance;
-		
-		//for now we can work around by calculating the factor from a projected point 
-		int x = (DEPTH_X_RES/2) + 1;
-		double [] xyz = cameraToWorld(x, 0, 1000);
+		// Struct-by-value isn't currently working in bridj. When it is
+		// we can do:
+		// freenect_registration regInfo =
+		// libfreenectLibrary.freenect_copy_registration(device);
+		// double ref_pix_size =
+		// regInfo.zero_plane_info().reference_pixel_size();
+		// double ref_distance = regInfo.zero_plane_info().reference_distance();
+		// return 2 * ref_pix_size / ref_distance;
+
+		// for now we can work around by calculating the factor from a projected
+		// point
+		final int x = (DEPTH_X_RES / 2) + 1;
+		final double[] xyz = cameraToWorld(x, 0, 1000);
 		return xyz[0] / 1000.0;
 	}
-	
+
 	/**
-	 * Compute the world coordinates from the pixel location and
-	 * registered depth. This method requires you pre-compute the
-	 * constant scaling factor using {@link #computeScalingFactor()},
-	 * but it should be faster than using {@link #cameraToWorld(int, int, int)}. 
+	 * Compute the world coordinates from the pixel location and registered
+	 * depth. This method requires you pre-compute the constant scaling factor
+	 * using {@link #computeScalingFactor()}, but it should be faster than using
+	 * {@link #cameraToWorld(int, int, int)}.
 	 * 
-	 * @param x pixel x-ordinate
-	 * @param y pixel y-ordinate
-	 * @param depth the depth
-	 * @param factor the scaling factor
+	 * @param x
+	 *            pixel x-ordinate
+	 * @param y
+	 *            pixel y-ordinate
+	 * @param depth
+	 *            the depth
+	 * @param factor
+	 *            the scaling factor
 	 * @return the (x,y,z) coordinate in world space
 	 */
 	public float[] cameraToWorld(int x, int y, int depth, double factor) {
-		float[] pt = new float[3];
-		pt[0] = (float)((x - DEPTH_X_RES/2) * factor * depth);
-		pt[1] = (float)((y - DEPTH_Y_RES/2) * factor * depth);
+		final float[] pt = new float[3];
+		pt[0] = (float) ((x - DEPTH_X_RES / 2) * factor * depth);
+		pt[1] = (float) ((y - DEPTH_Y_RES / 2) * factor * depth);
 		pt[2] = depth;
 		return pt;
 	}
-	
+
 	/**
-	 * Compute the world coordinates from the pixel location and
-	 * registered depth. This method requires you pre-compute the
-	 * constant scaling factor using {@link #computeScalingFactor()},
-	 * but it should be faster than using {@link #cameraToWorld(int, int, int)}.
+	 * Compute the world coordinates from the pixel location and registered
+	 * depth. This method requires you pre-compute the constant scaling factor
+	 * using {@link #computeScalingFactor()}, but it should be faster than using
+	 * {@link #cameraToWorld(int, int, int)}.
 	 * 
 	 * This method is the same as {@link #cameraToWorld(int, int, int, double)},
 	 * but reuses the point array for efficiency.
 	 * 
-	 * @param x pixel x-ordinate
-	 * @param y pixel y-ordinate
-	 * @param depth the depth
-	 * @param factor 
-	 * @param pt the point to write to
+	 * @param x
+	 *            pixel x-ordinate
+	 * @param y
+	 *            pixel y-ordinate
+	 * @param depth
+	 *            the depth
+	 * @param factor
+	 * @param pt
+	 *            the point to write to
 	 * @return the (x,y,z) coordinate in world space
 	 */
 	public float[] cameraToWorld(int x, int y, int depth, double factor, float[] pt) {
-		pt[0] = (float)((x - DEPTH_X_RES/2) * factor * depth);
-		pt[1] = (float)((y - DEPTH_Y_RES/2) * factor * depth);
+		pt[0] = (float) ((x - DEPTH_X_RES / 2) * factor * depth);
+		pt[1] = (float) ((y - DEPTH_Y_RES / 2) * factor * depth);
 		pt[2] = depth;
 		return pt;
 	}
-	
+
 	/**
-	 * Compute the world coordinates from the pixel locations in the
-	 * given registered depth image. This method basically gives you
-	 * a fully registered point cloud.
+	 * Compute the world coordinates from the pixel locations in the given
+	 * registered depth image. This method basically gives you a fully
+	 * registered point cloud.
 	 * 
-	 * @param regDepth the registered depth image
-	 * @param startx the starting x-ordinate in the image
-	 * @param stopx the stopping x-ordinate in the image
-	 * @param stepx the number of pixels in the x direction to skip between samples
-	 * @param starty the starting y-ordinate in the image
-	 * @param stopy the stopping y-ordinate in the image
-	 * @param stepy the number of pixels in the y direction to skip between samples
+	 * @param regDepth
+	 *            the registered depth image
+	 * @param startx
+	 *            the starting x-ordinate in the image
+	 * @param stopx
+	 *            the stopping x-ordinate in the image
+	 * @param stepx
+	 *            the number of pixels in the x direction to skip between
+	 *            samples
+	 * @param starty
+	 *            the starting y-ordinate in the image
+	 * @param stopy
+	 *            the stopping y-ordinate in the image
+	 * @param stepy
+	 *            the number of pixels in the y direction to skip between
+	 *            samples
 	 * @return an array of 3d vectors
 	 */
 	public float[][] cameraToWorld(FImage regDepth, int startx, int stopx, int stepx, int starty, int stopy, int stepy) {
-		freenect_registration regInfo = libfreenectLibrary.freenect_copy_registration(device);
-		double ref_pix_size = regInfo.zero_plane_info().reference_pixel_size();
-		double ref_distance = regInfo.zero_plane_info().reference_distance();
-		
-		int nx = (stopx - startx) / stepx;
-		int ny = (stopy - starty) / stepy;
-		final float[][] points = new float[nx*ny][3];
+		final freenect_registration regInfo = libfreenectLibrary.freenect_copy_registration(device);
+		final double ref_pix_size = regInfo.zero_plane_info().reference_pixel_size();
+		final double ref_distance = regInfo.zero_plane_info().reference_distance();
+
+		final int nx = (stopx - startx) / stepx;
+		final int ny = (stopy - starty) / stepy;
+		final float[][] points = new float[nx * ny][3];
 		final float[][] depths = regDepth.pixels;
-		double factor = 2 * ref_pix_size / ref_distance;
-		
-		for (int i=0, y=starty; y<stopy; y+=stepy) {
-			for (int x=startx; x<stopx; x+=stepx) {
-				float depth = depths[y][x];
-				
-				points[i][0] = (float)((x - DEPTH_X_RES/2) * factor * depth);
-				points[i][1] = (float)((y - DEPTH_Y_RES/2) * factor * depth);
+		final double factor = 2 * ref_pix_size / ref_distance;
+
+		for (int i = 0, y = starty; y < stopy; y += stepy) {
+			for (int x = startx; x < stopx; x += stepx) {
+				final float depth = depths[y][x];
+
+				points[i][0] = (float) ((x - DEPTH_X_RES / 2) * factor * depth);
+				points[i][1] = (float) ((y - DEPTH_Y_RES / 2) * factor * depth);
 				points[i][2] = depth;
 			}
 		}
-				
+
 		return points;
 	}
-	
+
 	/**
 	 * Test
+	 * 
 	 * @param args
 	 * @throws KinectException
 	 */
