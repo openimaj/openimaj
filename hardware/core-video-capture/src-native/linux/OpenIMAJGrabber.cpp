@@ -31,7 +31,11 @@
 #include "capture.h"
 #include <stdio.h>
 
+#ifdef GLIBC_2_4
+__asm__(".symver memcpy,memcpy@GLIBC_2.4");
+#else
 __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
+#endif
 
 #define NUM_DEVICES_SEARCH 16
 

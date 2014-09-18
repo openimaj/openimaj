@@ -44,10 +44,10 @@
 #cp OpenIMAJGrabber.so ../../src/main/resources/org/openimaj/video/capture/nativelib/linux_armel/
 
 
-g++ -fno-rtti -fno-exceptions -fPIC -g -c OpenIMAJGrabber.cpp
+g++ -DGLIBC_2_4 -fno-rtti -fno-exceptions -fPIC -g -c OpenIMAJGrabber.cpp
 g++ -fno-rtti -fno-exceptions -fPIC -g -c capture.cpp 
 g++ -fno-rtti -fno-exceptions -fPIC -g -c support.cpp
-gcc -nostdlibs -static-libgcc --shared -Wl,-soname,OpenIMAJGrabber.so -o OpenIMAJGrabber.so OpenIMAJGrabber.o capture.o support.o -lrt -lc -lv4l2 -lv4lconvert -ljpeg
+gcc -nostdlibs -static-libgcc --shared -Wl,-soname,OpenIMAJGrabber.so -o OpenIMAJGrabber.so OpenIMAJGrabber.o capture.o support.o -L/usr/lib/arm-linux-gnueabihf -lrt -lc -lv4l2 -lv4lconvert -ljpeg
 
 
 cp OpenIMAJGrabber.so ../../src/main/resources/org/openimaj/video/capture/nativelib/linux_armhf/
