@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>com.twelvemonkeys.imageio</groupId>
 			<artifactId>imageio-jpeg</artifactId>
-			<version>3.0-20130211</version>
+			<version>3.0-rc5</version>
 		</dependency>
     <dependency>
       <groupId>junit</groupId>
