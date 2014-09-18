@@ -129,17 +129,17 @@ DeviceList * OpenIMAJGrabber::getVideoDevices(){
     return new DeviceList(devices, count);
 }
 
-bool OpenIMAJGrabber::startSession(int width, int height,double rate)
+bool OpenIMAJGrabber::startSession(int width, int height, int millisPerFrame)
 {
 	if(this->getVideoDevices()->getNumDevices() <= ((videoData*)this->data)->device)
 		return false;
 	return this->startSession(
-		width,height,rate,
+		width,height,millisPerFrame,
 		this->getVideoDevices()->getDevice(((videoData*)this->data)->device)
 	);
 }
 
-bool OpenIMAJGrabber::startSession(int width, int height,double rate, Device* dev){
+bool OpenIMAJGrabber::startSession(int width, int height, int millisPerFrame, Device* dev){
 	if(((videoData*)this->data)->buffer != NULL){
 		delete [] ((videoData*)this->data)->buffer;
 		((videoData*)this->data)->VI->stopDevice(((videoData*)this->data)->device);
@@ -151,7 +151,7 @@ bool OpenIMAJGrabber::startSession(int width, int height,double rate, Device* de
 	if(this->getVideoDevices()->getNumDevices() <= ((videoData*)this->data)->device)
 		return false;
 	//cout << "Current device is: " << ((videoData*)this->data)->device << endl;
-	((videoData*)this->data)->VI->setIdealFramerate(((videoData*)this->data)->device, (int) rate);
+	((videoData*)this->data)->VI->setIdealFramerate(((videoData*)this->data)->device, (int) (1000 / millisPerFrame));
 	((videoData*)this->data)->VI->setupDevice(((videoData*)this->data)->device,width,height);
 	//cout << "Device set up, initialising" << endl;
 

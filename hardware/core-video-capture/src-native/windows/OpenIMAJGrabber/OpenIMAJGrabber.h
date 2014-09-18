@@ -73,8 +73,8 @@ class OpenIMAJGrabber
         __declspec(dllexport) unsigned char* getImage();
 		__declspec(dllexport) void setTimeout(int timeout);
         __declspec(dllexport) int nextFrame();
-        __declspec(dllexport) bool startSession(int width, int height, double rate, Device * device);
-		__declspec(dllexport) bool startSession(int width, int height, double rate);
+        __declspec(dllexport) bool startSession(int width, int height, int millisPerFrame, Device * device);
+		__declspec(dllexport) bool startSession(int width, int height, int millisPerFrame);
         __declspec(dllexport) void stopSession();
         
         __declspec(dllexport) int getWidth();
