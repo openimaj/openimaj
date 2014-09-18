@@ -3,13 +3,13 @@
   <parent>
     <artifactId>openimaj-hadoop-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3</version>
+    <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.hadoop.tools</groupId>
   <artifactId>HadoopTwitterPreprocessingTool</artifactId>
-  <version>1.3</version>
+  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>HadoopTwitterPreprocessingTool</name>
   <inceptionYear>2011</inceptionYear>
@@ -22,19 +22,19 @@
     <dependency>
       <groupId>org.openimaj.tools</groupId>
       <artifactId>TwitterPreprocessingTool</artifactId>
-      <version>1.3</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj.hadoop.tools</groupId>
       <artifactId>core-hadoop-tool</artifactId>
-      <version>1.3</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-hadoop</artifactId>
-      <version>1.3</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -4,12 +4,12 @@
   <parent>
     <artifactId>thirdparty</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3</version>
+    <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>JTransforms</artifactId>
-  <version>1.3</version>
+  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>JTransforms</name>
   <description>
@@ -32,8 +32,8 @@
     </license>
   </licenses>
   <scm>
-    <url>https://jtransforms.svn.sourceforge.net/svnroot/jtransforms/tags/openimaj-1.3/svnroot/jtransforms </url>
-    <connection>https://jtransforms.svn.sourceforge.net/svnroot/jtransforms/tags/openimaj-1.3/svnroot/jtransforms </connection>
+    <url>https://jtransforms.svn.sourceforge.net/svnroot/jtransforms </url>
+    <connection>https://jtransforms.svn.sourceforge.net/svnroot/jtransforms </connection>
   </scm>
   <developers>
     <developer>

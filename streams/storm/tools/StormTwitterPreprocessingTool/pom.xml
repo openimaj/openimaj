@@ -3,13 +3,13 @@
   <parent>
     <artifactId>openimaj-storm-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3</version>
+    <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.storm.tools</groupId>
   <artifactId>StormTwitterPreprocessingTool</artifactId>
-  <version>1.3</version>
+  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>StormTwitterPreprocessingTool</name>
   <inceptionYear>2011</inceptionYear>
@@ -21,13 +21,13 @@
     <dependency>
         <groupId>org.openimaj.storm.tools</groupId>
         <artifactId>core-storm-tool</artifactId>
-        <version>1.3</version>
+        <version>1.4-SNAPSHOT</version>
         <scope>compile</scope>
       </dependency>
     <dependency>
       <groupId>org.openimaj.tools</groupId>
       <artifactId>TwitterPreprocessingTool</artifactId>
-      <version>1.3</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
       <exclusions>
         <!-- <exclusion>
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>org.openimaj.storm</groupId>
       <artifactId>core-storm</artifactId>
-      <version>1.3</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
