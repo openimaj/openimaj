@@ -152,11 +152,11 @@ void OpenIMAJGrabber::setTimeout(int timeout) {
     VG->timeout = timeout;
 }
 
-bool OpenIMAJGrabber::startSession(int width, int height, double rate) {
-    return startSession(width, height, rate, NULL);
+bool OpenIMAJGrabber::startSession(int width, int height, int millisPerFrame) {
+    return startSession(width, height, millisPerFrame, NULL);
 }
 
-bool OpenIMAJGrabber::startSession(int width, int height, double rate, Device * device) {
+bool OpenIMAJGrabber::startSession(int width, int height, int millisPerFrame, Device * device) {
     if (device == NULL) {
         DeviceList * list = getVideoDevices();
         if (list->getNumDevices() > 0) {
@@ -174,7 +174,7 @@ bool OpenIMAJGrabber::startSession(int width, int height, double rate, Device * 
 
     VG->requested_width = width;
     VG->requested_height = height;
-    VG->requested_rate = rate;
+    VG->requested_rate = 1000.0/(double)millisPerFrame;
     VG->timeout = 5000;
 
     if (open_device(VG) < 0) return false;
