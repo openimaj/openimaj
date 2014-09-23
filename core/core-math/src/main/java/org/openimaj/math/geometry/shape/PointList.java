@@ -502,7 +502,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	}
 
 	/**
-	 * Calculate the convext hull of the points using the Graham Scan algorithm.
+	 * Calculate the convex hull of the points using the Graham Scan algorithm.
 	 * 
 	 * @see GrahamScan
 	 * @return the convex hull
