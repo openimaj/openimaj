@@ -157,7 +157,7 @@ public class VideoCapture extends Video<MBFImage> {
 			if (!startSession(width, height, fps))
 				throw new VideoCaptureException("No webcams found!");
 		} else {
-			if (!startSession(width, height, 0, defaultDevice))
+			if (!startSession(width, height, fps, defaultDevice))
 				throw new VideoCaptureException("An error occured opening the capture device");
 		}
 	}
@@ -181,7 +181,7 @@ public class VideoCapture extends Video<MBFImage> {
 	 */
 	public VideoCapture(int width, int height, Device device) throws VideoCaptureException {
 		grabber = new OpenIMAJGrabber();
-		if (!startSession(width, height, 0, device))
+		if (!startSession(width, height, fps, device))
 			throw new VideoCaptureException("An error occured opening the capture device");
 	}
 

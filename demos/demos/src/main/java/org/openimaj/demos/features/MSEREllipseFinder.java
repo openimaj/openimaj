@@ -49,35 +49,39 @@ import org.openimaj.math.geometry.shape.Ellipse;
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-@Demo(author = "Sina Samangooei", description = "Shows ellipse fitting for regions detected using an MSER feature extractor", keywords = {
-		"mser", "ellipse", "feat" }, title = "MSER Ellipse Finder")
+@Demo(
+		author = "Sina Samangooei",
+		description = "Shows ellipse fitting for regions detected using an MSER feature extractor",
+		keywords = {
+				"mser", "ellipse", "feat" },
+		title = "MSER Ellipse Finder")
 public class MSEREllipseFinder {
 	/**
 	 * Construct demo
 	 */
 	public MSEREllipseFinder() {
-		MBFImage image = new MBFImage(400, 400, ColourSpace.RGB);
-		MBFImageRenderer renderer = image.createRenderer();
+		final MBFImage image = new MBFImage(400, 400, ColourSpace.RGB);
+		final MBFImageRenderer renderer = image.createRenderer();
 
 		image.fill(RGBColour.WHITE);
-		List<Ellipse> ellipses = new ArrayList<Ellipse>();
+		final List<Ellipse> ellipses = new ArrayList<Ellipse>();
 		ellipses.add(new Ellipse(200, 100, 100, 80, Math.PI / 4));
 		ellipses.add(new Ellipse(200, 300, 50, 30, -Math.PI / 4));
 		ellipses.add(new Ellipse(100, 300, 30, 50, -Math.PI / 3));
 
-		for (Ellipse ellipse : ellipses) {
+		for (final Ellipse ellipse : ellipses) {
 			renderer.drawShapeFilled(ellipse, RGBColour.BLACK);
 		}
 
 		@SuppressWarnings("unchecked")
-		MSERFeatureGenerator mser = new MSERFeatureGenerator(
+		final MSERFeatureGenerator mser = new MSERFeatureGenerator(
 				MomentFeature.class);
-		List<Component> features = mser.generateMSERs(Transforms
+		final List<Component> features = mser.generateMSERs(Transforms
 				.calculateIntensityNTSC(image));
-		for (Component c : features) {
-			MomentFeature feature = c.getFeature(MomentFeature.class);
-			renderer.drawShape(feature.getEllipse(), RGBColour.RED);
-			renderer.drawShape(feature.getEllipse()
+		for (final Component c : features) {
+			final MomentFeature feature = c.getFeature(MomentFeature.class);
+			renderer.drawShape(feature.getEllipse(2), RGBColour.RED);
+			renderer.drawShape(feature.getEllipse(2)
 					.calculateOrientedBoundingBox(), RGBColour.GREEN);
 		}
 		DisplayUtilities.display(image);
@@ -85,7 +89,9 @@ public class MSEREllipseFinder {
 
 	/**
 	 * The main method
-	 * @param args ignored
+	 * 
+	 * @param args
+	 *            ignored
 	 */
 	public static void main(String args[]) {
 		new MSEREllipseFinder();

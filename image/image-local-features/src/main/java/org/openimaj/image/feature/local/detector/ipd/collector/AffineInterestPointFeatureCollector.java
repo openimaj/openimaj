@@ -36,13 +36,14 @@ import org.openimaj.image.feature.local.engine.ipd.InterestPointImageExtractorPr
 import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 
 /**
- * Use the interest point's local shape to extract features from an affine corrected patch at the interest point.
+ * Use the interest point's local shape to extract features from an affine
+ * corrected patch at the interest point.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class AffineInterestPointFeatureCollector extends InterestPointFeatureCollector<EllipticInterestPointData>{
-	
+public class AffineInterestPointFeatureCollector extends InterestPointFeatureCollector<EllipticInterestPointData> {
+
 	/**
 	 * @param extractor
 	 */
@@ -51,28 +52,30 @@ public class AffineInterestPointFeatureCollector extends InterestPointFeatureCol
 	}
 
 	@Override
-	public void foundInterestPoint(FImage image,EllipticInterestPointData point){
-		InterestPointImageExtractorProperties<Float,FImage> property = new InterestPointImageExtractorProperties<Float,FImage>(image,point);
-		OrientedFeatureVector[] extracted = extractor.extractFeature(property);
-		
-		for(OrientedFeatureVector feature : extracted){
-			features.add(new AffineInterestPointKeypoint(feature,point.clone()));
+	public void foundInterestPoint(FImage image, EllipticInterestPointData point) {
+		final InterestPointImageExtractorProperties<Float, FImage> property = new InterestPointImageExtractorProperties<Float, FImage>(
+				image, point);
+		final OrientedFeatureVector[] extracted = extractor.extractFeature(property);
+
+		for (final OrientedFeatureVector feature : extracted) {
+			features.add(new AffineInterestPointKeypoint(feature, point.clone()));
 		}
-		
+
 	}
 
 	@Override
 	public void foundInterestPoint(FImage image, EllipticInterestPointData point, double octaveSize) {
-		InterestPointImageExtractorProperties<Float,FImage> property = new InterestPointImageExtractorProperties<Float,FImage>(image,point);
-		OrientedFeatureVector[] extracted = extractor.extractFeature(property);
-		
-		for(OrientedFeatureVector feature : extracted){
+		final InterestPointImageExtractorProperties<Float, FImage> property = new InterestPointImageExtractorProperties<Float, FImage>(
+				image, point);
+		final OrientedFeatureVector[] extracted = extractor.extractFeature(property);
+
+		for (final OrientedFeatureVector feature : extracted) {
 			point = point.clone();
 			point.scale *= octaveSize;
 			point.x *= octaveSize;
 			point.y *= octaveSize;
-			
-			features.add(new AffineInterestPointKeypoint(feature,point.clone()));
+
+			features.add(new AffineInterestPointKeypoint(feature, point.clone()));
 		}
 	}
 }
