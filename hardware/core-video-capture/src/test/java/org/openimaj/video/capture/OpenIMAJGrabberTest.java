@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, The University of Southampton and the individual contributors.
+\ * Copyright (c) 2011, The University of Southampton and the individual contributors.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -32,10 +32,10 @@ package org.openimaj.video.capture;
 import org.junit.Test;
 
 /**
- * Tests for {@link OpenIMAJGrabber}.
+ * Tests for OpenIMAJGrabber.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class OpenIMAJGrabberTest {
 	/**
