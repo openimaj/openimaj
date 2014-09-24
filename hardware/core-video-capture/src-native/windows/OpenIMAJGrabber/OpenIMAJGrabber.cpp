@@ -151,8 +151,9 @@ bool OpenIMAJGrabber::startSession(int width, int height, int millisPerFrame, De
 	if(this->getVideoDevices()->getNumDevices() <= ((videoData*)this->data)->device)
 		return false;
 	//cout << "Current device is: " << ((videoData*)this->data)->device << endl;
-	((videoData*)this->data)->VI->setIdealFramerate(((videoData*)this->data)->device, (int) (1000 / millisPerFrame));
-	((videoData*)this->data)->VI->setupDevice(((videoData*)this->data)->device,width,height);
+    if (millisPerFrame>0)
+        ((videoData*)this->data)->VI->setIdealFramerate(((videoData*)this->data)->device, (int) (1000.0 / millisPerFrame));
+	((videoData*)this->data)->VI->setupDevice(((videoData*)this->data)->device, width, height);
 	//cout << "Device set up, initialising" << endl;
 
 	if(((videoData*)this->data)->VI->isDeviceSetup(((videoData*)this->data)->device)){

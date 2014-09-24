@@ -154,10 +154,10 @@ public class VideoCapture extends Video<MBFImage> {
 		grabber = new OpenIMAJGrabber();
 
 		if (defaultDevice == null) {
-			if (!startSession(width, height, fps))
+			if (!startSession(width, height, 0))
 				throw new VideoCaptureException("No webcams found!");
 		} else {
-			if (!startSession(width, height, fps, defaultDevice))
+			if (!startSession(width, height, 0, defaultDevice))
 				throw new VideoCaptureException("An error occured opening the capture device");
 		}
 	}
@@ -181,7 +181,7 @@ public class VideoCapture extends Video<MBFImage> {
 	 */
 	public VideoCapture(int width, int height, Device device) throws VideoCaptureException {
 		grabber = new OpenIMAJGrabber();
-		if (!startSession(width, height, fps, device))
+		if (!startSession(width, height, 0, device))
 			throw new VideoCaptureException("An error occured opening the capture device");
 	}
 
@@ -226,7 +226,7 @@ public class VideoCapture extends Video<MBFImage> {
 	protected synchronized boolean startSession(final int requestedWidth, final int requestedHeight, double requestedFPS,
 			Device device)
 	{
-		final int millisPerFrame = (int) (1000 / requestedFPS);
+		final int millisPerFrame = requestedFPS == 0 ? 0 : (int) (1000.0 / requestedFPS);
 
 		if (grabber.startSession(requestedWidth, requestedHeight, millisPerFrame, Pointer.getPointer(device))) {
 			width = grabber.getWidth();
@@ -240,7 +240,7 @@ public class VideoCapture extends Video<MBFImage> {
 	}
 
 	protected synchronized boolean startSession(int requestedWidth, int requestedHeight, double requestedFPS) {
-		final int millisPerFrame = (int) (1000 / requestedFPS);
+		final int millisPerFrame = requestedFPS == 0 ? 0 : (int) (1000.0 / requestedFPS);
 
 		if (grabber.startSession(requestedWidth, requestedHeight, millisPerFrame)) {
 			width = grabber.getWidth();

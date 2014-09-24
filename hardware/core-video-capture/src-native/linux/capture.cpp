@@ -64,9 +64,14 @@ static int set_rate(VideoGrabber* grabber, double fps) {
 		printf("Unable to get frame rate: %d.\n", errno);
 		return ret;
 	}
-
-	parm.parm.capture.timeperframe.numerator = 100;
-	parm.parm.capture.timeperframe.denominator = (int)(fps*100);
+    
+    if (fps == 0) {
+        parm.parm.capture.timeperframe.numerator = 0;
+        parm.parm.capture.timeperframe.denominator = 0;
+    } else {
+        parm.parm.capture.timeperframe.numerator = 100;
+        parm.parm.capture.timeperframe.denominator = (int)(fps*100);
+    }
 
 	ret = xioctl(grabber->fd, VIDIOC_S_PARM, &parm);
 	if (ret < 0) {

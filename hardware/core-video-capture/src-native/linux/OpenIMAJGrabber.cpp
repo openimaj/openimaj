@@ -178,7 +178,10 @@ bool OpenIMAJGrabber::startSession(int width, int height, int millisPerFrame, De
 
     VG->requested_width = width;
     VG->requested_height = height;
-    VG->requested_rate = 1000.0/(double)millisPerFrame;
+    if (millisPerFrame > 0)
+        VG->requested_rate = 1000.0/(double)millisPerFrame;
+    else
+        VG->requested_rate = 0;
     VG->timeout = 5000;
 
     if (open_device(VG) < 0) return false;
