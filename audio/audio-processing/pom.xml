@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-audio</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3.1</version>
+    <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>audio-processing</artifactId>
-  <version>1.3.1</version>
+  <version>1.4-SNAPSHOT</version>
   <name>The OpenIMAJ Audio Processing Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -19,31 +19,31 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.3.1</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-experiment</artifactId>
-      <version>1.3.1</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-math</artifactId>
-      <version>1.3.1</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-audio</artifactId>
-      <version>1.3.1</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>org.openimaj</groupId>
         <artifactId>core-feature</artifactId>
-        <version>1.3.1</version>
+        <version>1.4-SNAPSHOT</version>
         <scope>compile</scope>
     </dependency>
     <dependency>
@@ -55,12 +55,12 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>JTransforms</artifactId>
-      <version>1.3.1</version>
+      <version>1.4-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>org.openimaj</groupId>
     	<artifactId>xuggle-video</artifactId>
-    	<version>1.3.1</version>
+    	<version>1.4-SNAPSHOT</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
@@ -72,7 +72,7 @@
     <dependency>
     	<groupId>org.openimaj</groupId>
     	<artifactId>machine-learning</artifactId>
-    	<version>1.3.1</version>
+    	<version>1.4-SNAPSHOT</version>
     	<scope>compile</scope>
     </dependency>
   </dependencies>
