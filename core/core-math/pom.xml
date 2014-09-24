@@ -4,12 +4,12 @@
   <parent>
     <artifactId>openimaj-core-libs</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.1</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>core-math</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.3.1</version>
   <name>The OpenIMAJ Core Math Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -58,7 +58,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>MatrixLib</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.1</version>
     </dependency>
     <dependency>
       <groupId>gov.sandia.foundry</groupId>

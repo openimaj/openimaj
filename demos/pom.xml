@@ -3,14 +3,14 @@
   <parent>
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.1</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj-demos</artifactId>
   <packaging>pom</packaging>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.3.1</version>
   <name>OpenIMAJ Demos Subproject</name>
   <inceptionYear>2011</inceptionYear>
   <description>Demos showing the functionality of OpenIMAJ.</description>

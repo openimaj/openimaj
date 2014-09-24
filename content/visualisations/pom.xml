@@ -4,12 +4,12 @@
 	<parent>
 		<artifactId>openimaj-content-libs</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.3.1</version>
 		<relativePath>../</relativePath>
 	</parent>
 	<groupId>org.openimaj.content</groupId>
 	<artifactId>visualisations</artifactId>
-	<version>1.4-SNAPSHOT</version>
+	<version>1.3.1</version>
 	<name>The OpenIMAJ Visualisations Library</name>
 	<inceptionYear>2011</inceptionYear>
 	<description>
@@ -20,31 +20,31 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-image</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-audio</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>audio-processing</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-video</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>video-processing</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

@@ -3,14 +3,14 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.1</version>
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>ClusterQuantiserTool</artifactId>
   <packaging>jar</packaging>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.3.1</version>
   <name>ClusterQuantiserTool</name>
   <inceptionYear>2011</inceptionYear>
   <description>Tool for clustering and quantising features.</description>
@@ -21,31 +21,31 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>ImprovedArgs4J</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj.tools</groupId>
       <artifactId>LocalFeaturesTool</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>clustering</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-feature</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-local-features</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
