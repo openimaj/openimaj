@@ -232,6 +232,29 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 			            </configuration>
 			        </execution>
 			    </executions>
+			    <dependencies>
+		          <dependency>
+		            <groupId>org.codehaus.gmaven.runtime</groupId>
+		            <artifactId>gmaven-runtime-1.8</artifactId>
+		            <version>1.5</version>
+		            <exclusions>
+		              <exclusion>
+		                <groupId>org.codehaus.groovy</groupId>
+		                <artifactId>groovy-all</artifactId>
+		              </exclusion>
+		            </exclusions>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.codehaus.groovy</groupId>
+		            	<artifactId>groovy-all</artifactId>
+		            <version>1.8.7</version>
+		          </dependency>
+					<dependency>
+					    <groupId>org.apache.ivy</groupId>
+					    <artifactId>ivy</artifactId>
+					    <version>2.1.0</version>
+					</dependency>
+		      	</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
