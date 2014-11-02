@@ -272,4 +272,27 @@ public class StructuringElement {
 	public int countActive() {
 		return positive.size() + negative.size();
 	}
+
+	/**
+	 * Build a disk shaped structuring element with the given radius.
+	 * 
+	 * @param radius
+	 *            the disk radius
+	 * @return the disk shaped S.E.
+	 */
+	public static StructuringElement disk(int radius) {
+		final StructuringElement se = new StructuringElement();
+		final int r2 = radius * radius;
+
+		for (int j = -radius; j <= radius; j++) {
+			final int j2 = j * j;
+			for (int i = -radius; i <= radius; i++) {
+				if ((i * i + j2) <= r2) {
+					se.positive.add(new Pixel(i, j));
+				}
+			}
+		}
+
+		return se;
+	}
 }

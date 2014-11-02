@@ -1291,7 +1291,7 @@ public class Polygon extends PointList implements Shape
 		final Point2d[] D = new Point2d[2 * n + 1];
 		int bot = n - 2, top = bot + 3; // initial bottom and top deque indices
 		D[bot] = D[top] = points.get(i + 1); // 3rd vertex is at both bot and
-												// top
+		// top
 		if (isLeft(points.get(0), points.get(i), points.get(i + 1)) > 0) {
 			D[bot + 1] = points.get(0);
 			D[bot + 2] = points.get(i); // ccw vertices are: 2,0,1,2
@@ -1361,5 +1361,65 @@ public class Polygon extends PointList implements Shape
 	 */
 	public RotatedRectangle minimumBoundingRectangle(boolean assumeSimple) {
 		return RotatingCalipers.getMinimumBoundingRectangle(this, assumeSimple);
+	}
+
+	/**
+	 * Find the closest point on the polygon to the given point
+	 * 
+	 * @param pt
+	 *            the point
+	 * @return the closest point
+	 */
+	public Point2d closestPoint(Point2d pt) {
+		final boolean closed = isClosed();
+
+		if (!closed)
+			close();
+
+		final float x = pt.getX();
+		final float y = pt.getY();
+		float minDist = Float.MAX_VALUE;
+		final Point2dImpl min = new Point2dImpl();
+		final Point2dImpl tpt = new Point2dImpl();
+
+		for (int k = 0; k < points.size() - 1; k++) {
+			final float vx = points.get(k).getX();
+			final float vy = points.get(k).getY();
+			final float wx = points.get(k + 1).getX();
+			final float wy = points.get(k + 1).getY();
+
+			// Return minimum distance between line segment vw and point p
+			final float l2 = (wx - vx) * (wx - vx) + (wy - vy) * (wy - vy);
+
+			if (l2 == 0.0) {
+				tpt.x = vx;
+				tpt.y = vy;
+			} else {
+				final float t = ((x - vx) * (wx - vx) + (y - vy) * (wy - vy)) / l2;
+
+				if (t < 0.0) {
+					tpt.x = vx;
+					tpt.y = vy;
+				} else if (t > 1.0) {
+					tpt.x = wx;
+					tpt.y = wy;
+				} else {
+					tpt.x = vx + t * (wx - vx);
+					tpt.y = vy + t * (wy - vy);
+				}
+			}
+
+			final float dist = (float) Line2d.distance(x, y, tpt.x, tpt.y);
+			if (dist < minDist) {
+				minDist = dist;
+				min.x = tpt.x;
+				min.y = tpt.y;
+			}
+		}
+
+		if (!closed)
+			open();
+
+		return min;
 	}
 }

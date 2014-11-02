@@ -91,14 +91,14 @@ public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFea
 	protected float patchOrientation;
 
 	/**
-	 * Construct a SIFTFeatureExtractor with the default parameters.
+	 * Construct a {@link SIFTFeatureProvider} with the default parameters.
 	 */
 	public SIFTFeatureProvider() {
 		this.vec = new float[numSpatialBins * numSpatialBins * numOriBins];
 	}
 
 	/**
-	 * Construct a SIFTFeatureExtractor with the provided options.
+	 * Construct a {@link SIFTFeatureProvider} with the provided options.
 	 * 
 	 * @param numOriBins
 	 *            the number of orientation bins (default 8)
@@ -110,7 +110,7 @@ public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFea
 	}
 
 	/**
-	 * Construct a SIFTFeatureExtractor with the provided options.
+	 * Construct a {@link SIFTFeatureProvider} with the provided options.
 	 * 
 	 * @param numOriBins
 	 *            the number of orientation bins (default 8)
