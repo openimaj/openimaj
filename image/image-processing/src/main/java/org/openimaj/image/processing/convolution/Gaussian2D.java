@@ -39,24 +39,31 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
  * filter will do the same thing, but much much faster!
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class Gaussian2D extends FConvolution {
 
 	/**
 	 * Construct with given kernel size and variance.
-	 * @param width kernel width
-	 * @param height kernel height
-	 * @param sigma variance
+	 * 
+	 * @param width
+	 *            kernel width
+	 * @param height
+	 *            kernel height
+	 * @param sigma
+	 *            variance
 	 */
 	public Gaussian2D(int width, int height, float sigma) {
 		super(createKernelImage(width, height, sigma));
 	}
-	
+
 	/**
 	 * Construct with given kernel size and variance.
-	 * @param size kernel width/height
-	 * @param sigma variance
+	 * 
+	 * @param size
+	 *            kernel width/height
+	 * @param sigma
+	 *            variance
 	 */
 	public Gaussian2D(int size, float sigma) {
 		super(createKernelImage(size, size, sigma));
@@ -64,34 +71,41 @@ public class Gaussian2D extends FConvolution {
 
 	/**
 	 * Create a kernel image with given kernel size and variance.
-	 * @param size image height/width.
-	 * @param sigma variance.
+	 * 
+	 * @param size
+	 *            image height/width.
+	 * @param sigma
+	 *            variance.
 	 * @return new kernel image.
 	 */
 	public static FImage createKernelImage(int size, float sigma) {
 		return createKernelImage(size, size, sigma);
 	}
-	
+
 	/**
 	 * Create a kernel image with given kernel size and variance.
-	 * @param width image width.
-	 * @param height image height.
-	 * @param sigma variance.
+	 * 
+	 * @param width
+	 *            image width.
+	 * @param height
+	 *            image height.
+	 * @param sigma
+	 *            variance.
 	 * @return new kernel image.
 	 */
 	public static FImage createKernelImage(int width, int height, float sigma) {
-		FImage f = new FImage(width, height);
-		int hw = (width-1)/2;
-		int hh = (height-1)/2;
-		float sigmasq = sigma * sigma;
-		
-		for (int y=-hh, j=0; y<hh; y++, j++) {
-			for (int x=-hw, i=0; x<hw; x++, i++) {
-				int radsqrd = x*x + y*y;
-				f.pixels[j][i] = (float) exp( -radsqrd/ ( 2 * sigmasq ) );				
+		final FImage f = new FImage(width, height);
+		final int hw = (width - 1) / 2;
+		final int hh = (height - 1) / 2;
+		final float sigmasq = sigma * sigma;
+
+		for (int y = -hh, j = 0; y <= hh; y++, j++) {
+			for (int x = -hw, i = 0; x <= hw; x++, i++) {
+				final int radsqrd = x * x + y * y;
+				f.pixels[j][i] = (float) exp(-radsqrd / (2 * sigmasq));
 			}
 		}
-		float sum = FloatArrayStatsUtils.sum(f.pixels);
+		final float sum = FloatArrayStatsUtils.sum(f.pixels);
 		return f.divideInplace(sum);
 	}
 }

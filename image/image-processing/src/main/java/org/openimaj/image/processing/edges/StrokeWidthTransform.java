@@ -85,6 +85,20 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 	private int maxStrokeWidth = 70;
 
 	/**
+	 * Construct the SWT with the given Canny edge detector.
+	 * 
+	 * @param direction
+	 *            direction of the SWT; true for dark on light, false for light
+	 *            on dark.
+	 * @param canny
+	 *            the canny edge detector
+	 */
+	public StrokeWidthTransform(boolean direction, CannyEdgeDetector canny) {
+		this.direction = direction;
+		this.canny = canny;
+	}
+
+	/**
 	 * Construct the SWT with the given sigma for smoothing in the Canny phase
 	 * The Canny thresholds are chosen automatically.
 	 * 
@@ -116,6 +130,25 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 	public StrokeWidthTransform(boolean direction, float lowThresh, float highThresh, float sigma) {
 		this.direction = direction;
 		this.canny = new CannyEdgeDetector(lowThresh, highThresh, sigma);
+	}
+
+	/**
+	 * Get the maximum stroke width
+	 * 
+	 * @return the maximum stroke width
+	 */
+	public int getMaxStrokeWidth() {
+		return maxStrokeWidth;
+	}
+
+	/**
+	 * Set the maximum stroke width
+	 * 
+	 * @param maxStrokeWidth
+	 *            the maximum stroke width
+	 */
+	public void setMaxStrokeWidth(int maxStrokeWidth) {
+		this.maxStrokeWidth = maxStrokeWidth;
 	}
 
 	@Override
@@ -196,6 +229,7 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 
 					final float currentGradX = dx.pixels[currentY][currentX];
 					final float currentGradY = dy.pixels[currentY][currentX];
+
 					// final float currentMag = (float) Math.sqrt((currentGradX
 					// * currentGradX)
 					// + (currentGradY * currentGradY))
@@ -209,7 +243,6 @@ public class StrokeWidthTransform implements SinglebandImageProcessor<Float, FIm
 					// found = true;
 					// break;
 					// }
-
 					final float tn = startGradY * currentGradX - startGradX * currentGradY;
 					final float td = startGradX * currentGradX + startGradY * currentGradY;
 					if (tn * 7 < -td * 4 && tn * 7 > td * 4)

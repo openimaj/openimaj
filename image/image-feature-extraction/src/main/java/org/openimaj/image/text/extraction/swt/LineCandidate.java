@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox.image.text;
+package org.openimaj.image.text.extraction.swt;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,15 +40,30 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.Pair;
 import org.openimaj.util.set.DisjointSetForest;
 
-public class LineCandidate {
-	List<LetterCandidate> letters = new ArrayList<LetterCandidate>();
-	Rectangle regularBoundingBox;
+/**
+ * This class models a candidate line of text, with one of more word candidates
+ * within it, from the {@link SWTTextDetector}.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class LineCandidate extends Candidate {
+	protected List<LetterCandidate> letters = new ArrayList<LetterCandidate>();
+	protected List<WordCandidate> words;
 
-	LineCandidate() {
+	protected LineCandidate() {
 	}
 
-	public static List<LineCandidate> extractLines(List<LetterCandidate> letters) {
-		final List<Pair<LetterCandidate>> pairs = createLetterPairs(letters);
+	/**
+	 * Computes lines of text by merging pairs of characters that have similar
+	 * directions.
+	 * 
+	 * @param letters
+	 * @param options
+	 * @return
+	 */
+	protected static List<LineCandidate> extractLines(List<LetterCandidate> letters, SWTTextDetector.Options options) {
+		final List<Pair<LetterCandidate>> pairs = createLetterPairs(letters, options);
 
 		final Set<Set<Pair<LetterCandidate>>> sets = DisjointSetForest.partitionSubsets(pairs,
 				new Comparator<Pair<LetterCandidate>>() {
@@ -96,24 +111,38 @@ public class LineCandidate {
 				lcs.add(p.secondObject());
 			}
 
+			if (lcs.size() < options.minLettersPerLine)
+				continue;
+
 			final LineCandidate lc = new LineCandidate();
 			lc.letters = new ArrayList<LetterCandidate>(lcs);
+
+			// set the line
+			for (final LetterCandidate letter : lc.letters)
+				letter.line = lc;
+
 			lc.regularBoundingBox = LetterCandidate.computeBounds(lc.letters);
+			lc.words = WordCandidate.extractWords(lc, options);
+
 			chains.add(lc);
 		}
 
-		computeBounds(chains);
-
-		return chains;// chainPairs(pairs);
+		return chains;
 	}
 
-	private static void computeBounds(List<LineCandidate> lines) {
-		for (final LineCandidate line : lines) {
-			line.regularBoundingBox = LetterCandidate.computeBounds(line.letters);
-		}
-	}
-
-	private static List<Pair<LetterCandidate>> createLetterPairs(List<LetterCandidate> letters) {
+	/**
+	 * Compute all likely pairs of letters on the basis that they close
+	 * together, have similar stroke widths & similar heights.
+	 * 
+	 * @param letters
+	 *            the candidate letters
+	 * @param options
+	 *            the options
+	 * @return a list of potentially valid pairs
+	 */
+	private static List<Pair<LetterCandidate>> createLetterPairs(List<LetterCandidate> letters,
+			SWTTextDetector.Options options)
+	{
 		final List<Pair<LetterCandidate>> pairs = new ArrayList<Pair<LetterCandidate>>();
 
 		final int numLetters = letters.size();
@@ -126,28 +155,33 @@ public class LineCandidate {
 
 				// similar stroke width (median ratio < 2)
 				if (Math.max(l1.medianStrokeWidth, l2.medianStrokeWidth)
-						/ Math.min(l1.medianStrokeWidth, l2.medianStrokeWidth) > 2.0)
+						/ Math.min(l1.medianStrokeWidth, l2.medianStrokeWidth) > options.medianStrokeWidthRatio)
 					continue;
 
 				// similar height
 				if (Math.max(l1.regularBoundingBox.height, l2.regularBoundingBox.height)
-						/ Math.min(l1.regularBoundingBox.height, l2.regularBoundingBox.height) > 2.0)
+						/ Math.min(l1.regularBoundingBox.height, l2.regularBoundingBox.height) > options.letterHeightRatio)
 					continue;
 
-				// similar color
-				if (Math.abs(l1.averageBrightness - l2.averageBrightness) > 0.12f)
+				// similar color (technically intensity)
+				if (Math.abs(l1.averageBrightness - l2.averageBrightness) > options.intensityThreshold)
 					continue;
 
 				// small distance between
 				final double distance = l1.centroid.x - l2.centroid.x;
-				if (Math.abs(distance) > 3 * Math.max(l1.regularBoundingBox.width, l2.regularBoundingBox.width))
+				if (Math.abs(distance) > options.widthMultiplier
+						* Math.max(l1.regularBoundingBox.width, l2.regularBoundingBox.width))
 					continue;
 
 				// approximately level
-				final int oy = (int) (Math.min(l1.regularBoundingBox.y + l1.regularBoundingBox.height,
-						l2.regularBoundingBox.y + l2.regularBoundingBox.height) - Math.max(l1.regularBoundingBox.y,
-						l2.regularBoundingBox.y));
-				if (oy * 1.3f < Math.min(l1.regularBoundingBox.height, l2.regularBoundingBox.height))
+				// FIXME: vertical text...
+				final int oy = (int) (Math.min(l1.regularBoundingBox.y +
+						l1.regularBoundingBox.height,
+						l2.regularBoundingBox.y + l2.regularBoundingBox.height) -
+						Math.max(l1.regularBoundingBox.y,
+								l2.regularBoundingBox.y));
+				if (oy * options.intersectRatio < Math.min(l1.regularBoundingBox.height,
+						l2.regularBoundingBox.height))
 					continue;
 
 				// tests passed... merge
@@ -156,5 +190,23 @@ public class LineCandidate {
 		}
 
 		return pairs;
+	}
+
+	/**
+	 * Get the letters corresponding to this line.
+	 * 
+	 * @return the letters
+	 */
+	public List<LetterCandidate> getLetters() {
+		return this.letters;
+	}
+
+	/**
+	 * Get the words corresponding to this line
+	 * 
+	 * @return the words
+	 */
+	public List<WordCandidate> getWords() {
+		return words;
 	}
 }

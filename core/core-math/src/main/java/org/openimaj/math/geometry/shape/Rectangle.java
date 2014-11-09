@@ -360,7 +360,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	}
 
 	@Override
-	public double intersectionArea(Shape that, int nStepsPerDimention) {
+	public double intersectionArea(Shape that, int nStepsPerDimension) {
 		final Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
 		if (overlapping == null)
 			return 0;
@@ -369,7 +369,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 			return overlapping.calculateArea();
 		} else {
 			double intersection = 0;
-			final double step = Math.max(overlapping.width, overlapping.height) / (double) nStepsPerDimention;
+			final double step = Math.max(overlapping.width, overlapping.height) / (double) nStepsPerDimension;
 			double nReads = 0;
 			for (float x = overlapping.x; x < overlapping.x + overlapping.width; x += step) {
 				for (float y = overlapping.y; y < overlapping.y + overlapping.height; y += step) {

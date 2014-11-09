@@ -34,6 +34,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.pair.FloatFloatPair;
 
 /**
  * Otsu's adaptive thresholding algorithm.
@@ -147,6 +148,30 @@ public class OtsuThreshold implements ImageProcessor<FImage> {
 	}
 
 	/**
+	 * Estimate the threshold and inter-class variance for the given data.
+	 * <p>
+	 * Internally, the data will be min-max normalised before the histogram is
+	 * built, and the specified number of bins will cover the entire
+	 * <code>max-min</code> range. The returned threshold will have
+	 * <code>min</code> added to it to return it to the original range.
+	 * 
+	 * @param data
+	 *            the data
+	 * @param numBins
+	 *            the number of histogram bins
+	 * @return the estimated threshold and variance
+	 */
+	public static FloatFloatPair calculateThresholdAndVariance(float[] data, int numBins) {
+		final float min = ArrayUtils.minValue(data);
+		final float max = ArrayUtils.maxValue(data);
+		final int[] histData = makeHistogram(data, numBins, min, max);
+
+		final FloatFloatPair result = computeThresholdAndVarianceFromHistogram(histData, data.length);
+		result.first += min;
+		return result;
+	}
+
+	/**
 	 * Estimate the threshold for the given histogram.
 	 * 
 	 * @param histData
@@ -156,6 +181,19 @@ public class OtsuThreshold implements ImageProcessor<FImage> {
 	 * @return the estimated threshold
 	 */
 	public static float computeThresholdFromHistogram(int[] histData, int total) {
+		return computeThresholdAndVarianceFromHistogram(histData, total).first;
+	}
+
+	/**
+	 * Estimate the threshold and inter-class variance for the given histogram.
+	 * 
+	 * @param histData
+	 *            the histogram
+	 * @param total
+	 *            the total number of items in the histogram
+	 * @return the estimated threshold and variance
+	 */
+	public static FloatFloatPair computeThresholdAndVarianceFromHistogram(int[] histData, int total) {
 		final int numBins = histData.length;
 		float sum = 0;
 		for (int t = 0; t < numBins; t++)
@@ -192,7 +230,7 @@ public class OtsuThreshold implements ImageProcessor<FImage> {
 			}
 		}
 
-		return threshold / (numBins - 1);
+		return new FloatFloatPair(threshold / (numBins - 1), varMax / total / total);
 	}
 
 	@Override

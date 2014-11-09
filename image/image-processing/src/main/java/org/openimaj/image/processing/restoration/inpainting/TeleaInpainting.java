@@ -12,7 +12,11 @@ import org.openimaj.image.processing.morphology.StructuringElement;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * Implementation of Alexandru Telea's FMM-based inpainting algorithm.
+ * Implementation of Alexandru Telea's FMM-based inpainting algorithm. The
+ * {@link AbstractFMMInpainter} is extended with a method to inpaint pixels
+ * based on the neighbours and explicitly taking into account the image
+ * gradients in the neighbourhood in order to preserve sharp details and smooth
+ * zones.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 

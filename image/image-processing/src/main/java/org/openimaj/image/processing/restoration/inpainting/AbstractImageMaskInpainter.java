@@ -66,9 +66,12 @@ public abstract class AbstractImageMaskInpainter<IMAGE extends Image<?, IMAGE>>
 	}
 
 	/**
-	 * Perform any initialisation once the mask has been set
+	 * Perform any initialisation once the mask has been set. Does nothing by
+	 * default; subclasses should override as required.
 	 */
-	protected abstract void initMask();
+	protected void initMask() {
+
+	};
 
 	@Override
 	public final void processImage(IMAGE image) {
