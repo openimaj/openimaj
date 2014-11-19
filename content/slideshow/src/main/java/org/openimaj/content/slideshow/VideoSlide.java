@@ -138,7 +138,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 		this.panel.setSize(width, height);
 		this.panel.setPreferredSize(new Dimension(width, height));
 
-		this.video = new XuggleVideo(this.url, true);
+		this.video = new XuggleVideo(this.url, false);
 		this.display = VideoDisplay.createOffscreenVideoDisplay(this.video);
 		this.display.setEndAction(this.endAction);
 
