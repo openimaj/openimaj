@@ -1606,7 +1606,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	 */
 	public static void main(String[] args) throws IOException {
 		final ChessboardCornerFinder fcc = new ChessboardCornerFinder(9, 6,
-				Options.FILTER_QUADS, Options.FAST_CHECK);
+				Options.FILTER_QUADS, Options.FAST_CHECK, Options.ADAPTIVE_THRESHOLD);
 		VideoDisplay.createVideoDisplay(new VideoCapture(640, 480)).addVideoListener(new VideoDisplayAdapter<MBFImage>()
 		{
 			@Override

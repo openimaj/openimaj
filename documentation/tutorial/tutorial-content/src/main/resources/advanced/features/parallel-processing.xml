@@ -183,7 +183,7 @@ for (ListDataset&lt;MBFImage&gt; clzImages : images.values()) {
 	    MBFImage tmp = new MBFImage(200, 200, ColourSpace.RGB);
 
 	    while (it.hasNext()) {
-	        final MBFImage i = im.next();
+	        final MBFImage i = it.next();
 	        tmp.fill(RGBColour.WHITE);
 
 	        final MBFImage small = i.process(resize).normalise();

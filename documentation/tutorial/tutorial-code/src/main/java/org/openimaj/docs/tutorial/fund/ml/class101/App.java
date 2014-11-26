@@ -29,6 +29,7 @@
  */
 package org.openimaj.docs.tutorial.fund.ml.class101;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
+import org.openimaj.feature.DiskCachingFeatureExtractor;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.SparseIntFV;
@@ -103,7 +105,8 @@ public class App {
 		// HomogeneousKernelMap(KernelType.Chi2, WindowType.Rectangular);
 		// final FeatureExtractor<DoubleFV, Record<FImage>> extractor = map
 		// .createWrappedExtractor(new PHOWExtractor(pdsift, assigner));
-		final FeatureExtractor<DoubleFV, Record<FImage>> extractor = new SpPHOWExtractorImplementation(pdsift, assigner);
+		final FeatureExtractor<DoubleFV, Record<FImage>> extractor = new DiskCachingFeatureExtractor<DoubleFV, Caltech101.Record<FImage>>(
+				new File("/Users/jsh2/feature_cache/c101-small"), new SpPHOWExtractorImplementation(pdsift, assigner));
 
 		System.out.println("Construct and train classifier");
 		final LiblinearAnnotator<Record<FImage>, String> ann = new LiblinearAnnotator<Record<FImage>, String>(
