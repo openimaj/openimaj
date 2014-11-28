@@ -58,7 +58,7 @@ import org.openimaj.io.ObjectReader;
  * {@link GroupedDataset} from a directory containing directories of images:
  * 
  * <pre>
- * GroupDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
+ * GroupedDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
  * 		&quot;/path/to/directory/of/images&quot;,
  * 		ImageUtilities.FIMAGE_READER);
  * </pre>
@@ -66,14 +66,14 @@ import org.openimaj.io.ObjectReader;
  * a zip file of directories of images:
  * 
  * <pre>
- * GroupDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
+ * GroupedDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
  * 		&quot;zip:file:/path/to/images.zip&quot;, ImageUtilities.FIMAGE_READER);
  * </pre>
  * 
  * or even a remote zip of directories of images hosted via http:
  * 
  * <pre>
- * GroupDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
+ * GroupedDataset&lt;String, VFSListDataset&lt;FImage&gt;, FImage&gt; dataset = new VFSGroupDataset&lt;FImage&gt;(
  * 		&quot;zip:http://localhost/&tilde;jsh2/thumbnails.zip&quot;, ImageUtilities.FIMAGE_READER);
  * </pre>
  * 
