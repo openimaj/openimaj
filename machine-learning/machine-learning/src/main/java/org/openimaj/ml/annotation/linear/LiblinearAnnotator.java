@@ -120,7 +120,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 
 		public abstract void train(List<? extends Annotated<OBJECT, ANNOTATION>> data);
 
-		public abstract void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset);
+		public abstract void train(GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset);
 
 		public abstract List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object);
 
@@ -174,7 +174,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		}
 
 		@Override
-		public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+		public void train(GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset) {
 			annotationsList = new ArrayList<ANNOTATION>(dataset.getGroups());
 
 			final int nItems = dataset.numInstances();
@@ -444,7 +444,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 		}
 
 		@Override
-		public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+		public void train(GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset) {
 			train(AnnotatedObject.createList(dataset));
 		}
 	}
@@ -523,7 +523,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	}
 
 	@Override
-	public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+	public void train(GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset) {
 		internal.train(dataset);
 	}
 }

@@ -63,7 +63,7 @@ public abstract class BatchAnnotator<OBJECT, ANNOTATION>
 	 * @param dataset
 	 *            the dataset to train on
 	 */
-	public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+	public void train(GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset) {
 		train(AnnotatedObject.createList(dataset));
 	}
 }
