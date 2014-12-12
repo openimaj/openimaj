@@ -10,7 +10,7 @@
   <artifactId>vector-image</artifactId>
   <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>The OpenIMAJ Vcetor Image Library</name>
+  <name>The OpenIMAJ Vector Image Library</name>
 	<inceptionYear>2011</inceptionYear>
   <description>Support for vector images using the Batik SVG library</description>
   <properties>
