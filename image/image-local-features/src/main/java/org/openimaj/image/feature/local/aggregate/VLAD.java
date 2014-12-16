@@ -132,6 +132,32 @@ public class VLAD<T> implements VectorAggregator<ArrayFeatureVector<T>, Multidim
 			}
 		}
 
+		return prepareOutput(vector);
+	}
+
+	@Override
+	public MultidimensionalFloatFV aggregateVectors(List<? extends ArrayFeatureVector<T>> features) {
+		if (features == null || features.size() <= 0)
+			return null;
+
+		final int K = this.centroids.length;
+		final int D = features.get(0).length();
+
+		final float[][] vector = new float[K][D];
+
+		for (final ArrayFeatureVector<T> f : features) {
+			final T x = f.values;
+			final int i = assigner.assign(x);
+
+			for (int j = 0; j < D; j++) {
+				vector[i][j] += (float) (Array.getDouble(x, j) - Array.getDouble(centroids[i], j));
+			}
+		}
+
+		return prepareOutput(vector);
+	}
+
+	private MultidimensionalFloatFV prepareOutput(final float[][] vector) {
 		final MultidimensionalFloatFV out = new MultidimensionalFloatFV(vector);
 
 		if (normalise) {

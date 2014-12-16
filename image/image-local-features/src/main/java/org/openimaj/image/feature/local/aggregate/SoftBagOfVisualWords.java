@@ -55,7 +55,7 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public class SoftBagOfVisualWords<DATATYPE, DISTANCE>
 		implements
-			VectorAggregator<ArrayFeatureVector<DATATYPE>, SparseDoubleFV>
+		VectorAggregator<ArrayFeatureVector<DATATYPE>, SparseDoubleFV>
 {
 	private SoftAssigner<DATATYPE, DISTANCE> assigner;
 
@@ -75,6 +75,38 @@ public class SoftBagOfVisualWords<DATATYPE, DISTANCE>
 
 		for (final LocalFeature<?, ? extends ArrayFeatureVector<DATATYPE>> f : features) {
 			final IndependentPair<int[], DISTANCE> a = assigner.assignWeighted(f.getFeatureVector().values);
+
+			increment(fv, a);
+		}
+
+		return fv;
+	}
+
+	@Override
+	public SparseDoubleFV aggregateVectors(List<? extends ArrayFeatureVector<DATATYPE>> features) {
+		final SparseDoubleFV fv = new SparseDoubleFV(assigner.numDimensions());
+
+		for (final ArrayFeatureVector<DATATYPE> f : features) {
+			final IndependentPair<int[], DISTANCE> a = assigner.assignWeighted(f.values);
+
+			increment(fv, a);
+		}
+
+		return fv;
+	}
+
+	/**
+	 * Aggregate the given features into a vector.
+	 * 
+	 * @param features
+	 *            the features to aggregate
+	 * @return the aggregated vector
+	 */
+	public SparseDoubleFV aggregateVectorsRaw(List<DATATYPE> features) {
+		final SparseDoubleFV fv = new SparseDoubleFV(assigner.numDimensions());
+
+		for (final DATATYPE f : features) {
+			final IndependentPair<int[], DISTANCE> a = assigner.assignWeighted(f);
 
 			increment(fv, a);
 		}

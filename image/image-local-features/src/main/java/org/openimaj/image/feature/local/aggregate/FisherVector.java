@@ -62,18 +62,20 @@ import org.openimaj.ml.gmm.GaussianMixtureModelEM.CovarianceType;
  *            the {@link LocalFeature}s that will be processed.
  */
 @References(
-		references = { @Reference(
-				type = ReferenceType.Inproceedings,
-				author = { "Perronnin, F.", "Dance, C." },
-				title = "Fisher Kernels on Visual Vocabularies for Image Categorization",
-				year = "2007",
-				booktitle = "Computer Vision and Pattern Recognition, 2007. CVPR '07. IEEE Conference on",
-				pages = { "1", "8" },
-				customData = {
-						"keywords", "Gaussian processes;gradient methods;image classification;Fisher kernels;Gaussian mixture model;generative probability model;gradient vector;image categorization;pattern classification;visual vocabularies;Character generation;Feeds;Image databases;Kernel;Pattern classification;Power generation;Signal generators;Spatial databases;Visual databases;Vocabulary",
-						"doi", "10.1109/CVPR.2007.383266",
-						"ISSN", "1063-6919"
-				}
+		references = {
+				@Reference(
+						type = ReferenceType.Inproceedings,
+						author = { "Perronnin, F.", "Dance, C." },
+						title = "Fisher Kernels on Visual Vocabularies for Image Categorization",
+						year = "2007",
+						booktitle = "Computer Vision and Pattern Recognition, 2007. CVPR '07. IEEE Conference on",
+						pages = { "1", "8" },
+						customData = {
+								"keywords",
+								"Gaussian processes;gradient methods;image classification;Fisher kernels;Gaussian mixture model;generative probability model;gradient vector;image categorization;pattern classification;visual vocabularies;Character generation;Feeds;Image databases;Kernel;Pattern classification;Power generation;Signal generators;Spatial databases;Visual databases;Vocabulary",
+								"doi", "10.1109/CVPR.2007.383266",
+								"ISSN", "1063-6919"
+						}
 				),
 				@Reference(
 						type = ReferenceType.Inproceedings,
@@ -168,6 +170,32 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 			X[i] = f.getFeatureVector().asDoubleVector();
 		}
 
+		return computeFisherVector(features.size(), K, D, vector, X);
+	}
+
+	@Override
+	public FloatFV aggregateVectors(List<? extends ArrayFeatureVector<T>> features) {
+		if (features == null || features.size() <= 0)
+			return null;
+
+		final int K = this.gmm.gaussians.length;
+		final int D = features.get(0).length();
+
+		final float[] vector = new float[2 * K * D];
+
+		// cache all the features in an array
+		final double[][] X = new double[features.size()][];
+		for (int i = 0; i < X.length; i++) {
+			final ArrayFeatureVector<T> f = features.get(i);
+			X[i] = f.asDoubleVector();
+		}
+
+		return computeFisherVector(features.size(), K, D, vector, X);
+	}
+
+	private FloatFV computeFisherVector(int nFeatures, final int K,
+			final int D, final float[] vector, final double[][] X)
+	{
 		// compute posterior probabilities of all features at once (more
 		// efficient than
 		// doing it for each one at a time)
@@ -196,8 +224,8 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 		}
 
 		for (int k = 0; k < K; k++) {
-			final double wt1 = 1.0 / (features.size() * Math.sqrt(gmm.weights[k]));
-			final double wt2 = 1.0 / (features.size() * Math.sqrt(2 * gmm.weights[k]));
+			final double wt1 = 1.0 / (nFeatures * Math.sqrt(gmm.weights[k]));
+			final double wt2 = 1.0 / (nFeatures * Math.sqrt(2 * gmm.weights[k]));
 
 			for (int j = 0; j < D; j++) {
 				vector[k * 2 * D + j] *= wt1;
@@ -225,7 +253,6 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 				out.values[i] *= norm;
 			}
 		}
-
 		return out;
 	}
 }

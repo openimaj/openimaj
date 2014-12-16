@@ -729,9 +729,9 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 
 	/**
-	 * Returns the pixels of the image as a vector (array) of doubles.
+	 * Returns the pixels of the image as a vector (array) of floats.
 	 * 
-	 * @return the pixels of the image as a vector (array) of doubles.
+	 * @return the pixels of the image as a vector (array) of floats.
 	 */
 	public float[] getFloatPixelVector()
 	{

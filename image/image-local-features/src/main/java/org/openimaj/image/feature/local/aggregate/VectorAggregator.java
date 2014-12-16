@@ -55,4 +55,13 @@ public interface VectorAggregator<FEATURE extends FeatureVector, AGGREGATE exten
 	 * @return the aggregated vector
 	 */
 	public AGGREGATE aggregate(List<? extends LocalFeature<?, ? extends FEATURE>> features);
+
+	/**
+	 * Aggregate the given features into a vector.
+	 * 
+	 * @param features
+	 *            the features to aggregate
+	 * @return the aggregated vector
+	 */
+	public AGGREGATE aggregateVectors(List<? extends FEATURE> features);
 }

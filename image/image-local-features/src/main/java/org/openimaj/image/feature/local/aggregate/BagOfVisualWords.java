@@ -125,4 +125,36 @@ public class BagOfVisualWords<T> implements VectorAggregator<ArrayFeatureVector<
 
 		return fv;
 	}
+
+	@Override
+	public SparseIntFV aggregateVectors(List<? extends ArrayFeatureVector<T>> features) {
+		final SparseIntFV fv = new SparseIntFV(this.assigner.size());
+
+		for (final ArrayFeatureVector<T> f : features) {
+			final int idx = assigner.assign(f.values);
+
+			fv.values.increment(idx, 1);
+		}
+
+		return fv;
+	}
+
+	/**
+	 * Aggregate the given features into a vector.
+	 * 
+	 * @param features
+	 *            the features to aggregate
+	 * @return the aggregated vector
+	 */
+	public SparseIntFV aggregateVectorsRaw(List<T> features) {
+		final SparseIntFV fv = new SparseIntFV(this.assigner.size());
+
+		for (final T f : features) {
+			final int idx = assigner.assign(f);
+
+			fv.values.increment(idx, 1);
+		}
+
+		return fv;
+	}
 }
