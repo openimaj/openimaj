@@ -140,7 +140,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 			if (!estimateProbabilities)
 				return;
 
-			final int nr_class = annotationsList.size();
+			final int nr_class = prob_estimates.length;
 			int nr_w;
 			if (nr_class == 2)
 				nr_w = 1;
