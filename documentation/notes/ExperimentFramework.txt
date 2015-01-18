@@ -1,0 +1,32 @@
+Dataset (set of instances)
+	Labelled dataset (class + some number of instances)
+
+Dataset Splitter (creates sub-datasets)
+	Two-way splits (training/test)
+		- static or dynamic
+	Three-way splits (training/validation/test)
+		- static or dynamic
+	K-way splits (for x-validation)
+	Bagging splits (like k-way, but with replacement)
+
+
+
+Experiment (setup, run, finalise, getResults)
+	RetrievalExperiment, …
+
+ExperimentRunner (perform experiment)
+
+EvaluationStatistic
+	RetrievalExperimentStatistic
+		UKBenchStatistic
+		TrecEvalStatisitics
+	ClassificationStatistic
+		ROCStatistics
+		
+
+Retrieval evaluation:
+	* Retrieval system
+	* Queries
+	* Ground truth rankings
+
+

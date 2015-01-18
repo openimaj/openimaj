@@ -1,0 +1,23 @@
+# Backend #
+
+- make face recognisers have methods to load/save themselves (not using serialisable!!)
+
+# Commandline #
+Tool for constructing a recogniser from a set of images
+Tool for loading a recogniser and querying it
+
+# Web Services #
+- Face Detection
+ - Given image return list of detections, eye locations, etc
+- Face Recognition
+ + training
+ + querying
+
+
+# Done # 
+- add the concept of a facial comparator that can e.g. return probabilities, etc
+- Refactor DetectedFace
+ + Allow for different alignment techniques; perhaps detected face should just contain a single image - that of the actual detected face in the image, then other reps can be extracted as required...
+
+
+

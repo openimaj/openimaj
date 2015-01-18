@@ -1,0 +1,39 @@
+Known OpenIMAJ/ImageTerrier user organisations (who've been in email contact):
+rwth-aachen (Germany)
+asu (USA)
+hp-china (China)
+comcast (USA)
+keele (UK)
+it-innovation (UK)
+u-ottawa (Canada)
+isti-cnr (Italy)
+salzburg-research (Austria)
+gersys-software 
+insa-lyon (fr)
+mosaicatm.com
+wits.ac.za
+
+Presentations where OpenIMAJ/ImageTerrier has been shown:
+U. Glasgow (Research Seminar)
+U. Soton (Research Seminar)
+KMi (Research Seminar)
+U. Soton (IEEE student branch talk)
+ACMMM 2012 (presentation, poster session and open-source panel session)
+
+Tutorial sessions:
+U. Soton (project student tutorial, 4 students)
+U. Soton (project student tutorial, 9 students)
+Dev8d (=20 people from universities across the UK)
+
+Papers:
+Paper at ACMMM11 (Phoenix, Tx, Nov ’11)
+Paper at ICMR2012 (Hong Kong, June ’12)
+
+Media coverage:
+IEEE Multimedia (column about the open-source competition & a video on the website)
+SIGMM records article (July ’13)
+
+Teaching:
+U. Soton COMP3005 AY1314 (superseded by 3204/6223 below)
+U. Soton COMP3204 AY1415+
+U. Soton COMP6223 AY1415+
