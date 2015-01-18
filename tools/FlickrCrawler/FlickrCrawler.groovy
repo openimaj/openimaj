@@ -33,11 +33,11 @@
   * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @GrabResolver(name='openimaj', root='http://maven.openimaj.org')
-@Grab('com.aetrion.flickr:flickrapi:1.2jh.3')
-import com.aetrion.flickr.Flickr
-import com.aetrion.flickr.REST
-import com.aetrion.flickr.photos.SearchParameters
-import com.aetrion.flickr.photos.Extras
+@Grab('com.flickr4java:flickr4java:2.13_jonhare_0408059615bfa8da071c2e54268e3004ce62d6a4')
+import com.flickr4java.flickr.Flickr
+import com.flickr4java.flickr.REST
+import com.flickr4java.flickr.photos.SearchParameters
+import com.flickr4java.flickr.photos.Extras
 
 @GrabResolver(name='jboss', root='http://repository.jboss.org/maven2/')
 @Grab(group='org.codehaus.gpars', module='gpars', version='0.9')

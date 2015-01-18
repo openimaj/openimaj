@@ -229,6 +229,8 @@ public class VFSListDataset<INSTANCE> extends ReadableListDataset<INSTANCE, File
 
 	@Override
 	public int numInstances() {
+		if (files == null)
+			return 0;
 		return files.length;
 	}
 
