@@ -42,6 +42,32 @@ public class ArrayUtils {
     private ArrayUtils () {
         
     }
+
+    /*-- toString() --*/
+	/**
+	 * Format the array as a string, using the provided format 
+	 * string to control how each value is printed.
+	 * 
+	 * @param arr
+	 *            array of #t#
+	 * @param fmt
+	 *            format string for each element
+	 * @return the value
+	 */
+    public static String toString(#t#[] arr, String fmt) {
+		StringBuffer localStringBuffer = new StringBuffer();
+		localStringBuffer.append("[");
+		int i = arr.length - 1;
+		for (int j = 0; j <= i; ++j)
+		{
+			localStringBuffer.append(String.format(fmt, arr[j]));
+			if (j >= i)
+				continue;
+			localStringBuffer.append(", ");
+		}
+		localStringBuffer.append("]");
+		return localStringBuffer.toString();
+	}
     
     /*-- maxValue() --*/
 	/**
@@ -1392,6 +1418,7 @@ public class ArrayUtils {
 				high = hh - 1;
 		}
 	}	
+
 	/*-- conversions --*/
 	/**
 	 * Convert from #TT#[] to #t#[]. This will create a new array and copy the contents.
