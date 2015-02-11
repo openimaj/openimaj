@@ -222,61 +222,61 @@
 									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Modules <b class="caret"/></a>
 									<ul class="dropdown-menu">
 										<li>
-											<a href="openimaj-maven-archetypes/index.html" title="OpenIMAJ Maven Archetypes">OpenIMAJ Maven Archetypes</a>
+											<a href="/openimaj-maven-archetypes/index.html" title="OpenIMAJ Maven Archetypes">OpenIMAJ Maven Archetypes</a>
 										</li>
 										<li>
-											<a href="openimaj-core-libs/index.html" title="OpenIMAJ Core Libraries">OpenIMAJ Core Libraries</a>
+											<a href="/openimaj-core-libs/index.html" title="OpenIMAJ Core Libraries">OpenIMAJ Core Libraries</a>
 										</li>
 										<li>
-											<a href="openimaj-image/index.html" title="OpenIMAJ Image Processing Libraries">OpenIMAJ Image Processing Libraries</a>
+											<a href="/openimaj-image/index.html" title="OpenIMAJ Image Processing Libraries">OpenIMAJ Image Processing Libraries</a>
 										</li>
 										<li>
-											<a href="openimaj-video/index.html" title="OpenIMAJ Video Processing Libraries">OpenIMAJ Video Processing Libraries</a>
+											<a href="/openimaj-video/index.html" title="OpenIMAJ Video Processing Libraries">OpenIMAJ Video Processing Libraries</a>
 										</li>
 										<li>
-											<a href="openimaj-audio/index.html" title="OpenIMAJ Audio Processing Libraries">OpenIMAJ Audio Processing Libraries</a>
+											<a href="/openimaj-audio/index.html" title="OpenIMAJ Audio Processing Libraries">OpenIMAJ Audio Processing Libraries</a>
 										</li>
 										<li>
-											<a href="openimaj-machine-learning/index.html" title="OpenIMAJ Machine Learning Subprojects">OpenIMAJ Machine Learning Subprojects</a>
+											<a href="/openimaj-machine-learning/index.html" title="OpenIMAJ Machine Learning Subprojects">OpenIMAJ Machine Learning Subprojects</a>
 										</li>
 										<li>
-											<a href="openimaj-text/index.html" title="OpenIMAJ Text Analysis Subprojects">OpenIMAJ Text Analysis Subprojects</a>
+											<a href="/openimaj-text/index.html" title="OpenIMAJ Text Analysis Subprojects">OpenIMAJ Text Analysis Subprojects</a>
 										</li>
 										<li>
-											<a href="thirdparty/index.html" title="OpenIMAJ Third Party Ported Libraries">OpenIMAJ Third Party Ported Libraries</a>
+											<a href="/thirdparty/index.html" title="OpenIMAJ Third Party Ported Libraries">OpenIMAJ Third Party Ported Libraries</a>
 										</li>
 										<li>
-											<a href="openimaj-demos/index.html" title="OpenIMAJ Demos Subproject">OpenIMAJ Demos Subproject</a>
+											<a href="/openimaj-demos/index.html" title="OpenIMAJ Demos Subproject">OpenIMAJ Demos Subproject</a>
 										</li>
 										<li>
-											<a href="openimaj-knowledge/index.html" title="OpenIMAJ Knowledge Representation and Reasoning Libraries">OpenIMAJ Knowledge Representation and Reasoning Libraries</a>
+											<a href="/openimaj-knowledge/index.html" title="OpenIMAJ Knowledge Representation and Reasoning Libraries">OpenIMAJ Knowledge Representation and Reasoning Libraries</a>
 										</li>
 										<li>
-											<a href="test-resources/index.html" title="OpenIMAJ Unit Test Resources">OpenIMAJ Unit Test Resources</a>
+											<a href="/test-resources/index.html" title="OpenIMAJ Unit Test Resources">OpenIMAJ Unit Test Resources</a>
 										</li>
 										<li>
-											<a href="openimaj-tools/index.html" title="OpenIMAJ Tools">OpenIMAJ Tools</a>
+											<a href="/openimaj-tools/index.html" title="OpenIMAJ Tools">OpenIMAJ Tools</a>
 										</li>
 										<li>
-											<a href="openimaj-hadoop/index.html" title="OpenIMAJ Hadoop Subproject">OpenIMAJ Hadoop Subproject</a>
+											<a href="/openimaj-hadoop/index.html" title="OpenIMAJ Hadoop Subproject">OpenIMAJ Hadoop Subproject</a>
 										</li>
 										<li>
-											<a href="openimaj-storm/index.html" title="OpenIMAJ Storm Subproject">OpenIMAJ Storm Subproject</a>
+											<a href="/openimaj-storm/index.html" title="OpenIMAJ Storm Subproject">OpenIMAJ Storm Subproject</a>
 										</li>
 										<li>
-											<a href="openimaj-web/index.html" title="OpenIMAJ web subproject">OpenIMAJ web subproject</a>
+											<a href="/openimaj-web/index.html" title="OpenIMAJ web subproject">OpenIMAJ web subproject</a>
 										</li>
 										<li>
-											<a href="openimaj-hardware/index.html" title="OpenIMAJ Hardware Subprojects">OpenIMAJ Hardware Subprojects</a>
+											<a href="/openimaj-hardware/index.html" title="OpenIMAJ Hardware Subprojects">OpenIMAJ Hardware Subprojects</a>
 										</li>
 										<li>
-											<a href="openimaj-content-libs/index.html" title="OpenIMAJ Content Creation Libraries">OpenIMAJ Content Creation Libraries</a>
+											<a href="/openimaj-content-libs/index.html" title="OpenIMAJ Content Creation Libraries">OpenIMAJ Content Creation Libraries</a>
 										</li>
 										<li>
-											<a href="openimaj-ide-integration/index.html" title="OpenIMAJ IDE Integration Plugins">OpenIMAJ IDE Integration Plugins</a>
+											<a href="/openimaj-ide-integration/index.html" title="OpenIMAJ IDE Integration Plugins">OpenIMAJ IDE Integration Plugins</a>
 										</li>
 										<li>
-											<a href="openimaj-documentation/index.html" title="OpenIMAJ Documentation">OpenIMAJ Documentation</a>
+											<a href="/openimaj-documentation/index.html" title="OpenIMAJ Documentation">OpenIMAJ Documentation</a>
 										</li>
 									</ul>
 								</li>
