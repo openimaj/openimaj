@@ -33,7 +33,6 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.detection.CLMDetectedFace;
 import org.openimaj.image.processing.face.tracking.clm.MultiTracker;
-import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Triangle;

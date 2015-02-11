@@ -30,25 +30,6 @@
 package org.openimaj.tools.globalfeature;
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
-import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
-import org.openimaj.image.feature.global.AvgBrightness;
-import org.openimaj.image.feature.global.Colorfulness;
-import org.openimaj.image.feature.global.ColourContrast;
-import org.openimaj.image.feature.global.HorizontalIntensityDistribution;
-import org.openimaj.image.feature.global.HueStats;
-import org.openimaj.image.feature.global.LRIntensityBalance;
-import org.openimaj.image.feature.global.LuoSimplicity;
-import org.openimaj.image.feature.global.ModifiedLuoSimplicity;
-import org.openimaj.image.feature.global.Naturalness;
-import org.openimaj.image.feature.global.ROIProportion;
-import org.openimaj.image.feature.global.RuleOfThirds;
-import org.openimaj.image.feature.global.SharpPixelProportion;
-import org.openimaj.image.feature.global.Sharpness;
-import org.openimaj.image.feature.global.WeberContrast;
-import org.openimaj.image.pixel.statistics.BlockHistogramModel;
-import org.openimaj.image.pixel.statistics.HistogramModel;
-import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
-import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
 import org.openimaj.tools.globalfeature.type.AverageBrightnessExtractor;
 import org.openimaj.tools.globalfeature.type.ColourContrastExtractor;
 import org.openimaj.tools.globalfeature.type.ColourFacesExtractor;

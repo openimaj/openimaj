@@ -43,17 +43,17 @@ import Jama.Matrix;
 /**
  * By sampling a distribution and calculating the log liklihood of those samples
  * against another distribution, construct a similarity metric.
- * 
+ *
  * This function uses
  * {@link MultivariateDistribution#estimateLogProbability(double[][])}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class TestMultivariateDistanceComparator {
 
 	/**
 	 * Test sampling multivariate gaussian
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -77,7 +77,7 @@ public class TestMultivariateDistanceComparator {
 
 	/**
 	 * Test KLDivergenece
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test

@@ -43,7 +43,6 @@ import java.util.Set;
 
 import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.function.Predicate;
-import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
 import com.jmatio.io.MatFileReader;

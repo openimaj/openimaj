@@ -9,7 +9,6 @@
   </parent>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>FeatureVisualisation</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>FeatureVisualisation</name>
   <description>Tools for visualising certain types of image feature.</description>
   <inceptionYear>2011</inceptionYear>

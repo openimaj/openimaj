@@ -68,6 +68,7 @@ public class RBFSimilarityDoubleClustererWrapper<T> extends DoubleFVSimilarityFu
 		}
 	}
 
+	@Override
 	protected SparseMatrix similarity() {
 		prepareVariance();
 		int N = feats.length;

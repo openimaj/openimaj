@@ -31,7 +31,6 @@ package org.openimaj.ml.clustering.spectral;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +53,6 @@ import org.openimaj.ml.clustering.dbscan.DoubleNNDBSCAN;
 
 import ch.akuhn.matrix.SparseMatrix;
 
-import com.jmatio.io.MatFileWriter;
 import com.jmatio.types.MLArray;
 
 /**

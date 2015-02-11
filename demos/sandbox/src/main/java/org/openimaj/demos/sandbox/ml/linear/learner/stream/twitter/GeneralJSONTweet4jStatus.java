@@ -34,7 +34,6 @@ import java.util.Scanner;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.USMFStatus.User;

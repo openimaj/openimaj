@@ -43,17 +43,17 @@ import Jama.Matrix;
 /**
  * Implementation of a Fundamental matrix model that estimates the epipolar
  * geometry.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 	/**
 	 * Computes the algebraic residual of the point pairs applied to the F
 	 * matrix
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class Fundamental8PtResidual extends AbstractResidualCalculator<Point2d, Point2d, FundamentalModel> {
 		@Override
@@ -86,7 +86,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 	/**
 	 * Geometric residual that sums the distance of points from the closest
 	 * epipolar line.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class EpipolarResidual extends AbstractResidualCalculator<Point2d, Point2d, FundamentalModel> {
@@ -123,9 +123,9 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 
 	/**
 	 * {@link ResidualCalculator} based on Sampson's geometric error.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class SampsonGeometricResidual extends AbstractResidualCalculator<Point2d, Point2d, FundamentalModel> {
 		@Override
@@ -170,7 +170,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 
 	/**
 	 * Create a {@link FundamentalModel} with optional automatic normalisation.
-	 * 
+	 *
 	 * @param norm
 	 *            true if the data should be automatically normalised before
 	 *            running the 8-point algorithm
@@ -197,7 +197,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 	/**
 	 * De-normalise a fundamental estimate. Use when {@link #estimate(List)} was
 	 * called with pre-normalised data.
-	 * 
+	 *
 	 * @param norms
 	 *            the normalisation transforms
 	 */
@@ -217,7 +217,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 
 	/**
 	 * Clone the model
-	 * 
+	 *
 	 * @return a cloned copy
 	 */
 	@Override
@@ -230,7 +230,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 
 	/**
 	 * Set the Fundamental matrix
-	 * 
+	 *
 	 * @param optimised
 	 */
 	public void setF(Matrix optimised) {
@@ -239,7 +239,7 @@ public class FundamentalModel implements EstimatableModel<Point2d, Point2d> {
 
 	/**
 	 * Get the fundamental matrix
-	 * 
+	 *
 	 * @return the F matrix
 	 */
 	public Matrix getF() {

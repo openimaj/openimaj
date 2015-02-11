@@ -106,7 +106,8 @@ public class FloatDST_1D {
                 final int firstIdx = j * k;
                 final int lastIdx = (j == (nthreads - 1)) ? nd2 : firstIdx + k;
                 futures[j] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         float tmp;
                         int idx0 = offa + n - 1;
                         int idx1;
@@ -172,7 +173,8 @@ public class FloatDST_1D {
                 final int firstIdx = j * k;
                 final int lastIdx = (j == (nthreads - 1)) ? nd2 : firstIdx + k;
                 futures[j] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         float tmp;
                         int idx0 = offa + n - 1;
                         int idx1, idx2;

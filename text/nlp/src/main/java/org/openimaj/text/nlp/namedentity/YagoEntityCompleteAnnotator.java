@@ -38,7 +38,6 @@ import java.util.Set;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEntityCandidateFinder;
 import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEntityContextScorer;
-import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory.YagoEntityExactMatcher;
 
 /**
  * {@link EntityAnnotator} wrapper for {@link YagoEntityExactMatcher}

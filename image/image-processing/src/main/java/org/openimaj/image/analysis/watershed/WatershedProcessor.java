@@ -37,55 +37,62 @@ import org.openimaj.image.analysis.watershed.event.ComponentStackMergeListener;
 import org.openimaj.image.analysis.watershed.feature.ComponentFeature;
 import org.openimaj.image.pixel.IntValuePixel;
 
-
 /**
- *	Detector for Maximally-Stable Extremal Regions. The actual image analysis
- *	is in the class {@link WatershedProcessorAlgorithm} to allow this class to be
- *	re-used efficiently.
+ * Detector for Maximally-Stable Extremal Regions. The actual image analysis is
+ * in the class {@link WatershedProcessorAlgorithm} to allow this class to be
+ * re-used efficiently.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *
  */
 public class WatershedProcessor
 {
 	/** This is where we start "pouring" our water */
-	private IntValuePixel startPixel = new IntValuePixel(0,0);
-		
+	private IntValuePixel startPixel = new IntValuePixel(0, 0);
+
 	/** A list of objects that want to know what components on the stack merge */
 	private List<ComponentStackMergeListener> csmListeners = null;
 
 	private Class<? extends ComponentFeature>[] featureClasses;
-	
+
 	/**
-	 * 	Default constructor. 
-	 * @param featureClasses classes for feature creation
+	 * Default constructor.
+	 * 
+	 * @param featureClasses
+	 *            classes for feature creation
 	 */
+	@SafeVarargs
 	public WatershedProcessor(Class<? extends ComponentFeature>... featureClasses)
 	{
 		this.csmListeners = new ArrayList<ComponentStackMergeListener>();
 		this.featureClasses = featureClasses;
 	}
-	
+
 	/**
-	 *	Process the given image.
-	 *	@param greyscaleImage The image to process
+	 * Process the given image.
+	 *
+	 * @param greyscaleImage
+	 *            The image to process
 	 */
-	public void processImage( FImage greyscaleImage ) {	
-		WatershedProcessorAlgorithm d = new WatershedProcessorAlgorithm( greyscaleImage, this.startPixel, featureClasses );
-		
-		for( ComponentStackMergeListener csm : csmListeners )
-			d.addComponentStackMergeListener( csm );
-		
+	public void processImage(FImage greyscaleImage) {
+		final WatershedProcessorAlgorithm d = new WatershedProcessorAlgorithm(greyscaleImage, this.startPixel,
+				featureClasses);
+
+		for (final ComponentStackMergeListener csm : csmListeners)
+			d.addComponentStackMergeListener(csm);
+
 		d.startPour();
 	}
-	
+
 	/**
-	 * 	Add a component stack merge listener
-	 *	@param csml The {@link ComponentStackMergeListener} to add
+	 * Add a component stack merge listener
+	 *
+	 * @param csml
+	 *            The {@link ComponentStackMergeListener} to add
 	 */
-	public void addComponentStackMergeListener( ComponentStackMergeListener csml )
+	public void addComponentStackMergeListener(ComponentStackMergeListener csml)
 	{
-		csmListeners.add( csml );
+		csmListeners.add(csml);
 	}
 
 }

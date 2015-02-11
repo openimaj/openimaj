@@ -31,17 +31,13 @@ package org.openimaj.ml.linear.learner;
 
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.mtj.AbstractMTJMatrix;
 import gov.sandia.cognition.math.matrix.mtj.AbstractSparseMatrix;
-import gov.sandia.cognition.math.matrix.mtj.SparseColumnMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
-import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
 
 import org.apache.log4j.Logger;
 import org.openimaj.io.ReadWriteableBinary;

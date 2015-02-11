@@ -35,7 +35,7 @@ import org.openimaj.image.SingleBandImage;
 /**
  * An interface for objects that are able to process only
  * {@link SingleBandImage}s.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T>
  *            The type of pixel in the image that this processor can process.
@@ -44,12 +44,12 @@ import org.openimaj.image.SingleBandImage;
  *            can process.
  */
 public interface SinglebandImageProcessor<T, S extends Image<T, S>>
-		extends ImageProcessor<S>
+extends ImageProcessor<S>
 {
 	/**
 	 * An interface for {@link Image}s that are processable by
 	 * {@link SinglebandImageProcessor}s.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * @param <T>
 	 *            The type of pixel in the image
@@ -63,7 +63,7 @@ public interface SinglebandImageProcessor<T, S extends Image<T, S>>
 		/**
 		 * Process with the given {@link SinglebandImageProcessor} returning a
 		 * new image.
-		 * 
+		 *
 		 * @param p
 		 *            The processor to process the image with
 		 * @return A new image containing the result.
@@ -74,7 +74,7 @@ public interface SinglebandImageProcessor<T, S extends Image<T, S>>
 		 * Process with the given {@link SinglebandImageProcessor} storing the
 		 * result in this processable image. Side-affects this processable
 		 * image.
-		 * 
+		 *
 		 * @param p
 		 *            The processor to process the image with
 		 * @return A new image containing the result.

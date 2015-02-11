@@ -37,37 +37,42 @@ import org.openimaj.io.ReadableBinary;
 
 /**
  * A wrapper for {@link List} that is readable.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <V> The type of the elements of the list.
+ * @param <V>
+ *            The type of the elements of the list.
  */
 public abstract class ReadableArrayBinary<V> implements ReadableBinary {
 	/**
 	 * The underlying list
 	 */
 	public V[] value;
-	
+
 	/**
 	 * Construct with a backing list
-	 * @param list the backing list
+	 * 
+	 * @param list
+	 *            the backing list
 	 */
 	public ReadableArrayBinary(V[] list) {
 		this.value = list;
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		
-		int sz = in.readInt();
-		if(this.value == null) this.value = createEmpty(sz);
-		
-		for (int i=0; i<sz; i++) {
+
+		final int sz = in.readInt();
+		if (this.value == null)
+			this.value = createEmpty(sz);
+
+		for (int i = 0; i < sz; i++) {
 			value[i] = readValue(in);
 		}
 	}
 
 	protected abstract V readValue(DataInput in) throws IOException;
+
 	protected abstract V[] createEmpty(int sz) throws IOException;
 
 	@Override

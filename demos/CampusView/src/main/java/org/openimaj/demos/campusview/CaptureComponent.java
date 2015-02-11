@@ -29,9 +29,18 @@
  */
 package org.openimaj.demos.campusview;
 
-import javax.swing.JPanel;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
@@ -39,35 +48,26 @@ import org.openimaj.video.capture.Device;
 import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.capture.VideoCaptureException;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
 /**
  * A JPanel that displays the output of a camera
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class CaptureComponent extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private static final List<Device> devices = VideoCapture.getVideoDevices();
-	
-	private JComboBox comboBox;
+
+	private JComboBox<Object> comboBox;
 	private JPanel panel;
 	private JLabel label;
-	
+
 	private VideoDisplay<MBFImage> display;
 
 	private int capHeight = 320;
 	private int capWidth = 240;
 	private double capRate = 25;
-	
+
 	private int defaultWidth = 320;
 	private int defaultHeight = 240;
 
@@ -77,107 +77,110 @@ public class CaptureComponent extends JPanel {
 	public CaptureComponent() {
 		this(640, 480, 1);
 	}
-	
+
 	/**
 	 * Create the panel.
-	 * @param capWidth 
-	 * @param capHeight 
-	 * @param capRate 
+	 *
+	 * @param capWidth
+	 * @param capHeight
+	 * @param capRate
 	 */
-	public CaptureComponent(int capWidth, int capHeight, double capRate) 
+	public CaptureComponent(int capWidth, int capHeight, double capRate)
 	{
 		this.capWidth = capWidth;
 		this.capHeight = capHeight;
 		this.capRate = capRate;
 
-		setOpaque( false );
-		setLayout( new GridBagLayout() );
-		
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0; gbc.gridy = 0;
+		setOpaque(false);
+		setLayout(new GridBagLayout());
+
+		final GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		label = new JLabel("Camera #1");
 		label.setForeground(Color.WHITE);
 		label.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
 		label.setBounds(6, 6, 124, 16);
 		add(label, gbc);
-		
+
 		gbc.gridy++;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weighty = 0;
-		comboBox = new JComboBox();
+		comboBox = new JComboBox<Object>();
 		comboBox.setBounds(6, 286, 320, 27);
-		add( comboBox, gbc );
+		add(comboBox, gbc);
 
 		gbc.gridy++;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weighty = 1;
 		panel = new JPanel();
-		panel.setOpaque( false );
+		panel.setOpaque(false);
 		panel.setBounds(6, 34, defaultWidth, defaultHeight);
 		panel.setMaximumSize(new Dimension(defaultWidth, defaultHeight));
-		add(panel,gbc);
-		
+		add(panel, gbc);
+
 		initSrcList();
 	}
 
 	/**
 	 * Set the title of the component
+	 *
 	 * @param title
 	 */
 	public void setTitle(String title) {
 		label.setText(title);
 	}
-	
+
 	/**
 	 * @return the title of the component
 	 */
 	public String getTitle() {
 		return label.getText();
 	}
-	
+
 	private void initSrcList() {
 		comboBox.addItem("None");
-		
-		for (Device d : devices) 
+
+		for (final Device d : devices)
 			comboBox.addItem(d);
-		
+
 		comboBox.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setupVideo();
 			}
-			
+
 		});
-		
+
 		comboBox.setSelectedItem(0);
 	}
 
 	private void setupVideo() {
-		if (comboBox.getSelectedItem().equals("None")) 
+		if (comboBox.getSelectedItem().equals("None"))
 			return;
-		
-		Device dev = (Device) comboBox.getSelectedItem();
-		
+
+		final Device dev = (Device) comboBox.getSelectedItem();
+
 		if (display != null) {
-			((VideoCapture)display.getVideo()).stopCapture();
+			((VideoCapture) display.getVideo()).stopCapture();
 			panel.removeAll();
 		}
-		
+
 		System.out.println(dev);
-		
+
 		try {
 			display = VideoDisplay.createVideoDisplay(new VideoCapture(capWidth, capHeight, capRate, dev), panel);
-		} catch (VideoCaptureException e) {
+		} catch (final VideoCaptureException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		revalidate();
 		repaint();
 	}
-	
+
 	/**
 	 * @return the capHeight
 	 */
@@ -186,7 +189,8 @@ public class CaptureComponent extends JPanel {
 	}
 
 	/**
-	 * @param capHeight the capHeight to set
+	 * @param capHeight
+	 *            the capHeight to set
 	 */
 	public void setCapHeight(int capHeight) {
 		this.capHeight = capHeight;
@@ -201,7 +205,8 @@ public class CaptureComponent extends JPanel {
 	}
 
 	/**
-	 * @param capWidth the capWidth to set
+	 * @param capWidth
+	 *            the capWidth to set
 	 */
 	public void setCapWidth(int capWidth) {
 		this.capWidth = capWidth;
@@ -214,36 +219,37 @@ public class CaptureComponent extends JPanel {
 	public double getCapRate() {
 		return capRate;
 	}
-	
+
 	@Override
 	public int getWidth()
 	{
-		if( display != null )
+		if (display != null)
 			return display.getScreen().getWidth();
 		return defaultWidth;
 	}
-	
+
 	@Override
 	public int getHeight()
 	{
-		if( display != null )
+		if (display != null)
 			return display.getScreen().getHeight();
 		return defaultHeight;
 	}
 
 	/**
-	 * @param capRate the capRate to set
+	 * @param capRate
+	 *            the capRate to set
 	 */
 	public void setCapRate(double capRate) {
 		this.capRate = capRate;
 		setupVideo();
 	}
-	
+
 	/**
 	 * @return the current frame
 	 */
 	public MBFImage getCurrentFrame() {
-		if( display != null )
+		if (display != null)
 			return display.getVideo().getCurrentFrame();
 		return null;
 	}

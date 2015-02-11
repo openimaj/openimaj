@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
-# * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ # * Copyright (c) 2011, The University of Southampton and the individual contributors.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -59,6 +59,7 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode;
 
 import java.io.IOException;
+
 import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
@@ -68,26 +69,34 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
  *
  */
 public abstract class TwitterTokenOutputMode {
-	
-	
-	@Option(name="--results-output", aliases="-ro", required=false, usage="Where should the results be outputted?", metaVar="STRING")
+
+	@Option(
+			name = "--results-output",
+			aliases = "-ro",
+			required = false,
+			usage = "Where should the results be outputted?",
+			metaVar = "STRING")
 	public String outputPath = null;
-	
-	@Option(name="--results-output-overwrite", aliases="-rorm", required=false, usage="Where should the results be outputted?", metaVar="STRING")
+
+	@Option(
+			name = "--results-output-overwrite",
+			aliases = "-rorm",
+			required = false,
+			usage = "Where should the results be outputted?",
+			metaVar = "STRING")
 	public boolean replace = false;
-	
-	
-	
+
 	/**
-	 * @param opts The token tool options
-	 * @param completedMode The mode to output from
-	 * @param outputPath The final location of the output
-	 * @param replace whether to replace an existing output
-	 * @throws IOException 
-	 * 
+	 * @param opts
+	 *            The token tool options
+	 * @param completedMode
+	 *            The mode to output from
+	 * @throws Exception
+	 * @throws IOException
+	 *
 	 */
 	public abstract void write(
-			HadoopTwitterTokenToolOptions opts, 
+			HadoopTwitterTokenToolOptions opts,
 			TwitterTokenMode completedMode) throws Exception;
 
 }

@@ -29,41 +29,32 @@
  */
 package org.openimaj.ml.linear.learner.regul;
 
-import no.uib.cipr.matrix.Vector.Norm;
-
-import org.apache.log4j.Logger;
-import org.openimaj.math.matrix.CFMatrixUtils;
-
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.mtj.AbstractMTJMatrix;
-import gov.sandia.cognition.math.matrix.mtj.AbstractMTJVector;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseRowMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseVector;
-import gov.sandia.cognition.math.matrix.mtj.SparseVectorFactoryMTJ;
 
-public class L1L2Regulariser implements Regulariser{
+import org.openimaj.math.matrix.CFMatrixUtils;
 
-	private static final Logger logger = Logger.getLogger(L1L2Regulariser.class);
+public class L1L2Regulariser implements Regulariser {
 
 	@Override
 	public Matrix prox(Matrix W, double lambda) {
-		int nrows = W.getNumRows();
+		final int nrows = W.getNumRows();
 		Matrix ret = SparseMatrixFactoryMTJ.INSTANCE.createMatrix(W.getNumRows(), W.getNumColumns());
-		SparseRowMatrix Wrow = CFMatrixUtils.asSparseRow(W);
-//		Matrix Wrow = W;
+		final SparseRowMatrix Wrow = CFMatrixUtils.asSparseRow(W);
+		// Matrix Wrow = W;
 		ret = CFMatrixUtils.asSparseRow(ret);
-		
+
 		for (int r = 0; r < nrows; r++) {
-//			Vector row = W.getRow(r);
-			SparseVector row = Wrow.getRow(r);
-			double rownorm = row.norm2();
-			if(rownorm > lambda){
-				double scal = (rownorm - lambda)/rownorm;
-				Vector scaled = row.scale(scal);
-				ret.setRow(r,scaled);
+			// Vector row = W.getRow(r);
+			final SparseVector row = Wrow.getRow(r);
+			final double rownorm = row.norm2();
+			if (rownorm > lambda) {
+				final double scal = (rownorm - lambda) / rownorm;
+				final Vector scaled = row.scale(scal);
+				ret.setRow(r, scaled);
 			}
 		}
 		return CFMatrixUtils.asSparseColumn(ret);

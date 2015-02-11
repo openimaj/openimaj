@@ -45,7 +45,7 @@ import com.xuggle.xuggler.io.IURLProtocolHandler;
  * the resource to a temporary file before opening it - it could potentially
  * consume a stream directly, but this would restrict the video codecs to ones
  * that directly support streaming.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class JarURLProtocolHandler extends FileProtocolHandler {
@@ -60,7 +60,7 @@ public class JarURLProtocolHandler extends FileProtocolHandler {
 
 	/**
 	 * Construct with the given url. The video will be extracted immediately.
-	 * 
+	 *
 	 * @param url
 	 *            the url to the video
 	 * @throws IOException

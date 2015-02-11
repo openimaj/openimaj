@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>core-web</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>core-web</name>
   <inceptionYear>2011</inceptionYear>
   <description>Implementation of a programatic offscreen web browser and utility functions.</description>

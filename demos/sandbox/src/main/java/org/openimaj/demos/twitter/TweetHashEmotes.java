@@ -31,13 +31,9 @@ package org.openimaj.demos.twitter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openimaj.logger.LoggerUtils;
-import org.openimaj.stream.provider.twitter.TwitterSearchDataset;
-import org.openimaj.stream.provider.twitter.TwitterStreamDataset;
 import org.openimaj.stream.provider.twitter.TwitterStreamFilterDataset;
 import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.api.auth.common.TwitterAPIToken;
-import org.openimaj.util.data.Context;
-import org.openimaj.util.function.Operation;
 import org.openimaj.util.stream.Stream;
 
 import twitter4j.Query;

@@ -36,21 +36,23 @@ import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.function.Predicate;
 
 /**
- * Given a {@link List} of {@link USMFStatus} instances, create a new {@link List}
- * containing only those which pass the {@link TwitterPredicateFunction} functions specified
+ * Given a {@link List} of {@link USMFStatus} instances, create a new
+ * {@link List} containing only those which pass the
+ * {@link TwitterPredicateFunction} functions specified
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class TwitterPredicateFunction implements Predicate<USMFStatus>{
-
+public class TwitterPredicateFunction implements Predicate<USMFStatus> {
 
 	private TwitterPreprocessingPredicate[] filters;
+
 	/**
 	 * @param filters
 	 */
-	public TwitterPredicateFunction(TwitterPreprocessingPredicate...filters) {
+	public TwitterPredicateFunction(TwitterPreprocessingPredicate... filters) {
 		this.filters = filters;
-		for (TwitterPreprocessingPredicate filter : filters) {
+		for (final TwitterPreprocessingPredicate filter : filters) {
 			filter.validate();
 		}
 	}
@@ -58,9 +60,10 @@ public class TwitterPredicateFunction implements Predicate<USMFStatus>{
 	@Override
 	public boolean test(USMFStatus object) {
 		boolean passed = true;
-		for (TwitterPreprocessingPredicate filter : this.filters) {
+		for (final TwitterPreprocessingPredicate filter : this.filters) {
 			passed = filter.test(object);
-			if(!passed)break;
+			if (!passed)
+				break;
 		}
 		return passed;
 	}

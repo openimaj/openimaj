@@ -9,7 +9,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>ImageCollectionTool</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>ImageCollectionTool</name>
   <packaging>jar</packaging>
   <properties>

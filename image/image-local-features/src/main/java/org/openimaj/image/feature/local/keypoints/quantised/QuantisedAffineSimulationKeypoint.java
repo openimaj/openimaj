@@ -38,9 +38,9 @@ import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint.AffineSi
  * {@link AffineSimulationKeypointLocation}. This can be used for representing
  * quantised local features extracted in combination with the {@link ASIFT}
  * algorithm.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class QuantisedAffineSimulationKeypoint extends QuantisedLocalFeature<AffineSimulationKeypointLocation> {
 	/**
@@ -54,7 +54,7 @@ public class QuantisedAffineSimulationKeypoint extends QuantisedLocalFeature<Aff
 	/**
 	 * Construct a {@link QuantisedAffineSimulationKeypoint}, located at the
 	 * origin with the given id.
-	 * 
+	 *
 	 * @param id
 	 *            the id
 	 */
@@ -65,7 +65,7 @@ public class QuantisedAffineSimulationKeypoint extends QuantisedLocalFeature<Aff
 	/**
 	 * Construct a {@link QuantisedAffineSimulationKeypoint}, located at the
 	 * given position and id.
-	 * 
+	 *
 	 * @param location
 	 *            the position
 	 * @param id

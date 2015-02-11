@@ -7,10 +7,8 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>core-audio</artifactId>
   <name>The OpenIMAJ Core Audio Library</name>
-  <version>1.4-SNAPSHOT</version>
   <description>
 	Core definitions of audio streams and samples/chunks. Also contains interfaces for processors for these basic types.
   </description>

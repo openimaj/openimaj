@@ -45,9 +45,9 @@ import org.openimaj.feature.IdentityFeatureExtractor;
  * Because the features are cached, the internal annotator must rely on a
  * {@link IdentityFeatureExtractor} or similar, and thus not perform any
  * extraction itself.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object
  * @param <ANNOTATION>
@@ -56,7 +56,7 @@ import org.openimaj.feature.IdentityFeatureExtractor;
  *            Type of feature extracted and cached.
  */
 public class FeatureCachingIncrementalBatchAnnotator<OBJECT, ANNOTATION, FEATURE>
-		extends IncrementalAnnotator<OBJECT, ANNOTATION>
+extends IncrementalAnnotator<OBJECT, ANNOTATION>
 {
 	BatchAnnotator<FEATURE, ANNOTATION> batchAnnotator;
 	GroupedListCache<ANNOTATION, FEATURE> featureCache;
@@ -66,7 +66,7 @@ public class FeatureCachingIncrementalBatchAnnotator<OBJECT, ANNOTATION, FEATURE
 	/**
 	 * Construct with the given feature extractor and batch annotator, and use
 	 * an in-memory cache.
-	 * 
+	 *
 	 * @param extractor
 	 *            the extractor
 	 * @param batchAnnotator
@@ -83,7 +83,7 @@ public class FeatureCachingIncrementalBatchAnnotator<OBJECT, ANNOTATION, FEATURE
 	/**
 	 * Construct with the given feature extractor and batch annotator, and use
 	 * an in-memory cache.
-	 * 
+	 *
 	 * @param extractor
 	 *            the extractor
 	 * @param batchAnnotator

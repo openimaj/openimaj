@@ -54,7 +54,6 @@ import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.assignment.hard.ExactByteAssigner;
 import org.openimaj.ml.clustering.assignment.hard.KDTreeByteEuclideanAssigner;
-import org.openimaj.ml.clustering.kmeans.ByteKMeans;
 import org.openimaj.util.pair.IntFloatPair;
 
 /**

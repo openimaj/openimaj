@@ -54,9 +54,9 @@ import org.openimaj.ml.gmm.GaussianMixtureModelEM.CovarianceType;
  * thus you probably want to learn a {@link CovarianceType#Diagonal} or
  * {@link CovarianceType#Spherical} type gaussian with the
  * {@link GaussianMixtureModelEM} class.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            Primitive array type of the {@link ArrayFeatureVector}s used by
  *            the {@link LocalFeature}s that will be processed.
@@ -76,25 +76,25 @@ import org.openimaj.ml.gmm.GaussianMixtureModelEM.CovarianceType;
 								"doi", "10.1109/CVPR.2007.383266",
 								"ISSN", "1063-6919"
 						}
-				),
-				@Reference(
-						type = ReferenceType.Inproceedings,
-						author = { "Perronnin, Florent", "S\'{a}nchez, Jorge", "Mensink, Thomas" },
-						title = "Improving the Fisher Kernel for Large-scale Image Classification",
-						year = "2010",
-						booktitle = "Proceedings of the 11th European Conference on Computer Vision: Part IV",
-						pages = { "143", "", "156" },
-						url = "http://dl.acm.org/citation.cfm?id=1888089.1888101",
-						publisher = "Springer-Verlag",
-						series = "ECCV'10",
-						customData = {
-								"isbn", "3-642-15560-X, 978-3-642-15560-4",
-								"location", "Heraklion, Crete, Greece",
-								"numpages", "14",
-								"acmid", "1888101",
-								"address", "Berlin, Heidelberg"
-						}
-				)
+						),
+						@Reference(
+								type = ReferenceType.Inproceedings,
+								author = { "Perronnin, Florent", "S\'{a}nchez, Jorge", "Mensink, Thomas" },
+								title = "Improving the Fisher Kernel for Large-scale Image Classification",
+								year = "2010",
+								booktitle = "Proceedings of the 11th European Conference on Computer Vision: Part IV",
+								pages = { "143", "", "156" },
+								url = "http://dl.acm.org/citation.cfm?id=1888089.1888101",
+								publisher = "Springer-Verlag",
+								series = "ECCV'10",
+								customData = {
+										"isbn", "3-642-15560-X, 978-3-642-15560-4",
+										"location", "Heraklion, Crete, Greece",
+										"numpages", "14",
+										"acmid", "1888101",
+										"address", "Berlin, Heidelberg"
+								}
+								)
 		})
 public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, FloatFV> {
 	private MixtureOfGaussians gmm;
@@ -106,7 +106,7 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 	 * steps. The covariance matrices of the gaussians are all assumed to be
 	 * diagonal, and will be treated as such; any non-zero off-diagonal values
 	 * will be completely ignored.
-	 * 
+	 *
 	 * @param gmm
 	 *            the mixture of gaussians
 	 * @param hellinger
@@ -127,7 +127,7 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 	 * Gaussians. The covariance matrices of the gaussians are all assumed to be
 	 * diagonal, and will be treated as such; any non-zero off-diagonal values
 	 * will be completely ignored.
-	 * 
+	 *
 	 * @param gmm
 	 *            the mixture of gaussians
 	 */
@@ -142,7 +142,7 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 	 * to be diagonal, and will be treated as such; any non-zero off-diagonal
 	 * values will be completely ignored. For the improved version, the final
 	 * vector is projected into Hellinger's kernel and then l2 normalised.
-	 * 
+	 *
 	 * @param gmm
 	 *            the mixture of gaussians
 	 * @param improved
@@ -238,7 +238,7 @@ public class FisherVector<T> implements VectorAggregator<ArrayFeatureVector<T>, 
 		if (hellinger) {
 			for (int i = 0; i < out.values.length; i++) {
 				out.values[i] = (float) (out.values[i] > 0 ? Math.sqrt(out.values[i]) :
-						-1 * Math.sqrt(-1 * out.values[i]));
+					-1 * Math.sqrt(-1 * out.values[i]));
 			}
 		}
 

@@ -44,13 +44,16 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 
+/**
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class HadoopLZOTest extends Configured implements Tool {
 	enum CounterEnum {
 		CHEESE, FLEES;
@@ -105,11 +108,12 @@ public class HadoopLZOTest extends Configured implements Tool {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public int run(String[] args) throws Exception {
-		Class<? extends InputFormat> lzoClass = null;
+		Class<? extends InputFormat<?, ?>> lzoClass = null;
 		try {
-			lzoClass = (Class<? extends InputFormat>) Class.forName("com.hadoop.mapreduce.LzoTextInputFormat");
+			lzoClass = (Class<? extends InputFormat<?, ?>>) Class.forName("com.hadoop.mapreduce.LzoTextInputFormat");
 		} catch (final ClassNotFoundException nfe) {
 			System.err.println("LZO not installed; skipping");
 			return -1;
@@ -126,7 +130,7 @@ public class HadoopLZOTest extends Configured implements Tool {
 		job.setOutputFormatClass(TextOutputFormat.class);
 		job.setJarByClass(this.getClass());
 
-		lzoClass.getMethod("setInputPaths", Path[].class).invoke(null, paths);
+		lzoClass.getMethod("setInputPaths", Path[].class).invoke(null, (Object[]) paths);
 		TextOutputFormat.setOutputPath(job, out);
 		job.setMapperClass(CounterMapper.class);
 		job.setReducerClass(CounterReducer.class);
@@ -137,9 +141,5 @@ public class HadoopLZOTest extends Configured implements Tool {
 		end = System.currentTimeMillis();
 		System.out.println("Took: " + (end - start) + "ms");
 		return 0;
-	}
-
-	public static void main(String[] args) throws Exception {
-		ToolRunner.run(new HadoopLZOTest(), args);
 	}
 }

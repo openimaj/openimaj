@@ -64,23 +64,23 @@ import org.openimaj.experiment.evaluation.retrieval.Scored;
  * {@link SetRetrievalEvaluator} are the ID of the query; if the queries are not
  * {@link Identifiable}, then the {@link Object#toString()} method is used
  * instead.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <QUERY>
  *            Type of query
  * @param <DOCUMENT>
  *            Type of document
  */
 public class IREvalAnalyser<QUERY, DOCUMENT extends Identifiable>
-		implements RetrievalAnalyser<
-		IREvalResult,
-		QUERY,
-		DOCUMENT>
+implements RetrievalAnalyser<
+IREvalResult,
+QUERY,
+DOCUMENT>
 {
 	protected static <Q, D extends Identifiable> TreeMap<String, ArrayList<Document>> convertResults(
 			Map<Q, List<D>> results)
-	{
+			{
 		final TreeMap<String, ArrayList<Document>> allRankings = new TreeMap<String, ArrayList<Document>>();
 
 		for (final Entry<Q, List<D>> entry : results.entrySet()) {
@@ -110,11 +110,11 @@ public class IREvalAnalyser<QUERY, DOCUMENT extends Identifiable>
 		}
 
 		return allRankings;
-	}
+			}
 
 	protected static <Q, D extends Identifiable> TreeMap<String, ArrayList<Judgment>> convertRelevant(
 			Map<Q, Set<D>> relevant)
-	{
+			{
 		final TreeMap<String, ArrayList<Judgment>> allJudgments = new TreeMap<String, ArrayList<Judgment>>();
 
 		for (final Entry<Q, Set<D>> entry : relevant.entrySet()) {
@@ -134,7 +134,7 @@ public class IREvalAnalyser<QUERY, DOCUMENT extends Identifiable>
 		}
 
 		return allJudgments;
-	}
+			}
 
 	@Override
 	public IREvalResult analyse(Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant) {

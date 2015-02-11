@@ -29,7 +29,6 @@
  */
 package org.openimaj.ml.linear.experiments.sinabill;
 
-import gnu.trove.set.hash.TIntHashSet;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 
@@ -41,13 +40,10 @@ import java.util.List;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.ml.linear.data.BillMatlabFileDataGenerator;
-import org.openimaj.ml.linear.data.BillMatlabFileDataGenerator.Mode;
 import org.openimaj.ml.linear.evaluation.BilinearEvaluator;
 import org.openimaj.ml.linear.evaluation.RootMeanSumLossEvaluator;
 import org.openimaj.ml.linear.learner.BilinearLearnerParameters;
 import org.openimaj.ml.linear.learner.BilinearSparseOnlineLearner;
-import org.openimaj.ml.linear.learner.init.SparseSingleValueInitStrat;
-import org.openimaj.ml.linear.learner.init.SingleValueInitStrat;
 import org.openimaj.ml.linear.learner.init.SparseZerosInitStrategy;
 import org.openimaj.ml.linear.learner.loss.MatSquareLossFunction;
 import org.openimaj.util.pair.Pair;

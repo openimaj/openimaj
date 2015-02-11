@@ -41,9 +41,9 @@ import org.openimaj.ml.training.BatchTrainer;
  * will cause the internal model to be re-initialised using the new data. If you
  * want to implement an {@link Annotator} that can be updated, implement the
  * {@link IncrementalAnnotator} interface instead.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object being annotated
  * @param <ANNOTATION>
@@ -59,7 +59,7 @@ public abstract class BatchAnnotator<OBJECT, ANNOTATION>
 	 * Train the annotator with the given grouped dataset. Internally, the
 	 * dataset is converted to a list containing exactly one reference to each
 	 * object in the dataset with (potentially) multiple annotations.
-	 * 
+	 *
 	 * @param dataset
 	 *            the dataset to train on
 	 */

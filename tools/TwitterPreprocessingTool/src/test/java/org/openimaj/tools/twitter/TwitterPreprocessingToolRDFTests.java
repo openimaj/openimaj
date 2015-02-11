@@ -78,12 +78,17 @@ public class TwitterPreprocessingToolRDFTests {
 	@Before
 	public void setup() throws IOException {
 		jsonTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER));
-		jsonGeoTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(GEO_JSON_TWITTER));
-		jsonTwitterUTFInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER_UTF));
+		jsonGeoTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class
+				.getResourceAsStream(GEO_JSON_TWITTER));
+		jsonTwitterUTFInputFile = fileFromStream(TwitterPreprocessingToolTests.class
+				.getResourceAsStream(JSON_TWITTER_UTF));
 		rawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_TWITTER));
-		rawFewerTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_FEWER_TWITTER));
-		brokenRawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(BROKEN_RAW_TWITTER));
-		monthLongTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(MONTH_LONG_TWITTER));
+		rawFewerTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class
+				.getResourceAsStream(RAW_FEWER_TWITTER));
+		brokenRawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class
+				.getResourceAsStream(BROKEN_RAW_TWITTER));
+		monthLongTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class
+				.getResourceAsStream(MONTH_LONG_TWITTER));
 		retweetedStatusFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RETWEETED_STATUS));
 		accidentlyBrokenFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(ACCIDENTLY_BROKEN));
 
@@ -91,9 +96,9 @@ public class TwitterPreprocessingToolRDFTests {
 	}
 
 	private File fileFromStream(InputStream stream) throws IOException {
-		File f = folder.newFile("tweet" + stream.hashCode() + ".txt");
-		PrintWriter writer = new PrintWriter(f, "UTF-8");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+		final File f = folder.newFile("tweet" + stream.hashCode() + ".txt");
+		final PrintWriter writer = new PrintWriter(f, "UTF-8");
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			writer.println(line);
@@ -105,15 +110,15 @@ public class TwitterPreprocessingToolRDFTests {
 
 	/**
 	 * detect language using json
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
 	public void testTweetRetweetedStatus() throws IOException {
-		String mode = "LANG_ID";
-		File languageOutJSON = folder.newFile("retweetedStatus.json");
-		String commandArgs = String.format(commandFormat, retweetedStatusFile, languageOutJSON, mode, "APPEND");
-		String[] commandArgsArr = commandArgs.split(" ");
+		final String mode = "LANG_ID";
+		final File languageOutJSON = folder.newFile("retweetedStatus.json");
+		final String commandArgs = String.format(commandFormat, retweetedStatusFile, languageOutJSON, mode, "APPEND");
+		final String[] commandArgsArr = commandArgs.split(" ");
 		TwitterPreprocessingTool.main(commandArgsArr);
 
 		languageOutJSON.delete();

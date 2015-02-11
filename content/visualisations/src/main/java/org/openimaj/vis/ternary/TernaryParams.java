@@ -40,12 +40,16 @@ import org.openimaj.image.typography.general.GeneralFont;
 import org.openimaj.image.typography.mathml.MathMLFont;
 
 /**
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ */
+/**
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
  */
 public class TernaryParams extends HashMap<String, Object> {
 	/**
-	 * 
+	 *
 	 */
 	public TernaryParams() {
 		this.put(COLOUR_MAP, ColourMap.Greys3);
@@ -86,79 +90,92 @@ public class TernaryParams extends HashMap<String, Object> {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -1188907996988444966L;
 	/**
-	 * 
+	 *
 	 */
 	public static final String COLOUR_MAP = "ternary.colour.map";
 	/**
-	 * 
+	 *
 	 */
 	public static final String PADDING = "ternary.border";
 	/**
-	 * 
+	 *
 	 */
 	public static final String LABELS = "ternary.label.data";
 	/**
-	 * 
+	 *
 	 */
 	public static final String LABEL_FONT = "ternary.label.font";
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public static final String LABEL_BACKGROUND = "ternary.label.background";
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public static final String LABEL_BORDER = "ternary.label.border";
 	/**
-	 * 
+	 *
 	 */
 	public static final String LABEL_PADDING = "ternary.label.padding";
 	/**
-	 * 
+	 *
 	 */
 	public static final String BG_COLOUR = "ternary.bg.colour";
 	/**
-	 * 
+	 *
 	 */
 	public static final String TRIANGLE_BORDER = "ternary.triangle_border.on";
 	/**
-	 * 
+	 *
 	 */
 	public static final String TRIANGLE_BORDER_THICKNESS = "ternary.triangle_border.thickness";
 	/**
-	 * 
+	 *
 	 */
 	public static final String TRIANGLE_BORDER_TICKS = "ternary.triangle_border.ticks";
 	/**
-	 * 
+	 *
 	 */
 	public static final String TRIANGLE_BORDER_COLOUR = "ternary.triangle_border.colour";
 	/**
-	 * 
+	 *
 	 */
 	public static final String TRIANGLE_BORDER_TICK_THICKNESS = "ternary.triangle_border.ticks.thickness";
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public static final String TICK_FONT = "ternary.triangle_border.ticks.font";
 	/**
-	 * 
+	 *
 	 */
 	public static final String DRAW_SCALE = "ternary.scale.draw";
+	/**
+	 *
+	 */
 	public static final float TOP_RIGHT_X = 0.9f;
+	/**
+	 *
+	 */
 	public static final float TOP_RIGHT_Y = 0.0f;
+	/**
+	 *
+	 */
 	public static final String SCALE_FONT = "ternary.scale.font";
+	/**
+	 *
+	 */
 	public static final String SCALE_MIN = "ternary.scale.min.text";
+	/**
+	 *
+	 */
 	public static final String SCALE_MAX = "ternary.scale.max.text";
-	
-	
 
 	/**
 	 * @param param

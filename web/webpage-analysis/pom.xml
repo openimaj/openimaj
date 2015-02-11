@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>webpage-analysis</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>webpage-analysis</name>
   <inceptionYear>2011</inceptionYear>
   <description>Utilities for analysing the content and visual layout of a web-page.</description>

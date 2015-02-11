@@ -47,9 +47,9 @@ import org.openimaj.image.processing.transform.AffineParams;
 
 /**
  * An {@link Engine} for ASIFT.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 @Reference(
 		type = ReferenceType.Article,
@@ -73,7 +73,7 @@ public class ASIFTEngine implements Engine<AffineSimulationKeypoint, FImage> {
 	/**
 	 * Construct using 5 tilt levels with optional initial double-sizing. The
 	 * default parameters for the internal {@link DoGSIFTEngine} are used.
-	 * 
+	 *
 	 * @param hires
 	 *            should the image should be double sized as a first step
 	 */
@@ -85,7 +85,7 @@ public class ASIFTEngine implements Engine<AffineSimulationKeypoint, FImage> {
 	 * Construct using given number of tilt levels with optional initial
 	 * double-sizing. The default parameters for the internal
 	 * {@link DoGSIFTEngine} are used.
-	 * 
+	 *
 	 * @param hires
 	 *            should the image should be double sized as a first step
 	 * @param nTilts
@@ -99,7 +99,7 @@ public class ASIFTEngine implements Engine<AffineSimulationKeypoint, FImage> {
 	/**
 	 * Construct using 5 tilt levels and the given parameters for the internal
 	 * {@link DoGSIFTEngine}.
-	 * 
+	 *
 	 * @param opts
 	 *            parameters for the internal {@link DoGSIFTEngine}.
 	 */
@@ -110,7 +110,7 @@ public class ASIFTEngine implements Engine<AffineSimulationKeypoint, FImage> {
 	/**
 	 * Construct using the given numbe of tilt levels and parameters for the
 	 * internal {@link DoGSIFTEngine}.
-	 * 
+	 *
 	 * @param opts
 	 *            parameters for the internal {@link DoGSIFTEngine}.
 	 * @param nTilts
@@ -123,7 +123,7 @@ public class ASIFTEngine implements Engine<AffineSimulationKeypoint, FImage> {
 
 	/**
 	 * Find the features as a list of {@link Keypoint} objects
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return the detected features
@@ -136,7 +136,7 @@ public class ASIFTEngine implements Engine<AffineSimulationKeypoint, FImage> {
 	/**
 	 * Find the features of a single simulation as a list of {@link Keypoint}
 	 * objects
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param params
@@ -145,14 +145,14 @@ public class ASIFTEngine implements Engine<AffineSimulationKeypoint, FImage> {
 	 */
 	public LocalFeatureList<Keypoint> findKeypoints(FImage image,
 			AffineParams params)
-	{
+			{
 		return asift.detectFeatures(image, params);
-	}
+			}
 
 	/**
 	 * Find the features and return the resultant features in a per-simulation
 	 * format.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return the features

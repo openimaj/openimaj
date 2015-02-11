@@ -30,8 +30,6 @@
 package org.openimaj.ml.linear.data;
 
 import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -42,7 +40,6 @@ import org.openimaj.util.pair.Pair;
 import com.jmatio.io.MatFileReader;
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLCell;
-import com.jmatio.types.MLDouble;
 
 public class MatlabFileDataGenerator implements MatrixDataGenerator<Matrix>{
 	private MLCell data;

@@ -42,20 +42,20 @@ import org.openimaj.image.pixel.IntValuePixel;
 /**
  * Maximally Stable Extremal Region watershed algorithm, implemented as
  * described in the Microsoft paper of Nister and Stewenius.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class WatershedProcessorAlgorithm
 {
 	/**
 	 * A sorted heap of pixels. When {@link #pop()} is called the lowest value
 	 * pixel is returned first.
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (dpd@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	private class BoundaryHeap
 	{
@@ -65,7 +65,7 @@ public class WatershedProcessorAlgorithm
 		/**
 		 * Construct a boundary heap object with a given number of levels (i.e.
 		 * max value of a pixel).
-		 * 
+		 *
 		 * @param sz
 		 *            number of levels.
 		 */
@@ -80,7 +80,7 @@ public class WatershedProcessorAlgorithm
 
 		/**
 		 * Pushes the pixel onto the heap.
-		 * 
+		 *
 		 * @param p
 		 *            The {@link IntValuePixel} to push onto the heap.
 		 */
@@ -95,7 +95,7 @@ public class WatershedProcessorAlgorithm
 		 * Returns the lowest available pixel off the heap (removing it from the
 		 * heap). Pixels are returned in sorted order (lowest value first). The
 		 * method will return null if the heap is empty.
-		 * 
+		 *
 		 * @return The lowest value available pixel or NULL if no pixels are
 		 *         available.
 		 */
@@ -140,7 +140,7 @@ public class WatershedProcessorAlgorithm
 
 	/**
 	 * Default constructor
-	 * 
+	 *
 	 * @param greyscaleImage
 	 *            the image as a 2d array of integer values
 	 * @param startPixel
@@ -149,6 +149,7 @@ public class WatershedProcessorAlgorithm
 	 *            the features that should be created for each detected
 	 *            component
 	 */
+	@SafeVarargs
 	public WatershedProcessorAlgorithm(int[][] greyscaleImage, IntValuePixel startPixel,
 			Class<? extends ComponentFeature>... featureClasses)
 	{
@@ -161,7 +162,7 @@ public class WatershedProcessorAlgorithm
 
 	/**
 	 * Default constructor
-	 * 
+	 *
 	 * @param bGreyscaleImage
 	 *            the image to apply the watershed transform too
 	 * @param startPixel
@@ -170,6 +171,7 @@ public class WatershedProcessorAlgorithm
 	 *            the features that should be created for each detected
 	 *            component
 	 */
+	@SafeVarargs
 	public WatershedProcessorAlgorithm(FImage bGreyscaleImage, IntValuePixel startPixel,
 			Class<? extends ComponentFeature>... featureClasses)
 	{
@@ -185,7 +187,7 @@ public class WatershedProcessorAlgorithm
 	/**
 	 * Start the detection process by pouring on water at the pour point. (part
 	 * 1 and 2)
-	 * 
+	 *
 	 */
 	public void startPour()
 	{
@@ -243,7 +245,7 @@ public class WatershedProcessorAlgorithm
 			{
 				if (neighbour == null)
 					break; // neighbours array is packed, so nulls only occur at
-							// the end
+				// the end
 
 				final int idx = neighbour.x + neighbour.y * this.greyscaleImage[0].length;
 
@@ -353,7 +355,7 @@ public class WatershedProcessorAlgorithm
 	/**
 	 * Returns the neighbouring pixels for a given pixel with 4-connectedness.
 	 * If the pixel lies outside of the image the result will be null.
-	 * 
+	 *
 	 * @param pixel
 	 *            The pixel to find the neighbours of
 	 * @return An array of pixels some of which may be null if they lie outside
@@ -388,7 +390,7 @@ public class WatershedProcessorAlgorithm
 
 	/**
 	 * Add a component stack merge listener
-	 * 
+	 *
 	 * @param csml
 	 *            The {@link ComponentStackMergeListener} to add
 	 */
@@ -400,7 +402,7 @@ public class WatershedProcessorAlgorithm
 	/**
 	 * Removes the given {@link ComponentStackMergeListener} from the listeners
 	 * list.
-	 * 
+	 *
 	 * @param csml
 	 *            The {@link ComponentStackMergeListener} to remove
 	 */
@@ -412,7 +414,7 @@ public class WatershedProcessorAlgorithm
 	/**
 	 * Fire the component stack merge listener event for the merging of two
 	 * components.
-	 * 
+	 *
 	 * @param c1
 	 *            The first component
 	 * @param c2
@@ -427,7 +429,7 @@ public class WatershedProcessorAlgorithm
 	/**
 	 * Fire the component stack merge listener event for the upward merge of a
 	 * component.
-	 * 
+	 *
 	 * @param c1
 	 *            The component that has been promoted to a higher intensity
 	 *            level
@@ -440,7 +442,7 @@ public class WatershedProcessorAlgorithm
 
 	/**
 	 * Helper function for debugging arrays
-	 * 
+	 *
 	 * @param o
 	 * @return
 	 */

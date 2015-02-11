@@ -31,7 +31,6 @@ package org.openimaj.ml.timeseries;
 
 import org.openimaj.ml.timeseries.converter.TimeSeriesConverter;
 import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
-import org.openimaj.ml.timeseries.processor.interpolation.TimeSeriesInterpolation;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

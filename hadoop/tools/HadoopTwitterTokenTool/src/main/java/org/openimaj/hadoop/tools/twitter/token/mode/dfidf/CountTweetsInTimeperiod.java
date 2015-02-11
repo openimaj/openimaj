@@ -78,9 +78,9 @@ import com.jayway.jsonpath.JsonPath;
  * -1:<word:#freq,tweets:#freq> > reduce input: <timePeriod:
  * [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> reduce output:
  * <timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class CountTweetsInTimeperiod extends StageProvider {
 
@@ -111,8 +111,6 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	public final static String TIMEINDEX_LOCATION_PROP = "org.openimaj.hadoop.tools.twitter.token.mode.dfidf.timeindex";
 
 	/**
-	 * @param output
-	 *            the output location
 	 * @param nonHadoopArgs
 	 *            to be sent to the stage
 	 * @param timedelta
@@ -125,8 +123,6 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	}
 
 	/**
-	 * @param output
-	 *            the output location
 	 * @param nonHadoopArgs
 	 *            to be sent to the stage
 	 * @param inMemoryCombine
@@ -144,14 +140,14 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	}
 
 	/**
-	 * 
+	 *
 	 * map input: tweetstatus # json twitter status with JSONPath to words map
 	 * output: <timePeriod: <word:#freq,tweets:#freq>,
 	 * -1:<word:#freq,tweets:#freq> >
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         <ss@ecs.soton.ac.uk>
-	 * 
+	 *
 	 */
 	public static class Map extends Mapper<LongWritable, Text, LongWritable, BytesWritable> {
 
@@ -294,11 +290,11 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	}
 
 	/**
-	 * Indetical to the {@link IdentityReducer} but constructs a time index
+	 * Identical to the {@link IdentityReducer} but constructs a time index
 	 * found in {@link #TIMEINDEX_FILE}
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TimeIndexReducer extends
 			Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>
@@ -352,9 +348,9 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	 * reduce input: <timePeriod:
 	 * [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> reduce output:
 	 * <timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class InMemoryCombiningReducer extends
 			Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>
@@ -465,7 +461,7 @@ public class CountTweetsInTimeperiod extends StageProvider {
 
 	/**
 	 * Write a timeindex to a {@link Path}
-	 * 
+	 *
 	 * @param timeMap
 	 * @param indexOut
 	 * @throws IOException
@@ -486,7 +482,7 @@ public class CountTweetsInTimeperiod extends StageProvider {
 	/**
 	 * Read a {@link TimeFrequencyHolder} from a {@link Path}. Path is assumed
 	 * to be a directory containing many {@link TimeFrequencyHolder} instances.
-	 * 
+	 *
 	 * @param indexOut
 	 * @return a new {@link TimeFrequencyHolder}
 	 * @throws IOException
@@ -510,8 +506,8 @@ public class CountTweetsInTimeperiod extends StageProvider {
 					@Override
 					public boolean execute(long a, TimeFrequency b) {
 						tfh.put(a, b); // This is safe because each time
-										// frequency should contain completely
-										// unique times!
+						// frequency should contain completely
+						// unique times!
 						return true;
 					}
 				});

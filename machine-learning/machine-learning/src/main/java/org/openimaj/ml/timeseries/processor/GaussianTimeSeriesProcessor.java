@@ -33,18 +33,18 @@ import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationPro
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 /**
- * Calculates a moving average over a specified window in the past such that  
- * 
+ * Calculates a moving average over a specified window in the past such that
+ *
  * data[t_n] = sum^{m}_{i=1}{data[t_{n-i}}
- * 
- * This processor returns a value for each time in the underlying time series. 
- * For sensible results, consider interpolating a consistent time span using an {@link LinearInterpolationProcessor}
- * followed by this processor.
- * 
+ *
+ * This processor returns a value for each time in the underlying time series.
+ * For sensible results, consider interpolating a consistent time span using an
+ * {@link LinearInterpolationProcessor} followed by this processor.
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class GaussianTimeSeriesProcessor implements TimeSeriesProcessor<double[],Double,DoubleTimeSeries>
+public class GaussianTimeSeriesProcessor implements TimeSeriesProcessor<double[], Double, DoubleTimeSeries>
 {
 	private double[] kernel;
 	/**
@@ -52,81 +52,91 @@ public class GaussianTimeSeriesProcessor implements TimeSeriesProcessor<double[]
 	 * when building a kernel
 	 */
 	public static final double DEFAULT_GAUSS_TRUNCATE = 4.0d;
+
 	/**
-	 * @param sigma the sigma of the guassian function
+	 * @param sigma
+	 *            the sigma of the guassian function
 	 */
 	public GaussianTimeSeriesProcessor(double sigma) {
-		this.kernel = makeKernel(sigma,DEFAULT_GAUSS_TRUNCATE);
+		this.kernel = makeKernel(sigma, DEFAULT_GAUSS_TRUNCATE);
 	}
-	
+
 	/**
 	 * Construct a zero-mean Gaussian with the specified standard deviation.
-	 * @param sigma the standard deviation of the Gaussian
-	 * @param truncate the number of sigmas from the centre at which to
-	 * 				truncate the Gaussian 
+	 * 
+	 * @param sigma
+	 *            the standard deviation of the Gaussian
+	 * @param truncate
+	 *            the number of sigmas from the centre at which to truncate the
+	 *            Gaussian
 	 * @return an array representing a Gaussian function
 	 */
 	public static double[] makeKernel(double sigma, double truncate) {
-		if(sigma == 0) return new double[]{1f};
-		//The kernel is truncated at truncate sigmas from center.
+		if (sigma == 0)
+			return new double[] { 1f };
+		// The kernel is truncated at truncate sigmas from center.
 		int ksize = (int) (2.0f * truncate * sigma + 1.0f);
-//		ksize = Math.max(1, ksize); // size must be at least 3
-		if( ksize % 2 == 0 ) ksize++;  // size must be odd
+		// ksize = Math.max(1, ksize); // size must be at least 3
+		if (ksize % 2 == 0)
+			ksize++; // size must be odd
 
-		double [] kernel = new double[ksize];
+		final double[] kernel = new double[ksize];
 
-		//build kernel
+		// build kernel
 		float sum = 0.0f;
-		for(int i = 0; i < ksize; i++) {
-			float x = i - ksize / 2;
-			kernel[i] = (float) Math.exp( -x * x / (2.0 * sigma * sigma) );
+		for (int i = 0; i < ksize; i++) {
+			final float x = i - ksize / 2;
+			kernel[i] = (float) Math.exp(-x * x / (2.0 * sigma * sigma));
 			sum += kernel[i];
 		}
 
-		//normalise area to 1
-		for(int i = 0; i < ksize; i++) {
+		// normalise area to 1
+		for (int i = 0; i < ksize; i++) {
 			kernel[i] /= sum;
 		}
-		
+
 		return kernel;
 	}
-	
+
 	/**
 	 * Convolve a double array
-	 * 
-	 * @param data the image to convolve.
-	 * @param kernel the convolution kernel.
+	 *
+	 * @param data
+	 *            the image to convolve.
+	 * @param kernel
+	 *            the convolution kernel.
 	 */
-	public static void convolveHorizontal(double[] data, double [] kernel) {
-		int halfsize = kernel.length / 2;
+	public static void convolveHorizontal(double[] data, double[] kernel) {
+		final int halfsize = kernel.length / 2;
 
-		double buffer[] = new double[data.length + kernel.length];		
-		
-		for(int i = 0; i < halfsize; i++)
+		final double buffer[] = new double[data.length + kernel.length];
+
+		for (int i = 0; i < halfsize; i++)
 			buffer[i] = data[0];
-		for(int i = 0; i < data.length; i++)
+		for (int i = 0; i < data.length; i++)
 			buffer[halfsize + i] = data[i];
-		
-		for(int i = 0; i < halfsize; i++)
-			buffer[halfsize + data.length + i] = data[data.length- 1];
 
-//		convolveBuffer(buffer, kernel);
-		int l =  buffer.length-kernel.length;
-		for(int i = 0; i < l; i++) {
+		for (int i = 0; i < halfsize; i++)
+			buffer[halfsize + data.length + i] = data[data.length - 1];
+
+		// convolveBuffer(buffer, kernel);
+		final int l = buffer.length - kernel.length;
+		for (int i = 0; i < l; i++) {
 			float sum = 0.0f;
 
-			for(int j = 0, jj=kernel.length-1; j < kernel.length; j++, jj--)
+			for (int j = 0, jj = kernel.length - 1; j < kernel.length; j++, jj--)
 				sum += buffer[i + j] * kernel[jj];
 
 			buffer[i] = sum;
 		}
-//		end convolveBuffer(buffer, kernel);
+		// end convolveBuffer(buffer, kernel);
 
-		for(int c=0; c<data.length; c++) data[c] = buffer[c];
+		for (int c = 0; c < data.length; c++)
+			data[c] = buffer[c];
 	}
 
 	@Override
 	public void process(DoubleTimeSeries series) {
-		convolveHorizontal(series.getData(),this.kernel);
+		convolveHorizontal(series.getData(), this.kernel);
 	}
 }

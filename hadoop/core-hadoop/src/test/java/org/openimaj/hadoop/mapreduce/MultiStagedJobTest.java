@@ -29,7 +29,7 @@
  */
 package org.openimaj.hadoop.mapreduce;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,113 +54,130 @@ import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.io.FileUtils;
 
 /**
- * Test the MultiStagedJob 
- * 
+ * Test the MultiStagedJob
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class MultiStagedJobTest {
 	static class CountWords extends Mapper<LongWritable, Text, NullWritable, Text> {
-		
+
 		@Override
-		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
+		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context)
+				throws java.io.IOException, InterruptedException
 		{
 			context.write(NullWritable.get(), new Text(value.toString().split(" ").length + ""));
 		}
 	}
+
 	static class AddOne extends Mapper<LongWritable, Text, NullWritable, Text> {
 		@Override
-		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
+		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context)
+				throws java.io.IOException, InterruptedException
 		{
-			Integer intVal = Integer.parseInt(value.toString());
+			final Integer intVal = Integer.parseInt(value.toString());
 			context.write(NullWritable.get(), new Text((intVal + 1) + ""));
 		}
 	}
-	
+
+	/**
+	 * Working dir
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
+
 	private File initialFile;
 	private File outputFile;
-	
+
 	/**
 	 * Prepare the input file and output location
+	 * 
 	 * @throws IOException
 	 */
 	@Before
 	public void setup() throws IOException {
 		initialFile = folder.newFile("input");
-		FileUtils.copyStreamToFile(MultiStagedJobTest.class.getResourceAsStream("/org/openimaj/hadoop/textfile"), initialFile);
-		
+		FileUtils.copyStreamToFile(MultiStagedJobTest.class.getResourceAsStream("/org/openimaj/hadoop/textfile"),
+				initialFile);
+
 		outputFile = folder.newFile("out.dir");
 		outputFile.delete();
 	}
+
 	/**
-	 * Create a simple two stage process which counts the words per line, outputs the word counts per line and adds one to each word count per line.
+	 * Create a simple two stage process which counts the words per line,
+	 * outputs the word counts per line and adds one to each word count per
+	 * line.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testMultipleStages() throws Exception{
-		MultiStagedJob mjob = new MultiStagedJob(initialFile.getAbsolutePath(),outputFile.getAbsolutePath(),new String[]{});
+	public void testMultipleStages() throws Exception {
+		final MultiStagedJob mjob = new MultiStagedJob(initialFile.getAbsolutePath(), outputFile.getAbsolutePath(),
+				new String[] {});
 		mjob.queueStage(new Stage<
-				TextInputFormat, 
-				TextOutputFormat<NullWritable,Text>,
-				LongWritable,Text,
-				NullWritable,Text,
-				NullWritable,Text
-		>(){
+				TextInputFormat,
+				TextOutputFormat<NullWritable, Text>,
+				LongWritable, Text,
+				NullWritable, Text,
+				NullWritable, Text
+				>()
+				{
 
-			@Override
-			public String outname() {
-				return "countwords";
-			}
-			
-			@Override
-			public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
-				return CountWords.class;
-			}
-			
-		});
-		
+					@Override
+					public String outname() {
+						return "countwords";
+					}
+
+					@Override
+					public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
+						return CountWords.class;
+					}
+
+				});
+
 		mjob.queueStage(new Stage<
-			TextInputFormat, 
-			TextOutputFormat<NullWritable,Text>,
-			LongWritable,Text,
-			NullWritable,Text,
-			NullWritable,Text
-		>(){
+				TextInputFormat,
+				TextOutputFormat<NullWritable, Text>,
+				LongWritable, Text,
+				NullWritable, Text,
+				NullWritable, Text
+				>()
+				{
 
-			@Override
-			public String outname() {
-				return "addone";
-			}
-			
-			@Override
-			public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
-				return AddOne.class;
-			}
-			
-		});
+					@Override
+					public String outname() {
+						return "addone";
+					}
+
+					@Override
+					public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
+						return AddOne.class;
+					}
+
+				});
 		System.out.println(mjob.runAll());
-		
-		Path[] countwordsp = mjob.getStagePaths("countwords");
-		Path[] addonep = mjob.getStagePaths("addone");
-		FileSystem fs = getFileSystem(countwordsp[0].toUri());
-		InputStream countstream = fs.open(countwordsp[0]);
-		InputStream addonestream = fs.open(addonep[0]);
-		String[] clines = FileUtils.readlines(countstream);
-		String[] alines = FileUtils.readlines(addonestream);
-		
+
+		final Path[] countwordsp = mjob.getStagePaths("countwords");
+		final Path[] addonep = mjob.getStagePaths("addone");
+		final FileSystem fs = getFileSystem(countwordsp[0].toUri());
+		final InputStream countstream = fs.open(countwordsp[0]);
+		final InputStream addonestream = fs.open(addonep[0]);
+		final String[] clines = FileUtils.readlines(countstream);
+		final String[] alines = FileUtils.readlines(addonestream);
+
 		for (int i = 0; i < alines.length; i++) {
-			int cint = Integer.parseInt(clines[i]);
-			int aint = Integer.parseInt(alines[i]);
+			final int cint = Integer.parseInt(clines[i]);
+			final int aint = Integer.parseInt(alines[i]);
 			assertTrue(aint == cint + 1);
 		}
 	}
+
 	private static FileSystem getFileSystem(URI uri) throws IOException {
-		Configuration config = new Configuration();
+		final Configuration config = new Configuration();
 		FileSystem fs = FileSystem.get(uri, config);
-		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
+		if (fs instanceof LocalFileSystem)
+			fs = ((LocalFileSystem) fs).getRaw();
 		return fs;
 	}
 }

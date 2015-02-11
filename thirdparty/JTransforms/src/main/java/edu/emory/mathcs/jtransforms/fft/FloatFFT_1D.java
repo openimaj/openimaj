@@ -392,7 +392,8 @@ public strictfp class FloatFFT_1D {
                     final int firstIdx = i * k;
                     final int lastIdx = (i == (nthreads - 1)) ? n / 2 : firstIdx + k;
                     futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             int idx1, idx2;
                             for (int k = firstIdx; k < lastIdx; k++) {
                                 idx1 = 2 * k;
@@ -595,7 +596,8 @@ public strictfp class FloatFFT_1D {
                     final int firstIdx = i * k;
                     final int lastIdx = (i == (nthreads - 1)) ? n / 2 : firstIdx + k;
                     futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             int idx1, idx2;
                             for (int k = firstIdx; k < lastIdx; k++) {
                                 idx1 = 2 * k;
@@ -1117,7 +1119,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         if (isign > 0) {
                             for (int i = firstIdx; i < lastIdx; i++) {
                                 int idx1 = 2 * i;
@@ -1149,7 +1152,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         if (isign > 0) {
                             for (int i = firstIdx; i < lastIdx; i++) {
                                 int idx1 = 2 * i;
@@ -1179,7 +1183,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         if (isign > 0) {
                             for (int i = firstIdx; i < lastIdx; i++) {
                                 int idx1 = 2 * i;
@@ -1282,7 +1287,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         if (isign > 0) {
                             for (int i = firstIdx; i < lastIdx; i++) {
                                 int idx1 = 2 * i;
@@ -1312,7 +1318,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         if (isign > 0) {
                             for (int i = firstIdx; i < lastIdx; i++) {
                                 int idx1 = 2 * i;
@@ -1342,7 +1349,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         if (isign > 0) {
                             for (int i = firstIdx; i < lastIdx; i++) {
                                 int idx1 = 2 * i;
@@ -1436,7 +1444,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             int idx1 = 2 * i;
                             int idx2 = idx1 + 1;
@@ -1456,7 +1465,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             int idx1 = 2 * i;
                             int idx2 = idx1 + 1;
@@ -1586,7 +1596,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             int idx1 = 2 * i;
                             int idx2 = idx1 + 1;
@@ -1606,7 +1617,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             int idx1 = 2 * i;
                             int idx2 = idx1 + 1;
@@ -1652,7 +1664,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             int idx1 = 2 * i;
                             int idx2 = idx1 + 1;
@@ -1672,7 +1685,8 @@ public strictfp class FloatFFT_1D {
                 final int firstIdx = i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             int idx1 = 2 * i;
                             int idx2 = idx1 + 1;
@@ -5526,7 +5540,8 @@ public strictfp class FloatFFT_1D {
             final int firstIdx = offa + i * m;
             if (i != idiv4) {
                 futures[idx++] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         int isplt, j, k, m;
                         int idx1 = firstIdx + mf;
                         m = n;
@@ -5546,7 +5561,8 @@ public strictfp class FloatFFT_1D {
                 });
             } else {
                 futures[idx++] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         int isplt, j, k, m;
                         int idx1 = firstIdx + mf;
                         k = 1;
@@ -6565,7 +6581,8 @@ public strictfp class FloatFFT_1D {
                 final int lastIdx = (i == (nthreads - 1)) ? offa + n2 : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             a[i] *= norm;
                         }

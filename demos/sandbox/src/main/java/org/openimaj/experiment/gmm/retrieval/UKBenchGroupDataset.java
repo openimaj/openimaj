@@ -29,9 +29,7 @@
  */
 package org.openimaj.experiment.gmm.retrieval;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,22 +38,20 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.openimaj.data.dataset.GroupedDataset;
-import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.ReadableGroupDataset;
 import org.openimaj.data.identity.Identifiable;
-import org.openimaj.image.Image;
 import org.openimaj.io.ObjectReader;
 
 /**
  * A {@link GroupedDataset} of {@link UKBenchListDataset}s instances each of an
- * item in the UKBench experiment.  
- * 
+ * item in the UKBench experiment.
+ *
  * UKBench can be provided in any form supported by {@link VFS}
- * 
+ *
  * The UKBench files must be in one flat directory and named "ukbenchXXXXX.jpg"
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <IMAGE>
  *            The type of IMAGE in the dataset
  */
@@ -68,8 +64,9 @@ public class UKBenchGroupDataset<IMAGE>
 	private static final int UKBENCH_OBJECTS = 2550;
 	private Map<Integer, UKBenchListDataset<IMAGE>> ukbenchObjects;
 	private FileObject base;
+
 	/**
-	 * @param path 
+	 * @param path
 	 * @param reader
 	 */
 	public UKBenchGroupDataset(String path, ObjectReader<IMAGE, FileObject> reader) {
@@ -79,34 +76,29 @@ public class UKBenchGroupDataset<IMAGE>
 		try {
 			manager = VFS.getManager();
 			this.base = manager.resolveFile(path);
-		} catch (FileSystemException e) {
+		} catch (final FileSystemException e) {
 			throw new RuntimeException(e);
 		}
-		
-		for(int i = 0; i < UKBENCH_OBJECTS; i++){
-			this.ukbenchObjects.put(i, new UKBenchListDataset<IMAGE>(path, reader,i ));
+
+		for (int i = 0; i < UKBENCH_OBJECTS; i++) {
+			this.ukbenchObjects.put(i, new UKBenchListDataset<IMAGE>(path, reader, i));
 		}
 	}
 
-	
 	@Override
 	public String toString() {
 		return String.format("%s(%d groups with a total of %d instances)", this.getClass().getName(), this.size(),
 				this.numInstances());
 	}
 
-
 	@Override
 	public String getID() {
 		return base.getName().getBaseName();
 	}
-
 
 	@Override
 	public Set<java.util.Map.Entry<Integer, UKBenchListDataset<IMAGE>>> entrySet() {
 		return ukbenchObjects.entrySet();
 	}
 
-
-	
 }

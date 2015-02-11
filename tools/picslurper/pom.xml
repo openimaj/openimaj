@@ -9,7 +9,6 @@
 	</parent>
 	<groupId>org.openimaj.tools</groupId>
 	<artifactId>picslurper</artifactId>
-	<version>1.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>picslurper</name>
 	<description>Tool for grabbing all the images from a social media stream and holding on to some simple stats</description>

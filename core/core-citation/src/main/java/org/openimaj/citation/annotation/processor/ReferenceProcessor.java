@@ -56,7 +56,7 @@ import org.openimaj.citation.annotation.output.StandardFormatters;
  * <p>
  * Currently the processor produces a bibliography in BibTeX, HTML and Plain
  * Text formats containing all references in the project.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @SupportedAnnotationTypes(
@@ -64,7 +64,8 @@ import org.openimaj.citation.annotation.output.StandardFormatters;
 public class ReferenceProcessor extends AbstractProcessor {
 	private static final String[] extensions = { "bib", "html", "txt" };
 	private static final String[] names = { "BibTeX", "HTML", "text" };
-	private static final StandardFormatters[] types = { StandardFormatters.BIBTEX, StandardFormatters.HTML, StandardFormatters.STRING };
+	private static final StandardFormatters[] types = { StandardFormatters.BIBTEX, StandardFormatters.HTML,
+			StandardFormatters.STRING };
 
 	Set<Reference> references = new HashSet<Reference>();
 

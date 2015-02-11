@@ -33,7 +33,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,7 +88,7 @@ import org.openimaj.video.capture.VideoCapture;
  * Some further improvements for detection of partially occluded boards at
  * non-ideal lighting conditions have been made by Alex Bovyrin and Kurt
  * Kolonige.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
@@ -219,9 +218,9 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 
 	/**
 	 * Options for controlling how the corner finder works
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static enum Options {
 		/**
@@ -244,7 +243,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 
 	/**
 	 * Construct with the given pattern size and options set.
-	 * 
+	 *
 	 * @param patternWidth
 	 *            the pattern width
 	 * @param patternHeight
@@ -425,7 +424,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	/**
 	 * Returns corners in clockwise order corners don't necessarily start at
 	 * same position on quad (e.g., top left corner)
-	 * 
+	 *
 	 * @param threshImg
 	 *            the binary image
 	 * @return the extracted Quads
@@ -527,7 +526,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 
 	/**
 	 * Find the neighbouring quads for each quad
-	 * 
+	 *
 	 * @param quads
 	 *            the quads
 	 */
@@ -677,7 +676,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 
 	/**
 	 * Was a chessboard found in the last call to {@link #analyseImage(FImage)}?
-	 * 
+	 *
 	 * @return true if found; false otherwise
 	 */
 	public boolean isFound() {
@@ -687,7 +686,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	/**
 	 * Get any corners detected by the last call to
 	 * {@link #analyseImage(FImage)}.
-	 * 
+	 *
 	 * @return the corners
 	 */
 	public List<Point2dImpl> getCorners() {
@@ -697,7 +696,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	/**
 	 * Find groups of connected quads. This searches for the first un-labelled
 	 * quad and then finds the connected ones.
-	 * 
+	 *
 	 * @param quads
 	 *            the quads
 	 * @param groupIdx
@@ -752,7 +751,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	 * order a group of connected quads order of corners: 0 is top left
 	 * clockwise from there note: "top left" is nominal, depends on initial
 	 * ordering of starting quad but all other quads are ordered consistently
-	 * 
+	 *
 	 * can change the number of quads in the group can add quads, so we need to
 	 * have quad/corner arrays passed in
 	 */
@@ -832,7 +831,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 				if (neighbour != null && neighbour.ordered == false && neighbour.count == 4)
 				{
 					orderQuad(neighbour, q.corners[i], (i + 2) % 4); // set in
-																		// order
+					// order
 					neighbour.ordered = true;
 					neighbour.row = row;
 					neighbour.col = col;
@@ -894,8 +893,8 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 					}
 					final Quad neighbour = quads.get(i).neighbours[j];
 					if (neighbour != null && !neighbour.ordered && // is it an
-																	// inner
-																	// quad?
+							// inner
+							// quad?
 							col <= colMax && col >= colMin &&
 							row <= rowMax && row >= rowMin)
 					{
@@ -932,14 +931,14 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 			logger.trace("Inner bounds ok, check outer quads");
 			int rcount = quadCount;
 			for (int i = quadCount - 1; i >= 0; i--) // eliminate any quad not
-														// connected to
-			// an ordered quad
+				// connected to
+				// an ordered quad
 			{
 				if (quads.get(i).ordered == false)
 				{
 					boolean outer = false;
 					for (int j = 0; j < 4; j++) // any neighbours that are
-												// ordered?
+						// ordered?
 					{
 						if (quads.get(i).neighbours[j] != null && quads.get(i).neighbours[j].ordered)
 							outer = true;
@@ -962,7 +961,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	/**
 	 * put quad into correct order, where <code>corner</code> has value
 	 * <code<common</code>
-	 * 
+	 *
 	 * @param quad
 	 *            the quad to sort
 	 * @param corner
@@ -976,7 +975,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 		int tc;
 		for (tc = 0; tc < 4; tc++)
 			if (quad.corners[tc].x == corner.x &&
-					quad.corners[tc].y == corner.y)
+			quad.corners[tc].y == corner.y)
 				break;
 
 		// set corner order
@@ -1000,16 +999,16 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 
 	/*
 	 * add an outer quad
-	 * 
+	 *
 	 * looks for the neighbor of <code>quad</code> that isn't present, tries to
 	 * add it in. <code>quad</code> is ordered
-	 * 
+	 *
 	 * @param quad the quad
-	 * 
+	 *
 	 * @param quads all quad group
-	 * 
+	 *
 	 * @param allQuads all the quads
-	 * 
+	 *
 	 * @return
 	 */
 	private int addOuterQuad(final Quad quad, List<Quad> quads, List<Quad> allQuads)
@@ -1104,7 +1103,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	/**
 	 * if we found too many connect quads, remove those which probably do not
 	 * belong.
-	 * 
+	 *
 	 * @param quadGroup
 	 *            the group of quads
 	 * @return the new group size
@@ -1166,10 +1165,10 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 			{
 				// get bounding rectangle
 				final Point2dImpl temp = centers.get(skip); // temporarily make
-															// index 'skip' the
-															// same as
+				// index 'skip' the
+				// same as
 				centers.set(skip, center); // pattern center (so it is not
-											// counted for convex hull)
+				// counted for convex hull)
 				final PointList pl = new PointList(centers);
 				final Polygon hull = pl.calculateConvexHull();
 				centers.set(skip, temp);
@@ -1217,7 +1216,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private int checkQuadGroup(List<Quad> quadGroup, List<Corner> outCorners)
 	{
@@ -1477,17 +1476,17 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 
 	/**
 	 * Checks that each board row and column is pretty much monotonous curve:
-	 * 
+	 *
 	 * It analyzes each row and each column of the chessboard as following:
-	 * 
+	 *
 	 * for each corner c lying between end points in the same row/column it
 	 * checks that the point projection to the line segment (a,b) is lying
 	 * between projections of the neighbor corners in the same row/column.
-	 * 
+	 *
 	 * This function has been created as temporary workaround for the bug in
 	 * current implementation of cvFindChessboardCornes that produces absolutely
 	 * unordered sets of corners.
-	 * 
+	 *
 	 * @return true if the board is good; false otherwise.
 	 */
 	private boolean checkBoardMonotony()
@@ -1500,7 +1499,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 			{
 				final Point2dImpl a = k == 0 ? outCorners.get(i * patternWidth) : outCorners.get(i);
 				final Point2dImpl b = k == 0 ? outCorners.get((i + 1) * patternWidth - 1) :
-						outCorners.get((patternHeight - 1) * patternWidth + i);
+					outCorners.get((patternHeight - 1) * patternWidth + i);
 				float prevt = 0;
 				final float dx0 = b.x - a.x, dy0 = b.y - a.y;
 				if (Math.abs(dx0) + Math.abs(dy0) < Float.MIN_VALUE)
@@ -1508,7 +1507,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 				for (j = 1; j < (k == 0 ? patternWidth : patternHeight) - 1; j++)
 				{
 					final Point2dImpl c = k == 0 ? outCorners.get(i * patternWidth + j) :
-							outCorners.get(j * patternWidth + i);
+						outCorners.get(j * patternWidth + i);
 					final float t = ((c.x - a.x) * dx0 + (c.y - a.y) * dy0) / (dx0 * dx0 + dy0 * dy0);
 					if (t < prevt || t > 1)
 						return false;
@@ -1523,7 +1522,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 	/**
 	 * Draw the predicted chessboard corners from the last call to
 	 * {@link #analyseImage(FImage)} on the given image.
-	 * 
+	 *
 	 * @param image
 	 *            the image to draw on
 	 */
@@ -1533,7 +1532,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 
 	/**
 	 * Draw the given chessboard corners from on the given image.
-	 * 
+	 *
 	 * @param image
 	 *            the image to draw on
 	 * @param patternWidth
@@ -1565,7 +1564,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 		} else {
 			Point2d prevPt = new Point2dImpl();
 			final Float[][] lineColours =
-			{
+				{
 					RGBColour.RGB(0, 0, 255),
 					RGBColour.RGB(0, 128, 255),
 					RGBColour.RGB(0, 200, 200),
@@ -1573,7 +1572,7 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 					RGBColour.RGB(200, 200, 0),
 					RGBColour.RGB(255, 0, 0),
 					RGBColour.RGB(255, 0, 255)
-			};
+				};
 
 			for (int y = 0, i = 0; y < patternHeight; y++) {
 				final Float[] color = lineColours[y % lineColours.length];
@@ -1599,21 +1598,20 @@ public class ChessboardCornerFinder implements ImageAnalyser<FImage> {
 
 	/**
 	 * Simple test program
-	 * 
+	 *
 	 * @param args
-	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
 		final ChessboardCornerFinder fcc = new ChessboardCornerFinder(9, 6,
 				Options.FILTER_QUADS, Options.FAST_CHECK, Options.ADAPTIVE_THRESHOLD);
 		VideoDisplay.createVideoDisplay(new VideoCapture(640, 480)).addVideoListener(new VideoDisplayAdapter<MBFImage>()
-		{
+				{
 			@Override
 			public void beforeUpdate(MBFImage frame) {
 				fcc.analyseImage(frame.flatten());
 				fcc.drawChessboardCorners(frame);
 			}
-		});
+				});
 	}
 }

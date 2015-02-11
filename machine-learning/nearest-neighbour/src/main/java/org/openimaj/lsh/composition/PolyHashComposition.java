@@ -40,9 +40,9 @@ import org.openimaj.util.hash.composition.HashComposition;
  * individual hashes. Based on the composition in the <a
  * href="https://code.google.com/p/caltech-image-search/">Caltech Large Scale
  * Image Search Toolbox</a>.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Object being hashed
  */
@@ -50,11 +50,11 @@ public class PolyHashComposition<OBJECT> extends HashComposition<OBJECT> {
 	private static final int HASH_POLY = 1368547;
 	private static final int HASH_POLY_REM = 573440;
 	private static final int HASH_POLY_A[] =
-		{ 1342, 876454, 656565, 223, 337, 9847, 87676, 34234, 23445, 76543, 8676234, 3497, 9876, 87856, 2342858 };
+	{ 1342, 876454, 656565, 223, 337, 9847, 87676, 34234, 23445, 76543, 8676234, 3497, 9876, 87856, 2342858 };
 
 	/**
 	 * Construct with the given functions.
-	 * 
+	 *
 	 * @param functions
 	 *            the underlying hash functions.
 	 */
@@ -64,12 +64,13 @@ public class PolyHashComposition<OBJECT> extends HashComposition<OBJECT> {
 
 	/**
 	 * Construct with the given functions.
-	 * 
+	 *
 	 * @param first
 	 *            the first function
 	 * @param remainder
 	 *            the remainder of the functions
 	 */
+	@SafeVarargs
 	public PolyHashComposition(HashFunction<OBJECT> first, HashFunction<OBJECT>... remainder) {
 		super(first, remainder);
 	}
@@ -77,7 +78,7 @@ public class PolyHashComposition<OBJECT> extends HashComposition<OBJECT> {
 	/**
 	 * Construct with the factory which is used to produce the required number
 	 * of functions.
-	 * 
+	 *
 	 * @param factory
 	 *            the factory to use to produce the underlying hash functions.
 	 * @param nFuncs

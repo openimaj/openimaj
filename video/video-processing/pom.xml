@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>video-processing</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>The OpenIMAJ Video Processing Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>Various video processing algorithms, such as shot-boundary detection.</description>

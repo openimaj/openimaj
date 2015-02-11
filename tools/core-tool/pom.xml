@@ -10,7 +10,6 @@
   <groupId>org.openimaj.tools</groupId>
   <artifactId>core-tool</artifactId>
   <packaging>jar</packaging>
-  <version>1.4-SNAPSHOT</version>
   <name>core-tool</name>
   <inceptionYear>2012</inceptionYear>
   <description>Core library for building openimaj tools</description>

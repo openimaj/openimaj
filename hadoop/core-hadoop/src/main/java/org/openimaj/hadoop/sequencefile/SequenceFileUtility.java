@@ -73,10 +73,10 @@ import org.apache.hadoop.util.ReflectionUtils;
 /**
  * Base class for a utility class that deals with specifically typed sequence
  * files.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <K>
  *            Key type
  * @param <V>
@@ -116,7 +116,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Get a list of all the reducer outputs in a directory. If the given
 	 * path/uri is not a directory, then it is assumed that it is a SequenceFile
 	 * and returned directly.
-	 * 
+	 *
 	 * @param uriOrPath
 	 *            the path or uri
 	 * @return the reducer outputs
@@ -130,7 +130,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Get a list of all the sequence files (with a given name prefix) in a
 	 * directory. If the given uri is not a directory, then it is assumed that
 	 * it is a SequenceFile and returned directly.
-	 * 
+	 *
 	 * @param uriOrPath
 	 *            the path or uri
 	 * @param filenamePrefix
@@ -144,7 +144,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		final FileSystem fs = FileSystem.get(uri, config);
 		final Path path = new Path(uri.toString());
 
-		if (fs.getFileStatus(path).isDir()) {
+		if (fs.getFileStatus(path).isDirectory()) {
 			final FileStatus[] files = fs.listStatus(path, new PathFilter() {
 				@Override
 				public boolean accept(Path p) {
@@ -167,7 +167,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Get a list of all the sequence files (with a given name prefix) in the
 	 * set of input paths. If a given uri is not a directory, then it is assumed
 	 * that it is a SequenceFile and returned directly.
-	 * 
+	 *
 	 * @param uriOrPaths
 	 *            the paths or uris
 	 * @param filenamePrefix
@@ -195,7 +195,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * <p>
 	 * If the given uri is not a directory, then it is assumed that it is a
 	 * single SequenceFile and returned directly.
-	 * 
+	 *
 	 * @param uriOrPaths
 	 *            the URI or path to the directory/file
 	 * @param subdir
@@ -224,7 +224,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Get a list of all the sequence files (with a given name prefix) in a
 	 * directory. If the given uri is not a directory, then it is assumed that
 	 * it is a SequenceFile and returned directly.
-	 * 
+	 *
 	 * @param uriOrPath
 	 *            the path or uri
 	 * @param filenamePrefix
@@ -239,7 +239,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 		final Path path = new Path(uri);
 
-		if (fs.getFileStatus(path).isDir()) {
+		if (fs.getFileStatus(path).isDirectory()) {
 			final FileStatus[] files = fs.listStatus(path, new PathFilter() {
 				@Override
 				public boolean accept(Path p) {
@@ -262,7 +262,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Get a list of all the sequence files whose names match the given regular
 	 * expression in a directory. If the given uri is not a directory, then it
 	 * is assumed that it is a SequenceFile and returned directly.
-	 * 
+	 *
 	 * @param uriOrPath
 	 *            the path or uri
 	 * @param regex
@@ -276,7 +276,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		final FileSystem fs = FileSystem.get(uri, config);
 		final Path path = new Path(uri.toString());
 
-		if (fs.getFileStatus(path).isDir()) {
+		if (fs.getFileStatus(path).isDirectory()) {
 			final FileStatus[] files = fs.listStatus(path, new PathFilter() {
 				@Override
 				public boolean accept(Path p) {
@@ -297,7 +297,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Return a list of the keys in the sequence file. Read mode only.
-	 * 
+	 *
 	 * @return keys.
 	 */
 	@SuppressWarnings("unchecked")
@@ -342,7 +342,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Go through a sequence file, applying each
 	 * {@link RecordInformationExtractor} to each key, printing out the results
 	 * in order to the provided {@link PrintStream}
-	 * 
+	 *
 	 * @param extractors
 	 *            the {@link RecordInformationExtractor}s to apply
 	 * @param stream
@@ -414,7 +414,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Converts a string representing a file or uri to a uri object.
-	 * 
+	 *
 	 * @param uriOrPath
 	 *            uri or path to convert
 	 * @return uri
@@ -474,7 +474,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			// if the output directory is a directory, then create the file
 			// inside the
 			// directory with the name given by the uuid
-			if (fileSystem.exists(sequenceFilePath) && fileSystem.getFileStatus(sequenceFilePath).isDir()) {
+			if (fileSystem.exists(sequenceFilePath) && fileSystem.getFileStatus(sequenceFilePath).isDirectory()) {
 				sequenceFilePath = new Path(sequenceFilePath, uuid + ".seq");
 			}
 
@@ -507,7 +507,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Get the UUID of this file
-	 * 
+	 *
 	 * @return UUID
 	 */
 	public String getUUID() {
@@ -516,7 +516,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Return the metadata map. Read mode only.
-	 * 
+	 *
 	 * @return metadata
 	 */
 	public Map<Text, Text> getMetadata() {
@@ -542,7 +542,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Return a list of the keys in the sequence file. Read mode only.
-	 * 
+	 *
 	 * @return keys.
 	 */
 	@SuppressWarnings("unchecked")
@@ -578,7 +578,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Extracts file to a directory. Read mode only.
-	 * 
+	 *
 	 * @param uriOrPath
 	 *            path or uri to extract to.
 	 * @throws IOException
@@ -589,7 +589,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Extracts file to a directory. Read mode only.
-	 * 
+	 *
 	 * @param uriOrPath
 	 *            path or uri to extract to.
 	 * @param naming
@@ -634,7 +634,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Extracts file to a directory. Read mode only.
-	 * 
+	 *
 	 * @param uriOrPath
 	 *            path or uri to extract to.
 	 * @param naming
@@ -672,7 +672,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Extracts file to a zip file. Read mode only.
-	 * 
+	 *
 	 * @param zos
 	 *            The {@link ZipOutputStream} to write to
 	 * @param naming
@@ -741,7 +741,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Extracts file to a directory. Read mode only.
-	 * 
+	 *
 	 * @param fs
 	 *            filesystem of output file
 	 * @param dirPath
@@ -753,7 +753,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Extracts file to a directory. Read mode only.
-	 * 
+	 *
 	 * @param fs
 	 *            filesystem of output file
 	 * @param dirPath
@@ -864,7 +864,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Close the underlying writer. Does nothing in read mode.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void close() throws IOException {
@@ -874,7 +874,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Get number of records in file. Read mode only.
-	 * 
+	 *
 	 * @return number of records
 	 */
 	public long getNumberRecords() {
@@ -937,7 +937,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Get the filesystem associated with a uri.
-	 * 
+	 *
 	 * @param uri
 	 * @return the filesystem
 	 * @throws IOException
@@ -948,7 +948,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Get the filesystem associated with a uri.
-	 * 
+	 *
 	 * @param uri
 	 * @param config
 	 * @return the filesystem
@@ -963,7 +963,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Get a path from a uri.
-	 * 
+	 *
 	 * @param uri
 	 * @return the path
 	 * @throws IOException
@@ -974,7 +974,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Get the MD5 sum of a file
-	 * 
+	 *
 	 * @param fs
 	 * @param p
 	 * @return the md5sum
@@ -1021,7 +1021,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Append data read from a file to the sequence file.
-	 * 
+	 *
 	 * @param key
 	 * @param fs
 	 * @param p
@@ -1037,7 +1037,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Append data to a sequence file.
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @throws IOException
@@ -1051,7 +1051,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Interface for objects that can make a key from a path
-	 * 
+	 *
 	 * @param <K>
 	 */
 	public interface KeyProvider<K> {
@@ -1109,7 +1109,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Append files to a sequenceFile.
-	 * 
+	 *
 	 * @param fs
 	 *            The filesystem of the files being added.
 	 * @param path
@@ -1213,7 +1213,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Search for the record identified by queryKey.
-	 * 
+	 *
 	 * @param queryKey
 	 *            the key.
 	 * @param offset
@@ -1259,7 +1259,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	/**
 	 * Search for the record identified by queryKey. Uses a linear search from
 	 * the beginning of the file.
-	 * 
+	 *
 	 * @param queryKey
 	 * @return the found value, or null.
 	 */
@@ -1269,7 +1269,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Find a record and write the value to a file.
-	 * 
+	 *
 	 * @param key
 	 * @param uriOrPath
 	 * @param offset
@@ -1292,7 +1292,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	/**
 	 * Find a record and write the value to a file.
-	 * 
+	 *
 	 * @param key
 	 * @param fs
 	 * @param dirPath

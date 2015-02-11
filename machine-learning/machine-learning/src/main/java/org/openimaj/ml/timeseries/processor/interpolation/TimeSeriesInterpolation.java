@@ -29,7 +29,6 @@
  */
 package org.openimaj.ml.timeseries.processor.interpolation;
 
-import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
 import org.openimaj.ml.timeseries.processor.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;

@@ -42,7 +42,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * in any given window is constant. Coupled with a
  * {@link GradientOrientationHistogramExtractor}, this provides a way to
  * efficiently extract the HOG descriptor of any rectangular window.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FlexibleHOGStrategy implements SpatialBinningStrategy {
@@ -67,7 +67,7 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 	 * are constructed from the given number of cells in each dimension. Blocks
 	 * overlap, and shift by 1 cell (i.e. overlap is cellsPerBlock - 1).
 	 * {@link BlockNormalisation#L2} is used for block normalisation.
-	 * 
+	 *
 	 * @param numCellsX
 	 *            the number of cells per window in the x direction
 	 * @param numCellsY
@@ -83,7 +83,7 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 	 * Construct with square cells of the given size (in pixels). Square blocks
 	 * are constructed from the given number of cells in each dimension. Blocks
 	 * overlap, and shift by 1 cell (i.e. overlap is cellsPerBlock - 1).
-	 * 
+	 *
 	 * @param numCellsX
 	 *            the number of cells per window in the x direction
 	 * @param numCellsY
@@ -100,7 +100,7 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 	/**
 	 * Construct with square cells of the given size (in pixels). Square blocks
 	 * are constructed from the given number of cells in each dimension.
-	 * 
+	 *
 	 * @param numCellsX
 	 *            the number of cells per window in the x direction
 	 * @param numCellsY
@@ -119,7 +119,7 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 	/**
 	 * Construct with square cells of the given size (in pixels). Square blocks
 	 * are constructed from the given number of cells in each dimension.
-	 * 
+	 *
 	 * @param numCellsX
 	 *            the number of cells per window in the x direction
 	 * @param numCellsY

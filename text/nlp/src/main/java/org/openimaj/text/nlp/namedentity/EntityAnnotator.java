@@ -38,22 +38,22 @@ import org.openimaj.ml.annotation.AbstractAnnotator;
 /**
  * An entity annotator (given a list of strings) assigns entity annotations
  * which are {@link Map} instances mapping token indexes to entities.
- * 
+ *
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class EntityAnnotator
-		extends
-		AbstractAnnotator<List<String>, HashMap<String, Object>>
+extends
+AbstractAnnotator<List<String>, HashMap<String, Object>>
 {
 
 	/**
 	 * The types of entities which can be annotated
-	 * 
+	 *
 	 * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public enum EntityType {
 		/**

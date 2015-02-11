@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>processing</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>OpenIMAJ Processing</name>
   <description>Set of tools for integrating OpenIMAJ with processing</description>
   <inceptionYear>2011</inceptionYear>

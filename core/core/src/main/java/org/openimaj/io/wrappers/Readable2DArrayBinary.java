@@ -31,38 +31,38 @@ package org.openimaj.io.wrappers;
 
 import java.io.DataInput;
 import java.io.IOException;
-import java.util.List;
 
 import org.openimaj.io.ReadableBinary;
 
 /**
- * A wrapper for {@link List} that is readable.
- * 
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * A wrapper for 2D Array that is readable.
  *
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Readable2DArrayBinary implements ReadableBinary {
 	/**
 	 * The underlying Matrix
 	 */
 	public double[][] value;
-	
+
 	/**
 	 * Construct with a backing matrix
-	 * @param list the backing list
+	 *
+	 * @param list
+	 *            the backing list
 	 */
 	public Readable2DArrayBinary(double[][] list) {
 		this.value = list;
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		int rows = in.readInt();
-		int cols = in.readInt();
-		
+		final int rows = in.readInt();
+		final int cols = in.readInt();
+
 		value = new double[rows][cols];
-		
-		for (int i=0; i<rows; i++) {
+
+		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
 				value[i][j] = in.readDouble();
 			}

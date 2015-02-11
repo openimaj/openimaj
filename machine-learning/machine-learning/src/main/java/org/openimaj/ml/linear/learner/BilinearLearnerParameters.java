@@ -29,8 +29,6 @@
  */
 package org.openimaj.ml.linear.learner;
 
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;

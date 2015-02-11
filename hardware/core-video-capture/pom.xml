@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>core-video-capture</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>The OpenIMAJ Core Video Capture Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>Cross-platform video capture interface using a lightweight native interface. Supports 32 and 64 bit JVMs under Linux, OSX and Windows.</description>
@@ -41,7 +39,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.3</version>
         <executions>
           <execution>
             <configuration>

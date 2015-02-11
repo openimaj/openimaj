@@ -51,7 +51,6 @@ import java.util.Scanner;
 import org.openimaj.ml.clustering.CentroidsProvider;
 import org.openimaj.ml.clustering.Clusters;
 import org.openimaj.ml.clustering.SpatialClusters;
-import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 import org.openimaj.util.pair.Int#R#Pair;

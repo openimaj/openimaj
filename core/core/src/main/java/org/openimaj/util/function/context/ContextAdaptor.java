@@ -38,12 +38,11 @@ import org.openimaj.util.function.Function;
  * and output to a potentially different key of that {@link Context}.
  * <p>
  * This base class just holds the parts required for the adaption (the object
- * being adapted, and the {@link ContextExtractor} and
- * {@link ContextInsertor}), but doesn't actually provide any
- * functionality.
- * 
+ * being adapted, and the {@link ContextExtractor} and {@link ContextInsertor}),
+ * but doesn't actually provide any functionality.
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <ADAPTED>
  *            The type of object being adapted
  * @param <IN>
@@ -58,7 +57,7 @@ public abstract class ContextAdaptor<ADAPTED, IN, OUT> {
 
 	/**
 	 * Construct with the given options.
-	 * 
+	 *
 	 * @param inner
 	 *            the object being adapted
 	 * @param extract
@@ -75,7 +74,7 @@ public abstract class ContextAdaptor<ADAPTED, IN, OUT> {
 	/**
 	 * Construct with the given object to adapt. The insertor and extractor are
 	 * created from the given keys.
-	 * 
+	 *
 	 * @param inner
 	 *            the object being adapted
 	 * @param keyin

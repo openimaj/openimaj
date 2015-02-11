@@ -55,22 +55,24 @@ import org.openimaj.util.pair.IndependentPair;
 
 import com.Ostermiller.util.CSVParser;
 
-
 /**
  * Output the word/time values for each word
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class Values extends StageProvider{
+public class Values extends StageProvider {
 	private String outputPath;
 	private int valueReduceSplit;
 	private boolean sortValueByTime;
 	private boolean matlabOutput;
+
 	/**
 	 * Assign the output path for the stage
+	 *
 	 * @param outputPath
-	 * @param sortValueByTime 
-	 * @param matlabOutput 
+	 * @param sortValueByTime
+	 * @param matlabOutput
 	 */
 	public Values(String outputPath, int valueReduceSplit, boolean sortValueByTime, boolean matlabOutput) {
 		this.outputPath = outputPath;
@@ -78,63 +80,71 @@ public class Values extends StageProvider{
 		this.sortValueByTime = sortValueByTime;
 		this.matlabOutput = matlabOutput;
 	}
+
 	/**
 	 * The index location config option
 	 */
 	public static final String ARGS_KEY = "INDEX_ARGS";
 	public static final String MATLAB_OUT = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.matlab_out";
+
 	@Override
-	public SequenceFileTextStage<?,?,?, ?,?, ?> stage() {
-		if(this.sortValueByTime){
-			return new SequenceFileTextStage<Text, BytesWritable, LongWritable, BytesWritable,NullWritable, Text> () {
+	public SequenceFileTextStage<?, ?, ?, ?, ?, ?> stage() {
+		if (this.sortValueByTime) {
+			return new SequenceFileTextStage<Text, BytesWritable, LongWritable, BytesWritable, NullWritable, Text>() {
 				@Override
 				public void setup(Job job) {
 					job.setNumReduceTasks(valueReduceSplit);
-					job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
+					job.getConfiguration().setStrings(Values.ARGS_KEY, new String[] { outputPath.toString() });
 					job.getConfiguration().setBoolean(MATLAB_OUT, matlabOutput);
 				}
+
 				@Override
 				public Class<? extends Mapper<Text, BytesWritable, LongWritable, BytesWritable>> mapper() {
 					return MapValuesByTime.class;
 				}
+
 				@Override
-				public Class<? extends Reducer<LongWritable,BytesWritable,NullWritable,Text>> reducer() {
+				public Class<? extends Reducer<LongWritable, BytesWritable, NullWritable, Text>> reducer() {
 					return ReduceValuesByTime.class;
-				}			
+				}
+
 				@Override
 				public String outname() {
 					return "values";
 				}
-				
+
 				@Override
 				public void finished(Job job) {
-					if(matlabOutput){
+					if (matlabOutput) {
 						try {
 							WordIndex.writeToMatlab(outputPath.toString());
 							TimeIndex.writeToMatlab(outputPath.toString());
 							System.out.println("Done writing the word and time index files to matlab");
-						} catch (IOException e) {
+						} catch (final IOException e) {
 							System.out.println("Failed to write the word and time index files");
 						}
 					}
 				}
 			};
 		}
-		else{
-			return new SimpleSequenceFileTextStage<Text, BytesWritable, NullWritable, Text> () {
+		else {
+			return new SimpleSequenceFileTextStage<Text, BytesWritable, NullWritable, Text>() {
 				@Override
 				public void setup(Job job) {
 					job.setNumReduceTasks(valueReduceSplit);
-					job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
+					job.getConfiguration().setStrings(Values.ARGS_KEY, new String[] { outputPath.toString() });
 				}
+
 				@Override
 				public Class<? extends Mapper<Text, BytesWritable, NullWritable, Text>> mapper() {
 					return MapValuesByWord.class;
 				}
+
 				@Override
-				public Class<? extends Reducer<NullWritable,Text,NullWritable,Text>> reducer() {
+				public Class<? extends Reducer<NullWritable, Text, NullWritable, Text>> reducer() {
 					return ReduceValuesByWord.class;
-				}			
+				}
+
 				@Override
 				public String outname() {
 					return "values";
@@ -142,58 +152,61 @@ public class Values extends StageProvider{
 			};
 		}
 	}
+
 	/**
-	 * Construct a time series per word 
-	 * 
+	 * Construct a time series per word
+	 *
 	 * @param path
 	 * @param timeIndex
 	 * @param wordIndex
-	 * @return hashmap containing a {@link WordDFIDFTimeSeries} instance per word
-	 * @throws IOException 
+	 * @return hashmap containing a {@link WordDFIDFTimeSeries} instance per
+	 *         word
+	 * @throws IOException
 	 */
-	public static LinkedHashMap<String, WordDFIDFTimeSeries> readWordDFIDF(String path,LinkedHashMap<Long, IndependentPair<Long, Long>> timeIndex,LinkedHashMap<String, IndependentPair<Long, Long>> wordIndex) throws IOException {
-		LinkedHashMap<String, WordDFIDFTimeSeries> tsMap = new LinkedHashMap<String, WordDFIDFTimeSeries>();
-		
-		long[] timeReverseIndex = new long[timeIndex.size()];
-		for (Entry<Long, IndependentPair<Long, Long>> l : timeIndex.entrySet()) {
-			long lineNum = l.getValue().secondObject();
+	public static LinkedHashMap<String, WordDFIDFTimeSeries> readWordDFIDF(String path,
+			LinkedHashMap<Long, IndependentPair<Long, Long>> timeIndex,
+			LinkedHashMap<String, IndependentPair<Long, Long>> wordIndex) throws IOException
+			{
+		final LinkedHashMap<String, WordDFIDFTimeSeries> tsMap = new LinkedHashMap<String, WordDFIDFTimeSeries>();
+
+		final long[] timeReverseIndex = new long[timeIndex.size()];
+		for (final Entry<Long, IndependentPair<Long, Long>> l : timeIndex.entrySet()) {
+			final long lineNum = l.getValue().secondObject();
 			timeReverseIndex[(int) lineNum] = l.getKey();
 		}
-		
-		String[] wordReverseIndex = new String[wordIndex.size()];
-		for (Entry<String, IndependentPair<Long, Long>> w : wordIndex.entrySet()) {
-			long lineNum = w.getValue().secondObject();
+
+		final String[] wordReverseIndex = new String[wordIndex.size()];
+		for (final Entry<String, IndependentPair<Long, Long>> w : wordIndex.entrySet()) {
+			final long lineNum = w.getValue().secondObject();
 			wordReverseIndex[(int) lineNum] = w.getKey();
 		}
-		String wordPath = path + "/values";
-		Path p = HadoopToolsUtil.getInputPaths(wordPath)[0];
-		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
-		FSDataInputStream toRead = fs.open(p);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(toRead));
-		CSVParser csvreader = new CSVParser(reader);
-		long lineN = 0;
+		final String wordPath = path + "/values";
+		final Path p = HadoopToolsUtil.getInputPaths(wordPath)[0];
+		final FileSystem fs = HadoopToolsUtil.getFileSystem(p);
+		final FSDataInputStream toRead = fs.open(p);
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(toRead));
+		final CSVParser csvreader = new CSVParser(reader);
 		String[] next = null;
-		
-		
-		while((next = csvreader.getLine())!=null && next.length > 0){
-//			writer.writeln(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
-			int wordI = Integer.parseInt(next[0]);
-			int timeI = Integer.parseInt(next[1]);
-			long wf = Long.parseLong(next[2]);
-			long tf = Long.parseLong(next[3]);
-			long Twf = Long.parseLong(next[4]);
-			long Ttf = Long.parseLong(next[5]);
-			long time = timeReverseIndex[timeI];
-			WordDFIDF wordDFIDF = new WordDFIDF(time, wf, tf, Twf, Ttf);
-			String word = wordReverseIndex[wordI];
+
+		while ((next = csvreader.getLine()) != null && next.length > 0) {
+			// writer.writeln(new String[]{wordI + "",timeI + "",idf.wf +
+			// "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
+			final int wordI = Integer.parseInt(next[0]);
+			final int timeI = Integer.parseInt(next[1]);
+			final long wf = Long.parseLong(next[2]);
+			final long tf = Long.parseLong(next[3]);
+			final long Twf = Long.parseLong(next[4]);
+			final long Ttf = Long.parseLong(next[5]);
+			final long time = timeReverseIndex[timeI];
+			final WordDFIDF wordDFIDF = new WordDFIDF(time, wf, tf, Twf, Ttf);
+			final String word = wordReverseIndex[wordI];
 			WordDFIDFTimeSeries current = tsMap.get(word);
-			if(current == null){
+			if (current == null) {
 				tsMap.put(word, current = new WordDFIDFTimeSeries());
 			}
 			current.add(time, wordDFIDF);
-			lineN ++;
 		}
-		
+
 		return tsMap;
-	}
+			}
 }

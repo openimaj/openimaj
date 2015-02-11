@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.image.feature.local.detector.mser.gui;
 
@@ -70,10 +70,10 @@ import org.openimaj.image.feature.local.detector.mser.gui.ImageUtils.ImagePanel;
 
 /**
  * Test GUI for the MSER extractor
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- * 
- * 
+ *
+ *
  */
 public class TestGUI extends JFrame
 {
@@ -90,7 +90,7 @@ public class TestGUI extends JFrame
 	private ImagePanel jImagePanel = null;
 
 	private JPanel jControlsPanel = null;
-	
+
 	private List<MergeTreeBuilder> mergeTrees = null;
 
 	protected MBFImage img;
@@ -115,7 +115,6 @@ public class TestGUI extends JFrame
 
 	private JSlider jMinDiversitySlider = null;
 
-
 	/**
 	 * This is the default constructor
 	 */
@@ -133,34 +132,34 @@ public class TestGUI extends JFrame
 		this.setSize(768, 541);
 		this.setJMenuBar(getJJMenuBar());
 		this.setContentPane(getJContentPane());
-		this.setTitle( "MSER Test Harness" );
-		
-		this.addWindowListener( new WindowAdapter(){
+		this.setTitle("MSER Test Harness");
+
+		this.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing( WindowEvent e )
+			public void windowClosing(WindowEvent e)
 			{
-				super.windowClosing( e );
-				System.exit( 1 );
+				super.windowClosing(e);
+				System.exit(1);
 			}
 		});
 	}
 
 	/**
 	 * This method initializes jContentPane
-	 * 
+	 *
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJContentPane()
 	{
-		if( jContentPane == null )
+		if (jContentPane == null)
 		{
-			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
 			gridBagConstraints1.gridx = 1;
 			gridBagConstraints1.fill = GridBagConstraints.VERTICAL;
 			gridBagConstraints1.insets = new Insets(4, 4, 4, 4);
 			gridBagConstraints1.weighty = 1.0D;
 			gridBagConstraints1.gridy = 0;
-			GridBagConstraints gridBagConstraints = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
 			gridBagConstraints.weightx = 1.0D;
 			gridBagConstraints.weighty = 1.0D;
@@ -169,20 +168,20 @@ public class TestGUI extends JFrame
 			jImagePanel = new ImagePanel();
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new GridBagLayout());
-			jContentPane.add(jImagePanel, gridBagConstraints );			
+			jContentPane.add(jImagePanel, gridBagConstraints);
 			jContentPane.add(getJControlsPanel(), gridBagConstraints1);
 		}
 		return jContentPane;
 	}
 
 	/**
-	 * This method initializes jJMenuBar	
-	 * 	
-	 * @return javax.swing.JMenuBar	
+	 * This method initializes jJMenuBar
+	 *
+	 * @return javax.swing.JMenuBar
 	 */
 	private JMenuBar getJJMenuBar()
 	{
-		if( jJMenuBar == null )
+		if (jJMenuBar == null)
 		{
 			jJMenuBar = new JMenuBar();
 			jJMenuBar.add(getJFileMenu());
@@ -191,13 +190,13 @@ public class TestGUI extends JFrame
 	}
 
 	/**
-	 * This method initializes jFileMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
+	 * This method initializes jFileMenu
+	 *
+	 * @return javax.swing.JMenu
 	 */
 	private JMenu getJFileMenu()
 	{
-		if( jFileMenu == null )
+		if (jFileMenu == null)
 		{
 			jFileMenu = new JMenu();
 			jFileMenu.setText("File");
@@ -207,158 +206,157 @@ public class TestGUI extends JFrame
 	}
 
 	/**
-	 * This method initializes jOpenMenuItem	
-	 * 	
-	 * @return javax.swing.JMenuItem	
+	 * This method initializes jOpenMenuItem
+	 *
+	 * @return javax.swing.JMenuItem
 	 */
 	private JMenuItem getJOpenMenuItem()
 	{
-		if( jOpenMenuItem == null )
+		if (jOpenMenuItem == null)
 		{
 			jOpenMenuItem = new JMenuItem();
 			jOpenMenuItem.setText("Open");
-			jOpenMenuItem.addActionListener( new ActionListener(){
+			jOpenMenuItem.addActionListener(new ActionListener() {
 
 				@Override
-				public void actionPerformed( ActionEvent e )
+				public void actionPerformed(ActionEvent e)
 				{
-					JFileChooser jfc = new JFileChooser();
-					int retValue = jfc.showOpenDialog( TestGUI.this );
-					if( retValue == JFileChooser.APPROVE_OPTION )
+					final JFileChooser jfc = new JFileChooser();
+					final int retValue = jfc.showOpenDialog(TestGUI.this);
+					if (retValue == JFileChooser.APPROVE_OPTION)
 					{
-						File f = jfc.getSelectedFile();
+						final File f = jfc.getSelectedFile();
 						try {
-							loadFile( f );
-						} catch (IOException e1) {
+							loadFile(f);
+						} catch (final IOException e1) {
 							e1.printStackTrace();
 						}
 					}
-				}				
+				}
 			});
 		}
 		return jOpenMenuItem;
 	}
 
-	private void loadFile( File f ) throws IOException
+	private void loadFile(File f) throws IOException
 	{
 		// Load the image
-		System.out.println("Analysing "+f );
-		TestGUI.this.img = ImageUtilities.readMBF( f );
-		System.out.println("Image Dimensions: "+TestGUI.this.img.getWidth()+"x"+TestGUI.this.img.getHeight() );
-		
-		long start = System.currentTimeMillis();
-		
-		@SuppressWarnings("unchecked")
-		MSERFeatureGenerator mser = new MSERFeatureGenerator( 1, 1, 1, 0f, 0.7f, PixelsFeature.class);
-		
-		TestGUI.this.mergeTrees = mser.performWatershed( Transforms.calculateIntensityNTSC(img) );
-		long end = System.currentTimeMillis();
+		System.out.println("Analysing " + f);
+		TestGUI.this.img = ImageUtilities.readMBF(f);
+		System.out.println("Image Dimensions: " + TestGUI.this.img.getWidth() + "x" + TestGUI.this.img.getHeight());
+
+		final long start = System.currentTimeMillis();
+
+		final MSERFeatureGenerator mser = new MSERFeatureGenerator(1, 1, 1, 0f, 0.7f, PixelsFeature.class);
+
+		TestGUI.this.mergeTrees = mser.performWatershed(Transforms.calculateIntensityNTSC(img));
+		final long end = System.currentTimeMillis();
 
 		// Show some stats
-		long timeTaken = end - start;
-		System.out.println("--------------------------------------------" );
-		System.out.println("Time taken: "+timeTaken+" milliseconds" );
-		System.out.println("Number of pixels: "+img.getWidth()*img.getHeight() );
-		System.out.println("Pixels per second: "+(img.getWidth()*img.getHeight())/(timeTaken/(double)1000) );
-		System.out.println("--------------------------------------------" );
-		
+		final long timeTaken = end - start;
+		System.out.println("--------------------------------------------");
+		System.out.println("Time taken: " + timeTaken + " milliseconds");
+		System.out.println("Number of pixels: " + img.getWidth() * img.getHeight());
+		System.out.println("Pixels per second: " + (img.getWidth() * img.getHeight()) / (timeTaken / (double) 1000));
+		System.out.println("--------------------------------------------");
+
 		updateMSER();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void updateMSER()
 	{
-		System.out.println("Delta: "+jDeltaSlider.getValue() );
-		System.out.println("Max Area: "+jMaxAreaSlider.getValue() );
-		System.out.println("Min Area: "+jMinAreaSlider1.getValue() );
-		System.out.println("Max Variation: "+jMaxVariationSlider1.getValue()/100f );
-		System.out.println("Min Diversity: "+jMinDiversitySlider.getValue()/100f );
-		
-		long start = System.currentTimeMillis();
-		@SuppressWarnings("unchecked")
-		MSERFeatureGenerator mser = new MSERFeatureGenerator( 
+		System.out.println("Delta: " + jDeltaSlider.getValue());
+		System.out.println("Max Area: " + jMaxAreaSlider.getValue());
+		System.out.println("Min Area: " + jMinAreaSlider1.getValue());
+		System.out.println("Max Variation: " + jMaxVariationSlider1.getValue() / 100f);
+		System.out.println("Min Diversity: " + jMinDiversitySlider.getValue() / 100f);
+
+		final long start = System.currentTimeMillis();
+		final MSERFeatureGenerator mser = new MSERFeatureGenerator(
 				jDeltaSlider.getValue(),
 				jMaxAreaSlider.getValue(),
 				jMinAreaSlider1.getValue(),
-				jMaxVariationSlider1.getValue()/100f,
-				jMinDiversitySlider.getValue()/100f,
+				jMaxVariationSlider1.getValue() / 100f,
+				jMinDiversitySlider.getValue() / 100f,
 				PixelsFeature.class);
-		List<Component> up_regions = mser.performMSERDetection( this.mergeTrees, MSERDirection.Up );
-		List<Component> down_regions = mser.performMSERDetection( this.mergeTrees, MSERDirection.Down );
-		long end = System.currentTimeMillis();
+		final List<Component> up_regions = mser.performMSERDetection(this.mergeTrees, MSERDirection.Up);
+		final List<Component> down_regions = mser.performMSERDetection(this.mergeTrees, MSERDirection.Down);
+		final long end = System.currentTimeMillis();
 
 		// Show some stats
-		long timeTaken = end - start;
-		System.out.println("--------------------------------------------" );
-		System.out.println("Time taken: "+timeTaken+" milliseconds" );
-		System.out.println("Detected "+(up_regions.size() + down_regions.size()) +" regions" );
-		System.out.println("--------------------------------------------" );		
-		
-		BufferedImage bimg = ComponentUtils.plotComponentList( up_regions, ImageUtils.copyImage(ImageUtilities.createBufferedImage(img)), Color.yellow );
-		bimg = ComponentUtils.plotComponentList( down_regions, bimg, Color.blue);
-		jImagePanel.setImage( bimg );
+		final long timeTaken = end - start;
+		System.out.println("--------------------------------------------");
+		System.out.println("Time taken: " + timeTaken + " milliseconds");
+		System.out.println("Detected " + (up_regions.size() + down_regions.size()) + " regions");
+		System.out.println("--------------------------------------------");
+
+		BufferedImage bimg = ComponentUtils.plotComponentList(up_regions,
+				ImageUtils.copyImage(ImageUtilities.createBufferedImage(img)), Color.yellow);
+		bimg = ComponentUtils.plotComponentList(down_regions, bimg, Color.blue);
+		jImagePanel.setImage(bimg);
 	}
 
 	/**
-	 * This method initializes jControlsPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes jControlsPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJControlsPanel()
 	{
-		if( jControlsPanel == null )
+		if (jControlsPanel == null)
 		{
-			GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
 			gridBagConstraints11.fill = GridBagConstraints.VERTICAL;
 			gridBagConstraints11.gridy = 9;
 			gridBagConstraints11.weightx = 1.0;
 			gridBagConstraints11.gridx = 0;
-			GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
 			gridBagConstraints10.gridx = 0;
 			gridBagConstraints10.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints10.gridy = 8;
 			jMinDiversityLabel = new JLabel();
 			jMinDiversityLabel.setText("Minimum Diversity");
-			GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
 			gridBagConstraints9.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints9.gridy = 7;
 			gridBagConstraints9.weightx = 1.0;
 			gridBagConstraints9.gridx = 0;
-			GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
 			gridBagConstraints8.gridx = 0;
 			gridBagConstraints8.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints8.gridy = 6;
 			jMaxVariationLabel = new JLabel();
 			jMaxVariationLabel.setText("Maximum Variation");
-			GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
 			gridBagConstraints7.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints7.gridy = 5;
 			gridBagConstraints7.weightx = 1.0;
 			gridBagConstraints7.gridx = 0;
-			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
 			gridBagConstraints6.gridx = 0;
 			gridBagConstraints6.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints6.gridy = 4;
 			jMinAreaLabel = new JLabel();
 			jMinAreaLabel.setText("Minimum Area");
-			GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
 			gridBagConstraints5.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints5.gridy = 3;
 			gridBagConstraints5.weightx = 1.0;
 			gridBagConstraints5.gridx = 0;
-			GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
 			gridBagConstraints4.gridx = 0;
 			gridBagConstraints4.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints4.gridy = 2;
 			jMaxAreaLabel = new JLabel();
 			jMaxAreaLabel.setText("Maximum Area");
-			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
 			gridBagConstraints3.gridx = 0;
 			gridBagConstraints3.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints3.gridy = 0;
-			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+			final GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
 			gridBagConstraints2.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints2.gridy = 1;
 			gridBagConstraints2.weightx = 1.0;
@@ -383,13 +381,13 @@ public class TestGUI extends JFrame
 	}
 
 	/**
-	 * This method initializes jDeltaSlider	
-	 * 	
-	 * @return javax.swing.JSlider	
+	 * This method initializes jDeltaSlider
+	 *
+	 * @return javax.swing.JSlider
 	 */
 	private JSlider getJDeltaSlider()
 	{
-		if( jDeltaSlider == null )
+		if (jDeltaSlider == null)
 		{
 			jDeltaSlider = new JSlider();
 			jDeltaSlider.setMaximum(255);
@@ -399,26 +397,26 @@ public class TestGUI extends JFrame
 			jDeltaSlider.setPaintLabels(true);
 			jDeltaSlider.setMinorTickSpacing(10);
 			jDeltaSlider.setMinimum(0);
-			jDeltaSlider.addChangeListener( new ChangeListener(){
+			jDeltaSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged( ChangeEvent e )
+				public void stateChanged(ChangeEvent e)
 				{
-					if( !jDeltaSlider.getValueIsAdjusting() )
+					if (!jDeltaSlider.getValueIsAdjusting())
 						updateMSER();
-				}				
+				}
 			});
 		}
 		return jDeltaSlider;
 	}
 
 	/**
-	 * This method initializes jMaxAreaSlider	
-	 * 	
-	 * @return javax.swing.JSlider	
+	 * This method initializes jMaxAreaSlider
+	 *
+	 * @return javax.swing.JSlider
 	 */
 	private JSlider getJMaxAreaSlider()
 	{
-		if( jMaxAreaSlider == null )
+		if (jMaxAreaSlider == null)
 		{
 			jMaxAreaSlider = new JSlider();
 			jMaxAreaSlider.setPaintTicks(true);
@@ -427,26 +425,26 @@ public class TestGUI extends JFrame
 			jMaxAreaSlider.setMinorTickSpacing(5000);
 			jMaxAreaSlider.setValue(10000);
 			jMaxAreaSlider.setPaintLabels(true);
-			jMaxAreaSlider.addChangeListener( new ChangeListener(){
+			jMaxAreaSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged( ChangeEvent e )
+				public void stateChanged(ChangeEvent e)
 				{
-					if( !jMaxAreaSlider.getValueIsAdjusting() )
+					if (!jMaxAreaSlider.getValueIsAdjusting())
 						updateMSER();
-				}				
+				}
 			});
 		}
 		return jMaxAreaSlider;
 	}
 
 	/**
-	 * This method initializes jMinAreaSlider1	
-	 * 	
-	 * @return javax.swing.JSlider	
+	 * This method initializes jMinAreaSlider1
+	 *
+	 * @return javax.swing.JSlider
 	 */
 	private JSlider getJMinAreaSlider1()
 	{
-		if( jMinAreaSlider1 == null )
+		if (jMinAreaSlider1 == null)
 		{
 			jMinAreaSlider1 = new JSlider();
 			jMinAreaSlider1.setMajorTickSpacing(200);
@@ -454,26 +452,26 @@ public class TestGUI extends JFrame
 			jMinAreaSlider1.setMaximum(1000);
 			jMinAreaSlider1.setValue(1);
 			jMinAreaSlider1.setPaintLabels(true);
-			jMinAreaSlider1.addChangeListener( new ChangeListener(){
+			jMinAreaSlider1.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged( ChangeEvent e )
+				public void stateChanged(ChangeEvent e)
 				{
-					if( !jMinAreaSlider1.getValueIsAdjusting() )
+					if (!jMinAreaSlider1.getValueIsAdjusting())
 						updateMSER();
-				}				
+				}
 			});
 		}
 		return jMinAreaSlider1;
 	}
 
 	/**
-	 * This method initializes jMaxVariationSlider1	
-	 * 	
-	 * @return javax.swing.JSlider	
+	 * This method initializes jMaxVariationSlider1
+	 *
+	 * @return javax.swing.JSlider
 	 */
 	private JSlider getJMaxVariationSlider1()
 	{
-		if( jMaxVariationSlider1 == null )
+		if (jMaxVariationSlider1 == null)
 		{
 			jMaxVariationSlider1 = new JSlider();
 			jMaxVariationSlider1.setMaximum(1000);
@@ -481,54 +479,54 @@ public class TestGUI extends JFrame
 			jMaxVariationSlider1.setPaintTicks(true);
 			jMaxVariationSlider1.setValue(1000);
 			jMaxVariationSlider1.setMajorTickSpacing(200);
-			jMaxVariationSlider1.addChangeListener( new ChangeListener(){
+			jMaxVariationSlider1.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged( ChangeEvent e )
+				public void stateChanged(ChangeEvent e)
 				{
-					if( !jMaxVariationSlider1.getValueIsAdjusting() )
+					if (!jMaxVariationSlider1.getValueIsAdjusting())
 						updateMSER();
-				}				
+				}
 			});
 		}
 		return jMaxVariationSlider1;
 	}
 
 	/**
-	 * This method initializes jMinDiversitySlider	
-	 * 	
-	 * @return javax.swing.JSlider	
+	 * This method initializes jMinDiversitySlider
+	 *
+	 * @return javax.swing.JSlider
 	 */
 	private JSlider getJMinDiversitySlider()
 	{
-		if( jMinDiversitySlider == null )
+		if (jMinDiversitySlider == null)
 		{
 			jMinDiversitySlider = new JSlider();
 			jMinDiversitySlider.setMajorTickSpacing(20);
 			jMinDiversitySlider.setPaintTicks(true);
 			jMinDiversitySlider.setEnabled(true);
 			jMinDiversitySlider.setPaintLabels(true);
-			jMinDiversitySlider.addChangeListener( new ChangeListener(){
+			jMinDiversitySlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged( ChangeEvent e )
+				public void stateChanged(ChangeEvent e)
 				{
-					if( !jMinDiversitySlider.getValueIsAdjusting() )
+					if (!jMinDiversitySlider.getValueIsAdjusting())
 						updateMSER();
-				}				
+				}
 			});
 		}
 		return jMinDiversitySlider;
 	}
 
 	/**
-	 * 
-	 *	@param args
-	 * @throws IOException 
+	 *
+	 * @param args
+	 * @throws IOException
 	 */
-	public static void main( String[] args ) throws IOException
+	public static void main(String[] args) throws IOException
 	{
-		TestGUI t = new TestGUI();
-		t.setVisible( true );
-		 t.loadFile( new File("test-images/spotty-cat.jpg") );
-//		t.loadFile( new File("test-images/grey-patch.png") );
+		final TestGUI t = new TestGUI();
+		t.setVisible(true);
+		t.loadFile(new File("test-images/spotty-cat.jpg"));
+		// t.loadFile( new File("test-images/grey-patch.png") );
 	}
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+} // @jve:decl-index=0:visual-constraint="10,10"

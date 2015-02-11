@@ -45,8 +45,11 @@ import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 
 /**
- * This mapper loads arguments for the {@link AbstractTwitterPreprocessingToolOptions} from the {@link HadoopTwitterPreprocessingTool#ARGS_KEY}
- * variable (once per in memory mapper) and uses these to preprocess tweets.
+ * This mapper loads arguments for the
+ * {@link AbstractTwitterPreprocessingToolOptions} from the
+ * {@link HadoopTwitterPreprocessingTool#ARGS_KEY} variable (once per in memory
+ * mapper) and uses these to preprocess tweets.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
@@ -54,40 +57,47 @@ public class TwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullW
 	private static HadoopTwitterPreprocessingToolOptions options = null;
 	private static List<TwitterPreprocessingMode<?>> modes = null;
 
-	protected static synchronized void loadOptions(Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws IOException {
+	protected static synchronized void loadOptions(Mapper<LongWritable, Text, NullWritable, Text>.Context context)
+			throws IOException
+	{
 		if (options == null) {
 			try {
-				options = new HadoopTwitterPreprocessingToolOptions(context.getConfiguration().getStrings(HadoopTwitterPreprocessingTool.ARGS_KEY));
+				options = new HadoopTwitterPreprocessingToolOptions(context.getConfiguration().getStrings(
+						HadoopTwitterPreprocessingTool.ARGS_KEY));
 				options.prepare();
 				modes = options.preprocessingMode();
-			} catch (CmdLineException e) {
+			} catch (final CmdLineException e) {
 				throw new IOException(e);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new IOException(e);
 			}
 		}
 	}
 
 	@Override
-	protected void setup(Mapper<LongWritable, Text, NullWritable, Text>.Context context)throws IOException, InterruptedException{
+	protected void setup(Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws IOException,
+			InterruptedException
+	{
 		loadOptions(context);
 	}
 
 	@Override
-	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException
+	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context)
+			throws java.io.IOException, InterruptedException
 	{
-		USMFStatus status = new USMFStatus(GeneralJSONTwitter.class);
+		final USMFStatus status = new USMFStatus(GeneralJSONTwitter.class);
 		status.fillFromString(value.toString());
-		if(status.isInvalid()) return;
-		for (TwitterPreprocessingMode<?> mode : modes) {
+		if (status.isInvalid())
+			return;
+		for (final TwitterPreprocessingMode<?> mode : modes) {
 			mode.process(status);
 		}
-		StringWriter outTweetString = new StringWriter();
-		PrintWriter outTweetWriter = new PrintWriter(outTweetString);
+		final StringWriter outTweetString = new StringWriter();
+		final PrintWriter outTweetWriter = new PrintWriter(outTweetString);
 		try {
-			options.ouputMode().output(options.convertToOutputFormat(status), outTweetWriter );
+			options.ouputMode().output(options.convertToOutputFormat(status), outTweetWriter);
 			context.write(NullWritable.get(), new Text(outTweetString.getBuffer().toString()));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("Failed to write tweet: " + status.text);
 			System.err.println("With error: ");
 			e.printStackTrace();

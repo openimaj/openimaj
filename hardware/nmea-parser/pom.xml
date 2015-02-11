@@ -9,7 +9,6 @@
   </parent>
   <groupId>org.openimaj.hardware</groupId>
   <artifactId>nmea-parser</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>OpenIMAJ Groovy NMEA parser</name>
   <description>Contains a parser for NMEA sentences written in Groovy.</description>
   <inceptionYear>2011</inceptionYear>
@@ -84,7 +83,59 @@
 			 		            <perCoreThreadCount>2</perCoreThreadCount> -->
         </configuration>
       </plugin>
+      <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>build-helper-maven-plugin</artifactId>
+    <version>1.9.1</version>
+    <executions>
+        <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+                <goal>add-source</goal>
+            </goals>
+            <configuration>
+                <sources>
+                    <source>${project.build.directory}/generated-sources/groovy-stubs/main/</source>
+                </sources>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
     </plugins>
+    <pluginManagement>
+  <plugins>
+    <plugin>
+     <groupId>org.eclipse.m2e</groupId>
+     <artifactId>lifecycle-mapping</artifactId>
+     <version>1.0.0</version>
+     <configuration>
+       <lifecycleMappingMetadata>
+         <pluginExecutions>
+           <pluginExecution>
+             <pluginExecutionFilter>
+               <groupId>org.codehaus.gmaven</groupId>
+        	   <artifactId>gmaven-plugin</artifactId>
+               <versionRange>[1.4,)</versionRange>
+               <goals>
+                 <goal>generateStubs</goal>
+                 <goal>compile</goal>
+               	 <goal>generateTestStubs</goal>
+              	 <goal>testCompile</goal>
+               </goals>
+             </pluginExecutionFilter>
+             <action>
+               <execute>
+                 <runOnIncremental>true</runOnIncremental>
+               </execute >
+             </action>
+           </pluginExecution>
+         </pluginExecutions>
+       </lifecycleMappingMetadata>
+     </configuration>
+    </plugin>
+  </plugins>
+</pluginManagement>
   </build>
   <dependencies>
     <dependency>

@@ -47,14 +47,14 @@ import backtype.storm.generated.StormTopology;
 
 /**
  * Create {@link DirectedGraph} instances from {@link StormTopology} instances
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class StormGraphCreator {
 	/**
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public interface NamingStrategy {
 		/**
@@ -66,9 +66,9 @@ public class StormGraphCreator {
 
 		/**
 		 * Uses id as name
-		 * 
+		 *
 		 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-		 * 
+		 *
 		 */
 		public static class DefaultNamingStrategy implements NamingStrategy {
 
@@ -81,9 +81,9 @@ public class StormGraphCreator {
 
 		/**
 		 * Names {@link ComponentCommon} as A, B, C... and provides a lookup map
-		 * 
+		 *
 		 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-		 * 
+		 *
 		 */
 		public static class AlphabeticNamingStrategy implements NamingStrategy {
 			char currentLetter = 'A';
@@ -96,7 +96,7 @@ public class StormGraphCreator {
 			@Override
 			public String name(String name) {
 				if (!seen.containsKey(name)) {
-					String newName = new String(new char[] { currentLetter++ });
+					final String newName = new String(new char[] { currentLetter++ });
 					seen.put(name, newName);
 					lookup.put(newName, name);
 				}
@@ -125,9 +125,9 @@ public class StormGraphCreator {
 
 	/**
 	 * A name and type node
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public class NamedNode {
 		/**
@@ -152,7 +152,7 @@ public class StormGraphCreator {
 		public boolean equals(Object other) {
 			if (!(other instanceof NamedNode))
 				return false;
-			NamedNode that = (NamedNode) other;
+			final NamedNode that = (NamedNode) other;
 			if (that.node != this.node)
 				return false;
 			return this.hashCode() == that.hashCode();
@@ -170,9 +170,10 @@ public class StormGraphCreator {
 	}
 
 	private ListenableDirectedGraph<NamedNode, DefaultEdge> _asGraph(StormTopology t) {
-		Map<String, Bolt> bolts = t.get_bolts();
-		Map<String, SpoutSpec> spouts = t.get_spouts();
-		ListenableDirectedGraph<NamedNode, DefaultEdge> ret = new ListenableDirectedGraph<NamedNode, DefaultEdge>(DefaultEdge.class);
+		final Map<String, Bolt> bolts = t.get_bolts();
+		final Map<String, SpoutSpec> spouts = t.get_spouts();
+		final ListenableDirectedGraph<NamedNode, DefaultEdge> ret = new ListenableDirectedGraph<NamedNode, DefaultEdge>(
+				DefaultEdge.class);
 
 		createSpouts(spouts, ret);
 		createBolts(bolts, ret);
@@ -181,15 +182,15 @@ public class StormGraphCreator {
 	}
 
 	private void createConnections(Map<String, Bolt> bolts, ListenableDirectedGraph<NamedNode, DefaultEdge> ret) {
-		for (Entry<String, Bolt> boltspec : bolts.entrySet()) {
-			Bolt bolt = boltspec.getValue();
-			String id = boltspec.getKey();
-			Map<GlobalStreamId, Grouping> inputs = bolt.get_common().get_inputs();
-			for (Entry<GlobalStreamId, Grouping> input : inputs.entrySet()) {
-				GlobalStreamId from = input.getKey();
-				//				Grouping grouping = input.getValue();
-				String fromId = from.get_componentId();
-				//				String streamId = from.get_streamId();
+		for (final Entry<String, Bolt> boltspec : bolts.entrySet()) {
+			final Bolt bolt = boltspec.getValue();
+			final String id = boltspec.getKey();
+			final Map<GlobalStreamId, Grouping> inputs = bolt.get_common().get_inputs();
+			for (final Entry<GlobalStreamId, Grouping> input : inputs.entrySet()) {
+				final GlobalStreamId from = input.getKey();
+				// Grouping grouping = input.getValue();
+				final String fromId = from.get_componentId();
+				// String streamId = from.get_streamId();
 				ret.addEdge(nns.get(fromId), nns.get(id));
 			}
 
@@ -197,8 +198,8 @@ public class StormGraphCreator {
 	}
 
 	private void createSpouts(Map<String, SpoutSpec> spouts, ListenableDirectedGraph<NamedNode, DefaultEdge> ret) {
-		for (Entry<String, SpoutSpec> spoutEntries : spouts.entrySet()) {
-			String name = spoutEntries.getKey();
+		for (final Entry<String, SpoutSpec> spoutEntries : spouts.entrySet()) {
+			final String name = spoutEntries.getKey();
 			if (!nns.containsKey(name))
 				nns.put(name, new NamedNode(name, Type.SPOUT));
 			ret.addVertex(nns.get(name));
@@ -206,8 +207,8 @@ public class StormGraphCreator {
 	}
 
 	private void createBolts(Map<String, Bolt> bolts, ListenableDirectedGraph<NamedNode, DefaultEdge> ret) {
-		for (Entry<String, Bolt> boltEntries : bolts.entrySet()) {
-			String name = boltEntries.getKey();
+		for (final Entry<String, Bolt> boltEntries : bolts.entrySet()) {
+			final String name = boltEntries.getKey();
 			if (!nns.containsKey(name))
 				nns.put(name, new NamedNode(name, Type.BOLT));
 			ret.addVertex(nns.get(name));
@@ -220,7 +221,7 @@ public class StormGraphCreator {
 	 * @return a {@link ListenableDirectedGraph} usable with JGraph
 	 */
 	public static ListenableDirectedGraph<NamedNode, DefaultEdge> asGraph(StormTopology t) {
-		StormGraphCreator creator = new StormGraphCreator();
+		final StormGraphCreator creator = new StormGraphCreator();
 		return creator._asGraph(t);
 	}
 
@@ -232,7 +233,7 @@ public class StormGraphCreator {
 	 * @return a {@link ListenableDirectedGraph} usable with JGraph
 	 */
 	public static ListenableDirectedGraph<NamedNode, DefaultEdge> asGraph(StormTopology t, NamingStrategy strat) {
-		StormGraphCreator creator = new StormGraphCreator(strat);
+		final StormGraphCreator creator = new StormGraphCreator(strat);
 		return creator._asGraph(t);
 	}
 }

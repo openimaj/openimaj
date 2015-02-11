@@ -32,9 +32,6 @@ package org.openimaj.ml.linear.learner.perceptron;
 import java.util.ArrayList;
 import java.util.List;
 
-import no.uib.cipr.matrix.DenseVector;
-import no.uib.cipr.matrix.Vector;
-
 import org.openimaj.math.matrix.MeanVector;
 import org.openimaj.ml.linear.kernel.VectorKernel;
 
@@ -42,7 +39,7 @@ import org.openimaj.ml.linear.kernel.VectorKernel;
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class MeanCenteredKernelPerceptron extends MatrixKernelPerceptron{
+public class MeanCenteredKernelPerceptron extends DoubleArrayKernelPerceptron{
 	MeanVector mv = new MeanVector();
 	
 	/**

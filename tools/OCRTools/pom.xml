@@ -7,10 +7,8 @@
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openimaj</groupId>
   <artifactId>OCRTools</artifactId>
   <name>OCR Tools</name>
-  <version>1.4-SNAPSHOT</version>
   <description>Tools for training and testing OCR.</description>
   <inceptionYear>2011</inceptionYear>
   <properties>

@@ -39,7 +39,6 @@ import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.openimaj.math.matrix.DiagonalMatrix;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.util.array.IntArrayView;
 import org.openimaj.util.pair.ObjectDoublePair;
 
 import scala.actors.threadpool.Arrays;

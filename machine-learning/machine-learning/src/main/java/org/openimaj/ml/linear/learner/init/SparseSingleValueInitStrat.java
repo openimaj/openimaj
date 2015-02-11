@@ -30,7 +30,6 @@
 package org.openimaj.ml.linear.learner.init;
 
 import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 import org.openimaj.math.matrix.CFMatrixUtils;

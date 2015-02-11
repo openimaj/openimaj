@@ -29,12 +29,9 @@
  */
 package org.openimaj.experiment.gmm.retrieval;
 
-import gov.sandia.cognition.collection.CollectionUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,17 +57,14 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.io.ObjectReader;
 import org.openimaj.math.statistics.distribution.MixtureOfGaussians;
 import org.openimaj.math.statistics.distribution.metrics.SampledMultivariateDistanceComparator;
 import org.openimaj.ml.gmm.GaussianMixtureModelEM.CovarianceType;
 import org.openimaj.util.function.Function;
 import org.openimaj.util.function.Operation;
-import org.openimaj.util.pair.DoubleIntPair;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.IntDoublePair;
-import org.openimaj.util.parallel.GlobalExecutorPool;
 import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
 

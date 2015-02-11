@@ -27,23 +27,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.cbir;
+package org.openimaj.ml.linear.learner.perceptron;
 
-import java.io.File;
+import org.openimaj.ml.linear.kernel.VectorKernel;
 
-import org.openimaj.feature.local.list.MemoryLocalFeatureList;
-import org.openimaj.image.feature.dense.gradient.dsift.FloatDSIFTKeypoint;
+/**
+ * An implementation of a simple {@link KernelPerceptron} which works with
+ * double array inputs and is binary.
+ *
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ */
+public class ThresholdDoubleArrayKernelPerceptron extends DoubleArrayKernelPerceptron {
 
-public class Test {
-	public static void main(String[] args) {
-		final File dir = new File("/Volumes/Raid/mirflickr/pyr-dsift/");
+	private double rate;
+	private double thresh;
 
-		for (final File f : dir.listFiles()) {
-			try {
-				MemoryLocalFeatureList.read(f, FloatDSIFTKeypoint.class);
-			} catch (final Exception e) {
-				System.out.println(f);
-			}
-		}
+	public ThresholdDoubleArrayKernelPerceptron(VectorKernel k) {
+		this(0.1, 0, k);
 	}
+
+	public ThresholdDoubleArrayKernelPerceptron(double weight, double threshold, VectorKernel k) {
+		super(k);
+		this.rate = weight;
+		this.thresh = threshold;
+
+	}
+
+	@Override
+	public PerceptronClass predict(double[] x) {
+		double apply = mapping(x);
+		if (Math.abs(apply) < this.thresh)
+			apply = -1;
+		return PerceptronClass.fromSign(Math.signum(apply));
+
+	}
+
+	@Override
+	double getUpdateRate() {
+		return rate;
+	}
+
 }

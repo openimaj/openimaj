@@ -143,7 +143,8 @@ public class FloatDCT_2D {
                     final int firstRow = l * p;
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int r = firstRow; r < lastRow; r++) {
                                 dctColumns.forward(a, r * columns, scale);
                             }
@@ -156,7 +157,8 @@ public class FloatDCT_2D {
                     final int firstColumn = l * p;
                     final int lastColumn = (l == (nthreads - 1)) ? columns : firstColumn + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             float[] temp = new float[rows];
                             for (int c = firstColumn; c < lastColumn; c++) {
                                 for (int r = 0; r < rows; r++) {
@@ -228,7 +230,8 @@ public class FloatDCT_2D {
                     final int firstRow = l * p;
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int i = firstRow; i < lastRow; i++) {
                                 dctColumns.forward(a[i], scale);
                             }
@@ -241,7 +244,8 @@ public class FloatDCT_2D {
                     final int firstColumn = l * p;
                     final int lastColumn = (l == (nthreads - 1)) ? columns : firstColumn + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             float[] temp = new float[rows];
                             for (int c = firstColumn; c < lastColumn; c++) {
                                 for (int r = 0; r < rows; r++) {
@@ -313,7 +317,8 @@ public class FloatDCT_2D {
                     final int firstRow = l * p;
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int i = firstRow; i < lastRow; i++) {
                                 dctColumns.inverse(a, i * columns, scale);
                             }
@@ -326,7 +331,8 @@ public class FloatDCT_2D {
                     final int firstColumn = l * p;
                     final int lastColumn = (l == (nthreads - 1)) ? columns : firstColumn + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             float[] temp = new float[rows];
                             for (int c = firstColumn; c < lastColumn; c++) {
                                 for (int r = 0; r < rows; r++) {
@@ -398,7 +404,8 @@ public class FloatDCT_2D {
                     final int firstRow = l * p;
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int i = firstRow; i < lastRow; i++) {
                                 dctColumns.inverse(a[i], scale);
                             }
@@ -411,7 +418,8 @@ public class FloatDCT_2D {
                     final int firstColumn = l * p;
                     final int lastColumn = (l == (nthreads - 1)) ? columns : firstColumn + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             float[] temp = new float[rows];
                             for (int c = firstColumn; c < lastColumn; c++) {
                                 for (int r = 0; r < rows; r++) {
@@ -460,7 +468,8 @@ public class FloatDCT_2D {
             final int n0 = i;
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     int idx1, idx2;
                     if (columns > 2 * nthreads) {
                         if (isgn == -1) {
@@ -565,7 +574,8 @@ public class FloatDCT_2D {
             final int n0 = i;
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     int idx2;
                     if (columns > 2 * nthreads) {
                         if (isgn == -1) {
@@ -657,7 +667,8 @@ public class FloatDCT_2D {
             final int n0 = i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                public void run() {
+                @Override
+				public void run() {
                     if (isgn == -1) {
                         for (int r = n0; r < rows; r += nthreads) {
                             dctColumns.forward(a, r * columns, scale);
@@ -682,7 +693,8 @@ public class FloatDCT_2D {
             final int n0 = i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                public void run() {
+                @Override
+				public void run() {
                     if (isgn == -1) {
                         for (int r = n0; r < rows; r += nthreads) {
                             dctColumns.forward(a[r], scale);

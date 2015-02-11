@@ -2,9 +2,6 @@ package org.openimaj.picslurper.output;
 
 import java.net.URL;
 
-import org.openimaj.picslurper.StatusConsumer;
-import org.openimaj.picslurper.StatusConsumption;
-
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *

@@ -29,7 +29,6 @@
  */
 package org.openimaj.experiment.gmm.retrieval;
 
-import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;

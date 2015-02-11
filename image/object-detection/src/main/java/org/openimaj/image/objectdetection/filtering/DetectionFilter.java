@@ -31,9 +31,6 @@ package org.openimaj.image.objectdetection.filtering;
 
 import java.util.List;
 
-import org.openimaj.image.objectdetection.ObjectDetector;
-import org.openimaj.math.geometry.shape.Rectangle;
-
 /**
  * Interface describing an algorithm capable of filtering detections from a
  * {@link ObjectDetector}. Typically this might mean finding the biggest

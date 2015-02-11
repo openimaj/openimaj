@@ -32,16 +32,12 @@ package org.openimaj.ml.neuralnet;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.mtj.DenseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
-import org.openimaj.math.matrix.CFMatrixUtils;
-import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.function.Function;
 
 

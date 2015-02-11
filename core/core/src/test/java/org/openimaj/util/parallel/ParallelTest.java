@@ -44,9 +44,9 @@ import org.openimaj.util.parallel.partition.RangePartitioner;
 
 /**
  * Tests for {@link Parallel}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ParallelTest {
 	/**

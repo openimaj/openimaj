@@ -69,15 +69,15 @@ import Jama.Matrix;
  * written with {@link IOUtils}. To work-around these issues, this class
  * implements a set of static I/O methods for reading and writing multiple
  * features to/from a standard .siftgeo file.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, VariableLength, Cloneable, Serializable {
 	/**
 	 * The location of a {@link SIFTGeoKeypoint}.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public class SIFTGeoLocation extends KeypointLocation {
 		private static final long serialVersionUID = 1L;
@@ -97,7 +97,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 		/**
 		 * Construct with the given parameters
-		 * 
+		 *
 		 * @param x
 		 *            x-ordinate of feature
 		 * @param y
@@ -149,7 +149,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 		public void writeASCII(PrintWriter out) throws IOException {
 			out.format("%4.2f %4.2f %4.2f %4.3f %4.3f %4.3f %4.3f %4.3f", x, y, scale, orientation,
 					(float) affine.get(0, 0), (float) affine.get(0, 1), (float) affine
-							.get(1, 0), (float) affine.get(1, 1));
+					.get(1, 0), (float) affine.get(1, 1));
 			out.println();
 		}
 
@@ -201,8 +201,9 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 		@Override
 		public Float getOrdinate(int dimension) {
-			final float[] pos = { x, y, scale, orientation, (float) affine.get(0, 0), (float) affine.get(0, 1), (float) affine
-					.get(1, 0), (float) affine.get(1, 1) };
+			final float[] pos = { x, y, scale, orientation, (float) affine.get(0, 0), (float) affine.get(0, 1),
+					(float) affine
+							.get(1, 0), (float) affine.get(1, 1) };
 			return pos[dimension];
 		}
 	}
@@ -222,7 +223,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 	/**
 	 * Construct with the location set to zero, and with an empty descriptor of
 	 * the given length.
-	 * 
+	 *
 	 * @param len
 	 *            the descriptor length
 	 */
@@ -232,22 +233,22 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 	/**
 	 * Construct with the given parameters
-	 * 
+	 *
 	 * @param x
 	 *            x-ordinate of feature
-	 * 
+	 *
 	 * @param y
 	 *            y-ordinate of feature
-	 * 
+	 *
 	 * @param scale
 	 *            scale of feature
-	 * 
+	 *
 	 * @param orientation
 	 *            orientation of feature
-	 * 
+	 *
 	 * @param cornerness
 	 *            the saliency of the interest point
-	 * 
+	 *
 	 * @param affine
 	 *            affine parameters
 	 * @param descriptor
@@ -349,7 +350,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 	/**
 	 * Read a .siftgeo file.
-	 * 
+	 *
 	 * @param file
 	 *            the file
 	 * @return the list of read {@link SIFTGeoKeypoint}s
@@ -362,7 +363,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 	/**
 	 * Read .siftgeo file from a stream.
-	 * 
+	 *
 	 * @param stream
 	 *            the stream
 	 * @return the list of read {@link SIFTGeoKeypoint}s
@@ -375,7 +376,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 	/**
 	 * Read .siftgeo file from a stream.
-	 * 
+	 *
 	 * @param stream
 	 *            the stream
 	 * @return the list of read {@link SIFTGeoKeypoint}s
@@ -399,7 +400,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 	/**
 	 * Write a .siftgeo file
-	 * 
+	 *
 	 * @param keys
 	 *            the {@link SIFTGeoKeypoint}s to write
 	 * @param file
@@ -413,7 +414,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 	/**
 	 * Write a .siftgeo stream
-	 * 
+	 *
 	 * @param keys
 	 *            the {@link SIFTGeoKeypoint}s to write
 	 * @param stream
@@ -427,7 +428,7 @@ public class SIFTGeoKeypoint implements LocalFeature<SIFTGeoLocation, ByteFV>, V
 
 	/**
 	 * Write a .siftgeo stream
-	 * 
+	 *
 	 * @param keys
 	 *            the {@link SIFTGeoKeypoint}s to write
 	 * @param stream

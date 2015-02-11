@@ -46,23 +46,23 @@ import org.openimaj.experiment.evaluation.classification.Classifier;
 
 /**
  * A {@link ClassificationAnalyser} that creates Confusion Matrices.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <CLASS>
  *            The type of classes produced by the {@link Classifier}
  * @param <OBJECT>
  *            The type of object classifed by the {@link Classifier}
  */
 public class CMAnalyser<OBJECT, CLASS>
-		implements ClassificationAnalyser<
-		CMResult<CLASS>,
-		CLASS,
-		OBJECT>
+implements ClassificationAnalyser<
+CMResult<CLASS>,
+CLASS,
+OBJECT>
 {
 	/**
 	 * Strategies for building confusion matrices
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static enum Strategy {
@@ -78,7 +78,7 @@ public class CMAnalyser<OBJECT, CLASS>
 			{
 				data.add(DefaultTargetEstimatePair.create(
 						actual.size() == 0 ? null : new ArrayList<CLASS>(actual).get(0),
-						predicted.size() == 0 ? null : new ArrayList<CLASS>(predicted).get(0)
+								predicted.size() == 0 ? null : new ArrayList<CLASS>(predicted).get(0)
 						));
 			}
 		},
@@ -150,7 +150,7 @@ public class CMAnalyser<OBJECT, CLASS>
 
 	/**
 	 * Construct with the given strategy for building the confusion matrix
-	 * 
+	 *
 	 * @param strategy
 	 *            the strategy
 	 */
@@ -162,7 +162,7 @@ public class CMAnalyser<OBJECT, CLASS>
 	public CMResult<CLASS> analyse(
 			Map<OBJECT, ClassificationResult<CLASS>> predicted,
 			Map<OBJECT, Set<CLASS>> actual)
-	{
+			{
 		final List<TargetEstimatePair<CLASS, CLASS>> data = new ArrayList<TargetEstimatePair<CLASS, CLASS>>();
 
 		for (final OBJECT obj : predicted.keySet()) {
@@ -173,5 +173,5 @@ public class CMAnalyser<OBJECT, CLASS>
 		}
 
 		return new CMResult<CLASS>(eval.evaluatePerformance(data));
-	}
+			}
 }

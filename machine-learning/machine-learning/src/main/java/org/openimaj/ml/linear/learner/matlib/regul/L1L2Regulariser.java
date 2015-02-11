@@ -29,26 +29,23 @@
  */
 package org.openimaj.ml.linear.learner.matlib.regul;
 
-import org.apache.log4j.Logger;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 
 import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.Vector;
 
-public class L1L2Regulariser implements Regulariser{
-
-	private static final Logger logger = Logger.getLogger(L1L2Regulariser.class);
+public class L1L2Regulariser implements Regulariser {
 
 	@Override
 	public Matrix prox(Matrix W, double lambda) {
-		int nrows = W.rowCount();
-		Matrix ret = W.newInstance();
-		
+		final int nrows = W.rowCount();
+		final Matrix ret = W.newInstance();
+
 		for (int r = 0; r < nrows; r++) {
-			Vector row = W.row(r);
-			double rownorm = MatlibMatrixUtils.norm2(row);
-			if(rownorm > lambda){
-				double scal = (rownorm - lambda)/rownorm;
+			final Vector row = W.row(r);
+			final double rownorm = MatlibMatrixUtils.norm2(row);
+			if (rownorm > lambda) {
+				final double scal = (rownorm - lambda) / rownorm;
 				MatlibMatrixUtils.setSubMatrixRow(ret, r, 0, row.times(scal));
 			}
 		}

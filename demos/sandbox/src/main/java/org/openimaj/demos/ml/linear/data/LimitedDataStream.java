@@ -29,11 +29,7 @@
  */
 package org.openimaj.demos.ml.linear.data;
 
-import java.util.Iterator;
-
 import org.openimaj.ml.linear.data.DataGenerator;
-import org.openimaj.ml.linear.data.LinearPerceptronDataGenerator;
-import org.openimaj.ml.linear.learner.perceptron.PerceptronClass;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.AbstractStream;
 

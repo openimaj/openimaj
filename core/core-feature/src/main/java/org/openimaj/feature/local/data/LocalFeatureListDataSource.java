@@ -44,21 +44,21 @@ import org.openimaj.feature.local.list.LocalFeatureList;
  * {@link LocalFeature}s that use an {@link ArrayFeatureVector} for the feature
  * vector. This can be used as a convenience when you want to feed multiple
  * lists of local features to a clustering algorithm.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            The type of {@link LocalFeature}
  * @param <F>
  *            The type of {@link FeatureVector}.
  */
 public class LocalFeatureListDataSource<T extends LocalFeature<?, ? extends ArrayFeatureVector<F>>, F>
-		extends
-		AbstractMultiListDataSource<F, T>
+extends
+AbstractMultiListDataSource<F, T>
 {
 	/**
 	 * Construct with the given list of data
-	 * 
+	 *
 	 * @param data
 	 *            the data
 	 */
@@ -69,17 +69,18 @@ public class LocalFeatureListDataSource<T extends LocalFeature<?, ? extends Arra
 
 	/**
 	 * Construct with the given lists of data
-	 * 
+	 *
 	 * @param data
 	 *            the data
 	 */
+	@SafeVarargs
 	public LocalFeatureListDataSource(LocalFeatureList<T>... data) {
 		super(data);
 	}
 
 	/**
 	 * Construct with the given lists of data
-	 * 
+	 *
 	 * @param data
 	 *            the data
 	 */
@@ -90,7 +91,7 @@ public class LocalFeatureListDataSource<T extends LocalFeature<?, ? extends Arra
 	/**
 	 * Construct with the given map of data. The keys are ignored, and only the
 	 * values are used.
-	 * 
+	 *
 	 * @param data
 	 *            the data
 	 */

@@ -40,24 +40,32 @@ import org.openimaj.util.pair.IndependentPair;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeriesCollection<double[], Double, DoubleSynchronisedTimeSeriesCollection,DoubleTimeSeries>{
-	
+public class DoubleSynchronisedTimeSeriesCollection
+		extends
+			SynchronisedTimeSeriesCollection<double[], Double, DoubleSynchronisedTimeSeriesCollection, DoubleTimeSeries>
+{
+
 	/**
 	 * basic constructor
 	 */
 	public DoubleSynchronisedTimeSeriesCollection() {
 	}
-	
+
 	/**
 	 * create a synchronised series from a bunch of pairs
+	 * 
 	 * @param series
 	 * @throws IncompatibleTimeSeriesException
 	 */
-	public DoubleSynchronisedTimeSeriesCollection(IndependentPair<String,DoubleTimeSeries> ... series) throws IncompatibleTimeSeriesException {
-		for (IndependentPair<String, DoubleTimeSeries> dts : series) {
+	@SafeVarargs
+	public DoubleSynchronisedTimeSeriesCollection(IndependentPair<String, DoubleTimeSeries>... series)
+			throws IncompatibleTimeSeriesException
+	{
+		for (final IndependentPair<String, DoubleTimeSeries> dts : series) {
 			this.addTimeSeries(dts.firstObject(), dts.secondObject());
 		}
 	}
+
 	@Override
 	public DoubleTimeSeries internalNewInstance() {
 		return new DoubleTimeSeries();
@@ -70,13 +78,13 @@ public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeri
 
 	@Override
 	public double[] flatten() {
-		
-		int tlength = this.getTimes().length;
-		int nseries = this.nSeries();
-		double[] flattened = new double[tlength * nseries];
+
+		final int tlength = this.getTimes().length;
+		final int nseries = this.nSeries();
+		final double[] flattened = new double[tlength * nseries];
 		int seriesi = 0;
-		for (DoubleTimeSeries series : this.allseries()) {
-			double[] toCopy = series.getData();
+		for (final DoubleTimeSeries series : this.allseries()) {
+			final double[] toCopy = series.getData();
 			for (int timej = 0; timej < tlength; timej++) {
 				flattened[seriesi + timej * nseries] = toCopy[timej];
 			}
@@ -87,8 +95,8 @@ public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeri
 
 	@Override
 	public Iterator<IndependentPair<Long, Map<String, Double>>> iterator() {
-//		return new Iterator<IndependentPair<Long,Map<String,Double>>>() {
-//		};
+		// return new Iterator<IndependentPair<Long,Map<String,Double>>>() {
+		// };
 		return null;
 	}
 }

@@ -34,10 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.openimaj.util.data.Context;
-import org.openimaj.util.function.Function;
 import org.openimaj.util.function.MultiFunction;
-import org.openimaj.util.function.Predicate;
-
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
 

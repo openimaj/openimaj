@@ -37,7 +37,7 @@ import java.util.NoSuchElementException;
 /**
  * A Context is a {@link Map} which can give typed elements and can fail
  * gracefully when elements don't exist.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class Context extends HashMap<String, Object> implements Cloneable {
@@ -53,15 +53,16 @@ public class Context extends HashMap<String, Object> implements Cloneable {
 	public Context() {
 
 	}
-	
+
 	/**
-	 * A conveniance function where nameval.length % 2 is assumed to  == 0 
-	 * and nameval contains pairs of "key" : value instances
+	 * A conveniance function where nameval.length % 2 is assumed to == 0 and
+	 * nameval contains pairs of "key" : value instances
+	 * 
 	 * @param nameval
 	 */
-	public Context(Object ... nameval){
-		for (int i = 0; i < nameval.length; i+=2) {
-			this.put(nameval[i].toString(), nameval[i+1]);
+	public Context(Object... nameval) {
+		for (int i = 0; i < nameval.length; i += 2) {
+			this.put(nameval[i].toString(), nameval[i + 1]);
 		}
 	}
 
@@ -70,7 +71,7 @@ public class Context extends HashMap<String, Object> implements Cloneable {
 	 * configured to either return <code>null</code> from
 	 * {@link #getTyped(String)} or throw a {@link RuntimeException} if there is
 	 * a casting issue or the object doesn't exist.
-	 * 
+	 *
 	 * @param failfast
 	 *            forces the getTyped to throw a runtime exception if set and
 	 *            the object does not exist or is not the correct type
@@ -81,7 +82,7 @@ public class Context extends HashMap<String, Object> implements Cloneable {
 
 	/**
 	 * Get the object from the context with the given key and coerce the type.
-	 * 
+	 *
 	 * @param key
 	 *            the key
 	 * @return the object with the given key coerced to the specific return type
@@ -124,7 +125,7 @@ public class Context extends HashMap<String, Object> implements Cloneable {
 	 * <p>
 	 * If both prefixes are the same then the data being copied from the other
 	 * context will have precedence. The prefixes can be <code>null</code>.
-	 * 
+	 *
 	 * @param that
 	 *            the context to combine with this
 	 * @param thisprefix

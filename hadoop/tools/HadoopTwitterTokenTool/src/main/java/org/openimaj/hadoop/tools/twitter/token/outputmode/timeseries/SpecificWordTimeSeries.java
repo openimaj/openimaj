@@ -39,24 +39,28 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
 
-public class SpecificWordTimeSeries extends TwitterTokenOutputMode{
-	
-	@Option(name="--word-time-series", aliases="-wt", required=false, usage="Construct a time series of each word specified", multiValued = true)
+public class SpecificWordTimeSeries extends TwitterTokenOutputMode {
+
+	@Option(
+			name = "--word-time-series",
+			aliases = "-wt",
+			required = false,
+			usage = "Construct a time series of each word specified",
+			multiValued = true)
 	List<String> wordtimeseries;
 	private MultiStagedJob stages;
-	
+
 	@Override
-	public void write(HadoopTwitterTokenToolOptions opts,TwitterTokenMode completedMode) throws Exception {
-		HadoopToolsUtil.validateOutput(outputPath,replace);
-		String[] input = completedMode.finalOutput(opts);
-		
+	public void write(HadoopTwitterTokenToolOptions opts, TwitterTokenMode completedMode) throws Exception {
+		HadoopToolsUtil.validateOutput(outputPath, replace);
+
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts), CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
-		);
-		
-		SpecificWordStageProvider swsp = new SpecificWordStageProvider(wordtimeseries);
+				);
+
+		final SpecificWordStageProvider swsp = new SpecificWordStageProvider(wordtimeseries);
 		this.stages.queueStage(swsp.stage());
 		this.stages.runAll();
 	}

@@ -501,6 +501,7 @@ public class ArrayUtils {
 	 *            the arrays to concatenate.
 	 * @return the new concatenated array
 	 */
+	@SafeVarargs
 	public static <T> T[] concatenate(final T[]... arrays) {
 		int length = 0;
 		Class<?> type = null;

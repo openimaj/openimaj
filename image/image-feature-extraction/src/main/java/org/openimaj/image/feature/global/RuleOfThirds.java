@@ -51,7 +51,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * I've assumed that the distances to the power-points should be normalized with
  * respect to the image size - this isn't explicit in the paper, but given that
  * the sigma of the gaussian is fixed, it seems likely...
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
@@ -82,7 +82,7 @@ public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvi
 	/**
 	 * Construct a new {@link RuleOfThirds} with the given values for the
 	 * {@link YehSaliency} algorithm.
-	 * 
+	 *
 	 * @param saliencySigma
 	 *            smoothing for the {@link AchantaSaliency} class
 	 * @param segmenterSigma
@@ -106,7 +106,7 @@ public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvi
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
 	 * .image.Image)

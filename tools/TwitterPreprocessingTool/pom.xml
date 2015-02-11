@@ -10,7 +10,6 @@
 	<groupId>org.openimaj.tools</groupId>
 	<artifactId>TwitterPreprocessingTool</artifactId>
 	<packaging>jar</packaging>
-	<version>1.4-SNAPSHOT</version>
 	<name>TwitterPreprocessingTool</name>
 	<inceptionYear>2012</inceptionYear>
 	<description>Tool for applying a text preprocessing pipeline to twitter tweets.</description>

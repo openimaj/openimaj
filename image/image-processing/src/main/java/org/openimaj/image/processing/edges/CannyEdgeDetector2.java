@@ -43,7 +43,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * This is an implementation of the canny edge detector that was found somewhere
  * out there on the web with no attribution. If this is your code and you don't
  * want it in OpenIMAJ, please let us know.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 @Deprecated
@@ -92,7 +92,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
@@ -147,7 +147,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 	/**
 	 * Assumes the input is a one-dimensional representation of an image.
 	 * Displays the image.
-	 * 
+	 *
 	 * @param data
 	 *            A one-dimensional representation of an image.
 	 */
@@ -163,7 +163,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 	/**
 	 * Assumes the input is a one-dimensional representation of an image.
 	 * Displays the image.
-	 * 
+	 *
 	 * @param data
 	 *            A one-dimensional representation of an image.
 	 */
@@ -293,22 +293,22 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 				float f5;
 				if (f6 * f7 <= 0
 						? Math.abs(f6) >= Math.abs(f7)
-								? (f5 = Math.abs(f6 * f12))
-										>= Math.abs(f7 * f18 - (f6 + f7) * f16)
-										&& f5
-										> Math.abs(f7 * f19 - (f6 + f7) * f15) : (
+						? (f5 = Math.abs(f6 * f12))
+								>= Math.abs(f7 * f18 - (f6 + f7) * f16)
+								&& f5
+								> Math.abs(f7 * f19 - (f6 + f7) * f15) : (
 										f5 = Math.abs(f7 * f12))
 										>= Math.abs(f6 * f18 - (f7 + f6) * f13)
 										&& f5
 										> Math.abs(f6 * f19 - (f7 + f6) * f14) : Math.abs(f6)
-						>= Math.abs(f7)
-								? (f5 = Math.abs(f6 * f12))
-										>= Math.abs(f7 * f20 + (f6 - f7) * f16)
-										&& f5
-										> Math.abs(f7 * f17 + (f6 - f7) * f15) : (
-										f5 = Math.abs(f7 * f12))
-										>= Math.abs(f6 * f20 + (f7 - f6) * f14)
-										&& f5 > Math.abs(f6 * f17 + (f7 - f6) * f13))
+										>= Math.abs(f7)
+										? (f5 = Math.abs(f6 * f12))
+												>= Math.abs(f7 * f20 + (f6 - f7) * f16)
+												&& f5
+												> Math.abs(f7 * f17 + (f6 - f7) * f15) : (
+														f5 = Math.abs(f7 * f12))
+														>= Math.abs(f6 * f20 + (f7 - f6) * f14)
+														&& f5 > Math.abs(f6 * f17 + (f7 - f6) * f13))
 				{
 					magnitude[j2] = derivative_mag[j2];
 					orientation[j2] = (float) Math.toDegrees(
@@ -326,7 +326,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 	/**
 	 * If <code>f</code> and <code>f1</code> are the shorter sides of a
 	 * triangle, calculates the hypotenuse of the triangle.
-	 * 
+	 *
 	 * @param f
 	 *            short side of a triangle
 	 * @param f1
@@ -444,7 +444,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * Get the threshold above which an edge pixel will be considered an edge.
-	 * 
+	 *
 	 * @return the threshold above which edge pixels will be considered edges.
 	 */
 	public int getThreshold()
@@ -454,7 +454,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * Get the threshold above which an edge pixel will be considered an edge.
-	 * 
+	 *
 	 * @param threshold
 	 *            the threshold above which an edge pixel will be considered an
 	 *            edge.
@@ -466,7 +466,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * Get the first hysteresis threshold.
-	 * 
+	 *
 	 * @return the first hysteresis threshold.
 	 */
 	public int getHystThresh1()
@@ -476,7 +476,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * Set the fist hysteresis threshold.
-	 * 
+	 *
 	 * @param hystThresh1
 	 *            the threshold value
 	 */
@@ -487,7 +487,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * Get the second hysteresis threshold.
-	 * 
+	 *
 	 * @return the second hysteresis threshold.
 	 */
 	public int getHystThresh2()
@@ -497,7 +497,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * Set the second hysteresis threshold.
-	 * 
+	 *
 	 * @param hystThresh2
 	 *            the threshold value
 	 */
@@ -508,7 +508,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * Get the kernel size being used.
-	 * 
+	 *
 	 * @return the kernel size being used for blurring
 	 */
 	public int getKernelSize()
@@ -518,7 +518,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float, FImag
 
 	/**
 	 * Set the kernel size to use.
-	 * 
+	 *
 	 * @param kernelSize
 	 *            the size of the kernel to use for blurring.
 	 */

@@ -46,9 +46,9 @@ import java.util.Scanner;
 import org.openimaj.io.IOUtils;
 
 /**
- * Interface to describe objects that are the result of the clustering where the
+ * Class to describe objects that are the result of the clustering where the
  * training data is implicitly clustered
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class IndexClusters implements Clusters {
@@ -108,6 +108,9 @@ public class IndexClusters implements Clusters {
 		}
 	}
 
+	/**
+	 * @param completedClusters
+	 */
 	public IndexClusters(List<int[]> completedClusters) {
 		this.nEntries = 0;
 		this.clusters = new int[completedClusters.size()][];
@@ -119,7 +122,7 @@ public class IndexClusters implements Clusters {
 
 	/**
 	 * Get the number of clusters.
-	 * 
+	 *
 	 * @return number of clusters.
 	 */
 	public int[][] clusters() {
@@ -128,7 +131,7 @@ public class IndexClusters implements Clusters {
 
 	/**
 	 * Get the number of data entries
-	 * 
+	 *
 	 * @return the number of data entries.
 	 */
 	public int numEntries() {
@@ -137,7 +140,7 @@ public class IndexClusters implements Clusters {
 
 	/**
 	 * Get the number of clusters.
-	 * 
+	 *
 	 * @return number of clusters.
 	 */
 	public int numClusters() {

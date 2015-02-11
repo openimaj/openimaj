@@ -36,20 +36,20 @@ import java.util.Map;
 
 /**
  * An abstract {@link DataSource} backed by multiple lists of data.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <DATATYPE>
  *            the data type which can be returned
  * @param <ELEMENTTYPE>
  *            the datatype of the underlying lists
- * 
+ *
  */
 public abstract class AbstractMultiListDataSource<DATATYPE, ELEMENTTYPE> extends AbstractDataSource<DATATYPE> {
 	protected List<? extends List<ELEMENTTYPE>> data;
 
 	/**
 	 * Construct with the given lists of data
-	 * 
+	 *
 	 * @param data
 	 *            the data
 	 */
@@ -59,10 +59,11 @@ public abstract class AbstractMultiListDataSource<DATATYPE, ELEMENTTYPE> extends
 
 	/**
 	 * Construct with the given lists of data
-	 * 
+	 *
 	 * @param data
 	 *            the data
 	 */
+	@SafeVarargs
 	public AbstractMultiListDataSource(List<ELEMENTTYPE>... data) {
 		this.data = Arrays.asList(data);
 	}
@@ -70,7 +71,7 @@ public abstract class AbstractMultiListDataSource<DATATYPE, ELEMENTTYPE> extends
 	/**
 	 * Construct with the given map of data. The keys are ignored, and only the
 	 * values are used.
-	 * 
+	 *
 	 * @param data
 	 *            the data
 	 */
@@ -104,7 +105,7 @@ public abstract class AbstractMultiListDataSource<DATATYPE, ELEMENTTYPE> extends
 
 	/**
 	 * Convert an item's type
-	 * 
+	 *
 	 * @param ele
 	 *            the input item
 	 * @return the converted item

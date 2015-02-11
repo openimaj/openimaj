@@ -87,6 +87,7 @@ public class Corel5kDataset extends ListBackedDataset<CorelAnnotatedImage> {
 						vec[blobId - 1] += weight;
 					}
 				}
+				sc.close();
 
 				data.put(id, new DoubleFV(vec));
 			}

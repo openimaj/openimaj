@@ -48,9 +48,9 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * This interface is implicitly for single-scale detection. If your detector
  * works at multiple scales, then implementing the
  * {@link MultiScaleObjectDetector} would be a better idea.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <IMAGE>
  *            The image on which to perform the detection
  * @param <DETECTED_OBJECT>
@@ -64,7 +64,7 @@ public interface ObjectDetector<IMAGE extends Image<?, IMAGE>, DETECTED_OBJECT> 
 	 * <p>
 	 * If no objects are detected, <code>null</code> or an empty list may be
 	 * returned.
-	 * 
+	 *
 	 * @param image
 	 *            the image to detect the object in.
 	 * @return a list of detections or <code>null</code> if none are found.
@@ -76,7 +76,7 @@ public interface ObjectDetector<IMAGE extends Image<?, IMAGE>, DETECTED_OBJECT> 
 	 * <p>
 	 * Set the region of interest within the image to search for objects.
 	 * Setting to <code>null</code> means to search the whole image.
-	 * 
+	 *
 	 * @param roi
 	 *            the region of interest
 	 */

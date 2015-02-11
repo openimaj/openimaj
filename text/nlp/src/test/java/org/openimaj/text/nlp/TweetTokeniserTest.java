@@ -124,14 +124,18 @@ public class TweetTokeniserTest {
 	@Test
 	public void emoticons() {
 		final EmoticonPatternProvider provider = new EmoticonPatternProvider();
-		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] { IndependentPair.pair(
-				"^_^ there is one :-) :) and now sad :(", 4), IndependentPair.pair(
-				"Intelligence is only one variable in the equation... (c) Susan DePhillips", 1), IndependentPair
-				.pair("@avlsuresh I didnt know about it :-)). I would be even more happy when you will give the old one to me.",
-						1), IndependentPair
-				.pair("RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))",
-						1), IndependentPair.pair("@glamthug well what the fuck man:(", 1), IndependentPair.pair(
-				"@dezfafranco -.-' burlate u.u", 2)
+		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] {
+				IndependentPair.pair(
+						"^_^ there is one :-) :) and now sad :(", 4),
+				IndependentPair.pair(
+						"Intelligence is only one variable in the equation... (c) Susan DePhillips", 1),
+				IndependentPair
+						.pair("@avlsuresh I didnt know about it :-)). I would be even more happy when you will give the old one to me.",
+								1),
+				IndependentPair
+						.pair("RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))",
+								1), IndependentPair.pair("@glamthug well what the fuck man:(", 1), IndependentPair.pair(
+						"@dezfafranco -.-' burlate u.u", 2)
 
 		};
 
@@ -146,26 +150,31 @@ public class TweetTokeniserTest {
 	public void truncated() {
 		final TruncatedURLPatternProvider provider = new TruncatedURLPatternProvider();
 		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] {
-				IndependentPair.pair(
-					"RT @SportParadise: TOMMY HILFIGER BOY PRINTED MULTI FULL SHEET SET 200 TC 100% COMBED COTTON NIP 651862293835 | eBay http://bit.l...",
-					1
-				),
-				IndependentPair.pair(
-					"Make money online,only you need to do is click! Be relaxed. How to be brave. Get innovatiion. Feel brilliant. #AUTOFOLLOW http://adf...",
-					1
-				),
-				IndependentPair.pair(
-					"RT @1DReport: #2yearsOf1D \u2665 Thank you boys for everything. No words can describe how proud I am to call myself a Directioner. http://t.c ...",
-					1
-				),
-				IndependentPair.pair(
-					"RT @AfterSchoolDaze: Video: #AfterSchool Performing \"Flashback\" - 2012 Olympic In London Fighting Korea Concert [Air Date 120722] http:/ ...",
-					1
-				),
-				IndependentPair.pair(
-					"RT @LittlecBeadles: Boston was amazing!!!  Here are the pics for the BOSTON MA Meet &amp; Greet... @LittlecBeadles @godsgirl8494 http:// ...",
-					1
-				),
+				IndependentPair
+						.pair(
+								"RT @SportParadise: TOMMY HILFIGER BOY PRINTED MULTI FULL SHEET SET 200 TC 100% COMBED COTTON NIP 651862293835 | eBay http://bit.l...",
+								1
+						),
+						IndependentPair
+						.pair(
+								"Make money online,only you need to do is click! Be relaxed. How to be brave. Get innovatiion. Feel brilliant. #AUTOFOLLOW http://adf...",
+								1
+						),
+								IndependentPair
+						.pair(
+								"RT @1DReport: #2yearsOf1D \u2665 Thank you boys for everything. No words can describe how proud I am to call myself a Directioner. http://t.c ...",
+								1
+						),
+										IndependentPair
+						.pair(
+								"RT @AfterSchoolDaze: Video: #AfterSchool Performing \"Flashback\" - 2012 Olympic In London Fighting Korea Concert [Air Date 120722] http:/ ...",
+								1
+						),
+												IndependentPair
+						.pair(
+								"RT @LittlecBeadles: Boston was amazing!!!  Here are the pics for the BOSTON MA Meet &amp; Greet... @LittlecBeadles @godsgirl8494 http:// ...",
+								1
+						),
 		};
 
 		testProvider(provider, teststr);
@@ -177,18 +186,29 @@ public class TweetTokeniserTest {
 	@Test
 	public void urls() {
 		final URLPatternProvider provider = new URLPatternProvider();
-		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] { IndependentPair.pair(
-				"here we have, a url: http://woed.de some text", 1), IndependentPair.pair(
-				"here we have, a url: http://woeD.de", 1), IndependentPair.pair(
-				"http://foo.com/more_(than)_one_(parens)", 1), IndependentPair.pair(
-				"http://foo.com/blah_(wikipedia)#cite-1", 1), IndependentPair.pair(
-				"http://foo.com/blah_(wikipedia)_blah#cite-1", 1), IndependentPair.pair(
-				"http://foo.com/unicode_(\u272A)_in_parens", 1), IndependentPair.pair(
-				"http://foo.com/(something)?after=parens", 1), IndependentPair.pair(
-				"here we have, a url: www.woed.de asdasd", 1), IndependentPair.pair(
-				"here we have, a url: // www.TrueCaller.com asdasd", 1), IndependentPair
-				.pair("http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht (@andreesrr live on http://twitcam.com/2bl4v",
-						1), IndependentPair.pair("Vou aqui :http://nuke.nativa-latorre.com/Portals/0/dedia.jpg", 1) };
+		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] {
+				IndependentPair.pair(
+						"here we have, a url: http://woed.de some text", 1),
+				IndependentPair.pair(
+						"here we have, a url: http://woeD.de", 1),
+				IndependentPair.pair(
+						"http://foo.com/more_(than)_one_(parens)", 1),
+				IndependentPair.pair(
+						"http://foo.com/blah_(wikipedia)#cite-1", 1),
+				IndependentPair.pair(
+						"http://foo.com/blah_(wikipedia)_blah#cite-1", 1),
+				IndependentPair.pair(
+						"http://foo.com/unicode_(\u272A)_in_parens", 1),
+				IndependentPair.pair(
+						"http://foo.com/(something)?after=parens", 1),
+				IndependentPair.pair(
+						"here we have, a url: www.woed.de asdasd", 1),
+				IndependentPair.pair(
+						"here we have, a url: // www.TrueCaller.com asdasd", 1),
+				IndependentPair
+						.pair("http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht (@andreesrr live on http://twitcam.com/2bl4v",
+								1),
+				IndependentPair.pair("Vou aqui :http://nuke.nativa-latorre.com/Portals/0/dedia.jpg", 1) };
 
 		testProvider(provider, teststr);
 
@@ -202,17 +222,17 @@ public class TweetTokeniserTest {
 		final URLPatternProvider.DFURLPatternProvider provider = new URLPatternProvider.DFURLPatternProvider();
 		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] { IndependentPair.pair(
 				"here we have, a url: http://woed.de some text", 1), IndependentPair.pair(
-				"here we have, a url: http://woeD.de", 1), IndependentPair.pair(
-				"here we have, a url: www.woed.de asdasd", 1), IndependentPair.pair(
-				"here we have, a url: // www.TrueCaller.com asdasd", 1), IndependentPair.pair(
-				"http://foo.com/more_(than)_one_(parens)", 1), IndependentPair.pair(
-				"http://foo.com/blah_(wikipedia)#cite-1", 1), IndependentPair.pair(
-				"http://foo.com/blah_(wikipedia)_blah#cite-1", 1), IndependentPair.pair(
-				"http://foo.com/unicode_(\u272A)_in_parens", 1), IndependentPair.pair(
-				"http://foo.com/(something)?after=parens", 1), IndependentPair.pair(
-				"@CarideeChris ....Awwwww...lets hope rest of the day you are more lucky ;-)", 0), IndependentPair.pair(
-				"12123321 The Everglades comehttp://short.ie/m0h9q4", 1), IndependentPair.pair(
-				"Vou aqui :http://nuke.nativa-latorre.com/Portals/0/dedia.jpg", 1) };
+						"here we have, a url: http://woeD.de", 1), IndependentPair.pair(
+								"here we have, a url: www.woed.de asdasd", 1), IndependentPair.pair(
+										"here we have, a url: // www.TrueCaller.com asdasd", 1), IndependentPair.pair(
+												"http://foo.com/more_(than)_one_(parens)", 1), IndependentPair.pair(
+														"http://foo.com/blah_(wikipedia)#cite-1", 1), IndependentPair.pair(
+																"http://foo.com/blah_(wikipedia)_blah#cite-1", 1), IndependentPair.pair(
+																		"http://foo.com/unicode_(\u272A)_in_parens", 1), IndependentPair.pair(
+																				"http://foo.com/(something)?after=parens", 1), IndependentPair.pair(
+																						"@CarideeChris ....Awwwww...lets hope rest of the day you are more lucky ;-)", 0), IndependentPair.pair(
+																								"12123321 The Everglades comehttp://short.ie/m0h9q4", 1), IndependentPair.pair(
+																										"Vou aqui :http://nuke.nativa-latorre.com/Portals/0/dedia.jpg", 1) };
 
 		testProvider(provider, teststr);
 
@@ -242,12 +262,16 @@ public class TweetTokeniserTest {
 	@Test
 	public void punctuation() {
 		final PunctuationPatternProvider provider = new PunctuationPatternProvider();
-		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] { IndependentPair.pair(
-				"I was so IMPRESSED! ? !!", 3), IndependentPair.pair(
-				"@CarideeChris ....Awwwww...lets hope rest of the day you are more lucky", 2), IndependentPair
-				.pair("Maureen Green, the former TV anchor, blogs to keep up with social and workforce trends|Gloria Wright / The ..",
-						5), IndependentPair.pair("people... so bored!!!!!!!!why u dont want 2 go 2 the campa?!!!why?!!",
-				4) };
+		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] {
+				IndependentPair.pair(
+						"I was so IMPRESSED! ? !!", 3),
+				IndependentPair.pair(
+						"@CarideeChris ....Awwwww...lets hope rest of the day you are more lucky", 2),
+				IndependentPair
+						.pair("Maureen Green, the former TV anchor, blogs to keep up with social and workforce trends|Gloria Wright / The ..",
+								5),
+				IndependentPair.pair("people... so bored!!!!!!!!why u dont want 2 go 2 the campa?!!!why?!!",
+						4) };
 
 		testProvider(provider, teststr);
 	}
@@ -272,14 +296,20 @@ public class TweetTokeniserTest {
 	@Test
 	public void twitterStuff() {
 		final TwitterStuffPatternProvider provider = new TwitterStuffPatternProvider();
-		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] { IndependentPair.pair(
-				"RT @erkthajerk: @Erkthajerk beat sale going on now til march 31st. Contact for details", 3), IndependentPair
-				.pair("you should all follow @sinjax #ff #awesomeGuy", 3), IndependentPair
-				.pair("@_CarolineF_ *Nods, smiling* Just alright? *touches your arm, seeing flashes of your recent past and drawing my hand away quickly in shock*",
-						1), IndependentPair.pair("#some_dirty-hashtag right here", 1), IndependentPair.pair(
-				"you should all follow @sinjax #ff #awesomeGuy", 3), IndependentPair
-				.pair("RT @GardenForkTV: The Labs in the park - http://bit.ly/doHueQ New on Gardenfork //they look adorable in the snow http://ff.im/-gHOF7",
-						2), };
+		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] {
+				IndependentPair.pair(
+						"RT @erkthajerk: @Erkthajerk beat sale going on now til march 31st. Contact for details", 3),
+				IndependentPair
+						.pair("you should all follow @sinjax #ff #awesomeGuy", 3),
+				IndependentPair
+						.pair("@_CarolineF_ *Nods, smiling* Just alright? *touches your arm, seeing flashes of your recent past and drawing my hand away quickly in shock*",
+								1),
+				IndependentPair.pair("#some_dirty-hashtag right here", 1),
+				IndependentPair.pair(
+						"you should all follow @sinjax #ff #awesomeGuy", 3),
+				IndependentPair
+						.pair("RT @GardenForkTV: The Labs in the park - http://bit.ly/doHueQ New on Gardenfork //they look adorable in the snow http://ff.im/-gHOF7",
+								2), };
 
 		testProvider(provider, teststr);
 	}
@@ -291,12 +321,15 @@ public class TweetTokeniserTest {
 	@Test
 	public void numbers() {
 		final ComplicatedNumberPatternProvider provider = new ComplicatedNumberPatternProvider();
-		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] { IndependentPair.pair(
-				"Checking out \"HONUS WAGNER HARRISON STUDIOS 1919 $10,000\" on VINTAGE SPORTS CARDS", 1), IndependentPair
-				.pair("Dorin Dickerson was not on Kipers top 15 TE as Sr or Jr and made Millions today with 4.4 40 time and 43.d vert and now top 1st rd lock",
-						1), IndependentPair
-				.pair("RT @Adam_Schefter: Florida QB Tim Tebow broke the combine record for QBs with a 38-inch vertical jump. He also ran an impressive 40 time ...",
-						0), };
+		final IndependentPair<String, Integer>[] teststr = new IndependentPair[] {
+				IndependentPair.pair(
+						"Checking out \"HONUS WAGNER HARRISON STUDIOS 1919 $10,000\" on VINTAGE SPORTS CARDS", 1),
+				IndependentPair
+						.pair("Dorin Dickerson was not on Kipers top 15 TE as Sr or Jr and made Millions today with 4.4 40 time and 43.d vert and now top 1st rd lock",
+								1),
+				IndependentPair
+						.pair("RT @Adam_Schefter: Florida QB Tim Tebow broke the combine record for QBs with a 38-inch vertical jump. He also ran an impressive 40 time ...",
+								0), };
 
 		testProvider(provider, teststr);
 
@@ -330,25 +363,25 @@ public class TweetTokeniserTest {
 	@Test
 	public void testSingleTweets() throws UnsupportedEncodingException, TweetTokeniserException {
 		final String[] tweets = new String[] {
-		// "Listening to \"Rockin u Radio\" http://www.live365.com/stations/djmarkstevens on Live365.",
-		// "Maigc.'everything' was'nt magic",
-		// "Maigc.'everything' was'nt magic",
-		// "Maigc.everything' 'a's magic",
-		// "@CarideeChris ....Awwwww...lets hope rest of the day you are more lucky ;-)",
-		// "Intelligence is only one variable in the equation... (c) Susan DePhillips",
-		// "@Snuva You might be the Queen of Grump but the Wicked Witch of the South(tm) insists the weekend doesn't start til 2:00 pm tomorrow :-("
-		// "RT @iAmTheGreek: everybody in Lehigh Valley (& beyond) should support @homebase610 with voting during March for the Pepsi Refresh Project"
-		// "aaaaaaah naaaaaao;;; hino do corinthiaans naaao DDDDD: IOEUIAOUEAIOUOAEIUEIO' (@stevens_adam live on http://twitcam.com/2bqv)",
-		// "Maureen Green,the former TV anchor, blogs to keep up with social and workforce trends|Gloria Wright / The .. http://oohja.com/x7OhR",
-		// "@avlsuresh I didnt know about it :-)). I would be even more happy when you will give the old one to me.",
-		// "@_CarolineF_ *Nods, smiling* Just alright? *touches your arm, seeing flashes of your recent past and drawing my hand away quickly in shock*"
-		// "RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))",
-		// "Big work event tonight means I've got to dress up, mix & mingle with the donors & bust out the non-granola hippy deodorant. Hurumph",
-		// "here is a #hashTag",
-		// "\u30A2\u30DE\u30BE\u30F3\uFF0F\u6D0B\u66F8\u306E\u65B0\u7740\uFF08\uFF13\uFF09Alpine Glow \u3010\uFFE54,461\u3011 http://tinyurl.com/3yslnw5\u3000(http://tinyurl.com/24e8alm )",
-		// "http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht (@andreesrr live on http://twitcam.com/2bl4v"
-		// "RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))"
-		"@janecds RT _badbristal np VYBZ KARTEL - TURN & WINE&lt; WE DANCEN TO THIS LOL? http://blity.ax.lt/63HPL" };
+				// "Listening to \"Rockin u Radio\" http://www.live365.com/stations/djmarkstevens on Live365.",
+				// "Maigc.'everything' was'nt magic",
+				// "Maigc.'everything' was'nt magic",
+				// "Maigc.everything' 'a's magic",
+				// "@CarideeChris ....Awwwww...lets hope rest of the day you are more lucky ;-)",
+				// "Intelligence is only one variable in the equation... (c) Susan DePhillips",
+				// "@Snuva You might be the Queen of Grump but the Wicked Witch of the South(tm) insists the weekend doesn't start til 2:00 pm tomorrow :-("
+				// "RT @iAmTheGreek: everybody in Lehigh Valley (& beyond) should support @homebase610 with voting during March for the Pepsi Refresh Project"
+				// "aaaaaaah naaaaaao;;; hino do corinthiaans naaao DDDDD: IOEUIAOUEAIOUOAEIUEIO' (@stevens_adam live on http://twitcam.com/2bqv)",
+				// "Maureen Green,the former TV anchor, blogs to keep up with social and workforce trends|Gloria Wright / The .. http://oohja.com/x7OhR",
+				// "@avlsuresh I didnt know about it :-)). I would be even more happy when you will give the old one to me.",
+				// "@_CarolineF_ *Nods, smiling* Just alright? *touches your arm, seeing flashes of your recent past and drawing my hand away quickly in shock*"
+				// "RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))",
+				// "Big work event tonight means I've got to dress up, mix & mingle with the donors & bust out the non-granola hippy deodorant. Hurumph",
+				// "here is a #hashTag",
+				// "\u30A2\u30DE\u30BE\u30F3\uFF0F\u6D0B\u66F8\u306E\u65B0\u7740\uFF08\uFF13\uFF09Alpine Glow \u3010\uFFE54,461\u3011 http://tinyurl.com/3yslnw5\u3000(http://tinyurl.com/24e8alm )",
+				// "http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht (@andreesrr live on http://twitcam.com/2bl4v"
+				// "RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))"
+				"@janecds RT _badbristal np VYBZ KARTEL - TURN & WINE&lt; WE DANCEN TO THIS LOL? http://blity.ax.lt/63HPL" };
 		for (final String text : tweets) {
 			final TweetTokeniser tokeniser = new TweetTokeniser(text);
 			System.out.println("Tweet: " + text);

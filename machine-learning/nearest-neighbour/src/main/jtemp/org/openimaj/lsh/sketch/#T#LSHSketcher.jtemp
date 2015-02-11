@@ -76,6 +76,7 @@ public class #T#LSHSketcher<OBJECT> implements Sketcher<OBJECT, #t#[]> {
 	 * @param remainder
 	 *            the remainder of the functions
 	 */
+	@SafeVarargs
 	public #T#LSHSketcher(HashFunction<OBJECT> first, HashFunction<OBJECT>... remainder) {
 		this.hashFunctions = new ArrayList<HashFunction<OBJECT>>();
 		this.hashFunctions.add(first);

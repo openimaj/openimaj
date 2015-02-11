@@ -42,92 +42,109 @@ import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.processing.convolution.FImageGradients;
 
-
 /**
  * <p>
- * Class capable of extracting local descriptors from an interest point {@link InterestPointData} from an interest point detector {@link InterestPointDetector}. 
- * The actual feature extracted is determined by the {@link GradientFeatureProvider} that
- * is provided by the {@link GradientFeatureProviderFactory} set during
- * construction.
+ * Class capable of extracting local descriptors from an interest point
+ * {@link InterestPointData} from an interest point detector
+ * {@link InterestPointDetector}. The actual feature extracted is determined by
+ * the {@link GradientFeatureProvider} that is provided by the
+ * {@link GradientFeatureProviderFactory} set during construction.
  * </p>
  * <p>
- * The GradientFeatureExtractor first calculates the dominant orientation
- * of the image patch described by the {@link InterestPointImageExtractorProperties}
+ * The GradientFeatureExtractor first calculates the dominant orientation of the
+ * image patch described by the {@link InterestPointImageExtractorProperties}
  * and then iterates over the pixels in an oriented square, centered on the
  * interest point, passing the gradient and magnitude values of the respective
  * pixel to the {@link GradientFeatureProvider}.
  * </p>
  * <p>
- * The size of the sampling square is exactly equal to the patch in the properties, this is in turn controlled
- * by the interest point's scale and possibly its shape. For some types of feature provider, this number
- * might need to be set based on the internal settings of the provider. 
+ * The size of the sampling square is exactly equal to the patch in the
+ * properties, this is in turn controlled by the interest point's scale and
+ * possibly its shape. For some types of feature provider, this number might
+ * need to be set based on the internal settings of the provider.
  * </p>
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class InterestPointGradientFeatureExtractor implements FeatureVectorExtractor<OrientedFeatureVector, InterestPointImageExtractorProperties<Float,FImage>> {
+public class InterestPointGradientFeatureExtractor
+		implements
+			FeatureVectorExtractor<OrientedFeatureVector, InterestPointImageExtractorProperties<Float, FImage>>
+{
 	private static final Float INVALID_PIXEL_VALUE = Float.NaN;
 
 	AbstractDominantOrientationExtractor dominantOrientationExtractor;
-	
+
 	GradientFeatureProviderFactory factory;
-	
+
 	private GradientScaleSpaceImageExtractorProperties<FImage> currentGradientProperties = new GradientScaleSpaceImageExtractorProperties<FImage>();
-	
+
 	/**
-	 * @param dominantOrientationExtractor how dominant orientations are located
-	 * @param factory object used to construct {@link GradientFeatureProvider} instances which in turn
-	 * construction the actual features
+	 * @param dominantOrientationExtractor
+	 *            how dominant orientations are located
+	 * @param factory
+	 *            object used to construct {@link GradientFeatureProvider}
+	 *            instances which in turn construction the actual features
 	 */
-	public InterestPointGradientFeatureExtractor(AbstractDominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
+	public InterestPointGradientFeatureExtractor(AbstractDominantOrientationExtractor dominantOrientationExtractor,
+			GradientFeatureProviderFactory factory)
+	{
 		this.dominantOrientationExtractor = dominantOrientationExtractor;
 		this.factory = factory;
 	}
-	
+
 	/**
-	 * Get the GradientScaleSpaceImageExtractorProperties for the given properties.
-	 * The returned properties are the same as the input properties, but with the
-	 * gradient images added. 
-	 * 
-	 * For efficiency, this method always returns the same cached GradientScaleSpaceImageExtractorProperties,
-	 * and internally updates this as necessary. The gradient images are only recalculated
-	 * when the input image from the input properties is different to the cached one.
-	 * 
-	 * @param properties input properties
-	 * @return cached GradientScaleSpaceImageExtractorProperties 
+	 * Get the GradientScaleSpaceImageExtractorProperties for the given
+	 * properties. The returned properties are the same as the input properties,
+	 * but with the gradient images added.
+	 *
+	 * For efficiency, this method always returns the same cached
+	 * GradientScaleSpaceImageExtractorProperties, and internally updates this
+	 * as necessary. The gradient images are only recalculated when the input
+	 * image from the input properties is different to the cached one.
+	 *
+	 * @param properties
+	 *            input properties
+	 * @return cached GradientScaleSpaceImageExtractorProperties
 	 */
-	public GradientScaleSpaceImageExtractorProperties<FImage> getCurrentGradientProps(ScaleSpaceImageExtractorProperties<FImage> properties) {
+	public GradientScaleSpaceImageExtractorProperties<FImage> getCurrentGradientProps(
+			ScaleSpaceImageExtractorProperties<FImage> properties)
+	{
 		if (properties.image != currentGradientProperties.image) {
 			currentGradientProperties.image = properties.image;
 
-			//only if the size of the image has changed do we need to reset the gradient and orientation images. 
-			if (currentGradientProperties.orientation == null || 
-					currentGradientProperties.orientation.height != currentGradientProperties.image.height || 
-					currentGradientProperties.orientation.width != currentGradientProperties.image.width) { 
-				currentGradientProperties.orientation = new FImage(currentGradientProperties.image.width, currentGradientProperties.image.height);
-				currentGradientProperties.magnitude = new FImage(currentGradientProperties.image.width, currentGradientProperties.image.height);				
+			// only if the size of the image has changed do we need to reset the
+			// gradient and orientation images.
+			if (currentGradientProperties.orientation == null ||
+					currentGradientProperties.orientation.height != currentGradientProperties.image.height ||
+					currentGradientProperties.orientation.width != currentGradientProperties.image.width)
+			{
+				currentGradientProperties.orientation = new FImage(currentGradientProperties.image.width,
+						currentGradientProperties.image.height);
+				currentGradientProperties.magnitude = new FImage(currentGradientProperties.image.width,
+						currentGradientProperties.image.height);
 			}
 
-			FImageGradients.gradientMagnitudesAndOrientations(currentGradientProperties.image, currentGradientProperties.magnitude, currentGradientProperties.orientation);
+			FImageGradients.gradientMagnitudesAndOrientations(currentGradientProperties.image,
+					currentGradientProperties.magnitude, currentGradientProperties.orientation);
 		}
-		
+
 		currentGradientProperties.x = properties.x;
 		currentGradientProperties.y = properties.y;
 		currentGradientProperties.scale = properties.scale;
-		
+
 		return currentGradientProperties;
 	}
 
 	@Override
-	public OrientedFeatureVector[] extractFeature(InterestPointImageExtractorProperties<Float,FImage> properties) {
-		GradientScaleSpaceImageExtractorProperties<FImage> gprops = getCurrentGradientProps(properties);
-		
-		float [] dominantOrientations = dominantOrientationExtractor.extractFeatureRaw(gprops);
+	public OrientedFeatureVector[] extractFeature(InterestPointImageExtractorProperties<Float, FImage> properties) {
+		final GradientScaleSpaceImageExtractorProperties<FImage> gprops = getCurrentGradientProps(properties);
 
-		OrientedFeatureVector[] ret = new OrientedFeatureVector[dominantOrientations.length];
+		final float[] dominantOrientations = dominantOrientationExtractor.extractFeatureRaw(gprops);
 
-		for (int i=0; i<dominantOrientations.length; i++) {
+		final OrientedFeatureVector[] ret = new OrientedFeatureVector[dominantOrientations.length];
+
+		for (int i = 0; i < dominantOrientations.length; i++) {
 			ret[i] = createFeature(properties, dominantOrientations[i]);
 		}
 
@@ -135,28 +152,31 @@ public class InterestPointGradientFeatureExtractor implements FeatureVectorExtra
 	}
 
 	/*
-	 * Iterate over the pixels in a sampling patch provided in the properties instance
-	 * and pass the information to a feature provider that will extract the relevant
-	 * feature vector.
+	 * Iterate over the pixels in a sampling patch provided in the properties
+	 * instance and pass the information to a feature provider that will extract
+	 * the relevant feature vector.
 	 */
-	protected OrientedFeatureVector createFeature(InterestPointImageExtractorProperties<Float,FImage> properties, float orientation) {
-		GradientFeatureProvider provider = factory.newProvider();
+	protected OrientedFeatureVector createFeature(InterestPointImageExtractorProperties<Float, FImage> properties,
+			float orientation)
+	{
+		final GradientFeatureProvider provider = factory.newProvider();
 		provider.setPatchOrientation(orientation);
-		
-		//pass over all the pixels in the subimage, they are the sampling area
+
+		// pass over all the pixels in the subimage, they are the sampling area
 		for (int y = 0; y < properties.featureWindowSize; y++) {
 			for (int x = 0; x < properties.featureWindowSize; x++) {
-				
-				//check if the pixel is in the image bounds; if not ignore it
+
+				// check if the pixel is in the image bounds; if not ignore it
 				if (properties.image.pixels[y][x] != INVALID_PIXEL_VALUE) {
-					//calculate the actual position of the sample in the patch coordinate system
-					float sx = (0.5f + x) / properties.featureWindowSize;
-					float sy = (0.5f + y )/ properties.featureWindowSize;
-					
-					provider.addSample(sx, sy, 
-						currentGradientProperties.magnitude.pixels[y][x], 
-						currentGradientProperties.orientation.pixels[y][x]
-					);
+					// calculate the actual position of the sample in the patch
+					// coordinate system
+					final float sx = (0.5f + x) / properties.featureWindowSize;
+					final float sy = (0.5f + y) / properties.featureWindowSize;
+
+					provider.addSample(sx, sy,
+							currentGradientProperties.magnitude.pixels[y][x],
+							currentGradientProperties.orientation.pixels[y][x]
+							);
 				}
 			}
 		}

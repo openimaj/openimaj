@@ -41,7 +41,7 @@ import org.openimaj.data.dataset.MapBackedDataset;
 
 /**
  * Helper methods to provide different types of view on a dataset.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class DatasetAdaptors {
@@ -50,7 +50,7 @@ public class DatasetAdaptors {
 	 * {@link ListDataset} it is returned, otherwise this method creates a new
 	 * {@link List} containing all the instances in the dataset. The list is
 	 * populated by iterating through the dataset.
-	 * 
+	 *
 	 * @param <INSTANCE>
 	 *            The type of instances in the dataset
 	 * @param dataset
@@ -76,15 +76,15 @@ public class DatasetAdaptors {
 	 * from those lists are directly associated with the key. This type of thing
 	 * might occur if your dataset element reader can extract multiple media
 	 * parts from a single dataset item, that will all end up with the same key.
-	 * 
+	 *
 	 * @param dataset
 	 *            The dataset
 	 * @return The new dataset
 	 */
 	public static <ANN, INSTANCE> GroupedDataset<ANN, ListDataset<INSTANCE>, INSTANCE>
-			flattenListGroupedDataset(
-					final GroupedDataset<ANN, ? extends ListDataset<List<INSTANCE>>, ? extends List<INSTANCE>> dataset)
-	{
+	flattenListGroupedDataset(
+			final GroupedDataset<ANN, ? extends ListDataset<List<INSTANCE>>, ? extends List<INSTANCE>> dataset)
+			{
 		// Create a grouped dataset without the lists
 		final MapBackedDataset<ANN, ListDataset<INSTANCE>, INSTANCE> g =
 				new MapBackedDataset<ANN, ListDataset<INSTANCE>, INSTANCE>();
@@ -106,21 +106,22 @@ public class DatasetAdaptors {
 		}
 
 		return g;
-	}
+			}
 
 	/**
 	 * Takes a grouped dataset and returns a new dataset that contains only
 	 * those groups specified. If the given groups do not exist in the provided
 	 * dataset, then they will be ignored.
-	 * 
+	 *
 	 * @param data
 	 *            The dataset to take the groups from
 	 * @param groups
 	 *            The groups to take
 	 * @return the new dataset containing only those groups.
 	 */
+	@SafeVarargs
 	public static <ANN, DATASET extends Dataset<INSTANCE>, INSTANCE> GroupedDataset<ANN, DATASET, INSTANCE>
-			getGroupedDatasetSubset(final GroupedDataset<ANN, DATASET, INSTANCE> data, final ANN... groups)
+	getGroupedDatasetSubset(final GroupedDataset<ANN, DATASET, INSTANCE> data, final ANN... groups)
 	{
 		// New dataset
 		final MapBackedDataset<ANN, DATASET, INSTANCE> newDataset = new MapBackedDataset<ANN, DATASET, INSTANCE>();
@@ -140,28 +141,28 @@ public class DatasetAdaptors {
 	/**
 	 * Takes a grouped dataset and returns a new dataset with the groups
 	 * re-shuffled as specified in the regrouping criteria.
-	 * 
+	 *
 	 * The regrouping criteria is a map from new group name to old group name.
 	 * Instances in the old group names will be mapped to the new group names.
-	 * 
+	 *
 	 * Where many old groups map to a single new group, the groups will be
 	 * merged.
-	 * 
+	 *
 	 * For example:
-	 * 
+	 *
 	 * <pre>
 	 * <code>
 	 * 	old == GroupedDataset: {G1=[1,2,3],G2=[4,5,6],G3=[7,8,9]}
-	 * 
+	 *
 	 * 		new = getGroupedDatasetSubset( old, {A->[G1,G3],B->[G2]} )
-	 * 
+	 *
 	 * 		new == GroupedDataset: {A=[1,2,3,7,8,9],B=[4,5,6]}
 	 * 	</code>
 	 * </pre>
-	 * 
+	 *
 	 * If the given groups do not exist in the provided dataset, then they will
 	 * be ignored.
-	 * 
+	 *
 	 * @param data
 	 *            The dataset to take the groups from
 	 * @param regroupCriteria
@@ -169,8 +170,8 @@ public class DatasetAdaptors {
 	 * @return the new dataset containing the new regrouping.
 	 */
 	public static <ANN, DATASET extends ListDataset<INSTANCE>, INSTANCE>
-			GroupedDataset<ANN, ListBackedDataset<INSTANCE>, INSTANCE>
-			getRegroupedDataset(final GroupedDataset<ANN, DATASET, INSTANCE> data, final Map<ANN, ANN[]> regroupCriteria)
+	GroupedDataset<ANN, ListBackedDataset<INSTANCE>, INSTANCE>
+	getRegroupedDataset(final GroupedDataset<ANN, DATASET, INSTANCE> data, final Map<ANN, ANN[]> regroupCriteria)
 	{
 		// New dataset
 		final MapBackedDataset<ANN, ListBackedDataset<INSTANCE>, INSTANCE> newDataset =

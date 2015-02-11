@@ -36,7 +36,6 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 

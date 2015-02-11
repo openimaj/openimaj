@@ -57,17 +57,17 @@ import org.openimaj.ml.annotation.utils.AnnotatedListHelper;
  * <p>
  * The SVMs use the PEGASOS algorithm implemented by the
  * {@link PrimalEstimatedSubGradient} class.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object being annotated
  * @param <ANNOTATION>
  *            Type of annotation
  */
 public class LinearSVMAnnotator<OBJECT, ANNOTATION>
-		extends
-		BatchAnnotator<OBJECT, ANNOTATION>
+extends
+BatchAnnotator<OBJECT, ANNOTATION>
 {
 	private final Map<ANNOTATION, LinearBinaryCategorizer> classifiers = new HashMap<ANNOTATION, LinearBinaryCategorizer>();
 	private Set<ANNOTATION> annotations;
@@ -78,7 +78,7 @@ public class LinearSVMAnnotator<OBJECT, ANNOTATION>
 	 * Construct a new {@link LinearSVMAnnotator} with the given extractor and
 	 * the specified negative class. The negative class is excluded from the
 	 * predicted annotations.
-	 * 
+	 *
 	 * @param extractor
 	 *            the extractor
 	 * @param negativeClass
@@ -91,7 +91,7 @@ public class LinearSVMAnnotator<OBJECT, ANNOTATION>
 
 	/**
 	 * Construct a new {@link LinearSVMAnnotator} with the given extractor.
-	 * 
+	 *
 	 * @param extractor
 	 *            the extractor
 	 */
@@ -119,7 +119,7 @@ public class LinearSVMAnnotator<OBJECT, ANNOTATION>
 	}
 
 	private Collection<? extends InputOutputPair<? extends Vectorizable, Boolean>>
-			convert(List<? extends FeatureVector> positive, List<? extends FeatureVector> negative)
+	convert(List<? extends FeatureVector> positive, List<? extends FeatureVector> negative)
 	{
 		final Collection<InputOutputPair<Vectorizable, Boolean>> data =
 				new ArrayList<InputOutputPair<Vectorizable, Boolean>>(positive.size() + negative.size());

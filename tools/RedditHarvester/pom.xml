@@ -10,7 +10,6 @@
   <groupId>org.openimaj.tools</groupId>
   <artifactId>RedditHarvester</artifactId>
   <packaging>jar</packaging>
-  <version>1.4-SNAPSHOT</version>
   <name>RedditHarvester</name>
   <inceptionYear>2012</inceptionYear>
   <description>A tool for harvesting posts and comments from reddit.</description>

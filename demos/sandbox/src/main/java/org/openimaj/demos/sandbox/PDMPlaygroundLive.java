@@ -66,6 +66,7 @@ public class PDMPlaygroundLive {
 	 * @param args
 	 * @throws IOException
 	 */
+	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) throws IOException {
 		// ASFDataset dataset = new ASFDataset(new
 		// File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data"));

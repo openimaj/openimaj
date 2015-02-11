@@ -50,9 +50,9 @@ import org.openimaj.twitter.USMFStatus;
  * {@link AbstractTwitterPreprocessingToolOptions} from the
  * {@link HadoopTwitterPreprocessingTool#ARGS_KEY} variable (once per in memory
  * mapper) and uses these to preprocess tweets.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
 	private HadoopTwitterPreprocessingToolOptions options = null;

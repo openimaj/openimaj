@@ -44,7 +44,7 @@ import org.openimaj.experiment.RunnableExperiment;
  * {@link RunnableExperiment} instance. These variables and their values will be
  * recorded automatically within an {@link ExperimentContext} when the
  * {@link RunnableExperiment} is run with the {@link ExperimentRunner}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Documented
@@ -52,9 +52,9 @@ import org.openimaj.experiment.RunnableExperiment;
 @Target(value = ElementType.FIELD)
 public @interface IndependentVariable {
 	/**
-	 * The identifier of the variable. If not set, then it will
-	 * be replaced with the name of the field the annotation is
-	 * attached to.
+	 * The identifier of the variable. If not set, then it will be replaced with
+	 * the name of the field the annotation is attached to.
+	 * 
 	 * @return the identifier of the variable
 	 */
 	String identifier() default "";

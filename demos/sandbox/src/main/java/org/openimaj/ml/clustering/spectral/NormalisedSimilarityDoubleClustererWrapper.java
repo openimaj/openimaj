@@ -34,8 +34,6 @@ import org.apache.log4j.Logger;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
-import org.openimaj.ml.clustering.SimilarityClusterer;
-
 import ch.akuhn.matrix.SparseMatrix;
 
 /**
@@ -64,6 +62,7 @@ public class NormalisedSimilarityDoubleClustererWrapper<T> extends DoubleFVSimil
 
 
 	
+	@Override
 	protected SparseMatrix similarity() {
 		final SparseMatrix mat = new SparseMatrix(feats.length,feats.length);
 		final DoubleFVComparison dist = DoubleFVComparison.EUCLIDEAN;

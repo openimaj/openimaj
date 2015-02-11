@@ -40,11 +40,11 @@ import org.openimaj.experiment.ExperimentRunner;
 import org.openimaj.experiment.RunnableExperiment;
 
 /**
- * Annotation for describing an instance of a {@link RunnableExperiment}.
- * The information provided by the annotation is used to fill in
- * the {@link ExperimentContext} when the experiment is run with a
+ * Annotation for describing an instance of a {@link RunnableExperiment}. The
+ * information provided by the annotation is used to fill in the
+ * {@link ExperimentContext} when the experiment is run with a
  * {@link ExperimentRunner}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
@@ -56,12 +56,12 @@ public @interface Experiment {
 	 * @return the authors of the experiment
 	 */
 	String author();
-	
+
 	/**
 	 * @return a description of the experiment
 	 */
 	String description();
-	
+
 	/**
 	 * @return the data the experiment was created
 	 */

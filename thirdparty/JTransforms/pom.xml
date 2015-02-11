@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>JTransforms</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>JTransforms</name>
   <description>
@@ -58,14 +56,6 @@
 
   <build>
     <plugins>
-        <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
-            </configuration>
-        </plugin>
-        
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>

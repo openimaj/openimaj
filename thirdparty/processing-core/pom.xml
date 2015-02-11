@@ -7,9 +7,7 @@
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openimaj</groupId>
   <artifactId>processing-core</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>processing-core</name>
   <dependencies>

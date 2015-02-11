@@ -29,8 +29,6 @@
  */
 package org.openimaj.ml.timeseries.processor.interpolation.util;
 
-import org.openimaj.ml.timeseries.TimeSeries;
-
 /**
  * Some utility functions used by various {@link TimeSeries} classes to get arrays of spans of time
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)

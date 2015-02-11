@@ -33,10 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
@@ -44,22 +41,57 @@ import Jama.Matrix;
 
 /**
  * Very crude orthographic wireframe renderer
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class Simple3D {
+	/**
+	 * Simple interface to describe a primative
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
 	public static interface Primative {
+		/**
+		 * Render the primative
+		 *
+		 * @param transform
+		 * @param tx
+		 * @param ty
+		 * @param image
+		 */
 		public void renderOrtho(Matrix transform, int tx, int ty, MBFImage image);
 
+		/**
+		 * Translate the primative
+		 *
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
 		public void translate(int x, int y, int z);
 	}
 
+	/**
+	 * A 3D point
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *
+	 */
 	public static class Point3D implements Primative {
 		Matrix pt;
 		private Float[] colour;
 		private int size;
 
+		/**
+		 * Construct
+		 *
+		 * @param x
+		 * @param y
+		 * @param z
+		 * @param colour
+		 * @param size
+		 */
 		public Point3D(double x, double y, double z, Float[] colour, int size) {
 			pt = new Matrix(3, 1);
 			pt.set(0, 0, x);
@@ -86,12 +118,28 @@ public class Simple3D {
 		}
 	}
 
+	/**
+	 * 3D Text
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *
+	 */
 	public static class Text3D implements Primative {
 		Matrix pt;
 		private Float[] colour;
 		private int size;
 		private String text;
 
+		/**
+		 * Construct
+		 *
+		 * @param x
+		 * @param y
+		 * @param z
+		 * @param colour
+		 * @param size
+		 * @param text
+		 */
 		public Text3D(double x, double y, double z, Float[] colour, int size, String text) {
 			pt = new Matrix(3, 1);
 			pt.set(0, 0, x);
@@ -119,12 +167,30 @@ public class Simple3D {
 		}
 	}
 
+	/**
+	 * 3D line
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *
+	 */
 	public static class Line3D implements Primative {
 		Matrix pt1;
 		Matrix pt2;
 		private Float[] colour;
 		private int thickness;
 
+		/**
+		 * Construct
+		 *
+		 * @param x1
+		 * @param y1
+		 * @param z1
+		 * @param x2
+		 * @param y2
+		 * @param z2
+		 * @param colour
+		 * @param size
+		 */
 		public Line3D(double x1, double y1, double z1, double x2, double y2, double z2, Float[] colour, int size) {
 			pt1 = new Matrix(3, 1);
 			pt1.set(0, 0, x1);
@@ -162,30 +228,68 @@ public class Simple3D {
 		}
 	}
 
+	/**
+	 * A scene consisting of primatives
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *
+	 */
 	public static class Scene {
 		List<Primative> primatives = new ArrayList<Primative>();
 
+		/**
+		 * Construct
+		 */
 		public Scene() {
 		}
 
+		/**
+		 * Construct
+		 *
+		 * @param primatives
+		 */
 		public Scene(List<Primative> primatives) {
 			this.primatives.addAll(primatives);
 		}
 
+		/**
+		 * Construct
+		 *
+		 * @param primatives
+		 */
 		public Scene(Primative... primatives) {
 			this.primatives.addAll(Arrays.asList(primatives));
 		}
 
+		/**
+		 * Add a primative to the scene
+		 *
+		 * @param p
+		 * @return the scene
+		 */
 		public Scene addPrimative(Primative p) {
 			primatives.add(p);
 			return this;
 		}
 
+		/**
+		 * Render the scene
+		 *
+		 * @param transform
+		 * @param image
+		 */
 		public void renderOrtho(Matrix transform, MBFImage image) {
 			for (final Primative p : primatives)
 				p.renderOrtho(transform, image.getWidth() / 2, image.getHeight() / 2, image);
 		}
 
+		/**
+		 * Translate the scene
+		 * 
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
 		public void translate(int x, int y, int z) {
 			for (final Primative p : primatives) {
 				p.translate(x, y, z);
@@ -193,7 +297,11 @@ public class Simple3D {
 		}
 	}
 
-	public static Point2dImpl projectOrtho(Matrix pt) {
+	/**
+	 * @param pt
+	 * @return
+	 */
+	static Point2dImpl projectOrtho(Matrix pt) {
 		final Point2dImpl po = new Point2dImpl();
 
 		po.x = (float) pt.get(0, 0);
@@ -202,7 +310,13 @@ public class Simple3D {
 		return po;
 	}
 
-	public static Matrix euler2Rot(final double pitch, final double yaw, final double roll)
+	/**
+	 * @param pitch
+	 * @param yaw
+	 * @param roll
+	 * @return
+	 */
+	static Matrix euler2Rot(final double pitch, final double yaw, final double roll)
 	{
 		Matrix R;
 		R = new Matrix(3, 3);
@@ -222,17 +336,5 @@ public class Simple3D {
 		R.set(2, 2, R.get(0, 0) * R.get(1, 1) - R.get(0, 1) * R.get(1, 0));
 
 		return R;
-	}
-
-	public static void main(String[] args) {
-		final MBFImage img = new MBFImage(800, 800, ColourSpace.RGB);
-		new Scene(
-				new Point3D(400, 400, 400, RGBColour.RED, 14),
-				new Line3D(0, 400, 400, 800, 400, 400, RGBColour.GREEN, 3),
-				new Line3D(400, 0, 400, 400, 800, 400, RGBColour.BLUE, 3),
-				new Line3D(400, 400, 0, 400, 400, 800, RGBColour.MAGENTA, 3)).renderOrtho(
-				euler2Rot(Math.PI / 4, Math.PI / 4, Math.PI / 4),
-				img);
-		DisplayUtilities.display(img);
 	}
 }

@@ -33,54 +33,57 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.feature.local.descriptor.LocalFeatureProvider;
 import org.openimaj.math.util.Interpolation;
 
-
 /**
- * Interface for classes capable of building local descriptors
- * from the gradient (magnitude and orientation) information in
- * an image patch. The model for the construction of various
- * concrete feature extractors that implement this interface 
- * is that some external code will provide individual pixel
- * samples (consisting of both magnitude and orientation values)
- * and their relative positions within a unit sampling patch (or
- * slightly beyond if interpolation is used; see {@link Interpolation#bilerp }).  
- * <br/><br/>
- * The general contract for methods using this interface is
- * as follows: <br/><br/>
+ * Interface for classes capable of building local descriptors from the gradient
+ * (magnitude and orientation) information in an image patch. The model for the
+ * construction of various concrete feature extractors that implement this
+ * interface is that some external code will provide individual pixel samples
+ * (consisting of both magnitude and orientation values) and their relative
+ * positions within a unit sampling patch (or slightly beyond if interpolation
+ * is used; see {@link Interpolation#bilerp }). <br/>
+ * <br/>
+ * The general contract for methods using this interface is as follows: <br/>
+ * <br/>
  * <code>
  * 	f = new GradientBasedLocalFeatureExtractorImpl() <br/>
  * 	f.setPatchOrientation(orientation) <br/>
  * 	for (pixels in patch) <br/>
  * 	&nbsp;&nbsp;&nbsp;&nbsp;f.addSample(normalised-pixel-position, pixel-magnitude, pixel-orientation) <br/>
  * </code>
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface GradientFeatureProvider extends LocalFeatureProvider<OrientedFeatureVector> {
 	/**
-	 * Set the primary orientation of the sample patch in the image
-	 * being processed. This might be used by concrete implementations
-	 * to provide rotation invariance.
-	 * 
+	 * Set the primary orientation of the sample patch in the image being
+	 * processed. This might be used by concrete implementations to provide
+	 * rotation invariance.
+	 *
 	 * This method should only be called once by calling code, and the call
-	 * should be before any calls to {@link #addSample(float, float, float, float)} 
-	 * are made.
-	 * 
-	 * @param patchOrientation the actual orientation of the square in the image
+	 * should be before any calls to
+	 * {@link #addSample(float, float, float, float)} are made.
+	 *
+	 * @param patchOrientation
+	 *            the actual orientation of the square in the image
 	 */
 	public abstract void setPatchOrientation(float patchOrientation);
-	
+
 	/**
-	 * Add a sample to the feature. The x and y coordinates are given
-	 * in terms of a unit index square (i.e. 0<=x<=1 and 0<=y<=1).  
-	 * 
-	 * @param x x-coordinate within the unit indexing square
-	 * @param y y-coordinate within the unit indexing square
-	 * @param gradmag the gradient magnitude at the given coordinate
-	 * @param gradori the gradient direction at the given coordinate
+	 * Add a sample to the feature. The x and y coordinates are given in terms
+	 * of a unit index square (i.e. 0<=x<=1 and 0<=y<=1).
+	 *
+	 * @param x
+	 *            x-coordinate within the unit indexing square
+	 * @param y
+	 *            y-coordinate within the unit indexing square
+	 * @param gradmag
+	 *            the gradient magnitude at the given coordinate
+	 * @param gradori
+	 *            the gradient direction at the given coordinate
 	 */
 	public abstract void addSample(float x, float y, float gradmag, float gradori);
-	
+
 	@Override
 	public OrientedFeatureVector getFeatureVector();
 }

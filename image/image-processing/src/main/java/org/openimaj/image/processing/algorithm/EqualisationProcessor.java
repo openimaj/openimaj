@@ -36,10 +36,10 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 /**
  * An {@link ImageProcessor} that performs histogram equalisation (projecting
  * the colours back into the image).
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @created 31 Mar 2011
  */
 public class EqualisationProcessor implements SinglebandImageProcessor<Float, FImage> {
@@ -49,9 +49,9 @@ public class EqualisationProcessor implements SinglebandImageProcessor<Float, FI
 	 * The resulting image has equalised values between 0 and 1. It assumes the
 	 * image has already been normalised such that its values are also between 0
 	 * and 1.
-	 * 
+	 *
 	 * It is assumed that there are 256 discrete grey-levels.
-	 * 
+	 *
 	 * @see "http://www.generation5.org/content/2004/histogramEqualization.asp"
 	 */
 	@Override

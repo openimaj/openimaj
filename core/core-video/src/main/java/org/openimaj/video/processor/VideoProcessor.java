@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.video.processor;
 
@@ -62,15 +62,15 @@ import org.openimaj.video.Video;
  * content, video processors should change the video frame content in place,
  * returning new altered frames. If you do not need to do this then use the
  * VideoAnalyser.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            Type of {@link Image}
  * @created 1 Jun 2011
  */
 public abstract class VideoProcessor<T extends Image<?, T>>
-		extends Video<T>
+extends Video<T>
 {
 	/** The video in a video processing chain */
 	private Video<T> video = null;
@@ -87,7 +87,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * Constructor for creating a video processor which is chainable.
-	 * 
+	 *
 	 * @param v
 	 *            The video to process
 	 */
@@ -102,7 +102,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 	 * subclass processors add listeners for processed frames if they are
 	 * required. The implementation must process the frame in-place and the
 	 * frame should be returned.
-	 * 
+	 *
 	 * @param frame
 	 *            The frame to process.
 	 * @return the processed frame
@@ -120,7 +120,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * Process the given video using this processor.
-	 * 
+	 *
 	 * @param video
 	 *            The video to process.
 	 */
@@ -146,7 +146,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
@@ -160,7 +160,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
@@ -174,7 +174,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getNextFrame()
 	 */
 	@Override
@@ -191,7 +191,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#hasNextFrame()
 	 */
 	@Override
@@ -204,7 +204,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#hasNextFrame()
 	 */
 	@Override
@@ -217,7 +217,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getCurrentFrame()
 	 */
 	@Override
@@ -244,7 +244,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -255,7 +255,7 @@ public abstract class VideoProcessor<T extends Image<?, T>>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override

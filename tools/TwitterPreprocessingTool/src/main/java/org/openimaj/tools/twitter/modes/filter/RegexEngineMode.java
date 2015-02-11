@@ -29,8 +29,6 @@
  */
 package org.openimaj.tools.twitter.modes.filter;
 
-import java.util.regex.Pattern;
-
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 
 /**

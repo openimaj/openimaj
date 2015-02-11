@@ -42,9 +42,9 @@ import org.openimaj.util.sketch.Sketcher;
  * {@link BitSet}. Only the least-significant bit of each hash function will be
  * appended to the final sketch. The length of the output array will be computed
  * such that the bit from each hash function is contained.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object being sketched
  */
@@ -53,7 +53,7 @@ public class BitSetLSHSketcher<OBJECT> implements Sketcher<OBJECT, BitSet> {
 
 	/**
 	 * Construct with the given functions.
-	 * 
+	 *
 	 * @param functions
 	 *            the underlying hash functions.
 	 */
@@ -63,12 +63,13 @@ public class BitSetLSHSketcher<OBJECT> implements Sketcher<OBJECT, BitSet> {
 
 	/**
 	 * Construct with the given functions.
-	 * 
+	 *
 	 * @param first
 	 *            the first function
 	 * @param remainder
 	 *            the remainder of the functions
 	 */
+	@SafeVarargs
 	public BitSetLSHSketcher(HashFunction<OBJECT> first, HashFunction<OBJECT>... remainder) {
 		this.hashFunctions = new ArrayList<HashFunction<OBJECT>>();
 		this.hashFunctions.add(first);
@@ -80,7 +81,7 @@ public class BitSetLSHSketcher<OBJECT> implements Sketcher<OBJECT, BitSet> {
 	/**
 	 * Construct with the factory which is used to produce the required number
 	 * of functions.
-	 * 
+	 *
 	 * @param factory
 	 *            the factory to use to produce the underlying hash functions.
 	 * @param nFuncs
@@ -109,7 +110,7 @@ public class BitSetLSHSketcher<OBJECT> implements Sketcher<OBJECT, BitSet> {
 
 	/**
 	 * Get the length of the sketch in bits.
-	 * 
+	 *
 	 * @return the number of bits in the sketch
 	 */
 	public int bitLength() {

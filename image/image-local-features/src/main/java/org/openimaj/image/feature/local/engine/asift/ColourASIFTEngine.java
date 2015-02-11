@@ -45,7 +45,7 @@ import org.openimaj.image.processing.transform.AffineParams;
 
 /**
  * An {@link Engine} for Colour ASIFT.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFImage> {
@@ -63,7 +63,7 @@ public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFIm
 	/**
 	 * Construct using 5 tilt levels with optional initial double-sizing. The
 	 * default parameters for the internal {@link DoGSIFTEngine} are used.
-	 * 
+	 *
 	 * @param hires
 	 *            should the image should be double sized as a first step
 	 */
@@ -75,7 +75,7 @@ public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFIm
 	 * Construct using given number of tilt levels with optional initial
 	 * double-sizing. The default parameters for the internal
 	 * {@link DoGSIFTEngine} are used.
-	 * 
+	 *
 	 * @param hires
 	 *            should the image should be double sized as a first step
 	 * @param nTilts
@@ -89,7 +89,7 @@ public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFIm
 	/**
 	 * Construct using 5 tilt levels and the given parameters for the internal
 	 * {@link DoGSIFTEngine}.
-	 * 
+	 *
 	 * @param opts
 	 *            parameters for the internal {@link DoGSIFTEngine}.
 	 */
@@ -100,7 +100,7 @@ public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFIm
 	/**
 	 * Construct using the given numbe of tilt levels and parameters for the
 	 * internal {@link DoGSIFTEngine}.
-	 * 
+	 *
 	 * @param opts
 	 *            parameters for the internal {@link DoGSIFTEngine}.
 	 * @param nTilts
@@ -113,7 +113,7 @@ public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFIm
 
 	/**
 	 * Find the features as a list of {@link Keypoint} objects
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return the detected features
@@ -126,7 +126,7 @@ public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFIm
 	/**
 	 * Find the features of a single simulation as a list of {@link Keypoint}
 	 * objects
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param params
@@ -140,7 +140,7 @@ public class ColourASIFTEngine implements Engine<AffineSimulationKeypoint, MBFIm
 	/**
 	 * Find the features and return the resultant features in a per-simulation
 	 * format.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return the features

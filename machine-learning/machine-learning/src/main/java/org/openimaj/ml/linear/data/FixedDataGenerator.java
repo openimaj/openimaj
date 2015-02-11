@@ -29,7 +29,6 @@
  */
 package org.openimaj.ml.linear.data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.util.pair.IndependentPair;

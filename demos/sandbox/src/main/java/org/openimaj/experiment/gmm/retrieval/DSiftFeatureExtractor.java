@@ -46,6 +46,7 @@ public class DSiftFeatureExtractor implements
 		LocalFeatureList<? extends LocalFeature<?,? extends FeatureVector>>  
 	>{
 	
+	@Override
 	public LocalFeatureList<? extends LocalFeature<?,? extends FeatureVector>> apply(FImage img) {
 		DenseSIFT dsift = new DenseSIFT();
 		dsift.analyseImage(img);

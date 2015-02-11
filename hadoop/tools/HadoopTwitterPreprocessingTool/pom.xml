@@ -9,7 +9,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.hadoop.tools</groupId>
   <artifactId>HadoopTwitterPreprocessingTool</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>HadoopTwitterPreprocessingTool</name>
   <inceptionYear>2011</inceptionYear>

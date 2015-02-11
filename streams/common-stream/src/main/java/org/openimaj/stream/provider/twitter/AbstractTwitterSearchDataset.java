@@ -58,7 +58,7 @@ import twitter4j.json.DataObjectFactory;
  * search results available and then attempts to retrieve results which occurred
  * after the latest Tweet seen. Apart form this, this {@link Stream} makes no
  * special efforts to:
- * 
+ *
  * <ul>
  * <li>stop duplicate items
  * <li>stop when a search returns nothing
@@ -74,15 +74,15 @@ import twitter4j.json.DataObjectFactory;
  * <li>the status object
  * <li>the raw json of the status
  * </ul>
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            Type of items in the stream
  */
 public abstract class AbstractTwitterSearchDataset<T> extends BlockingDroppingBufferedStream<T>
-		implements
-		StreamingDataset<T>
+implements
+StreamingDataset<T>
 {
 
 	final class TwitterAPIRunnable implements Runnable {
@@ -179,7 +179,7 @@ public abstract class AbstractTwitterSearchDataset<T> extends BlockingDroppingBu
 	/**
 	 * Handle the given incoming status and optionally {@link #register(Object)}
 	 * it with the stream.
-	 * 
+	 *
 	 * @param query
 	 *            the query
 	 * @param status
@@ -196,17 +196,17 @@ public abstract class AbstractTwitterSearchDataset<T> extends BlockingDroppingBu
 
 	/**
 	 * Get the current query
-	 * 
+	 *
 	 * @return the query
 	 */
 	public abstract Query getQuery();
 
 	protected Configuration makeConfiguration(TwitterAPIToken token) {
 		final ConfigurationBuilder cb = new ConfigurationBuilder()
-				.setOAuthConsumerKey(token.consumerKey)
-				.setOAuthConsumerSecret(token.consumerSecret)
-				.setOAuthAccessToken(token.accessToken)
-				.setOAuthAccessTokenSecret(token.accessSecret);
+		.setOAuthConsumerKey(token.consumerKey)
+		.setOAuthConsumerSecret(token.consumerSecret)
+		.setOAuthAccessToken(token.accessToken)
+		.setOAuthAccessTokenSecret(token.accessSecret);
 		cb.setJSONStoreEnabled(true);
 
 		return cb.build();

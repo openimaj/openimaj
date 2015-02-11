@@ -41,7 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * A bounded variant of a {@linkplain BlockingDroppingQueue blocking queue}
  * backed by an array.
- * 
+ *
  * <p>
  * Elements in the queue are ordered as FIFO (first-in-first-out). The
  * <em>head</em> of the queue is that element that has been on the queue the
@@ -49,31 +49,31 @@ import java.util.concurrent.locks.ReentrantLock;
  * the queue the shortest time. New elements are inserted at the tail of the
  * queue, and the queue retrieval operations obtain elements at the head of the
  * queue.
- * 
+ *
  * <p>
  * This is a classic &quot;ring buffer&quot;, in which a fixed-sized array holds
  * elements inserted by producers and extracted by consumers. Once created, the
  * capacity cannot be increased. Attempts to <tt>put</tt> an element into a full
  * queue will result in the oldest item being removed to make room; attempts to
  * <tt>take</tt> an element from an empty queue will block.
- * 
+ *
  * <p>
  * This class supports an optional fairness policy for ordering waiting producer
  * and consumer threads. By default, this ordering is not guaranteed. However, a
  * queue constructed with fairness set to <tt>true</tt> grants threads access in
  * FIFO order. Fairness generally decreases throughput but reduces variability
  * and avoids starvation.
- * 
+ *
  * <p>
  * This class and its iterator implement all of the <em>optional</em> methods of
  * the {@link Collection} and {@link Iterator} interfaces.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <E>
  *            the type of elements held in this collection
  */
 public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
-		implements BlockingDroppingQueue<E>, java.io.Serializable
+implements BlockingDroppingQueue<E>, java.io.Serializable
 {
 	private static final long serialVersionUID = -2040484277582233451L;
 
@@ -217,7 +217,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	/**
 	 * Creates an <tt>ArrayBlockingDroppingQueue</tt> with the given (fixed)
 	 * capacity and default access policy.
-	 * 
+	 *
 	 * @param capacity
 	 *            the capacity of this queue
 	 * @throws IllegalArgumentException
@@ -230,7 +230,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	/**
 	 * Creates an <tt>ArrayBlockingDroppingQueue</tt> with the given (fixed)
 	 * capacity and the specified access policy.
-	 * 
+	 *
 	 * @param capacity
 	 *            the capacity of this queue
 	 * @param fair
@@ -255,7 +255,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	 * capacity, the specified access policy and initially containing the
 	 * elements of the given collection, added in traversal order of the
 	 * collection's iterator.
-	 * 
+	 *
 	 * @param capacity
 	 *            the capacity of this queue
 	 * @param fair
@@ -286,7 +286,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	 * to do so immediately without exceeding the queue's capacity, returning
 	 * <tt>true</tt> upon success and throwing an <tt>IllegalStateException</tt>
 	 * if this queue is full.
-	 * 
+	 *
 	 * @param e
 	 *            the element to add
 	 * @return <tt>true</tt> (as specified by {@link Collection#add})
@@ -392,7 +392,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	// greater in size than Integer.MAX_VALUE
 	/**
 	 * Returns the number of elements in this queue.
-	 * 
+	 *
 	 * @return the number of elements in this queue
 	 */
 	@Override
@@ -413,7 +413,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	 * the absence of memory or resource constraints) accept without blocking.
 	 * This is always equal to the initial capacity of this queue less the
 	 * current <tt>size</tt> of this queue.
-	 * 
+	 *
 	 * <p>
 	 * Note that you <em>cannot</em> always tell if an attempt to insert an
 	 * element will succeed by inspecting <tt>remainingCapacity</tt> because it
@@ -437,7 +437,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	 * <tt>o.equals(e)</tt>, if this queue contains one or more such elements.
 	 * Returns <tt>true</tt> if this queue contained the specified element (or
 	 * equivalently, if this queue changed as a result of the call).
-	 * 
+	 *
 	 * @param o
 	 *            element to be removed from this queue, if present
 	 * @return <tt>true</tt> if this queue changed as a result of the call
@@ -471,7 +471,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	 * Returns <tt>true</tt> if this queue contains the specified element. More
 	 * formally, returns <tt>true</tt> if and only if this queue contains at
 	 * least one element <tt>e</tt> such that <tt>o.equals(e)</tt>.
-	 * 
+	 *
 	 * @param o
 	 *            object to be checked for containment in this queue
 	 * @return <tt>true</tt> if this queue contains the specified element
@@ -500,15 +500,15 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	/**
 	 * Returns an array containing all of the elements in this queue, in proper
 	 * sequence.
-	 * 
+	 *
 	 * <p>
 	 * The returned array will be "safe" in that no references to it are
 	 * maintained by this queue. (In other words, this method must allocate a
 	 * new array). The caller is thus free to modify the returned array.
-	 * 
+	 *
 	 * <p>
 	 * This method acts as bridge between array-based and collection-based APIs.
-	 * 
+	 *
 	 * @return an array containing all of the elements in this queue
 	 */
 	@Override
@@ -536,30 +536,30 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	 * array. If the queue fits in the specified array, it is returned therein.
 	 * Otherwise, a new array is allocated with the runtime type of the
 	 * specified array and the size of this queue.
-	 * 
+	 *
 	 * <p>
 	 * If this queue fits in the specified array with room to spare (i.e., the
 	 * array has more elements than this queue), the element in the array
 	 * immediately following the end of the queue is set to <tt>null</tt>.
-	 * 
+	 *
 	 * <p>
 	 * Like the {@link #toArray()} method, this method acts as bridge between
 	 * array-based and collection-based APIs. Further, this method allows
 	 * precise control over the runtime type of the output array, and may, under
 	 * certain circumstances, be used to save allocation costs.
-	 * 
+	 *
 	 * <p>
 	 * Suppose <tt>x</tt> is a queue known to contain only strings. The
 	 * following code can be used to dump the queue into a newly allocated array
 	 * of <tt>String</tt>:
-	 * 
+	 *
 	 * <pre>
 	 * String[] y = x.toArray(new String[0]);
 	 * </pre>
-	 * 
+	 *
 	 * Note that <tt>toArray(new Object[0])</tt> is identical in function to
 	 * <tt>toArray()</tt>.
-	 * 
+	 *
 	 * @param a
 	 *            the array into which the elements of the queue are to be
 	 *            stored, if it is big enough; otherwise, a new array of the
@@ -722,7 +722,7 @@ public class ArrayBlockingDroppingQueue<E> extends AbstractQueue<E>
 	 * to traverse elements as they existed upon construction of the iterator,
 	 * and may (but is not guaranteed to) reflect any modifications subsequent
 	 * to construction.
-	 * 
+	 *
 	 * @return an iterator over the elements in this queue in proper sequence
 	 */
 	@Override

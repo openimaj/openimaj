@@ -27,7 +27,6 @@ import org.openimaj.io.HttpUtils.MetaRefreshRedirectStrategy;
 import org.openimaj.picslurper.output.OutputListener;
 import org.openimaj.picslurper.output.WriteableImageOutput;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
-import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.web.scraping.SiteSpecificConsumer;
 import org.openimaj.web.scraping.images.CommonHTMLConsumers;
@@ -35,7 +34,6 @@ import org.openimaj.web.scraping.images.FacebookConsumer;
 import org.openimaj.web.scraping.images.ImgurConsumer;
 import org.openimaj.web.scraping.images.InstagramConsumer;
 import org.openimaj.web.scraping.images.OwlyImageConsumer;
-import org.openimaj.web.scraping.images.TmblrPhotoConsumer;
 import org.openimaj.web.scraping.images.TwipleConsumer;
 import org.openimaj.web.scraping.images.TwitPicConsumer;
 import org.openimaj.web.scraping.images.TwitterPhotoConsumer;
@@ -50,9 +48,9 @@ import twitter4j.URLEntity;
  * Twitter JSON, perhaps making it abstract and turning {@link #consume(Status)}
  * into an abstract function that can deal with other types of status would be
  * sensible
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class StatusConsumer {
 
@@ -99,7 +97,7 @@ public class StatusConsumer {
 	 *            the output location for this status
 	 * @param outputModes
 	 *            the output modes informed on image downloads
-	 * 
+	 *
 	 */
 	public StatusConsumer(final boolean outputStats, final File globalStats, final File outputLocation,
 			final List<OutputListener> outputModes)
@@ -168,7 +166,7 @@ public class StatusConsumer {
 
 	/**
 	 * Process all added URLs
-	 * 
+	 *
 	 * @param status
 	 * @return the {@link StatusConsumption} statistics
 	 * @throws IOException
@@ -197,7 +195,7 @@ public class StatusConsumer {
 
 	/**
 	 * Add a URL to process without allowing already seen URLs to be added
-	 * 
+	 *
 	 * @param newURL
 	 */
 	public void add(final String newURL) {
@@ -221,7 +219,7 @@ public class StatusConsumer {
 	 * Given a URL, use {@link #urlToImage(URL)} to turn the url into a list of
 	 * images and write the images into the output location using the names
 	 * "image_N.png"
-	 * 
+	 *
 	 * @param url
 	 * @param cons
 	 *            the consumption stats
@@ -268,9 +266,9 @@ public class StatusConsumer {
 	/**
 	 * An extention of the {@link MetaRefreshRedirectStrategy} which disallows
 	 * all redirects and instead remembers a redirect for use later on.
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class StatusConsumerRedirectStrategy extends MetaRefreshRedirectStrategy {
 		private boolean wasRedirected = false;
@@ -311,18 +309,17 @@ public class StatusConsumer {
 	 * First, try all the {@link SiteSpecificConsumer} instances loaded into
 	 * {@link #siteSpecific}. If any consumer takes control of a link the
 	 * consumer's output is used
-	 * 
+	 *
 	 * if this fails use
 	 * {@link HttpUtils#readURLAsByteArrayInputStream(URL, org.apache.http.client.RedirectStrategy)}
 	 * with a {@link StatusConsumerRedirectStrategy} which specifically
 	 * disallows redirects to be dealt with automatically and forces this
 	 * function to be called for each redirect.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param url
 	 * @return a list of images or null
 	 */
-	@SuppressWarnings("unchecked")
 	public List<IndependentPair<URL, MBFImage>> urlToImage(final URL url) {
 		StatusConsumer.logger.debug("Resolving URL: " + url);
 		StatusConsumer.logger.debug("Attempting site specific consumers");
@@ -392,7 +389,7 @@ public class StatusConsumer {
 
 	/**
 	 * Construct a file in the output location for a given url
-	 * 
+	 *
 	 * @param url
 	 * @param outputLocation
 	 * @return a file that looks like: outputLocation/protocol/path/query/...
@@ -423,7 +420,7 @@ public class StatusConsumer {
 	/**
 	 * Replaces illegal characters in a filename with "_" illegal characters : :
 	 * \ / * ? | < >
-	 * 
+	 *
 	 * @param name
 	 * @return Sanitised filename
 	 */

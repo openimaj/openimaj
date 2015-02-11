@@ -41,7 +41,7 @@ import ch.akuhn.matrix.Vector;
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class Projectron extends MatrixKernelPerceptron{
+public class Projectron extends DoubleArrayKernelPerceptron{
 
 	private static final double DEFAULT_ETA = 0.01f;
 	private Matrix Kinv;

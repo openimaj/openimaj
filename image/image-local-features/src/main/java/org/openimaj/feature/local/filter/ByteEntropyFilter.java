@@ -45,7 +45,7 @@ import org.openimaj.util.function.Predicate;
  * This filter is an implementation of the approach described by Dong, Wang and
  * Li; the default threshold is taken from the paper, and will work with
  * standard SIFT features, such as those produced by a {@link DoGSIFTEngine}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
@@ -67,7 +67,7 @@ public class ByteEntropyFilter implements Predicate<LocalFeature<?, ByteFV>> {
 
 	/**
 	 * Construct with a custom threshold.
-	 * 
+	 *
 	 * @param threshold
 	 *            The threshold.
 	 */
@@ -82,7 +82,7 @@ public class ByteEntropyFilter implements Predicate<LocalFeature<?, ByteFV>> {
 
 	/**
 	 * Compute the entropy of the given byte vector.
-	 * 
+	 *
 	 * @param vector
 	 *            the vector.
 	 * @return the entropy.

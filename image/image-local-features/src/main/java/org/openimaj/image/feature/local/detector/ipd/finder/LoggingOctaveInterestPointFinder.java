@@ -32,6 +32,7 @@ package org.openimaj.image.feature.local.detector.ipd.finder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
@@ -41,49 +42,52 @@ import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 
 /**
- * Finder with a specified detector which finds interest points at a given gaussian octave. This is often
- * used in conjunction with a {@link GaussianPyramid} which provides {@link GaussianOctave} instances. 
- * 
- * This finder calls a specified {@link InterestPointFeatureCollector} which does something with the features
- * located at a given octave.
- * 
+ * Finder with a specified detector which finds interest points at a given
+ * gaussian octave. This is often used in conjunction with a
+ * {@link GaussianPyramid} which provides {@link GaussianOctave} instances.
+ *
+ * This finder calls a specified {@link InterestPointFeatureCollector} which
+ * does something with the features located at a given octave.
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <T> The type of {@link InterestPointData}
+ * @param <T>
+ *            The type of {@link InterestPointData}
  *
  */
-public class LoggingOctaveInterestPointFinder<T extends InterestPointData> extends OctaveInterestPointFinder<T>{
+public class LoggingOctaveInterestPointFinder<T extends InterestPointData> extends OctaveInterestPointFinder<T> {
 
 	private HashMap<String, Integer> scalePoints;
 	private ArrayList<String> scales;
 
 	/**
 	 * instantiate scalepoints the superclass and scalepoints to log
+	 * 
 	 * @param detector
 	 * @param selectionMode
 	 */
-	public LoggingOctaveInterestPointFinder(InterestPointDetector<T> detector,IPDSelectionMode selectionMode) {
+	public LoggingOctaveInterestPointFinder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
 		super(detector, selectionMode);
-		scalePoints = new HashMap<String,Integer>();
+		scalePoints = new HashMap<String, Integer>();
 		scales = new ArrayList<String>();
 	}
-	
+
 	@Override
 	protected void processOctaveLevelPoints(FImage fImage, List<T> points, float currentScale, float octaveSize) {
 		super.processOctaveLevelPoints(fImage, points, currentScale, octaveSize);
-		String key = String.format("%f-%f", currentScale*octaveSize,octaveSize);
-		this.scalePoints.put(key ,points.size());
+		final String key = String.format("%f-%f", currentScale * octaveSize, octaveSize);
+		this.scalePoints.put(key, points.size());
 		this.scales.add(key);
 	}
-	
-	private void printScalePoints(){
-		for(String scale : scales){
-			Integer entry = this.scalePoints.get(scale);
-			System.out.format("%s,%d\n",scale,entry);
+
+	private void printScalePoints() {
+		for (final String scale : scales) {
+			final Integer entry = this.scalePoints.get(scale);
+			System.out.format("%s,%d\n", scale, entry);
 		}
 	}
-	
+
 	@Override
-	public void finish(){
+	public void finish() {
 		printScalePoints();
 	}
 }

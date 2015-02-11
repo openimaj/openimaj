@@ -51,7 +51,6 @@ public class FVFWDSift {
 		DenseSIFT create();
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void extractPDSift(final File indir, final File outDir, final DSFactory factory) throws IOException
 	{
 		Parallel.forEach(Arrays.asList(indir.listFiles()), new Operation<File>() {

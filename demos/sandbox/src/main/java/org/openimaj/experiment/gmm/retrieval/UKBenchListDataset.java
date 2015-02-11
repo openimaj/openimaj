@@ -31,7 +31,6 @@ package org.openimaj.experiment.gmm.retrieval;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
@@ -40,7 +39,6 @@ import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.openimaj.data.dataset.ReadableListDataset;
 import org.openimaj.data.identity.Identifiable;
-import org.openimaj.image.Image;
 import org.openimaj.io.ObjectReader;
 
 /**

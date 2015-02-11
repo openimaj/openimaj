@@ -43,29 +43,37 @@ import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 
 /**
- * Finder with a specified detector which finds interest points at a given gaussian octave. This is often
- * used in conjunction with a {@link GaussianPyramid} which provides {@link GaussianOctave} instances. 
- * 
- * This finder calls a specified {@link InterestPointFeatureCollector} which does something with the features
- * located at a given octave.
- * 
+ * Finder with a specified detector which finds interest points at a given
+ * gaussian octave. This is often used in conjunction with a
+ * {@link GaussianPyramid} which provides {@link GaussianOctave} instances.
+ *
+ * This finder calls a specified {@link InterestPointFeatureCollector} which
+ * does something with the features located at a given octave.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @author  Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <T> The type of {@link InterestPointData}
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @param <T>
+ *            The type of {@link InterestPointData}
  *
  */
-public class OctaveInterestPointFinder<T extends InterestPointData> implements OctaveProcessor<GaussianOctave<FImage>, FImage> {
-	
+public class OctaveInterestPointFinder<T extends InterestPointData>
+		implements
+			OctaveProcessor<GaussianOctave<FImage>, FImage>
+{
+
 	protected InterestPointDetector<T> detector;
 	protected InterestPointFeatureCollector<T> listener;
 	protected IPDSelectionMode selectionMode;
 	static Logger logger = Logger.getLogger(OctaveInterestPointFinder.class);
-	static{
+	static {
 		BasicConfigurator.configure();
 	}
+
 	/**
-	 * @param detector the detector with which features are found
-	 * @param selectionMode the detector's feature selection mode
+	 * @param detector
+	 *            the detector with which features are found
+	 * @param selectionMode
+	 *            the detector's feature selection mode
 	 */
 	public OctaveInterestPointFinder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
 		this.detector = detector;
@@ -75,25 +83,28 @@ public class OctaveInterestPointFinder<T extends InterestPointData> implements O
 	@Override
 	public void process(GaussianOctave<FImage> octave) {
 		for (int currentScaleIndex = 0; currentScaleIndex < octave.images.length; currentScaleIndex++) {
-			FImage fImage = octave.images[currentScaleIndex];
-			float currentScale = (float) (octave.options.getInitialSigma() * Math.pow(2, (float)currentScaleIndex/octave.options.getScales()));
+			final FImage fImage = octave.images[currentScaleIndex];
+			final float currentScale = (float) (octave.options.getInitialSigma() * Math.pow(2, (float) currentScaleIndex
+					/ octave.options.getScales()));
 			detector.setDetectionScale(currentScale);
 			detector.findInterestPoints(fImage);
-			List<T> points = this.selectionMode.selectPoints(detector);
-			processOctaveLevelPoints(fImage, points, currentScale, octave.octaveSize);	
+			final List<T> points = this.selectionMode.selectPoints(detector);
+			processOctaveLevelPoints(fImage, points, currentScale, octave.octaveSize);
 		}
-		
+
 	}
 
 	protected void processOctaveLevelPoints(FImage fImage, List<T> points, float currentScale, float octaveSize) {
-		logger.info(String.format("At octave scale %4.2f (absolute scale %4.2f) %d points detected", currentScale,currentScale*octaveSize,points.size()));
-		for(T point: points){
-			this.listener.foundInterestPoint(fImage, point,octaveSize);
+		logger.info(String.format("At octave scale %4.2f (absolute scale %4.2f) %d points detected", currentScale,
+				currentScale * octaveSize, points.size()));
+		for (final T point : points) {
+			this.listener.foundInterestPoint(fImage, point, octaveSize);
 		}
 	}
 
 	/**
-	 * @param listener to be informed on detection of new interest points
+	 * @param listener
+	 *            to be informed on detection of new interest points
 	 */
 	public void setOctaveInterestPointListener(InterestPointFeatureCollector<T> listener) {
 		this.listener = listener;
@@ -102,6 +113,7 @@ public class OctaveInterestPointFinder<T extends InterestPointData> implements O
 	/**
 	 * Once all the features have been detected, do something (default: nothing)
 	 */
-	public void finish() {}
+	public void finish() {
+	}
 
 }

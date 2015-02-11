@@ -57,7 +57,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * Normally, HOG features are computed using all gradients in the image, but
  * this class makes it possible to only consider gradients at the edges using
  * the {@link #analyseImage(FImage, FImage)} method.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
@@ -87,7 +87,7 @@ public class HOG implements ImageAnalyser<FImage> {
 	 * Construct a new {@link HOG} with the 9 bins, using histogram
 	 * interpolation and unsigned gradients. Use the given strategy to extract
 	 * the actual features.
-	 * 
+	 *
 	 * @param strategy
 	 *            the {@link SpatialBinningStrategy} to use to produce the
 	 *            features
@@ -101,7 +101,7 @@ public class HOG implements ImageAnalyser<FImage> {
 	 * Construct a new {@link HOG} with the given number of bins. Optionally
 	 * perform linear interpolation across orientation bins. Histograms can also
 	 * use either signed or unsigned gradients.
-	 * 
+	 *
 	 * @param nbins
 	 *            number of bins
 	 * @param histogramInterpolation
@@ -133,7 +133,7 @@ public class HOG implements ImageAnalyser<FImage> {
 	 * accumulated. This could be used to suppress all magnitudes except those
 	 * at edges; the resultant extracted histograms would only contain
 	 * information about edge gradients.
-	 * 
+	 *
 	 * @param image
 	 *            the image to analyse
 	 * @param edges
@@ -145,7 +145,7 @@ public class HOG implements ImageAnalyser<FImage> {
 
 	/**
 	 * Compute the HOG feature for the given window.
-	 * 
+	 *
 	 * @param rectangle
 	 *            the window
 	 * @return the computed HOG feature

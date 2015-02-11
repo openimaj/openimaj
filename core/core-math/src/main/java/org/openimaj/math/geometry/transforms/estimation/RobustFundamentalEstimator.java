@@ -62,7 +62,7 @@ import Jama.Matrix;
  * Levenburg-Marquardt is performed to on the inliers using the initial estimate
  * to optimise against a true geometric residual given by
  * {@link FundamentalRefinement}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, Point2d, FundamentalModel> {
@@ -75,7 +75,7 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 	/**
 	 * Construct using the {@link LMedS} algorithm with the given expected
 	 * outlier percentage
-	 * 
+	 *
 	 * @param outlierProportion
 	 *            expected proportion of outliers (between 0 and 1)
 	 * @param refinement
@@ -92,7 +92,7 @@ public class RobustFundamentalEstimator implements RobustModelFitting<Point2d, P
 
 	/**
 	 * Construct using the {@link RANSAC} algorithm with the given options.
-	 * 
+	 *
 	 * @param threshold
 	 *            the threshold on the {@link AlgebraicResidual2d} at which to
 	 *            consider a point as an inlier

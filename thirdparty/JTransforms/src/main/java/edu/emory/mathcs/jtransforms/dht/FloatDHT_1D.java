@@ -96,7 +96,8 @@ public class FloatDHT_1D {
                 final int lastIdx = (i == (nthreads - 1)) ? nd2 : firstIdx + k1;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                    public void run() {
+                    @Override
+					public void run() {
                         int idx1, idx2;
                         for (int i = firstIdx; i < lastIdx; i++) {
                             idx1 = 2 * i;
@@ -170,7 +171,8 @@ public class FloatDHT_1D {
                 final int lastIdx = (i == (nthreads - 1)) ? offa + n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             a[i] *= norm;
                         }

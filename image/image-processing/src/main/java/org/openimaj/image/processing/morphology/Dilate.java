@@ -43,7 +43,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * Morphological dilation of connected components and (assumed binary) FImages.
  * See {@link MaxFilter} for greyscale dilation.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Dilate implements ConnectedComponentProcessor, KernelProcessor<Float, FImage> {
@@ -55,7 +55,7 @@ public class Dilate implements ConnectedComponentProcessor, KernelProcessor<Floa
 
 	/**
 	 * Construct the dilate operator with the given structuring element
-	 * 
+	 *
 	 * @param se
 	 *            the structuring element
 	 */
@@ -128,7 +128,7 @@ public class Dilate implements ConnectedComponentProcessor, KernelProcessor<Floa
 	/**
 	 * Apply dilation some number of times to an image with the default
 	 * {@link StructuringElement#BOX} element
-	 * 
+	 *
 	 * @param img
 	 *            the image
 	 * @param times

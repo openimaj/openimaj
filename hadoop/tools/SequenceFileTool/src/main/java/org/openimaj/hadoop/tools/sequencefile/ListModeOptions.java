@@ -39,7 +39,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.SequenceFile;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.openimaj.hadoop.sequencefile.RecordInformationExtractor;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;

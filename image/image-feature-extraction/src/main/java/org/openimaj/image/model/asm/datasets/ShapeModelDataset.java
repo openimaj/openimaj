@@ -44,33 +44,33 @@ import org.openimaj.util.pair.IndependentPair;
  * with a set of connections between points which are valid across all
  * instances. Useful for training {@link PointDistributionModel}s and
  * {@link ActiveShapeModel}s.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <IMAGE>
  *            type of the images in the collection
  */
 public interface ShapeModelDataset<IMAGE extends Image<?, IMAGE>>
-		extends
-		ListDataset<IndependentPair<PointList, IMAGE>>
+extends
+ListDataset<IndependentPair<PointList, IMAGE>>
 {
 	/**
 	 * Get the connections between the points
-	 * 
+	 *
 	 * @return the connections
 	 */
 	public PointListConnections getConnections();
 
 	/**
 	 * Get the points for each instance
-	 * 
+	 *
 	 * @return the point list for each instance
 	 */
 	public List<PointList> getPointLists();
 
 	/**
 	 * Get the image for each instance
-	 * 
+	 *
 	 * @return the image for each instance
 	 */
 	public List<IMAGE> getImages();

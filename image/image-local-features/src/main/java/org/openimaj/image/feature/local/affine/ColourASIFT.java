@@ -45,14 +45,14 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
  * that the type of Colour-SIFT feature is controlled directly by the
  * colour-space of the input image; for example if an RGB image is given as
  * input, then the feature will be standard RGB-SIFT.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ColourASIFT extends ASIFT<MBFImage, Float[]> {
 	/**
 	 * Construct with the given options for the internal {@link DoGSIFTEngine}.
-	 * 
+	 *
 	 * @param opts
 	 */
 	public ColourASIFT(DoGSIFTEngineOptions<MBFImage> opts) {
@@ -63,9 +63,9 @@ public class ColourASIFT extends ASIFT<MBFImage, Float[]> {
 	 * Construct the ASIFT extractor using the default parameters for the
 	 * {@link DoGSIFTEngine}, with the exception of the option to double the
 	 * size of the initial image which can be overridden.
-	 * 
+	 *
 	 * @see DoGSIFTEngineOptions#setDoubleInitialImage(boolean)
-	 * 
+	 *
 	 * @param hires
 	 *            if true, then the input image is doubled in size before the
 	 *            SIFT features are extracted.

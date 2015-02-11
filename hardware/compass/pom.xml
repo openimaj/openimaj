@@ -9,7 +9,6 @@
   </parent>
   <groupId>org.openimaj.hardware</groupId>
   <artifactId>compass</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>Driver for OceanServer Serial Compass</name>
   <description>Interface to an OceanServer OS5000 digital compass.</description>
   <inceptionYear>2011</inceptionYear>
@@ -65,11 +64,6 @@
           <!-- <parallel>classes</parallel>
 		 		            <perCoreThreadCount>2</perCoreThreadCount> -->
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.8</version>
       </plugin>
     </plugins>
   </build>

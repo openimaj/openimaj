@@ -33,20 +33,22 @@ import org.openimaj.image.Image;
 import org.openimaj.image.processor.ImageProcessor;
 
 /**
- * An interface for objects that are able to perform analysis on images. 
- * The {@link ImageAnalyser}s should not change the image; if you want to
- * change the pixels, use an {@link ImageProcessor} instead.
- * 	
+ * An interface for objects that are able to perform analysis on images. The
+ * {@link ImageAnalyser}s should not change the image; if you want to change the
+ * pixels, use an {@link ImageProcessor} instead.
  * 
- *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *  @param <I> The type of image that this analyser can analyse
+ *
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @param <I>
+ *            The type of image that this analyser can analyse
  */
-public interface ImageAnalyser<I extends Image<?,I>> 
+public interface ImageAnalyser<I extends Image<?, I>>
 {
 	/**
 	 * Analyse an image.
-	 * 
-	 * @param image The image to process in place.
+	 *
+	 * @param image
+	 *            The image to process in place.
 	 */
 	public abstract void analyseImage(I image);
 }

@@ -41,9 +41,9 @@ import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
 
 /**
  * Options for the {@link BatchExtractor} tool.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class BatchExtractorOptions extends BaseExtractorOptions {
 	@Option(name = "--input", aliases = "-i", usage = "input directory", required = true)
@@ -66,7 +66,7 @@ public class BatchExtractorOptions extends BaseExtractorOptions {
 
 	/**
 	 * Get the input files
-	 * 
+	 *
 	 * @return the input files
 	 */
 	public List<File> getInputs() {
@@ -98,7 +98,7 @@ public class BatchExtractorOptions extends BaseExtractorOptions {
 	/**
 	 * Get the output file corresponding to the input, making directories as
 	 * required
-	 * 
+	 *
 	 * @param f
 	 *            the input file
 	 * @return the output file
@@ -118,7 +118,7 @@ public class BatchExtractorOptions extends BaseExtractorOptions {
 
 	/**
 	 * Get the thread pool to use for performing operations
-	 * 
+	 *
 	 * @return the thread pool
 	 */
 	public ThreadPoolExecutor getThreadPool() {

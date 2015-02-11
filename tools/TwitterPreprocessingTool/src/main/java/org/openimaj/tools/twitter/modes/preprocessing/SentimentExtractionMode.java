@@ -39,14 +39,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.text.nlp.sentiment.BillMPQASentiment;
 import org.openimaj.text.nlp.sentiment.SentimentExtractor;
-import org.openimaj.text.nlp.sentiment.model.wordlist.MPQAToken;
-import org.openimaj.text.nlp.sentiment.model.wordlist.MPQATokenList;
-import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
 import org.openimaj.twitter.USMFStatus;
-import org.tartarus.snowball.ext.EnglishStemmer;
 
 /**
  *

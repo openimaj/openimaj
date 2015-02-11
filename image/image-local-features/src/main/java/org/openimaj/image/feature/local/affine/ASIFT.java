@@ -47,10 +47,10 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * This is implemented as an extension of the {@link AffineSimulationExtractor}
  * which uses a {@link DoGSIFTEngine} to extract SIFT features from each affine
  * simulation.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <I>
  *            Type of image
  * @param <P>
@@ -64,15 +64,15 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 		journal = "SIAM J. Img. Sci.",
 		publisher = "Society for Industrial and Applied Mathematics")
 public abstract class ASIFT<I extends Image<P, I> & SinglebandImageProcessor.Processable<Float, FImage, I>, P>
-		extends
-		AffineSimulationExtractor<LocalFeatureList<Keypoint>, Keypoint, I, P>
+extends
+AffineSimulationExtractor<LocalFeatureList<Keypoint>, Keypoint, I, P>
 {
 	Engine<Keypoint, I> keypointEngine;
 
 	/**
 	 * A commonly used option, while all others in {@link DoGSIFTEngineOptions}
 	 * are default
-	 * 
+	 *
 	 * @param hires
 	 *            whether the image should be double sized as a first step
 	 */
@@ -95,7 +95,7 @@ public abstract class ASIFT<I extends Image<P, I> & SinglebandImageProcessor.Pro
 
 	/**
 	 * An engine which can process images of type <I> and output keypoints
-	 * 
+	 *
 	 * @param opts
 	 * @return various engines
 	 */

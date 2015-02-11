@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.image.feature.local.detector.mser;
 
@@ -46,7 +46,7 @@ import org.openimaj.util.tree.TreeNode;
 
 /**
  * Detector for MSER features.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 @Reference(
@@ -67,9 +67,9 @@ import org.openimaj.util.tree.TreeNode;
 public class MSERFeatureGenerator {
 	/**
 	 * A way of representing how the MSER should be processed.
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public enum MSERDirection {
 		/**
@@ -95,17 +95,18 @@ public class MSERFeatureGenerator {
 
 	/**
 	 * Default constructor
-	 * 
+	 *
 	 * @param featureClasses
 	 *            features to generate for each mser
 	 */
+	@SafeVarargs
 	public MSERFeatureGenerator(Class<? extends ComponentFeature>... featureClasses) {
 		this.featureClasses = featureClasses;
 	}
 
 	/**
 	 * Constructor that takes all the parameters for the MSER process.
-	 * 
+	 *
 	 * @param delta
 	 * @param maxArea
 	 * @param minArea
@@ -114,6 +115,7 @@ public class MSERFeatureGenerator {
 	 * @param featureClasses
 	 *            features to generate for each mser
 	 */
+	@SafeVarargs
 	public MSERFeatureGenerator(int delta, int maxArea, int minArea, float maxVariation, float minDiversity,
 			Class<? extends ComponentFeature>... featureClasses)
 	{
@@ -129,7 +131,7 @@ public class MSERFeatureGenerator {
 	/**
 	 * Performs a watershed then an MSER detection on the given image and
 	 * returns the MSERs.
-	 * 
+	 *
 	 * @param img
 	 *            The image to analyse.
 	 * @return A list of {@link Component}s
@@ -141,7 +143,7 @@ public class MSERFeatureGenerator {
 	/**
 	 * Performs a watershed then an MSER detection on the given image and
 	 * returns the MSERs.
-	 * 
+	 *
 	 * @param img
 	 *            The image to analyse.#
 	 * @param dir
@@ -156,7 +158,7 @@ public class MSERFeatureGenerator {
 
 	/**
 	 * Perform the watershed algorithm on the given image.
-	 * 
+	 *
 	 * @param img
 	 *            The image to perform the watershed on
 	 * @return A tuple of {@link MergeTreeBuilder}s (down first, up second)
@@ -195,7 +197,7 @@ public class MSERFeatureGenerator {
 	 * Performs MSER detection on the trees provided. The input list must be a
 	 * list containing {@link MergeTreeBuilder}s, the first being the downward
 	 * watershed, the second being the upward watershed.
-	 * 
+	 *
 	 * @param mtbs
 	 *            The list of {@link MergeTreeBuilder}s
 	 * @param dir
@@ -254,7 +256,7 @@ public class MSERFeatureGenerator {
 
 	/**
 	 * Removes all the MSER flags from the components in the tree
-	 * 
+	 *
 	 * @param tree
 	 *            The tree to clear MSER flags
 	 */
@@ -272,7 +274,7 @@ public class MSERFeatureGenerator {
 	/**
 	 * Returns a count of the number of components in the tree that are marked
 	 * as MSERs.
-	 * 
+	 *
 	 * @param tree
 	 *            The tree to count MSERs in
 	 * @return the count

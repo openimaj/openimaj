@@ -41,7 +41,7 @@ import Jama.Matrix;
  * location described by a {@link KeypointLocation}. It is the quantised
  * equivalent to a {@link Keypoint}, with the feature vector replaced by a
  * single integer assignment.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> implements Point2d {
@@ -56,7 +56,7 @@ public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> i
 	/**
 	 * Construct a {@link QuantisedKeypoint}, located at the given position with
 	 * an id of 0.
-	 * 
+	 *
 	 * @param loc
 	 *            the position
 	 */
@@ -67,7 +67,7 @@ public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> i
 	/**
 	 * Construct a {@link QuantisedKeypoint}, located at the given position and
 	 * id.
-	 * 
+	 *
 	 * @param loc
 	 *            the position
 	 * @param id

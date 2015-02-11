@@ -41,246 +41,257 @@ import edu.emory.mathcs.utils.IOUtils;
 
 /**
  * Benchmark of single precision DCT's
- * 
+ *
  * @author Piotr Wendykier (piotr.wendykier@gmail.com)
- * 
+ *
  */
+@SuppressWarnings("javadoc")
 public class BenchmarkFloatDCT {
 
-    private static int nthread = 8;
+	private static int nthread = 8;
 
-    private static int niter = 200;
+	private static int niter = 200;
 
-    private static int nsize = 16;
+	private static int nsize = 16;
 
-    private static int threadsBegin2D = 65636;
+	private static int threadsBegin2D = 65636;
 
-    private static int threadsBegin3D = 65636;
+	private static int threadsBegin3D = 65636;
 
-    private static boolean doWarmup = true;
+	private static boolean doWarmup = true;
 
-    private static int[] sizes1D = new int[] { 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 10368, 27000, 75600, 165375, 362880, 1562500, 3211264, 6250000 };
+	private static int[] sizes1D = new int[] { 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 10368,
+			27000, 75600, 165375, 362880, 1562500, 3211264, 6250000 };
 
-    private static int[] sizes2D = new int[] { 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 260, 520, 1050, 1458, 1960, 2916, 4116, 5832 };
+	private static int[] sizes2D = new int[] { 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 260, 520, 1050, 1458, 1960,
+			2916, 4116, 5832 };
 
-    private static int[] sizes3D = new int[] { 8, 16, 32, 64, 128, 256, 512, 1024, 5, 17, 30, 95, 180, 270, 324, 420 };
+	private static int[] sizes3D = new int[] { 8, 16, 32, 64, 128, 256, 512, 1024, 5, 17, 30, 95, 180, 270, 324, 420 };
 
-    private static boolean doScaling = false;
+	private static boolean doScaling = false;
 
-    private BenchmarkFloatDCT() {
+	private BenchmarkFloatDCT() {
 
-    }
+	}
 
-    public static void parseArguments(String[] args) {
-        if (args.length > 0) {
-            nthread = Integer.parseInt(args[0]);
-            threadsBegin2D = Integer.parseInt(args[1]);
-            threadsBegin3D = Integer.parseInt(args[2]);
-            niter = Integer.parseInt(args[3]);
-            doWarmup = Boolean.parseBoolean(args[4]);
-            doScaling = Boolean.parseBoolean(args[5]);
-            nsize = Integer.parseInt(args[6]);
-            sizes1D = new int[nsize];
-            sizes2D = new int[nsize];
-            sizes3D = new int[nsize];
-            for (int i = 0; i < nsize; i++) {
-                sizes1D[i] = Integer.parseInt(args[7 + i]);
-            }
-            for (int i = 0; i < nsize; i++) {
-                sizes2D[i] = Integer.parseInt(args[7 + nsize + i]);
-            }
-            for (int i = 0; i < nsize; i++) {
-                sizes3D[i] = Integer.parseInt(args[7 + nsize + nsize + i]);
-            }
-        } else {
-            System.out.println("Default settings are used.");
-        }
-        ConcurrencyUtils.setNumberOfThreads(nthread);
-        ConcurrencyUtils.setThreadsBeginN_2D(threadsBegin2D);
-        ConcurrencyUtils.setThreadsBeginN_3D(threadsBegin3D);
-        System.out.println("nthred = " + nthread);
-        System.out.println("threadsBegin2D = " + threadsBegin2D);
-        System.out.println("threadsBegin3D = " + threadsBegin3D);
-        System.out.println("niter = " + niter);
-        System.out.println("doWarmup = " + doWarmup);
-        System.out.println("doScaling = " + doScaling);
-        System.out.println("nsize = " + nsize);
-        System.out.println("sizes1D[] = " + Arrays.toString(sizes1D));
-        System.out.println("sizes2D[] = " + Arrays.toString(sizes2D));
-        System.out.println("sizes3D[] = " + Arrays.toString(sizes3D));
-    }
+	public static void parseArguments(String[] args) {
+		if (args.length > 0) {
+			nthread = Integer.parseInt(args[0]);
+			threadsBegin2D = Integer.parseInt(args[1]);
+			threadsBegin3D = Integer.parseInt(args[2]);
+			niter = Integer.parseInt(args[3]);
+			doWarmup = Boolean.parseBoolean(args[4]);
+			doScaling = Boolean.parseBoolean(args[5]);
+			nsize = Integer.parseInt(args[6]);
+			sizes1D = new int[nsize];
+			sizes2D = new int[nsize];
+			sizes3D = new int[nsize];
+			for (int i = 0; i < nsize; i++) {
+				sizes1D[i] = Integer.parseInt(args[7 + i]);
+			}
+			for (int i = 0; i < nsize; i++) {
+				sizes2D[i] = Integer.parseInt(args[7 + nsize + i]);
+			}
+			for (int i = 0; i < nsize; i++) {
+				sizes3D[i] = Integer.parseInt(args[7 + nsize + nsize + i]);
+			}
+		} else {
+			System.out.println("Default settings are used.");
+		}
+		ConcurrencyUtils.setNumberOfThreads(nthread);
+		ConcurrencyUtils.setThreadsBeginN_2D(threadsBegin2D);
+		ConcurrencyUtils.setThreadsBeginN_3D(threadsBegin3D);
+		System.out.println("nthred = " + nthread);
+		System.out.println("threadsBegin2D = " + threadsBegin2D);
+		System.out.println("threadsBegin3D = " + threadsBegin3D);
+		System.out.println("niter = " + niter);
+		System.out.println("doWarmup = " + doWarmup);
+		System.out.println("doScaling = " + doScaling);
+		System.out.println("nsize = " + nsize);
+		System.out.println("sizes1D[] = " + Arrays.toString(sizes1D));
+		System.out.println("sizes2D[] = " + Arrays.toString(sizes2D));
+		System.out.println("sizes3D[] = " + Arrays.toString(sizes3D));
+	}
 
-    public static void benchmarkForward_1D() {
-        double[] times = new double[nsize];
-        float[] x;
-        for (int i = 0; i < nsize; i++) {
-            System.out.println("Forward DCT 1D of size " + sizes1D[i]);
-            FloatDCT_1D dct = new FloatDCT_1D(sizes1D[i]);
-            x = new float[sizes1D[i]];
-            if (doWarmup) { // call the transform twice to warm up
-                IOUtils.fillMatrix_1D(sizes1D[i], x);
-                dct.forward(x, doScaling);
-                IOUtils.fillMatrix_1D(sizes1D[i], x);
-                dct.forward(x, doScaling);
-            }
-            float av_time = 0;
-            long elapsedTime = 0;
-            for (int j = 0; j < niter; j++) {
-                IOUtils.fillMatrix_1D(sizes1D[i], x);
-                elapsedTime = System.nanoTime();
-                dct.forward(x, doScaling);
-                elapsedTime = System.nanoTime() - elapsedTime;
-                av_time = av_time + elapsedTime;
-            }
-            times[i] = (double) av_time / 1000000.0 / (float) niter;
-            System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / (float) niter) + " msec");
-            x = null;
-            dct = null;
-            System.gc();
-            ConcurrencyUtils.sleep(5000);
-        }
-        IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_1D.txt", nthread, niter, doWarmup, doScaling, sizes1D, times);
-    }
+	public static void benchmarkForward_1D() {
+		final double[] times = new double[nsize];
+		float[] x;
+		for (int i = 0; i < nsize; i++) {
+			System.out.println("Forward DCT 1D of size " + sizes1D[i]);
+			FloatDCT_1D dct = new FloatDCT_1D(sizes1D[i]);
+			x = new float[sizes1D[i]];
+			if (doWarmup) { // call the transform twice to warm up
+				IOUtils.fillMatrix_1D(sizes1D[i], x);
+				dct.forward(x, doScaling);
+				IOUtils.fillMatrix_1D(sizes1D[i], x);
+				dct.forward(x, doScaling);
+			}
+			float av_time = 0;
+			long elapsedTime = 0;
+			for (int j = 0; j < niter; j++) {
+				IOUtils.fillMatrix_1D(sizes1D[i], x);
+				elapsedTime = System.nanoTime();
+				dct.forward(x, doScaling);
+				elapsedTime = System.nanoTime() - elapsedTime;
+				av_time = av_time + elapsedTime;
+			}
+			times[i] = av_time / 1000000.0 / niter;
+			System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / niter) + " msec");
+			x = null;
+			dct = null;
+			System.gc();
+			ConcurrencyUtils.sleep(5000);
+		}
+		IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_1D.txt", nthread, niter, doWarmup, doScaling,
+				sizes1D, times);
+	}
 
-    public static void benchmarkForward_2D_input_1D() {
-        double[] times = new double[nsize];
-        float[] x;
-        for (int i = 0; i < nsize; i++) {
-            System.out.println("Forward DCT 2D (input 1D) of size " + sizes2D[i] + " x " + sizes2D[i]);
-            FloatDCT_2D dct2 = new FloatDCT_2D(sizes2D[i], sizes2D[i]);
-            x = new float[sizes2D[i] * sizes2D[i]];
-            if (doWarmup) { // call the transform twice to warm up
-                IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
-                dct2.forward(x, doScaling);
-                IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
-                dct2.forward(x, doScaling);
-            }
-            float av_time = 0;
-            long elapsedTime = 0;
-            for (int j = 0; j < niter; j++) {
-                IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
-                elapsedTime = System.nanoTime();
-                dct2.forward(x, doScaling);
-                elapsedTime = System.nanoTime() - elapsedTime;
-                av_time = av_time + elapsedTime;
-            }
-            times[i] = (double) av_time / 1000000.0 / (float) niter;
-            System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / (float) niter) + " msec");
-            x = null;
-            dct2 = null;
-            System.gc();
-            ConcurrencyUtils.sleep(5000);
-        }
-        IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_2D_input_1D.txt", nthread, niter, doWarmup, doScaling, sizes2D, times);
+	public static void benchmarkForward_2D_input_1D() {
+		final double[] times = new double[nsize];
+		float[] x;
+		for (int i = 0; i < nsize; i++) {
+			System.out.println("Forward DCT 2D (input 1D) of size " + sizes2D[i] + " x " + sizes2D[i]);
+			FloatDCT_2D dct2 = new FloatDCT_2D(sizes2D[i], sizes2D[i]);
+			x = new float[sizes2D[i] * sizes2D[i]];
+			if (doWarmup) { // call the transform twice to warm up
+				IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
+				dct2.forward(x, doScaling);
+				IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
+				dct2.forward(x, doScaling);
+			}
+			float av_time = 0;
+			long elapsedTime = 0;
+			for (int j = 0; j < niter; j++) {
+				IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
+				elapsedTime = System.nanoTime();
+				dct2.forward(x, doScaling);
+				elapsedTime = System.nanoTime() - elapsedTime;
+				av_time = av_time + elapsedTime;
+			}
+			times[i] = av_time / 1000000.0 / niter;
+			System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / niter) + " msec");
+			x = null;
+			dct2 = null;
+			System.gc();
+			ConcurrencyUtils.sleep(5000);
+		}
+		IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_2D_input_1D.txt", nthread, niter, doWarmup,
+				doScaling, sizes2D, times);
 
-    }
+	}
 
-    public static void benchmarkForward_2D_input_2D() {
-        double[] times = new double[nsize];
-        float[][] x;
-        for (int i = 0; i < nsize; i++) {
-            System.out.println("Forward DCT 2D (input 2D) of size " + sizes2D[i] + " x " + sizes2D[i]);
-            FloatDCT_2D dct2 = new FloatDCT_2D(sizes2D[i], sizes2D[i]);
-            x = new float[sizes2D[i]][sizes2D[i]];
-            if (doWarmup) { // call the transform twice to warm up
-                IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
-                dct2.forward(x, doScaling);
-                IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
-                dct2.forward(x, doScaling);
-            }
-            float av_time = 0;
-            long elapsedTime = 0;
-            for (int j = 0; j < niter; j++) {
-                IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
-                elapsedTime = System.nanoTime();
-                dct2.forward(x, doScaling);
-                elapsedTime = System.nanoTime() - elapsedTime;
-                av_time = av_time + elapsedTime;
-            }
-            times[i] = (double) av_time / 1000000.0 / (float) niter;
-            System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / (float) niter) + " msec");
-            x = null;
-            dct2 = null;
-            System.gc();
-            ConcurrencyUtils.sleep(5000);
-        }
-        IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_2D_input_2D.txt", nthread, niter, doWarmup, doScaling, sizes2D, times);
+	public static void benchmarkForward_2D_input_2D() {
+		final double[] times = new double[nsize];
+		float[][] x;
+		for (int i = 0; i < nsize; i++) {
+			System.out.println("Forward DCT 2D (input 2D) of size " + sizes2D[i] + " x " + sizes2D[i]);
+			FloatDCT_2D dct2 = new FloatDCT_2D(sizes2D[i], sizes2D[i]);
+			x = new float[sizes2D[i]][sizes2D[i]];
+			if (doWarmup) { // call the transform twice to warm up
+				IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
+				dct2.forward(x, doScaling);
+				IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
+				dct2.forward(x, doScaling);
+			}
+			float av_time = 0;
+			long elapsedTime = 0;
+			for (int j = 0; j < niter; j++) {
+				IOUtils.fillMatrix_2D(sizes2D[i], sizes2D[i], x);
+				elapsedTime = System.nanoTime();
+				dct2.forward(x, doScaling);
+				elapsedTime = System.nanoTime() - elapsedTime;
+				av_time = av_time + elapsedTime;
+			}
+			times[i] = av_time / 1000000.0 / niter;
+			System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / niter) + " msec");
+			x = null;
+			dct2 = null;
+			System.gc();
+			ConcurrencyUtils.sleep(5000);
+		}
+		IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_2D_input_2D.txt", nthread, niter, doWarmup,
+				doScaling, sizes2D, times);
 
-    }
+	}
 
-    public static void benchmarkForward_3D_input_1D() {
-        double[] times = new double[nsize];
-        float[] x;
-        for (int i = 0; i < nsize; i++) {
-            System.out.println("Forward DCT 3D (input 1D) of size " + sizes3D[i] + " x " + sizes3D[i] + " x " + sizes3D[i]);
-            FloatDCT_3D dct3 = new FloatDCT_3D(sizes3D[i], sizes3D[i], sizes3D[i]);
-            x = new float[sizes3D[i] * sizes3D[i] * sizes3D[i]];
-            if (doWarmup) { // call the transform twice to warm up
-                IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
-                dct3.forward(x, doScaling);
-                IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
-                dct3.forward(x, doScaling);
-            }
-            float av_time = 0;
-            long elapsedTime = 0;
-            for (int j = 0; j < niter; j++) {
-                IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
-                elapsedTime = System.nanoTime();
-                dct3.forward(x, doScaling);
-                elapsedTime = System.nanoTime() - elapsedTime;
-                av_time = av_time + elapsedTime;
-            }
-            times[i] = (double) av_time / 1000000.0 / (float) niter;
-            System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / (float) niter) + " msec");
-            x = null;
-            dct3 = null;
-            System.gc();
-            ConcurrencyUtils.sleep(5000);
-        }
-        IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_3D_input_1D.txt", nthread, niter, doWarmup, doScaling, sizes3D, times);
+	public static void benchmarkForward_3D_input_1D() {
+		final double[] times = new double[nsize];
+		float[] x;
+		for (int i = 0; i < nsize; i++) {
+			System.out.println("Forward DCT 3D (input 1D) of size " + sizes3D[i] + " x " + sizes3D[i] + " x "
+					+ sizes3D[i]);
+			FloatDCT_3D dct3 = new FloatDCT_3D(sizes3D[i], sizes3D[i], sizes3D[i]);
+			x = new float[sizes3D[i] * sizes3D[i] * sizes3D[i]];
+			if (doWarmup) { // call the transform twice to warm up
+				IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
+				dct3.forward(x, doScaling);
+				IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
+				dct3.forward(x, doScaling);
+			}
+			float av_time = 0;
+			long elapsedTime = 0;
+			for (int j = 0; j < niter; j++) {
+				IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
+				elapsedTime = System.nanoTime();
+				dct3.forward(x, doScaling);
+				elapsedTime = System.nanoTime() - elapsedTime;
+				av_time = av_time + elapsedTime;
+			}
+			times[i] = av_time / 1000000.0 / niter;
+			System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / niter) + " msec");
+			x = null;
+			dct3 = null;
+			System.gc();
+			ConcurrencyUtils.sleep(5000);
+		}
+		IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_3D_input_1D.txt", nthread, niter, doWarmup,
+				doScaling, sizes3D, times);
 
-    }
+	}
 
-    public static void benchmarkForward_3D_input_3D() {
-        double[] times = new double[nsize];
-        float[][][] x;
-        for (int i = 0; i < nsize; i++) {
-            System.out.println("Forward DCT 3D (input 3D) of size " + sizes3D[i] + " x " + sizes3D[i] + " x " + sizes3D[i]);
-            FloatDCT_3D dct3 = new FloatDCT_3D(sizes3D[i], sizes3D[i], sizes3D[i]);
-            x = new float[sizes3D[i]][sizes3D[i]][sizes3D[i]];
-            if (doWarmup) { // call the transform twice to warm up
-                IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
-                dct3.forward(x, doScaling);
-                IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
-                dct3.forward(x, doScaling);
-            }
-            float av_time = 0;
-            long elapsedTime = 0;
-            for (int j = 0; j < niter; j++) {
-                IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
-                elapsedTime = System.nanoTime();
-                dct3.forward(x, doScaling);
-                elapsedTime = System.nanoTime() - elapsedTime;
-                av_time = av_time + elapsedTime;
-            }
-            times[i] = (double) av_time / 1000000.0 / (double) (niter);
-            System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / (double) (niter)) + " msec");
-            x = null;
-            dct3 = null;
-            System.gc();
-            ConcurrencyUtils.sleep(5000);
-        }
-        IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_3D_input_3D.txt", nthread, niter, doWarmup, doScaling, sizes3D, times);
-    }
+	public static void benchmarkForward_3D_input_3D() {
+		final double[] times = new double[nsize];
+		float[][][] x;
+		for (int i = 0; i < nsize; i++) {
+			System.out.println("Forward DCT 3D (input 3D) of size " + sizes3D[i] + " x " + sizes3D[i] + " x "
+					+ sizes3D[i]);
+			FloatDCT_3D dct3 = new FloatDCT_3D(sizes3D[i], sizes3D[i], sizes3D[i]);
+			x = new float[sizes3D[i]][sizes3D[i]][sizes3D[i]];
+			if (doWarmup) { // call the transform twice to warm up
+				IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
+				dct3.forward(x, doScaling);
+				IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
+				dct3.forward(x, doScaling);
+			}
+			float av_time = 0;
+			long elapsedTime = 0;
+			for (int j = 0; j < niter; j++) {
+				IOUtils.fillMatrix_3D(sizes3D[i], sizes3D[i], sizes3D[i], x);
+				elapsedTime = System.nanoTime();
+				dct3.forward(x, doScaling);
+				elapsedTime = System.nanoTime() - elapsedTime;
+				av_time = av_time + elapsedTime;
+			}
+			times[i] = av_time / 1000000.0 / (niter);
+			System.out.println("Average execution time: " + String.format("%.2f", av_time / 1000000.0 / (niter))
+					+ " msec");
+			x = null;
+			dct3 = null;
+			System.gc();
+			ConcurrencyUtils.sleep(5000);
+		}
+		IOUtils.writeFFTBenchmarkResultsToFile("benchmarkFloatForwardDCT_3D_input_3D.txt", nthread, niter, doWarmup,
+				doScaling, sizes3D, times);
+	}
 
-    public static void main(String[] args) {
-        parseArguments(args);
-        benchmarkForward_1D();
-        benchmarkForward_2D_input_1D();
-        benchmarkForward_2D_input_2D();
-        benchmarkForward_3D_input_1D();
-        benchmarkForward_3D_input_3D();
-        System.exit(0);
+	public static void main(String[] args) {
+		parseArguments(args);
+		benchmarkForward_1D();
+		benchmarkForward_2D_input_1D();
+		benchmarkForward_2D_input_2D();
+		benchmarkForward_3D_input_1D();
+		benchmarkForward_3D_input_3D();
+		System.exit(0);
 
-    }
+	}
 }

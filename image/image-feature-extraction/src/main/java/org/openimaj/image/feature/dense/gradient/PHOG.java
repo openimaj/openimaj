@@ -68,9 +68,9 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * you do need to extract many PHOG-like features different rectangles of the
  * same image, use a {@link GradientOrientationHistogramExtractor} coupled with
  * a {@link QuadtreeStrategy} to achieve the desired effect.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
@@ -112,7 +112,7 @@ public class PHOG implements ImageAnalyser<FImage>, FeatureVectorProvider<Double
 	/**
 	 * Construct with the given values, using Canny edge detection and gradient
 	 * histogram interpolation.
-	 * 
+	 *
 	 * @param nlevels
 	 *            number of pyramid levels (note this includes l0, so you might
 	 *            need 1 more)
@@ -130,7 +130,7 @@ public class PHOG implements ImageAnalyser<FImage>, FeatureVectorProvider<Double
 	 * Construct with the given parameters. The <code>edgeDetector</code>
 	 * parameter can be <code>null</code> if you don't want to filter out
 	 * non-edge pixels from the histograms.
-	 * 
+	 *
 	 * @param nlevels
 	 *            number of pyramid levels (note this includes l0, so you might
 	 *            need 1 more)
@@ -177,7 +177,7 @@ public class PHOG implements ImageAnalyser<FImage>, FeatureVectorProvider<Double
 	/**
 	 * Extract the PHOG feature for the specified region of the image last
 	 * analysed with {@link #analyseImage(FImage)}.
-	 * 
+	 *
 	 * @param rect
 	 *            the region
 	 * @return the PHOG feature
@@ -199,9 +199,9 @@ public class PHOG implements ImageAnalyser<FImage>, FeatureVectorProvider<Double
 	/**
 	 * Extract the PHOG feature for the whole of the image last analysed with
 	 * {@link #analyseImage(FImage)}.
-	 * 
+	 *
 	 * @return the PHOG feature
-	 * 
+	 *
 	 * @see org.openimaj.feature.FeatureVectorProvider#getFeatureVector()
 	 */
 	@Override

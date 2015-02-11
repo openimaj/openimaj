@@ -29,16 +29,12 @@
  */
 package org.openimaj.tools.reddit;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Period;
 import org.kohsuke.args4j.Option;
 import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
-import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.LongLongPair;
 
 /**

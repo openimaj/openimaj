@@ -46,15 +46,16 @@ import org.openimaj.util.stream.Stream;
 /**
  * This class implements a function that can read images from URLs. Use in
  * combination with a {@link Stream} to convert from URLs to {@link Image}s.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <I>
  *            The type of {@link Image}
  */
 public class ImageFromURL<I extends Image<?, I>> implements MultiFunction<URL, I> {
 	/**
-	 * Static instance of the {@link ImageFromURL} for extracting {@link FImage}s
+	 * Static instance of the {@link ImageFromURL} for extracting {@link FImage}
+	 * s
 	 */
 	public static ImageFromURL<FImage> FIMAGE_EXTRACTOR = new ImageFromURL<FImage>(ImageUtilities.FIMAGE_READER);
 
@@ -68,7 +69,7 @@ public class ImageFromURL<I extends Image<?, I>> implements MultiFunction<URL, I
 
 	/**
 	 * Construct with the given image reader.
-	 * 
+	 *
 	 * @param reader
 	 */
 	public ImageFromURL(ObjectReader<I, InputStream> reader) {

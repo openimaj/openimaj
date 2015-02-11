@@ -38,16 +38,16 @@ import org.openimaj.util.hash.HashFunctionFactory;
 /**
  * Simple composition function. Computes the composite hash using the same
  * method as {@link HashCodeUtil} for int arrays.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object being hashed
  */
 public class SimpleComposition<OBJECT> extends HashComposition<OBJECT> {
 	/**
 	 * Construct with the given functions.
-	 * 
+	 *
 	 * @param functions
 	 *            the underlying hash functions.
 	 */
@@ -57,12 +57,13 @@ public class SimpleComposition<OBJECT> extends HashComposition<OBJECT> {
 
 	/**
 	 * Construct with the given functions.
-	 * 
+	 *
 	 * @param first
 	 *            the first function
 	 * @param remainder
 	 *            the remainder of the functions
 	 */
+	@SafeVarargs
 	public SimpleComposition(HashFunction<OBJECT> first, HashFunction<OBJECT>... remainder) {
 		super(first, remainder);
 	}
@@ -70,7 +71,7 @@ public class SimpleComposition<OBJECT> extends HashComposition<OBJECT> {
 	/**
 	 * Construct with the factory which is used to produce the required number
 	 * of functions.
-	 * 
+	 *
 	 * @param factory
 	 *            the factory to use to produce the underlying hash functions.
 	 * @param nFuncs

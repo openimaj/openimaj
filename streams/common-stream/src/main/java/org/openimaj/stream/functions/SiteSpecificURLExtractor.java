@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.openimaj.io.HttpUtils;
 import org.openimaj.util.function.MultiFunction;
 import org.openimaj.web.scraping.SiteSpecificConsumer;
 

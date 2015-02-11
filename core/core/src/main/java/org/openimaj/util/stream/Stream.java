@@ -86,7 +86,7 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 *            processing to stop
 	 */
 	public void forEach(Operation<T> operation, Predicate<T> stopPredicate);
-	
+
 	/**
 	 * Apply the given {@link Operation} to each item in the stream. Items are
 	 * presented to the {@link Operation} in the order they appear in the
@@ -99,10 +99,9 @@ public interface Stream<T> extends Iterator<T>, Iterable<T> {
 	 *
 	 * @param operation
 	 *            the {@link Operation} to apply
-	 * @param limit 
-	 * 			  the number of items to read from the stream
-	 * @return 
-	 * 			  the number of items read
+	 * @param limit
+	 *            the number of items to read from the stream
+	 * @return the number of items read
 	 */
 	public int forEach(Operation<T> operation, int limit);
 

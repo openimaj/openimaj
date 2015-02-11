@@ -31,7 +31,6 @@ package org.openimaj.image.feature.local.descriptor;
 
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 
 /**
  * Base interface for classes capable of building local descriptors.

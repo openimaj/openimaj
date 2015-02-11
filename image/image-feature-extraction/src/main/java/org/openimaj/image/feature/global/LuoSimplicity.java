@@ -43,10 +43,9 @@ import org.openimaj.image.saliency.LuoTangSubjectRegion;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
- * Estimate the simplicity of an image by looking at the
- * colour distribution of the background using the algorithm
- * defined by Yiwen Luo and Xiaoou Tang.
- * 
+ * Estimate the simplicity of an image by looking at the colour distribution of
+ * the background using the algorithm defined by Yiwen Luo and Xiaoou Tang.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
@@ -59,65 +58,74 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 		url = "http://dx.doi.org/10.1007/978-3-540-88690-7_29",
 		publisher = "Springer-Verlag",
 		series = "ECCV '08",
-		customData = { 
-				"isbn", "978-3-540-88689-1", 
-				"location", "Marseille, France", 
-				"numpages", "14", 
-				"doi", "10.1007/978-3-540-88690-7_29", 
-				"acmid", "1478204", 
-				"address", "Berlin, Heidelberg" 
-		}
-)
+		customData = {
+				"isbn", "978-3-540-88689-1",
+				"location", "Marseille, France",
+				"numpages", "14",
+				"doi", "10.1007/978-3-540-88690-7_29",
+				"acmid", "1478204",
+				"address", "Berlin, Heidelberg"
+		})
 public class LuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	LuoTangSubjectRegion extractor;
 	int binsPerBand = 16;
 	float gamma = 0.01f;
 	double simplicity;
-	
+
 	/**
-	 * Construct with the defaults of 16 histograms per image band
-	 * and a gamma value of 0.01. The defaults are used for the
-	 * {@link LuoTangSubjectRegion} extractor.
+	 * Construct with the defaults of 16 histograms per image band and a gamma
+	 * value of 0.01. The defaults are used for the {@link LuoTangSubjectRegion}
+	 * extractor.
 	 */
 	public LuoSimplicity() {
 		extractor = new LuoTangSubjectRegion();
 	}
-	
+
 	/**
 	 * Construct with the given parameters.
-	 * @param binsPerBand the number of histogram bins per colour band
-	 * @param gamma the gamma value for determining the threshold
-	 * @param alpha the alpha value.
-	 * @param maxKernelSize Maximum kernel size for the {@link DepthOfFieldEstimator}.
-	 * @param kernelSizeStep Kernel step size for the {@link DepthOfFieldEstimator}.
-	 * @param nbins Number of bins for the {@link DepthOfFieldEstimator}.
-	 * @param windowSize window size for the {@link DepthOfFieldEstimator}.
+	 * 
+	 * @param binsPerBand
+	 *            the number of histogram bins per colour band
+	 * @param gamma
+	 *            the gamma value for determining the threshold
+	 * @param alpha
+	 *            the alpha value.
+	 * @param maxKernelSize
+	 *            Maximum kernel size for the {@link DepthOfFieldEstimator}.
+	 * @param kernelSizeStep
+	 *            Kernel step size for the {@link DepthOfFieldEstimator}.
+	 * @param nbins
+	 *            Number of bins for the {@link DepthOfFieldEstimator}.
+	 * @param windowSize
+	 *            window size for the {@link DepthOfFieldEstimator}.
 	 */
-	public LuoSimplicity(int binsPerBand, float gamma, float alpha, int maxKernelSize, int kernelSizeStep, int nbins, int windowSize) {
+	public LuoSimplicity(int binsPerBand, float gamma, float alpha, int maxKernelSize, int kernelSizeStep, int nbins,
+			int windowSize)
+	{
 		extractor = new LuoTangSubjectRegion(alpha, maxKernelSize, kernelSizeStep, nbins, windowSize);
 		this.binsPerBand = binsPerBand;
 		this.gamma = gamma;
 	}
-	
+
 	@Override
 	public void analyseImage(MBFImage image) {
 		Transforms.calculateIntensityNTSC(image).analyseWith(extractor);
 		final FImage mask = extractor.getROIMap().inverse();
-		
+
 		final MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);
 		hm.estimateModel(image);
-		
+
 		final MultidimensionalHistogram fv = hm.getFeatureVector();
-		final double thresh = gamma* fv.max();
+		final double thresh = gamma * fv.max();
 		int count = 0;
 		for (final double f : fv.values) {
-			if (f >= thresh) 
+			if (f >= thresh)
 				count++;
 		}
-		
-		simplicity = (double)count / (double)fv.values.length;
+
+		simplicity = (double) count / (double) fv.values.length;
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { simplicity });

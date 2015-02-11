@@ -61,7 +61,6 @@ import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.image.processing.transform.SkewCorrector;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.OrientatedBoundingBoxRenderer;
-import org.openimaj.image.text.ocr.OCRProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;

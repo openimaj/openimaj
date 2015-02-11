@@ -37,7 +37,6 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.dog.collector.Collector;
-import org.openimaj.image.feature.local.detector.dog.collector.OctaveKeypointCollector;
 import org.openimaj.image.feature.local.detector.dog.collector.OctaveMinMaxKeypointCollector;
 import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.detector.dog.extractor.GradientFeatureExtractor;

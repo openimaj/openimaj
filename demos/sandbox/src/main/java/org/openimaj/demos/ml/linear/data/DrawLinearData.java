@@ -54,7 +54,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.ml.linear.data.LinearPerceptronDataGenerator;
 import org.openimaj.ml.linear.kernel.LinearVectorKernel;
-import org.openimaj.ml.linear.learner.perceptron.MatrixKernelPerceptron;
+import org.openimaj.ml.linear.learner.perceptron.DoubleArrayKernelPerceptron;
 import org.openimaj.ml.linear.learner.perceptron.MeanCenteredKernelPerceptron;
 import org.openimaj.ml.linear.learner.perceptron.MeanCenteredProjectron;
 import org.openimaj.ml.linear.learner.perceptron.PerceptronClass;
@@ -63,7 +63,7 @@ import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.stream.Stream;
 
 /**
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class DrawLinearData {
@@ -132,7 +132,7 @@ public class DrawLinearData {
 		return dg;
 	}
 
-	private static void leanrnCogFound() {
+	private static void learnCogFound() {
 		final LinearPerceptronDataGenerator dg = dataGen();
 		final gov.sandia.cognition.learning.algorithm.perceptron.kernel.KernelPerceptron<gov.sandia.cognition.math.matrix.Vector> mkp = new gov.sandia.cognition.learning.algorithm.perceptron.kernel.KernelPerceptron<gov.sandia.cognition.math.matrix.Vector>(
 				new LinearKernel());
@@ -142,7 +142,7 @@ public class DrawLinearData {
 	}
 
 	private static Collection<? extends InputOutputPair<? extends gov.sandia.cognition.math.matrix.Vector, Boolean>>
-			createData()
+	createData()
 	{
 		final List<InputOutputPair<gov.sandia.cognition.math.matrix.Vector, Boolean>> ret = new ArrayList<InputOutputPair<gov.sandia.cognition.math.matrix.Vector, Boolean>>();
 		final LinearPerceptronDataGenerator dg = dataGen();
@@ -160,7 +160,7 @@ public class DrawLinearData {
 		return ret;
 	}
 
-	private static void drawMkpLine(MatrixKernelPerceptron mkp) {
+	private static void drawMkpLine(DoubleArrayKernelPerceptron mkp) {
 		final MBFImage img = new MBFImage(300, 300, ColourSpace.RGB);
 
 		final List<double[]> sup = mkp.getSupports();
@@ -233,7 +233,7 @@ public class DrawLinearData {
 	}
 
 	private static void
-			leanrnPoints(MatrixKernelPerceptron mkp, Iterable<IndependentPair<double[], PerceptronClass>> iter)
+	leanrnPoints(DoubleArrayKernelPerceptron mkp, Iterable<IndependentPair<double[], PerceptronClass>> iter)
 	{
 		int i = 0;
 		int errors = 0;

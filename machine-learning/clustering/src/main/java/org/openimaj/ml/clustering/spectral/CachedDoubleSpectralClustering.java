@@ -59,6 +59,7 @@ public class CachedDoubleSpectralClustering extends DoubleSpectralClustering{
 		this.cache = cache;
 	}
 	
+	@Override
 	protected Eigenvalues spectralCluster(SparseMatrix data) {
 		Eigenvalues eig = null;
 		if(cache.exists()){

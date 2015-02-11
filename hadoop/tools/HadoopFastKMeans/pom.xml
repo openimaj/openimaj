@@ -9,7 +9,6 @@
   </parent>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>HadoopFastKMeans</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>HadoopFastKMeans</name>
   <inceptionYear>2011</inceptionYear>
   <description>

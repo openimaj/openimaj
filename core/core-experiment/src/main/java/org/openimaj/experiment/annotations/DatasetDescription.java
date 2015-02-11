@@ -35,16 +35,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.openimaj.data.dataset.Dataset;
 import org.openimaj.experiment.ExperimentContext;
 
 /**
- * An annotation for marking up a specific {@link Dataset} subclass with
- * metadata about the dataset.
+ * An annotation for marking up a specific org.openimaj.data.Dataset subclass
+ * with metadata about the dataset.
  * <p>
  * The {@link ExperimentContext} can use this metadata in any reports that it
  * generates.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Documented

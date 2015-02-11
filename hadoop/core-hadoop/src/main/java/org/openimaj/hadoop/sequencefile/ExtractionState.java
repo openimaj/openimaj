@@ -31,7 +31,6 @@ package org.openimaj.hadoop.sequencefile;
 
 import java.util.Arrays;
 
-import org.apache.hadoop.io.SequenceFile;
 import org.openimaj.data.RandomData;
 
 /**

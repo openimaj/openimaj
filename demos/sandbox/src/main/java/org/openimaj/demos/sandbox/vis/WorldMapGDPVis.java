@@ -37,14 +37,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
-import org.openimaj.demos.irc.WorldVis;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.vis.VideoVisualisation;
-import org.openimaj.vis.VisualisationImpl;
 import org.openimaj.vis.general.LabelledPointVisualisation;
 import org.openimaj.vis.general.LabelledPointVisualisation.LabelledDot;
 import org.openimaj.vis.world.WorldMap;

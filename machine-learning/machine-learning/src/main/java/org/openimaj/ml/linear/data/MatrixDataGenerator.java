@@ -48,5 +48,6 @@ public interface MatrixDataGenerator<T extends Matrix> extends DataGenerator<T,T
 	/**
 	 * @return The X and Y of this generator's Y = F(X)
 	 */
+	@Override
 	public Pair<T> generate();
 }

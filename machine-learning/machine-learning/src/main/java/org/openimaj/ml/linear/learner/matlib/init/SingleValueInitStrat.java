@@ -30,7 +30,6 @@
 package org.openimaj.ml.linear.learner.matlib.init;
 
 
-import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 
 import ch.akuhn.matrix.DenseMatrix;

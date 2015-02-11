@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos.sandbox.video.gt;
 
@@ -75,7 +75,7 @@ import org.openimaj.video.timecode.VideoTimecode;
  * are provided by subclasses of this class through the {@link #getStates()}
  * method. Annotated scenes are added to a {@link Dataset} via the
  * {@link VideoGroundTruth} class.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 5 Dec 2012
  * @version $Author$, $Revision$, $Date$
@@ -132,7 +132,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 	/**
 	 * Returns a list of the states that are able to be labelled for any one
 	 * scene.
-	 * 
+	 *
 	 * @return The list of states
 	 */
 	public abstract String[] getStates();
@@ -153,7 +153,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.StateProvider#getCurrentState(org.openimaj.data.identity.Identifiable)
 	 */
 	@Override
@@ -169,7 +169,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifierProducer#getIdentifiers()
 	 */
 	@Override
@@ -295,7 +295,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 
 	/**
 	 * Show the UI frame if it's not already being shown.
-	 * 
+	 *
 	 * @return The UI frame
 	 */
 	private JFrame showFrame()
@@ -313,7 +313,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 
 	/**
 	 * Process a frame from the video
-	 * 
+	 *
 	 * @param frame
 	 *            The video frame
 	 */
@@ -379,7 +379,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 	 * return null to indicate that no default state should be used. If it
 	 * returns a state, it should return a value that matches one of those
 	 * returned by {@link #getStates()}.
-	 * 
+	 *
 	 * @return The default state
 	 */
 	public String getDefaultState()
@@ -390,7 +390,7 @@ public abstract class SceneLabellingVideoAnnotationTool extends JPanel
 	/**
 	 * Determines whether tags are exclusive (only one can be selected at a
 	 * time).
-	 * 
+	 *
 	 * @param tf
 	 *            Whether tags can be selected or not.
 	 */

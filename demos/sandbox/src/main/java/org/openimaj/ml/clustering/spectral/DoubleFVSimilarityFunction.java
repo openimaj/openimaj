@@ -34,7 +34,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
-import org.openimaj.ml.clustering.SimilarityClusterer;
 import org.openimaj.util.function.Function;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -58,6 +57,7 @@ public abstract class DoubleFVSimilarityFunction<T> implements Function<List<T>,
 		this.extractor = extractor;
 	}
 	
+	@Override
 	public SparseMatrix apply(List<T> in) {
 		this.data = in;
 		this.prepareFeats();

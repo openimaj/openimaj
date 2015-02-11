@@ -95,8 +95,10 @@ public class FVFWExperiment {
 		final int nsets = sc.nextInt();
 		final int nhpairs = sc.nextInt();
 
-		if (nsets != 10 || nhpairs != 300)
+		if (nsets != 10 || nhpairs != 300) {
+			sc.close();
 			throw new RuntimeException();
+		}
 
 		for (int s = 0; s < 10; s++) {
 			for (int i = 0; i < 300; i++) {
@@ -137,8 +139,10 @@ public class FVFWExperiment {
 
 		final int nsets = sc.nextInt();
 
-		if (nsets != 10)
+		if (nsets != 10) {
+			sc.close();
 			throw new RuntimeException();
+		}
 
 		for (int s = 0; s < 10; s++) {
 			final int nnames = sc.nextInt();

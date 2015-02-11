@@ -9,7 +9,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>SequenceFileTool</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>SequenceFileTool</name>
   <inceptionYear>2011</inceptionYear>
@@ -71,7 +70,6 @@
 			<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-shade-plugin</artifactId>
-			    <version>1.4</version>
 			    <configuration>
 			        <createDependencyReducedPom>true</createDependencyReducedPom>
 			    </configuration>

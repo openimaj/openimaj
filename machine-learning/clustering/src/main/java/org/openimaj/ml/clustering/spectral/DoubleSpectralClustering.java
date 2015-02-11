@@ -28,21 +28,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.openimaj.ml.clustering.spectral;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.apache.log4j.Logger;
 import org.openimaj.ml.clustering.SimilarityClusterer;
 
-import com.jmatio.io.MatFileWriter;
-import com.jmatio.types.MLArray;
-import com.jmatio.types.MLDouble;
-import com.jmatio.types.MLInt32;
-
-import ch.akuhn.matrix.DenseMatrix;
 import ch.akuhn.matrix.SparseMatrix;
 import ch.akuhn.matrix.eigenvalues.Eigenvalues;
 

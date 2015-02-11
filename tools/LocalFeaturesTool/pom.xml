@@ -10,7 +10,6 @@
   <groupId>org.openimaj.tools</groupId>
   <artifactId>LocalFeaturesTool</artifactId>
   <packaging>jar</packaging>
-  <version>1.4-SNAPSHOT</version>
   <name>LocalFeaturesTool</name>
   <inceptionYear>2011</inceptionYear>
   <description>

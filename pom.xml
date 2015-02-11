@@ -161,7 +161,6 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 			</plugin>
 			<plugin>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.4</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.scm</groupId>
@@ -305,8 +304,8 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<annotationProcessors>
 						<annotationProcessor>org.openimaj.citation.annotation.processor.ReferenceProcessor</annotationProcessor>
 					</annotationProcessors>

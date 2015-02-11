@@ -59,9 +59,9 @@ import Jama.Matrix;
 /**
  * Base class for representing and manipulating images. Images are typed by the
  * type of pixel at each coordinate and the concrete subclass type.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <Q>
  *            the pixel type
  * @param <I>
@@ -70,7 +70,7 @@ import Jama.Matrix;
 public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Serializable, ImageProvider<I> {
 	/**
 	 * Enumerator for representing the type of field interlacing operations.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum Field {
@@ -88,7 +88,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Accumulate this image the the given {@link AccumulatingImageCombiner}.
-	 * 
+	 *
 	 * @param combiner
 	 *            the combiner
 	 * @see AccumulatingImageCombiner#accumulate(Image)
@@ -101,14 +101,14 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Set all pixels to their absolute values, so that all pixel values in the
 	 * image will be greater than zero.
-	 * 
+	 *
 	 * @return The image with absolute values
 	 */
 	public abstract I abs();
 
 	/**
 	 * Adds the given image to this image and return new image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to add
 	 * @return A new image that is the sum of this image and the given image.
@@ -121,7 +121,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Add a value to each pixel and return new image.
-	 * 
+	 *
 	 * @param num
 	 *            The value to add to each pixel
 	 * @return A new image that is the sum of this image and the given value.
@@ -134,7 +134,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Add the given image to this image (side-affects this image).
-	 * 
+	 *
 	 * @param im
 	 *            The image to add to this image
 	 * @return A reference to this image.
@@ -143,7 +143,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Add a scalar to each pixel in this image (side-affects this image).
-	 * 
+	 *
 	 * @param num
 	 *            The value to add to every pixel in this image.
 	 * @return A reference to this image.
@@ -152,7 +152,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Analyse this image with an {@link ImageAnalyser}.
-	 * 
+	 *
 	 * @param analyser
 	 *            The analyser to analyse with.
 	 * @see ImageAnalyser#analyseImage(Image)
@@ -164,7 +164,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Analyse this image with a {@link PixelAnalyser}.
-	 * 
+	 *
 	 * @param analyser
 	 *            The analyser to analyse with.
 	 * @see PixelAnalyser#analysePixel(Object)
@@ -182,12 +182,12 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Analyse this image with the given {@link PixelAnalyser}, only analysing
 	 * those pixels where the mask is non-zero.
-	 * 
+	 *
 	 * @param mask
 	 *            The mask to apply to the analyser.
 	 * @param analyser
 	 *            The {@link PixelProcessor} to apply.
-	 * 
+	 *
 	 * @see PixelAnalyser#analysePixel(Object)
 	 */
 	public void analyseWithMasked(FImage mask, PixelAnalyser<Q> analyser) {
@@ -207,7 +207,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * <code>max</code> to the highest normal value that the image allows
 	 * (usually 1 for floating-point images). This method may side-affect this
 	 * image.
-	 * 
+	 *
 	 * @param min
 	 *            The minimum value
 	 * @param max
@@ -220,7 +220,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Set all values greater than the given value to the highest normal value
 	 * that the image allows (usually 1 for floating-point images). This method
 	 * may side-affect this image.
-	 * 
+	 *
 	 * @param thresh
 	 *            The value over which pixels are clipped to zero.
 	 * @return The clipped image.
@@ -230,7 +230,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Set all values less than the given value to zero. This method may
 	 * side-affect this image.
-	 * 
+	 *
 	 * @param thresh
 	 *            The value below which pixels are clipped to zero.
 	 * @return The clipped image.
@@ -239,7 +239,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Deep copy of an image (internal image buffers copied).
-	 * 
+	 *
 	 * @return A copy of this image.
 	 */
 	@Override
@@ -247,14 +247,14 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Create a {@link ImageRenderer} capable of drawing into this image.
-	 * 
+	 *
 	 * @return the renderer
 	 */
 	public abstract ImageRenderer<Q, I> createRenderer();
 
 	/**
 	 * Create a {@link ImageRenderer} capable of drawing into this image.
-	 * 
+	 *
 	 * @param options
 	 *            Options for the renderer
 	 * @return the renderer
@@ -263,7 +263,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Combine this image with another using an {@link ImageCombiner}.
-	 * 
+	 *
 	 * @param <OUT>
 	 *            The output {@link Image} type.
 	 * @param <OTHER>
@@ -283,13 +283,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Get the default foreground colour.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @return the default foreground colour.
 	 */
 	public Q defaultBackgroundColour() {
@@ -298,13 +298,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Get the default foreground colour.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @return the default foreground colour.
 	 */
 	public Q defaultForegroundColour() {
@@ -314,7 +314,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Divide each pixel of the image by corresponding pixel in the given image.
 	 * This method should return a new image.
-	 * 
+	 *
 	 * @param im
 	 *            image The image to divide this image by.
 	 * @return A new image containing the result.
@@ -328,7 +328,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Divide each pixel of the image by the given scalar value. This method
 	 * should return a new image.
-	 * 
+	 *
 	 * @param val
 	 *            The value to divide the pixels in this image by.
 	 * @return A new image containing the result.
@@ -342,7 +342,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Divide each pixel in this image by the corresponding pixel value in the
 	 * given image. This method should side-affect this image.
-	 * 
+	 *
 	 * @param im
 	 *            image The image to divide this image by.
 	 * @return A reference to this image containing the result.
@@ -352,7 +352,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Divide each pixel of the image by the given scalar value. This method
 	 * should side-affect this image.
-	 * 
+	 *
 	 * @param val
 	 *            The value to divide each pixel by.
 	 * @return A reference to this image containing the result.
@@ -362,13 +362,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw onto this image lines drawn with the given colour between the points
 	 * given. No points are drawn. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param pts
 	 *            The point list to draw onto this image.
 	 * @param col
@@ -380,13 +380,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Draw a cubic Bezier curve into the image with 100 point accuracy.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param p1
 	 *            One end point of the line
 	 * @param p2
@@ -411,13 +411,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw into this image the provided image at the given coordinates. Parts
 	 * of the image outside the bounds of this image will be ignored.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param image
 	 *            The image to draw.
 	 * @param x
@@ -433,13 +433,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw into this image the provided image at the given coordinates. Parts
 	 * of the image outside the bounds of this image will be ignored.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param image
 	 *            The image to draw.
 	 * @param pt
@@ -454,13 +454,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * certain pixels. Parts of the image outside the bounds of this image will
 	 * be ignored. Side-affects this image. Pixels in the ignore list will be
 	 * stripped from the image to draw.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param image
 	 *            The image to draw.
 	 * @param x
@@ -478,13 +478,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> at an
 	 * angle of <code>theta</code> with the given length, thickness and colour.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param x1
 	 *            The x-ordinate to start the line.
 	 * @param y1
@@ -506,13 +506,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> at an
 	 * angle of <code>theta</code> with the given length and colour.
 	 * Line-thickness will be 1. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param x1
 	 *            The x-ordinate to start the line.
 	 * @param y1
@@ -532,13 +532,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to the
 	 * coordinates specified by <code>(x1,y1)</code> using the given color and
 	 * thickness. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param x0
 	 *            The x-ordinate at the start of the line.
 	 * @param y0
@@ -560,13 +560,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to
 	 * <code>(x1,y1)</code> using the given colour. The line thickness will be 1
 	 * pixel. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param x0
 	 *            The x-ordinate at the start of the line.
 	 * @param y0
@@ -585,13 +585,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw a line from the coordinates specified using the given colour. The
 	 * line thickness will be 1 pixel. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param p1
 	 *            The coordinate of the start of the line.
 	 * @param p2
@@ -606,13 +606,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw a line from the coordinates specified using the given colour and
 	 * thickness. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param p1
 	 *            The coordinate of the start of the line.
 	 * @param p2
@@ -628,13 +628,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Draw a line from the specified Line2d object
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param line
 	 *            the line
 	 * @param thickness
@@ -649,13 +649,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw the given list of lines using {@link #drawLine(Line2d, int, Object)}
 	 * with the given colour and thickness. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param lines
 	 *            The list of lines to draw.
 	 * @param thickness
@@ -671,13 +671,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw a dot centered on the given location (rounded to nearest integer
 	 * location) at the given size and with the given color. Side-affects this
 	 * image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param p
 	 *            The coordinates at which to draw the point
 	 * @param col
@@ -693,13 +693,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw the given list of points using
 	 * {@link #drawPoint(Point2d, Object, int)} with the given colour and size.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param pts
 	 *            The list of points to draw.
 	 * @param col
@@ -714,13 +714,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw the given polygon in the specified colour with the given thickness
 	 * lines. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param p
 	 *            The polygon to draw.
 	 * @param thickness
@@ -736,13 +736,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw the given polygon in the specified colour. Uses
 	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param p
 	 *            The polygon to draw.
 	 * @param col
@@ -755,13 +755,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw the given polygon, filled with the specified colour. Side-affects
 	 * this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param p
 	 *            The polygon to draw.
 	 * @param col
@@ -774,13 +774,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw the given shape in the specified colour with the given thickness
 	 * lines. Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param s
 	 *            The shape to draw.
 	 * @param thickness
@@ -796,13 +796,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Draw the given shape in the specified colour. Uses
 	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param p
 	 *            The shape to draw.
 	 * @param col
@@ -815,13 +815,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw the given shape, filled with the specified colour. Side-affects this
 	 * image.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param s
 	 *            The shape to draw.
 	 * @param col
@@ -833,13 +833,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Render the text using its attributes.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param text
 	 *            the text
 	 * @param x
@@ -853,13 +853,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Render the text using its attributes.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param text
 	 *            the text
 	 * @param pt
@@ -871,13 +871,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Render the text in the given font with the default style.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -898,13 +898,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Render the text in the given font in the given colour with the default
 	 * style.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -926,13 +926,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Render the text with the given {@link FontStyle}.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param text
 	 *            the text
 	 * @param x
@@ -948,13 +948,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Render the text in the given font with the default style.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -973,13 +973,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Render the text in the given font in the given colour with the default
 	 * style.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param <F>
 	 *            the font
 	 * @param text
@@ -999,13 +999,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Render the text with the given {@link FontStyle}.
-	 * 
+	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
 	 * the default renderer to do the actual drawing. Create the renderer
 	 * yourself and use it to draw if you need more control.
 	 * </p>
-	 * 
+	 *
 	 * @param text
 	 *            the text
 	 * @param pt
@@ -1023,7 +1023,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * <code>width/2</code> and <code>height/2</code> from the centre point so
 	 * that the centre point of the extracted box is also the centre point of
 	 * the image.
-	 * 
+	 *
 	 * @param w
 	 *            The width of the box to extract
 	 * @param h
@@ -1042,7 +1042,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * return a box that extends <code>width/2</code> and <code>height/2</code>
 	 * from the given point <code>(x,y)</code> such that the centre point of the
 	 * extracted box is the same as the point <code>(x,y)</code> in this image.
-	 * 
+	 *
 	 * @param x
 	 *            Center point of the rectangle to extract
 	 * @param y
@@ -1065,7 +1065,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * the given image. Coordinate <code>(0,0)</code> is the top-left corner.
 	 * The width and height of the extracted image should be determined from the
 	 * given image's width and height.
-	 * 
+	 *
 	 * @param x
 	 *            The leftmost coordinate of the rectangle to extract
 	 * @param y
@@ -1080,7 +1080,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Extract a rectangular region of interest of the given width and height.
 	 * Coordinate <code>(0,0)</code> is the top-left corner. Returns a new
 	 * image.
-	 * 
+	 *
 	 * @param x
 	 *            The leftmost coordinate of the rectangle to extract
 	 * @param y
@@ -1097,7 +1097,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Extract a rectangular region of interest of the given width and height.
 	 * Coordinate <code>(0,0)</code> is the top-left corner. Returns a new
 	 * image.
-	 * 
+	 *
 	 * @param r
 	 *            the rectangle
 	 * @return A new image representing the selected region
@@ -1109,7 +1109,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Fill this image with the given colour. Should overwrite all other data
 	 * stored in this image. Side-affects this image.
-	 * 
+	 *
 	 * @param colour
 	 *            the colour to fill the image with
 	 * @return A reference to this image.
@@ -1118,14 +1118,14 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Flips the content horizontally. Side-affects this image.
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public abstract I flipX();
 
 	/**
 	 * Flips the content vertically. Side-affects this image.
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public abstract I flipY();
@@ -1133,7 +1133,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Get a rectangle representing the image, with the top-left at 0,0 and the
 	 * bottom-right at width,height
-	 * 
+	 *
 	 * @return the bounding rectangle of the image
 	 */
 	public Rectangle getBounds() {
@@ -1143,7 +1143,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Get the image width in pixels. This is syntactic sugar for
 	 * {@link #getWidth()};
-	 * 
+	 *
 	 * @return The image width in pixels.
 	 */
 	public int getCols() {
@@ -1153,7 +1153,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Get bounding box of non-zero-valued pixels around the outside of the
 	 * image. Used by {@link #trim()}.
-	 * 
+	 *
 	 * @return A rectangle of the boundaries of the non-zero-valued image
 	 */
 	public abstract Rectangle getContentArea();
@@ -1162,7 +1162,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Get the given field of this image. Used for deinterlacing video, this
 	 * should return a new image containing the deinterlaced image. The returned
 	 * image will be half the height of this image.
-	 * 
+	 *
 	 * @param f
 	 *            The {@link Field} to extract from this image
 	 * @return An image containing only the odd or even fields.
@@ -1174,7 +1174,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * by doubling the fields. Used for deinterlacing video, this should return
 	 * a new image containing the deinterlaced image. The returned image should
 	 * be the same size as this image.
-	 * 
+	 *
 	 * @param f
 	 *            The {@link Field} to extract from this image
 	 * @return An image containing the odd or even fields doubled.
@@ -1186,7 +1186,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * by interpolating between the fields. Used for deinterlacing video, this
 	 * should return a new image containing the detinterlaced image. The
 	 * returned image should be the same size as this image.
-	 * 
+	 *
 	 * @param f
 	 *            The {@link Field} to extract from this image.
 	 * @return An image containing the odd or even fields with interpolated rows
@@ -1196,29 +1196,29 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Returns the image height in pixels.
-	 * 
+	 *
 	 * @return The image height in pixels.
 	 */
 	public abstract int getHeight();
 
 	/**
 	 * Get the value of the pixel at coordinate <code>(x, y)</code>.
-	 * 
+	 *
 	 * @param x
 	 *            The x-ordinate to get
 	 * @param y
 	 *            The y-ordinate to get
-	 * 
+	 *
 	 * @return The pixel value at (x, y)
 	 */
 	public abstract Q getPixel(int x, int y);
 
 	/**
 	 * Get the value of the pixel at coordinate p
-	 * 
+	 *
 	 * @param p
 	 *            The coordinate to get
-	 * 
+	 *
 	 * @return The pixel value at (x, y)
 	 */
 	public Q getPixel(Pixel p) {
@@ -1228,14 +1228,14 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a pixel comparator that is able to compare equality of pixels in
 	 * the given image type.
-	 * 
+	 *
 	 * @return A {@link Comparator} that compares pixels.
 	 */
 	public abstract Comparator<? super Q> getPixelComparator();
 
 	/**
 	 * Get the value of a sub-pixel using linear-interpolation.
-	 * 
+	 *
 	 * @param x
 	 *            The x-ordinate to get
 	 * @param y
@@ -1247,7 +1247,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Get the value of a sub-pixel using linear-interpolation. Also specify the
 	 * colour of the background (for interpolation at the edge)
-	 * 
+	 *
 	 * @param x
 	 *            The x-ordinate to get.
 	 * @param y
@@ -1261,7 +1261,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns the pixels in this image as a vector (an array of the pixel
 	 * type).
-	 * 
+	 *
 	 * @param f
 	 *            The array into which to place the data
 	 * @return The pixels in the image as a vector (a reference to the given
@@ -1278,7 +1278,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Get the height of this image. This is a syntactic sugar method for
 	 * {@link #getHeight()}.
-	 * 
+	 *
 	 * @return The image height in pixels.
 	 */
 	public int getRows() {
@@ -1287,7 +1287,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Get the width (number of columns) in this image.
-	 * 
+	 *
 	 * @return the image width
 	 */
 	public abstract int getWidth();
@@ -1296,7 +1296,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Copy the internal state from another image of the same type. This method
 	 * is designed to be FAST. This means that bounds checking WILL NOT be
 	 * performed, so it is important that the images are the SAME size.
-	 * 
+	 *
 	 * @param im
 	 *            The source image to make a copy of.
 	 * @return A reference to this image.
@@ -1305,7 +1305,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Assign the internal state from another image of the same type.
-	 * 
+	 *
 	 * @param im
 	 *            The source image to make a copy of.
 	 * @return A reference to this image.
@@ -1315,14 +1315,14 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Copy pixels from given ARGB buffer image into this image. Side-affects
 	 * this image.
-	 * 
+	 *
 	 * @param pixelData
 	 *            buffer of ARGB packed integer pixels
 	 * @param width
 	 *            the width of the buffer
 	 * @param height
 	 *            the height of the buffer
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public abstract I internalAssign(int[] pixelData, int width, int height);
@@ -1330,21 +1330,21 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Invert the image pixels by finding the maximum value and subtracting each
 	 * pixel value from that maximum.
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public abstract I inverse();
 
 	/**
 	 * Find the maximum pixel value.
-	 * 
+	 *
 	 * @return The maximum pixel value
 	 */
 	public abstract Q max();
 
 	/**
 	 * Find the minimum pixel value.
-	 * 
+	 *
 	 * @return The minimum pixel value
 	 */
 	public abstract Q min();
@@ -1352,7 +1352,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Multiply the pixel values in this image with the corresponding pixel
 	 * values in the given image. This method returns a new image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to multiply with this one
 	 * @return A new image containing the result.
@@ -1365,7 +1365,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Multiply each pixel of this by the given scalar and return new image.
-	 * 
+	 *
 	 * @param num
 	 *            The scalar which to multiply the image by
 	 * @return A new image containing the result
@@ -1379,7 +1379,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Multiply each pixel in this image by the corresponding pixel in the given
 	 * image. This method side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to multiply with this image.
 	 * @return A reference to this image.
@@ -1389,7 +1389,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Multiply each pixel of this by the given scalar. This method side-affects
 	 * this image.
-	 * 
+	 *
 	 * @param num
 	 *            The scalar to multiply this image by.
 	 * @return A reference to this image.
@@ -1398,12 +1398,12 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Create a new instance of this image subclass with given dimensions.
-	 * 
+	 *
 	 * @param width
 	 *            The image width
 	 * @param height
 	 *            The image height
-	 * 
+	 *
 	 * @return A new instance of an image of type <code>I</code>
 	 */
 	public abstract I newInstance(int width, int height);
@@ -1412,7 +1412,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Normalise all pixel values to fall within the range 0.0 - 1.0. This
 	 * should be scaled by both the maximum and minimum values. This method
 	 * side-affects this image.
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public abstract I normalise();
@@ -1420,7 +1420,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Adds padding as in {@link Image#padding(int, int, Object)}. The padding
 	 * colour is the colour of the closest border pixel.
-	 * 
+	 *
 	 * @param paddingWidth
 	 *            padding in the x direction
 	 * @param paddingHeight
@@ -1434,7 +1434,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Adds this many pixels to both sides of the image such that the new image
 	 * width = padding + width + padding with the original image in the middle
-	 * 
+	 *
 	 * @param paddingWidth
 	 *            left and right padding width
 	 * @param paddingHeight
@@ -1469,13 +1469,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 						out.setPixel(x, y, this.getPixel(0, 0)); // Top Left
 					else if (x < paddingWidth && y >= bottomLimit)
 						out.setPixel(x, y, this.getPixel(0, this.getHeight() - 1)); // Bottom
-																					// Left
+					// Left
 					else if (x >= rightLimit && y < paddingHeight)
 						out.setPixel(x, y, this.getPixel(this.getWidth() - 1, 0)); // Top
-																					// Right
+					// Right
 					else if (x >= rightLimit && y >= bottomLimit)
 						out.setPixel(x, y, this.getPixel(this.getWidth() - 1, this.getHeight() - 1)); // Bottom
-																										// Right
+					// Right
 					else {
 						if (x < paddingWidth)
 							out.setPixel(x, y, this.getPixel(0, y - paddingHeight)); // Left
@@ -1497,7 +1497,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * paddingLeft + width + paddingRight with the original image in the middle.
 	 * The values of the padding pixels are formed from repeated symmetric
 	 * reflections of the original image.
-	 * 
+	 *
 	 * @param paddingLeft
 	 *            left padding width
 	 * @param paddingRight
@@ -1566,7 +1566,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link GridProcessor} and return new
 	 * image containing the result.
-	 * 
+	 *
 	 * @param p
 	 *            {@link GridProcessor} to apply to this image.
 	 * @return A new image containing the result.
@@ -1590,7 +1590,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with an {@link ImageProcessor} and return new image
 	 * containing the result.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link ImageProcessor} to apply to this image.
 	 * @return A new image containing the result.
@@ -1604,7 +1604,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link KernelProcessor} and return new
 	 * image containing the result.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link KernelProcessor} to apply.
 	 * @return A new image containing the result.
@@ -1616,7 +1616,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link KernelProcessor} and return new
 	 * image containing the result.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link KernelProcessor} to apply.
 	 * @param pad
@@ -1656,7 +1656,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link PixelProcessor} and return a new
 	 * image containing the result.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link PixelProcessor} to apply.
 	 * @return A new image containing the result.
@@ -1670,7 +1670,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with an {@link Processor} and return new image
 	 * containing the result.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link Processor} to apply to this image.
 	 * @return A new image containing the result.
@@ -1684,7 +1684,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link Processor} side-affecting this
 	 * image.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link Processor} to apply.
 	 * @return A reference to this image containing the result.
@@ -1706,7 +1706,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link ImageProcessor} side-affecting
 	 * this image.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link ImageProcessor} to apply.
 	 * @return A reference to this image containing the result.
@@ -1720,7 +1720,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link KernelProcessor} side-affecting
 	 * this image.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link KernelProcessor} to apply.
 	 * @return A reference to this image containing the result.
@@ -1732,7 +1732,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link KernelProcessor} side-affecting
 	 * this image.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link KernelProcessor} to apply.
 	 * @param pad
@@ -1750,7 +1750,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link PixelProcessor} side-affecting
 	 * this image.
-	 * 
+	 *
 	 * @param p
 	 *            The {@link PixelProcessor} to apply.
 	 * @return A reference to this image containing the result.
@@ -1769,7 +1769,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link PixelProcessor} only affecting
 	 * those pixels where the mask is non-zero. Returns a new image.
-	 * 
+	 *
 	 * @param mask
 	 *            The mask to apply to the processing.
 	 * @param p
@@ -1785,7 +1785,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Process this image with the given {@link PixelProcessor}, only affecting
 	 * those pixels where the mask is non-zero. Side-affects this image.
-	 * 
+	 *
 	 * @param mask
 	 *            The mask to apply to the processor.
 	 * @param p
@@ -1807,7 +1807,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Sets the pixel at <code>(x,y)</code> to the given value. Side-affects
 	 * this image.
-	 * 
+	 *
 	 * @param x
 	 *            The x-ordinate of the pixel to set
 	 * @param y
@@ -1820,7 +1820,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Subtract the corresponding pixel value from the given image from the
 	 * pixel values in this image. Returns a new image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to subtract from this image.
 	 * @return A new image containing the result.
@@ -1834,7 +1834,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Subtract a scalar from every pixel value in this image and return new
 	 * image.
-	 * 
+	 *
 	 * @param num
 	 *            A value to subtract from each pixel.
 	 * @return A new image containing the result.
@@ -1848,7 +1848,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Subtract the corresponding pixel value from the given image from the
 	 * pixel values in this image. Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The image to subtract from this image.
 	 * @return A reference to this containing the result.
@@ -1858,7 +1858,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Subtract a scalar from every pixel value in this image. Side-affects this
 	 * image.
-	 * 
+	 *
 	 * @param num
 	 *            A value to subtract from each pixel.
 	 * @return A reference to this image containing the result.
@@ -1868,7 +1868,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Set all values less than the given threshold to 0 and all others to 1.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * @param thresh
 	 *            The threshold value
 	 * @return A reference to this image containing the result.
@@ -1879,7 +1879,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Convert the image to a byte representation suitable for writing to a pnm
 	 * type format. Each byte should represent a single pixel. Multiband images
 	 * should interleave the data; e.g. [R1,G1,B1,R2,G2,B2...etc.]
-	 * 
+	 *
 	 * @return This image as a byte array
 	 */
 	public abstract byte[] toByteImage();
@@ -1887,7 +1887,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a 1D array representation of this image with each pixel
 	 * represented as a packed ARGB integer.
-	 * 
+	 *
 	 * @return An array of ARGB pixels.
 	 */
 	public abstract int[] toPackedARGBPixels();
@@ -1895,7 +1895,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Apply a transform matrix to the image and returns the result as a new
 	 * image.
-	 * 
+	 *
 	 * @param transform
 	 *            The transform matrix to apply.
 	 * @return A new image containing the result.
@@ -1951,7 +1951,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Removes zero-valued pixels from around the outside of the image.
 	 * Analagous to {@link String#trim()}.
-	 * 
+	 *
 	 * @return A new image containing the trimmed image.
 	 */
 	public I trim() {
@@ -1961,14 +1961,14 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Set all pixels in the image to zero. Side-affects this image.
-	 * 
+	 *
 	 * @return A reference to this image containing the result.
 	 */
 	public abstract I zero();
 
 	/**
 	 * Shifts all the pixels to the left by one pixel
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public I shiftLeftInplace() {
@@ -1977,7 +1977,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Shifts all the pixels to the right by one pixel
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public I shiftRightInplace() {
@@ -1986,10 +1986,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Shifts all the pixels to the left by count pixel
-	 * 
+	 *
 	 * @param count
 	 *            The number of pixels
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public I shiftLeftInplace(int count) {
@@ -1998,10 +1998,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Shifts all the pixels to the right by count pixel
-	 * 
+	 *
 	 * @param count
 	 *            The number of pixels
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public I shiftRightInplace(int count) {
@@ -2011,7 +2011,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by one
 	 * pixel
-	 * 
+	 *
 	 * @return A new image shifted around to the left by one pixel
 	 */
 	public I shiftLeft() {
@@ -2021,10 +2021,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by the
 	 * number of pixels given.
-	 * 
+	 *
 	 * @param nPixels
 	 *            The number of pixels
-	 * 
+	 *
 	 * @return A new image shifted around to the left by the number of pixels
 	 */
 	public I shiftLeft(int nPixels) {
@@ -2039,7 +2039,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by one
 	 * pixel
-	 * 
+	 *
 	 * @return A new image shifted around to the right by one pixel
 	 */
 	public I shiftRight() {
@@ -2049,10 +2049,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by the
 	 * number of pixels given.
-	 * 
+	 *
 	 * @param nPixels
 	 *            the number of pixels
-	 * 
+	 *
 	 * @return A new image shifted around to the right by the number of pixels
 	 */
 	public I shiftRight(int nPixels) {
@@ -2066,7 +2066,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Shifts all the pixels up by one pixel
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public I shiftUpInplace() {
@@ -2075,7 +2075,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Shifts all the pixels down by one pixels
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public I shiftDownInplace() {
@@ -2084,10 +2084,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Shifts all the pixels up by count pixels
-	 * 
+	 *
 	 * @param count
 	 *            The number of pixels
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public I shiftUpInplace(int count) {
@@ -2096,10 +2096,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 
 	/**
 	 * Shifts all the pixels down by count pixels
-	 * 
+	 *
 	 * @param count
 	 *            The number of pixels
-	 * 
+	 *
 	 * @return A reference to this image.
 	 */
 	public I shiftDownInplace(int count) {
@@ -2109,7 +2109,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by one
 	 * pixel
-	 * 
+	 *
 	 * @return A new image shifted around up by one pixel
 	 */
 	public I shiftUp() {
@@ -2119,10 +2119,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by the
 	 * number of pixels given.
-	 * 
+	 *
 	 * @param nPixels
 	 *            The number of pixels
-	 * 
+	 *
 	 * @return A new image shifted around up by the number of pixels
 	 */
 	public I shiftUp(int nPixels) {
@@ -2137,7 +2137,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by one
 	 * pixel
-	 * 
+	 *
 	 * @return A new image shifted around down by one pixel
 	 */
 	public I shiftDown() {
@@ -2147,10 +2147,10 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Returns a new image that is it shifted around the x-ordinates by the
 	 * number of pixels given.
-	 * 
+	 *
 	 * @param nPixels
 	 *            the number of pixels
-	 * 
+	 *
 	 * @return A new image shifted around down by the number of pixels
 	 */
 	public I shiftDown(int nPixels) {
@@ -2165,7 +2165,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Overlays the given image on this image and returns a new image containing
 	 * the result.
-	 * 
+	 *
 	 * @param image
 	 *            The image to overlay on this image.
 	 * @param x
@@ -2183,7 +2183,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Overlays the given image on this image directly. The method returns this
 	 * image for chaining.
-	 * 
+	 *
 	 * @param image
 	 *            The image to overlay
 	 * @param x
@@ -2203,7 +2203,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Replace pixels of a certain colour with another colour. Side-affects this
 	 * image.
-	 * 
+	 *
 	 * @param target
 	 *            the colour to fill the image with
 	 * @param replacement
@@ -2216,9 +2216,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Sub-pixel sampling of a centred rectangular region such that
 	 * <code>dst(x, y) = src(x + center.x   (width(dst)   1) ⇤ 0.5, y + center.y   (height(dst)   1) ⇤ 0.5)</code>
 	 * . Sub-pixels values are estimated using bilinear interpolation.
-	 * 
+	 *
 	 * @see #getPixelInterp(double, double)
-	 * 
+	 *
 	 * @param centre
 	 *            the centre
 	 * @param width
@@ -2235,7 +2235,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Sub-pixel sampling of a centred rectangular region such that
 	 * <code>dst(x, y) = src(x + center.x   (width(dst)   1) ⇤ 0.5, y + center.y   (height(dst)   1) ⇤ 0.5)</code>
 	 * . Sub-pixels values are estimated using bilinear interpolation.
-	 * 
+	 *
 	 * @see #getPixelInterp(double, double)
 	 * @param cx
 	 *            the x-ordinate of the centre
@@ -2256,9 +2256,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Sub-pixel sampling of a centred rectangular region such that
 	 * <code>dst(x, y) = src(x + center.x   (width(dst)   1) ⇤ 0.5, y + center.y   (height(dst)   1) ⇤ 0.5)</code>
 	 * . Sub-pixels values are estimated using bilinear interpolation.
-	 * 
+	 *
 	 * @see #getPixelInterp(double, double)
-	 * 
+	 *
 	 * @param centre
 	 *            the centre
 	 * @param out
@@ -2274,7 +2274,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Sub-pixel sampling of a centred rectangular region such that
 	 * <code>dst(x, y) = src(x + center.x   (width(dst)   1) ⇤ 0.5, y + center.y   (height(dst)   1) ⇤ 0.5)</code>
 	 * . Sub-pixels values are estimated using bilinear interpolation.
-	 * 
+	 *
 	 * @see #getPixelInterp(double, double)
 	 * @param cx
 	 *            the x-ordinate of the centre

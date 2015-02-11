@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.image.text.ocr;
 
@@ -40,25 +40,26 @@ import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- *	Top-level class for classes that are able to process images to
- *	extract textual content by performing OCR.
+ * Top-level class for classes that are able to process images to extract
+ * textual content by performing OCR.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 4 Aug 2011
- *	
- *  @param <T> The type of {@link ImageProcessor} 
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 4 Aug 2011
+ *
+ * @param <T>
+ *            The type of {@link ImageProcessor}
  */
-public abstract class OCRProcessor<T extends Image<?,T>> 
-	implements ImageAnalyser<T>
+public abstract class OCRProcessor<T extends Image<?, T>>
+		implements ImageAnalyser<T>
 {
 	/**
-	 * 	After processing, this method should return a set of bounding
-	 * 	boxes of regions within the image mapped to a String that contains
-	 * 	the recognised text. If the OCR processor cannot extract regions (it
-	 * 	just reads whatever image it's given), then the map can be singular
-	 * 	with the rectangular bounding box the same as the image bounding box. 
-	 * 
-	 *	@return A map of rectangle to string
+	 * After processing, this method should return a set of bounding boxes of
+	 * regions within the image mapped to a String that contains the recognised
+	 * text. If the OCR processor cannot extract regions (it just reads whatever
+	 * image it's given), then the map can be singular with the rectangular
+	 * bounding box the same as the image bounding box.
+	 *
+	 * @return A map of rectangle to string
 	 */
-	public abstract Map<Rectangle,String> getText(); 
+	public abstract Map<Rectangle, String> getText();
 }

@@ -31,7 +31,6 @@ package org.openimaj.image.analysis.algorithm.histogram;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.analysis.algorithm.histogram.binning.SpatialBinningStrategy;
 import org.openimaj.image.processing.convolution.FImageGradients;
 
 /**

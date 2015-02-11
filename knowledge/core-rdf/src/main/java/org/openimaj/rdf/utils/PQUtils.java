@@ -36,11 +36,18 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * Some tools for playing with {@link ParameterizedSparqlString} instances
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class PQUtils {
 
+	/**
+	 * Set a {@link ParameterizedSparqlString} literal
+	 *
+	 * @param pss
+	 * @param strings
+	 * @param geo
+	 */
 	public static void setPSSLiteral(ParameterizedSparqlString pss, String[] strings, double[] geo) {
 		for (int i = 0; i < strings.length; i++) {
 			if (geo == null) {
@@ -52,18 +59,45 @@ public class PQUtils {
 		}
 	}
 
+	/**
+	 * Set a {@link ParameterizedSparqlString} null
+	 *
+	 * @param pss
+	 * @param name
+	 */
 	public static void setNull(ParameterizedSparqlString pss, String name) {
 		pss.setLiteral(name, Node.NULL.toString());
 	}
 
+	/**
+	 * Set a {@link ParameterizedSparqlString} literal
+	 *
+	 * @param pss
+	 * @param name
+	 * @param d
+	 */
 	public static void setPSSLiteral(ParameterizedSparqlString pss, String name, double d) {
 		pss.setLiteral(name, d);
 	}
 
+	/**
+	 * Set a {@link ParameterizedSparqlString} literal
+	 *
+	 * @param pss
+	 * @param name
+	 * @param d
+	 */
 	public static void setPSSLiteral(ParameterizedSparqlString pss, String name, int d) {
 		pss.setLiteral(name, d);
 	}
 
+	/**
+	 * Set a {@link ParameterizedSparqlString} literal
+	 *
+	 * @param pss
+	 * @param name
+	 * @param lit
+	 */
 	public static void setPSSLiteral(ParameterizedSparqlString pss, String name, String lit) {
 		if (lit != null)
 			pss.setLiteral(name, lit);
@@ -72,6 +106,11 @@ public class PQUtils {
 
 	}
 
+	/**
+	 * @param pss
+	 * @param name
+	 * @param iri
+	 */
 	public static void setPSSIri(ParameterizedSparqlString pss, String name, String iri) {
 		if (iri != null)
 			pss.setIri(name, iri);
@@ -79,6 +118,11 @@ public class PQUtils {
 			setNull(pss, name);
 	}
 
+	/**
+	 * @param pss
+	 * @param name
+	 * @param iri
+	 */
 	public static void setPSSResource(ParameterizedSparqlString pss, String name, Resource iri) {
 		if (iri != null)
 			pss.setParam(name, iri);
@@ -86,6 +130,13 @@ public class PQUtils {
 			setNull(pss, name);
 	}
 
+	/**
+	 * Construct a {@link ParameterizedSparqlString}
+	 * 
+	 * @param query
+	 * @param m
+	 * @return the {@link ParameterizedSparqlString}
+	 */
 	public static ParameterizedSparqlString constructPQ(String query, Model m) {
 		final ParameterizedSparqlString pss = new ParameterizedSparqlString(query, m);
 		return pss;

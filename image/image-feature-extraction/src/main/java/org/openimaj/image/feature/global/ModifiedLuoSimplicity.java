@@ -55,7 +55,7 @@ import org.openimaj.util.array.ArrayUtils;
  * <p>
  * Algorithm based on that proposed by Yiwen Luo and Xiaoou Tang, but modified
  * to use the foreground detection approach suggested in Che-Hua Yeh et al.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @References(references = {
@@ -71,15 +71,15 @@ import org.openimaj.util.array.ArrayUtils;
 				series = "ECCV '08",
 				customData = { "isbn", "978-3-540-88689-1", "location", "Marseille, France", "numpages", "14", "doi",
 						"10.1007/978-3-540-88690-7_29", "acmid", "1478204", "address", "Berlin, Heidelberg" }),
-		@Reference(
-				type = ReferenceType.Inproceedings,
-				author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
-				title = "Personalized Photograph Ranking and Selection System",
-				year = "2010",
-				booktitle = "Proceedings of ACM Multimedia",
-				pages = { "211", "220" },
-				month = "October",
-				customData = { "location", "Florence, Italy" }) })
+						@Reference(
+								type = ReferenceType.Inproceedings,
+								author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
+								title = "Personalized Photograph Ranking and Selection System",
+								year = "2010",
+								booktitle = "Proceedings of ACM Multimedia",
+								pages = { "211", "220" },
+								month = "October",
+								customData = { "location", "Florence, Italy" }) })
 public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency extractor;
 	protected float alpha = 0.67f;
@@ -98,7 +98,7 @@ public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVe
 
 	/**
 	 * Construct with the given values
-	 * 
+	 *
 	 * @param binsPerBand
 	 *            the number of histogram bins per colour band
 	 * @param gamma
@@ -131,7 +131,7 @@ public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVe
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
 	 * .Image)
@@ -154,8 +154,8 @@ public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVe
 				@Override
 				public boolean execute(ConnectedComponent cc, float sal) {
 					if (sal >= thresh) { // note that this is reversed from the
-											// paper, which doesn't seem to make
-											// sense.
+						// paper, which doesn't seem to make
+						// sense.
 						renderer.process(cc);
 					}
 

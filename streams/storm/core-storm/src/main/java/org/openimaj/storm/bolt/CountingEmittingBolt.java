@@ -43,9 +43,9 @@ import backtype.storm.tuple.Values;
 /**
  * A simple Storm {@link IBasicBolt} whose purpose is to increment a count on
  * the reciept of a tuple followed by an emit of the same tuple.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class CountingEmittingBolt extends BaseRichBolt {
 	private static final long serialVersionUID = -2567619894656997375L;

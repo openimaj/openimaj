@@ -46,7 +46,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 		Histogram h = hp.getHistogram();
  * 	}
  * 	</pre></code>
- * 
+ *
  * @see FImage#process(ImageProcessor)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -61,7 +61,7 @@ public class HistogramAnalyser implements ImageAnalyser<FImage>
 	/**
 	 * Default constructor that builds a histogram processor that will create
 	 * histograms with the given number of bins.
-	 * 
+	 *
 	 * @param nbins
 	 *            The number of bins.
 	 */
@@ -73,7 +73,7 @@ public class HistogramAnalyser implements ImageAnalyser<FImage>
 	 * Computes the Histogram for this image. The assumption is that the image
 	 * has been normalised to the range 0..1. Values greater than 1 will be
 	 * placed in the top bin.
-	 * 
+	 *
 	 * @param image
 	 *            The image from which to extract histogram
 	 */
@@ -95,7 +95,7 @@ public class HistogramAnalyser implements ImageAnalyser<FImage>
 	/**
 	 * Returns the histogram that was built having run the processing function.
 	 * This will return null if the processing has not yet been run.
-	 * 
+	 *
 	 * @return The {@link Histogram} that was built.
 	 */
 	public Histogram getHistogram()
@@ -105,7 +105,7 @@ public class HistogramAnalyser implements ImageAnalyser<FImage>
 
 	/**
 	 * Quickly create a histogram from an image.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param nbins

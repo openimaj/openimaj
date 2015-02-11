@@ -38,18 +38,18 @@ import Jama.Matrix;
 
 /**
  * An elliptical shape
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class EllipseUtilities {
 	/***
 	 * Construct an ellipse using a parametric ellipse equation, namely:
-	 * 
+	 *
 	 * X(t) = centerX + major * cos(t) * cos(rotation) - minor * sin(t) *
 	 * sin(rotation) Y(t) = centerY + major * cos(t) * cos(rotation) + minor *
 	 * sin(t) * sin(rotation)
-	 * 
+	 *
 	 * @param centerX
 	 * @param centerY
 	 * @param major
@@ -58,14 +58,14 @@ public class EllipseUtilities {
 	 * @return an ellipse
 	 */
 	public static Ellipse
-			ellipseFromEquation(double centerX, double centerY, double major, double minor, double rotation)
+	ellipseFromEquation(double centerX, double centerY, double major, double minor, double rotation)
 	{
 		return new Ellipse(centerX, centerY, major, minor, rotation);
 	}
 
 	/**
 	 * Construct ellipse from second moment matrix and centroid.
-	 * 
+	 *
 	 * @param x
 	 *            x-ordinate of centroid
 	 * @param y
@@ -80,7 +80,7 @@ public class EllipseUtilities {
 
 	/**
 	 * Construct ellipse from second moment matrix, scale-factor and centroid.
-	 * 
+	 *
 	 * @param x
 	 *            x-ordinate of centroid
 	 * @param y
@@ -115,7 +115,7 @@ public class EllipseUtilities {
 
 	/**
 	 * Construct ellipse from covariance matrix, scale-factor and centroid.
-	 * 
+	 *
 	 * @param x
 	 *            x-ordinate of centroid
 	 * @param y
@@ -143,7 +143,7 @@ public class EllipseUtilities {
 
 	/**
 	 * Create the covariance matrix of an ellipse.
-	 * 
+	 *
 	 * @param e
 	 *            the ellipse
 	 * @return the corresponding covariance matrix
@@ -167,7 +167,7 @@ public class EllipseUtilities {
 
 	/**
 	 * Create an ellipse.
-	 * 
+	 *
 	 * @param U
 	 * @param x
 	 * @param y
@@ -206,7 +206,7 @@ public class EllipseUtilities {
 	/**
 	 * Construct an ellipse that encompasses the shape of a
 	 * {@link CachingMultivariateGaussian}.
-	 * 
+	 *
 	 * @param gaussian
 	 *            the {@link CachingMultivariateGaussian}
 	 * @param scale

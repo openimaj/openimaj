@@ -34,7 +34,6 @@ import org.openimaj.storm.tool.StormToolOptions;
 
 import backtype.storm.Config;
 import backtype.storm.StormSubmitter;
-import backtype.storm.generated.StormTopology;
 
 /**
  * A {@link StormTopologyMode} uses a {@link StormSubmitter} to submit a

@@ -58,9 +58,9 @@ import com.twitter.util.Time;
  * A simple Kestrel client taken from
  * https://github.com/hogelog/simple-kestrel-client by Hogelog. Using this one
  * over {@link KestrelThriftClient} which seemed to have some major issues
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SimpleKestrelClient implements Closeable {
 	private static final Logger LOG = Logger.getLogger(SimpleKestrelClient.class);
@@ -70,7 +70,7 @@ public class SimpleKestrelClient implements Closeable {
 	/**
 	 * Initialise an {@link InetSocketAddress#InetSocketAddress(String, int)}
 	 * instance
-	 * 
+	 *
 	 * @param host
 	 * @param port
 	 */
@@ -81,7 +81,7 @@ public class SimpleKestrelClient implements Closeable {
 	/**
 	 * initialise a {@link Client} instance using {@link ServiceFactory} from a
 	 * {@link ClientBuilder}
-	 * 
+	 *
 	 * @param addr
 	 */
 	public SimpleKestrelClient(InetSocketAddress addr) {
@@ -97,7 +97,7 @@ public class SimpleKestrelClient implements Closeable {
 	 * Calls {@link Client#delete(String)} on the underlying {@link Client}
 	 * instance. This deletes the underlying journal instance in the kestrel
 	 * queue
-	 * 
+	 *
 	 * @param queueName
 	 */
 	public void delete(String queueName) {
@@ -112,7 +112,7 @@ public class SimpleKestrelClient implements Closeable {
 	/**
 	 * Performs a put kestrel call on the string value with a expiary of 0 (i.e.
 	 * does not expire)
-	 * 
+	 *
 	 * @param queueName
 	 * @param value
 	 */
@@ -122,7 +122,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Performs a put kestrel call with the provided expiration.
-	 * 
+	 *
 	 * @param queueName
 	 * @param exp
 	 * @param value
@@ -135,7 +135,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Performs a put with the byte array value with no expiration
-	 * 
+	 *
 	 * @param queueName
 	 * @param value
 	 */
@@ -145,7 +145,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Performs a put with the byte array valye with an expiration
-	 * 
+	 *
 	 * @param queueName
 	 * @param exp
 	 * @param value
@@ -158,7 +158,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Get the next value in the queue
-	 * 
+	 *
 	 * @param queueName
 	 * @return the next value
 	 */
@@ -168,7 +168,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Get the next value in the queue
-	 * 
+	 *
 	 * @param queueName
 	 * @return the next value
 	 */
@@ -178,7 +178,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Get the next value in the queue
-	 * 
+	 *
 	 * @param queueName
 	 * @param waitFor
 	 * @return the next value
@@ -190,7 +190,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Get the next value in the queue
-	 * 
+	 *
 	 * @param queueName
 	 * @param waitFor
 	 * @return the next value
@@ -207,7 +207,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Get the next value from the queue
-	 * 
+	 *
 	 * @param queueName
 	 * @param waitDuration
 	 * @return the next value
@@ -227,7 +227,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Get the next value from the queue
-	 * 
+	 *
 	 * @param queueName
 	 * @param waitDuration
 	 *            an amount of time to wait before returning null
@@ -248,7 +248,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Get the next value without popping it
-	 * 
+	 *
 	 * @param queueName
 	 * @return the next value
 	 */
@@ -258,7 +258,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * The next value without popping it
-	 * 
+	 *
 	 * @param queueName
 	 * @param waitFor
 	 *            an amount of time to wait before returning null
@@ -271,7 +271,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * The next value without popping it
-	 * 
+	 *
 	 * @param queueName
 	 * @param waitDuration
 	 *            an amount of time to wait before returning null
@@ -283,7 +283,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * Get the next value without popping it
-	 * 
+	 *
 	 * @param queueName
 	 * @return the next value
 	 */
@@ -293,7 +293,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * The next value without popping it
-	 * 
+	 *
 	 * @param queueName
 	 * @param waitFor
 	 *            an amount of time to wait before returning null
@@ -306,7 +306,7 @@ public class SimpleKestrelClient implements Closeable {
 
 	/**
 	 * The next value without popping it
-	 * 
+	 *
 	 * @param queueName
 	 * @param waitDuration
 	 *            an amount of time to wait before returning null

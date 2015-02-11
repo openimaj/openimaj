@@ -46,7 +46,7 @@ import org.openimaj.math.geometry.shape.Ellipse;
 
 /**
  * Demo showing ellipse fitted to MSERs
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 @Demo(
@@ -54,7 +54,7 @@ import org.openimaj.math.geometry.shape.Ellipse;
 		description = "Shows ellipse fitting for regions detected using an MSER feature extractor",
 		keywords = {
 				"mser", "ellipse", "feat" },
-		title = "MSER Ellipse Finder")
+				title = "MSER Ellipse Finder")
 public class MSEREllipseFinder {
 	/**
 	 * Construct demo
@@ -74,8 +74,7 @@ public class MSEREllipseFinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		final MSERFeatureGenerator mser = new MSERFeatureGenerator(
-				MomentFeature.class);
+		final MSERFeatureGenerator mser = new MSERFeatureGenerator(MomentFeature.class);
 		final List<Component> features = mser.generateMSERs(Transforms
 				.calculateIntensityNTSC(image));
 		for (final Component c : features) {
@@ -89,7 +88,7 @@ public class MSEREllipseFinder {
 
 	/**
 	 * The main method
-	 * 
+	 *
 	 * @param args
 	 *            ignored
 	 */

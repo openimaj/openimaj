@@ -29,7 +29,6 @@
  */
 package org.openimaj.ml.linear.data;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.log4j.ConsoleAppender;
@@ -48,14 +47,15 @@ public class BilinearSparseOnlineLearnerTest {
 	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	private File matfile;
-	private File winitfile;
-	private File uinitfile;
+
+	// private File matfile;
+	// private File winitfile;
+	// private File uinitfile;
 
 	@BeforeClass
 	public static void before() throws IOException {
 		final ConsoleAppender console = new ConsoleAppender(); // create
-																// appender
+		// appender
 		// configure the appender
 		final String PATTERN = "[%C{1}] %m%n";
 		console.setLayout(new PatternLayout(PATTERN));

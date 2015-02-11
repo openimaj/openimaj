@@ -52,7 +52,7 @@ import org.openimaj.util.array.ArrayUtils;
  * <p>
  * Basically returns the proportion of the image that can be considered
  * interesting.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
@@ -80,7 +80,7 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 	/**
 	 * Construct with the given alpha value, but use the defaults for the
 	 * {@link YehSaliency} estimator.
-	 * 
+	 *
 	 * @param alpha
 	 *            the alpha value for determining the threshold
 	 */
@@ -91,7 +91,7 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 
 	/**
 	 * Construct with the given parameters.
-	 * 
+	 *
 	 * @param saliencySigma
 	 *            smoothing for the {@link AchantaSaliency} class
 	 * @param segmenterSigma
@@ -116,7 +116,7 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
 	 * .Image)
@@ -136,8 +136,8 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 			@Override
 			public boolean execute(ConnectedComponent cc, float sal) {
 				if (sal >= thresh) { // note that this is reversed from the
-										// paper, which doesn't seem to make
-										// sense.
+					// paper, which doesn't seem to make
+					// sense.
 					renderer.process(cc);
 				}
 
@@ -151,6 +151,6 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 				roiProportion += map.pixels[y][x];
 
 		roiProportion /= (map.width * map.height); // smaller simplicity means
-													// smaller ROI
+		// smaller ROI
 	}
 }

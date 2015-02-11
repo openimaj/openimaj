@@ -47,13 +47,13 @@ import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeansResult;
  * using a {@link DataSource} that reads data from disk. Hierarchical KMeans
  * clustering is demonstrated, but exact and approximate K-Means can also be
  * used.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class BigDataClusterExample {
 	/**
 	 * Main method for the example.
-	 * 
+	 *
 	 * @param args
 	 *            Ignored.
 	 * @throws IOException
@@ -96,9 +96,9 @@ public class BigDataClusterExample {
 	 * {@link #getData(int, int, byte[][])} are synchronized to ensure that
 	 * multiple threads don't interfere with the underlying
 	 * {@link RandomAccessFile}.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	static class ExampleDatasource extends AbstractDataSource<byte[]> implements Closeable {
 		/**
@@ -168,7 +168,7 @@ public class BigDataClusterExample {
 	 * number of vectors and dimensionality. The remainder of the file is the
 	 * vector data, one vector at a time, with each vector encoded as
 	 * <code>dimensionality</code> bytes.
-	 * 
+	 *
 	 * @param dimensionality
 	 *            length of the vectors
 	 * @param numItems

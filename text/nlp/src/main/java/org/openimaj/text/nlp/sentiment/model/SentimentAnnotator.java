@@ -31,7 +31,6 @@ package org.openimaj.text.nlp.sentiment.model;
 
 import org.openimaj.ml.annotation.Annotator;
 import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
-import org.openimaj.text.nlp.sentiment.type.Sentiment;
 
 /**
  * An annotator which can ascribe {@link Sentiment} to some {@link Object}

@@ -41,9 +41,9 @@ import org.openimaj.io.FileUtils;
 /**
  * A file tool reads and writes files and knows whether existing outputs should
  * be deleted
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class InOutToolOptions {
 
@@ -83,7 +83,7 @@ public abstract class InOutToolOptions {
 	/**
 	 * When the input file is set, any existing input file LIST file is removed
 	 * (anything from -if)
-	 * 
+	 *
 	 * @param input
 	 *            new input location
 	 */
@@ -111,12 +111,13 @@ public abstract class InOutToolOptions {
 	/**
 	 * Fixes a problem with args4j with multivalued arguments being preserved
 	 * within the same JVM
-	 * 
+	 *
 	 * @param <T>
 	 * @param modeOptions
 	 * @param defaults
 	 *            optional default values if the modeoptions is empty
 	 */
+	@SafeVarargs
 	public static <T> void prepareMultivaluedArgument(List<T> modeOptions, T... defaults) {
 		final Set<T> modes = new HashSet<T>();
 		for (final T mode : modeOptions) {

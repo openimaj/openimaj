@@ -42,6 +42,7 @@ import org.openimaj.util.function.Function;
  */
 public class DoGSiftFeatureExtractor implements Function<FImage,  LocalFeatureList<? extends LocalFeature<?,? extends FeatureVector>>  >{
 	
+	@Override
 	public LocalFeatureList<? extends LocalFeature<?,? extends FeatureVector>> apply(FImage img) {
 		DoGSIFTEngine dsift = new DoGSIFTEngine();
 		return dsift.findFeatures(img);

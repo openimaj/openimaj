@@ -195,7 +195,8 @@ public class DoubleFFT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 int idx1 = s * sliceStride;
                                 for (int r = 0; r < rows; r++) {
@@ -212,7 +213,8 @@ public class DoubleFFT_3D {
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[2 * rows];
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 int idx1 = s * sliceStride;
@@ -244,7 +246,8 @@ public class DoubleFFT_3D {
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[2 * slices];
                             for (int r = firstRow; r < lastRow; r++) {
                                 int idx1 = r * rowStride;
@@ -384,7 +387,8 @@ public class DoubleFFT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 for (int r = 0; r < rows; r++) {
                                     fftColumns.complexForward(a[s][r]);
@@ -400,7 +404,8 @@ public class DoubleFFT_3D {
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[2 * rows];
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 for (int c = 0; c < columns; c++) {
@@ -429,7 +434,8 @@ public class DoubleFFT_3D {
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[2 * slices];
                             for (int r = firstRow; r < lastRow; r++) {
                                 for (int c = 0; c < columns; c++) {
@@ -565,7 +571,8 @@ public class DoubleFFT_3D {
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 int idx1 = s * sliceStride;
                                 for (int r = 0; r < rows; r++) {
@@ -582,7 +589,8 @@ public class DoubleFFT_3D {
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[2 * rows];
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 int idx1 = s * sliceStride;
@@ -614,7 +622,8 @@ public class DoubleFFT_3D {
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[2 * slices];
                             for (int r = firstRow; r < lastRow; r++) {
                                 int idx1 = r * rowStride;
@@ -753,7 +762,8 @@ public class DoubleFFT_3D {
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 for (int r = 0; r < rows; r++) {
                                     fftColumns.complexInverse(a[s][r], scale);
@@ -769,7 +779,8 @@ public class DoubleFFT_3D {
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[2 * rows];
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 for (int c = 0; c < columns; c++) {
@@ -798,7 +809,8 @@ public class DoubleFFT_3D {
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
 
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[2 * slices];
                             for (int r = firstRow; r < lastRow; r++) {
                                 for (int c = 0; c < columns; c++) {
@@ -1450,7 +1462,8 @@ public class DoubleFFT_3D {
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             for (int r = 0; r < rows; r++) {
                                 fftColumns.realForwardFull(a[s][r]);
@@ -1466,7 +1479,8 @@ public class DoubleFFT_3D {
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[2 * rows];
 
                         for (int s = firstSlice; s < lastSlice; s++) {
@@ -1496,7 +1510,8 @@ public class DoubleFFT_3D {
                 final int lastRow = (l == (nthreads - 1)) ? ldimn2 : firstRow + p;
 
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[2 * slices];
 
                         for (int r = firstRow; r < lastRow; r++) {
@@ -1525,7 +1540,8 @@ public class DoubleFFT_3D {
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
 
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx2 = (slices - s) % slices;
@@ -1623,7 +1639,8 @@ public class DoubleFFT_3D {
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             for (int r = 0; r < rows; r++) {
                                 fftColumns.realInverseFull(a[s][r], scale);
@@ -1639,7 +1656,8 @@ public class DoubleFFT_3D {
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[2 * rows];
 
                         for (int s = firstSlice; s < lastSlice; s++) {
@@ -1668,7 +1686,8 @@ public class DoubleFFT_3D {
                 final int firstRow = l * p;
                 final int lastRow = (l == (nthreads - 1)) ? ldimn2 : firstRow + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[2 * slices];
 
                         for (int r = firstRow; r < lastRow; r++) {
@@ -1697,7 +1716,8 @@ public class DoubleFFT_3D {
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
 
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
 
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx2 = (slices - s) % slices;
@@ -1797,7 +1817,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = slices - 1 - l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? n1d2 + 1 : firstSlice - p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[twon3];
                         for (int s = firstSlice; s >= lastSlice; s--) {
                             int idx1 = s * sliceStride;
@@ -1819,7 +1840,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? n1d2 + 1 : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx1 = s * sliceStride;
                             for (int r = 0; r < rows; r++) {
@@ -1836,7 +1858,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? n1d2 + 1 : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx1 = s * twoSliceStride;
                             for (int r = 0; r < rows; r++) {
@@ -1853,7 +1876,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[2 * rows];
 
                         for (int s = firstSlice; s < lastSlice; s++) {
@@ -1885,7 +1909,8 @@ public class DoubleFFT_3D {
                 final int firstRow = l * p;
                 final int lastRow = (l == (nthreads - 1)) ? ldimn2 : firstRow + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[2 * slices];
 
                         for (int r = firstRow; r < lastRow; r++) {
@@ -1916,7 +1941,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
 
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx2 = (slices - s) % slices;
@@ -2041,7 +2067,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = slices - 1 - l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? n1d2 + 1 : firstSlice - p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[twon3];
                         for (int s = firstSlice; s >= lastSlice; s--) {
                             int idx1 = s * sliceStride;
@@ -2063,7 +2090,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? n1d2 + 1 : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx1 = s * sliceStride;
                             for (int r = 0; r < rows; r++) {
@@ -2080,7 +2108,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? n1d2 + 1 : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx1 = s * twoSliceStride;
                             for (int r = 0; r < rows; r++) {
@@ -2097,7 +2126,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[2 * rows];
 
                         for (int s = firstSlice; s < lastSlice; s++) {
@@ -2129,7 +2159,8 @@ public class DoubleFFT_3D {
                 final int firstRow = l * p;
                 final int lastRow = (l == (nthreads - 1)) ? ldimn2 : firstRow + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         double[] temp = new double[2 * slices];
 
                         for (int r = firstRow; r < lastRow; r++) {
@@ -2161,7 +2192,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
 
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx2 = (slices - s) % slices;
@@ -3289,7 +3321,8 @@ public class DoubleFFT_3D {
             final int n0 = i;
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     int idx0, idx1, idx2, idx3, idx4, idx5;
 
                     if (isgn == -1) {
@@ -3489,7 +3522,8 @@ public class DoubleFFT_3D {
             final int n0 = i;
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     int idx0, idx1, idx2, idx3, idx4, idx5;
 
                     if (isgn == -1) {
@@ -3687,7 +3721,8 @@ public class DoubleFFT_3D {
             final int n0 = i;
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     int idx2, idx3, idx4, idx5;
 
                     if (isgn == -1) {
@@ -3872,7 +3907,8 @@ public class DoubleFFT_3D {
             final int n0 = i;
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     int idx2, idx3, idx4, idx5;
 
                     if (isgn == -1) {
@@ -4057,7 +4093,8 @@ public class DoubleFFT_3D {
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                public void run() {
+                @Override
+				public void run() {
                     int idx0, idx1, idx2, idx3, idx4, idx5;
 
                     if (isgn == -1) {
@@ -4250,7 +4287,8 @@ public class DoubleFFT_3D {
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                public void run() {
+                @Override
+				public void run() {
                     int idx2, idx3, idx4, idx5;
 
                     if (isgn == -1) {
@@ -4623,7 +4661,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx1 = (slices - s) % slices;
                             for (int r = 0; r < rows; r++) {
@@ -4646,7 +4685,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx1 = (slices - s) % slices;
                             for (int r = 1; r < n2d2; r++) {
@@ -4666,7 +4706,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx1 = (slices - s) % slices;
                             for (int r = 1; r < n2d2; r++) {
@@ -4801,7 +4842,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx3 = ((slices - s) % slices) * twoSliceStride;
                             int idx5 = s * twoSliceStride;
@@ -4827,7 +4869,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx5 = ((slices - s) % slices) * twoSliceStride;
                             int idx6 = s * twoSliceStride;
@@ -4851,7 +4894,8 @@ public class DoubleFFT_3D {
                 final int firstSlice = l * p;
                 final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                 futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
                             int idx3 = ((slices - s) % slices) * twoSliceStride;
                             int idx4 = s * twoSliceStride;

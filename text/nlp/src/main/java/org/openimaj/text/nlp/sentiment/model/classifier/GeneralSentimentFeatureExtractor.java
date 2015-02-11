@@ -43,12 +43,12 @@ import org.openimaj.ml.annotation.bayes.NaiveBayesAnnotator;
  * {@link FeatureExtractor} that is suitable for {@link NaiveBayesAnnotator}.
  * Should be initialized with training corpus of the machine learning
  * {@link AbstractAnnotator} you are using.
- * 
+ *
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
- * 
+ *
  */
 public class GeneralSentimentFeatureExtractor implements
-		FeatureExtractor<DoubleFV, List<String>>
+FeatureExtractor<DoubleFV, List<String>>
 {
 
 	private ArrayList<String> vocabList;
@@ -56,7 +56,7 @@ public class GeneralSentimentFeatureExtractor implements
 
 	/**
 	 * Construct with the training set. This is required to build a vocabulary.
-	 * 
+	 *
 	 * @param domainVocabularyCorpus
 	 *            list of tokenised corpus documents.
 	 */
@@ -75,7 +75,7 @@ public class GeneralSentimentFeatureExtractor implements
 
 	/**
 	 * Allows a new vocabulary to be constructed from a new corpus.
-	 * 
+	 *
 	 * @param domainVocabularyCorpus
 	 *            list of tokenised corpus documents.
 	 */

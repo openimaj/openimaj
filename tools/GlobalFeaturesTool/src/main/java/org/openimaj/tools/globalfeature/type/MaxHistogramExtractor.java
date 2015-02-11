@@ -36,7 +36,6 @@ import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.tools.globalfeature.GlobalFeatureType;
 import org.openimaj.util.array.ArrayUtils;
 
 /**

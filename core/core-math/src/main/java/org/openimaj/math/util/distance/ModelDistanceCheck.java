@@ -33,18 +33,20 @@ import org.openimaj.math.model.EstimatableModel;
 import org.openimaj.math.model.Model;
 
 /**
- * Implementation of a {@link DistanceCheck} that tests the
- * distance against a {@link EstimatableModel}.
- * 
+ * Implementation of a {@link DistanceCheck} that tests the distance against a
+ * {@link EstimatableModel}.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ModelDistanceCheck implements DistanceCheck {
 	Model<Double, Boolean> model;
-	
+
 	/**
 	 * Construct using the given model.
-	 * @param model the model to use in #check(double).
+	 * 
+	 * @param model
+	 *            the model to use in #check(double).
 	 */
 	public ModelDistanceCheck(Model<Double, Boolean> model) {
 		this.model = model;
@@ -54,7 +56,7 @@ public class ModelDistanceCheck implements DistanceCheck {
 	public boolean check(double distance) {
 		return model.predict(distance);
 	}
-	
+
 	/**
 	 * @return the model
 	 */

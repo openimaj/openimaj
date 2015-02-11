@@ -135,7 +135,8 @@ public abstract class Stage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPU
 		// A bit of a dirty hack, if any input file is an lzo file sneakily
 		// switch the input format class to LZOTextInput
 		if (inputFormatClass.equals(TextInputFormat.class) && containsLZO(inputs)) {
-			job.setInputFormatClass((Class<? extends InputFormat>) Class.forName("com.hadoop.mapreduce.LzoTextInputFormat"));
+			job.setInputFormatClass((Class<? extends InputFormat<?, ?>>) Class
+					.forName("com.hadoop.mapreduce.LzoTextInputFormat"));
 		}
 		else {
 			job.setInputFormatClass(inputFormatClass);

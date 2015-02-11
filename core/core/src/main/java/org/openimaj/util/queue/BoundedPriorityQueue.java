@@ -53,9 +53,9 @@ import java.util.PriorityQueue;
  * The Iterator provided in method {@link #iterator()} is <em>not</em>
  * guaranteed to traverse the elements of the priority queue in any particular
  * order.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  */
 public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
@@ -66,7 +66,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * Creates a {@code BoundedPriorityQueue} with the specified initial
 	 * capacity that orders its elements according to the inverse of the
 	 * specified comparator.
-	 * 
+	 *
 	 * @param maxSize
 	 *            the maximum number of elements in this priority queue
 	 * @param comparator
@@ -86,7 +86,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * Creates a {@code BoundedPriorityQueue} with the specified initial
 	 * capacity that orders its elements according to their inverse
 	 * {@linkplain Comparable natural ordering}.
-	 * 
+	 *
 	 * @param maxSize
 	 *            the maximum number of elements in this priority queue
 	 * @throws IllegalArgumentException
@@ -99,7 +99,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.PriorityQueue#offer(java.lang.Object)
 	 */
 	@Override
@@ -134,7 +134,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * <p>
 	 * Peeking at the head is an expensive (O(n)) operation as the
 	 * {@link BoundedPriorityQueue} only maintains the tail for fast insertions.
-	 * 
+	 *
 	 * @see java.util.PriorityQueue#peek()
 	 */
 	@Override
@@ -157,7 +157,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * <p>
 	 * Polling the head is an expensive (O(n)) operation as the
 	 * {@link BoundedPriorityQueue} only maintains the tail for fast insertions.
-	 * 
+	 *
 	 * @see java.util.PriorityQueue#poll()
 	 */
 	@Override
@@ -172,7 +172,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * natural order, or the order specified by the {@link Comparator} used in
 	 * constructing the queue. The list constructed in O(N) time, and the
 	 * sorting takes O(log(N)) time.
-	 * 
+	 *
 	 * @return a sorted list containing contents of the queue.
 	 */
 	public List<T> toOrderedList() {
@@ -200,7 +200,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * new array). The caller is thus free to modify the returned array.
 	 * <p>
 	 * This method acts as bridge between array-based and collection-based APIs.
-	 * 
+	 *
 	 * @return a sorted array containing all of the elements in this queue
 	 */
 	@SuppressWarnings("unchecked")
@@ -236,14 +236,14 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * Suppose <tt>x</tt> is a queue known to contain only strings. The
 	 * following code can be used to dump the queue into a newly allocated array
 	 * of <tt>String</tt>:
-	 * 
+	 *
 	 * <pre>
 	 * String[] y = x.toArray(new String[0]);
 	 * </pre>
 	 * <p>
 	 * Note that <tt>toArray(new Object[0])</tt> is identical in function to
 	 * <tt>toArray()</tt>.
-	 * 
+	 *
 	 * @param a
 	 *            the array into which the elements of the queue are to be
 	 *            stored, if it is big enough; otherwise, a new array of the
@@ -270,7 +270,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * <p>
 	 * This method destroys the queue; after the operation completes, the queue
 	 * will be empty. The operation completes in O(Nlog(N)) time.
-	 * 
+	 *
 	 * @return a sorted list containing contents of the queue.
 	 */
 	@SuppressWarnings("unchecked")
@@ -299,7 +299,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * new array). The caller is thus free to modify the returned array.
 	 * <p>
 	 * This method acts as bridge between array-based and collection-based APIs.
-	 * 
+	 *
 	 * @return a sorted array containing all of the elements in this queue
 	 */
 	public Object[] toOrderedArrayDestructive() {
@@ -340,14 +340,14 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * Suppose <tt>x</tt> is a queue known to contain only strings. The
 	 * following code can be used to dump the queue into a newly allocated array
 	 * of <tt>String</tt>:
-	 * 
+	 *
 	 * <pre>
 	 * String[] y = x.toArray(new String[0]);
 	 * </pre>
 	 * <p>
 	 * Note that <tt>toArray(new Object[0])</tt> is identical in function to
 	 * <tt>toArray()</tt>.
-	 * 
+	 *
 	 * @param a
 	 *            the array into which the elements of the queue are to be
 	 *            stored, if it is big enough; otherwise, a new array of the
@@ -381,7 +381,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * <tt>null</tt> if this queue is empty.
 	 * <p>
 	 * This operation is performed in O(1) time.
-	 * 
+	 *
 	 * @return the tail of this queue, or <tt>null</tt> if this queue is empty.
 	 */
 	public T peekTail() {
@@ -393,7 +393,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * this queue is empty.
 	 * <p>
 	 * This operation is performed in O(1) time.
-	 * 
+	 *
 	 * @return the tail of this queue, or <tt>null</tt> if this queue is empty.
 	 */
 	public T pollTail() {
@@ -410,10 +410,10 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 	 * was added to a queue that has not reached its capacity, then
 	 * <code>null</code> is returned. If the item was added to a queue at
 	 * capacity, then the item that was removed to make space is returned.
-	 * 
+	 *
 	 * @param item
 	 *            The item to attempt to add.
-	 * 
+	 *
 	 * @return The item if it couldn't be added to the queue; null if the item
 	 *         was added without needing to remove anything; or the removed item
 	 *         if space had to be made to add the item.
@@ -441,7 +441,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 
 	/**
 	 * Is the {@link BoundedPriorityQueue} full?
-	 * 
+	 *
 	 * @return true if full; false otherwise
 	 */
 	public boolean isFull() {

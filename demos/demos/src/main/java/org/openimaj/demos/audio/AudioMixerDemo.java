@@ -47,7 +47,6 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.time.Sequencer;
-import org.openimaj.time.Sequencer.SequencedAction;
 import org.openimaj.video.xuggle.XuggleAudio;
 
 /**

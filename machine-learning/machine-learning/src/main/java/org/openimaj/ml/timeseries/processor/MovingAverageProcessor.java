@@ -35,27 +35,26 @@ import org.openimaj.ml.timeseries.processor.interpolation.TimeSeriesInterpolatio
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 /**
- * Calculates a moving average over a specified window in the past such that  
- * 
+ * Calculates a moving average over a specified window in the past such that
+ *
  * data[t_n] = sum^{m}_{i=1}{data[t_{n-i}}
- * 
- * This processor returns a value for each time in the underlying time series. 
- * For sensible results, consider interpolating a consistent time span using an {@link LinearInterpolationProcessor}
- * followed by this processor.
- * 
+ *
+ * This processor returns a value for each time in the underlying time series.
+ * For sensible results, consider interpolating a consistent time span using an
+ * {@link LinearInterpolationProcessor} followed by this processor.
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class MovingAverageProcessor implements TimeSeriesProcessor<double[],Double,DoubleTimeSeries>
+public class MovingAverageProcessor implements TimeSeriesProcessor<double[], Double, DoubleTimeSeries>
 {
-	
-	
-	
+
 	private long length;
 
 	/**
 	 * @see TimeSeriesInterpolation#TimeSeriesInterpolation(long[])
-	 * @param length the length of the window placed ending at t_n
+	 * @param length
+	 *            the length of the window placed ending at t_n
 	 */
 	public MovingAverageProcessor(long length) {
 		this.length = length;
@@ -63,13 +62,13 @@ public class MovingAverageProcessor implements TimeSeriesProcessor<double[],Doub
 
 	@Override
 	public void process(DoubleTimeSeries series) {
-		long[] times = series.getTimes();
-		double[] data = series.getData();
-		int size = series.size();
-		for (int i = size-1; i >= 0; i--) {
-			long latest = times[i];
-			long earliest = latest - length;
-			DoubleTimeSeries spanoftime = series.get(earliest, latest);
+		final long[] times = series.getTimes();
+		final double[] data = series.getData();
+		final int size = series.size();
+		for (int i = size - 1; i >= 0; i--) {
+			final long latest = times[i];
+			final long earliest = latest - length;
+			final DoubleTimeSeries spanoftime = series.get(earliest, latest);
 			data[i] = StatUtils.mean(spanoftime.getData());
 		}
 	}

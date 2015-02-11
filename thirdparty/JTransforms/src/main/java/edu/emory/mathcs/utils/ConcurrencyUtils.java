@@ -65,7 +65,8 @@ public class ConcurrencyUtils {
     }
 
     private static class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
-        public void uncaughtException(Thread t, Throwable e) {
+        @Override
+		public void uncaughtException(Thread t, Throwable e) {
             e.printStackTrace();
         }
 
@@ -80,7 +81,8 @@ public class ConcurrencyUtils {
             this.handler = handler;
         }
 
-        public Thread newThread(Runnable r) {
+        @Override
+		public Thread newThread(Runnable r) {
             Thread t = defaultFactory.newThread(r);
             t.setUncaughtExceptionHandler(handler);
             t.setDaemon(true); //daemonize the thread

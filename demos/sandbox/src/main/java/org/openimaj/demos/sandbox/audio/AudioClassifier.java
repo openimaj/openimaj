@@ -47,22 +47,24 @@ import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.util.pair.IndependentPair;
 
-
 /**
- *	A general audio classifier class that can use any annotator and any dataset. The {@link AudioClassifier}
- *	requires an annotator to be passed in, which in turn requires feature extractor. The feature extractor
- *	must be able to extract a {@link FeatureVector} from a {@link SampleBuffer}.
+ * A general audio classifier class that can use any annotator and any dataset.
+ * The {@link AudioClassifier} requires an annotator to be passed in, which in
+ * turn requires feature extractor. The feature extractor must be able to
+ * extract a {@link FeatureVector} from a {@link SampleBuffer}.
  *
- *	<p>
- *	The {@link #train(List)}
- *	method takes a list of pairs, where the pairs are streams mapped to annotations. Each stream represents
- *	a set of {@link SampleBuffer}s for that annotation. They are extracted into {@link AnnotatedObject}s before
- *	being passed into the annotator for feature extraction.
+ * <p>
+ * The {@link #train(List)} method takes a list of pairs, where the pairs are
+ * streams mapped to annotations. Each stream represents a set of
+ * {@link SampleBuffer}s for that annotation. They are extracted into
+ * {@link AnnotatedObject}s before being passed into the annotator for feature
+ * extraction.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 7 May 2013
- *	@version $Author$, $Revision$, $Date$
- * 	@param <ANNOTATION> The annotation type
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 7 May 2013
+ * @version $Author$, $Revision$, $Date$
+ * @param <ANNOTATION>
+ *            The annotation type
  */
 public class AudioClassifier<ANNOTATION> extends AbstractAnnotator<SampleBuffer, ANNOTATION>
 {
@@ -70,44 +72,48 @@ public class AudioClassifier<ANNOTATION> extends AbstractAnnotator<SampleBuffer,
 	private final BatchAnnotator<SampleBuffer, ANNOTATION> annotator;
 
 	/**
-	 * 	Constructor that takes the actual annotator type to use.
-	 *	@param annotator The annotator
+	 * Constructor that takes the actual annotator type to use.
+	 *
+	 * @param annotator
+	 *            The annotator
 	 */
-	public AudioClassifier( final BatchAnnotator<SampleBuffer,ANNOTATION> annotator )
+	public AudioClassifier(final BatchAnnotator<SampleBuffer, ANNOTATION> annotator)
 	{
 		this.annotator = annotator;
 	}
 
 	/**
-	 * 	Train the annotator on the given streams. The streams are annotated with the appropriate
-	 * 	annotation, and sample chunks (and therefore buffers) are gathered from the streams into
-	 * 	batches to train the annotator.
+	 * Train the annotator on the given streams. The streams are annotated with
+	 * the appropriate annotation, and sample chunks (and therefore buffers) are
+	 * gathered from the streams into batches to train the annotator.
 	 *
-	 * 	@param streams The annotated streams
+	 * @param streams
+	 *            The annotated streams
 	 */
-	public void train( final List<IndependentPair<AudioStream,ANNOTATION>> streams )
+	public void train(final List<IndependentPair<AudioStream, ANNOTATION>> streams)
 	{
 		// Convert all the incoming streams into AnnotatedObject instances
 		// where the sample buffer for each
-		final List<Annotated<SampleBuffer,ANNOTATION>> list = new ArrayList<Annotated<SampleBuffer,ANNOTATION>>();
-		for( final IndependentPair<AudioStream, ANNOTATION> stream : streams )
+		final List<Annotated<SampleBuffer, ANNOTATION>> list = new ArrayList<Annotated<SampleBuffer, ANNOTATION>>();
+		for (final IndependentPair<AudioStream, ANNOTATION> stream : streams)
 		{
 			SampleChunk sc = null;
-			while( (sc  = stream.firstObject().nextSampleChunk()) != null )
+			while ((sc = stream.firstObject().nextSampleChunk()) != null)
 			{
 				final SampleBuffer sb = sc.getSampleBuffer();
-				final AnnotatedObject<SampleBuffer, ANNOTATION> a = AnnotatedObject.create( sb, stream.secondObject() );
-				list.add( a );
+				final AnnotatedObject<SampleBuffer, ANNOTATION> a = AnnotatedObject.create(sb, stream.secondObject());
+				list.add(a);
 			}
 		}
 
 		// Train the annotator for the streams
-		this.annotator.train( list );
+		this.annotator.train(list);
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.ml.annotation.Annotator#getAnnotations()
+	 * {@inheritDoc}
+	 *
+	 * @see org.openimaj.ml.annotation.Annotator#getAnnotations()
 	 */
 	@Override
 	public Set<ANNOTATION> getAnnotations()
@@ -116,12 +122,13 @@ public class AudioClassifier<ANNOTATION> extends AbstractAnnotator<SampleBuffer,
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.ml.annotation.Annotator#annotate(java.lang.Object)
+	 * {@inheritDoc}
+	 *
+	 * @see org.openimaj.ml.annotation.Annotator#annotate(java.lang.Object)
 	 */
 	@Override
-	public List<ScoredAnnotation<ANNOTATION>> annotate( final SampleBuffer object )
+	public List<ScoredAnnotation<ANNOTATION>> annotate(final SampleBuffer object)
 	{
-		return this.annotator.annotate( object );
+		return this.annotator.annotate(object);
 	}
 }

@@ -39,9 +39,9 @@ import org.openimaj.io.ObjectReader;
 /**
  * Base class for {@link ListDataset}s in which each instance is read with an
  * {@link InputStreamObjectReader}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <INSTANCE>
  *            the type of instances in the dataset
  * @param <SOURCE>
@@ -55,7 +55,7 @@ public abstract class ReadableListDataset<INSTANCE, SOURCE> extends AbstractList
 
 	/**
 	 * Construct with the given {@link ObjectReader}.
-	 * 
+	 *
 	 * @param reader
 	 *            the {@link InputStreamObjectReader}.
 	 */
@@ -77,7 +77,7 @@ public abstract class ReadableListDataset<INSTANCE, SOURCE> extends AbstractList
 	 * Get an identifier for the instance at the given index. By default this
 	 * just returns the index converted to a {@link String}, but sub-classes
 	 * should override to to something more sensible if possible.
-	 * 
+	 *
 	 * @param index
 	 *            the index
 	 * @return the identifier of the instance at the given index
@@ -89,7 +89,7 @@ public abstract class ReadableListDataset<INSTANCE, SOURCE> extends AbstractList
 	/**
 	 * Get the index of the instance with the given ID, or -1 if it can't be
 	 * found.
-	 * 
+	 *
 	 * @param id
 	 *            the ID string
 	 * @return the index; or -1 if not found.
@@ -149,7 +149,7 @@ public abstract class ReadableListDataset<INSTANCE, SOURCE> extends AbstractList
 	 * Create a view of this dataset in which the instances are wrapped up in
 	 * {@link IdentifiableObject}s. The {@link #getID(int)} method is used to
 	 * determine the identifier.
-	 * 
+	 *
 	 * @return a view of this dataset with {@link Identifiable}-wrapped
 	 *         instances
 	 */

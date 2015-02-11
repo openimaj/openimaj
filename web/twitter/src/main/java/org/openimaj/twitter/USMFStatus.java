@@ -56,11 +56,11 @@ import com.google.gson.Gson;
  *         (ss@ecs.soton.ac.uk), Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  *
  */
-public class USMFStatus extends GeneralJSON implements Cloneable{
+public class USMFStatus extends GeneralJSON implements Cloneable {
 	private static final Logger logger = Logger.getLogger(USMFStatus.class);
 	private transient Class<? extends GeneralJSON> generalJSONclass; // class of
-																		// the
-																		// source.
+	// the
+	// source.
 
 	/**
 	 * Service Name
@@ -220,7 +220,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		String line = (in.nextLine());
+		final String line = (in.nextLine());
 		fillFromString(line);
 	}
 
@@ -238,7 +238,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 		try {
 			jsonInstance = IOUtils.newInstance(generalJSONclass);
 			jsonInstance = jsonInstance.instanceFromString(line);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			logger.debug("Error parsing USMF: " + e.getMessage());
 		}
 
@@ -256,11 +256,11 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	}
 
 	@Override
-	public GeneralJSON instanceFromString(String line){
+	public GeneralJSON instanceFromString(String line) {
 		GeneralJSON jsonInstance = null;
 		try {
 			jsonInstance = gson.fromJson(line, generalJSONclass);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			logger.debug("Error parsing USMF: " + e.getMessage());
 		}
 		return jsonInstance;
@@ -271,13 +271,13 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	 * from a USMFStatus constructed from json
 	 */
 	private void fillFrom(USMFStatus read) {
-		for (Field field : USMFStatus.class.getFields()) {
+		for (final Field field : USMFStatus.class.getFields()) {
 			if (Modifier.isPublic(field.getModifiers())) {
 				try {
 					field.set(this, field.get(read));
-				} catch (IllegalArgumentException e) {
+				} catch (final IllegalArgumentException e) {
 					e.printStackTrace();
-				} catch (IllegalAccessException e) {
+				} catch (final IllegalAccessException e) {
 					e.printStackTrace();
 				}
 			}
@@ -300,7 +300,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	public boolean equals(Object obj) {
 		if (!(obj instanceof USMFStatus))
 			return false;
-		USMFStatus status = (USMFStatus) obj;
+		final USMFStatus status = (USMFStatus) obj;
 		// String statusStr = gson.toJson(status);
 		// String thisStr = gson.toJson(this);
 		boolean equal = true;
@@ -312,15 +312,15 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	}
 
 	private boolean equalAnalysed(USMFStatus status) {
-		Map<String, Object> thatanal = status.analysis;
-		Map<String, Object> thisanal = this.analysis;
-		for (String key : thatanal.keySet()) {
+		final Map<String, Object> thatanal = status.analysis;
+		final Map<String, Object> thisanal = this.analysis;
+		for (final String key : thatanal.keySet()) {
 			// if this contains the same key, and the values for the key are
 			// equal
 			if (!thisanal.containsKey(key))
 				return false;
-			Object thisobj = thisanal.get(key);
-			Object thatobj = thatanal.get(key);
+			final Object thisobj = thisanal.get(key);
+			final Object thatobj = thatanal.get(key);
 			if (thisobj.equals(thatobj))
 				continue;
 			return false;
@@ -329,8 +329,8 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	}
 
 	private boolean equalNonAnalysed(USMFStatus that) {
-		Field[] fields = this.getClass().getDeclaredFields();
-		for (Field field : fields) {
+		final Field[] fields = this.getClass().getDeclaredFields();
+		for (final Field field : fields) {
 			if (field.getName() == "analysis"
 					|| Modifier.isStatic(field.getModifiers())
 					|| Modifier.isPrivate(field.getModifiers()))
@@ -338,7 +338,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 			Object thisval;
 			try {
 				thisval = field.get(this);
-				Object thatval = field.get(that);
+				final Object thatval = field.get(that);
 				// If they are both null, or they are equal, continue
 				if (thisval == null || thatval == null) {
 					if (thisval == null && thatval == null)
@@ -350,7 +350,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 				if (thisval.equals(thatval))
 					continue;
 
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -379,7 +379,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	 * @throws ParseException
 	 */
 	public DateTime createdAt() throws ParseException {
-		DateTimeFormatter parser = DateTimeFormat
+		final DateTimeFormatter parser = DateTimeFormat
 				.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
 		if (date == null)
 			return null;
@@ -453,8 +453,8 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof User) {
-				User in = (User) obj;
-				for (Field field : User.class.getFields()) {
+				final User in = (User) obj;
+				for (final Field field : User.class.getFields()) {
 					try {
 						if (field.get(this) == null && field.get(in) == null)
 							continue;
@@ -463,10 +463,10 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 							return false;
 						else if (!field.get(this).equals(field.get(in)))
 							return false;
-					} catch (IllegalArgumentException e) {
+					} catch (final IllegalArgumentException e) {
 
 						e.printStackTrace();
-					} catch (IllegalAccessException e) {
+					} catch (final IllegalAccessException e) {
 
 						e.printStackTrace();
 					}
@@ -501,8 +501,8 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof Link) {
-				Link in = (Link) obj;
-				for (Field field : Link.class.getFields()) {
+				final Link in = (Link) obj;
+				for (final Field field : Link.class.getFields()) {
 					try {
 						if (field.get(this) == null && field.get(in) == null)
 							continue;
@@ -511,10 +511,10 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 							return false;
 						else if (!field.get(this).equals(field.get(in)))
 							return false;
-					} catch (IllegalArgumentException e) {
+					} catch (final IllegalArgumentException e) {
 
 						e.printStackTrace();
-					} catch (IllegalAccessException e) {
+					} catch (final IllegalAccessException e) {
 
 						e.printStackTrace();
 					}

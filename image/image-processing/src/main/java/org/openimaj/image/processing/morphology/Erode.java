@@ -43,7 +43,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * Morphological erosion of connected components and (assumed binary) FImages.
  * See {@link MinFilter} for greyscale erosion.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Erode implements ConnectedComponentProcessor, KernelProcessor<Float, FImage> {
@@ -55,7 +55,7 @@ public class Erode implements ConnectedComponentProcessor, KernelProcessor<Float
 
 	/**
 	 * Construct the erode operator with the given structuring element
-	 * 
+	 *
 	 * @param se
 	 *            the structuring element
 	 */
@@ -130,7 +130,7 @@ public class Erode implements ConnectedComponentProcessor, KernelProcessor<Float
 	/**
 	 * Apply erosion some number of times to an image with the default
 	 * {@link StructuringElement#BOX} element
-	 * 
+	 *
 	 * @param img
 	 *            the image
 	 * @param times

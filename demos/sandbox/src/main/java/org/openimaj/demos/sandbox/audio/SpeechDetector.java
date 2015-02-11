@@ -49,7 +49,6 @@ import org.openimaj.audio.AudioAnnotator.AudioAnnotatorType;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
 import org.openimaj.audio.features.MFCC;
-import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListBackedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.MapBackedDataset;

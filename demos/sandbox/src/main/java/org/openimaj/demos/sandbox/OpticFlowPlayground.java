@@ -35,7 +35,6 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -111,12 +110,13 @@ public class OpticFlowPlayground {
 				System.out.println(String.format("x: %2.2f,%s", meanMotion.x, direction));
 				dirAnn.train(new DirectionScore(meanMotion.x, direction));
 			} else {
-				final Iterator<Direction> iterator = dirAnn.classify((double) meanMotion.x).getPredictedClasses()
-						.iterator();
-				if (iterator.hasNext()) {
-					final Direction dir = iterator.next();
-					// System.out.println("Current flow: " + dir);
-				}
+				// final Iterator<Direction> iterator = dirAnn.classify((double)
+				// meanMotion.x).getPredictedClasses()
+				// .iterator();
+				// // if (iterator.hasNext()) {
+				// final Direction dir = iterator.next();
+				// // System.out.println("Current flow: " + dir);
+				// }
 			}
 		}
 	}

@@ -44,11 +44,11 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * The interface allows for multiple detections to be returned from the input
  * image. If required, these detections could be filtered by a
  * {@link DetectionFilter} as a post-processing operation.
- * 
+ *
  * @see ObjectDetector
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <IMAGE>
  *            The image on which to perform the detection
  * @param <DETECTED_OBJECT>
@@ -56,13 +56,13 @@ import org.openimaj.math.geometry.shape.Rectangle;
  */
 public interface MultiScaleObjectDetector<IMAGE extends Image<?, IMAGE>, DETECTED_OBJECT>
 		extends
-			ObjectDetector<IMAGE, DETECTED_OBJECT>
+ObjectDetector<IMAGE, DETECTED_OBJECT>
 {
 	/**
 	 * (Optional operation).
 	 * <p>
 	 * Set the minimum detection size.
-	 * 
+	 *
 	 * @param size
 	 *            the minimum detection size.
 	 */
@@ -73,7 +73,7 @@ public interface MultiScaleObjectDetector<IMAGE extends Image<?, IMAGE>, DETECTE
 	 * <p>
 	 * Set the maximum detection size. A size less than or equal to 0 indicates
 	 * there is no maximum size.
-	 * 
+	 *
 	 * @param size
 	 *            the maximum detection size.
 	 */
@@ -83,9 +83,9 @@ public interface MultiScaleObjectDetector<IMAGE extends Image<?, IMAGE>, DETECTE
 	 * (Optional operation).
 	 * <p>
 	 * Get the minimum detection size.
-	 * 
+	 *
 	 * @return the minimum detection size.
-	 * 
+	 *
 	 */
 	public int getMinimumDetectionSize();
 
@@ -94,7 +94,7 @@ public interface MultiScaleObjectDetector<IMAGE extends Image<?, IMAGE>, DETECTE
 	 * <p>
 	 * Get the maximum detection size. A size less than or equal to 0 indicates
 	 * there is no maximum size.
-	 * 
+	 *
 	 * @return the maximum detection size.
 	 */
 	public int getMaximumDetectionSize();

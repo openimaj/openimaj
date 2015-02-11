@@ -40,10 +40,10 @@ import org.openimaj.image.pixel.Pixel;
 /**
  * Represents a region or set of pixels (the name is based on the Microsoft
  * paper)
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class Component implements Cloneable
 {
@@ -61,12 +61,13 @@ public class Component implements Cloneable
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param p
 	 *            The grey level of the component
 	 * @param featureClasses
 	 *            the list of features to create for the component
 	 */
+	@SafeVarargs
 	public Component(IntValuePixel p, Class<? extends ComponentFeature>... featureClasses)
 	{
 		this.pivot = p;
@@ -83,7 +84,7 @@ public class Component implements Cloneable
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.util.AbstractCollection#toString()
 	 */
 	@Override
@@ -94,7 +95,7 @@ public class Component implements Cloneable
 
 	/**
 	 * Add a pixel to the component
-	 * 
+	 *
 	 * @param p
 	 *            the pixel to add
 	 */
@@ -108,7 +109,7 @@ public class Component implements Cloneable
 
 	/**
 	 * Merge another component with this one
-	 * 
+	 *
 	 * @param p
 	 *            the component to merge into this
 	 */
@@ -122,7 +123,7 @@ public class Component implements Cloneable
 
 	/**
 	 * The size of the component (i.e. the number of pixels)
-	 * 
+	 *
 	 * @return the size of the component
 	 */
 	public int size() {
@@ -133,7 +134,7 @@ public class Component implements Cloneable
 	 * Get the pixels in the component. If the component contains a
 	 * {@link PixelsFeature} then the pixels will be returned from that;
 	 * otherwise a set containing just the pivot pixel will be returned.
-	 * 
+	 *
 	 * @return the pixels in the component if possible, or just the pivot pixel
 	 */
 	public Set<Pixel> getPixels() {
@@ -166,7 +167,7 @@ public class Component implements Cloneable
 
 	/**
 	 * Get the feature at the given index
-	 * 
+	 *
 	 * @param index
 	 *            the index
 	 * @return the feature at the given index or null if it doesn't exist
@@ -181,7 +182,7 @@ public class Component implements Cloneable
 	/**
 	 * Get the feature matching the given class if it exists. If more than one
 	 * feature of the given class exists, then the first will be returned.
-	 * 
+	 *
 	 * @param <T>
 	 *            the class of the feature
 	 * @param featureClass

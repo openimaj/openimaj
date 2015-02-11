@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>tld</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>OpenIMAJ TLD tracker</name>
   <inceptionYear>2011</inceptionYear>
   <description>

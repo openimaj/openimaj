@@ -31,22 +31,17 @@ package org.openimaj.demos.twitter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.openimaj.content.animation.animator.LinearFloatValueAnimator;
 import org.openimaj.data.RandomData;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
-import org.openimaj.image.typography.Font;
-import org.openimaj.image.typography.FontStyle;
 import org.openimaj.image.typography.FontStyle.HorizontalAlignment;
 import org.openimaj.image.typography.FontStyle.VerticalAlignment;
 import org.openimaj.image.typography.general.GeneralFont;
@@ -58,9 +53,6 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.data.Context;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.util.parallel.GlobalExecutorPool;
-import org.openimaj.util.parallel.Parallel;
-import org.openimaj.video.AnimatedVideo;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 

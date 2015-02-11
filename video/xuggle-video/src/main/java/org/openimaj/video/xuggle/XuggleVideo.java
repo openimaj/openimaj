@@ -90,11 +90,11 @@ import com.xuggle.xuggler.video.ConverterFactory;
  * contrast to setting the {@link VideoDisplay} end action (using
  * {@link VideoDisplay#setEndAction(org.openimaj.video.VideoDisplay.EndAction)}
  * where the looping will reset all timestamps when the video loops.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @created 1 Jun 2011
  */
 public class XuggleVideo extends Video<MBFImage>
@@ -164,18 +164,18 @@ public class XuggleVideo extends Video<MBFImage>
 	 * time a video picture has been decoded from the stream. This class creates
 	 * a BufferedImage for each video frame and updates the currentFrameUpdated
 	 * boolean when one arrives.
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 * @created 1 Jun 2011
 	 */
 	protected class FrameGetter extends MediaListenerAdapter
 	{
 		/**
 		 * {@inheritDoc}
-		 * 
+		 *
 		 * @see com.xuggle.mediatool.MediaToolAdapter#onVideoPicture(com.xuggle.mediatool.event.IVideoPictureEvent)
 		 */
 		@Override
@@ -196,9 +196,9 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Wrapper that created an MBFImage from a BufferedImage.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 * @created 1 Nov 2011
 	 */
 	protected static final class MBFImageWrapper extends BufferedImage
@@ -214,9 +214,9 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Converter for converting IVideoPictures directly to MBFImages.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 * @created 1 Nov 2011
 	 */
 	protected static final class MBFImageConverter extends BgrConverter
@@ -279,7 +279,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Default constructor that takes the video file to read.
-	 * 
+	 *
 	 * @param videoFile
 	 *            The video file to read.
 	 */
@@ -290,7 +290,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Default constructor that takes the video file to read.
-	 * 
+	 *
 	 * @param videoFile
 	 *            The video file to read.
 	 * @param loop
@@ -304,7 +304,7 @@ public class XuggleVideo extends Video<MBFImage>
 	/**
 	 * Default constructor that takes the location of a video file to read. This
 	 * can either be a filename or a URL.
-	 * 
+	 *
 	 * @param url
 	 *            The URL of the file to read
 	 */
@@ -315,7 +315,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Default constructor that takes the URL of a video file to read.
-	 * 
+	 *
 	 * @param url
 	 *            The URL of the file to read
 	 */
@@ -330,7 +330,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * whether the video will loop indefinitely. If so, {@link #getNextFrame()}
 	 * will never return null; otherwise this method will return null at the end
 	 * of the video.
-	 * 
+	 *
 	 * @param url
 	 *            The URL of the file to read
 	 * @param loop
@@ -347,7 +347,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * whether the video will loop indefinitely. If so, {@link #getNextFrame()}
 	 * will never return null; otherwise this method will return null at the end
 	 * of the video.
-	 * 
+	 *
 	 * @param url
 	 *            The URL of the file to read
 	 * @param loop
@@ -363,7 +363,7 @@ public class XuggleVideo extends Video<MBFImage>
 	/**
 	 * Default constructor that takes an input stream. Note that only
 	 * "streamable" video codecs can be used in this way.
-	 * 
+	 *
 	 * @param stream
 	 *            The video data stream
 	 */
@@ -377,7 +377,7 @@ public class XuggleVideo extends Video<MBFImage>
 	/**
 	 * Default constructor that takes a data input. Note that only "streamable"
 	 * video codecs can be used in this way.
-	 * 
+	 *
 	 * @param input
 	 *            The video data
 	 */
@@ -390,7 +390,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#countFrames()
 	 */
 	@Override
@@ -401,7 +401,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getNextFrame()
 	 */
 	@Override
@@ -440,7 +440,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * have unexpected results as it does not swap current and next back. See
 	 * {@link #getNextFrame()} which swaps back when a frame has been pre-read
 	 * from the stream.
-	 * 
+	 *
 	 * @param preserveCurrent
 	 *            Whether to preserve the current frame
 	 * @return The frame that was read, or NULL if no frame could be read.
@@ -521,7 +521,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Returns a video timecode for the current frame.
-	 * 
+	 *
 	 * @return A video timecode for the current frame.
 	 */
 	public VideoTimecode getCurrentTimecode()
@@ -531,7 +531,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getCurrentFrame()
 	 */
 	@Override
@@ -544,7 +544,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
@@ -555,7 +555,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
@@ -566,7 +566,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#hasNextFrame()
 	 */
 	@Override
@@ -586,7 +586,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * <p>
 	 * Note: if you created the video from a {@link DataInput} or
 	 * {@link InputStream}, there is no way that it can be reset.
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#reset()
 	 */
 	@Override
@@ -807,7 +807,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -818,7 +818,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override
@@ -829,7 +829,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#getCurrentFrameIndex()
 	 */
 	@Override
@@ -840,7 +840,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#setCurrentFrameIndex(long)
 	 */
 	@Override
@@ -855,7 +855,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * <p>
 	 * Note: if you created the video from a {@link DataInput} or
 	 * {@link InputStream}, you can only seek forwards.
-	 * 
+	 *
 	 * @param timestamp
 	 *            The timestamp to get, in seconds.
 	 */
@@ -885,7 +885,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * <p>
 	 * Note: if you created the video from a {@link DataInput} or
 	 * {@link InputStream}, you can only seek forwards.
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#seek(double)
 	 */
 	@Override
@@ -922,7 +922,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * Returns the duration of the video in seconds.
-	 * 
+	 *
 	 * @return The duraction of the video in seconds.
 	 */
 	public synchronized long getDuration()
@@ -937,7 +937,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.video.Video#close()
 	 */
 	@Override

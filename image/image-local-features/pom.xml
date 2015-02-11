@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>image-local-features</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>The OpenIMAJ Local Image Features Library</name>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -101,11 +99,6 @@
           <!-- <parallel>classes</parallel>
 		 		            <perCoreThreadCount>2</perCoreThreadCount> -->
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.8</version>
       </plugin>
     </plugins>
   </build>

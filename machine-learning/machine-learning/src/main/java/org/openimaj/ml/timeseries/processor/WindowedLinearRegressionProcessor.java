@@ -42,9 +42,9 @@ import Jama.Matrix;
 /**
  * An implementation of an autoregressive model such that Xt =
  * b*X{t-offset-window,t-offset} + c
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<double[], Double, DoubleTimeSeries> {
 
@@ -67,7 +67,7 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 	/**
 	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to
 	 * windowsize
-	 * 
+	 *
 	 * @param windowsize
 	 */
 	public WindowedLinearRegressionProcessor(int windowsize) {
@@ -80,7 +80,7 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 	/**
 	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to
 	 * windowsize
-	 * 
+	 *
 	 * @param windowsize
 	 * @param offset
 	 */
@@ -96,7 +96,7 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 	 * {@link #process(DoubleTimeSeries)} function simply calls
 	 * {@link LinearRegression#predict(Matrix)} with the times in the series as
 	 * input
-	 * 
+	 *
 	 * @param reg
 	 */
 	public WindowedLinearRegressionProcessor(LinearRegression reg) {

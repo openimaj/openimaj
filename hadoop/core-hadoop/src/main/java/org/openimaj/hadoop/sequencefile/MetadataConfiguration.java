@@ -35,10 +35,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.SequenceFile.Metadata;
-import org.apache.hadoop.util.Tool;
 
 /**
  * Utility functions for storing and retrieving metadata

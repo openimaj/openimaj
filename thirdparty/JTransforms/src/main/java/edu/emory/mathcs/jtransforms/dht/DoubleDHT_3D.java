@@ -171,7 +171,8 @@ public class DoubleDHT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 int idx1 = s * sliceStride;
                                 for (int r = 0; r < rows; r++) {
@@ -187,7 +188,8 @@ public class DoubleDHT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[rows];
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 int idx1 = s * sliceStride;
@@ -218,7 +220,8 @@ public class DoubleDHT_3D {
                         stopRow = startRow + p;
                     }
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[slices];
                             for (int r = startRow; r < stopRow; r++) {
                                 int idx1 = r * rowStride;
@@ -322,7 +325,8 @@ public class DoubleDHT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 for (int r = 0; r < rows; r++) {
                                     dhtColumns.forward(a[s][r]);
@@ -337,7 +341,8 @@ public class DoubleDHT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[rows];
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 for (int c = 0; c < columns; c++) {
@@ -360,7 +365,8 @@ public class DoubleDHT_3D {
                     final int firstRow = l * p;
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[slices];
                             for (int r = firstRow; r < lastRow; r++) {
                                 for (int c = 0; c < columns; c++) {
@@ -460,7 +466,8 @@ public class DoubleDHT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 int idx1 = s * sliceStride;
                                 for (int r = 0; r < rows; r++) {
@@ -476,7 +483,8 @@ public class DoubleDHT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[rows];
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 int idx1 = s * sliceStride;
@@ -502,7 +510,8 @@ public class DoubleDHT_3D {
                     final int firstRow = l * p;
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[slices];
                             for (int r = firstRow; r < lastRow; r++) {
                                 int idx1 = r * rowStride;
@@ -608,7 +617,8 @@ public class DoubleDHT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 for (int r = 0; r < rows; r++) {
                                     dhtColumns.inverse(a[s][r], scale);
@@ -623,7 +633,8 @@ public class DoubleDHT_3D {
                     final int firstSlice = l * p;
                     final int lastSlice = (l == (nthreads - 1)) ? slices : firstSlice + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[rows];
                             for (int s = firstSlice; s < lastSlice; s++) {
                                 for (int c = 0; c < columns; c++) {
@@ -646,7 +657,8 @@ public class DoubleDHT_3D {
                     final int firstRow = l * p;
                     final int lastRow = (l == (nthreads - 1)) ? rows : firstRow + p;
                     futures[l] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             double[] temp = new double[slices];
                             for (int r = firstRow; r < lastRow; r++) {
                                 for (int c = 0; c < columns; c++) {
@@ -1068,7 +1080,8 @@ public class DoubleDHT_3D {
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                public void run() {
+                @Override
+				public void run() {
                     int idx0, idx1, idx2;
                     if (isgn == -1) {
                         for (int s = n0; s < slices; s += nthreads) {
@@ -1178,7 +1191,8 @@ public class DoubleDHT_3D {
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                public void run() {
+                @Override
+				public void run() {
                     int idx2;
                     if (isgn == -1) {
                         for (int s = n0; s < slices; s += nthreads) {
@@ -1278,7 +1292,8 @@ public class DoubleDHT_3D {
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                public void run() {
+                @Override
+				public void run() {
                     int idx0, idx1, idx2;
                     if (isgn == -1) {
                         if (columns > 2) {
@@ -1388,7 +1403,8 @@ public class DoubleDHT_3D {
             final int startt = nt * i;
             futures[i] = ConcurrencyUtils.submit(new Runnable() {
 
-                public void run() {
+                @Override
+				public void run() {
                     int idx2;
                     if (isgn == -1) {
                         if (columns > 2) {

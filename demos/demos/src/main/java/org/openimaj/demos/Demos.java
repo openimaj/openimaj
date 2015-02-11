@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos;
 
@@ -88,7 +88,7 @@ import com.uwyn.jhighlight.renderer.JavaXhtmlRenderer;
  * should ideally be transparent PNGs.
  * <p>
  * Screenshots should be PNGs and should be resized to be 250 pixels wide.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 2nd November 2011
  */
@@ -102,7 +102,7 @@ public class Demos {
 
 	/**
 	 * This is the display for the demo runner.
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 2nd November 2011
 	 */
@@ -111,8 +111,8 @@ public class Demos {
 		private static final long serialVersionUID = 1L;
 
 		private JTabbedPane demoTabs = new JTabbedPane();
-		private Map<DemoPackage, JList> demoTabMap =
-				new HashMap<DemoPackage, JList>();
+		private Map<DemoPackage, JList<DemoObject>> demoTabMap =
+				new HashMap<DemoPackage, JList<DemoObject>>();
 		private Map<DemoPackage, Vector<DemoObject>> demos =
 				new HashMap<DemoPackage, Vector<DemoObject>>();
 		private JLabel demoTitle = new JLabel();
@@ -196,10 +196,11 @@ public class Demos {
 				@Override
 				public void stateChanged(ChangeEvent e)
 				{
-					final JList d = (JList) ((JScrollPane) demoTabs.getSelectedComponent())
-							.getViewport().getComponent(0);
+					@SuppressWarnings("unchecked")
+					final JList<DemoObject> d = (JList<DemoObject>) ((JScrollPane) demoTabs.getSelectedComponent())
+					.getViewport().getComponent(0);
 					if (d.getSelectedValue() != null)
-						updateDisplay((DemoObject) d.getSelectedValue());
+						updateDisplay(d.getSelectedValue());
 				}
 			});
 
@@ -291,7 +292,7 @@ public class Demos {
 
 		/**
 		 * Updates the information display of the demo.
-		 * 
+		 *
 		 * @param dObj
 		 *            The {@link DemoObject} for the selected demo
 		 */
@@ -309,15 +310,15 @@ public class Demos {
 
 		/**
 		 * Add a demo to the list
-		 * 
+		 *
 		 * @param obj
 		 *            The object representing the demo
 		 */
 		public void addDemo(DemoObject obj) {
-			JList d = demoTabMap.get(obj.pkg);
+			JList<DemoObject> d = demoTabMap.get(obj.pkg);
 
 			if (d == null) {
-				final JList r = new JList();
+				final JList<DemoObject> r = new JList<DemoObject>();
 				demoTabMap.put(obj.pkg, r);
 				d = r;
 
@@ -330,14 +331,14 @@ public class Demos {
 						demoRunButton.setEnabled(true);
 						demoSourceButton.setEnabled(true);
 						updateDisplay(lastSelectedDemo =
-								(DemoObject) r.getSelectedValue());
+								r.getSelectedValue());
 					}
 				});
 				d.setCellRenderer(new IconListRenderer());
 
 				demoTabs.addTab(
 						obj.pkg == null ? "Demos" : obj.pkg.title(),
-						new JScrollPane(d));
+								new JScrollPane(d));
 			}
 
 			Vector<DemoObject> dd = demos.get(obj.pkg);
@@ -355,7 +356,7 @@ public class Demos {
 
 	/**
 	 * Used for each demo in the list.
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 2nd November 2011
 	 */
@@ -378,7 +379,7 @@ public class Demos {
 
 	/**
 	 * A list renderer that adds an icon to the label.
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 3rd November 2011
 	 */
@@ -386,7 +387,7 @@ public class Demos {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value,
+		public Component getListCellRendererComponent(JList<?> list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus)
 		{
 			final JLabel l = (JLabel) super.getListCellRendererComponent(
@@ -442,7 +443,7 @@ public class Demos {
 	/**
 	 * Given a demo class file, will instantiate the demo and run its main
 	 * method.
-	 * 
+	 *
 	 * @param clazz
 	 *            The demo class file
 	 */
@@ -463,7 +464,7 @@ public class Demos {
 	/**
 	 * Given a demo class file, instantiate the demo and run its main method in
 	 * a new JVM
-	 * 
+	 *
 	 * @param clazz
 	 *            The demo class file
 	 */
@@ -485,7 +486,7 @@ public class Demos {
 
 	/**
 	 * Returns a string of a stack trace.
-	 * 
+	 *
 	 * @param aThrowable
 	 *            The throwable to get a string for
 	 * @return The throwable's stack as a string
@@ -499,7 +500,7 @@ public class Demos {
 
 	/**
 	 * Default main just starts the demo system.
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) {

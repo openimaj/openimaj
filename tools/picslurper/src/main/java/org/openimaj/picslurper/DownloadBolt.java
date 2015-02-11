@@ -7,7 +7,6 @@ import java.util.Map;
 import org.openimaj.picslurper.output.OutputListener;
 import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
 
-import twitter4j.Status;
 import twitter4j.internal.json.z_T4JInternalJSONImplFactory;
 import twitter4j.internal.org.json.JSONObject;
 import backtype.storm.task.OutputCollector;

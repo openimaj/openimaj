@@ -52,9 +52,9 @@ import org.openimaj.util.array.ArrayUtils;
  * <p>
  * The implementation also allows a normalisation process to occur during
  * conversion through a {@link Normaliser}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <L>
  *            The type of {@link Location}
  */
@@ -65,7 +65,7 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 	/**
 	 * Construct a new {@link FloatLocalFeatureAdaptor} with the given
 	 * underlying feature
-	 * 
+	 *
 	 * @param localFeature
 	 *            the underlying feature
 	 */
@@ -76,7 +76,7 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 	/**
 	 * Construct a new {@link FloatLocalFeatureAdaptor} with the given
 	 * underlying feature and normaliser.
-	 * 
+	 *
 	 * @param localFeature
 	 *            the underlying feature
 	 * @param normaliser
@@ -142,7 +142,7 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -157,37 +157,37 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 	 * Produce a {@link LocalFeatureList} of {@link FloatLocalFeatureAdaptor} by
 	 * wrapping the input list, and dynamically wrapping with the
 	 * {@link FloatLocalFeatureAdaptor}s on demand.
-	 * 
+	 *
 	 * @param list
 	 *            the input list
 	 * @return the wrapped list
 	 */
 	public static <L extends Location> List<FloatLocalFeatureAdaptor<L>> wrap(
 			final List<? extends LocalFeature<L, ?>> list)
-	{
+			{
 		return wrap(list, null);
-	}
+			}
 
 	/**
 	 * Produce a {@link LocalFeatureList} of {@link FloatLocalFeatureAdaptor} by
 	 * wrapping the input list, and dynamically wrapping with the
 	 * {@link FloatLocalFeatureAdaptor}s on demand.
-	 * 
+	 *
 	 * @param list
 	 *            the input list
 	 * @return the wrapped list
 	 */
 	public static List<FloatLocalFeatureAdaptor<?>> wrapUntyped(
 			final List<? extends LocalFeature<?, ?>> list)
-	{
+			{
 		return wrapUntyped(list, null);
-	}
+			}
 
 	/**
 	 * Produce a {@link LocalFeatureList} of {@link FloatLocalFeatureAdaptor} by
 	 * wrapping the input list, and dynamically wrapping with the
 	 * {@link FloatLocalFeatureAdaptor}s on demand.
-	 * 
+	 *
 	 * @param list
 	 *            the input list
 	 * @param normaliser
@@ -196,7 +196,7 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 	 */
 	public static <L extends Location> List<FloatLocalFeatureAdaptor<L>> wrap(
 			final List<? extends LocalFeature<L, ?>> list, final Normaliser<FloatFV> normaliser)
-	{
+			{
 		final List<FloatLocalFeatureAdaptor<L>> out = new AbstractList<FloatLocalFeatureAdaptor<L>>() {
 
 			@Override
@@ -211,13 +211,13 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 		};
 
 		return out;
-	}
+			}
 
 	/**
 	 * Produce a {@link LocalFeatureList} of {@link FloatLocalFeatureAdaptor} by
 	 * wrapping the input list, and dynamically wrapping with the
 	 * {@link FloatLocalFeatureAdaptor}s on demand.
-	 * 
+	 *
 	 * @param list
 	 *            the input list
 	 * @param normaliser
@@ -226,7 +226,7 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 	 */
 	public static List<FloatLocalFeatureAdaptor<?>> wrapUntyped(
 			final List<? extends LocalFeature<?, ?>> list, final Normaliser<FloatFV> normaliser)
-	{
+			{
 		final List<FloatLocalFeatureAdaptor<?>> out = new AbstractList<FloatLocalFeatureAdaptor<?>>() {
 
 			@SuppressWarnings("unchecked")
@@ -242,5 +242,5 @@ public class FloatLocalFeatureAdaptor<L extends Location> implements LocalFeatur
 		};
 
 		return out;
-	}
+			}
 }

@@ -149,8 +149,10 @@ public class SymmetricFastICA extends IndependentComponentAnalysis {
 			mix2[i] = signal2[i] + 0.5 * signal1[i];
 		}
 
-		System.out.println(Arrays.toString(signal1));
-		System.out.println(Arrays.toString(signal2));
+		System.out.println("a=" + Arrays.toString(signal1));
+		System.out.println("b=" + Arrays.toString(signal2));
+		System.out.println("mixa=" + Arrays.toString(mix1));
+		System.out.println("mixb=" + Arrays.toString(mix2));
 
 		final Matrix data = new Matrix(new double[][] { mix1, mix2 });
 		final SymmetricFastICA symfica = new SymmetricFastICA();

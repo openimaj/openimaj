@@ -41,7 +41,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * an image based on the pixel positions given by a distortion map:
  * <code>destination(x,y) = source(mapx(x,y), mapy(x,y))</code>. This allows
  * efficient implementation of highly non-linear mappings.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class RemapProcessor implements SinglebandImageProcessor<Float, FImage> {
@@ -52,7 +52,7 @@ public class RemapProcessor implements SinglebandImageProcessor<Float, FImage> {
 	/**
 	 * Construct with the given distortion map, and use
 	 * {@link InterpolationType#BILINEAR} interpolation.
-	 * 
+	 *
 	 * @param xords
 	 *            the x-ordinates
 	 * @param yords
@@ -64,7 +64,7 @@ public class RemapProcessor implements SinglebandImageProcessor<Float, FImage> {
 
 	/**
 	 * Construct with the given distortion map and interpolator.
-	 * 
+	 *
 	 * @param xords
 	 *            the x-ordinates
 	 * @param yords
@@ -86,7 +86,7 @@ public class RemapProcessor implements SinglebandImageProcessor<Float, FImage> {
 
 	/**
 	 * Transform an image using the given parameters
-	 * 
+	 *
 	 * @param in
 	 *            the image to transform
 	 * @param xords
@@ -103,7 +103,7 @@ public class RemapProcessor implements SinglebandImageProcessor<Float, FImage> {
 
 	/**
 	 * Transform an image using the given parameters
-	 * 
+	 *
 	 * @param in
 	 *            the image to transform
 	 * @param xords
@@ -121,7 +121,7 @@ public class RemapProcessor implements SinglebandImageProcessor<Float, FImage> {
 	/**
 	 * Transform an image using the given parameters, and write te results into
 	 * <code>out</code>
-	 * 
+	 *
 	 * @param in
 	 *            the image to transform
 	 * @param out
@@ -151,7 +151,7 @@ public class RemapProcessor implements SinglebandImageProcessor<Float, FImage> {
 	/**
 	 * Transform an image using the given parameters. Assume
 	 * {@link InterpolationType#BILINEAR} interpolation.
-	 * 
+	 *
 	 * @param in
 	 *            the image to transform
 	 * @param xords
@@ -168,7 +168,7 @@ public class RemapProcessor implements SinglebandImageProcessor<Float, FImage> {
 	 * Transform an image using the given parameters, and write the results into
 	 * <code>out</code>. Assume {@link InterpolationType#BILINEAR}
 	 * interpolation.
-	 * 
+	 *
 	 * @param in
 	 *            the image to transform
 	 * @param out

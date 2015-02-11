@@ -40,9 +40,9 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * Compose a set of hash functions by computing the dot product of the hashes
  * they produce with a random vector.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Object being hashed
  */
@@ -51,7 +51,7 @@ public class RandomProjectionHashComposition<OBJECT> extends HashComposition<OBJ
 
 	/**
 	 * Construct with the given functions.
-	 * 
+	 *
 	 * @param rng
 	 *            the random number generator
 	 * @param functions
@@ -64,7 +64,7 @@ public class RandomProjectionHashComposition<OBJECT> extends HashComposition<OBJ
 
 	/**
 	 * Construct with the given functions.
-	 * 
+	 *
 	 * @param rng
 	 *            the random number generator
 	 * @param first
@@ -72,6 +72,7 @@ public class RandomProjectionHashComposition<OBJECT> extends HashComposition<OBJ
 	 * @param remainder
 	 *            the remainder of the functions
 	 */
+	@SafeVarargs
 	public RandomProjectionHashComposition(MersenneTwister rng, HashFunction<OBJECT> first,
 			HashFunction<OBJECT>... remainder)
 	{
@@ -82,7 +83,7 @@ public class RandomProjectionHashComposition<OBJECT> extends HashComposition<OBJ
 	/**
 	 * Construct with the factory which is used to produce the required number
 	 * of functions.
-	 * 
+	 *
 	 * @param rng
 	 *            the random number generator
 	 * @param factory

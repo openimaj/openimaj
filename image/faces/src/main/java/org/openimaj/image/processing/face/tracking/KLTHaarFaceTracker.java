@@ -103,12 +103,12 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 		List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
 
 		// Determine whether we need to force a retry now
-		if( this.forceRetry != -1 && this.frameCounter % this.forceRetry == 0 )
+		if (this.forceRetry != -1 && this.frameCounter % this.forceRetry == 0)
 			this.trackers.clear();
 
 		// If we're just starting tracking, find some features and start
 		// tracking them.
-		if (this.previousFrame == null || this.trackers.size() == 0 ) {
+		if (this.previousFrame == null || this.trackers.size() == 0) {
 
 			// Detect the faces in the image.
 			final List<DetectedFace> faces = this.detectFaces(img);
@@ -118,8 +118,8 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 				// Create a new tracker for this face
 				final BasicObjectTracker faceTracker = new BasicObjectTracker();
 				final Rectangle r = face.getBounds();
-				r.scaleCentroid( this.detectionScalar );
-				faceTracker.initialiseTracking( r, img);
+				r.scaleCentroid(this.detectionScalar);
+				faceTracker.initialiseTracking(r, img);
 				this.trackers.add(faceTracker);
 
 				// Store the last frame
@@ -128,33 +128,33 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 
 			detectedFaces = faces;
 		} else
-		// If we have a previous frame, attempt to track the frame
-		if (this.previousFrame != null) {
-			// Update all the trackers
-			final Iterator<BasicObjectTracker> i = this.trackers.iterator();
-			while (i.hasNext()) {
-				final BasicObjectTracker tracker = i.next();
-				if (tracker.trackObject(img).size() == 0)
-					i.remove();
-				else {
-					// Store the bounding box of the tracked features as the
-					// face
-					detectedFaces
-							.add(new DetectedFace(
-									tracker.getFeatureList().getBounds(),
-									img.extractROI( tracker.getFeatureList().getBounds() ),
-									tracker.getFeatureList().countRemainingFeatures()));
+			// If we have a previous frame, attempt to track the frame
+			if (this.previousFrame != null) {
+				// Update all the trackers
+				final Iterator<BasicObjectTracker> i = this.trackers.iterator();
+				while (i.hasNext()) {
+					final BasicObjectTracker tracker = i.next();
+					if (tracker.trackObject(img).size() == 0)
+						i.remove();
+					else {
+						// Store the bounding box of the tracked features as the
+						// face
+						detectedFaces
+						.add(new DetectedFace(
+								tracker.getFeatureList().getBounds(),
+								img.extractROI(tracker.getFeatureList().getBounds()),
+								tracker.getFeatureList().countRemainingFeatures()));
 
-					// Store the last frame
-					this.previousFrame = img;
+						// Store the last frame
+						this.previousFrame = img;
+					}
+				}
+
+				if (this.trackers.size() == 0 && this.retryFrame == false) {
+					this.retryFrame = true;
+					detectedFaces = this.trackFace(img);
 				}
 			}
-
-			if (this.trackers.size() == 0 && this.retryFrame == false) {
-				this.retryFrame = true;
-				detectedFaces = this.trackFace(img);
-			}
-		}
 
 		this.frameCounter++;
 		this.retryFrame = false;
@@ -162,7 +162,7 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 	}
 
 	/**
-	 *	@return the forceRetry
+	 * @return the forceRetry
 	 */
 	public int getForceRetry()
 	{
@@ -170,9 +170,10 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage> {
 	}
 
 	/**
-	 *	@param forceRetry the forceRetry to set
+	 * @param forceRetry
+	 *            the forceRetry to set
 	 */
-	public void setForceRetry( final int forceRetry )
+	public void setForceRetry(final int forceRetry)
 	{
 		this.forceRetry = forceRetry;
 	}

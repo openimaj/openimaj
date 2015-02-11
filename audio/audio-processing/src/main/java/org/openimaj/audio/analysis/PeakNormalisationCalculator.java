@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.audio.analysis;
 
@@ -38,52 +38,54 @@ import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.audio.samples.SampleBuffer;
 
 /**
- *	Calculates the scalar necessary to achieve peak value of the loudest part of
- *	the given input signal. This scalar can be retrieved using the 
- *	{@link #getVolumeScalar()} method which will return the scalar as it
- *	has currently been calculated for the stream which has passed. This will
- *	only return the correct value for the whole audio stream once the whole
- *	audio stream has passed through the processor. This processor will not
- *	perform attenuation - that is, the volume scalar will always be greater
- *	than 1 (and positive).
- *	<p>
- *	The value of the peak volume scalar is compatible with the 
- *	{@link VolumeAdjustProcessor} which can adjust the volume to the maximum
- *	peak value.
+ * Calculates the scalar necessary to achieve peak value of the loudest part of
+ * the given input signal. This scalar can be retrieved using the
+ * {@link #getVolumeScalar()} method which will return the scalar as it has
+ * currently been calculated for the stream which has passed. This will only
+ * return the correct value for the whole audio stream once the whole audio
+ * stream has passed through the processor. This processor will not perform
+ * attenuation - that is, the volume scalar will always be greater than 1 (and
+ * positive).
+ * <p>
+ * The value of the peak volume scalar is compatible with the
+ * {@link VolumeAdjustProcessor} which can adjust the volume to the maximum peak
+ * value.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 10 Dec 2012
- *	@version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 10 Dec 2012
+ * @version $Author$, $Revision$, $Date$
  */
 public class PeakNormalisationCalculator extends AudioProcessor
 {
 	/** The peak scalar as it's been calcultated so far in the stream */
 	private float scalar = Float.MAX_VALUE;
-	
-	/** 
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( final SampleChunk sample ) throws Exception
+	public SampleChunk process(final SampleChunk sample) throws Exception
 	{
-		// This allows us to retrieve samples that are scaled to 0..1 float values
+		// This allows us to retrieve samples that are scaled to 0..1 float
+		// values
 		final SampleBuffer sb = sample.getSampleBuffer();
-		
-		for( final float s : sb )
-			if( Math.abs(s) * this.scalar > 1 )
-				this.scalar = 1/Math.abs(s);
-		
+
+		for (final float s : sb)
+			if (Math.abs(s) * this.scalar > 1)
+				this.scalar = 1 / Math.abs(s);
+
 		return sample;
 	}
 
 	/**
-	 * 	Returns the calculated peak scalar as it currently stands in the stream.
-	 * 	If no audio has passed through the processor, this will return
-	 * 	{@link Float#MAX_VALUE} otherwise the value will always be positive
-	 * 	and greater than 1.
-	 * 
-	 *	@return	The calculated peak scalar.
+	 * Returns the calculated peak scalar as it currently stands in the stream.
+	 * If no audio has passed through the processor, this will return
+	 * {@link Float#MAX_VALUE} otherwise the value will always be positive and
+	 * greater than 1.
+	 *
+	 * @return The calculated peak scalar.
 	 */
 	public float getVolumeScalar()
 	{

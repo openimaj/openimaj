@@ -29,15 +29,10 @@
  */
 package org.openimaj.ml.benchmark;
 
-import java.util.Random;
-
-import org.apache.commons.math.stat.descriptive.moment.Mean;
-import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.math.matrix.MeanVector;
 import org.openimaj.time.Timer;
 
-import ch.akuhn.matrix.Matrix;
 import ch.akuhn.matrix.SparseMatrix;
 /**
  *

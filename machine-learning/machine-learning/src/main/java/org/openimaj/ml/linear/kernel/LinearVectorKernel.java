@@ -37,8 +37,6 @@ import no.uib.cipr.matrix.Vector;
 import org.openimaj.math.matrix.GramSchmidtProcess;
 import org.openimaj.util.pair.IndependentPair;
 
-import cern.colt.Arrays;
-
 /**
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)

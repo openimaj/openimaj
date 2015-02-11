@@ -42,9 +42,9 @@ import org.openimaj.util.iterator.ConcatenatedIterable;
 /**
  * A {@link MapBackedDataset} is a concrete implementation of a
  * {@link GroupedDataset} backed by a {@link Map}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <KEY>
  *            Type of dataset class key
  * @param <DATASET>
@@ -53,8 +53,8 @@ import org.openimaj.util.iterator.ConcatenatedIterable;
  *            Type of objects in the dataset
  */
 public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTANCE>, INSTANCE>
-		extends AbstractMap<KEY, DATASET>
-		implements GroupedDataset<KEY, DATASET, INSTANCE>
+extends AbstractMap<KEY, DATASET>
+implements GroupedDataset<KEY, DATASET, INSTANCE>
 {
 	protected Map<KEY, DATASET> map;
 
@@ -67,7 +67,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 
 	/**
 	 * Construct with the given map.
-	 * 
+	 *
 	 * @param map
 	 *            the map
 	 */
@@ -77,7 +77,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 
 	/**
 	 * Get the underlying map.
-	 * 
+	 *
 	 * @return the underlying map
 	 */
 	public Map<KEY, DATASET> getMap() {
@@ -151,7 +151,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.AbstractMap#put(java.lang.Object, java.lang.Object)
 	 */
 	@Override
@@ -161,13 +161,13 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 
 	/**
 	 * Convenience method for populating a dataset by chaining method calls:
-	 * 
+	 *
 	 * <pre>
 	 * final MapBackedDataset&lt;String, ListDataset&lt;String&gt;, String&gt; ds = new MapBackedDataset&lt;String, ListDataset&lt;String&gt;, String&gt;()
 	 * 		.add(&quot;A&quot;, new ListBackedDataset&lt;String&gt;())
 	 * 		.add(&quot;B&quot;, new ListBackedDataset&lt;String&gt;());
 	 * </pre>
-	 * 
+	 *
 	 * @param key
 	 *            the key to insert
 	 * @param dataset
@@ -183,13 +183,14 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * Convenience method to construct a {@link MapBackedDataset} from a number
 	 * of {@link Identifiable} sub-datasets. Each sub-dataset becomes a group,
 	 * and the key is the identifier returned by {@link Identifiable#getID()}.
-	 * 
+	 *
 	 * @param datasets
 	 *            the datasets representing the groups
 	 * @return the newly constructed grouped dataset.
 	 */
+	@SafeVarargs
 	public static <INSTANCE, DATASET extends Dataset<INSTANCE> & Identifiable>
-			MapBackedDataset<String, DATASET, INSTANCE> of(DATASET... datasets)
+	MapBackedDataset<String, DATASET, INSTANCE> of(DATASET... datasets)
 	{
 		final MapBackedDataset<String, DATASET, INSTANCE> ds = new MapBackedDataset<String, DATASET, INSTANCE>();
 
@@ -203,24 +204,24 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	/**
 	 * A builder for creating {@link MapBackedDataset} instances from
 	 * {@link Identifiable} sub-datasets. Example:
-	 * 
+	 *
 	 * <pre>
 	 * final MapBackedDataset<String, VFSListDataset<String>, String> ds = new MapBackedDataset.IdentifiableBuilder<VFSListDataset<String>, String>()
 	 * 					.add(new VFSListDataset<String>(...))
 	 * 					.add(new VFSListDataset<String>(...))
 	 * 					.build();
 	 * </pre>
-	 * 
+	 *
 	 * For small {@link MapBackedDataset}s, the <tt>MapBackedDataset.of()</tt>
 	 * methods are even more convenient.
 	 * <p>
 	 * Builder instances can be reused - it is safe to call {@link #build()}
 	 * multiple times to build multiple maps in series. Each map is a superset
 	 * of the maps created before it.
-	 * 
-	 * 
+	 *
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 * @param <DATASET>
 	 *            Type of sub-datasets.
 	 * @param <INSTANCE>
@@ -237,7 +238,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 		 * If duplicate keys (i.e. sub-datasets with duplicate identifiers) are
 		 * added, only the last one will appear in the resultant dataset
 		 * produced by {@link #build()}.
-		 * 
+		 *
 		 * @param dataset
 		 *            the sub-dataset to add
 		 * @return the builder
@@ -250,7 +251,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 
 		/**
 		 * Returns a newly-created {@link MapBackedDataset}.
-		 * 
+		 *
 		 * @return a newly-created {@link MapBackedDataset}.
 		 */
 		public MapBackedDataset<String, DATASET, INSTANCE> build() {
@@ -262,11 +263,11 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * Returns a new builder. The generated builder is equivalent to the builder
 	 * created by the {@link IdentifiableBuilder#IdentifiableBuilder()}
 	 * constructor.
-	 * 
+	 *
 	 * @return a new builder.
 	 */
 	public static <DATASET extends Dataset<INSTANCE> & Identifiable, INSTANCE>
-			IdentifiableBuilder<DATASET, INSTANCE> builder()
+	IdentifiableBuilder<DATASET, INSTANCE> builder()
 	{
 		return new IdentifiableBuilder<DATASET, INSTANCE>();
 	}
@@ -275,14 +276,14 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * Convenience method to construct a {@link MapBackedDataset} from a number
 	 * of {@link Identifiable} sub-datasets. Each sub-dataset becomes a group,
 	 * and the key is the identifier returned by {@link Identifiable#getID()}.
-	 * 
+	 *
 	 * @param d1
 	 *            first dataset
-	 * 
+	 *
 	 * @return the newly constructed grouped dataset.
 	 */
 	public static <INSTANCE, DATASET extends Dataset<INSTANCE> & Identifiable>
-			MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1)
+	MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1)
 	{
 		final MapBackedDataset<String, DATASET, INSTANCE> ds = new MapBackedDataset<String, DATASET, INSTANCE>();
 		ds.put(d1.getID(), d1);
@@ -293,16 +294,16 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * Convenience method to construct a {@link MapBackedDataset} from a number
 	 * of {@link Identifiable} sub-datasets. Each sub-dataset becomes a group,
 	 * and the key is the identifier returned by {@link Identifiable#getID()}.
-	 * 
+	 *
 	 * @param d1
 	 *            first dataset
 	 * @param d2
 	 *            second dataset
-	 * 
+	 *
 	 * @return the newly constructed grouped dataset.
 	 */
 	public static <INSTANCE, DATASET extends Dataset<INSTANCE> & Identifiable>
-			MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1, DATASET d2)
+	MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1, DATASET d2)
 	{
 		final MapBackedDataset<String, DATASET, INSTANCE> ds = new MapBackedDataset<String, DATASET, INSTANCE>();
 		ds.put(d1.getID(), d1);
@@ -314,18 +315,18 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * Convenience method to construct a {@link MapBackedDataset} from a number
 	 * of {@link Identifiable} sub-datasets. Each sub-dataset becomes a group,
 	 * and the key is the identifier returned by {@link Identifiable#getID()}.
-	 * 
+	 *
 	 * @param d1
 	 *            first dataset
 	 * @param d2
 	 *            second dataset
 	 * @param d3
 	 *            third dataset
-	 * 
+	 *
 	 * @return the newly constructed grouped dataset.
 	 */
 	public static <INSTANCE, DATASET extends Dataset<INSTANCE> & Identifiable>
-			MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1, DATASET d2, DATASET d3)
+	MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1, DATASET d2, DATASET d3)
 	{
 		final MapBackedDataset<String, DATASET, INSTANCE> ds = new MapBackedDataset<String, DATASET, INSTANCE>();
 		ds.put(d1.getID(), d1);
@@ -338,7 +339,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * Convenience method to construct a {@link MapBackedDataset} from a number
 	 * of {@link Identifiable} sub-datasets. Each sub-dataset becomes a group,
 	 * and the key is the identifier returned by {@link Identifiable#getID()}.
-	 * 
+	 *
 	 * @param d1
 	 *            first dataset
 	 * @param d2
@@ -350,7 +351,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * @return the newly constructed grouped dataset.
 	 */
 	public static <INSTANCE, DATASET extends Dataset<INSTANCE> & Identifiable>
-			MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1, DATASET d2, DATASET d3, DATASET d4)
+	MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1, DATASET d2, DATASET d3, DATASET d4)
 	{
 		final MapBackedDataset<String, DATASET, INSTANCE> ds = new MapBackedDataset<String, DATASET, INSTANCE>();
 		ds.put(d1.getID(), d1);
@@ -364,7 +365,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * Convenience method to construct a {@link MapBackedDataset} from a number
 	 * of {@link Identifiable} sub-datasets. Each sub-dataset becomes a group,
 	 * and the key is the identifier returned by {@link Identifiable#getID()}.
-	 * 
+	 *
 	 * @param d1
 	 *            first dataset
 	 * @param d2
@@ -378,7 +379,7 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * @return the newly constructed grouped dataset.
 	 */
 	public static <INSTANCE, DATASET extends Dataset<INSTANCE> & Identifiable>
-			MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1, DATASET d2, DATASET d3, DATASET d4, DATASET d5)
+	MapBackedDataset<String, DATASET, INSTANCE> of(DATASET d1, DATASET d2, DATASET d3, DATASET d4, DATASET d5)
 	{
 		final MapBackedDataset<String, DATASET, INSTANCE> ds = new MapBackedDataset<String, DATASET, INSTANCE>();
 		ds.put(d1.getID(), d1);
@@ -393,13 +394,13 @@ public class MapBackedDataset<KEY extends Object, DATASET extends Dataset<INSTAN
 	 * Convenience method to construct a {@link MapBackedDataset} from a number
 	 * of {@link Identifiable} sub-datasets. Each sub-dataset becomes a group,
 	 * and the key is the identifier returned by {@link Identifiable#getID()}.
-	 * 
+	 *
 	 * @param datasets
 	 *            the datasets representing the groups
 	 * @return the newly constructed grouped dataset.
 	 */
 	public static <INSTANCE, DATASET extends Dataset<INSTANCE> & Identifiable>
-			MapBackedDataset<String, DATASET, INSTANCE> of(Collection<DATASET> datasets)
+	MapBackedDataset<String, DATASET, INSTANCE> of(Collection<DATASET> datasets)
 	{
 		final MapBackedDataset<String, DATASET, INSTANCE> ds = new MapBackedDataset<String, DATASET, INSTANCE>();
 

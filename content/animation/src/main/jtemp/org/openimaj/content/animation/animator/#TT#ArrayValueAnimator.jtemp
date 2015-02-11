@@ -42,6 +42,7 @@ public class #TT#ArrayValueAnimator implements ValueAnimator<#t#[]> {
 	 * Construct from an array of {@link ValueAnimator}s
 	 * @param animators the animators
 	 */
+	@SafeVarargs
 	public #TT#ArrayValueAnimator(ValueAnimator<#TT#>... animators) {
 		this.animators = animators;
 	}

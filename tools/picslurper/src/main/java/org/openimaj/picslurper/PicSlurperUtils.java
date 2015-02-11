@@ -8,8 +8,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import org.openimaj.io.IOUtils;
-import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
-
 import twitter4j.Status;
 
 import com.google.gson.Gson;

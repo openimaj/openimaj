@@ -34,7 +34,6 @@ import org.openimaj.math.matrix.CFMatrixUtils;
 
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 public class MatSquareLossFunction extends LossFunction{

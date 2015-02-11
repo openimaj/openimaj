@@ -44,7 +44,7 @@ import org.openimaj.experiment.annotations.Time;
  * {@link ClassFileTransformer} that dynamically augments classes and methods
  * annotated with {@link Time} annotations in order to register and collect the
  * method timing information.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class TimeClassTransformer implements ClassTransformer {

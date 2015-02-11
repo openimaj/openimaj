@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openimaj.ml.clustering.kdtree.ClusterTestDataLoader.TestStats;
 
 /**
  * Load clusters from http://people.cs.nctu.edu.tw/~rsliang/dbscan/testdatagen.html

@@ -50,7 +50,7 @@ import org.openimaj.util.stream.Stream;
  * is partitioned using inspiration from <a href=
  * "http://reedcopsey.com/2010/01/26/parallelism-in-net-part-5-partitioning-of-work/"
  * >Reed Copsey's blog</a>.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Parallel {
@@ -88,7 +88,7 @@ public class Parallel {
 
 	/**
 	 * An integer range with a step size.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class IntRange {
@@ -116,7 +116,7 @@ public class Parallel {
 
 	/**
 	 * Parallel integer for loop.
-	 * 
+	 *
 	 * @param start
 	 *            starting value
 	 * @param stop
@@ -173,9 +173,9 @@ public class Parallel {
 
 	/**
 	 * Parallel integer for loop. Uses the default global thread pool.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param start
 	 *            starting value
 	 * @param stop
@@ -195,7 +195,7 @@ public class Parallel {
 	 * faster as it avoids auto-boxing/unboxing and results in fewer method
 	 * calls. The downside is that users have to write an extra loop to iterate
 	 * over the {@link IntRange} object. Uses the default global thread pool.
-	 * 
+	 *
 	 * @param start
 	 *            starting value
 	 * @param stop
@@ -215,7 +215,7 @@ public class Parallel {
 	 * potentially slightly faster as it avoids auto-boxing/unboxing and results
 	 * in fewer method calls. The downside is that users have to write an extra
 	 * loop to iterate over the {@link IntRange} object.
-	 * 
+	 *
 	 * @param start
 	 *            starting value
 	 * @param stop
@@ -287,9 +287,9 @@ public class Parallel {
 	 * automatically partitioned; if the data is a {@link List}, then a
 	 * {@link RangePartitioner} is used, otherwise a
 	 * {@link GrowingChunkPartitioner} is used.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param objects
@@ -314,9 +314,9 @@ public class Parallel {
 	 * thread pool. The data is automatically partitioned; if the data is a
 	 * {@link List}, then a {@link RangePartitioner} is used, otherwise a
 	 * {@link GrowingChunkPartitioner} is used.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param objects
@@ -331,9 +331,9 @@ public class Parallel {
 	/**
 	 * Parallel ForEach loop over partitioned data. Uses the default global
 	 * thread pool.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param partitioner
@@ -352,7 +352,7 @@ public class Parallel {
 	 * nprocs partitions 3.) while there are still partitions to process 3.1) on
 	 * completion of a partition schedule the next one 4.) wait for completion
 	 * of remaining partitions
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param partitioner
@@ -363,8 +363,8 @@ public class Parallel {
 	 *            the thread pool.
 	 */
 	public static <T>
-			void
-			forEach(final Partitioner<T> partitioner, final Operation<T> op, final ThreadPoolExecutor pool)
+	void
+	forEach(final Partitioner<T> partitioner, final Operation<T> op, final ThreadPoolExecutor pool)
 	{
 		final ExecutorCompletionService<Boolean> completion = new ExecutorCompletionService<Boolean>(pool);
 		final Iterator<Iterator<T>> partitions = partitioner.getPartitions();
@@ -413,7 +413,7 @@ public class Parallel {
 	 * nprocs partitions 3.) while there are still partitions to process 3.1) on
 	 * completion of a partition schedule the next one 4.) wait for completion
 	 * of remaining partitions
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param data
@@ -422,8 +422,8 @@ public class Parallel {
 	 *            the operation to apply
 	 */
 	public static <T>
-			void
-			forEachUnpartitioned(final Iterator<T> data, final Operation<T> op)
+	void
+	forEachUnpartitioned(final Iterator<T> data, final Operation<T> op)
 	{
 		forEachUnpartitioned(data, op, GlobalExecutorPool.getPool());
 	}
@@ -441,7 +441,7 @@ public class Parallel {
 	 * nprocs partitions 3.) while there are still partitions to process 3.1) on
 	 * completion of a partition schedule the next one 4.) wait for completion
 	 * of remaining partitions
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param data
@@ -452,8 +452,8 @@ public class Parallel {
 	 *            the thread pool.
 	 */
 	public static <T>
-			void
-			forEachUnpartitioned(final Iterator<T> data, final Operation<T> op, final ThreadPoolExecutor pool)
+	void
+	forEachUnpartitioned(final Iterator<T> data, final Operation<T> op, final ThreadPoolExecutor pool)
 	{
 		final ExecutorCompletionService<Boolean> completion = new ExecutorCompletionService<Boolean>(pool);
 		long submitted = 0;
@@ -509,7 +509,7 @@ public class Parallel {
 	 * nprocs partitions 3.) while there are still partitions to process 3.1) on
 	 * completion of a partition schedule the next one 4.) wait for completion
 	 * of remaining partitions
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param partitioner
@@ -520,9 +520,9 @@ public class Parallel {
 	 *            the thread pool.
 	 */
 	public static <T>
-			void
-			forEachPartitioned(final Partitioner<T> partitioner, final Operation<Iterator<T>> op,
-					final ThreadPoolExecutor pool)
+	void
+	forEachPartitioned(final Partitioner<T> partitioner, final Operation<Iterator<T>> op,
+			final ThreadPoolExecutor pool)
 	{
 		final ExecutorCompletionService<Boolean> completion = new ExecutorCompletionService<Boolean>(pool);
 		final Iterator<Iterator<T>> partitions = partitioner.getPartitions();
@@ -561,9 +561,9 @@ public class Parallel {
 	/**
 	 * Parallel ForEach loop over batched partitioned data. Uses the default
 	 * global thread pool.
-	 * 
+	 *
 	 * @see GlobalExecutorPool#getPool()
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data items
 	 * @param partitioner

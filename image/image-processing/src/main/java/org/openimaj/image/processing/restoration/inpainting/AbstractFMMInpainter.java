@@ -42,13 +42,12 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * <p>
  * The {@link #inpaint(int, int, Image)} method must be implemented by
  * subclasses to actually perform the inpainting operation
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <IMAGE>
  *            The type of image that this processor can process
  */
-@SuppressWarnings("javadoc")
 @References(references = {
 		@Reference(
 				type = ReferenceType.Article,
@@ -75,6 +74,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 				pages = { "1591", "", "1595" }
 		)
 })
+@SuppressWarnings("javadoc")
 public abstract class AbstractFMMInpainter<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
 		extends
 		AbstractImageMaskInpainter<IMAGE>
@@ -137,7 +137,7 @@ public abstract class AbstractFMMInpainter<IMAGE extends Image<?, IMAGE> & Singl
 
 	/**
 	 * Solve a step of the Eikonal equation.
-	 * 
+	 *
 	 * @param x1
 	 *            x-position of first pixel (diagonally adjacent to the second)
 	 * @param y1
@@ -217,7 +217,7 @@ public abstract class AbstractFMMInpainter<IMAGE extends Image<?, IMAGE> & Singl
 
 	/**
 	 * Inpaint the specified pixel of the given image.
-	 * 
+	 *
 	 * @param x
 	 *            the x-ordinate of the pixel to paint
 	 * @param y

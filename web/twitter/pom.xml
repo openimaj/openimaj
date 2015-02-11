@@ -7,9 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>org.openimaj</groupId>
   <artifactId>twitter</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <name>twitter</name>
   <inceptionYear>2012</inceptionYear>
   <description>

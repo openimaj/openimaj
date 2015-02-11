@@ -9,7 +9,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj.storm.tools</groupId>
   <artifactId>core-storm-tool</artifactId>
-  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>core-storm-tool</name>
   <inceptionYear>2011</inceptionYear>

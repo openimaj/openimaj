@@ -30,7 +30,6 @@
 package org.openimaj.ml.linear.learner.perceptron;
 
 import org.junit.Test;
-import org.openimaj.ml.linear.kernel.LinearVectorKernel;
 
 /**
  *

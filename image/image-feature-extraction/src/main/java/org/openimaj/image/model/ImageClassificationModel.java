@@ -39,22 +39,22 @@ import org.openimaj.math.model.EstimatableModel;
 /**
  * An ImageClassificationModel is a {@link EstimatableModel} constructed between
  * an generic image and a probability map in the form of an FImage.
- * 
+ *
  * Potential uses for such a model are for the prediction of certain classes of
  * pixels in an image. For example, a model could be constructed that predicted
  * skin-tones in an image based on hue and saturation values of pixels. With
  * such a model, a colour image could be presented, and a probability map would
  * be returned.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T>
  *            the type of image that the model can be applied to
- * 
+ *
  */
 public interface ImageClassificationModel<T extends Image<?, T>> extends EstimatableModel<T, FImage>, Serializable {
 	/**
 	 * Learn the model from the given {@link MBFImage}s.
-	 * 
+	 *
 	 * @param images
 	 *            the images to learn from
 	 */
@@ -62,7 +62,7 @@ public interface ImageClassificationModel<T extends Image<?, T>> extends Estimat
 
 	/**
 	 * Classify the given image and return the corresponding probability map
-	 * 
+	 *
 	 * @param im
 	 *            the image to classify
 	 * @return the probability map

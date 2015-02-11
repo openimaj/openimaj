@@ -34,7 +34,6 @@ import java.util.Random;
 import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.Vector;
 
-import org.openimaj.data.RandomData;
 import org.openimaj.math.matrix.GramSchmidtProcess;
 import org.openimaj.ml.linear.learner.perceptron.PerceptronClass;
 import org.openimaj.util.pair.IndependentPair;

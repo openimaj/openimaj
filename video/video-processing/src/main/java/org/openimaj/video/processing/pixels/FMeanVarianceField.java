@@ -38,14 +38,14 @@ import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;
  * The generated fields could be used to analyse which parts of a video are
  * stationary or change a lot. If your video consists of multiple shots, between
  * which there are large changes in the content, then it probably makes sense to
- * segment the video using a {@link HistogramVideoShotDetector} and apply a new analyser
- * to each shot independently.
- * 
+ * segment the video using a {@link HistogramVideoShotDetector} and apply a new
+ * analyser to each shot independently.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FMeanVarianceField
-		extends
-			VideoAnalyser<FImage>
+extends
+		VideoAnalyser<FImage>
 {
 	private FImage mean;
 	private FImage m2;
@@ -79,7 +79,7 @@ public class FMeanVarianceField
 
 	/**
 	 * Reset the accumulated field data.
-	 * 
+	 *
 	 * @see org.openimaj.video.processor.VideoProcessor#reset()
 	 */
 	@Override
@@ -90,7 +90,7 @@ public class FMeanVarianceField
 
 	/**
 	 * Get the mean field of all the frames that have been analysed so far.
-	 * 
+	 *
 	 * @return the mean field.
 	 */
 	public FImage getMean() {
@@ -99,7 +99,7 @@ public class FMeanVarianceField
 
 	/**
 	 * Get the variance field of all the frames that have been analysed so far.
-	 * 
+	 *
 	 * @return the variance field.
 	 */
 	public FImage getVariance() {

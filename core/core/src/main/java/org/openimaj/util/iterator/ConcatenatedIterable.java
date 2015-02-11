@@ -37,18 +37,19 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * An {@link Iterable} that chains together other 
- * {@link Iterable}s or {@link Iterator}s.  
- * 
+ * An {@link Iterable} that chains together other {@link Iterable}s or
+ * {@link Iterator}s.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <T> type of objects provided by underlying iterators
+ * @param <T>
+ *            type of objects provided by underlying iterators
  */
 public class ConcatenatedIterable<T> implements Iterable<T> {
 	class ConcatenatedIterator implements Iterator<T> {
 		Iterator<Iterator<T>> it;
 		Iterator<T> current;
-		
+
 		public ConcatenatedIterator() {
 			if (iterators == null) {
 				return;
@@ -60,15 +61,15 @@ public class ConcatenatedIterable<T> implements Iterable<T> {
 				it = null;
 				return;
 			}
-			
+
 			current = it.next();
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			if (it == null)
 				return false;
-			
+
 			if (current.hasNext())
 				return true;
 
@@ -82,51 +83,56 @@ public class ConcatenatedIterable<T> implements Iterable<T> {
 		@Override
 		public T next() {
 			if (!current.hasNext()) {
-				if (!it.hasNext()) 
+				if (!it.hasNext())
 					throw new NoSuchElementException();
-				
+
 				current = it.next();
 			}
-			
+
 			return current.next();
 		}
 
 		@Override
 		public void remove() {
-			throw new UnsupportedOperationException( "Not supported" );
+			throw new UnsupportedOperationException("Not supported");
 		}
 	};
-	
+
 	private List<Iterator<T>> iterators;
-	
+
 	/**
 	 * Construct with {@link Iterable}s.
+	 * 
 	 * @param iterables
 	 */
+	@SafeVarargs
 	public ConcatenatedIterable(Iterable<T>... iterables) {
 		iterators = new ArrayList<Iterator<T>>();
-		
-		for (Iterable<T> i : iterables) {
+
+		for (final Iterable<T> i : iterables) {
 			iterators.add(i.iterator());
 		}
 	}
-	
+
 	/**
 	 * Construct with {@link Iterable}s.
+	 * 
 	 * @param iterables
 	 */
 	public ConcatenatedIterable(Collection<? extends Iterable<T>> iterables) {
 		iterators = new ArrayList<Iterator<T>>();
-		
-		for (Iterable<T> i : iterables) {
+
+		for (final Iterable<T> i : iterables) {
 			iterators.add(i.iterator());
 		}
 	}
-	
+
 	/**
 	 * Construct with {@link Iterator}s.
+	 * 
 	 * @param iterables
 	 */
+	@SafeVarargs
 	public ConcatenatedIterable(Iterator<T>... iterables) {
 		iterators = Arrays.asList(iterables);
 	}

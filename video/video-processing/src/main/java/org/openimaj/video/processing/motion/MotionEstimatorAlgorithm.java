@@ -47,10 +47,10 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 /**
  * A set of algorithms for the motion estimator.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 1 Mar 2012
- * 
+ *
  */
 public abstract class MotionEstimatorAlgorithm
 {
@@ -58,9 +58,9 @@ public abstract class MotionEstimatorAlgorithm
 	/**
 	 * Within a search window around the subimages detect most likely match and
 	 * thus motion.
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TEMPLATE_MATCH extends MotionEstimatorAlgorithm {
 		private float searchProp;
@@ -78,7 +78,7 @@ public abstract class MotionEstimatorAlgorithm
 		/**
 		 * Given the template's size, search around a border of size
 		 * template*searchWindowBorderProp
-		 * 
+		 *
 		 * @param searchWindowBorderProp
 		 * @param mode
 		 *            the matching mode
@@ -89,7 +89,9 @@ public abstract class MotionEstimatorAlgorithm
 		}
 
 		@Override
-		Point2d estimateMotion(VideoSubFrame<FImage> img1sub, VideoSubFrame<FImage>... imagesSub) {
+		Point2d estimateMotion(VideoSubFrame<FImage> img1sub,
+				VideoSubFrame<FImage>... imagesSub)
+		{
 
 			final VideoFrame<FImage> current = img1sub.extract();
 			final VideoFrame<FImage> prev = imagesSub[0];
@@ -150,7 +152,7 @@ public abstract class MotionEstimatorAlgorithm
 		 * displacement of <code>img2.getWidth()/2</code> and a minimum
 		 * displacement of <code>-img2.getWidth()/2</code> and similarly for the
 		 * vertical displacement and height.
-		 * 
+		 *
 		 * @param img2sub
 		 *            The second image in the sequence
 		 * @param imagesSub
@@ -254,7 +256,7 @@ public abstract class MotionEstimatorAlgorithm
 	 * by {@link #requiredNumberOfFrames()}. It could be less if at the
 	 * beginning of the video. If you require more frames, return an empty
 	 * motion vector - that is (0,0).
-	 * 
+	 *
 	 * @param img1sub
 	 *            The image to which we want to estimate the motion.
 	 * @param imagesSub
@@ -269,7 +271,7 @@ public abstract class MotionEstimatorAlgorithm
 	 * algorithm to work. The default is 1 which means the algorithm will only
 	 * receive the previous frame. If more are required, override this method
 	 * and return the required number.
-	 * 
+	 *
 	 * @return The required number of frames to pass to the algorithm.
 	 */
 	protected int requiredNumberOfFrames()

@@ -160,7 +160,8 @@ public class FloatDCT_1D {
                     final int firstIdx = j * k;
                     final int lastIdx = (j == (nthreads - 1)) ? n : firstIdx + k;
                     futures[j] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int i = firstIdx; i < lastIdx; i++) {
                                 int twoi = 2 * i;
                                 int idx = offa + i;
@@ -247,7 +248,8 @@ public class FloatDCT_1D {
                     final int firstIdx = j * k;
                     final int lastIdx = (j == (nthreads - 1)) ? n : firstIdx + k;
                     futures[j] = ConcurrencyUtils.submit(new Runnable() {
-                        public void run() {
+                        @Override
+						public void run() {
                             for (int i = firstIdx; i < lastIdx; i++) {
                                 int twoi = 2 * i;
                                 float elem = a[offa + i];
@@ -1899,7 +1901,8 @@ public class FloatDCT_1D {
             final int firstIdx = offa + i * m;
             if (i != idiv4) {
                 futures[idx++] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         int isplt, k, m;
                         int idx1 = firstIdx + mf;
                         m = n;
@@ -1919,7 +1922,8 @@ public class FloatDCT_1D {
                 });
             } else {
                 futures[idx++] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         int isplt, k, m;
                         int idx1 = firstIdx + mf;
                         k = 1;
@@ -2929,7 +2933,8 @@ public class FloatDCT_1D {
                 final int firstIdx = offa + i * k;
                 final int lastIdx = (i == (nthreads - 1)) ? offa + n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(new Runnable() {
-                    public void run() {
+                    @Override
+					public void run() {
                         for (int i = firstIdx; i < lastIdx; i++) {
                             a[i] *= m;
                         }

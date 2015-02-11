@@ -40,9 +40,9 @@ import org.openimaj.util.iterator.ConcatenatedIterable;
 /**
  * Base class for {@link GroupedDataset}s in which each instance is read with an
  * {@link InputStreamObjectReader}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <KEY>
  *            Type of dataset class key
  * @param <DATASET>
@@ -53,14 +53,14 @@ import org.openimaj.util.iterator.ConcatenatedIterable;
  *            the type of object that provides the data to create the instance
  */
 public abstract class ReadableGroupDataset<KEY, DATASET extends Dataset<INSTANCE>, INSTANCE, SOURCE>
-		extends AbstractMap<KEY, DATASET>
-		implements GroupedDataset<KEY, DATASET, INSTANCE>
+extends AbstractMap<KEY, DATASET>
+implements GroupedDataset<KEY, DATASET, INSTANCE>
 {
 	protected ObjectReader<INSTANCE, SOURCE> reader;
 
 	/**
 	 * Construct with the given {@link InputStreamObjectReader}.
-	 * 
+	 *
 	 * @param reader
 	 *            the {@link InputStreamObjectReader}.
 	 */
