@@ -1,4 +1,4 @@
-package org.openimaj.demos;
+package org.openimaj.workinprogress.audio;
 
 import gnu.trove.list.array.TFloatArrayList;
 
