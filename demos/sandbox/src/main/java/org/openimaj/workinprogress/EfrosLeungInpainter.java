@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.restoration.inpainting;
+package org.openimaj.workinprogress;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
@@ -15,8 +17,32 @@ import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.Gaussian2D;
 import org.openimaj.image.processing.morphology.Erode;
 import org.openimaj.image.processing.morphology.StructuringElement;
+import org.openimaj.image.processing.restoration.inpainting.AbstractImageMaskInpainter;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
+/**
+ * FIXME: Finish implementation (it works but is incredibly slow!)
+ *
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ * @param <IMAGE>
+ *            The type of image that this processor can process
+ */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Efros, Alexei A.", "Leung, Thomas K." },
+		title = "Texture Synthesis by Non-Parametric Sampling",
+		year = "1999",
+		booktitle = "Proceedings of the International Conference on Computer Vision-Volume 2 - Volume 2",
+		pages = { "1033" },
+		url = "http://dl.acm.org/citation.cfm?id=850924.851569",
+		publisher = "IEEE Computer Society",
+		series = "ICCV '99",
+		customData = {
+				"isbn", "0-7695-0164-8",
+				"acmid", "851569",
+				"address", "Washington, DC, USA"
+		})
 public class EfrosLeungInpainter<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
 		extends
 		AbstractImageMaskInpainter<IMAGE>

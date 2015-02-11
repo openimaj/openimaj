@@ -44,12 +44,13 @@ import ch.akuhn.matrix.Vector.Entry;
 import ch.akuhn.matrix.eigenvalues.Eigenvalues;
 
 /**
- * For a given set of {@link Eigenvalues} perform the stages of spectral clustering
- * which involve the selection of the best eigen values and the calling of an internal clustering
- * algorithm
+ * For a given set of {@link Eigenvalues} perform the stages of spectral
+ * clustering which involve the selection of the best eigen values and the
+ * calling of an internal clustering algorithm
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class PreparedSpectralClustering implements DataClusterer<Eigenvalues, SpectralIndexedClusters>{
+public class PreparedSpectralClustering implements DataClusterer<Eigenvalues, SpectralIndexedClusters> {
 	final static Logger logger = Logger.getLogger(PreparedSpectralClustering.class);
 	private SpectralClusteringConf<double[]> conf;
 
@@ -68,66 +69,67 @@ public class PreparedSpectralClustering implements DataClusterer<Eigenvalues, Sp
 	@Override
 	public SpectralIndexedClusters cluster(Eigenvalues eig) {
 		// Also normalise each row
-		IndependentPair<double[], double[][]> lowestCols = bestCols(eig);
+		final IndependentPair<double[], double[][]> lowestCols = bestCols(eig);
 		// Using the eigenspace, cluster
 		return eigenspaceCluster(lowestCols);
 	}
-	
+
 	protected SpectralIndexedClusters eigenspaceCluster(IndependentPair<double[], double[][]> lowestCols) {
-		SpatialClusterer<? extends SpatialClusters<double[]>, double[]> clusterer = conf.internal.apply(lowestCols);
+		final SpatialClusterer<? extends SpatialClusters<double[]>, double[]> clusterer = conf.internal.apply(lowestCols);
 		// Cluster the rows with the internal spatial clusterer
-		SpatialClusters<double[]> cluster = clusterer.cluster(lowestCols.getSecondObject());
-		// if the clusters contain the cluster indexes of the training examples use those
-		if(cluster instanceof IndexClusters){
-			IndexClusters clusters = new IndexClusters(((IndexClusters)cluster).clusters());
-//			logger.debug(clusters);
+		final SpatialClusters<double[]> cluster = clusterer.cluster(lowestCols.getSecondObject());
+		// if the clusters contain the cluster indexes of the training examples
+		// use those
+		if (cluster instanceof IndexClusters) {
+			final IndexClusters clusters = new IndexClusters(((IndexClusters) cluster).clusters());
+			// logger.debug(clusters);
 			return new SpectralIndexedClusters(clusters, lowestCols);
 		}
 		// Otherwise attempt to assign values to clusters
-		int[] clustered = cluster.defaultHardAssigner().assign(lowestCols.getSecondObject());
+		final int[] clustered = cluster.defaultHardAssigner().assign(lowestCols.getSecondObject());
 		// done!
-		return new SpectralIndexedClusters(new IndexClusters(clustered),lowestCols);
+		return new SpectralIndexedClusters(new IndexClusters(clustered), lowestCols);
 	}
-	
+
 	protected IndependentPair<double[], double[][]> bestCols(final Eigenvalues eig) {
-		
-		
+
 		int eigenVectorSelect = conf.eigenChooser.nEigenVectors(this.conf.laplacian.eigenIterator(eig), eig.getN());
-		int eigenVectorSkip = this.conf.skipEigenVectors;
+		final int eigenVectorSkip = this.conf.skipEigenVectors;
 		logger.debug("Selected dimensions: " + eigenVectorSelect);
 		logger.debug("Skipping dimesions: " + eigenVectorSkip);
 		eigenVectorSelect -= eigenVectorSkip;
 
-
-		int nrows = eig.vector[0].size();
-		double[][] ret = new double[nrows][eigenVectorSelect];
-		double[] retSum = new double[nrows];
-		double[] eigvals = new double[eigenVectorSelect];
-		Iterator<DoubleObjectPair<Vector>> iterator = this.conf.laplacian.eigenIterator(eig);
+		final int nrows = eig.vector[0].size();
+		final double[][] ret = new double[nrows][eigenVectorSelect];
+		final double[] retSum = new double[nrows];
+		final double[] eigvals = new double[eigenVectorSelect];
+		final Iterator<DoubleObjectPair<Vector>> iterator = this.conf.laplacian.eigenIterator(eig);
 		// Skip a few at the beggining
-		for (int i = 0; i < eigenVectorSkip; i++) iterator.next();
+		for (int i = 0; i < eigenVectorSkip; i++)
+			iterator.next();
 		int col = 0;
 		// Calculate U matrix (containing n smallests eigen valued columns)
 		for (; iterator.hasNext();) {
-			DoubleObjectPair<Vector> v = iterator.next();
+			final DoubleObjectPair<Vector> v = iterator.next();
 			eigvals[col] = v.first;
-			
-			for (Entry d : v.second.entries()) {
+
+			for (final Entry d : v.second.entries()) {
 				double elColI = d.value;
-				if(conf.eigenValueScale){
+				if (conf.eigenValueScale) {
 					elColI *= Math.sqrt(v.first);
 				}
 				ret[d.index][col] = elColI;
 				retSum[d.index] += elColI * elColI;
 			}
 			col++;
-			if(col == eigenVectorSelect) break;
+			if (col == eigenVectorSelect)
+				break;
 		}
 
-		if(!conf.eigenValueScale){			
+		if (!conf.eigenValueScale) {
 			// normalise rows
 			for (int i = 0; i < ret.length; i++) {
-				double[] row = ret[i];
+				final double[] row = ret[i];
 				for (int j = 0; j < row.length; j++) {
 					row[j] /= Math.sqrt(retSum[i]);
 				}

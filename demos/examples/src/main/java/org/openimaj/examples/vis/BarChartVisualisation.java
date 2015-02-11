@@ -40,7 +40,7 @@ import org.openimaj.vis.general.BarVisualisation;
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 30 Jul 2012
  */
-public class BarVisualisationTest
+public class BarChartVisualisation
 {
 	/**
 	 * Main method
