@@ -31,7 +31,7 @@
   <para>
     For this tutorial, read the image from the following URL:
   </para>
-  <programlisting>MBFImage image = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/sinaface.jpg&quot;));</programlisting>
+  <programlisting>MBFImage image = ImageUtilities.readMBF(new URL(&quot;http://static.openimaj.org/media/tutorial/sinaface.jpg&quot;));</programlisting>
   <para>
     The <code>ImageUtilities</code> class provides the ability to
     read <code>MBFImage</code>s and <code>FImage</code>s. An

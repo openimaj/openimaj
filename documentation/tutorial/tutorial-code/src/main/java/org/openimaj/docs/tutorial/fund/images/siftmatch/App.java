@@ -60,8 +60,8 @@ public class App {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		final MBFImage query = ImageUtilities.readMBF(new URL("https://dl.dropboxusercontent.com/u/8705593/query.jpg"));
-		final MBFImage target = ImageUtilities.readMBF(new URL("https://dl.dropboxusercontent.com/u/8705593/target.jpg"));
+		final MBFImage query = ImageUtilities.readMBF(new URL("http://static.openimaj.org/media/tutorial/query.jpg"));
+		final MBFImage target = ImageUtilities.readMBF(new URL("http://static.openimaj.org/media/tutorial/target.jpg"));
 
 		final DoGSIFTEngine engine = new DoGSIFTEngine();
 		final LocalFeatureList<Keypoint> queryKeypoints = engine.findFeatures(query.flatten());

@@ -52,7 +52,7 @@ public class App {
 	 */
 	public static void main(String[] args) throws IOException {
 		final Video<MBFImage> video;
-		video = new XuggleVideo(new URL("http://dl.dropbox.com/u/8705593/keyboardcat.flv"));
+		video = new XuggleVideo(new URL("http://static.openimaj.org/media/tutorial/keyboardcat.flv"));
 		// video = new VideoCapture(320, 240);
 
 		// final VideoDisplay<MBFImage> display =

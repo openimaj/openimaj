@@ -18,8 +18,8 @@
     Firstly, lets load up a couple of images. Here we have a magazine
     and a scene containing the magazine:
   </para>
-  <programlisting>MBFImage query = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/query.jpg&quot;));
-MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://dl.dropbox.com/u/8705593/target.jpg&quot;));</programlisting>
+  <programlisting>MBFImage query = ImageUtilities.readMBF(new URL(&quot;http://static.openimaj.org/media/tutorial/query.jpg&quot;));
+MBFImage target = ImageUtilities.readMBF(new URL(&quot;http://static.openimaj.org/media/tutorial/target.jpg&quot;));</programlisting>
 
 <para role="centered">
 	<inlinemediaobject>

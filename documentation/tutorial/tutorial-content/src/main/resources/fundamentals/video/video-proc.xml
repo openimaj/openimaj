@@ -20,7 +20,7 @@
     <emphasis role="strong">Xuggle</emphasis> library which internally
     uses <literal>ffmpeg</literal>. Let’s load a video from a file
     (which you can download from here:
-    <ulink url="http://dl.dropbox.com/u/8705593/keyboardcat.flv"><literal>http://dl.dropbox.com/u/8705593/keyboardcat.flv</literal></ulink>).
+    <ulink url="http://static.openimaj.org/media/tutorial/keyboardcat.flv"><literal>http://static.openimaj.org/media/tutorial/keyboardcat.flv</literal></ulink>).
   </para>
   <para>
     If we want to load a video from a file we use a <code>XuggleVideo</code> object:
@@ -28,7 +28,7 @@
   <programlisting>video = new XuggleVideo(new File(&quot;/path/to/keyboardcat.flv&quot;));</programlisting>
 	<tip>
 		The <code>XuggleVideo</code> class also has constructors that let you pass a URL to a video on the web without downloading it first:
-		<programlisting>video = new XuggleVideo(new URL("http://dl.dropbox.com/u/8705593/keyboardcat.flv"));</programlisting>
+		<programlisting>video = new XuggleVideo(new URL("http://static.openimaj.org/media/tutorial/keyboardcat.flv"));</programlisting>
 	</tip>
   <para>
     If your computer has a camera, OpenIMAJ also supports live video

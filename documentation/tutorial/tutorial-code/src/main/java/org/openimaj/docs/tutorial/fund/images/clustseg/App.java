@@ -59,7 +59,7 @@ public class App {
 	 */
 	public static void main(String[] args) throws IOException {
 		// Load the image
-		MBFImage input = ImageUtilities.readMBF(new URL("http://dl.dropbox.com/u/8705593/sinaface.jpg"));
+		MBFImage input = ImageUtilities.readMBF(new URL("http://static.openimaj.org/media/tutorial/sinaface.jpg"));
 
 		input = ColourSpace.convert(input, ColourSpace.CIE_Lab);
 

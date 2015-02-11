@@ -53,7 +53,7 @@ public class App {
 	 */
 	public static void main(String[] args) throws IOException {
 		// Load the image
-		final MBFImage image = ImageUtilities.readMBF(new URL("http://dl.dropbox.com/u/8705593/sinaface.jpg"));
+		final MBFImage image = ImageUtilities.readMBF(new URL("http://static.openimaj.org/media/tutorial/sinaface.jpg"));
 
 		// Print colour space
 		System.out.println(image.colourSpace);
