@@ -141,6 +141,15 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 				<artifactId>nexus-staging-maven-plugin</artifactId>
 				<version>1.6.2</version>
 				<extensions>true</extensions>
+				<executions>
+			      <execution>
+			         <id>default-deploy</id>
+			         <phase>deploy</phase>
+			         <goals>
+			            <goal>deploy</goal>
+			         </goals>
+			      </execution>
+			   </executions>
 				<configuration>
 					<serverId>openimaj-snapshots</serverId>
 					<nexusUrl>http://maven.ecs.soton.ac.uk/</nexusUrl>
