@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.audio.processor;
 
@@ -36,251 +36,270 @@ import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 
 /**
- * 	Provides an audio processor that will process sample chunks of specific
- * 	sizes when the incoming stream's sample chunk size is unknown. 
- * 	<p>
- * 	This class has applications for FFT (for example) where the input sample size must be
- * 	a power of 2 and the underlying audio stream reader may be returning sample
- * 	chunks of any size. 
- * 	<p>
- * 	The processor can also provide overlapping sample windows. Call
- * 	{@link #setWindowStep(int)} to determine the slide of each sliding window.
- * 	If this is set to 0 or below, the windows will be consecutive and will 
- * 	not overlap.
- * 	<p>
- * 	The only assumption made by the class about the samples is that they are
- * 	whole numbers of bytes (8, 16, 24, 32 bits etc.). This is a pretty reasonable
- * 	assumption.
- * 
- *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
- *	@created 11 Jul 2011
+ * Provides an audio processor that will process sample chunks of specific sizes
+ * when the incoming stream's sample chunk size is unknown.
+ * <p>
+ * This class has applications for FFT (for example) where the input sample size
+ * must be a power of 2 and the underlying audio stream reader may be returning
+ * sample chunks of any size.
+ * <p>
+ * The processor can also provide overlapping sample windows. Call
+ * {@link #setWindowStep(int)} to determine the slide of each sliding window. If
+ * this is set to 0 or below, the windows will be consecutive and will not
+ * overlap.
+ * <p>
+ * The only assumption made by the class about the samples is that they are
+ * whole numbers of bytes (8, 16, 24, 32 bits etc.). This is a pretty reasonable
+ * assumption.
+ *
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *
+ * @created 11 Jul 2011
  */
 public class FixedSizeSampleAudioProcessor extends AudioProcessor
 {
 	/** The size of each required sample chunk */
 	private int requiredSampleSetSize = 512;
-	
+
 	/** Our buffer of sample chunks stored between calls to process() */
 	private SampleChunk sampleBuffer = null;
-	
+
 	/** The number of samples overlap required between each window */
 	private int windowStep = 0;
 
 	/** Whether or not the windows are overlapping */
 	private boolean overlapping = false;
-	
+
 	/**
-	 * 	Create processor that will process chunks of the given size.
-	 *  @param sizeRequired The size of the chunks required (in samples)
+	 * Create processor that will process chunks of the given size.
+	 *
+	 * @param sizeRequired
+	 *            The size of the chunks required (in samples)
 	 */
-	public FixedSizeSampleAudioProcessor( final int sizeRequired )
+	public FixedSizeSampleAudioProcessor(final int sizeRequired)
 	{
 		this.requiredSampleSetSize = sizeRequired;
 	}
-	
+
 	/**
-	 * 	Create processor that will process chunks of the given size.
-	 * 	@param stream An audio stream to process
-	 *  @param sizeRequired The size of the chunks required (in samples)
+	 * Create processor that will process chunks of the given size.
+	 *
+	 * @param stream
+	 *            An audio stream to process
+	 * @param sizeRequired
+	 *            The size of the chunks required (in samples)
 	 */
-	public FixedSizeSampleAudioProcessor( final AudioStream stream, final int sizeRequired )
+	public FixedSizeSampleAudioProcessor(final AudioStream stream, final int sizeRequired)
 	{
-		super( stream );
+		super(stream);
 		this.requiredSampleSetSize = sizeRequired;
 	}
-	
+
 	/**
-	 *	Constructor that takes the size of the window and the size of the
-	 *	window overlap. 
-	 *	@param nSamplesInWindow The number of samples in the window
-	 *	@param nSamplesOverlap The size of the overlap
+	 * Constructor that takes the size of the window and the size of the window
+	 * overlap.
+	 *
+	 * @param nSamplesInWindow
+	 *            The number of samples in the window
+	 * @param nSamplesOverlap
+	 *            The size of the overlap
 	 */
-	public FixedSizeSampleAudioProcessor( final int nSamplesInWindow,
-			final int nSamplesOverlap )
+	public FixedSizeSampleAudioProcessor(final int nSamplesInWindow,
+			final int nSamplesOverlap)
 	{
-		this( nSamplesInWindow );
-		this.setWindowStep( nSamplesOverlap );
+		this(nSamplesInWindow);
+		this.setWindowStep(nSamplesOverlap);
 	}
 
 	/**
-	 * 	Chainable constructor that takes the size of the window and 
-	 * 	the number of samples overlap.
-	 * 
-	 * 	@param as The chained audio stream
-	 *	@param nSamplesInWindow Samples in window
-	 *	@param nSamplesOverlap Samples in window overlap
+	 * Chainable constructor that takes the size of the window and the number of
+	 * samples overlap.
+	 *
+	 * @param as
+	 *            The chained audio stream
+	 * @param nSamplesInWindow
+	 *            Samples in window
+	 * @param nSamplesOverlap
+	 *            Samples in window overlap
 	 */
-	public FixedSizeSampleAudioProcessor( final AudioStream as, final int nSamplesInWindow,
-			final int nSamplesOverlap )
+	public FixedSizeSampleAudioProcessor(final AudioStream as, final int nSamplesInWindow,
+			final int nSamplesOverlap)
 	{
-		this( as, nSamplesInWindow );
-		this.setWindowStep( nSamplesOverlap );
+		this(as, nSamplesInWindow);
+		this.setWindowStep(nSamplesOverlap);
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.audio.processor.AudioProcessor#nextSampleChunk()
+	 * {@inheritDoc}
+	 *
+	 * @see org.openimaj.audio.processor.AudioProcessor#nextSampleChunk()
 	 */
 	@Override
-	public SampleChunk nextSampleChunk() 
+	public SampleChunk nextSampleChunk()
 	{
-//		System.out.println( "Sample Buffer: "+(sampleBuffer != null?
-//				sampleBuffer.getNumberOfSamples() : "null"));
-		
+		// System.out.println( "Sample Buffer: "+(sampleBuffer != null?
+		// sampleBuffer.getNumberOfSamples() : "null"));
+
 		// Get the samples. If there's more samples than we need in the
 		// buffer, we'll just use that, otherwise we'll get a new sample
 		// chunk from the stream.
 		SampleChunk s = null;
-		if( this.sampleBuffer != null && 
-			this.sampleBuffer.getNumberOfSamples() >= this.requiredSampleSetSize )
+		if (this.sampleBuffer != null &&
+				this.sampleBuffer.getNumberOfSamples() >= this.requiredSampleSetSize)
 		{
 			s = this.sampleBuffer;
 			this.sampleBuffer = null;
 		}
-		else	
+		else
 		{
 			s = this.getUnderlyingStream().nextSampleChunk();
-			if( s != null )
+			if (s != null)
 				s = s.clone();
-			
+
 			// If we have something in our buffer, prepend it to the new
 			// sample chunk
-			if( this.sampleBuffer != null && this.sampleBuffer.getNumberOfSamples() > 0 
-				&& s != null )
+			if (this.sampleBuffer != null && this.sampleBuffer.getNumberOfSamples() > 0
+					&& s != null)
 			{
 				// Prepend the contents of the sample buffer to the new sample
 				// chunk
-				s.prepend( this.sampleBuffer );
+				s.prepend(this.sampleBuffer);
 				this.sampleBuffer = null;
 			}
 		}
-		
+
 		// Sample buffer will always be null here
 		// It will be reinstated later with the left-overs after processing.
 		// From this point on we'll only work on the SampleChunk s.
-		
+
 		// Catch the end of the stream. As the sample buffer is always empty
 		// at this point, the only time s can be null is that if the
 		// nextSampleChunk() above returned null. In which case, there's no
 		// more audio, so we return null.
-		if( s == null )
+		if (s == null)
 		{
-			if( this.sampleBuffer != null )
+			if (this.sampleBuffer != null)
 			{
 				s = this.sampleBuffer;
 				this.sampleBuffer = null;
 				return s;
 			}
-			else	
+			else
 				return null;
 		}
-		
+
 		// Now check how many samples we have to start with
 		int nSamples = s.getNumberOfSamples();
-		
+
 		// If we don't have enough samples, we'll keep getting chunks until
 		// we have enough or until the end of the stream is reached.
 		boolean endOfStream = false;
-		while( !endOfStream && nSamples < this.requiredSampleSetSize )
+		while (!endOfStream && nSamples < this.requiredSampleSetSize)
 		{
 			final SampleChunk nextSamples = this.getUnderlyingStream().nextSampleChunk();
-			if( nextSamples != null )
+			if (nextSamples != null)
 			{
 				// Append the new samples onto the end of the sample chunk
-				s.append( nextSamples );
-				
+				s.append(nextSamples);
+
 				// Check how many samples we now have.
 				nSamples = s.getNumberOfSamples();
 			}
-			else	endOfStream = true;
+			else
+				endOfStream = true;
 		}
-		
+
 		// If we have the right number of samples,
 		// or we've got to the end of the stream
 		// then we just return the chunk we have.
 		SampleChunk ss;
-		if( !endOfStream && (this.overlapping || nSamples > this.requiredSampleSetSize) )
+		if (!endOfStream && (this.overlapping || nSamples > this.requiredSampleSetSize))
 		{
 			// We must now have too many samples...
 			// Store the excess back into the buffer
 			int start = 0;
-			if( this.overlapping )
-					start = this.windowStep;
-			else	start = this.requiredSampleSetSize;
-			
+			if (this.overlapping)
+				start = this.windowStep;
+			else
+				start = this.requiredSampleSetSize;
+
 			// Store the rest into the sample buffer
-			this.sampleBuffer = s.getSampleSlice( start, nSamples-start );
-			
+			this.sampleBuffer = s.getSampleSlice(start, nSamples - start);
+
 			// Process a slice of the sample chunk
-			ss = s.getSampleSlice( 0, this.requiredSampleSetSize );
+			ss = s.getSampleSlice(0, this.requiredSampleSetSize);
 		}
-		else	
+		else
 		{
 			ss = s;
-			
-			if( ss.getNumberOfSamples() < this.requiredSampleSetSize )
-				ss.pad( this.requiredSampleSetSize );
+
+			if (ss.getNumberOfSamples() < this.requiredSampleSetSize)
+				ss.pad(this.requiredSampleSetSize);
 		}
-		
+
 		try
-        {
+		{
 			// Return the processed samples
-	        return this.process( ss );
-        }
-        catch( final Exception e )
-        {
-        	// If there's an error, log it and return the unprocessed samples
-	        e.printStackTrace();
-	        return ss;
-        }
+			return this.process(ss);
+		} catch (final Exception e)
+		{
+			// If there's an error, log it and return the unprocessed samples
+			e.printStackTrace();
+			return ss;
+		}
 	}
-	
+
 	/**
-	 * 	Set the step of each overlapping window.
-	 *  @param overlap The step of each overlapping window.
+	 * Set the step of each overlapping window.
+	 *
+	 * @param overlap
+	 *            The step of each overlapping window.
 	 */
-	public void setWindowStep( final int overlap )
+	public void setWindowStep(final int overlap)
 	{
 		this.windowStep = overlap;
-		this.overlapping  = true;
-		if( overlap <= 0 )
+		this.overlapping = true;
+		if (overlap <= 0)
 			this.overlapping = false;
 	}
-	
+
 	/**
-	 * 	Returns the step of each overlapping window. 
-	 *  @return The step of each overlapping window.
+	 * Returns the step of each overlapping window.
+	 *
+	 * @return The step of each overlapping window.
 	 */
 	public int getWindowStep()
 	{
 		return this.windowStep;
 	}
-	
+
 	/**
-	 * 	Set the size of the window required. Should be called before
-	 * 	the object has been used to process anything. The result is undefined
-	 * 	if it's called during processing and will probably lead to some
-	 * 	sort of bounds error.
-	 *	@param sizeRequired The size required.
+	 * Set the size of the window required. Should be called before the object
+	 * has been used to process anything. The result is undefined if it's called
+	 * during processing and will probably lead to some sort of bounds error.
+	 *
+	 * @param sizeRequired
+	 *            The size required.
 	 */
-	public void setWindowSize( final int sizeRequired )
+	public void setWindowSize(final int sizeRequired)
 	{
 		this.requiredSampleSetSize = sizeRequired;
 	}
-	
+
 	/**
-	 * 	Returns the size of the sample window.
-	 *	@return The size of the sample window.
+	 * Returns the size of the sample window.
+	 *
+	 * @return The size of the sample window.
 	 */
 	public int getWindowSize()
 	{
 		return this.requiredSampleSetSize;
 	}
-	
+
 	/**
-	 * 	Returns whether the windows are overlapping or not.
-	 *  @return whether the windows are overlapping or not.
+	 * Returns whether the windows are overlapping or not.
+	 *
+	 * @return whether the windows are overlapping or not.
 	 */
 	public boolean isOverlapping()
 	{
@@ -288,16 +307,16 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	}
 
 	/**
-	 *	{@inheritDoc}
+	 * {@inheritDoc}
 	 *
-	 *	The default operation of the {@link FixedSizeSampleAudioProcessor} is
-	 *	simply to change the shape of the sample chunk. You may override
-	 *	this method to process the samples directly.
+	 * The default operation of the {@link FixedSizeSampleAudioProcessor} is
+	 * simply to change the shape of the sample chunk. You may override this
+	 * method to process the samples directly.
 	 *
-	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
+	 * @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( final SampleChunk sample ) throws Exception
+	public SampleChunk process(final SampleChunk sample) throws Exception
 	{
 		return sample;
 	}

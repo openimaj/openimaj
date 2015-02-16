@@ -30,6 +30,25 @@
 package org.openimaj.tools.globalfeature;
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
+import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
+import org.openimaj.image.feature.global.AvgBrightness;
+import org.openimaj.image.feature.global.Colorfulness;
+import org.openimaj.image.feature.global.ColourContrast;
+import org.openimaj.image.feature.global.HorizontalIntensityDistribution;
+import org.openimaj.image.feature.global.HueStats;
+import org.openimaj.image.feature.global.LRIntensityBalance;
+import org.openimaj.image.feature.global.LuoSimplicity;
+import org.openimaj.image.feature.global.ModifiedLuoSimplicity;
+import org.openimaj.image.feature.global.Naturalness;
+import org.openimaj.image.feature.global.ROIProportion;
+import org.openimaj.image.feature.global.RuleOfThirds;
+import org.openimaj.image.feature.global.SharpPixelProportion;
+import org.openimaj.image.feature.global.Sharpness;
+import org.openimaj.image.feature.global.WeberContrast;
+import org.openimaj.image.pixel.statistics.BlockHistogramModel;
+import org.openimaj.image.pixel.statistics.HistogramModel;
+import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
+import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
 import org.openimaj.tools.globalfeature.type.AverageBrightnessExtractor;
 import org.openimaj.tools.globalfeature.type.ColourContrastExtractor;
 import org.openimaj.tools.globalfeature.type.ColourFacesExtractor;
@@ -53,64 +72,69 @@ import org.openimaj.tools.globalfeature.type.WeberContrastExtractor;
 
 /**
  * Different types of global image feature.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum GlobalFeatureType implements CmdLineOptionsProvider {
-    /**
-     * Pixel histograms
-     * @see HistogramModel
-     */
-    HISTOGRAM {
-    	@Override
+	/**
+	 * Pixel histograms
+	 *
+	 * @see HistogramModel
+	 */
+	HISTOGRAM {
+		@Override
 		public GlobalFeatureExtractor getOptions() {
-    		return new HistogramExtractor();
-    	}
-    },
-    /**
-     * Using a pixel histogram (see {@link GlobalFeatureType#HISTOGRAM}) find
-     * the maximum bin. This can be interpreted as the image's dominant colour
-     */
-    MAX_HISTOGRAM {
-    	@Override
+			return new HistogramExtractor();
+		}
+	},
+	/**
+	 * Using a pixel histogram (see {@link GlobalFeatureType#HISTOGRAM}) find
+	 * the maximum bin. This can be interpreted as the image's dominant colour
+	 */
+	MAX_HISTOGRAM {
+		@Override
 		public GlobalFeatureExtractor getOptions() {
 			return new MaxHistogramExtractor();
 		}
-    },
-    /**
-     * Local (block-based) pixel histograms
-     * @see BlockHistogramModel
-     */
-    LOCAL_HISTOGRAM {
-    	@Override
+	},
+	/**
+	 * Local (block-based) pixel histograms
+	 *
+	 * @see BlockHistogramModel
+	 */
+	LOCAL_HISTOGRAM {
+		@Override
 		public GlobalFeatureExtractor getOptions() {
 			return new LocalHistogramExtractor();
 		}
-    },
-    /**
-     * EDCH
-     * @see EdgeDirectionCoherenceVector
-     */
-    EDGE_DIRECTION_COHERENCE_HISTOGRAM {
-    	@Override
+	},
+	/**
+	 * EDCH
+	 *
+	 * @see EdgeDirectionCoherenceVector
+	 */
+	EDGE_DIRECTION_COHERENCE_HISTOGRAM {
+		@Override
 		public GlobalFeatureExtractor getOptions() {
 			return new EDCHExtractor();
 		}
-    },
-    /**
-     * Average brightness
-     * @see AvgBrightness
-     */
-    AVERAGE_BRIGHTNESS {
-    	@Override
+	},
+	/**
+	 * Average brightness
+	 *
+	 * @see AvgBrightness
+	 */
+	AVERAGE_BRIGHTNESS {
+		@Override
 		public GlobalFeatureExtractor getOptions() {
 			return new AverageBrightnessExtractor();
 		}
 	},
 	/**
-     * Sharpness
-     * @see Sharpness
-     */
+	 * Sharpness
+	 *
+	 * @see Sharpness
+	 */
 	SHARPNESS {
 		@Override
 		public GlobalFeatureExtractor getOptions() {
@@ -118,39 +142,43 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-     * Colorfulness
-     * @see Colorfulness
-     */
-    COLORFULNESS {
+	 * Colorfulness
+	 *
+	 * @see Colorfulness
+	 */
+	COLORFULNESS {
 		@Override
 		public GlobalFeatureExtractor getOptions() {
 			return new ColourfulnessExtractor();
 		}
 	},
 	/**
-     * Hue stats
-     * @see HueStats
-     */
-    HUE_STATISTICS {
+	 * Hue stats
+	 *
+	 * @see HueStats
+	 */
+	HUE_STATISTICS {
 		@Override
 		public GlobalFeatureExtractor getOptions() {
 			return new HueStatsExtractor();
 		}
 	},
 	/**
-     * Naturalness
-     * @see Naturalness
-     */
-    NATURALNESS {
+	 * Naturalness
+	 *
+	 * @see Naturalness
+	 */
+	NATURALNESS {
 		@Override
 		public GlobalFeatureExtractor getOptions() {
 			return new NaturalnessExtractor();
 		}
 	},
 	/**
-     * Sandeep faces
-     * @see SandeepFaceDetector
-     */
+	 * Sandeep faces
+	 *
+	 * @see SandeepFaceDetector
+	 */
 	COLOR_FACES {
 		@Override
 		public GlobalFeatureExtractor getOptions() {
@@ -158,9 +186,10 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-     * Haar cascades
-     * @see HaarCascadeDetector
-     */
+	 * Haar cascades
+	 *
+	 * @see HaarCascadeDetector
+	 */
 	HAAR_FACES {
 		@Override
 		public GlobalFeatureExtractor getOptions() {
@@ -168,9 +197,10 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-     * Colour contrast
-     * @see ColourContrast
-     */
+	 * Colour contrast
+	 *
+	 * @see ColourContrast
+	 */
 	COLOUR_CONTRAST {
 		@Override
 		public GlobalFeatureExtractor getOptions() {
@@ -178,9 +208,10 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 		}
 	},
 	/**
-     * Weber constrast
-     * @see WeberContrast
-     */
+	 * Weber constrast
+	 *
+	 * @see WeberContrast
+	 */
 	WEBER_CONTRAST {
 		@Override
 		public GlobalFeatureExtractor getOptions() {
@@ -189,6 +220,7 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Left-right intensity balance
+	 *
 	 * @see LRIntensityBalance
 	 */
 	LR_INTENSITY_BALANCE {
@@ -199,6 +231,7 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Rule of thirds feature
+	 *
 	 * @see RuleOfThirds
 	 */
 	RULE_OF_THIRDS {
@@ -209,6 +242,7 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 	},
 	/**
 	 * ROI proportion
+	 *
 	 * @see ROIProportion
 	 */
 	ROI_PROPORTION {
@@ -219,6 +253,7 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Horizontal intensity distribution
+	 *
 	 * @see HorizontalIntensityDistribution
 	 */
 	HORIZONTAL_INTENSITY_DISTRIBUTION {
@@ -229,6 +264,7 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Sharp pixel proportion
+	 *
 	 * @see SharpPixelProportion
 	 */
 	SHARP_PIXEL_PROPORTION {
@@ -239,6 +275,7 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Luo's simplicity feature
+	 *
 	 * @see LuoSimplicity
 	 */
 	LUO_SIMPLICITY {
@@ -249,6 +286,7 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 	},
 	/**
 	 * Modified version of Luo's simplicity feature
+	 *
 	 * @see ModifiedLuoSimplicity
 	 */
 	MODIFIED_LUO_SIMPLICITY {
@@ -256,9 +294,8 @@ public enum GlobalFeatureType implements CmdLineOptionsProvider {
 		public GlobalFeatureExtractor getOptions() {
 			return new ModifiedLuoSimplicityExtractor();
 		}
-	}
-    ;
-    
-    @Override
+	};
+
+	@Override
 	public abstract GlobalFeatureExtractor getOptions();
 }

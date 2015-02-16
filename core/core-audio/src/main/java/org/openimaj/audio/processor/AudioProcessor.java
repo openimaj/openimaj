@@ -36,13 +36,13 @@ import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 
 /**
- *	An interface for objects that are able to process audio sample
- *	data. Due to the fact that audio processors provide processed
- *	audio, they are also able to implement the {@link AudioStream} interface
- *	thereby making processors chainable.
+ * An interface for objects that are able to process audio sample data. Due to
+ * the fact that audio processors provide processed audio, they are also able to
+ * implement the {@link AudioStream} interface thereby making processors
+ * chainable.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 8 Jun 2011
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 8 Jun 2011
  *
  */
 public abstract class AudioProcessor extends AudioStream
@@ -51,76 +51,83 @@ public abstract class AudioProcessor extends AudioStream
 	private AudioStream stream = null;
 
 	/**
-	 * 	A default constructor for processing sample chunks or files
-	 * 	in an ad-hoc manner.
+	 * A default constructor for processing sample chunks or files in an ad-hoc
+	 * manner.
 	 */
 	public AudioProcessor()
 	{
 	}
 
 	/**
-	 * 	Construct a new processor based on the given stream. This
-	 * 	processor can then be used as a stream itself in a chain.
+	 * Construct a new processor based on the given stream. This processor can
+	 * then be used as a stream itself in a chain.
 	 *
-	 *	@param a The audio stream to process.
+	 * @param a
+	 *            The audio stream to process.
 	 */
-	public AudioProcessor( final AudioStream a )
+	public AudioProcessor(final AudioStream a)
 	{
 		this.stream = a;
-		if( a != null )
+		if (a != null)
 			this.format = a.getFormat().clone();
 	}
 
 	/**
-	 * 	Function to process a whole audio stream. If the process returns
-	 * 	null, it will stop the processing of the audio stream. Note that the
-	 * 	output of the audio stream processing is not stored (it may be a live
-	 * 	stream and so would be too large to store), so the caller must interact
-	 * 	with the audio processor themselves to retrieve any useful information
-	 * 	from the processing.
+	 * Function to process a whole audio stream. If the process returns null, it
+	 * will stop the processing of the audio stream. Note that the output of the
+	 * audio stream processing is not stored (it may be a live stream and so
+	 * would be too large to store), so the caller must interact with the audio
+	 * processor themselves to retrieve any useful information from the
+	 * processing.
 	 *
-	 *  @param a The audio stream to process.
-	 * 	@throws Exception If the processing failed
+	 * @param a
+	 *            The audio stream to process.
+	 * @throws Exception
+	 *             If the processing failed
 	 */
-	public void process( final AudioStream a ) throws Exception
+	public void process(final AudioStream a) throws Exception
 	{
 		this.stream = a;
-		while( this.nextSampleChunk() != null );
-		this.processingComplete( a );
+		while (this.nextSampleChunk() != null)
+			;
+		this.processingComplete(a);
 	}
 
 	/**
-	 * 	Function that takes a sample chunk and processes the chunk.
-	 * 	It should also return a sample chunk containing the processed data.
-	 * 	If wished, the chunk may be side-affected and the input chunk returned.
-	 * 	It should not be assumed that the input chunk will be side-affected,
-	 * 	but it must be noted that it is possible that it could be. This process
-	 * 	function may also return null. If null is returned it means that the
-	 * 	rest of the audio stream is not required to be processed by this
-	 * 	processing function. Whether the rest of the sample chunks are copied or
-	 * 	ignored is up to the caller.
+	 * Function that takes a sample chunk and processes the chunk. It should
+	 * also return a sample chunk containing the processed data. If wished, the
+	 * chunk may be side-affected and the input chunk returned. It should not be
+	 * assumed that the input chunk will be side-affected, but it must be noted
+	 * that it is possible that it could be. This process function may also
+	 * return null. If null is returned it means that the rest of the audio
+	 * stream is not required to be processed by this processing function.
+	 * Whether the rest of the sample chunks are copied or ignored is up to the
+	 * caller.
 	 *
-	 *	@param sample The sample chunk to process.
-	 *	@return A sample chunk containing processed data.
-	 * 	@throws Exception If the processing could not take place
+	 * @param sample
+	 *            The sample chunk to process.
+	 * @return A sample chunk containing processed data.
+	 * @throws Exception
+	 *             If the processing could not take place
 	 */
-	public abstract SampleChunk process( SampleChunk sample ) throws Exception;
+	public abstract SampleChunk process(SampleChunk sample) throws Exception;
 
 	/**
-	 * 	Called when the processing of a given audio stream
-	 * 	has been completed. This can be used to alter the audio
-	 * 	stream's properties.
+	 * Called when the processing of a given audio stream has been completed.
+	 * This can be used to alter the audio stream's properties.
 	 *
-	 *	@param a The audio stream that has finished processing.
+	 * @param a
+	 *            The audio stream that has finished processing.
 	 */
-	public void processingComplete( final AudioStream a )
+	public void processingComplete(final AudioStream a)
 	{
 		// Default is no implementation. Override this if necessary.
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.audio.AudioStream#nextSampleChunk()
+	 * {@inheritDoc}
+	 *
+	 * @see org.openimaj.audio.AudioStream#nextSampleChunk()
 	 */
 	@Override
 	public SampleChunk nextSampleChunk()
@@ -128,9 +135,8 @@ public abstract class AudioProcessor extends AudioStream
 		try
 		{
 			final SampleChunk s = this.stream.nextSampleChunk();
-			return (s != null ? this.process( s ) : null );
-		}
-		catch( final Exception e )
+			return (s != null ? this.process(s) : null);
+		} catch (final Exception e)
 		{
 			e.printStackTrace();
 			return null;
@@ -138,10 +144,10 @@ public abstract class AudioProcessor extends AudioStream
 	}
 
 	/**
-	 * 	Get the underlying stream. Will return null for non-chained
-	 * 	audio processors.
+	 * Get the underlying stream. Will return null for non-chained audio
+	 * processors.
 	 *
-	 * 	@return The underlying stream on chained processors.
+	 * @return The underlying stream on chained processors.
 	 */
 	public AudioStream getUnderlyingStream()
 	{
@@ -149,33 +155,38 @@ public abstract class AudioProcessor extends AudioStream
 	}
 
 	/**
-	 * 	Sets the underlying stream, allowing it to be changed.
-	 *	@param stream The stream
+	 * Sets the underlying stream, allowing it to be changed.
+	 *
+	 * @param stream
+	 *            The stream
 	 */
-	public void setUnderlyingStream( final AudioStream stream )
+	public void setUnderlyingStream(final AudioStream stream)
 	{
 		this.stream = stream;
-		if( stream != null )
+		if (stream != null)
 			this.format = stream.getFormat().clone();
 	}
 
 	/**
-	 *	{@inheritDoc}
+	 * {@inheritDoc}
 	 *
-	 *	The implementation in this class does nothing, but removed other classes
-	 *	from having to implement an empty version. Override this if the stream
-	 *	can be reset.
+	 * The implementation in this class just calls reset on the wrapped stream
+	 * (if it's set).
 	 *
-	 * 	@see org.openimaj.audio.AudioStream#reset()
+	 * @see org.openimaj.audio.AudioStream#reset()
 	 */
 	@Override
 	public void reset()
 	{
+		if (this.stream != null) {
+			stream.reset();
+		}
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.audio.AudioStream#getLength()
+	 * {@inheritDoc}
+	 *
+	 * @see org.openimaj.audio.AudioStream#getLength()
 	 */
 	@Override
 	public long getLength()

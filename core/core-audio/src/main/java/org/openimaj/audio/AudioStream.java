@@ -28,49 +28,87 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.audio;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
- *	Represents an audio stream that can be read chunk-by-chunk.
+ * Represents an audio stream that can be read chunk-by-chunk.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 8 Jun 2011
- *	
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 8 Jun 2011
+ *
  */
-public abstract class AudioStream extends Audio
+public abstract class AudioStream extends Audio implements Iterable<SampleChunk>
 {
 	/**
-	 * 	Retrieve the next SampleChunk from the audio stream.
-	 *	@return The next sample chunk in the audio stream.
+	 * Retrieve the next SampleChunk from the audio stream.
+	 *
+	 * @return The next sample chunk in the audio stream.
 	 */
 	public abstract SampleChunk nextSampleChunk();
-	
-	/**
-	 * 	Reset the audio stream.
-	 */
-	public abstract void reset();
-	
-	/**
-	 * 	Returns the length of the audio stream in milliseconds. If the length
-	 * 	is unknown (for a live stream for example), then this method should
-	 * 	return -1.
-	 * 
-	 *	@return The length in milliseconds, or -1
-	 */
-	public abstract long getLength();
-	
 
 	/**
-	 *	Seeks the audio to the given timestamp. The timestamp of the audio
-	 *	should be checked after calling seek() as the seek method may not
-	 *	succeed if the stream does not support seeking.
-	 *  
-	 *	@param timestamp The timestamp to seek to
+	 * Reset the audio stream.
 	 */
-	public void seek( final long timestamp )
+	public abstract void reset();
+
+	/**
+	 * Returns the length of the audio stream in milliseconds. If the length is
+	 * unknown (for a live stream for example), then this method should return
+	 * -1.
+	 *
+	 * @return The length in milliseconds, or -1
+	 */
+	public abstract long getLength();
+
+	/**
+	 * Seeks the audio to the given timestamp. The timestamp of the audio should
+	 * be checked after calling seek() as the seek method may not succeed if the
+	 * stream does not support seeking.
+	 *
+	 * @param timestamp
+	 *            The timestamp to seek to
+	 */
+	public void seek(final long timestamp)
 	{
 		// Seek supported? Then override this method.
+	}
+
+	@Override
+	public Iterator<SampleChunk> iterator() {
+		return new Iterator<SampleChunk>() {
+			private SampleChunk next;
+
+			@Override
+			public boolean hasNext() {
+				if (next != null)
+					return true;
+				next = nextSampleChunk();
+				return next != null;
+			}
+
+			@Override
+			public SampleChunk next() {
+				if (next == null)
+					next = nextSampleChunk();
+
+				final SampleChunk ret = next;
+				next = null;
+
+				if (ret == null)
+					throw new NoSuchElementException();
+
+				return ret;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException("Remove not supported");
+			}
+		};
 	}
 }

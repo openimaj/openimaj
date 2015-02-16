@@ -684,7 +684,7 @@ public class XuggleVideo extends Video<MBFImage>
 			// understand), so we'll try opening an InputStream to the resource.
 			if (openResult < 0)
 			{
-				logger.info("URL " + urlstring + " could not be opened by ffmpeg. " +
+				logger.trace("URL " + urlstring + " could not be opened by ffmpeg. " +
 						"Trying to open a stream to the URL instead.");
 				final InputStream is = new DataInputStream(new URL(urlstring).openStream());
 				openResult = container.open(is, null, true, true);

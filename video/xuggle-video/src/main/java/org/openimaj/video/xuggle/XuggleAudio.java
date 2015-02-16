@@ -41,6 +41,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
@@ -62,13 +63,15 @@ import com.xuggle.xuggler.io.URLProtocolManager;
 /**
  * A wrapper for the Xuggle audio decoding system into the OpenIMAJ audio
  * system.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 8 Jun 2011
- * 
+ *
  */
 public class XuggleAudio extends AudioStream
 {
+	static Logger logger = Logger.getLogger(XuggleAudio.class);
+
 	static {
 		URLProtocolManager.getManager().registerFactory("jar", new JarURLProtocolHandlerFactory());
 	}
@@ -104,17 +107,17 @@ public class XuggleAudio extends AudioStream
 	private boolean constructedFromStream = false;
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 8 Jun 2011
-	 * 
+	 *
 	 */
 	protected class ChunkGetter extends MediaToolAdapter
 	{
 		/**
 		 * {@inheritDoc}
-		 * 
+		 *
 		 * @see com.xuggle.mediatool.MediaToolAdapter#onAudioSamples(com.xuggle.mediatool.event.IAudioSamplesEvent)
 		 */
 		@Override
@@ -157,7 +160,7 @@ public class XuggleAudio extends AudioStream
 
 	/**
 	 * Default constructor that takes the file to read.
-	 * 
+	 *
 	 * @param file
 	 *            The file to read.
 	 */
@@ -168,7 +171,7 @@ public class XuggleAudio extends AudioStream
 
 	/**
 	 * Default constructor that takes the file to read.
-	 * 
+	 *
 	 * @param file
 	 *            The file to read.
 	 * @param loop
@@ -182,7 +185,7 @@ public class XuggleAudio extends AudioStream
 	/**
 	 * Default constructor that takes the location of a file to read. This can
 	 * either be a filename or a URL.
-	 * 
+	 *
 	 * @param u
 	 *            The URL of the file to read
 	 */
@@ -194,7 +197,7 @@ public class XuggleAudio extends AudioStream
 	/**
 	 * Default constructor that takes the location of a file to read. This can
 	 * either be a filename or a URL.
-	 * 
+	 *
 	 * @param u
 	 *            The URL of the file to read
 	 * @param loop
@@ -208,7 +211,7 @@ public class XuggleAudio extends AudioStream
 	/**
 	 * Default constructor that takes the location of a file to read. This can
 	 * either be a filename or a URL.
-	 * 
+	 *
 	 * @param url
 	 *            The URL of the file to read
 	 */
@@ -223,7 +226,7 @@ public class XuggleAudio extends AudioStream
 	 * the file will loop indefinitely. If so, {@link #nextSampleChunk()} will
 	 * never return null; otherwise this method will return null at the end of
 	 * the video.
-	 * 
+	 *
 	 * @param u
 	 *            The URL of the file to read
 	 * @param loop
@@ -238,7 +241,7 @@ public class XuggleAudio extends AudioStream
 
 	/**
 	 * Construct a xuggle audio object from the stream.
-	 * 
+	 *
 	 * @param stream
 	 *            The stream
 	 */
@@ -252,7 +255,7 @@ public class XuggleAudio extends AudioStream
 
 	/**
 	 * Create the Xuggler reader
-	 * 
+	 *
 	 * @param stream
 	 *            Can be NULL; else the stream to create from.
 	 */
@@ -280,7 +283,7 @@ public class XuggleAudio extends AudioStream
 				openResult = container.open(stream, null, true, true);
 
 				if (openResult < 0)
-					System.out.println("XuggleAudio could not open InputStream to audio.");
+					logger.info("XuggleAudio could not open InputStream to audio.");
 			}
 			// otherwise we'll use the URL in the class
 			else
@@ -299,20 +302,20 @@ public class XuggleAudio extends AudioStream
 				// resource.
 				if (openResult < 0)
 				{
-					System.out.println("URL " + this.url + " could not be opened by ffmpeg. " +
+					logger.trace("URL " + this.url + " could not be opened by ffmpeg. " +
 							"Trying to open a stream to the URL instead.");
 					final InputStream is = uri.toURL().openStream();
 					openResult = container.open(is, null, true, true);
 
 					if (openResult < 0)
 					{
-						System.out.println("Error opening container. Error " + openResult +
+						logger.error("Error opening container. Error " + openResult +
 								" (" + IError.errorNumberToType(openResult).toString() + ")");
 						return;
 					}
 				}
 				else
-					System.out.println("Opened XuggleAudio stream ok: " + openResult);
+					logger.info("Opened XuggleAudio stream ok: " + openResult);
 			}
 		} catch (final URISyntaxException e2)
 		{
@@ -349,7 +352,7 @@ public class XuggleAudio extends AudioStream
 			}
 			i++;
 		}
-		System.out.println("Using audio stream " + this.streamIndex);
+		logger.info("Using audio stream " + this.streamIndex);
 
 		if (container.getDuration() == Global.NO_PTS)
 			this.length = -1;
@@ -361,7 +364,7 @@ public class XuggleAudio extends AudioStream
 		final IStreamCoder aAudioCoder = container.
 				getStream(this.streamIndex).getStreamCoder();
 
-		System.out.println("Using stream code: " + aAudioCoder);
+		logger.info("Using stream code: " + aAudioCoder);
 
 		// Create an audio format object suitable for the audio
 		// samples from Xuggle files
@@ -373,16 +376,29 @@ public class XuggleAudio extends AudioStream
 		af.setBigEndian(false);
 		super.format = af;
 
-		System.out.println("XuggleAudio using audio format: " + af);
+		logger.info("XuggleAudio using audio format: " + af);
 
 		this.currentSamples = new SampleChunk(af.clone());
 	}
 
-	protected int retries = 0;
+	// protected int retries = 0;
+	// protected int maxRetries = 0;
+	//
+	// /**
+	// * Set the maximum allowed number of retries in case of an error reading a
+	// * packet. Only use this on live streams; if you do it on a file-based
+	// * stream it might cause looping at the end of file.
+	// *
+	// * @param retries
+	// * maximum number of retries
+	// */
+	// public void setMaxRetries(int retries) {
+	// this.maxRetries = retries;
+	// }
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.audio.AudioStream#nextSampleChunk()
 	 */
 	@Override
@@ -394,24 +410,33 @@ public class XuggleAudio extends AudioStream
 			while ((e = this.reader.readPacket()) == null && !this.chunkAvailable)
 				;
 
-			if (!this.chunkAvailable || e != null && this.retries < 5)
+			if (!this.chunkAvailable) {
+				this.reader.close();
+				this.reader = null;
+				return null;
+			}
+
+			if (e != null)
 			{
 				this.reader.close();
 				this.reader = null;
-				if (e != null)
-				{
-					System.err.println("Got audio demux error " + e.getDescription());
-					this.create(null);
-					this.retries++;
-				}
-				System.out.println("Closing audio stream " + this.url);
+
+				// // We might be reading from a live stream & if we hit an
+				// error
+				// // we'll retry
+				// if (e != null && e.getType() != IError.Type.ERROR_EOF)
+				// {
+				// logger.error("Got audio demux error " + e.getDescription());
+				// this.create(null);
+				// this.retries++;
+				// }
+				// logger.info("Closing audio stream " + this.url);
 				return null;
 			}
 
 			this.chunkAvailable = false;
 			return this.currentSamples;
-		} catch (final Exception e)
-		{
+		} catch (final Exception e) {
 		}
 
 		return null;
@@ -419,7 +444,7 @@ public class XuggleAudio extends AudioStream
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.audio.AudioStream#reset()
 	 */
 	@Override
@@ -427,18 +452,19 @@ public class XuggleAudio extends AudioStream
 	{
 		if (this.constructedFromStream)
 		{
-			System.out.println("Cannot reset a stream of audio.");
+			logger.info("Cannot reset a stream of audio.");
 			return;
 		}
 
 		if (this.reader == null || this.reader.getContainer() == null)
 			this.create(null);
-		this.seek(0);
+		else
+			this.seek(0);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.audio.AudioStream#getLength()
 	 */
 	@Override
@@ -449,7 +475,7 @@ public class XuggleAudio extends AudioStream
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.audio.AudioStream#seek(long)
 	 */
 	@Override
@@ -457,7 +483,7 @@ public class XuggleAudio extends AudioStream
 	{
 		if (this.constructedFromStream)
 		{
-			System.out.println("Cannot seek within a stream of audio.");
+			logger.info("Cannot seek within a stream of audio.");
 			return;
 		}
 
@@ -472,17 +498,17 @@ public class XuggleAudio extends AudioStream
 		final long min = Math.max(0, position - 100);
 		final long max = position;
 
-		// System.out.println( "Timebase: "+timebase+" of a second second");
-		// System.out.println( "Position to seek to (timebase units): "+position
+		// logger.info( "Timebase: "+timebase+" of a second second");
+		// logger.info( "Position to seek to (timebase units): "+position
 		// );
-		// System.out.println( "max: "+max+", min: "+min );
+		// logger.info( "max: "+max+", min: "+min );
 
 		final int i = this.reader.getContainer().seekKeyFrame(this.streamIndex,
 				min, position, max, 0);
 
 		// Check for errors
 		if (i < 0)
-			System.err.println("Audio seek error (" + i + "): " + IError.errorNumberToType(i));
+			logger.error("Audio seek error (" + i + "): " + IError.errorNumberToType(i));
 		else
 			this.nextSampleChunk();
 	}

@@ -31,6 +31,7 @@ package org.openimaj.image.analysis.algorithm.histogram;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.image.analysis.algorithm.histogram.binning.SpatialBinningStrategy;
 import org.openimaj.image.processing.convolution.FImageGradients;
 
 /**
@@ -48,12 +49,12 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * The {@link #analyseImage(FImage, FImage)} method can be used to construct
  * histograms with moderated magnitudes (for example, suppressing all magnitudes
  * except those at edges).
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class GradientOrientationHistogramExtractor
-		extends SATWindowedExtractor
-		implements ImageAnalyser<FImage>
+extends SATWindowedExtractor
+implements ImageAnalyser<FImage>
 {
 	private FImageGradients.Mode orientationMode;
 	private boolean histogramInterpolation;
@@ -63,7 +64,7 @@ public class GradientOrientationHistogramExtractor
 	 * given number of bins. Optionally perform linear interpolation across
 	 * orientation bins. Histograms can also use either signed or unsigned
 	 * gradients.
-	 * 
+	 *
 	 * @param nbins
 	 *            number of bins
 	 * @param histogramInterpolation
@@ -101,7 +102,7 @@ public class GradientOrientationHistogramExtractor
 	 * accumulated. This could be used to suppress all magnitudes except those
 	 * at edges; the resultant extracted histograms would only contain
 	 * information about edge gradients.
-	 * 
+	 *
 	 * @param image
 	 *            the image to analyse
 	 * @param edges
