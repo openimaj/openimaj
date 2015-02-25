@@ -115,11 +115,14 @@ public class Linear#TT#ValueAnimator extends AbstractValueAnimator<#TT#> impleme
 	@Override
 	public ReversableValueAnimator<#TT#> reverseAnimator() {
 		#t# curr = current;
+		#t# sta = start;
 
 		reset();
 
 		current = curr;
 		incr *= -1;
+		start=finish;
+		finish = sta;
 		
 		return this;
 	}
