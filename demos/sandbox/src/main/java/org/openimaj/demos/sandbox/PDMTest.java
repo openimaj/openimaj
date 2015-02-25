@@ -1,0 +1,123 @@
+package org.openimaj.demos.sandbox;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openimaj.content.animation.animator.ForwardBackwardLoopingValueAnimator;
+import org.openimaj.content.animation.animator.LinearDoubleValueAnimator;
+import org.openimaj.content.animation.animator.ValueAnimator;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.PointDistributionModel;
+import org.openimaj.math.geometry.shape.PointList;
+import org.openimaj.math.geometry.shape.PointListConnections;
+import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.video.AnimatedVideo;
+import org.openimaj.video.VideoDisplay;
+
+public class PDMTest {
+	static List<PointList> loadData() {
+		final float[][] rawData = new float[][] {
+				{ 576, 303, 579, 418, 570, 466, 457, 415, 408, 355, 495, 216, 420, 99, 696, 81, 677, 206, 792, 382, 772, 438 },
+				{ 442, 289, 444, 392, 442, 433, 417, 428, 326, 401, 393, 215, 268, 169, 514, 156, 550, 218, 626, 412, 527, 437 },
+				{ 548, 317, 543, 423, 543, 464, 512, 463, 403, 434, 493, 254, 388, 216, 581, 187, 643, 243, 746, 447, 627, 472 },
+				{ 563, 302, 561, 404, 537, 450, 536, 464, 425, 421, 476, 231, 349, 191, 616, 160, 656, 223, 753, 435, 631, 462 },
+				{ 550, 267, 555, 375, 532, 413, 488, 442, 407, 392, 470, 193, 349, 164, 617, 124, 654, 189, 742, 405, 650, 449 },
+				{ 565, 318, 578, 441, 566, 477, 513, 489, 409, 445, 490, 231, 356, 112, 739, 88, 673, 222, 787, 461, 670, 498 },
+				{ 557, 312, 572, 434, 548, 472, 556, 464, 512, 481, 395, 438, 477, 229, 352, 118, 715, 88, 671, 219, 783, 455 },
+				{ 574, 308, 560, 423, 566, 482, 526, 470, 405, 435, 496, 234, 374, 194, 636, 170, 682, 229, 800, 444, 665, 476 },
+				{ 580, 308, 578, 424, 571, 468, 524, 513, 437, 453, 509, 228, 372, 173, 643, 154, 693, 227, 758, 469, 668, 512 },
+				{ 582, 305, 583, 419, 583, 467, 422, 505, 411, 438, 496, 227, 349, 111, 766, 86, 698, 212, 775, 458, 762, 527 }
+		};
+
+		final List<PointList> ptsL = new ArrayList<PointList>();
+		for (int i = 0; i < rawData.length; i++) {
+			final PointList pl = new PointList();
+
+			for (int j = 0; j < rawData[i].length; j += 2) {
+				final float x = rawData[i][j + 0];
+				final float y = rawData[i][j + 1];
+
+				pl.points.add(new Point2dImpl(x, y));
+			}
+
+			ptsL.add(pl);
+		}
+
+		return ptsL;
+	}
+
+	public static void main(String[] args) {
+		final int width = 900, height = 600;
+
+		final List<PointList> pointData = loadData();
+		final PointListConnections plc = loadConnections();
+
+		final Float[][] cols = new Float[pointData.get(0).size()][];
+		for (int i = 0; i < cols.length; i++)
+			cols[i] = RGBColour.randomColour();
+
+		// for (final PointList pl : pointData) {
+		// final MBFImage img = new MBFImage(width, height, 3);
+		// final List<Line2d> lines = plc.getLines(pl);
+		// img.drawLines(lines, 1, RGBColour.RED);
+		//
+		// for (int i = 0; i < pl.size(); i++) {
+		// final Point2d pt = pl.get(i);
+		// img.drawPoint(pt, cols[i], 3);
+		// }
+		// DisplayUtilities.display(img);
+		// }
+
+		final PointDistributionModel pdm = new PointDistributionModel(pointData);
+		pdm.setNumComponents(2);
+
+		final double sd = pdm.getStandardDeviations(3.0)[0];
+		VideoDisplay.createVideoDisplay(new AnimatedVideo<MBFImage>(new
+				MBFImage(width, height, 3))
+		{
+			ValueAnimator<Double> a = ForwardBackwardLoopingValueAnimator
+					.loop(new LinearDoubleValueAnimator(-sd, sd, 60));
+
+			@Override
+			protected void updateNextFrame(MBFImage frame) {
+				frame.fill(RGBColour.BLACK);
+				final Double val = a.nextValue();
+
+				System.out.println(val);
+				final PointList newShape = pdm.generateNewShape(new double[] {
+						val });
+
+				final PointList tpts = newShape.transform(TransformUtilities.translateMatrix(width / 2,
+						height / 2).times(
+						TransformUtilities.scaleMatrix(100, 100)));
+
+				for (int i = 0; i < tpts.size(); i++) {
+					final Point2d pt = tpts.get(i);
+					frame.drawPoint(pt, cols[i], 10);
+				}
+
+				final List<Line2d> lines = plc.getLines(tpts);
+				frame.drawLines(lines, 5, RGBColour.RED);
+			}
+		});
+	}
+
+	static PointListConnections loadConnections() {
+		final PointListConnections plc = new PointListConnections();
+		plc.addConnection(0, 1);
+		plc.addConnection(1, 2);
+		plc.addConnection(1, 4);
+		plc.addConnection(1, 9);
+		plc.addConnection(4, 3);
+		plc.addConnection(9, 10);
+		plc.addConnection(0, 5);
+		plc.addConnection(0, 8);
+		plc.addConnection(5, 6);
+		plc.addConnection(8, 7);
+		return plc;
+	}
+}
