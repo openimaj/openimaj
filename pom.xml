@@ -23,13 +23,13 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 		<url>http://www.soton.ac.uk</url>
 	</organization>
 	<mailingLists>
-	    <mailingList>
-	      <name>OpenIMAJ Mailing List</name>
-	      <subscribe>openimaj-discuss-join@lists.sourceforge.net</subscribe>
-	      <unsubscribe>openimaj-discuss-leave@lists.sourceforge.net</unsubscribe>
-	      <post>openimaj-discuss@lists.sourceforge.net</post>
-	      <archive>https://sourceforge.net/mailarchive/forum.php?forum_name=openimaj-discuss</archive>
-	    </mailingList>
+		<mailingList>
+		  <name>OpenIMAJ Mailing List</name>
+		  <subscribe>openimaj-discuss-join@lists.sourceforge.net</subscribe>
+		  <unsubscribe>openimaj-discuss-leave@lists.sourceforge.net</unsubscribe>
+		  <post>openimaj-discuss@lists.sourceforge.net</post>
+		  <archive>https://sourceforge.net/mailarchive/forum.php?forum_name=openimaj-discuss</archive>
+		</mailingList>
 	  </mailingLists>
 	<developers>
 		<developer>
@@ -139,16 +139,16 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 							<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 							<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
 							<script type="text/javascript">
-					      var _gaq = _gaq || [];
-					      _gaq.push(['_setAccount', 'UA-38338744-1']);
-					      _gaq.push(['_trackPageview']);
+						  var _gaq = _gaq || [];
+						  _gaq.push(['_setAccount', 'UA-38338744-1']);
+						  _gaq.push(['_trackPageview']);
 
-					      (function() {
-					        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-					        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-					        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-					      })();
-					    </script>
+						  (function() {
+							var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+							ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+							var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+						  })();
+						</script>
 						</div>
 						]]></bottom>
 					<linksource>true</linksource>
@@ -160,111 +160,28 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 				<version>1.9.0</version>
 			</plugin>
 			<plugin>
-        <artifactId>maven-release-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-svnexe</artifactId>
-            <version>1.9</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <autoVersionSubmodules>true</autoVersionSubmodules>
-        </configuration>
-      </plugin>
-			<!--	for copying the bibliographies -->
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<inherited>false</inherited>
-				<executions>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<concat destfile="${basedir}/site/src/site/resources/bibliography.bib" binary="no">
-									<fileset dir="${basedir}">
-										<include name="**/target/generated-sources/annotations/bibliography.bib" />
-									</fileset>
-								</concat>
-								<concat destfile="${basedir}/site/src/site/static-html/bibliography.html" binary="no">
-									<fileset dir="${basedir}">
-										<include name="**/target/generated-sources/annotations/bibliography.html" />
-									</fileset>
-								</concat>
-								<concat destfile="${basedir}/site/src/site/resources/bibliography.txt" binary="no">
-									<fileset dir="${basedir}">
-										<include name="**/target/generated-sources/annotations/bibliography.txt" />
-									</fileset>
-								</concat>
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-			    <groupId>org.codehaus.gmaven</groupId>
-			    <artifactId>gmaven-plugin</artifactId>
-				<inherited>false</inherited>
-				<version>1.4</version>
-			    <executions>
-			        <execution>
-			            <id>inject-main</id>
-			            <phase>site</phase>
-			            <goals>
-			                <goal>execute</goal>
-			            </goals>
-			            <configuration>
-			                <source>${basedir}/site/src/script/injectMainContent.groovy</source>
-			            </configuration>
-			        </execution>
-			        <execution>
-			        	<id>carousel-examples</id>
-			            <phase>site</phase>
-			            <goals>
-			                <goal>execute</goal>
-			            </goals>
-			            <configuration>
-			                <source>${basedir}/site/src/script/injectCarouselExamples.groovy</source>
-			            </configuration>
-			        </execution>
-			    </executions>
-			    <dependencies>
-		          <dependency>
-		            <groupId>org.codehaus.gmaven.runtime</groupId>
-		            <artifactId>gmaven-runtime-1.8</artifactId>
-		            <version>1.5</version>
-		            <exclusions>
-		              <exclusion>
-		                <groupId>org.codehaus.groovy</groupId>
-		                <artifactId>groovy-all</artifactId>
-		              </exclusion>
-		            </exclusions>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.codehaus.groovy</groupId>
-		            	<artifactId>groovy-all</artifactId>
-		            <version>1.8.7</version>
-		          </dependency>
-					<dependency>
-					    <groupId>org.apache.ivy</groupId>
-					    <artifactId>ivy</artifactId>
-					    <version>2.1.0</version>
-					</dependency>
-		      	</dependencies>
-			</plugin>
+		<artifactId>maven-release-plugin</artifactId>
+		<dependencies>
+		  <dependency>
+			<groupId>org.apache.maven.scm</groupId>
+			<artifactId>maven-scm-provider-svnexe</artifactId>
+			<version>1.9</version>
+		  </dependency>
+		</dependencies>
+		<configuration>
+		  <autoVersionSubmodules>true</autoVersionSubmodules>
+		</configuration>
+	  </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.4</version>
 				<dependencies>
-          <dependency><!-- add support for ssh/scp -->
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-ssh</artifactId>
-            <version>1.0</version>
-          </dependency>
+					<!-- <dependency>
+						<groupId>net.trajano.wagon</groupId>
+						<artifactId>wagon-git</artifactId>
+						<version>2.0.0</version>
+					</dependency> -->
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
@@ -275,6 +192,7 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 					<siteDirectory>${basedir}/site/src/site</siteDirectory>
 					<inputEncoding>UTF-8</inputEncoding>
 					<outputEncoding>UTF-8</outputEncoding>
+					<skipDeploy>true</skipDeploy>
 				</configuration>
 				<executions>
 					<execution>
@@ -284,6 +202,26 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+			  <groupId>com.github.github</groupId>
+			  <artifactId>site-maven-plugin</artifactId>
+			  <version>0.11</version>
+			  <configuration>
+			    <message>Creating site for ${project.artifactId}, ${project.version}</message>
+			    <!-- this does the trick to place every module in the correct subfolder -->
+			    <path>${project.distributionManagement.site.url}</path>
+			    <merge>true</merge>
+			  </configuration>
+			  <executions>
+			    <execution>
+			      <id>github-site</id>
+			      <goals>
+			        <goal>site</goal>
+			      </goals>
+			      <phase>site-deploy</phase>
+			    </execution>
+			  </executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -359,19 +297,19 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 		<pluginManagement>
 			<plugins>
 				<plugin>
-	        <artifactId>maven-release-plugin</artifactId>
-	        <version>2.4</version>
-	        <dependencies>
-	          <dependency>
-	            <groupId>org.apache.maven.scm</groupId>
-	            <artifactId>maven-scm-provider-svnexe</artifactId>
-	            <version>1.9</version>
-	          </dependency>
-	        </dependencies>
-	        <configuration>
-	          <autoVersionSubmodules>true</autoVersionSubmodules>
-	        </configuration>
-	      </plugin>
+			<artifactId>maven-release-plugin</artifactId>
+			<version>2.4</version>
+			<dependencies>
+			  <dependency>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-provider-svnexe</artifactId>
+				<version>1.9</version>
+			  </dependency>
+			</dependencies>
+			<configuration>
+			  <autoVersionSubmodules>true</autoVersionSubmodules>
+			</configuration>
+		  </plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
@@ -415,6 +353,89 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 						</additionalConfig>
 					</configuration>
 				</plugin>
+				<!--	for copying the bibliographies -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<concat destfile="${basedir}/site/src/site/resources/bibliography.bib" binary="no">
+									<fileset dir="${basedir}">
+										<include name="**/target/generated-sources/annotations/bibliography.bib" />
+									</fileset>
+								</concat>
+								<concat destfile="${basedir}/site/src/site/static-html/bibliography.html" binary="no">
+									<fileset dir="${basedir}">
+										<include name="**/target/generated-sources/annotations/bibliography.html" />
+									</fileset>
+								</concat>
+								<concat destfile="${basedir}/site/src/site/resources/bibliography.txt" binary="no">
+									<fileset dir="${basedir}">
+										<include name="**/target/generated-sources/annotations/bibliography.txt" />
+									</fileset>
+								</concat>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<inherited>false</inherited>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>inject-main</id>
+						<phase>site</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>${basedir}/site/src/script/injectMainContent.groovy</source>
+						</configuration>
+					</execution>
+					<execution>
+						<id>carousel-examples</id>
+						<phase>site</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>${basedir}/site/src/script/injectCarouselExamples.groovy</source>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+				  <dependency>
+					<groupId>org.codehaus.gmaven.runtime</groupId>
+					<artifactId>gmaven-runtime-1.8</artifactId>
+					<version>1.5</version>
+					<exclusions>
+					  <exclusion>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+					  </exclusion>
+					</exclusions>
+				  </dependency>
+				  <dependency>
+					<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+					<version>1.8.7</version>
+				  </dependency>
+					<dependency>
+						<groupId>org.apache.ivy</groupId>
+						<artifactId>ivy</artifactId>
+						<version>2.1.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -441,12 +462,12 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 										_gaq.push(['_setAccount', 'UA-38338744-1']);
 										_gaq.push(['_trackPageview']);
 
-						      	(function() {
-						        	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-						        	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-						        	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-						      	})();
-						    	</script>
+								(function() {
+									var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+									ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+									var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+								})();
+								</script>
 								</div>
 								]]></bottom>
 							<linksource>true</linksource>
@@ -484,11 +505,11 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 								</goals>
 							</execution>
 						</executions>
-				    </plugin>
+					</plugin>
 				</plugins>
 			</build>
 			<distributionManagement>
-			  	<snapshotRepository>
+				<snapshotRepository>
 					<id>ossrh</id>
 					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 				</snapshotRepository>
@@ -540,16 +561,16 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 							<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 							<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
 							<script type="text/javascript">
-					      var _gaq = _gaq || [];
-					      _gaq.push(['_setAccount', 'UA-38338744-1']);
-					      _gaq.push(['_trackPageview']);
+						  var _gaq = _gaq || [];
+						  _gaq.push(['_setAccount', 'UA-38338744-1']);
+						  _gaq.push(['_trackPageview']);
 
-					      (function() {
-					        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-					        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-					        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-					      })();
-					    </script>
+						  (function() {
+							var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+							ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+							var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+						  })();
+						</script>
 						</div>
 						]]></bottom>
 					<linksource>true</linksource>
@@ -608,8 +629,12 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 			<url>http://maven.ecs.soton.ac.uk/content/repositories/openimaj-snapshots/</url>
 		</snapshotRepository>
 		<site>
-			<id>openimaj.sf.net</id>
-			<url>scp://shell.sourceforge.net/home/project-web/openimaj/htdocs/</url>
+			<!-- <id>github</id>
+			<name>OpenIMAJ GitHub Pages</name>
+			<url>git:ssh://git@github.com/openimaj/openimaj.git?gh-pages#</url> -->
+			<id>github-pages-site</id>
+    		<name>Deployment through GitHub's site deployment plugin</name>
+    		<url>site/${project.version}</url>
 		</site>
 	</distributionManagement>
 	<properties>
@@ -617,8 +642,8 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 	<scm>
-		<connection>scm:svn:svn://svn.code.sf.net/p/openimaj/code/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/openimaj/code/trunk</developerConnection>
-		<url>https://sourceforge.net/p/openimaj/code</url>
+		<connection>scm:git:https://github.com/openimaj/openimaj.git</connection>
+		<developerConnection>scm:git:git@github.com:openimaj/openimaj.git</developerConnection>
+		<url>https://github.com/openimaj/openimaj/</url>
 	</scm>
 </project>
