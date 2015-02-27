@@ -1,0 +1,4 @@
+target/
+site/src/site/resources/bibliography.bib
+site/src/site/resources/bibliography.txt
+site/src/site/static-html/bibliography.html

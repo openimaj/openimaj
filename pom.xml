@@ -9,174 +9,174 @@
 	<url>http://www.openimaj.org</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and tools for multimedia analysis written in the Java programming language. OpenIMAJ intends to be the first truly complete multimedia analysis library and contains modules for analysing images, videos, text, audio and even webpages. The OpenIMAJ image and video analysis and feature extraction modules contain methods for processing visual content and extracting state-of-the-art features, including SIFT. The OpenIMAJ clustering and nearest-neighbour libraries contain efficient, multi-threaded implementations of clustering algorithms including Hierarchical K-Means and Approximate K-Means. The clustering library makes it possible to easily create visual-bag-of-words representations for images and video with very large vocabularies. The text-analysis modules contain implementations of a statistical language classifier and low-level processing pipeline. A number of modules deal with content creation, including interactive slideshows and animations. The hardware integration modules allow cross-platform integration with devices including webcams, the Microsoft Kinect, and even devices such as GPS's. OpenIMAJ also incorporates a number of tools to enable extremely-large-scale multimedia analysis using a distributed computing approach based on Apache Hadoop.</description>
-	<licenses>
-		<license>
-			<name>New BSD</name>
-			<url>http://www.openimaj.org/LICENSE.txt</url>
-			<distribution>repo,manual</distribution>
-			<comments>The New BSD License</comments>
-		</license>
-	</licenses>
-	<organization>
-		<name>The University of Southampton</name>
-		<url>http://www.soton.ac.uk</url>
-	</organization>
-	<mailingLists>
-		<mailingList>
-		  <name>OpenIMAJ Mailing List</name>
-		  <subscribe>openimaj-discuss-join@lists.sourceforge.net</subscribe>
-		  <unsubscribe>openimaj-discuss-leave@lists.sourceforge.net</unsubscribe>
-		  <post>openimaj-discuss@lists.sourceforge.net</post>
-		  <archive>https://sourceforge.net/mailarchive/forum.php?forum_name=openimaj-discuss</archive>
-		</mailingList>
-	  </mailingLists>
-	<developers>
-		<developer>
-			<id>jonhare</id>
-			<name>Jonathon Hare</name>
-			<email>jsh2@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>sinjax</id>
-			<name>Sina Samangooei</name>
-			<email>ss@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/ss</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>davedupplaw</id>
-			<name>David Dupplaw</name>
-			<email>dpd@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-	<contributors>
-		<contributor>
-			<name>Michael Matthews</name>
-			<email>mikmat@yahoo.com</email>
-			<url>http://research.yahoo.com/Michael_Matthews</url>
-			<organization>Yahoo! Research Barcelona</organization>
-			<organizationUrl>http://research.yahoo.com/</organizationUrl>
-			<roles>
-				<role>Readability4J development</role>
-			</roles>
-			<timezone>+1</timezone>
-		</contributor>
-		<contributor>
-			<name>Michael Cook</name>
-			<email>Michael_J_Cook@cable.comcast.com</email>
-			<url>http://www.comcast.com/corporate/about/pressroom/corporateoverview/boardofdirectors/jmichaelcook.html</url>
-			<organization>Comcast</organization>
-			<organizationUrl>http://www.comcast.com</organizationUrl>
-			<roles>
-				<role>Demos Contributor</role>
-			</roles>
-			<timezone>-8</timezone>
-		</contributor>
-	</contributors>
-	<ciManagement>
-		<system>jenkins</system>
-		<url>http://jenkins.ecs.soton.ac.uk/job/OpenIMAJ/</url>
-	</ciManagement>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.openimaj.org</url>
-	</issueManagement>
-	<modules>
-		<module>archetypes</module>
-		<module>core</module>
-		<module>image</module>
-		<module>video</module>
-		<module>audio</module>
-		<module>machine-learning</module>
-		<module>text</module>
-		<module>thirdparty</module>
-		<module>demos</module>
-		<module>knowledge</module>
-		<module>test-resources</module>
-		<module>tools</module>
-		<module>hadoop</module>
-		<module>streams</module>
-		<module>web</module>
-		<module>hardware</module>
-		<module>content</module>
-		<module>ide-integration</module>
-		<!-- <module>distribution</module> -->
-		<module>documentation</module>
-	</modules>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<bottom><![CDATA[
-						<div style="display:none">
-							<link rel="stylesheet" type="text/css" href="{@docRoot}/../css/reference.css" />
-							<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-							<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
-							<script type="text/javascript">
-						  var _gaq = _gaq || [];
-						  _gaq.push(['_setAccount', 'UA-38338744-1']);
-						  _gaq.push(['_trackPageview']);
+		OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and tools for multimedia analysis written in the Java programming language. OpenIMAJ intends to be the first truly complete multimedia analysis library and contains modules for analysing images, videos, text, audio and even webpages. The OpenIMAJ image and video analysis and feature extraction modules contain methods for processing visual content and extracting state-of-the-art features, including SIFT. The OpenIMAJ clustering and nearest-neighbour libraries contain efficient, multi-threaded implementations of clustering algorithms including Hierarchical K-Means and Approximate K-Means. The clustering library makes it possible to easily create visual-bag-of-words representations for images and video with very large vocabularies. The text-analysis modules contain implementations of a statistical language classifier and low-level processing pipeline. A number of modules deal with content creation, including interactive slideshows and animations. The hardware integration modules allow cross-platform integration with devices including webcams, the Microsoft Kinect, and even devices such as GPS's. OpenIMAJ also incorporates a number of tools to enable extremely-large-scale multimedia analysis using a distributed computing approach based on Apache Hadoop.</description>
+		<licenses>
+			<license>
+				<name>New BSD</name>
+				<url>http://www.openimaj.org/LICENSE.txt</url>
+				<distribution>repo,manual</distribution>
+				<comments>The New BSD License</comments>
+			</license>
+		</licenses>
+		<organization>
+			<name>The University of Southampton</name>
+			<url>http://www.soton.ac.uk</url>
+		</organization>
+		<mailingLists>
+			<mailingList>
+				<name>OpenIMAJ Mailing List</name>
+				<subscribe>openimaj-discuss-join@lists.sourceforge.net</subscribe>
+				<unsubscribe>openimaj-discuss-leave@lists.sourceforge.net</unsubscribe>
+				<post>openimaj-discuss@lists.sourceforge.net</post>
+				<archive>https://sourceforge.net/mailarchive/forum.php?forum_name=openimaj-discuss</archive>
+			</mailingList>
+		</mailingLists>
+		<developers>
+			<developer>
+				<id>jonhare</id>
+				<name>Jonathon Hare</name>
+				<email>jsh2@ecs.soton.ac.uk</email>
+				<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+				<organization>The University of Southampton</organization>
+				<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+				<roles>
+					<role>architect</role>
+					<role>developer</role>
+				</roles>
+				<timezone>0</timezone>
+			</developer>
+			<developer>
+				<id>sinjax</id>
+				<name>Sina Samangooei</name>
+				<email>ss@ecs.soton.ac.uk</email>
+				<url>http://www.ecs.soton.ac.uk/people/ss</url>
+				<organization>The University of Southampton</organization>
+				<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+				<roles>
+					<role>architect</role>
+					<role>developer</role>
+				</roles>
+				<timezone>0</timezone>
+			</developer>
+			<developer>
+				<id>davedupplaw</id>
+				<name>David Dupplaw</name>
+				<email>dpd@ecs.soton.ac.uk</email>
+				<url>http://www.ecs.soton.ac.uk/people/dpd</url>
+				<organization>The University of Southampton</organization>
+				<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+				<roles>
+					<role>architect</role>
+					<role>developer</role>
+				</roles>
+				<timezone>0</timezone>
+			</developer>
+		</developers>
+		<contributors>
+			<contributor>
+				<name>Michael Matthews</name>
+				<email>mikmat@yahoo.com</email>
+				<url>http://research.yahoo.com/Michael_Matthews</url>
+				<organization>Yahoo! Research Barcelona</organization>
+				<organizationUrl>http://research.yahoo.com/</organizationUrl>
+				<roles>
+					<role>Readability4J development</role>
+				</roles>
+				<timezone>+1</timezone>
+			</contributor>
+			<contributor>
+				<name>Michael Cook</name>
+				<email>Michael_J_Cook@cable.comcast.com</email>
+				<url>http://www.comcast.com/corporate/about/pressroom/corporateoverview/boardofdirectors/jmichaelcook.html</url>
+				<organization>Comcast</organization>
+				<organizationUrl>http://www.comcast.com</organizationUrl>
+				<roles>
+					<role>Demos Contributor</role>
+				</roles>
+				<timezone>-8</timezone>
+			</contributor>
+		</contributors>
+		<ciManagement>
+			<system>jenkins</system>
+			<url>http://jenkins.ecs.soton.ac.uk/job/OpenIMAJ/</url>
+		</ciManagement>
+		<issueManagement>
+			<system>JIRA</system>
+			<url>http://jira.openimaj.org</url>
+		</issueManagement>
+		<modules>
+			<module>archetypes</module>
+			<module>core</module>
+			<module>image</module>
+			<module>video</module>
+			<module>audio</module>
+			<module>machine-learning</module>
+			<module>text</module>
+			<module>thirdparty</module>
+			<module>demos</module>
+			<module>knowledge</module>
+			<module>test-resources</module>
+			<module>tools</module>
+			<module>hadoop</module>
+			<module>streams</module>
+			<module>web</module>
+			<module>hardware</module>
+			<module>content</module>
+			<module>ide-integration</module>
+			<!-- <module>distribution</module> -->
+			<module>documentation</module>
+		</modules>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<bottom><![CDATA[
+							<div style="display:none">
+								<link rel="stylesheet" type="text/css" href="{@docRoot}/../css/reference.css" />
+								<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+								<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
+								<script type="text/javascript">
+									var _gaq = _gaq || [];
+									_gaq.push(['_setAccount', 'UA-38338744-1']);
+									_gaq.push(['_trackPageview']);
 
-						  (function() {
-							var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-							ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-							var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-						  })();
-						</script>
-						</div>
-						]]></bottom>
-					<linksource>true</linksource>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
-			</plugin>
-			<plugin>
-		<artifactId>maven-release-plugin</artifactId>
-		<dependencies>
-		  <dependency>
-			<groupId>org.apache.maven.scm</groupId>
-			<artifactId>maven-scm-provider-svnexe</artifactId>
-			<version>1.9</version>
-		  </dependency>
-		</dependencies>
-		<configuration>
-		  <autoVersionSubmodules>true</autoVersionSubmodules>
-		</configuration>
-	  </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
-				<dependencies>
+									(function() {
+									var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+									ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+									var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+									})();
+								</script>
+							</div>
+							]]></bottom>
+							<linksource>true</linksource>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>com.mycila.maven-license-plugin</groupId>
+						<artifactId>maven-license-plugin</artifactId>
+						<version>1.9.0</version>
+					</plugin>
+					<plugin>
+						<artifactId>maven-release-plugin</artifactId>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.maven.scm</groupId>
+								<artifactId>maven-scm-provider-svnexe</artifactId>
+								<version>1.9</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-site-plugin</artifactId>
+						<version>3.4</version>
+						<dependencies>
 					<!-- <dependency>
 						<groupId>net.trajano.wagon</groupId>
 						<artifactId>wagon-git</artifactId>
@@ -185,14 +185,14 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
-						<version>1.3</version>
+						<version>1.6</version>
 					</dependency>
 				</dependencies>
 				<configuration>
 					<siteDirectory>${basedir}/site/src/site</siteDirectory>
 					<inputEncoding>UTF-8</inputEncoding>
 					<outputEncoding>UTF-8</outputEncoding>
-					<skipDeploy>true</skipDeploy>
+					<!-- <skipDeploy>true</skipDeploy> -->
 				</configuration>
 				<executions>
 					<execution>
@@ -204,12 +204,20 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-publish-plugin</artifactId>
+				<version>1.1</version>
+				<configuration>
+					<tryUpdate>true</tryUpdate>
+					<scmBranch>gh-pages</scmBranch>
+				</configuration>
+			</plugin>
+			<!-- <plugin>
 			  <groupId>com.github.github</groupId>
 			  <artifactId>site-maven-plugin</artifactId>
 			  <version>0.11</version>
 			  <configuration>
 			    <message>Creating site for ${project.artifactId}, ${project.version}</message>
-			    <!-- this does the trick to place every module in the correct subfolder -->
 			    <path>${project.distributionManagement.site.url}</path>
 			    <merge>true</merge>
 			  </configuration>
@@ -222,7 +230,7 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 			      <phase>site-deploy</phase>
 			    </execution>
 			  </executions>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -293,67 +301,7 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-			<artifactId>maven-release-plugin</artifactId>
-			<version>2.4</version>
-			<dependencies>
-			  <dependency>
-				<groupId>org.apache.maven.scm</groupId>
-				<artifactId>maven-scm-provider-svnexe</artifactId>
-				<version>1.9</version>
-			  </dependency>
-			</dependencies>
-			<configuration>
-			  <autoVersionSubmodules>true</autoVersionSubmodules>
-			</configuration>
-		  </plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-shade-plugin</artifactId>
-					<version>1.6</version>
-					<executions>
-						<execution>
-							<phase>package</phase>
-							<goals>
-								<goal>shade</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>2.9</version>
-					<configuration>
-						<downloadSources>true</downloadSources>
-						<downloadJavadocs>true</downloadJavadocs>
-						<workspaceCodeStylesURL>http://users.ecs.soton.ac.uk/jsh2/openimaj-formatter.xml</workspaceCodeStylesURL>
-						<additionalConfig>
-							<file>
-								<name>.settings/org.eclipse.jdt.core.prefs</name>
-								<content><![CDATA[
-org.eclipse.jdt.core.compiler.doc.comment.support=enabled
-org.eclipse.jdt.core.compiler.problem.invalidJavadoc=warning
-org.eclipse.jdt.core.compiler.problem.invalidJavadocTags=enabled
-org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsDeprecatedRef=enabled
-org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsNotVisibleRef=enabled
-org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsVisibility=public
-org.eclipse.jdt.core.compiler.problem.missingJavadocComments=warning
-org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsOverriding=disabled
-org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsVisibility=public
-org.eclipse.jdt.core.compiler.problem.missingJavadocTagDescription=return_tag
-org.eclipse.jdt.core.compiler.problem.missingJavadocTags=warning
-org.eclipse.jdt.core.compiler.problem.missingJavadocTagsOverriding=disabled
-org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
-									]]></content>
-							</file>
-						</additionalConfig>
-					</configuration>
-				</plugin>
-				<!--	for copying the bibliographies -->
+			<!--	for copying the bibliographies -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<inherited>false</inherited>
@@ -413,22 +361,22 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 					</execution>
 				</executions>
 				<dependencies>
-				  <dependency>
-					<groupId>org.codehaus.gmaven.runtime</groupId>
-					<artifactId>gmaven-runtime-1.8</artifactId>
-					<version>1.5</version>
-					<exclusions>
-					  <exclusion>
+					<dependency>
+						<groupId>org.codehaus.gmaven.runtime</groupId>
+						<artifactId>gmaven-runtime-1.8</artifactId>
+						<version>1.5</version>
+						<exclusions>
+							<exclusion>
+								<groupId>org.codehaus.groovy</groupId>
+								<artifactId>groovy-all</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
 						<groupId>org.codehaus.groovy</groupId>
 						<artifactId>groovy-all</artifactId>
-					  </exclusion>
-					</exclusions>
-				  </dependency>
-				  <dependency>
-					<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-all</artifactId>
-					<version>1.8.7</version>
-				  </dependency>
+						<version>1.8.7</version>
+					</dependency>
 					<dependency>
 						<groupId>org.apache.ivy</groupId>
 						<artifactId>ivy</artifactId>
@@ -436,22 +384,185 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 					</dependency>
 				</dependencies>
 			</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-	<profiles>
-		<profile>
-			<id>doclint-java8-disable</id>
-			<activation>
-				<jdk>[1.8,)</jdk>
-			</activation>
-			<build>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.4</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.scm</groupId>
+							<artifactId>maven-scm-provider-svnexe</artifactId>
+							<version>1.9</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>1.6</version>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>shade</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<downloadSources>true</downloadSources>
+						<downloadJavadocs>true</downloadJavadocs>
+						<workspaceCodeStylesURL>http://users.ecs.soton.ac.uk/jsh2/openimaj-formatter.xml</workspaceCodeStylesURL>
+						<additionalConfig>
+							<file>
+								<name>.settings/org.eclipse.jdt.core.prefs</name>
+								<content><![CDATA[
+									org.eclipse.jdt.core.compiler.doc.comment.support=enabled
+									org.eclipse.jdt.core.compiler.problem.invalidJavadoc=warning
+									org.eclipse.jdt.core.compiler.problem.invalidJavadocTags=enabled
+									org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsDeprecatedRef=enabled
+									org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsNotVisibleRef=enabled
+									org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsVisibility=public
+									org.eclipse.jdt.core.compiler.problem.missingJavadocComments=warning
+									org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsOverriding=disabled
+									org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsVisibility=public
+									org.eclipse.jdt.core.compiler.problem.missingJavadocTagDescription=return_tag
+									org.eclipse.jdt.core.compiler.problem.missingJavadocTags=warning
+									org.eclipse.jdt.core.compiler.problem.missingJavadocTagsOverriding=disabled
+									org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
+									]]></content>
+								</file>
+							</additionalConfig>
+						</configuration>
+					</plugin>
+				</plugins>
+			</pluginManagement>
+		</build>
+		<profiles>
+			<profile>
+				<id>doclint-java8-disable</id>
+				<activation>
+					<jdk>[1.8,)</jdk>
+				</activation>
+				<build>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<version>2.9</version>
+							<configuration>
+								<bottom><![CDATA[
+									<div style="display:none">
+										<link rel="stylesheet" type="text/css" href="{@docRoot}/../css/reference.css" />
+										<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+										<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
+										<script type="text/javascript">
+											var _gaq = _gaq || [];
+											_gaq.push(['_setAccount', 'UA-38338744-1']);
+											_gaq.push(['_trackPageview']);
+
+											(function() {
+											var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+											ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+											var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+											})();
+										</script>
+									</div>
+									]]></bottom>
+									<linksource>true</linksource>
+									<additionalparam>-Xdoclint:none</additionalparam>
+								</configuration>
+							</plugin>
+						</plugins>
+					</build>
+				</profile>
+				<profile>
+					<id>central-deployment</id>
+					<build>
+						<plugins>
+							<plugin>
+								<groupId>org.sonatype.plugins</groupId>
+								<artifactId>nexus-staging-maven-plugin</artifactId>
+								<version>1.6.2</version>
+								<extensions>true</extensions>
+								<configuration>
+									<serverId>ossrh</serverId>
+									<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+									<autoReleaseAfterClose>true</autoReleaseAfterClose>
+								</configuration>
+							</plugin>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-gpg-plugin</artifactId>
+								<version>1.5</version>
+								<executions>
+									<execution>
+										<id>sign-artifacts</id>
+										<phase>verify</phase>
+										<goals>
+											<goal>sign</goal>
+										</goals>
+									</execution>
+								</executions>
+							</plugin>
+						</plugins>
+					</build>
+					<distributionManagement>
+						<snapshotRepository>
+							<id>ossrh</id>
+							<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+						</snapshotRepository>
+					</distributionManagement>
+				</profile>
+			</profiles>
+			<reporting>
 				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
+						<version>2.7</version>
+						<configuration>
+							<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+							<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+						</configuration>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>cim</report>
+									<report>dependencies</report>
+									<report>dependency-convergence</report>
+									<report>dependency-management</report>
+									<report>distribution-management</report>
+									<report>help</report>
+									<report>index</report>
+									<report>issue-tracking</report>
+									<report>license</report>
+									<report>mailing-list</report>
+									<report>modules</report>
+									<report>plugin-management</report>
+									<report>plugins</report>
+									<report>project-team</report>
+									<report>scm</report>
+									<report>summary</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<version>2.9</version>
 						<configuration>
+							<excludePackageNames>org.openimaj.demos.*:org.openimaj.examples.*</excludePackageNames>
 							<bottom><![CDATA[
 								<div style="display:none">
 									<link rel="stylesheet" type="text/css" href="{@docRoot}/../css/reference.css" />
@@ -462,188 +573,87 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
 										_gaq.push(['_setAccount', 'UA-38338744-1']);
 										_gaq.push(['_trackPageview']);
 
-								(function() {
-									var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-									ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-									var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-								})();
-								</script>
+										(function() {
+										var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+										ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+										var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+										})();
+									</script>
 								</div>
 								]]></bottom>
-							<linksource>true</linksource>
-							<additionalparam>-Xdoclint:none</additionalparam>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>central-deployment</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.2</version>
-						<extensions>true</extensions>
-						<configuration>
-							<serverId>ossrh</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>true</autoReleaseAfterClose>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.5</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-			<distributionManagement>
-				<snapshotRepository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-				</snapshotRepository>
-			</distributionManagement>
-		</profile>
-	</profiles>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>cim</report>
-							<report>dependencies</report>
-							<report>dependency-convergence</report>
-							<report>dependency-management</report>
-							<report>distribution-management</report>
-							<report>help</report>
-							<report>index</report>
-							<report>issue-tracking</report>
-							<report>license</report>
-							<report>mailing-list</report>
-							<report>modules</report>
-							<report>plugin-management</report>
-							<report>plugins</report>
-							<report>project-team</report>
-							<report>scm</report>
-							<report>summary</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<excludePackageNames>org.openimaj.demos.*:org.openimaj.examples.*</excludePackageNames>
-					<bottom><![CDATA[
-						<div style="display:none">
-							<link rel="stylesheet" type="text/css" href="{@docRoot}/../css/reference.css" />
-							<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-							<script type="text/javascript" src="{@docRoot}/../js/reference-jdk7.js"></script>
-							<script type="text/javascript">
-						  var _gaq = _gaq || [];
-						  _gaq.push(['_setAccount', 'UA-38338744-1']);
-						  _gaq.push(['_trackPageview']);
-
-						  (function() {
-							var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-							ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-							var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-						  })();
-						</script>
-						</div>
-						]]></bottom>
-					<linksource>true</linksource>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<id>javadoc</id>
-						<reports>
-							<report>javadoc</report>
-						</reports>
-					</reportSet>
-					<reportSet>
-						<id>aggregate</id>
-						<reports>
-							<report>aggregate</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<linkJavadoc>true</linkJavadoc>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-	<repositories>
-		<repository>
-			<id>openimaj-maven</id>
-			<url>http://maven.openimaj.org/</url>
-		</repository>
-		<repository>
-			<id>openimaj-snapshots-maven</id>
-			<url>http://snapshots.openimaj.org/</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>openimaj-maven</id>
-			<url>http://maven.openimaj.org</url>
-			<layout>default</layout>
-		</pluginRepository>
-	</pluginRepositories>
-	<distributionManagement>
-		<repository>
-			<id>openimaj-releases</id>
-			<name>OpenIMAJ Maven Releases Repository</name>
-			<url>http://maven.ecs.soton.ac.uk/content/repositories/openimaj-releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>openimaj-snapshots</id>
-			<name>OpenIMAJ Maven Snapshots Repository</name>
-			<url>http://maven.ecs.soton.ac.uk/content/repositories/openimaj-snapshots/</url>
-		</snapshotRepository>
-		<site>
-			<!-- <id>github</id>
-			<name>OpenIMAJ GitHub Pages</name>
-			<url>git:ssh://git@github.com/openimaj/openimaj.git?gh-pages#</url> -->
-			<id>github-pages-site</id>
+								<linksource>true</linksource>
+							</configuration>
+							<reportSets>
+								<reportSet>
+									<id>javadoc</id>
+									<reports>
+										<report>javadoc</report>
+									</reports>
+								</reportSet>
+								<reportSet>
+									<id>aggregate</id>
+									<reports>
+										<report>aggregate</report>
+									</reports>
+								</reportSet>
+							</reportSets>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-jxr-plugin</artifactId>
+							<version>2.2</version>
+							<configuration>
+								<linkJavadoc>true</linkJavadoc>
+							</configuration>
+						</plugin>
+					</plugins>
+				</reporting>
+				<repositories>
+					<repository>
+						<id>openimaj-maven</id>
+						<url>http://maven.openimaj.org/</url>
+					</repository>
+					<repository>
+						<id>openimaj-snapshots-maven</id>
+						<url>http://snapshots.openimaj.org/</url>
+					</repository>
+				</repositories>
+				<pluginRepositories>
+					<pluginRepository>
+						<id>openimaj-maven</id>
+						<url>http://maven.openimaj.org</url>
+						<layout>default</layout>
+					</pluginRepository>
+				</pluginRepositories>
+				<distributionManagement>
+					<repository>
+						<id>openimaj-releases</id>
+						<name>OpenIMAJ Maven Releases Repository</name>
+						<url>http://maven.ecs.soton.ac.uk/content/repositories/openimaj-releases/</url>
+					</repository>
+					<snapshotRepository>
+						<id>openimaj-snapshots</id>
+						<name>OpenIMAJ Maven Snapshots Repository</name>
+						<url>http://maven.ecs.soton.ac.uk/content/repositories/openimaj-snapshots/</url>
+					</snapshotRepository>
+					<site>
+						<id>github</id>
+						<name>OpenIMAJ GitHub Pages</name>
+						<url>scm:git:git@github.com:openimaj/openimaj.git</url>
+						<!-- <url>git:ssh://git@github.com/openimaj/openimaj.git?gh-pages#</url> -->
+			<!-- <id>github-pages-site</id>
     		<name>Deployment through GitHub's site deployment plugin</name>
-    		<url>site/${project.version}</url>
-		</site>
-	</distributionManagement>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
-	<scm>
-		<connection>scm:git:https://github.com/openimaj/openimaj.git</connection>
-		<developerConnection>scm:git:git@github.com:openimaj/openimaj.git</developerConnection>
-		<url>https://github.com/openimaj/openimaj/</url>
-	</scm>
+    		<url>site/${project.version}</url> -->
+    	</site>
+    </distributionManagement>
+    <properties>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    	<github.global.server>github-pages-site</github.global.server>
+    </properties>
+    <scm>
+    	<connection>scm:git:https://github.com/openimaj/openimaj.git</connection>
+    	<developerConnection>scm:git:git@github.com:openimaj/openimaj.git</developerConnection>
+    	<url>https://github.com/openimaj/openimaj/</url>
+    </scm>
 </project>
