@@ -34,17 +34,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
-import gnu.io.SerialPort;
+import jssc.SerialPort;
 
 import org.openimaj.hardware.serial.SerialDevice;
 
-
 /**
  * A simple controller for our serially connected electronic turntable.
- * 
- * Send NNNNNA0 to rotate anticlockwise by NNNNN increments (360/24000th of a degree)
- * Send NNNNNC0 to rotate clockwise by NNNNN increments (360/24000th of a degree)
- * 
+ *
+ * Send NNNNNA0 to rotate anticlockwise by NNNNN increments (360/24000th of a
+ * degree) Send NNNNNC0 to rotate clockwise by NNNNN increments (360/24000th of
+ * a degree)
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Turntable {
@@ -56,19 +56,22 @@ public class Turntable {
 	protected SerialDevice turntableDevice;
 
 	/**
-	 * Default constructor. Opens a connection to the turntable on
-	 * the given port.
-	 * 
-	 * @param port The port
+	 * Default constructor. Opens a connection to the turntable on the given
+	 * port.
+	 *
+	 * @param port
+	 *            The port
 	 * @throws Exception
 	 */
 	public Turntable(String port) throws Exception {
-		turntableDevice = new SerialDevice( port, 9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE );
+		turntableDevice = new SerialDevice(port, 9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+				SerialPort.PARITY_NONE);
 	}
 
 	/**
-	 * Get the current absolute angle in degrees (relative to the
-	 * position at initialisation)
+	 * Get the current absolute angle in degrees (relative to the position at
+	 * initialisation)
+	 *
 	 * @return the absolute angle in degrees
 	 */
 	public double getCurrentAngleDegrees() {
@@ -76,20 +79,22 @@ public class Turntable {
 	}
 
 	/**
-	 * Get the current absolute angle in radians (relative to the
-	 * position at initialisation)
-	 * @return the absolute angle in radians 
+	 * Get the current absolute angle in radians (relative to the position at
+	 * initialisation)
+	 *
+	 * @return the absolute angle in radians
 	 */
 	public double getCurrentAngleRadians() {
 		return currentAngleTicks / TICKS_PER_RADIAN;
 	}
 
 	/**
-	 * Rotate the turntable to the given absolute angle in radians 
-	 * (relative to the position at initialisation). The turntable 
-	 * will take the shortest path to the requested position.
-	 * 
-	 * @param rads the angle in radians
+	 * Rotate the turntable to the given absolute angle in radians (relative to
+	 * the position at initialisation). The turntable will take the shortest
+	 * path to the requested position.
+	 *
+	 * @param rads
+	 *            the angle in radians
 	 * @throws IOException
 	 */
 	public void rotateToRadians(double rads) throws IOException {
@@ -97,45 +102,48 @@ public class Turntable {
 	}
 
 	/**
-	 * Rotate the turntable to the given absolute angle in degrees 
-	 * (relative to the position at initialisation). The turntable 
-	 * will take the shortest path to the requested position.
-	 * 
-	 * @param degrees the angle in degrees
+	 * Rotate the turntable to the given absolute angle in degrees (relative to
+	 * the position at initialisation). The turntable will take the shortest
+	 * path to the requested position.
+	 *
+	 * @param degrees
+	 *            the angle in degrees
 	 * @throws IOException
 	 */
 	public void rotateToDegrees(double degrees) throws IOException {
 		final double current = getCurrentAngleDegrees();
 		double delta = degrees - current;
-		
+
 		if (delta > 180)
-			delta = 360-delta;
+			delta = 360 - delta;
 		if (delta < -180)
-			delta = 360+delta;
-		
-		sendCommand((int)Math.rint(delta * TICKS_PER_DEGREE));
+			delta = 360 + delta;
+
+		sendCommand((int) Math.rint(delta * TICKS_PER_DEGREE));
 	}
 
 	/**
-	 * Rotate the turntable by the given angle in radians.
-	 * Positive angles are clockwise, negative anticlockwise.
-	 * 
-	 * @param rads the angle in radians
+	 * Rotate the turntable by the given angle in radians. Positive angles are
+	 * clockwise, negative anticlockwise.
+	 *
+	 * @param rads
+	 *            the angle in radians
 	 * @throws IOException
 	 */
 	public void rotateByRadians(double rads) throws IOException {
-		sendCommand((int)Math.rint(rads * TICKS_PER_RADIAN));
+		sendCommand((int) Math.rint(rads * TICKS_PER_RADIAN));
 	}
 
 	/**
-	 * Rotate the turntable by the given angle in degrees.
-	 * Positive angles are clockwise, negative anticlockwise.
-	 * 
-	 * @param degrees the angle in degrees
+	 * Rotate the turntable by the given angle in degrees. Positive angles are
+	 * clockwise, negative anticlockwise.
+	 *
+	 * @param degrees
+	 *            the angle in degrees
 	 * @throws IOException
 	 */
 	public void rotateByDegrees(double degrees) throws IOException {
-		sendCommand((int)Math.rint(degrees * TICKS_PER_DEGREE));
+		sendCommand((int) Math.rint(degrees * TICKS_PER_DEGREE));
 	}
 
 	protected void sendCommand(int ticks) throws IOException {
@@ -145,21 +153,21 @@ public class Turntable {
 			sendCommand(ticks, true);
 		}
 	}
-	
+
 	protected void sendCommand(int ticks, boolean cw) throws IOException {
 		final String dir = cw ? "C" : "A";
-		
-		if (cw) 
+
+		if (cw)
 			currentAngleTicks += ticks;
-		else 
+		else
 			currentAngleTicks -= ticks;
-		
-		if (currentAngleTicks > TICKS_PER_REVOLUTION/2)
+
+		if (currentAngleTicks > TICKS_PER_REVOLUTION / 2)
 			currentAngleTicks = TICKS_PER_REVOLUTION - currentAngleTicks;
-		if (currentAngleTicks < -TICKS_PER_REVOLUTION/2)
+		if (currentAngleTicks < -TICKS_PER_REVOLUTION / 2)
 			currentAngleTicks = TICKS_PER_REVOLUTION + currentAngleTicks;
-		
-		try {	
+
+		try {
 			final String cmd = ticks + dir + "0\n";
 			turntableDevice.getOutputStream().write(cmd.getBytes("US-ASCII"));
 		} catch (final UnsupportedEncodingException e) {
@@ -168,39 +176,43 @@ public class Turntable {
 	}
 
 	/**
-	 * Close the connection to the turntable. 
+	 * Close the connection to the turntable.
+	 * 
+	 * @throws IOException
 	 */
-	public void close() {
+	public void close() throws IOException {
 		turntableDevice.close();
 	}
-	
+
 	/**
 	 * Test the turntable
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main( String[] args ) throws Exception {
+	public static void main(String[] args) throws Exception {
 		System.out.println("Initializing Turntable");
-		System.out.println("the command \"r 10\" will rotate the turntable to 10 degrees CW relative to the starting point");
-		System.out.println("the command \"i -10\" will rotate the turntable to 10 degrees AW relative to the current point");
-		
-		//Turntable t = new Turntable("/dev/tty.usbserial-FTCXE2RA");
+		System.out
+		.println("the command \"r 10\" will rotate the turntable to 10 degrees CW relative to the starting point");
+		System.out
+		.println("the command \"i -10\" will rotate the turntable to 10 degrees AW relative to the current point");
+
+		// Turntable t = new Turntable("/dev/tty.usbserial-FTCXE2RA");
 		final Turntable t = new Turntable("/dev/tty.usbserial");
 
 		System.out.println("Turntable is ready");
 		System.out.println("Current absolute angle is " + t.getCurrentAngleDegrees() + " degrees");
-		
+
 		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
+
 		String s;
 		while ((s = br.readLine()) != null) {
 			try {
 				final String[] parts = s.split("\\s");
-				
+
 				if (parts[0].equals("q"))
 					break;
-				
+
 				final double ang = Double.parseDouble(parts[1]);
 				if (parts[0].equals("i"))
 					t.rotateByDegrees(ang);
@@ -208,13 +220,13 @@ public class Turntable {
 					t.rotateToDegrees(ang);
 				else
 					throw new Exception();
-				
+
 				System.out.println("Rotating to absolute angle of " + t.getCurrentAngleDegrees() + " degrees");
 			} catch (final Throwable throwable) {
 				System.out.println("invalid command");
 			}
 		}
-		
+
 		System.out.println("Done");
 		System.exit(0);
 	}

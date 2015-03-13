@@ -28,72 +28,73 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.hardware.compass;
 
-import gnu.io.SerialPort;
+import jssc.SerialPort;
 
 import org.openimaj.hardware.serial.SerialDataListener;
 import org.openimaj.hardware.serial.SerialDevice;
 
 /**
- * 	This class is used to read data from the Ocean Server serial compass.
- * 
- *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
- *	@created 13 Jul 2011
+ * This class is used to read data from the Ocean Server serial compass.
+ *
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *
+ * @created 13 Jul 2011
  */
 public class CompassSerialReader implements Runnable
 {
 	/** The port name on which the compass is putting its data */
 	private String portName = null;
-	
+
 	private CompassData latestData = null;
-	
+
 	/**
-	 * 	Constructor that takes the serial port name on which the
-	 * 	compass is putting its data.
-	 * 
-	 *  @param portName The port name.
+	 * Constructor that takes the serial port name on which the compass is
+	 * putting its data.
+	 *
+	 * @param portName
+	 *            The port name.
 	 */
-	public CompassSerialReader( String portName )
-    {
+	public CompassSerialReader(String portName)
+	{
 		this.portName = portName;
-    }
-	
+	}
+
 	/**
-	 *  {@inheritDoc}
-	 *  @see java.lang.Runnable#run()
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Runnable#run()
 	 */
-    @Override
+	@Override
 	public void run()
-    {
+	{
 		try
-        {
-	        String firstPort = portName;
-	        System.out.println( "Opening "+firstPort );
-	        
-	        // This is the standard Ocean Server compass configuration
-	        SerialDevice sd = new SerialDevice( firstPort, 19200, 
-	        		SerialPort.DATABITS_8, SerialPort.STOPBITS_1, 
-	        		SerialPort.PARITY_NONE );
-	        
-	        sd.addSerialDataListener( new SerialDataListener()
+		{
+			final String firstPort = portName;
+			System.out.println("Opening " + firstPort);
+
+			// This is the standard Ocean Server compass configuration
+			final SerialDevice sd = new SerialDevice(firstPort, 19200,
+					SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+					SerialPort.PARITY_NONE);
+
+			sd.addSerialDataListener(new SerialDataListener()
 			{
 				@Override
-				public void dataReceived( String data )
+				public void dataReceived(String data)
 				{
-					latestData = OS5000_0x01_Parser.parseLine( data.trim() );
+					latestData = OS5000_0x01_Parser.parseLine(data.trim());
 				}
 			});
-        }
-        catch( Exception e )
-        {
-	        e.printStackTrace();
-        }		
-		
-    }
+		} catch (final Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
 
 	/**
 	 * @return The most recent compass data
@@ -102,11 +103,11 @@ public class CompassSerialReader implements Runnable
 	{
 		return latestData;
 	}
-	
+
 	/**
-	 *  @param args
+	 * @param args
 	 */
-	public static void main( String[] args )
+	public static void main(String[] args)
 	{
 		new CompassSerialReader("/dev/ttyUSB0").run();
 	}
