@@ -80,7 +80,7 @@ import com.google.common.collect.Lists;
  * <li> {@link CommonHTMLConsumers#PHOTONUI}
  * <li> {@link CommonHTMLConsumers#PICS_LOCKERZ}
  * </ul>
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ImageSiteURLExtractor extends SiteSpecificURLExtractor {
@@ -90,7 +90,7 @@ public class ImageSiteURLExtractor extends SiteSpecificURLExtractor {
 
 	/**
 	 * Construct with or without Tumblr support
-	 * 
+	 *
 	 * @param tumblr
 	 *            true if tumblr is required.
 	 * @param fallback
@@ -103,7 +103,7 @@ public class ImageSiteURLExtractor extends SiteSpecificURLExtractor {
 
 	/**
 	 * Construct with or without Tumblr support
-	 * 
+	 *
 	 * @param tumblr
 	 *            true if tumblr is required.
 	 */
@@ -111,8 +111,8 @@ public class ImageSiteURLExtractor extends SiteSpecificURLExtractor {
 		super();
 
 		siteSpecific.addAll(Arrays.asList(
-				new InstagramConsumer(),
 				new TwitterPhotoConsumer(),
+				new InstagramConsumer(),
 				new TwitPicConsumer(),
 				new ImgurConsumer(),
 				new FacebookConsumer(),
@@ -137,7 +137,7 @@ public class ImageSiteURLExtractor extends SiteSpecificURLExtractor {
 	/**
 	 * An extension of the {@link MetaRefreshRedirectStrategy} which disallows
 	 * all redirects and instead remembers a redirect for use later on.
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
 	private static class StatusConsumerRedirectStrategy extends MetaRefreshRedirectStrategy {
@@ -179,13 +179,13 @@ public class ImageSiteURLExtractor extends SiteSpecificURLExtractor {
 	 * First, try all the {@link SiteSpecificConsumer} instances loaded into
 	 * {@link #siteSpecific}. If any consumer takes control of a link the
 	 * consumer's output is used
-	 * 
+	 *
 	 * if this fails use
 	 * {@link HttpUtils#readURLAsByteArrayInputStream(URL, org.apache.http.client.RedirectStrategy)}
 	 * with a {@link StatusConsumerRedirectStrategy} which specifically
 	 * disallows redirects to be dealt with automatically and forces this
 	 * function to be called for each redirect.
-	 * 
+	 *
 	 * @param url
 	 * @return a list of images or null
 	 */

@@ -27,19 +27,27 @@ import org.openimaj.web.scraping.SiteSpecificConsumer;
 
 /**
  * Download images from twitter's own image hosting service
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class TwitterPhotoConsumer implements SiteSpecificConsumer {
 	@Override
 	public boolean canConsume(URL url) {
 		// http://twitter.com/HutchSelenator/status/222772697531301890/photo/1
-		return url.getHost().equals("twitter.com") && url.getPath().contains("photo");
+		if (url.getHost().equals("twitter.com") && url.getPath().contains("photo"))
+			return true;
+
+		// http://pbs.twimg.com/media/B_7Q6PMWAAAzvH0.jpg
+		return url.getHost().endsWith("twimg.com") && url.getPath().contains("media");
 	}
 
 	@Override
 	public List<URL> consume(URL url) {
+		if (url.getHost().endsWith("twimg.com")) {
+			return Arrays.asList(new URL[] { url });
+		}
+
 		String largeURLStr = url.toString();
 		if (!largeURLStr.endsWith("large")) {
 			largeURLStr += "/large";
@@ -52,7 +60,5 @@ public class TwitterPhotoConsumer implements SiteSpecificConsumer {
 		} catch (final Exception e) {
 			return null;
 		}
-
 	}
-
 }

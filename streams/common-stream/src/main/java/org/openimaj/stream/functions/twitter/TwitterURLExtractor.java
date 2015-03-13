@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
 import org.openimaj.util.function.MultiFunction;
 
+import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 
@@ -49,7 +50,7 @@ import twitter4j.URLEntity;
  * This class implements a function that processes Twitter {@link Status}
  * objects to extract all the mentioned URLs. URLs are extracted from both the
  * entities field and the Tweet message body (by applying a regular expression).
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class TwitterURLExtractor implements MultiFunction<Status, URL> {
@@ -74,6 +75,22 @@ public class TwitterURLExtractor implements MultiFunction<Status, URL> {
 
 				urls.add(u);
 			}
+		}
+
+		// Add all the entries from media.urls
+		for (final MediaEntity map : status.getMediaEntities()) {
+			String u = map.getMediaURL();
+
+			if (u == null) {
+				u = map.getMediaURLHttps();
+
+				if (u == null)
+					u = map.getDisplayURL();
+
+				if (u == null)
+					continue;
+			}
+			urls.add(u);
 		}
 
 		// Find the URLs in the raw text
