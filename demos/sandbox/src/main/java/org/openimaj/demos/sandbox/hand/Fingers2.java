@@ -29,9 +29,9 @@
  */
 package org.openimaj.demos.sandbox.hand;
 
-import gnu.io.SerialPort;
-
 import javax.swing.JFrame;
+
+import jssc.SerialPort;
 
 import org.openimaj.hardware.serial.SerialDevice;
 import org.openimaj.image.DisplayUtilities;

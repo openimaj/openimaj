@@ -29,7 +29,7 @@
  */
 package org.openimaj.demos.servotrack;
 
-import gnu.io.SerialPort;
+import jssc.SerialPort;
 
 import org.openimaj.hardware.serial.SerialDevice;
 
