@@ -57,7 +57,7 @@ public class SerialReader implements SerialPortEventListener
 	@Override
 	public void serialEvent(SerialPortEvent event)
 	{
-		if (!event.isRXCHAR())
+		if (event != null && !event.isRXCHAR())
 			return;
 
 		try
