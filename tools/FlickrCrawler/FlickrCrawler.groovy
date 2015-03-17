@@ -39,9 +39,9 @@ import com.flickr4java.flickr.REST
 import com.flickr4java.flickr.photos.SearchParameters
 import com.flickr4java.flickr.photos.Extras
 
-@GrabResolver(name='jboss', root='http://repository.jboss.org/maven2/')
-@Grab(group='org.codehaus.gpars', module='gpars', version='0.9')
-import static groovyx.gpars.Parallelizer.*
+//@GrabResolver(name='jboss', root='http://repository.jboss.org/maven2/')
+@Grab(group='org.codehaus.gpars', module='gpars', version='1.2.0')
+import static groovyx.gpars.GParsPool.*
 
 //Configure crawler defaults
 defaultConf = """
@@ -59,6 +59,7 @@ defaultConf = """
     	concurrentDownloads=16
     	pagingLimit=20
         maxretrytime=300000
+        skipDownloadImages=false
     	data {
     	    info=true
     	    exif=true
@@ -250,7 +251,7 @@ while (true) {
     def lastDate = crawlState.lastDate
 
     //now loop over the images
-    doParallel(crawlConf.crawler.concurrentDownloads) {
+    withPool(crawlConf.crawler.concurrentDownloads) {
         results.eachParallel { r ->
             synchronized(crawlState) {
                 if (crawlConf.crawler.maximages>0 && crawlState.imageCount >= crawlConf.crawler.maximages) {
@@ -285,28 +286,29 @@ while (true) {
                     currentDirs << imageDir
                 }
                 
-                imageDir.mkdirs()                
-
                 String csv = makeCSV(r, imageDir)
                 synchronized(imagelog) {
                     imagelog.append(csv)
                 }
                 
-                //Download images
-                //Forced download of given sizes
-                if (crawlConf.crawler.images.original) saveImage(imageDir, r, "original")
-                if (crawlConf.crawler.images.large) saveImage(imageDir, r, "large")
-                if (crawlConf.crawler.images.medium) saveImage(imageDir, r, "medium")
-                if (crawlConf.crawler.images.small) saveImage(imageDir, r, "small")
-                if (crawlConf.crawler.images.thumbnail) saveImage(imageDir, r, "thumbnail")
-                if (crawlConf.crawler.images.smallSquare) saveImage(imageDir, r, "smallSquare")
-        
-                //Try and get first targetSize, or an alternative one if not available
-                for (String size : crawlConf.crawler.images.targetSize) {
-                    if (saveImage(imageDir, r, size, true))
-                        break
+                if (!crawlConf.crawler.skipDownloadImages) {
+                    //Download images
+                    imageDir.mkdirs()                
+                    //Forced download of given sizes
+                    if (crawlConf.crawler.images.original) saveImage(imageDir, r, "original")
+                    if (crawlConf.crawler.images.large) saveImage(imageDir, r, "large")
+                    if (crawlConf.crawler.images.medium) saveImage(imageDir, r, "medium")
+                    if (crawlConf.crawler.images.small) saveImage(imageDir, r, "small")
+                    if (crawlConf.crawler.images.thumbnail) saveImage(imageDir, r, "thumbnail")
+                    if (crawlConf.crawler.images.smallSquare) saveImage(imageDir, r, "smallSquare")
+            
+                    //Try and get first targetSize, or an alternative one if not available
+                    for (String size : crawlConf.crawler.images.targetSize) {
+                        if (saveImage(imageDir, r, size, true))
+                            break
+                    }
                 }
-                
+
                 //getInfo
                 if (crawlConf.crawler.data.info) {
                     saveData(imageDir, "info.xml", "http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=${crawlConf.crawler.apikey}&photo_id=${r.id}")
