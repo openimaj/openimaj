@@ -1,3 +1,6 @@
+.settings
+.project
+.classpath
 target/
 site/src/site/resources/bibliography.bib
 site/src/site/resources/bibliography.txt
