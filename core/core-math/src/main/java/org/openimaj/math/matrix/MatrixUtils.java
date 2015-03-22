@@ -1445,7 +1445,7 @@ public class MatrixUtils {
 	 *            the matrix
 	 * @return the sparsity
 	 */
-	public static double sparcity(SparseMatrix matrix) {
+	public static double sparsity(SparseMatrix matrix) {
 		final double density = matrix.used() / ((double) matrix.rowCount() * (double) matrix.columnCount());
 		return 1 - density;
 	}
