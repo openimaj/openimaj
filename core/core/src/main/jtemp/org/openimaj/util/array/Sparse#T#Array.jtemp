@@ -388,7 +388,7 @@ public abstract class Sparse#T#Array implements ReadWriteable, Concatenatable<Sp
 	 * @return this
 	 */
 	public Sparse#T#Array addInplace(Sparse#T#Array vector) {
-		for (Entry e : entries()) {
+		for (Entry e : vector.entries()) {
 			increment(e.index, e.value);
 		}
 
@@ -412,7 +412,7 @@ public abstract class Sparse#T#Array implements ReadWriteable, Concatenatable<Sp
 	 * @return this
 	 */
 	public Sparse#T#Array subtractInplace(Sparse#T#Array vector) {
-		for (Entry e : entries()) {
+		for (Entry e : vector.entries()) {
 			increment(e.index, (#t#)(-e.value));
 		}
 
@@ -437,7 +437,7 @@ public abstract class Sparse#T#Array implements ReadWriteable, Concatenatable<Sp
 	public Sparse#T#Array multiplyInplace(double value) {
 		for (Entry e : entries()) {
 			if (this.isUsed(e.index))
-				set(e.index, (#t#)(get(e.index) * e.value));
+				set(e.index, (#t#)(value * e.value));
 		}
 
 		return this;
