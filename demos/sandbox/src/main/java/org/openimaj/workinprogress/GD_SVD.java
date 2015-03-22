@@ -45,7 +45,7 @@ public class GD_SVD {
 	private Matrix SM;
 
 	public GD_SVD(Matrix MM, int maxOrder) {
-		final Random random = new Random();
+		final Random random = new Random(0);
 		final double initValue = 1 / Math.sqrt(maxOrder);
 
 		final int m = MM.getRowDimension();
@@ -75,6 +75,7 @@ public class GD_SVD {
 							pred += Uprime[i][kk] * Vprime[j][kk];
 
 						final double error = M[i][j] - pred;
+						System.out.println("Error: " + error + " " + M[i][j]);
 						sq += error * error;
 						final double uTemp = Uprime[i][k];
 						final double vTemp = Vprime[j][k];
@@ -84,6 +85,9 @@ public class GD_SVD {
 						// - regularization * vTemp );
 						Uprime[i][k] += learningRate * (error * vTemp);
 						Vprime[j][k] += learningRate * (error * uTemp);
+
+						// System.out.println(i + " " + learningRate * (error *
+						// vTemp));
 					}
 				}
 
@@ -101,33 +105,42 @@ public class GD_SVD {
 		VM = new Matrix(maxOrder, n);
 		final double[][] V = VM.getArray();
 		for (int i = 0; i < maxOrder; i++) {
+			double un = 0;
+			double vn = 0;
 			for (int j = 0; j < m; j++) {
-				S[i][i] += (Uprime[j][i] * Uprime[j][i]);
-			}
-			S[i][i] = Math.sqrt(S[i][i]);
-			for (int j = 0; j < m; j++) {
-				U[j][i] = Uprime[j][i] / S[i][i];
+				un += (Uprime[j][i] * Uprime[j][i]);
 			}
 			for (int j = 0; j < n; j++) {
-				V[i][j] = Vprime[j][i] / S[i][i];
+				vn += (Vprime[j][i] * Vprime[j][i]);
 			}
-			S[i][i] = S[i][i] * S[i][i];
-		}
 
+			un = Math.sqrt(un);
+			vn = Math.sqrt(vn);
+
+			for (int j = 0; j < m; j++) {
+				U[j][i] = Uprime[j][i] / un;
+			}
+			for (int j = 0; j < n; j++) {
+				V[i][j] = Vprime[j][i] / vn;
+			}
+
+			S[i][i] = un * vn;
+		}
 	}
 
 	public static void main(String[] args) {
-		final Matrix m = Matrix.random(40, 40);
+		// final Matrix m = Matrix.random(10, 10);
+		final Matrix m = new Matrix(new double[][] { { 0.5, 0.4 }, { 0.1, 0.7 } });
 
-		final GD_SVD gdsvd = new GD_SVD(m, 10);
+		final GD_SVD gdsvd = new GD_SVD(m, 2);
 
 		// m.print(5, 5);
 		// gdsvd.UprimeM.print(5, 5);
 		// gdsvd.UprimeM.times(gdsvd.VprimeM.transpose()).print(5, 5);
 		// gdsvd.UM.times(gdsvd.SM.times(gdsvd.VM)).print(5, 5);
-		gdsvd.UM.print(5, 5);
-		// gdsvd.SM.print(5, 5);
-		gdsvd.VM.print(5, 5);
+		// gdsvd.UM.print(5, 5);
+		gdsvd.SM.print(5, 5);
+		// gdsvd.VM.print(5, 5);
 
 		// final ThinSingularValueDecomposition tsvd = new
 		// ThinSingularValueDecomposition(m, 2);
