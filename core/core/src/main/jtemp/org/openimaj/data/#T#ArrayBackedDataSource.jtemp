@@ -84,7 +84,7 @@ public class #T#ArrayBackedDataSource implements DataSource<#t#[]> {
 	}
 
 	@Override
-	public int numRows() {
+	public int size() {
 		return data.length;
 	}
 	
@@ -96,5 +96,10 @@ public class #T#ArrayBackedDataSource implements DataSource<#t#[]> {
 	@Override
 	public Iterator<#t#[]> iterator() {
 		return new ArrayIterator<#t#[]>(data);
+	}
+	
+	@Override
+	public #t#[][] createTemporaryArray(int size) {
+		return new #t#[size][data[0].length];
 	}
 }

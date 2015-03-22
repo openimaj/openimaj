@@ -157,7 +157,7 @@ public class Incremental#T#ADCNearestNeighbours
 		this.pq = pq;
 		this.ndims = dataPoints.getData(0).length;
 
-		final int size = dataPoints.numRows();
+		final int size = dataPoints.size();
 		this.data = new ArrayList<byte[]>(size);
 		for (int i = 0; i < size; i++) {
 			data.add(pq.quantise(dataPoints.getData(i)));

@@ -151,13 +151,18 @@ public class BigDataClusterExample {
 		}
 
 		@Override
-		public int numRows() {
+		public int size() {
 			return numItems;
 		}
 
 		@Override
 		public void close() throws IOException {
 			raf.close();
+		}
+
+		@Override
+		public byte[][] createTemporaryArray(int size) {
+			return new byte[size][dimensionality];
 		}
 	}
 

@@ -62,7 +62,6 @@ AbstractMultiListDataSource<F, T>
 	 * @param data
 	 *            the data
 	 */
-	@SuppressWarnings("unchecked")
 	public LocalFeatureListDataSource(LocalFeatureList<T> data) {
 		super(data);
 	}

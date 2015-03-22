@@ -259,7 +259,7 @@ public class IntRAC
 
 	@Override
 	public IntRAC cluster(DataSource<int[]> data) {
-		final int[][] dataArr = new int[data.numRows()][data.numDimensions()];
+		final int[][] dataArr = new int[data.size()][data.numDimensions()];
 
 		return cluster(dataArr);
 	}

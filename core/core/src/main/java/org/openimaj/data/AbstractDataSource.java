@@ -50,7 +50,7 @@ public abstract class AbstractDataSource<DATATYPE> implements DataSource<DATATYP
 
 			@Override
 			public boolean hasNext() {
-				return (index + 1) < numRows();
+				return (index + 1) < size();
 			}
 
 			@Override
@@ -69,7 +69,7 @@ public abstract class AbstractDataSource<DATATYPE> implements DataSource<DATATYP
 
 	@Override
 	public void getRandomRows(DATATYPE[] data) {
-		final int[] rndIndexes = RandomData.getUniqueRandomInts(data.length, 0, numRows());
+		final int[] rndIndexes = RandomData.getUniqueRandomInts(data.length, 0, size());
 
 		for (int i = 0; i < rndIndexes.length; i++)
 			data[i] = getData(rndIndexes[i]);

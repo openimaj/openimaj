@@ -133,7 +133,7 @@ public class Random#T#Clusterer implements SpatialClusterer<#T#CentroidsResult, 
 		int nc = this.K;
 		
 		if (nc == -1) {
-			nc = data.numRows();
+			nc = data.size();
 		}
 		
 		#T#CentroidsResult result = new #T#CentroidsResult();
@@ -141,7 +141,7 @@ public class Random#T#Clusterer implements SpatialClusterer<#T#CentroidsResult, 
 		#t#[][] dataRow = new #t#[1][];
 		
 		for (int i = 0; i < nc; i++) {
-			int dIndex = this.random.nextInt(data.numRows());
+			int dIndex = this.random.nextInt(data.size());
 			dataRow[0] = result.centroids[i];
 			
 			data.getData(dIndex, dIndex+1, dataRow);

@@ -43,9 +43,9 @@ import org.openimaj.util.array.ByteArrayConverter;
 
 /**
  * A batched datasource
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SampleBatchIntDataSource implements DataSource<int[]> {
 	private int total;
@@ -56,7 +56,7 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 
 	/**
 	 * Construct with batches
-	 * 
+	 *
 	 * @param batches
 	 * @throws IOException
 	 */
@@ -69,7 +69,7 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 
 	/**
 	 * Set the random seed
-	 * 
+	 *
 	 * @param seed
 	 */
 	public void setSeed(long seed) {
@@ -96,14 +96,14 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 				final int interestedStart = startDelta < 0 ? 0 : startDelta;
 				final int interestedEnd = stopDelta + sb.getStartIndex() > sb.getEndIndex() ? sb.getEndIndex()
 						- sb.getStartIndex() : stopDelta;
-				final int[][] subSamples = ByteArrayConverter.byteToInt(sb.getStoredSamples(interestedStart,
-						interestedEnd));
+						final int[][] subSamples = ByteArrayConverter.byteToInt(sb.getStoredSamples(interestedStart,
+								interestedEnd));
 
-				for (int i = 0; i < subSamples.length; i++) {
-					System.arraycopy(subSamples[i], 0, output[added + i], 0, subSamples[i].length);
-				}
+						for (int i = 0; i < subSamples.length; i++) {
+							System.arraycopy(subSamples[i], 0, output[added + i], 0, subSamples[i].length);
+						}
 
-				added += subSamples.length;
+						added += subSamples.length;
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
@@ -159,7 +159,7 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 	}
 
 	@Override
-	public int numRows() {
+	public int size() {
 		return total;
 	}
 
@@ -175,5 +175,10 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 	@Override
 	public Iterator<int[]> iterator() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int[][] createTemporaryArray(int size) {
+		return new int[size][dims];
 	}
 }

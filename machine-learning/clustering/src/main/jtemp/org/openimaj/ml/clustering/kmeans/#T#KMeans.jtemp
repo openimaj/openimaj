@@ -266,7 +266,7 @@ import org.openimaj.util.pair.Int#R#Pair;
 		final #t#[][] centroids = result.centroids;
 		final int K = centroids.length;
 		final int D = centroids[0].length;
-		final int N = data.numRows();
+		final int N = data.size();
 		#r# [][] centroids_accum = new #r#[K][D];
 		int [] new_counts = new int[K];
 

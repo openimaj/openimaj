@@ -54,7 +54,7 @@ public class RandomSampleDataSource<DATATYPE> extends IndexedViewDataSource<DATA
 	 *             the datasource being sampled, or less than one.
 	 */
 	public RandomSampleDataSource(DataSource<DATATYPE> dataSource, int requestedSize) {
-		super(dataSource, RandomData.getUniqueRandomInts(requestedSize, 0, dataSource.numRows()));
+		super(dataSource, RandomData.getUniqueRandomInts(requestedSize, 0, dataSource.size()));
 	}
 
 	/**
@@ -71,8 +71,8 @@ public class RandomSampleDataSource<DATATYPE> extends IndexedViewDataSource<DATA
 	 */
 	public RandomSampleDataSource(DataSource<DATATYPE> dataSource, double proportion) {
 		super(dataSource, RandomData.getUniqueRandomInts(
-				(int) (proportion * dataSource.numRows()),
+				(int) (proportion * dataSource.size()),
 				0,
-				dataSource.numRows()));
+				dataSource.size()));
 	}
 }

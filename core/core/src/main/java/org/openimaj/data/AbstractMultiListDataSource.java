@@ -29,6 +29,7 @@
  */
 package org.openimaj.data;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -113,12 +114,18 @@ public abstract class AbstractMultiListDataSource<DATATYPE, ELEMENTTYPE> extends
 	protected abstract DATATYPE convert(ELEMENTTYPE ele);
 
 	@Override
-	public int numRows() {
+	public int size() {
 		int sum = 0;
 
 		for (final List<ELEMENTTYPE> d : data)
 			sum += d.size();
 
 		return sum;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public DATATYPE[] createTemporaryArray(int size) {
+		return (DATATYPE[]) Array.newInstance(getData(0).getClass(), size);
 	}
 }

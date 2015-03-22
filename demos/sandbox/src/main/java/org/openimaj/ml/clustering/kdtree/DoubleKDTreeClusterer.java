@@ -175,7 +175,7 @@ public class DoubleKDTreeClusterer implements SpatialClusterer<KDTreeClusters, d
 
 	@Override
 	public KDTreeClusters cluster(DataSource<double[]> data) {
-		double[][] arrdata = new double[data.numRows()][];
+		double[][] arrdata = new double[data.size()][];
 		for (int i = 0; i < arrdata.length; i++) {
 			arrdata[i] = data.getData(i);
 		}

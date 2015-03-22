@@ -200,7 +200,7 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 			final TIntObjectHashMap<TIntArrayList> assignments = new TIntObjectHashMap<TIntArrayList>();
 
 			final #t#[][] tmp = new #t#[1][M];
-			for (int i = 0; i < data.numRows(); i++) {
+			for (int i = 0; i < data.size(); i++) {
 				data.getData(i, i + 1, tmp);
 				final int asgn = assigner.assign(tmp[0]);
 
@@ -214,7 +214,7 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 				final int[] indexes = assignments.get(k).toArray();
 				final DataSource<#t#[]> partition = new IndexedViewDataSource<#t#[]>(data, indexes);
 
-				final int partitionK = Math.min(K, partition.numRows());
+				final int partitionK = Math.min(K, partition.size());
 
 				node.children[k] = trainLevel(partition, partitionK, height - 1);
 			}
@@ -248,7 +248,7 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 		result.K = K;
 		result.M = M;
 		result.depth = depth;
-		result.root = trainLevel(data, Math.min(K, data.numRows()), depth);
+		result.root = trainLevel(data, Math.min(K, data.size()), depth);
 		
 		return result;
 	}

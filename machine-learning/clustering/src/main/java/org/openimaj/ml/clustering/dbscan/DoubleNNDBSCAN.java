@@ -108,7 +108,7 @@ public class DoubleNNDBSCAN extends DBSCAN implements SpatialClusterer<DoubleDBS
 
 	@Override
 	public DoubleDBSCANClusters cluster(DataSource<double[]> data) {
-		double[][] allData = new double[data.numRows()][];
+		double[][] allData = new double[data.size()][];
 		Iterator<double[]> iterator = data.iterator();
 		for (int i = 0; i < allData.length; i++) {
 			allData[i] = iterator.next();

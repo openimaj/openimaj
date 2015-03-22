@@ -34,9 +34,9 @@ import java.lang.reflect.Array;
 /**
  * This {@link DataSource} provides an indexed view of a subset of another
  * {@link DataSource}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <DATATYPE>
  *            the data type which can be returned
  */
@@ -47,7 +47,7 @@ public class IndexedViewDataSource<DATATYPE> extends AbstractDataSource<DATATYPE
 	/**
 	 * Construct a new {@link IndexedViewDataSource} with the given inner data
 	 * and indexes into the inner data.
-	 * 
+	 *
 	 * @param dataSource
 	 *            the inner {@link DataSource}.
 	 * @param indexes
@@ -86,7 +86,12 @@ public class IndexedViewDataSource<DATATYPE> extends AbstractDataSource<DATATYPE
 	}
 
 	@Override
-	public int numRows() {
+	public int size() {
 		return indexes.length;
+	}
+
+	@Override
+	public DATATYPE[] createTemporaryArray(int size) {
+		return innerSource.createTemporaryArray(size);
 	}
 }

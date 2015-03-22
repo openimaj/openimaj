@@ -42,9 +42,9 @@ import org.openimaj.data.RandomData;
 
 /**
  * A batched datasource
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class SampleBatchByteDataSource implements DataSource<byte[]> {
 	private int total;
@@ -55,7 +55,7 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 
 	/**
 	 * Construct with batches
-	 * 
+	 *
 	 * @param batches
 	 * @throws IOException
 	 */
@@ -68,7 +68,7 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 
 	/**
 	 * Set the random seed
-	 * 
+	 *
 	 * @param seed
 	 */
 	public void setSeed(long seed) {
@@ -94,17 +94,17 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 				final int interestedStart = startDelta < 0 ? 0 : startDelta;
 				final int interestedEnd = stopDelta + sb.getStartIndex() > sb.getEndIndex() ? sb.getEndIndex()
 						- sb.getStartIndex() : stopDelta;
-				if (interestedEnd - interestedStart == 0)
-					continue;
-				// System.out.print("\rGetting " + interestedStart + "->" +
-				// interestedEnd + " from" + sb.sampleSource.getName());
-				final byte[][] subSamples = sb.getStoredSamples(interestedStart, interestedEnd);
+						if (interestedEnd - interestedStart == 0)
+							continue;
+						// System.out.print("\rGetting " + interestedStart + "->" +
+						// interestedEnd + " from" + sb.sampleSource.getName());
+						final byte[][] subSamples = sb.getStoredSamples(interestedStart, interestedEnd);
 
-				for (int i = 0; i < subSamples.length; i++) {
-					System.arraycopy(subSamples[i], 0, output[added + i], 0, subSamples[i].length);
-				}
+						for (int i = 0; i < subSamples.length; i++) {
+							System.arraycopy(subSamples[i], 0, output[added + i], 0, subSamples[i].length);
+						}
 
-				added += subSamples.length;
+						added += subSamples.length;
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
@@ -161,7 +161,7 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 	}
 
 	@Override
-	public int numRows() {
+	public int size() {
 		return total;
 	}
 
@@ -177,5 +177,10 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 	@Override
 	public Iterator<byte[]> iterator() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public byte[][] createTemporaryArray(int size) {
+		return new byte[size][dims];
 	}
 }

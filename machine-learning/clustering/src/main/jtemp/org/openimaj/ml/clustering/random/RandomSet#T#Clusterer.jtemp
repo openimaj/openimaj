@@ -115,7 +115,7 @@ public class RandomSet#T#Clusterer extends Random#T#Clusterer {
 		#T#CentroidsResult result = new #T#CentroidsResult();
 		
 		if(K == -1) {
-			final int nc = data.numRows();
+			final int nc = data.size();
 			result.centroids = new #t#[nc][data.numDimensions()];
 		} else {
 			result.centroids = new #t#[K][data.numDimensions()];
