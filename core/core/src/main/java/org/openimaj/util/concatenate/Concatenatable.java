@@ -50,7 +50,7 @@ public interface Concatenatable<IN, OUT> {
 	 *            the inputs
 	 * @return the concatenated object
 	 */
-	public OUT concatenate(IN... ins);
+	public OUT concatenate(@SuppressWarnings("unchecked") IN... ins);
 
 	/**
 	 * Concatenate all the inputs with this, returning a new object that is the
