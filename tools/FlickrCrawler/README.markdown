@@ -43,6 +43,7 @@ crawler {
 	concurrentDownloads=16  //max number of concurrent image downloads
 	pagingLimit=20          //max number of pages to look through
 	maxretrytime=300000     //maximum amout of time between retries
+    skipDownloadImages=false //skip image downloading
 	data {                  
 	    info=true           //download all the information about each image
 	    exif=true           //download all the exif information about each image
