@@ -42,6 +42,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -58,17 +59,17 @@ import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 /**
  * {@link SequenceFileTool} is a commandline tool for creating, extracting and
  * inspecting Hadoop {@link SequenceFile}s.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class SequenceFileTool {
 	/**
 	 * What to print when getting info
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	enum InfoModeOptions {
 		GUID, METADATA, NRECORDS, COMPRESSION_CODEC, COMPRESSION_TYPE;
@@ -76,10 +77,10 @@ public class SequenceFileTool {
 
 	/**
 	 * Strategies for key naming
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	private enum KeyNameStrategy {
 		MD5UUID {
@@ -166,8 +167,8 @@ public class SequenceFileTool {
 				usage = "Recurse into directories inside input directories")
 		boolean recurse = false;
 
-		@Option(name = "--key-name-strategy", aliases = "-kns", required = false, usage = "Don't rename keys")
-		KeyNameStrategy strategy = KeyNameStrategy.MD5UUID;
+		@Option(name = "--key-name-strategy", aliases = "-kns", required = false, usage = "Strategy for naming keys")
+		KeyNameStrategy strategy = KeyNameStrategy.FILENAME;
 
 		@Option(name = "--output", aliases = "-o", required = false, usage = "Output directory (path or uri).")
 		String outputPathOrUri = "./";
@@ -406,7 +407,7 @@ public class SequenceFileTool {
 
 	/**
 	 * Tool operation modes.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
@@ -448,7 +449,7 @@ public class SequenceFileTool {
 
 	/**
 	 * Execute the tool in the mode set through the commandline options
-	 * 
+	 *
 	 * @throws Exception
 	 *             if an error occurs
 	 */
@@ -458,7 +459,7 @@ public class SequenceFileTool {
 
 	/**
 	 * Tool main method.
-	 * 
+	 *
 	 * @param args
 	 *            the tool arguments
 	 * @throws Exception
