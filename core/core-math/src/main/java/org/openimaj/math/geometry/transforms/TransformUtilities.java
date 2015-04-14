@@ -47,10 +47,10 @@ import Jama.SingularValueDecomposition;
 
 /**
  * A collection of static methods for creating transform matrices.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class TransformUtilities {
 
@@ -59,7 +59,7 @@ public class TransformUtilities {
 
 	/**
 	 * Construct a rotation about 0, 0.
-	 * 
+	 *
 	 * @param rot
 	 *            The amount of rotation in radians.
 	 * @return The rotation matrix.
@@ -76,7 +76,7 @@ public class TransformUtilities {
 	/**
 	 * Given two points, get a transform matrix that takes points from point a
 	 * to point b
-	 * 
+	 *
 	 * @param from
 	 *            from this point
 	 * @param to
@@ -94,7 +94,7 @@ public class TransformUtilities {
 
 	/**
 	 * Construct a translation.
-	 * 
+	 *
 	 * @param x
 	 *            The amount to translate in the x-direction.
 	 * @param y
@@ -113,7 +113,7 @@ public class TransformUtilities {
 	/**
 	 * Construct a rotation about the centre of the rectangle defined by width
 	 * and height (i.e. width/2, height/2).
-	 * 
+	 *
 	 * @param rot
 	 *            The amount of rotation in radians.
 	 * @param width
@@ -131,7 +131,7 @@ public class TransformUtilities {
 
 	/**
 	 * Create a scaling centered around a point.
-	 * 
+	 *
 	 * @param sx
 	 *            x-scale
 	 * @param sy
@@ -151,7 +151,7 @@ public class TransformUtilities {
 
 	/**
 	 * Create a scaling centered around a point.
-	 * 
+	 *
 	 * @param sx
 	 *            x-scale
 	 * @param sy
@@ -170,7 +170,7 @@ public class TransformUtilities {
 	/**
 	 * Construct a rotation about the centre of the rectangle defined by width
 	 * and height (i.e. width/2, height/2).
-	 * 
+	 *
 	 * @param rot
 	 *            The amount of rotation in radians.
 	 * @param tx
@@ -190,7 +190,7 @@ public class TransformUtilities {
 	 * Find the affine transform between pairs of matching points in
 	 * n-dimensional space. The transform is the "best" possible in the
 	 * least-squares sense.
-	 * 
+	 *
 	 * @param q
 	 *            first set of points
 	 * @param p
@@ -208,8 +208,8 @@ public class TransformUtilities {
 			volume = "9",
 			number = "1"
 			)
-			public static Matrix
-			affineMatrixND(double[][] q, double[][] p)
+	public static Matrix
+	affineMatrixND(double[][] q, double[][] p)
 	{
 		final int dim = q[0].length;
 
@@ -254,7 +254,7 @@ public class TransformUtilities {
 	 * Find the affine transform between pairs of matching points in
 	 * n-dimensional space. The transform is the "best" possible in the
 	 * least-squares sense.
-	 * 
+	 *
 	 * @param data
 	 *            pairs of matching n-dimensional {@link Coordinate}s
 	 * @return least-squares estimated affine transform matrix
@@ -270,8 +270,8 @@ public class TransformUtilities {
 			volume = "9",
 			number = "1"
 			)
-			public static Matrix
-			affineMatrixND(List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data)
+	public static Matrix
+	affineMatrixND(List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data)
 	{
 		final int dim = data.get(0).firstObject().getDimensions();
 		final int nItems = data.size();
@@ -319,7 +319,7 @@ public class TransformUtilities {
 	 * Compute the least-squares rigid alignment between two sets of matching
 	 * points in N-dimensional space. Allows scaling and translation but nothing
 	 * else.
-	 * 
+	 *
 	 * @param q
 	 *            first set of points
 	 * @param p
@@ -336,7 +336,7 @@ public class TransformUtilities {
 			number = "7",
 			volume = "5"
 			)
-			public static Matrix rigidMatrix(double[][] q, double[][] p) {
+	public static Matrix rigidMatrix(double[][] q, double[][] p) {
 		final int dim = q[0].length;
 		final int nitems = q.length;
 
@@ -383,7 +383,7 @@ public class TransformUtilities {
 	 * Compute the least-squares rigid alignment between two sets of matching
 	 * points in N-dimensional space. Allows scaling and translation but nothing
 	 * else.
-	 * 
+	 *
 	 * @param data
 	 *            set of points matching points
 	 * @return rigid transformation matrix.
@@ -398,8 +398,8 @@ public class TransformUtilities {
 			number = "7",
 			volume = "5"
 			)
-			public static Matrix rigidMatrix(
-					List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data)
+	public static Matrix rigidMatrix(
+			List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data)
 	{
 		final int dim = data.get(0).firstObject().getDimensions();
 		final int nitems = data.size();
@@ -447,7 +447,7 @@ public class TransformUtilities {
 	/**
 	 * Construct an affine transform using a least-squares fit of the provided
 	 * point pairs. There must be at least 3 point pairs for this to work.
-	 * 
+	 *
 	 * @param data
 	 *            Data to calculate affine matrix from.
 	 * @return an affine transform matrix.
@@ -502,7 +502,7 @@ public class TransformUtilities {
 	/**
 	 * Construct a homogeneous scaling transform with the given amounts of
 	 * scaling.
-	 * 
+	 *
 	 * @param d
 	 *            Scaling in the x-direction.
 	 * @param e
@@ -523,13 +523,13 @@ public class TransformUtilities {
 	 * point is centered about the origin and also scaled be be within
 	 * Math.sqrt(2) of the origin. This corrects for some errors which occured
 	 * when distances between matched points were extremely large.
-	 * 
+	 *
 	 * @param data
 	 * @return the normalisation data
 	 */
 	public static Pair<Matrix> getNormalisations(
 			List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data)
-	{
+			{
 		final Point2dImpl firstMean = new Point2dImpl(0, 0), secondMean = new Point2dImpl(0, 0);
 		for (final IndependentPair<? extends Point2d, ? extends Point2d> pair : data) {
 			firstMean.x += pair.firstObject().getX();
@@ -577,18 +577,18 @@ public class TransformUtilities {
 		});
 
 		return new Pair<Matrix>(firstMatrix, secondMatrix);
-	}
+			}
 
 	/**
 	 * Normalise the data, returning a normalised copy.
-	 * 
+	 *
 	 * @param data
 	 * @param normalisations
 	 * @return the normalised data
 	 */
 	public static List<? extends IndependentPair<Point2d, Point2d>> normalise(
 			List<? extends IndependentPair<Point2d, Point2d>> data, Pair<Matrix> normalisations)
-	{
+			{
 		final List<Pair<Point2d>> normData = new ArrayList<Pair<Point2d>>();
 
 		for (int i = 0; i < data.size(); i++) {
@@ -599,11 +599,11 @@ public class TransformUtilities {
 		}
 
 		return normData;
-	}
+			}
 
 	/**
 	 * Normalise the data, returning a normalised copy.
-	 * 
+	 *
 	 * @param data
 	 *            the data
 	 * @param normalisations
@@ -612,16 +612,16 @@ public class TransformUtilities {
 	 */
 	public static IndependentPair<Point2d, Point2d> normalise(IndependentPair<Point2d, Point2d> data,
 			Pair<Matrix> normalisations)
-	{
+			{
 		final Point2d p1 = data.firstObject().transform(normalisations.firstObject());
 		final Point2d p2 = data.secondObject().transform(normalisations.secondObject());
 
 		return new Pair<Point2d>(p1, p2);
-	}
+			}
 
 	/**
 	 * The normalised 8-point algorithm for estimating the Fundamental matrix
-	 * 
+	 *
 	 * @param data
 	 * @return the estimated Fundamental matrix
 	 */
@@ -670,7 +670,7 @@ public class TransformUtilities {
 	/**
 	 * The un-normalised 8-point algorithm for estimation of the Fundamental
 	 * matrix. Only use with pre-normalised data!
-	 * 
+	 *
 	 * @param data
 	 * @return the estimated Fundamental matrix
 	 */
@@ -720,7 +720,7 @@ public class TransformUtilities {
 	 * points. The data is automatically normalised to prevent numerical
 	 * problems. The returned homography is the one that can be applied to the
 	 * first set of points to generate the second set.
-	 * 
+	 *
 	 * @param data
 	 *            the matching points
 	 * @return the estimated homography
@@ -790,7 +790,7 @@ public class TransformUtilities {
 	 * points. This method is potentially numerically unstable if the data has
 	 * not been pre-normalised (using {@link #normalise(List, Pair)}). For
 	 * un-normalised data, use {@link #homographyMatrixNorm(List)} instead.
-	 * 
+	 *
 	 * @param data
 	 *            the matching points
 	 * @return the estimated homography
@@ -852,13 +852,13 @@ public class TransformUtilities {
 	/**
 	 * Given a point x and y, calculate the 2x2 affine transform component of
 	 * the 3x3 homography provided such that:
-	 * 
+	 *
 	 * H = AH_p H = { {h11,h12,h13}, {h21,h22,h23}, {h31,h32,h33} } H_p = {
 	 * {1,0,0}, {0,1,0}, {h31,h32,1} } A = { {a11,a12,a13}, {a21,a22,a23},
 	 * {0,0,1} }
-	 * 
+	 *
 	 * so
-	 * 
+	 *
 	 * @param homography
 	 * @return the estimated Homography
 	 */
@@ -890,12 +890,12 @@ public class TransformUtilities {
 	/**
 	 * Estimate the closest (in the least-squares sense) affine transform for a
 	 * homography.
-	 * 
+	 *
 	 * @param homography
 	 *            the homography
 	 * @param x
 	 * @param y
-	 * 
+	 *
 	 * @return estimated affine transform.
 	 */
 	public static Matrix homographyToAffine(Matrix homography, double x, double y) {
@@ -934,7 +934,7 @@ public class TransformUtilities {
 
 	/**
 	 * Create a transform to transform from one rectangle to another.
-	 * 
+	 *
 	 * @param from
 	 *            first rectangle
 	 * @param to
@@ -946,8 +946,8 @@ public class TransformUtilities {
 		final double scaleW = to.getWidth() / from.getWidth();
 		final double scaleH = to.getHeight() / from.getHeight();
 
-		return TransformUtilities.translateMatrix(trans.getX(), trans.getY()).times(
-				TransformUtilities.scaleMatrix(scaleW, scaleH));
+		return TransformUtilities.scaleMatrix(scaleW, scaleH).times(
+				TransformUtilities.translateMatrix(trans.getX(), trans.getY()));
 	}
 
 	/**
@@ -957,7 +957,7 @@ public class TransformUtilities {
 	 * <p>
 	 * Fundamentally, this works by performing an SVD of the matrix, setting all
 	 * the singular values to 1 and then reconstructing the input.
-	 * 
+	 *
 	 * @param approx
 	 *            the initial guess
 	 * @return the rotation matrix
@@ -972,7 +972,7 @@ public class TransformUtilities {
 	 * Convert a 3D rotation matrix to a Rodrigues rotation vector, which is
 	 * oriented along the rotation axis, and has magnitude equal to the rotation
 	 * angle.
-	 * 
+	 *
 	 * @param R
 	 *            the rotation matrix
 	 * @return the Rodrigues rotation vector
@@ -993,7 +993,7 @@ public class TransformUtilities {
 
 	/**
 	 * Convert a Rodrigues rotation vector to a rotation matrix.
-	 * 
+	 *
 	 * @param r
 	 *            the Rodrigues rotation vector
 	 * @return the rotation matrix
