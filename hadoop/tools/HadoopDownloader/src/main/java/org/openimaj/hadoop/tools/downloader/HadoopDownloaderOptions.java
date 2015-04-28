@@ -35,6 +35,7 @@ import java.net.URI;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -44,7 +45,7 @@ import org.openimaj.hadoop.tools.downloader.InputMode.Parser;
 
 /**
  * Command-line options for the downloader tool
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HadoopDownloaderOptions {
@@ -103,7 +104,7 @@ public class HadoopDownloaderOptions {
 
 	/**
 	 * Construct with the given arguments
-	 * 
+	 *
 	 * @param args
 	 *            the arguments
 	 */
@@ -113,7 +114,7 @@ public class HadoopDownloaderOptions {
 
 	/**
 	 * Prepare the options
-	 * 
+	 *
 	 * @param initial
 	 *            true if initial setup is being performed; false if inside the
 	 *            mapper
@@ -148,7 +149,7 @@ public class HadoopDownloaderOptions {
 
 	/**
 	 * Get the input file(s) containing the URLs
-	 * 
+	 *
 	 * @return the input paths
 	 * @throws IOException
 	 */
@@ -201,7 +202,7 @@ public class HadoopDownloaderOptions {
 	/**
 	 * Get the number of threads to use in the mapper. If >1 a
 	 * {@link MultithreadedMapper} will be used.
-	 * 
+	 *
 	 * @return number of threads to use
 	 */
 	public int getNumberOfThreads() {
