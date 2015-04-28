@@ -39,7 +39,7 @@ import Jama.Matrix;
 
 /**
  * Simple concrete implementation of a three dimensional point.
- * 
+ *
  * @author Jonathon Hare
  */
 public class Point3dImpl implements Point3d, Cloneable {
@@ -60,7 +60,7 @@ public class Point3dImpl implements Point3d, Cloneable {
 
 	/**
 	 * Construct a Point3dImpl with the given (x, y, z) coordinates
-	 * 
+	 *
 	 * @param x
 	 *            x-ordinate
 	 * @param y
@@ -78,7 +78,7 @@ public class Point3dImpl implements Point3d, Cloneable {
 	/**
 	 * Construct a Point3dImpl with the given (x, y, z) coordinates packed into
 	 * an array
-	 * 
+	 *
 	 * @param array
 	 *            the coordinates ([x, y, z])
 	 */
@@ -92,7 +92,7 @@ public class Point3dImpl implements Point3d, Cloneable {
 	/**
 	 * Construct a Point3dImpl with the (x,y,z) coordinates given via another
 	 * point.
-	 * 
+	 *
 	 * @param p
 	 *            The point to copy from.
 	 */
@@ -274,10 +274,20 @@ public class Point3dImpl implements Point3d, Cloneable {
 
 	/**
 	 * Create a random point in ([0..1], [0..1], [0..1]).
-	 * 
+	 *
 	 * @return random point.
 	 */
 	public static Point3d createRandomPoint() {
 		return new Point3dImpl(Math.random(), Math.random(), Math.random());
+	}
+
+	@Override
+	public void setOrdinate(int dimension, Number value) {
+		if (dimension == 0)
+			x = value.floatValue();
+		if (dimension == 1)
+			y = value.floatValue();
+		if (dimension == 2)
+			z = value.floatValue();
 	}
 }

@@ -27,35 +27,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.math.geometry.shape;
+package org.openimaj.math.geometry.point;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openimaj.math.geometry.GeometricObject;
+import org.openimaj.math.geometry.GeometricObject2d;
 import org.openimaj.math.geometry.line.Line2d;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.util.GrahamScan;
 
 import Jama.Matrix;
 
 /**
- * A base implementation of a {@link GeometricObject} that is a set of points in
- * space.
- * 
+ * A base implementation of a {@link GeometricObject2d} that is a <b>set</b> of
+ * points in space. Even though the points are backed by a list, the class
+ * itself does not make any assumptions about the order of the points (i.e. to
+ * determine connectedness), however, subclasses might.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
  */
-public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable {
+public class PointList implements GeometricObject2d, Iterable<Point2d>, Cloneable {
 	/** The points in the {@link PointList} */
 	public List<Point2d> points = new ArrayList<Point2d>();
 
 	/**
 	 * Construct a {@link PointList} from points
-	 * 
+	 *
 	 * @param points
 	 *            the points
 	 */
@@ -66,7 +67,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 
 	/**
 	 * Construct a {@link PointList} from points
-	 * 
+	 *
 	 * @param points
 	 *            the points
 	 */
@@ -77,7 +78,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Construct a {@link PointList} from the points, possibly copying the
 	 * points first
-	 * 
+	 *
 	 * @param points
 	 *            the points
 	 * @param copy
@@ -89,7 +90,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 		else
 		{
 			for (final Point2d p : points)
-				this.points.add(new Point2dImpl(p.getX(), p.getY()));
+				this.points.add(p.copy());
 		}
 	}
 
@@ -107,7 +108,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Rotate the {@link PointList} about the given origin with the given angle
 	 * (in radians)
-	 * 
+	 *
 	 * @param origin
 	 *            the origin of the rotation
 	 * @param angle
@@ -121,7 +122,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Rotate the {@link PointList} about (0,0) with the given angle (in
 	 * radians)
-	 * 
+	 *
 	 * @param angle
 	 *            the angle in radians
 	 */
@@ -132,7 +133,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Compute the regular (oriented to the axes) bounding box of the
 	 * {@link PointList}.
-	 * 
+	 *
 	 * @return the regular bounding box
 	 */
 	@Override
@@ -155,7 +156,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 
 	/**
 	 * Translate the {@link PointList}s position
-	 * 
+	 *
 	 * @param x
 	 *            x-translation
 	 * @param y
@@ -172,7 +173,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Scale the {@link PointList} by the given amount about (0,0). Scalefactors
 	 * between 0 and 1 shrink the {@link PointList}.
-	 * 
+	 *
 	 * @param sc
 	 *            the scale factor.
 	 */
@@ -188,7 +189,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	 * Scale the {@link PointList} only in the x-direction by the given amount
 	 * about (0,0). Scale factors between 0 and 1 will shrink the
 	 * {@link PointList}
-	 * 
+	 *
 	 * @param sc
 	 *            The scale factor
 	 * @return this {@link PointList}
@@ -205,7 +206,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	 * Scale the {@link PointList} only in the y-direction by the given amount
 	 * about (0,0). Scale factors between 0 and 1 will shrink the
 	 * {@link PointList}
-	 * 
+	 *
 	 * @param sc
 	 *            The scale factor
 	 * @return this {@link PointList}
@@ -221,7 +222,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Scale the {@link PointList} by the given amount about (0,0). Scale
 	 * factors between 0 and 1 shrink the {@link PointList}.
-	 * 
+	 *
 	 * @param scx
 	 *            the scale factor in the x direction
 	 * @param scy
@@ -240,7 +241,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Scale the {@link PointList} by the given amount about the given point.
 	 * Scalefactors between 0 and 1 shrink the {@link PointList}.
-	 * 
+	 *
 	 * @param centre
 	 *            the centre of the scaling operation
 	 * @param sc
@@ -261,7 +262,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Scale the {@link PointList} about its centre of gravity. Scalefactors
 	 * between 0 and 1 shrink the {@link PointList}.
-	 * 
+	 *
 	 * @param sc
 	 *            the scale factor
 	 */
@@ -276,7 +277,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 
 	/**
 	 * Get the centre of gravity of the {@link PointList}
-	 * 
+	 *
 	 * @return the centre of gravity of the {@link PointList}
 	 */
 	@Override
@@ -352,7 +353,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Apply a 3x3 transform matrix to a copy of the {@link PointList} and
 	 * return it
-	 * 
+	 *
 	 * @param transform
 	 *            3x3 transform matrix
 	 * @return the transformed {@link PointList}
@@ -380,7 +381,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Iterable#iterator()
 	 */
 	@Override
@@ -398,7 +399,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	 * Compute the mean of a set of {@link PointList}s. It is assumed that the
 	 * number of points in the {@link PointList}s is equal, and that their is a
 	 * one-to-one correspondance between the ith point in each list.
-	 * 
+	 *
 	 * @param shapes
 	 *            the shapes to average
 	 * @return the average shape
@@ -439,7 +440,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 	/**
 	 * Calculate the intrinsic scale of the shape. This is the RMS distance of
 	 * all the points from the centroid.
-	 * 
+	 *
 	 * @return the scale of the object.
 	 */
 	public float computeIntrinsicScale() {
@@ -458,7 +459,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 
 	/**
 	 * Get the ith point
-	 * 
+	 *
 	 * @param i
 	 *            the index of the point
 	 * @return the ith point
@@ -503,7 +504,7 @@ public class PointList implements GeometricObject, Iterable<Point2d>, Cloneable 
 
 	/**
 	 * Calculate the convex hull of the points using the Graham Scan algorithm.
-	 * 
+	 *
 	 * @see GrahamScan
 	 * @return the convex hull
 	 */

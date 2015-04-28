@@ -34,10 +34,10 @@ import java.util.List;
 
 /**
  * Interface for k-nearest-neighbour calculations with some data.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <DATA>
  *            The type of data
  * @param <DISTANCES>
@@ -57,7 +57,7 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * <p>
 	 * <b>If a nearest-neighbour cannot be determined, it will have an index
 	 * value of -1</b>
-	 * 
+	 *
 	 * @param qus
 	 *            An array of N query vectors
 	 * @param indices
@@ -79,7 +79,7 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * <p>
 	 * <b>If a k-th nearest-neighbour cannot be determined, it will have an
 	 * index value of -1</b>
-	 * 
+	 *
 	 * @param qus
 	 *            An array of N query vectors
 	 * @param K
@@ -103,7 +103,7 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * <p>
 	 * <b>If a nearest-neighbour cannot be determined, it will have an index
 	 * value of -1</b>
-	 * 
+	 *
 	 * @param qus
 	 *            An array of N query vectors
 	 * @param indices
@@ -125,7 +125,7 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * <p>
 	 * <b>If a k-th nearest-neighbour cannot be determined, it will have an
 	 * index value of -1</b>
-	 * 
+	 *
 	 * @param qus
 	 *            An array of N query vectors
 	 * @param K
@@ -146,7 +146,7 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * <p>
 	 * If k neighbours cannot be determined, then the resultant list might have
 	 * fewer than k elements.
-	 * 
+	 *
 	 * @param query
 	 *            the query vector
 	 * @param K
@@ -161,7 +161,7 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 	 * <p>
 	 * If the nearest-neighbour cannot be determined <code>null</code> will be
 	 * returned.
-	 * 
+	 *
 	 * @param query
 	 *            the query vector
 	 * @return the distance and index of the nearest neighbour
@@ -170,7 +170,7 @@ public interface NearestNeighbours<DATA, DISTANCES, PAIR_TYPE> {
 
 	/**
 	 * Get the size of the dataset
-	 * 
+	 *
 	 * @return the dataset size
 	 */
 	public abstract int size();

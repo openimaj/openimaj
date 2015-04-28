@@ -37,9 +37,9 @@ import java.util.Scanner;
 
 /**
  * A feature-vector representation of an enumeration
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            type of underlying enumeration
  */
@@ -49,7 +49,7 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 
 	/**
 	 * Construct the feature with the given value
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 */
@@ -143,5 +143,29 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 		final double[] vec = new double[length()];
 		vec[enumValue.ordinal()] = 1;
 		return vec;
+	}
+
+	@Override
+	public double getAsDouble(int i) {
+		if (enumValue.ordinal() == i)
+			return 1;
+		return 0;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setFromDouble(int i, double v) {
+		if (v == 1) {
+			try {
+				enumValue = (T) this.getClass().getField("enumValue").getType().getEnumConstants()[i];
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	@Override
+	public EnumFV<T> newInstance() {
+		return new EnumFV<T>(enumValue);
 	}
 }

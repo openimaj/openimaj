@@ -44,9 +44,9 @@ import org.openimaj.image.model.landmark.FNormalLandmarkModel;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.PointList;
+import org.openimaj.math.geometry.point.PointListConnections;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
-import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.NumberComponentSelector;
 

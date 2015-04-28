@@ -36,22 +36,27 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 
 /**
- *	Test for {@link SkewCorrector} processor
+ * Test for {@link SkewCorrector} processor
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 28 Jul 2011
- *	
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 28 Jul 2011
+ *
  */
 public class SkewCorrectorTest
 {
 	/**
-	 * 	Helper method for debugging when viewing images
+	 * Helper method for debugging when viewing images
 	 */
 	protected void forceWait()
 	{
-		synchronized(this){ try	{ wait( 200000 ); } catch( InterruptedException e1 ) {} }
+		synchronized (this) {
+			try {
+				wait(200000);
+			} catch (final InterruptedException e1) {
+			}
+		}
 	}
-	
+
 	/**
 	 * Test skew correction
 	 */
@@ -61,20 +66,19 @@ public class SkewCorrectorTest
 		try
 		{
 			// Read the image
-			FImage testImage = ImageUtilities.readF( 
-					getClass().getResource("italic--20.png") ).normalise();
-//					getClass().getResource("test.jpg") ).normalise();
-//					getClass().getResource("lab-sign.jpg") ).normalise();
-					
+			final FImage testImage = ImageUtilities.readF(
+					getClass().getResource("italic--20.png")).normalise();
+			// getClass().getResource("test.jpg") ).normalise();
+			// getClass().getResource("lab-sign.jpg") ).normalise();
+
 			// Process the image
-			SkewCorrector sc = new SkewCorrector();
-			sc.processImage( testImage );
-		}
-		catch( IOException e )
+			final SkewCorrector sc = new SkewCorrector();
+			sc.processImage(testImage);
+		} catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
-		
-		// forceWait();
+
+		forceWait();
 	}
 }

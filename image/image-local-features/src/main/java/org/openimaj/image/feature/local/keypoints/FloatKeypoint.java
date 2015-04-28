@@ -51,16 +51,16 @@ import Jama.Matrix;
 /**
  * A local interest point with a location, scale, orientation and associated
  * feature. The feature is stored as an array of floats.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FloatKeypoint
-		implements
-		Serializable,
-		ScaleSpacePoint,
-		LocalFeature<KeypointLocation, FloatFV>,
-		VariableLength,
-		Cloneable
+implements
+Serializable,
+ScaleSpacePoint,
+LocalFeature<KeypointLocation, FloatFV>,
+VariableLength,
+Cloneable
 {
 	static final long serialVersionUID = 1234554345;
 
@@ -103,7 +103,7 @@ public class FloatKeypoint
 
 	/**
 	 * Construct with the given feature vector length.
-	 * 
+	 *
 	 * @param length
 	 *            the length of the feature vector
 	 */
@@ -115,7 +115,7 @@ public class FloatKeypoint
 
 	/**
 	 * Construct with the given parameters.
-	 * 
+	 *
 	 * @param x
 	 *            the x-ordinate of the keypoint
 	 * @param y
@@ -137,7 +137,7 @@ public class FloatKeypoint
 
 	/**
 	 * Construct by copying from another {@link FloatKeypoint}
-	 * 
+	 *
 	 * @param k
 	 *            the {@link FloatKeypoint} to copy from
 	 */
@@ -147,7 +147,7 @@ public class FloatKeypoint
 
 	/**
 	 * Construct from a {@link Keypoint}.
-	 * 
+	 *
 	 * @param k
 	 */
 	public FloatKeypoint(Keypoint k) {
@@ -213,7 +213,7 @@ public class FloatKeypoint
 	/**
 	 * Test whether the location of this {@link FloatKeypoint} and another
 	 * {@link FloatKeypoint} is the same.
-	 * 
+	 *
 	 * @param obj
 	 *            the other keypoint
 	 * @return true if the locations match; false otherwise.
@@ -342,7 +342,7 @@ public class FloatKeypoint
 
 	/**
 	 * Set the location of this {@link FloatKeypoint}
-	 * 
+	 *
 	 * @param location
 	 *            the location
 	 */
@@ -394,7 +394,7 @@ public class FloatKeypoint
 
 	/**
 	 * Convert a list of {@link Keypoint}s to {@link FloatKeypoint}s.
-	 * 
+	 *
 	 * @param keys
 	 *            the {@link Keypoint}s to convert.
 	 * @return the converted {@link FloatKeypoint}s.
@@ -406,5 +406,13 @@ public class FloatKeypoint
 			out.add(new FloatKeypoint(k));
 
 		return out;
+	}
+
+	@Override
+	public void setOrdinate(int dimension, Number value) {
+		if (dimension == 0)
+			x = value.floatValue();
+		if (dimension == 1)
+			y = value.floatValue();
 	}
 }

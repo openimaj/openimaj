@@ -40,6 +40,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.point.PointList;
 import org.openimaj.math.geometry.shape.util.PolygonUtils;
 import org.openimaj.math.geometry.shape.util.RotatingCalipers;
 

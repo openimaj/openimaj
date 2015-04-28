@@ -52,16 +52,16 @@ import cern.jet.random.Normal;
 /**
  * A local interest point with a location, scale, orientation and associated
  * feature. The feature is stored as an array of bytes.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Keypoint
-		implements
-		Serializable,
-		ScaleSpacePoint,
-		LocalFeature<KeypointLocation, ByteFV>,
-		VariableLength,
-		Cloneable
+implements
+Serializable,
+ScaleSpacePoint,
+LocalFeature<KeypointLocation, ByteFV>,
+VariableLength,
+Cloneable
 {
 	static final long serialVersionUID = 1234554345;
 
@@ -104,7 +104,7 @@ public class Keypoint
 
 	/**
 	 * Construct with the given feature vector length.
-	 * 
+	 *
 	 * @param length
 	 *            the length of the feature vector
 	 */
@@ -116,7 +116,7 @@ public class Keypoint
 
 	/**
 	 * Construct with the given parameters.
-	 * 
+	 *
 	 * @param x
 	 *            the x-ordinate of the keypoint
 	 * @param y
@@ -138,7 +138,7 @@ public class Keypoint
 
 	/**
 	 * Construct by copying from another {@link Keypoint}
-	 * 
+	 *
 	 * @param k
 	 *            the {@link Keypoint} to copy from
 	 */
@@ -200,7 +200,7 @@ public class Keypoint
 	/**
 	 * Test whether the location of this {@link Keypoint} and another
 	 * {@link Keypoint} is the same.
-	 * 
+	 *
 	 * @param obj
 	 *            the other keypoint
 	 * @return true if the locations match; false otherwise.
@@ -325,7 +325,7 @@ public class Keypoint
 
 	/**
 	 * Set the location of this {@link Keypoint}
-	 * 
+	 *
 	 * @param location
 	 *            the location
 	 */
@@ -339,7 +339,7 @@ public class Keypoint
 	/**
 	 * Create a list of {@link Keypoint}s from the input list, but with the
 	 * positions offset by the given amount.
-	 * 
+	 *
 	 * @param keypoints
 	 *            the input list
 	 * @param x
@@ -365,7 +365,7 @@ public class Keypoint
 	/**
 	 * Add Gaussian noise the feature vectors of some features. The original
 	 * features are untouched; the returned list contains a copy.
-	 * 
+	 *
 	 * @param siftFeatures
 	 *            the input features
 	 * @param mean
@@ -398,7 +398,7 @@ public class Keypoint
 	 * Scale a list of keypoints by the given amount. This scales the location
 	 * and scale of each keypoint. The original features are untouched; the
 	 * returned list contains a copy.
-	 * 
+	 *
 	 * @param keypoints
 	 *            the input features.
 	 * @param toScale
@@ -456,5 +456,13 @@ public class Keypoint
 	@Override
 	public Point2d copy() {
 		return clone();
+	}
+
+	@Override
+	public void setOrdinate(int dimension, Number value) {
+		if (dimension == 0)
+			x = value.floatValue();
+		if (dimension == 1)
+			y = value.floatValue();
 	}
 }

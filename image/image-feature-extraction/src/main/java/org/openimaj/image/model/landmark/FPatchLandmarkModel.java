@@ -34,7 +34,7 @@ import org.openimaj.image.analysis.algorithm.TemplateMatcher;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher.Mode;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.shape.PointList;
+import org.openimaj.math.geometry.point.PointList;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.ObjectFloatPair;
 

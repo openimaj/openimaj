@@ -333,4 +333,19 @@ public class #T#FV extends ArrayFeatureVector<#t#[]> implements Concatenatable<#
 	public #T#FV subvector(int beginIndex, int endIndex) {
 		return new #T#FV(Arrays.copyOfRange(this.values, beginIndex, endIndex));
 	}
+
+	@Override
+	public double getAsDouble(int i) {
+		return values[i];
+	}
+
+	@Override
+	public void setFromDouble(int i, double v) {
+		values[i] = ((#t#) v);
+	}
+
+	@Override
+	public #T#FV newInstance() {
+		return new #T#FV(length());
+	}
 }

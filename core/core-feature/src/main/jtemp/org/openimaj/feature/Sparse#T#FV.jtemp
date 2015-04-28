@@ -257,4 +257,19 @@ public class Sparse#T#FV implements FeatureVector, Concatenatable<Sparse#T#FV, S
 		
 		return new Sparse#T#FV(vals);
 	}
+
+	@Override
+	public double getAsDouble(int i) {
+		return values.get(i);
+	}
+
+	@Override
+	public void setFromDouble(int i, double v) {
+		values.set(i, (#t#) v);
+	}
+
+	@Override
+	public Sparse#T#FV newInstance() {
+		return new Sparse#T#FV(length());
+	}
 }

@@ -48,7 +48,7 @@ import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.Font;
 import org.openimaj.image.typography.FontStyle;
-import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.path.Path2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -470,7 +470,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param ignoreList
 	 *            The list of pixels to ignore when copying the image
 	 */
-	public void drawImage(I image, int x, int y, Q... ignoreList) {
+	public void drawImage(I image, int x, int y, @SuppressWarnings("unchecked") Q... ignoreList) {
 		createRenderer().drawImage(image, x, y, ignoreList);
 	}
 
@@ -627,7 +627,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 
 	/**
-	 * Draw a line from the specified Line2d object
+	 * Draw a line from the specified Path2d object
 	 *
 	 * <p>
 	 * This is a convenience method that calls {@link #createRenderer()} to get
@@ -642,12 +642,32 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param col
 	 *            The colour in which to draw the line.
 	 */
-	public void drawLine(Line2d line, int thickness, Q col) {
+	public void drawLine(Path2d line, int thickness, Q col) {
 		createRenderer().drawLine(line, thickness, col);
 	}
 
 	/**
-	 * Draw the given list of lines using {@link #drawLine(Line2d, int, Object)}
+	 * Draw a line from the specified Path2d object
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()} to get
+	 * the default renderer to do the actual drawing. Create the renderer
+	 * yourself and use it to draw if you need more control.
+	 * </p>
+	 *
+	 * @param line
+	 *            the line
+	 * @param thickness
+	 *            the stroke width
+	 * @param col
+	 *            The colour in which to draw the line.
+	 */
+	public void drawPath(Path2d line, int thickness, Q col) {
+		createRenderer().drawPath(line, thickness, col);
+	}
+
+	/**
+	 * Draw the given list of lines using {@link #drawLine(Path2d, int, Object)}
 	 * with the given colour and thickness. Side-affects this image.
 	 *
 	 * <p>
@@ -663,8 +683,29 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param col
 	 *            The colour to draw each point.
 	 */
-	public void drawLines(Iterable<? extends Line2d> lines, int thickness, Q col) {
+	public void drawLines(Iterable<? extends Path2d> lines, int thickness, Q col) {
 		createRenderer().drawLines(lines, thickness, col);
+	}
+
+	/**
+	 * Draw the given list of paths using {@link #drawLine(Path2d, int, Object)}
+	 * with the given colour and thickness. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()} to get
+	 * the default renderer to do the actual drawing. Create the renderer
+	 * yourself and use it to draw if you need more control.
+	 * </p>
+	 *
+	 * @param lines
+	 *            The list of lines to draw.
+	 * @param thickness
+	 *            the stroke width
+	 * @param col
+	 *            The colour to draw each point.
+	 */
+	public void drawPaths(Iterable<? extends Path2d> lines, int thickness, Q col) {
+		createRenderer().drawPaths(lines, thickness, col);
 	}
 
 	/**

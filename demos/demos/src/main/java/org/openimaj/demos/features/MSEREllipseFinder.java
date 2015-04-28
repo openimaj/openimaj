@@ -54,7 +54,7 @@ import org.openimaj.math.geometry.shape.Ellipse;
 		description = "Shows ellipse fitting for regions detected using an MSER feature extractor",
 		keywords = {
 				"mser", "ellipse", "feat" },
-				title = "MSER Ellipse Finder")
+		title = "MSER Ellipse Finder")
 public class MSEREllipseFinder {
 	/**
 	 * Construct demo
@@ -73,7 +73,6 @@ public class MSEREllipseFinder {
 			renderer.drawShapeFilled(ellipse, RGBColour.BLACK);
 		}
 
-		@SuppressWarnings("unchecked")
 		final MSERFeatureGenerator mser = new MSERFeatureGenerator(MomentFeature.class);
 		final List<Component> features = mser.generateMSERs(Transforms
 				.calculateIntensityNTSC(image));

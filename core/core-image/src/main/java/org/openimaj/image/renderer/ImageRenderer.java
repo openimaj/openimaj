@@ -34,6 +34,7 @@ import java.awt.geom.QuadCurve2D;
 import java.text.AttributedString;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.Image;
@@ -45,6 +46,7 @@ import org.openimaj.image.typography.Font;
 import org.openimaj.image.typography.FontRenderer;
 import org.openimaj.image.typography.FontStyle;
 import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.path.Path2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -155,7 +157,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param ignoreList
 	 *            The list of pixels to ignore when copying the image
 	 */
-	public void drawImage(final I image, final int x, final int y, final Q... ignoreList) {
+	public void drawImage(final I image, final int x, final int y, @SuppressWarnings("unchecked") final Q... ignoreList) {
 		final int stopx = Math.min(this.targetImage.getWidth(), x + image.getWidth());
 		final int stopy = Math.min(this.targetImage.getHeight(), y + image.getHeight());
 		final int startx = Math.max(0, x);
@@ -308,7 +310,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	}
 
 	/**
-	 * Draw a line from the specified Line2d object
+	 * Draw a line from the specified {@link Path2d} object
 	 *
 	 * @param line
 	 *            the line
@@ -317,13 +319,32 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param col
 	 *            The colour in which to draw the line.
 	 */
-	public void drawLine(final Line2d line, final int thickness, final Q col) {
-		this.drawLine((int) line.begin.getX(), (int) line.begin.getY(), (int) line.end.getX(), (int) line.end.getY(),
-				thickness, col);
+	public void drawLine(final Path2d line, final int thickness, final Q col) {
+		drawPath(line, thickness, col);
 	}
 
 	/**
-	 * Draw the given list of lines using {@link #drawLine(Line2d, int, Object)}
+	 * Draw a path from the specified {@link Path2d} object
+	 *
+	 * @param path
+	 *            the path
+	 * @param thickness
+	 *            the stroke width
+	 * @param col
+	 *            The colour in which to draw the line.
+	 */
+	public void drawPath(final Path2d path, final int thickness, final Q col) {
+		final Iterator<Line2d> it = path.lineIterator();
+
+		while (it.hasNext()) {
+			final Line2d line = it.next();
+			this.drawLine((int) line.begin.getX(), (int) line.begin.getY(), (int) line.end.getX(), (int) line.end.getY(),
+					thickness, col);
+		}
+	}
+
+	/**
+	 * Draw the given list of lines using {@link #drawLine(Path2d, int, Object)}
 	 * with the given colour and thickness.
 	 *
 	 * @param lines
@@ -333,9 +354,24 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param col
 	 *            The colour to draw each point.
 	 */
-	public void drawLines(final Iterable<? extends Line2d> lines, final int thickness, final Q col) {
-		for (final Line2d line : lines)
-			this.drawLine(line, thickness, col);
+	public void drawLines(final Iterable<? extends Path2d> lines, final int thickness, final Q col) {
+		drawPaths(lines, thickness, col);
+	}
+
+	/**
+	 * Draw the given list of lines using {@link #drawLine(Path2d, int, Object)}
+	 * with the given colour and thickness.
+	 *
+	 * @param paths
+	 *            The list of paths to draw.
+	 * @param thickness
+	 *            the stroke width
+	 * @param col
+	 *            The colour to draw each point.
+	 */
+	public void drawPaths(final Iterable<? extends Path2d> paths, final int thickness, final Q col) {
+		for (final Path2d path : paths)
+			this.drawLine(path, thickness, col);
 	}
 
 	/**

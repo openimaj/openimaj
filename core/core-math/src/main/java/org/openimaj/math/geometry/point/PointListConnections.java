@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.math.geometry.shape;
+package org.openimaj.math.geometry.point;
 
 import gnu.trove.list.array.TIntArrayList;
 
@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.math.geometry.line.Line2d;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
  * Class to model the connections between points in a {@link PointList}. The

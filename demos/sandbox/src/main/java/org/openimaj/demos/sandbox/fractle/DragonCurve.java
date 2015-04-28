@@ -38,7 +38,7 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.PointList;
+import org.openimaj.math.geometry.point.PointList;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;

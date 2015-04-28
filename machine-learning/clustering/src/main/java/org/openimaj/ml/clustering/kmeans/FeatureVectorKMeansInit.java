@@ -27,48 +27,59 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.math.geometry.shape.algorithm;
+package org.openimaj.ml.clustering.kmeans;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-import org.junit.Test;
-import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.point.PointList;
-import org.openimaj.math.geometry.shape.Triangle;
+import org.openimaj.data.DataSource;
 
-import cern.jet.random.Uniform;
-import cern.jet.random.engine.MersenneTwister;
+import com.rits.cloning.Cloner;
 
 /**
- * Tests for {@link ProcrustesAnalysis}
- * 
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * Initialisation for K-Means clustering. Given a data source of samples and a
+ * set of clusters to fill, implementations of this class should initialise the
+ * KMeans algorithm.
  *
+ * A default RANDOM implementation is provided which uses
+ * {@link DataSource#getRandomRows}
+ *
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ * @param <T>
+ *            Type of object being clustered
  */
-public class GeneralisedProcrustesAnalysisTest {
+public abstract class FeatureVectorKMeansInit<T> {
+	/**
+	 * Initialise the centroids based on the given data.
+	 *
+	 * @param bds
+	 *            the data source of samples
+	 * @param clusters
+	 *            the clusters to init
+	 * @throws IOException
+	 *             problem reading samples
+	 */
+	public abstract void initKMeans(DataSource<T> bds, T[] clusters) throws IOException;
 
 	/**
-	 * Test alignment by generating random transforms
-	 * and then recovering them
+	 * Simple kmeans initialized on randomly selected samples.
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 *
+	 * @param <T>
+	 *            Type of object being clustered
 	 */
-	@Test
-	public void testAlignment() {
-		Uniform rnd = new Uniform(new MersenneTwister(1));
-		List<PointList> shapes = new ArrayList<PointList>();
-		
-		for (int i=0; i<10; i++) {
-			shapes.add(randomTriangle(rnd));
+	public static class RANDOM<T> extends FeatureVectorKMeansInit<T> {
+		@Override
+		public void initKMeans(DataSource<T> bds, T[] clusters) throws IOException {
+			bds.getRandomRows(clusters);
+
+			final Cloner cloner = new Cloner();
+			for (int i = 0; i < clusters.length; i++) {
+				clusters[i] = cloner.deepClone(clusters[i]);
+			}
 		}
-
-		GeneralisedProcrustesAnalysis.alignPoints(shapes, 10f, 10000);
-	}
-
-	PointList randomTriangle(Uniform rnd) {
-		return new Triangle(
-			new Point2dImpl(rnd.nextFloatFromTo(0, 200), rnd.nextFloatFromTo(0, 200)), 
-			new Point2dImpl(rnd.nextFloatFromTo(0, 200), rnd.nextFloatFromTo(0, 200)),
-			new Point2dImpl(rnd.nextFloatFromTo(0, 200), rnd.nextFloatFromTo(0, 200))
-		).asPolygon();
 	}
 }

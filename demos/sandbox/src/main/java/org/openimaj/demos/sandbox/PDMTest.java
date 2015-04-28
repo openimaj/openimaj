@@ -43,8 +43,8 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.PointListConnections;
+import org.openimaj.math.geometry.point.PointList;
+import org.openimaj.math.geometry.point.PointListConnections;
 
 public class PDMTest {
 	static List<PointList> loadData() {

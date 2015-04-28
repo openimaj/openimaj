@@ -41,7 +41,7 @@
 
 package org.openimaj.ml.clustering.assignment.hard;
 
-import org.openimaj.feature.#T#FVComparison;
+import org.openimaj.feature.#T#FVComparator;
 import org.openimaj.knn.#T#NearestNeighboursExact;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.CentroidsProvider;
@@ -73,7 +73,7 @@ public class Exact#T#Assigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> 
 	 * @param provider the cluster data provider
 	 * @param comparison the distance function
 	 */
-	public Exact#T#Assigner(CentroidsProvider<#t#[]> provider, #T#FVComparison comparison) {
+	public Exact#T#Assigner(CentroidsProvider<#t#[]> provider, #T#FVComparator comparison) {
 		nn = new #T#NearestNeighboursExact(provider.getCentroids(), comparison);
 	}
 	
@@ -84,7 +84,7 @@ public class Exact#T#Assigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> 
 	 * @param data the cluster data
 	 * @param comparison the distance function
 	 */
-	public Exact#T#Assigner(#t#[][] data, #T#FVComparison comparison) {
+	public Exact#T#Assigner(#t#[][] data, #T#FVComparator comparison) {
 		nn = new #T#NearestNeighboursExact(data, comparison);
 	}
 	

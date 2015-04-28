@@ -80,6 +80,14 @@ public class PlotFlickrGeo {
 		}
 
 		@Override
+		public void setOrdinate(int dimension, Number value) {
+			if (dimension == 0)
+				latitude = value.doubleValue();
+			if (dimension == 1)
+				longitude = value.doubleValue();
+		}
+
+		@Override
 		public int getDimensions() {
 			return 2;
 		}

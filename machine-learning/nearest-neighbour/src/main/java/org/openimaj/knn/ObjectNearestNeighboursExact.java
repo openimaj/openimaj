@@ -30,6 +30,7 @@
 package org.openimaj.knn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.util.comparator.DistanceComparator;
@@ -39,10 +40,10 @@ import org.openimaj.util.queue.BoundedPriorityQueue;
 /**
  * Exact (brute-force) k-nearest-neighbour implementation for objects with a
  * compatible {@link DistanceComparator}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            Type of object being compared.
  */
@@ -50,6 +51,35 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 		implements
 		IncrementalNearestNeighbours<T, float[], IntFloatPair>
 {
+	/**
+	 * {@link NearestNeighboursFactory} for producing
+	 * {@link ObjectNearestNeighboursExact}s.
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *
+	 * @param <T>
+	 *            Type of object being compared.
+	 */
+	public static final class Factory<T> implements NearestNeighboursFactory<ObjectNearestNeighboursExact<T>, T> {
+		private final DistanceComparator<? super T> distance;
+
+		/**
+		 * Construct the factory with the given distance function for the
+		 * produced ObjectNearestNeighbours instances.
+		 *
+		 * @param distance
+		 *            the distance function
+		 */
+		public Factory(DistanceComparator<? super T> distance) {
+			this.distance = distance;
+		}
+
+		@Override
+		public ObjectNearestNeighboursExact<T> create(T[] data) {
+			return new ObjectNearestNeighboursExact<T>(data, distance);
+		}
+	}
+
 	protected final List<T> pnts;
 
 	/**
@@ -58,7 +88,7 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 	 * <p>
 	 * Note: If the distance function provides similarities rather than
 	 * distances they are automatically inverted.
-	 * 
+	 *
 	 * @param pnts
 	 *            the dataset
 	 * @param distance
@@ -70,12 +100,29 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T>
 	}
 
 	/**
+	 * Construct the {@link ObjectNearestNeighboursExact} over the provided
+	 * dataset with the given distance function.
+	 * <p>
+	 * Note: If the distance function provides similarities rather than
+	 * distances they are automatically inverted.
+	 *
+	 * @param pnts
+	 *            the dataset
+	 * @param distance
+	 *            the distance function
+	 */
+	public ObjectNearestNeighboursExact(final T[] pnts, final DistanceComparator<? super T> distance) {
+		super(distance);
+		this.pnts = Arrays.asList(pnts);
+	}
+
+	/**
 	 * Construct any empty {@link ObjectNearestNeighboursExact} with the given
 	 * distance function.
 	 * <p>
 	 * Note: If the distance function provides similarities rather than
 	 * distances they are automatically inverted.
-	 * 
+	 *
 	 * @param distance
 	 *            the distance function
 	 */

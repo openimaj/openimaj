@@ -36,24 +36,24 @@ import org.openimaj.experiment.evaluation.cluster.processor.Clusterer;
  * A {@link SpatialClusterer} clusters data that can be represented as points in
  * a space. Each point is typically represented by a numerical coordinate
  * vector.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <CLUSTERTYPE>
  *            The type of cluster produced.
  * @param <DATATYPE>
  *            the primitive array datatype which represents a centroid of this
  *            cluster.
  */
-public interface SpatialClusterer<CLUSTERTYPE extends SpatialClusters<DATATYPE>, DATATYPE> extends Clusterer<DATATYPE[]>{
+public interface SpatialClusterer<CLUSTERTYPE extends SpatialClusters<DATATYPE>, DATATYPE> extends Clusterer<DATATYPE[]> {
 
 	/**
 	 * Perform clustering on the given data.
-	 * 
+	 *
 	 * @param data
 	 *            the data.
-	 * 
+	 *
 	 * @return the generated clusters.
 	 */
 	public abstract CLUSTERTYPE cluster(final DATATYPE[] data);
@@ -61,34 +61,11 @@ public interface SpatialClusterer<CLUSTERTYPE extends SpatialClusters<DATATYPE>,
 	/**
 	 * Perform clustering with data from a data source. The {@link DataSource}
 	 * could potentially be backed by disk rather in memory.
-	 * 
+	 *
 	 * @param data
 	 *            the data.
-	 * 
+	 *
 	 * @return the generated clusters.
 	 */
 	public abstract CLUSTERTYPE cluster(DataSource<DATATYPE> data);
-
-	// /**
-	// * Get the data dimensionality
-	// *
-	// * @return the data dimensionality.
-	// */
-	// public abstract int numDimensions();
-	//
-	// /**
-	// * Get the number of clusters.
-	// *
-	// * @return number of clusters.
-	// */
-	// public int numClusters();
-	//
-	// /**
-	// * Get the default hard assigner for this clusterer. This method is
-	// * potentially expensive, so callers should only call it once, and hold on
-	// * to the result (and reuse it).
-	// *
-	// * @return a hard assigner.
-	// */
-	// public HardAssigner<DATATYPE, ?, ?> defaultHardAssigner();
 }

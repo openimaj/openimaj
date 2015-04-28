@@ -56,9 +56,9 @@ import org.openimaj.util.queue.BoundedPriorityQueue;
  * <p>
  * Note: This object is not thread-safe. Multiple insertions or mixed insertions
  * and searches should not be performed concurrently without external locking.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object being stored.
  */
@@ -69,9 +69,9 @@ public class LSHNearestNeighbours<OBJECT>
 	/**
 	 * Encapsulates a hash table with an associated hash function and pointers
 	 * to the data.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 * @param <OBJECT>
 	 *            Type of object being hashed
 	 */
@@ -86,7 +86,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 		/**
 		 * Insert a single point
-		 * 
+		 *
 		 * @param point
 		 *            the point
 		 * @param pid
@@ -105,7 +105,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 		/**
 		 * Search for a point in the table
-		 * 
+		 *
 		 * @param point
 		 *            query point
 		 * @param norm
@@ -126,7 +126,7 @@ public class LSHNearestNeighbours<OBJECT>
 	/**
 	 * Construct with the given hash functions and distance function. One table
 	 * will be created per hash function.
-	 * 
+	 *
 	 * @param tableHashes
 	 *            The hash functions
 	 * @param distanceFcn
@@ -145,7 +145,7 @@ public class LSHNearestNeighbours<OBJECT>
 	/**
 	 * Construct with the given hash function factory which will be used to
 	 * initialize the requested number of hash tables.
-	 * 
+	 *
 	 * @param factory
 	 *            The hash function factory.
 	 * @param numTables
@@ -165,7 +165,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 	/**
 	 * Get the number of hash tables
-	 * 
+	 *
 	 * @return The number of hash tables
 	 */
 	public int numTables() {
@@ -174,7 +174,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 	/**
 	 * Insert data into the tables
-	 * 
+	 *
 	 * @param d
 	 *            the data
 	 */
@@ -194,7 +194,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 	/**
 	 * Insert data into the tables
-	 * 
+	 *
 	 * @param d
 	 *            the data
 	 */
@@ -226,7 +226,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 	/**
 	 * Search for similar data in the underlying tables and return all matches
-	 * 
+	 *
 	 * @param data
 	 *            the points
 	 * @return matched ids
@@ -244,7 +244,7 @@ public class LSHNearestNeighbours<OBJECT>
 	/**
 	 * Search for a similar data item in the underlying tables and return all
 	 * matches
-	 * 
+	 *
 	 * @param data
 	 *            the point
 	 * @return matched ids
@@ -265,7 +265,7 @@ public class LSHNearestNeighbours<OBJECT>
 	/**
 	 * Compute identifiers of the buckets in which the given points belong for
 	 * all the tables.
-	 * 
+	 *
 	 * @param data
 	 *            the points
 	 * @return the bucket identifiers
@@ -283,7 +283,7 @@ public class LSHNearestNeighbours<OBJECT>
 	/**
 	 * Compute identifiers of the buckets in which the given point belongs for
 	 * all the tables.
-	 * 
+	 *
 	 * @param point
 	 *            the point
 	 * @return the bucket identifiers
@@ -414,7 +414,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 	/**
 	 * Get a read-only view of the underlying data.
-	 * 
+	 *
 	 * @return a read-only view of the underlying data.
 	 */
 	public List<OBJECT> getData() {
@@ -434,7 +434,7 @@ public class LSHNearestNeighbours<OBJECT>
 
 	/**
 	 * Get the data item at the given index.
-	 * 
+	 *
 	 * @param i
 	 *            The index
 	 * @return the retrieved object

@@ -44,8 +44,8 @@ import org.openimaj.image.Image;
 import org.openimaj.io.InputStreamObjectReader;
 import org.openimaj.io.ObjectReader;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.PointListConnections;
+import org.openimaj.math.geometry.point.PointList;
+import org.openimaj.math.geometry.point.PointListConnections;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

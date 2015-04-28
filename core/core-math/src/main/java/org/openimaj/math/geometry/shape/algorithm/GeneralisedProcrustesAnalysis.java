@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.shape.PointList;
+import org.openimaj.math.geometry.point.PointList;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;

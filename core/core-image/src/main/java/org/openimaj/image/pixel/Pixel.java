@@ -42,7 +42,7 @@ import Jama.Matrix;
 /**
  * Represents a pixel within an image, storing its coordinates. Provides helper
  * methods for rounding non-integer values to pixel coordinates.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Pixel implements Point2d, Cloneable {
@@ -54,7 +54,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * Construct a pixel with the given coordinates.
-	 * 
+	 *
 	 * @param x
 	 *            The x-coordinate of the pixel
 	 * @param y
@@ -74,7 +74,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -91,7 +91,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -104,7 +104,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -114,7 +114,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.point.Point2d#getX()
 	 */
 	@Override
@@ -124,7 +124,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.point.Point2d#getY()
 	 */
 	@Override
@@ -134,7 +134,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.point.Point2d#setX(float)
 	 */
 	@Override
@@ -144,7 +144,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.point.Point2d#setY(float)
 	 */
 	@Override
@@ -162,7 +162,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.point.Point2d#copyFrom(org.openimaj.math.geometry.point.Point2d)
 	 */
 	@Override
@@ -173,7 +173,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.point.Coordinate#getOrdinate(int)
 	 */
 	@Override
@@ -185,7 +185,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.point.Coordinate#getDimensions()
 	 */
 	@Override
@@ -224,7 +224,7 @@ public class Pixel implements Point2d, Cloneable {
 
 	/**
 	 * Inplace transform the point by the given matrix.
-	 * 
+	 *
 	 * @param transform
 	 *            the transform
 	 * @return this
@@ -301,5 +301,13 @@ public class Pixel implements Point2d, Cloneable {
 	@Override
 	public Pixel copy() {
 		return clone();
+	}
+
+	@Override
+	public void setOrdinate(int dimension, Number value) {
+		if (dimension == 0)
+			x = value.intValue();
+		if (dimension == 1)
+			y = value.intValue();
 	}
 }

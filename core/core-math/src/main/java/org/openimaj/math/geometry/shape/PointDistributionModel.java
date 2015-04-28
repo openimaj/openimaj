@@ -37,6 +37,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.citation.annotation.References;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.point.PointList;
 import org.openimaj.math.geometry.shape.algorithm.GeneralisedProcrustesAnalysis;
 import org.openimaj.math.geometry.shape.algorithm.ProcrustesAnalysis;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis;

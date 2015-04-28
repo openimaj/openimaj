@@ -40,8 +40,8 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.model.asm.datasets.ShapeModelDataset;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.PointListConnections;
+import org.openimaj.math.geometry.point.PointList;
+import org.openimaj.math.geometry.point.PointListConnections;
 import org.openimaj.util.pair.IndependentPair;
 
 public class AMPTSDataset extends ListBackedDataset<IndependentPair<PointList, FImage>>

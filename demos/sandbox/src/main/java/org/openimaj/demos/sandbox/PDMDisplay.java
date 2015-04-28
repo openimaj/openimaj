@@ -41,9 +41,9 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.model.asm.datasets.IMMFaceDatabase;
 import org.openimaj.image.model.asm.datasets.ShapeModelDataset;
 import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.point.PointList;
+import org.openimaj.math.geometry.point.PointListConnections;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
-import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 public class PDMDisplay {

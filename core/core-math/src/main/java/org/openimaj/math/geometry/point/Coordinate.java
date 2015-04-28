@@ -31,28 +31,39 @@ package org.openimaj.math.geometry.point;
 
 import org.openimaj.io.ReadWriteable;
 
-
 /**
- * Generic interface to get the distance along a dimension of
- * an object representing a point in an n-dimensional space
- * 
+ * Generic interface to get the distance along a dimension of an object
+ * representing a point in an n-dimensional space
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface Coordinate extends ReadWriteable {
-   /**
-    * Get the ordinate value for a specific dimension.
-    * 
-    * @param dimension The index of the dimension we are interested in 
-    * @return The value of the ordinate of the given dimension. 
-    * @exception IllegalArgumentException if the 
-    * Coordinate does not support the dimension.
-    */
-   public Number getOrdinate(int dimension);
+	/**
+	 * Get the ordinate value for a specific dimension.
+	 * 
+	 * @param dimension
+	 *            The index of the dimension we are interested in
+	 * @return The value of the ordinate of the given dimension.
+	 * @exception IllegalArgumentException
+	 *                if the Coordinate does not support the dimension.
+	 */
+	public Number getOrdinate(int dimension);
 
-   /**
-    * @return The number of dimensions in the coordinate.
-    */
-   public int getDimensions();
+	/**
+	 * Set the ordinate value for a specific dimension.
+	 * 
+	 * @param dimension
+	 *            The index of the dimension we are interested in
+	 * @param value
+	 *            The value of the ordinate of the given dimension.
+	 * @exception IllegalArgumentException
+	 *                if the Coordinate does not support the dimension.
+	 */
+	public void setOrdinate(int dimension, Number value);
+
+	/**
+	 * @return The number of dimensions in the coordinate.
+	 */
+	public int getDimensions();
 }
-

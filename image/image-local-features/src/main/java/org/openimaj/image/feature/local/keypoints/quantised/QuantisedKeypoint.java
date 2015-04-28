@@ -89,6 +89,16 @@ public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> i
 	}
 
 	@Override
+	public void setOrdinate(int dimension, Number value) {
+		if (dimension == 0)
+			location.x = value.floatValue();
+		if (dimension == 1)
+			location.y = value.floatValue();
+		if (dimension == 2)
+			location.scale = value.floatValue();
+	}
+
+	@Override
 	public int getDimensions() {
 		return 3;
 	}

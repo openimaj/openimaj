@@ -40,7 +40,7 @@ import Jama.Matrix;
 
 /**
  * Simple concrete implementation of a two dimensional point.
- * 
+ *
  * @author Jonathon Hare
  */
 public class Point2dImpl implements Point2d, Cloneable {
@@ -56,7 +56,7 @@ public class Point2dImpl implements Point2d, Cloneable {
 
 	/**
 	 * Construct a Point2dImpl with the given (x, y) coordinates
-	 * 
+	 *
 	 * @param x
 	 *            x-coordinate
 	 * @param y
@@ -71,7 +71,7 @@ public class Point2dImpl implements Point2d, Cloneable {
 	/**
 	 * Construct a Point2dImpl with the (x,y) coordinates given via another
 	 * point.
-	 * 
+	 *
 	 * @param p
 	 *            The point to copy from.
 	 */
@@ -91,7 +91,7 @@ public class Point2dImpl implements Point2d, Cloneable {
 	/**
 	 * Construct a {@link Point2dImpl} using the first two ordinates of a
 	 * {@link Coordinate}.
-	 * 
+	 *
 	 * @param coord
 	 *            the {@link Coordinate}
 	 */
@@ -103,7 +103,7 @@ public class Point2dImpl implements Point2d, Cloneable {
 	/**
 	 * Construct a Point2dImpl with the given (x, y) coordinates. The values
 	 * will be cast to single precision.
-	 * 
+	 *
 	 * @param x
 	 *            x-coordinate
 	 * @param y
@@ -271,7 +271,7 @@ public class Point2dImpl implements Point2d, Cloneable {
 
 	/**
 	 * Create a random point in ([0..1], [0..1]).
-	 * 
+	 *
 	 * @return random point.
 	 */
 	public static Point2d createRandomPoint() {
@@ -281,7 +281,7 @@ public class Point2dImpl implements Point2d, Cloneable {
 	/**
 	 * Create a random point in ([0..1], [0..1]) with the given random number
 	 * generator.
-	 * 
+	 *
 	 * @param rng
 	 *            the random number generator
 	 * @return random point.
@@ -296,5 +296,13 @@ public class Point2dImpl implements Point2d, Cloneable {
 	 */
 	public static Point2d fromDoubleArray(double[] calculateCentroid) {
 		return new Point2dImpl((float) calculateCentroid[0], (float) calculateCentroid[1]);
+	}
+
+	@Override
+	public void setOrdinate(int dimension, Number value) {
+		if (dimension == 0)
+			x = value.floatValue();
+		if (dimension == 1)
+			y = value.floatValue();
 	}
 }

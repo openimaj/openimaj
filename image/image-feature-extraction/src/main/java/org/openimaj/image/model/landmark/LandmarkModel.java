@@ -31,7 +31,7 @@ package org.openimaj.image.model.landmark;
 
 import org.openimaj.image.Image;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.shape.PointList;
+import org.openimaj.math.geometry.point.PointList;
 import org.openimaj.util.pair.ObjectFloatPair;
 
 /**

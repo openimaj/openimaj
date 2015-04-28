@@ -299,4 +299,13 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 			return (#r#) #T#FVComparison.SUM_SQUARE.compare(a, b);
 		return (#r#) distance.compare(a, b);
 	}
+
+	/**
+	 * Get the distance comparator
+	 * 
+	 * @return the distance comparator
+	 */
+	public #T#FVComparator distanceComparator() {
+		return this.distance;
+	}
 }

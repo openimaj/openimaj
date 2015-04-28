@@ -149,7 +149,7 @@ import org.openimaj.util.pair.Int#R#Pair;
 		@Override
 		public HardAssigner<#t#[], #r#[], Int#R#Pair> defaultHardAssigner() {
 			if (nn instanceof #T#NearestNeighboursExact)
-				return new Exact#T#Assigner(this);
+				return new Exact#T#Assigner(this, ((#T#NearestNeighboursExact)nn).distanceComparator());
 		
 			return new KDTree#T#EuclideanAssigner(this);
 		}

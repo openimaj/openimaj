@@ -34,9 +34,9 @@ import java.util.List;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.image.Image;
 import org.openimaj.image.model.asm.ActiveShapeModel;
+import org.openimaj.math.geometry.point.PointList;
+import org.openimaj.math.geometry.point.PointListConnections;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
-import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

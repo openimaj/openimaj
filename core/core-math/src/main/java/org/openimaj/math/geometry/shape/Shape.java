@@ -29,20 +29,20 @@
  */
 package org.openimaj.math.geometry.shape;
 
-import org.openimaj.math.geometry.GeometricObject;
+import org.openimaj.math.geometry.GeometricObject2d;
 import org.openimaj.math.geometry.point.Point2d;
 
 import Jama.Matrix;
 
 /**
  * Interface for classes that represent a shape.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public interface Shape extends GeometricObject, Cloneable {
+public interface Shape extends GeometricObject2d, Cloneable {
 	/**
 	 * Test whether the point p is inside the shape.
-	 * 
+	 *
 	 * @param point
 	 *            the point
 	 * @return true if the point is inside; false otherwise
@@ -51,21 +51,21 @@ public interface Shape extends GeometricObject, Cloneable {
 
 	/**
 	 * Calculate the area of the shape
-	 * 
+	 *
 	 * @return the area of the shape
 	 */
 	public double calculateArea();
 
 	/**
 	 * Calculate the perimeter of the shape
-	 * 
+	 *
 	 * @return the perimeter of the shape
 	 */
 	public double calculatePerimeter();
 
 	/**
 	 * Convert the shape to a polygon representation
-	 * 
+	 *
 	 * @return a polygon representation of the shape
 	 */
 	public Polygon asPolygon();
@@ -74,7 +74,7 @@ public interface Shape extends GeometricObject, Cloneable {
 	 * Calls {@link Polygon#intersectionArea(Shape, int)} with 1 step per pixel
 	 * dimension. Subsequently this function returns the shared whole pixels of
 	 * this polygon and that.
-	 * 
+	 *
 	 * @param that
 	 * @return intersection area
 	 */
@@ -85,29 +85,18 @@ public interface Shape extends GeometricObject, Cloneable {
 	 * another polygon. For each pixel step 1 is added if the point is inside
 	 * both polygons. The length of a step in each direction is calculated as
 	 * follows:
-	 * 
+	 *
 	 * max(intersectionWidth,intersectionHeight)/ (nStepsPerDimention)
-	 * 
+	 *
 	 * The total number of points inside the intersection of the shames is
 	 * divided by the number of points read and multiplied by the total area of
 	 * the intersection.
-	 * 
+	 *
 	 * @param that
 	 * @param nStepsPerDimension
 	 * @return normalised intersection area
 	 */
 	public double intersectionArea(Shape that, int nStepsPerDimension);
-
-	/**
-	 * Apply a 3x3 transform matrix to a copy of the {@link GeometricObject} and
-	 * return it
-	 * 
-	 * @param transform
-	 *            3x3 transform matrix
-	 * @return the transformed shape
-	 */
-	@Override
-	public Shape transform(Matrix transform);
 
 	/**
 	 * @return a copy of the shape
@@ -117,15 +106,23 @@ public interface Shape extends GeometricObject, Cloneable {
 	/**
 	 * Compute the minimum size rotated bounding rectangle that contains this
 	 * shape.
-	 * 
+	 *
 	 * @return the minimum bounding box
 	 */
 	public RotatedRectangle minimumBoundingRectangle();
 
 	/**
 	 * Test if the shape is convex.
-	 * 
+	 *
 	 * @return true if the shape is convex; false if non-convex
 	 */
 	public boolean isConvex();
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openimaj.math.geometry.GeometricObject2d#transform(Jama.Matrix)
+	 */
+	@Override
+	public Shape transform(Matrix transform);
 }

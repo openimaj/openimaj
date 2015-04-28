@@ -36,55 +36,79 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * A concrete implementation of a {@link Coordinate} that
- * has an associated payload.
- * 
+ * A concrete implementation of a {@link Coordinate} that has an associated
+ * payload.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <T> Type of underlying coordinate
- * @param <O> Type of payload data
+ * @param <T>
+ *            Type of underlying coordinate
+ * @param <O>
+ *            Type of payload data
  */
 public class PayloadCoordinate<T extends Coordinate, O> implements Coordinate {
-	
+
 	private T coord;
 	private O payload;
-	
+
 	/**
 	 * Construct with coordinate and payload.
-	 * @param coord The coordinate.
-	 * @param payload The payload.
+	 * 
+	 * @param coord
+	 *            The coordinate.
+	 * @param payload
+	 *            The payload.
 	 */
-	public PayloadCoordinate(T coord, O payload){
+	public PayloadCoordinate(T coord, O payload) {
 		this.coord = coord;
 		this.setPayload(payload);
 	}
-	
-	@Override
-	public void readASCII(Scanner in) throws IOException { coord.readASCII(in);}
-	@Override
-	public String asciiHeader() {return coord.asciiHeader();}
 
 	@Override
-	public void readBinary(DataInput in) throws IOException {coord.readBinary(in);}
+	public void readASCII(Scanner in) throws IOException {
+		coord.readASCII(in);
+	}
 
 	@Override
-	public byte[] binaryHeader() { return coord.binaryHeader();}
+	public String asciiHeader() {
+		return coord.asciiHeader();
+	}
 
 	@Override
-	public void writeASCII(PrintWriter out) throws IOException {coord.writeASCII(out);}
+	public void readBinary(DataInput in) throws IOException {
+		coord.readBinary(in);
+	}
 
 	@Override
-	public void writeBinary(DataOutput out) throws IOException {coord.writeBinary(out);}
+	public byte[] binaryHeader() {
+		return coord.binaryHeader();
+	}
 
 	@Override
-	public Number getOrdinate(int dimension) {return coord.getOrdinate(dimension);}
+	public void writeASCII(PrintWriter out) throws IOException {
+		coord.writeASCII(out);
+	}
 
 	@Override
-	public int getDimensions() {return coord.getDimensions();}
+	public void writeBinary(DataOutput out) throws IOException {
+		coord.writeBinary(out);
+	}
+
+	@Override
+	public Number getOrdinate(int dimension) {
+		return coord.getOrdinate(dimension);
+	}
+
+	@Override
+	public int getDimensions() {
+		return coord.getDimensions();
+	}
 
 	/**
 	 * Set the payload.
-	 * @param payload The payload
+	 * 
+	 * @param payload
+	 *            The payload
 	 */
 	public void setPayload(O payload) {
 		this.payload = payload;
@@ -99,13 +123,23 @@ public class PayloadCoordinate<T extends Coordinate, O> implements Coordinate {
 
 	/**
 	 * Create a {@link PayloadCoordinate}.
-	 * @param <T> The coordinate type.
-	 * @param <O> The payload type.
-	 * @param coord The coordinate.
-	 * @param payload The payload.
+	 * 
+	 * @param <T>
+	 *            The coordinate type.
+	 * @param <O>
+	 *            The payload type.
+	 * @param coord
+	 *            The coordinate.
+	 * @param payload
+	 *            The payload.
 	 * @return the newly created {@link PayloadCoordinate}.
 	 */
-	public static <T extends Coordinate, O> PayloadCoordinate<T,O> payload(T coord,O payload) {
-		return new PayloadCoordinate<T,O>(coord,payload);
+	public static <T extends Coordinate, O> PayloadCoordinate<T, O> payload(T coord, O payload) {
+		return new PayloadCoordinate<T, O>(coord, payload);
+	}
+
+	@Override
+	public void setOrdinate(int dimension, Number value) {
+		coord.setOrdinate(dimension, value);
 	}
 }

@@ -35,10 +35,10 @@ import org.openimaj.util.pair.IntFloatPair;
 /**
  * Abstract base class for k-nearest-neighbour calculations with any form of
  * object that can be compared with a {@link DistanceComparator}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <T>
  *            Type of object being compared.
  */
@@ -47,7 +47,7 @@ public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T,
 
 	/**
 	 * Construct with the given distance measure
-	 * 
+	 *
 	 * @param distance
 	 *            the distance measure
 	 */
@@ -57,7 +57,7 @@ public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T,
 
 	/**
 	 * Static method to find a distance between a query vector and point.
-	 * 
+	 *
 	 * @param <T>
 	 *            Type of object being compared.
 	 * @param distance
@@ -75,5 +75,14 @@ public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T,
 		} else {
 			return -(float) distance.compare(qu, pnt);
 		}
+	}
+
+	/**
+	 * Get the distance comparator
+	 *
+	 * @return the distance comparator
+	 */
+	public DistanceComparator<? super T> distanceComparator() {
+		return this.distance;
 	}
 }

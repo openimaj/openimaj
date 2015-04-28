@@ -35,13 +35,13 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import Jama.Matrix;
 
 /**
- * A generalised geometric object that has a calculable centre of gravity and
+ * A generalised 2D geometric object that has a calculable centre of gravity and
  * regular bounding box. The object can also be transformed in a variety of
  * ways.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public interface GeometricObject {
+public interface GeometricObject2d {
 	/**
 	 * Compute the regular (oriented to the axes) bounding box of the shape.
 	 * 
@@ -126,12 +126,12 @@ public interface GeometricObject {
 	public double getHeight();
 
 	/**
-	 * Apply a 3x3 transform matrix to a copy of the {@link GeometricObject} and
+	 * Apply a 3x3 transform matrix to a copy of the {@link GeometricObject2d} and
 	 * return it
 	 * 
 	 * @param transform
 	 *            3x3 transform matrix
 	 * @return the transformed shape
 	 */
-	public GeometricObject transform(Matrix transform);
+	public GeometricObject2d transform(Matrix transform);
 }

@@ -50,16 +50,16 @@ import Jama.Matrix;
 /**
  * Uses the Hough transform (for lines) to attempt to find the skew of the image
  * and unskews it using a basic skew transform.
- * 
+ *
  * @see "http://javaanpr.sourceforge.net/anpr.pdf"
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 12 Aug 2011
- * 
+ *
  */
 public class SkewCorrector implements ImageProcessor<FImage>
 {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	/**
 	 * Accuracy is a multiplier for the number of degrees in one bin of the
@@ -69,7 +69,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
@@ -180,7 +180,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 
 	/**
 	 * Helper function to display the image with lines
-	 * 
+	 *
 	 * @param i
 	 * @param hl
 	 * @param tf
@@ -194,7 +194,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		final MBFImage output = new MBFImage(i.getWidth(),
 				i.getHeight(), 3);
 		final MBFImageRenderer r = output.createRenderer(); // RenderHints.ANTI_ALIASED
-															// );
+		// );
 		r.drawImage(i, 0, 0);
 
 		for (final Line2d l : lines)
@@ -218,7 +218,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 	 * for lines. The default is 1 which means that the Hough Transform can
 	 * detect 360 degrees. If the accuracy is set to 2, the Hough Transform can
 	 * detect 720 distinct directional angles (accuracy is half a degree).
-	 * 
+	 *
 	 * @param accuracy
 	 *            The accuracy of the skew corrector
 	 */

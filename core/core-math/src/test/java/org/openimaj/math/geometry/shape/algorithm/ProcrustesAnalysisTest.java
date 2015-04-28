@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.PointList;
+import org.openimaj.math.geometry.point.PointList;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;

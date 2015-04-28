@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.point.PointList;
 
 import cern.jet.random.Normal;
 import cern.jet.random.Uniform;
