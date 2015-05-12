@@ -37,106 +37,109 @@ import org.openimaj.image.analysis.watershed.event.ComponentStackMergeListener;
 import org.openimaj.util.tree.TreeNode;
 import org.openimaj.util.tree.TreeNodeImpl;
 
-
 /**
- *	A listener that listens to the watershed algorithm progress and
- *	creates a region tree as the processing takes place.
+ * A listener that listens to the watershed algorithm progress and creates a
+ * region tree as the processing takes place.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *	
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
  */
 public class MergeTreeBuilder implements ComponentStackMergeListener
 {
 	Logger logger = Logger.getLogger(MergeTreeBuilder.class);
-	
+
 	/** This is the tree we build */
 	private TreeNode<Component> tree = null;
-	
-	/** 
-	 * 	Because we're creating components to store the history,
-	 *  the components that are being processed by the algorithm
-	 *  are not the same as those in our tree, so we must provide
-	 *  a map so that we can join up the tree afterwards. 
-	 */
-	private Map<Component,TreeNode<Component>> map = null;
 
 	/**
-	 * 	Default constructor
+	 * Because we're creating components to store the history, the components
+	 * that are being processed by the algorithm are not the same as those in
+	 * our tree, so we must provide a map so that we can join up the tree
+	 * afterwards.
+	 */
+	private Map<Component, TreeNode<Component>> map = null;
+
+	/**
+	 * Default constructor
 	 */
 	public MergeTreeBuilder()
 	{
 		map = new HashMap<Component, TreeNode<Component>>();
 	}
-	
-	/** 
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.analysis.watershed.event.ComponentStackMergeListener#componentsMerged(org.openimaj.image.analysis.watershed.Component, org.openimaj.image.analysis.watershed.Component)
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @see org.openimaj.image.analysis.watershed.event.ComponentStackMergeListener#componentsMerged(org.openimaj.image.analysis.watershed.Component,
+	 *      org.openimaj.image.analysis.watershed.Component)
 	 */
 	@Override
-	public void componentsMerged( Component c1, Component c2 )
+	public void componentsMerged(Component c1, Component c2)
 	{
-		logger.debug( "Map: "+map );
-		logger.debug( "Component c1: "+c1 );
-		logger.debug( "Component c2: "+c2 );
-		
+		// logger.debug( "Map: "+map );
+		logger.debug("Component c1: " + c1);
+		logger.debug("Component c2: " + c2);
+
 		// Create a tree node for the component if it doesn't
 		// exist already
-		TreeNode<Component> c1xtn = map.get( c1 );
-		if( c1xtn == null )
+		TreeNode<Component> c1xtn = map.get(c1);
+		if (c1xtn == null)
 		{
-			logger.debug( "c1 not found" );
+			logger.debug("c1 not found");
 			c1xtn = new TreeNodeImpl<Component>();
-			Component c1x = c1.clone();
-			c1xtn.setValue( c1x );
-			map.put( c1, c1xtn );
+			final Component c1x = c1.clone();
+			c1xtn.setValue(c1x);
+			map.put(c1, c1xtn);
 		}
 
 		// Add all the pixels from c2 into our copy of c1
-		c1xtn.getValue().merge( c2 );
+		c1xtn.getValue().merge(c2);
 
 		// Create a tree node for the second component
 		// if it doesn't exist already
-		TreeNode<Component> c2xtn = map.get( c2 );
-		if( c2xtn == null )
+		TreeNode<Component> c2xtn = map.get(c2);
+		if (c2xtn == null)
 		{
-			logger.debug( "c2 not found" );
+			logger.debug("c2 not found");
 			c2xtn = new TreeNodeImpl<Component>();
-			Component c2x = c2.clone();
-			c2xtn.setValue( c2x );
-			map.put( c2, c2xtn );
+			final Component c2x = c2.clone();
+			c2xtn.setValue(c2x);
+			map.put(c2, c2xtn);
 		}
 
-		logger.debug("Linking "+c1xtn+" and "+c2xtn );
+		// logger.debug("Linking " + c1xtn + " and " + c2xtn);
 
 		// Link the tree nodes
-		c1xtn.addChild( c2xtn );
+		c1xtn.addChild(c2xtn);
 		this.tree = c1xtn;
 	}
 
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.analysis.watershed.event.ComponentStackMergeListener#componentPromoted(org.openimaj.image.analysis.watershed.Component)
+	 * {@inheritDoc}
+	 *
+	 * @see org.openimaj.image.analysis.watershed.event.ComponentStackMergeListener#componentPromoted(org.openimaj.image.analysis.watershed.Component)
 	 */
 	@Override
-	public void componentPromoted( Component c1 )
-	{		
-		TreeNode<Component> c1xtn_old = map.get( c1 );
+	public void componentPromoted(Component c1)
+	{
+		final TreeNode<Component> c1xtn_old = map.get(c1);
 
-		Component c1x = c1.clone();
-		
-		TreeNode<Component> c1xtn = new TreeNodeImpl<Component>();
-		c1xtn.setValue( c1x );
-		
-		map.put( c1, c1xtn );
+		final Component c1x = c1.clone();
 
-		if( c1xtn_old != null )
-			c1xtn.addChild( c1xtn_old );
+		final TreeNode<Component> c1xtn = new TreeNodeImpl<Component>();
+		c1xtn.setValue(c1x);
+
+		map.put(c1, c1xtn);
+
+		if (c1xtn_old != null)
+			c1xtn.addChild(c1xtn_old);
 	}
-	
+
 	/**
-	 * 	Return the tree that has been built.
-	 *	@return the tree
+	 * Return the tree that has been built.
+	 *
+	 * @return the tree
 	 */
 	public TreeNode<Component> getTree()
 	{
