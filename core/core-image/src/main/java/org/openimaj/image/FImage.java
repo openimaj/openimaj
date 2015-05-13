@@ -52,7 +52,7 @@ import Jama.Matrix;
  * {@link FImage}s can be created from PGM files or from pixel arrays. If you
  * wish to read other types of files then use the {@link ImageUtilities} class
  * that provides read/write functions for {@link Image} objects.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FImage extends SingleBandImage<Float, FImage>
@@ -75,7 +75,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * Create an {@link FImage} from an array of floating point values with the
 	 * given width and height. The length of the array must equal the width
 	 * multiplied by the height.
-	 * 
+	 *
 	 * @param array
 	 *            An array of floating point values.
 	 * @param width
@@ -97,8 +97,33 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 
 	/**
+	 * Create an {@link FImage} from an array of double values with the given
+	 * width and height. The length of the array must equal the width multiplied
+	 * by the height. The values will be downcast to floats.
+	 *
+	 * @param array
+	 *            An array of floating point values.
+	 * @param width
+	 *            The width of the resulting image.
+	 * @param height
+	 *            The height of th resulting image.
+	 */
+	public FImage(final double[] array, final int width, final int height)
+	{
+		assert (array.length == width * height);
+
+		this.pixels = new float[height][width];
+		this.height = height;
+		this.width = width;
+
+		for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
+				this.pixels[y][x] = (float) array[y * width + x];
+	}
+
+	/**
 	 * Create an {@link FImage} from an array of floating point values.
-	 * 
+	 *
 	 * @param array
 	 *            the array representing pixel values to copy data from.
 	 */
@@ -111,7 +136,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Create an empty {@link FImage} of the given size.
-	 * 
+	 *
 	 * @param width
 	 *            image width (number of columns)
 	 * @param height
@@ -126,7 +151,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Construct an {@link FImage} from an array of packed ARGB integers.
-	 * 
+	 *
 	 * @param data
 	 *            array of packed ARGB pixels
 	 * @param width
@@ -141,7 +166,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Construct an {@link FImage} from an array of packed ARGB integers using
 	 * the specified plane.
-	 * 
+	 *
 	 * @param data
 	 *            array of packed ARGB pixels
 	 * @param width
@@ -183,7 +208,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#abs()
 	 */
 	@Override
@@ -200,7 +225,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * given image. This is a version of {@link Image#add(Image)} which takes an
 	 * {@link FImage}. This method directly accesses the underlying float[][]
 	 * and is therefore fast. This function returns a new {@link FImage}.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#add(Image)
 	 * @param im
 	 *            {@link FImage} to add into this one.
@@ -223,7 +248,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Returns a new {@link FImage} that contains the pixels of this image
 	 * increased by the given value. {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#add(java.lang.Object)
 	 */
 	@Override
@@ -242,7 +267,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * {@inheritDoc} This method throws an {@link UnsupportedOperationException}
 	 * if the given image is not an {@link FImage}.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#add(org.openimaj.image.Image)
 	 * @exception UnsupportedOperationException
 	 *                if an unsupported type is added
@@ -262,7 +287,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * Version of {@link Image#addInplace(Image)} which takes an {@link FImage}.
 	 * This directly accesses the underlying float[][] and is therefore fast.
 	 * This function side-affects the pixels in this {@link FImage}.
-	 * 
+	 *
 	 * @see Image#addInplace(Image)
 	 * @param im
 	 *            the FImage to add
@@ -282,7 +307,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#addInplace(java.lang.Object)
 	 */
 	@Override
@@ -299,7 +324,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * {@inheritDoc} This method throws an {@link UnsupportedOperationException}
 	 * if the given image is not an {@link FImage}.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#addInplace(org.openimaj.image.Image)
 	 * @exception UnsupportedOperationException
 	 *                if an unsupported type is added
@@ -316,7 +341,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#clip(java.lang.Object, java.lang.Object)
 	 */
 	@Override
@@ -340,7 +365,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#clipMax(java.lang.Object)
 	 */
 	@Override
@@ -360,7 +385,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#clipMin(java.lang.Object)
 	 */
 	@Override
@@ -380,7 +405,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.SingleBandImage#clone()
 	 */
 	@Override
@@ -410,7 +435,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * image. This is a version of {@link Image#divide(Image)} which takes an
 	 * {@link FImage}. This directly accesses the underlying float[][] and is
 	 * therefore fast. This function returns a new {@link FImage}.
-	 * 
+	 *
 	 * @see Image#divide(Image)
 	 * @param im
 	 *            the {@link FImage} to be the denominator.
@@ -436,7 +461,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * image. This is a version of {@link Image#divideInplace(Image)} which
 	 * takes an {@link FImage}. This directly accesses the underlying float[][]
 	 * and is therefore fast. This function side-affects this image.
-	 * 
+	 *
 	 * @see Image#divideInplace(Image)
 	 * @param im
 	 *            the {@link FImage} to be the denominator
@@ -460,7 +485,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#divideInplace(java.lang.Object)
 	 */
 	@Override
@@ -477,7 +502,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Divide all pixels by a given value
-	 * 
+	 *
 	 * @param fval
 	 *            the value
 	 * @return this image
@@ -494,7 +519,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#divideInplace(org.openimaj.image.Image)
 	 */
 	@Override
@@ -508,7 +533,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#extractROI(int, int,
 	 *      org.openimaj.image.Image)
 	 */
@@ -531,7 +556,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#extractROI(int, int, int, int)
 	 */
 	@Override
@@ -555,7 +580,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.SingleBandImage#fill(java.lang.Comparable)
 	 */
 	@Override
@@ -570,7 +595,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Fill an image with the given colour
-	 * 
+	 *
 	 * @param colour
 	 *            the colour
 	 * @return the image
@@ -587,7 +612,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getContentArea()
 	 */
 	@Override
@@ -614,7 +639,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Returns the pixels of the image as a vector (array) of doubles.
-	 * 
+	 *
 	 * @return the pixels of the image as a vector (array) of doubles.
 	 */
 	public double[] getDoublePixelVector()
@@ -629,7 +654,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getField(org.openimaj.image.Image.Field)
 	 */
 	@Override
@@ -652,7 +677,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getFieldCopy(org.openimaj.image.Image.Field)
 	 */
 	@Override
@@ -683,7 +708,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getFieldInterpolate(org.openimaj.image.Image.Field)
 	 */
 	@Override
@@ -730,7 +755,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Returns the pixels of the image as a vector (array) of floats.
-	 * 
+	 *
 	 * @return the pixels of the image as a vector (array) of floats.
 	 */
 	public float[] getFloatPixelVector()
@@ -745,7 +770,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getPixel(int, int)
 	 */
 	@Override
@@ -756,7 +781,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getPixelComparator()
 	 */
 	@Override
@@ -773,7 +798,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getPixelInterp(double, double)
 	 * @see Interpolation#bilerp(double, double, double, double, double, double)
 	 */
@@ -819,7 +844,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#getPixelInterp(double, double)
 	 * @see Interpolation#bilerp(double, double, double, double, double, double)
 	 */
@@ -869,7 +894,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Interpolate the value of a pixel at the given coordinates
-	 * 
+	 *
 	 * @param x
 	 *            the x-ordinate
 	 * @param y
@@ -925,7 +950,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */
 	@Override
@@ -943,7 +968,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */
 	@Override
@@ -958,7 +983,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#internalAssign(int [] data, int width, int
 	 *      height)
 	 */
@@ -990,7 +1015,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#inverse()
 	 */
 	@Override
@@ -1008,7 +1033,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#max()
 	 */
 	@Override
@@ -1030,7 +1055,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * which contains the location and value of the pixel. If there are multiple
 	 * pixels with the same value then the first is returned. Note that this
 	 * method assumes all pixel values are greater than 0.
-	 * 
+	 *
 	 * @return the maximum pixel as an {@link FValuePixel}.
 	 */
 	public FValuePixel maxPixel()
@@ -1053,7 +1078,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#min()
 	 */
 	@Override
@@ -1075,7 +1100,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * which contains the location and value of the pixel. If there are multiple
 	 * pixels with the same value then the first is returned. Note that this
 	 * method assumes all pixel values are greater than 0.
-	 * 
+	 *
 	 * @return The minimum pixel as an {@link FValuePixel}.
 	 */
 	public FValuePixel minPixel()
@@ -1096,7 +1121,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#multiply(java.lang.Object)
 	 */
 	@Override
@@ -1111,7 +1136,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * {@link Image#multiplyInplace(Image)} which takes an {@link FImage}. This
 	 * directly accesses the underlying float[][] and is therefore fast. This
 	 * function works inplace.
-	 * 
+	 *
 	 * @see Image#multiplyInplace(Image)
 	 * @param im
 	 *            the {@link FImage} to multiply with this image
@@ -1135,7 +1160,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#multiplyInplace(java.lang.Object)
 	 */
 	@Override
@@ -1155,7 +1180,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Multiply all pixel values by the given value
-	 * 
+	 *
 	 * @param fnum
 	 *            the value
 	 * @return this image
@@ -1178,7 +1203,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * {@inheritDoc} This method will throw an
 	 * {@link UnsupportedOperationException} if the input input is not an
 	 * {@link FImage}.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#multiplyInplace(org.openimaj.image.Image)
 	 * @throws UnsupportedOperationException
 	 *             if the given image is not an {@link FImage}
@@ -1194,7 +1219,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @return A new {@link FImage}
 	 * @see org.openimaj.image.Image#newInstance(int, int)
 	 */
@@ -1206,7 +1231,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#normalise()
 	 */
 	@Override
@@ -1214,6 +1239,9 @@ public class FImage extends SingleBandImage<Float, FImage>
 	{
 		final float min = this.min();
 		final float max = this.max();
+
+		if (max == min)
+			return this;
 
 		for (int r = 0; r < this.height; r++)
 		{
@@ -1228,7 +1256,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.SingleBandImage#process(org.openimaj.image.processor.KernelProcessor)
 	 */
 	@Override
@@ -1239,7 +1267,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * {@inheritDoc} This method has been overridden in {@link FImage} for
 	 * performance.
-	 * 
+	 *
 	 * @see org.openimaj.image.SingleBandImage#process(org.openimaj.image.processor.KernelProcessor,
 	 *      boolean)
 	 */
@@ -1275,7 +1303,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * {@inheritDoc} This method has been overridden in {@link FImage} for
 	 * performance.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#processInplace(org.openimaj.image.processor.PixelProcessor)
 	 */
 	@Override
@@ -1295,7 +1323,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * {@inheritDoc} This method has been overridden in {@link FImage} for
 	 * performance.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#analyseWith(org.openimaj.image.analyser.PixelAnalyser)
 	 */
 	@Override
@@ -1314,7 +1342,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#setPixel(int, int, java.lang.Object)
 	 */
 	@Override
@@ -1326,7 +1354,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Subtracts the given {@link FImage} from this image returning a new image
 	 * containing the result.
-	 * 
+	 *
 	 * @param im
 	 *            The image to subtract from this image.
 	 * @return A new image containing the result.
@@ -1347,7 +1375,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#subtract(java.lang.Object)
 	 */
 	@Override
@@ -1368,7 +1396,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * {@inheritDoc} Throws an {@link UnsupportedOperationException} if the
 	 * given image is not an {@link FImage}.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#subtract(org.openimaj.image.Image)
 	 * @throws UnsupportedOperationException
 	 *             if the given image is not an {@link FImage}.
@@ -1385,7 +1413,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Subtracts (pixel-by-pixel) the given {@link FImage} from this image.
 	 * Side-affects this image.
-	 * 
+	 *
 	 * @param im
 	 *            The {@link FImage} to subtract from this image.
 	 * @return A reference to this image containing the result.
@@ -1410,7 +1438,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#subtractInplace(java.lang.Object)
 	 */
 	@Override
@@ -1430,7 +1458,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#subtractInplace(org.openimaj.image.Image)
 	 */
 	@Override
@@ -1444,7 +1472,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#threshold(java.lang.Object)
 	 */
 	@Override
@@ -1466,7 +1494,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#toByteImage()
 	 */
 	@Override
@@ -1490,7 +1518,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#toPackedARGBPixels()
 	 */
 	@Override
@@ -1512,7 +1540,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -1544,7 +1572,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * Returns a string representation of every pixel in this image using the
 	 * format string (see {@link String#format(String, Object...)}) to format
 	 * each pixel value.
-	 * 
+	 *
 	 * @param format
 	 *            The format string to use for each pixel output
 	 * @return A string representation of the image
@@ -1563,7 +1591,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#transform(Jama.Matrix)
 	 */
 	@Override
@@ -1573,7 +1601,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#zero()
 	 */
 	@Override
@@ -1600,7 +1628,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Compare this image against another using a threshold on the absolute
 	 * difference between pixel values in order to determine equality.
-	 * 
+	 *
 	 * @param o
 	 *            the image to compare against
 	 * @param thresh
@@ -1624,10 +1652,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Get the value of the pixel at coordinate p
-	 * 
+	 *
 	 * @param p
 	 *            The coordinate to get
-	 * 
+	 *
 	 * @return The pixel value at (x, y)
 	 */
 	public float getPixelNative(final Pixel p) {
@@ -1636,12 +1664,12 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Get the value of the pixel at coordinate <code>(x, y)</code>.
-	 * 
+	 *
 	 * @param x
 	 *            The x-coordinate to get
 	 * @param y
 	 *            The y-coordinate to get
-	 * 
+	 *
 	 * @return The pixel value at (x, y)
 	 */
 	public float getPixelNative(final int x, final int y) {
@@ -1651,7 +1679,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Returns the pixels in this image as a vector (an array of the pixel
 	 * type).
-	 * 
+	 *
 	 * @param f
 	 *            The array into which to place the data
 	 * @return The pixels in the image as a vector (a reference to the given
@@ -1669,7 +1697,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Sets the pixel at <code>(x,y)</code> to the given value. Side-affects
 	 * this image.
-	 * 
+	 *
 	 * @param x
 	 *            The x-coordinate of the pixel to set
 	 * @param y
@@ -1683,7 +1711,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Convenience method to initialise an array of FImages
-	 * 
+	 *
 	 * @param num
 	 *            array length
 	 * @param width
@@ -1717,7 +1745,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Convert this {@link FImage} to an RGB {@link MBFImage}.
-	 * 
+	 *
 	 * @return a new RGB colour image.
 	 */
 	public MBFImage toRGB() {
@@ -1762,7 +1790,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Overlay the given image on this image with the given alpha channel at the
 	 * given location.
-	 * 
+	 *
 	 * @param img
 	 *            The image to overlay
 	 * @param alpha
@@ -1798,7 +1826,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * <p>
 	 * This method will overlay the given image at the given location with full
 	 * opacity.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#overlayInplace(org.openimaj.image.Image,
 	 *      int, int)
 	 */
@@ -1810,7 +1838,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Create a random image of the given size.
-	 * 
+	 *
 	 * @param width
 	 *            the width
 	 * @param height
@@ -1835,7 +1863,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Replace pixels of a certain colour with another colour. Side-affects this
 	 * image.
-	 * 
+	 *
 	 * @param target
 	 *            the colour to fill the image with
 	 * @param replacement
