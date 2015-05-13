@@ -29,10 +29,9 @@
  */
 package org.openimaj.math.matrix.algorithm.pca;
 
-import org.jblas.DoubleMatrix;
-import org.jblas.NativeBlas;
-import org.jblas.exceptions.LapackConvergenceException;
+import java.util.Arrays;
 
+import no.uib.cipr.matrix.NotConvergedException;
 import Jama.Matrix;
 
 /**
@@ -58,7 +57,7 @@ public class SvdPrincipalComponentAnalysis extends PrincipalComponentAnalysis {
 	/**
 	 * Construct a {@link SvdPrincipalComponentAnalysis} that will extract the n
 	 * best eigenvectors.
-	 *
+	 * 
 	 * @param ndims
 	 *            the number of eigenvectors to select.
 	 */
@@ -68,51 +67,28 @@ public class SvdPrincipalComponentAnalysis extends PrincipalComponentAnalysis {
 
 	@Override
 	public void learnBasisNorm(Matrix norm) {
-		final DoubleMatrix dm = new DoubleMatrix(norm.getRowDimension(), norm.getColumnDimension(),
-				norm.getColumnPackedCopy());
+		try {
+			final no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(norm.getArray());
+			final no.uib.cipr.matrix.EconomySVD svd = no.uib.cipr.matrix.EconomySVD.factorize(mjtA);
 
-		final DoubleMatrix[] result = econSVD(dm);
+			final no.uib.cipr.matrix.DenseMatrix output = svd.getVt();
 
-		final DoubleMatrix S = result[1];
-		final DoubleMatrix Vt = result[2];
+			final int dims = ndims < 0 ? svd.getS().length : ndims;
 
-		final int dims = ndims < 0 ? S.rows : ndims;
+			basis = new Matrix(output.numColumns(), dims);
+			eigenvalues = Arrays.copyOf(svd.getS(), dims);
 
-		basis = new Matrix(Vt.columns, dims);
-		eigenvalues = new double[dims];
+			final double normEig = 1.0 / (norm.getRowDimension() - 1);
+			for (int i = 0; i < eigenvalues.length; i++)
+				eigenvalues[i] = eigenvalues[i] * eigenvalues[i] * normEig;
 
-		final double normEig = 1.0 / (norm.getRowDimension() - 1);
-		for (int i = 0; i < eigenvalues.length; i++) {
-			eigenvalues[i] = S.data[i] * S.data[i] * normEig;
+			final double[][] basisData = basis.getArray();
+			for (int j = 0; j < output.numColumns(); j++)
+				for (int i = 0; i < dims; i++)
+					basisData[j][i] = output.get(i, j);
+
+		} catch (final NotConvergedException e) {
+			throw new RuntimeException(e);
 		}
-
-		final double[][] basisData = basis.getArray();
-		for (int j = 0; j < Vt.columns; j++)
-			for (int i = 0; i < dims; i++)
-				basisData[j][i] = Vt.data[i + Vt.rows * j];
-	}
-
-	/**
-	 * Compute a singular-value decomposition of A.
-	 *
-	 * @return A DoubleMatrix[3] array of U, S, Vt such that A = U * diag(S) *
-	 *         Vt
-	 */
-	private static DoubleMatrix[] econSVD(DoubleMatrix A) {
-		final int m = A.rows;
-		final int n = A.columns;
-
-		final DoubleMatrix U = new DoubleMatrix(m, Math.min(m, n));
-		final DoubleMatrix S = new DoubleMatrix(Math.min(m, n));
-		final DoubleMatrix V = new DoubleMatrix(Math.min(n, m), n);
-
-		final int info = NativeBlas.dgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n);
-
-		if (info > 0) {
-			throw new LapackConvergenceException("GESVD", info
-					+ " superdiagonals of an intermediate bidiagonal form failed to converge.");
-		}
-
-		return new DoubleMatrix[] { U, S, V };
 	}
 }
