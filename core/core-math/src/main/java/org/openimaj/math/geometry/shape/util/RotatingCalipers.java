@@ -42,10 +42,10 @@ import org.openimaj.math.geometry.shape.RotatedRectangle;
  * <p>
  * Modified to only use radians for angles and fit better within the OpenIMAJ
  * geometry classes.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Bart Kiers
- * 
+ *
  */
 public final class RotatingCalipers {
 	private static final double ANGLE_0DEG_IN_RADS = 0;
@@ -75,7 +75,7 @@ public final class RotatingCalipers {
 	/**
 	 * Use the rotating calipers algorithm to optimally find the minimum sized
 	 * rotated rectangle that encompasses the outer shell of the given polygon.
-	 * 
+	 *
 	 * @param poly
 	 *            the polygon
 	 * @param assumeSimple
@@ -138,7 +138,7 @@ public final class RotatingCalipers {
 		final double cx = (rectangle[0].x + rectangle[1].x + rectangle[2].x + rectangle[3].x) / 4;
 		final double cy = (rectangle[0].y + rectangle[1].y + rectangle[2].y + rectangle[3].y) / 4;
 
-		return new RotatedRectangle(cx, cy, lengthAB, lengthBC, angle);
+		return new RotatedRectangle(cx, cy, lengthBC, lengthAB, angle);
 	}
 
 	private static double getSmallestTheta(Caliper I, Caliper J, Caliper K, Caliper L) {
