@@ -38,7 +38,7 @@ import org.openimaj.image.renderer.RenderHints;
 
 /**
  * A multiband floating-point image.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
@@ -54,7 +54,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	/**
 	 * Construct an MBFImage from single band images. The given images are used
 	 * directly as the bands and are not cloned.
-	 * 
+	 *
 	 * @param colourSpace
 	 *            the colourspace
 	 * @param images
@@ -71,7 +71,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 * not cloned; if you want to create an RGB {@link MBFImage} from a single
 	 * {@link FImage}, you would need to clone the {@link FImage} at least
 	 * twice.
-	 * 
+	 *
 	 * @param images
 	 *            the bands
 	 */
@@ -81,7 +81,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/**
 	 * Construct an empty RGB image (3 bands)
-	 * 
+	 *
 	 * @param width
 	 *            Width of image
 	 * @param height
@@ -93,7 +93,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/**
 	 * Construct an empty image
-	 * 
+	 *
 	 * @param width
 	 *            Width of image
 	 * @param height
@@ -113,7 +113,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 * Construct an empty image. If the number of bands is 3, RGB is assumed, if
 	 * the number is 4, then RGBA is assumed, otherwise the colourspace is set
 	 * to CUSTOM.
-	 * 
+	 *
 	 * @param width
 	 *            Width of image
 	 * @param height
@@ -135,7 +135,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	/**
 	 * Create an image from a BufferedImage object. Resultant image have RGB
 	 * bands in the 0-1 range.
-	 * 
+	 *
 	 * @param data
 	 *            array of packed ARGB pixels
 	 * @param width
@@ -150,7 +150,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	/**
 	 * Create an image from a int[] object. Resultant image will be in the 0-1
 	 * range. If alpha is true, bands will be RGBA, otherwise RGB
-	 * 
+	 *
 	 * @param data
 	 *            array of packed ARGB pixels
 	 * @param width
@@ -165,9 +165,46 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		this.internalAssign(data, width, height);
 	}
 
+	/**
+	 * Create an MBFImage from an array of double values with the given width
+	 * and height. The length of the array must equal the width multiplied by
+	 * the height by the number of bands. The values will be downcast to floats.
+	 * The data can either be interlaced (rgbrgb...) or band at a time (rrrr...
+	 * gggg... bbbb...).
+	 *
+	 * @param ds
+	 *            An array of floating point values.
+	 * @param width
+	 *            The width of the resulting image.
+	 * @param height
+	 *            The height of the resulting image.
+	 * @param nbands
+	 *            the number of bands
+	 * @param interlaced
+	 *            if true the data in the array is interlaced
+	 */
+	public MBFImage(double[] ds, int width, int height, int nbands, boolean interlaced) {
+		if (interlaced) {
+			for (int i = 0; i < nbands; i++) {
+				bands.add(new FImage(width, height));
+			}
+			for (int y = 0, c = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					for (int i = 0; i < nbands; i++, c++) {
+						bands.get(i).pixels[y][x] = (float) ds[c];
+					}
+				}
+			}
+		} else {
+			for (int i = 0; i < nbands; i++) {
+				bands.add(new FImage(ds, width, height, i * width * height));
+			}
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.MultiBandImage#flattenMax()
 	 */
 	@Override
@@ -227,7 +264,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixel(int, int)
 	 */
 	@Override
@@ -267,7 +304,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixelInterp(double, double)
 	 */
 	@Override
@@ -283,7 +320,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixelInterp(double,
 	 * double,Float[])
 	 */
@@ -300,7 +337,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/**
 	 * Assign planar RGB bytes (R1G1B1R2G2B2...) to this image.
-	 * 
+	 *
 	 * @param bytes
 	 *            the byte array
 	 * @param width
@@ -333,7 +370,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#internalAssign(int[], int, int)
 	 */
 	@Override
@@ -385,7 +422,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.MultiBandImage#newInstance(int, int)
 	 */
 	@Override
@@ -409,10 +446,10 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/**
 	 * Get the value of the pixel at coordinate p
-	 * 
+	 *
 	 * @param p
 	 *            The coordinate to get
-	 * 
+	 *
 	 * @return The pixel value at (x, y)
 	 */
 	public float[] getPixelNative(final Pixel p) {
@@ -421,12 +458,12 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/**
 	 * Get the value of the pixel at coordinate <code>(x, y)</code>.
-	 * 
+	 *
 	 * @param x
 	 *            The x-coordinate to get
 	 * @param y
 	 *            The y-coordinate to get
-	 * 
+	 *
 	 * @return The pixel value at (x, y)
 	 */
 	public float[] getPixelNative(final int x, final int y) {
@@ -442,7 +479,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	/**
 	 * Returns the pixels in this image as a vector (an array of the pixel
 	 * type).
-	 * 
+	 *
 	 * @param f
 	 *            The array into which to place the data
 	 * @return The pixels in the image as a vector (a reference to the given
@@ -459,7 +496,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	/**
 	 * Sets the pixel at <code>(x,y)</code> to the given value. Side-affects
 	 * this image.
-	 * 
+	 *
 	 * @param x
 	 *            The x-coordinate of the pixel to set
 	 * @param y
@@ -486,7 +523,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 * This method assumes the last band in the multiband image is the alpha
 	 * channel. This allows a 2-channel MBFImage where the first image is an
 	 * FImage and the second an alpha channel, as well as a standard RGBA image.
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#overlayInplace(org.openimaj.image.Image,
 	 *      int, int)
 	 */
@@ -503,7 +540,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/**
 	 * Create a random RGB image.
-	 * 
+	 *
 	 * @param width
 	 *            the width
 	 * @param height
@@ -525,7 +562,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 * Convenience method to create an RGB {@link MBFImage} from an
 	 * {@link FImage} by cloning the {@link FImage} for each of the R, G and B
 	 * bands.
-	 * 
+	 *
 	 * @param image
 	 *            the {@link FImage} to convert
 	 * @return the new RGB {@link MBFImage}
@@ -563,5 +600,25 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	@Override
 	protected Float[] createPixelArray(int n) {
 		return new Float[n];
+	}
+
+	/**
+	 * Returns the pixels of the image as a vector (array) of doubles.
+	 *
+	 * @return the pixels of the image as a vector (array) of doubles.
+	 */
+	public double[] getDoublePixelVector()
+	{
+		final int height = getHeight();
+		final int width = getWidth();
+		final double f[] = new double[width * height * this.numBands()];
+		for (int i = 0; i < this.bands.size(); i++) {
+			final float[][] pixels = bands.get(i).pixels;
+
+			for (int y = 0; y < height; y++)
+				for (int x = 0; x < width; x++)
+					f[x + y * width + i * height * width] = pixels[y][x];
+		}
+		return f;
 	}
 }
