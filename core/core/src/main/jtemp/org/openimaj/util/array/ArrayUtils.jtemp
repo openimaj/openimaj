@@ -1452,5 +1452,23 @@ public class ArrayUtils {
 		
 		return out;
 	}
+
+	/*-- pnorm() --*/
+	/**
+	 * Compute the p-norm of the array
+	 * 
+	 * @param array the array 
+	 * @param p the p value
+	 * @return the p-norm
+	 */
+	public static double pnorm(final #t#[] array, final int p) {
+		double sum = 0;
+
+		for (int i=0; i<array.length; i++)
+			sum += Math.pow(Math.abs(array[i]), p);
+
+		return Math.pow(sum, 1.0/p);
+	}
+
 	/*-- the end --*/
 }
