@@ -167,7 +167,7 @@ public class #T#FV extends ArrayFeatureVector<#t#[]> implements Concatenatable<#
 		double pnorm = 0;
 
 		for (int i=0; i<dvals.length; i++)
-			pnorm += Math.pow(dvals[i], p);
+			pnorm += Math.pow(Math.abs(dvals[i]), p);
 			
 		pnorm = Math.pow(pnorm, 1.0 / p);
 
