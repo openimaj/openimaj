@@ -32,17 +32,17 @@ package org.openimaj.math.util;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
- * 
+ *
  * Some basic statistical operations on double arrays
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class DoubleArrayStatsUtils {
 	/**
 	 * Find the mean of a single dimensional double array. returns 0 if the
 	 * array is empty.
-	 * 
+	 *
 	 * @param arr
 	 * @return the mean
 	 */
@@ -62,7 +62,7 @@ public class DoubleArrayStatsUtils {
 	/**
 	 * Calculate the mean of a two dimensional double array. returns 0 if the
 	 * array is empty.
-	 * 
+	 *
 	 * @param arr
 	 * @return the mean
 	 */
@@ -90,9 +90,9 @@ public class DoubleArrayStatsUtils {
 	}
 
 	/**
-	 * Calculate the variance of a one dimensional double array. If the length
-	 * of the array is less than 2, variance is 0.
-	 * 
+	 * Calculate the sample variance of a one dimensional double array. If the
+	 * length of the array is less than 2, variance is 0.
+	 *
 	 * @param arr
 	 * @return the variance
 	 */
@@ -118,9 +118,9 @@ public class DoubleArrayStatsUtils {
 	}
 
 	/**
-	 * Calculate the variance of a one dimensional double array. If the length
-	 * of the array is less than 2, variance is 0.
-	 * 
+	 * Calculate the sample variance of a one dimensional double array. If the
+	 * length of the array is less than 2, variance is 0.
+	 *
 	 * @param arr
 	 * @return the variance
 	 */
@@ -154,9 +154,9 @@ public class DoubleArrayStatsUtils {
 	}
 
 	/**
-	 * Calculate the standard deviation of a 2D array. Calls
+	 * Calculate the sample standard deviation of a 2D array. Calls
 	 * {@link DoubleArrayStatsUtils#var(double[][])} and does a Math.sqrt.
-	 * 
+	 *
 	 * @param arr
 	 * @return the standard deviation
 	 */
@@ -165,9 +165,9 @@ public class DoubleArrayStatsUtils {
 	}
 
 	/**
-	 * Calculate the standard deviation of a 1D array. Calls
+	 * Calculate the sample standard deviation of a 1D array. Calls
 	 * {@link DoubleArrayStatsUtils#var(double[])} and does a Math.sqrt.
-	 * 
+	 *
 	 * @param arr
 	 * @return the standard deviation
 	 */
@@ -177,7 +177,7 @@ public class DoubleArrayStatsUtils {
 
 	/**
 	 * Calculate the sum of a 2D array.
-	 * 
+	 *
 	 * @param arr
 	 * @return the sum
 	 */
@@ -190,7 +190,7 @@ public class DoubleArrayStatsUtils {
 
 	/**
 	 * Calculate the sum of a 1D array.
-	 * 
+	 *
 	 * @param arr
 	 * @return the sum
 	 */
@@ -203,7 +203,7 @@ public class DoubleArrayStatsUtils {
 
 	/**
 	 * Calculate the sum of the squared values of a 2D array.
-	 * 
+	 *
 	 * @param arr
 	 * @return sum of squares
 	 */
@@ -216,7 +216,7 @@ public class DoubleArrayStatsUtils {
 
 	/**
 	 * Calculate the sum the squared values of a 1D array.
-	 * 
+	 *
 	 * @param arr
 	 * @return sum of squares
 	 */
@@ -229,7 +229,7 @@ public class DoubleArrayStatsUtils {
 
 	/**
 	 * Calculate the sum of the absolute values of a 2D array.
-	 * 
+	 *
 	 * @param arr
 	 * @return the sum absolute values
 	 */
@@ -242,7 +242,7 @@ public class DoubleArrayStatsUtils {
 
 	/**
 	 * Calculate the sum the absolute values of a 1D array.
-	 * 
+	 *
 	 * @param arr
 	 * @return the sum absolute values
 	 */
@@ -256,7 +256,7 @@ public class DoubleArrayStatsUtils {
 	/**
 	 * Calculate the median of the given array. Uses the quick select algorithm
 	 * ({@link ArrayUtils#quickSelect(double[], int)}).
-	 * 
+	 *
 	 * @param arr
 	 *            the array
 	 * @return the median value
@@ -276,7 +276,7 @@ public class DoubleArrayStatsUtils {
 	/**
 	 * Calculate the median of the given sub-array. Uses the quick select
 	 * algorithm ({@link ArrayUtils#quickSelect(double[], int, int, int)}).
-	 * 
+	 *
 	 * @param arr
 	 *            the array
 	 * @param start
