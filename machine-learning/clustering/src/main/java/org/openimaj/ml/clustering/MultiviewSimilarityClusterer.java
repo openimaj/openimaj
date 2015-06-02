@@ -34,12 +34,15 @@ import java.util.List;
 import ch.akuhn.matrix.SparseMatrix;
 
 /**
- * A {@link MultiviewSimilarityClusterer} clusters data that can be represented as multiple
- * similarity matricies. 
+ * A {@link MultiviewSimilarityClusterer} clusters data that can be represented
+ * as multiple similarity matrices.
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <CLUSTERS> 
+ * @param <CLUSTERS>
  */
-public interface MultiviewSimilarityClusterer<CLUSTERS extends IndexClusters> extends DataClusterer<List<SparseMatrix>,CLUSTERS> {
+public interface MultiviewSimilarityClusterer<CLUSTERS extends IndexClusters>
+		extends
+			DataClusterer<List<SparseMatrix>, CLUSTERS>
+{
 
 }
