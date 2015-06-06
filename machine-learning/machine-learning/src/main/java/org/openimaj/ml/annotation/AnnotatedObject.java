@@ -40,9 +40,9 @@ import org.openimaj.data.dataset.ListDataset;
 
 /**
  * Basic implementation of {@link Annotated}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object.
  * @param <ANNOTATION>
@@ -61,7 +61,7 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 
 	/**
 	 * Construct with the given object and its annotations.
-	 * 
+	 *
 	 * @param object
 	 *            the object
 	 * @param annotations
@@ -74,7 +74,7 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 
 	/**
 	 * Construct with the given object and its annotation.
-	 * 
+	 *
 	 * @param object
 	 *            the object
 	 * @param annotation
@@ -100,7 +100,7 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 	/**
 	 * Create an {@link AnnotatedObject} with the given object and its
 	 * annotations.
-	 * 
+	 *
 	 * @param <OBJECT>
 	 *            Type of object.
 	 * @param <ANNOTATION>
@@ -113,14 +113,14 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 	 */
 	public static <OBJECT, ANNOTATION> AnnotatedObject<OBJECT, ANNOTATION> create(OBJECT object,
 			Collection<ANNOTATION> annotations)
-	{
+			{
 		return new AnnotatedObject<OBJECT, ANNOTATION>(object, annotations);
-	}
+			}
 
 	/**
 	 * Create an {@link AnnotatedObject} with the given object and its
 	 * annotation.
-	 * 
+	 *
 	 * @param <OBJECT>
 	 *            Type of object.
 	 * @param <ANNOTATION>
@@ -139,7 +139,7 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 	 * Convert a grouped dataset to a list of annotated objects. The annotations
 	 * correspond to the type of group. If the same object appears in multiple
 	 * groups within the dataset then it will have multiple annotations.
-	 * 
+	 *
 	 * @param <OBJECT>
 	 *            Type of object.
 	 * @param <ANNOTATION>
@@ -150,7 +150,7 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 	 */
 	public static <OBJECT, ANNOTATION> List<AnnotatedObject<OBJECT, ANNOTATION>> createList(
 			GroupedDataset<ANNOTATION, ? extends ListDataset<OBJECT>, OBJECT> dataset)
-	{
+			{
 		final Map<OBJECT, AnnotatedObject<OBJECT, ANNOTATION>> annotated = new HashMap<OBJECT, AnnotatedObject<OBJECT, ANNOTATION>>(
 				dataset.numInstances());
 
@@ -166,5 +166,51 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 		}
 
 		return new ArrayList<AnnotatedObject<OBJECT, ANNOTATION>>(annotated.values());
+			}
+
+	/**
+	 * Convert parallel arrays of objects and annotations to a list of
+	 * {@link AnnotatedObject}.
+	 *
+	 * @param objs
+	 *            the objects
+	 * @param anns
+	 *            the annotation for each object (assumes 1 annotation per
+	 *            object).
+	 * @return the list
+	 */
+	public static <OBJECT, ANNOTATION> List<AnnotatedObject<OBJECT, ANNOTATION>> createList(OBJECT[] objs,
+			ANNOTATION[] anns)
+	{
+		final List<AnnotatedObject<OBJECT, ANNOTATION>> list = new ArrayList<AnnotatedObject<OBJECT, ANNOTATION>>();
+
+		for (int i = 0; i < objs.length; i++) {
+			list.add(create(objs[i], anns[i]));
+		}
+
+		return list;
+	}
+
+	/**
+	 * Convert parallel arrays of objects and annotations to a list of
+	 * {@link AnnotatedObject}.
+	 *
+	 * @param objs
+	 *            the objects
+	 * @param anns
+	 *            the annotations for each object.
+	 * @return the list
+	 */
+	public static <OBJECT, ANNOTATION> List<AnnotatedObject<OBJECT, ANNOTATION>> createList(OBJECT[] objs,
+			ANNOTATION[][] anns)
+	{
+		final List<AnnotatedObject<OBJECT, ANNOTATION>> list = new ArrayList<AnnotatedObject<OBJECT, ANNOTATION>>();
+
+		for (int i = 0; i < objs.length; i++) {
+			for (final ANNOTATION a : anns[i])
+				list.add(create(objs[i], a));
+		}
+
+		return list;
 	}
 }
