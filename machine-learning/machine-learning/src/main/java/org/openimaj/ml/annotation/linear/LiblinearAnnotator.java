@@ -62,9 +62,9 @@ import de.bwaldvogel.liblinear.SolverType;
  * features. Two modes of operation are available depending on whether the
  * problem is multiclass or multilabel. Binary classification can be achieved
  * with either mode, although multiclass mode is more efficient in this case.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object being annotated
  * @param <ANNOTATION>
@@ -95,9 +95,9 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 	 * The classifier mode; either multiclass or multilabel. Multiclass mode
 	 * will use liblinear's internal multiclass support, whereas multilabel mode
 	 * will create a set of one-versus-all (OvA) classifiers for each class.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public enum Mode {
 		/**
@@ -183,7 +183,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 			if (dense) {
 				final DenseProblem problem = new DenseProblem();
 				problem.l = nItems;
-				problem.n = featureLength + 1;
+				problem.n = featureLength + (bias >= 0 ? 1 : 0);
 				problem.bias = bias;
 				problem.x = new double[nItems][];
 				problem.y = new double[nItems];
@@ -201,7 +201,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 			} else {
 				final Problem problem = new Problem();
 				problem.l = nItems;
-				problem.n = featureLength;
+				problem.n = featureLength + (bias >= 0 ? 1 : 0);
 				problem.bias = bias;
 				problem.x = new Feature[nItems][];
 				problem.y = new double[nItems];
@@ -231,7 +231,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 			if (dense) {
 				final DenseProblem problem = new DenseProblem();
 				problem.l = nItems;
-				problem.n = featureLength;
+				problem.n = featureLength + (bias >= 0 ? 1 : 0);
 				problem.bias = bias;
 				problem.x = new double[nItems][];
 				problem.y = new double[nItems];
@@ -253,7 +253,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 			} else {
 				final Problem problem = new Problem();
 				problem.l = nItems;
-				problem.n = featureLength;
+				problem.n = featureLength + (bias >= 0 ? 1 : 0);
 				problem.bias = bias;
 				problem.x = new Feature[nItems][];
 				problem.y = new double[nItems];
@@ -318,9 +318,9 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 
 	/**
 	 * Multi-label classifier built from multiple binary classifiers.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	static class Multilabel<OBJECT, ANNOTATION> extends InternalModel<OBJECT, ANNOTATION> {
 		private Parameter parameter;
@@ -353,7 +353,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 				if (dense) {
 					final DenseProblem problem = new DenseProblem();
 					problem.l = positive.size() + negative.size();
-					problem.n = featureLength;
+					problem.n = featureLength + (bias >= 0 ? 1 : 0);
 					problem.bias = bias;
 					problem.x = new double[problem.l][];
 					problem.y = new double[problem.l];
@@ -372,7 +372,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 				} else {
 					final Problem problem = new Problem();
 					problem.l = positive.size() + negative.size();
-					problem.n = featureLength;
+					problem.n = featureLength + (bias >= 0 ? 1 : 0);
 					problem.bias = bias;
 					problem.x = new Feature[problem.l][];
 					problem.y = new double[problem.l];
@@ -453,7 +453,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 
 	/**
 	 * Default constructor. Assumes sparse features.
-	 * 
+	 *
 	 * @param extractor
 	 *            the feature extractor
 	 * @param mode
@@ -473,7 +473,7 @@ public class LiblinearAnnotator<OBJECT, ANNOTATION>
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param extractor
 	 *            the feature extractor
 	 * @param mode

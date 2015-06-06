@@ -48,14 +48,14 @@ import de.bwaldvogel.liblinear.FeatureNode;
 
 /**
  * Helper methods for interoperability of OpenIMAJ types with Liblinear.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class LiblinearHelper {
 	/**
 	 * Convert a {@link FeatureVector} to an array of {@link Feature}s.
-	 * 
+	 *
 	 * @param feature
 	 *            input {@link FeatureVector}
 	 * @param bias
@@ -124,7 +124,7 @@ public class LiblinearHelper {
 		}
 
 		if (extra == 1) {
-			out[out.length - 1] = new FeatureNode(feature.length(), bias);
+			out[out.length - 1] = new FeatureNode(feature.length() + 1, bias);
 		}
 
 		return out;
@@ -133,7 +133,7 @@ public class LiblinearHelper {
 	/**
 	 * Convert a {@link FeatureVector} to an array of doubles using
 	 * {@link FeatureVector#asDoubleVector()}.
-	 * 
+	 *
 	 * @param feature
 	 *            the feature
 	 * @param bias
