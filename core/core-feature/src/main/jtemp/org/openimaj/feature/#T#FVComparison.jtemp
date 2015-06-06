@@ -82,7 +82,7 @@ public enum #T#FVComparison implements #T#FVComparator {
 	/**
 	 * Correlation
 	 *
-	 * d(H1,H2) = sumI( H'1(I) * H'2(I) ) / sqrt( sumI[H'1(I)2]^2 * sumI[H'2(I)^2] )
+	 * s(H1,H2) = sumI( H'1(I) * H'2(I) ) / sqrt( sumI[H'1(I)2]^2 * sumI[H'2(I)^2] )
 	 * where
 	 * H'k(I) = Hk(I) - (1/N) * sumJ( Hk(J) ); N=number of FeatureVector bins
 	 *
@@ -143,7 +143,7 @@ public enum #T#FVComparison implements #T#FVComparator {
 	},
 	/**
 	 * Histogram intersection
-	 * d(H1,H2) = sumI( min(H1(I), H2(I)) )
+	 * s(H1,H2) = sumI( min(H1(I), H2(I)) )
 	 */
 	INTERSECTION(false) {
 		@Override
@@ -246,7 +246,7 @@ public enum #T#FVComparison implements #T#FVComparator {
 	},
 	/**
 	 * Cosine similarity (sim of 1 means identical)
-	 * d(H1,H2)=sumI(H1(I) * H2(I))) / (sumI(H1(I)^2) sumI(H2(I)^2))
+	 * s(H1,H2)=sumI(H1(I) * H2(I))) / (sumI(H1(I)^2) sumI(H2(I)^2))
 	 */
 	COSINE_SIM(false) {
 		@Override
@@ -332,6 +332,25 @@ public enum #T#FVComparison implements #T#FVComparator {
 			intersection.retainAll(h2);
 
 			return 1.0 - (((double)intersection.size()) / (double)union.size());
+		}
+	},
+	/**
+	 * Inner product
+	 * s(H1,H2)=sumI(H1(I) * H2(I))
+	 */
+	INNER_PRODUCT(false) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			if (h1.length != h2.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double h12 = 0;
+			
+			for (int i=0; i<h1.length; i++) {
+				h12 += h1[i] * h2[i];
+			}
+
+			return h12;
 		}
 	}
 	;

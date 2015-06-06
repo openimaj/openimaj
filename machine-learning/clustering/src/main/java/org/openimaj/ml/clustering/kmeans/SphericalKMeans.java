@@ -1,5 +1,7 @@
 package org.openimaj.ml.clustering.kmeans;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.openimaj.data.DataSource;
@@ -43,11 +45,34 @@ import org.openimaj.util.parallel.Parallel.IntRange;
  *
  */
 public class SphericalKMeans implements SpatialClusterer<SphericalKMeansResult, double[]> {
+	/**
+	 * Object storing the result of the previous iteration of spherical kmeans.
+	 * The object should be considered to be immutable, and read only. The
+	 * kmeans implementation will reuse the same instance for each iteration.
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+	public static class IterationResult {
+		/**
+		 * The iteration number, starting from 0
+		 */
+		public int iteration;
+		/**
+		 * The change in fitness from the previous iteration
+		 */
+		public double delta;
+		/**
+		 * The current results
+		 */
+		public SphericalKMeansResult result;
+	}
+
 	protected final Random rng = new Random();
 	protected final boolean damped;
 	protected final int maxIters;
 	protected final int k;
 	protected final double terminationEps = 0.1;
+	protected List<Operation<IterationResult>> iterationListeners = new ArrayList<Operation<IterationResult>>(0);
 
 	/**
 	 * Construct with the given parameters. Uses damped updates and terminates
@@ -114,8 +139,6 @@ public class SphericalKMeans implements SpatialClusterer<SphericalKMeansResult, 
 		Parallel.forRange(0, data.size(), 1, new Operation<Parallel.IntRange>() {
 			@Override
 			public void perform(IntRange range) {
-				double _delta = 0;
-
 				for (int i = range.start; i < range.stop; i++) {
 					final double[] vector = data.getData(i);
 					double assignmentWeight = Double.MIN_VALUE;
@@ -134,16 +157,17 @@ public class SphericalKMeans implements SpatialClusterer<SphericalKMeansResult, 
 					}
 
 					// aggregate the assignments to the relevant cluster
-					clusterSizes[result.assignments[i]]++;
-					_delta += assignmentWeight;
-					for (int k = 0; k < newCentroids[0].length; k++) {
-						newCentroids[result.assignments[i]][k] += vector[k];
+					synchronized (newCentroids) {
+						clusterSizes[result.assignments[i]]++;
+						delta[0] += assignmentWeight;
+						for (int k = 0; k < newCentroids[0].length; k++) {
+							newCentroids[result.assignments[i]][k] += vector[k];
+						}
 					}
 				}
-
-				delta[0] += _delta;
 			}
 		});
+
 		// update the centroids
 		Parallel.forRange(0, result.centroids.length, 1, new Operation<Parallel.IntRange>() {
 			@Override
@@ -193,24 +217,38 @@ public class SphericalKMeans implements SpatialClusterer<SphericalKMeansResult, 
 
 	@Override
 	public SphericalKMeansResult cluster(DataSource<double[]> data) {
-		final SphericalKMeansResult result = new SphericalKMeansResult();
-		result.centroids = new double[k][data.numDimensions()];
-		result.assignments = new int[data.size()];
+		final IterationResult ir = new IterationResult();
+		ir.result = new SphericalKMeansResult();
+		ir.result.centroids = new double[k][data.numDimensions()];
+		ir.result.assignments = new int[data.size()];
 
-		for (int j = 0; j < result.centroids.length; j++) {
-			makeRandomCentroid(result.centroids[j]);
+		for (int j = 0; j < ir.result.centroids.length; j++) {
+			makeRandomCentroid(ir.result.centroids[j]);
 		}
 
 		double last = 0;
-		for (int i = 0; i < maxIters; i++) {
-			final double d = performIteration(data, result);
-			final double delta = d - last;
-			System.out.println(d - last);
-			if (delta < terminationEps)
+		for (ir.iteration = 0; ir.iteration < maxIters; ir.iteration++) {
+			for (final Operation<IterationResult> l : iterationListeners)
+				l.perform(ir);
+
+			final double d = performIteration(data, ir.result);
+			ir.delta = d - last;
+
+			if (ir.delta < terminationEps)
 				break;
 			last = d;
 		}
 
-		return result;
+		return ir.result;
+	}
+
+	/**
+	 * Add a listener that will be called before every iteration.
+	 *
+	 * @param op
+	 *            the listener
+	 */
+	public void addIterationListener(Operation<IterationResult> op) {
+		iterationListeners.add(op);
 	}
 }

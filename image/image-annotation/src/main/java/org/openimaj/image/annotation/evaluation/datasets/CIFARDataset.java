@@ -15,12 +15,12 @@ public abstract class CIFARDataset {
 	/**
 	 * Image height
 	 */
-	protected static final int HEIGHT = 32;
+	public static final int HEIGHT = 32;
 
 	/**
 	 * Image width
 	 */
-	protected static final int WIDTH = 32;
+	public static final int WIDTH = 32;
 
 	/**
 	 * Reader for getting the data as {@link MBFImage}s

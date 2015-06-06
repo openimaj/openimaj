@@ -50,9 +50,9 @@ import org.openimaj.image.annotation.evaluation.datasets.cifar.BinaryReader;
 				+ "batches may contain more images from one class than another. "
 				+ "Between them, the training batches contain exactly 5000 images "
 				+ "from each class.",
-				creator = "Alex Krizhevsky, Vinod Nair, and Geoffrey Hinton",
-				url = "http://www.cs.toronto.edu/~kriz/cifar.html",
-				downloadUrls = {
+		creator = "Alex Krizhevsky, Vinod Nair, and Geoffrey Hinton",
+		url = "http://www.cs.toronto.edu/~kriz/cifar.html",
+		downloadUrls = {
 				"http://datasets.openimaj.org/cifar/cifar-10-binary.tar.gz",
 		})
 public class CIFAR10Dataset extends CIFARDataset {
@@ -60,11 +60,11 @@ public class CIFAR10Dataset extends CIFARDataset {
 	private static final String DOWNLOAD_URL = "http://datasets.openimaj.org/cifar/cifar-10-binary.tar.gz";
 
 	private static final String[] TRAINING_FILES = {
-		"data_batch_1.bin",
-		"data_batch_2.bin",
-		"data_batch_3.bin",
-		"data_batch_4.bin",
-	"data_batch_5.bin" };
+			"data_batch_1.bin",
+			"data_batch_2.bin",
+			"data_batch_3.bin",
+			"data_batch_4.bin",
+			"data_batch_5.bin" };
 	private static final String TEST_FILE = "test_batch.bin";
 	private static final String CLASSES_FILE = "batches.meta.txt";
 
@@ -95,7 +95,7 @@ public class CIFAR10Dataset extends CIFARDataset {
 	 */
 	public static <IMAGE> GroupedDataset<String, ListDataset<IMAGE>, IMAGE> getTrainingImages(BinaryReader<IMAGE> reader)
 			throws IOException
-			{
+	{
 		final MapBackedDataset<String, ListDataset<IMAGE>, IMAGE> dataset = new MapBackedDataset<String, ListDataset<IMAGE>, IMAGE>();
 
 		final FileSystemManager fsManager = VFS.getManager();
@@ -115,11 +115,11 @@ public class CIFAR10Dataset extends CIFARDataset {
 		}
 
 		return dataset;
-			}
+	}
 
 	private static <IMAGE> List<String> loadClasses(final MapBackedDataset<String, ListDataset<IMAGE>, IMAGE> dataset,
 			final FileObject base) throws FileSystemException, IOException
-	{
+			{
 		InputStream classStream = null;
 		List<String> classList = null;
 		try {
@@ -132,7 +132,7 @@ public class CIFAR10Dataset extends CIFARDataset {
 		for (final String clz : classList)
 			dataset.put(clz, new ListBackedDataset<IMAGE>());
 		return classList;
-	}
+			}
 
 	private static <IMAGE> void loadData(DataInputStream is,
 			MapBackedDataset<String, ListDataset<IMAGE>, IMAGE> dataset, List<String> classList,
@@ -142,7 +142,7 @@ public class CIFAR10Dataset extends CIFARDataset {
 		for (int i = 0; i < 10000; i++) {
 			final int clz = is.read();
 			final String clzStr = classList.get(clz);
-			final byte[] record = new byte[32 * 32 * 3];
+			final byte[] record = new byte[WIDTH * HEIGHT * 3];
 			is.readFully(record);
 
 			dataset.get(clzStr).add(reader.read(record));
@@ -162,7 +162,7 @@ public class CIFAR10Dataset extends CIFARDataset {
 	 */
 	public static <IMAGE> GroupedDataset<String, ListDataset<IMAGE>, IMAGE> getTestImages(BinaryReader<IMAGE> reader)
 			throws IOException
-			{
+	{
 		final MapBackedDataset<String, ListDataset<IMAGE>, IMAGE> dataset = new MapBackedDataset<String, ListDataset<IMAGE>, IMAGE>();
 
 		final FileSystemManager fsManager = VFS.getManager();
@@ -179,5 +179,5 @@ public class CIFAR10Dataset extends CIFARDataset {
 		}
 
 		return dataset;
-			}
+	}
 }
