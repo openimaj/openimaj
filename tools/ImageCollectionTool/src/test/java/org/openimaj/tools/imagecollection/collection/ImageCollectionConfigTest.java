@@ -45,7 +45,7 @@ public class ImageCollectionConfigTest {
 	@Test
 	public void testImageCollectionConfig() throws IOException, ParseException {
 		final ImageCollectionConfig config = new ImageCollectionConfig(jsonConfig);
-		assertEquals((double) config.read("$.a.inner"), 2);
+		assertEquals((double) config.read("$.a.inner"), 2, 0.01);
 		final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		IOUtils.writeASCII(stream, config);
 		assertEquals(stream.toString(), jsonConfig);
