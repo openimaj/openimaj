@@ -29,7 +29,7 @@
  */
 package org.openimaj.tools.imagecollection.collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,13 +41,13 @@ import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfi
 
 public class ImageCollectionConfigTest {
 	String jsonConfig = "{\"a\":{\"inner\":2},\"b\":\"cat\"}";
-	
+
 	@Test
-	public void testImageCollectionConfig() throws IOException, ParseException{
-		ImageCollectionConfig config = new ImageCollectionConfig(jsonConfig);
-		assertEquals(config.read("$.a.inner"),2);
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	public void testImageCollectionConfig() throws IOException, ParseException {
+		final ImageCollectionConfig config = new ImageCollectionConfig(jsonConfig);
+		assertEquals((double) config.read("$.a.inner"), 2);
+		final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		IOUtils.writeASCII(stream, config);
-		assertEquals(stream.toString(),jsonConfig);
+		assertEquals(stream.toString(), jsonConfig);
 	}
 }
