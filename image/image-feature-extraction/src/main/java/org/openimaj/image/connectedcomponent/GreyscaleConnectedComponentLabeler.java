@@ -48,7 +48,12 @@ import org.openimaj.image.pixel.Pixel;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class GreyscaleConnectedComponentLabeler implements ImageAnalyser<FImage> {
+	private static final boolean D = true; //Debug?
+	private static final String TAG = ConnectedComponentLabeler.class.getSimpleName();
+
 	List<ConnectedComponent> components;
+
+	private static int addedToQueueCount = 0;
 	
 	/**
 	 * Syntactic sugar for calling {@link #analyseImage(FImage)} followed by 
@@ -62,6 +67,17 @@ public class GreyscaleConnectedComponentLabeler implements ImageAnalyser<FImage>
 		return components;
 	}
 	
+	/**
+	 * Efficiently Creates a ConnectedComponent. The previous algorithm would add excessive numbers of pixels when
+	 * there were horizontal lines of targetColour. 
+	 * @param image The image to extract the ConnectedComponent from
+	 * @param start The pixel to start from. Pixels adjacent to this pixel (using the Connect 4 rule) of the same 
+	 * color are added to the connected component. this process repeats with each pixel added until no additional 
+	 * pixels are found.
+	 * @param output Array representation of this component. Does not appear to be used.
+	 * @param color the color to assign to the output array.
+	 * @return The pixels that make up the ConnectedComponent.
+	 */
 	protected ConnectedComponent floodFill(FImage image, Pixel start, int[][] output, int color) {
 		ConnectedComponent cc = new ConnectedComponent();
 //		Flood-fill (node, target-color, replacement-color):
@@ -72,44 +88,59 @@ public class GreyscaleConnectedComponentLabeler implements ImageAnalyser<FImage>
 //			 2. If the color of node is not equal to target-color, return.
 		float targetColour = image.pixels[start.y][start.x];
 		
-//			 3. Add node to Q.
+//		// 3. Add node to Q.
 		queue.add(start);
-//			 4. For each element n of Q:
+		if(D) addedToQueueCount++;
+
+		// 4. For each element n of Q:
 		while (queue.size() > 0) {
-			//Pixel n = queue.poll();
+			// Pixel n = queue.poll();
 			Pixel n = queue.iterator().next();
 			queue.remove(n);
+
+			// 5. Set the color of node to replacement-color.
+			output[n.y][n.x] = color;
+			cc.addPixel(n.x, n.y);
 			
-//			 5.  If the color of n is equal to target-color:
-			if (image.pixels[n.y][n.x] == targetColour) {
-//			 6.   Set w and e equal to n.
-				int e = n.x, w=n.x;
-//			 7.   Move w to the west until the color of the node to the west of w no longer matches target-color.
-				while (w>0 && image.pixels[n.y][w-1] == targetColour) w--;
-				
-//			 8.   Move e to the east until the color of the node to the east of e no longer matches target-color.
-				while (e<image.width-1 && image.pixels[n.y][e+1] == targetColour) e++;
-				
-//			 9.   Set the color of nodes between w and e to replacement-color.
-				for (int i=w; i<=e; i++) {
-					output[n.y][i] = color;
-					cc.addPixel(i, n.y);
-					
-//			10.   For each node n between w and e:
-					int north = n.y - 1;
-					int south = n.y + 1;
-//			11.    If the color of the node to the north of n is target-color, add that node to Q.
-					if (north >= 0 && image.pixels[north][i] == targetColour && output[north][i] != color) queue.add(new Pixel(i, north));
-//			       If the color of the node to the south of n is target-color, add that node to Q.
-					if (south < image.height && image.pixels[south][i] == targetColour && output[south][i] != color) queue.add(new Pixel(i, south));
-				}
-//			12. Continue looping until Q is exhausted.
+			int west = n.x - 1;
+			int east = n.x + 1;
+
+			// 6. If the color of the node to the west matches target-color add
+			// it to the queue
+			if (n.x > 0 && image.pixels[n.y][west] == targetColour && output[n.y][west] != color) {
+				queue.add(new Pixel(west, n.y));
+				if(D) addedToQueueCount++;
 			}
+
+			// 7. If the color of the node to the east matches target-color add
+			// it to the queue
+			if (n.x < image.width - 1 && image.pixels[n.y][east] == targetColour && output[n.y][east] != color) {
+				queue.add(new Pixel(east, n.y));
+				if(D) addedToQueueCount++;
+			}
+
+			// 8. Check above and below - 4 connected model
+			int north = n.y - 1;
+			int south = n.y + 1;
+
+			// 9. If the color of the node to the north of n is
+			// target-color, add that node to Q.
+			if (north >= 0 && image.pixels[north][n.x] == targetColour && output[north][n.x] != color) {
+				queue.add(new Pixel(n.x, north));
+				if(D) addedToQueueCount++;
+			}
+			// If the color of the node to the south of n is
+			// target-color, add that node to Q.
+			if (south < image.height && image.pixels[south][n.x] == targetColour && output[south][n.x] != color) {
+				queue.add(new Pixel(n.x, south));
+				if(D) addedToQueueCount++;
+			}
+
 		}
-//			13. Return.
+		// 10. Return.
 		return cc;
 	}
-
+	
 	@Override
 	public void analyseImage(FImage image) {
 		components = new ArrayList<ConnectedComponent>();
@@ -125,6 +156,8 @@ public class GreyscaleConnectedComponentLabeler implements ImageAnalyser<FImage>
 				}
 			}
 		}
+		
+		if(D) System.out.println(TAG + ".analyseImage - Tested " + addedToQueueCount + " pixels.");
 	}
 	
 	/**
