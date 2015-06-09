@@ -541,13 +541,13 @@ public class Line2d implements Path2d, Cloneable {
 		}
 
 		// Given the equation for a line as ax + by + c = 0 
-		float a = begin.getY() - end.getY();
-		float b = begin.getX() - end.getX();
-		float c = begin.getX() * end.getY() - end.getX() * begin.getY();
+		float a = end.getY() - begin.getY();
+		float b = end.getX() - begin.getX();
+		float c = end.getX() * begin.getY() - begin.getX() * end.getY();
 		
 		//calculate the distance from the line to the point
 		// http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line		
-		float distance = (float) (Math.abs(a * p.getX() + b * p.getY() + c) / Math.sqrt(a * a + b * b));
+		float distance = (float) (Math.abs(a * p.getX() - b * p.getY() + c) / Math.sqrt(a * a + b * b));
 
 		return distance;
 	}
