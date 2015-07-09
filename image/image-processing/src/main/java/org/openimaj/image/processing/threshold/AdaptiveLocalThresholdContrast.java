@@ -36,18 +36,18 @@ import org.openimaj.image.processing.algorithm.MinMaxAnalyser;
 /**
  * Adaptive local thresholding using the local contrast. Pixels are set to 1 if
  * they are closer to the local maximum rather than the local minimum.
- * 
+ *
  * @see <a
  *      href="http://fiji.sc/wiki/index.php/Auto_Local_Threshold">http://fiji.sc/wiki/index.php/Auto_Local_Threshold</a>
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class AdaptiveLocalThresholdContrast extends AbstractLocalThreshold {
 	/**
 	 * Construct the thresholding operator with the given patch size (assumed
 	 * square)
-	 * 
+	 *
 	 * @param size
 	 *            size of the local image patch
 	 */
@@ -57,7 +57,7 @@ public class AdaptiveLocalThresholdContrast extends AbstractLocalThreshold {
 
 	/**
 	 * Construct the thresholding operator with the given patch size
-	 * 
+	 *
 	 * @param size_x
 	 *            width of patch
 	 * @param size_y
@@ -70,6 +70,7 @@ public class AdaptiveLocalThresholdContrast extends AbstractLocalThreshold {
 	@Override
 	public void processImage(FImage image) {
 		final MinMaxAnalyser minimax = new MinMaxAnalyser(FilterSupport.createBlockSupport(sizeX, sizeY));
+		minimax.analyseImage(image);
 
 		final float[][] minpix = minimax.min.pixels;
 		final float[][] maxpix = minimax.max.pixels;
