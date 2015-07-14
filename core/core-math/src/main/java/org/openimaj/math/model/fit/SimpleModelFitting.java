@@ -41,9 +41,9 @@ import org.openimaj.util.pair.IndependentPair;
 /**
  * Example robust fitting, that simply wraps the models estimate method. Inliers
  * and outliers are estimated by verifying the model against the data.
- * 
+ *
  * @author Jonathon Hare
- * 
+ *
  * @param <I>
  *            type of independent data
  * @param <D>
@@ -61,7 +61,7 @@ public class SimpleModelFitting<I, D, M extends EstimatableModel<I, D>> implemen
 
 	/**
 	 * Creates a SimpleModelFitting object to fit data to a model
-	 * 
+	 *
 	 * @param m
 	 *            model to fit data to
 	 * @param errorModel
@@ -79,7 +79,7 @@ public class SimpleModelFitting<I, D, M extends EstimatableModel<I, D>> implemen
 
 	/**
 	 * Creates a SimpleModelFitting object to fit data to a model
-	 * 
+	 *
 	 * @param m
 	 *            model to fit data to
 	 * @param errorModel
@@ -109,6 +109,8 @@ public class SimpleModelFitting<I, D, M extends EstimatableModel<I, D>> implemen
 	public boolean fitData(List<? extends IndependentPair<I, D>> data) {
 		if (!model.estimate(data))
 			return false;
+
+		errorModel.setModel(model);
 
 		inl = new ArrayList<IndependentPair<I, D>>();
 		outl = new ArrayList<IndependentPair<I, D>>();
