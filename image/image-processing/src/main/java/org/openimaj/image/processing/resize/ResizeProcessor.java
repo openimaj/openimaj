@@ -43,7 +43,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * Based on <code>filter_rcg.c</code> by Dale Schumacher and Ray Gardener from
  * Graphics Gems III, with improvements from TwelveMonkeys and ImageMagick,
  * which in-particular fix normalisation problems.
- * 
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -67,11 +67,11 @@ import org.openimaj.math.geometry.shape.Rectangle;
 public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> {
 	/**
 	 * The resize mode to use.
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 * @created 4 Apr 2011
 	 */
 	public static enum Mode {
@@ -124,7 +124,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * Constructor that takes the resize mode. Use this function if you only
 	 * want to {@link Mode#DOUBLE double} or {@link Mode#HALF halve} the image
 	 * size.
-	 * 
+	 *
 	 * @param mode
 	 *            The resize mode.
 	 */
@@ -136,7 +136,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * Constructor a resize processor that will rescale the image by a given
 	 * scale factor using the given filter function.
-	 * 
+	 *
 	 * @param amount
 	 *            The amount to scale the image by
 	 * @param ff
@@ -152,7 +152,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * Construct a resize processor that will rescale the image to the given
 	 * width and height with the given filter function. By default, this method
 	 * will retain the image's aspect ratio.
-	 * 
+	 *
 	 * @param newX
 	 *            The new width of the image.
 	 * @param newY
@@ -170,7 +170,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * Constructor a resize processor that will rescale the image by a given
 	 * scale factor using the default filter function.
-	 * 
+	 *
 	 * @param amount
 	 *            The amount to scale the image by
 	 */
@@ -183,7 +183,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * width and height with the default filter function. By default, this
 	 * method will retain the image's aspect ratio which means that the
 	 * resulting image may have dimensions less than those specified here.
-	 * 
+	 *
 	 * @param newX
 	 *            The new width of the image.
 	 * @param newY
@@ -198,7 +198,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * wider than the given size such that their biggest side is equal to the
 	 * given size. Images that have both sides smaller than the given size will
 	 * be unchanged.
-	 * 
+	 *
 	 * @param maxSize
 	 *            The maximum allowable height or width
 	 */
@@ -215,7 +215,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * such that their biggest side is equal to the given size. Images that have
 	 * a smaller area or both sides smaller than the given size will be
 	 * unchanged.
-	 * 
+	 *
 	 * @param maxSizeArea
 	 *            The maximum allowable area, or height or width
 	 * @param area
@@ -235,7 +235,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * stretched to fit within the new width and height. If
 	 * <code>aspectRatio</code> is set to true, the resulting images may have
 	 * dimensions less than those specified here.
-	 * 
+	 *
 	 * @param newX
 	 *            The new width of the image.
 	 * @param newY
@@ -259,7 +259,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * stretched to fit within the new width and height. If
 	 * <code>aspectRatio</code> is set to true, the resulting images may have
 	 * dimensions less than those specified here.
-	 * 
+	 *
 	 * @param newX
 	 *            The new width of the image.
 	 * @param newY
@@ -280,7 +280,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
@@ -316,7 +316,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Set the filter function used by the filter
-	 * 
+	 *
 	 * @param filterFunction
 	 *            the filter function
 	 */
@@ -327,7 +327,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * Resize an image such that its biggest size is at most as big as the given
 	 * size. Images whose sides are smaller than the given size are untouched.
-	 * 
+	 *
 	 * @param image
 	 *            the image to resize
 	 * @param maxDim
@@ -361,7 +361,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * Resize an image such that its area size is at most as big as the given
 	 * area. Images whose ares are smaller than the given area are untouched.
-	 * 
+	 *
 	 * @param image
 	 *            the image to resize
 	 * @param maxArea
@@ -378,9 +378,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 		if (area < maxArea) {
 			return image;
 		} else {
-			final float whRatio = width / height;
+			final double whRatio = (double) width / (double) height;
 			final int newWidth = (int) Math.sqrt(maxArea * whRatio);
-			final int newHeight = maxArea / newWidth;
+			final int newHeight = (int) (newWidth / whRatio);
 
 			zoomInplace(image, newWidth, newHeight, filterf);
 
@@ -391,7 +391,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * Resize an image such that its biggest size is at most as big as the given
 	 * size. Images whose sides are smaller than the given size are untouched.
-	 * 
+	 *
 	 * @param image
 	 *            the image to resize
 	 * @param maxDim
@@ -423,7 +423,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * Resize an image such that its area size is at most as big as the given
 	 * area. Images whose ares are smaller than the given area are untouched.
-	 * 
+	 *
 	 * @param image
 	 *            the image to resize
 	 * @param maxArea
@@ -431,29 +431,15 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * @return the input image, resized appropriately
 	 */
 	public static FImage resizeMaxArea(FImage image, int maxArea) {
-		final int width = image.width;
-		final int height = image.height;
-		final int area = width * height;
-
-		if (area < maxArea) {
-			return image;
-		} else {
-			final float whRatio = width / height;
-			final int newWidth = (int) Math.sqrt(maxArea * whRatio);
-			final int newHeight = maxArea / newWidth;
-
-			zoomInplace(image, newWidth, newHeight);
-
-			return image;
-		}
+		return resizeMaxArea(image, maxArea, DEFAULT_FILTER);
 	}
 
 	/**
 	 * Double the size of the image.
-	 * 
+	 *
 	 * @param <I>
 	 *            the image type
-	 * 
+	 *
 	 * @param image
 	 *            The image to double in size
 	 * @return a copy of the original image with twice the size
@@ -464,7 +450,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Double the size of the image.
-	 * 
+	 *
 	 * @param image
 	 *            The image to double in size
 	 * @return a copy of the original image with twice the size
@@ -499,9 +485,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Halve the size of the image.
-	 * 
+	 *
 	 * @param <I>
-	 * 
+	 *
 	 * @param image
 	 *            The image halve in size
 	 * @return a copy of the input image with half the size
@@ -514,7 +500,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * Halve the size of the image. Note that this method just samples every
 	 * other pixel and will produce aliasing unless the image has been
 	 * pre-filtered.
-	 * 
+	 *
 	 * @param image
 	 *            The image halve in size
 	 * @return a copy the the image with half the size
@@ -545,7 +531,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Returns a new image that is a resampled version of the given image.
-	 * 
+	 *
 	 * @param in
 	 *            The source image
 	 * @param newX
@@ -564,7 +550,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * retained, which means newX or newY could be smaller than given here. The
 	 * dimensions of the new image will not be larger than newX or newY.
 	 * Side-affects the given image.
-	 * 
+	 *
 	 * @param in
 	 *            The source image
 	 * @param newX
@@ -597,7 +583,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * retained, which means newX or newY could be smaller than given here. The
 	 * dimensions of the new image will not be larger than newX or newY.
 	 * Side-affects the given image.
-	 * 
+	 *
 	 * @param in
 	 *            The source image
 	 * @param newX
@@ -629,9 +615,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * For the port of the zoom function
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	static class PixelContribution {
 		/** Index of the pixel */
@@ -642,9 +628,9 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * For the port of the zoom function
-	 * 
+	 *
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	static class PixelContributions {
 		int numberOfContributors;
@@ -655,7 +641,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * Calculates the filter weights for a single target column. contribX->p
 	 * must be freed afterwards.
-	 * 
+	 *
 	 * @param contribX
 	 *            Receiver of contrib info
 	 * @param xscale
@@ -670,7 +656,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            Filter processor
 	 * @param i
 	 *            Pixel column in source bitmap being processed
-	 * 
+	 *
 	 * @returns -1 if error, 0 otherwise.
 	 */
 	private static void calc_x_contrib(PixelContributions contribX, double xscale, double fwidth, int dstwidth,
@@ -697,7 +683,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 			center = i / xscale;
 			final int left = (int) Math.ceil(center - width);// Note: Assumes
-																// width <= .5
+			// width <= .5
 			final int right = (int) Math.floor(center + width);
 
 			double density = 0.0;
@@ -785,7 +771,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Resizes an image.
-	 * 
+	 *
 	 * @param in
 	 *            The source image
 	 * @param newX
@@ -801,7 +787,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Resizes an image.
-	 * 
+	 *
 	 * @param newX
 	 *            New width of the image
 	 * @param newY
@@ -821,14 +807,14 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Resizes bitmaps while resampling them.
-	 * 
+	 *
 	 * @param dst
 	 *            Destination Image
 	 * @param in
 	 *            Source Image
 	 * @param filterf
 	 *            Filter to use
-	 * 
+	 *
 	 * @return the destination image
 	 */
 	public static FImage zoom(FImage in, FImage dst, ResizeFilterFunction filterf) {
@@ -1019,7 +1005,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	/**
 	 * Draws one portion of an image into another, resampling as necessary using
 	 * the default filter function.
-	 * 
+	 *
 	 * @param dst
 	 *            Destination Image
 	 * @param in
@@ -1036,7 +1022,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 	/**
 	 * Draws one portion of an image into another, resampling as necessary.
-	 * 
+	 *
 	 * @param dst
 	 *            Destination Image
 	 * @param in
@@ -1047,7 +1033,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 *            the destination of pixels in the destination image
 	 * @param filterf
 	 *            Filter to use
-	 * 
+	 *
 	 * @return the destination image
 	 */
 	public static FImage zoom(FImage in, Rectangle inRect, FImage dst, Rectangle dstRect, ResizeFilterFunction filterf)

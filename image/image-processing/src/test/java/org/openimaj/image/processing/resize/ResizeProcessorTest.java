@@ -29,6 +29,9 @@
  */
 package org.openimaj.image.processing.resize;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -37,15 +40,15 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Tests for the {@link ResizeProcessor}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ResizeProcessorTest {
 	/**
 	 * Test bounded zoom
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -73,7 +76,7 @@ public class ResizeProcessorTest {
 
 		// Now some speed tests, 10000 times with extract and 10000 times with
 		// new zoom
-		long start = System.currentTimeMillis();
+		// long start = System.currentTimeMillis();
 		for (int i = 0; i < 10000; i++) {
 			ResizeProcessor.zoom(
 					image, inLoc,
@@ -81,25 +84,62 @@ public class ResizeProcessorTest {
 					filter
 					);
 		}
-		long end = System.currentTimeMillis();
-		System.out.println("Time taken (inplace zoom): " + (end - start));
-		start = System.currentTimeMillis();
+		// long end = System.currentTimeMillis();
+		// System.out.println("Time taken (inplace zoom): " + (end - start));
+		// start = System.currentTimeMillis();
 		for (int i = 0; i < 10000; i++) {
 			final FImage imageExtracted = image.extractROI(inLoc); // Can't do
-																	// it any
-																	// other way
-																	// with
-																	// normal
-																	// zoom
+			// it any
+			// other way
+			// with
+			// normal
+			// zoom
 			ResizeProcessor.zoom(
 					imageExtracted,
 					imageOut,
 					filter
 					);
 		}
-		end = System.currentTimeMillis();
-		System.out.println("Time taken (extract/zoom): " + (end - start));
+		// end = System.currentTimeMillis();
+		// System.out.println("Time taken (extract/zoom): " + (end - start));
 	}
-	
-	
+
+	/**
+	 * Test resizeMaxArea
+	 */
+	@Test
+	public void testResizeMaxArea1() {
+		FImage image = new FImage(100, 200);
+
+		image = ResizeProcessor.resizeMaxArea(image, 5000);
+
+		assertEquals(5000, image.height * image.width);
+		assertEquals(100.0 / 200.0, (double) image.width / (double) image.height, 0.001);
+	}
+
+	/**
+	 * Test resizeMaxArea
+	 */
+	@Test
+	public void testResizeMaxArea2() {
+		FImage image = new FImage(200, 100);
+
+		image = ResizeProcessor.resizeMaxArea(image, 5000);
+
+		assertEquals(5000, image.height * image.width);
+		assertEquals(200.0 / 100.0, (double) image.width / (double) image.height, 0.001);
+	}
+
+	/**
+	 * Test resizeMaxArea
+	 */
+	@Test
+	public void testResizeMaxArea3() {
+		FImage image = new FImage(2687, 3356);
+
+		image = ResizeProcessor.resizeMaxArea(image, 3700000);
+
+		assertTrue(3700000 > image.height * image.width);
+		assertEquals(2687.0 / 3356.0, (double) image.width / (double) image.height, 0.001);
+	}
 }
