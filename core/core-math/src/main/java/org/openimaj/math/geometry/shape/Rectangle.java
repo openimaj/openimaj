@@ -45,7 +45,7 @@ import Jama.Matrix;
 /**
  * A rectangle shape oriented to the axes. For non-oriented versions, use a
  * polygon.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Rectangle implements Shape, ReadWriteable, Serializable {
@@ -72,7 +72,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/**
 	 * Construct a Rectangle with the given parameters.
-	 * 
+	 *
 	 * @param x
 	 *            x-coordinate of top-left
 	 * @param y
@@ -91,7 +91,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/**
 	 * Construct a Rectangle by copying from another rectangle.
-	 * 
+	 *
 	 * @param r
 	 *            rectangle to copy from
 	 */
@@ -104,7 +104,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/**
 	 * Construct a Rectangle with the given parameters.
-	 * 
+	 *
 	 * @param topLeft
 	 *            top-left corner
 	 * @param bottomRight
@@ -235,7 +235,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/**
 	 * Set the position and size of this rectangle
-	 * 
+	 *
 	 * @param x
 	 *            x-coordinate of top-left
 	 * @param y
@@ -259,7 +259,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/**
 	 * Test if rectangles overlap.
-	 * 
+	 *
 	 * @param other
 	 *            the rectangle to test with.
 	 * @return true if there is overlap; false otherwise.
@@ -277,20 +277,20 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	}
 
 	/**
-	 * Test if this rectangle is inside another.
-	 * 
-	 * @param that
+	 * Test if the given rectangle is inside this one.
+	 *
+	 * @param rect
 	 *            the rectangle to test with.
 	 * @return true if this rectangle is inside the other; false otherwise.
 	 */
-	public boolean isInside(Rectangle that) {
-		return this.x <= that.x && this.y <= that.y && this.x + this.width >= that.x + that.width
-				&& this.y + this.height >= that.y + that.height;
+	public boolean isInside(Rectangle rect) {
+		return this.x <= rect.x && this.y <= rect.y && this.x + this.width >= rect.x + rect.width
+				&& this.y + this.height >= rect.y + rect.height;
 	}
 
 	/**
 	 * Get the overlapping rectangle between this rectangle and another.
-	 * 
+	 *
 	 * @param other
 	 *            the rectangle to test with.
 	 * @return the overlap rectangle, or null if there is no overlap.
@@ -317,7 +317,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/**
 	 * Compute the percentage by which the given rectangle overlaps this one.
-	 * 
+	 *
 	 * @param other
 	 * @return the percentage overlap
 	 */
@@ -333,7 +333,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	/**
 	 * Find the rectangle that just contains this rectangle and another
 	 * rectangle.
-	 * 
+	 *
 	 * @param other
 	 *            the other rectangle
 	 * @return a rectangle
@@ -432,7 +432,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -448,7 +448,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -484,7 +484,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	/**
 	 * Rotate the {@link Rectangle} about the given pivot with the given angle
 	 * (in radians)
-	 * 
+	 *
 	 * @param p
 	 *            the pivot of the rotation
 	 * @param angle
