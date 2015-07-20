@@ -45,9 +45,9 @@ import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Least Median of Squares robust model fitting
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <I>
  *            type of independent data
  * @param <D>
@@ -105,7 +105,7 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	 * outliers is assumed to be 0.4. The threshold for determining inliers and
 	 * outliers is automatically computed. Uniform random sampling is used for
 	 * creating the subsets.
-	 * 
+	 *
 	 * @param model
 	 *            the model to estimate
 	 * @param residualEstimator
@@ -123,7 +123,7 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	 * proportion of outliers. The threshold for determining inliers and
 	 * outliers is automatically computed. Uniform random sampling is used for
 	 * creating the subsets.
-	 * 
+	 *
 	 * @param model
 	 *            the model to estimate
 	 * @param residualEstimator
@@ -145,7 +145,7 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	 * degrees of freedom of the model are used to estimate the optimal
 	 * threshold for determining inliers versus outliers. Uniform random
 	 * sampling is used for creating the subsets.
-	 * 
+	 *
 	 * @param model
 	 *            the model to estimate
 	 * @param residualEstimator
@@ -173,7 +173,7 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	 * Construct with the given model and residual calculator. The proportion of
 	 * outliers is assumed to be 0.4. The threshold for determining inliers and
 	 * outliers is automatically computed.
-	 * 
+	 *
 	 * @param model
 	 *            the model to estimate
 	 * @param residualEstimator
@@ -199,7 +199,7 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	 * Construct with the given model, residual calculator and estimated
 	 * proportion of outliers. The threshold for determining inliers and
 	 * outliers is automatically computed.
-	 * 
+	 *
 	 * @param model
 	 *            the model to estimate
 	 * @param residualEstimator
@@ -224,7 +224,7 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 	 * proportion of outliers. The given inlier noise level and number of
 	 * degrees of freedom of the model are used to estimate the optimal
 	 * threshold for determining inliers versus outliers.
-	 * 
+	 *
 	 * @param model
 	 *            the model to estimate
 	 * @param residualEstimator
@@ -313,7 +313,7 @@ public class LMedS<I, D, M extends EstimatableModel<I, D>> implements RobustMode
 			threshold = inlierNoiseLevel * inlierNoiseLevel
 					* new ChiSquaredDistribution(degreesOfFreedom).inverseCumulativeProbability(probability);
 		else {
-			final double sigmahat = 1.4826 * (1 + 5 / (data.size() - model.numItemsToEstimate()))
+			final double sigmahat = 1.4826 * (1 + 5 / (Math.max(1, data.size() - model.numItemsToEstimate())))
 					* Math.sqrt(bestMedianError);
 			// http://research.microsoft.com/en-us/um/people/zhang/INRIA/Publis/Tutorial-Estim/node25.html
 			threshold = (2.5 * sigmahat) * (2.5 * sigmahat);
