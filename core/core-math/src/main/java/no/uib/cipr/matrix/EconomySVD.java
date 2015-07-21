@@ -48,8 +48,8 @@ public class EconomySVD {
 
 		// Allocate space for the decomposition
 		S = new double[Math.min(m, n)];
-		U = new DenseMatrix(m, Math.min(m, n));
-		Vt = new DenseMatrix(Math.min(m, n), n);
+		U = new DenseMatrix(Matrices.ld(m), Math.min(m, n));
+		Vt = new DenseMatrix(Matrices.ld(Math.min(m, n)), n);
 
 		// Find workspace requirements
 		iwork = new int[8 * Math.min(m, n)];
@@ -58,8 +58,8 @@ public class EconomySVD {
 		final double[] worksize = new double[1];
 		final intW info = new intW(0);
 		LAPACK.getInstance().dgesdd(JobSVD.Part.netlib(), m, n, new double[0],
-				Matrices.ld(m), new double[0], new double[0], Matrices.ld(m),
-				new double[0], Matrices.ld(n), worksize, -1, iwork, info);
+				Matrices.ld(m), new double[0], new double[0], U.numRows,
+				new double[0], Vt.numRows, worksize, -1, iwork, info);
 
 		// Allocate workspace
 		int lwork = -1;
@@ -101,10 +101,13 @@ public class EconomySVD {
 			throw new IllegalArgumentException("A.numColumns() != n");
 
 		final intW info = new intW(0);
-		LAPACK.getInstance().dgesdd(JobSVD.Part.netlib(), m, n, A.getData(),
-				Matrices.ld(m), S, U.getData(),
-				Matrices.ld(m), Vt.getData(),
-				Matrices.ld(n), work, work.length, iwork, info);
+
+		LAPACK.getInstance().dgesdd(JobSVD.Part.netlib(), m, n,
+				A.getData(), A.numRows,
+				S,
+				U.getData(), U.numRows,
+				Vt.getData(), Vt.numRows,
+				work, work.length, iwork, info);
 
 		if (info.val > 0)
 			throw new NotConvergedException(
