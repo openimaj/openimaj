@@ -6,6 +6,7 @@ package org.openimaj.hardware.serial;
 import gnu.trove.list.TByteList;
 import gnu.trove.list.array.TByteArrayList;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import jssc.SerialPortEventListener;
  *
  * @created 12 Jul 2011
  */
-public class SerialReader implements SerialPortEventListener
+public class SerialReader implements SerialPortEventListener, Closeable
 {
 	/** The input stream from the serial device */
 	private InputStream inputStream = null;
@@ -38,6 +39,8 @@ public class SerialReader implements SerialPortEventListener
 
 	/** Listeners */
 	private List<SerialDataListener> listeners = new ArrayList<SerialDataListener>();
+
+	private boolean closed = false;
 
 	/**
 	 * Default constructor
@@ -57,6 +60,9 @@ public class SerialReader implements SerialPortEventListener
 	@Override
 	public void serialEvent(SerialPortEvent event)
 	{
+		if (closed)
+			return;
+
 		if (event != null && !event.isRXCHAR())
 			return;
 
@@ -152,5 +158,10 @@ public class SerialReader implements SerialPortEventListener
 	public void setMaxBufferSize(int maxSize)
 	{
 		this.maxSize = maxSize;
+	}
+
+	@Override
+	public void close() throws IOException {
+		this.closed = true;
 	}
 }

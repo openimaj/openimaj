@@ -130,8 +130,11 @@ public class SerialDevice implements SerialDataListener
 	@Override
 	protected void finalize() throws Throwable
 	{
-		serialPort.removeEventListener();
-		serialPort.closePort();
+		if (serialPort.isOpened()) {
+			serialReader.close();
+			serialPort.removeEventListener();
+			serialPort.closePort();
+		}
 		super.finalize();
 	}
 
@@ -143,6 +146,7 @@ public class SerialDevice implements SerialDataListener
 	public void close() throws IOException
 	{
 		try {
+			serialReader.close();
 			serialPort.removeEventListener();
 			serialPort.closePort();
 		} catch (final SerialPortException e) {
