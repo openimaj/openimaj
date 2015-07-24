@@ -125,7 +125,7 @@ public abstract class MotionEstimatorAlgorithm
 			// System.out.println("Center of template: " + centerOfGrid);
 
 			// DisplayUtilities.displayName(searchRectDraw, "searchWindow");
-			if (firstBest == null)
+			if (firstBest == null || Float.isNaN(firstBest.value))
 				return new Point2dImpl(0, 0);
 			// firstBest.translate(current.frame.width/2,
 			// current.frame.height/2);
@@ -133,7 +133,6 @@ public abstract class MotionEstimatorAlgorithm
 			// System.out.println("Diff: " + centerOfGrid.minus(firstBest));
 			return centerOfGrid.minus(firstBest);
 		}
-
 	}
 
 	/**
