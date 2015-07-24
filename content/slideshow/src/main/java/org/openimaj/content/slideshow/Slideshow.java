@@ -56,9 +56,9 @@ import javax.swing.UIManager;
  * fullscreen mode. If the current slide being displayed is also a
  * {@link KeyListener} then keypresses other than these will be passed to the
  * slide.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class Slideshow implements KeyListener {
 	protected RootPaneContainer container;
@@ -76,7 +76,7 @@ public abstract class Slideshow implements KeyListener {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param container
 	 *            the root window
 	 * @param slides
@@ -152,7 +152,7 @@ public abstract class Slideshow implements KeyListener {
 
 	/**
 	 * Display the next slide
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void displayNextSlide() throws IOException {
@@ -164,7 +164,7 @@ public abstract class Slideshow implements KeyListener {
 
 	/**
 	 * Display the previous slide
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void displayPrevSlide() throws IOException {
@@ -245,7 +245,7 @@ public abstract class Slideshow implements KeyListener {
 	/**
 	 * Method allows changing whether this window is displayed in fullscreen or
 	 * windowed mode.
-	 * 
+	 *
 	 * @param fullscreen
 	 *            true = change to fullscreen, false = change to windowed
 	 */

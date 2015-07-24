@@ -56,7 +56,7 @@ import org.openimaj.math.geometry.shape.Shape;
  * to realise that some methods may return unexpected results (e.g. boundary
  * tracing). If you are only dealing with unconnected pixel sets, use the
  * {@link PixelSet} superclass instead.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
@@ -65,7 +65,7 @@ public class ConnectedComponent extends PixelSet {
 	 * For boundary representations of {@link ConnectedComponent}s, this enum
 	 * determines and specifies how the boundary is calculated; either using a
 	 * 4-connected rule, or an 8-connected rule.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum ConnectMode {
@@ -76,7 +76,7 @@ public class ConnectedComponent extends PixelSet {
 
 		/**
 		 * Get the neighbouring pixels
-		 * 
+		 *
 		 * @param image
 		 *            the image
 		 * @param x
@@ -129,7 +129,7 @@ public class ConnectedComponent extends PixelSet {
 	 * created for the connected component that lie within the shape; but these
 	 * pixels will not have specific values as they are not associated to any
 	 * particular image.
-	 * 
+	 *
 	 * @param shape
 	 *            The shape from which to construct the connected component.
 	 */
@@ -142,7 +142,7 @@ public class ConnectedComponent extends PixelSet {
 	 * created for the connected component that lie within the shape; but these
 	 * pixels will not have specific values as they are not associated to any
 	 * particular image.
-	 * 
+	 *
 	 * @param poly
 	 *            The polygon from which to construct the connected component.
 	 */
@@ -166,7 +166,7 @@ public class ConnectedComponent extends PixelSet {
 	 * Construct a rectangular {@link ConnectedComponent}. Pixels are created
 	 * for the area within the rectangle but these will not have any specific
 	 * value as they are not associated to any particular image.
-	 * 
+	 *
 	 * @param x
 	 *            The top-left x-coordinate of the rectangle
 	 * @param y
@@ -185,7 +185,7 @@ public class ConnectedComponent extends PixelSet {
 	 * for areas within the mask image that are non-zero. Note that this may
 	 * result in a connected component definition that is unconnected and some
 	 * methods may not return expected results.
-	 * 
+	 *
 	 * @param img
 	 *            The mask image to construct a connected component from.
 	 */
@@ -198,7 +198,7 @@ public class ConnectedComponent extends PixelSet {
 	 * for areas within the mask image that are above the given threshold. Note
 	 * that this may result in a connected component definition that is
 	 * unconnected and some methods may not return expected results.
-	 * 
+	 *
 	 * @param mask
 	 *            The mask image to construct a connected component from.
 	 * @param thresh
@@ -213,7 +213,7 @@ public class ConnectedComponent extends PixelSet {
 	 * pixels are shallow copied into the connected component. If the pixels do
 	 * not form a connected component then some methods in this class may not
 	 * return expected results.
-	 * 
+	 *
 	 * @param pixels
 	 *            A {@link Set} of {@link Pixel}s.
 	 */
@@ -229,7 +229,7 @@ public class ConnectedComponent extends PixelSet {
 	 * boundary points are considered when iterating through the binary, while
 	 * the smoothness determines how smooth the resulting boundary
 	 * representation can be.
-	 * 
+	 *
 	 * @param smoothWidth
 	 *            The smoothness of the resulting boundary
 	 * @param windowWidth
@@ -293,7 +293,7 @@ public class ConnectedComponent extends PixelSet {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param P0
 	 * @param P1
 	 * @param P2
@@ -306,7 +306,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Calculates the convex hull polygon for this connected component using
 	 * Andrew's montone algorithm.
-	 * 
+	 *
 	 * @return The polygon defining the convex hull shape for this component.
 	 */
 	public Polygon calculateConvexHull() {
@@ -317,7 +317,7 @@ public class ConnectedComponent extends PixelSet {
 	 * Calculate the ratio of the area of the given connected component to the
 	 * area of the connected component. This does not consider whether the areas
 	 * overlap.
-	 * 
+	 *
 	 * @param ch
 	 *            The connected component to test.
 	 * @return The area ratio of the given connected component to this connected
@@ -330,7 +330,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Calculate the ratio of the area of the given polygon to the area of this
 	 * connected component. This does not consider whether the areas overlap.
-	 * 
+	 *
 	 * @param ch
 	 *            The polygon to test again.
 	 * @return The area ratio of the given polygon to this connected component.
@@ -344,7 +344,7 @@ public class ConnectedComponent extends PixelSet {
 	 * actual area of this connected component. This gives an idea of how well
 	 * the calculated convex hull fits the component. The value returned is a
 	 * percentage (0-1).
-	 * 
+	 *
 	 * @return The area ratio of this component's convex hull its area.
 	 */
 	public double calculatePercentageConvexHullFit() {
@@ -360,7 +360,7 @@ public class ConnectedComponent extends PixelSet {
 	 * included with it. SoftSurfer makes no warranty for this code, and cannot
 	 * be held liable for any real or imagined damage resulting from its use.
 	 * Users of this code must verify correctness for their application.
-	 * 
+	 *
 	 * @param V
 	 *            List of pixels containing within the region
 	 * @return A polygon defining the shape of the convex hull
@@ -411,7 +411,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Calculate the convex hull using Andrew's monotone chain 2D convex hull
 	 * algorithm.
-	 * 
+	 *
 	 * @return A polygon defining the shape of the convex hull.
 	 */
 	protected Polygon calculateConvexHull_AndrewsMontone() {
@@ -529,7 +529,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Returns the next edge pixel when tracing a boundary in a 4-connected
 	 * system.
-	 * 
+	 *
 	 * @param current
 	 *            The current pixel
 	 * @param lastdir
@@ -543,7 +543,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Returns the next edge pixel when tracing a boundary in a 4-connected
 	 * system.
-	 * 
+	 *
 	 * @param current
 	 *            The current pixel
 	 * @param lastdir
@@ -579,7 +579,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Returns the next edge pixel when tracing a boundary in an 8-connected
 	 * system.
-	 * 
+	 *
 	 * @param current
 	 *            The current pixel
 	 * @param lastdir
@@ -616,7 +616,7 @@ public class ConnectedComponent extends PixelSet {
 	 * For the two pixels, determines the 4-connected chain code that will move
 	 * from the first pixel to the next. If the pixels are not adjacent the
 	 * method returns -1.
-	 * 
+	 *
 	 * @param current
 	 *            The current pixel
 	 * @param next
@@ -640,7 +640,7 @@ public class ConnectedComponent extends PixelSet {
 	 * For the two pixels, determines the 8-connected chain code that will move
 	 * from the first pixel to the next. If the pixels are not adjacent or
 	 * diagonal then the method returns -1.
-	 * 
+	 *
 	 * @param current
 	 *            The current pixel
 	 * @param next
@@ -672,7 +672,7 @@ public class ConnectedComponent extends PixelSet {
 	 * Converts this connected component into a {@link Polygon} representation
 	 * by performing a 4-connected boundary trace and converting the resulting
 	 * pixels into vertices.
-	 * 
+	 *
 	 * @return A {@link Polygon} representing the inner boundary of the
 	 *         component.
 	 */
@@ -691,7 +691,7 @@ public class ConnectedComponent extends PixelSet {
 	 * list is ordered such that adjacent boundary pixels are adjacent in the
 	 * list. The first pixel in the list should be the same as
 	 * {@link #topLeftMostPixel()}.
-	 * 
+	 *
 	 * @param mode
 	 *            The {@link ConnectMode} to use.
 	 * @return An ordered list of pixels defining the inner boundary
@@ -742,7 +742,7 @@ public class ConnectedComponent extends PixelSet {
 	 * shape. That means that the boundary points are all outside of the region.
 	 * The list is ordered such that adjacent boundary pixels are adjacent in
 	 * the list.
-	 * 
+	 *
 	 * @return An ordered list of pixels defining the outer boundary
 	 */
 	public List<Pixel> getOuterBoundary() {
@@ -797,7 +797,7 @@ public class ConnectedComponent extends PixelSet {
 	 * single start coordinate and a list of direction codes. The Freeman
 	 * direction codes are 0-4 for 4-connected boundaries and 0-7 for
 	 * 8-connected boundaries.
-	 * 
+	 *
 	 * @param mode
 	 *            4 or 8 connectivity
 	 * @return the chain code
@@ -837,7 +837,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Process the given set of connected components with the given
 	 * {@link ConnectedComponentProcessor}.
-	 * 
+	 *
 	 * @param components
 	 *            The components to process
 	 * @param p
@@ -852,7 +852,7 @@ public class ConnectedComponent extends PixelSet {
 	 * Process this connected component with the given
 	 * {@link ConnectedComponentProcessor} and returns a new component
 	 * containing the result.
-	 * 
+	 *
 	 * @param p
 	 *            The processor to process this component with
 	 * @return A new component containing the result.
@@ -866,7 +866,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Process a connected component with the given
 	 * {@link ConnectedComponentProcessor}. Side-affects this component.
-	 * 
+	 *
 	 * @param p
 	 *            The processor to process this component with
 	 * @return A reference to this connected component.
@@ -879,7 +879,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Performs a flood fill on the given image starting at the given pixel. The
 	 * result of the flood fill is returned as a {@link ConnectedComponent}.
-	 * 
+	 *
 	 * @param image
 	 *            The image on which to perform a flood fill
 	 * @param start
@@ -910,7 +910,7 @@ public class ConnectedComponent extends PixelSet {
 			queue.remove(n);
 
 			// 5. If the color of n is equal to target-color:
-			if (image.pixels[n.y][n.x] <= val) {
+			if (image.pixels[n.y][n.x] <= val && output[n.y][n.x] != 1) {
 				// 6. Set w and e equal to n.
 				int e = n.x, w = n.x;
 				// 7. Move w to the west until the color of the node to the west
@@ -950,7 +950,7 @@ public class ConnectedComponent extends PixelSet {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * Performs a deep copy on the connected component; that is, all pixels are
 	 * also cloned.
 	 */
@@ -974,7 +974,7 @@ public class ConnectedComponent extends PixelSet {
 	 * Calculates the distance from the centroid of every pixel on the
 	 * 8-connected boundary of this component. Returns a {@link TFloatArrayList}
 	 * that contains the list of distances (in order of the boundary).
-	 * 
+	 *
 	 * @return A list ({@link TFloatArrayList}) of distances of boundary points
 	 *         to the centroid.
 	 */
@@ -1004,11 +1004,11 @@ public class ConnectedComponent extends PixelSet {
 
 	/**
 	 * Compute the aspect ratio of the oriented bounding box.
-	 * 
+	 *
 	 * @return the aspect ratio of the oriented bounding box.
 	 */
 	public double calculateOrientatedBoundingBoxAspectRatio() {
-		RotatedRectangle r = toPolygon().minimumBoundingRectangle();
+		final RotatedRectangle r = toPolygon().minimumBoundingRectangle();
 
 		return r.height / r.width;
 	}
@@ -1016,7 +1016,7 @@ public class ConnectedComponent extends PixelSet {
 	/**
 	 * Calculates the polygon that defines the minimum bounding box that best
 	 * fits the connected component, at whatever angle that may be.
-	 * 
+	 *
 	 * @return A {@link RotatedRectangle} that defines the minimum bounding box.
 	 */
 	public RotatedRectangle calculateOrientatedBoundingBox() {

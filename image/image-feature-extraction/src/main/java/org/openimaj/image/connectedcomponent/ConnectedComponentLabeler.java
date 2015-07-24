@@ -45,21 +45,21 @@ import org.openimaj.image.pixel.Pixel;
 
 /**
  * A connected component labeler.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 	/**
 	 * Different algorithms for finding {@link ConnectedComponent}s.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum Algorithm {
 		/**
 		 * A single-pass algorithm
-		 * 
+		 *
 		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-		 * 
+		 *
 		 */
 		SINGLE_PASS {
 			@Override
@@ -112,7 +112,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 		},
 		/**
 		 * The standard two-pass algorithm.
-		 * 
+		 *
 		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		TWO_PASS {
@@ -209,7 +209,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 		},
 		/**
 		 * The flood-fill algorithm
-		 * 
+		 *
 		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		FLOOD_FILL {
@@ -252,7 +252,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 					queue.remove(n);
 
 					// 5. If the color of n is equal to target-color:
-					if (image.pixels[n.y][n.x] != 0) {
+					if (image.pixels[n.y][n.x] != 0 && output[n.y][n.x] != color) {
 						// 6. Set w and e equal to n.
 						int e = n.x, w = n.x;
 						// 7. Move w to the west until the color of the node to
@@ -293,7 +293,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 
 		/**
 		 * Find the connected components in an image.
-		 * 
+		 *
 		 * @param image
 		 *            the image
 		 * @param bgThreshold
@@ -314,7 +314,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 	/**
 	 * Construct using the default (two-pass) algorithm, background pixels
 	 * having a value of 0 or less, and the given {@link ConnectMode}.
-	 * 
+	 *
 	 * @param mode
 	 *            the connection mode.
 	 */
@@ -325,7 +325,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 	/**
 	 * Construct using the given algorithm, background pixels having a value of
 	 * 0 or less, and the given {@link ConnectMode}.
-	 * 
+	 *
 	 * @param algorithm
 	 *            the algorithm to use
 	 * @param mode
@@ -339,7 +339,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 	/**
 	 * Construct using the given algorithm, background pixel threshold, and the
 	 * given {@link ConnectMode}.
-	 * 
+	 *
 	 * @param algorithm
 	 *            the algorithm to use
 	 * @param bgThreshold
@@ -357,7 +357,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 	/**
 	 * Syntactic sugar for calling {@link #analyseImage(FImage)} followed by
 	 * {@link #getComponents()};
-	 * 
+	 *
 	 * @param image
 	 *            the image to extract components from
 	 * @return the extracted components.
