@@ -53,9 +53,9 @@ import Jama.Matrix;
 /**
  * Slide that shows a video. Number keys are bound to seek to different points
  * in the video.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
 	URL url;
@@ -71,7 +71,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param video
 	 * @param background
 	 * @param transform
@@ -90,7 +90,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param video
 	 * @param transform
 	 * @param endAction
@@ -114,7 +114,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param video
 	 * @param background
 	 * @param endAction
