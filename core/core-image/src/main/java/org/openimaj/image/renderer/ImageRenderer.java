@@ -38,9 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.Image;
-import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
 import org.openimaj.image.renderer.ScanRasteriser.ScanLineListener;
 import org.openimaj.image.typography.Font;
 import org.openimaj.image.typography.FontRenderer;
@@ -454,7 +452,10 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param col
 	 *            The colour to fill the polygon with.
 	 */
-	public void drawPolygonFilled(final Polygon p, final Q col) {
+	public void drawPolygonFilled(Polygon p, final Q col) {
+		// clip to the frame
+		p = p.intersect(this.targetImage.getBounds().asPolygon());
+
 		this.drawPolygon(p, col);
 
 		if (p.getNumInnerPoly() == 1) {
@@ -465,8 +466,21 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 				}
 			});
 		} else {
-			final ConnectedComponent cc = new ConnectedComponent(p);
-			cc.process(new BlobRenderer<Q>(this.targetImage, col));
+			// final ConnectedComponent cc = new ConnectedComponent(p);
+			// cc.process(new BlobRenderer<Q>(this.targetImage, col));
+
+			final int minx = Math.max(0, (int) Math.round(p.minX()));
+			final int maxx = Math.min((int) Math.round(p.maxX()), targetImage.getWidth() - 1);
+			final int miny = Math.max(0, (int) Math.round(p.minY()));
+			final int maxy = Math.min((int) Math.round(p.maxY()), targetImage.getHeight() - 1);
+
+			final Pixel tmp = new Pixel();
+			for (tmp.y = miny; tmp.y <= maxy; tmp.y++) {
+				for (tmp.x = minx; tmp.x <= maxx; tmp.x++) {
+					if (p.isInside(tmp))
+						this.targetImage.setPixel(tmp.x, tmp.y, col);
+				}
+			}
 		}
 	}
 
@@ -705,19 +719,19 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 				c2.getX(), c2.getY(), p2.getX(), p2.getY());
 		BezierUtils.adaptiveHalving(c, new SimpleConvexHullSubdivCriterion(),
 				new CubicSegmentConsumer()
-				{
-					@Override
-					public void processSegment(final CubicCurve2D segment,
-							final double startT, final double endT)
-					{
-						if (0.0 == startT)
-							points.add(new Point2dImpl(
-									(float) segment.getX1(), (float) segment.getY1()));
+		{
+			@Override
+			public void processSegment(final CubicCurve2D segment,
+					final double startT, final double endT)
+			{
+				if (0.0 == startT)
+					points.add(new Point2dImpl(
+							(float) segment.getX1(), (float) segment.getY1()));
 
-						points.add(new Point2dImpl(
-								(float) segment.getX2(), (float) segment.getY2()));
-					}
-				}
+				points.add(new Point2dImpl(
+						(float) segment.getX2(), (float) segment.getY2()));
+			}
+		}
 				);
 
 		Point2d last = null;
@@ -750,18 +764,18 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 				p1.getX(), p1.getY(), c1.getX(), c1.getY(), p2.getX(), p2.getY());
 		BezierUtils.adaptiveHalving(c, new SimpleConvexHullSubdivCriterion(),
 				new QuadSegmentConsumer()
-				{
-					@Override
-					public void processSegment(final QuadCurve2D segment, final double startT, final double endT)
-					{
-						if (0.0 == startT)
-							points.add(new Point2dImpl(
-									(float) segment.getX1(), (float) segment.getY1()));
+		{
+			@Override
+			public void processSegment(final QuadCurve2D segment, final double startT, final double endT)
+			{
+				if (0.0 == startT)
+					points.add(new Point2dImpl(
+							(float) segment.getX1(), (float) segment.getY1()));
 
-						points.add(new Point2dImpl(
-								(float) segment.getX2(), (float) segment.getY2()));
-					}
-				}
+				points.add(new Point2dImpl(
+						(float) segment.getX2(), (float) segment.getY2()));
+			}
+		}
 				);
 
 		Point2d last = null;

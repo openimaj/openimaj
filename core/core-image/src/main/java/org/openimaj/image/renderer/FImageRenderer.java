@@ -30,6 +30,8 @@
 package org.openimaj.image.renderer;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.renderer.ScanRasteriser.ScanLineListener;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -38,15 +40,15 @@ import org.openimaj.math.geometry.shape.Polygon;
 /**
  * {@link ImageRenderer} for {@link FImage} images. Supports both anti-aliased
  * and fast rendering.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * Construct with given target image.
-	 * 
+	 *
 	 * @param targetImage
 	 *            the target image.
 	 */
@@ -56,7 +58,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * Construct with given target image and rendering hints.
-	 * 
+	 *
 	 * @param targetImage
 	 *            the target image.
 	 * @param hints
@@ -78,7 +80,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, double,
 	 *      int, int, java.lang.Object)
 	 */
@@ -94,7 +96,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, int,
 	 *      int, int, java.lang.Object)
 	 */
@@ -307,7 +309,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawPoint(org.openimaj.math.geometry.point.Point2d,
 	 *      java.lang.Object, int)
 	 */
@@ -334,7 +336,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.image.renderer.ImageRenderer#drawPolygon(org.openimaj.math.geometry.shape.Polygon,
 	 *      int, java.lang.Object)
 	 */
@@ -377,5 +379,38 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	protected Float sanitise(final Float colour)
 	{
 		return colour;
+	}
+
+	@Override
+	public void drawPolygonFilled(Polygon p, final Float col) {
+		// clip to the frame
+		p = p.intersect(this.targetImage.getBounds().asPolygon());
+
+		this.drawPolygon(p, col);
+
+		if (p.getNumInnerPoly() == 1) {
+			ScanRasteriser.scanFill(p.points, new ScanLineListener() {
+				@Override
+				public void process(final int x1, final int x2, final int y) {
+					FImageRenderer.this.drawHorizLine(x1, x2, y, col);
+				}
+			});
+		} else {
+			// final ConnectedComponent cc = new ConnectedComponent(p);
+			// cc.process(new BlobRenderer<Q>(this.targetImage, col));
+
+			final int minx = Math.max(0, (int) Math.round(p.minX()));
+			final int maxx = Math.min((int) Math.round(p.maxX()), targetImage.width - 1);
+			final int miny = Math.max(0, (int) Math.round(p.minY()));
+			final int maxy = Math.min((int) Math.round(p.maxY()), targetImage.height - 1);
+
+			final Pixel tmp = new Pixel();
+			for (tmp.y = miny; tmp.y <= maxy; tmp.y++) {
+				for (tmp.x = minx; tmp.x <= maxx; tmp.x++) {
+					if (p.isInside(tmp))
+						this.targetImage.pixels[tmp.y][tmp.x] = col;
+				}
+			}
+		}
 	}
 }
