@@ -58,7 +58,8 @@ public class SVGImage extends Image<Float[], SVGImage> {
 	 * @param hints
 	 */
 	public SVGImage(SVGRenderHints hints) {
-		this.renderer = new SVGRenderer(hints);
+		this.renderer = new SVGRenderer(null, hints);
+		this.renderer.setImage(this);
 	}
 
 	private SVGImage() {
@@ -67,7 +68,7 @@ public class SVGImage extends Image<Float[], SVGImage> {
 
 	/**
 	 * Construct an empty SVG-backed image of the given size
-	 * 
+	 *
 	 * @param w
 	 *            the width
 	 * @param h
