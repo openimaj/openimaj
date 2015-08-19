@@ -39,6 +39,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -68,10 +69,10 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Static methods for displaying images using Swing.
- * 
+ *
  * In addition to normal windows, the class also supports "named windows" which
  * can be referred to by name.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class DisplayUtilities
@@ -84,7 +85,7 @@ public class DisplayUtilities
 
 	/**
 	 * Get the number of open windows
-	 * 
+	 *
 	 * @return number of open windows
 	 */
 	public static int openWindowCount()
@@ -94,7 +95,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display an image with the default name
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return frame containing the image
@@ -107,7 +108,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display an image with the default name
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return frame containing the image
@@ -120,7 +121,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display an image with the given title
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param title
@@ -137,7 +138,7 @@ public class DisplayUtilities
 	/**
 	 * Display an image with the default name No additional functionality, such
 	 * as zooming, is enabled.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return frame containing the image
@@ -151,7 +152,7 @@ public class DisplayUtilities
 	/**
 	 * Display an image with the default name. No additional functionality, such
 	 * as zooming, is enabled.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @return frame containing the image
@@ -165,7 +166,7 @@ public class DisplayUtilities
 	/**
 	 * Display an image with the given title. No additional functionality, such
 	 * as zooming, is enabled.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param title
@@ -196,7 +197,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display an image in the given frame
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param frame
@@ -213,7 +214,7 @@ public class DisplayUtilities
 
 	/**
 	 * Set the position of a named window.
-	 * 
+	 *
 	 * @param name
 	 *            The window name
 	 * @param x
@@ -230,7 +231,7 @@ public class DisplayUtilities
 
 	/**
 	 * Update the image that is being displayed in the given named window.
-	 * 
+	 *
 	 * @param name
 	 *            The named window
 	 * @param newImage
@@ -245,13 +246,13 @@ public class DisplayUtilities
 		final BufferedImage bimg = DisplayUtilities.getImage(w);
 
 		((ImageComponent) w.getContentPane().getComponent(0))
-				.setImage(ImageUtilities.createBufferedImageForDisplay(
-						newImage, bimg));
+		.setImage(ImageUtilities.createBufferedImageForDisplay(
+				newImage, bimg));
 	}
 
 	/**
 	 * Create a named window with a title that is also the name
-	 * 
+	 *
 	 * @param name
 	 * @return the window
 	 */
@@ -262,7 +263,7 @@ public class DisplayUtilities
 
 	/**
 	 * Create a named window with a title
-	 * 
+	 *
 	 * @param name
 	 * @param title
 	 * @return the window
@@ -275,7 +276,7 @@ public class DisplayUtilities
 
 	/**
 	 * Create a named window that auto resizes
-	 * 
+	 *
 	 * @param name
 	 * @param title
 	 * @param autoResize
@@ -297,7 +298,7 @@ public class DisplayUtilities
 	/**
 	 * Display an image in the given frame by name (will be created if not
 	 * already done so using {@link #createNamedWindow(String)}
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param name
@@ -316,7 +317,7 @@ public class DisplayUtilities
 	/**
 	 * Display an image in the given frame by name (will be created if not
 	 * already done so using {@link #createNamedWindow(String)}
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param name
@@ -342,16 +343,16 @@ public class DisplayUtilities
 	 * <p>
 	 * When allowZooming is TRUE, clicking in the image will zoom in. CTRL-click
 	 * in the image to zoom out.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	public static class ImageComponent extends JComponent implements
-			MouseListener, MouseMotionListener
+	MouseListener, MouseMotionListener
 	{
 		/**
 		 * Listener for zoom and pan events
-		 * 
+		 *
 		 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 		 * @created 25 Jul 2012
 		 * @version $Author$, $Revision$, $Date$
@@ -360,7 +361,7 @@ public class DisplayUtilities
 		{
 			/**
 			 * Called when the image has been zoomed to the new zoom factor.
-			 * 
+			 *
 			 * @param newScaleFactor
 			 *            The new zoom factor
 			 */
@@ -368,7 +369,7 @@ public class DisplayUtilities
 
 			/**
 			 * Called when the image has been panned to a new position.
-			 * 
+			 *
 			 * @param newX
 			 *            The new X position
 			 * @param newY
@@ -467,7 +468,7 @@ public class DisplayUtilities
 		/**
 		 * Default constructor. Allows setting of the autoResize parameter which
 		 * if true changes the size of the component to fit the contents.
-		 * 
+		 *
 		 * @param autoResize
 		 *            automatically resize the component to the content size
 		 */
@@ -478,7 +479,7 @@ public class DisplayUtilities
 
 		/**
 		 * Construct with given image
-		 * 
+		 *
 		 * @param image
 		 *            the image
 		 */
@@ -493,7 +494,7 @@ public class DisplayUtilities
 		 * if true changes the size of the component to fit the contents, and
 		 * the autoPack parameter which automatically packs the containers root
 		 * (if its a JFrame) whenever it is resized.
-		 * 
+		 *
 		 * @param autoResize
 		 *            automatically resize the component to the content size
 		 * @param autoPack
@@ -509,7 +510,7 @@ public class DisplayUtilities
 		 * if true changes the size of the component to fit the contents, and
 		 * the autoPack parameter which automatically packs the containers root
 		 * (if its a JFrame) whenever it is resized.
-		 * 
+		 *
 		 * @param initialScale
 		 *            initial scale of the image
 		 * @param autoResize
@@ -543,7 +544,7 @@ public class DisplayUtilities
 
 		/**
 		 * Add the given listener to this image component.
-		 * 
+		 *
 		 * @param l
 		 *            The listener to add
 		 */
@@ -554,7 +555,7 @@ public class DisplayUtilities
 
 		/**
 		 * Remove the given listener from this image component.
-		 * 
+		 *
 		 * @param l
 		 *            The listener to remove.
 		 */
@@ -565,7 +566,7 @@ public class DisplayUtilities
 
 		/**
 		 * Set whether to allow zooming.
-		 * 
+		 *
 		 * @param allowZoom
 		 *            TRUE to allow zooming
 		 */
@@ -578,7 +579,7 @@ public class DisplayUtilities
 
 		/**
 		 * Set whether to allow panning.
-		 * 
+		 *
 		 * @param allowPan
 		 *            TRUE to allow panning
 		 */
@@ -591,7 +592,7 @@ public class DisplayUtilities
 
 		/**
 		 * Set whether to allow drawing of the transparency grid.
-		 * 
+		 *
 		 * @param drawGrid
 		 *            TRUE draws the grid
 		 */
@@ -603,7 +604,7 @@ public class DisplayUtilities
 
 		/**
 		 * Set whether to show pixel colours or not.
-		 * 
+		 *
 		 * @param showPixelColours
 		 *            TRUE to show pixel colours
 		 */
@@ -615,7 +616,7 @@ public class DisplayUtilities
 
 		/**
 		 * Set whether to show the XY position of the mouse curson or not
-		 * 
+		 *
 		 * @param showXYPosition
 		 *            TRUE to show XY position
 		 */
@@ -627,7 +628,7 @@ public class DisplayUtilities
 
 		/**
 		 * Set the image to draw
-		 * 
+		 *
 		 * @param image
 		 *            the image
 		 */
@@ -677,7 +678,7 @@ public class DisplayUtilities
 		 * Given an image, will calculate two scale factors for the X and Y
 		 * dimensions of the image, such that the image will fit within the
 		 * bounds.
-		 * 
+		 *
 		 * @param image
 		 *            The image to fit
 		 * @param bounds
@@ -710,7 +711,7 @@ public class DisplayUtilities
 
 		/**
 		 * Move the image to the given position (image coordinates)
-		 * 
+		 *
 		 * @param x
 		 *            The x image coordinate
 		 * @param y
@@ -731,7 +732,7 @@ public class DisplayUtilities
 
 		/**
 		 * Set the scale factor to zoom to
-		 * 
+		 *
 		 * @param sf
 		 *            The scale factor
 		 */
@@ -747,7 +748,7 @@ public class DisplayUtilities
 		/**
 		 * Set the scale factor to draw the image in the x-direction. Allows the
 		 * image to be stretched or shrunk horizontally.
-		 * 
+		 *
 		 * @param sf
 		 *            The new scale factor
 		 */
@@ -759,7 +760,7 @@ public class DisplayUtilities
 		/**
 		 * Set the scale factor to draw the image in the y-direction. Allows the
 		 * image to be stretched or shrunk vertically.
-		 * 
+		 *
 		 * @param sf
 		 *            The new scale factor
 		 */
@@ -771,7 +772,7 @@ public class DisplayUtilities
 		/**
 		 * Set the scale factor to draw the image. Allows the image to be
 		 * stretched or shrunk both horizontall or vertically.
-		 * 
+		 *
 		 * @param sfx
 		 *            The new x scale factor
 		 * @param sfy
@@ -789,7 +790,7 @@ public class DisplayUtilities
 		 * here. Use null to enforce showing the BufferedImage pixel values.
 		 * This does not set the BufferedImage that is being used for the
 		 * display.
-		 * 
+		 *
 		 * @param image
 		 *            The original image.
 		 */
@@ -821,7 +822,7 @@ public class DisplayUtilities
 
 		/**
 		 * {@inheritDoc}
-		 * 
+		 *
 		 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 		 */
 		@Override
@@ -921,7 +922,7 @@ public class DisplayUtilities
 
 		/**
 		 * {@inheritDoc}
-		 * 
+		 *
 		 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
 		 */
 		@Override
@@ -1086,7 +1087,7 @@ public class DisplayUtilities
 						this.currentPixelColour = new Float[i.numBands()];
 						for (int b = 0; b < i.numBands(); b++)
 							this.currentPixelColour[b] = i.getBand(b)
-									.getPixel(this.pixelX, this.pixelY);
+							.getPixel(this.pixelX, this.pixelY);
 					}
 				}
 
@@ -1106,7 +1107,7 @@ public class DisplayUtilities
 		 * of the image component which is being sized externally. This
 		 * shouldn't be used in combination with autoResize. When this method is
 		 * called with TRUE, zooming and dragging are disabled.
-		 * 
+		 *
 		 * @param tf
 		 *            TRUE to auto fit the image.
 		 */
@@ -1123,7 +1124,7 @@ public class DisplayUtilities
 		/**
 		 * Sets whether to keep the aspect ratio of the image constant when the
 		 * image is being autoFit into the component.
-		 * 
+		 *
 		 * @param tf
 		 *            TRUE to keep the aspect ratio constant
 		 */
@@ -1139,7 +1140,7 @@ public class DisplayUtilities
 		 * forces (such as a layout manager), setting this to true can cause
 		 * weird results where the image is pulled out and in constantly. This
 		 * shouldn't be used in combination with autoFit.
-		 * 
+		 *
 		 * @param tf
 		 *            TRUE to resize the component.
 		 */
@@ -1152,7 +1153,7 @@ public class DisplayUtilities
 		 * Sets whether the component is to attempt to pack a frame into which
 		 * it is added. If it is not in a frame this will have no effect. This
 		 * allows the frame to resize with the component.
-		 * 
+		 *
 		 * @param tf
 		 *            TRUE to auto pack the parent frame.
 		 */
@@ -1165,7 +1166,7 @@ public class DisplayUtilities
 		 * Returns the current mouse position in pixels within the viewport.
 		 * Will return the last known position if the mouse is no longer within
 		 * the viewport.
-		 * 
+		 *
 		 * @return The position in pixels
 		 */
 		public Point2d getCurrentMousePosition()
@@ -1178,7 +1179,7 @@ public class DisplayUtilities
 		 * and is determined by the scaling factors and the position of the
 		 * image within the viewport. If the mouse is no longer in the viewport,
 		 * the last known mouse position will be returned.
-		 * 
+		 *
 		 * @return The position in image coordinates.
 		 */
 		public Point2d getCurrentMouseImagePosition()
@@ -1194,7 +1195,7 @@ public class DisplayUtilities
 		 * supplied, then the number of elements will be equal to the number of
 		 * bands in the original image and the values will be the original pixel
 		 * values in the original image.
-		 * 
+		 *
 		 * @return The current pixel colour.
 		 */
 		public Float[] getCurrentPixelColour()
@@ -1205,7 +1206,7 @@ public class DisplayUtilities
 		/**
 		 * Returns the current displayed pixel colour (as an RGB encoded int)
 		 * from the currently displayed image.
-		 * 
+		 *
 		 * @return The current displayed pixel colour.
 		 */
 		public int getCurrentDisplayedPixelColour()
@@ -1215,7 +1216,7 @@ public class DisplayUtilities
 
 		/**
 		 * Returns the currently displaying image.
-		 * 
+		 *
 		 * @return The displayed image.
 		 */
 		public BufferedImage getDisplayedImage()
@@ -1226,9 +1227,9 @@ public class DisplayUtilities
 
 	/**
 	 * An extension of {@link ImageComponent} that scales the displayed image.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class ScalingImageComponent extends ImageComponent
 	{
@@ -1240,6 +1241,7 @@ public class DisplayUtilities
 		@Override
 		public void paint(final Graphics g)
 		{
+			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			final Component f = SwingUtilities.getRoot(this);
 			if (this.image != null)
 				g.drawImage(this.image, 0, 0, this.getWidth(),
@@ -1249,7 +1251,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display an image in the given frame
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param frame
@@ -1263,7 +1265,7 @@ public class DisplayUtilities
 
 	/**
 	 * Displays an image in the given named window
-	 * 
+	 *
 	 * @param image
 	 *            The image
 	 * @param name
@@ -1279,7 +1281,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display an image in the given frame
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param frame
@@ -1335,7 +1337,7 @@ public class DisplayUtilities
 
 	/**
 	 * Make a frame with the given title.
-	 * 
+	 *
 	 * @param title
 	 *            the title
 	 * @return the frame
@@ -1361,7 +1363,7 @@ public class DisplayUtilities
 	/**
 	 * Display an image with the given title. No additional functionality, such
 	 * as zooming, is enabled.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param title
@@ -1376,7 +1378,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display an image with the given title
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param title
@@ -1391,7 +1393,7 @@ public class DisplayUtilities
 	/**
 	 * Display an image with the given title. No additional functionality, such
 	 * as zooming, is enabled.
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param title
@@ -1413,7 +1415,7 @@ public class DisplayUtilities
 	/**
 	 * Get a frame that will display an image. No additional functionality, such
 	 * as zooming, is enabled.
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param width
@@ -1458,7 +1460,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display an image with the given title
-	 * 
+	 *
 	 * @param image
 	 *            the image
 	 * @param title
@@ -1479,7 +1481,7 @@ public class DisplayUtilities
 
 	/**
 	 * Get a frame that will display an image.
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param width
@@ -1496,7 +1498,7 @@ public class DisplayUtilities
 
 	/**
 	 * Get a frame that will display an image.
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param width
@@ -1516,7 +1518,7 @@ public class DisplayUtilities
 
 	/**
 	 * Get a frame that will display an image.
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param width
@@ -1553,7 +1555,7 @@ public class DisplayUtilities
 
 	/**
 	 * Render a connected component and display it
-	 * 
+	 *
 	 * @param input
 	 *            the connected component
 	 * @return frame containing the rendered image
@@ -1565,7 +1567,7 @@ public class DisplayUtilities
 
 	/**
 	 * Render a connected component with a given grey level and display it
-	 * 
+	 *
 	 * @param input
 	 *            the connected component
 	 * @param col
@@ -1591,7 +1593,7 @@ public class DisplayUtilities
 
 	/**
 	 * Render a polygon to an image and display it.
-	 * 
+	 *
 	 * @param input
 	 *            the polygon
 	 * @return the frame
@@ -1603,7 +1605,7 @@ public class DisplayUtilities
 
 	/**
 	 * Render a polygon with a given grey level and display it
-	 * 
+	 *
 	 * @param input
 	 *            the polygon
 	 * @param col
@@ -1627,7 +1629,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display multiple images in an array
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param images
@@ -1641,14 +1643,14 @@ public class DisplayUtilities
 
 		for (int i = 0; i < images.length; i++)
 			bimages[i] = ImageUtilities
-					.createBufferedImageForDisplay(images[i]);
+			.createBufferedImageForDisplay(images[i]);
 
 		return DisplayUtilities.display(title, bimages);
 	}
 
 	/**
 	 * Display multiple images in a collection
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param images
@@ -1663,14 +1665,14 @@ public class DisplayUtilities
 		int i = 0;
 		for (final Image<?, ?> img : images)
 			bimages[i++] = ImageUtilities
-					.createBufferedImageForDisplay(img);
+			.createBufferedImageForDisplay(img);
 
 		return DisplayUtilities.display(title, bimages);
 	}
 
 	/**
 	 * Display multiple images in an array
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param cols
@@ -1705,7 +1707,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display multiple images in an array
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param cols
@@ -1763,7 +1765,7 @@ public class DisplayUtilities
 
 	/**
 	 * Display multiple images in an array of frames
-	 * 
+	 *
 	 * @param title
 	 *            the frame title
 	 * @param images
