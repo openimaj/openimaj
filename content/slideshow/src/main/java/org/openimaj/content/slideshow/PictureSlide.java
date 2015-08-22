@@ -41,9 +41,9 @@ import org.openimaj.image.MBFImage;
 
 /**
  * A slide that displays a picture, scaled to the size of the slide.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class PictureSlide implements Slide {
 	protected URL url;
@@ -52,7 +52,7 @@ public class PictureSlide implements Slide {
 
 	/**
 	 * Create a picture slide
-	 * 
+	 *
 	 * @param picture
 	 *            the url of the picture
 	 * @throws IOException
@@ -64,7 +64,7 @@ public class PictureSlide implements Slide {
 
 	/**
 	 * Create a picture slide
-	 * 
+	 *
 	 * @param mbfImage
 	 *            the picture
 	 */
@@ -76,7 +76,7 @@ public class PictureSlide implements Slide {
 	public Component getComponent(int width, int height) throws IOException {
 		final BufferedImage image = ImageUtilities.createBufferedImageForDisplay(mbfImage, null);
 
-		ic = new ScalingImageComponent();
+		ic = new ScalingImageComponent(true);
 		ic.setImage(image);
 		ic.setSize(width, height);
 		ic.setPreferredSize(new Dimension(width, height));
