@@ -13,6 +13,7 @@ import java.util.List;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
+import jssc.SerialPortTimeoutException;
 
 /**
  * Serial device driver. Uses RXTX library underneath. The native parts of the
@@ -107,10 +108,19 @@ public class SerialDevice implements SerialDataListener
 		inputStream = new InputStream() {
 			@Override
 			public int read() throws IOException {
-				try {
-					return serialPort.readBytes(1)[0];
-				} catch (final SerialPortException e) {
-					throw new IOException(e);
+				while (true) {
+					try {
+						if (!serialPort.isOpened())
+							return -1;
+
+						return serialPort.readBytes(1, 100)[0];
+					} catch (final SerialPortTimeoutException e) {
+						// ignore and try again
+					} catch (final SerialPortException e) {
+						if (e.getMessage().contains("Port not opened"))
+							return -1;
+						throw new IOException(e);
+					}
 				}
 			}
 		};
