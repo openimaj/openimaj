@@ -246,8 +246,8 @@ public class DisplayUtilities
 		final BufferedImage bimg = DisplayUtilities.getImage(w);
 
 		((ImageComponent) w.getContentPane().getComponent(0))
-		.setImage(ImageUtilities.createBufferedImageForDisplay(
-				newImage, bimg));
+				.setImage(ImageUtilities.createBufferedImageForDisplay(
+						newImage, bimg));
 	}
 
 	/**
@@ -348,7 +348,7 @@ public class DisplayUtilities
 	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	public static class ImageComponent extends JComponent implements
-	MouseListener, MouseMotionListener
+			MouseListener, MouseMotionListener
 	{
 		/**
 		 * Listener for zoom and pan events
@@ -1087,7 +1087,7 @@ public class DisplayUtilities
 						this.currentPixelColour = new Float[i.numBands()];
 						for (int b = 0; b < i.numBands(); b++)
 							this.currentPixelColour[b] = i.getBand(b)
-							.getPixel(this.pixelX, this.pixelY);
+									.getPixel(this.pixelX, this.pixelY);
 					}
 				}
 
@@ -1237,11 +1237,32 @@ public class DisplayUtilities
 		 *
 		 */
 		private static final long serialVersionUID = 1L;
+		private boolean hq = false;
+
+		/**
+		 * Construct the ScalingImageComponent with fast scaling enabled
+		 */
+		public ScalingImageComponent() {
+		}
+
+		/**
+		 * Construct the ScalingImageComponent, choosing between fast scaling or
+		 * high quality scaling
+		 *
+		 * @param hq
+		 *            true if high quality scaling is required.
+		 */
+		public ScalingImageComponent(boolean hq) {
+			this.hq = hq;
+		}
 
 		@Override
 		public void paint(final Graphics g)
 		{
-			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			if (hq)
+				((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
+						RenderingHints.VALUE_RENDER_QUALITY);
+
 			final Component f = SwingUtilities.getRoot(this);
 			if (this.image != null)
 				g.drawImage(this.image, 0, 0, this.getWidth(),
@@ -1643,7 +1664,7 @@ public class DisplayUtilities
 
 		for (int i = 0; i < images.length; i++)
 			bimages[i] = ImageUtilities
-			.createBufferedImageForDisplay(images[i]);
+					.createBufferedImageForDisplay(images[i]);
 
 		return DisplayUtilities.display(title, bimages);
 	}
@@ -1665,7 +1686,7 @@ public class DisplayUtilities
 		int i = 0;
 		for (final Image<?, ?> img : images)
 			bimages[i++] = ImageUtilities
-			.createBufferedImageForDisplay(img);
+					.createBufferedImageForDisplay(img);
 
 		return DisplayUtilities.display(title, bimages);
 	}
