@@ -855,10 +855,10 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 				final double center = i / yscale;
 				final int left = (int) Math.ceil(center - width);
-				final int right = (int) Math.floor(center + width);
+				// final int right = (int) Math.floor(center + width);
+				final int right = left + contribY[i].contributions.length - 1;
 
 				double density = 0.0;
-
 				for (int j = left; j <= right; j++) {
 					double weight = center - j;
 					weight = filterf.filter(weight / fscale) / fscale;
@@ -906,7 +906,8 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 
 				final double center = i / yscale;
 				final double left = Math.ceil(center - fwidth);
-				final double right = Math.floor(center + fwidth);
+				// final double right = Math.floor(center + fwidth);
+				final double right = left + contribY[i].contributions.length - 1;
 				for (int j = (int) left; j <= right; ++j) {
 					double weight = center - j;
 					weight = filterf.filter(weight);
