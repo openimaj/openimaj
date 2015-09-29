@@ -55,7 +55,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * {@link GradientOrientationHistogramExtractor}) for the image being analysed.
  * <p>
  * Normally, HOG features are computed using all gradients in the image, but
- * this class makes it possible to only consider gradients at the edges using
+ * this class makes it possible to only consider gradients along "edges" using
  * the {@link #analyseImage(FImage, FImage)} method.
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
