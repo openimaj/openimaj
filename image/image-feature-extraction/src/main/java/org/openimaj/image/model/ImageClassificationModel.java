@@ -58,7 +58,7 @@ public interface ImageClassificationModel<T extends Image<?, T>> extends Estimat
 	 * @param images
 	 *            the images to learn from
 	 */
-	public abstract void learnModel(T... images);
+	public abstract void learnModel(@SuppressWarnings("unchecked") T... images);
 
 	/**
 	 * Classify the given image and return the corresponding probability map
