@@ -54,13 +54,13 @@ import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
  * being tested at a given time. It is however safe to use this implementation
  * with a detector that multi-threads its detection across the x and y window
  * positions for a fixed scale:
- * 
+ *
  * <code><pre>
  *  StageTreeClassifier cascade = ...
- *  
+ * 
  * 	for each scale {
  * 		cascade.setScale(scale);
- * 		
+ * 
  * 		//the x and y search could be threaded...
  * 		for each y {
  * 			for each x {
@@ -69,7 +69,7 @@ import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
  * 		}
  * }
  * </pre></code>
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
@@ -82,7 +82,8 @@ import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 		number = "",
 		volume = "1",
 		customData = {
-				"keywords", " AdaBoost; background regions; boosted simple feature cascade; classifiers; face detection; image processing; image representation; integral image; machine learning; object specific focus-of-attention mechanism; rapid object detection; real-time applications; statistical guarantees; visual object detection; feature extraction; image classification; image representation; learning (artificial intelligence); object detection;",
+				"keywords",
+				" AdaBoost; background regions; boosted simple feature cascade; classifiers; face detection; image processing; image representation; integral image; machine learning; object specific focus-of-attention mechanism; rapid object detection; real-time applications; statistical guarantees; visual object detection; feature extraction; image classification; image representation; learning (artificial intelligence); object detection;",
 				"doi", "10.1109/CVPR.2001.990517",
 				"ISSN", "1063-6919 "
 		})
@@ -120,7 +121,7 @@ public class StageTreeClassifier {
 
 	/**
 	 * Construct the {@link StageTreeClassifier} with the given parameters.
-	 * 
+	 *
 	 * @param width
 	 *            the width of the classifier
 	 * @param height
@@ -151,7 +152,7 @@ public class StageTreeClassifier {
 
 		final float mean = sum * cachedInvArea;
 		float wvNorm = sqSum * cachedInvArea - mean * mean;
-		wvNorm = (float) ((wvNorm >= 0) ? Math.sqrt(wvNorm) : 1);
+		wvNorm = (float) ((wvNorm > 0) ? Math.sqrt(wvNorm) : 1);
 
 		return wvNorm;
 	}
@@ -164,7 +165,7 @@ public class StageTreeClassifier {
 	 * classifiers and pre-caches information related to the current scale to
 	 * avoid lots of expensive recomputation of values that don't change for a
 	 * given scale.
-	 * 
+	 *
 	 * @param scale
 	 *            the current scale
 	 */
@@ -183,7 +184,7 @@ public class StageTreeClassifier {
 	/**
 	 * Recursively update the caches of all the stages to reflect the current
 	 * scale.
-	 * 
+	 *
 	 * @param s
 	 *            the stage to update
 	 */
@@ -206,7 +207,7 @@ public class StageTreeClassifier {
 	 * example a value of 20 indicates the successful detection from a total of
 	 * 20 stages, whilst -10 indicates an unsuccessful detection due to a
 	 * failure on the 11th stage.
-	 * 
+	 *
 	 * @param sat
 	 *            the summed area table(s) for the image in question. If there
 	 *            are tilted features, this must include the tilted SAT.
@@ -241,7 +242,7 @@ public class StageTreeClassifier {
 
 	/**
 	 * Get the classifier width
-	 * 
+	 *
 	 * @return the width
 	 */
 	public int getWidth() {
@@ -250,7 +251,7 @@ public class StageTreeClassifier {
 
 	/**
 	 * Get the classifier height
-	 * 
+	 *
 	 * @return the height
 	 */
 	public int getHeight() {
@@ -259,7 +260,7 @@ public class StageTreeClassifier {
 
 	/**
 	 * Get the classifier name
-	 * 
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -268,10 +269,19 @@ public class StageTreeClassifier {
 
 	/**
 	 * Does the classifier use tilted haar-like features?
-	 * 
+	 *
 	 * @return true if tilted features are used; false otherwise.
 	 */
 	public boolean hasTiltedFeatures() {
 		return hasTiltedFeatures;
+	}
+
+	/**
+	 * Get the root {@link Stage} of the classifier
+	 *
+	 * @return the root
+	 */
+	public Stage getRoot() {
+		return root;
 	}
 }
