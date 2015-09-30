@@ -45,7 +45,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * However, the advantage over a {@link BinnedWindowedExtractor} is that the
  * histogram extraction is an O(1) operation, and it is thus very quick for
  * evaluating many windows.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SATWindowedExtractor implements WindowedHistogramExtractor {
@@ -55,7 +55,7 @@ public class SATWindowedExtractor implements WindowedHistogramExtractor {
 	/**
 	 * Protected constructor for subclasses to use if they don't wan't to
 	 * compute the SATs at construction time
-	 * 
+	 *
 	 * @param nbins
 	 *            the number of histogram bins.
 	 */
@@ -69,7 +69,7 @@ public class SATWindowedExtractor implements WindowedHistogramExtractor {
 	 * represents a bin of the histogram, and each element is the histogram
 	 * weight at the respective spatial location for the corresponding bin
 	 * (usually the images will be very sparse).
-	 * 
+	 *
 	 * @param magnitudeMaps
 	 *            array of images, one per bin, with each pixel set to the
 	 *            histogram magnitude at that bin
@@ -125,8 +125,10 @@ public class SATWindowedExtractor implements WindowedHistogramExtractor {
 
 		for (int i = 0; i < nbins; i++) {
 			final float val = sats[i].calculateArea(x, y, x2, y2);
-			hist.values[i] = Math.max(0, val); // rounding errors in the SAT
-												// might lead to small -ve's
+			// rounding errors in the SAT can lead to small values that should
+			// actually be zero
+			hist.values[i] = val < 1e-4 ? 0 : val;
+
 		}
 
 		return hist;
@@ -141,7 +143,7 @@ public class SATWindowedExtractor implements WindowedHistogramExtractor {
 		for (int i = 0; i < values.length; i++) {
 			final float val = sats[i].calculateArea(x, y, x2, y2);
 			values[i] = Math.max(0, val); // rounding errors in the SAT
-											// might lead to small -ve's
+			// might lead to small -ve's
 		}
 	}
 
