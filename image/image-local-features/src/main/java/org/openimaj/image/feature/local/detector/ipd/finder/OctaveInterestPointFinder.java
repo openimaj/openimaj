@@ -40,7 +40,7 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
-import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.feature.local.interest.MultiscaleInterestPointDetector;
 
 /**
  * Finder with a specified detector which finds interest points at a given
@@ -57,11 +57,11 @@ import org.openimaj.image.feature.local.interest.InterestPointDetector;
  *
  */
 public class OctaveInterestPointFinder<T extends InterestPointData>
-		implements
-			OctaveProcessor<GaussianOctave<FImage>, FImage>
+implements
+		OctaveProcessor<GaussianOctave<FImage>, FImage>
 {
 
-	protected InterestPointDetector<T> detector;
+	protected MultiscaleInterestPointDetector<T> detector;
 	protected InterestPointFeatureCollector<T> listener;
 	protected IPDSelectionMode selectionMode;
 	static Logger logger = Logger.getLogger(OctaveInterestPointFinder.class);
@@ -75,7 +75,7 @@ public class OctaveInterestPointFinder<T extends InterestPointData>
 	 * @param selectionMode
 	 *            the detector's feature selection mode
 	 */
-	public OctaveInterestPointFinder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
+	public OctaveInterestPointFinder(MultiscaleInterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
 		this.detector = detector;
 		this.selectionMode = selectionMode;
 	}

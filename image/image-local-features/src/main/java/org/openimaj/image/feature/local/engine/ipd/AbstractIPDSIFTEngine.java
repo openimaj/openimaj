@@ -42,111 +42,129 @@ import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGrad
 import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
-import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.feature.local.interest.MultiscaleInterestPointDetector;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 
 /**
- * Extract SIFT features as defined by David Lowe but located using interest point detectors.
- * 
- * This Engine allows the control interest point detector used, whether scale simulation should be used
- * and how interest point patches are extracted.
+ * Extract SIFT features as defined by David Lowe but located using interest
+ * point detectors.
+ *
+ * This Engine allows the control interest point detector used, whether scale
+ * simulation should be used and how interest point patches are extracted.
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <T> The type of {@link InterestPointData} 
+ * @param <T>
+ *            The type of {@link InterestPointData}
  */
 public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
-	
+
 	private static final boolean DEFAULT_ACROSS_SCALES = false;
 	private static final IPDSelectionMode DEFAULT_SELECTION_MODE = new IPDSelectionMode.Threshold(2500f);
-	
+
 	private FinderMode<T> finderMode = new FinderMode.Basic<T>();
-	
-	private InterestPointDetector<T> detector;
+
+	private MultiscaleInterestPointDetector<T> detector;
 	private boolean acrossScales = DEFAULT_ACROSS_SCALES;
-	private IPDSelectionMode selectionMode = DEFAULT_SELECTION_MODE ;
-	
+	private IPDSelectionMode selectionMode = DEFAULT_SELECTION_MODE;
+
 	/**
 	 * set the selection mode number
-	 * @param selectionMode the selection mode
+	 *
+	 * @param selectionMode
+	 *            the selection mode
 	 */
 	public void setSelectionMode(IPDSelectionMode selectionMode) {
 		this.selectionMode = selectionMode;
 	}
+
 	/**
 	 * Initiate the engine with a given detector.
+	 *
 	 * @param detector
 	 */
-	public AbstractIPDSIFTEngine(InterestPointDetector<T> detector){
+	public AbstractIPDSIFTEngine(MultiscaleInterestPointDetector<T> detector) {
 		this.detector = detector;
 		this.selectionMode = DEFAULT_SELECTION_MODE;
-		
+
 	}
+
 	/**
-	 * Find the interest points using the provided detector and extract a SIFT descriptor per point.
-	 * @param image to extract features from
+	 * Find the interest points using the provided detector and extract a SIFT
+	 * descriptor per point.
+	 *
+	 * @param image
+	 *            to extract features from
 	 * @return extracted interest point features
 	 */
 	public LocalFeatureList<InterestPointKeypoint<T>> findFeatures(FImage image) {
-		InterestPointFeatureCollector<T> collector = constructCollector(new InterestPointGradientFeatureExtractor(new DominantOrientationExtractor(), new SIFTFeatureProvider()));
+		final InterestPointFeatureCollector<T> collector = constructCollector(new InterestPointGradientFeatureExtractor(
+				new DominantOrientationExtractor(), new SIFTFeatureProvider()));
 		image = image.multiply(255f);
-		if(acrossScales ){
-			findAcrossScales(image,collector);
+		if (acrossScales) {
+			findAcrossScales(image, collector);
 		}
-		else{
-			findInSingleScale(image,collector);
+		else {
+			findInSingleScale(image, collector);
 		}
 		return collector.getFeatures();
-		
+
 	}
 
 	/**
 	 * Given an extractor, construct an {@link InterestPointFeatureCollector}
+	 *
 	 * @param extractor
 	 * @return the collector
 	 */
 	public abstract InterestPointFeatureCollector<T> constructCollector(InterestPointGradientFeatureExtractor extractor);
-	
+
 	private void findInSingleScale(FImage image, InterestPointFeatureCollector<T> collector) {
 		detector.findInterestPoints(image);
-		
-		List<T> points = this.selectionMode.selectPoints(this.detector);
-		for(T point: points){
+
+		final List<T> points = this.selectionMode.selectPoints(this.detector);
+		for (final T point : points) {
 			collector.foundInterestPoint(image, point);
 		}
 	}
+
 	private void findAcrossScales(FImage image, InterestPointFeatureCollector<T> collector) {
-		OctaveInterestPointFinder<T> finder = constructFinder();
+		final OctaveInterestPointFinder<T> finder = constructFinder();
 		finder.setOctaveInterestPointListener(collector);
-		GaussianPyramidOptions<FImage> options = new GaussianPyramidOptions<FImage>();
+		final GaussianPyramidOptions<FImage> options = new GaussianPyramidOptions<FImage>();
 		options.setDoubleInitialImage(false);
 		options.setInitialSigma(1.0f);
 		options.setExtraScaleSteps(0);
 		options.setOctaveProcessor(finder);
-		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
+		final GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
 		pyr.process(image);
 		finder.finish();
 	}
-	
+
 	private OctaveInterestPointFinder<T> constructFinder() {
-		return getFinderMode().finder(this.detector,this.selectionMode);
+		return getFinderMode().finder(this.detector, this.selectionMode);
 	}
+
 	/**
 	 * @param acrossScales
 	 */
 	public void setAcrossScales(boolean acrossScales) {
 		this.acrossScales = acrossScales;
 	}
+
 	/**
 	 * set the underlying finder
+	 *
 	 * @param finderMode
 	 */
 	public void setFinderMode(FinderMode<T> finderMode) {
 		this.finderMode = finderMode;
 	}
+
 	/**
 	 * @return the finder used by {@link #findFeatures(FImage)}
 	 */
 	public FinderMode<T> getFinderMode() {
 		return finderMode;
 	}
-	
+
 }

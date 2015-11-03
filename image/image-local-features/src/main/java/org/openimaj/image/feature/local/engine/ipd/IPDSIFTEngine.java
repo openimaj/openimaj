@@ -33,24 +33,29 @@ import org.openimaj.image.feature.local.detector.ipd.collector.CircularInterestP
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.interest.InterestPointData;
-import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.feature.local.interest.MultiscaleInterestPointDetector;
 
 /**
- * an interest point detector engine instantiated with a detector of {@link InterestPointData}
+ * an interest point detector engine instantiated with a detector of
+ * {@link InterestPointData}
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class IPDSIFTEngine extends AbstractIPDSIFTEngine<InterestPointData> {
 
 	/**
-	 * @param detector The underlying detector of the engine
+	 * @param detector
+	 *            The underlying detector of the engine
 	 */
-	public IPDSIFTEngine(InterestPointDetector<InterestPointData> detector) {
+	public IPDSIFTEngine(MultiscaleInterestPointDetector<InterestPointData> detector) {
 		super(detector);
 	}
 
 	@Override
-	public InterestPointFeatureCollector<InterestPointData> constructCollector(InterestPointGradientFeatureExtractor extractor) {
+	public InterestPointFeatureCollector<InterestPointData> constructCollector(
+			InterestPointGradientFeatureExtractor extractor)
+	{
 		return new CircularInterestPointFeatureCollector(extractor);
 	}
 

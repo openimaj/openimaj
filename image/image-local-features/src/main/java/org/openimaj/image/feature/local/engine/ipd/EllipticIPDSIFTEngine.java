@@ -34,24 +34,30 @@ import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeat
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.feature.local.interest.MultiscaleInterestPointDetector;
 
 /**
  * Use the {@link AffineInterestPointFeatureCollector} to detect keypoint
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class EllipticIPDSIFTEngine extends AbstractIPDSIFTEngine<EllipticInterestPointData> {
 
 	/**
-	 * Default constructor of {@link AbstractIPDSIFTEngine#AbstractIPDSIFTEngine(InterestPointDetector)}
+	 * Default constructor of
+	 * {@link AbstractIPDSIFTEngine#AbstractIPDSIFTEngine(InterestPointDetector)}
+	 * 
 	 * @param detector
 	 */
-	public EllipticIPDSIFTEngine(InterestPointDetector<EllipticInterestPointData> detector) {
+	public EllipticIPDSIFTEngine(MultiscaleInterestPointDetector<EllipticInterestPointData> detector) {
 		super(detector);
 	}
 
 	@Override
-	public InterestPointFeatureCollector<EllipticInterestPointData> constructCollector(InterestPointGradientFeatureExtractor extractor) {
+	public InterestPointFeatureCollector<EllipticInterestPointData> constructCollector(
+			InterestPointGradientFeatureExtractor extractor)
+	{
 		return new AffineInterestPointFeatureCollector(extractor);
 	}
 

@@ -47,12 +47,12 @@ import Jama.Matrix;
 /**
  * Abstract base class for an interest point detector which uses derivatives or
  * the (multiscale) structure tensor.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public abstract class AbstractStructureTensorIPD implements
-		InterestPointDetector<InterestPointData>
+		MultiscaleInterestPointDetector<InterestPointData>
 {
 
 	protected int borderSkip;
@@ -72,7 +72,7 @@ public abstract class AbstractStructureTensorIPD implements
 	 * Set the scale factor between the integration scale and the detection
 	 * scale. When detection scale is set, integration scale = detIntScaleFactor
 	 * * detectionScale
-	 * 
+	 *
 	 * @param detIntScaleFactor
 	 */
 	public AbstractStructureTensorIPD(float detIntScaleFactor) {
@@ -84,7 +84,7 @@ public abstract class AbstractStructureTensorIPD implements
 	 * Abstract structure tensor detected at a given scale, the first
 	 * derivatives found and a structure tensor combined from these first
 	 * derivatives with a gaussian window of sigma = integrationScale
-	 * 
+	 *
 	 * @param detectionScale
 	 * @param integrationScale
 	 */
@@ -101,7 +101,7 @@ public abstract class AbstractStructureTensorIPD implements
 	 * state whether the image in from which features are extracted is already
 	 * blurred to the detection scale, if not it will be blurred to the correct
 	 * level
-	 * 
+	 *
 	 * @param detectionScale
 	 * @param integrationScale
 	 * @param blurred
@@ -119,7 +119,7 @@ public abstract class AbstractStructureTensorIPD implements
 	 * specify how many pixels to skip around the edge of the image. The kernel
 	 * used to extract edges results in a black border so some pixels are better
 	 * ignored in terms of corner detection.
-	 * 
+	 *
 	 * @param detectionScale
 	 * @param integrationScale
 	 * @param borderSkip
@@ -140,7 +140,7 @@ public abstract class AbstractStructureTensorIPD implements
 	 * ignored in terms of corner detection. Also state whether the image in
 	 * from which features are extracted is already blurred to the detection
 	 * scale, if not it will be blurred to the correct level
-	 * 
+	 *
 	 * @param detectionScale
 	 * @param integrationScale
 	 * @param borderSkip
@@ -258,12 +258,12 @@ public abstract class AbstractStructureTensorIPD implements
 				final float curr = image.pixels[y][x];
 				if (curr > image.pixels[y - 1][x - 1]
 						&& curr >= image.pixels[y - 1][x]
-						&& curr >= image.pixels[y - 1][x + 1]
-						&& curr >= image.pixels[y][x - 1]
-						&& curr >= image.pixels[y][x + 1]
-						&& curr >= image.pixels[y + 1][x - 1]
-						&& curr >= image.pixels[y + 1][x]
-						&& curr >= image.pixels[y + 1][x + 1])
+								&& curr >= image.pixels[y - 1][x + 1]
+										&& curr >= image.pixels[y][x - 1]
+												&& curr >= image.pixels[y][x + 1]
+														&& curr >= image.pixels[y + 1][x - 1]
+																&& curr >= image.pixels[y + 1][x]
+																		&& curr >= image.pixels[y + 1][x + 1])
 				{
 					maxima.add(new Maxima(x, y, curr));
 				}
@@ -328,7 +328,6 @@ public abstract class AbstractStructureTensorIPD implements
 		return integrationScale;
 	}
 
-	@Override
 	public void setIntegrationScale(float integrationScale) {
 		this.integrationScale = integrationScale;
 		this.detectionScale = integrationScale * (1f / this.detIntScaleFactor);

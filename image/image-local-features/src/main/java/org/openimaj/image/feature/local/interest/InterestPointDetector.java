@@ -36,49 +36,51 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * A detector of interest points.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @param <T> The type of {@link InterestPointData}
+ * @param <T>
+ *            The type of {@link InterestPointData}
  *
  */
 public interface InterestPointDetector<T extends InterestPointData> extends Cloneable {
 	/**
 	 * Find the interest points in an image
+	 * 
 	 * @param image
 	 */
 	public void findInterestPoints(FImage image);
-	
+
 	/**
 	 * Find the interest points in an image
+	 * 
 	 * @param image
 	 * @param window
 	 */
 	void findInterestPoints(FImage image, Rectangle window);
-	
+
 	/**
 	 * Retrieve the interest points found
-	 * @param npoints number of interest points to retrieve, < 0 returns all
+	 * 
+	 * @param npoints
+	 *            number of interest points to retrieve, < 0 returns all
 	 * @return interest points
 	 */
 	public List<T> getInterestPoints(int npoints);
-	
+
 	/**
-	 * Retrieve the interest points found whose normalised score exceeds the threshold
-	 * @param threshold normalised threshold
+	 * Retrieve the interest points found whose normalised score exceeds the
+	 * threshold
+	 * 
+	 * @param threshold
+	 *            normalised threshold
 	 * @return interest points
 	 */
 	public List<T> getInterestPoints(float threshold);
-	
+
 	/**
 	 * Get all the interest points found.
+	 * 
 	 * @return all interest points
 	 */
 	public List<T> getInterestPoints();
-	
-	/**
-	 * 
-	 * @param detectionScaleVariance
-	 */
-	public void setDetectionScale(float detectionScaleVariance);
-
-	public void setIntegrationScale(float currentScale);
 }

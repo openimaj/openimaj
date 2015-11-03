@@ -39,7 +39,7 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
-import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.feature.local.interest.MultiscaleInterestPointDetector;
 
 /**
  * Finder with a specified detector which finds interest points at a given
@@ -61,11 +61,11 @@ public class LoggingOctaveInterestPointFinder<T extends InterestPointData> exten
 
 	/**
 	 * instantiate scalepoints the superclass and scalepoints to log
-	 * 
+	 *
 	 * @param detector
 	 * @param selectionMode
 	 */
-	public LoggingOctaveInterestPointFinder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
+	public LoggingOctaveInterestPointFinder(MultiscaleInterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
 		super(detector, selectionMode);
 		scalePoints = new HashMap<String, Integer>();
 		scales = new ArrayList<String>();

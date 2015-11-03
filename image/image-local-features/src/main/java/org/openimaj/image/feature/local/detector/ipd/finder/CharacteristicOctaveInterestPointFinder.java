@@ -34,14 +34,15 @@ import java.util.TreeSet;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
-import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.feature.local.interest.MultiscaleInterestPointDetector;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.math.geometry.shape.Ellipse;
 
 /**
- * A characteristic octave interest point finder throws {@link InterestPointData} away if two instances are similar. 
- * Similarity is defined by the position, rotation and axis ratio of the two interest points.
- * 
+ * A characteristic octave interest point finder throws
+ * {@link InterestPointData} away if two instances are similar. Similarity is
+ * defined by the position, rotation and axis ratio of the two interest points.
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T>
@@ -56,62 +57,70 @@ public class CharacteristicOctaveInterestPointFinder<T extends InterestPointData
 	 */
 	public double maxDistance = DEFAULT_MAX_DISTANCE;
 	/**
-	 * The maximum rotation difference before two keypoints are considered "similar"
+	 * The maximum rotation difference before two keypoints are considered
+	 * "similar"
 	 */
 	public double maxRotation = DEFAULT_MAX_ROTATION;
 	/**
-	 * The maximum axis ratio difference before two keypoints are considered similar
+	 * The maximum axis ratio difference before two keypoints are considered
+	 * similar
 	 */
 	public double maxAxisRatio = DEFAULT_MAX_AXIS_RATIO;
 
 	/**
 	 * construct this finder with the detector and selection mode
+	 * 
 	 * @param detector
 	 * @param selectionMode
 	 */
-	public CharacteristicOctaveInterestPointFinder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
+	public CharacteristicOctaveInterestPointFinder(MultiscaleInterestPointDetector<T> detector,
+			IPDSelectionMode selectionMode)
+	{
 		super(detector, selectionMode);
 	}
-	
+
 	@Override
 	public void finish() {
-		LocalFeatureList<InterestPointKeypoint<T>> locatedFeatures = this.listener.getFeatures();
-		TreeSet<Integer> toRemove = new TreeSet<Integer>();
+		final LocalFeatureList<InterestPointKeypoint<T>> locatedFeatures = this.listener.getFeatures();
+		final TreeSet<Integer> toRemove = new TreeSet<Integer>();
 		for (int i = 0; i < locatedFeatures.size(); i++) {
-			InterestPointKeypoint<T> kp1 = locatedFeatures.get(i);
-			for (int j = i+1; j < locatedFeatures.size(); j++) {
-				InterestPointKeypoint<T> kp2 = locatedFeatures.get(j);
-				if(similarTo(kp1,kp2)){
-					if(kp1.location.score >= kp2.location.score){
+			final InterestPointKeypoint<T> kp1 = locatedFeatures.get(i);
+			for (int j = i + 1; j < locatedFeatures.size(); j++) {
+				final InterestPointKeypoint<T> kp2 = locatedFeatures.get(j);
+				if (similarTo(kp1, kp2)) {
+					if (kp1.location.score >= kp2.location.score) {
 						toRemove.add(j);
 					}
-					else{
+					else {
 						toRemove.add(i);
 					}
 				}
-			}	
+			}
 		}
 		int nRemove = 0;
-		for(int index : toRemove){
+		for (final int index : toRemove) {
 			locatedFeatures.remove(index - nRemove++);
 		}
 	}
 
-	private boolean similarTo(InterestPointKeypoint<T> kp1,InterestPointKeypoint<T> kp2) {
+	private boolean similarTo(InterestPointKeypoint<T> kp1, InterestPointKeypoint<T> kp2) {
 		boolean similar = true;
 		// Similar position
-		similar = Math.sqrt(Math.pow(kp1.x -kp2.x,2) +  Math.pow(kp1.y -kp2.y,2)) < maxDistance ; 
-		if(!similar) return false;
-		Ellipse e1 = kp1.location.getEllipse();
-		Ellipse e2 = kp2.location.getEllipse();
+		similar = Math.sqrt(Math.pow(kp1.x - kp2.x, 2) + Math.pow(kp1.y - kp2.y, 2)) < maxDistance;
+		if (!similar)
+			return false;
+		final Ellipse e1 = kp1.location.getEllipse();
+		final Ellipse e2 = kp2.location.getEllipse();
 		// Ellipse with a similar rotation
-		similar = Math.abs(e1.getRotation() - e2.getRotation()) < maxRotation; 
-		if(!similar) return false;
-		
+		similar = Math.abs(e1.getRotation() - e2.getRotation()) < maxRotation;
+		if (!similar)
+			return false;
+
 		// Similar semi-major and semi-minor axis ratio
-		similar = Math.abs((e1.getMinor()/e1.getMajor()) - (e2.getMinor()/e2.getMajor())) < maxAxisRatio ;
-		if(!similar) return false;
-		
+		similar = Math.abs((e1.getMinor() / e1.getMajor()) - (e2.getMinor() / e2.getMajor())) < maxAxisRatio;
+		if (!similar)
+			return false;
+
 		return true;
 	}
 
