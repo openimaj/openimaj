@@ -37,7 +37,7 @@ import Jama.SingularValueDecomposition;
 
 /**
  * Base class for implementation of classes that perform convolution operations
- * on @link{FImage}s as a @link{SinglebandImageProcessor}, with the kernel
+ * on {@link FImage}s as a @link{SinglebandImageProcessor}, with the kernel
  * itself formed from and @link{FImage}.
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -189,7 +189,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
 	 * .image.Image)
