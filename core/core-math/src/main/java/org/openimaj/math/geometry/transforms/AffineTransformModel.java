@@ -41,9 +41,9 @@ import Jama.Matrix;
 /**
  * Concrete implementation of a model of an Affine transform. Capable of
  * least-squares estimate of model parameters using the SVD.
- * 
+ *
  * @author Jonathon Hare
- * 
+ *
  */
 public class AffineTransformModel implements EstimatableModel<Point2d, Point2d>, MatrixTransformProvider {
 	protected Predicate<AffineTransformModel> modelCheck;
@@ -65,7 +65,7 @@ public class AffineTransformModel implements EstimatableModel<Point2d, Point2d>,
 	 * Create an {@link AffineTransformModel}. The given {@link Predicate} is
 	 * used by the {@link #estimate(List)} method to test whether the estimated
 	 * affine transform is sensible.
-	 * 
+	 *
 	 * @param mc
 	 *            the test function for sensible affine transforms
 	 */
@@ -98,6 +98,9 @@ public class AffineTransformModel implements EstimatableModel<Point2d, Point2d>,
 	 */
 	@Override
 	public boolean estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
+		if (data.size() < numItemsToEstimate())
+			return false;
+
 		this.transform = TransformUtilities.affineMatrix(data);
 
 		if (modelCheck == null)
