@@ -23,12 +23,12 @@
 <!--      <artifactId>hadoop-core</artifactId>
       <version>0.20.2-cdh3u3</version> -->
 			<artifactId>hadoop-client</artifactId>
-			<version>2.0.0-mr1-cdh4.7.0</version>
+			<version>2.5.0-mr1-cdh5.2.0</version>
     </dependency>
 		<dependency>
 	      <groupId>org.apache.hadoop</groupId>
 				<artifactId>hadoop-core</artifactId>
-				<version>2.0.0-mr1-cdh4.7.0</version>
+				<version>2.5.0-mr1-cdh5.2.0</version>
 				<scope>provided</scope>
     </dependency>
 		<dependency>
