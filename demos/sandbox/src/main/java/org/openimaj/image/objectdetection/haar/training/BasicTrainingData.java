@@ -33,9 +33,10 @@ import java.util.List;
 
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.objectdetection.haar.HaarFeature;
+import org.openimaj.ml.classification.LabelledDataProvider;
 import org.openimaj.util.array.ArrayUtils;
 
-public class BasicTrainingData implements HaarTrainingData {
+public class BasicTrainingData implements LabelledDataProvider {
 	SummedSqTiltAreaTable[] sats;
 	boolean[] classes;
 	HaarFeature[] features;
@@ -63,7 +64,7 @@ public class BasicTrainingData implements HaarTrainingData {
 	}
 
 	@Override
-	public float[] getResponses(int dimension) {
+	public float[] getFeatureResponse(int dimension) {
 		final float[] response = new float[sats.length];
 
 		for (int i = 0; i < sats.length; i++) {
@@ -86,7 +87,7 @@ public class BasicTrainingData implements HaarTrainingData {
 	}
 
 	@Override
-	public int numFeatures() {
+	public int numDimensions() {
 		return features.length;
 	}
 
@@ -125,11 +126,10 @@ public class BasicTrainingData implements HaarTrainingData {
 	}
 
 	@Override
-	public int[] getSortedIndices(int d) {
-		return ArrayUtils.indexSort(getResponses(d));
+	public int[] getSortedResponseIndices(int d) {
+		return ArrayUtils.indexSort(getFeatureResponse(d));
 	}
 
-	@Override
 	public HaarFeature getFeature(int dimension) {
 		return features[dimension];
 	}

@@ -51,6 +51,8 @@ public class Runner {
 		final StageTreeClassifier classifier = IOUtils.read(new ObjectInputStream(new FileInputStream(new File(
 				"test-classifier.bin"))));
 
+		// classifier.getRoot().threshold = 2;
+
 		// final StageTreeClassifier classifier =
 		// OCVHaarLoader.read(OCVHaarLoader.class
 		// .getResourceAsStream("test.xml"));

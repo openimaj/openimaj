@@ -27,43 +27,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.objectdetection.haar.training;
+package org.openimaj.ml.classification.boosting;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.ml.classification.LabelledDataProvider;
+import org.openimaj.ml.classification.StumpClassifier;
 import org.openimaj.util.pair.ObjectFloatPair;
 
 public class AdaBoost {
 	StumpClassifier.WeightedLearner factory = new StumpClassifier.WeightedLearner();
 
-	public List<ObjectFloatPair<StumpClassifier>> learn(HaarTrainingData trainingSet, int _numberOfRounds) {
+	public List<ObjectFloatPair<StumpClassifier>> learn(LabelledDataProvider trainingSet, int numberOfRounds) {
 		// Initialise weights
-		final float[] _weights = new float[trainingSet.numInstances()];
+		final float[] weights = new float[trainingSet.numInstances()];
 		for (int i = 0; i < trainingSet.numInstances(); i++)
-			_weights[i] = 1.0f / trainingSet.numInstances();
+			weights[i] = 1.0f / trainingSet.numInstances();
 
 		final boolean[] actualClasses = trainingSet.getClasses();
 
-		final List<ObjectFloatPair<StumpClassifier>> _h = new ArrayList<ObjectFloatPair<StumpClassifier>>();
+		final List<ObjectFloatPair<StumpClassifier>> ensemble = new ArrayList<ObjectFloatPair<StumpClassifier>>();
 
 		// Perform the learning
-		for (int t = 0; t < _numberOfRounds; t++) {
+		for (int t = 0; t < numberOfRounds; t++) {
 			System.out.println("Iteration: " + t);
 
 			// Create the weak learner and train it
-			final ObjectFloatPair<StumpClassifier> h = factory.learn(trainingSet, _weights);
+			final ObjectFloatPair<StumpClassifier> h = factory.learn(trainingSet, weights);
 
 			// Compute the classifications and training error
 			final boolean[] hClassification = new boolean[trainingSet.numInstances()];
-			final float[] responses = trainingSet.getResponses(h.first.dimension);
+			final float[] responses = trainingSet.getFeatureResponse(h.first.dimension);
 			double epsilon = 0.0;
 			for (int i = 0; i < trainingSet.numInstances(); i++) {
 				hClassification[i] = h.first.classify(responses[i]);
-				epsilon += hClassification[i] != actualClasses[i] ? _weights[i] : 0.0;
+				epsilon += hClassification[i] != actualClasses[i] ? weights[i] : 0.0;
 			}
-
-			System.out.println("epsilon = " + epsilon);
 
 			// Check stopping condition
 			if (epsilon >= 0.5)
@@ -72,35 +72,29 @@ public class AdaBoost {
 			// Calculate alpha
 			final float alpha = (float) (0.5 * Math.log((1 - epsilon) / epsilon));
 
-			System.out.println("alpha = " + alpha);
-
 			// Update the weights
 			float weightsSum = 0.0f;
 			for (int i = 0; i < trainingSet.numInstances(); i++) {
-				_weights[i] *= Math.exp(-alpha * (actualClasses[i] ? 1 : -1) * (hClassification[i] ? 1 : -1));
-				weightsSum += _weights[i];
+				weights[i] *= Math.exp(-alpha * (actualClasses[i] ? 1 : -1) * (hClassification[i] ? 1 : -1));
+				weightsSum += weights[i];
 			}
+
 			// Normalise
 			for (int i = 0; i < trainingSet.numInstances(); i++)
-				_weights[i] /= weightsSum;
+				weights[i] /= weightsSum;
 
 			// Store the weak learner and alpha value
-			_h.add(new ObjectFloatPair<StumpClassifier>(h.first, alpha));
-
-			// if (t % 5 == 0)
-			// printClassificationQuality(trainingSet, _h);
-			// DisplayUtilities.display(DrawingTest.drawRects(trainingSet.getFeature(h.first.dimension).rects));
-			System.out.println("feature = " + h.first.dimension);
+			ensemble.add(new ObjectFloatPair<StumpClassifier>(h.first, alpha));
 
 			// Break if perfectly classifying data
 			if (epsilon == 0.0)
 				break;
 		}
 
-		return _h;
+		return ensemble;
 	}
 
-	public void printClassificationQuality(HaarTrainingData data, List<ObjectFloatPair<StumpClassifier>> ensemble,
+	public void printClassificationQuality(LabelledDataProvider data, List<ObjectFloatPair<StumpClassifier>> ensemble,
 			float threshold)
 	{
 		int tp = 0;
@@ -113,7 +107,7 @@ public class AdaBoost {
 		for (int i = 0; i < ninstances; i++) {
 			final float[] feature = data.getInstanceFeature(i);
 
-			final boolean predicted = AdaBoost.Classify(feature, ensemble, threshold);
+			final boolean predicted = AdaBoost.classify(feature, ensemble, threshold);
 			final boolean actual = classes[i];
 
 			if (actual) {
@@ -137,23 +131,23 @@ public class AdaBoost {
 		System.out.format("FPR: %2.2f\tTPR: %2.2f\n", fpr, tpr);
 	}
 
-	public static boolean Classify(float[] data, List<ObjectFloatPair<StumpClassifier>> _h) {
+	public static boolean classify(float[] data, List<ObjectFloatPair<StumpClassifier>> ensemble) {
 		double classification = 0.0;
 
 		// Call the weak learner classify methods and combine results
-		for (int t = 0; t < _h.size(); t++)
-			classification += _h.get(t).second * (_h.get(t).first.classify(data) ? 1 : -1);
+		for (int t = 0; t < ensemble.size(); t++)
+			classification += ensemble.get(t).second * (ensemble.get(t).first.classify(data) ? 1 : -1);
 
 		// Return the thresholded classification
 		return classification > 0.0 ? true : false;
 	}
 
-	public static boolean Classify(float[] data, List<ObjectFloatPair<StumpClassifier>> _h, float threshold) {
+	public static boolean classify(float[] data, List<ObjectFloatPair<StumpClassifier>> ensemble, float threshold) {
 		double classification = 0.0;
 
 		// Call the weak learner classify methods and combine results
-		for (int t = 0; t < _h.size(); t++)
-			classification += _h.get(t).second * (_h.get(t).first.classify(data) ? 1 : -1);
+		for (int t = 0; t < ensemble.size(); t++)
+			classification += ensemble.get(t).second * (ensemble.get(t).first.classify(data) ? 1 : -1);
 
 		// Return the thresholded classification
 		return classification > threshold ? true : false;

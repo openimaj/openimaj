@@ -27,23 +27,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.objectdetection.haar.training;
+package org.openimaj.ml.classification;
 
-import org.openimaj.image.objectdetection.haar.HaarFeature;
+public interface LabelledDataProvider {
 
-public interface HaarTrainingData {
+	/**
+	 * Get the response for all items for a specific dimension of each feature
+	 * vector
+	 *
+	 * @param dimension
+	 *            the dimension to select
+	 * @return a vector of responses
+	 */
+	float[] getFeatureResponse(int dimension);
 
-	float[] getResponses(int dimension);
-
+	/**
+	 * Get the feature vector for a specific instance
+	 *
+	 * @param idx
+	 *            the index of the instance
+	 * @return the feature vector
+	 */
 	float[] getInstanceFeature(int idx);
 
+	/**
+	 * @return get the classes.
+	 */
 	boolean[] getClasses();
 
 	int numInstances();
 
-	int numFeatures();
+	int numDimensions();
 
-	int[] getSortedIndices(int d);
-
-	HaarFeature getFeature(int dimension);
+	/**
+	 * Get the indices of the responses corresponding to a specific dimension
+	 * for all items ordered such that the responses are ascending.
+	 *
+	 * @param d
+	 *            the dimension to select
+	 * @return the indices ordered by the corresponding ascending response
+	 *         values
+	 */
+	int[] getSortedResponseIndices(int d);
 }

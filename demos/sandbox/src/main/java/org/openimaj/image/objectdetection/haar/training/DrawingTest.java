@@ -76,11 +76,15 @@ public class DrawingTest {
 		return image;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		final List<HaarFeature> features = HaarFeatureType.generateFeatures(20, 20, HaarFeatureType.BASIC);
 
-		final HaarFeature f = features.get(77661);
+		final FImage img = loadPositive();
+		for (int i = 0; i < features.size(); i++) {
+			final HaarFeature f = features.get(i);
 
-		DisplayUtilities.display(drawRects(f.rects, loadPositive()));
+			DisplayUtilities.displayName(drawRects(f.rects, img.clone()), "foo");
+			Thread.sleep(100);
+		}
 	}
 }

@@ -33,11 +33,12 @@ import java.util.List;
 
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.objectdetection.haar.HaarFeature;
+import org.openimaj.ml.classification.LabelledDataProvider;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.function.Operation;
 import org.openimaj.util.parallel.Parallel;
 
-public class CachedTrainingData implements HaarTrainingData {
+public class CachedTrainingData implements LabelledDataProvider {
 	float[][] responses;
 	boolean[] classes;
 	int[][] sortedIndices;
@@ -59,7 +60,7 @@ public class CachedTrainingData implements HaarTrainingData {
 		final float cachedInvArea = 1.0f / (w * h);
 		final float mean = sum * cachedInvArea;
 		float wvNorm = sqSum * cachedInvArea - mean * mean;
-		wvNorm = (float) ((wvNorm >= 0) ? Math.sqrt(wvNorm) : 1);
+		wvNorm = (float) ((wvNorm > 0) ? Math.sqrt(wvNorm) : 1);
 
 		return wvNorm;
 	}
@@ -105,7 +106,7 @@ public class CachedTrainingData implements HaarTrainingData {
 	}
 
 	@Override
-	public float[] getResponses(int dimension) {
+	public float[] getFeatureResponse(int dimension) {
 		return responses[dimension];
 	}
 
@@ -120,7 +121,7 @@ public class CachedTrainingData implements HaarTrainingData {
 	}
 
 	@Override
-	public int numFeatures() {
+	public int numDimensions() {
 		return responses.length;
 	}
 
@@ -136,11 +137,10 @@ public class CachedTrainingData implements HaarTrainingData {
 	}
 
 	@Override
-	public int[] getSortedIndices(int d) {
+	public int[] getSortedResponseIndices(int d) {
 		return sortedIndices[d];
 	}
 
-	@Override
 	public HaarFeature getFeature(int dimension) {
 		return features.get(dimension);
 	}

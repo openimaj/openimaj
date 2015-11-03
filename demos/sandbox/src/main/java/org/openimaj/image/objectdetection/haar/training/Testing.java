@@ -45,6 +45,8 @@ import org.openimaj.image.objectdetection.haar.Stage;
 import org.openimaj.image.objectdetection.haar.StageTreeClassifier;
 import org.openimaj.image.objectdetection.haar.ValueClassifier;
 import org.openimaj.io.IOUtils;
+import org.openimaj.ml.classification.StumpClassifier;
+import org.openimaj.ml.classification.boosting.AdaBoost;
 import org.openimaj.util.pair.ObjectFloatPair;
 
 public class Testing {
@@ -103,7 +105,7 @@ public class Testing {
 	}
 
 	void loadPositive(boolean tilted) throws IOException {
-		for (final File file : new File("/Volumes/Raid/face_databases/cbcl-faces/train/face").listFiles()) {
+		for (final File file : new File("/Users/jsh2/Data/cbcl-faces/train/face").listFiles()) {
 			if (file.getName().endsWith(".pgm")) {
 				loadImage(file, positive, tilted);
 			}
@@ -111,7 +113,7 @@ public class Testing {
 	}
 
 	void loadNegative(boolean tilted) throws IOException {
-		for (final File file : new File("/Volumes/Raid/face_databases/cbcl-faces/train/non-face").listFiles()) {
+		for (final File file : new File("/Users/jsh2/Data/cbcl-faces/train/non-face").listFiles()) {
 			if (file.getName().endsWith(".pgm")) {
 				loadImage(file, negative, tilted);
 			}
@@ -137,15 +139,47 @@ public class Testing {
 
 		System.out.println("Starting Training");
 		final AdaBoost boost = new AdaBoost();
-		final List<ObjectFloatPair<StumpClassifier>> ensemble = boost.learn(data, 100);
+		final List<ObjectFloatPair<StumpClassifier>> ensemble = boost.learn(data, 500);
 
 		System.out.println("Training complete. Ensemble has " + ensemble.size() + " classifiers.");
 
-		for (float threshold = 3; threshold >= -3; threshold -= 0.1f) {
+		for (float threshold = 3; threshold >= -3; threshold -= 0.25f) {
 			System.out.println("Threshold = " + threshold);
 			boost.printClassificationQuality(data, ensemble, threshold);
 		}
 
+		final Stage root = createStage(ensemble);
+		final StageTreeClassifier classifier = new StageTreeClassifier(19, 19, "test cascade", false, root);
+		classifier.setScale(1);
+
+		for (int i = 0; i < positive.size(); i++) {
+			if ((classifier.classify(positive.get(i), 0, 0) == 1) != AdaBoost.classify(data.getInstanceFeature(i),
+					ensemble))
+				System.out.println("ERROR");
+		}
+		for (int i = 0; i < negative.size(); i++) {
+			if ((classifier.classify(negative.get(i), 0, 0) == 1) != AdaBoost.classify(
+					data.getInstanceFeature(i + positive.size()), ensemble))
+			{
+				System.out.println(classifier.classify(negative.get(i), 0, 0) + " " + AdaBoost.classify(
+						data.getInstanceFeature(i + positive.size()), ensemble));
+				System.out.println("ERROR2");
+			}
+		}
+
+		final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("test-classifier.bin")));
+		IOUtils.write(classifier, oos);
+		oos.close();
+	}
+
+	/**
+	 * Create a {@link Stage} from a trained ensemble.
+	 *
+	 * @param ensemble
+	 *            the ensemble
+	 * @return the stage
+	 */
+	private Stage createStage(final List<ObjectFloatPair<StumpClassifier>> ensemble) {
 		final HaarFeatureClassifier[] trees = new HaarFeatureClassifier[ensemble.size()];
 
 		for (int i = 0; i < trees.length; i++) {
@@ -153,8 +187,7 @@ public class Testing {
 			final StumpClassifier c = wc.first;
 			final float alpha = wc.second;
 			final float threshold = c.threshold;
-			final float leftValue = c.sign > 0 ? -alpha : alpha; // right way
-																	// around???
+			final float leftValue = c.sign > 0 ? -alpha : alpha;
 			final HaarFeature feature = features.get(c.dimension);
 
 			final ValueClassifier left = new ValueClassifier(leftValue);
@@ -164,11 +197,7 @@ public class Testing {
 		}
 
 		final Stage root = new Stage(0, trees, null, null);
-		final StageTreeClassifier classifier = new StageTreeClassifier(19, 19, "test cascade", false, root);
-
-		final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("test-classifier.bin")));
-		IOUtils.write(classifier, oos);
-		oos.close();
+		return root;
 	}
 
 	public static void main(String[] args) throws IOException {
