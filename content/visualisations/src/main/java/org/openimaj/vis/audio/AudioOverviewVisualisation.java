@@ -69,7 +69,7 @@ import org.openimaj.vis.timeline.TimelineObjectAdapter;
  * @created 9 Jun 2011
  */
 public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
-		implements TimelineObject
+implements TimelineObject
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -126,7 +126,7 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 
 		/**
 		 * {@inheritDoc}
-		 * 
+		 *
 		 * @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 		 */
 		@Override
@@ -276,12 +276,14 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 
 	/**
 	 * Default constructor
-	 * 
+	 *
 	 * @param as
 	 *            The audio data to plot
 	 */
 	public AudioOverviewVisualisation(final AudioStream as)
 	{
+		super(640, 480);
+
 		this.data = as;
 		this.length = this.data.getLength();
 
@@ -434,7 +436,7 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.vis.timeline.TimelineObjectAdapter#getStartTimeMilliseconds()
 	 */
 	@Override
@@ -445,7 +447,7 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.vis.timeline.TimelineObjectAdapter#getEndTimeMilliseconds()
 	 */
 	@Override
@@ -456,7 +458,7 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.vis.VisualisationImpl#update()
 	 */
 	@Override
@@ -470,7 +472,7 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.vis.timeline.TimelineObject#setStartTimeMilliseconds(long)
 	 */
 	@Override
@@ -481,7 +483,7 @@ public class AudioOverviewVisualisation extends VisualisationImpl<AudioStream>
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.vis.timeline.TimelineObject#setDataPixelTransformer(org.openimaj.vis.DataUnitsTransformer)
 	 */
 	@Override
