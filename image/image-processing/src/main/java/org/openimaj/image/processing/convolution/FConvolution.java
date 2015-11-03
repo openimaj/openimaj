@@ -39,7 +39,7 @@ import Jama.SingularValueDecomposition;
  * Base class for implementation of classes that perform convolution operations
  * on @link{FImage}s as a @link{SinglebandImageProcessor}, with the kernel
  * itself formed from and @link{FImage}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
@@ -139,7 +139,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 
 	/**
 	 * Construct the convolution operator with the given kernel
-	 * 
+	 *
 	 * @param kernel
 	 *            the kernel
 	 */
@@ -150,7 +150,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 
 	/**
 	 * Construct the convolution operator with the given kernel
-	 * 
+	 *
 	 * @param kernel
 	 *            the kernel
 	 */
@@ -162,7 +162,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	/**
 	 * Set brute-force convolution; disables kernel separation and other
 	 * optimisations.
-	 * 
+	 *
 	 * @param brute
 	 */
 	public void setBruteForce(boolean brute) {
@@ -178,7 +178,6 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 			this.mode = new ConvolveMode.OneD(kernel);
 		}
 		else {
-			MatrixUtils.matrixFromFloat(this.kernel.pixels);
 			final SingularValueDecomposition svd = new SingularValueDecomposition(
 					MatrixUtils.matrixFromFloat(this.kernel.pixels));
 			if (svd.rank() == 1)
@@ -190,7 +189,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
 	 * .image.Image)
@@ -202,10 +201,10 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 
 	/**
 	 * Return the kernel response at the x,y in the given image.
-	 * 
+	 *
 	 * This method will throw an array index out of bounds if x,y requests
 	 * pixels outside the image bounds
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param image
