@@ -204,7 +204,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.MultiBandImage#flattenMax()
 	 */
 	@Override
@@ -264,7 +264,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixel(int, int)
 	 */
 	@Override
@@ -304,7 +304,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixelInterp(double, double)
 	 */
 	@Override
@@ -320,7 +320,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixelInterp(double,
 	 * double,Float[])
 	 */
@@ -370,7 +370,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.openimaj.image.Image#internalAssign(int[], int, int)
 	 */
 	@Override
@@ -422,7 +422,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.soton.ecs.jsh2.image.MultiBandImage#newInstance(int, int)
 	 */
 	@Override
@@ -470,7 +470,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		final float[] pixels = new float[this.bands.size()];
 
 		for (int i = 0; i < this.bands.size(); i++) {
-			pixels[i] = this.bands.get(i).getPixel(x, y);
+			pixels[i] = this.bands.get(i).getPixelNative(x, y);
 		}
 
 		return pixels;
