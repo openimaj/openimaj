@@ -178,4 +178,9 @@ public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {
 	public int numDimensions() {
 	    return nn.numDimensions();
 	}
+	
+	@Override
+	public int size() {
+	    return nn.size();
+	}
 }

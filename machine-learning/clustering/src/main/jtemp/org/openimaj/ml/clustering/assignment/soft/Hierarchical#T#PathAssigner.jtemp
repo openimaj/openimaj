@@ -160,4 +160,9 @@ public class Hierarchical#T#PathAssigner implements SoftAssigner<#t#[], #r#[]> {
 	public int numDimensions() {
 	    return result.numDimensions();
 	}
+	
+	@Override
+	public int size() {
+	    return result.numClusters();
+	}
 }

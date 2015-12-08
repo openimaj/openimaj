@@ -43,9 +43,9 @@ import org.openimaj.util.pair.IndependentPair;
  * and an {@link SoftAssigner} with an associated codebook. Soft-assignment
  * assigns a single feature to multiple visual words, usually with some
  * weighting for each word.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <DATATYPE>
  *            Primitive array type of the {@link ArrayFeatureVector}s used by
  *            the {@link LocalFeature}s that will be processed.
@@ -54,14 +54,14 @@ import org.openimaj.util.pair.IndependentPair;
  *            and cluster centroids
  */
 public class SoftBagOfVisualWords<DATATYPE, DISTANCE>
-		implements
-		VectorAggregator<ArrayFeatureVector<DATATYPE>, SparseDoubleFV>
+implements
+VectorAggregator<ArrayFeatureVector<DATATYPE>, SparseDoubleFV>
 {
 	private SoftAssigner<DATATYPE, DISTANCE> assigner;
 
 	/**
 	 * Construct with the given assigner.
-	 * 
+	 *
 	 * @param assigner
 	 *            the assigner
 	 */
@@ -71,7 +71,7 @@ public class SoftBagOfVisualWords<DATATYPE, DISTANCE>
 
 	@Override
 	public SparseDoubleFV aggregate(List<? extends LocalFeature<?, ? extends ArrayFeatureVector<DATATYPE>>> features) {
-		final SparseDoubleFV fv = new SparseDoubleFV(assigner.numDimensions());
+		final SparseDoubleFV fv = new SparseDoubleFV(assigner.size());
 
 		for (final LocalFeature<?, ? extends ArrayFeatureVector<DATATYPE>> f : features) {
 			final IndependentPair<int[], DISTANCE> a = assigner.assignWeighted(f.getFeatureVector().values);
@@ -84,7 +84,7 @@ public class SoftBagOfVisualWords<DATATYPE, DISTANCE>
 
 	@Override
 	public SparseDoubleFV aggregateVectors(List<? extends ArrayFeatureVector<DATATYPE>> features) {
-		final SparseDoubleFV fv = new SparseDoubleFV(assigner.numDimensions());
+		final SparseDoubleFV fv = new SparseDoubleFV(assigner.size());
 
 		for (final ArrayFeatureVector<DATATYPE> f : features) {
 			final IndependentPair<int[], DISTANCE> a = assigner.assignWeighted(f.values);
@@ -97,13 +97,13 @@ public class SoftBagOfVisualWords<DATATYPE, DISTANCE>
 
 	/**
 	 * Aggregate the given features into a vector.
-	 * 
+	 *
 	 * @param features
 	 *            the features to aggregate
 	 * @return the aggregated vector
 	 */
 	public SparseDoubleFV aggregateVectorsRaw(List<DATATYPE> features) {
-		final SparseDoubleFV fv = new SparseDoubleFV(assigner.numDimensions());
+		final SparseDoubleFV fv = new SparseDoubleFV(assigner.size());
 
 		for (final DATATYPE f : features) {
 			final IndependentPair<int[], DISTANCE> a = assigner.assignWeighted(f);
