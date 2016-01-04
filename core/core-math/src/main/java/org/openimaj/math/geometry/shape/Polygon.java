@@ -50,7 +50,7 @@ import Jama.Matrix;
  * A polygon, modelled as a list of vertices. Polygon extends {@link PointList},
  * so the vertices are the underlying {@link PointList#points}, and they are
  * considered to be joined in order.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Polygon extends PointList implements Shape
@@ -77,7 +77,7 @@ public class Polygon extends PointList implements Shape
 	 * Constructs an empty polygon to which vertices may be added. The boolean
 	 * parameter determines whether this polygon will represent a hole (rather
 	 * than a solid).
-	 * 
+	 *
 	 * @param representsHole
 	 *            Whether the polygon will represent a hole.
 	 */
@@ -88,7 +88,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Construct a Polygon from vertices
-	 * 
+	 *
 	 * @param vertices
 	 *            the vertices
 	 */
@@ -98,7 +98,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Construct a Polygon from vertices
-	 * 
+	 *
 	 * @param vertices
 	 *            the vertices
 	 */
@@ -109,7 +109,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Construct a Polygon from the vertices, possibly copying the vertices
 	 * first
-	 * 
+	 *
 	 * @param vertices
 	 *            the vertices
 	 * @param copy
@@ -121,7 +121,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Get the vertices of the polygon
-	 * 
+	 *
 	 * @return the vertices
 	 */
 	public List<Point2d> getVertices() {
@@ -130,7 +130,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Get the number of vertices
-	 * 
+	 *
 	 * @return the number of vertices
 	 */
 	public int nVertices() {
@@ -141,7 +141,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Is the polygon closed (i.e. is the last vertex equal to the first)?
-	 * 
+	 *
 	 * @return true if closed; false if open
 	 */
 	public boolean isClosed() {
@@ -172,7 +172,7 @@ public class Polygon extends PointList implements Shape
 	 * algorithm. Also tests whether the point is in any of the inner polygons.
 	 * If the inner polygon represents a hole and the point is within that
 	 * polygon then the point is not within this polygon.
-	 * 
+	 *
 	 * @param point
 	 *            the point to test
 	 * @return true if the point is inside; false otherwise
@@ -229,7 +229,7 @@ public class Polygon extends PointList implements Shape
 	 * Calculates the difference between two polygons and returns a new polygon.
 	 * It assumes that the given polygon and this polygon have the same number
 	 * of vertices.
-	 * 
+	 *
 	 * @param p
 	 *            the polygon to subtract.
 	 * @return the difference polygon
@@ -259,7 +259,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Calculate the area of the polygon. This does not take into account holes
 	 * in the polygon.
-	 * 
+	 *
 	 * @return the area of the polygon
 	 */
 	public double calculateSignedArea() {
@@ -290,7 +290,7 @@ public class Polygon extends PointList implements Shape
 	 * Calls {@link Polygon#intersectionArea(Shape, int)} with 1 step per pixel
 	 * dimension. Subsequently this function returns the shared whole pixels of
 	 * this polygon and that.
-	 * 
+	 *
 	 * @param that
 	 * @return intersection area
 	 */
@@ -304,9 +304,9 @@ public class Polygon extends PointList implements Shape
 	 * another polygon. For each pixel step 1 is added if the point is inside
 	 * both polygons. For each pixel, perPixelPerDimension steps are taken.
 	 * Subsequently the intersection is:
-	 * 
+	 *
 	 * sumIntersections / (perPixelPerDimension * perPixelPerDimension)
-	 * 
+	 *
 	 * @param that
 	 * @return normalised intersection area
 	 */
@@ -334,7 +334,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.shape.Shape#asPolygon()
 	 */
 	@Override
@@ -344,7 +344,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Add a vertex to the polygon
-	 * 
+	 *
 	 * @param x
 	 *            x-coordinate of the vertex
 	 * @param y
@@ -356,7 +356,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Add a vertex to the polygon
-	 * 
+	 *
 	 * @param pt
 	 *            coordinate of the vertex
 	 */
@@ -367,7 +367,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Iterates through the vertices and rounds all vertices to round integers.
 	 * Side-affects this polygon.
-	 * 
+	 *
 	 * @return this polygon
 	 */
 	public Polygon roundVertices()
@@ -397,7 +397,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Return whether this polygon has no vertices or not.
-	 * 
+	 *
 	 * @return TRUE if this polygon has no vertices
 	 */
 	public boolean isEmpty()
@@ -408,7 +408,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Returns the number of inner polygons in this polygon including this
 	 * polygon.
-	 * 
+	 *
 	 * @return the number of inner polygons in this polygon.
 	 */
 	public int getNumInnerPoly()
@@ -419,7 +419,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Get the inner polygon at the given index. Note that index 0 will return
 	 * this polygon, while index i+1 will return the inner polygon i.
-	 * 
+	 *
 	 * @param index
 	 *            the index of the polygon to get
 	 * @return The inner polygon at the given index.
@@ -439,7 +439,7 @@ public class Polygon extends PointList implements Shape
 	 * polygons for this polygon regardless of whether a main polygon exists.
 	 * When the main polygon is inferred from the given polygon, the vertices
 	 * are copied into this polygon's vertex list.
-	 * 
+	 *
 	 * @param p
 	 *            The inner polygon to add
 	 * @param inferOuter
@@ -469,7 +469,7 @@ public class Polygon extends PointList implements Shape
 	 * Add an inner polygon to this polygon. If there is no main polygon defined
 	 * (the number of vertices is zero) then the given inner polygon will become
 	 * the main polygon.
-	 * 
+	 *
 	 * @param p
 	 *            The inner polygon to add
 	 */
@@ -480,7 +480,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Returns the list of inner polygons.
-	 * 
+	 *
 	 * @return the list of inner polygons
 	 */
 	public List<Polygon> getInnerPolys()
@@ -490,7 +490,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Set whether this polygon represents a hole in another polygon.
-	 * 
+	 *
 	 * @param isHole
 	 *            Whether this polygon is a whole.
 	 */
@@ -501,7 +501,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Returns whether this polygon is representing a hole in another polygon.
-	 * 
+	 *
 	 * @return Whether this polygon is representing a hole in another polygon.
 	 */
 	public boolean isHole()
@@ -511,7 +511,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -526,9 +526,9 @@ public class Polygon extends PointList implements Shape
 	 * vertices being in the same order. If the vertices are not in the vertex
 	 * list in the same manner but are in the same order (when wrapped around)
 	 * the method will return true. So the triangles below will return true:
-	 * 
+	 *
 	 * {[1,1],[2,2],[1,2]} and {[1,2],[1,1],[2,2]}
-	 * 
+	 *
 	 * @param p
 	 *            The polygon to test against
 	 * @return TRUE if the polygons are the same.
@@ -558,7 +558,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -571,9 +571,9 @@ public class Polygon extends PointList implements Shape
 	 * Displays the complete list of vertices unless the number of vertices is
 	 * greater than 10 - then a sublist is shown of 5 from the start and 5 from
 	 * the end separated by ellipses.
-	 * 
+	 *
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -588,7 +588,7 @@ public class Polygon extends PointList implements Shape
 		else
 			sb.append(points.subList(0, len / 2).toString() + "..." +
 					points.subList(points.size() - len / 2, points.size())
-							.toString());
+					.toString());
 
 		if (innerPolygons.size() > 0)
 		{
@@ -602,19 +602,29 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Returns the intersection of this polygon and the given polygon.
-	 * 
+	 *
 	 * @param p2
 	 *            The polygon to intersect with.
 	 * @return The resulting polygon intersection
 	 */
 	public Polygon intersect(Polygon p2)
 	{
-		return new PolygonUtils().intersection(this, p2);
+		// FIXME: PolygonUtils should handle inner polys itself, but it seems
+		// there are bugs... This is a hack to work around those problems
+		// without having to understand the ins and outs of how the GPC works,
+		// but it should really be fixed properly in the future!
+		final Polygon clone = new PolygonUtils().intersection(new Polygon(this.points), p2);
+		clone.setIsHole(isHole);
+
+		for (final Polygon innerPoly : innerPolygons)
+			clone.addInnerPolygon(innerPoly.intersect(p2));
+
+		return clone;
 	}
 
 	/**
 	 * Returns the union of this polygon and the given polygon.
-	 * 
+	 *
 	 * @param p2
 	 *            The polygon to union with.
 	 * @return The resulting polygon union
@@ -626,7 +636,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Returns the XOR of this polygon and the given polygon.
-	 * 
+	 *
 	 * @param p2
 	 *            The polygon to XOR with.
 	 * @return The resulting polygon
@@ -644,7 +654,7 @@ public class Polygon extends PointList implements Shape
 	 * performs the polyline algorithm on the two segments, and finally ensures
 	 * that the joins in the segments are consistent with the given epsilon
 	 * value.
-	 * 
+	 *
 	 * @param eps
 	 *            distance value below which a vertex can be ignored
 	 * @return new polygon that approximates this polygon, but with fewer
@@ -740,7 +750,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Ramer Douglas Peucker polyline algorithm
-	 * 
+	 *
 	 * @param p
 	 *            the polyline to simplify
 	 * @param eps
@@ -789,7 +799,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Apply a 3x3 transform matrix to a copy of the polygon and return it
-	 * 
+	 *
 	 * @param transform
 	 *            3x3 transform matrix
 	 * @return the transformed polygon
@@ -820,7 +830,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Compute the regular (oriented to the axes) bounding box of the polygon.
-	 * 
+	 *
 	 * @return the regular bounding box as [x,y,width,height]
 	 */
 	@Override
@@ -850,7 +860,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Translate the polygons position
-	 * 
+	 *
 	 * @param x
 	 *            x-translation
 	 * @param y
@@ -871,7 +881,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Scale the polygon by the given amount about (0,0). Scalefactors between 0
 	 * and 1 shrink the polygon.
-	 * 
+	 *
 	 * @param sc
 	 *            the scale factor.
 	 */
@@ -890,7 +900,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Scale the polygon only in the x-direction by the given amount about
 	 * (0,0). Scale factors between 0 and 1 will shrink the polygon
-	 * 
+	 *
 	 * @param sc
 	 *            The scale factor
 	 * @return this polygon
@@ -911,7 +921,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Scale the polygon only in the y-direction by the given amount about
 	 * (0,0). Scale factors between 0 and 1 will shrink the polygon
-	 * 
+	 *
 	 * @param sc
 	 *            The scale factor
 	 * @return this polygon
@@ -932,7 +942,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Scale the polygon by the given amount about (0,0). Scale factors between
 	 * 0 and 1 shrink the polygon.
-	 * 
+	 *
 	 * @param scx
 	 *            the scale factor in the x direction
 	 * @param scy
@@ -956,7 +966,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Scale the polygon by the given amount about the given point. Scalefactors
 	 * between 0 and 1 shrink the polygon.
-	 * 
+	 *
 	 * @param centre
 	 *            the centre of the scaling operation
 	 * @param sc
@@ -978,7 +988,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Calculate the centroid of the polygon.
-	 * 
+	 *
 	 * @return calls {@link #calculateFirstMoment()};
 	 */
 	@Override
@@ -991,7 +1001,7 @@ public class Polygon extends PointList implements Shape
 	 * Treating the polygon as a continuous piecewise function, calculate
 	 * exactly the first moment. This follows working presented by Carsten
 	 * Steger in "On the Calculation of Moments of Polygons" ,
-	 * 
+	 *
 	 * @return the first moment
 	 */
 	@Reference(
@@ -1002,7 +1012,7 @@ public class Polygon extends PointList implements Shape
 			year = "1996",
 			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
 			)
-			public double[] calculateFirstMoment() {
+	public double[] calculateFirstMoment() {
 		final boolean closed = isClosed();
 
 		if (!closed)
@@ -1037,7 +1047,7 @@ public class Polygon extends PointList implements Shape
 	 * Treating the polygon as a continuous piecewise function, calculate
 	 * exactly the second moment. This follows working presented by Carsten
 	 * Steger in "On the Calculation of Moments of Polygons" ,
-	 * 
+	 *
 	 * @return the second moment as an array with values: (axx,axy,ayy)
 	 */
 	@Reference(
@@ -1048,7 +1058,7 @@ public class Polygon extends PointList implements Shape
 			year = "1996",
 			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
 			)
-			public double[] calculateSecondMoment() {
+	public double[] calculateSecondMoment() {
 		final boolean closed = isClosed();
 		final double area = calculateSignedArea();
 
@@ -1086,7 +1096,7 @@ public class Polygon extends PointList implements Shape
 	 * Treating the polygon as a continuous piecewise function, calculate
 	 * exactly the centralised second moment. This follows working presented by
 	 * Carsten Steger in "On the Calculation of Moments of Polygons" ,
-	 * 
+	 *
 	 * @return the second moment as an array with values: (axx,axy,ayy)
 	 */
 	@Reference(
@@ -1097,7 +1107,7 @@ public class Polygon extends PointList implements Shape
 			year = "1996",
 			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
 			)
-			public double[] calculateSecondMomentCentralised() {
+	public double[] calculateSecondMomentCentralised() {
 		final double[] firstMoment = this.calculateFirstMoment();
 		final double[] secondMoment = this.calculateSecondMoment();
 
@@ -1114,7 +1124,7 @@ public class Polygon extends PointList implements Shape
 	 * given by
 	 * <code>0.5 * atan( (M<sub>20</sub>-M<sub>02</sub>) / 2 * M<sub>11</sub> )</code>
 	 * so results in an angle between -PI and +PI.
-	 * 
+	 *
 	 * @return The principle direction (-PI/2 to +PI/2 radians) of the connected
 	 *         component.
 	 */
@@ -1133,7 +1143,7 @@ public class Polygon extends PointList implements Shape
 	 * {@link EllipseUtilities#ellipseFromCovariance(float, float, Matrix, float)}
 	 * and the {@link #calculateSecondMomentCentralised()} return the Ellipse
 	 * best fitting the shape of this polygon.
-	 * 
+	 *
 	 * @return {@link Ellipse} defining the shape of the polygon
 	 */
 	public Ellipse toEllipse() {
@@ -1158,7 +1168,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Test if the outer polygon is convex.
-	 * 
+	 *
 	 * @return true if the outer polygon is convex; false if non-convex or less
 	 *         than two vertices
 	 */
@@ -1200,9 +1210,9 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Test if this has no inner polygons or sub-parts
-	 * 
+	 *
 	 * @see Polygon#getInnerPolys()
-	 * 
+	 *
 	 * @return true if this is polygon has no inner polygons; false otherwise.
 	 */
 	public boolean hasNoInnerPolygons() {
@@ -1234,7 +1244,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Test (outer) polygon path direction
-	 * 
+	 *
 	 * @return true is the outer path direction is clockwise w.r.t OpenIMAJ
 	 *         coordinate system
 	 */
@@ -1272,7 +1282,7 @@ public class Polygon extends PointList implements Shape
 	 * included with it. SoftSurfer makes no warranty for this code, and cannot
 	 * be held liable for any real or imagined damage resulting from its use.
 	 * Users of this code must verify correctness for their application.
-	 * 
+	 *
 	 * @return A polygon defining the shape of the convex hull
 	 */
 	public Polygon calculateConvexHullMelkman() {
@@ -1339,7 +1349,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Compute the minimum size rotated bounding rectangle that contains this
 	 * shape using the rotating calipers approach.
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.shape.Shape#minimumBoundingRectangle()
 	 * @see RotatingCalipers#getMinimumBoundingRectangle(Polygon, boolean)
 	 */
@@ -1351,13 +1361,13 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Compute the minimum size rotated bounding rectangle that contains this
 	 * shape using the rotating calipers approach.
-	 * 
+	 *
 	 * @see RotatingCalipers#getMinimumBoundingRectangle(Polygon, boolean)
-	 * 
+	 *
 	 * @param assumeSimple
 	 *            can the algorithm assume the polygon is simple and use an
 	 *            optimised (Melkman's) convex hull?
-	 * 
+	 *
 	 * @return the minimum bounding box
 	 */
 	public RotatedRectangle minimumBoundingRectangle(boolean assumeSimple) {
@@ -1366,7 +1376,7 @@ public class Polygon extends PointList implements Shape
 
 	/**
 	 * Find the closest point on the polygon to the given point
-	 * 
+	 *
 	 * @param pt
 	 *            the point
 	 * @return the closest point
