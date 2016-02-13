@@ -115,6 +115,8 @@ public enum #T#FVComparison implements #T#FVComparator {
 				SH1S += (h1prime * h1prime);
 				SH2S += (h2prime * h2prime);
 			}
+	
+			if (d==0) return 0;
 
 			return d / Math.sqrt(SH1S * SH2S);
 		}
