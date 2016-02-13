@@ -42,9 +42,9 @@ import org.openimaj.util.tree.DoubleKDTree;
 /**
  * Exact mean shift implementation. The mean shift procedure is applied to every
  * underlying point. This can be quite slow, especially with many points.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ExactMeanShift {
 	private int maxIter = 300;
@@ -57,7 +57,7 @@ public class ExactMeanShift {
 
 	/**
 	 * Perform the ExactMeanShift operation on the given KDE.
-	 * 
+	 *
 	 * @param kde
 	 */
 	public ExactMeanShift(MultivariateKernelDensityEstimate kde) {
@@ -66,7 +66,7 @@ public class ExactMeanShift {
 		performMeanShift();
 	}
 
-	private void performMeanShift() {
+	protected void performMeanShift() {
 		final double[][] data = kde.getData();
 		final double[][] modePerPoint = new double[data.length][];
 
@@ -87,7 +87,7 @@ public class ExactMeanShift {
 
 	/**
 	 * Get the modes
-	 * 
+	 *
 	 * @return the modes
 	 */
 	public double[][] getModes() {
@@ -96,7 +96,7 @@ public class ExactMeanShift {
 
 	/**
 	 * Get the assignments
-	 * 
+	 *
 	 * @return the assignments
 	 */
 	public int[] getAssignments() {
