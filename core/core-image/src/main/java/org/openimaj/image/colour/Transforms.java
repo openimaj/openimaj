@@ -1283,7 +1283,7 @@ public class Transforms {
 	 * href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
 	 * 
-	 * Conversion goes from RGB->XYZ->Lab
+	 * Conversion goes from RGB-&gt;XYZ-&gt;Lab
 	 * 
 	 * @param input
 	 *            input RGB image
@@ -1363,7 +1363,7 @@ public class Transforms {
 	 * href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
 	 * 
-	 * Conversion goes from Lab->XYZ->RGB
+	 * Conversion goes from Lab-&gt;XYZ-&gt;RGB
 	 * 
 	 * @param input
 	 *            input CIE Lab image
@@ -1374,7 +1374,7 @@ public class Transforms {
 	}
 
 	/**
-	 * Convert CIEXYZ to CIELab and normalise the resultant L, a & b values to
+	 * Convert CIEXYZ to CIELab and normalise the resultant L, a &amp; b values to
 	 * 0..1. See <a href="http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html">
 	 * http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html</a>.
 	 * 
@@ -1387,11 +1387,11 @@ public class Transforms {
 	}
 
 	/**
-	 * Convert normalised CIE Lab to RGB. The L, a & b values are in 0..1. See
+	 * Convert normalised CIE Lab to RGB. The L, a &amp; b values are in 0..1. See
 	 * <a href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
 	 * 
-	 * Conversion goes from Lab->XYZ->RGB
+	 * Conversion goes from Lab-&gt;XYZ-&gt;RGB
 	 * 
 	 * @param input
 	 *            input CIE Lab image
@@ -1488,7 +1488,7 @@ public class Transforms {
 	 * href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
 	 * 
-	 * Conversion goes from RGB->XYZ->LUV
+	 * Conversion goes from RGB-&gt;XYZ-&gt;LUV
 	 * 
 	 * @param input
 	 *            input RGB image
@@ -1566,7 +1566,7 @@ public class Transforms {
 	 * href="http://www.brucelindbloom.com/index.html?Math.html">
 	 * http://www.brucelindbloom.com/index.html?Math.html</a>
 	 * 
-	 * Conversion goes from LUV->XYZ->RGB
+	 * Conversion goes from LUV-&gt;XYZ-&gt;RGB
 	 * 
 	 * @param input
 	 *            input CIE LUV image

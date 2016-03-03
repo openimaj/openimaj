@@ -129,7 +129,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 
 	/**
 	 * Peak at the head of the queue. To maintain the semantics of a
-	 * {@link PriorityQueue}, this is the <it>least</it> element with respect to
+	 * {@link PriorityQueue}, this is the <emph>least</emph> element with respect to
 	 * the specified ordering.
 	 * <p>
 	 * Peeking at the head is an expensive (O(n)) operation as the
@@ -152,7 +152,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 
 	/**
 	 * Poll the head of the queue. To maintain the semantics of a
-	 * {@link PriorityQueue}, this is the <it>least</it> element with respect to
+	 * {@link PriorityQueue}, this is the <emph>least</emph> element with respect to
 	 * the specified ordering.
 	 * <p>
 	 * Polling the head is an expensive (O(n)) operation as the

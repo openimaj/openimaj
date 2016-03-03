@@ -33,6 +33,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.detection.CLMDetectedFace;
 import org.openimaj.image.processing.face.tracking.clm.MultiTracker;
+import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Triangle;
@@ -44,9 +45,9 @@ import com.jsaragih.Tracker;
 
 /**
  * Renderer for drawing {@link CLMDetectedFace}s
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetectedFace> {
 	private int[][] triangles;
@@ -80,7 +81,7 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 	 * Helper function, does the same as
 	 * {@link #drawDetectedFace(MBFImage,int, CLMDetectedFace)} but with the
 	 * insides of a {@link TrackedFace}.
-	 * 
+	 *
 	 * @param image
 	 * @param f
 	 */
@@ -108,12 +109,12 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 						new Point2dImpl(
 								(float) (shape.get(triangles[i][0], 0) + bounds.x) / scale,
 								(float) (shape.get(triangles[i][0] + n, 0) + bounds.y) / scale),
-						new Point2dImpl(
-								(float) (shape.get(triangles[i][1], 0) + bounds.x) / scale,
-								(float) (shape.get(triangles[i][1] + n, 0) + bounds.y) / scale),
-						new Point2dImpl(
-								(float) (shape.get(triangles[i][2], 0) + bounds.x) / scale,
-								(float) (shape.get(triangles[i][2] + n, 0) + bounds.y) / scale)
+								new Point2dImpl(
+										(float) (shape.get(triangles[i][1], 0) + bounds.x) / scale,
+										(float) (shape.get(triangles[i][1] + n, 0) + bounds.y) / scale),
+										new Point2dImpl(
+												(float) (shape.get(triangles[i][2], 0) + bounds.x) / scale,
+												(float) (shape.get(triangles[i][2] + n, 0) + bounds.y) / scale)
 						);
 				image.drawShape(t, thickness, meshColour);
 			}
@@ -130,10 +131,10 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 						new Point2dImpl(
 								(float) (shape.get(connections[0][i], 0) + bounds.x) / scale,
 								(float) (shape.get(connections[0][i] + n, 0) + bounds.y) / scale),
-						new Point2dImpl(
-								(float) (shape.get(connections[1][i], 0) + bounds.x) / scale,
-								(float) (shape.get(connections[1][i] + n, 0) + bounds.y) / scale),
-						thickness, connectionColour);
+								new Point2dImpl(
+										(float) (shape.get(connections[1][i], 0) + bounds.x) / scale,
+										(float) (shape.get(connections[1][i] + n, 0) + bounds.y) / scale),
+										thickness, connectionColour);
 			}
 		}
 
@@ -147,14 +148,14 @@ public class CLMDetectedFaceRenderer implements DetectedFaceRenderer<CLMDetected
 						new Point2dImpl(
 								((float) shape.get(i, 0) + bounds.x) / scale,
 								((float) shape.get(i + n, 0) + bounds.y) / scale),
-						pointColour, thickness);
+								pointColour, thickness);
 			}
 		}
 	}
 
 	/**
 	 * Static helper function for quick and dirty rendering
-	 * 
+	 *
 	 * @param mbf
 	 *            image to draw on to
 	 * @param thickness

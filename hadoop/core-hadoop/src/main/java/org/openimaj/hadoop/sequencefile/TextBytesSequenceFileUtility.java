@@ -41,6 +41,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.Text;
 
@@ -48,7 +49,7 @@ import org.apache.hadoop.io.Text;
  * A concrete implementation of a {@link SequenceFileUtility} for
  * {@link SequenceFile}s with {@link Text} keys and {@link BytesWritable}
  * values.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public final class TextBytesSequenceFileUtility extends SequenceFileUtility<Text, BytesWritable> {

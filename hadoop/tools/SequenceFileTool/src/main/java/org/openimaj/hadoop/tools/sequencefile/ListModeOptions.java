@@ -39,30 +39,31 @@ import javax.imageio.ImageIO;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.SequenceFile;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.openimaj.hadoop.sequencefile.RecordInformationExtractor;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 
 /**
- * Options for controlling what is printed when listing the contents
- * of a {@link SequenceFile} with the {@link SequenceFileTool}.
- * 
+ * Options for controlling what is printed when listing the contents of a
+ * {@link SequenceFile} with the {@link SequenceFileTool}.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public enum ListModeOptions {
 	/**
 	 * Print the record key
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	KEY {
 		@Override
 		public RecordInformationExtractor getExtractor() {
-			return new RecordInformationExtractor(){
+			return new RecordInformationExtractor() {
 				@Override
-				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
+				public <K, V> String extract(K key, V value, long offset, Path seqFile) {
 					return key.toString();
 				}
 			};
@@ -70,35 +71,34 @@ public enum ListModeOptions {
 	},
 	/**
 	 * Print the offset of the record in the {@link SequenceFile}
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	OFFSET {
 		@Override
 		public RecordInformationExtractor getExtractor() {
-			return new RecordInformationExtractor(){
+			return new RecordInformationExtractor() {
 				@Override
-				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
-					return ((Long)offset).toString();
+				public <K, V> String extract(K key, V value, long offset, Path seqFile) {
+					return ((Long) offset).toString();
 				}
 			};
-		}		
+		}
 	},
 	/**
-	 * Print the path to the {@link SequenceFile} in question. 
-	 * This is useful if you're working with a directory of
-	 * {@link SequenceFile}s
-	 * 
+	 * Print the path to the {@link SequenceFile} in question. This is useful if
+	 * you're working with a directory of {@link SequenceFile}s
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	SEQUENCEFILE {
 		@Override
 		public RecordInformationExtractor getExtractor() {
-			return new RecordInformationExtractor(){
+			return new RecordInformationExtractor() {
 				@Override
-				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
+				public <K, V> String extract(K key, V value, long offset, Path seqFile) {
 					return seqFile.toString();
 				}
 			};
@@ -106,24 +106,25 @@ public enum ListModeOptions {
 	},
 	/**
 	 * Print the mimetype of the value in each record
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	MIMETYPE {
 		@Override
 		public RecordInformationExtractor getExtractor() {
-			return new RecordInformationExtractor(){
+			return new RecordInformationExtractor() {
 				@Override
-				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
-					if(value instanceof BytesWritable) {
+				public <K, V> String extract(K key, V value, long offset, Path seqFile) {
+					if (value instanceof BytesWritable) {
 						MagicMimeTypeIdentifier match;
 						try {
-							BytesWritable bw = (BytesWritable)value;
-							match = new MagicMimeTypeIdentifier ();
-							String ident = match.identify(bw.getBytes(),key.toString(),new URIImpl(seqFile.toUri().toString()));
+							final BytesWritable bw = (BytesWritable) value;
+							match = new MagicMimeTypeIdentifier();
+							final String ident = match.identify(bw.getBytes(), key.toString(), new URIImpl(seqFile
+									.toUri().toString()));
 							return ident;
-						} catch(Exception e){
+						} catch (final Exception e) {
 							System.err.println("Failed!");
 						}
 					}
@@ -134,18 +135,18 @@ public enum ListModeOptions {
 	},
 	/**
 	 * Print the size of the record value in bytes
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	SIZE {
 		@Override
 		public RecordInformationExtractor getExtractor() {
-			return new RecordInformationExtractor(){
+			return new RecordInformationExtractor() {
 				@Override
-				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
-					if(value instanceof BytesWritable) {
-						return "" + ((BytesWritable)value).getLength();
+				public <K, V> String extract(K key, V value, long offset, Path seqFile) {
+					if (value instanceof BytesWritable) {
+						return "" + ((BytesWritable) value).getLength();
 					}
 					return null;
 				}
@@ -153,9 +154,8 @@ public enum ListModeOptions {
 		}
 	},
 	/**
-	 * Print the dimensions of each records value if it is a
-	 * valid image.
-	 * 
+	 * Print the dimensions of each records value if it is a valid image.
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
@@ -164,12 +164,13 @@ public enum ListModeOptions {
 		public RecordInformationExtractor getExtractor() {
 			return new RecordInformationExtractor() {
 				@Override
-				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
-					if(value instanceof BytesWritable) {
+				public <K, V> String extract(K key, V value, long offset, Path seqFile) {
+					if (value instanceof BytesWritable) {
 						try {
-							BufferedImage im = ImageIO.read(new ByteArrayInputStream(((BytesWritable) value).getBytes()));
+							final BufferedImage im = ImageIO.read(new ByteArrayInputStream(((BytesWritable) value)
+									.getBytes()));
 							return String.format("%d %d", im.getWidth(), im.getHeight());
-						} catch (IOException e) {
+						} catch (final IOException e) {
 							return null;
 						}
 					}
@@ -178,24 +179,26 @@ public enum ListModeOptions {
 			};
 		}
 	};
-	
+
 	/**
-	 * @return a {@link RecordInformationExtractor} for extracting information from a {@link SequenceFile} record.
+	 * @return a {@link RecordInformationExtractor} for extracting information
+	 *         from a {@link SequenceFile} record.
 	 */
 	public abstract RecordInformationExtractor getExtractor();
 
 	/**
 	 * Construct a list of extractors from the given options.
-	 * 
-	 * @param options the options
+	 *
+	 * @param options
+	 *            the options
 	 * @return the extractors in the same order as the given options
 	 */
 	public static List<RecordInformationExtractor> listOptionsToExtractPolicy(List<ListModeOptions> options) {
-		List<RecordInformationExtractor> extractors = new ArrayList<RecordInformationExtractor>();
-		
-		for(ListModeOptions opt : options) 
+		final List<RecordInformationExtractor> extractors = new ArrayList<RecordInformationExtractor>();
+
+		for (final ListModeOptions opt : options)
 			extractors.add(opt.getExtractor());
-		
+
 		return extractors;
 	}
 }

@@ -27,6 +27,7 @@ import org.openimaj.io.HttpUtils.MetaRefreshRedirectStrategy;
 import org.openimaj.picslurper.output.OutputListener;
 import org.openimaj.picslurper.output.WriteableImageOutput;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
+import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.web.scraping.SiteSpecificConsumer;
 import org.openimaj.web.scraping.images.CommonHTMLConsumers;

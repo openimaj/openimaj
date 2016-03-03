@@ -31,18 +31,19 @@ package org.openimaj.text.nlp.sentiment.model;
 
 import org.openimaj.ml.annotation.Annotator;
 import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
+import org.openimaj.text.nlp.sentiment.type.Sentiment;
 
 /**
  * An annotator which can ascribe {@link Sentiment} to some {@link Object}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            The object to which sentiment can be ascribed
  * @param <CLONETYPE>
  *            the type of model this model clones into
  */
 public interface SentimentAnnotator<OBJECT, CLONETYPE extends SentimentAnnotator<OBJECT, CLONETYPE>>
-		extends Annotator<OBJECT, BipolarSentiment>
+extends Annotator<OBJECT, BipolarSentiment>
 {
 }

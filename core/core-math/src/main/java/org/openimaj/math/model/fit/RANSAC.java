@@ -44,24 +44,27 @@ import org.openimaj.util.pair.IndependentPair;
  * The RANSAC Algorithm (RANdom SAmple Consensus)
  * <p>
  * For fitting noisy data consisting of inliers and outliers to a model.
+ * </p>
  * <p>
  * Assume: M data items required to estimate parameter x N data items in total
+ * </p>
  * <p>
- * 1.) select M data items at random <br/>
- * 2.) estimate parameter x <br/>
- * 3.) find how many of the N data items fit (i.e. have an error less than a
- * threshold or pass some check) x within tolerence tol, call this K <br/>
- * 4.) if K is large enough (bigger than numItems) accept x and exit with
- * success <br/>
- * 5.) repeat 1..4 nIter times <br/>
- * 6.) fail - no good x fit of data
+ * 1.) select M data items at random <br>
+ * </br> 2.) estimate parameter x <br>
+ * </br> 3.) find how many of the N data items fit (i.e. have an error less than
+ * a threshold or pass some check) x within tolerence tol, call this K <br>
+ * </br> 4.) if K is large enough (bigger than numItems) accept x and exit with
+ * success <br>
+ * </br> 5.) repeat 1..4 nIter times <br>
+ * </br> 6.) fail - no good x fit of data
+ * </p>
  * <p>
  * In this implementation, the conditions that control the iterations are
  * configurable. In addition, the best matching model is always stored, even if
  * the fitData() method returns false.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <I>
  *            type of independent data
  * @param <D>
@@ -77,7 +80,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 		/**
 		 * Initialise the stopping condition if necessary. Return false if the
 		 * initialisation cannot be performed and RANSAC should fail
-		 * 
+		 *
 		 * @param data
 		 *            The data being fitted
 		 * @param model
@@ -88,7 +91,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 		/**
 		 * Should we stop iterating and return the model?
-		 * 
+		 *
 		 * @param numInliers
 		 *            number of inliers in this iteration
 		 * @return true if the model is good and iterations should stop
@@ -98,7 +101,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 		/**
 		 * Should the model be considered to fit after the final iteration has
 		 * passed?
-		 * 
+		 *
 		 * @param numInliers
 		 *            number of inliers in the final model
 		 * @return true if the model fits, false otherwise
@@ -117,7 +120,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 		 * Construct the stopping condition with the given threshold on the
 		 * number of data points which must match for a model to be considered a
 		 * fit.
-		 * 
+		 *
 		 * @param limit
 		 *            the threshold
 		 */
@@ -139,7 +142,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 		@Override
 		public boolean shouldStopIterations(int numInliers) {
 			return numInliers >= limit; // stop if there are more inliers than
-										// our limit
+			// our limit
 		}
 
 		@Override
@@ -160,7 +163,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 		 * Construct the stopping condition with the given percentage threshold
 		 * on the number of data points which must match for a model to be
 		 * considered a fit.
-		 * 
+		 *
 		 * @param percentageLimit
 		 *            the percentage threshold
 		 */
@@ -197,7 +200,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 		/**
 		 * Default constructor.
-		 * 
+		 *
 		 * @param desiredErrorProbability
 		 *            The desired error rate
 		 * @param inlierIsBadProbability
@@ -216,7 +219,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 		/**
 		 * Constructor with defaults for bad inlier probability and percentage
 		 * inliers.
-		 * 
+		 *
 		 * @param desiredErrorProbability
 		 *            The desired error rate
 		 */
@@ -314,7 +317,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 		@Override
 		public boolean finalFitCondition(int numInliers) {
 			return numInliers > required; // accept the best result as a good
-											// fit if there are enough inliers
+			// fit if there are enough inliers
 		}
 	}
 
@@ -335,7 +338,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 	/**
 	 * Create a RANSAC object with uniform random sampling for creating the
 	 * subsets
-	 * 
+	 *
 	 * @param model
 	 *            Model object with which to fit data
 	 * @param errorModel
@@ -360,7 +363,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 	/**
 	 * Create a RANSAC object with uniform random sampling for creating the
 	 * subsets
-	 * 
+	 *
 	 * @param model
 	 *            Model object with which to fit data
 	 * @param errorModel
@@ -385,7 +388,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 	/**
 	 * Create a RANSAC object
-	 * 
+	 *
 	 * @param model
 	 *            Model object with which to fit data
 	 * @param errorModel
@@ -412,7 +415,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 	/**
 	 * Create a RANSAC object
-	 * 
+	 *
 	 * @param model
 	 *            Model object with which to fit data
 	 * @param errorModel
@@ -457,7 +460,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 		if (data.size() < M || !stoppingCondition.init(data, model)) {
 			return false; // there are not enough points to create a model, or
-							// init failed
+			// init failed
 		}
 
 		sampler.setCollection(data);
@@ -531,15 +534,15 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 	@Override
 	public List<? extends IndependentPair<I, D>> getInliers()
-	{
+			{
 		return inliers;
-	}
+			}
 
 	@Override
 	public List<? extends IndependentPair<I, D>> getOutliers()
-	{
+			{
 		return outliers;
-	}
+			}
 
 	/**
 	 * @return maximum number of allowed iterations
@@ -550,7 +553,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 	/**
 	 * Set the maximum number of allowed iterations
-	 * 
+	 *
 	 * @param nIter
 	 *            maximum number of allowed iterations
 	 */
@@ -565,7 +568,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 	/**
 	 * Set the underlying model being fitted
-	 * 
+	 *
 	 * @param model
 	 *            the model
 	 */
@@ -584,7 +587,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 	/**
 	 * Set whether RANSAC should attempt to improve the model using all inliers
 	 * as data
-	 * 
+	 *
 	 * @param improveEstimate
 	 *            should RANSAC attempt to improve the model using all inliers
 	 *            as data
@@ -595,7 +598,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 
 	/**
 	 * Set the data used to construct the model
-	 * 
+	 *
 	 * @param modelConstructionData
 	 */
 	public void setModelConstructionData(List<? extends IndependentPair<I, D>> modelConstructionData) {

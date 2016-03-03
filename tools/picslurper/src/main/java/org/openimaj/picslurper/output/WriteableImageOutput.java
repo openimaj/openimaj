@@ -23,9 +23,9 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Can serialise itself as bytes or a json string
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class WriteableImageOutput implements ReadWriteable, Cloneable {
 	private transient Gson gson = new GsonBuilder().create();
@@ -138,6 +138,7 @@ public class WriteableImageOutput implements ReadWriteable, Cloneable {
 	}
 
 	/**
+	 * @param root
 	 * @return all the images in this ImageOutput's file
 	 */
 	public List<File> listImageFiles(String root) {

@@ -37,17 +37,17 @@ import org.openimaj.image.pixel.Pixel;
 
 /**
  * Iterators for producing discrete pixel positions along a line.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class LineIterators {
 	/**
 	 * Pixel iterator based on Bresenham's algorithm for a line between two
 	 * discrete endpoints. <b>The pixel returned by the iterator will always be
 	 * the same object for efficiency; if you need to hold on to it, you should
-	 * clone it first.<b>
-	 * 
+	 * clone it first.</b>
+	 *
 	 * @param start
 	 *            the coordinate of the start point
 	 * @param end
@@ -62,8 +62,8 @@ public class LineIterators {
 	 * Pixel iterator based on Bresenham's algorithm for a line between two
 	 * discrete endpoints. <b>The pixel returned by the iterator will always be
 	 * the same object for efficiency; if you need to hold on to it, you should
-	 * clone it first.<b>
-	 * 
+	 * clone it first.</b>
+	 *
 	 * @param x0
 	 *            the x-ordinate of the start point
 	 * @param y0
@@ -123,10 +123,10 @@ public class LineIterators {
 	 * Pixel iterator based on Bresenham's algorithm for a line starting at a
 	 * given point, with an angle given by the provided x and y deltas. <b>The
 	 * pixel returned by the iterator will always be the same object for
-	 * efficiency; if you need to hold on to it, you should clone it first.<b>
+	 * efficiency; if you need to hold on to it, you should clone it first.</b>
 	 * <b>Note: The returned iterator is infinite; that is it won't ever
 	 * end.</b>
-	 * 
+	 *
 	 * @param x0
 	 *            the x-ordinate of the start point
 	 * @param y0
@@ -181,9 +181,9 @@ public class LineIterators {
 	/**
 	 * Generate the pixels for the supercover of the line between two points.
 	 * Based directly on code from Eugen Dedu.
-	 * 
+	 *
 	 * @see "http://lifc.univ-fcomte.fr/~dedu/projects/bresenham/index.html"
-	 * 
+	 *
 	 * @param x1
 	 *            the x-ordinate of the start point
 	 * @param y1
@@ -192,7 +192,7 @@ public class LineIterators {
 	 *            the x-ordinate of the end point
 	 * @param y2
 	 *            the y-ordinate of the end point
-	 * 
+	 *
 	 * @return the iterator of pixels representing the supercover line
 	 */
 	public static Iterator<Pixel> supercover(int x1, int y1, int x2, int y2) {
@@ -202,9 +202,9 @@ public class LineIterators {
 	/**
 	 * Generate the pixels for the supercover of the line between two points.
 	 * Based directly on code from Eugen Dedu.
-	 * 
+	 *
 	 * @see "http://lifc.univ-fcomte.fr/~dedu/projects/bresenham/index.html"
-	 * 
+	 *
 	 * @param x1
 	 *            the x-ordinate of the start point
 	 * @param y1
@@ -213,7 +213,7 @@ public class LineIterators {
 	 *            the x-ordinate of the end point
 	 * @param y2
 	 *            the y-ordinate of the end point
-	 * 
+	 *
 	 * @return the list of pixels representing the supercover line
 	 */
 	public static List<Pixel> supercoverAsList(int x1, int y1, int x2, int y2) {
@@ -248,8 +248,8 @@ public class LineIterators {
 			// dx==dy)
 			errorprev = error = dx; // start in the middle of the square
 			for (int i = 0; i < dx; i++) { // do not use the first point
-											// (already
-											// done)
+				// (already
+				// done)
 				x += xstep;
 				error += ddy;
 				if (error > ddx) { // increment y if AFTER the middle ( > )
@@ -297,14 +297,14 @@ public class LineIterators {
 	/**
 	 * Generate the pixels for the supercover of the line between two points.
 	 * Based directly on code from Eugen Dedu.
-	 * 
+	 *
 	 * @see "http://lifc.univ-fcomte.fr/~dedu/projects/bresenham/index.html"
-	 * 
+	 *
 	 * @param start
 	 *            the coordinate of the start point
 	 * @param end
 	 *            the coordinate of the end point
-	 * 
+	 *
 	 * @return the list of pixels representing the supercover line
 	 */
 	public static List<Pixel> supercoverAsList(Pixel start, Pixel end) {

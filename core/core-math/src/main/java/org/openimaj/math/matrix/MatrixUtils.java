@@ -1087,8 +1087,8 @@ public class MatrixUtils {
 
 	/**
 	 * Add the rows to the mat at rowIndex. Assumes MANY things with no checks:
-	 * rows.rows == rowIndex.length mat.cols == rows.cols rowIndex.length <
-	 * mat.rows for x in rowIndex: x < mat.rows && x >= 0 etc.
+	 * rows.rows == rowIndex.length mat.cols == rows.cols rowIndex.length &lt;
+	 * mat.rows for x in rowIndex: x &lt; mat.rows &amp;&amp; x &gt;= 0 etc.
 	 * 
 	 * @param mat
 	 * @param rows
@@ -1111,7 +1111,7 @@ public class MatrixUtils {
 	/**
 	 * @param x
 	 * @param val
-	 * @return a new matrix for x < val
+	 * @return a new matrix for x &lt; val
 	 */
 	public static Matrix lessThan(Matrix x, double val) {
 		final Matrix retMat = x.copy();
@@ -1128,7 +1128,7 @@ public class MatrixUtils {
 	/**
 	 * @param x
 	 * @param val
-	 * @return a new matrix for x > val
+	 * @return a new matrix for x &gt; val
 	 */
 	public static Matrix greaterThan(Matrix x, double val) {
 		final Matrix retMat = x.copy();
@@ -1144,7 +1144,7 @@ public class MatrixUtils {
 
 	/**
 	 * @param x
-	 * @return a new matrix for x1 && x2 && ... && xn where && means "!=0"
+	 * @return a new matrix for x1 &amp;&amp; x2 &amp;&amp; ... &amp;&amp; xn where &amp;&amp; means "!=0"
 	 */
 	public static Matrix and(Matrix... x) {
 		final Matrix retMat = MatrixUtils.ones(x[0].getRowDimension(), x[0].getColumnDimension());
@@ -1665,7 +1665,7 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Return a copy of the input matrix where every value is the hyerbolic
+	 * Return a copy of the input matrix where every value is the hyperbolic
 	 * tangent of the elements.
 	 * 
 	 * @param m

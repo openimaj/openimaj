@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openimaj.ml.regression.LinearRegression;
+import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.util.pair.IndependentPair;
@@ -52,7 +53,7 @@ import org.openimaj.util.pair.IndependentPair;
  *
  * When intitalised, the Y time series must be explicitly specified. By default
  * the
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
@@ -75,7 +76,7 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 
 	/**
 	 * Calculate the regression from the same time series inputed
-	 * 
+	 *
 	 * @param ydataName
 	 */
 	public WindowedLinearRegressionAggregator(String ydataName) {
@@ -86,7 +87,7 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 
 	/**
 	 * Calculate the regression from the same time series inputed
-	 * 
+	 *
 	 * @param ydataName
 	 * @param autoregressive
 	 *            whether the ydata should be used in regression
@@ -101,7 +102,7 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 	/**
 	 * Perform regression s.t. Y = Sum(w_{0-i} * x_{0-i}) + c using the same
 	 * window size for all other time series
-	 * 
+	 *
 	 * @param ydataName
 	 * @param windowsize
 	 */
@@ -115,7 +116,7 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 	/**
 	 * Perform regression s.t. Y = Sum(w_{0-i} * x_{0-i}) + c using the same
 	 * window size for all other time series
-	 * 
+	 *
 	 * @param ydataName
 	 * @param windowsize
 	 * @param autoregressive
@@ -133,7 +134,7 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to
 	 * windowsize with some offset. The same windowsize and offset is used for
 	 * each time series
-	 * 
+	 *
 	 * @param ydataName
 	 * @param windowsize
 	 * @param offset
@@ -149,7 +150,7 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to
 	 * windowsize with some offset. The same windowsize and offset is used for
 	 * each time series
-	 * 
+	 *
 	 * @param ydataName
 	 * @param windowsize
 	 * @param offset
@@ -168,12 +169,13 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to
 	 * windowsize with some offset. The same windowsize and offset is used for
 	 * each time series
-	 * 
+	 *
 	 * @param ydataName
 	 * @param windowsize
 	 * @param offset
 	 * @param autoregressive
 	 *            whether the ydata should be used in regression
+	 * @param other
 	 */
 	public WindowedLinearRegressionAggregator(String ydataName, int windowsize, int offset, boolean autoregressive,
 			DoubleSynchronisedTimeSeriesCollection other)
@@ -192,7 +194,7 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to
 	 * windowsize with some offset. The same windowsize and offset is used for
 	 * each time series
-	 * 
+	 *
 	 * @param ydataName
 	 * @param autoregressive
 	 *            whether the ydata should be used in regression

@@ -31,6 +31,7 @@ package org.openimaj.ml.timeseries;
 
 import org.openimaj.ml.timeseries.converter.TimeSeriesConverter;
 import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
+import org.openimaj.ml.timeseries.processor.interpolation.TimeSeriesInterpolation;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -41,25 +42,25 @@ import org.openimaj.util.pair.IndependentPair;
  * <p>
  * These values can be used by a {@link TimeSeriesInterpolation} to get specific
  * moments in time
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  * @param <DATA>
  *            the type of the data at each point in time
  * @param <SINGLE_TYPE>
  *            the type of the an element at a single point in time
  * @param <RETURNTYPE>
  *            the time series returned by the get
- * 
+ *
  */
 public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE>>
-		implements
-			Iterable<IndependentPair<Long, SINGLE_TYPE>>
+implements
+		Iterable<IndependentPair<Long, SINGLE_TYPE>>
 {
 
 	/**
 	 * Same as calling {@link #get(long, int, int)} with spans as 0
-	 * 
+	 *
 	 * @param time
 	 * @return the requested data or null.
 	 */
@@ -76,7 +77,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 	 * least 1 datapoint will be returned.
 	 * <p>
 	 * Data should be returned in order
-	 * 
+	 *
 	 * @param time
 	 * @param nbefore
 	 * @param nafter
@@ -90,7 +91,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 	 * convenience this output is also returned
 	 * <p>
 	 * Data should be returned in order
-	 * 
+	 *
 	 * @param time
 	 * @param nbefore
 	 * @param nafter
@@ -107,7 +108,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 	 * window specified.
 	 * <p>
 	 * Data should be returned in order
-	 * 
+	 *
 	 * @param time
 	 * @param threshbefore
 	 * @param threshafter
@@ -122,7 +123,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 	 * is available within the window specified.
 	 * <p>
 	 * Data should be returned in order
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @return all data found with these parameters
@@ -133,7 +134,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 	 * Set the data associated with each time. This function explicitly assumes
 	 * that time.length == data.length and there exists a single data instance
 	 * per time instance
-	 * 
+	 *
 	 * @param time
 	 *            instances of time
 	 * @param data
@@ -192,7 +193,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 
 	/**
 	 * process using the provided processor, return
-	 * 
+	 *
 	 * @param tsp
 	 * @return a new instance processed
 	 */
@@ -209,7 +210,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 
 	/**
 	 * Process using the provided processor
-	 * 
+	 *
 	 * @param tsp
 	 * @return this object processed inplace
 	 */
@@ -220,7 +221,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 
 	/**
 	 * Convert a {@link TimeSeries}
-	 * 
+	 *
 	 * @param <OUTDATA>
 	 * @param <OUTSING>
 	 * @param <OUTRET>
@@ -236,7 +237,7 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 
 	/**
 	 * Convert a {@link TimeSeries}
-	 * 
+	 *
 	 * @param <OUTDATA>
 	 * @param <OUTSING>
 	 * @param <OUTRET>

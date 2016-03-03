@@ -40,6 +40,7 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -55,13 +56,13 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.io.IOUtils;
 
 /**
- * A Hadoop version of the GlobalFeaturesTool. Capable of 
- * extracting global image features on very large scale corpora
- * from images stored in {@link SequenceFile}s.
- * 
+ * A Hadoop version of the GlobalFeaturesTool. Capable of extracting global
+ * image features on very large scale corpora from images stored in
+ * {@link SequenceFile}s.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class HadoopGlobalFeaturesTool extends Configured implements Tool 
+public class HadoopGlobalFeaturesTool extends Configured implements Tool
 {
 	private static final String ARGS_KEY = "globalfeatures.args";
 	private static Logger logger = Logger.getLogger(HadoopGlobalFeaturesTool.class);
@@ -69,63 +70,71 @@ public class HadoopGlobalFeaturesTool extends Configured implements Tool
 	static class GlobalFeaturesMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
 		private HadoopGlobalFeaturesOptions options;
 
-		public GlobalFeaturesMapper() {}
-
-		@Override
-		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) {
-			options = new HadoopGlobalFeaturesOptions(context.getConfiguration().getStrings(ARGS_KEY)); 
+		public GlobalFeaturesMapper() {
 		}
 
 		@Override
-		protected void map(Text key, BytesWritable value, Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws InterruptedException {
-			try {
-				MBFImage img = ImageUtilities.readMBF(new ByteArrayInputStream(value.getBytes()));
-				FeatureVector fv = options.featureOp.extract(img);
+		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) {
+			options = new HadoopGlobalFeaturesOptions(context.getConfiguration().getStrings(ARGS_KEY));
+		}
 
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		@Override
+		protected void
+				map(Text key, BytesWritable value, Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)
+						throws InterruptedException
+		{
+			try {
+				final MBFImage img = ImageUtilities.readMBF(new ByteArrayInputStream(value.getBytes()));
+				final FeatureVector fv = options.featureOp.extract(img);
+
+				final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				if (options.binary)
 					IOUtils.writeBinary(baos, fv);
 				else
 					IOUtils.writeASCII(baos, fv);
 
 				context.write(key, new BytesWritable(baos.toByteArray()));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				logger.warn("Problem processing image " + key + " (" + e + ")");
-			} 
+			}
 		}
 	}
 
 	@Override
 	public int run(String[] args) throws Exception {
-		HadoopGlobalFeaturesOptions options = new HadoopGlobalFeaturesOptions(args,true); 
+		final HadoopGlobalFeaturesOptions options = new HadoopGlobalFeaturesOptions(args, true);
 
-		Map<String,String> metadata = new HashMap<String,String>();
-		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/globalfeature-" + options.feature + "-" + (options.binary? "bin" : "ascii" ));
+		final Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/globalfeature-" + options.feature + "-"
+				+ (options.binary ? "bin" : "ascii"));
 
-		metadata.put("clusterquantiser.filetype", (options.binary ? "bin" : "ascii" ));
-		
-		List<Path> allPaths = new ArrayList<Path>();
-		for (String p : options.input) {
+		metadata.put("clusterquantiser.filetype", (options.binary ? "bin" : "ascii"));
+
+		final List<Path> allPaths = new ArrayList<Path>();
+		for (final String p : options.input) {
 			allPaths.addAll(Arrays.asList(HadoopToolsUtil.getInputPaths(p)));
 		}
-		
-		Job job = TextBytesJobUtil.createJob(allPaths, new Path(options.output), metadata, this.getConf());
+
+		final Job job = TextBytesJobUtil.createJob(allPaths, new Path(options.output), metadata, this.getConf());
 		job.setJarByClass(this.getClass());
 		job.setMapperClass(GlobalFeaturesMapper.class);
 		job.getConfiguration().setStrings(ARGS_KEY, args);
 		job.setNumReduceTasks(0);
 
 		job.waitForCompletion(true);
-		
+
 		return 0;
 	}
 
 	/**
 	 * The main method for the tool.
-	 * @param args the command-line arguments
-	 * @throws Exception if an error occurs
+	 * 
+	 * @param args
+	 *            the command-line arguments
+	 * @throws Exception
+	 *             if an error occurs
 	 */
-	public static void main( String[] args ) throws Exception
+	public static void main(String[] args) throws Exception
 	{
 		ToolRunner.run(new HadoopGlobalFeaturesTool(), args);
 	}

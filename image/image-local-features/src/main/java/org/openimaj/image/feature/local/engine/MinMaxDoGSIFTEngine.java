@@ -37,6 +37,7 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.dog.collector.Collector;
+import org.openimaj.image.feature.local.detector.dog.collector.OctaveKeypointCollector;
 import org.openimaj.image.feature.local.detector.dog.collector.OctaveMinMaxKeypointCollector;
 import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.detector.dog.extractor.GradientFeatureExtractor;
@@ -56,7 +57,7 @@ import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
  * Internally, this class is identical to {@link DoGSIFTEngine}, but uses a
  * {@link OctaveMinMaxKeypointCollector} instead of an
  * {@link OctaveKeypointCollector}.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
@@ -79,7 +80,7 @@ public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 
 	/**
 	 * Construct a {@link MinMaxDoGSIFTEngine} with the given options.
-	 * 
+	 *
 	 * @param options
 	 *            the options
 	 */
@@ -98,10 +99,10 @@ public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 						new DominantOrientationExtractor(options.peakThreshold,
 								new OrientationHistogramExtractor(options.numOriHistBins, options.scaling,
 										options.smoothingIterations, options.samplingSize)),
-						new SIFTFeatureProvider(options.numOriBins, options.numSpatialBins, options.valueThreshold,
-								options.gaussianSigma),
-						options.magnificationFactor * options.numSpatialBins
-				));
+										new SIFTFeatureProvider(options.numOriBins, options.numSpatialBins, options.valueThreshold,
+												options.gaussianSigma),
+												options.magnificationFactor * options.numSpatialBins
+						));
 
 		finder.setOctaveInterestPointListener(collector);
 
@@ -115,7 +116,7 @@ public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 
 	/**
 	 * Get the options for this engine.
-	 * 
+	 *
 	 * @return the options for this engine
 	 */
 	public DoGSIFTEngineOptions<FImage> getOptions() {

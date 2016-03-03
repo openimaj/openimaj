@@ -35,7 +35,7 @@ import org.openimaj.math.geometry.shape.Shape;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class WorldPlace {
 
@@ -47,7 +47,7 @@ public class WorldPlace {
 
 	/**
 	 * @param name
-	 * @param desc
+	 * @param countryCode
 	 * @param lat
 	 * @param lon
 	 * @param shape

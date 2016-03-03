@@ -384,7 +384,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	@Override
 	public void drawPolygonFilled(Polygon p, final Float col) {
 		// clip to the frame
-		p = p.intersect(this.targetImage.getBounds().asPolygon());
+		// p = p.intersect(this.targetImage.getBounds().asPolygon());
 
 		this.drawPolygon(p, col);
 

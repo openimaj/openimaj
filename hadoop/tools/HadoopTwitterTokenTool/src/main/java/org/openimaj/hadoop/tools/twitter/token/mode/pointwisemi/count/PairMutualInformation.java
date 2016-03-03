@@ -54,7 +54,7 @@ import org.openimaj.io.IOUtils;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class PairMutualInformation extends TextByteByteStage{
+public class PairMutualInformation extends TextByteByteStage {
 
 	/**
 	 * The time delta between time periods
@@ -81,8 +81,9 @@ public class PairMutualInformation extends TextByteByteStage{
 	private Path actualOutputLocation;
 
 	/**
-	 * @param outpath where the output is going
-	 * @param nonHadoopArgs the arguments for configuration
+	 * @param nonHadoopArgs
+	 *            the arguments for configuration
+	 * @param timedelta
 	 */
 	public PairMutualInformation(String[] nonHadoopArgs, long timedelta) {
 		this.nonHadoopArgs = nonHadoopArgs;
@@ -93,91 +94,97 @@ public class PairMutualInformation extends TextByteByteStage{
 	public void setup(Job job) throws IOException {
 		job.getConfiguration().setStrings(HadoopTwitterTokenToolOptions.ARGS_KEY, nonHadoopArgs);
 		job.getConfiguration().setLong(TIMEDELTA, timedelta);
-		Path tpcOutRoot = new Path(this.actualOutputLocation,TIMEPERIOD_OUTPUT_NAME);
+		final Path tpcOutRoot = new Path(this.actualOutputLocation, TIMEPERIOD_OUTPUT_NAME);
 		job.getConfiguration().set(TIMEPERIOD_COUNT_OUTPUT_ROOT, tpcOutRoot.toString());
-		if(timedelta!=-1){
-			// if there are multiple times, split a file per day 
+		if (timedelta != -1) {
+			// if there are multiple times, split a file per day
 			job.setNumReduceTasks(365);
 		}
-		
-		((JobConf)job.getConfiguration()).setOutputValueGroupingComparator(TokenPairValueGroupingComparator.class);
-		((JobConf)job.getConfiguration()).setOutputKeyComparatorClass(TokenPairKeyComparator.class);
+
+		((JobConf) job.getConfiguration()).setOutputValueGroupingComparator(TokenPairValueGroupingComparator.class);
+		((JobConf) job.getConfiguration()).setOutputKeyComparatorClass(TokenPairKeyComparator.class);
 		job.setPartitionerClass(TokenPairPartitioner.class);
 	}
-	
+
 	@Override
 	public Class<PairEmit> mapper() {
 		return PairEmit.class;
 	}
-	
-	
+
 	@Override
 	public Class<? extends Reducer<BytesWritable, BytesWritable, BytesWritable, BytesWritable>> combiner() {
 		return PairEmitCombiner.class;
 	}
-	
+
 	@Override
 	public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception {
-		this.actualOutputLocation = output; 
+		this.actualOutputLocation = output;
 		return super.stage(inputs, output, conf);
 	}
-	
+
 	@Override
 	public Class<? extends Reducer<BytesWritable, BytesWritable, BytesWritable, BytesWritable>> reducer() {
 		return PairEmitCounter.class;
 	}
-	
+
 	@Override
 	public String outname() {
 		return PAIRMI_DIR;
 	}
+
 	@Override
 	public void finished(Job job) {
-		Path out = new Path(actualOutputLocation, PAIR_STATS_FILE);
+		final Path out = new Path(actualOutputLocation, PAIR_STATS_FILE);
 		FileSystem fs;
 		try {
 			fs = HadoopToolsUtil.getFileSystem(out);
-			FSDataOutputStream os = fs.create(out);
-			IOUtils.writeASCII(os, new WritablePairEnum(job.getCounters(),PairEnum.values()));
-		} catch (IOException e) {
+			final FSDataOutputStream os = fs.create(out);
+			IOUtils.writeASCII(os, new WritablePairEnum(job.getCounters(), PairEnum.values()));
+		} catch (final IOException e) {
 		}
 	}
-	
+
 	/**
-	 * Load the PointwisePMI stats file from an output location (Path: outpath/{@link PairMutualInformation#PAIR_STATS_FILE}
+	 * Load the PointwisePMI stats file from an output location (Path: outpath/
+	 * {@link PairMutualInformation#PAIR_STATS_FILE}
+	 *
 	 * @param outpath
 	 * @return a WritablePairEnum instance with the counter values filled
 	 * @throws IOException
 	 */
-	public static WritablePairEnum loadStats(Path outpath) throws IOException{
-		Path pmistats = new Path(outpath,PairMutualInformation.PAIRMI_DIR);
-		pmistats = new Path(pmistats,PairMutualInformation.PAIR_STATS_FILE);
-		FileSystem fs = HadoopToolsUtil.getFileSystem(pmistats);
-		FSDataInputStream inp = fs.open(pmistats);
-		WritablePairEnum ret = IOUtils.read(inp,WritablePairEnum.class);
+	public static WritablePairEnum loadStats(Path outpath) throws IOException {
+		Path pmistats = new Path(outpath, PairMutualInformation.PAIRMI_DIR);
+		pmistats = new Path(pmistats, PairMutualInformation.PAIR_STATS_FILE);
+		final FileSystem fs = HadoopToolsUtil.getFileSystem(pmistats);
+		final FSDataInputStream inp = fs.open(pmistats);
+		final WritablePairEnum ret = IOUtils.read(inp, WritablePairEnum.class);
 		return ret;
 	}
 
 	/**
-	 * Load the total pairs seen in every time period from the pairmi location provided
-	 * @param pairmiloc a directory which contains {@link #PAIRMI_DIR}/{@link #TIMEPERIOD_OUTPUT_NAME}
+	 * Load the total pairs seen in every time period from the pairmi location
+	 * provided
+	 *
+	 * @param pairmiloc
+	 *            a directory which contains {@link #PAIRMI_DIR}/
+	 *            {@link #TIMEPERIOD_OUTPUT_NAME}
 	 * @return map of a time period to a count
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static Map<Long,Long> loadTimeCounts(Path pairmiloc) throws IOException {
-		Path dir = new Path(new Path(pairmiloc,PAIRMI_DIR),TIMEPERIOD_OUTPUT_NAME);
-		FileSystem fs = HadoopToolsUtil.getFileSystem(dir);
-		FileStatus[] timePaths = fs.listStatus(dir);
-		
-		Map<Long, Long> out = new HashMap<Long, Long>();
-		for (FileStatus fileStatus : timePaths) {
-			Path fsp = fileStatus.getPath();
-			Long time = Long.parseLong(fsp.getName());
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fs.open(fsp)));
-			Long count = Long.parseLong(reader.readLine());
+	public static Map<Long, Long> loadTimeCounts(Path pairmiloc) throws IOException {
+		final Path dir = new Path(new Path(pairmiloc, PAIRMI_DIR), TIMEPERIOD_OUTPUT_NAME);
+		final FileSystem fs = HadoopToolsUtil.getFileSystem(dir);
+		final FileStatus[] timePaths = fs.listStatus(dir);
+
+		final Map<Long, Long> out = new HashMap<Long, Long>();
+		for (final FileStatus fileStatus : timePaths) {
+			final Path fsp = fileStatus.getPath();
+			final Long time = Long.parseLong(fsp.getName());
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(fs.open(fsp)));
+			final Long count = Long.parseLong(reader.readLine());
 			out.put(time, count);
 		}
-		return out ;
+		return out;
 	}
-	
+
 }

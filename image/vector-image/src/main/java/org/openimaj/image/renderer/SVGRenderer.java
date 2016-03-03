@@ -95,8 +95,6 @@ public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 	/**
 	 * Construct with given target image and rendering hints.
 	 *
-	 * @param targetImage
-	 *            the target image.
 	 * @param hints
 	 *            the render hints
 	 */
@@ -106,6 +104,7 @@ public class SVGRenderer extends ImageRenderer<Float[], SVGImage> {
 	}
 
 	/**
+	 * @param img
 	 * @param create
 	 */
 	public SVGRenderer(SVGImage img, Graphics create) {

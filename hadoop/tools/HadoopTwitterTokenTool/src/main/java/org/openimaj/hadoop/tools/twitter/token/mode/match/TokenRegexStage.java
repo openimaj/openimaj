@@ -36,17 +36,18 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 
-
 /**
  * If tokens in set of terms spit out the whole line, otherwise ignore.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class TokenRegexStage extends TextStage{
-	
+public class TokenRegexStage extends TextStage {
+
 	/**
 	 * The key where regexs are stored
 	 */
@@ -58,26 +59,29 @@ public class TokenRegexStage extends TextStage{
 
 	private List<String> tomatch;
 	private String[] args;
-	
+
 	@Override
 	public void setup(Job job) {
 		job.getConfiguration().setStrings(REGEX_KEY, tomatch.toArray(new String[tomatch.size()]));
 		job.getConfiguration().setStrings(HadoopTwitterTokenToolOptions.ARGS_KEY, this.args);
 	}
+
 	/**
-	 * @param rstrings the list of regexes to match
-	 * @param args the arguments sent to the tool
+	 * @param rstrings
+	 *            the list of regexes to match
+	 * @param args
+	 *            the arguments sent to the tool
 	 */
 	public TokenRegexStage(List<String> rstrings, String[] args) {
 		this.tomatch = rstrings;
 		this.args = args;
 	}
-	
+
 	@Override
 	public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
 		return TokenRegexMapper.class;
 	}
-	
+
 	@Override
 	public String outname() {
 		return OUT_NAME;

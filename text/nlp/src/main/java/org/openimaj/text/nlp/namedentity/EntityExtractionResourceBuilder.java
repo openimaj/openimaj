@@ -48,6 +48,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEntityCandidateFinder;
+import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEntityContextScorer;
+import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory.YagoEntityExactMatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -58,13 +61,13 @@ import org.xml.sax.SAXException;
  * {@link YagoEntityContextScorer} and {@link YagoEntityExactMatcher}. These
  * resources are a text File of entity aliases, and a lucene index of contextual
  * data.
- * 
+ *
  * The directory of the stripped down Yago tsv files is required. This directory
  * can be built with {@link SeedBuilder}.
- * 
+ *
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class EntityExtractionResourceBuilder {
 
@@ -87,7 +90,7 @@ public class EntityExtractionResourceBuilder {
 
 	/**
 	 * Builds the alias text file in the default location.
-	 * 
+	 *
 	 * @param seedDirectoryPath
 	 *            = path location of the stripped down Yago .tsv files.
 	 */
@@ -98,7 +101,7 @@ public class EntityExtractionResourceBuilder {
 
 	/**
 	 * Builds the alias text file in the specified location.
-	 * 
+	 *
 	 * @param seedDirectoryPath
 	 *            = path location of the stripped down Yago .tsv files.
 	 * @param destinationPath
@@ -113,7 +116,7 @@ public class EntityExtractionResourceBuilder {
 
 	/**
 	 * Builds the lucene index in the default path.
-	 * 
+	 *
 	 * @param seedDirectoryPath
 	 *            = path location of the stripped down Yago .tsv files.
 	 */
@@ -124,7 +127,7 @@ public class EntityExtractionResourceBuilder {
 
 	/**
 	 * Builds the lucene index at the specified path.
-	 * 
+	 *
 	 * @param seedDirectoryPath
 	 * @param destinationPath
 	 */
@@ -142,7 +145,7 @@ public class EntityExtractionResourceBuilder {
 	/**
 	 * Builds the alias text file and the lucene index in the default root
 	 * directory.
-	 * 
+	 *
 	 * @param seedDirectoryPath
 	 */
 	public void buildAll(String seedDirectoryPath) {
@@ -160,7 +163,7 @@ public class EntityExtractionResourceBuilder {
 	/**
 	 * Builds the alias text file and the lucene index in the specified root
 	 * directory.
-	 * 
+	 *
 	 * @param seedDirectoryPath
 	 * @param destinationPath
 	 */
@@ -263,7 +266,7 @@ public class EntityExtractionResourceBuilder {
 
 	private void buildIndex(HashMap<String, YagoNamedEntity> entities,
 			String destinationPath, String seedDirectoryPath)
-			throws IOException
+					throws IOException
 	{
 		print("Building Index...");
 		setEntityContextValues(entities, seedDirectoryPath);
@@ -497,7 +500,7 @@ public class EntityExtractionResourceBuilder {
 
 	private HashMap<String, YagoNamedEntity> getEntities(
 			String seedDirectoryPath)
-	{
+			{
 		print("Getting Entities...");
 		final HashMap<String, YagoNamedEntity> result = new HashMap<String, YagoNamedEntity>();
 		BufferedReader in = null;
@@ -569,7 +572,7 @@ public class EntityExtractionResourceBuilder {
 		}
 		print("Total Entities: " + result.size());
 		return result;
-	}
+			}
 
 	public static BufferedReader openFileAsReadStream(String path)
 			throws FileNotFoundException
@@ -625,7 +628,7 @@ public class EntityExtractionResourceBuilder {
 
 	/**
 	 * Defualt main.
-	 * 
+	 *
 	 * @param args
 	 *            = path to the seed directory.
 	 */
@@ -636,9 +639,9 @@ public class EntityExtractionResourceBuilder {
 	/**
 	 * Helper class to iterate through the lines of a Reader to do a bit of work
 	 * on each.
-	 * 
+	 *
 	 * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static abstract class StreamLooper {
 		BufferedReader reader;
@@ -664,7 +667,7 @@ public class EntityExtractionResourceBuilder {
 
 		/**
 		 * Do what you want to each line here.
-		 * 
+		 *
 		 * @param s
 		 */
 		protected abstract void doWork(String s);

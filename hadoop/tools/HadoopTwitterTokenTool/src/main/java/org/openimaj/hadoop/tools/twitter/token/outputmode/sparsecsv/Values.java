@@ -71,6 +71,7 @@ public class Values extends StageProvider {
 	 * Assign the output path for the stage
 	 *
 	 * @param outputPath
+	 * @param valueReduceSplit
 	 * @param sortValueByTime
 	 * @param matlabOutput
 	 */
@@ -166,7 +167,7 @@ public class Values extends StageProvider {
 	public static LinkedHashMap<String, WordDFIDFTimeSeries> readWordDFIDF(String path,
 			LinkedHashMap<Long, IndependentPair<Long, Long>> timeIndex,
 			LinkedHashMap<String, IndependentPair<Long, Long>> wordIndex) throws IOException
-			{
+	{
 		final LinkedHashMap<String, WordDFIDFTimeSeries> tsMap = new LinkedHashMap<String, WordDFIDFTimeSeries>();
 
 		final long[] timeReverseIndex = new long[timeIndex.size()];
@@ -208,5 +209,5 @@ public class Values extends StageProvider {
 		}
 
 		return tsMap;
-			}
+	}
 }

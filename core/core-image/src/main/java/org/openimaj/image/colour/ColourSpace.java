@@ -563,8 +563,9 @@ public enum ColourSpace {
 	 * "http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html">
 	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html</a>
 	 * <p>
-	 * The resultant L values are in the range 0-100, and the a & b values are
+	 * The resultant L values are in the range 0-100, and the a &amp; b values are
 	 * in -127..127 inclusive.
+	 * </p>
 	 */
 	CIE_Lab {
 		@Override
@@ -593,7 +594,8 @@ public enum ColourSpace {
 	 * "http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html">
 	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html</a>
 	 * <p>
-	 * The L, a & b values are normalised to 0..1.
+	 * The L, &amp; b values are normalised to 0..1.
+	 * </p>
 	 */
 	CIE_Lab_Norm {
 		@Override
@@ -619,8 +621,9 @@ public enum ColourSpace {
 	/**
 	 * CIE L*u*v* color space (CIE 1976).
 	 * <p>
-	 * The resultant L values are in the range 0-100, and the u & v values are
+	 * The resultant L values are in the range 0-100, and the u &amp; v values are
 	 * in -100..100 inclusive.
+	 * </p>
 	 */
 	CIE_Luv {
 

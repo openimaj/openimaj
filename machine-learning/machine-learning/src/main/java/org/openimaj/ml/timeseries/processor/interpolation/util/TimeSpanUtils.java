@@ -29,21 +29,27 @@
  */
 package org.openimaj.ml.timeseries.processor.interpolation.util;
 
+import org.openimaj.ml.timeseries.TimeSeries;
+
 /**
- * Some utility functions used by various {@link TimeSeries} classes to get arrays of spans of time
+ * Some utility functions used by various {@link TimeSeries} classes to get
+ * arrays of spans of time
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TimeSpanUtils {
 	/**
 	 * Get
+	 * 
 	 * @param begin
 	 * @param end
 	 * @param delta
-	 * @return longs evenly spaced between from begin and less than end with spacings of delta
+	 * @return longs evenly spaced between from begin and less than end with
+	 *         spacings of delta
 	 */
 	public static long[] getTime(long begin, long end, long delta) {
-		long[] times = new long[(int) ((end - begin)/delta) + 1];
+		final long[] times = new long[(int) ((end - begin) / delta) + 1];
 		long val = begin;
 		for (int i = 0; i < times.length; i++) {
 			times[i] = val;
@@ -51,16 +57,18 @@ public class TimeSpanUtils {
 		}
 		return times;
 	}
-	
+
 	/**
 	 * @param begin
 	 * @param end
 	 * @param splits
-	 * @return longs starting from begin and less than end such that "splits" times are returned and delta between the times is (end-begin)/(splits-1)
+	 * @return longs starting from begin and less than end such that "splits"
+	 *         times are returned and delta between the times is
+	 *         (end-begin)/(splits-1)
 	 */
 	public static long[] getTime(long begin, long end, int splits) {
-		long[] times = new long[splits];
-		long delta = (end - begin) / (splits-1);
+		final long[] times = new long[splits];
+		final long delta = (end - begin) / (splits - 1);
 		long val = begin;
 		for (int i = 0; i < times.length; i++) {
 			times[i] = val;
@@ -68,15 +76,15 @@ public class TimeSpanUtils {
 		}
 		return times;
 	}
-	
+
 	/**
 	 * @param begin
 	 * @param steps
 	 * @param delta
-	 * @return "steps" longs starting from begin spaced by delta 
+	 * @return "steps" longs starting from begin spaced by delta
 	 */
-	public static long[] getTime(long begin, int steps, long delta){
-		long[] times = new long[steps];
+	public static long[] getTime(long begin, int steps, long delta) {
+		final long[] times = new long[steps];
 		long val = begin;
 		for (int i = 0; i < times.length; i++) {
 			times[i] = val;

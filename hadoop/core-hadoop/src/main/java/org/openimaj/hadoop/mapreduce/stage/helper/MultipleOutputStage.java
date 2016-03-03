@@ -42,30 +42,38 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 
 /**
- * A helper class for a common stage type. In this case, a stage that goes from text to a sequence file of bytes indexed by longs
- * @author Sina Samangooei (ss@ecs.soton.ac.uk) 
+ * A helper class for a common stage type. In this case, a stage that goes from
+ * text to a sequence file of bytes indexed by longs
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @param <INPUT_FORMAT>
+ * @param <INPUT_KEY>
+ * @param <INPUT_VALUE>
+ * @param <MAP_OUTPUT_KEY>
+ * @param <MAP_OUTPUT_VALUE>
+ * @param <OUTPUT_KEY>
+ * @param <OUTPUT_VALUE>
  *
  */
-public abstract class MultipleOutputStage<
-	INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPUT_VALUE>,
-	INPUT_KEY, INPUT_VALUE,
-	MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,
-	OUTPUT_KEY,OUTPUT_VALUE
-> extends Stage<
-	INPUT_FORMAT,
-	FileOutputFormat<OUTPUT_KEY,OUTPUT_VALUE>,
-	INPUT_KEY,INPUT_VALUE,
-	MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,
-	OUTPUT_KEY,OUTPUT_VALUE
->{
-	
+public abstract class MultipleOutputStage<INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPUT_VALUE>, INPUT_KEY, INPUT_VALUE, MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE>
+		extends
+			Stage<
+			INPUT_FORMAT,
+			FileOutputFormat<OUTPUT_KEY, OUTPUT_VALUE>,
+			INPUT_KEY, INPUT_VALUE,
+			MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE,
+			OUTPUT_KEY, OUTPUT_VALUE
+			>
+{
+
 	@Override
-	public abstract Class<? extends MultipleOutputReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE>> reducer();
-	
+	public abstract Class<? extends MultipleOutputReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE>>
+			reducer();
+
 	@Override
-	public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception{
-		
-		Job job = super.stage(inputs, output, conf);
+	public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception {
+
+		final Job job = super.stage(inputs, output, conf);
 		job.setOutputFormatClass(NullOutputFormat.class);
 		MultipleOutputs.addNamedOutput(job, "text", TextOutputFormat.class, NullWritable.class, Text.class);
 		return job;

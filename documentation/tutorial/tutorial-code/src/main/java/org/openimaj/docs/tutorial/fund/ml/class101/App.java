@@ -72,12 +72,12 @@ import de.bwaldvogel.liblinear.SolverType;
 
 /**
  * OpenIMAJ Hello world!
- * 
+ *
  */
 public class App {
 	/**
 	 * Main method
-	 * 
+	 *
 	 * @param args
 	 * @throws IOException
 	 */
@@ -152,7 +152,7 @@ public class App {
 
 	private static HardAssigner<byte[], float[], IntFloatPair> trainQuantiser(
 			GroupedDataset<String, ListDataset<Record<FImage>>, Record<FImage>> sample, PyramidDenseSIFT<FImage> pdsift)
-	{
+			{
 		List<LocalFeatureList<ByteDSIFTKeypoint>> allkeys = new ArrayList<LocalFeatureList<ByteDSIFTKeypoint>>();
 
 		for (final Record<FImage> rec : sample) {
@@ -170,5 +170,5 @@ public class App {
 		final ByteCentroidsResult result = km.cluster(datasource);
 
 		return result.defaultHardAssigner();
-	}
+			}
 }

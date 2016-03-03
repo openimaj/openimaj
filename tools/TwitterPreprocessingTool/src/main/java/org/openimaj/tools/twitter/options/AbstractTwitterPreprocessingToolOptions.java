@@ -51,9 +51,9 @@ import org.openimaj.twitter.collection.TwitterStatusListUtils;
 /**
  * An abstract kind of twitter processing tool. Contains all the options generic
  * to this kind of tool, not dependant on files or hadoop or whatever.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolOptions {
 
@@ -157,8 +157,9 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 *            the arguments, prepared using the prepare method
 	 * @param prepare
 	 *            whether prepare should be called now or later
+	 * @throws CmdLineException
 	 */
-	public AbstractTwitterPreprocessingToolOptions(String[] args, boolean prepare) throws CmdLineException{
+	public AbstractTwitterPreprocessingToolOptions(String[] args, boolean prepare) throws CmdLineException {
 		this.args = args;
 		if (prepare)
 			this.prepare();
@@ -167,15 +168,18 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	/**
 	 * @param args
 	 *            the arguments, prepared using the prepare method
+	 * @throws CmdLineException
 	 */
-	public AbstractTwitterPreprocessingToolOptions(String[] args) throws CmdLineException{
+	public AbstractTwitterPreprocessingToolOptions(String[] args) throws CmdLineException {
 		this(args, true);
 	}
 
 	/**
 	 * prepare the tool for running
+	 *
+	 * @throws CmdLineException
 	 */
-	public void prepare() throws CmdLineException{
+	public void prepare() throws CmdLineException {
 		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			if (veryLoud && quiet) {
@@ -278,7 +282,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	/**
 	 * Check the internal preprocessing filters and say whether a given status
 	 * should be skipped
-	 * 
+	 *
 	 * @param twitterStatus
 	 * @return whether to skip a status
 	 */
@@ -295,7 +299,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	/**
 	 * Check the internal postprocessing filters and say whether a given status
 	 * should be skipped
-	 * 
+	 *
 	 * @param twitterStatus
 	 * @return whether to skip a status
 	 */
@@ -312,7 +316,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	/**
 	 * Provides the functionality to convert to the required output format as
 	 * specified by -ot
-	 * 
+	 *
 	 * @param twitterStatus
 	 * @return the converted output
 	 */
@@ -321,14 +325,14 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 		outInstance.fromUSMF(twitterStatus);
 		return outInstance;
 	}
-	
+
 	/**
 	 * @return the input status type
 	 */
-	public StatusType  getInputClass() {
+	public StatusType getInputClass() {
 		return this.statusType;
 	}
-	
+
 	/**
 	 * @return the input status type
 	 */

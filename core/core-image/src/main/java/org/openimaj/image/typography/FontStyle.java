@@ -126,7 +126,7 @@ public class FontStyle<T> {
 	public static final Attribute ANGLE = new FontStyleAttribute("angle");
 
 	/**
-	 * Attribute for stroke colour. Value should be of type <T>.
+	 * Attribute for stroke colour.
 	 */
 	public static final Attribute COLOUR = new FontStyleAttribute("colour");
 

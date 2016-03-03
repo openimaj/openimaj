@@ -47,7 +47,7 @@ public interface LocalFeatureList<T extends LocalFeature<?, ?>> extends Randomis
 	/**
 	 * Get the feature-vector data of the list as a two-dimensional array of
 	 * data. The number of rows will equal the number of features in the list,
-	 * and the type <Q>must be compatible with the data type of the features
+	 * and the type &lt;Q&gt;must be compatible with the data type of the features
 	 * themselves.
 	 * 
 	 * @param <Q>

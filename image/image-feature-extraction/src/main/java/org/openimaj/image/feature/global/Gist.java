@@ -67,18 +67,18 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
  * if the image size changes. For computing features to compare images, fixed
  * size mode makes more sense.
  * <p>
- * <b>Example usage for image comparison:</b><br/>
- * <code>
+ * <b>Example usage for image comparison:</b><br>
+ * </br> <code>
  * <pre>
  * FImage i1, i2 = ...
  * Gist<FImage> fsg = new Gist<FImage>(256, 256);
- * 
+ *
  * fsg.analyseImage(i1);
  * FloatFV f1 = fsg.getResponse();
- * 
+ *
  * fsg.analyseImage(i2);
  * FloatFV f2 = fsg.getResponse();
- * 
+ *
  * double d = FloatFVComparison.SUM_SQUARE.compare(f1, f2);
  * </pre>
  * </code>
@@ -86,9 +86,9 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
  * The ability to generate a visualisation of the current descriptor in the same
  * way as provided by the original Matlab code is given by the
  * {@link #visualiseDescriptor(int)} method.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <IMAGE>
  *            The type of image. {@link MBFImage} and {@link FImage} are
  *            supported; other types might not work.
@@ -114,8 +114,8 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 				"keywords", "energy spectrum, natural images, principal components, scene recognition, spatial layout"
 		})
 public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Processable<Float, FImage, IMAGE>>
-		implements
-		ImageAnalyser<IMAGE>
+implements
+ImageAnalyser<IMAGE>
 {
 	/**
 	 * The default number of filter orientations per scale (from HF to LF)
@@ -175,7 +175,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	/**
 	 * Construct a variable or fixed size Gist extractor using the default
 	 * values.
-	 * 
+	 *
 	 * @param fixedSize
 	 *            if true the images should be resized and cropped
 	 */
@@ -186,7 +186,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	/**
 	 * Construct a fixed-size Gist extractor, with the given image size and the
 	 * default number of orientations per scale for the Gabor jet.
-	 * 
+	 *
 	 * @param width
 	 *            the image width
 	 * @param height
@@ -199,7 +199,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	/**
 	 * Construct a fixed-size Gist extractor, with the given image size and
 	 * number of orientations per scale for the Gabor jet.
-	 * 
+	 *
 	 * @param width
 	 *            the image width
 	 * @param height
@@ -214,7 +214,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	/**
 	 * Construct a variable or fixed size Gist extractor with the given number
 	 * of orientations per scale for the Gabor jet.
-	 * 
+	 *
 	 * @param orientationsPerScale
 	 *            the number of Gabor orientations per scale (from HF to LF)
 	 * @param fixedSize
@@ -228,7 +228,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	 * Construct a variable or fixed size Gist extractor with the given number
 	 * of orientations per scale for the Gabor jet. The given height and width
 	 * are ignored in variable size mode.
-	 * 
+	 *
 	 * @param width
 	 *            the image width
 	 * @param height
@@ -267,7 +267,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 			}
 
 			extractGist(image.clone()); // clone to stop side effects from
-										// normalisation further down
+			// normalisation further down
 		}
 	}
 
@@ -381,7 +381,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	 * {@link #numberOfBlocks}, but can be overridden in combination with
 	 * {@link #sampleResponses(FImage, float[], int)} in a subclass to support
 	 * different spatial sampling strategies.
-	 * 
+	 *
 	 * @return the number of sampling blocks per filter.
 	 */
 	protected int computeNumberOfSamplingBlocks() {
@@ -393,7 +393,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	 * insert into the vector. This method could be overridden to support
 	 * different spatial aggregation strategies (in which case
 	 * {@link #computeNumberOfSamplingBlocks()} should also be overridden).
-	 * 
+	 *
 	 * @param image
 	 *            the image to sample
 	 * @param v
@@ -460,7 +460,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 			for (int c = 0; c < cols; c++) {
 				out.pixels[r][c] = (float) Math.sqrt(workingSpace[r][c * 2] * workingSpace[r][c * 2]
 						+ workingSpace[r][1 + c * 2]
-						* workingSpace[r][1 + c * 2]);
+								* workingSpace[r][1 + c * 2]);
 			}
 		}
 		return out;
@@ -471,7 +471,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	 * matlab code. The resultant image illustrates the dominant filter
 	 * responses for each spatial bin. The filter scales are drawn with
 	 * differing hues, and brightness is proportional to response value.
-	 * 
+	 *
 	 * @param height
 	 *            the desired height of the produced image
 	 * @return the visualisation TODO: colour descriptors
@@ -537,7 +537,7 @@ public class Gist<IMAGE extends Image<?, IMAGE> & SinglebandImageProcessor.Proce
 	/**
 	 * Get the response vector from the previous call to
 	 * {@link #analyseImage(Image)}.
-	 * 
+	 *
 	 * @return the response
 	 */
 	public FloatFV getResponse() {

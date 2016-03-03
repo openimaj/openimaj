@@ -33,12 +33,13 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 
 /**
  * Command line options for regex engine selection
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public enum RegexEngineMode implements CmdLineOptionsProvider{
+public enum RegexEngineMode implements CmdLineOptionsProvider {
 	/**
-	 * The default {@link Pattern} regex engine
+	 * The default {@link java.util.regex.Pattern} regex engine
 	 */
 	JAVA {
 		@Override

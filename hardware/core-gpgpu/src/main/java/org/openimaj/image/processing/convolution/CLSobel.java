@@ -19,7 +19,7 @@ import com.nativelibs4java.opencl.CLQueue;
 
 /**
  * OpenCL implementation of a 3x3 Sobel operator. Computes the magnitude, orientation
- * and gradients (in x & y) in parallel. 
+ * and gradients (in x &amp; y) in parallel. 
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *

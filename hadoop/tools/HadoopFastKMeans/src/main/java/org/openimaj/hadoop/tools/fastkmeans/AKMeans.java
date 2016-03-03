@@ -54,13 +54,14 @@ import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.assignment.hard.ExactByteAssigner;
 import org.openimaj.ml.clustering.assignment.hard.KDTreeByteEuclideanAssigner;
+import org.openimaj.ml.clustering.kmeans.ByteKMeans;
 import org.openimaj.util.pair.IntFloatPair;
 
 /**
  * Approximate KMeans mapreduce implementation
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class AKMeans {
 	/**
@@ -84,9 +85,9 @@ public class AKMeans {
 	 * the map for approximate kmeans. Uses the {@link ByteKMeans} under the
 	 * hood. For each feature assign the feature to a centroid and emit with
 	 * centroid as key.
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class Map extends Mapper<Text, BytesWritable, IntWritable, BytesWritable> {
 		private static Path centroidsPath = null;
@@ -97,7 +98,7 @@ public class AKMeans {
 
 		@Override
 		protected void setup(Mapper<Text, BytesWritable, IntWritable, BytesWritable>.Context context) throws IOException,
-				InterruptedException
+		InterruptedException
 		{
 			loadCluster(context);
 		}
@@ -173,9 +174,9 @@ public class AKMeans {
 	/**
 	 * for efficiency, combine centroids early, emitting sums and k for
 	 * centroids combined
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class Combine extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {
 		private int k;
@@ -187,7 +188,7 @@ public class AKMeans {
 
 		@Override
 		public void reduce(IntWritable key, Iterable<BytesWritable> values, Context context) throws IOException,
-				InterruptedException
+		InterruptedException
 		{
 			final int[] sum = new int[128];
 			int totalAssigned = 0;
@@ -226,9 +227,9 @@ public class AKMeans {
 	 * The AKmeans reducer. average the combined features assigned to each
 	 * centroid, emit new centroids. may (if not assigned) result in some
 	 * centroids with no value.
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class Reduce extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {
 		private int k;
@@ -240,7 +241,7 @@ public class AKMeans {
 
 		@Override
 		public void reduce(IntWritable key, Iterable<BytesWritable> values, Context context) throws IOException,
-				InterruptedException
+		InterruptedException
 		{
 			final int[] sum = new int[128];
 			final byte[] out = new byte[128];
@@ -303,7 +304,7 @@ public class AKMeans {
 	/**
 	 * Given the location of a binary dump of centroids on the HDFS, load the
 	 * binary dump and construct a proper {@link ByteKMeans} instance
-	 * 
+	 *
 	 * @param centroids
 	 * @param selected
 	 * @param options
@@ -311,8 +312,8 @@ public class AKMeans {
 	 * @throws Exception
 	 */
 	public static ByteCentroidsResult
-			completeCentroids(String centroids, String selected, HadoopFastKMeansOptions options)
-					throws Exception
+	completeCentroids(String centroids, String selected, HadoopFastKMeansOptions options)
+			throws Exception
 	{
 		System.out.println("Attempting to complete");
 		final Path centroidsPath = new Path(centroids);
@@ -349,7 +350,7 @@ public class AKMeans {
 	/**
 	 * load some initially selected centroids from {@link FeatureSelect} as a
 	 * {@link ByteKMeans} instance
-	 * 
+	 *
 	 * @param initialCentroids
 	 * @param k
 	 * @return a {@link ByteKMeans}

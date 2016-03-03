@@ -122,7 +122,7 @@ public enum Sparse#T#FVComparison implements FVComparator<Sparse#T#FV> {
 		}
 	},
 	/**
-	 * Histogram intersection; assumes all values > 0.
+	 * Histogram intersection; assumes all values &gt; 0.
 	 * d(H1,H2) = sumI( min(H1(I), H2(I)) )
 	 */
 	INTERSECTION(false) {

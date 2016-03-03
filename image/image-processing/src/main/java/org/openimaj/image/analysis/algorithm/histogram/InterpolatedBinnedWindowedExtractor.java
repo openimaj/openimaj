@@ -44,12 +44,12 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * Cyclic histograms are also supported (i.e. for angles).
  * <p>
  * For non cyclic histograms, the bin centres are at <code>min + binWidth/2 +
- * n*binWidth</code> for <code>n=0..<nbins</code>. Any point less than
+ * n*binWidth</code> for <code>n=0..&lt;nbins</code>. Any point less than
  * <code>binWidth/2</code> from the end of a non-cyclic histogram counts fully
  * to the respective end bin.
  * <p>
  * For cyclic histograms, the bin centres are at <code>min + n*binWidth</code>
- * for <code>n=0..<nbins</code>.
+ * for <code>n=0..&lt;nbins</code>.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */

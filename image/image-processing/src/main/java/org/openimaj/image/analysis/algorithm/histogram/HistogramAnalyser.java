@@ -46,6 +46,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 		Histogram h = hp.getHistogram();
  * 	}
  * 	</pre></code>
+ *  </p>
  *
  * @see FImage#process(ImageProcessor)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)

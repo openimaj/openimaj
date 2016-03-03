@@ -44,11 +44,13 @@ import org.openimaj.ml.linear.learner.init.SparseZerosInitStrategy;
 import org.openimaj.ml.linear.learner.loss.SquareMissingLossFunction;
 import org.openimaj.ml.linear.learner.regul.L1L2Regulariser;
 
+import ch.akuhn.matrix.SparseMatrix;
+
 /**
  * Parameters used to control a {@link BilinearSparseOnlineLearner}
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class BilinearLearnerParameters extends LearningParameters implements WriteableASCII {
 
@@ -144,24 +146,21 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	public static final String FORCE_SPARCITY = "forcesparcity";
 	/**
 	 * The value of w, u and beta are updated each time data is added s.t. w = w
-	 * * (1.0 - DAM
-	 * PENING). The default value is 0
+	 * * (1.0 - DAM PENING). The default value is 0
 	 */
 	public static final String DAMPENING = "dampening";
-	
-	
+
 	/**
 	 * Whether the Vprime and Dprime matrices should be zscore standardised
 	 */
-	public static final String Z_STANDARDISE ="z_standardise";
+	public static final String Z_STANDARDISE = "z_standardise";
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = -2059819246888686435L;
-	
-	
+
 	/**
-	 * The ammount by which ETA is made to increase each iteration 
+	 * The ammount by which ETA is made to increase each iteration
 	 */
 	public static final String ETA_GAMMA = "gamma";
 
@@ -190,7 +189,7 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 		this.defaults.put(FORCE_SPARCITY, true);
 		this.defaults.put(DAMPENING, 0d);
 		this.defaults.put(Z_STANDARDISE, false);
-		this.defaults.put(ETA_GAMMA,1.5);
+		this.defaults.put(ETA_GAMMA, 1.5);
 	}
 
 	@Override
@@ -201,14 +200,14 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 			out.printf("%s: %s\n", key, this.getTyped(key));
 		}
 	}
-	
+
 	@Override
 	public String toString() {
-		StringWriter writer = new StringWriter();
-		PrintWriter pw = new PrintWriter(writer, true);
+		final StringWriter writer = new StringWriter();
+		final PrintWriter pw = new PrintWriter(writer, true);
 		try {
 			writeASCII(pw);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 		pw.flush();
 		return writer.toString();
@@ -218,11 +217,11 @@ public class BilinearLearnerParameters extends LearningParameters implements Wri
 	public String asciiHeader() {
 		return "Bilinear Learner Params";
 	}
-	
+
 	@Override
 	public BilinearLearnerParameters clone() {
-		BilinearLearnerParameters ret = new BilinearLearnerParameters();
-		for (java.util.Map.Entry<String, Object> ent : this.entrySet()) {
+		final BilinearLearnerParameters ret = new BilinearLearnerParameters();
+		for (final java.util.Map.Entry<String, Object> ent : this.entrySet()) {
 			ret.put(ent.getKey(), ent.getValue());
 		}
 		return ret;

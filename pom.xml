@@ -582,6 +582,13 @@
 								</div>
 								]]></bottom>
 								<linksource>true</linksource>
+								<tags>
+									<tag>
+						              <name>created</name>
+						              <placement>a</placement>
+						              <head>Created:</head>
+						            </tag>
+					            </tags>
 							</configuration>
 							<reportSets>
 								<reportSet>

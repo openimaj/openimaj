@@ -10,7 +10,7 @@ import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * Implementation of Perona & Malik's image filtering by anisotropic diffusion.
+ * Implementation of Perona &amp; Malik's image filtering by anisotropic diffusion.
  * Enables edge-preserving image smoothing.
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -59,7 +59,7 @@ public class AnisotropicDiffusion implements SinglebandImageProcessor<Float, FIm
 	}
 
 	/**
-	 * The first conduction function proposed by Perona & Malik, that privileges
+	 * The first conduction function proposed by Perona &amp; Malik, that privileges
 	 * high contrast edges over low constrast ones.
 	 *
 	 * <pre>
@@ -89,7 +89,7 @@ public class AnisotropicDiffusion implements SinglebandImageProcessor<Float, FIm
 	};
 
 	/**
-	 * The second conduction function proposed by Perona & Malik, that
+	 * The second conduction function proposed by Perona &amp; Malik, that
 	 * privileges wider regions over smaller ones.
 	 *
 	 * <pre>

@@ -175,7 +175,7 @@ public class MultidimensionalScaling implements SimilarityMatrixProcessor {
 	 * Get a list of the 2-D coordinates learned by the MDS algorithm for each
 	 * element in the input similarity matrix.
 	 * 
-	 * @return list of <index, point>
+	 * @return list of &lt;index, point&gt;
 	 */
 	public List<IndependentPair<String, Point2d>> getPoints() {
 		return points;

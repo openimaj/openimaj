@@ -31,13 +31,14 @@ package org.openimaj.hadoop.sequencefile;
 
 import java.util.Arrays;
 
+import org.apache.hadoop.io.SequenceFile;
 import org.openimaj.data.RandomData;
 
 /**
  * The state describing the extraction process from {@link SequenceFile}.
  * Basically, this class stores the current state of the extraction and
  * determines whether the next item should be extracted or not.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -81,7 +82,7 @@ public class ExtractionState {
 
 	/**
 	 * Instruct the state to extract number records from the file randomly.
-	 * 
+	 *
 	 * @param number
 	 *            number of records to extract
 	 * @param total
@@ -96,7 +97,7 @@ public class ExtractionState {
 
 	/**
 	 * Set the maximum allowed number of records to extract.
-	 * 
+	 *
 	 * @param max
 	 *            the number of records.
 	 */

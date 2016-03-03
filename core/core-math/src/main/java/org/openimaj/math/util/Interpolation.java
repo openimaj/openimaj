@@ -145,7 +145,7 @@ public class Interpolation {
 	}
 
 	/**
-	 * Bilinear interpolation of the value at x,y where 0<=x<=1 and 0<=y<=1
+	 * Bilinear interpolation of the value at x,y where 0&lt;=x&lt;=1 and 0&lt;=y&lt;=1
 	 * given the values at (0,0), (0,1), (1,0) and (1,1). Note: This will work
 	 * for other values of (x,y) but doesn't normally make sense.
 	 * 
@@ -168,7 +168,7 @@ public class Interpolation {
 	}
 
 	/**
-	 * Bilinear interpolation of the value at x,y where 0<=x<=1 and 0<=y<=1
+	 * Bilinear interpolation of the value at x,y where 0&lt;=x&lt;=1 and 0&lt;=y&lt;=1
 	 * given the values at (0,0), (0,1), (1,0) and (1,1). Note: This will work
 	 * for other values of (x,y) but doesn't normally make sense.
 	 * 
@@ -191,7 +191,7 @@ public class Interpolation {
 	}
 
 	/**
-	 * Bilinear interpolation of the value at x,y where 0<=x<=1 and 0<=y<=1
+	 * Bilinear interpolation of the value at x,y where 0&lt;=x&lt;=1 and 0&lt;=y&lt;=1
 	 * given the values at (0,0), (0,1), (1,0) and (1,1). Note: This will work
 	 * for other values of (x,y) but doesn't normally make sense.
 	 * 
@@ -214,7 +214,7 @@ public class Interpolation {
 	}
 
 	/**
-	 * Bicubic interpolation of the value at x,y where 0<=x<=1 and 0<=y<=1 given
+	 * Bicubic interpolation of the value at x,y where 0&lt;=x&lt;=1 and 0&lt;=y&lt;=1 given
 	 * the values at integer coordinates from (-1,-1) to (3,3).
 	 * 
 	 * @param x
@@ -235,7 +235,7 @@ public class Interpolation {
 	}
 
 	/**
-	 * Bicubic interpolation of the value at x,y where 0<=x<=1 and 0<=y<=1 given
+	 * Bicubic interpolation of the value at x,y where 0&lt;=x&lt;=1 and 0&lt;=y&lt;=1 given
 	 * the values at integer coordinates from (-1,-1) to (3,3).
 	 * 
 	 * @param x

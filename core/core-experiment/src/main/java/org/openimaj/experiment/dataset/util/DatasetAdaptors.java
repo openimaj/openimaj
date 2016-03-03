@@ -71,7 +71,7 @@ public class DatasetAdaptors {
 
 	/**
 	 * if you have a grouped dataset where the groups contains lists of feature
-	 * objects (i.e. GroupedDataset<KEY,ListDataset<List<INSTANCE>>,INSTANCE>)
+	 * objects (i.e. GroupedDataset&lt;KEY,ListDataset&lt;List&lt;INSTANCE&gt;&gt;,INSTANCE&gt;)
 	 * then this will flatten those internal list, so that all the instances
 	 * from those lists are directly associated with the key. This type of thing
 	 * might occur if your dataset element reader can extract multiple media
@@ -82,9 +82,9 @@ public class DatasetAdaptors {
 	 * @return The new dataset
 	 */
 	public static <ANN, INSTANCE> GroupedDataset<ANN, ListDataset<INSTANCE>, INSTANCE>
-	flattenListGroupedDataset(
-			final GroupedDataset<ANN, ? extends ListDataset<List<INSTANCE>>, ? extends List<INSTANCE>> dataset)
-			{
+			flattenListGroupedDataset(
+					final GroupedDataset<ANN, ? extends ListDataset<List<INSTANCE>>, ? extends List<INSTANCE>> dataset)
+	{
 		// Create a grouped dataset without the lists
 		final MapBackedDataset<ANN, ListDataset<INSTANCE>, INSTANCE> g =
 				new MapBackedDataset<ANN, ListDataset<INSTANCE>, INSTANCE>();
@@ -106,7 +106,7 @@ public class DatasetAdaptors {
 		}
 
 		return g;
-			}
+	}
 
 	/**
 	 * Takes a grouped dataset and returns a new dataset that contains only
@@ -121,7 +121,7 @@ public class DatasetAdaptors {
 	 */
 	@SafeVarargs
 	public static <ANN, DATASET extends Dataset<INSTANCE>, INSTANCE> GroupedDataset<ANN, DATASET, INSTANCE>
-	getGroupedDatasetSubset(final GroupedDataset<ANN, DATASET, INSTANCE> data, final ANN... groups)
+			getGroupedDatasetSubset(final GroupedDataset<ANN, DATASET, INSTANCE> data, final ANN... groups)
 	{
 		// New dataset
 		final MapBackedDataset<ANN, DATASET, INSTANCE> newDataset = new MapBackedDataset<ANN, DATASET, INSTANCE>();
@@ -153,10 +153,10 @@ public class DatasetAdaptors {
 	 * <pre>
 	 * <code>
 	 * 	old == GroupedDataset: {G1=[1,2,3],G2=[4,5,6],G3=[7,8,9]}
-	 *
-	 * 		new = getGroupedDatasetSubset( old, {A->[G1,G3],B->[G2]} )
-	 *
-	 * 		new == GroupedDataset: {A=[1,2,3,7,8,9],B=[4,5,6]}
+	 * 
+	 * 	new = getGroupedDatasetSubset( old, {A-&gt;[G1,G3],B-&gt;[G2]} )
+	 * 
+	 * 	new == GroupedDataset: {A=[1,2,3,7,8,9],B=[4,5,6]}
 	 * 	</code>
 	 * </pre>
 	 *
@@ -170,8 +170,8 @@ public class DatasetAdaptors {
 	 * @return the new dataset containing the new regrouping.
 	 */
 	public static <ANN, DATASET extends ListDataset<INSTANCE>, INSTANCE>
-	GroupedDataset<ANN, ListBackedDataset<INSTANCE>, INSTANCE>
-	getRegroupedDataset(final GroupedDataset<ANN, DATASET, INSTANCE> data, final Map<ANN, ANN[]> regroupCriteria)
+			GroupedDataset<ANN, ListBackedDataset<INSTANCE>, INSTANCE>
+			getRegroupedDataset(final GroupedDataset<ANN, DATASET, INSTANCE> data, final Map<ANN, ANN[]> regroupCriteria)
 	{
 		// New dataset
 		final MapBackedDataset<ANN, ListBackedDataset<INSTANCE>, INSTANCE> newDataset =

@@ -454,7 +454,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 */
 	public void drawPolygonFilled(Polygon p, final Q col) {
 		// clip to the frame
-		p = p.intersect(this.targetImage.getBounds().asPolygon());
+		// p = p.intersect(this.targetImage.getBounds().asPolygon());
 
 		this.drawPolygon(p, col);
 

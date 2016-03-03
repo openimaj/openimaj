@@ -73,7 +73,7 @@ public abstract class Pyramid<
 	
 	/**
 	 * A list of all the octaves should you want to keep them.
-	 * @see PyramidOptions.keepOctaves 
+	 * @see PyramidOptions#keepOctaves 
 	 */
 	protected List<OCTAVE> octaves;
 	

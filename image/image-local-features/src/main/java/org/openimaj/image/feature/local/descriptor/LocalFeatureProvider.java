@@ -31,24 +31,26 @@ package org.openimaj.image.feature.local.descriptor;
 
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
+import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 
 /**
- * Base interface for classes capable of building local descriptors.
- * Local descriptors are constructed by being handed
- * values in a unit square sampling patch (the patch itself in
- * terms of image coordinates doesn't have to be square, but the 
- * coordinates will be normalised to lie in a unit square).
- * 
+ * Base interface for classes capable of building local descriptors. Local
+ * descriptors are constructed by being handed values in a unit square sampling
+ * patch (the patch itself in terms of image coordinates doesn't have to be
+ * square, but the coordinates will be normalised to lie in a unit square).
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * @param <T> The type of {@link FeatureVector}
- * 
+ * @param <T>
+ *            The type of {@link FeatureVector}
+ *
  */
-public interface LocalFeatureProvider<T extends FeatureVector> extends FeatureVectorProvider<T> {	
+public interface LocalFeatureProvider<T extends FeatureVector> extends FeatureVectorProvider<T> {
 	/**
-	 * Get the amount of required over-sampling outside of 
-	 * the unit square patch. An oversampling of 0.5 would
-	 * result in methods such as {@link SIFTFeatureProvider#addSample(float, float, float, float)}
-	 * being called with pixels in the range -0.5 to 1.5.
+	 * Get the amount of required over-sampling outside of the unit square
+	 * patch. An oversampling of 0.5 would result in methods such as
+	 * {@link SIFTFeatureProvider#addSample(float, float, float, float)} being
+	 * called with pixels in the range -0.5 to 1.5.
+	 * 
 	 * @return the amount over sampling above the unit square
 	 */
 	public abstract float getOversamplingAmount();
