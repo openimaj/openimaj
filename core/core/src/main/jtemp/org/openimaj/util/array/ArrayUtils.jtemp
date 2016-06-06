@@ -1175,7 +1175,7 @@ public class ArrayUtils {
 	public static double[] normaliseMax(final double[] array, final double max) {
 		final double m = maxValue(array);
 		for (int i = 0; i < array.length; i++)
-			array[i] /= m;
+			array[i] = (array[i] / m) * max;
 		return array;
 	}
 
