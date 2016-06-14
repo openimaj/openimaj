@@ -63,9 +63,9 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 	private transient Histogram[][] cells;
 
 	/**
-	 * Construct with square cells of the given size (in pixels). Square blocks
-	 * are constructed from the given number of cells in each dimension. Blocks
-	 * overlap, and shift by 1 cell (i.e. overlap is cellsPerBlock - 1).
+	 * Construct with the given number of cells per window (or image). Square
+	 * blocks are constructed from the given number of cells in each dimension.
+	 * Blocks overlap, and shift by 1 cell (i.e. overlap is cellsPerBlock - 1).
 	 * {@link BlockNormalisation#L2} is used for block normalisation.
 	 *
 	 * @param numCellsX
@@ -80,9 +80,9 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 	}
 
 	/**
-	 * Construct with square cells of the given size (in pixels). Square blocks
-	 * are constructed from the given number of cells in each dimension. Blocks
-	 * overlap, and shift by 1 cell (i.e. overlap is cellsPerBlock - 1).
+	 * Construct with the given number of cells per window (or image). Square
+	 * blocks are constructed from the given number of cells in each dimension.
+	 * Blocks overlap, and shift by 1 cell (i.e. overlap is cellsPerBlock - 1).
 	 *
 	 * @param numCellsX
 	 *            the number of cells per window in the x direction
@@ -98,8 +98,8 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 	}
 
 	/**
-	 * Construct with square cells of the given size (in pixels). Square blocks
-	 * are constructed from the given number of cells in each dimension.
+	 * Construct with the given number of cells per window (or image). Square
+	 * blocks are constructed from the given number of cells in each dimension.
 	 *
 	 * @param numCellsX
 	 *            the number of cells per window in the x direction
@@ -117,8 +117,9 @@ public class FlexibleHOGStrategy implements SpatialBinningStrategy {
 	}
 
 	/**
-	 * Construct with square cells of the given size (in pixels). Square blocks
-	 * are constructed from the given number of cells in each dimension.
+	 * Construct with the given number of cells per window (or image).
+	 * Rectangular blocks are constructed from the given number of cells in each
+	 * dimension.
 	 *
 	 * @param numCellsX
 	 *            the number of cells per window in the x direction
