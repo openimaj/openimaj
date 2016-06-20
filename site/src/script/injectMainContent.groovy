@@ -1,9 +1,6 @@
-@GrabResolver(name='groovy-template', root='http://artifacts.iteego.com/artifactory/public-release-local')
+@GrabResolver(name='groovy-template', root='http://maven.openimaj.org')
 @Grab('org.codehaus.groovy:groovy-streaming-template-engine:2.3.6.1')
 import groovy.text.StreamingTemplateEngine
-
-//groovy.grape.Grape.addResolver([name:'groovy-template', root:'http://artifacts.iteego.com/artifactory/public-release-local'])
-//groovy.grape.Grape.grab(group:'org.codehaus.groovy', module:'groovy-streaming-template-engine', version:'[2.3.6.1,)')
 
 /**
  * Script to patch static html pages into the maven site template, circumventing some 
