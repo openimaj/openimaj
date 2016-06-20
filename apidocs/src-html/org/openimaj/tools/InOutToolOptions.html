@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2012, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.tools;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.io.File;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.io.IOException;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.util.HashSet;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.util.List;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.util.Set;<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.kohsuke.args4j.Option;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.io.FileUtils;<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>/**<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * A file tool reads and writes files and knows whether existing outputs should<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * be deleted<a name="line.43"></a>
+<span class="sourceLineNo">044</span> *<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.45"></a>
+<span class="sourceLineNo">046</span> *<a name="line.46"></a>
+<span class="sourceLineNo">047</span> */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>public abstract class InOutToolOptions {<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>        @Option(name = "--input", aliases = "-i", required = false, usage = "Input location", metaVar = "STRING")<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        String input = null;<a name="line.51"></a>
+<span class="sourceLineNo">052</span><a name="line.52"></a>
+<span class="sourceLineNo">053</span>        @Option(name = "--output", aliases = "-o", required = false, usage = "output location", metaVar = "STRING")<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        protected String output = null;<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>        @Option(<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                        name = "--remove-existing-output",<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                        aliases = "-rm",<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                        required = false,<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                        usage = "If existing output exists, remove it")<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        boolean force = false;<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        @Option(name = "--input-file", aliases = "-if", required = false, usage = "Get a set of inputs as listed in a file")<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        private String inputFile = null;<a name="line.64"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>        @Option(name = "--no-continue", aliases = "-nc", required = false, usage = "Do not continue an existing output")<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        boolean contin = false;<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        /**<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * @return the input string option<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        public String getInput() {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                return this.input;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>        /**<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * @return the input string option<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         */<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        public String getOutput() {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                return this.output;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * When the input file is set, any existing input file LIST file is removed<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * (anything from -if)<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         *<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * @param input<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         *            new input location<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        public void setInput(String input) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                this.inputFile = null;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                this.input = input;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * @param output<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         *            new input location<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        public void setOutput(String output) {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                this.output = output;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * @return the force option, whether the output should be overwritten if it<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         *         exists<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        public boolean overwriteOutput() {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                return this.isForce();<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>        /**<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * Fixes a problem with args4j with multivalued arguments being preserved<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         * within the same JVM<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         *<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * @param &lt;T&gt;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * @param modeOptions<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * @param defaults<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         *            optional default values if the modeoptions is empty<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         */<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        @SafeVarargs<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        public static &lt;T&gt; void prepareMultivaluedArgument(List&lt;T&gt; modeOptions, T... defaults) {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                final Set&lt;T&gt; modes = new HashSet&lt;T&gt;();<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                for (final T mode : modeOptions) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        modes.add(mode);<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                }<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                modeOptions.clear();<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                modeOptions.addAll(modes);<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                if (modeOptions.isEmpty()) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        for (final T t : defaults) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                modeOptions.add(t);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                }<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        }<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>        /**<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         * @return should files be forcefully removed<a name="line.136"></a>
+<span class="sourceLineNo">137</span>         */<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        public boolean isForce() {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                return force;<a name="line.139"></a>
+<span class="sourceLineNo">140</span>        }<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>        /**<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         * @return should existing files be continued from<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         */<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        public boolean isContinue() {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                return this.contin;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        }<a name="line.147"></a>
+<span class="sourceLineNo">148</span><a name="line.148"></a>
+<span class="sourceLineNo">149</span>        /**<a name="line.149"></a>
+<span class="sourceLineNo">150</span>         * @return all the inputs from the -if options file, or the single input if<a name="line.150"></a>
+<span class="sourceLineNo">151</span>         *         -i was not defined<a name="line.151"></a>
+<span class="sourceLineNo">152</span>         */<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        public String[] getAllInputs() {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                boolean multifiles = this.getInputFile() != null;<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                File inputFileF = null;<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                if (multifiles) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        inputFileF = new File(this.getInputFile());<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        multifiles = inputFileF.exists() &amp;&amp; inputFileF.canRead();<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                }<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                if (!multifiles) {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                        if (this.input == null)<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                                return null;<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        return new String[] { this.input };<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                } else {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        try {<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                                final String[] lines = FileUtils.readlines(inputFileF);<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                                return lines;<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                        } catch (final IOException e) {<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                                if (this.input == null)<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                                        return null;<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                                return new String[] { this.input };<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        }<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                }<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        }<a name="line.174"></a>
+<span class="sourceLineNo">175</span><a name="line.175"></a>
+<span class="sourceLineNo">176</span>        /**<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         * @return the input list file, each line is an input<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         */<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        public String getInputFile() {<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                return inputFile;<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        }<a name="line.181"></a>
+<span class="sourceLineNo">182</span><a name="line.182"></a>
+<span class="sourceLineNo">183</span>        /**<a name="line.183"></a>
+<span class="sourceLineNo">184</span>         * @param inputFile<a name="line.184"></a>
+<span class="sourceLineNo">185</span>         *            the new input file<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         */<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        public void setInputFile(String inputFile) {<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                this.inputFile = inputFile;<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        }<a name="line.189"></a>
+<span class="sourceLineNo">190</span>}<a name="line.190"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

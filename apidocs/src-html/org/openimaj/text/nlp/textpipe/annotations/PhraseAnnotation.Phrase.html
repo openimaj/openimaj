@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.text.nlp.textpipe.annotations;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>/**<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * An annotation representing a phrase as per the Penn Treebank.<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * <a name="line.34"></a>
+<span class="sourceLineNo">035</span> * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * <a name="line.36"></a>
+<span class="sourceLineNo">037</span> */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>public class PhraseAnnotation extends TextPipeAnnotation {<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>        /**<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * Penn Treebank phrase abbreviations.<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         * <a name="line.42"></a>
+<span class="sourceLineNo">043</span>         * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         * <a name="line.44"></a>
+<span class="sourceLineNo">045</span>         */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        public enum Phrase {<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                ADJP("Adjective Phrase."),<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                ADVP("Adverb Phrase."),<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                CONJP("Conjunction Phrase."),<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                FRAG("Fragment."),<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                INTJ("Interjection. Corresponds approximately to the part-of-speech tag UH."),<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                LST("List marker. Includes surrounding punctuation."),<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                NAC("Not a Constituent; used to show the scope of certain prenominal modifiers within an NP."),<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                NP("Noun Phrase. "),<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                NX(<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                                "Used within certain complex NPs to mark the head of the NP. Corresponds very roughly to N-bar level but used quite differently."),<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                PP("Prepositional Phrase."),<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                PRN("Parenthetical. "),<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                PRT("Particle. Category for words that should be tagged RP. "),<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                QP("Quantifier Phrase (i.e. complex measure/amount phrase); used within NP."),<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                RRC("Reduced Relative Clause. "),<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                UCP("Unlike Coordinated Phrase. "),<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                VP("Vereb Phrase. "),<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                WHADJP("Wh-adjective Phrase. Adjectival phrase containing a wh-adverb, as in how hot."),<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                WHAVP(<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                                "Wh-adverb Phrase. Introduces a clause with an NP gap. May be null (containing the 0 complementizer) or lexical, containing a wh-adverb such as how or why."),<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                WHNP(<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                                "Wh-noun Phrase. Introduces a clause with an NP gap. May be null (containing the 0 complementizer) or lexical, containing some wh-word, e.g. who, which book, whose daughter, none of which, or how many leopards."),<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                WHPP(<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                                "Wh-prepositional Phrase. Prepositional phrase containing a wh-noun phrase (such as of which or by whose authority) that either introduces a PP gap or is contained by a WHNP."),<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                X(<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                "Unknown, uncertain, or unbracketable. X is often used for bracketing typos and in bracketing the...the-constructions."),<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                /**<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                 * This is added for phrases with no mapping to penn bank.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                 */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                UK("Unknown");<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>                /**<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                 * Penn Tree Bank short description<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                 */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                public final String DESCRIPTION;<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>                Phrase(String description) {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        this.DESCRIPTION = description;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                }<a name="line.85"></a>
+<span class="sourceLineNo">086</span><a name="line.86"></a>
+<span class="sourceLineNo">087</span>                /**<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                 * Returns a {@link Phrase} based on the string.<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                 * <a name="line.89"></a>
+<span class="sourceLineNo">090</span>                 * @param pennAbreviation<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                 * @return {@link Phrase}<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                 */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                public static Phrase getPhrasefromString(String pennAbreviation) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        for (final Phrase pos : Phrase.values()) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                if (pos.toString().equals(pennAbreviation))<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                        return pos;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        }<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        return Phrase.UK;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        };<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /**<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * The {@link Phrase} label.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        public Phrase phrase;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        /**<a name="line.106"></a>
+<span class="sourceLineNo">107</span>         * true if this is the start token of a phrase segment. false if it is a<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * continuation.<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         */<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        public boolean start;<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>        public PhraseAnnotation(Phrase phrase, boolean start) {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                super();<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                this.phrase = phrase;<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                this.start = start;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        }<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>        /**<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         * Returns a string representation of the Phrase order of this phrase.<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         * <a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * @return String order.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        public String getOrder() {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                if (start)<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        return "start";<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                else<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        return "continue";<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        }<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>}<a name="line.130"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

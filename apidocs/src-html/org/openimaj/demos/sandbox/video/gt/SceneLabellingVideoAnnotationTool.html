@@ -1,0 +1,476 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *<a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>package org.openimaj.demos.sandbox.video.gt;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.awt.Dimension;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.awt.GridBagConstraints;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.awt.GridBagLayout;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.awt.Insets;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.awt.event.ActionEvent;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import java.awt.event.ActionListener;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import java.awt.event.ItemEvent;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import java.awt.event.ItemListener;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import java.util.ArrayList;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import java.util.HashSet;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import java.util.List;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import java.util.Set;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>import javax.swing.AbstractButton;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import javax.swing.ImageIcon;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import javax.swing.JFrame;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import javax.swing.JLabel;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import javax.swing.JPanel;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import javax.swing.JToggleButton;<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>import org.openimaj.audio.AudioStream;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>import org.openimaj.data.dataset.Dataset;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>import org.openimaj.data.identity.Identifiable;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>import org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifiableVideoFrame;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>import org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifierProducer;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>import org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.StateProvider;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>import org.openimaj.image.ImageUtilities;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>import org.openimaj.image.MBFImage;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>import org.openimaj.image.processing.resize.ResizeProcessor;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>import org.openimaj.video.Video;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>import org.openimaj.video.VideoDisplay;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>import org.openimaj.video.VideoDisplayListener;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>import org.openimaj.video.processing.shotdetector.HistogramVideoShotDetector;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>import org.openimaj.video.timecode.HrsMinSecFrameTimecode;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>import org.openimaj.video.timecode.VideoTimecode;<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>/**<a name="line.71"></a>
+<span class="sourceLineNo">072</span> * A tool for annotating scenes within videos. This class provides the methods<a name="line.72"></a>
+<span class="sourceLineNo">073</span> * and UI for doing shot detection (using a {@link HistogramVideoShotDetector}),<a name="line.73"></a>
+<span class="sourceLineNo">074</span> * and then adding annotations to the detected scenes. The tags for annotation<a name="line.74"></a>
+<span class="sourceLineNo">075</span> * are provided by subclasses of this class through the {@link #getStates()}<a name="line.75"></a>
+<span class="sourceLineNo">076</span> * method. Annotated scenes are added to a {@link Dataset} via the<a name="line.76"></a>
+<span class="sourceLineNo">077</span> * {@link VideoGroundTruth} class.<a name="line.77"></a>
+<span class="sourceLineNo">078</span> *<a name="line.78"></a>
+<span class="sourceLineNo">079</span> * @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.79"></a>
+<span class="sourceLineNo">080</span> * @created 5 Dec 2012<a name="line.80"></a>
+<span class="sourceLineNo">081</span> * @version $Author$, $Revision$, $Date$<a name="line.81"></a>
+<span class="sourceLineNo">082</span> */<a name="line.82"></a>
+<span class="sourceLineNo">083</span>public abstract class SceneLabellingVideoAnnotationTool extends JPanel<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                implements IdentifierProducer, StateProvider<a name="line.84"></a>
+<span class="sourceLineNo">085</span>{<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        /** */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        private static final long serialVersionUID = 1L;<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /** The video ground truth writer */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        private VideoGroundTruth groundTruth = null;<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>        /** The shot detector to use to analyse the video */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        private HistogramVideoShotDetector shotDetector = null;<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /** A list of the detected shot boundaries */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        private final Set&lt;IdentifiableVideoFrame&gt; shotBoundaries =<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        new HashSet&lt;IdentifiableVideoFrame&gt;();<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>        /** The last video shot boundary that was detected */<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        private IdentifiableVideoFrame lastShotBoundary = null;<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /** The video being processed */<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        private final Video&lt;MBFImage&gt; video;<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>        /** The JLabel that shows the last boundary frame */<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        private final JLabel lastShotBoundaryFrameLabel = new JLabel();<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>        /** The JLabel that shows the last boundary timecode */<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        private final JLabel lastShotBoundaryTimecodeLabel = new JLabel();<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>        /** The timecode of the previous frame to be processed */<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        private VideoTimecode previousFrameTimecode = null;<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>        /** The frame for this UI */<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        private JFrame frame;<a name="line.115"></a>
+<span class="sourceLineNo">116</span><a name="line.116"></a>
+<span class="sourceLineNo">117</span>        /** The list of state radio buttons */<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        private AbstractButton[] radioButtons = null;<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>        /** A button group for the states */<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        private final ButtonGroup stateButtonGroup = new ButtonGroup();<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>        /** The currently selected state */<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        private List&lt;String&gt; currentState;<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>        /**<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         * Determines whether the tags are singular (more than one cannot be<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         * selected at once)<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         */<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        private final boolean exclusiveTags = true;<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>        /**<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         * Returns a list of the states that are able to be labelled for any one<a name="line.133"></a>
+<span class="sourceLineNo">134</span>         * scene.<a name="line.134"></a>
+<span class="sourceLineNo">135</span>         *<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         * @return The list of states<a name="line.136"></a>
+<span class="sourceLineNo">137</span>         */<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        public abstract String[] getStates();<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>        /**<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * @param video<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * @param audio<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         */<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        public SceneLabellingVideoAnnotationTool(final Video&lt;MBFImage&gt; video,<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                        final AudioStream audio)<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                this.video = video;<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                this.groundTruth = new VideoGroundTruth(video, audio, this);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                this.shotDetector = new HistogramVideoShotDetector(video);<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                this.currentState = new ArrayList&lt;String&gt;();<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                this.init();<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        }<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>        /**<a name="line.154"></a>
+<span class="sourceLineNo">155</span>         * {@inheritDoc}<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         *<a name="line.156"></a>
+<span class="sourceLineNo">157</span>         * @see org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.StateProvider#getCurrentState(org.openimaj.data.identity.Identifiable)<a name="line.157"></a>
+<span class="sourceLineNo">158</span>         */<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        @Override<a name="line.159"></a>
+<span class="sourceLineNo">160</span>        public List&lt;String&gt; getCurrentState(final Identifiable id)<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                if (this.currentState == null)<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        return null;<a name="line.163"></a>
+<span class="sourceLineNo">164</span><a name="line.164"></a>
+<span class="sourceLineNo">165</span>                final List&lt;String&gt; list = new ArrayList&lt;String&gt;();<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                list.addAll(this.currentState);<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                return list;<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        }<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>        /**<a name="line.170"></a>
+<span class="sourceLineNo">171</span>         * {@inheritDoc}<a name="line.171"></a>
+<span class="sourceLineNo">172</span>         *<a name="line.172"></a>
+<span class="sourceLineNo">173</span>         * @see org.openimaj.demos.sandbox.video.gt.VideoGroundTruth.IdentifierProducer#getIdentifiers()<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         */<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        @Override<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        public List&lt;Identifiable&gt; getIdentifiers()<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        {<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                final List&lt;Identifiable&gt; list = new ArrayList&lt;Identifiable&gt;();<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                list.add(this.lastShotBoundary);<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                return list;<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        }<a name="line.181"></a>
+<span class="sourceLineNo">182</span><a name="line.182"></a>
+<span class="sourceLineNo">183</span>        /**<a name="line.183"></a>
+<span class="sourceLineNo">184</span>         * Set up the UI<a name="line.184"></a>
+<span class="sourceLineNo">185</span>         */<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        private void init()<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        {<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                this.setLayout(new GridBagLayout());<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>                // Set up a default constraints. We'll change this as we add<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                // bits and bobs to the UI<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                final GridBagConstraints gbc = new GridBagConstraints();<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                gbc.gridx = gbc.gridy = 0;<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                gbc.gridwidth = 1;<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                gbc.fill = GridBagConstraints.BOTH;<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                gbc.weightx = gbc.weighty = 0;<a name="line.196"></a>
+<span class="sourceLineNo">197</span><a name="line.197"></a>
+<span class="sourceLineNo">198</span>                // Add the label that shows the last shot boundary frame<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                gbc.insets = new Insets(4, 4, 4, 4);<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                gbc.weightx = 1;<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                this.add(this.lastShotBoundaryFrameLabel, gbc);<a name="line.201"></a>
+<span class="sourceLineNo">202</span><a name="line.202"></a>
+<span class="sourceLineNo">203</span>                // Add the label that shows the timecode for the last shot boundary<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                gbc.gridx++;<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                gbc.weightx = 1;<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                final Dimension d = this.lastShotBoundaryTimecodeLabel.getPreferredSize();<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                d.width = 300;<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                this.lastShotBoundaryTimecodeLabel.setPreferredSize(d);<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                this.add(this.lastShotBoundaryTimecodeLabel, gbc);<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>                // Now add on radio buttons for all the possible states<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                gbc.gridwidth = 2;<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                gbc.gridx = 0;<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                gbc.insets = new Insets(1, 1, 1, 1);<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                final String[] states = this.getStates();<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                this.radioButtons = new AbstractButton[states.length];<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                for (int i = 0; i &lt; states.length; i++)<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                {<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                        gbc.gridy++;<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        this.add(this.radioButtons[i] =<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                                        new JToggleButton(states[i]), gbc);<a name="line.221"></a>
+<span class="sourceLineNo">222</span><a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        // If only one tag can be selected at a time, then the button group<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                        // itemListener will be used to change the currentState member<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                        // This itemListener is added immediately after this loop.<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                        // Otherwise, we use an actionListener on the button to add or<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                        // remove the state represented by the button to the currentState<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                        // field. Use setExclusiveTags() to determine this option.<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        if (this.exclusiveTags)<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                this.stateButtonGroup.add(this.radioButtons[i]);<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                        else<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        {<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                final int f = i;<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                this.radioButtons[i].addActionListener(new ActionListener()<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                                {<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                                        @Override<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                                        public void actionPerformed(final ActionEvent e)<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                        {<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                                if (SceneLabellingVideoAnnotationTool.this.<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                                                radioButtons[f].isSelected())<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                                        SceneLabellingVideoAnnotationTool.this.<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                                                        currentState.add(SceneLabellingVideoAnnotationTool.<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                                                                        this.radioButtons[f].getText());<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                                                else<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                                                        SceneLabellingVideoAnnotationTool.this.<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                                                        currentState.remove(SceneLabellingVideoAnnotationTool.<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                                                                        this.radioButtons[f].getText());<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                        }<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                });<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                        }<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                }<a name="line.251"></a>
+<span class="sourceLineNo">252</span><a name="line.252"></a>
+<span class="sourceLineNo">253</span>                // Add an item listener that sets the current state when a button is<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                // pressed<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                // This is only used when the button group is used, and that's only used<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                // when only one tag can be selected for a scene.<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                this.stateButtonGroup.addItemListener(new ItemListener()<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                {<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                        @Override<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                        public void itemStateChanged(final ItemEvent e)<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                        {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                                SceneLabellingVideoAnnotationTool.this.currentState.clear();<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                                SceneLabellingVideoAnnotationTool.this.currentState.add(<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                                                SceneLabellingVideoAnnotationTool.this.<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                                                stateButtonGroup.getSelected().getText());<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                        }<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                });<a name="line.267"></a>
+<span class="sourceLineNo">268</span><a name="line.268"></a>
+<span class="sourceLineNo">269</span>                // Set up the video player.<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                this.groundTruth.getVideoPlayer().setButtons(new String[] { "play", "pause" });<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                this.groundTruth.getVideoPlayer().pause();<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                this.groundTruth.getVideoPlayer().addVideoListener(<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                                new VideoDisplayListener&lt;MBFImage&gt;()<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                                {<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                                        @Override<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                                        public void beforeUpdate(final MBFImage frame)<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                                        {<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                                                SceneLabellingVideoAnnotationTool.this.processFrame(frame);<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                                        }<a name="line.279"></a>
+<span class="sourceLineNo">280</span><a name="line.280"></a>
+<span class="sourceLineNo">281</span>                                        @Override<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                                        public void afterUpdate(final VideoDisplay&lt;MBFImage&gt; display)<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                                        {<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                                        }<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                                });<a name="line.285"></a>
+<span class="sourceLineNo">286</span><a name="line.286"></a>
+<span class="sourceLineNo">287</span>                // Show the video player<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                final JFrame f = this.groundTruth.getVideoPlayer().showFrame();<a name="line.288"></a>
+<span class="sourceLineNo">289</span><a name="line.289"></a>
+<span class="sourceLineNo">290</span>                // Show the tool<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                final JFrame ff = this.showFrame();<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                ff.setLocation(f.getLocation().x + f.getWidth(), f.getLocation().y);<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                ff.setSize(ff.getWidth(), f.getHeight());<a name="line.293"></a>
+<span class="sourceLineNo">294</span>        }<a name="line.294"></a>
+<span class="sourceLineNo">295</span><a name="line.295"></a>
+<span class="sourceLineNo">296</span>        /**<a name="line.296"></a>
+<span class="sourceLineNo">297</span>         * Show the UI frame if it's not already being shown.<a name="line.297"></a>
+<span class="sourceLineNo">298</span>         *<a name="line.298"></a>
+<span class="sourceLineNo">299</span>         * @return The UI frame<a name="line.299"></a>
+<span class="sourceLineNo">300</span>         */<a name="line.300"></a>
+<span class="sourceLineNo">301</span>        private JFrame showFrame()<a name="line.301"></a>
+<span class="sourceLineNo">302</span>        {<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                if (this.frame == null)<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                {<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                        this.frame = new JFrame();<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                        this.frame.add(this);<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                        this.frame.pack();<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                }<a name="line.308"></a>
+<span class="sourceLineNo">309</span><a name="line.309"></a>
+<span class="sourceLineNo">310</span>                this.frame.setVisible(true);<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                return this.frame;<a name="line.311"></a>
+<span class="sourceLineNo">312</span>        }<a name="line.312"></a>
+<span class="sourceLineNo">313</span><a name="line.313"></a>
+<span class="sourceLineNo">314</span>        /**<a name="line.314"></a>
+<span class="sourceLineNo">315</span>         * Process a frame from the video<a name="line.315"></a>
+<span class="sourceLineNo">316</span>         *<a name="line.316"></a>
+<span class="sourceLineNo">317</span>         * @param frame<a name="line.317"></a>
+<span class="sourceLineNo">318</span>         *            The video frame<a name="line.318"></a>
+<span class="sourceLineNo">319</span>         */<a name="line.319"></a>
+<span class="sourceLineNo">320</span>        protected void processFrame(final MBFImage frame)<a name="line.320"></a>
+<span class="sourceLineNo">321</span>        {<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                // Pass the frame to our shot detector to see if the shot has changed.<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                this.shotDetector.processFrame(frame);<a name="line.323"></a>
+<span class="sourceLineNo">324</span><a name="line.324"></a>
+<span class="sourceLineNo">325</span>                // Timecode for the current frame<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                final HrsMinSecFrameTimecode tc = new HrsMinSecFrameTimecode(<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                                this.video.getCurrentFrameIndex(), this.video.getFPS());<a name="line.327"></a>
+<span class="sourceLineNo">328</span><a name="line.328"></a>
+<span class="sourceLineNo">329</span>                // If we're in to a new scene, we update the scene counter<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                if (this.shotDetector.wasLastFrameBoundary())<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                {<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                        // If we already have a shot that we're dealing with, then<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                        // we'll create a region-based annotation for this shot and<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        // give it to the video ground truth thingy<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                        if (this.lastShotBoundary != null)<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                        {<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                                // Add this as a data item to the ground truthed dataset<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                                this.groundTruth.updateIdentifiableRegion(this.lastShotBoundary,<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                                                this.lastShotBoundary.timecode, this.previousFrameTimecode);<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                        }<a name="line.340"></a>
+<span class="sourceLineNo">341</span><a name="line.341"></a>
+<span class="sourceLineNo">342</span>                        // New shot boundary here<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                        this.lastShotBoundary = new IdentifiableVideoFrame(frame, tc);<a name="line.343"></a>
+<span class="sourceLineNo">344</span><a name="line.344"></a>
+<span class="sourceLineNo">345</span>                        // Store this shot boundary<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                        this.shotBoundaries.add(this.lastShotBoundary);<a name="line.346"></a>
+<span class="sourceLineNo">347</span><a name="line.347"></a>
+<span class="sourceLineNo">348</span>                        // Update the labels in the UI<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                        this.lastShotBoundaryFrameLabel.setIcon(<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                                        new ImageIcon(ImageUtilities.createBufferedImage(<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                                                        frame.process(new ResizeProcessor(200, 200, true)))));<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                        this.lastShotBoundaryTimecodeLabel.setText(tc.toString());<a name="line.352"></a>
+<span class="sourceLineNo">353</span><a name="line.353"></a>
+<span class="sourceLineNo">354</span>                        // Check whether there's a default state for our state buttons<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                        final String defaultState = this.getDefaultState();<a name="line.355"></a>
+<span class="sourceLineNo">356</span><a name="line.356"></a>
+<span class="sourceLineNo">357</span>                        // Reset all the radio buttons - we don't want this new scene<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                        // to have the settings from the last scene<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                        for (final AbstractButton button : this.radioButtons)<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                        {<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                                if (defaultState == null || !button.getText().equals(defaultState))<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                                        button.setSelected(false);<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                                else<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                                        button.setSelected(true);<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                        }<a name="line.365"></a>
+<span class="sourceLineNo">366</span><a name="line.366"></a>
+<span class="sourceLineNo">367</span>                        this.currentState = null;<a name="line.367"></a>
+<span class="sourceLineNo">368</span><a name="line.368"></a>
+<span class="sourceLineNo">369</span>                        // Make sure the UI gets updated<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                        this.repaint();<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                }<a name="line.371"></a>
+<span class="sourceLineNo">372</span><a name="line.372"></a>
+<span class="sourceLineNo">373</span>                // Remember this timecode for the next processing loop<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                this.previousFrameTimecode = tc;<a name="line.374"></a>
+<span class="sourceLineNo">375</span>        }<a name="line.375"></a>
+<span class="sourceLineNo">376</span><a name="line.376"></a>
+<span class="sourceLineNo">377</span>        /**<a name="line.377"></a>
+<span class="sourceLineNo">378</span>         * Returns the default state to be set for each new scene. The method can<a name="line.378"></a>
+<span class="sourceLineNo">379</span>         * return null to indicate that no default state should be used. If it<a name="line.379"></a>
+<span class="sourceLineNo">380</span>         * returns a state, it should return a value that matches one of those<a name="line.380"></a>
+<span class="sourceLineNo">381</span>         * returned by {@link #getStates()}.<a name="line.381"></a>
+<span class="sourceLineNo">382</span>         *<a name="line.382"></a>
+<span class="sourceLineNo">383</span>         * @return The default state<a name="line.383"></a>
+<span class="sourceLineNo">384</span>         */<a name="line.384"></a>
+<span class="sourceLineNo">385</span>        public String getDefaultState()<a name="line.385"></a>
+<span class="sourceLineNo">386</span>        {<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                return null;<a name="line.387"></a>
+<span class="sourceLineNo">388</span>        }<a name="line.388"></a>
+<span class="sourceLineNo">389</span><a name="line.389"></a>
+<span class="sourceLineNo">390</span>        /**<a name="line.390"></a>
+<span class="sourceLineNo">391</span>         * Determines whether tags are exclusive (only one can be selected at a<a name="line.391"></a>
+<span class="sourceLineNo">392</span>         * time).<a name="line.392"></a>
+<span class="sourceLineNo">393</span>         *<a name="line.393"></a>
+<span class="sourceLineNo">394</span>         * @param tf<a name="line.394"></a>
+<span class="sourceLineNo">395</span>         *            Whether tags can be selected or not.<a name="line.395"></a>
+<span class="sourceLineNo">396</span>         */<a name="line.396"></a>
+<span class="sourceLineNo">397</span>        public void setExclusiveTags(final boolean tf)<a name="line.397"></a>
+<span class="sourceLineNo">398</span>        {<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                this.stateButtonGroup.clear();<a name="line.399"></a>
+<span class="sourceLineNo">400</span>                if (tf)<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                        for (final AbstractButton b : this.radioButtons)<a name="line.401"></a>
+<span class="sourceLineNo">402</span>                                this.stateButtonGroup.add(b);<a name="line.402"></a>
+<span class="sourceLineNo">403</span>        }<a name="line.403"></a>
+<span class="sourceLineNo">404</span>}<a name="line.404"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

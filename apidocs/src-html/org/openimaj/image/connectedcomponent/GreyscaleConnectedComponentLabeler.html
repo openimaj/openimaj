@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.connectedcomponent;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.util.ArrayList;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.util.LinkedHashSet;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.util.List;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.image.FImage;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.image.analyser.ImageAnalyser;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.image.pixel.ConnectedComponent;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.image.pixel.Pixel;<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>/**<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * A Connected Component Labeler for grey-level images. This class can be used<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * to transform an image that represents a map of labeled objects into a list of<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * {@link ConnectedComponent}s.<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * &lt;p&gt;<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * Internally we use a flood-fill approach to finding the<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * {@link ConnectedComponent}s.<a name="line.47"></a>
+<span class="sourceLineNo">048</span> *<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.49"></a>
+<span class="sourceLineNo">050</span> */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>public class GreyscaleConnectedComponentLabeler implements ImageAnalyser&lt;FImage&gt; {<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        List&lt;ConnectedComponent&gt; components;<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         * Syntactic sugar for calling {@link #analyseImage(FImage)} followed by<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         * {@link #getComponents()};<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         *<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * @param image<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         *            the image to extract components from<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * @return the extracted components.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        public List&lt;ConnectedComponent&gt; findComponents(FImage image) {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                analyseImage(image);<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                return components;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        protected ConnectedComponent floodFill(FImage image, Pixel start, int[][] output, int color) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                final ConnectedComponent cc = new ConnectedComponent();<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                // Flood-fill (node, target-color, replacement-color):<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                // 1. Set Q to the empty queue.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                // Queue&lt;Pixel&gt; queue = new LinkedList&lt;Pixel&gt;();<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                final LinkedHashSet&lt;Pixel&gt; queue = new LinkedHashSet&lt;Pixel&gt;();<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>                // 2. If the color of node is not equal to target-color, return.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                final float targetColour = image.pixels[start.y][start.x];<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>                // 3. Add node to Q.<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                queue.add(start);<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                // 4. For each element n of Q:<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                while (queue.size() &gt; 0) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        // Pixel n = queue.poll();<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        final Pixel n = queue.iterator().next();<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        queue.remove(n);<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>                        // 5. If the color of n is equal to target-color:<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        if (image.pixels[n.y][n.x] == targetColour &amp;&amp; output[n.y][n.x] != color) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                                // 6. Set w and e equal to n.<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                                int e = n.x, w = n.x;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                                // 7. Move w to the west until the color of the node to the west<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                                // of w no longer matches target-color.<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                                while (w &gt; 0 &amp;&amp; image.pixels[n.y][w - 1] == targetColour)<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                        w--;<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>                                // 8. Move e to the east until the color of the node to the east<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                // of e no longer matches target-color.<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                while (e &lt; image.width - 1 &amp;&amp; image.pixels[n.y][e + 1] == targetColour)<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                        e++;<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                // 9. Set the color of nodes between w and e to<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                                // replacement-color.<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                for (int i = w; i &lt;= e; i++) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                                        output[n.y][i] = color;<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                        cc.addPixel(i, n.y);<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                        // 10. For each node n between w and e:<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                        final int north = n.y - 1;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                        final int south = n.y + 1;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                                        // 11. If the color of the node to the north of n is<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                        // target-color, add that node to Q.<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                        if (north &gt;= 0 &amp;&amp; image.pixels[north][i] == targetColour &amp;&amp; output[north][i] != color)<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                                queue.add(new Pixel(i, north));<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                                        // If the color of the node to the south of n is<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                                        // target-color, add that node to Q.<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                                        if (south &lt; image.height &amp;&amp; image.pixels[south][i] == targetColour &amp;&amp; output[south][i] != color)<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                                queue.add(new Pixel(i, south));<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                }<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                // 12. Continue looping until Q is exhausted.<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                }<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                // 13. Return.<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                return cc;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>        @Override<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        public void analyseImage(FImage image) {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                components = new ArrayList&lt;ConnectedComponent&gt;();<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                final int[][] labels = new int[image.height][image.width];<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                int nextColor = 1;<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                for (int y = 0; y &lt; image.height; y++) {<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        for (int x = 0; x &lt; image.width; x++) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                if (labels[y][x] == 0) {<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                                        components.add(floodFill(image, new Pixel(x, y), labels, nextColor));<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                        nextColor++;<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                }<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                        }<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                }<a name="line.138"></a>
+<span class="sourceLineNo">139</span>        }<a name="line.139"></a>
+<span class="sourceLineNo">140</span><a name="line.140"></a>
+<span class="sourceLineNo">141</span>        /**<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * @return the list of components found in the last call to<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         *         {@link #analyseImage(FImage)}.<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         */<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        public List&lt;ConnectedComponent&gt; getComponents() {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                return components;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        }<a name="line.147"></a>
+<span class="sourceLineNo">148</span>}<a name="line.148"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

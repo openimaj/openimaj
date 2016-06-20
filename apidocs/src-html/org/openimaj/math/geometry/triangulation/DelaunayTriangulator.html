@@ -1,0 +1,355 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.math.geometry.triangulation;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.util.ArrayList;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.util.Collections;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.util.Comparator;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.util.HashSet;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.util.List;<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.math.geometry.line.Line2d;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.math.geometry.point.Point2dImpl;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.math.geometry.shape.Circle;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.math.geometry.shape.Triangle;<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>/**<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * The Delaunay Triangulation algorithm. Produces a triangulation of a set of<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * points.<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * &lt;p&gt;<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * Originally ported from &lt;a<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * href="http://paulbourke.net/papers/triangulate/"Paul Bourke's<a name="line.49"></a>
+<span class="sourceLineNo">050</span> * triangulate.c&lt;/a&gt;.<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * &lt;p&gt;<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * This OpenIMAJ version is based off &lt;a<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * href="http://www.florianjenett.de/"&gt;Florian Jenett's&lt;/a&gt; Java port: fjenett,<a name="line.53"></a>
+<span class="sourceLineNo">054</span> * 20th february 2005, offenbach-germany. contact: http://www.florianjenett.de/<a name="line.54"></a>
+<span class="sourceLineNo">055</span> */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>public class DelaunayTriangulator {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /*<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * From P Bourke's C prototype -<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * <a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * qsort(p,nv,sizeof(XYZ),XYZCompare);<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         * <a name="line.61"></a>
+<span class="sourceLineNo">062</span>         * int XYZCompare(void *v1,void *v2) { XYZ *p1,*p2; p1 = v1; p2 = v2; if<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         * (p1-&gt;x &lt; p2-&gt;x) return(-1); else if (p1-&gt;x &gt; p2-&gt;x) return(1); else<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         * return(0); }<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         */<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        private static class XComparator implements Comparator&lt;Point2d&gt; {<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>                @Override<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                public int compare(Point2d p1, Point2d p2) {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                        if (p1.getX() &lt; p2.getX()) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                                return -1;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        }<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        else if (p1.getX() &gt; p2.getX()) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                                return 1;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        else {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                return 0;<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                }<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>        static final float EPSILON = 0.00000001f;<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>        /*<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * Return TRUE if a point (xp,yp) is inside the circumcircle made up of the<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * points (x1,y1), (x2,y2), (x3,y3) The circumcircle centre is returned in<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * (xc,yc) and the radius r NOTE: A point on the edge is inside the<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * circumcircle<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        private static boolean circumCircle(Point2d p, Triangle t, Circle circle) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                float m1, m2, mx1, mx2, my1, my2;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                float dx, dy, rsqr, drsqr;<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>                /* Check for coincident points */<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                if (Math.abs(t.firstVertex().getY() - t.secondVertex().getY()) &lt; EPSILON<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                &amp;&amp; Math.abs(t.secondVertex().getY() - t.thirdVertex().getY()) &lt; EPSILON)<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        System.err.println("CircumCircle: Points are coincident.");<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                        return false;<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>                if (Math.abs(t.secondVertex().getY() - t.firstVertex().getY()) &lt; EPSILON) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        m2 = -(t.thirdVertex().getX() - t.secondVertex().getX()) / (t.thirdVertex().getY() - t.secondVertex().getY());<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        mx2 = (t.secondVertex().getX() + t.thirdVertex().getX()) / 2.0f;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        my2 = (t.secondVertex().getY() + t.thirdVertex().getY()) / 2.0f;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        circle.setX((t.secondVertex().getX() + t.firstVertex().getX()) / 2.0f);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        circle.setY(m2 * (circle.getX() - mx2) + my2);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                }<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                else if (Math.abs(t.thirdVertex().getY() - t.secondVertex().getY()) &lt; EPSILON) {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        m1 = -(t.secondVertex().getX() - t.firstVertex().getX()) / (t.secondVertex().getY() - t.firstVertex().getY());<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        mx1 = (t.firstVertex().getX() + t.secondVertex().getX()) / 2.0f;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        my1 = (t.firstVertex().getY() + t.secondVertex().getY()) / 2.0f;<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        circle.setX((t.thirdVertex().getX() + t.secondVertex().getX()) / 2.0f);<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        circle.setY(m1 * (circle.getX() - mx1) + my1);<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                }<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                else {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        m1 = -(t.secondVertex().getX() - t.firstVertex().getX()) / (t.secondVertex().getY() - t.firstVertex().getY());<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        m2 = -(t.thirdVertex().getX() - t.secondVertex().getX()) / (t.thirdVertex().getY() - t.secondVertex().getY());<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        mx1 = (t.firstVertex().getX() + t.secondVertex().getX()) / 2.0f;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        mx2 = (t.secondVertex().getX() + t.thirdVertex().getX()) / 2.0f;<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        my1 = (t.firstVertex().getY() + t.secondVertex().getY()) / 2.0f;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        my2 = (t.secondVertex().getY() + t.thirdVertex().getY()) / 2.0f;<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                        circle.setX((m1 * mx1 - m2 * mx2 + my2 - my1) / (m1 - m2));<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        circle.setY(m1 * (circle.getX() - mx1) + my1);<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                }<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>                dx = t.secondVertex().getX() - circle.getX();<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                dy = t.secondVertex().getY() - circle.getY();<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                rsqr = dx * dx + dy * dy;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                circle.setRadius((float) Math.sqrt(rsqr));<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>                dx = p.getX() - circle.getX();<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                dy = p.getY() - circle.getY();<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                drsqr = dx * dx + dy * dy;<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>                return drsqr &lt;= rsqr;<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        }<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>        /**<a name="line.139"></a>
+<span class="sourceLineNo">140</span>         * Trianglate a set of vertices.<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * <a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * @param pxyz<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         *            vertices to triangulate.<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         * @return list of triangles arranged in a consistent clockwise order.<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         */<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        public static List&lt;Triangle&gt; triangulate(List&lt;? extends Point2d&gt; pxyz) {<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>                // sort vertex array in increasing x values<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                Collections.sort(pxyz, new XComparator());<a name="line.149"></a>
+<span class="sourceLineNo">150</span><a name="line.150"></a>
+<span class="sourceLineNo">151</span>                /*<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                 * Find the maximum and minimum vertex bounds. This is to allow<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                 * calculation of the bounding triangle<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                 */<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                float xmin = ((Point2d) pxyz.get(0)).getX();<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                float ymin = ((Point2d) pxyz.get(0)).getY();<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                float xmax = xmin;<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                float ymax = ymin;<a name="line.158"></a>
+<span class="sourceLineNo">159</span><a name="line.159"></a>
+<span class="sourceLineNo">160</span>                for (final Point2d p : pxyz) {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                        if (p.getX() &lt; xmin)<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                                xmin = p.getX();<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        if (p.getX() &gt; xmax)<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                                xmax = p.getX();<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        if (p.getY() &lt; ymin)<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                                ymin = p.getY();<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                        if (p.getY() &gt; ymax)<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                                ymax = p.getY();<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                }<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>                final float dx = xmax - xmin;<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                final float dy = ymax - ymin;<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                final float dmax = (dx &gt; dy) ? dx : dy;<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                final float xmid = (xmax + xmin) / 2.0f;<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                final float ymid = (ymax + ymin) / 2.0f;<a name="line.175"></a>
+<span class="sourceLineNo">176</span><a name="line.176"></a>
+<span class="sourceLineNo">177</span>                final ArrayList&lt;Triangle&gt; triangles = new ArrayList&lt;Triangle&gt;(); // for<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                                                                                                                                        // the<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                                                                                                                                                        // Triangles<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                final HashSet&lt;Triangle&gt; complete = new HashSet&lt;Triangle&gt;(); // for<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                                                                                                                                        // complete<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                                                                                                                                        // Triangles<a name="line.182"></a>
+<span class="sourceLineNo">183</span><a name="line.183"></a>
+<span class="sourceLineNo">184</span>                /*<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                 * Set up the supertriangle This is a triangle which encompasses all the<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                 * sample points. The supertriangle coordinates are added to the end of<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                 * the vertex list. The supertriangle is the first triangle in the<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                 * triangle list.<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                 */<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                final Triangle superTriangle = new Triangle(<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                                new Point2dImpl(xmid - 2.0f * dmax, ymid - dmax),<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                                new Point2dImpl(xmid, ymid + 2.0f * dmax),<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                                new Point2dImpl(xmid + 2.0f * dmax, ymid - dmax)<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                                );<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                triangles.add(superTriangle);<a name="line.195"></a>
+<span class="sourceLineNo">196</span><a name="line.196"></a>
+<span class="sourceLineNo">197</span>                /*<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                 * Include each point one at a time into the existing mesh<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                 */<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                final ArrayList&lt;Line2d&gt; edges = new ArrayList&lt;Line2d&gt;();<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                for (final Point2d p : pxyz) {<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        edges.clear();<a name="line.202"></a>
+<span class="sourceLineNo">203</span><a name="line.203"></a>
+<span class="sourceLineNo">204</span>                        /*<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                         * Set up the edge buffer. If the point (xp,yp) lies inside the<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                         * circumcircle then the three edges of that triangle are added to<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                         * the edge buffer and that triangle is removed.<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                         */<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                        final Circle circle = new Circle(0, 0, 0);<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        for (int j = triangles.size() - 1; j &gt;= 0; j--) {<a name="line.211"></a>
+<span class="sourceLineNo">212</span><a name="line.212"></a>
+<span class="sourceLineNo">213</span>                                final Triangle t = triangles.get(j);<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                                if (complete.contains(t)) {<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                                        continue;<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                                }<a name="line.216"></a>
+<span class="sourceLineNo">217</span><a name="line.217"></a>
+<span class="sourceLineNo">218</span>                                final boolean inside = circumCircle(p, t, circle);<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>                                if (circle.getX() + circle.getRadius() &lt; p.getX()) {<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                                        complete.add(t);<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                                }<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                                if (inside) {<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                                        edges.add(new Line2d(t.firstVertex(), t.secondVertex()));<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                                        edges.add(new Line2d(t.secondVertex(), t.thirdVertex()));<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                                        edges.add(new Line2d(t.thirdVertex(), t.firstVertex()));<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                                        triangles.remove(j);<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                                }<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>                        }<a name="line.230"></a>
+<span class="sourceLineNo">231</span><a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        /*<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                         * Tag multiple edges Note: if all triangles are specified<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                         * anticlockwise then all interior edges are opposite pointing in<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                         * direction.<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                         */<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        for (int j = 0; j &lt; edges.size() - 1; j++) {<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                final Line2d e1 = edges.get(j);<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                for (int k = j + 1; k &lt; edges.size(); k++) {<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                                        final Line2d e2 = edges.get(k);<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                        if (e1.begin == e2.end &amp;&amp; e1.end == e2.begin) {<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                                                e1.begin = null;<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                                                e1.end = null;<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                                                e2.begin = null;<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                                                e2.end = null;<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                                        }<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                                        /* Shouldn't need the following, see note above */<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                        if (e1.begin == e2.begin &amp;&amp; e1.end == e2.end) {<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                                e1.begin = null;<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                                e1.end = null;<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                                                e2.begin = null;<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                                                e2.end = null;<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                                        }<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                                }<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                        }<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>                        /*<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                         * Form new triangles for the current point Skipping over any tagged<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                         * edges. All edges are arranged in clockwise order.<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                         */<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                        for (int j = 0; j &lt; edges.size(); j++) {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                                final Line2d e = edges.get(j);<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                                if (e.begin == null || e.end == null) {<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                                        continue;<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                                }<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                                triangles.add(new Triangle(e.begin, e.end, p));<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                        }<a name="line.267"></a>
+<span class="sourceLineNo">268</span><a name="line.268"></a>
+<span class="sourceLineNo">269</span>                }<a name="line.269"></a>
+<span class="sourceLineNo">270</span><a name="line.270"></a>
+<span class="sourceLineNo">271</span>                /*<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                 * Remove triangles with supertriangle vertices<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                 */<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                for (int i = triangles.size() - 1; i &gt;= 0; i--) {<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                        final Triangle t = triangles.get(i);<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                        if (t.sharesVertex(superTriangle)) {<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                                triangles.remove(i);<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                        }<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                }<a name="line.279"></a>
+<span class="sourceLineNo">280</span><a name="line.280"></a>
+<span class="sourceLineNo">281</span>                return triangles;<a name="line.281"></a>
+<span class="sourceLineNo">282</span>        }<a name="line.282"></a>
+<span class="sourceLineNo">283</span>}<a name="line.283"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

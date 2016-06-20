@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *<a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>package org.openimaj.demos.sandbox.video;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.awt.Dimension;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.util.ArrayList;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.util.HashMap;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.HashSet;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.util.List;<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.image.DisplayUtilities;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.image.MBFImage;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.image.colour.RGBColour;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.image.processing.face.tracking.clm.MultiTracker;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.math.geometry.shape.Rectangle;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.math.util.RunningStat;<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>/**<a name="line.50"></a>
+<span class="sourceLineNo">051</span> *      Uses a tracker ({@link CLMFaceTracker})<a name="line.51"></a>
+<span class="sourceLineNo">052</span> *      to track the face in the frame and determine whether the face stays within<a name="line.52"></a>
+<span class="sourceLineNo">053</span> *      certain size boundaries to determine shot type.<a name="line.53"></a>
+<span class="sourceLineNo">054</span> *      &lt;p&gt;<a name="line.54"></a>
+<span class="sourceLineNo">055</span> *      The shot types detected are:<a name="line.55"></a>
+<span class="sourceLineNo">056</span> *      &lt;ul&gt;<a name="line.56"></a>
+<span class="sourceLineNo">057</span> *      &lt;li&gt;&lt;b&gt;Close Up:&lt;/b&gt; The face fills the frame - that is, it takes between<a name="line.57"></a>
+<span class="sourceLineNo">058</span> *              12% or more of the frame.&lt;/li&gt;<a name="line.58"></a>
+<span class="sourceLineNo">059</span> *      &lt;li&gt;&lt;b&gt;Medium Close Up:&lt;/b&gt; The person is filmed head-and-shoulders - that<a name="line.59"></a>
+<span class="sourceLineNo">060</span> *              is, the face takes up between 3% and 12% of the frame.&lt;/li&gt;<a name="line.60"></a>
+<span class="sourceLineNo">061</span> *      &lt;li&gt;&lt;b&gt;Mid-Shot:&lt;/b&gt; The person is filmed half-body or less - that is,<a name="line.61"></a>
+<span class="sourceLineNo">062</span> *              the face takes up between 0% and 3% of the frame.&lt;/li&gt;<a name="line.62"></a>
+<span class="sourceLineNo">063</span> *      &lt;li&gt;&lt;b&gt;Two-Shot:&lt;/b&gt; If there are two people in the frame.&lt;/li&gt;<a name="line.63"></a>
+<span class="sourceLineNo">064</span> *      &lt;li&gt;&lt;b&gt;Group-Shot:&lt;b&gt; If there are more than two people in the frame.&lt;/li&gt;<a name="line.64"></a>
+<span class="sourceLineNo">065</span> *      &lt;/ul&gt;<a name="line.65"></a>
+<span class="sourceLineNo">066</span> *      &lt;p&gt;<a name="line.66"></a>
+<span class="sourceLineNo">067</span> *      If the tracker loses track of any of the faces, then the face is removed<a name="line.67"></a>
+<span class="sourceLineNo">068</span> *      from the set that is used to produce the annotations.<a name="line.68"></a>
+<span class="sourceLineNo">069</span> *      &lt;p&gt;<a name="line.69"></a>
+<span class="sourceLineNo">070</span> *      The cumulative moving average is used to store the size of each face during<a name="line.70"></a>
+<span class="sourceLineNo">071</span> *      the tracking of the faces.<a name="line.71"></a>
+<span class="sourceLineNo">072</span> *      &lt;p&gt;<a name="line.72"></a>
+<span class="sourceLineNo">073</span> *      The {@link CLMFaceTracker} is also able to provide pose information about<a name="line.73"></a>
+<span class="sourceLineNo">074</span> *      the subject. From this we are able to determine some extra annotations<a name="line.74"></a>
+<span class="sourceLineNo">075</span> *      about the subject - such as whether they appear to be talking to an off-screen<a name="line.75"></a>
+<span class="sourceLineNo">076</span> *      person (interviewee or interviewer), or talking to the camera (presenter<a name="line.76"></a>
+<span class="sourceLineNo">077</span> *      or anchor).<a name="line.77"></a>
+<span class="sourceLineNo">078</span> *<a name="line.78"></a>
+<span class="sourceLineNo">079</span> *      @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.79"></a>
+<span class="sourceLineNo">080</span> *  @created 22 Jan 2013<a name="line.80"></a>
+<span class="sourceLineNo">081</span> *      @version $Author$, $Revision$, $Date$<a name="line.81"></a>
+<span class="sourceLineNo">082</span> */<a name="line.82"></a>
+<span class="sourceLineNo">083</span>public class FaceShotTypeAnnotator extends VideoAnnotator&lt;MBFImage, String&gt;<a name="line.83"></a>
+<span class="sourceLineNo">084</span>{<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /** The ontology URI */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        private static final String ONTO = "http://onto.dupplaw.me.uk/video#";<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>        /** The face tracker we're going to use to track faces */<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        private CLMFaceTracker faceTracker = null;<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>        /** The percentage that each face covers the full frame */<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        private HashMap&lt;TrackedFace,RunningStat&gt; faceSizes = null;<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>        /** The average pose of each face */<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        private HashMap&lt;TrackedFace,RunningStat[]&gt; facePoses = null;<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>        /** The size of the frame stored for any visual outputs */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        private Dimension frameSize = null;<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>        /** The last frame processed - for visualisations */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        private MBFImage lastFrame = null;<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         *      Constructor<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         */<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        public FaceShotTypeAnnotator()<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                this.faceTracker = new CLMFaceTracker();<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                this.faceSizes = new HashMap&lt;MultiTracker.TrackedFace, RunningStat&gt;();<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                this.facePoses = new HashMap&lt;MultiTracker.TrackedFace, RunningStat[]&gt;();<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>        /**<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         *      {@inheritDoc}<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         *      @see org.openimaj.video.processor.VideoProcessor#processFrame(org.openimaj.image.Image)<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         */<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        @Override<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        public MBFImage processFrame( final MBFImage frame )<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                // Store the size of the frame.<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                this.frameSize = new Dimension( frame.getWidth(), frame.getHeight() );<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>                // Track the face in the image.<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                this.faceTracker.track( frame );<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>                // Get the tracked faces<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                // The assumption is that the tracker will return the same TrackedFace<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                // object for the same face in the image as the tracking continues.<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                // FIXME: If the tracker is set to auto-redetect, it returns different objects for the same faces<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                final List&lt;TrackedFace&gt; trackedFaces = this.faceTracker.getTrackedFaces();<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>                // Calculate the size of the frame<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                final double frameSize = frame.getWidth() * frame.getHeight();<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>                // Remove any faces which no longer exist<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                final HashSet&lt;TrackedFace&gt; missingFaces =<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                new HashSet&lt;TrackedFace&gt;( this.faceSizes.keySet() );<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                for( final TrackedFace face : trackedFaces )<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        missingFaces.remove( face );<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                for( final TrackedFace face : missingFaces )<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                {<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        this.faceSizes.remove( face );<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        this.facePoses.remove( face );<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                }<a name="line.144"></a>
+<span class="sourceLineNo">145</span><a name="line.145"></a>
+<span class="sourceLineNo">146</span>                // Loop over the tracked faces and update the map<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                for( final TrackedFace face : trackedFaces )<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                {<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                        // ---------- SIZE -----------<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        // Calculate the size of the face in percent of the frame size<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        final double faceSizePc = (face.lastMatchBounds.width *<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                                        face.lastMatchBounds.height) / frameSize;<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        // If it's a new face, we make the cumulative average to be the<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        // current size of the face.<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        if( this.faceSizes.get( face ) == null )<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                this.faceSizes.put( face, new RunningStat(faceSizePc) );<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        // If the face exists, we update the size<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                        else<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                        {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                // Get the current running face average<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                                final RunningStat ca = this.faceSizes.get( face );<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>                                // Update the face average<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                                ca.push( faceSizePc );<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                        }<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>                        // ---------- POSE -----------<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                        // Get the pose information for this face<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        final int nParams = face.clm._pglobl.getRowDimension();<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        final double[] poseInfo = new double[nParams];<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        for( int i = 0; i &lt; nParams; i++ )<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                                poseInfo[i] = face.clm._pglobl.get(i,0);<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>                        // If it's a new face, store the current pose into the map<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                        RunningStat[] stats = this.facePoses.get(face);<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        if( stats == null )<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                this.facePoses.put( face, stats = new RunningStat[nParams] );<a name="line.178"></a>
+<span class="sourceLineNo">179</span><a name="line.179"></a>
+<span class="sourceLineNo">180</span>                        // Update the average pose information<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                        for( int i = 0; i &lt; nParams; i++ )<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        {<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                                if( stats[i] == null ) stats[i] = new RunningStat();<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                                stats[i].push( poseInfo[i] );<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        }<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                }<a name="line.186"></a>
+<span class="sourceLineNo">187</span><a name="line.187"></a>
+<span class="sourceLineNo">188</span>                // Store the last frame for visualisation purposes.<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                this.lastFrame = frame;<a name="line.189"></a>
+<span class="sourceLineNo">190</span><a name="line.190"></a>
+<span class="sourceLineNo">191</span>                // Returns the original frame untouched.<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                return frame;<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        }<a name="line.193"></a>
+<span class="sourceLineNo">194</span><a name="line.194"></a>
+<span class="sourceLineNo">195</span>        /**<a name="line.195"></a>
+<span class="sourceLineNo">196</span>         *      {@inheritDoc}<a name="line.196"></a>
+<span class="sourceLineNo">197</span>         *      @see org.openimaj.demos.sandbox.video.VideoAnnotator#updateAnnotations()<a name="line.197"></a>
+<span class="sourceLineNo">198</span>         */<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        @Override<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        protected void updateAnnotations()<a name="line.200"></a>
+<span class="sourceLineNo">201</span>        {<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                this.addShotTypeAnnotations();<a name="line.202"></a>
+<span class="sourceLineNo">203</span>        }<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>        /**<a name="line.205"></a>
+<span class="sourceLineNo">206</span>         *      Determines the shot type annotations to add based<a name="line.206"></a>
+<span class="sourceLineNo">207</span>         *      on the face stats that has been captured.<a name="line.207"></a>
+<span class="sourceLineNo">208</span>         */<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        private void addShotTypeAnnotations()<a name="line.209"></a>
+<span class="sourceLineNo">210</span>        {<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                // Check if we found any faces<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                if( this.faceSizes.keySet().size() == 0 )<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                        return;<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>                // If we found more than one face, then it's some sort of<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                // group shot.<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                if( this.faceSizes.keySet().size() &gt; 1 )<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                {<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                        // Group shot.<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        if( this.faceSizes.keySet().size() == 2 )<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                                        this.annotations.add( FaceShotTypeAnnotator.ONTO+"TwoShot" );<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                        else    this.annotations.add( FaceShotTypeAnnotator.ONTO+"GroupShot" );<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                }<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                // There is one face in the video:<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                else<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                {<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                        // If there's only one face, we'll retrieve it.<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                        final TrackedFace onlyFace = this.faceSizes.keySet().iterator().next();<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>                        // ==============================================================<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                        // Determine the shot type<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        // ==============================================================<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                        // Retrieve it's average size:<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                        final double size = this.faceSizes.get( onlyFace ).mean();<a name="line.234"></a>
+<span class="sourceLineNo">235</span><a name="line.235"></a>
+<span class="sourceLineNo">236</span>                        // Mid-Shot<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        if( size &lt;= 0.03 )<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                this.annotations.add( FaceShotTypeAnnotator.ONTO+"MidShot" );<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                        else<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                        // Medium Close Up<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                        if( size &lt;= 0.12 )<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                                this.annotations.add( FaceShotTypeAnnotator.ONTO+"MediumCloseUp" );<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                        // Close up shot<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                        else<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                                this.annotations.add( FaceShotTypeAnnotator.ONTO+"CloseUp" );<a name="line.245"></a>
+<span class="sourceLineNo">246</span><a name="line.246"></a>
+<span class="sourceLineNo">247</span>                        final List&lt;String&gt; faceAnns = this.getAnnotationURIsForFace( onlyFace,<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                        this.facePoses.get( onlyFace ) );<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                        this.annotations.addAll( faceAnns );<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                }<a name="line.250"></a>
+<span class="sourceLineNo">251</span><a name="line.251"></a>
+<span class="sourceLineNo">252</span>                // This displays an image containing the average poses of the faces found<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                this.displayAveragePoseImage( this.lastFrame );<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        }<a name="line.254"></a>
+<span class="sourceLineNo">255</span><a name="line.255"></a>
+<span class="sourceLineNo">256</span>        /**<a name="line.256"></a>
+<span class="sourceLineNo">257</span>         *      Given a face, it will return a list of URIs (as Strings) that provide<a name="line.257"></a>
+<span class="sourceLineNo">258</span>         *      annotations for the given face, based on its pose and shape.<a name="line.258"></a>
+<span class="sourceLineNo">259</span>         *<a name="line.259"></a>
+<span class="sourceLineNo">260</span>         *      Of the pose parameters:<a name="line.260"></a>
+<span class="sourceLineNo">261</span>         *              i=1 is the x-rotation (head nod),<a name="line.261"></a>
+<span class="sourceLineNo">262</span>         *              i=2 is the y-rotation (head shake), and<a name="line.262"></a>
+<span class="sourceLineNo">263</span>         *              i=3 is the z-rotation (headstand)<a name="line.263"></a>
+<span class="sourceLineNo">264</span>         *<a name="line.264"></a>
+<span class="sourceLineNo">265</span>         *      From these we are able to make some assumptions about the face.<a name="line.265"></a>
+<span class="sourceLineNo">266</span>         *<a name="line.266"></a>
+<span class="sourceLineNo">267</span>         *      @param face The face to annotate<a name="line.267"></a>
+<span class="sourceLineNo">268</span>         *      @param runningStats The average running stats of the given face<a name="line.268"></a>
+<span class="sourceLineNo">269</span>         *      @return A list of String URIs<a name="line.269"></a>
+<span class="sourceLineNo">270</span>         */<a name="line.270"></a>
+<span class="sourceLineNo">271</span>        private List&lt;String&gt; getAnnotationURIsForFace( final TrackedFace face,<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                        final RunningStat[] runningStats )<a name="line.272"></a>
+<span class="sourceLineNo">273</span>        {<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                // This is the list of URIs we'll return<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                final List&lt;String&gt; uris = new ArrayList&lt;String&gt;();<a name="line.275"></a>
+<span class="sourceLineNo">276</span><a name="line.276"></a>
+<span class="sourceLineNo">277</span>                // Get the shape and pose information<a name="line.277"></a>
+<span class="sourceLineNo">278</span><a name="line.278"></a>
+<span class="sourceLineNo">279</span>                // If the head is mostly looking at the camera...<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                if( Math.abs( runningStats[1].mean() ) &lt; 0.5 &amp;&amp;<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                        Math.abs( runningStats[2].mean() ) &lt; 0.5 &amp;&amp;<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                        Math.abs( runningStats[3].mean() ) &lt; 0.5 )<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                {<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                                // Then they're probably talking to the camera. Determining whether<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                                // their role is presenter, or not, is more difficult!<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                                uris.add( FaceShotTypeAnnotator.ONTO+"TalkingHead" );<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                }<a name="line.287"></a>
+<span class="sourceLineNo">288</span><a name="line.288"></a>
+<span class="sourceLineNo">289</span>                return uris;<a name="line.289"></a>
+<span class="sourceLineNo">290</span>        }<a name="line.290"></a>
+<span class="sourceLineNo">291</span><a name="line.291"></a>
+<span class="sourceLineNo">292</span>        /**<a name="line.292"></a>
+<span class="sourceLineNo">293</span>         *      Shows (and returns) an image containing the current average poses of all the<a name="line.293"></a>
+<span class="sourceLineNo">294</span>         *      faces in the video shot so far.<a name="line.294"></a>
+<span class="sourceLineNo">295</span>         *      @param frame (optional) Frame to place in the background of the visualisation<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         *      @return an MBFImage<a name="line.296"></a>
+<span class="sourceLineNo">297</span>         */<a name="line.297"></a>
+<span class="sourceLineNo">298</span>        public MBFImage displayAveragePoseImage( final MBFImage frame )<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        {<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                // We'll generate a video frame the size of the frame that was<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                // last processed (the assumption is that video frame size doesn't change)<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                final MBFImage image = new MBFImage(<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                                        (int)this.frameSize.getWidth(),<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                                        (int)this.frameSize.getHeight(), 3 );<a name="line.304"></a>
+<span class="sourceLineNo">305</span><a name="line.305"></a>
+<span class="sourceLineNo">306</span>                // If we have a frame to put in the background, dim it a bit...<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                if( frame != null )<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                        image.addInplace( frame.multiply( 0.5f ) );<a name="line.308"></a>
+<span class="sourceLineNo">309</span><a name="line.309"></a>
+<span class="sourceLineNo">310</span>                // Create a tracked face that we'll morph into the various average<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                // parameters to draw to the image<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                final TrackedFace avgFace = new TrackedFace(<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                        new Rectangle(50, -50, 500, 500), this.faceTracker.getInitialVars() );<a name="line.313"></a>
+<span class="sourceLineNo">314</span><a name="line.314"></a>
+<span class="sourceLineNo">315</span>                // We need the arrays of triangles and connections to draw the faces<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                final int[][] connections = this.faceTracker.connections;<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                final int[][] triangles = this.faceTracker.triangles;<a name="line.317"></a>
+<span class="sourceLineNo">318</span><a name="line.318"></a>
+<span class="sourceLineNo">319</span>                // Loop through each of the faces setting the pose and drawing to an image<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                for( final TrackedFace face : this.facePoses.keySet() )<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                {<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                        // Get the average pose for the tracked face<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                        final RunningStat[] poseInfo = this.facePoses.get( face );<a name="line.323"></a>
+<span class="sourceLineNo">324</span><a name="line.324"></a>
+<span class="sourceLineNo">325</span>                        // Set the model face to this pose<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                        for( int i = 0; i &lt; poseInfo.length; i++ )<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                                avgFace.clm._pglobl.set( i, 0, poseInfo[i].mean() );<a name="line.327"></a>
+<span class="sourceLineNo">328</span><a name="line.328"></a>
+<span class="sourceLineNo">329</span>                        // Recalculate the face shape<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                        avgFace.clm._pdm.calcShape2D( avgFace.shape,<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                                        avgFace.clm._plocal, avgFace.clm._pglobl );<a name="line.331"></a>
+<span class="sourceLineNo">332</span><a name="line.332"></a>
+<span class="sourceLineNo">333</span>                        // Draw the model to the image.<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        CLMFaceTracker.drawFaceModel( image, avgFace, true, true,<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                                        true, true, true, triangles, connections, 1, RGBColour.WHITE,<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                                        RGBColour.WHITE, RGBColour.YELLOW, RGBColour.RED );<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                }<a name="line.337"></a>
+<span class="sourceLineNo">338</span><a name="line.338"></a>
+<span class="sourceLineNo">339</span>                DisplayUtilities.display( image );<a name="line.339"></a>
+<span class="sourceLineNo">340</span><a name="line.340"></a>
+<span class="sourceLineNo">341</span>                return image;<a name="line.341"></a>
+<span class="sourceLineNo">342</span>        }<a name="line.342"></a>
+<span class="sourceLineNo">343</span><a name="line.343"></a>
+<span class="sourceLineNo">344</span>        /**<a name="line.344"></a>
+<span class="sourceLineNo">345</span>         *      {@inheritDoc}<a name="line.345"></a>
+<span class="sourceLineNo">346</span>         *      @see org.openimaj.demos.sandbox.video.VideoAnnotator#resetAnnotator()<a name="line.346"></a>
+<span class="sourceLineNo">347</span>         */<a name="line.347"></a>
+<span class="sourceLineNo">348</span>        @Override<a name="line.348"></a>
+<span class="sourceLineNo">349</span>        protected void resetAnnotator()<a name="line.349"></a>
+<span class="sourceLineNo">350</span>        {<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                this.faceTracker.reset();<a name="line.351"></a>
+<span class="sourceLineNo">352</span>        }<a name="line.352"></a>
+<span class="sourceLineNo">353</span>}<a name="line.353"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

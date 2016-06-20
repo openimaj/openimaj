@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.math.matrix.algorithm.ica;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.util.Arrays;<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.openimaj.math.matrix.MatrixUtils;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.util.array.ArrayUtils;<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>import Jama.Matrix;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>public class SymmetricFastICA extends IndependentComponentAnalysis {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        enum NonlinearFunction {<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                tanh, pow3, rat1, rat2, gaus<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>        double epsilon = 0.0001;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        double MaxIt = 100;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        NonlinearFunction g;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        Matrix W;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        private Matrix icasig;<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>        @Override<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        public Matrix getSignalToInterferenceMatrix() {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                // TODO Auto-generated method stub<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                return null;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        }<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        @Override<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        public Matrix getDemixingMatrix() {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                // TODO Auto-generated method stub<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                return null;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        @Override<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        public Matrix getIndependentComponentMatrix() {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                // TODO Auto-generated method stub<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                return null;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        }<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        @Override<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        protected void estimateComponentsWhitened(Matrix Z, double[] mean, Matrix X, Matrix CC) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                final int dim = X.getRowDimension();<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                final int N = X.getColumnDimension();<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>                final double[] crit = new double[dim];<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                int NumIt = 0;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                Matrix WOld = W;<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>                while (1 - ArrayUtils.minValue(crit) &gt; epsilon &amp;&amp; NumIt &lt; MaxIt) {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        NumIt = NumIt + 1;<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        switch (g) {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        case tanh:<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                                final Matrix hypTan = MatrixUtils.tanh(Z.transpose().times(W));<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                // W=Z*hypTan/N-ones(dim,1)*sum(1-hypTan.^2).*W/N;<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                final double[] sumv = new double[hypTan.getColumnDimension()];<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                                for (int r = 0; r &lt; hypTan.getRowDimension(); r++) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                                        for (int c = 0; c &lt; hypTan.getColumnDimension(); c++) {<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                                                sumv[c] += 1 - hypTan.get(r, c) * hypTan.get(r, c);<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                                        }<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                                }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                final Matrix weight = new Matrix(W.getRowDimension(), W.getColumnDimension());<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                                for (int r = 0; r &lt; weight.getRowDimension(); r++) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                                        for (int c = 0; c &lt; weight.getColumnDimension(); c++) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                                weight.set(r, c, W.get(r, c) * sumv[c] / N);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                        }<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                }<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                W = MatrixUtils.times(Z.times(hypTan), 1.0 / N).minus(weight);<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                break;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        // case pow3:<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        // W=(Z*((Z'*W).^ 3))/N-3*W;<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        // break;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        // case rat1:<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        // U=Z'*W;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        // Usquared=U.^2;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        // RR=4./(4+Usquared);<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        // Rati=U.*RR;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        // Rati2=Rati.^2;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        // dRati=RR-Rati2/2;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        // nu=mean(dRati);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        // hlp=Z*Rati/N;<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        // W=hlp-ones(dim,1)*nu.*W;<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        // break;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        // case rat2:<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        // U=Z'*W;<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        // Ua=1+sign(U).*U;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        // r1=U./Ua;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        // r2=r1.*sign(r1);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        // Rati=r1.*(2-r2);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        // dRati=(2./Ua).*(1-r2.*(2-r2));<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                        // nu=mean(dRati);<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        // hlp=Z*Rati/N;<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        // W=hlp-ones(dim,1)*nu.*W;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                        // break;<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        // case gaus:<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        // U=Z'*W;<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        // Usquared=U.^2;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        // ex=exp(-Usquared/2);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        // gauss=U.*ex;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        // dGauss=(1-Usquared).*ex;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                        // W=Z*gauss/N-ones(dim,1)*sum(dGauss).*W/N;<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                        // break;<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                        }<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>                        // decorrelate W<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        // fast symmetric orthogonalization<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        final Matrix WtW = W.transpose().times(W);<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        W = W.times(MatrixUtils.invSqrtSym(WtW));<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        for (int c = 0; c &lt; W.getColumnDimension(); c++) {<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                                crit[c] = 0;<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                                for (int r = 0; r &lt; W.getRowDimension(); r++) {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                                        crit[r] += W.get(r, c) * WOld.get(r, c);<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                                }<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                                crit[c] = Math.abs(crit[c]);<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        }<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        WOld = W;<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                }<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>                // estimate signals<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                // s=W'*Z;<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                // s = Zt.times(Wt.transpose());<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>                W = W.transpose().times(CC);<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>                // icasig=Wefica*X + (Wefica*Xmean)*ones(1,N);<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                final Matrix WXmean = W.times(new Matrix(new double[][] { mean }).transpose());<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                final Matrix delta = WXmean.times(MatrixUtils.ones(1, N));<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                icasig = W.times(X).plus(delta);<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        }<a name="line.163"></a>
+<span class="sourceLineNo">164</span><a name="line.164"></a>
+<span class="sourceLineNo">165</span>        public static void main(String[] args) {<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                final int dim = 1000;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                final double[] signal1 = new double[dim];<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                final double[] signal2 = new double[dim];<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                for (int i = 0; i &lt; dim; i++) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        signal1[i] = Math.cos(i);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        signal2[i] = Math.tan(i);<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                }<a name="line.172"></a>
+<span class="sourceLineNo">173</span><a name="line.173"></a>
+<span class="sourceLineNo">174</span>                final double[] mix1 = new double[dim];<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                final double[] mix2 = new double[dim];<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                for (int i = 0; i &lt; dim; i++) {<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        mix1[i] = signal1[i] + 0.8 * signal2[i];<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                        mix2[i] = signal2[i] + 0.5 * signal1[i];<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                }<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>                System.out.println("a=" + Arrays.toString(signal1));<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                System.out.println("b=" + Arrays.toString(signal2));<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                System.out.println("mixa=" + Arrays.toString(mix1));<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                System.out.println("mixb=" + Arrays.toString(mix2));<a name="line.184"></a>
+<span class="sourceLineNo">185</span><a name="line.185"></a>
+<span class="sourceLineNo">186</span>                final Matrix data = new Matrix(new double[][] { mix1, mix2 });<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                final SymmetricFastICA symfica = new SymmetricFastICA();<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                symfica.g = NonlinearFunction.tanh;<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                symfica.W = Matrix.identity(2, 2);<a name="line.189"></a>
+<span class="sourceLineNo">190</span><a name="line.190"></a>
+<span class="sourceLineNo">191</span>                symfica.estimateComponents(data);<a name="line.191"></a>
+<span class="sourceLineNo">192</span><a name="line.192"></a>
+<span class="sourceLineNo">193</span>                symfica.W.print(5, 5);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                symfica.icasig.print(5, 5);<a name="line.194"></a>
+<span class="sourceLineNo">195</span>        }<a name="line.195"></a>
+<span class="sourceLineNo">196</span>}<a name="line.196"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

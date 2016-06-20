@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.processing.convolution;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import org.openimaj.image.FImage;<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>/**<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * A set of standard derivative kernels. These kernels help estimate the derivative over various orders at a point in a matrix. <a name="line.35"></a>
+<span class="sourceLineNo">036</span> * This is approximated by applying a finite difference derivative operation on a gaussian kernel with a very low sigma. i.e. a gaussian<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * kernel that looks like:<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * <a name="line.38"></a>
+<span class="sourceLineNo">039</span> * [<a name="line.39"></a>
+<span class="sourceLineNo">040</span> *      [0,0,0],<a name="line.40"></a>
+<span class="sourceLineNo">041</span> *  [0,1,0],<a name="line.41"></a>
+<span class="sourceLineNo">042</span> *  [0,0,0]<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * ]<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * <a name="line.44"></a>
+<span class="sourceLineNo">045</span> * By successive derivative calculations in the x direction and y direction it is possible to estimate derivatives in both directions as well.<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * <a name="line.46"></a>
+<span class="sourceLineNo">047</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.47"></a>
+<span class="sourceLineNo">048</span> *<a name="line.48"></a>
+<span class="sourceLineNo">049</span> */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>public class BasicDerivativeKernels {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        static class DxKernel extends FConvolution {<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                public DxKernel() { super(new FImage(new float[][] {{-0.5f,0,0.5f}})); }<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        }<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        <a name="line.54"></a>
+<span class="sourceLineNo">055</span>        static class DyKernel extends FConvolution {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                public DyKernel() { super(new FImage(new float[][] {{-0.5f}, {0}, {0.5f}})); }<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        }<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        static class DxxKernel extends FConvolution {<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                public DxxKernel() { super(new FImage(new float[][] {{1,-2,1}})); }<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        <a name="line.62"></a>
+<span class="sourceLineNo">063</span>        static class DxyKernel extends FConvolution {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                public DxyKernel() { super(new FImage(new float[][] {{0.25f,0,-0.25f}, {0,0,0}, {-0.25f,0,0.25f}})); }<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        <a name="line.66"></a>
+<span class="sourceLineNo">067</span>        static class DyyKernel extends FConvolution {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                public DyyKernel() { super(new FImage(new float[][] {{1}, {-2}, {1}})); }<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        }<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        <a name="line.70"></a>
+<span class="sourceLineNo">071</span>        static class DxxxxKernel extends FConvolution {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                public DxxxxKernel() { super(new FImage(new float[][] {{1,-4 ,6 ,-4 ,1}})); }<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        <a name="line.74"></a>
+<span class="sourceLineNo">075</span>        static class DyyyyKernel extends FConvolution {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                public DyyyyKernel() { super(new FImage(new float[][] {{1}, {-4},{6},{-4},{1}})); }<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        }<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        <a name="line.78"></a>
+<span class="sourceLineNo">079</span>        static class DxxyyKernel extends FConvolution {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                public DxxyyKernel() { super(new FImage(new float[][] {{1f,-2f,1f},{-2f,4f,-2f},{1f,-2f,1f}})); }<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        <a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * kernel approximating the first derivative of a low-sigma gaussian in the x-direction [-0.5, 0, 0.5]. <a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * Useful for giving an estimate of the second derivative in x of any given point<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        public static final FConvolution  DX_KERNEL  = new DxKernel();<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        <a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /**<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * kernel approximating the first derivative of a low-sigma gaussian in the y-direction [-0.5, 0, 0.5]'. <a name="line.90"></a>
+<span class="sourceLineNo">091</span>         * Useful for giving an estimate of the second derivative in y of any given point<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        public static final FConvolution DY_KERNEL  = new DyKernel();<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        <a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * kernel approximating the second derivative of a low sigma gaussian in the x-direction [1, -2, 1]. <a name="line.96"></a>
+<span class="sourceLineNo">097</span>         * Useful for giving an estimate of the second derivative in x of any given point<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        public static final FConvolution DXX_KERNEL = new DxxKernel();<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        <a name="line.100"></a>
+<span class="sourceLineNo">101</span>        /**<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         * kernel approximating the first derivative of a low sigma gaussian in the x-direction and y-direction [[-0.25, 0, 0.25], [0, 0, 0], [0.25, 0, -0.25]] . <a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * Useful for giving an estimate of the first order derivative in x then y of any given point<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        public static final FConvolution DXY_KERNEL = new DxyKernel();<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        <a name="line.106"></a>
+<span class="sourceLineNo">107</span>        /**<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * kernel approximating the second derivative of a low sigma gaussian in the y-direction [1, -2, 1]'. <a name="line.108"></a>
+<span class="sourceLineNo">109</span>         * Useful for giving an estimate of the second derivative in y of any given point<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         */<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        public static final FConvolution DYY_KERNEL = new DyyKernel();<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        <a name="line.112"></a>
+<span class="sourceLineNo">113</span>        <a name="line.113"></a>
+<span class="sourceLineNo">114</span>        /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * kernel approximating the fourth derivative of a low sigma gaussian in the x-direction [1,-4,6,-4,1]^T<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * Useful for giving an estimate of the fourth derivative in y of any given point<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         */<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        public static final FConvolution DXXXX_KERNEL = new DxxxxKernel();<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        <a name="line.119"></a>
+<span class="sourceLineNo">120</span>        /**<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * kernel approximating the second derivative of a low sigma gaussian in the x-direction and y-direction [[1,-2,1],[-2,4,-2],[1,-2,1]] . <a name="line.121"></a>
+<span class="sourceLineNo">122</span>         * Useful for giving an estimate of the second order derivative in x then y of any given point<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         */<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        public static final FConvolution DXXYY_KERNEL = new DxxyyKernel();<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        /**<a name="line.125"></a>
+<span class="sourceLineNo">126</span>         * kernel approximating the fourth derivative of a low sigma gaussian in the y-direction [1,-4,6,-4,1]^T<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         * Useful for giving an estimate of the fourth derivative in y of any given point<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         */<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        public static final FConvolution DYYYY_KERNEL = new DyyyyKernel();<a name="line.129"></a>
+<span class="sourceLineNo">130</span>}<a name="line.130"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

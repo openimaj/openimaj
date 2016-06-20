@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.demos.sandbox.twitter.images;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.awt.GraphicsDevice;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.awt.GraphicsEnvironment;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.io.FileNotFoundException;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.io.UnsupportedEncodingException;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.net.URL;<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>import javax.swing.JFrame;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.image.DisplayUtilities;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.image.MBFImage;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.image.colour.ColourSpace;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.image.colour.RGBColour;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.image.processing.resize.ResizeProcessor;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.stream.functions.ImageFromURL;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.stream.functions.ImageSiteURLExtractor;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.stream.functions.twitter.TwitterURLExtractor;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.stream.provider.twitter.TwitterStreamDataset;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.util.api.auth.DefaultTokenFactory;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import org.openimaj.util.api.auth.common.TwitterAPIToken;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import org.openimaj.util.concurrent.ArrayBlockingDroppingQueue;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import org.openimaj.util.function.Operation;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import org.openimaj.util.stream.BlockingDroppingBufferedStream;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import org.openimaj.util.stream.CollectionStream;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import org.openimaj.util.stream.Stream;<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>import twitter4j.Status;<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>public class DisplayTwitterImages {<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        /**<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         * Main method<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         * <a name="line.62"></a>
+<span class="sourceLineNo">063</span>         * @param args<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         * @throws FileNotFoundException<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * @throws UnsupportedEncodingException<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         */<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                /*<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                 * Construct a twitter stream with an<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                 */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                final TwitterAPIToken token = DefaultTokenFactory.get(TwitterAPIToken.class);<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                final Stream&lt;Status&gt; stream = new TwitterStreamDataset(token);<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>                final ArrayBlockingDroppingQueue&lt;MBFImage&gt; buffer = new ArrayBlockingDroppingQueue&lt;MBFImage&gt;(10);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                final BlockingDroppingBufferedStream&lt;MBFImage&gt; imageStream = new BlockingDroppingBufferedStream&lt;MBFImage&gt;(buffer);<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>                new Thread(new Runnable() {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        @Override<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        public void run() {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                                stream.parallelForEach(new Operation&lt;Status&gt;() {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                                        @Override<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                                        public void perform(Status object) {<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                                final Stream&lt;URL&gt; imageUrlStream = new CollectionStream&lt;URL&gt;(new TwitterURLExtractor()<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                                                                .apply(object))<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                                                .map(new ImageSiteURLExtractor(false, true));<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>                                                // Get images<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                                                final Stream&lt;MBFImage&gt; imageStream = imageUrlStream.map(ImageFromURL.MBFIMAGE_EXTRACTOR);<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>                                                final boolean[] foundImages = { false };<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                                imageStream.forEach(new Operation&lt;MBFImage&gt;() {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                                                        @Override<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                                                        public void perform(MBFImage image) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                                                buffer.offer(image);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                                                foundImages[0] = true;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                                        }<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                                });<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                                System.out.println(foundImages[0]);<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                                        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                });<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        }<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                }).start();<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                final int N_ROWS = 10; <a name="line.104"></a>
+<span class="sourceLineNo">105</span>                final int IMAGE_WH= 50;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                final MBFImage b = new MBFImage(IMAGE_WH * N_ROWS, IMAGE_WH * N_ROWS, ColourSpace.RGB);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                final ResizeProcessor rp = new ResizeProcessor(IMAGE_WH);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                final JFrame f = DisplayUtilities.displaySimple(b, "image");<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                GraphicsDevice dev = env.getScreenDevices()[1];<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                dev.setFullScreenWindow(f);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                final MBFImage base = new MBFImage(f.getWidth(), f.getHeight(), ColourSpace.RGB);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                imageStream.forEach(new Operation&lt;MBFImage&gt;() {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        <a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        int currentX = 0;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        int currentY = 0;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        @Override<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        public void perform(MBFImage object) {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                MBFImage r = object.process(rp);<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                final int dx = (IMAGE_WH - r.getWidth()) / 2;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                final int dy = (IMAGE_WH - r.getHeight()) / 2;<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                r = r.padding(dx, dy, RGBColour.WHITE);<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                                base.drawImage(r, currentX * IMAGE_WH, currentY * IMAGE_WH);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                                currentX++;<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                if (currentX == base.getWidth()/IMAGE_WH) {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                                        currentY++;<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                                        currentX = 0;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                }<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                                if (currentY == base.getHeight()/IMAGE_WH)<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                        currentY = 0;<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>                                DisplayUtilities.display(base, f);<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                <a name="line.135"></a>
+<span class="sourceLineNo">136</span>                        }<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                });<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span>}<a name="line.139"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

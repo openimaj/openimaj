@@ -1,0 +1,305 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *<a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>package org.openimaj.demos.sandbox.vis;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.io.IOException;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.net.MalformedURLException;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.net.URL;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.HashMap;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.demos.irc.WorldVis;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.image.colour.ColourMap;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.image.colour.RGBColour;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.video.Video;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.video.VideoDisplay;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.vis.VideoVisualisation;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.vis.VisualisationImpl;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.vis.general.LabelledPointVisualisation;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.vis.general.LabelledPointVisualisation.LabelledDot;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import org.openimaj.vis.world.WorldMap;<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>import com.Ostermiller.util.ExcelCSVParser;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import com.Ostermiller.util.LabeledCSVParser;<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>/**<a name="line.55"></a>
+<span class="sourceLineNo">056</span> * A demonstration of the World visualisation. It downloads a CSV file from the<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * web, parses it and selects some data from the table. It then steps through<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * all the years in the particular dataset and colours the countries based on<a name="line.58"></a>
+<span class="sourceLineNo">059</span> * the values of the data.<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * &lt;p&gt;<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * You can supply an indicator name on the command line (when you run it, it<a name="line.61"></a>
+<span class="sourceLineNo">062</span> * will print out all available indicators). If you get the name wrong you'll<a name="line.62"></a>
+<span class="sourceLineNo">063</span> * get an NPE probably.<a name="line.63"></a>
+<span class="sourceLineNo">064</span> * &lt;p&gt;<a name="line.64"></a>
+<span class="sourceLineNo">065</span> * It demonstrates the {@link WorldVis} interface as well as using the<a name="line.65"></a>
+<span class="sourceLineNo">066</span> * {@link VideoVisualisation} API to convert a {@link VisualisationImpl} into a<a name="line.66"></a>
+<span class="sourceLineNo">067</span> * {@link Video} which is displayed using a standard {@link VideoDisplay}.<a name="line.67"></a>
+<span class="sourceLineNo">068</span> *<a name="line.68"></a>
+<span class="sourceLineNo">069</span> * @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.69"></a>
+<span class="sourceLineNo">070</span> * @created 12 Jun 2013<a name="line.70"></a>
+<span class="sourceLineNo">071</span> */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>public class WorldMapGDPVis<a name="line.72"></a>
+<span class="sourceLineNo">073</span>{<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        private static final HashMap&lt;String, HashMap&lt;Integer, HashMap&lt;String, Double&gt;&gt;&gt; indicators =<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        new HashMap&lt;String, HashMap&lt;Integer, HashMap&lt;String, Double&gt;&gt;&gt;();<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /**<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * Main Method<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         *<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         * @param args<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         *            Command-line args. You can provide an indicator name here to<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         *            override the default<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         * @throws IOException<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         *             If the CSV cannot be downloaded<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * @throws MalformedURLException<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         *             Should not be thrown<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        public static void main(final String[] args) throws MalformedURLException, IOException<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                // Create a parser for a CSV file<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                // The file gives values by country for a large set of indicators over a<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                // set of years.<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                // Years are in columns: the first column is the country, the second<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                // column the indicator type.<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                // We are using the ExcelCSVParser to parse this data for us.<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                final LabeledCSVParser l = new LabeledCSVParser(<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                new ExcelCSVParser(<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                                new URL(<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                                                "http://users.ecs.soton.ac.uk/dpd/projects/openimaj/GDPgrowth-countries.csv"<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                                                ).openStream()<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                ));<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>                // Get each line in turn and make a data structure<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                while (l.getLine() != null)<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        // Get the country and indicator (data) type.<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        final String c = l.getValueByLabel("Country");<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        final String t = l.getValueByLabel("IndicatorName");<a name="line.108"></a>
+<span class="sourceLineNo">109</span><a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        // The data is between years 1971 and 2011, so we'll get each of the<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        // years<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        // for every country and indicator and store it away in a big<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        // hashmap.<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        for (int year = 1971; year &lt;= 2011; year++)<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                final String s = l.getValueByLabel("" + year);<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                if (!s.isEmpty())<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                                {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                        final Double v = Double.parseDouble(s);<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                        HashMap&lt;Integer, HashMap&lt;String, Double&gt;&gt; yi = WorldMapGDPVis.indicators.get(t);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                        if (yi == null)<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                                WorldMapGDPVis.indicators.put(t, yi = new HashMap&lt;Integer, HashMap&lt;String, Double&gt;&gt;());<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                                        HashMap&lt;String, Double&gt; ci = yi.get(year);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                                        if (ci == null)<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                                yi.put(year, ci = new HashMap&lt;String, Double&gt;());<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>                                        ci.put(c, v);<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                }<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                }<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>                // List the indicators so we can choose one.<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                System.out.println("Possible indicators: " + WorldMapGDPVis.indicators.keySet());<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>                // The labelled point vis is used to plot country names.<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                final LabelledPointVisualisation dpv = new LabelledPointVisualisation();<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                // The world map vis to show the world<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                final WorldMap&lt;LabelledDot&gt; wm = new WorldMap&lt;LabelledDot&gt;(1280, 720, dpv);<a name="line.141"></a>
+<span class="sourceLineNo">142</span><a name="line.142"></a>
+<span class="sourceLineNo">143</span>                // Set the colours (and we'll remove the long/lat axes)<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                wm.setDefaultCountryLandColour(RGBColour.BLACK);<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                wm.getAxesRenderer().setDrawXAxis(false);<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                wm.getAxesRenderer().setDrawYAxis(false);<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>                // This is the indicator we'll use<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                String showIndicator = "Agriculture, hunting, forestry, fishing (ISIC A-B)";<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                if (args.length &gt; 0)<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        showIndicator = args[0];<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>                // Create a video from the visualisation.<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                final VideoVisualisation vv = new VideoVisualisation(wm);<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                VideoDisplay.createVideoDisplay(vv);<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>                // Loop through all the years and update the visualisation to show<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                // the values for each year. We do this once a second.<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                for (int year = 1971; year &lt; 2011; year++)<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                        wm.clearData();<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        WorldMapGDPVis.updateYear(wm, showIndicator, year);<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        try<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                                Thread.sleep(1000);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                        } catch (final InterruptedException e)<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                        {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                                e.printStackTrace();<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                        }<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                }<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>        /**<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * Gets the data for a specific year and updates the visualisation.<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         *<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         * @param wm<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         *            The visualisation to update.<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         * @param showIndicator<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         *            Which indicator to show<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         * @param year<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         *            Which year to show for<a name="line.181"></a>
+<span class="sourceLineNo">182</span>         */<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        private static void updateYear(final WorldMap&lt;LabelledDot&gt; wm,<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                        final String showIndicator, final int year)<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        {<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                // Get the dataset for the given indicator and year.<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                final HashMap&lt;String, Double&gt; set = WorldMapGDPVis.indicators.get(showIndicator).get(year);<a name="line.187"></a>
+<span class="sourceLineNo">188</span><a name="line.188"></a>
+<span class="sourceLineNo">189</span>                // Calculate the max and mean. Only values above the mean will be shown<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                double max = 0;<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                double mean = 0;<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                for (final double d : set.values())<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                {<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                        max = Math.max(max, d);<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                        mean += d;<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                }<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                mean /= set.values().size();<a name="line.197"></a>
+<span class="sourceLineNo">198</span><a name="line.198"></a>
+<span class="sourceLineNo">199</span>                // Loop through all the countries<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                for (final String c : set.keySet())<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                {<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        // Get the value<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        double v = set.get(c);<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>                        // Clip the data (just in case)<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                        if (v &lt; 0)<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                                v = 0;<a name="line.207"></a>
+<span class="sourceLineNo">208</span><a name="line.208"></a>
+<span class="sourceLineNo">209</span>                        // Get the country from the world vis (some won't work just to<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                        // naming differences)<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        final String cc = wm.getCountryCodeByName(c);<a name="line.211"></a>
+<span class="sourceLineNo">212</span><a name="line.212"></a>
+<span class="sourceLineNo">213</span>                        // If it didn't work, we will ignore it.<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                        if (cc != null)<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                        {<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                                // Get the position of the country (for plotting it's name<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                                // label)<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                                final Point2d cl = wm.getCountryLocation(cc);<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>                                // Highlight the country with a colour based on its value<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                                wm.addHighlightCountry(cc, ColourMap.Autumn.apply((float) (v / max)));<a name="line.221"></a>
+<span class="sourceLineNo">222</span><a name="line.222"></a>
+<span class="sourceLineNo">223</span>                                // Only if it's above the mean will we plot its name (just to<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                                // keep the vis tidier)<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                                if (v &gt; mean)<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                                        wm.addPoint(cl.getX(), cl.getY(), new LabelledDot(c + ": " + v, 1, RGBColour.WHITE));<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                        }<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                        else<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                                System.out.println("country " + c + " unknown");<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                }<a name="line.230"></a>
+<span class="sourceLineNo">231</span><a name="line.231"></a>
+<span class="sourceLineNo">232</span>        }<a name="line.232"></a>
+<span class="sourceLineNo">233</span>}<a name="line.233"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

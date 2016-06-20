@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.processing.face.detection;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.io.BufferedReader;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.io.DataInput;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.io.DataOutput;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.io.IOException;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.io.InputStream;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.io.InputStreamReader;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.ArrayList;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.util.List;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import java.util.Scanner;<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.citation.annotation.Reference;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.citation.annotation.ReferenceType;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.image.FImage;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.io.IOUtils;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.math.geometry.shape.Rectangle;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>import Jama.Matrix;<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>import com.jsaragih.CLM;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import com.jsaragih.FDet;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import com.jsaragih.IO;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import com.jsaragih.MFCheck;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import com.jsaragih.Tracker;<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>/**<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * Face detector based on a constrained local model. Fits a 3D face model to<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * each detection.<a name="line.58"></a>
+<span class="sourceLineNo">059</span> * <a name="line.59"></a>
+<span class="sourceLineNo">060</span> * @see CLM<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * <a name="line.61"></a>
+<span class="sourceLineNo">062</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.62"></a>
+<span class="sourceLineNo">063</span> * <a name="line.63"></a>
+<span class="sourceLineNo">064</span> */<a name="line.64"></a>
+<span class="sourceLineNo">065</span>@Reference(<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                type = ReferenceType.Inproceedings,<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                author = { "Jason M. Saragih", "Simon Lucey", "Jeffrey F. Cohn" },<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                title = "Face alignment through subspace constrained mean-shifts",<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                year = "2009",<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                booktitle = "IEEE 12th International Conference on Computer Vision, ICCV 2009, Kyoto, Japan, September 27 - October 4, 2009",<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                pages = { "1034", "1041" },<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                publisher = "IEEE",<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                customData = {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                                "doi", "http://dx.doi.org/10.1109/ICCV.2009.5459377",<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                                "researchr", "http://researchr.org/publication/SaragihLC09",<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                                "cites", "0",<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                "citedby", "0"<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                })<a name="line.78"></a>
+<span class="sourceLineNo">079</span>public class CLMFaceDetector implements FaceDetector&lt;CLMDetectedFace, FImage&gt; {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        /**<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         * Configuration for the face detector<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         * <a name="line.82"></a>
+<span class="sourceLineNo">083</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * <a name="line.84"></a>
+<span class="sourceLineNo">085</span>         */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        public static class Configuration {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                /** The constrained local model */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                public CLM clm;<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                /** The reference shape */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                public Matrix referenceShape;<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>                /** The current shape */<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                public Matrix shape;<a name="line.94"></a>
+<span class="sourceLineNo">095</span><a name="line.95"></a>
+<span class="sourceLineNo">096</span>                /** The Face detector */<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                public FDet faceDetector;<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                /** The failure checker */<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                public MFCheck failureCheck;<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>                /** Initialisation similarity */<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                double[] similarity;<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>                /** The face mesh */<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                public int[][] triangles = null;<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>                /** The face connections */<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                public int[][] connections = null;<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>                /** Whether to use the face check (using pixels as a face classifier) */<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                public boolean fcheck = false;<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>                /** Search window sizes */<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                public int[] windowSize = { 11, 9, 7 };<a name="line.115"></a>
+<span class="sourceLineNo">116</span><a name="line.116"></a>
+<span class="sourceLineNo">117</span>                /** Number of iterations to use for model fitting */<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                public int nIter = 5;<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>                /**<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                 * Number of standard deviations from the mean face to allow in the<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                 * model<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                 */<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                public double clamp = 3;<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>                /** Model fitting optimisation tolerance */<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                public double fTol = 0.01;<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>                private void read(final InputStream in) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        BufferedReader br = null;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        try {<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                br = new BufferedReader(new InputStreamReader(in));<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                final Scanner sc = new Scanner(br);<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                                read(sc, true);<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                        } finally {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                try {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                        br.close();<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                                } catch (final IOException e) {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                                }<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        }<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                }<a name="line.141"></a>
+<span class="sourceLineNo">142</span><a name="line.142"></a>
+<span class="sourceLineNo">143</span>                private void read(Scanner s, boolean readType) {<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        if (readType) {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                                final int type = s.nextInt();<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                                assert (type == IO.Types.TRACKER.ordinal());<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        }<a name="line.147"></a>
+<span class="sourceLineNo">148</span><a name="line.148"></a>
+<span class="sourceLineNo">149</span>                        clm = CLM.read(s, true);<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        faceDetector = FDet.read(s, true);<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        failureCheck = MFCheck.read(s, true);<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        referenceShape = IO.readMat(s);<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        similarity = new double[] { s.nextDouble(), s.nextDouble(), s.nextDouble(), s.nextDouble() };<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        shape = new Matrix(2 * clm._pdm.nPoints(), 1);<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        clm._pdm.identity(clm._plocal, clm._pglobl);<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                }<a name="line.156"></a>
+<span class="sourceLineNo">157</span><a name="line.157"></a>
+<span class="sourceLineNo">158</span>                /**<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                 * Construct with the default model parameters<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                 */<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                public Configuration() {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        read(Tracker.class.getResourceAsStream("face2.tracker"));<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        triangles = IO.loadTri(Tracker.class.getResourceAsStream("face.tri"));<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        connections = IO.loadCon(Tracker.class.getResourceAsStream("face.con"));<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                }<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>        private Configuration config;<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>        /**<a name="line.170"></a>
+<span class="sourceLineNo">171</span>         * Default constructor<a name="line.171"></a>
+<span class="sourceLineNo">172</span>         */<a name="line.172"></a>
+<span class="sourceLineNo">173</span>        public CLMFaceDetector() {<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                config = new Configuration();<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        }<a name="line.175"></a>
+<span class="sourceLineNo">176</span><a name="line.176"></a>
+<span class="sourceLineNo">177</span>        @Override<a name="line.177"></a>
+<span class="sourceLineNo">178</span>        public void readBinary(DataInput in) throws IOException {<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                config = IOUtils.read(in);<a name="line.179"></a>
+<span class="sourceLineNo">180</span>        }<a name="line.180"></a>
+<span class="sourceLineNo">181</span><a name="line.181"></a>
+<span class="sourceLineNo">182</span>        @Override<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        public byte[] binaryHeader() {<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                return this.getClass().getName().getBytes();<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        }<a name="line.185"></a>
+<span class="sourceLineNo">186</span><a name="line.186"></a>
+<span class="sourceLineNo">187</span>        @Override<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        public void writeBinary(DataOutput out) throws IOException {<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                IOUtils.write(config, out);<a name="line.189"></a>
+<span class="sourceLineNo">190</span>        }<a name="line.190"></a>
+<span class="sourceLineNo">191</span><a name="line.191"></a>
+<span class="sourceLineNo">192</span>        @Override<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        public List&lt;CLMDetectedFace&gt; detectFaces(FImage image) {<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                final List&lt;Rectangle&gt; detRects = config.faceDetector.detect(image);<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>                return detectFaces(image, detRects);<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        }<a name="line.197"></a>
+<span class="sourceLineNo">198</span><a name="line.198"></a>
+<span class="sourceLineNo">199</span>        /**<a name="line.199"></a>
+<span class="sourceLineNo">200</span>         * Detect faces in the image using the given rectangles as the seeds from<a name="line.200"></a>
+<span class="sourceLineNo">201</span>         * which to start fitting the model.<a name="line.201"></a>
+<span class="sourceLineNo">202</span>         * <a name="line.202"></a>
+<span class="sourceLineNo">203</span>         * @param image<a name="line.203"></a>
+<span class="sourceLineNo">204</span>         *            the image<a name="line.204"></a>
+<span class="sourceLineNo">205</span>         * @param detRects<a name="line.205"></a>
+<span class="sourceLineNo">206</span>         *            the seed rectangles<a name="line.206"></a>
+<span class="sourceLineNo">207</span>         * @return the detected faces<a name="line.207"></a>
+<span class="sourceLineNo">208</span>         */<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        public List&lt;CLMDetectedFace&gt; detectFaces(FImage image, List&lt;Rectangle&gt; detRects) {<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                final List&lt;CLMDetectedFace&gt; faces = new ArrayList&lt;CLMDetectedFace&gt;();<a name="line.210"></a>
+<span class="sourceLineNo">211</span><a name="line.211"></a>
+<span class="sourceLineNo">212</span>                for (final Rectangle f : detRects) {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                        if ((f.width == 0) || (f.height == 0)) {<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                                continue;<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                        }<a name="line.215"></a>
+<span class="sourceLineNo">216</span><a name="line.216"></a>
+<span class="sourceLineNo">217</span>                        initShape(f, config.shape, config.referenceShape);<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                        config.clm._pdm.calcParams(config.shape, config.clm._plocal, config.clm._pglobl);<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        config.clm.fit(image, config.windowSize, config.nIter, config.clamp, config.fTol);<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        config.clm._pdm.calcShape2D(config.shape, config.clm._plocal, config.clm._pglobl);<a name="line.221"></a>
+<span class="sourceLineNo">222</span><a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        if (config.fcheck) {<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                                if (!config.failureCheck.check(config.clm.getViewIdx(), image, config.shape)) {<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                                        continue;<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                                }<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                        }<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        faces.add(new CLMDetectedFace(f, config.shape.copy(), config.clm._pglobl.copy(), config.clm._plocal.copy(),<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                        config.clm._visi[config.clm.getViewIdx()].copy(), image));<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                }<a name="line.231"></a>
+<span class="sourceLineNo">232</span><a name="line.232"></a>
+<span class="sourceLineNo">233</span>                return faces;<a name="line.233"></a>
+<span class="sourceLineNo">234</span>        }<a name="line.234"></a>
+<span class="sourceLineNo">235</span><a name="line.235"></a>
+<span class="sourceLineNo">236</span>        /**<a name="line.236"></a>
+<span class="sourceLineNo">237</span>         * Initialise the shape within the given rectangle based on the given<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         * reference shape.<a name="line.238"></a>
+<span class="sourceLineNo">239</span>         * <a name="line.239"></a>
+<span class="sourceLineNo">240</span>         * @param r<a name="line.240"></a>
+<span class="sourceLineNo">241</span>         *            The rectangle<a name="line.241"></a>
+<span class="sourceLineNo">242</span>         * @param shape<a name="line.242"></a>
+<span class="sourceLineNo">243</span>         *            The shape to initialise<a name="line.243"></a>
+<span class="sourceLineNo">244</span>         * @param _rshape<a name="line.244"></a>
+<span class="sourceLineNo">245</span>         *            The reference shape<a name="line.245"></a>
+<span class="sourceLineNo">246</span>         */<a name="line.246"></a>
+<span class="sourceLineNo">247</span>        private void initShape(final Rectangle r, final Matrix shape, final Matrix _rshape) {<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                assert ((shape.getRowDimension() == _rshape.getRowDimension()) &amp;&amp; (shape<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                .getColumnDimension() == _rshape.getColumnDimension()));<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>                final int n = _rshape.getRowDimension() / 2;<a name="line.251"></a>
+<span class="sourceLineNo">252</span><a name="line.252"></a>
+<span class="sourceLineNo">253</span>                final double a = r.width * Math.cos(config.similarity[1]) * config.similarity[0] + 1;<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                final double b = r.width * Math.sin(config.similarity[1]) * config.similarity[0];<a name="line.254"></a>
+<span class="sourceLineNo">255</span><a name="line.255"></a>
+<span class="sourceLineNo">256</span>                final double tx = r.x + (int) (r.width / 2) + r.width * config.similarity[2];<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                final double ty = r.y + (int) (r.height / 2) + r.height * config.similarity[3];<a name="line.257"></a>
+<span class="sourceLineNo">258</span><a name="line.258"></a>
+<span class="sourceLineNo">259</span>                final double[][] s = _rshape.getArray();<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                final double[][] d = shape.getArray();<a name="line.260"></a>
+<span class="sourceLineNo">261</span><a name="line.261"></a>
+<span class="sourceLineNo">262</span>                for (int i = 0; i &lt; n; i++) {<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        d[i][0] = a * s[i][0] - b * s[i + n][0] + tx;<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                        d[i + n][0] = b * s[i][0] + a * s[i + n][0] + ty;<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                }<a name="line.265"></a>
+<span class="sourceLineNo">266</span>        }<a name="line.266"></a>
+<span class="sourceLineNo">267</span><a name="line.267"></a>
+<span class="sourceLineNo">268</span>        /**<a name="line.268"></a>
+<span class="sourceLineNo">269</span>         * Get the internal configuration of the detector.<a name="line.269"></a>
+<span class="sourceLineNo">270</span>         * <a name="line.270"></a>
+<span class="sourceLineNo">271</span>         * @return the internal configuration of the detector.<a name="line.271"></a>
+<span class="sourceLineNo">272</span>         */<a name="line.272"></a>
+<span class="sourceLineNo">273</span>        public Configuration getConfiguration() {<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                return config;<a name="line.274"></a>
+<span class="sourceLineNo">275</span>        }<a name="line.275"></a>
+<span class="sourceLineNo">276</span>}<a name="line.276"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,1097 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.pixel;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import gnu.trove.list.array.TFloatArrayList;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import gnu.trove.list.array.TIntArrayList;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.util.ArrayList;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.util.Collection;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.util.HashSet;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.LinkedHashSet;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.util.List;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import java.util.Set;<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.image.FImage;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.image.renderer.ScanRasteriser;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.image.renderer.ScanRasteriser.ScanLineListener;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.math.geometry.shape.Polygon;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.math.geometry.shape.RotatedRectangle;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.math.geometry.shape.Shape;<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>/**<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * This class represents a connected region within an image and provides methods<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * for accessing and manipulating that region.<a name="line.53"></a>
+<span class="sourceLineNo">054</span> * &lt;p&gt;<a name="line.54"></a>
+<span class="sourceLineNo">055</span> * Nothing stops an unconnected component being constructed, but it is important<a name="line.55"></a>
+<span class="sourceLineNo">056</span> * to realise that some methods may return unexpected results (e.g. boundary<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * tracing). If you are only dealing with unconnected pixel sets, use the<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * {@link PixelSet} superclass instead.<a name="line.58"></a>
+<span class="sourceLineNo">059</span> *<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.61"></a>
+<span class="sourceLineNo">062</span> */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>public class ConnectedComponent extends PixelSet {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * For boundary representations of {@link ConnectedComponent}s, this enum<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * determines and specifies how the boundary is calculated; either using a<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         * 4-connected rule, or an 8-connected rule.<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         *<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        public enum ConnectMode {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                /** 4-connected edges in the boundary representation */<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                CONNECT_4,<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                /** 8-connected edges in the boundary representation */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                CONNECT_8;<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>                /**<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                 * Get the neighbouring pixels<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                 *<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                 * @param image<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                 *            the image<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                 * @param x<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                 *            the x ordinate<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                 * @param y<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                 *            the y ordinate<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                 * @param bgThreshold<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                 *            the threshold for below which pixels should be ignored<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                 * @return the neighbouring pixels<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                 */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                public List&lt;Pixel&gt; getNeighbours(FImage image, int x, int y, float bgThreshold) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                        final List&lt;Pixel&gt; neighbours = new ArrayList&lt;Pixel&gt;(this == CONNECT_8 ? 8 : 4);<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        switch (this) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        case CONNECT_8:<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                if (x &gt; 0 &amp;&amp; y &gt; 0 &amp;&amp; image.pixels[y - 1][x - 1] &gt; bgThreshold)<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                        neighbours.add(new Pixel(x - 1, y - 1));<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                if (x + 1 &lt; image.width &amp;&amp; y &gt; 0 &amp;&amp; image.pixels[y - 1][x + 1] &gt; bgThreshold)<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                        neighbours.add(new Pixel(x + 1, y - 1));<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                if (x &gt; 0 &amp;&amp; y + 1 &lt; image.height &amp;&amp; image.pixels[y + 1][x - 1] &gt; bgThreshold)<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                                        neighbours.add(new Pixel(x - 1, y + 1));<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                if (x + 1 &lt; image.width &amp;&amp; y + 1 &lt; image.height &amp;&amp; image.pixels[y + 1][x + 1] &gt; bgThreshold)<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                                        neighbours.add(new Pixel(x + 1, y + 1));<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                // Note : no break, so we fall through...<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        case CONNECT_4:<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                if (x &gt; 0 &amp;&amp; image.pixels[y][x - 1] &gt; bgThreshold)<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                        neighbours.add(new Pixel(x - 1, y));<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                if (x + 1 &lt; image.width &amp;&amp; image.pixels[y][x + 1] &gt; bgThreshold)<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                                        neighbours.add(new Pixel(x + 1, y));<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                if (y &gt; 0 &amp;&amp; image.pixels[y - 1][x] &gt; bgThreshold)<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                        neighbours.add(new Pixel(x, y - 1));<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                if (y + 1 &lt; image.height &amp;&amp; image.pixels[y + 1][x] &gt; bgThreshold)<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                                        neighbours.add(new Pixel(x, y + 1));<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                                break;<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        }<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        return neighbours;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                }<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>        /**<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * Default constructor. Has an empty implementation.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        public ConnectedComponent() {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                super();<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        }<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>        /**<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         * Construct a new connected component from the given shape. Pixels are<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         * created for the connected component that lie within the shape; but these<a name="line.129"></a>
+<span class="sourceLineNo">130</span>         * pixels will not have specific values as they are not associated to any<a name="line.130"></a>
+<span class="sourceLineNo">131</span>         * particular image.<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         *<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         * @param shape<a name="line.133"></a>
+<span class="sourceLineNo">134</span>         *            The shape from which to construct the connected component.<a name="line.134"></a>
+<span class="sourceLineNo">135</span>         */<a name="line.135"></a>
+<span class="sourceLineNo">136</span>        public ConnectedComponent(Shape shape) {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                fromShape(shape);<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>        /**<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * Construct a new connected component from the given polygon. Pixels are<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * created for the connected component that lie within the shape; but these<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         * pixels will not have specific values as they are not associated to any<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         * particular image.<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         *<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         * @param poly<a name="line.146"></a>
+<span class="sourceLineNo">147</span>         *            The polygon from which to construct the connected component.<a name="line.147"></a>
+<span class="sourceLineNo">148</span>         */<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        public ConnectedComponent(Polygon poly) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                // FIXME: this can be improved if the scan-fill algorithm<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                // could be adapted to deal with holes.<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                if (poly.getNumInnerPoly() == 1) {<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        ScanRasteriser.scanFill(poly.points, new ScanLineListener() {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                                @Override<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                                public void process(int x1, int x2, int y) {<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                                        for (int x = x1; x &lt;= x2; x++)<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                                ConnectedComponent.this.addPixel(x, y);<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                                }<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                        });<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                } else {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                        fromShape(poly);<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                }<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        }<a name="line.163"></a>
+<span class="sourceLineNo">164</span><a name="line.164"></a>
+<span class="sourceLineNo">165</span>        /**<a name="line.165"></a>
+<span class="sourceLineNo">166</span>         * Construct a rectangular {@link ConnectedComponent}. Pixels are created<a name="line.166"></a>
+<span class="sourceLineNo">167</span>         * for the area within the rectangle but these will not have any specific<a name="line.167"></a>
+<span class="sourceLineNo">168</span>         * value as they are not associated to any particular image.<a name="line.168"></a>
+<span class="sourceLineNo">169</span>         *<a name="line.169"></a>
+<span class="sourceLineNo">170</span>         * @param x<a name="line.170"></a>
+<span class="sourceLineNo">171</span>         *            The top-left x-coordinate of the rectangle<a name="line.171"></a>
+<span class="sourceLineNo">172</span>         * @param y<a name="line.172"></a>
+<span class="sourceLineNo">173</span>         *            The top-left y-coordinate of the rectangle<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * @param w<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         *            The width of the rectangle<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         * @param h<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         *            The height of the rectangle<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         */<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        public ConnectedComponent(int x, int y, int w, int h) {<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                super(x, y, w, h);<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        }<a name="line.181"></a>
+<span class="sourceLineNo">182</span><a name="line.182"></a>
+<span class="sourceLineNo">183</span>        /**<a name="line.183"></a>
+<span class="sourceLineNo">184</span>         * Constructs a connected component from a mask image. Pixels are created<a name="line.184"></a>
+<span class="sourceLineNo">185</span>         * for areas within the mask image that are non-zero. Note that this may<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         * result in a connected component definition that is unconnected and some<a name="line.186"></a>
+<span class="sourceLineNo">187</span>         * methods may not return expected results.<a name="line.187"></a>
+<span class="sourceLineNo">188</span>         *<a name="line.188"></a>
+<span class="sourceLineNo">189</span>         * @param img<a name="line.189"></a>
+<span class="sourceLineNo">190</span>         *            The mask image to construct a connected component from.<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         */<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        public ConnectedComponent(int[][] img) {<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                super(img);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        }<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>        /**<a name="line.196"></a>
+<span class="sourceLineNo">197</span>         * Constructs a connected component from a mask image. Pixels are created<a name="line.197"></a>
+<span class="sourceLineNo">198</span>         * for areas within the mask image that are above the given threshold. Note<a name="line.198"></a>
+<span class="sourceLineNo">199</span>         * that this may result in a connected component definition that is<a name="line.199"></a>
+<span class="sourceLineNo">200</span>         * unconnected and some methods may not return expected results.<a name="line.200"></a>
+<span class="sourceLineNo">201</span>         *<a name="line.201"></a>
+<span class="sourceLineNo">202</span>         * @param mask<a name="line.202"></a>
+<span class="sourceLineNo">203</span>         *            The mask image to construct a connected component from.<a name="line.203"></a>
+<span class="sourceLineNo">204</span>         * @param thresh<a name="line.204"></a>
+<span class="sourceLineNo">205</span>         *            the threshold value.<a name="line.205"></a>
+<span class="sourceLineNo">206</span>         */<a name="line.206"></a>
+<span class="sourceLineNo">207</span>        public ConnectedComponent(FImage mask, float thresh) {<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                super(mask, thresh);<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        }<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>        /**<a name="line.211"></a>
+<span class="sourceLineNo">212</span>         * Construct a connected component from the given set of {@link Pixel}s. The<a name="line.212"></a>
+<span class="sourceLineNo">213</span>         * pixels are shallow copied into the connected component. If the pixels do<a name="line.213"></a>
+<span class="sourceLineNo">214</span>         * not form a connected component then some methods in this class may not<a name="line.214"></a>
+<span class="sourceLineNo">215</span>         * return expected results.<a name="line.215"></a>
+<span class="sourceLineNo">216</span>         *<a name="line.216"></a>
+<span class="sourceLineNo">217</span>         * @param pixels<a name="line.217"></a>
+<span class="sourceLineNo">218</span>         *            A {@link Set} of {@link Pixel}s.<a name="line.218"></a>
+<span class="sourceLineNo">219</span>         */<a name="line.219"></a>
+<span class="sourceLineNo">220</span>        public ConnectedComponent(Set&lt;Pixel&gt; pixels) {<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                super(pixels);<a name="line.221"></a>
+<span class="sourceLineNo">222</span>        }<a name="line.222"></a>
+<span class="sourceLineNo">223</span><a name="line.223"></a>
+<span class="sourceLineNo">224</span>        /**<a name="line.224"></a>
+<span class="sourceLineNo">225</span>         * Estimates how many vertices are required to encode the boundary with the<a name="line.225"></a>
+<span class="sourceLineNo">226</span>         * given smoothness and window width. Basically it determines how many<a name="line.226"></a>
+<span class="sourceLineNo">227</span>         * strong peaks there are in the boundary, where the peak strength is<a name="line.227"></a>
+<span class="sourceLineNo">228</span>         * determined by the two parameters. The window width determines how many<a name="line.228"></a>
+<span class="sourceLineNo">229</span>         * boundary points are considered when iterating through the binary, while<a name="line.229"></a>
+<span class="sourceLineNo">230</span>         * the smoothness determines how smooth the resulting boundary<a name="line.230"></a>
+<span class="sourceLineNo">231</span>         * representation can be.<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         *<a name="line.232"></a>
+<span class="sourceLineNo">233</span>         * @param smoothWidth<a name="line.233"></a>
+<span class="sourceLineNo">234</span>         *            The smoothness of the resulting boundary<a name="line.234"></a>
+<span class="sourceLineNo">235</span>         * @param windowWidth<a name="line.235"></a>
+<span class="sourceLineNo">236</span>         *            The number of edge points to consider<a name="line.236"></a>
+<span class="sourceLineNo">237</span>         * @return The estimated number of vertices required to encode the boundary.<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         */<a name="line.238"></a>
+<span class="sourceLineNo">239</span>        public int estimateNumberOfVertices(int smoothWidth, int windowWidth) {<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                final TFloatArrayList distances = calculateBoundaryDistanceFromCentre();<a name="line.240"></a>
+<span class="sourceLineNo">241</span><a name="line.241"></a>
+<span class="sourceLineNo">242</span>                if (smoothWidth % 2 == 0)<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                        smoothWidth++;<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                if (windowWidth % 2 == 0)<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                        windowWidth++;<a name="line.245"></a>
+<span class="sourceLineNo">246</span><a name="line.246"></a>
+<span class="sourceLineNo">247</span>                final int n = distances.size();<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                final float[] kernel = new float[windowWidth];<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                final float[] response = new float[n];<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>                for (int i = 0; i &lt; n; i++) {<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        float sum = 0;<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                        for (int j = 0; j &lt; smoothWidth; j++) {<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                                int k = i + j - (smoothWidth / 2);<a name="line.254"></a>
+<span class="sourceLineNo">255</span><a name="line.255"></a>
+<span class="sourceLineNo">256</span>                                if (k &lt; 0) {<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                                        k = n + k;<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                                } else if (k &gt;= n) {<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                                        k = k - n;<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                                }<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                                sum += distances.get(k);<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                        }<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        distances.set(i, sum / smoothWidth);<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                }<a name="line.264"></a>
+<span class="sourceLineNo">265</span><a name="line.265"></a>
+<span class="sourceLineNo">266</span>                for (int i = 0; i &lt; windowWidth; i++)<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                        kernel[i] = -(windowWidth / 2) + i;<a name="line.267"></a>
+<span class="sourceLineNo">268</span><a name="line.268"></a>
+<span class="sourceLineNo">269</span>                for (int i = 0; i &lt; n; i++) {<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                        float sum = 0;<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                        for (int j = 0; j &lt; windowWidth; j++) {<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                                int k = i + j - (windowWidth / 2);<a name="line.272"></a>
+<span class="sourceLineNo">273</span><a name="line.273"></a>
+<span class="sourceLineNo">274</span>                                if (k &lt; 0) {<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                                        k = n + k;<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                                } else if (k &gt;= n) {<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                                        k = k - n;<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                                }<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                                sum += kernel[j] * distances.get(k);<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                        }<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                        response[i] = sum;<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                }<a name="line.282"></a>
+<span class="sourceLineNo">283</span><a name="line.283"></a>
+<span class="sourceLineNo">284</span>                int peaks = 0;<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                for (int i = 1; i &lt; n; i++) {<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                        if (response[i - 1] &gt;= 0 &amp;&amp; response[i] &lt; 0)<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                                peaks++;<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                }<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                if (response[n - 1] &gt;= 0 &amp;&amp; response[0] &lt; 0)<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                        peaks++;<a name="line.290"></a>
+<span class="sourceLineNo">291</span><a name="line.291"></a>
+<span class="sourceLineNo">292</span>                return peaks;<a name="line.292"></a>
+<span class="sourceLineNo">293</span>        }<a name="line.293"></a>
+<span class="sourceLineNo">294</span><a name="line.294"></a>
+<span class="sourceLineNo">295</span>        /**<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         *<a name="line.296"></a>
+<span class="sourceLineNo">297</span>         * @param P0<a name="line.297"></a>
+<span class="sourceLineNo">298</span>         * @param P1<a name="line.298"></a>
+<span class="sourceLineNo">299</span>         * @param P2<a name="line.299"></a>
+<span class="sourceLineNo">300</span>         * @return<a name="line.300"></a>
+<span class="sourceLineNo">301</span>         */<a name="line.301"></a>
+<span class="sourceLineNo">302</span>        protected int isLeft(Pixel P0, Pixel P1, Pixel P2) {<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                return (P1.x - P0.x) * (P2.y - P0.y) - (P2.x - P0.x) * (P1.y - P0.y);<a name="line.303"></a>
+<span class="sourceLineNo">304</span>        }<a name="line.304"></a>
+<span class="sourceLineNo">305</span><a name="line.305"></a>
+<span class="sourceLineNo">306</span>        /**<a name="line.306"></a>
+<span class="sourceLineNo">307</span>         * Calculates the convex hull polygon for this connected component using<a name="line.307"></a>
+<span class="sourceLineNo">308</span>         * Andrew's montone algorithm.<a name="line.308"></a>
+<span class="sourceLineNo">309</span>         *<a name="line.309"></a>
+<span class="sourceLineNo">310</span>         * @return The polygon defining the convex hull shape for this component.<a name="line.310"></a>
+<span class="sourceLineNo">311</span>         */<a name="line.311"></a>
+<span class="sourceLineNo">312</span>        public Polygon calculateConvexHull() {<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                return calculateConvexHull_AndrewsMontone();<a name="line.313"></a>
+<span class="sourceLineNo">314</span>        }<a name="line.314"></a>
+<span class="sourceLineNo">315</span><a name="line.315"></a>
+<span class="sourceLineNo">316</span>        /**<a name="line.316"></a>
+<span class="sourceLineNo">317</span>         * Calculate the ratio of the area of the given connected component to the<a name="line.317"></a>
+<span class="sourceLineNo">318</span>         * area of the connected component. This does not consider whether the areas<a name="line.318"></a>
+<span class="sourceLineNo">319</span>         * overlap.<a name="line.319"></a>
+<span class="sourceLineNo">320</span>         *<a name="line.320"></a>
+<span class="sourceLineNo">321</span>         * @param ch<a name="line.321"></a>
+<span class="sourceLineNo">322</span>         *            The connected component to test.<a name="line.322"></a>
+<span class="sourceLineNo">323</span>         * @return The area ratio of the given connected component to this connected<a name="line.323"></a>
+<span class="sourceLineNo">324</span>         *         component.<a name="line.324"></a>
+<span class="sourceLineNo">325</span>         */<a name="line.325"></a>
+<span class="sourceLineNo">326</span>        public double calculateAreaRatio(ConnectedComponent ch) {<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                return (double) calculateArea() / (double) ch.calculateArea();<a name="line.327"></a>
+<span class="sourceLineNo">328</span>        }<a name="line.328"></a>
+<span class="sourceLineNo">329</span><a name="line.329"></a>
+<span class="sourceLineNo">330</span>        /**<a name="line.330"></a>
+<span class="sourceLineNo">331</span>         * Calculate the ratio of the area of the given polygon to the area of this<a name="line.331"></a>
+<span class="sourceLineNo">332</span>         * connected component. This does not consider whether the areas overlap.<a name="line.332"></a>
+<span class="sourceLineNo">333</span>         *<a name="line.333"></a>
+<span class="sourceLineNo">334</span>         * @param ch<a name="line.334"></a>
+<span class="sourceLineNo">335</span>         *            The polygon to test again.<a name="line.335"></a>
+<span class="sourceLineNo">336</span>         * @return The area ratio of the given polygon to this connected component.<a name="line.336"></a>
+<span class="sourceLineNo">337</span>         */<a name="line.337"></a>
+<span class="sourceLineNo">338</span>        public double calculateAreaRatio(Polygon ch) {<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                return calculateAreaRatio(new ConnectedComponent(ch));<a name="line.339"></a>
+<span class="sourceLineNo">340</span>        }<a name="line.340"></a>
+<span class="sourceLineNo">341</span><a name="line.341"></a>
+<span class="sourceLineNo">342</span>        /**<a name="line.342"></a>
+<span class="sourceLineNo">343</span>         * Calculate the ratio of the area of this component's convex hull to the<a name="line.343"></a>
+<span class="sourceLineNo">344</span>         * actual area of this connected component. This gives an idea of how well<a name="line.344"></a>
+<span class="sourceLineNo">345</span>         * the calculated convex hull fits the component. The value returned is a<a name="line.345"></a>
+<span class="sourceLineNo">346</span>         * percentage (0-1).<a name="line.346"></a>
+<span class="sourceLineNo">347</span>         *<a name="line.347"></a>
+<span class="sourceLineNo">348</span>         * @return The area ratio of this component's convex hull its area.<a name="line.348"></a>
+<span class="sourceLineNo">349</span>         */<a name="line.349"></a>
+<span class="sourceLineNo">350</span>        public double calculatePercentageConvexHullFit() {<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                return calculateAreaRatio(calculateConvexHull());<a name="line.351"></a>
+<span class="sourceLineNo">352</span>        }<a name="line.352"></a>
+<span class="sourceLineNo">353</span><a name="line.353"></a>
+<span class="sourceLineNo">354</span>        /**<a name="line.354"></a>
+<span class="sourceLineNo">355</span>         * Calculate convex hull using Melkman's algorithm. Based on<a name="line.355"></a>
+<span class="sourceLineNo">356</span>         * http://softsurfer.com/Archive/algorithm_0203/algorithm_0203.htm<a name="line.356"></a>
+<span class="sourceLineNo">357</span>         * &lt;p&gt;<a name="line.357"></a>
+<span class="sourceLineNo">358</span>         * Copyright 2001, softSurfer (www.softsurfer.com) This code may be freely<a name="line.358"></a>
+<span class="sourceLineNo">359</span>         * used and modified for any purpose providing that this copyright notice is<a name="line.359"></a>
+<span class="sourceLineNo">360</span>         * included with it. SoftSurfer makes no warranty for this code, and cannot<a name="line.360"></a>
+<span class="sourceLineNo">361</span>         * be held liable for any real or imagined damage resulting from its use.<a name="line.361"></a>
+<span class="sourceLineNo">362</span>         * Users of this code must verify correctness for their application.<a name="line.362"></a>
+<span class="sourceLineNo">363</span>         *<a name="line.363"></a>
+<span class="sourceLineNo">364</span>         * @param V<a name="line.364"></a>
+<span class="sourceLineNo">365</span>         *            List of pixels containing within the region<a name="line.365"></a>
+<span class="sourceLineNo">366</span>         * @return A polygon defining the shape of the convex hull<a name="line.366"></a>
+<span class="sourceLineNo">367</span>         */<a name="line.367"></a>
+<span class="sourceLineNo">368</span>        protected Polygon calculateConvexHull_Melkman(List&lt;Pixel&gt; V) {<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                // initialize a deque D[] from bottom to top so that the<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                // 1st three vertices of V[] are a counterclockwise triangle<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                final int n = V.size();<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                final Pixel[] D = new Pixel[2 * n + 1];<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                int bot = n - 2, top = bot + 3; // initial bottom and top deque indices<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                D[bot] = D[top] = V.get(2); // 3rd vertex is at both bot and top<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                if (isLeft(V.get(0), V.get(1), V.get(2)) &gt; 0) {<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                        D[bot + 1] = V.get(0);<a name="line.376"></a>
+<span class="sourceLineNo">377</span>                        D[bot + 2] = V.get(1); // ccw vertices are: 2,0,1,2<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                } else {<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                        D[bot + 1] = V.get(1);<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                        D[bot + 2] = V.get(0); // ccw vertices are: 2,1,0,2<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                }<a name="line.381"></a>
+<span class="sourceLineNo">382</span><a name="line.382"></a>
+<span class="sourceLineNo">383</span>                // compute the hull on the deque D[]<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                for (int i = 3; i &lt; n; i++) { // process the rest of vertices<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                        // test if next vertex is inside the deque hull<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                        if ((isLeft(D[bot], D[bot + 1], V.get(i)) &gt; 0) &amp;&amp;<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                                        (isLeft(D[top - 1], D[top], V.get(i)) &gt; 0))<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                                continue; // skip an interior vertex<a name="line.388"></a>
+<span class="sourceLineNo">389</span><a name="line.389"></a>
+<span class="sourceLineNo">390</span>                        // incrementally add an exterior vertex to the deque hull<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                        // get the rightmost tangent at the deque bot<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                        while (isLeft(D[bot], D[bot + 1], V.get(i)) &lt;= 0)<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                                ++bot; // remove bot of deque<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                        D[--bot] = V.get(i); // insert V[i] at bot of deque<a name="line.394"></a>
+<span class="sourceLineNo">395</span><a name="line.395"></a>
+<span class="sourceLineNo">396</span>                        // get the leftmost tangent at the deque top<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                        while (isLeft(D[top - 1], D[top], V.get(i)) &lt;= 0)<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                                --top; // pop top of deque<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                        D[++top] = V.get(i); // push V[i] onto top of deque<a name="line.399"></a>
+<span class="sourceLineNo">400</span>                }<a name="line.400"></a>
+<span class="sourceLineNo">401</span><a name="line.401"></a>
+<span class="sourceLineNo">402</span>                // transcribe deque D[] to the output hull array H[]<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                final Polygon H = new Polygon();<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                final List&lt;Point2d&gt; vertices = H.getVertices();<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                for (int h = 0; h &lt;= (top - bot); h++)<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                        vertices.add(D[bot + h]);<a name="line.406"></a>
+<span class="sourceLineNo">407</span><a name="line.407"></a>
+<span class="sourceLineNo">408</span>                return H;<a name="line.408"></a>
+<span class="sourceLineNo">409</span>        }<a name="line.409"></a>
+<span class="sourceLineNo">410</span><a name="line.410"></a>
+<span class="sourceLineNo">411</span>        /**<a name="line.411"></a>
+<span class="sourceLineNo">412</span>         * Calculate the convex hull using Andrew's monotone chain 2D convex hull<a name="line.412"></a>
+<span class="sourceLineNo">413</span>         * algorithm.<a name="line.413"></a>
+<span class="sourceLineNo">414</span>         *<a name="line.414"></a>
+<span class="sourceLineNo">415</span>         * @return A polygon defining the shape of the convex hull.<a name="line.415"></a>
+<span class="sourceLineNo">416</span>         */<a name="line.416"></a>
+<span class="sourceLineNo">417</span>        protected Polygon calculateConvexHull_AndrewsMontone() {<a name="line.417"></a>
+<span class="sourceLineNo">418</span>                if (this.calculateArea() == 1) {<a name="line.418"></a>
+<span class="sourceLineNo">419</span>                        return new Polygon(this.pixels.iterator().next());<a name="line.419"></a>
+<span class="sourceLineNo">420</span>                }<a name="line.420"></a>
+<span class="sourceLineNo">421</span><a name="line.421"></a>
+<span class="sourceLineNo">422</span>                final List&lt;Pixel&gt; P = new ArrayList&lt;Pixel&gt;();<a name="line.422"></a>
+<span class="sourceLineNo">423</span><a name="line.423"></a>
+<span class="sourceLineNo">424</span>                // sort<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                int minx = Integer.MAX_VALUE, maxx = Integer.MIN_VALUE, miny = Integer.MAX_VALUE, maxy = Integer.MIN_VALUE;<a name="line.425"></a>
+<span class="sourceLineNo">426</span><a name="line.426"></a>
+<span class="sourceLineNo">427</span>                for (final Pixel p : pixels) {<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                        if (p.x &lt; minx)<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                                minx = p.x;<a name="line.429"></a>
+<span class="sourceLineNo">430</span>                        if (p.x &gt; maxx)<a name="line.430"></a>
+<span class="sourceLineNo">431</span>                                maxx = p.x;<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                        if (p.y &lt; miny)<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                                miny = p.y;<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                        if (p.y &gt; maxy)<a name="line.434"></a>
+<span class="sourceLineNo">435</span>                                maxy = p.y;<a name="line.435"></a>
+<span class="sourceLineNo">436</span>                }<a name="line.436"></a>
+<span class="sourceLineNo">437</span><a name="line.437"></a>
+<span class="sourceLineNo">438</span>                for (int x = minx; x &lt;= maxx; x++) {<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                        for (int y = miny; y &lt;= maxy; y++) {<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                                final Pixel p = new Pixel(x, y);<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                                if (pixels.contains(p))<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                                        P.add(p);<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                        }<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                }<a name="line.444"></a>
+<span class="sourceLineNo">445</span><a name="line.445"></a>
+<span class="sourceLineNo">446</span>                // the output array H[] will be used as the stack<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                int bot = 0, top = (-1); // indices for bottom and top of the stack<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                int i; // array scan index<a name="line.448"></a>
+<span class="sourceLineNo">449</span>                final int n = P.size();<a name="line.449"></a>
+<span class="sourceLineNo">450</span><a name="line.450"></a>
+<span class="sourceLineNo">451</span>                final Polygon poly = new Polygon();<a name="line.451"></a>
+<span class="sourceLineNo">452</span>                final Pixel[] H = new Pixel[P.size()];<a name="line.452"></a>
+<span class="sourceLineNo">453</span><a name="line.453"></a>
+<span class="sourceLineNo">454</span>                // Get the indices of points with min x-coord and min|max y-coord<a name="line.454"></a>
+<span class="sourceLineNo">455</span>                final int minmin = 0;<a name="line.455"></a>
+<span class="sourceLineNo">456</span>                int minmax;<a name="line.456"></a>
+<span class="sourceLineNo">457</span>                final float xmin = P.get(0).x;<a name="line.457"></a>
+<span class="sourceLineNo">458</span>                for (i = 1; i &lt; n; i++)<a name="line.458"></a>
+<span class="sourceLineNo">459</span>                        if (P.get(i).x != xmin)<a name="line.459"></a>
+<span class="sourceLineNo">460</span>                                break;<a name="line.460"></a>
+<span class="sourceLineNo">461</span>                minmax = i - 1;<a name="line.461"></a>
+<span class="sourceLineNo">462</span>                if (minmax == n - 1) { // degenerate case: all x-coords == xmin<a name="line.462"></a>
+<span class="sourceLineNo">463</span>                        H[++top] = P.get(minmin);<a name="line.463"></a>
+<span class="sourceLineNo">464</span>                        if (P.get(minmax).y != P.get(minmin).y) // a nontrivial segment<a name="line.464"></a>
+<span class="sourceLineNo">465</span>                                H[++top] = P.get(minmax);<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                        H[++top] = P.get(minmin); // add polygon endpoint<a name="line.466"></a>
+<span class="sourceLineNo">467</span><a name="line.467"></a>
+<span class="sourceLineNo">468</span>                        for (int k = 0; k &lt; top + 1; k++)<a name="line.468"></a>
+<span class="sourceLineNo">469</span>                                poly.getVertices().add(H[k]);<a name="line.469"></a>
+<span class="sourceLineNo">470</span>                        return poly;<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                }<a name="line.471"></a>
+<span class="sourceLineNo">472</span><a name="line.472"></a>
+<span class="sourceLineNo">473</span>                // Get the indices of points with max x-coord and min|max y-coord<a name="line.473"></a>
+<span class="sourceLineNo">474</span>                int maxmin;<a name="line.474"></a>
+<span class="sourceLineNo">475</span>                final int maxmax = n - 1;<a name="line.475"></a>
+<span class="sourceLineNo">476</span>                final float xmax = P.get(n - 1).x;<a name="line.476"></a>
+<span class="sourceLineNo">477</span>                for (i = n - 2; i &gt;= 0; i--)<a name="line.477"></a>
+<span class="sourceLineNo">478</span>                        if (P.get(i).x != xmax)<a name="line.478"></a>
+<span class="sourceLineNo">479</span>                                break;<a name="line.479"></a>
+<span class="sourceLineNo">480</span>                maxmin = i + 1;<a name="line.480"></a>
+<span class="sourceLineNo">481</span><a name="line.481"></a>
+<span class="sourceLineNo">482</span>                // Compute the lower hull on the stack H<a name="line.482"></a>
+<span class="sourceLineNo">483</span>                H[++top] = P.get(minmin); // push minmin point onto stack<a name="line.483"></a>
+<span class="sourceLineNo">484</span>                i = minmax;<a name="line.484"></a>
+<span class="sourceLineNo">485</span>                while (++i &lt;= maxmin) {<a name="line.485"></a>
+<span class="sourceLineNo">486</span>                        // the lower line joins P[minmin] with P[maxmin]<a name="line.486"></a>
+<span class="sourceLineNo">487</span>                        if (isLeft(P.get(minmin), P.get(maxmin), P.get(i)) &gt;= 0 &amp;&amp; i &lt; maxmin)<a name="line.487"></a>
+<span class="sourceLineNo">488</span>                                continue; // ignore P[i] above or on the lower line<a name="line.488"></a>
+<span class="sourceLineNo">489</span><a name="line.489"></a>
+<span class="sourceLineNo">490</span>                        while (top &gt; 0) // there are at least 2 points on the stack<a name="line.490"></a>
+<span class="sourceLineNo">491</span>                        {<a name="line.491"></a>
+<span class="sourceLineNo">492</span>                                // test if P[i] is left of the line at the stack top<a name="line.492"></a>
+<span class="sourceLineNo">493</span>                                if (isLeft(H[top - 1], H[top], P.get(i)) &gt; 0)<a name="line.493"></a>
+<span class="sourceLineNo">494</span>                                        break; // P[i] is a new hull vertex<a name="line.494"></a>
+<span class="sourceLineNo">495</span>                                else<a name="line.495"></a>
+<span class="sourceLineNo">496</span>                                        top--; // pop top point off stack<a name="line.496"></a>
+<span class="sourceLineNo">497</span>                        }<a name="line.497"></a>
+<span class="sourceLineNo">498</span>                        H[++top] = P.get(i); // push P[i] onto stack<a name="line.498"></a>
+<span class="sourceLineNo">499</span>                }<a name="line.499"></a>
+<span class="sourceLineNo">500</span><a name="line.500"></a>
+<span class="sourceLineNo">501</span>                // Next, compute the upper hull on the stack H above the bottom hull<a name="line.501"></a>
+<span class="sourceLineNo">502</span>                if (maxmax != maxmin) // if distinct xmax points<a name="line.502"></a>
+<span class="sourceLineNo">503</span>                        H[++top] = P.get(maxmax); // push maxmax point onto stack<a name="line.503"></a>
+<span class="sourceLineNo">504</span>                bot = top; // the bottom point of the upper hull stack<a name="line.504"></a>
+<span class="sourceLineNo">505</span>                i = maxmin;<a name="line.505"></a>
+<span class="sourceLineNo">506</span>                while (--i &gt;= minmax) {<a name="line.506"></a>
+<span class="sourceLineNo">507</span>                        // the upper line joins P[maxmax] with P[minmax]<a name="line.507"></a>
+<span class="sourceLineNo">508</span>                        if (isLeft(P.get(maxmax), P.get(minmax), P.get(i)) &gt;= 0 &amp;&amp; i &gt; minmax)<a name="line.508"></a>
+<span class="sourceLineNo">509</span>                                continue; // ignore P[i] below or on the upper line<a name="line.509"></a>
+<span class="sourceLineNo">510</span><a name="line.510"></a>
+<span class="sourceLineNo">511</span>                        while (top &gt; bot) // at least 2 points on the upper stack<a name="line.511"></a>
+<span class="sourceLineNo">512</span>                        {<a name="line.512"></a>
+<span class="sourceLineNo">513</span>                                // test if P[i] is left of the line at the stack top<a name="line.513"></a>
+<span class="sourceLineNo">514</span>                                if (isLeft(H[top - 1], H[top], P.get(i)) &gt; 0)<a name="line.514"></a>
+<span class="sourceLineNo">515</span>                                        break; // P[i] is a new hull vertex<a name="line.515"></a>
+<span class="sourceLineNo">516</span>                                else<a name="line.516"></a>
+<span class="sourceLineNo">517</span>                                        top--; // pop top point off stack<a name="line.517"></a>
+<span class="sourceLineNo">518</span>                        }<a name="line.518"></a>
+<span class="sourceLineNo">519</span>                        H[++top] = P.get(i); // push P[i] onto stack<a name="line.519"></a>
+<span class="sourceLineNo">520</span>                }<a name="line.520"></a>
+<span class="sourceLineNo">521</span>                if (minmax != minmin)<a name="line.521"></a>
+<span class="sourceLineNo">522</span>                        H[++top] = P.get(minmin); // push joining endpoint onto stack<a name="line.522"></a>
+<span class="sourceLineNo">523</span><a name="line.523"></a>
+<span class="sourceLineNo">524</span>                for (int k = 0; k &lt; top + 1; k++)<a name="line.524"></a>
+<span class="sourceLineNo">525</span>                        poly.getVertices().add(H[k]);<a name="line.525"></a>
+<span class="sourceLineNo">526</span>                return poly;<a name="line.526"></a>
+<span class="sourceLineNo">527</span>        }<a name="line.527"></a>
+<span class="sourceLineNo">528</span><a name="line.528"></a>
+<span class="sourceLineNo">529</span>        /**<a name="line.529"></a>
+<span class="sourceLineNo">530</span>         * Returns the next edge pixel when tracing a boundary in a 4-connected<a name="line.530"></a>
+<span class="sourceLineNo">531</span>         * system.<a name="line.531"></a>
+<span class="sourceLineNo">532</span>         *<a name="line.532"></a>
+<span class="sourceLineNo">533</span>         * @param current<a name="line.533"></a>
+<span class="sourceLineNo">534</span>         *            The current pixel<a name="line.534"></a>
+<span class="sourceLineNo">535</span>         * @param lastdir<a name="line.535"></a>
+<span class="sourceLineNo">536</span>         *            The last direction traversed<a name="line.536"></a>
+<span class="sourceLineNo">537</span>         * @return The next pixel in the edge<a name="line.537"></a>
+<span class="sourceLineNo">538</span>         */<a name="line.538"></a>
+<span class="sourceLineNo">539</span>        protected Pixel nextEdgePixelACW4(Pixel current, int lastdir) {<a name="line.539"></a>
+<span class="sourceLineNo">540</span>                return nextEdgePixelACW4(current, lastdir, null);<a name="line.540"></a>
+<span class="sourceLineNo">541</span>        }<a name="line.541"></a>
+<span class="sourceLineNo">542</span><a name="line.542"></a>
+<span class="sourceLineNo">543</span>        /**<a name="line.543"></a>
+<span class="sourceLineNo">544</span>         * Returns the next edge pixel when tracing a boundary in a 4-connected<a name="line.544"></a>
+<span class="sourceLineNo">545</span>         * system.<a name="line.545"></a>
+<span class="sourceLineNo">546</span>         *<a name="line.546"></a>
+<span class="sourceLineNo">547</span>         * @param current<a name="line.547"></a>
+<span class="sourceLineNo">548</span>         *            The current pixel<a name="line.548"></a>
+<span class="sourceLineNo">549</span>         * @param lastdir<a name="line.549"></a>
+<span class="sourceLineNo">550</span>         *            The last direction traversed<a name="line.550"></a>
+<span class="sourceLineNo">551</span>         * @param outer<a name="line.551"></a>
+<span class="sourceLineNo">552</span>         *            A list to fill with the outer boundary<a name="line.552"></a>
+<span class="sourceLineNo">553</span>         * @return The next pixel in the edge<a name="line.553"></a>
+<span class="sourceLineNo">554</span>         */<a name="line.554"></a>
+<span class="sourceLineNo">555</span>        protected Pixel nextEdgePixelACW4(Pixel current, int lastdir, List&lt;Pixel&gt; outer) {<a name="line.555"></a>
+<span class="sourceLineNo">556</span>                final int startdir = (lastdir + 3) % 4;<a name="line.556"></a>
+<span class="sourceLineNo">557</span><a name="line.557"></a>
+<span class="sourceLineNo">558</span>                final Pixel target[] = {<a name="line.558"></a>
+<span class="sourceLineNo">559</span>                                new Pixel(current.x + 1, current.y), // dir 0<a name="line.559"></a>
+<span class="sourceLineNo">560</span>                                new Pixel(current.x, current.y - 1), // dir 1<a name="line.560"></a>
+<span class="sourceLineNo">561</span>                                new Pixel(current.x - 1, current.y), // dir 2<a name="line.561"></a>
+<span class="sourceLineNo">562</span>                                new Pixel(current.x, current.y + 1) // dir 3<a name="line.562"></a>
+<span class="sourceLineNo">563</span>                };<a name="line.563"></a>
+<span class="sourceLineNo">564</span><a name="line.564"></a>
+<span class="sourceLineNo">565</span>                for (int i = 0; i &lt; 4; i++) {<a name="line.565"></a>
+<span class="sourceLineNo">566</span>                        int dir = startdir + i;<a name="line.566"></a>
+<span class="sourceLineNo">567</span>                        if (dir &gt;= 4)<a name="line.567"></a>
+<span class="sourceLineNo">568</span>                                dir -= 4;<a name="line.568"></a>
+<span class="sourceLineNo">569</span><a name="line.569"></a>
+<span class="sourceLineNo">570</span>                        if (pixels.contains(target[dir])) {<a name="line.570"></a>
+<span class="sourceLineNo">571</span>                                return target[dir];<a name="line.571"></a>
+<span class="sourceLineNo">572</span>                        } else if (outer != null)<a name="line.572"></a>
+<span class="sourceLineNo">573</span>                                outer.add(target[dir]);<a name="line.573"></a>
+<span class="sourceLineNo">574</span>                }<a name="line.574"></a>
+<span class="sourceLineNo">575</span><a name="line.575"></a>
+<span class="sourceLineNo">576</span>                return current;<a name="line.576"></a>
+<span class="sourceLineNo">577</span>        }<a name="line.577"></a>
+<span class="sourceLineNo">578</span><a name="line.578"></a>
+<span class="sourceLineNo">579</span>        /**<a name="line.579"></a>
+<span class="sourceLineNo">580</span>         * Returns the next edge pixel when tracing a boundary in an 8-connected<a name="line.580"></a>
+<span class="sourceLineNo">581</span>         * system.<a name="line.581"></a>
+<span class="sourceLineNo">582</span>         *<a name="line.582"></a>
+<span class="sourceLineNo">583</span>         * @param current<a name="line.583"></a>
+<span class="sourceLineNo">584</span>         *            The current pixel<a name="line.584"></a>
+<span class="sourceLineNo">585</span>         * @param lastdir<a name="line.585"></a>
+<span class="sourceLineNo">586</span>         *            The last direction traversed<a name="line.586"></a>
+<span class="sourceLineNo">587</span>         * @return The next pixel in the edge<a name="line.587"></a>
+<span class="sourceLineNo">588</span>         */<a name="line.588"></a>
+<span class="sourceLineNo">589</span>        protected Pixel nextEdgePixelACW8(Pixel current, int lastdir) {<a name="line.589"></a>
+<span class="sourceLineNo">590</span>                final int startdir = (lastdir + 7 - (lastdir % 2)) % 8;<a name="line.590"></a>
+<span class="sourceLineNo">591</span><a name="line.591"></a>
+<span class="sourceLineNo">592</span>                final Pixel target[] = {<a name="line.592"></a>
+<span class="sourceLineNo">593</span>                                new Pixel(current.x + 1, current.y), // dir 0<a name="line.593"></a>
+<span class="sourceLineNo">594</span>                                new Pixel(current.x + 1, current.y - 1), // dir 1<a name="line.594"></a>
+<span class="sourceLineNo">595</span>                                new Pixel(current.x, current.y - 1), // dir 2<a name="line.595"></a>
+<span class="sourceLineNo">596</span>                                new Pixel(current.x - 1, current.y - 1), // dir 3<a name="line.596"></a>
+<span class="sourceLineNo">597</span>                                new Pixel(current.x - 1, current.y), // dir 4<a name="line.597"></a>
+<span class="sourceLineNo">598</span>                                new Pixel(current.x - 1, current.y + 1), // dir 5<a name="line.598"></a>
+<span class="sourceLineNo">599</span>                                new Pixel(current.x, current.y + 1), // dir 6<a name="line.599"></a>
+<span class="sourceLineNo">600</span>                                new Pixel(current.x + 1, current.y + 1) // dir 7<a name="line.600"></a>
+<span class="sourceLineNo">601</span>                };<a name="line.601"></a>
+<span class="sourceLineNo">602</span><a name="line.602"></a>
+<span class="sourceLineNo">603</span>                for (int i = 0; i &lt; 8; i++) {<a name="line.603"></a>
+<span class="sourceLineNo">604</span>                        int dir = startdir + i;<a name="line.604"></a>
+<span class="sourceLineNo">605</span>                        if (dir &gt;= 8)<a name="line.605"></a>
+<span class="sourceLineNo">606</span>                                dir -= 8;<a name="line.606"></a>
+<span class="sourceLineNo">607</span><a name="line.607"></a>
+<span class="sourceLineNo">608</span>                        if (pixels.contains(target[dir]))<a name="line.608"></a>
+<span class="sourceLineNo">609</span>                                return target[dir];<a name="line.609"></a>
+<span class="sourceLineNo">610</span>                }<a name="line.610"></a>
+<span class="sourceLineNo">611</span><a name="line.611"></a>
+<span class="sourceLineNo">612</span>                return current;<a name="line.612"></a>
+<span class="sourceLineNo">613</span>        }<a name="line.613"></a>
+<span class="sourceLineNo">614</span><a name="line.614"></a>
+<span class="sourceLineNo">615</span>        /**<a name="line.615"></a>
+<span class="sourceLineNo">616</span>         * For the two pixels, determines the 4-connected chain code that will move<a name="line.616"></a>
+<span class="sourceLineNo">617</span>         * from the first pixel to the next. If the pixels are not adjacent the<a name="line.617"></a>
+<span class="sourceLineNo">618</span>         * method returns -1.<a name="line.618"></a>
+<span class="sourceLineNo">619</span>         *<a name="line.619"></a>
+<span class="sourceLineNo">620</span>         * @param current<a name="line.620"></a>
+<span class="sourceLineNo">621</span>         *            The current pixel<a name="line.621"></a>
+<span class="sourceLineNo">622</span>         * @param next<a name="line.622"></a>
+<span class="sourceLineNo">623</span>         *            The next pixel<a name="line.623"></a>
+<span class="sourceLineNo">624</span>         * @return The Freeman 4-connected chain code<a name="line.624"></a>
+<span class="sourceLineNo">625</span>         */<a name="line.625"></a>
+<span class="sourceLineNo">626</span>        protected int code4(Pixel current, Pixel next) {<a name="line.626"></a>
+<span class="sourceLineNo">627</span>                if (current.x - 1 == next.x)<a name="line.627"></a>
+<span class="sourceLineNo">628</span>                        return 2;<a name="line.628"></a>
+<span class="sourceLineNo">629</span>                if (current.y + 1 == next.y)<a name="line.629"></a>
+<span class="sourceLineNo">630</span>                        return 3;<a name="line.630"></a>
+<span class="sourceLineNo">631</span>                if (current.x + 1 == next.x)<a name="line.631"></a>
+<span class="sourceLineNo">632</span>                        return 0;<a name="line.632"></a>
+<span class="sourceLineNo">633</span>                if (current.y - 1 == next.y)<a name="line.633"></a>
+<span class="sourceLineNo">634</span>                        return 1;<a name="line.634"></a>
+<span class="sourceLineNo">635</span><a name="line.635"></a>
+<span class="sourceLineNo">636</span>                return -1;<a name="line.636"></a>
+<span class="sourceLineNo">637</span>        }<a name="line.637"></a>
+<span class="sourceLineNo">638</span><a name="line.638"></a>
+<span class="sourceLineNo">639</span>        /**<a name="line.639"></a>
+<span class="sourceLineNo">640</span>         * For the two pixels, determines the 8-connected chain code that will move<a name="line.640"></a>
+<span class="sourceLineNo">641</span>         * from the first pixel to the next. If the pixels are not adjacent or<a name="line.641"></a>
+<span class="sourceLineNo">642</span>         * diagonal then the method returns -1.<a name="line.642"></a>
+<span class="sourceLineNo">643</span>         *<a name="line.643"></a>
+<span class="sourceLineNo">644</span>         * @param current<a name="line.644"></a>
+<span class="sourceLineNo">645</span>         *            The current pixel<a name="line.645"></a>
+<span class="sourceLineNo">646</span>         * @param next<a name="line.646"></a>
+<span class="sourceLineNo">647</span>         *            The next pixel<a name="line.647"></a>
+<span class="sourceLineNo">648</span>         * @return The Freeman 8-connected chain code<a name="line.648"></a>
+<span class="sourceLineNo">649</span>         */<a name="line.649"></a>
+<span class="sourceLineNo">650</span>        protected int code8(Pixel current, Pixel next) {<a name="line.650"></a>
+<span class="sourceLineNo">651</span>                if (current.x + 1 == next.x &amp;&amp; current.y == next.y)<a name="line.651"></a>
+<span class="sourceLineNo">652</span>                        return 0;<a name="line.652"></a>
+<span class="sourceLineNo">653</span>                if (current.x + 1 == next.x &amp;&amp; current.y - 1 == next.y)<a name="line.653"></a>
+<span class="sourceLineNo">654</span>                        return 1;<a name="line.654"></a>
+<span class="sourceLineNo">655</span>                if (current.x == next.x &amp;&amp; current.y - 1 == next.y)<a name="line.655"></a>
+<span class="sourceLineNo">656</span>                        return 2;<a name="line.656"></a>
+<span class="sourceLineNo">657</span>                if (current.x - 1 == next.x &amp;&amp; current.y - 1 == next.y)<a name="line.657"></a>
+<span class="sourceLineNo">658</span>                        return 3;<a name="line.658"></a>
+<span class="sourceLineNo">659</span>                if (current.x - 1 == next.x &amp;&amp; current.y == next.y)<a name="line.659"></a>
+<span class="sourceLineNo">660</span>                        return 4;<a name="line.660"></a>
+<span class="sourceLineNo">661</span>                if (current.x - 1 == next.x &amp;&amp; current.y + 1 == next.y)<a name="line.661"></a>
+<span class="sourceLineNo">662</span>                        return 5;<a name="line.662"></a>
+<span class="sourceLineNo">663</span>                if (current.x == next.x &amp;&amp; current.y + 1 == next.y)<a name="line.663"></a>
+<span class="sourceLineNo">664</span>                        return 6;<a name="line.664"></a>
+<span class="sourceLineNo">665</span>                if (current.x + 1 == next.x &amp;&amp; current.y + 1 == next.y)<a name="line.665"></a>
+<span class="sourceLineNo">666</span>                        return 7;<a name="line.666"></a>
+<span class="sourceLineNo">667</span><a name="line.667"></a>
+<span class="sourceLineNo">668</span>                return -1;<a name="line.668"></a>
+<span class="sourceLineNo">669</span>        }<a name="line.669"></a>
+<span class="sourceLineNo">670</span><a name="line.670"></a>
+<span class="sourceLineNo">671</span>        /**<a name="line.671"></a>
+<span class="sourceLineNo">672</span>         * Converts this connected component into a {@link Polygon} representation<a name="line.672"></a>
+<span class="sourceLineNo">673</span>         * by performing a 4-connected boundary trace and converting the resulting<a name="line.673"></a>
+<span class="sourceLineNo">674</span>         * pixels into vertices.<a name="line.674"></a>
+<span class="sourceLineNo">675</span>         *<a name="line.675"></a>
+<span class="sourceLineNo">676</span>         * @return A {@link Polygon} representing the inner boundary of the<a name="line.676"></a>
+<span class="sourceLineNo">677</span>         *         component.<a name="line.677"></a>
+<span class="sourceLineNo">678</span>         */<a name="line.678"></a>
+<span class="sourceLineNo">679</span>        public Polygon toPolygon() {<a name="line.679"></a>
+<span class="sourceLineNo">680</span>                final Polygon poly = new Polygon();<a name="line.680"></a>
+<span class="sourceLineNo">681</span><a name="line.681"></a>
+<span class="sourceLineNo">682</span>                for (final Pixel p : getInnerBoundary(ConnectMode.CONNECT_4))<a name="line.682"></a>
+<span class="sourceLineNo">683</span>                        poly.getVertices().add(p);<a name="line.683"></a>
+<span class="sourceLineNo">684</span><a name="line.684"></a>
+<span class="sourceLineNo">685</span>                return poly;<a name="line.685"></a>
+<span class="sourceLineNo">686</span>        }<a name="line.686"></a>
+<span class="sourceLineNo">687</span><a name="line.687"></a>
+<span class="sourceLineNo">688</span>        /**<a name="line.688"></a>
+<span class="sourceLineNo">689</span>         * Returns an ordered list of pixels that are on the inner boundary of the<a name="line.689"></a>
+<span class="sourceLineNo">690</span>         * shape. That means that the boundary points are all within the region. The<a name="line.690"></a>
+<span class="sourceLineNo">691</span>         * list is ordered such that adjacent boundary pixels are adjacent in the<a name="line.691"></a>
+<span class="sourceLineNo">692</span>         * list. The first pixel in the list should be the same as<a name="line.692"></a>
+<span class="sourceLineNo">693</span>         * {@link #topLeftMostPixel()}.<a name="line.693"></a>
+<span class="sourceLineNo">694</span>         *<a name="line.694"></a>
+<span class="sourceLineNo">695</span>         * @param mode<a name="line.695"></a>
+<span class="sourceLineNo">696</span>         *            The {@link ConnectMode} to use.<a name="line.696"></a>
+<span class="sourceLineNo">697</span>         * @return An ordered list of pixels defining the inner boundary<a name="line.697"></a>
+<span class="sourceLineNo">698</span>         */<a name="line.698"></a>
+<span class="sourceLineNo">699</span>        public List&lt;Pixel&gt; getInnerBoundary(ConnectMode mode) {<a name="line.699"></a>
+<span class="sourceLineNo">700</span>                final List&lt;Pixel&gt; pset = new ArrayList&lt;Pixel&gt;();<a name="line.700"></a>
+<span class="sourceLineNo">701</span><a name="line.701"></a>
+<span class="sourceLineNo">702</span>                final Pixel start = topLeftMostPixel();<a name="line.702"></a>
+<span class="sourceLineNo">703</span>                Pixel current = start;<a name="line.703"></a>
+<span class="sourceLineNo">704</span>                Pixel next;<a name="line.704"></a>
+<span class="sourceLineNo">705</span>                int dir;<a name="line.705"></a>
+<span class="sourceLineNo">706</span><a name="line.706"></a>
+<span class="sourceLineNo">707</span>                switch (mode) {<a name="line.707"></a>
+<span class="sourceLineNo">708</span>                case CONNECT_4:<a name="line.708"></a>
+<span class="sourceLineNo">709</span>                        dir = 3;<a name="line.709"></a>
+<span class="sourceLineNo">710</span>                        while (true) {<a name="line.710"></a>
+<span class="sourceLineNo">711</span>                                next = nextEdgePixelACW4(current, dir);<a name="line.711"></a>
+<span class="sourceLineNo">712</span>                                if (pset.size() &gt;= 2 &amp;&amp; next.equals(pset.get(1)) &amp;&amp; current.equals(start)) {<a name="line.712"></a>
+<span class="sourceLineNo">713</span>                                        break;<a name="line.713"></a>
+<span class="sourceLineNo">714</span>                                }<a name="line.714"></a>
+<span class="sourceLineNo">715</span><a name="line.715"></a>
+<span class="sourceLineNo">716</span>                                dir = code4(current, next);<a name="line.716"></a>
+<span class="sourceLineNo">717</span>                                pset.add(current);<a name="line.717"></a>
+<span class="sourceLineNo">718</span>                                current = next;<a name="line.718"></a>
+<span class="sourceLineNo">719</span>                        }<a name="line.719"></a>
+<span class="sourceLineNo">720</span>                        break;<a name="line.720"></a>
+<span class="sourceLineNo">721</span>                case CONNECT_8:<a name="line.721"></a>
+<span class="sourceLineNo">722</span>                        dir = 7;<a name="line.722"></a>
+<span class="sourceLineNo">723</span>                        while (true) {<a name="line.723"></a>
+<span class="sourceLineNo">724</span>                                next = nextEdgePixelACW8(current, dir);<a name="line.724"></a>
+<span class="sourceLineNo">725</span><a name="line.725"></a>
+<span class="sourceLineNo">726</span>                                if (pset.size() &gt;= 2 &amp;&amp; next.equals(pset.get(1)) &amp;&amp; current.equals(start)) {<a name="line.726"></a>
+<span class="sourceLineNo">727</span>                                        break;<a name="line.727"></a>
+<span class="sourceLineNo">728</span>                                }<a name="line.728"></a>
+<span class="sourceLineNo">729</span><a name="line.729"></a>
+<span class="sourceLineNo">730</span>                                dir = code8(current, next);<a name="line.730"></a>
+<span class="sourceLineNo">731</span>                                pset.add(current);<a name="line.731"></a>
+<span class="sourceLineNo">732</span>                                current = next;<a name="line.732"></a>
+<span class="sourceLineNo">733</span>                        }<a name="line.733"></a>
+<span class="sourceLineNo">734</span>                        break;<a name="line.734"></a>
+<span class="sourceLineNo">735</span>                }<a name="line.735"></a>
+<span class="sourceLineNo">736</span><a name="line.736"></a>
+<span class="sourceLineNo">737</span>                return pset;<a name="line.737"></a>
+<span class="sourceLineNo">738</span>        }<a name="line.738"></a>
+<span class="sourceLineNo">739</span><a name="line.739"></a>
+<span class="sourceLineNo">740</span>        /**<a name="line.740"></a>
+<span class="sourceLineNo">741</span>         * Returns an ordered list of pixels that are on the outer boundary of the<a name="line.741"></a>
+<span class="sourceLineNo">742</span>         * shape. That means that the boundary points are all outside of the region.<a name="line.742"></a>
+<span class="sourceLineNo">743</span>         * The list is ordered such that adjacent boundary pixels are adjacent in<a name="line.743"></a>
+<span class="sourceLineNo">744</span>         * the list.<a name="line.744"></a>
+<span class="sourceLineNo">745</span>         *<a name="line.745"></a>
+<span class="sourceLineNo">746</span>         * @return An ordered list of pixels defining the outer boundary<a name="line.746"></a>
+<span class="sourceLineNo">747</span>         */<a name="line.747"></a>
+<span class="sourceLineNo">748</span>        public List&lt;Pixel&gt; getOuterBoundary() {<a name="line.748"></a>
+<span class="sourceLineNo">749</span>                final List&lt;Pixel&gt; pset = new ArrayList&lt;Pixel&gt;();<a name="line.749"></a>
+<span class="sourceLineNo">750</span>                List&lt;Pixel&gt; outer = new ArrayList&lt;Pixel&gt;();<a name="line.750"></a>
+<span class="sourceLineNo">751</span><a name="line.751"></a>
+<span class="sourceLineNo">752</span>                final Pixel start = topLeftMostPixel();<a name="line.752"></a>
+<span class="sourceLineNo">753</span>                Pixel current = start;<a name="line.753"></a>
+<span class="sourceLineNo">754</span>                Pixel next;<a name="line.754"></a>
+<span class="sourceLineNo">755</span>                int dir = 3;<a name="line.755"></a>
+<span class="sourceLineNo">756</span><a name="line.756"></a>
+<span class="sourceLineNo">757</span>                while (true) {<a name="line.757"></a>
+<span class="sourceLineNo">758</span>                        next = nextEdgePixelACW4(current, dir, outer);<a name="line.758"></a>
+<span class="sourceLineNo">759</span>                        if (pset.size() &gt;= 2 &amp;&amp; next.equals(pset.get(1)) &amp;&amp; current.equals(start)) {<a name="line.759"></a>
+<span class="sourceLineNo">760</span>                                break;<a name="line.760"></a>
+<span class="sourceLineNo">761</span>                        }<a name="line.761"></a>
+<span class="sourceLineNo">762</span>                        if (this.pixels.size() == 1)<a name="line.762"></a>
+<span class="sourceLineNo">763</span>                                break;<a name="line.763"></a>
+<span class="sourceLineNo">764</span><a name="line.764"></a>
+<span class="sourceLineNo">765</span>                        dir = code4(current, next);<a name="line.765"></a>
+<span class="sourceLineNo">766</span>                        pset.add(current);<a name="line.766"></a>
+<span class="sourceLineNo">767</span>                        current = next;<a name="line.767"></a>
+<span class="sourceLineNo">768</span>                }<a name="line.768"></a>
+<span class="sourceLineNo">769</span><a name="line.769"></a>
+<span class="sourceLineNo">770</span>                if (outer.size() &gt; 4) {<a name="line.770"></a>
+<span class="sourceLineNo">771</span>                        for (int i = 3; i &gt; 0; i--) {<a name="line.771"></a>
+<span class="sourceLineNo">772</span>                                boolean found = true;<a name="line.772"></a>
+<span class="sourceLineNo">773</span>                                for (int j = 0; j &lt; i; j++) {<a name="line.773"></a>
+<span class="sourceLineNo">774</span>                                        if (!outer.get(j).equals(outer.get(outer.size() - i + j))) {<a name="line.774"></a>
+<span class="sourceLineNo">775</span>                                                found = false;<a name="line.775"></a>
+<span class="sourceLineNo">776</span>                                                break;<a name="line.776"></a>
+<span class="sourceLineNo">777</span>                                        }<a name="line.777"></a>
+<span class="sourceLineNo">778</span>                                }<a name="line.778"></a>
+<span class="sourceLineNo">779</span><a name="line.779"></a>
+<span class="sourceLineNo">780</span>                                if (found) {<a name="line.780"></a>
+<span class="sourceLineNo">781</span>                                        outer = outer.subList(0, outer.size() - i);<a name="line.781"></a>
+<span class="sourceLineNo">782</span>                                        break;<a name="line.782"></a>
+<span class="sourceLineNo">783</span>                                }<a name="line.783"></a>
+<span class="sourceLineNo">784</span>                        }<a name="line.784"></a>
+<span class="sourceLineNo">785</span>                }<a name="line.785"></a>
+<span class="sourceLineNo">786</span><a name="line.786"></a>
+<span class="sourceLineNo">787</span>                return outer;<a name="line.787"></a>
+<span class="sourceLineNo">788</span>        }<a name="line.788"></a>
+<span class="sourceLineNo">789</span><a name="line.789"></a>
+<span class="sourceLineNo">790</span>        /**<a name="line.790"></a>
+<span class="sourceLineNo">791</span>         * Calculates the Freeman chaincode for this connected component. The<a name="line.791"></a>
+<span class="sourceLineNo">792</span>         * chaincode is returned as a list of direction codes defining the path of<a name="line.792"></a>
+<span class="sourceLineNo">793</span>         * the boundary.<a name="line.793"></a>
+<span class="sourceLineNo">794</span>         * &lt;p&gt;<a name="line.794"></a>
+<span class="sourceLineNo">795</span>         * The Freeman chaincode is a means for encoding the paths between nodes on<a name="line.795"></a>
+<span class="sourceLineNo">796</span>         * the boundary of a shape, thereby reducing the encoding of a shape to a<a name="line.796"></a>
+<span class="sourceLineNo">797</span>         * single start coordinate and a list of direction codes. The Freeman<a name="line.797"></a>
+<span class="sourceLineNo">798</span>         * direction codes are 0-4 for 4-connected boundaries and 0-7 for<a name="line.798"></a>
+<span class="sourceLineNo">799</span>         * 8-connected boundaries.<a name="line.799"></a>
+<span class="sourceLineNo">800</span>         *<a name="line.800"></a>
+<span class="sourceLineNo">801</span>         * @param mode<a name="line.801"></a>
+<span class="sourceLineNo">802</span>         *            4 or 8 connectivity<a name="line.802"></a>
+<span class="sourceLineNo">803</span>         * @return the chain code<a name="line.803"></a>
+<span class="sourceLineNo">804</span>         */<a name="line.804"></a>
+<span class="sourceLineNo">805</span>        public TIntArrayList freemanChainCode(ConnectMode mode) {<a name="line.805"></a>
+<span class="sourceLineNo">806</span>                final TIntArrayList code = new TIntArrayList();<a name="line.806"></a>
+<span class="sourceLineNo">807</span><a name="line.807"></a>
+<span class="sourceLineNo">808</span>                final Pixel start = topLeftMostPixel();<a name="line.808"></a>
+<span class="sourceLineNo">809</span>                Pixel current = start;<a name="line.809"></a>
+<span class="sourceLineNo">810</span>                Pixel next;<a name="line.810"></a>
+<span class="sourceLineNo">811</span>                int dir;<a name="line.811"></a>
+<span class="sourceLineNo">812</span><a name="line.812"></a>
+<span class="sourceLineNo">813</span>                switch (mode) {<a name="line.813"></a>
+<span class="sourceLineNo">814</span>                case CONNECT_8:<a name="line.814"></a>
+<span class="sourceLineNo">815</span>                        dir = 7;<a name="line.815"></a>
+<span class="sourceLineNo">816</span>                        while (!(next = nextEdgePixelACW8(current, dir)).equals(start)) {<a name="line.816"></a>
+<span class="sourceLineNo">817</span>                                dir = code8(current, next);<a name="line.817"></a>
+<span class="sourceLineNo">818</span>                                code.add(dir);<a name="line.818"></a>
+<span class="sourceLineNo">819</span>                                current = next;<a name="line.819"></a>
+<span class="sourceLineNo">820</span>                        }<a name="line.820"></a>
+<span class="sourceLineNo">821</span>                        code.add(code8(current, next));<a name="line.821"></a>
+<span class="sourceLineNo">822</span>                        break;<a name="line.822"></a>
+<span class="sourceLineNo">823</span>                case CONNECT_4:<a name="line.823"></a>
+<span class="sourceLineNo">824</span>                        dir = 3;<a name="line.824"></a>
+<span class="sourceLineNo">825</span>                        while (!(next = nextEdgePixelACW4(current, dir)).equals(start)) {<a name="line.825"></a>
+<span class="sourceLineNo">826</span>                                dir = code4(current, next);<a name="line.826"></a>
+<span class="sourceLineNo">827</span>                                code.add(dir);<a name="line.827"></a>
+<span class="sourceLineNo">828</span>                                current = next;<a name="line.828"></a>
+<span class="sourceLineNo">829</span>                        }<a name="line.829"></a>
+<span class="sourceLineNo">830</span>                        code.add(code4(current, next));<a name="line.830"></a>
+<span class="sourceLineNo">831</span>                        break;<a name="line.831"></a>
+<span class="sourceLineNo">832</span>                }<a name="line.832"></a>
+<span class="sourceLineNo">833</span><a name="line.833"></a>
+<span class="sourceLineNo">834</span>                return code;<a name="line.834"></a>
+<span class="sourceLineNo">835</span>        }<a name="line.835"></a>
+<span class="sourceLineNo">836</span><a name="line.836"></a>
+<span class="sourceLineNo">837</span>        /**<a name="line.837"></a>
+<span class="sourceLineNo">838</span>         * Process the given set of connected components with the given<a name="line.838"></a>
+<span class="sourceLineNo">839</span>         * {@link ConnectedComponentProcessor}.<a name="line.839"></a>
+<span class="sourceLineNo">840</span>         *<a name="line.840"></a>
+<span class="sourceLineNo">841</span>         * @param components<a name="line.841"></a>
+<span class="sourceLineNo">842</span>         *            The components to process<a name="line.842"></a>
+<span class="sourceLineNo">843</span>         * @param p<a name="line.843"></a>
+<span class="sourceLineNo">844</span>         *            The process to process the components with<a name="line.844"></a>
+<span class="sourceLineNo">845</span>         */<a name="line.845"></a>
+<span class="sourceLineNo">846</span>        public static void process(Collection&lt;ConnectedComponent&gt; components, ConnectedComponentProcessor p) {<a name="line.846"></a>
+<span class="sourceLineNo">847</span>                for (final ConnectedComponent c : components)<a name="line.847"></a>
+<span class="sourceLineNo">848</span>                        c.processInplace(p);<a name="line.848"></a>
+<span class="sourceLineNo">849</span>        }<a name="line.849"></a>
+<span class="sourceLineNo">850</span><a name="line.850"></a>
+<span class="sourceLineNo">851</span>        /**<a name="line.851"></a>
+<span class="sourceLineNo">852</span>         * Process this connected component with the given<a name="line.852"></a>
+<span class="sourceLineNo">853</span>         * {@link ConnectedComponentProcessor} and returns a new component<a name="line.853"></a>
+<span class="sourceLineNo">854</span>         * containing the result.<a name="line.854"></a>
+<span class="sourceLineNo">855</span>         *<a name="line.855"></a>
+<span class="sourceLineNo">856</span>         * @param p<a name="line.856"></a>
+<span class="sourceLineNo">857</span>         *            The processor to process this component with<a name="line.857"></a>
+<span class="sourceLineNo">858</span>         * @return A new component containing the result.<a name="line.858"></a>
+<span class="sourceLineNo">859</span>         */<a name="line.859"></a>
+<span class="sourceLineNo">860</span>        public ConnectedComponent process(ConnectedComponentProcessor p) {<a name="line.860"></a>
+<span class="sourceLineNo">861</span>                final ConnectedComponent tmp = clone();<a name="line.861"></a>
+<span class="sourceLineNo">862</span>                p.process(tmp);<a name="line.862"></a>
+<span class="sourceLineNo">863</span>                return tmp;<a name="line.863"></a>
+<span class="sourceLineNo">864</span>        }<a name="line.864"></a>
+<span class="sourceLineNo">865</span><a name="line.865"></a>
+<span class="sourceLineNo">866</span>        /**<a name="line.866"></a>
+<span class="sourceLineNo">867</span>         * Process a connected component with the given<a name="line.867"></a>
+<span class="sourceLineNo">868</span>         * {@link ConnectedComponentProcessor}. Side-affects this component.<a name="line.868"></a>
+<span class="sourceLineNo">869</span>         *<a name="line.869"></a>
+<span class="sourceLineNo">870</span>         * @param p<a name="line.870"></a>
+<span class="sourceLineNo">871</span>         *            The processor to process this component with<a name="line.871"></a>
+<span class="sourceLineNo">872</span>         * @return A reference to this connected component.<a name="line.872"></a>
+<span class="sourceLineNo">873</span>         */<a name="line.873"></a>
+<span class="sourceLineNo">874</span>        public ConnectedComponent processInplace(ConnectedComponentProcessor p) {<a name="line.874"></a>
+<span class="sourceLineNo">875</span>                p.process(this);<a name="line.875"></a>
+<span class="sourceLineNo">876</span>                return this;<a name="line.876"></a>
+<span class="sourceLineNo">877</span>        }<a name="line.877"></a>
+<span class="sourceLineNo">878</span><a name="line.878"></a>
+<span class="sourceLineNo">879</span>        /**<a name="line.879"></a>
+<span class="sourceLineNo">880</span>         * Performs a flood fill on the given image starting at the given pixel. The<a name="line.880"></a>
+<span class="sourceLineNo">881</span>         * result of the flood fill is returned as a {@link ConnectedComponent}.<a name="line.881"></a>
+<span class="sourceLineNo">882</span>         *<a name="line.882"></a>
+<span class="sourceLineNo">883</span>         * @param image<a name="line.883"></a>
+<span class="sourceLineNo">884</span>         *            The image on which to perform a flood fill<a name="line.884"></a>
+<span class="sourceLineNo">885</span>         * @param start<a name="line.885"></a>
+<span class="sourceLineNo">886</span>         *            The start pixel to begin the flood<a name="line.886"></a>
+<span class="sourceLineNo">887</span>         * @return A ConnectedComponent containing the resulting region.<a name="line.887"></a>
+<span class="sourceLineNo">888</span>         */<a name="line.888"></a>
+<span class="sourceLineNo">889</span>        public static ConnectedComponent floodFill(FImage image, Pixel start) {<a name="line.889"></a>
+<span class="sourceLineNo">890</span>                final ConnectedComponent cc = new ConnectedComponent();<a name="line.890"></a>
+<span class="sourceLineNo">891</span>                final float val = image.pixels[start.y][start.x];<a name="line.891"></a>
+<span class="sourceLineNo">892</span>                final int[][] output = new int[image.height][image.width];<a name="line.892"></a>
+<span class="sourceLineNo">893</span><a name="line.893"></a>
+<span class="sourceLineNo">894</span>                // Flood-fill (node, target-color, replacement-color):<a name="line.894"></a>
+<span class="sourceLineNo">895</span>                // 1. Set Q to the empty queue.<a name="line.895"></a>
+<span class="sourceLineNo">896</span>                // Queue&lt;Pixel&gt; queue = new LinkedList&lt;Pixel&gt;();<a name="line.896"></a>
+<span class="sourceLineNo">897</span>                final LinkedHashSet&lt;Pixel&gt; queue = new LinkedHashSet&lt;Pixel&gt;();<a name="line.897"></a>
+<span class="sourceLineNo">898</span><a name="line.898"></a>
+<span class="sourceLineNo">899</span>                // 2. If the color of node is not equal to target-color, return.<a name="line.899"></a>
+<span class="sourceLineNo">900</span>                if (image.pixels[start.y][start.x] &gt; val)<a name="line.900"></a>
+<span class="sourceLineNo">901</span>                        return cc;<a name="line.901"></a>
+<span class="sourceLineNo">902</span><a name="line.902"></a>
+<span class="sourceLineNo">903</span>                // 3. Add node to Q.<a name="line.903"></a>
+<span class="sourceLineNo">904</span>                queue.add(start);<a name="line.904"></a>
+<span class="sourceLineNo">905</span><a name="line.905"></a>
+<span class="sourceLineNo">906</span>                // 4. For each element n of Q:<a name="line.906"></a>
+<span class="sourceLineNo">907</span>                while (queue.size() &gt; 0) {<a name="line.907"></a>
+<span class="sourceLineNo">908</span>                        // Pixel n = queue.poll();<a name="line.908"></a>
+<span class="sourceLineNo">909</span>                        final Pixel n = queue.iterator().next();<a name="line.909"></a>
+<span class="sourceLineNo">910</span>                        queue.remove(n);<a name="line.910"></a>
+<span class="sourceLineNo">911</span><a name="line.911"></a>
+<span class="sourceLineNo">912</span>                        // 5. If the color of n is equal to target-color:<a name="line.912"></a>
+<span class="sourceLineNo">913</span>                        if (image.pixels[n.y][n.x] &lt;= val &amp;&amp; output[n.y][n.x] != 1) {<a name="line.913"></a>
+<span class="sourceLineNo">914</span>                                // 6. Set w and e equal to n.<a name="line.914"></a>
+<span class="sourceLineNo">915</span>                                int e = n.x, w = n.x;<a name="line.915"></a>
+<span class="sourceLineNo">916</span>                                // 7. Move w to the west until the color of the node to the west<a name="line.916"></a>
+<span class="sourceLineNo">917</span>                                // of w no longer matches target-color.<a name="line.917"></a>
+<span class="sourceLineNo">918</span>                                while (w &gt; 0 &amp;&amp; image.pixels[n.y][w - 1] &lt;= val)<a name="line.918"></a>
+<span class="sourceLineNo">919</span>                                        w--;<a name="line.919"></a>
+<span class="sourceLineNo">920</span><a name="line.920"></a>
+<span class="sourceLineNo">921</span>                                // 8. Move e to the east until the color of the node to the east<a name="line.921"></a>
+<span class="sourceLineNo">922</span>                                // of e no longer matches target-color.<a name="line.922"></a>
+<span class="sourceLineNo">923</span>                                while (e &lt; image.width - 1 &amp;&amp; image.pixels[n.y][e + 1] &lt;= val)<a name="line.923"></a>
+<span class="sourceLineNo">924</span>                                        e++;<a name="line.924"></a>
+<span class="sourceLineNo">925</span><a name="line.925"></a>
+<span class="sourceLineNo">926</span>                                // 9. Set the color of nodes between w and e to<a name="line.926"></a>
+<span class="sourceLineNo">927</span>                                // replacement-color.<a name="line.927"></a>
+<span class="sourceLineNo">928</span>                                for (int i = w; i &lt;= e; i++) {<a name="line.928"></a>
+<span class="sourceLineNo">929</span>                                        output[n.y][i] = 1;<a name="line.929"></a>
+<span class="sourceLineNo">930</span>                                        cc.addPixel(i, n.y);<a name="line.930"></a>
+<span class="sourceLineNo">931</span><a name="line.931"></a>
+<span class="sourceLineNo">932</span>                                        // 10. For each node n between w and e:<a name="line.932"></a>
+<span class="sourceLineNo">933</span>                                        final int north = n.y - 1;<a name="line.933"></a>
+<span class="sourceLineNo">934</span>                                        final int south = n.y + 1;<a name="line.934"></a>
+<span class="sourceLineNo">935</span>                                        // 11. If the color of the node to the north of n is<a name="line.935"></a>
+<span class="sourceLineNo">936</span>                                        // target-color, add that node to Q.<a name="line.936"></a>
+<span class="sourceLineNo">937</span>                                        if (north &gt;= 0 &amp;&amp; image.pixels[north][i] &lt;= val &amp;&amp; output[north][i] != 1)<a name="line.937"></a>
+<span class="sourceLineNo">938</span>                                                queue.add(new Pixel(i, north));<a name="line.938"></a>
+<span class="sourceLineNo">939</span>                                        // If the color of the node to the south of n is<a name="line.939"></a>
+<span class="sourceLineNo">940</span>                                        // target-color, add that node to Q.<a name="line.940"></a>
+<span class="sourceLineNo">941</span>                                        if (south &lt; image.height &amp;&amp; image.pixels[south][i] &lt;= val &amp;&amp; output[south][i] != 1)<a name="line.941"></a>
+<span class="sourceLineNo">942</span>                                                queue.add(new Pixel(i, south));<a name="line.942"></a>
+<span class="sourceLineNo">943</span>                                }<a name="line.943"></a>
+<span class="sourceLineNo">944</span>                                // 12. Continue looping until Q is exhausted.<a name="line.944"></a>
+<span class="sourceLineNo">945</span>                        }<a name="line.945"></a>
+<span class="sourceLineNo">946</span>                }<a name="line.946"></a>
+<span class="sourceLineNo">947</span>                // 13. Return.<a name="line.947"></a>
+<span class="sourceLineNo">948</span>                return cc;<a name="line.948"></a>
+<span class="sourceLineNo">949</span>        }<a name="line.949"></a>
+<span class="sourceLineNo">950</span><a name="line.950"></a>
+<span class="sourceLineNo">951</span>        /**<a name="line.951"></a>
+<span class="sourceLineNo">952</span>         * {@inheritDoc}<a name="line.952"></a>
+<span class="sourceLineNo">953</span>         *<a name="line.953"></a>
+<span class="sourceLineNo">954</span>         * Performs a deep copy on the connected component; that is, all pixels are<a name="line.954"></a>
+<span class="sourceLineNo">955</span>         * also cloned.<a name="line.955"></a>
+<span class="sourceLineNo">956</span>         */<a name="line.956"></a>
+<span class="sourceLineNo">957</span>        @Override<a name="line.957"></a>
+<span class="sourceLineNo">958</span>        public ConnectedComponent clone() {<a name="line.958"></a>
+<span class="sourceLineNo">959</span>                ConnectedComponent tmp;<a name="line.959"></a>
+<span class="sourceLineNo">960</span>                try {<a name="line.960"></a>
+<span class="sourceLineNo">961</span>                        tmp = (ConnectedComponent) super.clone();<a name="line.961"></a>
+<span class="sourceLineNo">962</span>                        tmp.pixels = new HashSet&lt;Pixel&gt;();<a name="line.962"></a>
+<span class="sourceLineNo">963</span><a name="line.963"></a>
+<span class="sourceLineNo">964</span>                        for (final Pixel p : pixels)<a name="line.964"></a>
+<span class="sourceLineNo">965</span>                                tmp.pixels.add(p.clone());<a name="line.965"></a>
+<span class="sourceLineNo">966</span><a name="line.966"></a>
+<span class="sourceLineNo">967</span>                        return tmp;<a name="line.967"></a>
+<span class="sourceLineNo">968</span>                } catch (final CloneNotSupportedException e) {<a name="line.968"></a>
+<span class="sourceLineNo">969</span>                        throw new RuntimeException(e);<a name="line.969"></a>
+<span class="sourceLineNo">970</span>                }<a name="line.970"></a>
+<span class="sourceLineNo">971</span>        }<a name="line.971"></a>
+<span class="sourceLineNo">972</span><a name="line.972"></a>
+<span class="sourceLineNo">973</span>        /**<a name="line.973"></a>
+<span class="sourceLineNo">974</span>         * Calculates the distance from the centroid of every pixel on the<a name="line.974"></a>
+<span class="sourceLineNo">975</span>         * 8-connected boundary of this component. Returns a {@link TFloatArrayList}<a name="line.975"></a>
+<span class="sourceLineNo">976</span>         * that contains the list of distances (in order of the boundary).<a name="line.976"></a>
+<span class="sourceLineNo">977</span>         *<a name="line.977"></a>
+<span class="sourceLineNo">978</span>         * @return A list ({@link TFloatArrayList}) of distances of boundary points<a name="line.978"></a>
+<span class="sourceLineNo">979</span>         *         to the centroid.<a name="line.979"></a>
+<span class="sourceLineNo">980</span>         */<a name="line.980"></a>
+<span class="sourceLineNo">981</span>        public TFloatArrayList calculateBoundaryDistanceFromCentre() {<a name="line.981"></a>
+<span class="sourceLineNo">982</span>                final TFloatArrayList distances = new TFloatArrayList();<a name="line.982"></a>
+<span class="sourceLineNo">983</span>                final List&lt;Pixel&gt; bound = getInnerBoundary(ConnectMode.CONNECT_8);<a name="line.983"></a>
+<span class="sourceLineNo">984</span>                final double[] centroid = calculateCentroid();<a name="line.984"></a>
+<span class="sourceLineNo">985</span><a name="line.985"></a>
+<span class="sourceLineNo">986</span>                for (final Pixel p : bound) {<a name="line.986"></a>
+<span class="sourceLineNo">987</span>                        final float dist = (float) Math.sqrt(((centroid[0] - p.x) * ((centroid[0] - p.x))) +<a name="line.987"></a>
+<span class="sourceLineNo">988</span>                                        ((centroid[1] - p.y) * ((centroid[1] - p.y))));<a name="line.988"></a>
+<span class="sourceLineNo">989</span>                        distances.add(dist);<a name="line.989"></a>
+<span class="sourceLineNo">990</span>                }<a name="line.990"></a>
+<span class="sourceLineNo">991</span><a name="line.991"></a>
+<span class="sourceLineNo">992</span>                return distances;<a name="line.992"></a>
+<span class="sourceLineNo">993</span>        }<a name="line.993"></a>
+<span class="sourceLineNo">994</span><a name="line.994"></a>
+<span class="sourceLineNo">995</span>        @Override<a name="line.995"></a>
+<span class="sourceLineNo">996</span>        public String asciiHeader() {<a name="line.996"></a>
+<span class="sourceLineNo">997</span>                return "ConnectedComponent";<a name="line.997"></a>
+<span class="sourceLineNo">998</span>        }<a name="line.998"></a>
+<span class="sourceLineNo">999</span><a name="line.999"></a>
+<span class="sourceLineNo">1000</span>        @Override<a name="line.1000"></a>
+<span class="sourceLineNo">1001</span>        public byte[] binaryHeader() {<a name="line.1001"></a>
+<span class="sourceLineNo">1002</span>                return "CC".getBytes();<a name="line.1002"></a>
+<span class="sourceLineNo">1003</span>        }<a name="line.1003"></a>
+<span class="sourceLineNo">1004</span><a name="line.1004"></a>
+<span class="sourceLineNo">1005</span>        /**<a name="line.1005"></a>
+<span class="sourceLineNo">1006</span>         * Compute the aspect ratio of the oriented bounding box.<a name="line.1006"></a>
+<span class="sourceLineNo">1007</span>         *<a name="line.1007"></a>
+<span class="sourceLineNo">1008</span>         * @return the aspect ratio of the oriented bounding box.<a name="line.1008"></a>
+<span class="sourceLineNo">1009</span>         */<a name="line.1009"></a>
+<span class="sourceLineNo">1010</span>        public double calculateOrientatedBoundingBoxAspectRatio() {<a name="line.1010"></a>
+<span class="sourceLineNo">1011</span>                final RotatedRectangle r = toPolygon().minimumBoundingRectangle();<a name="line.1011"></a>
+<span class="sourceLineNo">1012</span><a name="line.1012"></a>
+<span class="sourceLineNo">1013</span>                return r.height / r.width;<a name="line.1013"></a>
+<span class="sourceLineNo">1014</span>        }<a name="line.1014"></a>
+<span class="sourceLineNo">1015</span><a name="line.1015"></a>
+<span class="sourceLineNo">1016</span>        /**<a name="line.1016"></a>
+<span class="sourceLineNo">1017</span>         * Calculates the polygon that defines the minimum bounding box that best<a name="line.1017"></a>
+<span class="sourceLineNo">1018</span>         * fits the connected component, at whatever angle that may be.<a name="line.1018"></a>
+<span class="sourceLineNo">1019</span>         *<a name="line.1019"></a>
+<span class="sourceLineNo">1020</span>         * @return A {@link RotatedRectangle} that defines the minimum bounding box.<a name="line.1020"></a>
+<span class="sourceLineNo">1021</span>         */<a name="line.1021"></a>
+<span class="sourceLineNo">1022</span>        public RotatedRectangle calculateOrientatedBoundingBox() {<a name="line.1022"></a>
+<span class="sourceLineNo">1023</span>                return this.toPolygon().minimumBoundingRectangle();<a name="line.1023"></a>
+<span class="sourceLineNo">1024</span>        }<a name="line.1024"></a>
+<span class="sourceLineNo">1025</span>}<a name="line.1025"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

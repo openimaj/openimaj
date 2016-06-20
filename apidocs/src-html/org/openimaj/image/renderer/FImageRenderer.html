@@ -1,0 +1,488 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.renderer;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import org.openimaj.image.FImage;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import org.openimaj.image.pixel.Pixel;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.openimaj.image.renderer.ScanRasteriser.ScanLineListener;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.math.geometry.line.Line2d;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.math.geometry.point.Point2dImpl;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.math.geometry.shape.Polygon;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>/**<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * {@link ImageRenderer} for {@link FImage} images. Supports both anti-aliased<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * and fast rendering.<a name="line.42"></a>
+<span class="sourceLineNo">043</span> *<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.44"></a>
+<span class="sourceLineNo">045</span> *<a name="line.45"></a>
+<span class="sourceLineNo">046</span> */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>public class FImageRenderer extends ImageRenderer&lt;Float, FImage&gt; {<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * Construct with given target image.<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         *<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * @param targetImage<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         *            the target image.<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        public FImageRenderer(final FImage targetImage) {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                super(targetImage);<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        }<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        /**<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * Construct with given target image and rendering hints.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         *<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         * @param targetImage<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         *            the target image.<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         * @param hints<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         *            the render hints<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         */<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        public FImageRenderer(final FImage targetImage, final RenderHints hints) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                super(targetImage, hints);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        }<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>        @Override<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        public Float defaultForegroundColour() {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                return 1f;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>        @Override<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        public Float defaultBackgroundColour() {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                return 0f;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        }<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>        /**<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         * {@inheritDoc}<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         *<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, double,<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         *      int, int, java.lang.Object)<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        @Override<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        public void drawLine(final int x1, final int y1, final double theta, final int length, final int thickness,<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        final Float grey)<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                final int x2 = x1 + (int) Math.round(Math.cos(theta) * length);<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                final int y2 = y1 + (int) Math.round(Math.sin(theta) * length);<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>                this.drawLine(x1, y1, x2, y2, thickness, grey);<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        }<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>        /**<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         * {@inheritDoc}<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         *<a name="line.99"></a>
+<span class="sourceLineNo">100</span>         * @see org.openimaj.image.renderer.ImageRenderer#drawLine(int, int, int,<a name="line.100"></a>
+<span class="sourceLineNo">101</span>         *      int, int, java.lang.Object)<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         */<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        @Override<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        public void drawLine(final int x0, final int y0, final int x1, final int y1, final int thickness, final Float grey) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                this.drawLine((float) x0, (float) y0, (float) x1, (float) y1, thickness, grey);<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>        @Override<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        public void drawLine(final float x0, final float y0, final float x1, final float y1, final int thickness,<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        final Float grey)<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                switch (this.hints.drawingAlgorithm) {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                case ANTI_ALIASED:<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        if (thickness &lt;= 1) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                this.drawLineXiaolinWu(x0, y0, x1, y1, grey);<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        } else {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                final double theta = Math.atan2(y1 - y0, x1 - x0);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                                final double t = thickness / 2;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                final double sin = t * Math.sin(theta);<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                                final double cos = t * Math.cos(theta);<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                final Polygon p = new Polygon();<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                p.addVertex(new Point2dImpl((float) (x0 - sin), (float) (y0 + cos)));<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                p.addVertex(new Point2dImpl((float) (x0 + sin), (float) (y0 - cos)));<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                                p.addVertex(new Point2dImpl((float) (x1 + sin), (float) (y1 - cos)));<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                                p.addVertex(new Point2dImpl((float) (x1 - sin), (float) (y1 + cos)));<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                                this.drawPolygonFilled(p, grey);<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        }<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        break;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                default:<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        this.drawLineBresenham(Math.round(x0), Math.round(y0), Math.round(x1), Math.round(y1), thickness, grey);<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                }<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        }<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>        private float fpart(final float f) {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                return f - (int) f;<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>        private float rfpart(final float f) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                return 1 - this.fpart(f);<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        }<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>        private void plot(final int a, final int b, final float c, final float grey, final boolean reversed) {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                int x, y;<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                if (reversed) {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        y = a;<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        x = b;<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                } else {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        x = a;<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        y = b;<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                }<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>                if (x &gt;= 0 &amp;&amp; x &lt; this.targetImage.width &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; this.targetImage.height &amp;&amp; !Float.isNaN(c)) {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        this.targetImage.pixels[y][x] = c * grey + (1 - c) * this.targetImage.pixels[y][x];<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                }<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>        /*<a name="line.159"></a>
+<span class="sourceLineNo">160</span>         * Implementation of Xiaolin Wu's anti-aliased line drawing algorithm. Based<a name="line.160"></a>
+<span class="sourceLineNo">161</span>         * on the wikipedia article:<a name="line.161"></a>
+<span class="sourceLineNo">162</span>         * http://en.wikipedia.org/wiki/Xiaolin_Wu's_line_algorithm<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        protected void drawLineXiaolinWu(float x1, float y1, float x2, float y2, final Float grey) {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                float dx = x2 - x1;<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                float dy = y2 - y1;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                boolean reversed = false;<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>                if (Math.abs(dx) &lt; Math.abs(dy)) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        float tmp;<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        tmp = x1;<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        x1 = y1;<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        y1 = tmp;<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                        tmp = x2;<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                        x2 = y2;<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                        y2 = tmp;<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        tmp = dx;<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                        dx = dy;<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                        dy = tmp;<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                        reversed = true;<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                }<a name="line.181"></a>
+<span class="sourceLineNo">182</span><a name="line.182"></a>
+<span class="sourceLineNo">183</span>                if (x2 &lt; x1) {<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                        float tmp;<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        tmp = x1;<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                        x1 = x2;<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                        x2 = tmp;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                        tmp = y1;<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        y1 = y2;<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                        y2 = tmp;<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                }<a name="line.191"></a>
+<span class="sourceLineNo">192</span><a name="line.192"></a>
+<span class="sourceLineNo">193</span>                final float gradient = dy / dx;<a name="line.193"></a>
+<span class="sourceLineNo">194</span><a name="line.194"></a>
+<span class="sourceLineNo">195</span>                // handle first endpoint<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                int xend = Math.round(x1);<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                float yend = y1 + gradient * (xend - x1);<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                float xgap = this.rfpart(x1 + 0.5f);<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                final int xpxl1 = xend; // this will be used in the main loop<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                final int ypxl1 = (int) (yend);<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                this.plot(xpxl1, ypxl1, this.rfpart(yend) * xgap, grey, reversed);<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                this.plot(xpxl1, ypxl1 + 1, this.fpart(yend) * xgap, grey, reversed);<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                float intery = yend + gradient; // first y-intersection for the main<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                // loop<a name="line.204"></a>
+<span class="sourceLineNo">205</span><a name="line.205"></a>
+<span class="sourceLineNo">206</span>                // handle second endpoint<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                xend = Math.round(x2);<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                yend = y2 + gradient * (xend - x2);<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                xgap = this.fpart(x2 + 0.5f);<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                final int xpxl2 = xend; // this will be used in the main loop<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                final int ypxl2 = (int) (yend);<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                this.plot(xpxl2, ypxl2, this.rfpart(yend) * xgap, grey, reversed);<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                this.plot(xpxl2, ypxl2 + 1, this.fpart(yend) * xgap, grey, reversed);<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>                // main loop<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                for (int x = xpxl1 + 1; x &lt;= xpxl2 - 1; x++) {<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                        this.plot(x, (int) (intery), this.rfpart(intery), grey, reversed);<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                        this.plot(x, (int) (intery) + 1, this.fpart(intery), grey, reversed);<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                        intery += gradient;<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                }<a name="line.220"></a>
+<span class="sourceLineNo">221</span>        }<a name="line.221"></a>
+<span class="sourceLineNo">222</span><a name="line.222"></a>
+<span class="sourceLineNo">223</span>        /*<a name="line.223"></a>
+<span class="sourceLineNo">224</span>         * Implementation of Bresenham's fast line drawing algorithm. Based on the<a name="line.224"></a>
+<span class="sourceLineNo">225</span>         * wikipedia article:<a name="line.225"></a>
+<span class="sourceLineNo">226</span>         * http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm<a name="line.226"></a>
+<span class="sourceLineNo">227</span>         */<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        protected void drawLineBresenham(int x0, int y0, int x1, int y1, int thickness, final Float grey) {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                final Line2d line = new Line2d(new Point2dImpl(x0, y0), new Point2dImpl(x1, y1))<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                .lineWithinSquare(this.targetImage<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                                                .getBounds());<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                if (line == null)<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                        return;<a name="line.233"></a>
+<span class="sourceLineNo">234</span><a name="line.234"></a>
+<span class="sourceLineNo">235</span>                x0 = (int) line.begin.getX();<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                y0 = (int) line.begin.getY();<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                x1 = (int) line.end.getX();<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                y1 = (int) line.end.getY();<a name="line.238"></a>
+<span class="sourceLineNo">239</span><a name="line.239"></a>
+<span class="sourceLineNo">240</span>                final double theta = Math.atan2(y1 - y0, x1 - x0);<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                thickness = (int) Math.round(thickness * Math.max(Math.abs(Math.cos(theta)), Math.abs(Math.sin(theta))));<a name="line.241"></a>
+<span class="sourceLineNo">242</span><a name="line.242"></a>
+<span class="sourceLineNo">243</span>                final int offset = thickness / 2;<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                final int extra = thickness % 2;<a name="line.244"></a>
+<span class="sourceLineNo">245</span><a name="line.245"></a>
+<span class="sourceLineNo">246</span>                // implementation of Bresenham's algorithm from Wikipedia.<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                int Dx = x1 - x0;<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                int Dy = y1 - y0;<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                final boolean steep = (Math.abs(Dy) &gt;= Math.abs(Dx));<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                if (steep) {<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                        int tmp;<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        // SWAP(x0, y0);<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                        tmp = x0;<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                        x0 = y0;<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                        y0 = tmp;<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                        // SWAP(x1, y1);<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                        tmp = x1;<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                        x1 = y1;<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                        y1 = tmp;<a name="line.259"></a>
+<span class="sourceLineNo">260</span><a name="line.260"></a>
+<span class="sourceLineNo">261</span>                        // recompute Dx, Dy after swap<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                        Dx = x1 - x0;<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        Dy = y1 - y0;<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                }<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                int xstep = 1;<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                if (Dx &lt; 0) {<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                        xstep = -1;<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                        Dx = -Dx;<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                }<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                int ystep = 1;<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                if (Dy &lt; 0) {<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                        ystep = -1;<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                        Dy = -Dy;<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                }<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                final int TwoDy = 2 * Dy;<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                final int TwoDyTwoDx = TwoDy - 2 * Dx; // 2*Dy - 2*Dx<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                int E = TwoDy - Dx; // 2*Dy - Dx<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                int y = y0;<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                int xDraw, yDraw;<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                for (int x = x0; x != x1; x += xstep) {<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                        if (steep) {<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                                xDraw = y;<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                                yDraw = x;<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                        } else {<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                                xDraw = x;<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                                yDraw = y;<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                        }<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                        // plot<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                        if (xDraw &gt;= 0 &amp;&amp; xDraw &lt; this.targetImage.width &amp;&amp; yDraw &gt;= 0 &amp;&amp; yDraw &lt; this.targetImage.height) {<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                                if (thickness == 1) {<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                                        this.targetImage.pixels[yDraw][xDraw] = grey;<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                                } else if (thickness &gt; 1) {<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                                        for (int yy = yDraw - offset; yy &lt; yDraw + offset + extra; yy++)<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                                                for (int xx = xDraw - offset; xx &lt; xDraw + offset + extra; xx++)<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                                                        if (xx &gt;= 0 &amp;&amp; yy &gt;= 0 &amp;&amp; xx &lt; this.targetImage.width &amp;&amp; yy &lt; this.targetImage.height)<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                                                                this.targetImage.pixels[yy][xx] = grey;<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                                }<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                        }<a name="line.298"></a>
+<span class="sourceLineNo">299</span><a name="line.299"></a>
+<span class="sourceLineNo">300</span>                        // next<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                        if (E &gt; 0) {<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                                E += TwoDyTwoDx; // E += 2*Dy - 2*Dx;<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                                y = y + ystep;<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                        } else {<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                                E += TwoDy; // E += 2*Dy;<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                        }<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                }<a name="line.307"></a>
+<span class="sourceLineNo">308</span>        }<a name="line.308"></a>
+<span class="sourceLineNo">309</span><a name="line.309"></a>
+<span class="sourceLineNo">310</span>        /**<a name="line.310"></a>
+<span class="sourceLineNo">311</span>         * {@inheritDoc}<a name="line.311"></a>
+<span class="sourceLineNo">312</span>         *<a name="line.312"></a>
+<span class="sourceLineNo">313</span>         * @see org.openimaj.image.renderer.ImageRenderer#drawPoint(org.openimaj.math.geometry.point.Point2d,<a name="line.313"></a>
+<span class="sourceLineNo">314</span>         *      java.lang.Object, int)<a name="line.314"></a>
+<span class="sourceLineNo">315</span>         */<a name="line.315"></a>
+<span class="sourceLineNo">316</span>        @Override<a name="line.316"></a>
+<span class="sourceLineNo">317</span>        public void drawPoint(final Point2d p, final Float grey, final int size) {<a name="line.317"></a>
+<span class="sourceLineNo">318</span><a name="line.318"></a>
+<span class="sourceLineNo">319</span>                if (!this.targetImage.getBounds().isInside(p))<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                        return;<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                final int halfsize = (size + 1) / 2; // 3 == 2, 4 = 2, 5 = 3, 6 = 3 etc.<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                // TODO anti-aliased point rendering<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                final int x = Math.round(p.getX());<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                final int y = Math.round(p.getY());<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                final int startx = Math.max(0, x - (halfsize - 1));<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                final int starty = Math.max(0, y - (halfsize - 1));<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                final int endx = Math.min(this.targetImage.width, x + halfsize);<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                final int endy = Math.min(this.targetImage.height, y + halfsize);<a name="line.328"></a>
+<span class="sourceLineNo">329</span><a name="line.329"></a>
+<span class="sourceLineNo">330</span>                for (int j = starty; j &lt; endy; j++) {<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                        for (int i = startx; i &lt; endx; i++) {<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                                this.targetImage.pixels[j][i] = grey;<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                        }<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                }<a name="line.334"></a>
+<span class="sourceLineNo">335</span>        }<a name="line.335"></a>
+<span class="sourceLineNo">336</span><a name="line.336"></a>
+<span class="sourceLineNo">337</span>        /**<a name="line.337"></a>
+<span class="sourceLineNo">338</span>         * {@inheritDoc}<a name="line.338"></a>
+<span class="sourceLineNo">339</span>         *<a name="line.339"></a>
+<span class="sourceLineNo">340</span>         * @see org.openimaj.image.renderer.ImageRenderer#drawPolygon(org.openimaj.math.geometry.shape.Polygon,<a name="line.340"></a>
+<span class="sourceLineNo">341</span>         *      int, java.lang.Object)<a name="line.341"></a>
+<span class="sourceLineNo">342</span>         */<a name="line.342"></a>
+<span class="sourceLineNo">343</span>        @Override<a name="line.343"></a>
+<span class="sourceLineNo">344</span>        public void drawPolygon(final Polygon p, final int thickness, final Float grey) {<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                if (p.nVertices() &lt; 2)<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                        return;<a name="line.346"></a>
+<span class="sourceLineNo">347</span><a name="line.347"></a>
+<span class="sourceLineNo">348</span>                Point2d p1, p2;<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                for (int i = 0; i &lt; p.nVertices() - 1; i++) {<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                        p1 = p.getVertices().get(i);<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                        p2 = p.getVertices().get(i + 1);<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                        this.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), thickness, grey);<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                }<a name="line.353"></a>
+<span class="sourceLineNo">354</span><a name="line.354"></a>
+<span class="sourceLineNo">355</span>                p1 = p.getVertices().get(p.nVertices() - 1);<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                p2 = p.getVertices().get(0);<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                this.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), thickness, grey);<a name="line.357"></a>
+<span class="sourceLineNo">358</span><a name="line.358"></a>
+<span class="sourceLineNo">359</span>                for (final Polygon i : p.getInnerPolys())<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                        drawPolygon(i, thickness, grey);<a name="line.360"></a>
+<span class="sourceLineNo">361</span>        }<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>        @Override<a name="line.363"></a>
+<span class="sourceLineNo">364</span>        protected void drawHorizLine(final int x1, final int x2, final int y, final Float col) {<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                if (y &lt; 0 || y &gt; this.targetImage.getHeight() - 1)<a name="line.365"></a>
+<span class="sourceLineNo">366</span>                        return;<a name="line.366"></a>
+<span class="sourceLineNo">367</span><a name="line.367"></a>
+<span class="sourceLineNo">368</span>                final int startx = Math.max(0, Math.min(x1, x2));<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                final int stopx = Math.min(Math.max(x1, x2), this.targetImage.getWidth() - 1);<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                final float[][] img = this.targetImage.pixels;<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                final float c = col;<a name="line.371"></a>
+<span class="sourceLineNo">372</span><a name="line.372"></a>
+<span class="sourceLineNo">373</span>                for (int x = startx; x &lt;= stopx; x++) {<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                        img[y][x] = c;<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                }<a name="line.375"></a>
+<span class="sourceLineNo">376</span>        }<a name="line.376"></a>
+<span class="sourceLineNo">377</span><a name="line.377"></a>
+<span class="sourceLineNo">378</span>        @Override<a name="line.378"></a>
+<span class="sourceLineNo">379</span>        protected Float sanitise(final Float colour)<a name="line.379"></a>
+<span class="sourceLineNo">380</span>        {<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                return colour;<a name="line.381"></a>
+<span class="sourceLineNo">382</span>        }<a name="line.382"></a>
+<span class="sourceLineNo">383</span><a name="line.383"></a>
+<span class="sourceLineNo">384</span>        @Override<a name="line.384"></a>
+<span class="sourceLineNo">385</span>        public void drawPolygonFilled(Polygon p, final Float col) {<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                // clip to the frame<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                // p = p.intersect(this.targetImage.getBounds().asPolygon());<a name="line.387"></a>
+<span class="sourceLineNo">388</span><a name="line.388"></a>
+<span class="sourceLineNo">389</span>                this.drawPolygon(p, col);<a name="line.389"></a>
+<span class="sourceLineNo">390</span><a name="line.390"></a>
+<span class="sourceLineNo">391</span>                if (p.getNumInnerPoly() == 1) {<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                        ScanRasteriser.scanFill(p.points, new ScanLineListener() {<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                                @Override<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                                public void process(final int x1, final int x2, final int y) {<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                                        FImageRenderer.this.drawHorizLine(x1, x2, y, col);<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                                }<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                        });<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                } else {<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                        // final ConnectedComponent cc = new ConnectedComponent(p);<a name="line.399"></a>
+<span class="sourceLineNo">400</span>                        // cc.process(new BlobRenderer&lt;Q&gt;(this.targetImage, col));<a name="line.400"></a>
+<span class="sourceLineNo">401</span><a name="line.401"></a>
+<span class="sourceLineNo">402</span>                        final int minx = Math.max(0, (int) Math.round(p.minX()));<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                        final int maxx = Math.min((int) Math.round(p.maxX()), targetImage.width - 1);<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                        final int miny = Math.max(0, (int) Math.round(p.minY()));<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                        final int maxy = Math.min((int) Math.round(p.maxY()), targetImage.height - 1);<a name="line.405"></a>
+<span class="sourceLineNo">406</span><a name="line.406"></a>
+<span class="sourceLineNo">407</span>                        final Pixel tmp = new Pixel();<a name="line.407"></a>
+<span class="sourceLineNo">408</span>                        for (tmp.y = miny; tmp.y &lt;= maxy; tmp.y++) {<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                                for (tmp.x = minx; tmp.x &lt;= maxx; tmp.x++) {<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                                        if (p.isInside(tmp))<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                                                this.targetImage.pixels[tmp.y][tmp.x] = col;<a name="line.411"></a>
+<span class="sourceLineNo">412</span>                                }<a name="line.412"></a>
+<span class="sourceLineNo">413</span>                        }<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                }<a name="line.414"></a>
+<span class="sourceLineNo">415</span>        }<a name="line.415"></a>
+<span class="sourceLineNo">416</span>}<a name="line.416"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

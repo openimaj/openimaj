@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.processing.edges;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import static java.lang.Math.atan;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import static java.lang.Math.sqrt;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.image.FImage;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.image.analyser.ImageAnalyser;<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>/**<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * Using a simple sobel-like x and y derivative kernel, find edges in an image.<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.41"></a>
+<span class="sourceLineNo">042</span> *<a name="line.42"></a>
+<span class="sourceLineNo">043</span> */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>public class EdgeFinder implements ImageAnalyser&lt;FImage&gt; {<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        protected float [][] kx;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        protected float [][] ky;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        /**<a name="line.48"></a>
+<span class="sourceLineNo">049</span>         * The magnitudes of each edge as worked out by the hypotenuse of the triangle formed by the dx and dy of a pixel<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        public FImage magnitude;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /**<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * The direction of each edge as worked out by the angle between the triangle formed by the dx and dy of a pixel<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        public FImage angle;<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /**<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * Find edges in an image using the following edge kernels<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * @param kx<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * @param ky<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        public EdgeFinder(float [][] kx, float [][] ky) {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                this.kx = kx;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                this.ky = ky;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * Find the edges in an image using default, sobel like 5x5 derivative kernels<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        public EdgeFinder() {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                kx = new float[][] {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                {+1, +1, 0, -1, -1},<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                {+2, +2, 0, -2, -2},<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                                {+2, +2, 0, -2, -2},<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                                {+2, +2, 0, -2, -2},<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                                {+1, +1, 0, -1, -1}<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                };<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                ky = new float[][] {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                                {+1, +2, +2, +2, +1},<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                                {+1, +2, +2, +2, +1},<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                                { 0,  0,  0,  0,  0},<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                                {-1, -2, -2, -2, -1},<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                {-1, -2, -2, -2, -1}<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                };<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        }<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>        /* (non-Javadoc)<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        @Override<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        public void analyseImage(FImage image) {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                int height = image.getHeight();<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                int width = image.getWidth();<a name="line.94"></a>
+<span class="sourceLineNo">095</span><a name="line.95"></a>
+<span class="sourceLineNo">096</span>                magnitude = new FImage(width, height);<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                angle = new FImage(width, height);<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                int w = (kx.length - 1) / 2;<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>                for (int y=w+1; y&lt;height-w; y++) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        for (int x=w+1; x&lt;width-w; x++) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                //compute gradient<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                double gx = 0;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                double gy = 0;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                for (int j=0; j&lt;kx.length; j++) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                        for (int i=0; i&lt;kx.length; i++) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                                                gx += image.pixels[y-w+j][x-w+i] * kx[j][i];<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                                gy += image.pixels[y-w+j][x-w+i] * ky[j][i];<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>                                magnitude.pixels[y][x] = (float) sqrt(gx*gx + gy*gy);<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                if(gy!=0)<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                        angle.pixels[y][x] = (float) atan(gx/-gy);<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                else<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                                        angle.pixels[y][x] = 1.57f;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                }<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        }       <a name="line.121"></a>
+<span class="sourceLineNo">122</span>}<a name="line.122"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

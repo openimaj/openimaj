@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.text.nlp.textpipe.annotators;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.util.List;<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.openimaj.text.nlp.namedentity.NamedEntity;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory.YagoEntityExactMatcher;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.text.nlp.textpipe.annotations.NamedEntityAnnotation;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.text.nlp.textpipe.annotations.SentenceAnnotation;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>public class YagoNEAnnotator extends AbstractNEAnnotator {<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>        private int cw = 1; // On either side of current sentence.<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        public YagoEntityExactMatcher yagoMatcher;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        public YagoNEAnnotator() {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                yagoMatcher = YagoEntityExactMatcherFactory.getMatcher();<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        }<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        @Override<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        void performAnnotation(RawTextAnnotation annotation)<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                        throws MissingRequiredAnnotationException<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                // Get the sentences<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                final List&lt;SentenceAnnotation&gt; sentences = annotation.getAnnotationsFor(SentenceAnnotation.class);<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                for (int i = 0; i &lt; sentences.size(); i++) {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                        // get context for sentence<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                        final String context = getContextFrom(sentences.subList(Math.max(0, i - cw),<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                                        Math.min(i + cw + 1, sentences.size())));<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                        annotateSentence(sentences.get(i), context);<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                }<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        }<a name="line.64"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>        private void annotateSentence(SentenceAnnotation sentence,<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        String context)<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        {<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>                final List&lt;NamedEntity&gt; ents = yagoMatcher.matchExact(sentence.getAnnotationsFor(TokenAnnotation.class), context);<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>                for (final NamedEntity ent : ents) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        final NamedEntityAnnotation nea = new NamedEntityAnnotation();<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        nea.namedEntity = ent;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        nea.tokensMatched.addAll(sentence.getAnnotationsFor(TokenAnnotation.class).subList(ent.startToken,<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                                        ent.stopToken));<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        sentence.addAnnotation(nea);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                }<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>                /*<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                 * List&lt;List&lt;TokenAnnotation&gt;&gt; validEntityPhrases =<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                 * getValidEntityPhrases(sentence); for(List&lt;TokenAnnotation&gt; entPhrase:<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                 * validEntityPhrases){ List&lt;NamedEntity&gt; ents =<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                 * yagoMatcher.matchExact(entPhrase, context); for(NamedEntity ent:<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                 * ents){ NamedEntityAnnotation nea = new NamedEntityAnnotation();<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                 * nea.namedEntity=ent;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                 * nea.tokensMatched.addAll(sentence.getAnnotationsFor<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                 * (TokenAnnotation.class).subList(ent.startToken, ent.stopToken));<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                 * sentence.addAnnotation(nea); } }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                 */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>        // private List&lt;List&lt;TokenAnnotation&gt;&gt;<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        // getValidEntityPhrases(SentenceAnnotation sentence) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        // List&lt;List&lt;TokenAnnotation&gt;&gt; results = new<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        // ArrayList&lt;List&lt;TokenAnnotation&gt;&gt;();<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        // List&lt;TokenAnnotation&gt; current = new ArrayList&lt;TokenAnnotation&gt;();<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        // for(TokenAnnotation<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        // tok:sentence.getAnnotationsFor(TokenAnnotation.class)){<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        // if(start(tok)){<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        // current.add(tok);<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        // }<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        // else if(cont(tok)&amp;&amp;current.size()&gt;0){<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        // current.add(tok);<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        // }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        // else if(current.size()&gt;0){<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        // results.add(current);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        // current=new ArrayList&lt;TokenAnnotation&gt;();<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        // }<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        // }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        // if(current.size()&gt;0)results.add(current);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        // return results;<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        // }<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        //<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        // private boolean cont(TokenAnnotation tok) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        // return (!tok.getAnnotationsFor(PhraseAnnotation.class).get(0).start);<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        // }<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        //<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        // private boolean start(TokenAnnotation tok) {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        // final PhraseAnnotation phrase =<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        // tok.getAnnotationsFor(PhraseAnnotation.class).get(0);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        // if (phrase.phrase.toString().equals("NP"))<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        // return phrase.start;<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        // else<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        // return false;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        // }<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>        private String getContextFrom(List&lt;SentenceAnnotation&gt; sents) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                final StringBuffer result = new StringBuffer();<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                for (final SentenceAnnotation sent : sents) {<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        result.append(sent.text + " ");<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                }<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                return result.toString();<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        }<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>        @Override<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        void checkForRequiredAnnotations(RawTextAnnotation annotation)<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        throws MissingRequiredAnnotationException<a name="line.138"></a>
+<span class="sourceLineNo">139</span>        {<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                if (!annotation.getAnnotationKeyList().contains(SentenceAnnotation.class))<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        throw new MissingRequiredAnnotationException("No SentenceAnnotations found");<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        }<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>}<a name="line.144"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

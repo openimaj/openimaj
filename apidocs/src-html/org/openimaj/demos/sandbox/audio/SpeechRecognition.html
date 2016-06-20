@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * <a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>package org.openimaj.demos.sandbox.audio;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.awt.Font;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.io.File;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.io.IOException;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.net.URL;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.util.ArrayList;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import java.util.List;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import java.util.regex.Matcher;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import java.util.regex.Pattern;<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.audio.AudioFormat;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.audio.AudioStream;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.audio.conversion.BitDepthConverter;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.audio.conversion.BitDepthConverter.BitDepthConversionAlgorithm;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.audio.conversion.MultichannelToMonoProcessor;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.audio.conversion.SampleRateConverter;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import org.openimaj.audio.conversion.SampleRateConverter.SampleRateConversionAlgorithm;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import org.openimaj.audio.filters.EQFilter;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import org.openimaj.audio.filters.EQFilter.EQType;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import org.openimaj.image.DisplayUtilities;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import org.openimaj.image.MBFImage;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import org.openimaj.image.colour.RGBColour;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>import org.openimaj.image.typography.FontStyle;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>import org.openimaj.image.typography.general.GeneralFont;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>import org.openimaj.math.geometry.shape.Rectangle;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>import org.openimaj.video.xuggle.XuggleAudio;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>import org.openimaj.vis.audio.AudioOverviewVisualisation;<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>import edu.cmu.sphinx.recognizer.Recognizer;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>import edu.cmu.sphinx.result.Result;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>import edu.cmu.sphinx.util.props.ConfigurationManager;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>import edu.cmu.sphinx.util.props.PropertyException;<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>/**<a name="line.67"></a>
+<span class="sourceLineNo">068</span> * Basic Sphinx demo (from their webpage). Uses the OpenIMAJ audio file data<a name="line.68"></a>
+<span class="sourceLineNo">069</span> * source to link OpenIMAJ audio engine to Sphinx.<a name="line.69"></a>
+<span class="sourceLineNo">070</span> * <a name="line.70"></a>
+<span class="sourceLineNo">071</span> * @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.71"></a>
+<span class="sourceLineNo">072</span> * <a name="line.72"></a>
+<span class="sourceLineNo">073</span> * @created 23 May 2012<a name="line.73"></a>
+<span class="sourceLineNo">074</span> */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>public class SpeechRecognition<a name="line.75"></a>
+<span class="sourceLineNo">076</span>{<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /**<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         *      Returns the affected audio stream.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         *      @param as The audio stream to affect<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         *      @return The affected audio stream<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         */<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        public static AudioStream getStream( final AudioStream as )<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                // Effect chain:<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                //<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                //              -&gt; Mono<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                //              -&gt; Band-pass filter (LPF + HPF)<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                //              -&gt; Sample rate to 16KHz<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                //              -&gt; Bit rate to 8-bit<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                //<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>                final MultichannelToMonoProcessor m2m2 = new MultichannelToMonoProcessor( as );<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>                final double fc = 1000; // mid-point 1000Hz<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                final double q = 1600;  // HPF @ 200Hz, LPF @ 1800Hz<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                final EQFilter lpf = new EQFilter( m2m2, EQType.LPF, fc+q/2 );<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                final EQFilter hpf = new EQFilter( lpf, EQType.HPF, fc-q/2 );<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                final SampleRateConverter src2 = new SampleRateConverter( hpf,<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                                SampleRateConversionAlgorithm.LINEAR_INTERPOLATION,<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                new AudioFormat( m2m2.getFormat().getNBits(),<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                                                16, m2m2.getFormat().getNumChannels() ) );<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>                final BitDepthConverter xa2 = new BitDepthConverter( src2,<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                BitDepthConversionAlgorithm.NEAREST,<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                new AudioFormat( 8, src2.getFormat().getSampleRateKHz(),<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                                src2.getFormat().getNumChannels() ) );<a name="line.107"></a>
+<span class="sourceLineNo">108</span><a name="line.108"></a>
+<span class="sourceLineNo">109</span>                return xa2;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>        /**<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         * @param args<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * @throws PropertyException<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * @throws IOException<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * @throws InstantiationException<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * @throws InterruptedException<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        public static void main( final String[] args ) throws IOException,<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        PropertyException, InstantiationException, InterruptedException<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                final URL configFile = SpeechRecognition.class<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                .getResource( "/org/openimaj/demos/sandbox/audio/sphinx-config-hub4.xml" );<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                // Check the configuration file exists<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                if( configFile == null )<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        System.err.println( "Cannot find config file" );<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        System.exit( 1 );<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                }<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>                // Get the audio file input<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                // URL audioFileURL = new URL( "http://www.moviewavs.com/0058349934/WAVS/Movies/Juno/experimenting.wav" );<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                final File audioFileURL = new File( "videoplayback.mp4" );<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>                try<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                {<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        final List&lt;Rectangle&gt; boundingBoxes = new ArrayList&lt;Rectangle&gt;();<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        System.out.println( audioFileURL );<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        // Get a display of the audio waveform<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        final XuggleAudio xuggle = new XuggleAudio( audioFileURL );<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        final AudioOverviewVisualisation awp = new AudioOverviewVisualisation( SpeechRecognition.getStream( xuggle ) );<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                        final MBFImage awi = awp.plotAudioWaveformImage( 1000, 300,<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                                        new Float[]<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                                                        { 0f, 0f, 0f, 1f }, new Float[]<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                                                                        { 1f, 1f, 1f, 1f } );<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        System.out.println( awp.millisecondsInView );<a name="line.150"></a>
+<span class="sourceLineNo">151</span><a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        final MBFImage img = new MBFImage( 1000, 400, 3 );<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        img.drawImage( awi, 0, 0 );<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        DisplayUtilities.displayName( img, "waveform" );<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        // Load the configuration<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        final ConfigurationManager cm = new ConfigurationManager( configFile );<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>                        // Allocate the recognizer<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                        System.out.println( "Loading..." );<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                        final Recognizer recognizer = (Recognizer)cm.lookup( "recognizer" );<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        recognizer.allocate();<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        // Configure the audio input for the recognizer<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        final OpenIMAJAudioFileDataSource dataSource = (OpenIMAJAudioFileDataSource)cm<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                                        .lookup( "audioFileDataSource" );<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                        final XuggleAudio xuggle2 = new XuggleAudio( audioFileURL );<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                        dataSource.setAudioStream( SpeechRecognition.getStream( xuggle2 ) );<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        // Play the audio<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        //                      XuggleAudio xuggleToPlay = new XuggleAudio( audioFileURL );<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        //                      AudioPlayer ap = AudioPlayer.createAudioPlayer( getStream( xuggleToPlay ) );<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        //                      ap.run();<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>                        // The font to plot the words<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                        final GeneralFont font = new GeneralFont("Courier", Font.PLAIN );<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        final FontStyle&lt;Float[]&gt; fontStyle = font.createStyle( awi.createRenderer() );<a name="line.177"></a>
+<span class="sourceLineNo">178</span><a name="line.178"></a>
+<span class="sourceLineNo">179</span>                        // Start recognising words from the audio file<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                        final Pattern p = Pattern.compile( "([A-Za-z0-9'_]+)\\(([0-9.]+),([0-9.]+)\\)" );<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                        Result result = null;<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        final StringBuffer sb = new StringBuffer();<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                        while( (result = recognizer.recognize()) != null )<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                        {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                                final String resultText = result.getTimedBestResult( false, true );<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                                System.out.println( resultText );<a name="line.186"></a>
+<span class="sourceLineNo">187</span><a name="line.187"></a>
+<span class="sourceLineNo">188</span>                                final Matcher matcher = p.matcher( resultText );<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                                while( matcher.find() )<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                                {<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                                        System.out.println( "Word:  " + matcher.group( 1 ) );<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                                        System.out.println( "Start: " + matcher.group( 2 ) );<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                                        System.out.println( "End:   " + matcher.group( 3 ) );<a name="line.193"></a>
+<span class="sourceLineNo">194</span><a name="line.194"></a>
+<span class="sourceLineNo">195</span>                                        // Parse the word and timings from the result<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                                        final String word = matcher.group(1);<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                                        final double s = Double.parseDouble( matcher.group(2) ) * 1000;<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                                        final double e = Double.parseDouble( matcher.group(3) ) * 1000;<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                                        sb.append( word+" " );<a name="line.199"></a>
+<span class="sourceLineNo">200</span><a name="line.200"></a>
+<span class="sourceLineNo">201</span>                                        // Get the bounds of the word polygon<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                                        final Rectangle bounds = font.getRenderer(<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                                                        awi.createRenderer() ).getSize(<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                                                                        word, fontStyle );<a name="line.204"></a>
+<span class="sourceLineNo">205</span><a name="line.205"></a>
+<span class="sourceLineNo">206</span>                                        // Determine the pixel coordinate of the start and end times<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                                        final int startX = (int)(s/awp.millisecondsInView*1000);<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                                        final int endX   = (int)(e/awp.millisecondsInView*1000);<a name="line.208"></a>
+<span class="sourceLineNo">209</span><a name="line.209"></a>
+<span class="sourceLineNo">210</span>                                        // Draw bars showing the range of the word<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                                        img.drawLine( startX, 320, endX, 320, RGBColour.YELLOW );<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                                        img.drawLine( startX, 318, startX, 322, RGBColour.GREEN );<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                                        img.drawLine( endX, 318, endX, 322, RGBColour.RED );<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>                                        int y = 350;<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                                        bounds.translate( startX, y );<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                                        boolean noIntersection = true;<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                                        do<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                                        {<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                                                noIntersection = true;<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                                                for( final Rectangle r : boundingBoxes )<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                                                        if( r.isOverlapping( bounds ) )<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                                                        { noIntersection = false; break; }<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>                                                if( !noIntersection )<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                                                        bounds.translate( 0, bounds.height );<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                                        } while( !noIntersection );<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                                        y = (int)bounds.y;<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                        // Draw the word<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                                        img.drawLine( startX, 322, startX, (int)(y+bounds.height),<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                                        new Float[]{0.4f,0.4f,0.4f} );<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                        img.drawLine( startX, (int)(y+bounds.height), startX+8,<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                                        (int)(y+bounds.height), new Float[]{0.4f,0.4f,0.4f} );<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                                        img.drawText( word, startX, y, font, 24, RGBColour.WHITE  );<a name="line.235"></a>
+<span class="sourceLineNo">236</span><a name="line.236"></a>
+<span class="sourceLineNo">237</span>                                        // Store the bounding box<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                        boundingBoxes.add( bounds );<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                }<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                        }<a name="line.240"></a>
+<span class="sourceLineNo">241</span><a name="line.241"></a>
+<span class="sourceLineNo">242</span>                        DisplayUtilities.displayName( img, "waveform" );<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                        System.out.println( "=======================================" );<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                        System.out.println( "Text: \n"+sb.toString() );<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                        System.out.println( "=======================================" );<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                }<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                catch( final NumberFormatException e )<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                {<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                        e.printStackTrace();<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                }<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                catch( final IllegalStateException e )<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                {<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                        e.printStackTrace();<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                }<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        }<a name="line.255"></a>
+<span class="sourceLineNo">256</span>}<a name="line.256"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

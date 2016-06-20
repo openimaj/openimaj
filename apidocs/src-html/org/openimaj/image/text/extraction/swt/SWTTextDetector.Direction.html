@@ -1,0 +1,456 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.text.extraction.swt;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.util.ArrayList;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.util.List;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.util.Set;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.citation.annotation.Reference;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.citation.annotation.ReferenceType;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.image.FImage;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.image.analyser.ImageAnalyser;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.image.pixel.ConnectedComponent;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.image.pixel.Pixel;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.image.processing.edges.CannyEdgeDetector;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.image.processing.edges.StrokeWidthTransform;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.image.processing.resize.ResizeProcessor;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.util.set.DisjointSetForest;<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>/**<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * Implementation of the Stroke Width Transform text detection algorithm by<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * Epshtein et al.<a name="line.49"></a>
+<span class="sourceLineNo">050</span> * &lt;p&gt;<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * This is a (relatively) high-performance text detection technique that does<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * not require training (except for parameter setting) and is language<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * independent. The algorithm automatically identifies individual characters<a name="line.53"></a>
+<span class="sourceLineNo">054</span> * ("letters"), as well as performing word grouping and line segmentation.<a name="line.54"></a>
+<span class="sourceLineNo">055</span> * &lt;p&gt;<a name="line.55"></a>
+<span class="sourceLineNo">056</span> * There is an implicit assumption in this implementation that the text is<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * *almost* horizontal. This implementation cannot be considered to be rotation<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * invariant. It also has difficulties with curved text.<a name="line.58"></a>
+<span class="sourceLineNo">059</span> * <a name="line.59"></a>
+<span class="sourceLineNo">060</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.60"></a>
+<span class="sourceLineNo">061</span> */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>@Reference(<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                type = ReferenceType.Inproceedings,<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                author = { "Epshtein, B.", "Ofek, E.", "Wexler, Y." },<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                title = "Detecting text in natural scenes with stroke width transform",<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                year = "2010",<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                booktitle = "Computer Vision and Pattern Recognition (CVPR), 2010 IEEE Conference on",<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                pages = { "2963", "2970" },<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                customData = {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                                "keywords",<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                                "image processing;text analysis;image operator;image pixel;natural images;natural scenes;stroke width transform;text detection;Colored noise;Computer vision;Engines;Filter bank;Geometry;Image segmentation;Layout;Optical character recognition software;Pixel;Robustness",<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                "doi", "10.1109/CVPR.2010.5540041",<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                "ISSN", "1063-6919"<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                })<a name="line.74"></a>
+<span class="sourceLineNo">075</span>public class SWTTextDetector implements ImageAnalyser&lt;FImage&gt; {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        /**<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * Text search "directions": Dark text on a lighter background, light text<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * on a dark background and both.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         * <a name="line.79"></a>
+<span class="sourceLineNo">080</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         * <a name="line.81"></a>
+<span class="sourceLineNo">082</span>         */<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        public static enum Direction {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                /**<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                 * Dark text against a lighter background<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                 */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                DarkOnLight {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        @Override<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        protected void detect(FImage image, SWTTextDetector detector) {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                                final StrokeWidthTransform swt = new StrokeWidthTransform(true, detector.options.canny);<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                                swt.setMaxStrokeWidth(detector.options.maxStrokeWidth);<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                final FImage swtImage = image.process(swt);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                                detector.analyseImage(image, swtImage);<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        }<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                },<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                /**<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                 * Light text against a lighter background<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                 */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                LightOnDark {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        @Override<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                        protected void detect(FImage image, SWTTextDetector detector) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                                final StrokeWidthTransform swt = new StrokeWidthTransform(false, detector.options.canny);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                swt.setMaxStrokeWidth(detector.options.maxStrokeWidth);<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                final FImage swtImage = image.process(swt);<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                detector.analyseImage(image, swtImage);<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                },<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                /**<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                 * Search for both light and dark text<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                 */<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                Both {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        @Override<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        protected void detect(FImage image, SWTTextDetector detector) {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                                final StrokeWidthTransform swt = new StrokeWidthTransform(true, detector.options.canny);<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                swt.setMaxStrokeWidth(detector.options.maxStrokeWidth);<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                FImage swtImage = image.process(swt);<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                detector.analyseImage(image, swtImage);<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                swt.setDirection(false);<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                                swtImage = image.process(swt);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                detector.analyseImage(image, swtImage);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                };<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                protected abstract void detect(FImage image, SWTTextDetector detector);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        }<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>        /**<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         * Options for controlling the {@link SWTTextDetector}.<a name="line.129"></a>
+<span class="sourceLineNo">130</span>         * <a name="line.130"></a>
+<span class="sourceLineNo">131</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         */<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        public static class Options {<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>                /**<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                 * The "direction" to perform the SWT<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                 */<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                public Direction direction = Direction.DarkOnLight;<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                /**<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                 * The canny edge detector to use for the SWT.<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                 */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                public CannyEdgeDetector canny = new CannyEdgeDetector(1);<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>                /**<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                 * Upscale the image to double size before applying the SWT.<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                 */<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                public boolean doubleSize = false;<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>                /**<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                 * Maximum allowed ratio of a pair of stroke widths for them to be<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                 * considered part of the same connected component.<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                 */<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                public float strokeWidthRatio = 3.0f;<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>                /**<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                 * Maximum allowed variance of stroke width in a single character as a<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                 * percentage of the mean.<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                 */<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                public double letterVarianceMean = 0.93;<a name="line.160"></a>
+<span class="sourceLineNo">161</span><a name="line.161"></a>
+<span class="sourceLineNo">162</span>                /**<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                 * Maximum allowed aspect ratio for a single letter<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                 */<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                public double maxAspectRatio = 10;<a name="line.165"></a>
+<span class="sourceLineNo">166</span><a name="line.166"></a>
+<span class="sourceLineNo">167</span>                /**<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                 * Maximum allowed ratio of diameter to stroke width for a single<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                 * character.<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                 */<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                public double maxDiameterStrokeRatio = 10;<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>                /**<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                 * Minimum allowed component size; used to quickly filter out small<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                 * components.<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                 */<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                public int minArea = 38;<a name="line.177"></a>
+<span class="sourceLineNo">178</span><a name="line.178"></a>
+<span class="sourceLineNo">179</span>                /**<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                 * Minimum character height<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                 */<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                public float minHeight = 10;<a name="line.182"></a>
+<span class="sourceLineNo">183</span><a name="line.183"></a>
+<span class="sourceLineNo">184</span>                /**<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                 * Maximum character height<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                 */<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                public float maxHeight = 300;<a name="line.187"></a>
+<span class="sourceLineNo">188</span><a name="line.188"></a>
+<span class="sourceLineNo">189</span>                /**<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                 * Maximum allowed number of overlapping characters<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                 */<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                public int maxNumOverlappingBoxes = 10;<a name="line.192"></a>
+<span class="sourceLineNo">193</span><a name="line.193"></a>
+<span class="sourceLineNo">194</span>                /**<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                 * Maximum allowed stroke width<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                 */<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                public int maxStrokeWidth = 70;<a name="line.197"></a>
+<span class="sourceLineNo">198</span><a name="line.198"></a>
+<span class="sourceLineNo">199</span>                /**<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                 * Maximum ratio of stroke width for two letters to be considered to be<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                 * related<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                 */<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                public float medianStrokeWidthRatio = 2;<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>                /**<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                 * Maximum ratio of height for two letters to be considered to be<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                 * related<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                 */<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                public float letterHeightRatio = 2;<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>                /**<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                 * Maximum difference in intensity for two letters to be considered to<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                 * be related<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                 */<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                public float intensityThreshold = 0.12f;<a name="line.215"></a>
+<span class="sourceLineNo">216</span><a name="line.216"></a>
+<span class="sourceLineNo">217</span>                /**<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                 * The width multiplier for two letters to be considered to be related.<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                 * Distance between centroids must be less than widthMultiplier *<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                 * maxLetterWidth.<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                 */<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                public float widthMultiplier = 3;<a name="line.222"></a>
+<span class="sourceLineNo">223</span><a name="line.223"></a>
+<span class="sourceLineNo">224</span>                /**<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                 * Minimum number of allowed letters on a line<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                 */<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                public int minLettersPerLine = 3;<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>                /**<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                 * Ratio of vertical intersection for character pairing. This helps<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                 * ensure that the characters are horizontal.<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                 */<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                public float intersectRatio = 1.3f;<a name="line.233"></a>
+<span class="sourceLineNo">234</span><a name="line.234"></a>
+<span class="sourceLineNo">235</span>                /**<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                 * Ratio of the interclass std dev of the letter spacings to the mean to<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                 * suggest a word break.<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                 */<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                public float wordBreakdownRatio = 1f;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>        }<a name="line.240"></a>
+<span class="sourceLineNo">241</span><a name="line.241"></a>
+<span class="sourceLineNo">242</span>        /**<a name="line.242"></a>
+<span class="sourceLineNo">243</span>         * 8-connected locations<a name="line.243"></a>
+<span class="sourceLineNo">244</span>         */<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        private final static int[][] connect8 = {<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                        { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } };<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>        /**<a name="line.248"></a>
+<span class="sourceLineNo">249</span>         * The parameters of the algorithm<a name="line.249"></a>
+<span class="sourceLineNo">250</span>         */<a name="line.250"></a>
+<span class="sourceLineNo">251</span>        protected Options options;<a name="line.251"></a>
+<span class="sourceLineNo">252</span><a name="line.252"></a>
+<span class="sourceLineNo">253</span>        private List&lt;LetterCandidate&gt; letters = null;<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        private List&lt;LineCandidate&gt; lines = null;<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        private List&lt;WordCandidate&gt; words = null;<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>        /**<a name="line.257"></a>
+<span class="sourceLineNo">258</span>         * Construct the {@link SWTTextDetector} with the default parameters.<a name="line.258"></a>
+<span class="sourceLineNo">259</span>         */<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        public SWTTextDetector() {<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                this(new Options());<a name="line.261"></a>
+<span class="sourceLineNo">262</span>        }<a name="line.262"></a>
+<span class="sourceLineNo">263</span><a name="line.263"></a>
+<span class="sourceLineNo">264</span>        /**<a name="line.264"></a>
+<span class="sourceLineNo">265</span>         * Construct the {@link SWTTextDetector} with the given parameters.<a name="line.265"></a>
+<span class="sourceLineNo">266</span>         * <a name="line.266"></a>
+<span class="sourceLineNo">267</span>         * @param options<a name="line.267"></a>
+<span class="sourceLineNo">268</span>         *            the parameters<a name="line.268"></a>
+<span class="sourceLineNo">269</span>         */<a name="line.269"></a>
+<span class="sourceLineNo">270</span>        public SWTTextDetector(Options options) {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                this.options = options;<a name="line.271"></a>
+<span class="sourceLineNo">272</span>        }<a name="line.272"></a>
+<span class="sourceLineNo">273</span><a name="line.273"></a>
+<span class="sourceLineNo">274</span>        /**<a name="line.274"></a>
+<span class="sourceLineNo">275</span>         * Get the current options.<a name="line.275"></a>
+<span class="sourceLineNo">276</span>         * <a name="line.276"></a>
+<span class="sourceLineNo">277</span>         * @return the current options.<a name="line.277"></a>
+<span class="sourceLineNo">278</span>         */<a name="line.278"></a>
+<span class="sourceLineNo">279</span>        public Options getOptions() {<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                return options;<a name="line.280"></a>
+<span class="sourceLineNo">281</span>        }<a name="line.281"></a>
+<span class="sourceLineNo">282</span><a name="line.282"></a>
+<span class="sourceLineNo">283</span>        /**<a name="line.283"></a>
+<span class="sourceLineNo">284</span>         * Modified connected component algorithm - uses a modified predicate to<a name="line.284"></a>
+<span class="sourceLineNo">285</span>         * group SWT pixels based on their stroke width ratio.<a name="line.285"></a>
+<span class="sourceLineNo">286</span>         * <a name="line.286"></a>
+<span class="sourceLineNo">287</span>         * @param image<a name="line.287"></a>
+<span class="sourceLineNo">288</span>         *            swt image<a name="line.288"></a>
+<span class="sourceLineNo">289</span>         * @return the detected components<a name="line.289"></a>
+<span class="sourceLineNo">290</span>         */<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        private List&lt;ConnectedComponent&gt; findComponents(FImage image) {<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                final DisjointSetForest&lt;Pixel&gt; forest = new DisjointSetForest&lt;Pixel&gt;();<a name="line.292"></a>
+<span class="sourceLineNo">293</span><a name="line.293"></a>
+<span class="sourceLineNo">294</span>                Pixel current = new Pixel();<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                Pixel next = new Pixel();<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                for (int y = 0; y &lt; image.height; y++) {<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                        for (int x = 0; x &lt; image.width; x++) {<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                                final float currentValue = image.pixels[y][x];<a name="line.298"></a>
+<span class="sourceLineNo">299</span><a name="line.299"></a>
+<span class="sourceLineNo">300</span>                                if (currentValue &gt; 0 &amp;&amp; currentValue != Float.POSITIVE_INFINITY) {<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                                        current.x = x;<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                                        current.y = y;<a name="line.302"></a>
+<span class="sourceLineNo">303</span><a name="line.303"></a>
+<span class="sourceLineNo">304</span>                                        if (forest.makeSet(current) != null)<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                                                current = current.clone();<a name="line.305"></a>
+<span class="sourceLineNo">306</span><a name="line.306"></a>
+<span class="sourceLineNo">307</span>                                        for (int i = 0; i &lt; connect8.length; i++) {<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                                                final int xx = x + connect8[i][0];<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                                                final int yy = y + connect8[i][1];<a name="line.309"></a>
+<span class="sourceLineNo">310</span><a name="line.310"></a>
+<span class="sourceLineNo">311</span>                                                if (xx &gt;= 0 &amp;&amp; xx &lt; image.width - 1 &amp;&amp; yy &gt;= 0 &amp;&amp; yy &lt; image.height - 1) {<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                                                        final float value = image.pixels[yy][xx];<a name="line.312"></a>
+<span class="sourceLineNo">313</span><a name="line.313"></a>
+<span class="sourceLineNo">314</span>                                                        if (value &gt; 0 &amp;&amp; value != Float.POSITIVE_INFINITY) {<a name="line.314"></a>
+<span class="sourceLineNo">315</span>                                                                next.x = xx;<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                                                                next.y = yy;<a name="line.316"></a>
+<span class="sourceLineNo">317</span><a name="line.317"></a>
+<span class="sourceLineNo">318</span>                                                                if (forest.makeSet(next) != null)<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                                                                        next = next.clone();<a name="line.319"></a>
+<span class="sourceLineNo">320</span><a name="line.320"></a>
+<span class="sourceLineNo">321</span>                                                                if ((Math.max(currentValue, value) / Math.min(currentValue, value)) &lt; options.strokeWidthRatio)<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                                                                        forest.union(current, next);<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                                                        }<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                                                }<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                                        }<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                                }<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                        }<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                }<a name="line.328"></a>
+<span class="sourceLineNo">329</span><a name="line.329"></a>
+<span class="sourceLineNo">330</span>                final List&lt;ConnectedComponent&gt; components = new ArrayList&lt;ConnectedComponent&gt;();<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                for (final Set&lt;Pixel&gt; pixels : forest.getSubsets()) {<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                        final ConnectedComponent cc = new ConnectedComponent(pixels);<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                        components.add(cc);<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                }<a name="line.334"></a>
+<span class="sourceLineNo">335</span><a name="line.335"></a>
+<span class="sourceLineNo">336</span>                return components;<a name="line.336"></a>
+<span class="sourceLineNo">337</span>        }<a name="line.337"></a>
+<span class="sourceLineNo">338</span><a name="line.338"></a>
+<span class="sourceLineNo">339</span>        @Override<a name="line.339"></a>
+<span class="sourceLineNo">340</span>        public void analyseImage(FImage image) {<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                letters = new ArrayList&lt;LetterCandidate&gt;();<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                lines = new ArrayList&lt;LineCandidate&gt;();<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                words = new ArrayList&lt;WordCandidate&gt;();<a name="line.343"></a>
+<span class="sourceLineNo">344</span><a name="line.344"></a>
+<span class="sourceLineNo">345</span>                if (options.doubleSize)<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                        image = ResizeProcessor.doubleSize(image);<a name="line.346"></a>
+<span class="sourceLineNo">347</span><a name="line.347"></a>
+<span class="sourceLineNo">348</span>                options.direction.detect(image, this);<a name="line.348"></a>
+<span class="sourceLineNo">349</span>        }<a name="line.349"></a>
+<span class="sourceLineNo">350</span><a name="line.350"></a>
+<span class="sourceLineNo">351</span>        protected void analyseImage(FImage image, FImage swt) {<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                final List&lt;ConnectedComponent&gt; comps = findComponents(swt);<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                final List&lt;LetterCandidate&gt; tmpLetters = LetterCandidate.findLetters(comps, swt, image, options);<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                final List&lt;LineCandidate&gt; tmpLines = LineCandidate.extractLines(tmpLetters, this.options);<a name="line.354"></a>
+<span class="sourceLineNo">355</span><a name="line.355"></a>
+<span class="sourceLineNo">356</span>                this.letters.addAll(tmpLetters);<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                this.lines.addAll(tmpLines);<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                for (final LineCandidate line : tmpLines) {<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                        this.words.addAll(line.words);<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                }<a name="line.360"></a>
+<span class="sourceLineNo">361</span>        }<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>        /**<a name="line.363"></a>
+<span class="sourceLineNo">364</span>         * Get the detected candidate lines of text<a name="line.364"></a>
+<span class="sourceLineNo">365</span>         * <a name="line.365"></a>
+<span class="sourceLineNo">366</span>         * @return the lines of text<a name="line.366"></a>
+<span class="sourceLineNo">367</span>         */<a name="line.367"></a>
+<span class="sourceLineNo">368</span>        public List&lt;LineCandidate&gt; getLines() {<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                return lines;<a name="line.369"></a>
+<span class="sourceLineNo">370</span>        }<a name="line.370"></a>
+<span class="sourceLineNo">371</span><a name="line.371"></a>
+<span class="sourceLineNo">372</span>        /**<a name="line.372"></a>
+<span class="sourceLineNo">373</span>         * Get the unfiltered detected characters. Normally you would want to get<a name="line.373"></a>
+<span class="sourceLineNo">374</span>         * the lines and then get the characters from each line as these will be<a name="line.374"></a>
+<span class="sourceLineNo">375</span>         * filtered.<a name="line.375"></a>
+<span class="sourceLineNo">376</span>         * <a name="line.376"></a>
+<span class="sourceLineNo">377</span>         * @see #getLines()<a name="line.377"></a>
+<span class="sourceLineNo">378</span>         * <a name="line.378"></a>
+<span class="sourceLineNo">379</span>         * @return the unfiltered characters<a name="line.379"></a>
+<span class="sourceLineNo">380</span>         */<a name="line.380"></a>
+<span class="sourceLineNo">381</span>        public List&lt;LetterCandidate&gt; getLetters() {<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                return letters;<a name="line.382"></a>
+<span class="sourceLineNo">383</span>        }<a name="line.383"></a>
+<span class="sourceLineNo">384</span>}<a name="line.384"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

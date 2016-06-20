@@ -1,0 +1,140 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.openimaj</groupId>
+    <artifactId>openimaj-tutorial-parent</artifactId>
+		<version>1.4-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <artifactId>tutorial-html</artifactId>
+  <packaging>jar</packaging>
+  <name>Tutorial DocBook to HTML Conversion</name>
+  <description>OpenIMAJ Tutorial in HTML format</description>
+  <build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>html_chunk.xsl</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.cjcook</groupId>
+				<artifactId>docbook-plugin</artifactId>
+				<version>1.0</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<escapeString>\</escapeString>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.agilejava.docbkx</groupId>
+				<artifactId>docbkx-maven-plugin</artifactId>
+				<version>2.0.14</version>
+				<dependencies>
+					<dependency>
+						<groupId>docbook</groupId>
+						<artifactId>docbook-xml</artifactId>
+						<version>4.5</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>generate-html</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>generate-html</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<htmlCustomization>${basedir}/target/classes/html_chunk.xsl</htmlCustomization>
+					<sourceDirectory>${basedir}/target/docbook</sourceDirectory>
+					<targetDirectory>${basedir}/target/html</targetDirectory>
+					<includes>tutorial.xml</includes>
+					<xincludeSupported>true</xincludeSupported>
+					<chunkedOutput>true</chunkedOutput>
+					<chunkSectionDepth>1</chunkSectionDepth>
+					<useSvg>true</useSvg>
+					<keepRelativeImageUris>0</keepRelativeImageUris>
+					<admonGraphics>1</admonGraphics>
+					<admonGraphicsExtension>.png</admonGraphicsExtension>
+					<admonGraphicsPath>images/</admonGraphicsPath>
+					<htmlStylesheet>css/apache-maven-fluido-1.3.0.min.css css/stylesheet.css fonts/fonts.css</htmlStylesheet>
+					<postProcess>
+						<copy todir="${project.build.directory}/html/tutorial/images">
+							<fileset dir="${basedir}/src/main/resources/images" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/figs/">
+							<fileset dir="target/docbook/figs/" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/covers/">
+							<fileset dir="target/docbook/covers/" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/images/">
+							<fileset dir="target/docbook/images/" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/css">
+							<fileset dir="${basedir}/src/main/resources/css" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/fonts">
+							<fileset dir="${basedir}/src/main/resources/fonts" />
+						</copy>
+						<copy todir="${project.build.directory}/html/tutorial/js">
+							<fileset dir="${basedir}/src/main/resources/js" />
+						</copy>
+					</postProcess>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>tutorial-content</artifactId>
+									<version>${project.version}</version>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${basedir}/target/docbook</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+				  <classesDirectory>${basedir}/target/html</classesDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+
+  </build>
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>tutorial-content</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+</project>

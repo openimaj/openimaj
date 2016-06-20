@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.openimaj.demos.sandbox.tldcpp.videotld;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.util.List;<a name="line.3"></a>
+<span class="sourceLineNo">004</span><a name="line.4"></a>
+<span class="sourceLineNo">005</span>import org.openimaj.demos.sandbox.tldcpp.detector.NNClassifier;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import org.openimaj.demos.sandbox.tldcpp.detector.NormalizedPatch;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import org.openimaj.demos.sandbox.tldcpp.videotld.TLDMain.Command;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import org.openimaj.image.DisplayUtilities;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import org.openimaj.image.FImage;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import org.openimaj.image.MBFImage;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import org.openimaj.image.colour.RGBColour;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import org.openimaj.image.processing.resize.ResizeProcessor;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import org.openimaj.image.typography.hershey.HersheyFont;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import org.openimaj.math.geometry.shape.Rectangle;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import org.openimaj.video.VideoDisplay;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import org.openimaj.video.VideoDisplay.Mode;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import org.openimaj.video.VideoDisplayListener;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import org.openimaj.video.tracking.klt.Feature;<a name="line.18"></a>
+<span class="sourceLineNo">019</span><a name="line.19"></a>
+<span class="sourceLineNo">020</span>public class TLDVideoListener implements VideoDisplayListener&lt;MBFImage&gt; {<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>        private TLDMain tldMain;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>        private boolean reuseFrameOnce;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        private boolean skipProcessingOnce;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>        private int currentFrame;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>        public TLDVideoListener(TLDMain tldMain) {<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                this.tldMain = tldMain;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                this.reuseFrameOnce = false;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>                this.skipProcessingOnce = false;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                currentFrame = 0;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        }<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        @Override<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        public void beforeUpdate(MBFImage frame) {<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                if (this.tldMain.selector.drawRect(frame)) {<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                        return;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>                }<a name="line.38"></a>
+<span class="sourceLineNo">039</span>                final long tic = System.currentTimeMillis();<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                currentFrame++;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                FImage grey = null;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                if (!reuseFrameOnce) {<a name="line.42"></a>
+<span class="sourceLineNo">043</span>                        grey = frame.flatten();<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                }<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>                if (!skipProcessingOnce) {<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                        tldMain.tld.processImage(grey);<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                } else {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                        skipProcessingOnce = false;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                }<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>                if (tldMain.printResults != null) {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                        if (tldMain.tld.currBB != null) {<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                                tldMain.resultsFile.printf("%d %.2f %.2f %.2f %.2f %f\n", currentFrame - 1, tldMain.tld.currBB.x,<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                                                tldMain.tld.currBB.y, tldMain.tld.currBB.width, tldMain.tld.currBB.height, tldMain.tld.currConf);<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        } else {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                                tldMain.resultsFile.printf("%d NaN NaN NaN NaN NaN\n", currentFrame - 1);<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                        }<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                }<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>                final float fps = 1 / ((System.currentTimeMillis() - tic) / 1000f);<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>                final boolean confident = (tldMain.tld.currConf &gt;= tldMain.threshold) ? true : false;<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>                if (tldMain.showOutput || tldMain.saveDir != null) {<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                        String learningString = "";<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        if (tldMain.tld.isLearning()) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                                learningString = "learning";<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        }<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        final String string = String.format("#%d,Posterior %.2f; fps: %.2f, #numwindows:%d, %s", currentFrame - 1,<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                        tldMain.tld.currConf, fps, tldMain.tld.detectorCascade.getNumWindows(), learningString);<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        final Float[] yellow = RGBColour.YELLOW;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        final Float[] blue = RGBColour.BLUE;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        final Float[] red = RGBColour.RED;<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        if (tldMain.tld.currBB != null) {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                                final Float[] rectangleColor = confident ? blue : yellow;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                                // cvRectangle(img, tld.currBB.tl(), tld.currBB.br(),<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                                // rectangleColor, 8, 8, 0);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                                frame.drawShape(tldMain.tld.currBB, rectangleColor);<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                                if (tldMain.markerMode &amp;&amp; this.tldMain.tld.medianFlowTracker.featuresTrackedToBfromA != null) {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                                        // Draw the tracked points<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                        final Feature[] from = this.tldMain.tld.medianFlowTracker.featuresTrackedToBfromA.features;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                                        final Feature[] to = this.tldMain.tld.medianFlowTracker.featuresTrackedToAviaB.features;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                        for (int i = 0; i &lt; from.length; i++) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                                                frame.drawLine(from[i], to[i], 3, red);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                                        }<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                                }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                        }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        drawPositivePatches();<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        final HersheyFont font = HersheyFont.ROMAN_SIMPLEX;<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        frame.drawText(string, 25, 25, font, 12);<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>                }<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                if (reuseFrameOnce) {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        reuseFrameOnce = false;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>        private void drawPositivePatches() {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                final NNClassifier nnClass = tldMain.tld.detectorCascade.getNNClassifier();<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                final List&lt;NormalizedPatch&gt; patches = nnClass.getPositivePatches();<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                final Rectangle inDim = new Rectangle(0, 0, NormalizedPatch.TLD_PATCH_SIZE, NormalizedPatch.TLD_PATCH_SIZE);<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                final int X = 5;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                final int Y = Math.max(6, (patches.size() / X) + 1);<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                final FImage out = new FImage(50 * X, 50 * Y);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                out.fill(1f);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                int i = 0;<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                final Rectangle otRect = new Rectangle(0, 0, 50, 50);<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                for (final NormalizedPatch normalizedPatch : patches) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        otRect.x = (i % X) * 50;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        otRect.y = (i / X) * 50;<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        if ((i / X) &gt;= Y)<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                break;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        ResizeProcessor.zoom(normalizedPatch.normalisedPatch, inDim, out, otRect);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        i++;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                DisplayUtilities.displayName(out, "patches", true);<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        }<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>        @Override<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        public void afterUpdate(VideoDisplay&lt;MBFImage&gt; display) {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                if (this.tldMain.command == Command.NONE) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                }<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                else if (this.tldMain.command == Command.ALTERNATING) {<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                else if (this.tldMain.command == Command.CLEAR) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                        this.tldMain.tld.release();<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                }<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                else if (this.tldMain.command == Command.SELECT) {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                        this.tldMain.disp.setMode(Mode.PAUSE);<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                        this.tldMain.selector.selectBoundingBox();<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                }<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                else if (this.tldMain.command == Command.LEARNING) {<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        tldMain.tld.learningEnabled = !tldMain.tld.learningEnabled;<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                }<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                tldMain.command = Command.NONE;<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>}<a name="line.145"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

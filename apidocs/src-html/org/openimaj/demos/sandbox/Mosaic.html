@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.demos.sandbox;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.io.File;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.io.IOException;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.util.List;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.image.DisplayUtilities;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.image.FImage;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.image.ImageUtilities;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.image.MBFImage;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.image.colour.RGBColour;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.image.colour.Transforms;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.image.feature.local.engine.DoGSIFTEngine;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.image.feature.local.keypoints.Keypoint;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.image.processing.resize.ResizeProcessor;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.image.processing.transform.ProjectionProcessor;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.image.renderer.MBFImageRenderer;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import org.openimaj.math.geometry.transforms.HomographyModel;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import org.openimaj.math.geometry.transforms.residuals.SingleImageTransferResidual2d;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import org.openimaj.math.model.fit.RANSAC;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import org.openimaj.util.pair.Pair;<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>import Jama.Matrix;<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>public class Mosaic {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        public static void main(String[] args) throws IOException {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                final ProjectionProcessor&lt;Float[], MBFImage&gt; bpp = new ProjectionProcessor&lt;Float[], MBFImage&gt;();<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                final File[] imagesToCombineInOrder = new File[] {<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                                new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-0.jpg"),<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                                new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-1.jpg"),<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                                new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-2.jpg"),<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                                new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-3.jpg"),<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                };<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                // AffineTransformModel model = new AffineTransformModel(6.0f);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                final HomographyModel model = new HomographyModel();<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                final RANSAC&lt;Point2d, Point2d, HomographyModel&gt; ransac = new RANSAC&lt;Point2d, Point2d, HomographyModel&gt;(model,<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                                new SingleImageTransferResidual2d&lt;HomographyModel&gt;(), 12.0, 600,<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                                new RANSAC.BestFitStoppingCondition(), true);<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                final ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt; matcher = new ConsistentLocalFeatureMatcher2d&lt;Keypoint&gt;(<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                new FastBasicKeypointMatcher&lt;Keypoint&gt;(8));<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                matcher.setFittingModel(ransac);<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                final int centerImageIndex = 1;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                // double scaleFactor = 1;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                final ResizeProcessor displayResize = new ResizeProcessor(800, 600, false);<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                final ResizeProcessor analysisResize = new ResizeProcessor(800, 600);<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                final MBFImage centerImage = ImageUtilities.readMBF(imagesToCombineInOrder[centerImageIndex]).process(<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                                analysisResize);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                final FImage centerImagef = Transforms.calculateIntensityNTSC(centerImage);<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>                final DoGSIFTEngine engine = new DoGSIFTEngine();<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                final List&lt;Keypoint&gt; centerKeys = engine.findFeatures(centerImagef);<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>                // GO LEFT<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                MBFImage currentImage = centerImage;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                FImage currentImagef = centerImagef;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                List&lt;Keypoint&gt; currentKeys = centerKeys;<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                bpp.setMatrix(new Matrix(new double[][] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }));<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                bpp.accumulate(centerImage);<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                int steps = 1;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                for (int i = centerImageIndex - 1; i &gt;= 0; i--) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        final MBFImage nextImage = ImageUtilities.readMBF(imagesToCombineInOrder[i]).process(analysisResize);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        final FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        final List&lt;Keypoint&gt; keys2 = engine.findFeatures(nextImagef);<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                        matcher.setModelFeatures(currentKeys);<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        matcher.findMatches(keys2);<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        // FIXME: there should be a class/method for drawing matches<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        final MBFImage tmp = new MBFImage(currentImagef.width + nextImagef.width, Math.max(currentImagef.height,<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                        nextImagef.height), 3);<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        final MBFImageRenderer r = tmp.createRenderer();<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        r.drawImage(currentImage, 0, 0);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        r.drawImage(nextImage, currentImagef.width, 0);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        for (final Pair&lt;Keypoint&gt; m : matcher.getMatches()) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                r.drawLine((int) m.secondObject().x, (int) m.secondObject().y,<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                                (int) m.firstObject().x + currentImagef.width, (int) m.firstObject().y,<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                                RGBColour.RED);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        DisplayUtilities.display(tmp);<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        System.out.println("GOING LEFT");<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        final Matrix transform = model.getTransform();<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        model.getTransform().print(5, 5);<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        bpp.setMatrix(bpp.getMatrix().times(transform));<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        final int propWidth = (int) (nextImage.getWidth() * Math.pow(0.5, 0));<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        bpp.accumulate(nextImage.extractROI(nextImage.getWidth() - propWidth, 0, propWidth, nextImage.getHeight()));<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        currentImage = nextImage;<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                        currentImagef = nextImagef;<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        currentKeys = keys2;<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        steps++;<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>                }<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>                // GO RIGHT<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                currentImage = centerImage;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                currentImagef = centerImagef;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                currentKeys = centerKeys;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                bpp.setMatrix(new Matrix(new double[][] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }));<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                steps = 1;<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                for (int i = centerImageIndex + 1; i &lt; imagesToCombineInOrder.length; i++) {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                        final MBFImage nextImage = ImageUtilities.readMBF(imagesToCombineInOrder[i]).process(analysisResize);<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                        final FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        final List&lt;Keypoint&gt; keys2 = engine.findFeatures(nextImagef);<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        matcher.setModelFeatures(currentKeys);<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        matcher.findMatches(keys2);<a name="line.141"></a>
+<span class="sourceLineNo">142</span><a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        // FIXME: there should be a class/method for drawing matches<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        final MBFImage tmp = new MBFImage(currentImagef.width + nextImagef.width, Math.max(currentImagef.height,<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                                        nextImagef.height), 3);<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        final MBFImageRenderer r = tmp.createRenderer();<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        r.drawImage(currentImage, 0, 0);<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        r.drawImage(nextImage, currentImagef.width, 0);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                        for (final Pair&lt;Keypoint&gt; m : matcher.getMatches()) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                                r.drawLine((int) m.secondObject().x, (int) m.secondObject().y,<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                                                (int) m.firstObject().x + currentImagef.width, (int) m.firstObject().y,<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                                                RGBColour.RED);<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        DisplayUtilities.display(tmp);<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        final Matrix transform = model.getTransform();<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        System.out.println("GOING RIGHT");<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                        transform.print(5, 5);<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>                        bpp.setMatrix(bpp.getMatrix().times(transform));<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        final int propWidth = (int) (nextImage.getWidth() * Math.pow(0.5, steps));<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        bpp.accumulate(nextImage.extractROI(0, 0, propWidth, nextImage.getHeight()));<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        currentImage = nextImage;<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        currentImagef = nextImagef;<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                        currentKeys = keys2;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                        steps++;<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>                }<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>                DisplayUtilities.display(bpp.performProjection().process(displayResize));<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>                // MBFImage image1 = ImageUtilities.readMBF(new<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                // File("/Users/ss/Desktop/trento-view-0.jpg")).halfImageSize();<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                // MBFImage image2 = ImageUtilities.readMBF(new<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                // File("/Users/ss/Desktop/trento-view-1.jpg")).halfImageSize();<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                //<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                // FImage image1f = Transforms.calculateIntensityNTSC(image1);<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                // FImage image2f = Transforms.calculateIntensityNTSC(image2);<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                //<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                // KeypointEngine engine = new KeypointEngine();<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                // List&lt;Keypoint&gt; keys1 = engine.findKeypoints(image1f);<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                // List&lt;Keypoint&gt; keys2 = engine.findKeypoints(image2f);<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                //<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                // // HomographyModel model = new HomographyModel(6.0f);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                // // RANSAC&lt;Point2d, Point2d&gt; ransac = new RANSAC&lt;Point2d,<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                // Point2d&gt;(model, 100, 10, false);<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                // //<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                // // ConsistentKeypointMatcher&lt;Keypoint&gt; matcher = new<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                // ConsistentKeypointMatcher&lt;Keypoint&gt;(8,0);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                // matcher.setFittingModel(ransac);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                // matcher.setModelKeypoints(keys1);<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                // matcher.findMatches(keys2);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                //<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                // //FIXME: there should be a class/method for drawing matches<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                // MBFImage tmp = new MBFImage(Math.max(image1f.rows, image2f.rows),<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                // image1f.cols + image2f.cols, 3);<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                // tmp.drawImage(image1, 0, 0);<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                // tmp.drawImage(image2, image1f.cols, 0);<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                // // It is not drawing any matches??<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                // for (Pair&lt;Keypoint&gt; m : matcher.getMatches()) {<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                // tmp.drawLine((int)m.secondObject().col, (int)m.secondObject().row,<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                // (int)m.firstObject().col + image1f.cols, (int)m.firstObject().row,<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                // RGBColour.RED);<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                // }<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                //<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                // DisplayUtilities.display(tmp);<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                //<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                // Matrix transform = model.getTransform();<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                // model.getTransform().print(5,5);<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                //<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                // BackProjectionProcessor&lt;Float[],MBFImage&gt; bpp = new<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                // BackProjectionProcessor&lt;Float[],MBFImage&gt;();<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                // bpp.processImage(image1);<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                // bpp.setMatrix(transform);<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                // bpp.processImage(image2);<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                // //FIXME: there should be a class to do back-projection...<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                // MBFImage img = new MBFImage(4000,2524,3);<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                // for(int x = 0 ; x &lt; img.getWidth(); x ++ ) {<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                // for(int y = 0 ; y &lt; img.getHeight(); y ++ ) {<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                // int xx = x - 1500;<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                // int yy = y - 1500;<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                //<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                // double xt = transform.get(0, 0) * xx + transform.get(0, 1) * yy +<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                // transform.get(0, 2);<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                // double yt = transform.get(1, 0) * xx + transform.get(1, 1) * yy +<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                // transform.get(1, 2);<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                //<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                // double zt = transform.get(2, 0) * xx + transform.get(2, 1) * yy +<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                // transform.get(2, 2);<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                // xt /= zt;<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                // yt /= zt;<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                //<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                // if (xt &gt;=0 &amp;&amp; yt&gt;=0 &amp;&amp; xt&lt;=image1.getCols() &amp;&amp; yt&lt;= image1.getRows())<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                // img.setPixel(x, y, image1.getPixelInterp(xt, yt));<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                // }<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                // }<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                // img.drawImage(image2, 1500, 1500);<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                // MBFImage img = bpp.performBackProjection();<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                // img = img.trim();<a name="line.240"></a>
+<span class="sourceLineNo">241</span><a name="line.241"></a>
+<span class="sourceLineNo">242</span>                // DisplayUtilities.display(img.process(displayResize));<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                // DisplayUtilities.display(img.halfImageSize());<a name="line.243"></a>
+<span class="sourceLineNo">244</span>        }<a name="line.244"></a>
+<span class="sourceLineNo">245</span>}<a name="line.245"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

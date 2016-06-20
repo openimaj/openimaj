@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.ml.annotation.bayes;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import gov.sandia.cognition.learning.algorithm.IncrementalLearner;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import gov.sandia.cognition.learning.algorithm.bayes.VectorNaiveBayesCategorizer;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import gov.sandia.cognition.learning.algorithm.bayes.VectorNaiveBayesCategorizer.OnlineLearner;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import gov.sandia.cognition.learning.data.DefaultInputOutputPair;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import gov.sandia.cognition.math.LogMath;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import gov.sandia.cognition.math.matrix.Vector;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import gov.sandia.cognition.math.matrix.VectorFactory;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import gov.sandia.cognition.util.AbstractCloneableSerializable;<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>import java.util.ArrayList;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import java.util.Collections;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import java.util.List;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import java.util.Set;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.feature.FeatureExtractor;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.feature.FeatureVector;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import org.openimaj.feature.IdentityFeatureExtractor;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import org.openimaj.ml.annotation.Annotated;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import org.openimaj.ml.annotation.IncrementalAnnotator;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import org.openimaj.ml.annotation.ScoredAnnotation;<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>/**<a name="line.55"></a>
+<span class="sourceLineNo">056</span> * Annotator based on a Naive Bayes Classifier. Uses a<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * {@link VectorNaiveBayesCategorizer} as the actual classifier.<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * <a name="line.58"></a>
+<span class="sourceLineNo">059</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * <a name="line.60"></a>
+<span class="sourceLineNo">061</span> * @param &lt;OBJECT&gt;<a name="line.61"></a>
+<span class="sourceLineNo">062</span> *            Type of object being annotated<a name="line.62"></a>
+<span class="sourceLineNo">063</span> * @param &lt;ANNOTATION&gt;<a name="line.63"></a>
+<span class="sourceLineNo">064</span> *            Type of annotation<a name="line.64"></a>
+<span class="sourceLineNo">065</span> */<a name="line.65"></a>
+<span class="sourceLineNo">066</span>public class NaiveBayesAnnotator&lt;OBJECT, ANNOTATION&gt;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                extends<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                IncrementalAnnotator&lt;OBJECT, ANNOTATION&gt;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>{<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        private static class PDF extends UnivariateGaussian.PDF {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                private static final long serialVersionUID = 1L;<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>                private SufficientStatistic target;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>        private static class PDFLearner extends AbstractCloneableSerializable<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        implements<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        IncrementalLearner&lt;Double, PDF&gt;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                private static final long serialVersionUID = 1L;<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>                final UnivariateGaussian.IncrementalEstimator distrLearner = new UnivariateGaussian.IncrementalEstimator();<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>                @Override<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                public PDF createInitialLearnedObject() {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        final PDF pdf = new PDF();<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        pdf.target = distrLearner.createInitialLearnedObject();<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        return pdf;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>                @Override<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                public void update(PDF pdf, Double data) {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        distrLearner.update(pdf.target, data);<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        pdf.setMean(pdf.target.getMean());<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        pdf.setVariance(pdf.target.getVariance());<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                }<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                @Override<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                public void update(PDF pdf, Iterable&lt;? extends Double&gt; data) {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                        distrLearner.update(pdf.target, data);<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        pdf.setMean(pdf.target.getMean());<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        pdf.setVariance(pdf.target.getVariance());<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>        /**<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         * Modes of operation for prediction using the {@link NaiveBayesAnnotator}.<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         * <a name="line.110"></a>
+<span class="sourceLineNo">111</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * <a name="line.112"></a>
+<span class="sourceLineNo">113</span>         */<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        public static enum Mode {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                /**<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                 * The probability of each class should be calculated, and the<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                 * annotations returned should contain every annotation with its<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                 * associated probability in decreasing order of probability.<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                 */<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                ALL {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        @Override<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        protected &lt;ANNOTATION&gt; List&lt;ScoredAnnotation&lt;ANNOTATION&gt;&gt;<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                        getAnnotations(VectorNaiveBayesCategorizer&lt;ANNOTATION, PDF&gt; categorizer, Vector vec)<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        {<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                                final List&lt;ScoredAnnotation&lt;ANNOTATION&gt;&gt; results = new ArrayList&lt;ScoredAnnotation&lt;ANNOTATION&gt;&gt;();<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                double logDenominator = Double.NEGATIVE_INFINITY;<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                                for (final ANNOTATION category : categorizer.getCategories()) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                                        final double logPosterior = categorizer.computeLogPosterior(vec, category);<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                                        logDenominator = LogMath.add(logDenominator, logPosterior);<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                        results.add(new ScoredAnnotation&lt;ANNOTATION&gt;(category, (float) logPosterior));<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                }<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                for (final ScoredAnnotation&lt;ANNOTATION&gt; scored : results)<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                        scored.confidence = (float) Math.exp(scored.confidence - logDenominator);<a name="line.136"></a>
+<span class="sourceLineNo">137</span><a name="line.137"></a>
+<span class="sourceLineNo">138</span>                                Collections.sort(results, Collections.reverseOrder());<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                                return results;<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        }<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                },<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                /**<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                 * Only the single most likely annotation will be returned.<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                 */<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                MAXIMUM_LIKELIHOOD {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        @Override<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        protected &lt;ANNOTATION&gt; List&lt;ScoredAnnotation&lt;ANNOTATION&gt;&gt;<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                                        getAnnotations(VectorNaiveBayesCategorizer&lt;ANNOTATION, PDF&gt; categorizer, Vector vec)<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                                final List&lt;ScoredAnnotation&lt;ANNOTATION&gt;&gt; results = new ArrayList&lt;ScoredAnnotation&lt;ANNOTATION&gt;&gt;();<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>                                final DefaultWeightedValueDiscriminant&lt;ANNOTATION&gt; r = categorizer.evaluateWithDiscriminant(vec);<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>                                results.add(new ScoredAnnotation&lt;ANNOTATION&gt;(r.getValue(), (float) Math.exp(r.getWeight())));<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                return results;<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        }<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                };<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>                protected abstract &lt;ANNOTATION&gt; List&lt;ScoredAnnotation&lt;ANNOTATION&gt;&gt;<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                                getAnnotations(VectorNaiveBayesCategorizer&lt;ANNOTATION, PDF&gt; categorizer, Vector vec);<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        }<a name="line.163"></a>
+<span class="sourceLineNo">164</span><a name="line.164"></a>
+<span class="sourceLineNo">165</span>        private VectorNaiveBayesCategorizer&lt;ANNOTATION, PDF&gt; categorizer;<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        private OnlineLearner&lt;ANNOTATION, PDF&gt; learner;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        private final Mode mode;<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        private FeatureExtractor&lt;? extends FeatureVector, OBJECT&gt; extractor;<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>        /**<a name="line.170"></a>
+<span class="sourceLineNo">171</span>         * Construct a {@link NaiveBayesAnnotator} with the given feature extractor<a name="line.171"></a>
+<span class="sourceLineNo">172</span>         * and mode of operation.<a name="line.172"></a>
+<span class="sourceLineNo">173</span>         * <a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * @param extractor<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         *            the feature extractor.<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         * @param mode<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         *            the mode of operation during prediction<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         */<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        public NaiveBayesAnnotator(FeatureExtractor&lt;? extends FeatureVector, OBJECT&gt; extractor, Mode mode) {<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                this.extractor = extractor;<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                this.mode = mode;<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                reset();<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        }<a name="line.183"></a>
+<span class="sourceLineNo">184</span><a name="line.184"></a>
+<span class="sourceLineNo">185</span>        /**<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         * Convenience method to construct a {@link NaiveBayesAnnotator} in the case<a name="line.186"></a>
+<span class="sourceLineNo">187</span>         * where the raw objects are themselves the feature and thus an<a name="line.187"></a>
+<span class="sourceLineNo">188</span>         * {@link IdentityFeatureExtractor} can be used. This method is equivalent<a name="line.188"></a>
+<span class="sourceLineNo">189</span>         * to calling<a name="line.189"></a>
+<span class="sourceLineNo">190</span>         * &lt;tt&gt;new NaiveBayesAnnotator&lt;OBJECT,ANNOTATION&gt;(new IdentityFeatureExtractor&lt;OBJECT&gt;(), mode)&lt;/tt&gt;<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         * .<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * <a name="line.192"></a>
+<span class="sourceLineNo">193</span>         * @param mode<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         *            the mode of operation during prediction<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         * @return the new {@link NaiveBayesAnnotator}<a name="line.195"></a>
+<span class="sourceLineNo">196</span>         */<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        public static &lt;OBJECT extends FeatureVector, ANNOTATION&gt; NaiveBayesAnnotator&lt;OBJECT, ANNOTATION&gt; create(Mode mode) {<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                return new NaiveBayesAnnotator&lt;OBJECT, ANNOTATION&gt;(new IdentityFeatureExtractor&lt;OBJECT&gt;(), mode);<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        }<a name="line.199"></a>
+<span class="sourceLineNo">200</span><a name="line.200"></a>
+<span class="sourceLineNo">201</span>        @Override<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        public void train(Annotated&lt;OBJECT, ANNOTATION&gt; annotated) {<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                final FeatureVector feature = extractor.extractFeature(annotated.getObject());<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                final Vector vec = VectorFactory.getDefault().copyArray(feature.asDoubleVector());<a name="line.204"></a>
+<span class="sourceLineNo">205</span><a name="line.205"></a>
+<span class="sourceLineNo">206</span>                for (final ANNOTATION ann : annotated.getAnnotations()) {<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                        learner.update(categorizer, new DefaultInputOutputPair&lt;Vector, ANNOTATION&gt;(vec, ann));<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                }<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        }<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>        @Override<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        public void reset() {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                learner = new VectorNaiveBayesCategorizer.OnlineLearner&lt;ANNOTATION, PDF&gt;();<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                learner.setDistributionLearner(new PDFLearner());<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                categorizer = learner.createInitialLearnedObject();<a name="line.215"></a>
+<span class="sourceLineNo">216</span>        }<a name="line.216"></a>
+<span class="sourceLineNo">217</span><a name="line.217"></a>
+<span class="sourceLineNo">218</span>        @Override<a name="line.218"></a>
+<span class="sourceLineNo">219</span>        public Set&lt;ANNOTATION&gt; getAnnotations() {<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                return categorizer.getCategories();<a name="line.220"></a>
+<span class="sourceLineNo">221</span>        }<a name="line.221"></a>
+<span class="sourceLineNo">222</span><a name="line.222"></a>
+<span class="sourceLineNo">223</span>        @Override<a name="line.223"></a>
+<span class="sourceLineNo">224</span>        public List&lt;ScoredAnnotation&lt;ANNOTATION&gt;&gt; annotate(OBJECT object) {<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                final FeatureVector feature = extractor.extractFeature(object);<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                final Vector vec = VectorFactory.getDefault().copyArray(feature.asDoubleVector());<a name="line.226"></a>
+<span class="sourceLineNo">227</span><a name="line.227"></a>
+<span class="sourceLineNo">228</span>                return mode.getAnnotations(categorizer, vec);<a name="line.228"></a>
+<span class="sourceLineNo">229</span>        }<a name="line.229"></a>
+<span class="sourceLineNo">230</span>}<a name="line.230"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

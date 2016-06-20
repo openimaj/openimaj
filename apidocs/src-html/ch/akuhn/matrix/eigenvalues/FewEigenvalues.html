@@ -1,0 +1,344 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package ch.akuhn.matrix.eigenvalues;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.util.Arrays;<a name="line.3"></a>
+<span class="sourceLineNo">004</span><a name="line.4"></a>
+<span class="sourceLineNo">005</span>import org.netlib.arpack.ARPACK;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import org.netlib.util.doubleW;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import org.netlib.util.intW;<a name="line.7"></a>
+<span class="sourceLineNo">008</span><a name="line.8"></a>
+<span class="sourceLineNo">009</span>import ch.akuhn.matrix.Matrix;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import ch.akuhn.matrix.Vector;<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>/**<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * Finds a few eigenvalues of a matrix.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * &lt;P&gt;<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * This class use ARPACK to find a few eigenvalues (&amp;lambda;) and corresponding<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * eigenvectors (&lt;b&gt;x&lt;/b&gt;) for the standard eigenvalue problem:<a name="line.16"></a>
+<span class="sourceLineNo">017</span> * <a name="line.17"></a>
+<span class="sourceLineNo">018</span> * &lt;PRE&gt;<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * &lt;CODE&gt;A&lt;b&gt;x&lt;/b&gt; = &amp;lambda;&lt;b&gt;x&lt;/b&gt;&lt;/CODE&gt;<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * &lt;/PRE&gt;<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * <a name="line.21"></a>
+<span class="sourceLineNo">022</span> * where &lt;code&gt;A&lt;/code&gt; is an &lt;code&gt;n&lt;/code&gt; &amp;times; &lt;code&gt;n&lt;/code&gt; real<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * symmetric matrix.<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * &lt;P&gt;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * The only thing that must be supplied in order to use this class on your<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * problem is to change the array dimensions appropriately, to specify<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * &lt;em&gt;which&lt;/em&gt; eigenvalues you want to compute and to supply a matrix-vector<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * product<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * <a name="line.29"></a>
+<span class="sourceLineNo">030</span> * &lt;PRE&gt;<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * &lt;b&gt;w&lt;/b&gt; &amp;larr; A&lt;b&gt;v&lt;/b&gt;<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * &lt;/PRE&gt;<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * <a name="line.33"></a>
+<span class="sourceLineNo">034</span> * in the {@link #callback(Vector)} method.<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * &lt;P&gt;<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * Please refer to the ARPACK guide for further information.<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;P&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * &lt;b&gt;Example:&lt;/b&gt;<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * <a name="line.39"></a>
+<span class="sourceLineNo">040</span> * &lt;PRE&gt;<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * Matrix A = &lt;i&gt;&amp;hellip;square matrix&amp;hellip;&lt;/i&gt;;<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * Eigenvalues eigen = Eigenvalues.of(A).largest(4);<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * eigen.run();<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * double[] l = eigen.values;<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * Vector[] x = eigen.vectors;<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * &lt;/PRE&gt;<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * <a name="line.47"></a>
+<span class="sourceLineNo">048</span> * @author Adrian Kuhn (Java) based on &lt;CODE&gt;ddsimp.f&lt;/CODE&gt; by Richard Lehoucq,<a name="line.48"></a>
+<span class="sourceLineNo">049</span> *         Danny Sorensen, Chao Yang (Fortran)<a name="line.49"></a>
+<span class="sourceLineNo">050</span> * <a name="line.50"></a>
+<span class="sourceLineNo">051</span> * @see "http://www.caam.rice.edu/software/ARPACK/UG"<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * <a name="line.52"></a>
+<span class="sourceLineNo">053</span> */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>@SuppressWarnings("javadoc")<a name="line.54"></a>
+<span class="sourceLineNo">055</span>public abstract class FewEigenvalues extends Eigenvalues {<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        private enum Which {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                LA, SA, LM, SM, BE<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        };<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        private Which which;<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        public static FewEigenvalues of(final Matrix matrix) {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                assert matrix.isSquare();<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                return new FewEigenvalues(matrix.columnCount()) {<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                        @Override<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        protected Vector callback(Vector vector) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                                return matrix.mult(vector);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        }<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                };<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        }<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>        public FewEigenvalues(int n) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                super(n);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                this.greatest(20);<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        }<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>        private FewEigenvalues which(Which which, int nev) {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                this.which = which;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                this.nev = nev &lt; n ? nev : n - 1;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                return this;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>        /** Compute the largest algebraic eigenvalues. */<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        @Override<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        public FewEigenvalues largest(int nev0) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                return which(Which.LA, nev0);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        }<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>        /** Compute the smallest algebraic eigenvalues. */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        public FewEigenvalues smallest(int nev0) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                return which(Which.SA, nev0);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /** Compute the largest eigenvalues in magnitude. */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        public FewEigenvalues greatest(int nev0) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                return which(Which.LM, nev0);<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        }<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>        /** Compute the smallest eigenvalues in magnitude. */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        public FewEigenvalues lowest(int nev0) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                return which(Which.SM, nev0);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>        /**<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         * Compute eigenvalues from both end of the spectrum. When the<a name="line.106"></a>
+<span class="sourceLineNo">107</span>         * &lt;CODE&gt;nev&lt;/CODE&gt; is odd, compute one more from the high end than from the<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * low end.<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         */<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        public FewEigenvalues fromBothEnds(int nev0) {<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                return which(Which.BE, nev0);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>        /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * Runs the eigenvalue decomposition, using an implicitly restarted Arnoldi<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * process (IRAP). Please refer to the ARPACK guide for more information.<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * <a name="line.117"></a>
+<span class="sourceLineNo">118</span>         */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        @Override<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        public Eigenvalues run() {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                final ARPACK arpack = ARPACK.getInstance();<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                /*<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                 * Setting up parameters for DSAUPD call.<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                 */<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                final intW ido = new intW(0); // must start zero<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                final String bmat = "I"; // standard problem<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                final doubleW tol = new doubleW(0); // uses machine precision<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                final intW info = new intW(0); // request random starting vector<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                final double[] resid = new double[n]; // allocate starting vector<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                /*<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                 * NVC is the largest number of basis vectors that will be used in the<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                 * Implicitly Restarted Arnoldi Process. Work per major iteration is<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                 * proportional to N*NCV*NCV.<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                 */<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                final int ncv = Math.min(nev * 4, n); // rule of thumb use twice nev<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                final double[] v = new double[n * ncv];<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                final double[] workd = new double[3 * n];<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                final double[] workl = new double[ncv * (ncv + 8)];<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                // Parameters<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                final int[] iparam = new int[11];<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                {<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        final int ishfts = 1; // use the exact shift strategy<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        final int maxitr = 300; // max number of Arnoldi iterations<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        final int mode = 1; // use "mode 1"<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                        iparam[1 - 1] = ishfts;<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        iparam[3 - 1] = maxitr;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        iparam[7 - 1] = mode;<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                }<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                final int[] ipntr = new int[11];<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                // debug setting<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                org.netlib.arpack.arpack_debug.ndigit.val = -3;<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                org.netlib.arpack.arpack_debug.logfil.val = 6;<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                org.netlib.arpack.arpack_debug.msgets.val = 0;<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                org.netlib.arpack.arpack_debug.msaitr.val = 0;<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                org.netlib.arpack.arpack_debug.msapps.val = 0;<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                org.netlib.arpack.arpack_debug.msaupd.val = 0;<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                org.netlib.arpack.arpack_debug.msaup2.val = 0;<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                org.netlib.arpack.arpack_debug.mseigt.val = 0;<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                org.netlib.arpack.arpack_debug.mseupd.val = 0;<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                /*<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                 * Main loop (reverse communication loop)<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                 * <a name="line.162"></a>
+<span class="sourceLineNo">163</span>                 * Repeatedly calls the routine DSAUPD and takes actions indicated by<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                 * parameter IDO until either convergence is indicated or maxitr has<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                 * been exceeded.<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                 */<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                assert n &gt; 0;<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                assert nev &gt; 0;<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                assert ncv &gt; nev &amp;&amp; ncv &lt;= n;<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>                while (true) {<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        arpack.dsaupd(<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                                        ido, // reverse communication parameter<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                                        bmat, // "I" = standard problem<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                                        n, // problem size<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                                        which.name(), // which values are requested?<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                                        nev, // who many values?<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                        tol, // 0 = use machine precision<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                                        resid,<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                                        ncv,<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                                        v,<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                                        n,<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                                        iparam,<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                                        ipntr,<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                                        workd,<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                                        workl,<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                                        workl.length,<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                                        info);<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        if (!(ido.val == 1 || ido.val == -1))<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                                break;<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                        /*<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                         * Perform matrix vector multiplication<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                         * <a name="line.193"></a>
+<span class="sourceLineNo">194</span>                         * y &lt;--- OP*x<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                         * <a name="line.195"></a>
+<span class="sourceLineNo">196</span>                         * The user should supply his own matrix- vector multiplication<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                         * routine here that takes workd(ipntr(1)) as the input, and return<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                         * the result to workd(ipntr(2)).<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                         */<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                        final int x0 = ipntr[1 - 1] - 1; // Fortran is off-by-one compared<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                                                                                                // to Java!<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        final int y0 = ipntr[2 - 1] - 1;<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        final Vector x = Vector.copy(workd, x0, n);<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                        final Vector y = this.callback(x);<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                        assert y.size() == n;<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                        y.storeOn(workd, y0);<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                }<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                /*<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                 * Either we have convergence or there is an error.<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                 */<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                if (info.val != 0)<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                        throw new Error("dsaupd ERRNO = " + info.val<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                                        + ", see http://www.caam.rice.edu/software/ARPACK/UG/node136.html");<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                /*<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                 * Post-Process using DSEUPD.<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                 * <a name="line.216"></a>
+<span class="sourceLineNo">217</span>                 * Computed eigenvalues may be extracted.<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                 * <a name="line.218"></a>
+<span class="sourceLineNo">219</span>                 * The routine DSEUPD now called to do this post processing (other modes<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                 * may require more complicated post processing than "mode 1").<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                 */<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                final boolean rvec = true; // request vectors<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                final boolean[] select = new boolean[ncv];<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                final double[] d = new double[ncv * 2];<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                final double sigma = 0; // not used in "mode 1"<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                final intW ierr = new intW(0);<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                final intW nevW = new intW(nev);<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                arpack.dseupd(<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                                rvec,<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                "All",<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                                select,<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                d,<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                v,<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                n,<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                                sigma,<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                                bmat,<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                                n,<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                which.name(),<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                nevW,<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                                tol.val,<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                resid,<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                                ncv,<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                                v,<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                                n,<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                                iparam,<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                                ipntr,<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                                workd,<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                workl,<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                workl.length,<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                ierr);<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                if (ierr.val &lt; 0)<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        throw new Error("dseupd ERRNO = " + info.val<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                                        + ", see http://www.caam.rice.edu/software/ARPACK/UG/node136.html");<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                /*<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                 * Eigenvalues are returned in the first column of the two dimensional<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                 * array D and the corresponding eigenvectors are returned in the first<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                 * NCONV (=IPARAM(5)) columns of the two dimensional array V if<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                 * requested. Otherwise, an orthogonal basis for the invariant subspace<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                 * corresponding to the eigenvalues in D is returned in V.<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                 */<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                final int nconv = iparam[5 - 1];<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                value = Arrays.copyOf(d, nconv);<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                vector = new Vector[nconv];<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                for (int i = 0; i &lt; value.length; i++) {<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                        vector[i] = Vector.copy(v, i * n, n);<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                }<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                return this;<a name="line.267"></a>
+<span class="sourceLineNo">268</span>        }<a name="line.268"></a>
+<span class="sourceLineNo">269</span><a name="line.269"></a>
+<span class="sourceLineNo">270</span>        protected abstract Vector callback(Vector vector);<a name="line.270"></a>
+<span class="sourceLineNo">271</span><a name="line.271"></a>
+<span class="sourceLineNo">272</span>}<a name="line.272"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,548 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.openimaj.demos.sandbox.tldcpp.tracker;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import org.openimaj.image.FImage;<a name="line.3"></a>
+<span class="sourceLineNo">004</span>import org.openimaj.image.analysis.algorithm.TemplateMatcher;<a name="line.4"></a>
+<span class="sourceLineNo">005</span>import org.openimaj.math.geometry.line.Line2d;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import org.openimaj.math.geometry.shape.Rectangle;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import org.openimaj.video.tracking.klt.Feature;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import org.openimaj.video.tracking.klt.FeatureList;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import org.openimaj.video.tracking.klt.KLTTracker;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import org.openimaj.video.tracking.klt.PyramidSet;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import org.openimaj.video.tracking.klt.TrackingContext;<a name="line.11"></a>
+<span class="sourceLineNo">012</span><a name="line.12"></a>
+<span class="sourceLineNo">013</span>/**<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * The MedianFlowTracker is backed by a {@link KLTTracker} which has some special<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * checks to make sure tracked points are actually good, and once it knows an overall<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * median of motion is calculated and reflected in the update of a bounding box.<a name="line.16"></a>
+<span class="sourceLineNo">017</span> * <a name="line.17"></a>
+<span class="sourceLineNo">018</span> * The ForwardBackward procedure checks whether a given point is tracked well.<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * Points in a uniform grid are tracked within a bounding box from frame A -&gt; B<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * The points that are tracked correctly are then tracked from B -&gt; A.<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * <a name="line.21"></a>
+<span class="sourceLineNo">022</span> * The Normalised Cross correlation is measured between points in A and B which survive this A -&gt; B -&gt; A transfer<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * The euclidian distance is measured between those points which started at A and the same points as tracked to A via B.<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * <a name="line.24"></a>
+<span class="sourceLineNo">025</span> * The median cross correlation and euclidian distance is used as a threshold to select points which were tracked well<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * between A and B.<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * <a name="line.27"></a>
+<span class="sourceLineNo">028</span> * The relative motion of these points from A to B is used to calcualte a movement and scale shift of the bounding box in A.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * <a name="line.29"></a>
+<span class="sourceLineNo">030</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *<a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>public class MedianFlowTracker {<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /**<a name="line.34"></a>
+<span class="sourceLineNo">035</span>         * The current tracker bounding box.<a name="line.35"></a>
+<span class="sourceLineNo">036</span>         */<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        public Rectangle trackerBB;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        private TrackingContext context;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        private KLTTracker klttracker;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        /**<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * Features tracked to B from A<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        public FeatureList featuresTrackedToBfromA;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        /**<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         * Features tracked back to A form B<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        public FeatureList featuresTrackedToAviaB;<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * null bounding box and init the {@link KLTTracker}<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        public MedianFlowTracker() {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                trackerBB = null;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                this.context = new TrackingContext();<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                klttracker = new KLTTracker(context, null);<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                this.context.setSequentialMode(true);<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        }<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        /**<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * null the bounding box<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        public void cleanPreviousData() {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                trackerBB = null;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        }<a name="line.64"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>        /**<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         * track points from the previous image within the bounding box to the current image (from A to B)<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * @param prevMat - Image A<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * @param currMat - Image B<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * @param prevBB - Bounding box in A<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        public void track(FImage prevMat, FImage currMat, Rectangle prevBB) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                if (prevBB != null) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        if (prevBB.width &lt;= 0 || prevBB.height &lt;= 0) {<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                                return;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        }<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        float bb_tracker[] = { prevBB.x, prevBB.y, prevBB.width + prevBB.x - 1, prevBB.height + prevBB.y - 1 };<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        FImage prevImg = prevMat;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        FImage currImg = currMat;<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        boolean success = fbtrack(prevImg, currImg, bb_tracker, bb_tracker);<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        // Extract subimage<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                        float x, y, w, h;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        x = (float) Math.floor(bb_tracker[0] + 0.5);<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        y = (float) Math.floor(bb_tracker[1] + 0.5);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        w = (float) Math.floor(bb_tracker[2] - bb_tracker[0] + 1 + 0.5);<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        h = (float) Math.floor(bb_tracker[3] - bb_tracker[1] + 1 + 0.5);<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>                        // TODO: Introduce a check for a minimum size<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        if (!success <a name="line.92"></a>
+<span class="sourceLineNo">093</span>                                        || x &lt; 0 || y &lt; 0 || w &lt;= 0 || h &lt;= 0<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                                        || x + w &gt; currMat.width || y + h &gt; currMat.height<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                        || x != x || y != y || w != w || h != h) { <a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        } else {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                <a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                trackerBB = new Rectangle(x, y, w, h);<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        private boolean fbtrack(FImage imgI, FImage imgJ, float[] bb, float[] bbnew) {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                int numM = 10;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                int numN = 10;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                int nPoints = numM * numN;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                int sizePointsArray = nPoints;<a name="line.107"></a>
+<span class="sourceLineNo">108</span><a name="line.108"></a>
+<span class="sourceLineNo">109</span>                boolean[] status = new boolean[nPoints];<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>                // float [] pt = new float[sizePointsArray];<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                // float [] ptTracked = new float[sizePointsArray];<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>                FeatureList pt = new FeatureList(sizePointsArray);<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>                int i;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                int nRealPoints;<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                float medFb;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                float medNcc;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                int nAfterFbUsage;<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                getFilledBBPoints(bb, numM, numN, 5, pt);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                // getFilledBBPoints(bb, numM, numN, 5, &amp;ptTracked);<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>                // initImgs();<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                FeatureList ptTracked = trackLK(imgI, imgJ, pt, status); // the points<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                                                                                                                                        // tracked<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                                                                                                                        // to the<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                                                                                                                                        // next<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                                                                                                                                        // image,<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                                                                                                                        // with the<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                                                                                                                                        // ncc <a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                                                                                                                        // (from start -&gt; next) and<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                                                                                                                        // fb <a name="line.133"></a>
+<span class="sourceLineNo">134</span>                                                                                                                                        // (from next -&gt; start)<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                // initImgs();<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                // char* status = *statusP;<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                int nlkPoints = 0;<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                for (i = 0; i &lt; nPoints; i++) {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        nlkPoints += status[i] ? 1 : 0;<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                }<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                // startPoints = (CvPoint2D32f*) malloc(nlkPoints *<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                // sizeof(CvPoint2D32f));<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                // targetPoints = (CvPoint2D32f*) malloc(nlkPoints *<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                // sizeof(CvPoint2D32f));<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                // fbLkCleaned = (float*) malloc(nlkPoints * sizeof(float));<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                // nccLkCleaned = (float*) malloc(nlkPoints * sizeof(float));<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                FeatureList cleanedTracked = new FeatureList(nlkPoints);<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                FeatureList cleanedStart = new FeatureList(nlkPoints);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                nRealPoints = 0;<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                float[] fbLkCleaned = new float[nlkPoints];<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                float[] nccLkCleaned = new float[nlkPoints];<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                for (i = 0; i &lt; nPoints; i++) {<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        // TODO:handle Missing Points<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        // or status[i]==0<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        if (ptTracked.features[i] == null || ptTracked.features[i].val &lt; 0 || !status[i]) {<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        } else {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                cleanedStart.features[nRealPoints] = pt.features[i].clone();<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                                cleanedTracked.features[nRealPoints] = ptTracked.features[i].clone();<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                                fbLkCleaned[nRealPoints] = ((FBNCCFeature) cleanedTracked.features[nRealPoints]).fbDistance;<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                                nccLkCleaned[nRealPoints] = ((FBNCCFeature) cleanedTracked.features[nRealPoints]).ncc;<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                nRealPoints++;<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        }<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                }<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                if(nlkPoints == 0) return false;<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                // assert nRealPoints==nlkPoints<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                medFb = FastMedian.getMedian(fbLkCleaned, nlkPoints);<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                medNcc = FastMedian.getMedian(nccLkCleaned, nlkPoints);<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                /*<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                 * printf("medianfb: %f\nmedianncc: %f\n", medFb, medNcc);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                 * printf("Number of points after lk: %d\n", nlkPoints);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                 */<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                nAfterFbUsage = 0;<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                for (i = 0; i &lt; nlkPoints; i++) {<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                        if ((fbLkCleaned[i] &lt;= medFb) &amp; (nccLkCleaned[i] &gt;= medNcc)) {<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                                cleanedStart.features[nAfterFbUsage] = cleanedStart.features[i];<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                                cleanedTracked.features[nAfterFbUsage] = cleanedTracked.features[i];<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                                nAfterFbUsage++;<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                        }<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                }<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                /* printf("Number of points after fb correction: %d\n", nAfterFbUsage); */<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                // showIplImage(IMGS[1]);<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                // show "OpticalFlow" fb filtered.<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                // drawLinesCvPoint2D32f(imgI, startPoints, nRealPoints, targetPoints,<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                // nRealPoints);<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                // showIplImage(imgI);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                predictbb(bb, cleanedStart, cleanedTracked, nAfterFbUsage, bbnew);<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                this.featuresTrackedToBfromA = new FeatureList(nAfterFbUsage);<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                System.arraycopy(cleanedStart.features, 0, this.featuresTrackedToBfromA.features, 0, nAfterFbUsage);<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                this.featuresTrackedToAviaB = new FeatureList(nAfterFbUsage);<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                System.arraycopy(cleanedTracked.features, 0, this.featuresTrackedToAviaB.features, 0, nAfterFbUsage);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                /*<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                 * printf("bbnew: %f,%f,%f,%f\n", bbnew[0], bbnew[1], bbnew[2],<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                 * bbnew[3]); printf("relative scale: %f \n", scaleshift[0]);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                 */<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>                if (medFb &gt; 10)<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                        return false;<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                else<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                        return true;<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                <a name="line.200"></a>
+<span class="sourceLineNo">201</span>        }<a name="line.201"></a>
+<span class="sourceLineNo">202</span><a name="line.202"></a>
+<span class="sourceLineNo">203</span>        private boolean predictbb(float[] bb0, FeatureList pt0, FeatureList pt1, int nPts, float []bb1) {<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                float[] ofx = new float[nPts];<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                float[] ofy = new float[nPts];<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                int i;<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                int j;<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                int d = 0;<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                float dx,dy;<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                int lenPdist;<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                float[] dist0;<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                float[] dist1;<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                float s0,s1;<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                for (i = 0; i &lt; nPts; i++)<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                {<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                        ofx[i] = pt1.features[i].x - pt0.features[i].x;<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                        ofy[i] = pt1.features[i].y - pt0.features[i].y;<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                }<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                dx = FastMedian.getMedianUnmanaged(ofx, nPts);<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                dy = FastMedian.getMedianUnmanaged(ofy, nPts);<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                ofx = null;<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                ofy = null;<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                //m(m-1)/2<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                lenPdist = nPts * (nPts - 1) / 2;<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                dist0 = new float[lenPdist];<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                dist1 = new float[lenPdist];<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                for (i = 0; i &lt; nPts; i++)<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        for (j = i + 1; j &lt; nPts; j++, d++)<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                        {<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                                dist0[d] = (float) Math.sqrt(<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                        Math.pow(pt0.features[i].x - pt0.features[j].x, 2) + <a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                        Math.pow(pt0.features[i].y - pt0.features[j].y, 2)<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                );<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                                dist1[d] = (float) Math.sqrt(Math.pow(pt1.features[i].x - pt1.features[j].x, 2) + Math.pow(pt1.features[i].y - pt1.features[j].y, 2));<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                                dist0[d] = dist1[d] / dist0[d];<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        }<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                }<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                // The scale change is the median of all changes of distance.<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                // same as s = median(d2./d1) with above<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                float shift = 0f;<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                if(lenPdist == 0){<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                        <a name="line.243"></a>
+<span class="sourceLineNo">244</span>                }<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                else{<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                        shift = FastMedian.getMedianUnmanaged(dist0, lenPdist);                 <a name="line.246"></a>
+<span class="sourceLineNo">247</span>                }<a name="line.247"></a>
+<span class="sourceLineNo">248</span>//              float shift = 1;<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                dist0 = null;<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                dist1 = null;<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                s0 = 0.5f * (shift - 1) * getBbWidth(bb0);<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                s1 = 0.5f * (shift - 1) * getBbHeight(bb0);<a name="line.252"></a>
+<span class="sourceLineNo">253</span><a name="line.253"></a>
+<span class="sourceLineNo">254</span>                // Apply transformations (translation&amp; scale) to old Bounding Box<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                bb1[0] = bb0[0] - s0 + dx;<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                bb1[1] = bb0[1] - s1 + dy;<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                bb1[2] = bb0[2] + s0 + dx;<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                bb1[3] = bb0[3] + s1 + dy;<a name="line.258"></a>
+<span class="sourceLineNo">259</span><a name="line.259"></a>
+<span class="sourceLineNo">260</span>                //return absolute scale change<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                //  shift[0] = s0;<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                //  shift[1] = s1;<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                return true;<a name="line.263"></a>
+<span class="sourceLineNo">264</span>        }<a name="line.264"></a>
+<span class="sourceLineNo">265</span><a name="line.265"></a>
+<span class="sourceLineNo">266</span>        private float getBbHeight(float[] bb) {<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                return Math.abs(bb[3] - bb[1] + 1);<a name="line.267"></a>
+<span class="sourceLineNo">268</span>        }<a name="line.268"></a>
+<span class="sourceLineNo">269</span><a name="line.269"></a>
+<span class="sourceLineNo">270</span>        private float getBbWidth(float[] bb) {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                return Math.abs(bb[2] - bb[0] + 1);<a name="line.271"></a>
+<span class="sourceLineNo">272</span>        }<a name="line.272"></a>
+<span class="sourceLineNo">273</span><a name="line.273"></a>
+<span class="sourceLineNo">274</span>        private FeatureList trackLK(FImage imgI, FImage imgJ, FeatureList pt,boolean[] status) {<a name="line.274"></a>
+<span class="sourceLineNo">275</span><a name="line.275"></a>
+<span class="sourceLineNo">276</span>                // TODO: watch NaN cases<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                // double nan = std::numeric_limits&lt;double&gt;::quiet_NaN();<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                // double inf = std::numeric_limits&lt;double&gt;::infinity();<a name="line.278"></a>
+<span class="sourceLineNo">279</span><a name="line.279"></a>
+<span class="sourceLineNo">280</span>                // tracking<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                int winsize_ncc;<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                int i;<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                winsize_ncc = 10;<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                // Get the current pyramid (use it for efficient tracking back)<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                PyramidSet pyrI = this.context.getPreviousPyramid();<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                if(pyrI.isNull()){<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                        pyrI = new PyramidSet(imgI, context);<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                        this.context.setPreviousPyramid(pyrI);<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                }<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                <a name="line.290"></a>
+<span class="sourceLineNo">291</span>                // Set the starting points (the grid)<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                this.klttracker.setFeatureList(pt);<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                // Track the grid to the next image<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                this.klttracker.trackFeatures(imgI, imgJ);<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                // Store the tracked points (these will be the output also)<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                FeatureList ptTracked = this.klttracker.getFeatureList().clone();<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                // Hold on to the pyramid, we must set this at the end<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                PyramidSet pyrJ = this.context.getPreviousPyramid();<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                // Track these points back to the first image<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                this.klttracker.trackFeatures(imgJ, imgI, pyrJ, pyrI);<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                // Hold the tracked back points<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                FeatureList trackedBack = this.klttracker.getFeatureList();<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                // fix the KLTTracker context for the next round<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                this.context.setPreviousPyramid(pyrJ);<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                // Figure out which points failed<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                for (i = 0; i &lt; ptTracked.features.length; i++) {<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                        if (trackedBack.features[i].val &gt;= 0<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                                        &amp;&amp; ptTracked.features[i].val &gt;= 0) {<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                                status[i] = true;<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                        } else {<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                                status[i] = false;<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                        }<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                }<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                // set the ncc in the ptTracked points<a name="line.314"></a>
+<span class="sourceLineNo">315</span>                normCrossCorrelation(imgI, imgJ, pt, ptTracked, status, winsize_ncc);<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                // set the fbDistance in the ptTracked points<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                euclideanDistance(pt, trackedBack, ptTracked, status); // compare the<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                                                                                                                                // first two and<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                                                                                                                                // store the<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                                                                                                                                // results in<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                                                                                                                                // the last one<a name="line.321"></a>
+<span class="sourceLineNo">322</span><a name="line.322"></a>
+<span class="sourceLineNo">323</span>                return ptTracked;<a name="line.323"></a>
+<span class="sourceLineNo">324</span>        }<a name="line.324"></a>
+<span class="sourceLineNo">325</span><a name="line.325"></a>
+<span class="sourceLineNo">326</span>        private void euclideanDistance(FeatureList pt, FeatureList trackedBack, FeatureList ptTracked, boolean[] status) {<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                for (int i = 0; i &lt; status.length; i++) {<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                        boolean tracked = status[i];<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                        FBNCCFeature feat = (FBNCCFeature) pt.features[i];<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                        FBNCCFeature trackedBackFeat = (FBNCCFeature) trackedBack.features[i];<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                        FBNCCFeature storageFeat = (FBNCCFeature) ptTracked.features[i];<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                        if (tracked) {<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                                storageFeat.fbDistance = (float) Line2d.distance(feat, trackedBackFeat);<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        } else {<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                                storageFeat.fbDistance = Float.NaN;<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                        }<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                }<a name="line.337"></a>
+<span class="sourceLineNo">338</span>        }<a name="line.338"></a>
+<span class="sourceLineNo">339</span><a name="line.339"></a>
+<span class="sourceLineNo">340</span>        private void normCrossCorrelation(FImage imgI, FImage imgJ, FeatureList pt,<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                        FeatureList ptTracked, boolean[] status, int winsize_ncc) {<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                for (int i = 0; i &lt; status.length; i++) {<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                        boolean tracked = status[i];<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                        FBNCCFeature feat = (FBNCCFeature) pt.features[i];<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                        FBNCCFeature featTracked = (FBNCCFeature) ptTracked.features[i];<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                        if (tracked) {<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                                feat.ncc = TemplateMatcher.Mode.NORM_SUM_SQUARED_DIFFERENCE<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                                                .computeMatchScore(imgI.pixels, (int) feat.x,<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                                                                (int) feat.y, imgJ.pixels, (int) featTracked.x,<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                                                                (int) featTracked.y, winsize_ncc, winsize_ncc);<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                        } else {<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                                feat.ncc = Float.NaN;<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                        }<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                }<a name="line.354"></a>
+<span class="sourceLineNo">355</span>        }<a name="line.355"></a>
+<span class="sourceLineNo">356</span><a name="line.356"></a>
+<span class="sourceLineNo">357</span>        /**<a name="line.357"></a>
+<span class="sourceLineNo">358</span>         * Creates numM x numN points grid on BBox. Points ordered in 1 dimensional<a name="line.358"></a>
+<span class="sourceLineNo">359</span>         * array (x1, y1, x2, y2).<a name="line.359"></a>
+<span class="sourceLineNo">360</span>         * <a name="line.360"></a>
+<span class="sourceLineNo">361</span>         * @param bb<a name="line.361"></a>
+<span class="sourceLineNo">362</span>         *            Bounding box represented through 2 points(x1,y1,x2,y2)<a name="line.362"></a>
+<span class="sourceLineNo">363</span>         * @param numM<a name="line.363"></a>
+<span class="sourceLineNo">364</span>         *            Number of points in height direction.<a name="line.364"></a>
+<span class="sourceLineNo">365</span>         * @param numN<a name="line.365"></a>
+<span class="sourceLineNo">366</span>         *            Number of points in width direction.<a name="line.366"></a>
+<span class="sourceLineNo">367</span>         * @param margin<a name="line.367"></a>
+<span class="sourceLineNo">368</span>         *            margin (in pixel)<a name="line.368"></a>
+<span class="sourceLineNo">369</span>         * @param pt2<a name="line.369"></a>
+<span class="sourceLineNo">370</span>         *            Contains the calculated points in the form (x1, y1, x2, y2).<a name="line.370"></a>
+<span class="sourceLineNo">371</span>         *            Size of the array must be numM * numN * 2.<a name="line.371"></a>
+<span class="sourceLineNo">372</span>         */<a name="line.372"></a>
+<span class="sourceLineNo">373</span>        boolean getFilledBBPoints(float[] bb, int numM, int numN, int margin,FeatureList pt2) {<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                FeatureList pt = pt2;<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                int i;<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                int j;<a name="line.376"></a>
+<span class="sourceLineNo">377</span>                float[] pbb_local;<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                /**<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                 * gap between points in width direction<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                 */<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                float divN = 0;<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                /**<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                 * gap between points in height direction<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                 */<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                float divM = 0;<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                float[] bb_local = new float[4];<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                float spaceN;<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                float spaceM;<a name="line.388"></a>
+<span class="sourceLineNo">389</span>                Feature cen;<a name="line.389"></a>
+<span class="sourceLineNo">390</span>                /* add margin */<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                bb_local[0] = bb[0] + margin;<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                bb_local[1] = bb[1] + margin;<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                bb_local[2] = bb[2] - margin;<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                bb_local[3] = bb[3] - margin;<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                pbb_local = bb_local;<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                /* printf("PointArraySize should be: %d\n", numM * numN * pointDim); */<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                /* handle cases numX = 1 */// If there is 1 point pick one in the middle<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                if (numN == 1 &amp;&amp; numM == 1) {<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                        Feature center = calculateBBCenter(pbb_local);<a name="line.399"></a>
+<span class="sourceLineNo">400</span>                        center.val = KLTTracker.KLT_TRACKED;<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                        pt2.features[0] = center;<a name="line.401"></a>
+<span class="sourceLineNo">402</span>                        return true;<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                } else if (numN == 1 &amp;&amp; numM &gt; 1) {<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                        divM = numM - 1;<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                        divN = 2;<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                        /* maybe save center coordinate into bb[1] instead of loop again */<a name="line.406"></a>
+<span class="sourceLineNo">407</span>                        /* calculate step width */<a name="line.407"></a>
+<span class="sourceLineNo">408</span>                        spaceM = (bb_local[3] - bb_local[1]) / divM;<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                        cen = calculateBBCenter(pbb_local);<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                        /* calculate points and save them to the array */<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                        for (i = 0; i &lt; numN; i++) {<a name="line.411"></a>
+<span class="sourceLineNo">412</span>                                for (j = 0; j &lt; numM; j++) {<a name="line.412"></a>
+<span class="sourceLineNo">413</span>                                        pt.features[i * numM + j] = new FBNCCFeature();<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                                        Feature f = pt.features[i * numM + j];<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                                        f.x = cen.x;<a name="line.415"></a>
+<span class="sourceLineNo">416</span>                                        f.y = bb_local[1] + j * spaceM;<a name="line.416"></a>
+<span class="sourceLineNo">417</span>                                        f.val = KLTTracker.KLT_TRACKED;<a name="line.417"></a>
+<span class="sourceLineNo">418</span>                                }<a name="line.418"></a>
+<span class="sourceLineNo">419</span>                        }<a name="line.419"></a>
+<span class="sourceLineNo">420</span>                        return true;<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                } else if (numN &gt; 1 &amp;&amp; numM == 1) {<a name="line.421"></a>
+<span class="sourceLineNo">422</span>                        divM = 2;<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                        divN = numN - 1;<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                        // maybe save center coordinate into bb[1] instead of loop again<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                        // calculate step width<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                        spaceN = (bb_local[2] - bb_local[0]) / divN;<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                        cen = calculateBBCenter(pbb_local);<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                        // calculate points and save them to the array<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                        for (i = 0; i &lt; numN; i++) {<a name="line.429"></a>
+<span class="sourceLineNo">430</span>                                for (j = 0; j &lt; numM; j++) {<a name="line.430"></a>
+<span class="sourceLineNo">431</span>                                        pt.features[i * numM + j] = new FBNCCFeature();<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                                        Feature f = pt.features[i * numM + j];<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                                        f.x = bb_local[0] + i * spaceN;<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                                        f.y = cen.y;<a name="line.434"></a>
+<span class="sourceLineNo">435</span>                                        f.val = KLTTracker.KLT_TRACKED;<a name="line.435"></a>
+<span class="sourceLineNo">436</span>                                }<a name="line.436"></a>
+<span class="sourceLineNo">437</span>                        }<a name="line.437"></a>
+<span class="sourceLineNo">438</span>                        return true;<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                } else if (numN &gt; 1 &amp;&amp; numM &gt; 1) {<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                        divM = numM - 1;<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                        divN = numN - 1;<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                }<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                // calculate step width<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                spaceN = (bb_local[2] - bb_local[0]) / divN;<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                spaceM = (bb_local[3] - bb_local[1]) / divM;<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                // calculate points and save them to the array<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                for (i = 0; i &lt; numN; i++) {<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                        for (j = 0; j &lt; numM; j++) {<a name="line.448"></a>
+<span class="sourceLineNo">449</span>                                pt.features[i * numM + j] = new FBNCCFeature();<a name="line.449"></a>
+<span class="sourceLineNo">450</span>                                Feature f = pt.features[i * numM + j];<a name="line.450"></a>
+<span class="sourceLineNo">451</span>                                f.x = bb_local[0] + i * spaceN;<a name="line.451"></a>
+<span class="sourceLineNo">452</span>                                f.y = bb_local[1] + j * spaceM;<a name="line.452"></a>
+<span class="sourceLineNo">453</span>                                f.val = KLTTracker.KLT_TRACKED;<a name="line.453"></a>
+<span class="sourceLineNo">454</span>                        }<a name="line.454"></a>
+<span class="sourceLineNo">455</span>                }<a name="line.455"></a>
+<span class="sourceLineNo">456</span>                return true;<a name="line.456"></a>
+<span class="sourceLineNo">457</span>        }<a name="line.457"></a>
+<span class="sourceLineNo">458</span><a name="line.458"></a>
+<span class="sourceLineNo">459</span>        /**<a name="line.459"></a>
+<span class="sourceLineNo">460</span>         * Calculates center of a Rectangle/Boundingbox.<a name="line.460"></a>
+<span class="sourceLineNo">461</span>         * <a name="line.461"></a>
+<span class="sourceLineNo">462</span>         * @param bb<a name="line.462"></a>
+<span class="sourceLineNo">463</span>         *            defined with 2 points x,y,x1,y1<a name="line.463"></a>
+<span class="sourceLineNo">464</span>         */<a name="line.464"></a>
+<span class="sourceLineNo">465</span>        Feature calculateBBCenter(float[] bb) {<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                float[] bbnow = bb;<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                Feature centernow = null;<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                if (bbnow == null) {<a name="line.468"></a>
+<span class="sourceLineNo">469</span>                        return null;<a name="line.469"></a>
+<span class="sourceLineNo">470</span>                }<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                centernow = new FBNCCFeature();<a name="line.471"></a>
+<span class="sourceLineNo">472</span>                centernow.x = 0.5f * (bbnow[0] + bbnow[2]);<a name="line.472"></a>
+<span class="sourceLineNo">473</span>                centernow.y = 0.5f * (bbnow[1] + bbnow[3]);<a name="line.473"></a>
+<span class="sourceLineNo">474</span>                return centernow;<a name="line.474"></a>
+<span class="sourceLineNo">475</span>        }<a name="line.475"></a>
+<span class="sourceLineNo">476</span>}<a name="line.476"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

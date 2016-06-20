@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.openimaj.picslurper;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.io.BufferedWriter;<a name="line.3"></a>
+<span class="sourceLineNo">004</span>import java.io.File;<a name="line.4"></a>
+<span class="sourceLineNo">005</span>import java.io.FileOutputStream;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import java.io.IOException;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import java.io.OutputStreamWriter;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import java.io.PrintWriter;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>import org.openimaj.io.IOUtils;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;<a name="line.11"></a>
+<span class="sourceLineNo">012</span><a name="line.12"></a>
+<span class="sourceLineNo">013</span>import twitter4j.Status;<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>import com.google.gson.Gson;<a name="line.15"></a>
+<span class="sourceLineNo">016</span><a name="line.16"></a>
+<span class="sourceLineNo">017</span>/**<a name="line.17"></a>
+<span class="sourceLineNo">018</span> * Functions for writing various parts of PicSlurper<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * <a name="line.19"></a>
+<span class="sourceLineNo">020</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.20"></a>
+<span class="sourceLineNo">021</span> *<a name="line.21"></a>
+<span class="sourceLineNo">022</span> */<a name="line.22"></a>
+<span class="sourceLineNo">023</span>public class PicSlurperUtils {<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        private static String TWEET_FILE_NAME = "tweets.json";<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>        /**<a name="line.26"></a>
+<span class="sourceLineNo">027</span>         * Update a specific file with statistics of URLs being consumed<a name="line.27"></a>
+<span class="sourceLineNo">028</span>         *<a name="line.28"></a>
+<span class="sourceLineNo">029</span>         * @param statsFile<a name="line.29"></a>
+<span class="sourceLineNo">030</span>         * @param statusConsumption<a name="line.30"></a>
+<span class="sourceLineNo">031</span>         * @throws IOException<a name="line.31"></a>
+<span class="sourceLineNo">032</span>         */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        public static synchronized void updateStats(File statsFile, StatusConsumption statusConsumption) throws IOException {<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                updateStats(statsFile, statusConsumption, false);<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        }<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        /**<a name="line.37"></a>
+<span class="sourceLineNo">038</span>         * Update a specific file with statistics of URLs being consumed<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         *<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * @param statsFile<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * @param statusConsumption<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         * @param forgetImageURLs<a name="line.42"></a>
+<span class="sourceLineNo">043</span>         *            whether the actual image urls collected should be saved. On<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         *            the global stats file this should be true<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         * @throws IOException<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        public static synchronized void updateStats(File statsFile, StatusConsumption statusConsumption,<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                        boolean forgetImageURLs) throws IOException<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        {<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                StatusConsumption current = new StatusConsumption();<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                if (statsFile.exists())<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                        current = IOUtils.read(statsFile, current);<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                current.incr(statusConsumption);<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                if (forgetImageURLs) {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                        // emtpy the imageURLs before you save<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        current.imageURLs.clear();<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                }<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                IOUtils.writeASCII(statsFile, current); // initialise the output file<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        }<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        private static transient Gson gson = new Gson();<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        /**<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         * Updated a tweets.json file in the specified location with the given<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * {@link ReadableWritableJSON} instance<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         *<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         * @param outRoot<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * @param status<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * @throws IOException<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        public static synchronized void updateTweets(File outRoot, Status status) throws IOException {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                if (status == null)<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        return;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                final File outFile = new File(outRoot, TWEET_FILE_NAME);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                final FileOutputStream fstream = new FileOutputStream(outFile, true);<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                final PrintWriter pwriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(fstream, "UTF-8")));<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                pwriter.println(gson.toJson(status));<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                pwriter.println();<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                pwriter.flush();<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                pwriter.close();<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>}<a name="line.82"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

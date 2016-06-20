@@ -1,0 +1,908 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.camera.calibration;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import static java.lang.Math.cos;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import static java.lang.Math.pow;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import static java.lang.Math.sin;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import static java.lang.Math.sqrt;<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.util.ArrayList;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.List;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.apache.commons.math3.analysis.MultivariateMatrixFunction;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.apache.commons.math3.analysis.MultivariateVectorFunction;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.apache.commons.math3.fitting.leastsquares.LeastSquaresFactory;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer.Optimum;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.apache.commons.math3.fitting.leastsquares.MultivariateJacobianFunction;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.apache.commons.math3.linear.ArrayRealVector;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.apache.commons.math3.linear.RealVector;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.image.camera.Camera;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.image.camera.CameraIntrinsics;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import org.openimaj.math.geometry.transforms.HomographyRefinement;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import org.openimaj.math.geometry.transforms.TransformUtilities;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import org.openimaj.util.pair.IndependentPair;<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>import Jama.Matrix;<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>public class CameraCalibration extends CameraCalibrationZhang {<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        public CameraCalibration(List&lt;List&lt;? extends IndependentPair&lt;? extends Point2d, ? extends Point2d&gt;&gt;&gt; points,<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                        int width, int height)<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                super(points, width, height);<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        @Override<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        protected void performCalibration(int width, int height) {<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                // compute the homographies<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                final List&lt;Matrix&gt; homographies = new ArrayList&lt;Matrix&gt;();<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                for (int i = 0; i &lt; points.size(); i++) {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                        final List&lt;? extends IndependentPair&lt;? extends Point2d, ? extends Point2d&gt;&gt; data = points.get(i);<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        final Matrix h = HomographyRefinement.SINGLE_IMAGE_TRANSFER.refine(<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                        TransformUtilities.homographyMatrixNorm(data), data);<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        homographies.add(h);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                }<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>                // intial estimate of intrisics and extrinsics<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                estimateIntrisicAndExtrinsics(homographies, width, height);<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>                // non-linear optimisation using analytic jacobian<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                refine();<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>        /**<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * This is the implementation of the value function for the optimiser. It<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * computes the predicted location of an image point by projecting a model<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * point through the camera homography and then applying the distortion. The<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * implementation is converted from the C code produced by the following<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * matlab symbolic code:<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * <a name="line.90"></a>
+<span class="sourceLineNo">091</span>         * &lt;pre&gt;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         * &lt;code&gt;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         * syms u0 v0 fx fy sk real<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         * syms tx ty tz wx wy wz real<a name="line.94"></a>
+<span class="sourceLineNo">095</span>         * syms k1 k2 k3 p1 p2 real<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * syms X Y real<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         * <a name="line.97"></a>
+<span class="sourceLineNo">098</span>         * % the intrinsic parameter matrix<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         * K=[fx sk u0; 0 fy v0; 0 0 1];<a name="line.99"></a>
+<span class="sourceLineNo">100</span>         * <a name="line.100"></a>
+<span class="sourceLineNo">101</span>         * % Expression for the rotation matrix based on the Rodrigues formula<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         * theta=sqrt(wx^2+wy^2+wz^2);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * omega=[0 -wz wy; wz 0 -wx; -wy wx 0];<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * R = eye(3) + (sin(theta)/theta)*omega + ((1-cos(theta))/theta^2)*(omega*omega);<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * <a name="line.105"></a>
+<span class="sourceLineNo">106</span>         * % Expression for the translation vector<a name="line.106"></a>
+<span class="sourceLineNo">107</span>         * t=[tx;ty;tz];<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * <a name="line.108"></a>
+<span class="sourceLineNo">109</span>         * % perspective projection of the model point (X,Y)<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         * uvs=K*[R(:,1) R(:,2) t]*[X; Y; 1];<a name="line.110"></a>
+<span class="sourceLineNo">111</span>         * u=uvs(1)/uvs(3);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * v=uvs(2)/uvs(3);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         * <a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * % application of 2-term radial distortion<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * uu0 = u - u0;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * vv0 = v - v0;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * x =  uu0/fx;<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         * y =  vv0/fy;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         * r2 = x*x + y*y;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         * r4 = r2*r2;<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * r6 = r2*r2*r2;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         * uv = [u + uu0*(k1*r2 + k2*r4 + k3*r6) + 2*p1*vv0 + p2*(r2 + 2*uu0^2);<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         *       v + vv0*(k1*r2 + k2*r4 + k3*r6) + p1*(r2 + 2*vv0^2) + 2*p2*uu0];<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         * ccode(uv, 'file', 'calibrate-value.c')<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         * &lt;/code&gt;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>         * &lt;/pre&gt;<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         * <a name="line.127"></a>
+<span class="sourceLineNo">128</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         * <a name="line.129"></a>
+<span class="sourceLineNo">130</span>         */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        private class Value implements MultivariateVectorFunction {<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                @Override<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                public double[] value(double[] params) throws IllegalArgumentException {<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                        int totalPoints = 0;<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                        for (int i = 0; i &lt; points.size(); i++)<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                totalPoints += points.get(i).size();<a name="line.136"></a>
+<span class="sourceLineNo">137</span><a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        final double[] result = new double[2 * totalPoints];<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        for (int i = 0, k = 0; i &lt; points.size(); i++) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                                for (int j = 0; j &lt; points.get(i).size(); j++, k++) {<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                                        final double[] tmp = computeValue(i, j, params);<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                                        result[k * 2 + 0] = tmp[0];<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                                        result[k * 2 + 1] = tmp[1];<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                                }<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        }<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        return result;<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                }<a name="line.149"></a>
+<span class="sourceLineNo">150</span><a name="line.150"></a>
+<span class="sourceLineNo">151</span>                private double[] computeValue(int img, int point, double[] params) {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        final double[][] A0 = new double[2][1];<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        final double X = points.get(img).get(point).firstObject().getX();<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        final double Y = points.get(img).get(point).firstObject().getY();<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        final double fx = params[0];<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        final double fy = params[1];<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                        final double u0 = params[2];<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                        final double v0 = params[3];<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                        final double sk = params[4];<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        final double k1 = params[5];<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        final double k2 = params[6];<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        final double k3 = params[7];<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        final double p1 = params[8];<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                        final double p2 = params[9];<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>                        final double wx = params[img * 6 + 10];<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                        final double wy = params[img * 6 + 11];<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        final double wz = params[img * 6 + 12];<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        final double tx = params[img * 6 + 13];<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        final double ty = params[img * 6 + 14];<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        final double tz = params[img * 6 + 15];<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>                        // begin matlab code<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                        final double t2 = wx * wx;<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        final double t3 = wy * wy;<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                        final double t4 = wz * wz;<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                        final double t5 = t2 + t3 + t4;<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                        final double t6 = sqrt(t5);<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                        final double t7 = sin(t6);<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        final double t8 = 1.0 / sqrt(t5);<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                        final double t9 = cos(t6);<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                        final double t10 = t9 - 1.0;<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        final double t11 = 1.0 / t5;<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                        final double t12 = t7 * t8 * wy;<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                        final double t13 = t10 * t11 * wx * wz;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                        final double t14 = t12 + t13;<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        final double t15 = t7 * t8 * wz;<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                        final double t16 = t7 * t8 * wx;<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                        final double t18 = t10 * t11 * wy * wz;<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                        final double t17 = t16 - t18;<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                        final double t19 = Y * t17;<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                        final double t38 = X * t14;<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                        final double t20 = t19 - t38 + tz;<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                        final double t21 = 1.0 / t20;<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                        final double t22 = t10 * t11 * wx * wy;<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                        final double t23 = t3 + t4;<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                        final double t24 = t10 * t11 * t23;<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                        final double t25 = t24 + 1.0;<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                        final double t26 = fx * t25;<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        final double t27 = t15 + t22;<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        final double t28 = t17 * u0;<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                        final double t29 = t2 + t4;<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                        final double t30 = t10 * t11 * t29;<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                        final double t31 = t30 + 1.0;<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                        final double t32 = sk * t31;<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                        final double t43 = fx * t27;<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                        final double t33 = t28 + t32 - t43;<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                        final double t34 = Y * t33;<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        final double t35 = fx * tx;<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                        final double t36 = sk * ty;<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                        final double t37 = tz * u0;<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                        final double t39 = t15 - t22;<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                        final double t40 = sk * t39;<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                        final double t48 = t14 * u0;<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                        final double t41 = t26 + t40 - t48;<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                        final double t42 = X * t41;<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                        final double t44 = t34 + t35 + t36 + t37 + t42;<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        final double t49 = t21 * t44;<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        final double t45 = -t49 + u0;<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                        final double t53 = fy * ty;<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        final double t54 = fy * t39;<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                        final double t55 = t14 * v0;<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                        final double t56 = t54 - t55;<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                        final double t57 = X * t56;<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                        final double t58 = tz * v0;<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                        final double t59 = t17 * v0;<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        final double t60 = fy * t31;<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                        final double t61 = t59 + t60;<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                        final double t62 = Y * t61;<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        final double t63 = t53 + t57 + t58 + t62;<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                        final double t64 = t21 * t63;<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                        final double t46 = -t64 + v0;<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                        final double t47 = 1.0 / (fx * fx);<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                        final double t50 = t45 * t45;<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        final double t51 = t47 * t50;<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                        final double t52 = 1.0 / (fy * fy);<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                        final double t65 = t46 * t46;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                        final double t66 = t52 * t65;<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                        final double t67 = t51 + t66;<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                        final double t68 = t67 * t67;<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                        final double t69 = k1 * t67;<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                        final double t70 = k2 * t68;<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                        final double t71 = k3 * t67 * t68;<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                        final double t72 = t69 + t70 + t71;<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                        A0[0][0] = -t45 * t72 + t21<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                        * (t34 + t35 + t36 + t37 + X * (t26 - t14 * u0 + sk * (t15 - t10 * t11 * wx * wy))) + p2<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                        * (t50 * 2.0 + t51 + t66) + p1 * t45 * t46 * 2.0;<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                        A0[1][0] = t64 - t46 * t72 + p1 * (t51 + t65 * 2.0 + t66) + p2 * t45 * t46 * 2.0;<a name="line.250"></a>
+<span class="sourceLineNo">251</span><a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        // end matlab code<a name="line.252"></a>
+<span class="sourceLineNo">253</span><a name="line.253"></a>
+<span class="sourceLineNo">254</span>                        return new double[] { A0[0][0], A0[1][0] };<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                }<a name="line.255"></a>
+<span class="sourceLineNo">256</span>        }<a name="line.256"></a>
+<span class="sourceLineNo">257</span><a name="line.257"></a>
+<span class="sourceLineNo">258</span>        /**<a name="line.258"></a>
+<span class="sourceLineNo">259</span>         * This is the implementation of the Jacobian function for the optimiser; it<a name="line.259"></a>
+<span class="sourceLineNo">260</span>         * is the partial derivative of the value function with respect to the<a name="line.260"></a>
+<span class="sourceLineNo">261</span>         * parameters. The implementation is based on the matlab symbolic code:<a name="line.261"></a>
+<span class="sourceLineNo">262</span>         * <a name="line.262"></a>
+<span class="sourceLineNo">263</span>         * &lt;pre&gt;<a name="line.263"></a>
+<span class="sourceLineNo">264</span>         * &lt;code&gt;<a name="line.264"></a>
+<span class="sourceLineNo">265</span>         * syms u0 v0 fx fy sk real<a name="line.265"></a>
+<span class="sourceLineNo">266</span>         * syms tx ty tz wx wy wz real<a name="line.266"></a>
+<span class="sourceLineNo">267</span>         * syms k1 k2 k3 p1 p2 real<a name="line.267"></a>
+<span class="sourceLineNo">268</span>         * syms X Y real<a name="line.268"></a>
+<span class="sourceLineNo">269</span>         * <a name="line.269"></a>
+<span class="sourceLineNo">270</span>         * % the intrinsic parameter matrix<a name="line.270"></a>
+<span class="sourceLineNo">271</span>         * K=[fx sk u0; 0 fy v0; 0 0 1];<a name="line.271"></a>
+<span class="sourceLineNo">272</span>         * <a name="line.272"></a>
+<span class="sourceLineNo">273</span>         * % Expression for the rotation matrix based on the Rodrigues formula<a name="line.273"></a>
+<span class="sourceLineNo">274</span>         * theta=sqrt(wx^2+wy^2+wz^2);<a name="line.274"></a>
+<span class="sourceLineNo">275</span>         * omega=[0 -wz wy; wz 0 -wx; -wy wx 0];<a name="line.275"></a>
+<span class="sourceLineNo">276</span>         * R = eye(3) + (sin(theta)/theta)*omega + ((1-cos(theta))/theta^2)*(omega*omega);<a name="line.276"></a>
+<span class="sourceLineNo">277</span>         * <a name="line.277"></a>
+<span class="sourceLineNo">278</span>         * % Expression for the translation vector<a name="line.278"></a>
+<span class="sourceLineNo">279</span>         * t=[tx;ty;tz];<a name="line.279"></a>
+<span class="sourceLineNo">280</span>         * <a name="line.280"></a>
+<span class="sourceLineNo">281</span>         * % perspective projection of the model point (X,Y)<a name="line.281"></a>
+<span class="sourceLineNo">282</span>         * uvs=K*[R(:,1) R(:,2) t]*[X; Y; 1];<a name="line.282"></a>
+<span class="sourceLineNo">283</span>         * u=uvs(1)/uvs(3);<a name="line.283"></a>
+<span class="sourceLineNo">284</span>         * v=uvs(2)/uvs(3);<a name="line.284"></a>
+<span class="sourceLineNo">285</span>         * <a name="line.285"></a>
+<span class="sourceLineNo">286</span>         * % application of 2-term radial distortion<a name="line.286"></a>
+<span class="sourceLineNo">287</span>         * uu0 = u - u0;<a name="line.287"></a>
+<span class="sourceLineNo">288</span>         * vv0 = v - v0;<a name="line.288"></a>
+<span class="sourceLineNo">289</span>         * x =  uu0/fx;<a name="line.289"></a>
+<span class="sourceLineNo">290</span>         * y =  vv0/fy;<a name="line.290"></a>
+<span class="sourceLineNo">291</span>         * r2 = x*x + y*y;<a name="line.291"></a>
+<span class="sourceLineNo">292</span>         * r4 = r2*r2;<a name="line.292"></a>
+<span class="sourceLineNo">293</span>         * r6 = r2*r2*r2;<a name="line.293"></a>
+<span class="sourceLineNo">294</span>         * uv = [u + uu0*(k1*r2 + k2*r4 + k3*r6) + 2*p1*vv0 + p2*(r2 + 2*uu0^2);<a name="line.294"></a>
+<span class="sourceLineNo">295</span>         *       v + vv0*(k1*r2 + k2*r4 + k3*r6) + p1*(r2 + 2*vv0^2) + 2*p2*uu0];<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         * J=jacobian(uv,[fx,fy,u0,v0,sk,k1,k2,k3,p1,p2 wx wy wz tx ty tz]);  <a name="line.296"></a>
+<span class="sourceLineNo">297</span>         * ccode(J, 'file', 'calibrate-jacobian.c')<a name="line.297"></a>
+<span class="sourceLineNo">298</span>         * &lt;/code&gt;<a name="line.298"></a>
+<span class="sourceLineNo">299</span>         * &lt;/pre&gt;<a name="line.299"></a>
+<span class="sourceLineNo">300</span>         * <a name="line.300"></a>
+<span class="sourceLineNo">301</span>         * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.301"></a>
+<span class="sourceLineNo">302</span>         * <a name="line.302"></a>
+<span class="sourceLineNo">303</span>         */<a name="line.303"></a>
+<span class="sourceLineNo">304</span>        private class Jacobian implements MultivariateMatrixFunction {<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                @Override<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                public double[][] value(double[] params) {<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                        // Note that we're building the jacobian for all cameras/images and<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                        // points. The params vector is 10 + 6*numCameras elements long (10<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                        // intrinsic params and 6 extrinsic per camera)<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                        int totalPoints = 0;<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                        for (int i = 0; i &lt; points.size(); i++)<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                                totalPoints += points.get(i).size();<a name="line.312"></a>
+<span class="sourceLineNo">313</span><a name="line.313"></a>
+<span class="sourceLineNo">314</span>                        final double[][] result = new double[2 * totalPoints][];<a name="line.314"></a>
+<span class="sourceLineNo">315</span><a name="line.315"></a>
+<span class="sourceLineNo">316</span>                        for (int i = 0, k = 0; i &lt; points.size(); i++) {<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                                for (int j = 0; j &lt; points.get(i).size(); j++, k++) {<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                                        final double[][] tmp = computeJacobian(i, j, params);<a name="line.318"></a>
+<span class="sourceLineNo">319</span><a name="line.319"></a>
+<span class="sourceLineNo">320</span>                                        result[k * 2 + 0] = tmp[0];<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                                        result[k * 2 + 1] = tmp[1];<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                                }<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                        }<a name="line.323"></a>
+<span class="sourceLineNo">324</span><a name="line.324"></a>
+<span class="sourceLineNo">325</span>                        return result;<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                }<a name="line.326"></a>
+<span class="sourceLineNo">327</span><a name="line.327"></a>
+<span class="sourceLineNo">328</span>                private double[][] computeJacobian(int img, int point, double[] params) {<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                        final double[][] A0 = new double[2][16];<a name="line.329"></a>
+<span class="sourceLineNo">330</span><a name="line.330"></a>
+<span class="sourceLineNo">331</span>                        final double X = points.get(img).get(point).firstObject().getX();<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                        final double Y = points.get(img).get(point).firstObject().getY();<a name="line.332"></a>
+<span class="sourceLineNo">333</span><a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        final double fx = params[0];<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                        final double fy = params[1];<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                        final double u0 = params[2];<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                        final double v0 = params[3];<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                        final double sk = params[4];<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                        final double k1 = params[5];<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                        final double k2 = params[6];<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                        final double k3 = params[7];<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                        final double p1 = params[8];<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                        final double p2 = params[9];<a name="line.343"></a>
+<span class="sourceLineNo">344</span><a name="line.344"></a>
+<span class="sourceLineNo">345</span>                        final double wx = params[img * 6 + 10];<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                        final double wy = params[img * 6 + 11];<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                        final double wz = params[img * 6 + 12];<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                        final double tx = params[img * 6 + 13];<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                        final double ty = params[img * 6 + 14];<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                        final double tz = params[img * 6 + 15];<a name="line.350"></a>
+<span class="sourceLineNo">351</span><a name="line.351"></a>
+<span class="sourceLineNo">352</span>                        // begin matlab code<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                        final double t2 = wx * wx;<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                        final double t3 = wy * wy;<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                        final double t4 = wz * wz;<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                        final double t5 = t2 + t3 + t4;<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                        final double t6 = sqrt(t5);<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                        final double t7 = sin(t6);<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                        final double t8 = 1.0 / sqrt(t5);<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                        final double t9 = cos(t6);<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                        final double t10 = t9 - 1.0;<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                        final double t11 = 1.0 / t5;<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                        final double t12 = t7 * t8 * wy;<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                        final double t13 = t10 * t11 * wx * wz;<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                        final double t14 = t12 + t13;<a name="line.365"></a>
+<span class="sourceLineNo">366</span>                        final double t15 = t7 * t8 * wz;<a name="line.366"></a>
+<span class="sourceLineNo">367</span>                        final double t16 = t7 * t8 * wx;<a name="line.367"></a>
+<span class="sourceLineNo">368</span>                        final double t18 = t10 * t11 * wy * wz;<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                        final double t17 = t16 - t18;<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                        final double t19 = Y * t17;<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                        final double t39 = X * t14;<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                        final double t20 = t19 - t39 + tz;<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                        final double t21 = 1.0 / t20;<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                        final double t22 = t10 * t11 * wx * wy;<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                        final double t23 = t3 + t4;<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                        final double t24 = t10 * t11 * t23;<a name="line.376"></a>
+<span class="sourceLineNo">377</span>                        final double t25 = t24 + 1.0;<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                        final double t26 = fx * t25;<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                        final double t27 = t15 + t22;<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                        final double t28 = t17 * u0;<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                        final double t29 = t2 + t4;<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                        final double t30 = t10 * t11 * t29;<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                        final double t31 = t30 + 1.0;<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                        final double t32 = sk * t31;<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                        final double t45 = fx * t27;<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                        final double t33 = t28 + t32 - t45;<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                        final double t34 = Y * t33;<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                        final double t35 = fx * tx;<a name="line.388"></a>
+<span class="sourceLineNo">389</span>                        final double t36 = sk * ty;<a name="line.389"></a>
+<span class="sourceLineNo">390</span>                        final double t37 = tz * u0;<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                        final double t40 = t15 - t22;<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                        final double t41 = sk * t40;<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                        final double t42 = t14 * u0;<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                        final double t43 = t26 + t41 - t42;<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                        final double t44 = X * t43;<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                        final double t46 = t34 + t35 + t36 + t37 + t44;<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                        final double t47 = t21 * t46;<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                        final double t38 = -t47 + u0;<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                        final double t48 = 1.0 / (fx * fx * fx);<a name="line.399"></a>
+<span class="sourceLineNo">400</span>                        final double t49 = t38 * t38;<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                        final double t50 = t48 * t49 * 2.0;<a name="line.401"></a>
+<span class="sourceLineNo">402</span>                        final double t51 = 1.0 / (fx * fx);<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                        final double t52 = X * t25;<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                        final double t57 = Y * t27;<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                        final double t53 = t52 - t57 + tx;<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                        final double t54 = t21 * t38 * t51 * t53 * 2.0;<a name="line.406"></a>
+<span class="sourceLineNo">407</span>                        final double t55 = t50 + t54;<a name="line.407"></a>
+<span class="sourceLineNo">408</span>                        final double t60 = fy * ty;<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                        final double t61 = fy * t40;<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                        final double t62 = t14 * v0;<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                        final double t63 = t61 - t62;<a name="line.411"></a>
+<span class="sourceLineNo">412</span>                        final double t64 = X * t63;<a name="line.412"></a>
+<span class="sourceLineNo">413</span>                        final double t65 = tz * v0;<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                        final double t66 = t17 * v0;<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                        final double t67 = fy * t31;<a name="line.415"></a>
+<span class="sourceLineNo">416</span>                        final double t68 = t66 + t67;<a name="line.416"></a>
+<span class="sourceLineNo">417</span>                        final double t69 = Y * t68;<a name="line.417"></a>
+<span class="sourceLineNo">418</span>                        final double t70 = t60 + t64 + t65 + t69;<a name="line.418"></a>
+<span class="sourceLineNo">419</span>                        final double t71 = t21 * t70;<a name="line.419"></a>
+<span class="sourceLineNo">420</span>                        final double t56 = -t71 + v0;<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                        final double t58 = t49 * t51;<a name="line.421"></a>
+<span class="sourceLineNo">422</span>                        final double t59 = 1.0 / (fy * fy);<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                        final double t72 = t56 * t56;<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                        final double t73 = t59 * t72;<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                        final double t74 = t58 + t73;<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                        final double t75 = t74 * t74;<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                        final double t76 = 1.0 / (fy * fy * fy);<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                        final double t77 = t72 * t76 * 2.0;<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                        final double t78 = X * t40;<a name="line.429"></a>
+<span class="sourceLineNo">430</span>                        final double t79 = Y * t31;<a name="line.430"></a>
+<span class="sourceLineNo">431</span>                        final double t80 = t78 + t79 + ty;<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                        final double t81 = t21 * t56 * t59 * t80 * 2.0;<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                        final double t82 = t77 + t81;<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                        final double t83 = k1 * t74;<a name="line.434"></a>
+<span class="sourceLineNo">435</span>                        final double t84 = k2 * t75;<a name="line.435"></a>
+<span class="sourceLineNo">436</span>                        final double t85 = k3 * t74 * t75;<a name="line.436"></a>
+<span class="sourceLineNo">437</span>                        final double t86 = t83 + t84 + t85;<a name="line.437"></a>
+<span class="sourceLineNo">438</span>                        final double t87 = 1.0 / pow(t5, 3.0 / 2.0);<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                        final double t88 = 1.0 / (t5 * t5);<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                        final double t89 = t7 * t87 * wx * wy;<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                        final double t90 = t2 * t7 * t87 * wz;<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                        final double t91 = t2 * t10 * t88 * wz * 2.0;<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                        final double t102 = t10 * t11 * wz;<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                        final double t103 = t9 * t11 * wx * wy;<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                        final double t92 = t89 + t90 + t91 - t102 - t103;<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                        final double t93 = t7 * t8;<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                        final double t94 = t2 * t9 * t11;<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                        final double t95 = t10 * t88 * wx * wy * wz * 2.0;<a name="line.448"></a>
+<span class="sourceLineNo">449</span>                        final double t96 = t7 * t87 * wx * wy * wz;<a name="line.449"></a>
+<span class="sourceLineNo">450</span>                        final double t109 = t2 * t7 * t87;<a name="line.450"></a>
+<span class="sourceLineNo">451</span>                        final double t97 = t93 + t94 + t95 + t96 - t109;<a name="line.451"></a>
+<span class="sourceLineNo">452</span>                        final double t98 = t9 * t11 * wx * wz;<a name="line.452"></a>
+<span class="sourceLineNo">453</span>                        final double t99 = t2 * t7 * t87 * wy;<a name="line.453"></a>
+<span class="sourceLineNo">454</span>                        final double t100 = t2 * t10 * t88 * wy * 2.0;<a name="line.454"></a>
+<span class="sourceLineNo">455</span>                        final double t107 = t10 * t11 * wy;<a name="line.455"></a>
+<span class="sourceLineNo">456</span>                        final double t108 = t7 * t87 * wx * wz;<a name="line.456"></a>
+<span class="sourceLineNo">457</span>                        final double t101 = t98 + t99 + t100 - t107 - t108;<a name="line.457"></a>
+<span class="sourceLineNo">458</span>                        final double t104 = t10 * t29 * t88 * wx * 2.0;<a name="line.458"></a>
+<span class="sourceLineNo">459</span>                        final double t105 = t7 * t29 * t87 * wx;<a name="line.459"></a>
+<span class="sourceLineNo">460</span>                        final double t114 = t10 * t11 * wx * 2.0;<a name="line.460"></a>
+<span class="sourceLineNo">461</span>                        final double t106 = t104 + t105 - t114;<a name="line.461"></a>
+<span class="sourceLineNo">462</span>                        final double t110 = X * t92;<a name="line.462"></a>
+<span class="sourceLineNo">463</span>                        final double t111 = Y * t97;<a name="line.463"></a>
+<span class="sourceLineNo">464</span>                        final double t112 = t110 + t111;<a name="line.464"></a>
+<span class="sourceLineNo">465</span>                        final double t113 = 1.0 / (t20 * t20);<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                        final double t115 = fy * t106;<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                        final double t142 = t97 * v0;<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                        final double t116 = t115 - t142;<a name="line.468"></a>
+<span class="sourceLineNo">469</span>                        final double t117 = Y * t116;<a name="line.469"></a>
+<span class="sourceLineNo">470</span>                        final double t118 = fy * t101;<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                        final double t119 = t92 * v0;<a name="line.471"></a>
+<span class="sourceLineNo">472</span>                        final double t120 = t118 + t119;<a name="line.472"></a>
+<span class="sourceLineNo">473</span>                        final double t143 = X * t120;<a name="line.473"></a>
+<span class="sourceLineNo">474</span>                        final double t121 = t117 - t143;<a name="line.474"></a>
+<span class="sourceLineNo">475</span>                        final double t122 = t21 * t121;<a name="line.475"></a>
+<span class="sourceLineNo">476</span>                        final double t123 = t70 * t112 * t113;<a name="line.476"></a>
+<span class="sourceLineNo">477</span>                        final double t124 = t122 + t123;<a name="line.477"></a>
+<span class="sourceLineNo">478</span>                        final double t125 = t10 * t23 * t88 * wx * 2.0;<a name="line.478"></a>
+<span class="sourceLineNo">479</span>                        final double t126 = t7 * t23 * t87 * wx;<a name="line.479"></a>
+<span class="sourceLineNo">480</span>                        final double t127 = t125 + t126;<a name="line.480"></a>
+<span class="sourceLineNo">481</span>                        final double t128 = sk * t101;<a name="line.481"></a>
+<span class="sourceLineNo">482</span>                        final double t129 = t92 * u0;<a name="line.482"></a>
+<span class="sourceLineNo">483</span>                        final double t145 = fx * t127;<a name="line.483"></a>
+<span class="sourceLineNo">484</span>                        final double t130 = t128 + t129 - t145;<a name="line.484"></a>
+<span class="sourceLineNo">485</span>                        final double t131 = X * t130;<a name="line.485"></a>
+<span class="sourceLineNo">486</span>                        final double t132 = -t98 + t99 + t100 - t107 + t108;<a name="line.486"></a>
+<span class="sourceLineNo">487</span>                        final double t133 = fx * t132;<a name="line.487"></a>
+<span class="sourceLineNo">488</span>                        final double t134 = t97 * u0;<a name="line.488"></a>
+<span class="sourceLineNo">489</span>                        final double t146 = sk * t106;<a name="line.489"></a>
+<span class="sourceLineNo">490</span>                        final double t135 = t133 + t134 - t146;<a name="line.490"></a>
+<span class="sourceLineNo">491</span>                        final double t136 = Y * t135;<a name="line.491"></a>
+<span class="sourceLineNo">492</span>                        final double t137 = t131 + t136;<a name="line.492"></a>
+<span class="sourceLineNo">493</span>                        final double t138 = t21 * t137;<a name="line.493"></a>
+<span class="sourceLineNo">494</span>                        final double t147 = t46 * t112 * t113;<a name="line.494"></a>
+<span class="sourceLineNo">495</span>                        final double t139 = t138 - t147;<a name="line.495"></a>
+<span class="sourceLineNo">496</span>                        final double t140 = t38 * t51 * t139 * 2.0;<a name="line.496"></a>
+<span class="sourceLineNo">497</span>                        final double t144 = t56 * t59 * t124 * 2.0;<a name="line.497"></a>
+<span class="sourceLineNo">498</span>                        final double t141 = t140 - t144;<a name="line.498"></a>
+<span class="sourceLineNo">499</span>                        final double t148 = t7 * t87 * wy * wz;<a name="line.499"></a>
+<span class="sourceLineNo">500</span>                        final double t149 = t3 * t7 * t87 * wx;<a name="line.500"></a>
+<span class="sourceLineNo">501</span>                        final double t150 = t3 * t10 * t88 * wx * 2.0;<a name="line.501"></a>
+<span class="sourceLineNo">502</span>                        final double t151 = t10 * t29 * t88 * wy * 2.0;<a name="line.502"></a>
+<span class="sourceLineNo">503</span>                        final double t152 = t7 * t29 * t87 * wy;<a name="line.503"></a>
+<span class="sourceLineNo">504</span>                        final double t153 = t151 + t152;<a name="line.504"></a>
+<span class="sourceLineNo">505</span>                        final double t154 = t9 * t11 * wy * wz;<a name="line.505"></a>
+<span class="sourceLineNo">506</span>                        final double t155 = t3 * t7 * t87 * wz;<a name="line.506"></a>
+<span class="sourceLineNo">507</span>                        final double t156 = t3 * t10 * t88 * wz * 2.0;<a name="line.507"></a>
+<span class="sourceLineNo">508</span>                        final double t157 = -t89 - t102 + t103 + t155 + t156;<a name="line.508"></a>
+<span class="sourceLineNo">509</span>                        final double t158 = t157 * u0;<a name="line.509"></a>
+<span class="sourceLineNo">510</span>                        final double t159 = t10 * t23 * t88 * wy * 2.0;<a name="line.510"></a>
+<span class="sourceLineNo">511</span>                        final double t160 = t7 * t23 * t87 * wy;<a name="line.511"></a>
+<span class="sourceLineNo">512</span>                        final double t174 = t10 * t11 * wy * 2.0;<a name="line.512"></a>
+<span class="sourceLineNo">513</span>                        final double t161 = t159 + t160 - t174;<a name="line.513"></a>
+<span class="sourceLineNo">514</span>                        final double t170 = t10 * t11 * wx;<a name="line.514"></a>
+<span class="sourceLineNo">515</span>                        final double t162 = -t148 + t149 + t150 + t154 - t170;<a name="line.515"></a>
+<span class="sourceLineNo">516</span>                        final double t163 = sk * t162;<a name="line.516"></a>
+<span class="sourceLineNo">517</span>                        final double t164 = t3 * t7 * t87;<a name="line.517"></a>
+<span class="sourceLineNo">518</span>                        final double t169 = t3 * t9 * t11;<a name="line.518"></a>
+<span class="sourceLineNo">519</span>                        final double t165 = -t93 + t95 + t96 + t164 - t169;<a name="line.519"></a>
+<span class="sourceLineNo">520</span>                        final double t166 = t165 * u0;<a name="line.520"></a>
+<span class="sourceLineNo">521</span>                        final double t175 = fx * t161;<a name="line.521"></a>
+<span class="sourceLineNo">522</span>                        final double t167 = t163 + t166 - t175;<a name="line.522"></a>
+<span class="sourceLineNo">523</span>                        final double t168 = X * t167;<a name="line.523"></a>
+<span class="sourceLineNo">524</span>                        final double t171 = Y * t157;<a name="line.524"></a>
+<span class="sourceLineNo">525</span>                        final double t172 = X * t165;<a name="line.525"></a>
+<span class="sourceLineNo">526</span>                        final double t173 = t171 + t172;<a name="line.526"></a>
+<span class="sourceLineNo">527</span>                        final double t176 = t148 + t149 + t150 - t154 - t170;<a name="line.527"></a>
+<span class="sourceLineNo">528</span>                        final double t177 = fx * t176;<a name="line.528"></a>
+<span class="sourceLineNo">529</span>                        final double t183 = sk * t153;<a name="line.529"></a>
+<span class="sourceLineNo">530</span>                        final double t178 = t158 + t177 - t183;<a name="line.530"></a>
+<span class="sourceLineNo">531</span>                        final double t179 = Y * t178;<a name="line.531"></a>
+<span class="sourceLineNo">532</span>                        final double t180 = t168 + t179;<a name="line.532"></a>
+<span class="sourceLineNo">533</span>                        final double t181 = t21 * t180;<a name="line.533"></a>
+<span class="sourceLineNo">534</span>                        final double t184 = t46 * t113 * t173;<a name="line.534"></a>
+<span class="sourceLineNo">535</span>                        final double t182 = t181 - t184;<a name="line.535"></a>
+<span class="sourceLineNo">536</span>                        final double t185 = fy * t162;<a name="line.536"></a>
+<span class="sourceLineNo">537</span>                        final double t186 = t165 * v0;<a name="line.537"></a>
+<span class="sourceLineNo">538</span>                        final double t187 = t185 + t186;<a name="line.538"></a>
+<span class="sourceLineNo">539</span>                        final double t188 = X * t187;<a name="line.539"></a>
+<span class="sourceLineNo">540</span>                        final double t189 = fy * t153;<a name="line.540"></a>
+<span class="sourceLineNo">541</span>                        final double t196 = t157 * v0;<a name="line.541"></a>
+<span class="sourceLineNo">542</span>                        final double t190 = t189 - t196;<a name="line.542"></a>
+<span class="sourceLineNo">543</span>                        final double t197 = Y * t190;<a name="line.543"></a>
+<span class="sourceLineNo">544</span>                        final double t191 = t188 - t197;<a name="line.544"></a>
+<span class="sourceLineNo">545</span>                        final double t192 = t21 * t191;<a name="line.545"></a>
+<span class="sourceLineNo">546</span>                        final double t198 = t70 * t113 * t173;<a name="line.546"></a>
+<span class="sourceLineNo">547</span>                        final double t193 = t192 - t198;<a name="line.547"></a>
+<span class="sourceLineNo">548</span>                        final double t194 = t56 * t59 * t193 * 2.0;<a name="line.548"></a>
+<span class="sourceLineNo">549</span>                        final double t195 = t38 * t51 * t182 * 2.0;<a name="line.549"></a>
+<span class="sourceLineNo">550</span>                        final double t199 = t194 + t195;<a name="line.550"></a>
+<span class="sourceLineNo">551</span>                        final double t200 = t4 * t9 * t11;<a name="line.551"></a>
+<span class="sourceLineNo">552</span>                        final double t201 = t4 * t7 * t87 * wx;<a name="line.552"></a>
+<span class="sourceLineNo">553</span>                        final double t202 = t4 * t10 * t88 * wx * 2.0;<a name="line.553"></a>
+<span class="sourceLineNo">554</span>                        final double t203 = t148 - t154 - t170 + t201 + t202;<a name="line.554"></a>
+<span class="sourceLineNo">555</span>                        final double t204 = t4 * t7 * t87 * wy;<a name="line.555"></a>
+<span class="sourceLineNo">556</span>                        final double t205 = t4 * t10 * t88 * wy * 2.0;<a name="line.556"></a>
+<span class="sourceLineNo">557</span>                        final double t206 = t98 - t107 - t108 + t204 + t205;<a name="line.557"></a>
+<span class="sourceLineNo">558</span>                        final double t207 = t4 * t7 * t87;<a name="line.558"></a>
+<span class="sourceLineNo">559</span>                        final double t208 = t10 * t29 * t88 * wz * 2.0;<a name="line.559"></a>
+<span class="sourceLineNo">560</span>                        final double t209 = t7 * t29 * t87 * wz;<a name="line.560"></a>
+<span class="sourceLineNo">561</span>                        final double t214 = t10 * t11 * wz * 2.0;<a name="line.561"></a>
+<span class="sourceLineNo">562</span>                        final double t210 = t208 + t209 - t214;<a name="line.562"></a>
+<span class="sourceLineNo">563</span>                        final double t211 = X * t203;<a name="line.563"></a>
+<span class="sourceLineNo">564</span>                        final double t212 = Y * t206;<a name="line.564"></a>
+<span class="sourceLineNo">565</span>                        final double t213 = t211 + t212;<a name="line.565"></a>
+<span class="sourceLineNo">566</span>                        final double t215 = t10 * t23 * t88 * wz * 2.0;<a name="line.566"></a>
+<span class="sourceLineNo">567</span>                        final double t216 = t7 * t23 * t87 * wz;<a name="line.567"></a>
+<span class="sourceLineNo">568</span>                        final double t217 = t203 * u0;<a name="line.568"></a>
+<span class="sourceLineNo">569</span>                        final double t218 = t93 + t95 + t96 + t200 - t207;<a name="line.569"></a>
+<span class="sourceLineNo">570</span>                        final double t219 = t206 * u0;<a name="line.570"></a>
+<span class="sourceLineNo">571</span>                        final double t220 = -t93 + t95 + t96 - t200 + t207;<a name="line.571"></a>
+<span class="sourceLineNo">572</span>                        final double t221 = fx * t220;<a name="line.572"></a>
+<span class="sourceLineNo">573</span>                        final double t238 = sk * t210;<a name="line.573"></a>
+<span class="sourceLineNo">574</span>                        final double t222 = t219 + t221 - t238;<a name="line.574"></a>
+<span class="sourceLineNo">575</span>                        final double t223 = Y * t222;<a name="line.575"></a>
+<span class="sourceLineNo">576</span>                        final double t224 = t203 * v0;<a name="line.576"></a>
+<span class="sourceLineNo">577</span>                        final double t225 = fy * t218;<a name="line.577"></a>
+<span class="sourceLineNo">578</span>                        final double t226 = t224 + t225;<a name="line.578"></a>
+<span class="sourceLineNo">579</span>                        final double t227 = X * t226;<a name="line.579"></a>
+<span class="sourceLineNo">580</span>                        final double t228 = fy * t210;<a name="line.580"></a>
+<span class="sourceLineNo">581</span>                        final double t244 = t206 * v0;<a name="line.581"></a>
+<span class="sourceLineNo">582</span>                        final double t229 = t228 - t244;<a name="line.582"></a>
+<span class="sourceLineNo">583</span>                        final double t245 = Y * t229;<a name="line.583"></a>
+<span class="sourceLineNo">584</span>                        final double t230 = t227 - t245;<a name="line.584"></a>
+<span class="sourceLineNo">585</span>                        final double t231 = t21 * t230;<a name="line.585"></a>
+<span class="sourceLineNo">586</span>                        final double t246 = t70 * t113 * t213;<a name="line.586"></a>
+<span class="sourceLineNo">587</span>                        final double t232 = t231 - t246;<a name="line.587"></a>
+<span class="sourceLineNo">588</span>                        final double t233 = t56 * t59 * t232 * 2.0;<a name="line.588"></a>
+<span class="sourceLineNo">589</span>                        final double t234 = -t214 + t215 + t216;<a name="line.589"></a>
+<span class="sourceLineNo">590</span>                        final double t235 = sk * t218;<a name="line.590"></a>
+<span class="sourceLineNo">591</span>                        final double t247 = fx * t234;<a name="line.591"></a>
+<span class="sourceLineNo">592</span>                        final double t236 = t217 + t235 - t247;<a name="line.592"></a>
+<span class="sourceLineNo">593</span>                        final double t237 = X * t236;<a name="line.593"></a>
+<span class="sourceLineNo">594</span>                        final double t239 = t223 + t237;<a name="line.594"></a>
+<span class="sourceLineNo">595</span>                        final double t240 = t21 * t239;<a name="line.595"></a>
+<span class="sourceLineNo">596</span>                        final double t248 = t46 * t113 * t213;<a name="line.596"></a>
+<span class="sourceLineNo">597</span>                        final double t241 = t240 - t248;<a name="line.597"></a>
+<span class="sourceLineNo">598</span>                        final double t242 = t38 * t51 * t241 * 2.0;<a name="line.598"></a>
+<span class="sourceLineNo">599</span>                        final double t243 = t233 + t242;<a name="line.599"></a>
+<span class="sourceLineNo">600</span>                        final double t249 = 1.0 / fx;<a name="line.600"></a>
+<span class="sourceLineNo">601</span>                        final double t250 = 1.0 / fy;<a name="line.601"></a>
+<span class="sourceLineNo">602</span>                        final double t251 = t21 * t56 * t250 * 2.0;<a name="line.602"></a>
+<span class="sourceLineNo">603</span>                        final double t252 = sk * t21 * t38 * t51 * 2.0;<a name="line.603"></a>
+<span class="sourceLineNo">604</span>                        final double t253 = t251 + t252;<a name="line.604"></a>
+<span class="sourceLineNo">605</span>                        final double t254 = t21 * u0;<a name="line.605"></a>
+<span class="sourceLineNo">606</span>                        final double t255 = t70 * t113;<a name="line.606"></a>
+<span class="sourceLineNo">607</span>                        final double t260 = t21 * v0;<a name="line.607"></a>
+<span class="sourceLineNo">608</span>                        final double t256 = t255 - t260;<a name="line.608"></a>
+<span class="sourceLineNo">609</span>                        final double t262 = t46 * t113;<a name="line.609"></a>
+<span class="sourceLineNo">610</span>                        final double t257 = t254 - t262;<a name="line.610"></a>
+<span class="sourceLineNo">611</span>                        final double t258 = t38 * t51 * t257 * 2.0;<a name="line.611"></a>
+<span class="sourceLineNo">612</span>                        final double t261 = t56 * t59 * t256 * 2.0;<a name="line.612"></a>
+<span class="sourceLineNo">613</span>                        final double t259 = t258 - t261;<a name="line.613"></a>
+<span class="sourceLineNo">614</span>                        final double t263 = k1 * t55;<a name="line.614"></a>
+<span class="sourceLineNo">615</span>                        final double t264 = k2 * t55 * t74 * 2.0;<a name="line.615"></a>
+<span class="sourceLineNo">616</span>                        final double t265 = k3 * t55 * t75 * 3.0;<a name="line.616"></a>
+<span class="sourceLineNo">617</span>                        final double t266 = t263 + t264 + t265;<a name="line.617"></a>
+<span class="sourceLineNo">618</span>                        final double t267 = k1 * t82;<a name="line.618"></a>
+<span class="sourceLineNo">619</span>                        final double t268 = k3 * t75 * t82 * 3.0;<a name="line.619"></a>
+<span class="sourceLineNo">620</span>                        final double t269 = k2 * t74 * t82 * 2.0;<a name="line.620"></a>
+<span class="sourceLineNo">621</span>                        final double t270 = t267 + t268 + t269;<a name="line.621"></a>
+<span class="sourceLineNo">622</span>                        final double t271 = t21 * t80;<a name="line.622"></a>
+<span class="sourceLineNo">623</span>                        final double t272 = t21 * t80 * t86;<a name="line.623"></a>
+<span class="sourceLineNo">624</span>                        final double t273 = k1 * t21 * t38 * t51 * t80 * 2.0;<a name="line.624"></a>
+<span class="sourceLineNo">625</span>                        final double t274 = k2 * t21 * t38 * t51 * t74 * t80 * 4.0;<a name="line.625"></a>
+<span class="sourceLineNo">626</span>                        final double t275 = k3 * t21 * t38 * t51 * t75 * t80 * 6.0;<a name="line.626"></a>
+<span class="sourceLineNo">627</span>                        final double t276 = t273 + t274 + t275;<a name="line.627"></a>
+<span class="sourceLineNo">628</span>                        final double t277 = t38 * t56 * 2.0;<a name="line.628"></a>
+<span class="sourceLineNo">629</span>                        final double t278 = k1 * t141;<a name="line.629"></a>
+<span class="sourceLineNo">630</span>                        final double t279 = k2 * t74 * t141 * 2.0;<a name="line.630"></a>
+<span class="sourceLineNo">631</span>                        final double t280 = k3 * t75 * t141 * 3.0;<a name="line.631"></a>
+<span class="sourceLineNo">632</span>                        final double t281 = k1 * t199;<a name="line.632"></a>
+<span class="sourceLineNo">633</span>                        final double t282 = k2 * t74 * t199 * 2.0;<a name="line.633"></a>
+<span class="sourceLineNo">634</span>                        final double t283 = k3 * t75 * t199 * 3.0;<a name="line.634"></a>
+<span class="sourceLineNo">635</span>                        final double t284 = t281 + t282 + t283;<a name="line.635"></a>
+<span class="sourceLineNo">636</span>                        final double t285 = k1 * t243;<a name="line.636"></a>
+<span class="sourceLineNo">637</span>                        final double t286 = k2 * t74 * t243 * 2.0;<a name="line.637"></a>
+<span class="sourceLineNo">638</span>                        final double t287 = k3 * t75 * t243 * 3.0;<a name="line.638"></a>
+<span class="sourceLineNo">639</span>                        final double t288 = t285 + t286 + t287;<a name="line.639"></a>
+<span class="sourceLineNo">640</span>                        final double t289 = k1 * t21 * t38 * t249 * 2.0;<a name="line.640"></a>
+<span class="sourceLineNo">641</span>                        final double t290 = k2 * t21 * t38 * t74 * t249 * 4.0;<a name="line.641"></a>
+<span class="sourceLineNo">642</span>                        final double t291 = k3 * t21 * t38 * t75 * t249 * 6.0;<a name="line.642"></a>
+<span class="sourceLineNo">643</span>                        final double t292 = t289 + t290 + t291;<a name="line.643"></a>
+<span class="sourceLineNo">644</span>                        final double t293 = k1 * t253;<a name="line.644"></a>
+<span class="sourceLineNo">645</span>                        final double t294 = k3 * t75 * t253 * 3.0;<a name="line.645"></a>
+<span class="sourceLineNo">646</span>                        final double t295 = k2 * t74 * t253 * 2.0;<a name="line.646"></a>
+<span class="sourceLineNo">647</span>                        final double t296 = t293 + t294 + t295;<a name="line.647"></a>
+<span class="sourceLineNo">648</span>                        final double t297 = k1 * t259;<a name="line.648"></a>
+<span class="sourceLineNo">649</span>                        final double t298 = k2 * t74 * t259 * 2.0;<a name="line.649"></a>
+<span class="sourceLineNo">650</span>                        final double t299 = k3 * t75 * t259 * 3.0;<a name="line.650"></a>
+<span class="sourceLineNo">651</span>                        final double t300 = t297 + t298 + t299;<a name="line.651"></a>
+<span class="sourceLineNo">652</span>                        A0[0][0] = t21 * t53 + t266<a name="line.652"></a>
+<span class="sourceLineNo">653</span>                                        * (u0 - t21 * (t34 + t35 + t36 + t37 + X * (t26 - t14 * u0 + sk * (t15 - t10 * t11 * wx * wy)))) - p2<a name="line.653"></a>
+<span class="sourceLineNo">654</span>                                        * (t50 + t54 + t21 * t38 * t53 * 4.0) + t21 * t53 * t86 - p1 * t21 * t53 * t56 * 2.0;<a name="line.654"></a>
+<span class="sourceLineNo">655</span>                        A0[0][1] = -p2 * t82 + t38 * t270 - p1 * t21 * t38 * t80 * 2.0;<a name="line.655"></a>
+<span class="sourceLineNo">656</span>                        A0[0][2] = 1.0;<a name="line.656"></a>
+<span class="sourceLineNo">657</span>                        A0[0][4] = t271 + t272 - p2 * (t21 * t38 * t80 * 4.0 + t21 * t38 * t51 * t80 * 2.0) + t38 * t276 - p1 * t21<a name="line.657"></a>
+<span class="sourceLineNo">658</span>                                        * t56 * t80 * 2.0;<a name="line.658"></a>
+<span class="sourceLineNo">659</span>                        A0[0][5] = -t38 * t74;<a name="line.659"></a>
+<span class="sourceLineNo">660</span>                        A0[0][6] = -t38 * t75;<a name="line.660"></a>
+<span class="sourceLineNo">661</span>                        A0[0][7] = -t38 * t74 * t75;<a name="line.661"></a>
+<span class="sourceLineNo">662</span>                        A0[0][8] = t277;<a name="line.662"></a>
+<span class="sourceLineNo">663</span>                        A0[0][9] = t49 * 2.0 + t58 + t73;<a name="line.663"></a>
+<span class="sourceLineNo">664</span>                        A0[0][10] = t138 - t147 + t86 * t139 + t38 * (t278 + t279 + t280) - p2 * (t140 - t144 + t38 * t139 * 4.0)<a name="line.664"></a>
+<span class="sourceLineNo">665</span>                                        + p1 * t38 * t124 * 2.0 - p1 * t56 * t139 * 2.0;<a name="line.665"></a>
+<span class="sourceLineNo">666</span>                        A0[0][11] = -t184 + t86 * t182 + t38 * t284 - p2 * (t194 + t195 + t38 * t182 * 4.0) + t21<a name="line.666"></a>
+<span class="sourceLineNo">667</span>                                        * (t168 + Y * (t158 - sk * t153 + fx * (t148 + t149 + t150 - t10 * t11 * wx - t9 * t11 * wy * wz)))<a name="line.667"></a>
+<span class="sourceLineNo">668</span>                                        - p1 * t38 * t193 * 2.0 - p1 * t56 * t182 * 2.0;<a name="line.668"></a>
+<span class="sourceLineNo">669</span>                        A0[0][12] = t240<a name="line.669"></a>
+<span class="sourceLineNo">670</span>                                        - t248<a name="line.670"></a>
+<span class="sourceLineNo">671</span>                                        + t38<a name="line.671"></a>
+<span class="sourceLineNo">672</span>                                        * t288<a name="line.672"></a>
+<span class="sourceLineNo">673</span>                                        - p2<a name="line.673"></a>
+<span class="sourceLineNo">674</span>                                        * (t233 + t242 + t38 * t241 * 4.0)<a name="line.674"></a>
+<span class="sourceLineNo">675</span>                                        + t86<a name="line.675"></a>
+<span class="sourceLineNo">676</span>                                        * (t21<a name="line.676"></a>
+<span class="sourceLineNo">677</span>                                                        * (t223 + X<a name="line.677"></a>
+<span class="sourceLineNo">678</span>                                                                        * (t217 + sk * (t93 + t95 + t96 + t200 - t4 * t7 * t87) - fx<a name="line.678"></a>
+<span class="sourceLineNo">679</span>                                                                                        * (t215 + t216 - t10 * t11 * wz * 2.0))) - t46 * t113 * t213) - p1 * t38<a name="line.679"></a>
+<span class="sourceLineNo">680</span>                                        * t232 * 2.0 - p1 * t56 * t241 * 2.0;<a name="line.680"></a>
+<span class="sourceLineNo">681</span>                        A0[0][13] = fx * t21 + t38 * t292 - p2 * (fx * t21 * t38 * 4.0 + t21 * t38 * t249 * 2.0) + fx * t21 * t86<a name="line.681"></a>
+<span class="sourceLineNo">682</span>                                        - fx * p1 * t21 * t56 * 2.0;<a name="line.682"></a>
+<span class="sourceLineNo">683</span>                        A0[0][14] = sk * t21 + t38 * t296 - p2 * (t251 + t252 + sk * t21 * t38 * 4.0) + sk * t21 * t86 - fy * p1<a name="line.683"></a>
+<span class="sourceLineNo">684</span>                                        * t21 * t38 * 2.0 - p1 * sk * t21 * t56 * 2.0;<a name="line.684"></a>
+<span class="sourceLineNo">685</span>                        A0[0][15] = t254 - t46 * t113 + t38 * t300 + t86 * t257 - p2 * (t258 - t261 + t38 * t257 * 4.0) - p1 * t56<a name="line.685"></a>
+<span class="sourceLineNo">686</span>                                        * t257 * 2.0 + p1 * t38 * (t255 - t260) * 2.0;<a name="line.686"></a>
+<span class="sourceLineNo">687</span>                        A0[1][0] = -p1 * t55 + t56 * t266 - p2 * t21 * t53 * t56 * 2.0;<a name="line.687"></a>
+<span class="sourceLineNo">688</span>                        A0[1][1] = t271 + t272 + t56 * t270 - p1 * (t77 + t81 + t21 * t56 * t80 * 4.0) - p2 * t21 * t38 * t80 * 2.0;<a name="line.688"></a>
+<span class="sourceLineNo">689</span>                        A0[1][3] = 1.0;<a name="line.689"></a>
+<span class="sourceLineNo">690</span>                        A0[1][4] = t56 * t276 - p2 * t21 * t56 * t80 * 2.0 - p1 * t21 * t38 * t51 * t80 * 2.0;<a name="line.690"></a>
+<span class="sourceLineNo">691</span>                        A0[1][5] = -t56 * t74;<a name="line.691"></a>
+<span class="sourceLineNo">692</span>                        A0[1][6] = -t56 * t75;<a name="line.692"></a>
+<span class="sourceLineNo">693</span>                        A0[1][7] = -t56 * t74 * t75;<a name="line.693"></a>
+<span class="sourceLineNo">694</span>                        A0[1][8] = t58 + t72 * 2.0 + t73;<a name="line.694"></a>
+<span class="sourceLineNo">695</span>                        A0[1][9] = t277;<a name="line.695"></a>
+<span class="sourceLineNo">696</span>                        A0[1][10] = -t122 - t123 - t86 * t124 + t56 * (t278 + t279 + t280) + p1 * (-t140 + t144 + t56 * t124 * 4.0)<a name="line.696"></a>
+<span class="sourceLineNo">697</span>                                        + p2 * t38 * t124 * 2.0 - p2 * t56 * t139 * 2.0;<a name="line.697"></a>
+<span class="sourceLineNo">698</span>                        A0[1][11] = t192 - t198 + t86 * t193 + t56 * t284 - p1 * (t194 + t195 + t56 * t193 * 4.0) - p2 * t38 * t193<a name="line.698"></a>
+<span class="sourceLineNo">699</span>                                        * 2.0 - p2 * t56 * t182 * 2.0;<a name="line.699"></a>
+<span class="sourceLineNo">700</span>                        A0[1][12] = t231 - t246 + t86 * t232 + t56 * t288 - p1 * (t233 + t242 + t56 * t232 * 4.0) - p2 * t38 * t232<a name="line.700"></a>
+<span class="sourceLineNo">701</span>                                        * 2.0 - p2 * t56 * t241 * 2.0;<a name="line.701"></a>
+<span class="sourceLineNo">702</span>                        A0[1][13] = t56 * t292 - fx * p2 * t21 * t56 * 2.0 - p1 * t21 * t38 * t249 * 2.0;<a name="line.702"></a>
+<span class="sourceLineNo">703</span>                        A0[1][14] = fy * t21 + t56 * t296 - p1 * (t251 + t252 + fy * t21 * t56 * 4.0) + fy * t21 * t86 - fy * p2<a name="line.703"></a>
+<span class="sourceLineNo">704</span>                                        * t21 * t38 * 2.0 - p2 * sk * t21 * t56 * 2.0;<a name="line.704"></a>
+<span class="sourceLineNo">705</span>                        A0[1][15] = -t255 + t260 - t86 * t256 + t56 * t300 + p1 * (-t258 + t261 + t56 * t256 * 4.0) - p2 * t56 * t257<a name="line.705"></a>
+<span class="sourceLineNo">706</span>                                        * 2.0 + p2 * t38 * (t255 - t260) * 2.0;<a name="line.706"></a>
+<span class="sourceLineNo">707</span>                        // end matlab code<a name="line.707"></a>
+<span class="sourceLineNo">708</span><a name="line.708"></a>
+<span class="sourceLineNo">709</span>                        final double[][] result = new double[2][10 + 6 * points.size()];<a name="line.709"></a>
+<span class="sourceLineNo">710</span>                        System.arraycopy(A0[0], 0, result[0], 0, 10);<a name="line.710"></a>
+<span class="sourceLineNo">711</span>                        System.arraycopy(A0[1], 0, result[1], 0, 10);<a name="line.711"></a>
+<span class="sourceLineNo">712</span>                        System.arraycopy(A0[0], 10, result[0], 10 + img * 6, 6);<a name="line.712"></a>
+<span class="sourceLineNo">713</span>                        System.arraycopy(A0[1], 10, result[1], 10 + img * 6, 6);<a name="line.713"></a>
+<span class="sourceLineNo">714</span><a name="line.714"></a>
+<span class="sourceLineNo">715</span>                        // result[0][7] = 0;<a name="line.715"></a>
+<span class="sourceLineNo">716</span>                        // result[1][7] = 0;<a name="line.716"></a>
+<span class="sourceLineNo">717</span>                        // result[0][8] = 0;<a name="line.717"></a>
+<span class="sourceLineNo">718</span>                        // result[1][8] = 0;<a name="line.718"></a>
+<span class="sourceLineNo">719</span>                        // result[0][9] = 0;<a name="line.719"></a>
+<span class="sourceLineNo">720</span>                        // result[1][9] = 0;<a name="line.720"></a>
+<span class="sourceLineNo">721</span><a name="line.721"></a>
+<span class="sourceLineNo">722</span>                        return result;<a name="line.722"></a>
+<span class="sourceLineNo">723</span>                }<a name="line.723"></a>
+<span class="sourceLineNo">724</span>        }<a name="line.724"></a>
+<span class="sourceLineNo">725</span><a name="line.725"></a>
+<span class="sourceLineNo">726</span>        /**<a name="line.726"></a>
+<span class="sourceLineNo">727</span>         * Stack the observed image locations of the calibration pattern points into<a name="line.727"></a>
+<span class="sourceLineNo">728</span>         * a vector<a name="line.728"></a>
+<span class="sourceLineNo">729</span>         * <a name="line.729"></a>
+<span class="sourceLineNo">730</span>         * @return the observed vector<a name="line.730"></a>
+<span class="sourceLineNo">731</span>         */<a name="line.731"></a>
+<span class="sourceLineNo">732</span>        @Override<a name="line.732"></a>
+<span class="sourceLineNo">733</span>        protected RealVector buildObservedVector()<a name="line.733"></a>
+<span class="sourceLineNo">734</span>        {<a name="line.734"></a>
+<span class="sourceLineNo">735</span>                int totalPoints = 0;<a name="line.735"></a>
+<span class="sourceLineNo">736</span>                for (int i = 0; i &lt; points.size(); i++)<a name="line.736"></a>
+<span class="sourceLineNo">737</span>                        totalPoints += points.get(i).size();<a name="line.737"></a>
+<span class="sourceLineNo">738</span><a name="line.738"></a>
+<span class="sourceLineNo">739</span>                final double[] vec = new double[totalPoints * 2];<a name="line.739"></a>
+<span class="sourceLineNo">740</span><a name="line.740"></a>
+<span class="sourceLineNo">741</span>                for (int i = 0, k = 0; i &lt; points.size(); i++) {<a name="line.741"></a>
+<span class="sourceLineNo">742</span>                        for (int j = 0; j &lt; points.get(i).size(); j++, k++) {<a name="line.742"></a>
+<span class="sourceLineNo">743</span>                                vec[k * 2 + 0] = points.get(i).get(j).secondObject().getX();<a name="line.743"></a>
+<span class="sourceLineNo">744</span>                                vec[k * 2 + 1] = points.get(i).get(j).secondObject().getY();<a name="line.744"></a>
+<span class="sourceLineNo">745</span>                        }<a name="line.745"></a>
+<span class="sourceLineNo">746</span>                }<a name="line.746"></a>
+<span class="sourceLineNo">747</span><a name="line.747"></a>
+<span class="sourceLineNo">748</span>                return new ArrayRealVector(vec, false);<a name="line.748"></a>
+<span class="sourceLineNo">749</span>        }<a name="line.749"></a>
+<span class="sourceLineNo">750</span><a name="line.750"></a>
+<span class="sourceLineNo">751</span>        /**<a name="line.751"></a>
+<span class="sourceLineNo">752</span>         * Perform Levenburg-Marquardt non-linear optimisation to get better<a name="line.752"></a>
+<span class="sourceLineNo">753</span>         * estimates of the parameters<a name="line.753"></a>
+<span class="sourceLineNo">754</span>         */<a name="line.754"></a>
+<span class="sourceLineNo">755</span>        private void refine()<a name="line.755"></a>
+<span class="sourceLineNo">756</span>        {<a name="line.756"></a>
+<span class="sourceLineNo">757</span>                final LevenbergMarquardtOptimizer lm = new LevenbergMarquardtOptimizer();<a name="line.757"></a>
+<span class="sourceLineNo">758</span>                final RealVector start = buildInitialVector();<a name="line.758"></a>
+<span class="sourceLineNo">759</span>                final RealVector observed = buildObservedVector();<a name="line.759"></a>
+<span class="sourceLineNo">760</span>                final int maxEvaluations = 1000;<a name="line.760"></a>
+<span class="sourceLineNo">761</span>                final int maxIterations = 1000;<a name="line.761"></a>
+<span class="sourceLineNo">762</span><a name="line.762"></a>
+<span class="sourceLineNo">763</span>                final MultivariateVectorFunction value = new Value();<a name="line.763"></a>
+<span class="sourceLineNo">764</span>                final MultivariateMatrixFunction jacobian = new Jacobian();<a name="line.764"></a>
+<span class="sourceLineNo">765</span>                final MultivariateJacobianFunction model = LeastSquaresFactory.model(value, jacobian);<a name="line.765"></a>
+<span class="sourceLineNo">766</span><a name="line.766"></a>
+<span class="sourceLineNo">767</span>                final Optimum result = lm.optimize(LeastSquaresFactory.create(model,<a name="line.767"></a>
+<span class="sourceLineNo">768</span>                                observed, start, null, maxEvaluations, maxIterations));<a name="line.768"></a>
+<span class="sourceLineNo">769</span><a name="line.769"></a>
+<span class="sourceLineNo">770</span>                updateEstimates(result.getPoint());<a name="line.770"></a>
+<span class="sourceLineNo">771</span>        }<a name="line.771"></a>
+<span class="sourceLineNo">772</span><a name="line.772"></a>
+<span class="sourceLineNo">773</span>        /**<a name="line.773"></a>
+<span class="sourceLineNo">774</span>         * Extract the data from the optimised parameter vector and put it back into<a name="line.774"></a>
+<span class="sourceLineNo">775</span>         * our camera model<a name="line.775"></a>
+<span class="sourceLineNo">776</span>         * <a name="line.776"></a>
+<span class="sourceLineNo">777</span>         * @param point<a name="line.777"></a>
+<span class="sourceLineNo">778</span>         *            the optimised parameter vector<a name="line.778"></a>
+<span class="sourceLineNo">779</span>         */<a name="line.779"></a>
+<span class="sourceLineNo">780</span>        private void updateEstimates(RealVector point) {<a name="line.780"></a>
+<span class="sourceLineNo">781</span>                final CameraIntrinsics intrinsic = cameras.get(0).intrinsicParameters;<a name="line.781"></a>
+<span class="sourceLineNo">782</span><a name="line.782"></a>
+<span class="sourceLineNo">783</span>                intrinsic.setFocalLengthX(point.getEntry(0));<a name="line.783"></a>
+<span class="sourceLineNo">784</span>                intrinsic.setFocalLengthY(point.getEntry(1));<a name="line.784"></a>
+<span class="sourceLineNo">785</span>                intrinsic.setPrincipalPointX(point.getEntry(2));<a name="line.785"></a>
+<span class="sourceLineNo">786</span>                intrinsic.setPrincipalPointY(point.getEntry(3));<a name="line.786"></a>
+<span class="sourceLineNo">787</span>                intrinsic.setSkewFactor(point.getEntry(4));<a name="line.787"></a>
+<span class="sourceLineNo">788</span>                intrinsic.k1 = point.getEntry(5);<a name="line.788"></a>
+<span class="sourceLineNo">789</span>                intrinsic.k2 = point.getEntry(6);<a name="line.789"></a>
+<span class="sourceLineNo">790</span>                intrinsic.k3 = point.getEntry(7);<a name="line.790"></a>
+<span class="sourceLineNo">791</span>                intrinsic.p1 = point.getEntry(8);<a name="line.791"></a>
+<span class="sourceLineNo">792</span>                intrinsic.p2 = point.getEntry(9);<a name="line.792"></a>
+<span class="sourceLineNo">793</span><a name="line.793"></a>
+<span class="sourceLineNo">794</span>                for (int i = 0; i &lt; cameras.size(); i++) {<a name="line.794"></a>
+<span class="sourceLineNo">795</span>                        final Camera e = cameras.get(i);<a name="line.795"></a>
+<span class="sourceLineNo">796</span>                        final double[] rv = new double[] { point.getEntry(i * 6 + 10), point.getEntry(i * 6 + 11),<a name="line.796"></a>
+<span class="sourceLineNo">797</span>                                        point.getEntry(i * 6 + 12) };<a name="line.797"></a>
+<span class="sourceLineNo">798</span>                        e.rotation = TransformUtilities.rodrigues(rv);<a name="line.798"></a>
+<span class="sourceLineNo">799</span><a name="line.799"></a>
+<span class="sourceLineNo">800</span>                        e.translation.setX(point.getEntry(i * 6 + 13));<a name="line.800"></a>
+<span class="sourceLineNo">801</span>                        e.translation.setY(point.getEntry(i * 6 + 14));<a name="line.801"></a>
+<span class="sourceLineNo">802</span>                        e.translation.setZ(point.getEntry(i * 6 + 15));<a name="line.802"></a>
+<span class="sourceLineNo">803</span>                }<a name="line.803"></a>
+<span class="sourceLineNo">804</span>        }<a name="line.804"></a>
+<span class="sourceLineNo">805</span><a name="line.805"></a>
+<span class="sourceLineNo">806</span>        private RealVector buildInitialVector() {<a name="line.806"></a>
+<span class="sourceLineNo">807</span>                final CameraIntrinsics intrinsic = cameras.get(0).intrinsicParameters;<a name="line.807"></a>
+<span class="sourceLineNo">808</span><a name="line.808"></a>
+<span class="sourceLineNo">809</span>                final double[] vector = new double[10 + cameras.size() * 6];<a name="line.809"></a>
+<span class="sourceLineNo">810</span><a name="line.810"></a>
+<span class="sourceLineNo">811</span>                vector[0] = intrinsic.getFocalLengthX();<a name="line.811"></a>
+<span class="sourceLineNo">812</span>                vector[1] = intrinsic.getFocalLengthY();<a name="line.812"></a>
+<span class="sourceLineNo">813</span>                vector[2] = intrinsic.getPrincipalPointX();<a name="line.813"></a>
+<span class="sourceLineNo">814</span>                vector[3] = intrinsic.getPrincipalPointY();<a name="line.814"></a>
+<span class="sourceLineNo">815</span>                vector[4] = intrinsic.getSkewFactor();<a name="line.815"></a>
+<span class="sourceLineNo">816</span>                vector[5] = intrinsic.k1;<a name="line.816"></a>
+<span class="sourceLineNo">817</span>                vector[6] = intrinsic.k2;<a name="line.817"></a>
+<span class="sourceLineNo">818</span>                vector[7] = intrinsic.k3;<a name="line.818"></a>
+<span class="sourceLineNo">819</span>                vector[8] = intrinsic.p1;<a name="line.819"></a>
+<span class="sourceLineNo">820</span>                vector[9] = intrinsic.p2;<a name="line.820"></a>
+<span class="sourceLineNo">821</span><a name="line.821"></a>
+<span class="sourceLineNo">822</span>                for (int i = 0; i &lt; cameras.size(); i++) {<a name="line.822"></a>
+<span class="sourceLineNo">823</span>                        final Camera e = cameras.get(i);<a name="line.823"></a>
+<span class="sourceLineNo">824</span>                        final double[] rv = TransformUtilities.rodrigues(e.rotation);<a name="line.824"></a>
+<span class="sourceLineNo">825</span><a name="line.825"></a>
+<span class="sourceLineNo">826</span>                        vector[i * 6 + 10] = rv[0];<a name="line.826"></a>
+<span class="sourceLineNo">827</span>                        vector[i * 6 + 11] = rv[1];<a name="line.827"></a>
+<span class="sourceLineNo">828</span>                        vector[i * 6 + 12] = rv[2];<a name="line.828"></a>
+<span class="sourceLineNo">829</span>                        vector[i * 6 + 13] = e.translation.getX();<a name="line.829"></a>
+<span class="sourceLineNo">830</span>                        vector[i * 6 + 14] = e.translation.getY();<a name="line.830"></a>
+<span class="sourceLineNo">831</span>                        vector[i * 6 + 15] = e.translation.getZ();<a name="line.831"></a>
+<span class="sourceLineNo">832</span>                }<a name="line.832"></a>
+<span class="sourceLineNo">833</span><a name="line.833"></a>
+<span class="sourceLineNo">834</span>                return new ArrayRealVector(vector, false);<a name="line.834"></a>
+<span class="sourceLineNo">835</span>        }<a name="line.835"></a>
+<span class="sourceLineNo">836</span>}<a name="line.836"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

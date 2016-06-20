@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.openimaj.demos.sandbox.tldcpp.videotld;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.io.File;<a name="line.3"></a>
+<span class="sourceLineNo">004</span><a name="line.4"></a>
+<span class="sourceLineNo">005</span>import org.openimaj.demos.sandbox.tldcpp.detector.DetectorCascade;<a name="line.5"></a>
+<span class="sourceLineNo">006</span><a name="line.6"></a>
+<span class="sourceLineNo">007</span>/**<a name="line.7"></a>
+<span class="sourceLineNo">008</span> * Configuration options and defaults<a name="line.8"></a>
+<span class="sourceLineNo">009</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> */<a name="line.11"></a>
+<span class="sourceLineNo">012</span>public class TLDConfig {<a name="line.12"></a>
+<span class="sourceLineNo">013</span>        <a name="line.13"></a>
+<span class="sourceLineNo">014</span>        static class Settings{<a name="line.14"></a>
+<span class="sourceLineNo">015</span>                private boolean m_useProportionalShift;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>                private boolean m_varianceFilterEnabled;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>                private boolean m_ensembleClassifierEnabled;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>                private boolean m_nnClassifierEnabled;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>                private boolean m_loadModel;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>                private boolean m_trackerEnabled;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>                private boolean m_selectManually;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>                private boolean m_learningEnabled;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>                private boolean m_showOutput;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>                private boolean m_showNotConfident;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>                private boolean m_showForeground;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>                private boolean m_alternating;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>                private boolean m_exportModelAfterRun;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                private int m_minScale;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                private int m_maxScale;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>                private int m_numFeatures;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                private int m_numTrees;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>                private float m_thetaP;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>                private float m_thetaN;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                private int m_minSize;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                private int m_seed;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                private double m_threshold;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                private float m_proportionalShift;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>                private String m_modelExportFile;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>                public Settings(){<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                        m_useProportionalShift = true;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                        m_varianceFilterEnabled = true;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>                        m_ensembleClassifierEnabled = true;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                        m_nnClassifierEnabled = true;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                        m_loadModel = false;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                        m_trackerEnabled = true;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                        m_selectManually = false;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                        m_learningEnabled = true;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                        m_showOutput = true;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                        m_showNotConfident = true;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                        m_showForeground = false;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                        m_alternating = false;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                        m_exportModelAfterRun = false;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                        m_minScale = -10;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                        m_maxScale = 10;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        m_numFeatures = 10;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                        m_numTrees = 10;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                        m_thetaP = 0.65f;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                        m_thetaN = 0.5f;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                        m_minSize = 25;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                        m_seed = 0;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                        m_threshold = 0.7;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                        m_proportionalShift = 0.1f;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                        m_modelExportFile = "model";<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                }<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        }<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        <a name="line.67"></a>
+<span class="sourceLineNo">068</span>        /**<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * initialise with defaults<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * @param main<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        public static void tldConfig(TLDMain main) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                Settings m_settings = new Settings();<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                main.tld.trackerEnabled = m_settings.m_trackerEnabled;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                main.showOutput = m_settings.m_showOutput;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                main.printResults = new File("results.txt");<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                main.saveDir = new File("savedir");<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                main.threshold = m_settings.m_threshold;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                main.showForeground = m_settings.m_showForeground;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                main.showNotConfident = m_settings.m_showNotConfident;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                main.tld.alternating = m_settings.m_alternating;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                main.tld.learningEnabled = m_settings.m_learningEnabled;<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                main.selectManually = m_settings.m_selectManually;<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                main.exportModelAfterRun = m_settings.m_exportModelAfterRun;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                main.modelExportFile = new File(m_settings.m_modelExportFile);<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                main.loadModel = m_settings.m_loadModel;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                main.seed = m_settings.m_seed;<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>                DetectorCascade detectorCascade = main.tld.detectorCascade;<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                detectorCascade.getVarianceFilter().enabled = m_settings.m_varianceFilterEnabled;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                detectorCascade.getEnsembleClassifier().enabled = m_settings.m_ensembleClassifierEnabled;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                detectorCascade.getNNClassifier().enabled = m_settings.m_nnClassifierEnabled;<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>                // classifier<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                detectorCascade.useShift = m_settings.m_useProportionalShift;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                detectorCascade.shift = m_settings.m_proportionalShift;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                detectorCascade.minScale = m_settings.m_minScale;<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                detectorCascade.maxScale = m_settings.m_maxScale;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                detectorCascade.minSize = m_settings.m_minSize;<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                detectorCascade.numTrees = m_settings.m_numTrees;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                detectorCascade.numFeatures = m_settings.m_numFeatures;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                detectorCascade.getNNClassifier().thetaTP = m_settings.m_thetaP;<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                detectorCascade.getNNClassifier().thetaFP = m_settings.m_thetaN;<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                <a name="line.104"></a>
+<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>}<a name="line.107"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

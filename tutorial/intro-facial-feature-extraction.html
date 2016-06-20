@@ -1,0 +1,319 @@
+<!DOCTYPE html><html xmlns:d="http://docbook.org/ns/docbook" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   
+      <title>3.&nbsp;Facial Feature Extraction</title>
+      <link rel="stylesheet" type="text/css" href="css/apache-maven-fluido-1.3.0.min.css">
+      <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+      <link rel="stylesheet" type="text/css" href="fonts/fonts.css">
+      <meta name="generator" content="DocBook XSL-NS Stylesheets V1.76.1">
+      <link rel="home" href="index.html" title="The OpenIMAJ Tutorial">
+      <link rel="up" href="pt07.html#d5e1800" title="Facial Analysis">
+      <link rel="prev" href="intro-face-alignment.html" title="2.&nbsp;Face Alignment">
+      <link rel="next" href="intro-face-recognitionclassification.html" title="4.&nbsp;Face Recognition/Classification">
+      <meta property="fb:admins" content="286108206">
+      <meta property="og:type" content="website">
+      <link rel="image_src" href="../images/OpenImaj-sq.png">
+      <meta property="og:image" content="http://openimaj.org/images/OpenImaj-sq.png">
+      <meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis">
+      <meta property="og:url" content="http://www.openimaj.org">
+      <meta property="og:description" content="OpenIMAJ is an award-winning set of libraries and tools for multimedia content analysis and content generation."><script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script><script type="text/javascript">
+	      var _gaq = _gaq || [];
+	      _gaq.push(['_setAccount', 'UA-38338744-1']);
+	      _gaq.push(['_trackPageview']);
+
+	      (function() {
+	        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	      })();
+	    </script></head>
+   <body class="topBarEnabled">
+      <div id="topbar" class="navbar navbar-fixed-top navbar-inverse">
+         <div class="navbar-inner">
+            <div class="container">
+               <div class="nav-collapse"><a class="brand" href="../index.html" title="OpenIMAJ"><img src="images/logo-tiny.png" alt="OpenIMAJ"></a><ul class="nav">
+                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Overview <b class="caret"></b></a><ul class="dropdown-menu">
+                           <li><a href="../index.html" title="Introduction">Introduction</a></li>
+                           <li><a href="../sponsors.html" title="History &amp; Sponsors">History &amp; Sponsors</a></li>
+                           <li><a href="../contact.html" title="Support &amp; Contacts">Support &amp; Contacts</a></li>
+                           <li><a href="team.html" title="Team">Team</a></li>
+                           <li><a href="http://blogs.ecs.soton.ac.uk/multimedia" title="The Blog">The Blog</a></li>
+                           <li><a href="http://www.sf.net/p/openimaj/code" title="Source Code">Source Code</a></li>
+                           <li class="dropdown-submenu"><a href="../#related" title="Related Projects">Related Projects</a><ul class="dropdown-menu">
+                                 <li><a href="http://www.imageterrier.org/" title="ImageTerrier">ImageTerrier</a></li>
+                              </ul>
+                           </li>
+                        </ul>
+                     </li>
+                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+                           <li class="dropdown-submenu"><a href="../#gettingstarted" title="Getting Started">Getting Started</a><ul class="dropdown-menu">
+                                 <li><a href="../tutorial-pdf.pdf" title="The Tutorial (PDF)">The Tutorial (PDF)</a></li>
+                                 <li><a href="../tutorial/index.html" title="The Tutorial (HTML)">The Tutorial (HTML)</a></li>
+                              </ul>
+                           </li>
+                           <li class="dropdown-submenu"><a href="../#using" title="Using OpenIMAJ">Using OpenIMAJ</a><ul class="dropdown-menu">
+                                 <li><a href="../BuildFromSource.html" title="Building OpenIMAJ from Source">Building OpenIMAJ from Source</a></li>
+                                 <li><a href="../UseLibrary.html" title="Using OpenIMAJ as a Library">Using OpenIMAJ as a Library</a></li>
+                                 <li><a href="../Groovy.html" title="Using OpenIMAJ with Groovy">Using OpenIMAJ with Groovy</a></li>
+                                 <li><a href="../tools.html" title="OpenIMAJ commandline tools introduction">OpenIMAJ commandline tools introduction</a></li>
+                                 <li><a href="../flickrCrawler.html" title="The FlickrCrawler Tool">The FlickrCrawler Tool</a></li>
+                                 <li><a href="../bibliography.html" title="Bibliography">Bibliography</a></li>
+                              </ul>
+                           </li>
+                           <li><a href="../apidocs/index.html" title="API Reference">API Reference</a></li>
+                           <li class="dropdown-submenu"><a href="#info" title="Project Information">Project Information</a><ul class="dropdown-menu">
+                                 <li><a href="../plugin-management.html" title="Plugin Management">Plugin Management</a></li>
+                                 <li><a href="../mail-lists.html" title="Mailing Lists">Mailing Lists</a></li>
+                                 <li><a href="../integration.html" title="Continuous Integration">Continuous Integration</a></li>
+                                 <li><a href="../license.html" title="Project License">Project License</a></li>
+                                 <li><a href="../team-list.html" title="Project Team">Project Team</a></li>
+                                 <li><a href="../source-repository.html" title="Source Repository">Source Repository</a></li>
+                                 <li><a href="../index.html" title="About">About</a></li>
+                                 <li><a href="../issue-tracking.html" title="Issue Tracking">Issue Tracking</a></li>
+                                 <li><a href="../project-summary.html" title="Project Summary">Project Summary</a></li>
+                                 <li><a href="../plugins.html" title="Project Plugins">Project Plugins</a></li>
+                                 <li><a href="../dependency-convergence.html" title="Dependency Convergence">Dependency Convergence</a></li>
+                                 <li><a href="../dependencies.html" title="Dependencies">Dependencies</a></li>
+                              </ul>
+                           </li>
+                        </ul>
+                     </li>
+                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Modules <b class="caret"></b></a><ul class="dropdown-menu">
+                           <li><a href="/openimaj-maven-archetypes/index.html" title="OpenIMAJ Maven Archetypes">OpenIMAJ Maven Archetypes</a></li>
+                           <li><a href="/openimaj-core-libs/index.html" title="OpenIMAJ Core Libraries">OpenIMAJ Core Libraries</a></li>
+                           <li><a href="/openimaj-image/index.html" title="OpenIMAJ Image Processing Libraries">OpenIMAJ Image Processing Libraries</a></li>
+                           <li><a href="/openimaj-video/index.html" title="OpenIMAJ Video Processing Libraries">OpenIMAJ Video Processing Libraries</a></li>
+                           <li><a href="/openimaj-audio/index.html" title="OpenIMAJ Audio Processing Libraries">OpenIMAJ Audio Processing Libraries</a></li>
+                           <li><a href="/openimaj-machine-learning/index.html" title="OpenIMAJ Machine Learning Subprojects">OpenIMAJ Machine Learning Subprojects</a></li>
+                           <li><a href="/openimaj-text/index.html" title="OpenIMAJ Text Analysis Subprojects">OpenIMAJ Text Analysis Subprojects</a></li>
+                           <li><a href="/thirdparty/index.html" title="OpenIMAJ Third Party Ported Libraries">OpenIMAJ Third Party Ported Libraries</a></li>
+                           <li><a href="/openimaj-demos/index.html" title="OpenIMAJ Demos Subproject">OpenIMAJ Demos Subproject</a></li>
+                           <li><a href="/openimaj-knowledge/index.html" title="OpenIMAJ Knowledge Representation and Reasoning Libraries">OpenIMAJ Knowledge Representation and Reasoning Libraries</a></li>
+                           <li><a href="/test-resources/index.html" title="OpenIMAJ Unit Test Resources">OpenIMAJ Unit Test Resources</a></li>
+                           <li><a href="/openimaj-tools/index.html" title="OpenIMAJ Tools">OpenIMAJ Tools</a></li>
+                           <li><a href="/openimaj-hadoop/index.html" title="OpenIMAJ Hadoop Subproject">OpenIMAJ Hadoop Subproject</a></li>
+                           <li><a href="/openimaj-storm/index.html" title="OpenIMAJ Storm Subproject">OpenIMAJ Storm Subproject</a></li>
+                           <li><a href="/openimaj-web/index.html" title="OpenIMAJ web subproject">OpenIMAJ web subproject</a></li>
+                           <li><a href="/openimaj-hardware/index.html" title="OpenIMAJ Hardware Subprojects">OpenIMAJ Hardware Subprojects</a></li>
+                           <li><a href="/openimaj-content-libs/index.html" title="OpenIMAJ Content Creation Libraries">OpenIMAJ Content Creation Libraries</a></li>
+                           <li><a href="/openimaj-ide-integration/index.html" title="OpenIMAJ IDE Integration Plugins">OpenIMAJ IDE Integration Plugins</a></li>
+                           <li><a href="/openimaj-documentation/index.html" title="OpenIMAJ Documentation">OpenIMAJ Documentation</a></li>
+                        </ul>
+                     </li>
+                  </ul>
+                  <form id="search-form" action="http://www.google.com/search" method="get" class="navbar-search pull-right" name="search-form"><input value="" name="sitesearch" type="hidden"><input class="search-query" name="q" id="query" type="text"></form><script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=search-form"></script><iframe src="http://www.facebook.com/plugins/like.php?href=http://www.openimaj.org/&amp;send=false&amp;layout=button_count&amp;show-faces=false&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" style="border:none; width:80px; height:20px; margin-top: 10px;" class="pull-right"></iframe><script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><ul class="nav pull-right">
+                     <li style="margin-top: 10px;">
+                        <div class="g-plusone" data-href="http://www.openimaj.org/" data-size="medium" width="60px" align="right"></div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div id="banner">
+            <div class="pull-left">
+               <div id="bannerLeft">
+                  <h2>OpenIMAJ</h2>
+               </div>
+            </div>
+            <div class="pull-right"></div>
+            <div class="clear">
+               <hr>
+            </div>
+         </div>
+         <div id="breadcrumbs">
+            <ul class="breadcrumb">
+               <li id="publishDate" class="pull-right">Last Published: 2016-06-20</li>
+               <li class="divider pull-right">|</li>
+               <li id="projectVersion" class="pull-right">Version: 1.4-SNAPSHOT</li>
+            </ul>
+         </div>
+         <div id="nav-sub-block"><a class="hide" name="nav-sub-a"></a><ul id="nav-sub">
+               <li class="first"><a accesskey="p" href="intro-face-alignment.html"><span>Prev : Face Alignment</span></a></li>
+               <li><a accesskey="h" href="index.html"><span>Contents</span></a></li>
+               <li class="last"><a accesskey="n" href="intro-face-recognitionclassification.html"><span>Next : Face Recognition/Classification</span></a></li>
+            </ul>
+         </div>
+         <div class="sect1" title="3.&nbsp;Facial Feature Extraction">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="intro-facial-feature-extraction"></a>3.&nbsp;Facial Feature Extraction
+                     </h2>
+                  </div>
+               </div>
+            </div>
+            	  
+            	  
+            <p>
+               	    Once you have detected a face (and possibly chosen an aligner for
+               	    it), you need to extract a feature which you can then use for
+               	    recognition or similarity comparison. As with the detection and
+               	    alignment phases, OpenIMAJ contains a number of different
+               	    implementations of <code class="literal">FacialFeatureExtractor</code>s which
+               	    produce <code class="literal">FacialFeature</code>s together with methods for
+               	    comparing pairs of <code class="literal">FacialFeature</code>s in order to get
+               	    a similarity measurement. The currently implemented
+               	    <code class="literal">FacialFeature</code>s are listed below:
+               	  
+            </p>
+            	  
+            <div class="itemizedlist">
+               <ul class="itemizedlist" type="disc">
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">CLMPoseFeature</code>: A feature that represents the
+                        	        pose of a face detected with the
+                        	        <code class="literal">CLMFaceDetector</code>. The pose consists of the
+                        	        pitch, roll and yaw of the face. The feature can expose itself
+                        	        as a <code class="literal">DoubleFV</code> and can be compared using a
+                        	        <code class="literal">FaceFVComparator</code>.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">CLMPoseShapeFeature</code>: A feature that
+                        	        represents the shape parameters and pose of a face detected with
+                        	        the <code class="literal">CLMFaceDetector</code>. The shape vector
+                        	        describes the shape of the face as a small set of variables, and
+                        	        the pose consists of the pitch, roll and yaw of the face. The
+                        	        feature can expose itself as a <code class="literal">DoubleFV</code> and
+                        	        can be compared using a <code class="literal">FaceFVComparator</code>.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">CLMShapeFeature</code>: A feature that represents
+                        	        the shape parameters of a face detected with the
+                        	        <code class="literal">CLMFaceDetector</code>. The shape vector describes
+                        	        the shape of the face as a small set of variables. The feature
+                        	        can expose itself as a <code class="literal">DoubleFV</code> and can be
+                        	        compared using a <code class="literal">FaceFVComparator</code>.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">DoGSIFTFeature</code>: A feature built by detecting
+                        	        local interest points on the face using a Difference of Gaussian
+                        	        pyramid, and then describing these using SIFT features. The
+                        	        <code class="literal">DoGSIFTFeatureComparator</code> can be used to
+                        	        compare these features.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">EigenFaceFeature</code>: A feature built by
+                        	        projecting the pixels of an aligned face into a
+                        	        lower-dimensional space learned through PCA. The feature
+                        	        extractor must be <span class="quote">&#8220;<span class="quote">trained</span>&#8221;</span> with a set of example
+                        	        aligned faces before it can be used. This forms the core of the
+                        	        classic Eigen Faces algorithm. The feature can expose itself as
+                        	        a <code class="literal">DoubleFV</code> and can be compared using a
+                        	        <code class="literal">FaceFVComparator</code>.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">FaceImageFeature</code>: A feature built directly
+                        	        from the pixels of an aligned face. No normalisation is
+                        	        performed. The feature can expose itself as a
+                        	        <code class="literal">FloatFV</code> and can be compared using a
+                        	        <code class="literal">FaceFVComparator</code>.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">FacePatchFeature</code>: A feature built by
+                        	        concatenating the pixels from each of the normalised circular
+                        	        patches around each facial keypoint from an
+                        	        <code class="literal">FKEDetectedFace</code>. The feature can expose
+                        	        itself as a <code class="literal">FloatFV</code> and can be compared using
+                        	        a <code class="literal">FaceFVComparator</code>.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">FisherFaceFeature</code>: A feature built by
+                        	        projecting the pixels of an aligned face into a
+                        	        lower-dimensional space learned through Fisher&#8217;s Linear
+                        	        Discriminant Analysis. The feature extractor must be
+                        	        <span class="quote">&#8220;<span class="quote">trained</span>&#8221;</span> with a set of example aligned faces
+                        	        before it can be used. This forms the core of the classic Fisher
+                        	        Faces algorithm. The feature can expose itself as a
+                        	        <code class="literal">DoubleFV</code> and can be compared using a
+                        	        <code class="literal">FaceFVComparator</code>.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">LocalLBPHistogram</code>: Feature constructed by
+                        	        breaking the image into blocks and computing histograms of Local
+                        	        Binary Patterns (LBPs) for each block. All histograms are
+                        	        concatenated to form the final feature. The feature can expose
+                        	        itself as a <code class="literal">FloatFV</code> and can be compared using
+                        	        a <code class="literal">FaceFVComparator</code>.
+                        	      
+                     </p>
+                     	    
+                  </li>
+                  <li class="listitem">
+                     	      
+                     <p>
+                        	        <code class="literal">LtpDtFeature</code>: A feature built from Local
+                        	        Trinary Patterns (LTPs) within an aligned image. The features
+                        	        are constructed to be compared using a Euclidean Distance
+                        	        Transform with the <code class="literal">LtpDtFeatureComparator</code> or
+                        	        <code class="literal">ReversedLtpDtFeatureComparator</code> comparators.
+                        	      
+                     </p>
+                     	    
+                  </li>
+               </ul>
+            </div>
+            	
+         </div>
+      </div>
+      <div id="nav-sub-block" class="bottom"><a class="hide" name="nav-sub-a"></a><ul id="nav-sub">
+            <li class="first"><a accesskey="p" href="intro-face-alignment.html"><span>Prev : Face Alignment</span></a></li>
+            <li><a accesskey="h" href="index.html"><span>Contents</span></a></li>
+            <li class="last"><a accesskey="n" href="intro-face-recognitionclassification.html"><span>Next : Face Recognition/Classification</span></a></li>
+         </ul>
+      </div>
+      <footer>
+         <div class="container">
+            <div class="row span12">Copyright &copy; 2011-2014 <a href="http://www.soton.ac.uk">The University of Southampton</a>. All Rights Reserved.
+                 				
+            </div>
+            <p id="poweredBy" class="pull-right"><a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy"><img class="builtBy" alt="Built by Maven" src="./images/logos/maven-feather.png"></a></p>
+            <div id="ohloh" class="pull-right"><script type="text/javascript" src="http://www.ohloh.net/p/openimaj/widgets/project_partner_badge.js"></script></div>
+         </div>
+      </footer>
+   </body>
+</html>

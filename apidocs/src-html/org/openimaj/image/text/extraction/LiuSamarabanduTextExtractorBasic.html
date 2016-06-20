@@ -1,0 +1,666 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *<a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>package org.openimaj.image.text.extraction;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.util.ArrayList;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.util.HashMap;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.util.Iterator;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.List;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.util.Map;<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.citation.annotation.Reference;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.citation.annotation.ReferenceType;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.image.DisplayUtilities;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.image.FImage;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.image.MBFImage;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.image.pixel.ConnectedComponent;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.image.pixel.Pixel;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import org.openimaj.image.pixel.PixelSet;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import org.openimaj.image.processing.convolution.CompassOperators.Compass0;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import org.openimaj.image.processing.convolution.CompassOperators.Compass135;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import org.openimaj.image.processing.convolution.CompassOperators.Compass45;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import org.openimaj.image.processing.convolution.CompassOperators.Compass90;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import org.openimaj.image.processing.convolution.FConvolution;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>import org.openimaj.image.processing.morphology.Close;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>import org.openimaj.image.processing.morphology.Dilate;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>import org.openimaj.image.processing.morphology.StructuringElement;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>import org.openimaj.image.processing.morphology.Thin;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>import org.openimaj.image.processing.threshold.OtsuThreshold;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>import org.openimaj.image.processing.transform.SkewCorrector;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>import org.openimaj.image.processor.connectedcomponent.render.OrientatedBoundingBoxRenderer;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>import org.openimaj.image.text.ocr.OCRProcessor;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>import org.openimaj.math.geometry.point.Point2dImpl;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>import org.openimaj.math.geometry.shape.Polygon;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>import org.openimaj.math.geometry.shape.Rectangle;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>import org.openimaj.util.pair.IndependentPair;<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>/**<a name="line.71"></a>
+<span class="sourceLineNo">072</span> * A processor that attempts to extract text from an image. It uses a 3-stage<a name="line.72"></a>
+<span class="sourceLineNo">073</span> * process: 1) find possible text regions; 2) filter then extract those regions;<a name="line.73"></a>
+<span class="sourceLineNo">074</span> * 3) OCR.<a name="line.74"></a>
+<span class="sourceLineNo">075</span> * &lt;p&gt;<a name="line.75"></a>
+<span class="sourceLineNo">076</span> * In the first stage it builds a feature map which is an image where the pixel<a name="line.76"></a>
+<span class="sourceLineNo">077</span> * intensity is the likelihood of a pixel being within a text region. It does<a name="line.77"></a>
+<span class="sourceLineNo">078</span> * this by a series of convolutions and morphological operations that find<a name="line.78"></a>
+<span class="sourceLineNo">079</span> * regions that have short edges in multiple directions.<a name="line.79"></a>
+<span class="sourceLineNo">080</span> * &lt;p&gt;<a name="line.80"></a>
+<span class="sourceLineNo">081</span> * In the second stage, the regions are turned into blobs and those blobs that<a name="line.81"></a>
+<span class="sourceLineNo">082</span> * are too small or inappropriately shaped are removed. The regions are then<a name="line.82"></a>
+<span class="sourceLineNo">083</span> * extracted from the original image as subimages containing text. The extracted<a name="line.83"></a>
+<span class="sourceLineNo">084</span> * subimages can have an expansion multipler applied to the box to ensure that<a name="line.84"></a>
+<span class="sourceLineNo">085</span> * enough surrounding information is contained within the extracted subimage for<a name="line.85"></a>
+<span class="sourceLineNo">086</span> * the OCR to work. Use {@link #setBoundingBoxPaddingPc(float)} with a multipler<a name="line.86"></a>
+<span class="sourceLineNo">087</span> * to expand the bounding boxes with; i.e. 1.05 will expand the bounding box by<a name="line.87"></a>
+<span class="sourceLineNo">088</span> * 5%.<a name="line.88"></a>
+<span class="sourceLineNo">089</span> * &lt;p&gt;<a name="line.89"></a>
+<span class="sourceLineNo">090</span> * The third stage simply uses an {@link OCRProcessor} to process the subimages<a name="line.90"></a>
+<span class="sourceLineNo">091</span> * and extract textual strings. Use the {@link #setOCRProcessor(OCRProcessor)}<a name="line.91"></a>
+<span class="sourceLineNo">092</span> * to set the {@link OCRProcessor} to use to extract text. Note that by default<a name="line.92"></a>
+<span class="sourceLineNo">093</span> * no processor is set. If the processor is executed without an<a name="line.93"></a>
+<span class="sourceLineNo">094</span> * {@link OCRProcessor} being set, the OCR stage will not occur. This part of<a name="line.94"></a>
+<span class="sourceLineNo">095</span> * the implementation has moved into {@link TextExtractor} super class.<a name="line.95"></a>
+<span class="sourceLineNo">096</span> * &lt;p&gt;<a name="line.96"></a>
+<span class="sourceLineNo">097</span> * The output of the processor can be retrieved using {@link #getTextRegions()}<a name="line.97"></a>
+<span class="sourceLineNo">098</span> * which returns a map where the key is a bounding box of every detected text<a name="line.98"></a>
+<span class="sourceLineNo">099</span> * region and the value is a pair of subimage to extracted text.<a name="line.99"></a>
+<span class="sourceLineNo">100</span> * &lt;p&gt;<a name="line.100"></a>
+<span class="sourceLineNo">101</span> * From: [paper 01626635.pdf] Xiaoqing Liu and Jagath Samarabandu; An Edge-based<a name="line.101"></a>
+<span class="sourceLineNo">102</span> * Text Region Extraction Algorithm for Indoor Mobile Robot Navigation,<a name="line.102"></a>
+<span class="sourceLineNo">103</span> * Proceedings of the IEEE International Conference on Mechatronics &amp; Automation<a name="line.103"></a>
+<span class="sourceLineNo">104</span> * Niagara Falls, Canada, July 2005<a name="line.104"></a>
+<span class="sourceLineNo">105</span> *<a name="line.105"></a>
+<span class="sourceLineNo">106</span> * @see "http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1626635"<a name="line.106"></a>
+<span class="sourceLineNo">107</span> * @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.107"></a>
+<span class="sourceLineNo">108</span> * @created 29 Jul 2011<a name="line.108"></a>
+<span class="sourceLineNo">109</span> *<a name="line.109"></a>
+<span class="sourceLineNo">110</span> */<a name="line.110"></a>
+<span class="sourceLineNo">111</span>@Reference(<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                type = ReferenceType.Inproceedings,<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                author = { "Xiaoqing Liu", "Samarabandu, J." },<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                title = "An edge-based text region extraction algorithm for indoor mobile robot navigation",<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                year = "2005",<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                booktitle = "Mechatronics and Automation, 2005 IEEE International Conference",<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                pages = { " 701 ", " 706 Vol. 2" },<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                month = "July-1 Aug.",<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                number = "",<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                volume = "2",<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                customData = {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                "keywords",<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                "edge-based text region extraction; feature extraction; scene text; text localization; vision-based mobile robot navigation; character recognition; edge detection; feature extraction; mobile robots; navigation; path planning; robot vision;",<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                "doi", "10.1109/ICMA.2005.1626635", "ISSN", "" })<a name="line.124"></a>
+<span class="sourceLineNo">125</span>public class LiuSamarabanduTextExtractorBasic extends TextExtractor&lt;FImage&gt;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>{<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        /** Whether to debug the text extractor - displaying images as it goes */<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        public static final boolean DEBUG = false;<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>        /** Percentage of size to add around the bounding box of a text region */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        private float boundingBoxPaddingPc = 1.1f;<a name="line.131"></a>
+<span class="sourceLineNo">132</span><a name="line.132"></a>
+<span class="sourceLineNo">133</span>        /** The output of the processor. Use #getTextRegions() */<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        private Map&lt;Rectangle, FImage&gt; textRegions = null;<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>        /**<a name="line.136"></a>
+<span class="sourceLineNo">137</span>         * Helper method that convolves the given image with the given convolution<a name="line.137"></a>
+<span class="sourceLineNo">138</span>         * operator. The method also performs an abs() and a normalise(). We can<a name="line.138"></a>
+<span class="sourceLineNo">139</span>         * take the absolute value as we're only interested in whether edges are,<a name="line.139"></a>
+<span class="sourceLineNo">140</span>         * for example, vertical and not in what direction they are.<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         *<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * @param img<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         *            The image to convolve<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         * @param c<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         *            The convolution operator<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         * @return A convolved image.<a name="line.146"></a>
+<span class="sourceLineNo">147</span>         */<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        private FImage processImage(FImage img, FConvolution c)<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                return img.process(c)<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                                .abs()<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                                .normalise();<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>        /**<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         * {@inheritDoc}<a name="line.156"></a>
+<span class="sourceLineNo">157</span>         * <a name="line.157"></a>
+<span class="sourceLineNo">158</span>         * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)<a name="line.158"></a>
+<span class="sourceLineNo">159</span>         */<a name="line.159"></a>
+<span class="sourceLineNo">160</span>        @Override<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        public void processImage(FImage image)<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        {<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                // Find which regions might be text<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                final FImage fmap = textRegionDetection(image);<a name="line.164"></a>
+<span class="sourceLineNo">165</span><a name="line.165"></a>
+<span class="sourceLineNo">166</span>                // Process the feature map<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                processFeatureMap(fmap, image);<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>                // The output process image is the feature map<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                image.internalAssign(fmap);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>        /**<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * Process a feature map. This function will side affect the field<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         * &lt;code&gt;textRegions&lt;/code&gt; in this class. Use {@link #getTextRegions()} to<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         * retrieve the text regions extracted from this method.<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         *<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         * @param fmap<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         *            The feature map to process<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         * @param image<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         *            The original image.<a name="line.181"></a>
+<span class="sourceLineNo">182</span>         */<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        public void processFeatureMap(FImage fmap, FImage image)<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                // Extract the text regions from the image<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                final Map&lt;Rectangle, FImage&gt; t = textRegionLocalisation(fmap, image);<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                this.textRegions = t;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        }<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>        /**<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         * Calculate the feature map that give the approximate localisation of<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * candidate text regions.<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         *<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         * @param image<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         *            The image to process.<a name="line.195"></a>
+<span class="sourceLineNo">196</span>         * @return The feature map<a name="line.196"></a>
+<span class="sourceLineNo">197</span>         */<a name="line.197"></a>
+<span class="sourceLineNo">198</span>        public FImage textRegionDetection(FImage image)<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        {<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                // 1) Directional Filtering<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                final HashMap&lt;Integer, FImage&gt; e = new HashMap&lt;Integer, FImage&gt;();<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                e.put(0, processImage(image, new Compass0()));<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                e.put(45, processImage(image, new Compass45()));<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                e.put(90, processImage(image, new Compass90()));<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                e.put(135, processImage(image, new Compass135()));<a name="line.205"></a>
+<span class="sourceLineNo">206</span><a name="line.206"></a>
+<span class="sourceLineNo">207</span>                // 2) Edge Selection<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                // 2a) Get strong edges<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                final FImage e90strong = e.get(90).process(new OtsuThreshold());<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>                if (DEBUG)<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                        DisplayUtilities.display(e90strong, "Strong Edges");<a name="line.212"></a>
+<span class="sourceLineNo">213</span><a name="line.213"></a>
+<span class="sourceLineNo">214</span>                // 2b) Get weak edges<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                // 2b)i) Dilate:<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                // Use a horizontal 1x3 structuring element<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                final StructuringElement se = new StructuringElement();<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                se.positive.add(new Pixel(0, 0));<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                se.positive.add(new Pixel(-1, 0));<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                se.positive.add(new Pixel(1, 0));<a name="line.220"></a>
+<span class="sourceLineNo">221</span><a name="line.221"></a>
+<span class="sourceLineNo">222</span>                if (DEBUG)<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        System.out.println("Dilating with a 1x3 structuring element");<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>                final FImage dilated = e90strong.process(new Dilate(se));<a name="line.225"></a>
+<span class="sourceLineNo">226</span><a name="line.226"></a>
+<span class="sourceLineNo">227</span>                // 2b)ii) Close:<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                // Use a vertical mx1 structuring element<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                int m = (int) (dilated.getHeight() / 25d);<a name="line.229"></a>
+<span class="sourceLineNo">230</span><a name="line.230"></a>
+<span class="sourceLineNo">231</span>                if (DEBUG)<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        System.out.println("Closing with a " + m + "x1 structuring element.");<a name="line.232"></a>
+<span class="sourceLineNo">233</span><a name="line.233"></a>
+<span class="sourceLineNo">234</span>                final StructuringElement se2 = new StructuringElement();<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                for (int i = 0; i &lt; m; i++)<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                        se2.positive.add(new Pixel(0, i - m / 2));<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                final FImage closed = dilated.process(new Close(se2));<a name="line.237"></a>
+<span class="sourceLineNo">238</span><a name="line.238"></a>
+<span class="sourceLineNo">239</span>                // 2b)iii) E90w = |E90 x (closed-dilated)|z<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                // |.|z is the Otsu threshold operator<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                FImage e90weak = closed.subtract(dilated).abs();<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                e90weak.multiplyInplace(e.get(90));<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                e90weak = e90weak.process(new OtsuThreshold());<a name="line.243"></a>
+<span class="sourceLineNo">244</span><a name="line.244"></a>
+<span class="sourceLineNo">245</span>                if (DEBUG)<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                        DisplayUtilities.display(e90weak, "Weak Edges");<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>                final FImage e90edges = e90strong.add(e90weak).normalise().process(<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                new OtsuThreshold());<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>                if (DEBUG)<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        DisplayUtilities.display(e90edges, "Edges");<a name="line.252"></a>
+<span class="sourceLineNo">253</span><a name="line.253"></a>
+<span class="sourceLineNo">254</span>                // 3a) Thin edges<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                final FImage e90thin = e90edges.process(new Thin(StructuringElement.BOX));<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>                if (DEBUG)<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                        DisplayUtilities.display(e90thin, "Thinned");<a name="line.258"></a>
+<span class="sourceLineNo">259</span><a name="line.259"></a>
+<span class="sourceLineNo">260</span>                final ConnectedComponentLabeler ccl = new ConnectedComponentLabeler(<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                                ConnectMode.CONNECT_4);<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                final List&lt;ConnectedComponent&gt; cc = ccl.findComponents(e90thin);<a name="line.262"></a>
+<span class="sourceLineNo">263</span><a name="line.263"></a>
+<span class="sourceLineNo">264</span>                // 4a) Label edges<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                final FImage e90labelled = new FImage(e90thin.getWidth(), e90thin.getHeight());<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                final ConnectedComponentProcessor ccp = new ConnectedComponentProcessor()<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                {<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                        @Override<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                        public void process(ConnectedComponent cc)<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                        {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                                final int a = cc.calculateArea();<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                                for (final Pixel p : cc.pixels)<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                                        e90labelled.setPixel((int) p.getX(), (int) p.getY(), (float) a);<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                        }<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                };<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                ConnectedComponent.process(cc, ccp);<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>                if (DEBUG) {<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                        DisplayUtilities.display(e90labelled.clone().normalise(), "Labelled Edges");<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                        System.out.println("Max edge length: " + e90labelled.max());<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                }<a name="line.281"></a>
+<span class="sourceLineNo">282</span><a name="line.282"></a>
+<span class="sourceLineNo">283</span>                // Threshold the labelled edges to get only short ones<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                final FImage e90short = e90labelled.clone().clip(0f, 1f).subtract(<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                                e90labelled.threshold(e90labelled.max() / 4 * 3));<a name="line.285"></a>
+<span class="sourceLineNo">286</span><a name="line.286"></a>
+<span class="sourceLineNo">287</span>                if (DEBUG)<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                        DisplayUtilities.display(e90short.clone().normalise(), "Thresholded Lengths");<a name="line.288"></a>
+<span class="sourceLineNo">289</span><a name="line.289"></a>
+<span class="sourceLineNo">290</span>                // 5) Feature Map Generation<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                // Suppress false regions and enhance candidate regions<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                // 5a) candidate = Dilation( e90short )[mxm]<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                final StructuringElement se3 = new StructuringElement();<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                for (int i = 0; i &lt; m; i++)<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                        for (int j = 0; j &lt; m; j++)<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                                se3.positive.add(new Pixel(i - m / 2, j - m / 2));<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                final FImage e90candidate = e90short.process(new Dilate(se3));<a name="line.297"></a>
+<span class="sourceLineNo">298</span><a name="line.298"></a>
+<span class="sourceLineNo">299</span>                if (DEBUG)<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                        DisplayUtilities.display(e90candidate, "Candidate Regions");<a name="line.300"></a>
+<span class="sourceLineNo">301</span><a name="line.301"></a>
+<span class="sourceLineNo">302</span>                // 5b) refined = candidate * sum( e0,e45,e90,e135 );<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                final FImage is = e.get(0).clone().<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                                addInplace(e.get(45)).<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                                addInplace(e.get(90)).<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                                addInplace(e.get(135));<a name="line.306"></a>
+<span class="sourceLineNo">307</span><a name="line.307"></a>
+<span class="sourceLineNo">308</span>                // We normalise the refined so that we can more simply<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                // normalise the pixel values in the feature map generation<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                // by the window size as we know each pixel is (0,1)<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                final FImage refined = e90candidate.multiply(is).normalise();<a name="line.311"></a>
+<span class="sourceLineNo">312</span><a name="line.312"></a>
+<span class="sourceLineNo">313</span>                if (DEBUG)<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                        DisplayUtilities.display(refined, "Refined");<a name="line.314"></a>
+<span class="sourceLineNo">315</span><a name="line.315"></a>
+<span class="sourceLineNo">316</span>                // 5c) fmap(i,j) = N{W(i,j).sum[-c&lt;m&lt;c]( sum[-c&lt;n&lt;c]( refined(i+m,j+n) )<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                // ) }<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                final int c = 5; // window size -- value not specified in paper<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                final FImage fmap = new FImage(image.getWidth(), image.getHeight());<a name="line.319"></a>
+<span class="sourceLineNo">320</span><a name="line.320"></a>
+<span class="sourceLineNo">321</span>                // Unlike the paper, we use the actual values of the edges<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                // in each of the direction images to calculate the weight<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                // for each pixel in the pixel map. So, instead of counting<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                // (which would require thresholding the direction images),<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                // we simply add the values of the maximum edges in each<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                // of the direction images; it means if there are 4 directions<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                // strongly represented in the window the weight will be near<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                // 4 (before normalisation); if there is only 1, the weight will<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                // be near 1. Anyway, we have to store the maximum for each direction<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                // image within the window which is what this hashmap is for,<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                // and what the updateMaxPixDir() private method is used for.<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                final HashMap&lt;Integer, Float&gt; maxPixDir = new HashMap&lt;Integer, Float&gt;();<a name="line.332"></a>
+<span class="sourceLineNo">333</span><a name="line.333"></a>
+<span class="sourceLineNo">334</span>                // For every pixel in the feature map<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                for (int j = c; j &lt; image.getHeight() - c; j++)<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                {<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                        for (int i = c; i &lt; image.getWidth() - c; i++)<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                        {<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                                float pixelValue = 0;<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                                final float N = c * c;<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                                maxPixDir.clear();<a name="line.341"></a>
+<span class="sourceLineNo">342</span><a name="line.342"></a>
+<span class="sourceLineNo">343</span>                                // Look in the window<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                                for (m = -c; m &lt; c; m++)<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                                {<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                                        for (int n = -c; n &lt; c; n++)<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                                        {<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                                                pixelValue += refined.getPixel(i + m, j + n);<a name="line.348"></a>
+<span class="sourceLineNo">349</span><a name="line.349"></a>
+<span class="sourceLineNo">350</span>                                                updateMaxPixDir(maxPixDir, e, 0, i + m, j + n);<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                                                updateMaxPixDir(maxPixDir, e, 45, i + m, j + n);<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                                                updateMaxPixDir(maxPixDir, e, 90, i + m, j + n);<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                                                updateMaxPixDir(maxPixDir, e, 135, i + m, j + n);<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                                        }<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                                }<a name="line.355"></a>
+<span class="sourceLineNo">356</span><a name="line.356"></a>
+<span class="sourceLineNo">357</span>                                float w = maxPixDir.get(0) +<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                                                maxPixDir.get(45) +<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                                                maxPixDir.get(90) +<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                                                maxPixDir.get(135);<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                                w /= 4; // normalise the weight so it's between 0 and 1<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>                                pixelValue *= w;<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                                pixelValue /= N;<a name="line.364"></a>
+<span class="sourceLineNo">365</span><a name="line.365"></a>
+<span class="sourceLineNo">366</span>                                fmap.setPixel(i, j, pixelValue);<a name="line.366"></a>
+<span class="sourceLineNo">367</span>                        }<a name="line.367"></a>
+<span class="sourceLineNo">368</span>                }<a name="line.368"></a>
+<span class="sourceLineNo">369</span><a name="line.369"></a>
+<span class="sourceLineNo">370</span>                if (DEBUG)<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                        DisplayUtilities.display(fmap.clone().normalise(), "Feature Map");<a name="line.371"></a>
+<span class="sourceLineNo">372</span><a name="line.372"></a>
+<span class="sourceLineNo">373</span>                return fmap;<a name="line.373"></a>
+<span class="sourceLineNo">374</span>        }<a name="line.374"></a>
+<span class="sourceLineNo">375</span><a name="line.375"></a>
+<span class="sourceLineNo">376</span>        /**<a name="line.376"></a>
+<span class="sourceLineNo">377</span>         * Helper method to store the maximum pixel value for a given direction at a<a name="line.377"></a>
+<span class="sourceLineNo">378</span>         * given x and y coordinate.<a name="line.378"></a>
+<span class="sourceLineNo">379</span>         *<a name="line.379"></a>
+<span class="sourceLineNo">380</span>         * @param maxPixDir<a name="line.380"></a>
+<span class="sourceLineNo">381</span>         *            The hashmap in which the maxes are stored<a name="line.381"></a>
+<span class="sourceLineNo">382</span>         * @param e<a name="line.382"></a>
+<span class="sourceLineNo">383</span>         *            The hashmap of direction images<a name="line.383"></a>
+<span class="sourceLineNo">384</span>         * @param dir<a name="line.384"></a>
+<span class="sourceLineNo">385</span>         *            The direction to dereference<a name="line.385"></a>
+<span class="sourceLineNo">386</span>         * @param x<a name="line.386"></a>
+<span class="sourceLineNo">387</span>         *            the x-coord<a name="line.387"></a>
+<span class="sourceLineNo">388</span>         * @param y<a name="line.388"></a>
+<span class="sourceLineNo">389</span>         *            the y-coord<a name="line.389"></a>
+<span class="sourceLineNo">390</span>         */<a name="line.390"></a>
+<span class="sourceLineNo">391</span>        private void updateMaxPixDir(HashMap&lt;Integer, Float&gt; maxPixDir, HashMap&lt;Integer, FImage&gt; e, int dir, int x, int y)<a name="line.391"></a>
+<span class="sourceLineNo">392</span>        {<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                Float xx = null;<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                if ((xx = maxPixDir.get(dir)) == null)<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                        maxPixDir.put(dir, e.get(dir).getPixel(x, y));<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                else<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                        maxPixDir.put(dir, Math.max(xx, e.get(dir).getPixel(x, y)));<a name="line.397"></a>
+<span class="sourceLineNo">398</span>        }<a name="line.398"></a>
+<span class="sourceLineNo">399</span><a name="line.399"></a>
+<span class="sourceLineNo">400</span>        /**<a name="line.400"></a>
+<span class="sourceLineNo">401</span>         * Extract the regions that probably contain text (as given by the feature<a name="line.401"></a>
+<span class="sourceLineNo">402</span>         * map)<a name="line.402"></a>
+<span class="sourceLineNo">403</span>         *<a name="line.403"></a>
+<span class="sourceLineNo">404</span>         * @param fmap<a name="line.404"></a>
+<span class="sourceLineNo">405</span>         *            The feature map calculated from<a name="line.405"></a>
+<span class="sourceLineNo">406</span>         *            {@link #textRegionDetection(FImage)}<a name="line.406"></a>
+<span class="sourceLineNo">407</span>         * @param image<a name="line.407"></a>
+<span class="sourceLineNo">408</span>         *            The original image<a name="line.408"></a>
+<span class="sourceLineNo">409</span>         * @return A map of boundingbox-&gt;images that area localised text regions<a name="line.409"></a>
+<span class="sourceLineNo">410</span>         */<a name="line.410"></a>
+<span class="sourceLineNo">411</span>        public Map&lt;Rectangle, FImage&gt; textRegionLocalisation(FImage fmap, FImage image)<a name="line.411"></a>
+<span class="sourceLineNo">412</span>        {<a name="line.412"></a>
+<span class="sourceLineNo">413</span>                // We'll store the localised text regions in this list<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                final HashMap&lt;Rectangle, FImage&gt; textAreas = new HashMap&lt;Rectangle, FImage&gt;();<a name="line.414"></a>
+<span class="sourceLineNo">415</span><a name="line.415"></a>
+<span class="sourceLineNo">416</span>                // Threshold the image to find high probability regions<a name="line.416"></a>
+<span class="sourceLineNo">417</span>                final FImage thresh = fmap.clone().normalise().process(new OtsuThreshold());<a name="line.417"></a>
+<span class="sourceLineNo">418</span><a name="line.418"></a>
+<span class="sourceLineNo">419</span>                // Dilate with a 7x7 structuring element<a name="line.419"></a>
+<span class="sourceLineNo">420</span>                final StructuringElement se = new StructuringElement();<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                final int ses = 9;<a name="line.421"></a>
+<span class="sourceLineNo">422</span>                for (int i = 0; i &lt; ses; i++)<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                        for (int j = 0; j &lt; ses; j++)<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                                se.positive.add(new Pixel(i, j));<a name="line.424"></a>
+<span class="sourceLineNo">425</span><a name="line.425"></a>
+<span class="sourceLineNo">426</span>                final FImage dilated = thresh.process(new Dilate(se));<a name="line.426"></a>
+<span class="sourceLineNo">427</span><a name="line.427"></a>
+<span class="sourceLineNo">428</span>                if (DEBUG)<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                        DisplayUtilities.display(dilated, "Candidate text-blobs");<a name="line.429"></a>
+<span class="sourceLineNo">430</span><a name="line.430"></a>
+<span class="sourceLineNo">431</span>                // We use the connected-component labeller to extract the components.<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                final ConnectedComponentLabeler ccl = new<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                                ConnectedComponentLabeler(ConnectMode.CONNECT_4);<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                final List&lt;ConnectedComponent&gt; ccs = ccl.findComponents(dilated);<a name="line.434"></a>
+<span class="sourceLineNo">435</span><a name="line.435"></a>
+<span class="sourceLineNo">436</span>                System.out.println("Got " + ccs.size() + " connected components.");<a name="line.436"></a>
+<span class="sourceLineNo">437</span><a name="line.437"></a>
+<span class="sourceLineNo">438</span>                // Now we can filter by iterating over the components<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                // Heuristics:<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                // Area(region) &gt;= (1/20).max<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                int maxArea = 0;<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                for (final PixelSet cc : ccs)<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                        maxArea = Math.max(maxArea, cc.calculateArea());<a name="line.443"></a>
+<span class="sourceLineNo">444</span><a name="line.444"></a>
+<span class="sourceLineNo">445</span>                // - Remove regions that are too small<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                for (final Iterator&lt;ConnectedComponent&gt; cci = ccs.iterator(); cci.hasNext();)<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                        if (cci.next().calculateArea() &lt; maxArea / 20d)<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                                cci.remove();<a name="line.448"></a>
+<span class="sourceLineNo">449</span><a name="line.449"></a>
+<span class="sourceLineNo">450</span>                // Ratio(w/h) = w/h &gt;= 0.2<a name="line.450"></a>
+<span class="sourceLineNo">451</span>                // - Remove regions that aren't square enough.<a name="line.451"></a>
+<span class="sourceLineNo">452</span>                for (final Iterator&lt;ConnectedComponent&gt; cci = ccs.iterator(); cci.hasNext();)<a name="line.452"></a>
+<span class="sourceLineNo">453</span>                {<a name="line.453"></a>
+<span class="sourceLineNo">454</span>                        final PixelSet cc = cci.next();<a name="line.454"></a>
+<span class="sourceLineNo">455</span>                        final Rectangle r = cc.calculateRegularBoundingBox();<a name="line.455"></a>
+<span class="sourceLineNo">456</span>                        if (r.width / r.height &lt; 0.2)<a name="line.456"></a>
+<span class="sourceLineNo">457</span>                                cci.remove();<a name="line.457"></a>
+<span class="sourceLineNo">458</span>                }<a name="line.458"></a>
+<span class="sourceLineNo">459</span><a name="line.459"></a>
+<span class="sourceLineNo">460</span>                if (DEBUG) {<a name="line.460"></a>
+<span class="sourceLineNo">461</span>                        final MBFImage bb = new MBFImage(image.getWidth(), image.getHeight(), 3);<a name="line.461"></a>
+<span class="sourceLineNo">462</span>                        bb.createRenderer().drawImage(image, 0, 0);<a name="line.462"></a>
+<span class="sourceLineNo">463</span>                        final OrientatedBoundingBoxRenderer&lt;Float[]&gt; obbr = new<a name="line.463"></a>
+<span class="sourceLineNo">464</span>                                        OrientatedBoundingBoxRenderer&lt;Float[]&gt;(bb, new Float[] { 1f, 1f, 0f });<a name="line.464"></a>
+<span class="sourceLineNo">465</span>                                        ConnectedComponent.process(ccs, obbr);<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                                        DisplayUtilities.display(bb);<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                                        System.out.println("Continuing with " + ccs.size() + " connected components.");<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                }<a name="line.468"></a>
+<span class="sourceLineNo">469</span><a name="line.469"></a>
+<span class="sourceLineNo">470</span>                // Extract the text regions from the original image<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                for (final PixelSet cc : ccs)<a name="line.471"></a>
+<span class="sourceLineNo">472</span>                {<a name="line.472"></a>
+<span class="sourceLineNo">473</span>                        if (cc.getPixels().size() &lt; 20)<a name="line.473"></a>
+<span class="sourceLineNo">474</span>                                continue;<a name="line.474"></a>
+<span class="sourceLineNo">475</span><a name="line.475"></a>
+<span class="sourceLineNo">476</span>                        // Extract from the image the text region<a name="line.476"></a>
+<span class="sourceLineNo">477</span>                        final Rectangle r = cc.calculateRegularBoundingBox();<a name="line.477"></a>
+<span class="sourceLineNo">478</span>                        r.scaleCentroid(boundingBoxPaddingPc);<a name="line.478"></a>
+<span class="sourceLineNo">479</span>                        FImage textArea = image.extractROI(r);<a name="line.479"></a>
+<span class="sourceLineNo">480</span><a name="line.480"></a>
+<span class="sourceLineNo">481</span>                        // Threshold of the image make it easier to extract MSERs<a name="line.481"></a>
+<span class="sourceLineNo">482</span>                        final OtsuThreshold o = new OtsuThreshold();<a name="line.482"></a>
+<span class="sourceLineNo">483</span>                        o.processImage(textArea);<a name="line.483"></a>
+<span class="sourceLineNo">484</span><a name="line.484"></a>
+<span class="sourceLineNo">485</span>                        if (DEBUG)<a name="line.485"></a>
+<span class="sourceLineNo">486</span>                                DisplayUtilities.display(textArea, "text area - before distortion");<a name="line.486"></a>
+<span class="sourceLineNo">487</span><a name="line.487"></a>
+<span class="sourceLineNo">488</span>                        // // We distort the image to attempt to make the lettering<a name="line.488"></a>
+<span class="sourceLineNo">489</span>                        // straighter<a name="line.489"></a>
+<span class="sourceLineNo">490</span>                        // // and more readable for the OCR<a name="line.490"></a>
+<span class="sourceLineNo">491</span>                        // // We work out the bounding box of the text to distort<a name="line.491"></a>
+<span class="sourceLineNo">492</span>                        // Polygon p = cc.calculateOrientatedBoundingBox();<a name="line.492"></a>
+<span class="sourceLineNo">493</span>                        //<a name="line.493"></a>
+<span class="sourceLineNo">494</span>                        // // and the mapping to distort the text to a regular rectangle<a name="line.494"></a>
+<span class="sourceLineNo">495</span>                        // List&lt;IndependentPair&lt;Point2d,Point2d&gt;&gt; pointPairs =<a name="line.495"></a>
+<span class="sourceLineNo">496</span>                        // calculateHomography( p );<a name="line.496"></a>
+<span class="sourceLineNo">497</span>                        //<a name="line.497"></a>
+<span class="sourceLineNo">498</span>                        // // Calculate the homography matrix to distort the image.<a name="line.498"></a>
+<span class="sourceLineNo">499</span>                        // Matrix homoMatrix = TransformUtilities.homographyMatrix(<a name="line.499"></a>
+<span class="sourceLineNo">500</span>                        // pointPairs );<a name="line.500"></a>
+<span class="sourceLineNo">501</span>                        //<a name="line.501"></a>
+<span class="sourceLineNo">502</span>                        // // Transform the image<a name="line.502"></a>
+<span class="sourceLineNo">503</span>                        // textArea = textArea.transform( homoMatrix );<a name="line.503"></a>
+<span class="sourceLineNo">504</span><a name="line.504"></a>
+<span class="sourceLineNo">505</span>                        final SkewCorrector sc = new SkewCorrector();<a name="line.505"></a>
+<span class="sourceLineNo">506</span>                        sc.setAccuracy(4);<a name="line.506"></a>
+<span class="sourceLineNo">507</span>                        textArea = textArea.process(sc);<a name="line.507"></a>
+<span class="sourceLineNo">508</span><a name="line.508"></a>
+<span class="sourceLineNo">509</span>                        // Store the detected text and the distorted image<a name="line.509"></a>
+<span class="sourceLineNo">510</span>                        textAreas.put(r, textArea);<a name="line.510"></a>
+<span class="sourceLineNo">511</span><a name="line.511"></a>
+<span class="sourceLineNo">512</span>                        if (DEBUG)<a name="line.512"></a>
+<span class="sourceLineNo">513</span>                                DisplayUtilities.display(textArea, "text area - after distortion");<a name="line.513"></a>
+<span class="sourceLineNo">514</span>                }<a name="line.514"></a>
+<span class="sourceLineNo">515</span><a name="line.515"></a>
+<span class="sourceLineNo">516</span>                return textAreas;<a name="line.516"></a>
+<span class="sourceLineNo">517</span>        }<a name="line.517"></a>
+<span class="sourceLineNo">518</span><a name="line.518"></a>
+<span class="sourceLineNo">519</span>        /**<a name="line.519"></a>
+<span class="sourceLineNo">520</span>         * Calculates the point pairing for a given distorted polygon into<a name="line.520"></a>
+<span class="sourceLineNo">521</span>         * orthogonal space.<a name="line.521"></a>
+<span class="sourceLineNo">522</span>         *<a name="line.522"></a>
+<span class="sourceLineNo">523</span>         * @param p<a name="line.523"></a>
+<span class="sourceLineNo">524</span>         *            The polygon with 4 points<a name="line.524"></a>
+<span class="sourceLineNo">525</span>         * @return A list of point pairs<a name="line.525"></a>
+<span class="sourceLineNo">526</span>         */<a name="line.526"></a>
+<span class="sourceLineNo">527</span>        public List&lt;IndependentPair&lt;Point2d, Point2d&gt;&gt; calculateHomography(Polygon p)<a name="line.527"></a>
+<span class="sourceLineNo">528</span>        {<a name="line.528"></a>
+<span class="sourceLineNo">529</span>                // Our output list<a name="line.529"></a>
+<span class="sourceLineNo">530</span>                final List&lt;IndependentPair&lt;Point2d, Point2d&gt;&gt; pointPairs = new<a name="line.530"></a>
+<span class="sourceLineNo">531</span>                                ArrayList&lt;IndependentPair&lt;Point2d, Point2d&gt;&gt;();<a name="line.531"></a>
+<span class="sourceLineNo">532</span><a name="line.532"></a>
+<span class="sourceLineNo">533</span>                // Get the vertices<a name="line.533"></a>
+<span class="sourceLineNo">534</span>                //<a name="line.534"></a>
+<span class="sourceLineNo">535</span>                // p1----------p4<a name="line.535"></a>
+<span class="sourceLineNo">536</span>                // | |<a name="line.536"></a>
+<span class="sourceLineNo">537</span>                // p2----------p3<a name="line.537"></a>
+<span class="sourceLineNo">538</span>                //<a name="line.538"></a>
+<span class="sourceLineNo">539</span>                final List&lt;Point2d&gt; v = p.getVertices();<a name="line.539"></a>
+<span class="sourceLineNo">540</span>                final Point2d p1 = v.get(0);<a name="line.540"></a>
+<span class="sourceLineNo">541</span>                final Point2d p2 = v.get(1);<a name="line.541"></a>
+<span class="sourceLineNo">542</span>                final Point2d p3 = v.get(2);<a name="line.542"></a>
+<span class="sourceLineNo">543</span>                final Point2d p4 = v.get(3);<a name="line.543"></a>
+<span class="sourceLineNo">544</span><a name="line.544"></a>
+<span class="sourceLineNo">545</span>                // Mapped vertices<a name="line.545"></a>
+<span class="sourceLineNo">546</span>                final Point2d p1p = new Point2dImpl(p2.getX(), p1.getY()); // vertical<a name="line.546"></a>
+<span class="sourceLineNo">547</span>                                                                                                                                        // above p2<a name="line.547"></a>
+<span class="sourceLineNo">548</span>                final Point2d p2p = v.get(1); // don't move<a name="line.548"></a>
+<span class="sourceLineNo">549</span>                final Point2d p3p = new Point2dImpl(p3.getX(), p2.getY()); // horizontal<a name="line.549"></a>
+<span class="sourceLineNo">550</span>                                                                                                                                        // from p2<a name="line.550"></a>
+<span class="sourceLineNo">551</span>                final Point2d p4p = new Point2dImpl(p3p.getX(), p1.getY()); // vertical<a name="line.551"></a>
+<span class="sourceLineNo">552</span>                                                                                                                                        // above p3<a name="line.552"></a>
+<span class="sourceLineNo">553</span><a name="line.553"></a>
+<span class="sourceLineNo">554</span>                pointPairs.add(new IndependentPair&lt;Point2d, Point2d&gt;(p1, p1p));<a name="line.554"></a>
+<span class="sourceLineNo">555</span>                pointPairs.add(new IndependentPair&lt;Point2d, Point2d&gt;(p2, p2p));<a name="line.555"></a>
+<span class="sourceLineNo">556</span>                pointPairs.add(new IndependentPair&lt;Point2d, Point2d&gt;(p3, p3p));<a name="line.556"></a>
+<span class="sourceLineNo">557</span>                pointPairs.add(new IndependentPair&lt;Point2d, Point2d&gt;(p4, p4p));<a name="line.557"></a>
+<span class="sourceLineNo">558</span><a name="line.558"></a>
+<span class="sourceLineNo">559</span>                return pointPairs;<a name="line.559"></a>
+<span class="sourceLineNo">560</span>        }<a name="line.560"></a>
+<span class="sourceLineNo">561</span><a name="line.561"></a>
+<span class="sourceLineNo">562</span>        /**<a name="line.562"></a>
+<span class="sourceLineNo">563</span>         * Get the expansion value of the bounding boxes that are generated for the<a name="line.563"></a>
+<span class="sourceLineNo">564</span>         * text regions.<a name="line.564"></a>
+<span class="sourceLineNo">565</span>         *<a name="line.565"></a>
+<span class="sourceLineNo">566</span>         * @return the new bounding box expansion multiplier.<a name="line.566"></a>
+<span class="sourceLineNo">567</span>         */<a name="line.567"></a>
+<span class="sourceLineNo">568</span>        public float getBoundingBoxPaddingPc()<a name="line.568"></a>
+<span class="sourceLineNo">569</span>        {<a name="line.569"></a>
+<span class="sourceLineNo">570</span>                return boundingBoxPaddingPc;<a name="line.570"></a>
+<span class="sourceLineNo">571</span>        }<a name="line.571"></a>
+<span class="sourceLineNo">572</span><a name="line.572"></a>
+<span class="sourceLineNo">573</span>        /**<a name="line.573"></a>
+<span class="sourceLineNo">574</span>         * Set the expansion value for the subimage extraction.<a name="line.574"></a>
+<span class="sourceLineNo">575</span>         *<a name="line.575"></a>
+<span class="sourceLineNo">576</span>         * @param boundingBoxPaddingPc<a name="line.576"></a>
+<span class="sourceLineNo">577</span>         *            the new multiplier<a name="line.577"></a>
+<span class="sourceLineNo">578</span>         */<a name="line.578"></a>
+<span class="sourceLineNo">579</span>        public void setBoundingBoxPaddingPc(float boundingBoxPaddingPc)<a name="line.579"></a>
+<span class="sourceLineNo">580</span>        {<a name="line.580"></a>
+<span class="sourceLineNo">581</span>                this.boundingBoxPaddingPc = boundingBoxPaddingPc;<a name="line.581"></a>
+<span class="sourceLineNo">582</span>        }<a name="line.582"></a>
+<span class="sourceLineNo">583</span><a name="line.583"></a>
+<span class="sourceLineNo">584</span>        /**<a name="line.584"></a>
+<span class="sourceLineNo">585</span>         * Returns a map of bounding box to image and textual string.<a name="line.585"></a>
+<span class="sourceLineNo">586</span>         *<a name="line.586"></a>
+<span class="sourceLineNo">587</span>         * @return A map of image bounding box to subimage and text string.<a name="line.587"></a>
+<span class="sourceLineNo">588</span>         */<a name="line.588"></a>
+<span class="sourceLineNo">589</span>        @Override<a name="line.589"></a>
+<span class="sourceLineNo">590</span>        public Map&lt;Rectangle, FImage&gt; getTextRegions()<a name="line.590"></a>
+<span class="sourceLineNo">591</span>        {<a name="line.591"></a>
+<span class="sourceLineNo">592</span>                return this.textRegions;<a name="line.592"></a>
+<span class="sourceLineNo">593</span>        }<a name="line.593"></a>
+<span class="sourceLineNo">594</span>}<a name="line.594"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

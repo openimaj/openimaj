@@ -1,0 +1,350 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.text.nlp;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import gov.sandia.cognition.text.token.DefaultToken;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import gov.sandia.cognition.text.token.Token;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.io.UnsupportedEncodingException;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.util.ArrayList;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.util.Iterator;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.List;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.util.Locale;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import java.util.regex.Matcher;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import java.util.regex.Pattern;<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.apache.commons.lang.StringEscapeUtils;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.text.nlp.patterns.AbbreviationPatternProvider;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.text.nlp.patterns.ComplicatedNumberPatternProvider;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.text.nlp.patterns.EmailPatternProvider;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.text.nlp.patterns.EmbeddedApostrophePatternProvider;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.text.nlp.patterns.EmbeddedDashPatternProvider;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import org.openimaj.text.nlp.patterns.EmoticonPatternProvider;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import org.openimaj.text.nlp.patterns.EntityPatternProvider;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import org.openimaj.text.nlp.patterns.PunctuationPatternProvider;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import org.openimaj.text.nlp.patterns.TimePatternProvider;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import org.openimaj.text.nlp.patterns.TwitterStuffPatternProvider;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import org.openimaj.text.nlp.patterns.URLPatternProvider;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import org.openimaj.text.util.RegexUtil;<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>/**<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * A tokeniser built to work with short text, like that found in twitter.<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * Protects various elements of the text with an assumption that if the user made the mark, it was an important mark that carries meaning<a name="line.61"></a>
+<span class="sourceLineNo">062</span> * because of the relatively high premium of each key stroke.<a name="line.62"></a>
+<span class="sourceLineNo">063</span> * <a name="line.63"></a>
+<span class="sourceLineNo">064</span> * Based on the twokenise by Brendan O'Connor <a name="line.64"></a>
+<span class="sourceLineNo">065</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.65"></a>
+<span class="sourceLineNo">066</span> *<a name="line.66"></a>
+<span class="sourceLineNo">067</span> */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>public class EntityTweetTokeniser implements Iterable&lt;Token&gt;{<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        <a name="line.69"></a>
+<span class="sourceLineNo">070</span>        <a name="line.70"></a>
+<span class="sourceLineNo">071</span>        private String text;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        private ArrayList&lt;Token&gt; tokenize;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        private ArrayList&lt;Token&gt; protectedTokens;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        private ArrayList&lt;Token&gt; unprotectedTokens;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        <a name="line.75"></a>
+<span class="sourceLineNo">076</span>        private final static Locale[] invalidLanguages = new Locale[]{<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                new Locale("zh"),<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                new Locale("ko"),<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                new Locale("jp"),<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        };<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        <a name="line.81"></a>
+<span class="sourceLineNo">082</span>        <a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * Check whether this locale is supported by this tokeniser. The unsupported languages are those which don't need space<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * characters to delimit words, namely the CJK languages.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * @param locale<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * @return true if the local is supported<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         */<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        public static boolean isValid(Locale locale){<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                return isValid(locale.getLanguage());<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        /**<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         * Check whether this locale (specified by the two letter country code, {@link Locale}) is<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         * supported by this tokeniser. The unsupported languages are those which don't need space<a name="line.94"></a>
+<span class="sourceLineNo">095</span>         * characters to delimit words, namely the CJK languages.<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * @param locale<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         * @return true if the local is supported<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        public static boolean isValid(String locale){<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                for (Locale invalidLocal: invalidLanguages) {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                        if(invalidLocal.getLanguage().equals(locale)) return false;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                }<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                return true;<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        <a name="line.105"></a>
+<span class="sourceLineNo">106</span>        <a name="line.106"></a>
+<span class="sourceLineNo">107</span>//      public static String regex_or(String ... items )<a name="line.107"></a>
+<span class="sourceLineNo">108</span>//      {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>//              String r = StringUtils.join(items, "|");<a name="line.109"></a>
+<span class="sourceLineNo">110</span>//              r = '(' + r + ')';<a name="line.110"></a>
+<span class="sourceLineNo">111</span>//              return r;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>//      }<a name="line.112"></a>
+<span class="sourceLineNo">113</span>//      public String pos_lookahead(String r){<a name="line.113"></a>
+<span class="sourceLineNo">114</span>//              return "(?=" + r + ')';<a name="line.114"></a>
+<span class="sourceLineNo">115</span>//      }<a name="line.115"></a>
+<span class="sourceLineNo">116</span>//              <a name="line.116"></a>
+<span class="sourceLineNo">117</span>//      public static String neg_lookahead(String r) {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>//              return "(?!" + r + ')';<a name="line.118"></a>
+<span class="sourceLineNo">119</span>//      }<a name="line.119"></a>
+<span class="sourceLineNo">120</span>//      public String optional(String r){<a name="line.120"></a>
+<span class="sourceLineNo">121</span>//              return String.format("(%s)?",r);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>//      }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        <a name="line.123"></a>
+<span class="sourceLineNo">124</span>        static EmoticonPatternProvider emoticons = new EmoticonPatternProvider();<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        static PunctuationPatternProvider punctuation = new PunctuationPatternProvider();<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        static EntityPatternProvider entity = new EntityPatternProvider();<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        static URLPatternProvider url = new URLPatternProvider();<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        static TimePatternProvider time = new TimePatternProvider();<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        static ComplicatedNumberPatternProvider number = new ComplicatedNumberPatternProvider();<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        static TwitterStuffPatternProvider twitterPart = new TwitterStuffPatternProvider();<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        static EmailPatternProvider email = new EmailPatternProvider();<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        static AbbreviationPatternProvider abbrev = new AbbreviationPatternProvider(entity);<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        private static final String spaceRegex = "\\s+";<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        static String Separators = RegexUtil.regex_or_match("--+", "\u2015");<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        static String Decorations = new String(" [\u266b]+ ").replace(" ","");<a name="line.135"></a>
+<span class="sourceLineNo">136</span>        static EmbeddedApostrophePatternProvider embedded = new EmbeddedApostrophePatternProvider(punctuation);<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        static EmbeddedDashPatternProvider embeddedDash = new EmbeddedDashPatternProvider(punctuation);<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        <a name="line.138"></a>
+<span class="sourceLineNo">139</span>        <a name="line.139"></a>
+<span class="sourceLineNo">140</span>        static String [] ProtectThese = new String[]{<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        twitterPart.patternString(),<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        emoticons.patternString(),<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        url.patternString(),<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        email.patternString(),<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                        entity.patternString(),<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        time.patternString(),<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        number.patternString(),<a name="line.147"></a>
+<span class="sourceLineNo">148</span>//                      embeddedDash.patternString(),<a name="line.148"></a>
+<span class="sourceLineNo">149</span>//                      embedded.patternString(),<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        punctuation.patternString(),<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        abbrev.patternString(),<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        Separators,<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        Decorations,<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        };<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        static String oredProtect = RegexUtil.regex_or_match(ProtectThese);<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        static Pattern Protect_RE = Pattern.compile(oredProtect,Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);<a name="line.156"></a>
+<span class="sourceLineNo">157</span>//      static Pattern Protect_RE = twitterPart.pattern();<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        <a name="line.158"></a>
+<span class="sourceLineNo">159</span>        <a name="line.159"></a>
+<span class="sourceLineNo">160</span>        /**<a name="line.160"></a>
+<span class="sourceLineNo">161</span>         * @param s Tokenise this string<a name="line.161"></a>
+<span class="sourceLineNo">162</span>         * @throws UnsupportedEncodingException<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         * @throws TweetTokeniserException<a name="line.163"></a>
+<span class="sourceLineNo">164</span>         */<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        public EntityTweetTokeniser(String s) throws UnsupportedEncodingException, TweetTokeniserException{<a name="line.165"></a>
+<span class="sourceLineNo">166</span>//              System.out.println(EdgePunct);<a name="line.166"></a>
+<span class="sourceLineNo">167</span>//              System.out.println(new String(""));<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                this.text = new String(s);<a name="line.168"></a>
+<span class="sourceLineNo">169</span>//              System.out.println("TWEET:" + text);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                fixEncoding();<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                squeeze_whitespace();<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                simple_tokenize();<a name="line.172"></a>
+<span class="sourceLineNo">173</span>        }<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        <a name="line.174"></a>
+<span class="sourceLineNo">175</span>        private void simple_tokenize() throws TweetTokeniserException {<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                this.tokenize = new ArrayList&lt;Token&gt;();<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                edge_punct_munge();<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                <a name="line.178"></a>
+<span class="sourceLineNo">179</span>                ArrayList&lt;String&gt; goods = new ArrayList&lt;String&gt;();<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                ArrayList&lt;String&gt; bads = new ArrayList&lt;String&gt;();<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                ArrayList&lt;Token&gt; res = new ArrayList&lt;Token&gt;();<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                ArrayList&lt;Token&gt; goodt = new ArrayList&lt;Token&gt;();<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                ArrayList&lt;Token&gt; badt = new ArrayList&lt;Token&gt;();<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                int i = 0;<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                Matcher matches = Protect_RE.matcher(this.text);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                if(matches!=null)<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                {<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                        while(matches.find()) {<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                                String goodString = this.text.substring(i,matches.start());<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                                goods.add(goodString);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                                List&lt;Token&gt; goodStrings = unprotected_tokenize(goodString);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                                res.addAll(goodStrings);<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                                goodt.addAll(goodStrings);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                                String badString = this.text.substring(matches.start(),matches.end());<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                                bads.add(badString);<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                                DefaultToken badTok = new DefaultToken(badString,0);<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                                res.add(badTok);<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                                badt.add(badTok);<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                                i = matches.end();<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                        }<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                        String finalGood =  this.text.substring(i, this.text.length());<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        List&lt;Token&gt; goodStrings = unprotected_tokenize(finalGood);<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        res.addAll(goodStrings);<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                        goodt.addAll(goodStrings);<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                }<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                else<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                {<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                        String goodString = this.text.substring(0, this.text.length());<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                        List&lt;Token&gt; goodStrings = unprotected_tokenize(goodString);<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                        res.addAll(goodStrings);<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        goodt.addAll(goodStrings);<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                }       <a name="line.212"></a>
+<span class="sourceLineNo">213</span>                <a name="line.213"></a>
+<span class="sourceLineNo">214</span>                <a name="line.214"></a>
+<span class="sourceLineNo">215</span>                this.tokenize = post_process(res);<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                this.protectedTokens = post_process(badt);<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                this.unprotectedTokens = post_process(goodt);<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        }<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>        private ArrayList&lt;Token&gt; post_process(ArrayList&lt;Token&gt; res) {<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                return res;<a name="line.221"></a>
+<span class="sourceLineNo">222</span>        }<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        private List&lt;Token&gt; unprotected_tokenize(String goodString) {<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                String[] strings = goodString.split("\\s+");<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                List&lt;Token&gt; t = new ArrayList&lt;Token&gt;();<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                for (String s : strings) {<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                        if(s.isEmpty()) continue;<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                        t.add(new DefaultToken(s, 0));<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                }<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                return t;<a name="line.230"></a>
+<span class="sourceLineNo">231</span>        }<a name="line.231"></a>
+<span class="sourceLineNo">232</span>        private void edge_punct_munge() {<a name="line.232"></a>
+<span class="sourceLineNo">233</span>//              this.text = EdgePunctuationPatternProvider.fixedges(this.text);<a name="line.233"></a>
+<span class="sourceLineNo">234</span>        }<a name="line.234"></a>
+<span class="sourceLineNo">235</span><a name="line.235"></a>
+<span class="sourceLineNo">236</span>        private void squeeze_whitespace() {<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                this.text = this.text.replaceAll(spaceRegex, " ");<a name="line.237"></a>
+<span class="sourceLineNo">238</span>        }<a name="line.238"></a>
+<span class="sourceLineNo">239</span><a name="line.239"></a>
+<span class="sourceLineNo">240</span>        private void fixEncoding() throws UnsupportedEncodingException {<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                this.text = new String(text.getBytes("UTF-8"),"UTF-8");<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                this.text = StringEscapeUtils.unescapeHtml(this.text);<a name="line.242"></a>
+<span class="sourceLineNo">243</span>//              System.out.println("UTF-8:" + text);<a name="line.243"></a>
+<span class="sourceLineNo">244</span>        }<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        @Override<a name="line.245"></a>
+<span class="sourceLineNo">246</span>        public Iterator&lt;Token&gt; iterator() {<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                return this.tokenize.iterator();<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        }<a name="line.248"></a>
+<span class="sourceLineNo">249</span>        <a name="line.249"></a>
+<span class="sourceLineNo">250</span>        public List&lt;Token&gt; getTokens(){<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                return this.tokenize;<a name="line.251"></a>
+<span class="sourceLineNo">252</span>        }<a name="line.252"></a>
+<span class="sourceLineNo">253</span>        <a name="line.253"></a>
+<span class="sourceLineNo">254</span>        public List&lt;String&gt; getStringTokens(){<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                List&lt;String&gt; stringTokens = new ArrayList&lt;String&gt;();<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                for (Token token : this.tokenize) {<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                        stringTokens.add(token.getText());<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                }<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                return stringTokens;<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        }<a name="line.260"></a>
+<span class="sourceLineNo">261</span><a name="line.261"></a>
+<span class="sourceLineNo">262</span>        public List&lt;String&gt; getProtectedStringTokens() {<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                List&lt;String&gt; stringTokens = new ArrayList&lt;String&gt;();<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                for (Token token : this.protectedTokens) {<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                        stringTokens.add(token.getText());<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                }<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                return stringTokens;<a name="line.267"></a>
+<span class="sourceLineNo">268</span>        }<a name="line.268"></a>
+<span class="sourceLineNo">269</span>        <a name="line.269"></a>
+<span class="sourceLineNo">270</span>        public List&lt;String&gt; getUnprotectedStringTokens() {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                List&lt;String&gt; stringTokens = new ArrayList&lt;String&gt;();<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                for (Token token : this.unprotectedTokens) {<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                        stringTokens.add(token.getText());<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                }<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                return stringTokens;<a name="line.275"></a>
+<span class="sourceLineNo">276</span>        }<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>}<a name="line.278"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

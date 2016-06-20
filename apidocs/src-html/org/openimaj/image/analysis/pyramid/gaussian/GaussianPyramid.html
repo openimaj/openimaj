@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.analysis.pyramid.gaussian;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import org.openimaj.image.FImage;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import org.openimaj.image.Image;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.openimaj.image.analyser.ImageAnalyser;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.image.analysis.pyramid.Pyramid;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.image.processing.resize.ResizeProcessor;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.image.processor.SinglebandImageProcessor;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>/**<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * A Gaussian image pyramid consisting of a stack of octaves where the image<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * halves its size. The pyramid is of the style described in Lowe's SIFT paper.<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * <a name="line.42"></a>
+<span class="sourceLineNo">043</span> * Octaves are processed by an OctaveProcessor as they are created if the<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * processor is set in the options object.<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * <a name="line.45"></a>
+<span class="sourceLineNo">046</span> * The pyramid will only hold onto its octaves if either the keepOctaves option<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * is set to true, or if a PyramidProcessor is set in the options. The<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * PyramidProcessor will called after all the octaves are created.<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * <a name="line.49"></a>
+<span class="sourceLineNo">050</span> * Pyramids are Iterable for easy access to the octaves; however this will only<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * work if the pyramid has already been populated with the octaves retained.<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * <a name="line.52"></a>
+<span class="sourceLineNo">053</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.53"></a>
+<span class="sourceLineNo">054</span> * <a name="line.54"></a>
+<span class="sourceLineNo">055</span> * @param &lt;I&gt;<a name="line.55"></a>
+<span class="sourceLineNo">056</span> *            Type of underlying image<a name="line.56"></a>
+<span class="sourceLineNo">057</span> */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>public class GaussianPyramid&lt;I extends Image&lt;?, I&gt; &amp; SinglebandImageProcessor.Processable&lt;Float, FImage, I&gt;&gt;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                extends<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                Pyramid&lt;GaussianPyramidOptions&lt;I&gt;, GaussianOctave&lt;I&gt;, I&gt;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                implements<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                ImageAnalyser&lt;I&gt;, Iterable&lt;GaussianOctave&lt;I&gt;&gt;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>{<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * Construct a Pyramid with the given options.<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * <a name="line.66"></a>
+<span class="sourceLineNo">067</span>         * @param options<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         *            the options<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        public GaussianPyramid(GaussianPyramidOptions&lt;I&gt; options) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                super(options);<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        }<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>        /*<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         * (non-Javadoc)<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         * <a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * @see<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * org.openimaj.image.processing.pyramid.AbstractPyramid#process(org.openimaj<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         * .image.Image)<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        @Override<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        public void process(I img) {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                if (img.getWidth() &lt;= 1 || img.getHeight() &lt;= 1)<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        throw new IllegalArgumentException("Image is too small");<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>                // the octave image size: 1 means same as input, 0.5 is twice as big as<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                // input, 2 is half input, 4 is quarter input, etc<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                float octaveSize = 1.0f;<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                // if doubleInitialImage is set, then the initial image should be scaled<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                // to<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                // twice its original size and the<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                I image;<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                if (options.doubleInitialImage) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        image = ResizeProcessor.doubleSize(img);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        octaveSize *= 0.5;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                } else<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        image = img.clone();<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>                // Lowe's IJCV paper (P.10) suggests that if you double the size of the<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                // initial image then it has a sigma of 1.0; if the image is not doubled<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                // the sigma is 0.5<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                final float currentSigma = (options.doubleInitialImage ? 1.0f : 0.5f);<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                if (options.initialSigma &gt; currentSigma) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        // we now need to bring the starting image to a sigma of<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        // initialSigma<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        // in order to start building the pyramid (every octave starts at<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        // initialSigma sigmas).<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        final float sigma = (float) Math.sqrt(options.initialSigma * options.initialSigma - currentSigma<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                        * currentSigma);<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        image.processInplace(this.options.createGaussianBlur(sigma));<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                }<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>                // the minimum size image in the pyramid must be bigger than<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                // two pixels + whatever border is required by the options<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                // (on both sides).<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                final int minImageSize = 2 + (2 * options.getBorderPixels());<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>                while (image.getHeight() &gt; minImageSize &amp;&amp; image.getWidth() &gt; minImageSize) {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        // construct empty octave<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        final GaussianOctave&lt;I&gt; currentOctave = new GaussianOctave&lt;I&gt;(this, octaveSize);<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>                        // populate the octave with images; once the octave<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        // is complete any OctaveProcessor specified in the<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        // options will be applied.<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                        currentOctave.process(image);<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        // get the image with 2*sigma from the octave and<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        // half its size ready for the next octave<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        image = ResizeProcessor.halfSize(currentOctave.getNextOctaveImage());<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        octaveSize *= 2.0; // the size of the octave increases by a factor<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                                                // of two each iteration<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>                        // if the octaves array is not null we want to retain each octave.<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                        if (octaves != null)<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                octaves.add(currentOctave);<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                // if a PyramidProcessor was specified in the options it should<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                // be applied now all the octaves are complete.<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                if (options.getPyramidProcessor() != null) {<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        options.getPyramidProcessor().process(this);<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                }<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        }<a name="line.145"></a>
+<span class="sourceLineNo">146</span>}<a name="line.146"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

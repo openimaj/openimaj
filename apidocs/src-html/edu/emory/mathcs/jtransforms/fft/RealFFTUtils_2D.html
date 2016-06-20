@@ -1,0 +1,502 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * ***** BEGIN LICENSE BLOCK ***** Version: MPL 1.1/GPL 2.0/LGPL 2.1<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * <a name="line.3"></a>
+<span class="sourceLineNo">004</span> * The contents of this file are subject to the Mozilla Public License Version<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * 1.1 (the "License"); you may not use this file except in compliance with the<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * License. You may obtain a copy of the License at http://www.mozilla.org/MPL/<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * <a name="line.7"></a>
+<span class="sourceLineNo">008</span> * Software distributed under the License is distributed on an "AS IS" basis,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for<a name="line.9"></a>
+<span class="sourceLineNo">010</span> * the specific language governing rights and limitations under the License.<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * <a name="line.11"></a>
+<span class="sourceLineNo">012</span> * The Original Code is JTransforms.<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * <a name="line.13"></a>
+<span class="sourceLineNo">014</span> * The Initial Developer of the Original Code is Piotr Wendykier, Emory<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * University. Portions created by the Initial Developer are Copyright (C)<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * 2007-2009 the Initial Developer. All Rights Reserved.<a name="line.16"></a>
+<span class="sourceLineNo">017</span> * <a name="line.17"></a>
+<span class="sourceLineNo">018</span> * Alternatively, the contents of this file may be used under the terms of<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * either the GNU General Public License Version 2 or later (the "GPL"), or the<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * GNU Lesser General Public License Version 2.1 or later (the "LGPL"), in which<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * case the provisions of the GPL or the LGPL are applicable instead of those<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * above. If you wish to allow use of your version of this file only under the<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * terms of either the GPL or the LGPL, and not to allow others to use your<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * version of this file under the terms of the MPL, indicate your decision by<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * deleting the provisions above and replace them with the notice and other<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * provisions required by the GPL or the LGPL. If you do not delete the<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * provisions above, a recipient may use your version of this file under the<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * terms of any one of the MPL, the GPL or the LGPL.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * <a name="line.29"></a>
+<span class="sourceLineNo">030</span> * ***** END LICENSE BLOCK *****<a name="line.30"></a>
+<span class="sourceLineNo">031</span> */<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>package edu.emory.mathcs.jtransforms.fft;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>// @formatter:off<a name="line.35"></a>
+<span class="sourceLineNo">036</span>/**<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;p&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * This is a set of utility methods for R/W access to data resulting from a call<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * to the Fourier transform of &lt;em&gt;real&lt;/em&gt; data. Memory optimized methods,<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * namely<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * &lt;ul&gt;<a name="line.41"></a>
+<span class="sourceLineNo">042</span> *   &lt;li&gt;{@link DoubleFFT_2D#realForward(double[])}&lt;/li&gt;<a name="line.42"></a>
+<span class="sourceLineNo">043</span> *   &lt;li&gt;{@link DoubleFFT_2D#realForward(double[][])}&lt;/li&gt;<a name="line.43"></a>
+<span class="sourceLineNo">044</span> *   &lt;li&gt;{@link FloatFFT_2D#realForward(float[])}&lt;/li&gt;<a name="line.44"></a>
+<span class="sourceLineNo">045</span> *   &lt;li&gt;{@link FloatFFT_2D#realForward(float[][])}&lt;/li&gt;<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * &lt;/ul&gt;<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * are implemented to handle this case specifically. However, packing of the<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * data in the data array is somewhat obscure. This class provides methods for<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * direct access to the data, without the burden of all necessary tests.<a name="line.49"></a>
+<span class="sourceLineNo">050</span> * &lt;/p&gt;<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * &lt;h3&gt;Example for Fourier Transform of real, double precision 1d data&lt;/h3&gt;<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * &lt;p&gt;<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * &lt;pre&gt;<a name="line.53"></a>
+<span class="sourceLineNo">054</span> *   DoubleFFT_2D fft = new DoubleFFT_2D(rows, columns);<a name="line.54"></a>
+<span class="sourceLineNo">055</span> *   double[] data = new double[2 * rows * columns];<a name="line.55"></a>
+<span class="sourceLineNo">056</span> *   ...<a name="line.56"></a>
+<span class="sourceLineNo">057</span> *   fft.realForwardFull(data);<a name="line.57"></a>
+<span class="sourceLineNo">058</span> *   data[r1 * 2 * columns + c1] = val1;<a name="line.58"></a>
+<span class="sourceLineNo">059</span> *   val2 = data[r2 * 2 * columns + c2];<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * &lt;/pre&gt;<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * is equivalent to<a name="line.61"></a>
+<span class="sourceLineNo">062</span> * &lt;pre&gt;<a name="line.62"></a>
+<span class="sourceLineNo">063</span> *   DoubleFFT_2D fft = new DoubleFFT_2D(rows, columns);<a name="line.63"></a>
+<span class="sourceLineNo">064</span> *   RealFFTUtils_2D unpacker = new RealFFTUtils_2D(rows, columns);<a name="line.64"></a>
+<span class="sourceLineNo">065</span> *   double[] data = new double[rows * columns];<a name="line.65"></a>
+<span class="sourceLineNo">066</span> *   ...<a name="line.66"></a>
+<span class="sourceLineNo">067</span> *   fft.realForward(data);<a name="line.67"></a>
+<span class="sourceLineNo">068</span> *   unpacker.pack(val1, r1, c1, data);<a name="line.68"></a>
+<span class="sourceLineNo">069</span> *   val2 = unpacker.unpack(r2, c2, data, 0);<a name="line.69"></a>
+<span class="sourceLineNo">070</span> * &lt;/pre&gt;<a name="line.70"></a>
+<span class="sourceLineNo">071</span> * Even (resp. odd) values of &lt;code&gt;c&lt;/code&gt; correspond to the real (resp.<a name="line.71"></a>
+<span class="sourceLineNo">072</span> * imaginary) part of the Fourier mode.<a name="line.72"></a>
+<span class="sourceLineNo">073</span> * &lt;/p&gt;<a name="line.73"></a>
+<span class="sourceLineNo">074</span> * &lt;h3&gt;Example for Fourier Transform of real, double precision 2d data&lt;/h3&gt;<a name="line.74"></a>
+<span class="sourceLineNo">075</span> * &lt;p&gt;<a name="line.75"></a>
+<span class="sourceLineNo">076</span> * &lt;pre&gt;<a name="line.76"></a>
+<span class="sourceLineNo">077</span> *   DoubleFFT_2D fft = new DoubleFFT_2D(rows, columns);<a name="line.77"></a>
+<span class="sourceLineNo">078</span> *   double[][] data = new double[rows][2 * columns];<a name="line.78"></a>
+<span class="sourceLineNo">079</span> *   ...<a name="line.79"></a>
+<span class="sourceLineNo">080</span> *   fft.realForwardFull(data);<a name="line.80"></a>
+<span class="sourceLineNo">081</span> *   data[r1][c1] = val1;<a name="line.81"></a>
+<span class="sourceLineNo">082</span> *   val2 = data[r2][c2];<a name="line.82"></a>
+<span class="sourceLineNo">083</span> * &lt;/pre&gt;<a name="line.83"></a>
+<span class="sourceLineNo">084</span> * is equivalent to<a name="line.84"></a>
+<span class="sourceLineNo">085</span> * &lt;pre&gt;<a name="line.85"></a>
+<span class="sourceLineNo">086</span> *   DoubleFFT_2D fft = new DoubleFFT_2D(rows, columns);<a name="line.86"></a>
+<span class="sourceLineNo">087</span> *   RealFFTUtils_2D unpacker = new RealFFTUtils_2D(rows, columns);<a name="line.87"></a>
+<span class="sourceLineNo">088</span> *   double[][] data = new double[rows][columns];<a name="line.88"></a>
+<span class="sourceLineNo">089</span> *   ...<a name="line.89"></a>
+<span class="sourceLineNo">090</span> *   fft.realForward(data);<a name="line.90"></a>
+<span class="sourceLineNo">091</span> *   unpacker.pack(val1, r1, c1, data);<a name="line.91"></a>
+<span class="sourceLineNo">092</span> *   val2 = unpacker.unpack(r2, c2, data, 0);<a name="line.92"></a>
+<span class="sourceLineNo">093</span> * &lt;/pre&gt;<a name="line.93"></a>
+<span class="sourceLineNo">094</span> * Even (resp. odd) values of &lt;code&gt;c&lt;/code&gt; correspond to the real (resp.<a name="line.94"></a>
+<span class="sourceLineNo">095</span> * imaginary) part of the Fourier mode.<a name="line.95"></a>
+<span class="sourceLineNo">096</span> * &lt;/p&gt;<a name="line.96"></a>
+<span class="sourceLineNo">097</span> * <a name="line.97"></a>
+<span class="sourceLineNo">098</span> * @author S&amp;eacute;bastien Brisard<a name="line.98"></a>
+<span class="sourceLineNo">099</span> * <a name="line.99"></a>
+<span class="sourceLineNo">100</span> */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>// @formatter:on<a name="line.101"></a>
+<span class="sourceLineNo">102</span>public class RealFFTUtils_2D {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>    /** The constant &lt;code&gt;int&lt;/code&gt; value of 1. */<a name="line.103"></a>
+<span class="sourceLineNo">104</span>    private static final int ONE = 1;<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>    /** The constant &lt;code&gt;int&lt;/code&gt; value of 2. */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>    private static final int TWO = 2;<a name="line.107"></a>
+<span class="sourceLineNo">108</span><a name="line.108"></a>
+<span class="sourceLineNo">109</span>    /** The constant &lt;code&gt;int&lt;/code&gt; value of 0. */<a name="line.109"></a>
+<span class="sourceLineNo">110</span>    private static final int ZERO = 0;<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>    /** The size of the data in the second direction. */<a name="line.112"></a>
+<span class="sourceLineNo">113</span>    private final int columns;<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>    /** The size of the data in the first direction. */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>    private final int rows;<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>    /**<a name="line.118"></a>
+<span class="sourceLineNo">119</span>     * Creates a new instance of this class. The size of the underlying<a name="line.119"></a>
+<span class="sourceLineNo">120</span>     * {@link DoubleFFT_2D} or {@link FloatFFT_2D} must be specified.<a name="line.120"></a>
+<span class="sourceLineNo">121</span>     * <a name="line.121"></a>
+<span class="sourceLineNo">122</span>     * @param rows<a name="line.122"></a>
+<span class="sourceLineNo">123</span>     *            number of rows<a name="line.123"></a>
+<span class="sourceLineNo">124</span>     * @param columns<a name="line.124"></a>
+<span class="sourceLineNo">125</span>     *            number of columns<a name="line.125"></a>
+<span class="sourceLineNo">126</span>     */<a name="line.126"></a>
+<span class="sourceLineNo">127</span>    public RealFFTUtils_2D(final int rows, final int columns) {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        this.columns = columns;<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        this.rows = rows;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>    }<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>    /**<a name="line.132"></a>
+<span class="sourceLineNo">133</span>     * &lt;p&gt;<a name="line.133"></a>
+<span class="sourceLineNo">134</span>     * Returns the 1d index of the specified 2d Fourier mode. In other words, if<a name="line.134"></a>
+<span class="sourceLineNo">135</span>     * &lt;code&gt;packed&lt;/code&gt; contains the transformed data following a call to<a name="line.135"></a>
+<span class="sourceLineNo">136</span>     * {@link DoubleFFT_2D#realForward(double[])} or<a name="line.136"></a>
+<span class="sourceLineNo">137</span>     * {@link FloatFFT_2D#realForward(float[])}, then the returned value<a name="line.137"></a>
+<span class="sourceLineNo">138</span>     * &lt;code&gt;index&lt;/code&gt; gives access to the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.138"></a>
+<span class="sourceLineNo">139</span>     * &lt;ul&gt;<a name="line.139"></a>
+<span class="sourceLineNo">140</span>     * &lt;li&gt;if &lt;code&gt;index == {@link Integer#MIN_VALUE}&lt;/code&gt;, then the Fourier<a name="line.140"></a>
+<span class="sourceLineNo">141</span>     * mode is zero,&lt;/li&gt;<a name="line.141"></a>
+<span class="sourceLineNo">142</span>     * &lt;li&gt;if &lt;code&gt;index &gt;= 0&lt;/code&gt;, then the Fourier mode is<a name="line.142"></a>
+<span class="sourceLineNo">143</span>     * &lt;code&gt;packed[index]&lt;/code&gt;,&lt;/li&gt;<a name="line.143"></a>
+<span class="sourceLineNo">144</span>     * &lt;li&gt;if &lt;code&gt;index &lt; 0&lt;/code&gt;, then the Fourier mode is<a name="line.144"></a>
+<span class="sourceLineNo">145</span>     * &lt;code&gt;-packed[-index]&lt;/code&gt;,&lt;/li&gt;<a name="line.145"></a>
+<span class="sourceLineNo">146</span>     * &lt;/ul&gt;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>     * &lt;/p&gt;<a name="line.147"></a>
+<span class="sourceLineNo">148</span>     * <a name="line.148"></a>
+<span class="sourceLineNo">149</span>     * @param r<a name="line.149"></a>
+<span class="sourceLineNo">150</span>     *            the row index<a name="line.150"></a>
+<span class="sourceLineNo">151</span>     * @param c<a name="line.151"></a>
+<span class="sourceLineNo">152</span>     *            the column index<a name="line.152"></a>
+<span class="sourceLineNo">153</span>     * @return the value of &lt;code&gt;index&lt;/code&gt;<a name="line.153"></a>
+<span class="sourceLineNo">154</span>     */<a name="line.154"></a>
+<span class="sourceLineNo">155</span>    public int getIndex(final int r, final int c) {<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        final int cmod2 = c &amp; ONE;<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        final int rmul2 = r &lt;&lt; ONE;<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        if (r != ZERO) {<a name="line.158"></a>
+<span class="sourceLineNo">159</span>            if (c &lt;= ONE) {<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                if (rmul2 == rows) {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                    if (cmod2 == ONE) {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        return Integer.MIN_VALUE;<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                    }<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                    return ((rows * columns) &gt;&gt; ONE);<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                } else if (rmul2 &lt; rows) {<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                    return columns * r + cmod2;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                } else {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                    if (cmod2 == ZERO) {<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                        return columns * (rows - r);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                    } else {<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        return -(columns * (rows - r) + ONE);<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                    }<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                }<a name="line.173"></a>
+<span class="sourceLineNo">174</span>            } else if ((c == columns) || (c == columns + ONE)) {<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                if (rmul2 == rows) {<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                    if (cmod2 == ONE) {<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        return Integer.MIN_VALUE;<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                    }<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                    return ((rows * columns) &gt;&gt; ONE) + ONE;<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                } else if (rmul2 &lt; rows) {<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                    if (cmod2 == ZERO) {<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        return columns * (rows - r) + ONE;<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                    } else {<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                        return -(columns * (rows - r));<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                    }<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                } else {<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                    return columns * r + ONE - cmod2;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                }<a name="line.188"></a>
+<span class="sourceLineNo">189</span>            } else if (c &lt; columns) {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                return columns * r + c;<a name="line.190"></a>
+<span class="sourceLineNo">191</span>            } else {<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                if (cmod2 == ZERO) {<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                    return columns * (rows + TWO - r) - c;<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                } else {<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                    return -(columns * (rows + TWO - r) - c + TWO);<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                }<a name="line.196"></a>
+<span class="sourceLineNo">197</span>            }<a name="line.197"></a>
+<span class="sourceLineNo">198</span>        } else {<a name="line.198"></a>
+<span class="sourceLineNo">199</span>            if ((c == ONE) || (c == columns + ONE)) {<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                return Integer.MIN_VALUE;<a name="line.200"></a>
+<span class="sourceLineNo">201</span>            } else if (c == columns) {<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                return ONE;<a name="line.202"></a>
+<span class="sourceLineNo">203</span>            } else if (c &lt; columns) {<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                return c;<a name="line.204"></a>
+<span class="sourceLineNo">205</span>            } else {<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                if (cmod2 == ZERO) {<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                    return (columns &lt;&lt; ONE) - c;<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                } else {<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                    return -((columns &lt;&lt; ONE) - c + TWO);<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                }<a name="line.210"></a>
+<span class="sourceLineNo">211</span>            }<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        }<a name="line.212"></a>
+<span class="sourceLineNo">213</span>    }<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>    /**<a name="line.215"></a>
+<span class="sourceLineNo">216</span>     * Sets the specified Fourier mode of the transformed data. The data array<a name="line.216"></a>
+<span class="sourceLineNo">217</span>     * results from a call to {@link DoubleFFT_2D#realForward(double[])}.<a name="line.217"></a>
+<span class="sourceLineNo">218</span>     * <a name="line.218"></a>
+<span class="sourceLineNo">219</span>     * @param val<a name="line.219"></a>
+<span class="sourceLineNo">220</span>     *            the new value of the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.220"></a>
+<span class="sourceLineNo">221</span>     * @param r<a name="line.221"></a>
+<span class="sourceLineNo">222</span>     *            the row index<a name="line.222"></a>
+<span class="sourceLineNo">223</span>     * @param c<a name="line.223"></a>
+<span class="sourceLineNo">224</span>     *            the column index<a name="line.224"></a>
+<span class="sourceLineNo">225</span>     * @param packed<a name="line.225"></a>
+<span class="sourceLineNo">226</span>     *            the transformed data<a name="line.226"></a>
+<span class="sourceLineNo">227</span>     * @param pos<a name="line.227"></a>
+<span class="sourceLineNo">228</span>     *            index of the first element in array &lt;code&gt;packed&lt;/code&gt;<a name="line.228"></a>
+<span class="sourceLineNo">229</span>     */<a name="line.229"></a>
+<span class="sourceLineNo">230</span>    public void pack(final double val, final int r, final int c,<a name="line.230"></a>
+<span class="sourceLineNo">231</span>            final double[] packed, final int pos) {<a name="line.231"></a>
+<span class="sourceLineNo">232</span>        final int index = getIndex(r, c);<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        if (index &gt;= 0) {<a name="line.233"></a>
+<span class="sourceLineNo">234</span>            packed[pos + index] = val;<a name="line.234"></a>
+<span class="sourceLineNo">235</span>        } else if (index &gt; Integer.MIN_VALUE) {<a name="line.235"></a>
+<span class="sourceLineNo">236</span>            packed[pos - index] = -val;<a name="line.236"></a>
+<span class="sourceLineNo">237</span>        } else {<a name="line.237"></a>
+<span class="sourceLineNo">238</span>            throw new IllegalArgumentException(<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                    String.format(<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                            "[%d][%d] component cannot be modified (always zero)",<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                            r, c));<a name="line.241"></a>
+<span class="sourceLineNo">242</span>        }<a name="line.242"></a>
+<span class="sourceLineNo">243</span>    }<a name="line.243"></a>
+<span class="sourceLineNo">244</span><a name="line.244"></a>
+<span class="sourceLineNo">245</span>    /**<a name="line.245"></a>
+<span class="sourceLineNo">246</span>     * Sets the specified Fourier mode of the transformed data. The data array<a name="line.246"></a>
+<span class="sourceLineNo">247</span>     * results from a call to {@link DoubleFFT_2D#realForward(double[][])}.<a name="line.247"></a>
+<span class="sourceLineNo">248</span>     * <a name="line.248"></a>
+<span class="sourceLineNo">249</span>     * @param val<a name="line.249"></a>
+<span class="sourceLineNo">250</span>     *            the new value of the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.250"></a>
+<span class="sourceLineNo">251</span>     * @param r<a name="line.251"></a>
+<span class="sourceLineNo">252</span>     *            the row index<a name="line.252"></a>
+<span class="sourceLineNo">253</span>     * @param c<a name="line.253"></a>
+<span class="sourceLineNo">254</span>     *            the column index<a name="line.254"></a>
+<span class="sourceLineNo">255</span>     * @param packed<a name="line.255"></a>
+<span class="sourceLineNo">256</span>     *            the transformed data<a name="line.256"></a>
+<span class="sourceLineNo">257</span>     */<a name="line.257"></a>
+<span class="sourceLineNo">258</span>    public void pack(final double val, final int r, final int c,<a name="line.258"></a>
+<span class="sourceLineNo">259</span>            final double[][] packed) {<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        final int index = getIndex(r, c);<a name="line.260"></a>
+<span class="sourceLineNo">261</span>        if (index &gt;= 0) {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>            packed[index / columns][index % columns] = val;<a name="line.262"></a>
+<span class="sourceLineNo">263</span>        } else if (index &gt; Integer.MIN_VALUE) {<a name="line.263"></a>
+<span class="sourceLineNo">264</span>            packed[(-index) / columns][(-index) % columns] = -val;<a name="line.264"></a>
+<span class="sourceLineNo">265</span>        } else {<a name="line.265"></a>
+<span class="sourceLineNo">266</span>            throw new IllegalArgumentException(<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                    String.format(<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                            "[%d][%d] component cannot be modified (always zero)",<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                            r, c));<a name="line.269"></a>
+<span class="sourceLineNo">270</span>        }<a name="line.270"></a>
+<span class="sourceLineNo">271</span>    }<a name="line.271"></a>
+<span class="sourceLineNo">272</span><a name="line.272"></a>
+<span class="sourceLineNo">273</span>    /**<a name="line.273"></a>
+<span class="sourceLineNo">274</span>     * Sets the specified Fourier mode of the transformed data. The data array<a name="line.274"></a>
+<span class="sourceLineNo">275</span>     * results from a call to {@link FloatFFT_2D#realForward(float[])}.<a name="line.275"></a>
+<span class="sourceLineNo">276</span>     * <a name="line.276"></a>
+<span class="sourceLineNo">277</span>     * @param val<a name="line.277"></a>
+<span class="sourceLineNo">278</span>     *            the new value of the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.278"></a>
+<span class="sourceLineNo">279</span>     * @param r<a name="line.279"></a>
+<span class="sourceLineNo">280</span>     *            the row index<a name="line.280"></a>
+<span class="sourceLineNo">281</span>     * @param c<a name="line.281"></a>
+<span class="sourceLineNo">282</span>     *            the column index<a name="line.282"></a>
+<span class="sourceLineNo">283</span>     * @param packed<a name="line.283"></a>
+<span class="sourceLineNo">284</span>     *            the transformed data<a name="line.284"></a>
+<span class="sourceLineNo">285</span>     * @param pos<a name="line.285"></a>
+<span class="sourceLineNo">286</span>     *            index of the first element in array &lt;code&gt;packed&lt;/code&gt;<a name="line.286"></a>
+<span class="sourceLineNo">287</span>     */<a name="line.287"></a>
+<span class="sourceLineNo">288</span>    public void pack(final float val, final int r, final int c,<a name="line.288"></a>
+<span class="sourceLineNo">289</span>            final float[] packed, final int pos) {<a name="line.289"></a>
+<span class="sourceLineNo">290</span>        final int index = getIndex(r, c);<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        if (index &gt;= 0) {<a name="line.291"></a>
+<span class="sourceLineNo">292</span>            packed[pos + index] = val;<a name="line.292"></a>
+<span class="sourceLineNo">293</span>        } else if (index &gt; Integer.MIN_VALUE) {<a name="line.293"></a>
+<span class="sourceLineNo">294</span>            packed[pos - index] = -val;<a name="line.294"></a>
+<span class="sourceLineNo">295</span>        } else {<a name="line.295"></a>
+<span class="sourceLineNo">296</span>            throw new IllegalArgumentException(<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                    String.format(<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                            "[%d][%d] component cannot be modified (always zero)",<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                            r, c));<a name="line.299"></a>
+<span class="sourceLineNo">300</span>        }<a name="line.300"></a>
+<span class="sourceLineNo">301</span>    }<a name="line.301"></a>
+<span class="sourceLineNo">302</span><a name="line.302"></a>
+<span class="sourceLineNo">303</span>    /**<a name="line.303"></a>
+<span class="sourceLineNo">304</span>     * Sets the specified Fourier mode of the transformed data. The data array<a name="line.304"></a>
+<span class="sourceLineNo">305</span>     * results from a call to {@link FloatFFT_2D#realForward(float[][])}.<a name="line.305"></a>
+<span class="sourceLineNo">306</span>     * <a name="line.306"></a>
+<span class="sourceLineNo">307</span>     * @param val<a name="line.307"></a>
+<span class="sourceLineNo">308</span>     *            the new value of the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.308"></a>
+<span class="sourceLineNo">309</span>     * @param r<a name="line.309"></a>
+<span class="sourceLineNo">310</span>     *            the row index<a name="line.310"></a>
+<span class="sourceLineNo">311</span>     * @param c<a name="line.311"></a>
+<span class="sourceLineNo">312</span>     *            the column index<a name="line.312"></a>
+<span class="sourceLineNo">313</span>     * @param packed<a name="line.313"></a>
+<span class="sourceLineNo">314</span>     *            the transformed data<a name="line.314"></a>
+<span class="sourceLineNo">315</span>     */<a name="line.315"></a>
+<span class="sourceLineNo">316</span>    public void pack(final float val, final int r, final int c,<a name="line.316"></a>
+<span class="sourceLineNo">317</span>            final float[][] packed) {<a name="line.317"></a>
+<span class="sourceLineNo">318</span>        final int index = getIndex(r, c);<a name="line.318"></a>
+<span class="sourceLineNo">319</span>        if (index &gt;= 0) {<a name="line.319"></a>
+<span class="sourceLineNo">320</span>            packed[index / columns][index % columns] = val;<a name="line.320"></a>
+<span class="sourceLineNo">321</span>        } else if (index &gt; Integer.MIN_VALUE) {<a name="line.321"></a>
+<span class="sourceLineNo">322</span>            packed[(-index) / columns][(-index) % columns] = -val;<a name="line.322"></a>
+<span class="sourceLineNo">323</span>        } else {<a name="line.323"></a>
+<span class="sourceLineNo">324</span>            throw new IllegalArgumentException(<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                    String.format(<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                            "[%d][%d] component cannot be modified (always zero)",<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                            r, c));<a name="line.327"></a>
+<span class="sourceLineNo">328</span>        }<a name="line.328"></a>
+<span class="sourceLineNo">329</span>    }<a name="line.329"></a>
+<span class="sourceLineNo">330</span><a name="line.330"></a>
+<span class="sourceLineNo">331</span>    /**<a name="line.331"></a>
+<span class="sourceLineNo">332</span>     * Returns the specified Fourier mode of the transformed data. The data<a name="line.332"></a>
+<span class="sourceLineNo">333</span>     * array results from a call to {@link DoubleFFT_2D#realForward(double[])}.<a name="line.333"></a>
+<span class="sourceLineNo">334</span>     * <a name="line.334"></a>
+<span class="sourceLineNo">335</span>     * @param r<a name="line.335"></a>
+<span class="sourceLineNo">336</span>     *            the row index<a name="line.336"></a>
+<span class="sourceLineNo">337</span>     * @param c<a name="line.337"></a>
+<span class="sourceLineNo">338</span>     *            the column index<a name="line.338"></a>
+<span class="sourceLineNo">339</span>     * @param packed<a name="line.339"></a>
+<span class="sourceLineNo">340</span>     *            the transformed data<a name="line.340"></a>
+<span class="sourceLineNo">341</span>     * @param pos<a name="line.341"></a>
+<span class="sourceLineNo">342</span>     *            index of the first element in array &lt;code&gt;packed&lt;/code&gt;<a name="line.342"></a>
+<span class="sourceLineNo">343</span>     * @return the value of the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.343"></a>
+<span class="sourceLineNo">344</span>     */<a name="line.344"></a>
+<span class="sourceLineNo">345</span>    public double unpack(final int r, final int c, final double[] packed,<a name="line.345"></a>
+<span class="sourceLineNo">346</span>            final int pos) {<a name="line.346"></a>
+<span class="sourceLineNo">347</span>        final int index = getIndex(r, c);<a name="line.347"></a>
+<span class="sourceLineNo">348</span>        if (index &gt;= 0) {<a name="line.348"></a>
+<span class="sourceLineNo">349</span>            return packed[pos + index];<a name="line.349"></a>
+<span class="sourceLineNo">350</span>        } else if (index &gt; Integer.MIN_VALUE) {<a name="line.350"></a>
+<span class="sourceLineNo">351</span>            return -packed[pos - index];<a name="line.351"></a>
+<span class="sourceLineNo">352</span>        } else {<a name="line.352"></a>
+<span class="sourceLineNo">353</span>            return ZERO;<a name="line.353"></a>
+<span class="sourceLineNo">354</span>        }<a name="line.354"></a>
+<span class="sourceLineNo">355</span>    }<a name="line.355"></a>
+<span class="sourceLineNo">356</span><a name="line.356"></a>
+<span class="sourceLineNo">357</span>    /**<a name="line.357"></a>
+<span class="sourceLineNo">358</span>     * Returns the specified Fourier mode of the transformed data. The data<a name="line.358"></a>
+<span class="sourceLineNo">359</span>     * array results from a call to {@link DoubleFFT_2D#realForward(double[][])}<a name="line.359"></a>
+<span class="sourceLineNo">360</span>     * .<a name="line.360"></a>
+<span class="sourceLineNo">361</span>     * <a name="line.361"></a>
+<span class="sourceLineNo">362</span>     * @param r<a name="line.362"></a>
+<span class="sourceLineNo">363</span>     *            the row index<a name="line.363"></a>
+<span class="sourceLineNo">364</span>     * @param c<a name="line.364"></a>
+<span class="sourceLineNo">365</span>     *            the column index<a name="line.365"></a>
+<span class="sourceLineNo">366</span>     * @param packed<a name="line.366"></a>
+<span class="sourceLineNo">367</span>     *            the transformed data<a name="line.367"></a>
+<span class="sourceLineNo">368</span>     * @return the value of the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.368"></a>
+<span class="sourceLineNo">369</span>     */<a name="line.369"></a>
+<span class="sourceLineNo">370</span>    public double unpack(final int r, final int c, final double[][] packed) {<a name="line.370"></a>
+<span class="sourceLineNo">371</span>        final int index = getIndex(r, c);<a name="line.371"></a>
+<span class="sourceLineNo">372</span>        if (index &gt;= 0) {<a name="line.372"></a>
+<span class="sourceLineNo">373</span>            return packed[index / columns][index % columns];<a name="line.373"></a>
+<span class="sourceLineNo">374</span>        } else if (index &gt; Integer.MIN_VALUE) {<a name="line.374"></a>
+<span class="sourceLineNo">375</span>            return -packed[(-index) / columns][(-index) % columns];<a name="line.375"></a>
+<span class="sourceLineNo">376</span>        } else {<a name="line.376"></a>
+<span class="sourceLineNo">377</span>            return ZERO;<a name="line.377"></a>
+<span class="sourceLineNo">378</span>        }<a name="line.378"></a>
+<span class="sourceLineNo">379</span>    }<a name="line.379"></a>
+<span class="sourceLineNo">380</span><a name="line.380"></a>
+<span class="sourceLineNo">381</span>    /**<a name="line.381"></a>
+<span class="sourceLineNo">382</span>     * Returns the specified Fourier mode of the transformed data. The data<a name="line.382"></a>
+<span class="sourceLineNo">383</span>     * array results from a call to {@link FloatFFT_2D#realForward(float[])}<a name="line.383"></a>
+<span class="sourceLineNo">384</span>     * .<a name="line.384"></a>
+<span class="sourceLineNo">385</span>     * <a name="line.385"></a>
+<span class="sourceLineNo">386</span>     * @param r<a name="line.386"></a>
+<span class="sourceLineNo">387</span>     *            the row index<a name="line.387"></a>
+<span class="sourceLineNo">388</span>     * @param c<a name="line.388"></a>
+<span class="sourceLineNo">389</span>     *            the column index<a name="line.389"></a>
+<span class="sourceLineNo">390</span>     * @param packed<a name="line.390"></a>
+<span class="sourceLineNo">391</span>     *            the transformed data<a name="line.391"></a>
+<span class="sourceLineNo">392</span>     * @param pos<a name="line.392"></a>
+<span class="sourceLineNo">393</span>     *            index of the first element in array &lt;code&gt;packed&lt;/code&gt;<a name="line.393"></a>
+<span class="sourceLineNo">394</span>     * @return the value of the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.394"></a>
+<span class="sourceLineNo">395</span>     */<a name="line.395"></a>
+<span class="sourceLineNo">396</span>    public float unpack(final int r, final int c, final float[] packed,<a name="line.396"></a>
+<span class="sourceLineNo">397</span>            final int pos) {<a name="line.397"></a>
+<span class="sourceLineNo">398</span>        final int index = getIndex(r, c);<a name="line.398"></a>
+<span class="sourceLineNo">399</span>        if (index &gt;= 0) {<a name="line.399"></a>
+<span class="sourceLineNo">400</span>            return packed[pos + index];<a name="line.400"></a>
+<span class="sourceLineNo">401</span>        } else if (index &gt; Integer.MIN_VALUE) {<a name="line.401"></a>
+<span class="sourceLineNo">402</span>            return -packed[pos - index];<a name="line.402"></a>
+<span class="sourceLineNo">403</span>        } else {<a name="line.403"></a>
+<span class="sourceLineNo">404</span>            return ZERO;<a name="line.404"></a>
+<span class="sourceLineNo">405</span>        }<a name="line.405"></a>
+<span class="sourceLineNo">406</span>    }<a name="line.406"></a>
+<span class="sourceLineNo">407</span><a name="line.407"></a>
+<span class="sourceLineNo">408</span>    /**<a name="line.408"></a>
+<span class="sourceLineNo">409</span>     * Returns the specified Fourier mode of the transformed data. The data<a name="line.409"></a>
+<span class="sourceLineNo">410</span>     * array results from a call to {@link FloatFFT_2D#realForward(float[][])} .<a name="line.410"></a>
+<span class="sourceLineNo">411</span>     * <a name="line.411"></a>
+<span class="sourceLineNo">412</span>     * @param r<a name="line.412"></a>
+<span class="sourceLineNo">413</span>     *            the row index<a name="line.413"></a>
+<span class="sourceLineNo">414</span>     * @param c<a name="line.414"></a>
+<span class="sourceLineNo">415</span>     *            the column index<a name="line.415"></a>
+<span class="sourceLineNo">416</span>     * @param packed<a name="line.416"></a>
+<span class="sourceLineNo">417</span>     *            the transformed data<a name="line.417"></a>
+<span class="sourceLineNo">418</span>     * @return the value of the &lt;code&gt;[r][c]&lt;/code&gt; Fourier mode<a name="line.418"></a>
+<span class="sourceLineNo">419</span>     */<a name="line.419"></a>
+<span class="sourceLineNo">420</span>    public float unpack(final int r, final int c, final float[][] packed) {<a name="line.420"></a>
+<span class="sourceLineNo">421</span>        final int index = getIndex(r, c);<a name="line.421"></a>
+<span class="sourceLineNo">422</span>        if (index &gt;= 0) {<a name="line.422"></a>
+<span class="sourceLineNo">423</span>            return packed[index / columns][index % columns];<a name="line.423"></a>
+<span class="sourceLineNo">424</span>        } else if (index &gt; Integer.MIN_VALUE) {<a name="line.424"></a>
+<span class="sourceLineNo">425</span>            return -packed[(-index) / columns][(-index) % columns];<a name="line.425"></a>
+<span class="sourceLineNo">426</span>        } else {<a name="line.426"></a>
+<span class="sourceLineNo">427</span>            return ZERO;<a name="line.427"></a>
+<span class="sourceLineNo">428</span>        }<a name="line.428"></a>
+<span class="sourceLineNo">429</span>    }<a name="line.429"></a>
+<span class="sourceLineNo">430</span>}<a name="line.430"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

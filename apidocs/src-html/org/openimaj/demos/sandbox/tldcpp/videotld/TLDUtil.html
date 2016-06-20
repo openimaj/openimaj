@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.openimaj.demos.sandbox.tldcpp.videotld;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.util.List;<a name="line.3"></a>
+<span class="sourceLineNo">004</span><a name="line.4"></a>
+<span class="sourceLineNo">005</span>import org.openimaj.demos.sandbox.tldcpp.detector.NormalizedPatch;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import org.openimaj.demos.sandbox.tldcpp.detector.ScaleIndexRectangle;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import org.openimaj.image.FImage;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import org.openimaj.image.processing.algorithm.MeanCenter;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import org.openimaj.image.processing.resize.ResizeProcessor;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import org.openimaj.math.geometry.shape.Rectangle;<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>/**<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * Variaus TLD utility functions<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>public class TLDUtil {<a name="line.17"></a>
+<span class="sourceLineNo">018</span>        <a name="line.18"></a>
+<span class="sourceLineNo">019</span>        /**<a name="line.19"></a>
+<span class="sourceLineNo">020</span>         * Resize image to fit in a {@link NormalizedPatch#TLD_PATCH_SIZE} squared image and mean center <a name="line.20"></a>
+<span class="sourceLineNo">021</span>         * @param img<a name="line.21"></a>
+<span class="sourceLineNo">022</span>         * @return new (image.process is called) image<a name="line.22"></a>
+<span class="sourceLineNo">023</span>         */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        public static FImage tldNormalizeImg(FImage img) {<a name="line.24"></a>
+<span class="sourceLineNo">025</span>                int size = NormalizedPatch.TLD_PATCH_SIZE;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>                <a name="line.26"></a>
+<span class="sourceLineNo">027</span>//              resize(img, result, cvSize(size,size)); //Default is bilinear<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                ResizeProcessor resizeProc = new ResizeProcessor(size, size, false);<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                FImage result = img.process(resizeProc);<a name="line.29"></a>
+<span class="sourceLineNo">030</span>                result.processInplace(new MeanCenter());<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                return result;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        }<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        <a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        /**<a name="line.36"></a>
+<span class="sourceLineNo">037</span>         * {@link #tldOverlapNorm(Rectangle, Rectangle)} called on every window and boundary.<a name="line.37"></a>
+<span class="sourceLineNo">038</span>         * @param windows<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         * @param numWindows<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * @param boundary<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * @param overlap<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        public static void tldOverlap(Rectangle[] windows, int numWindows, Rectangle boundary,float[] overlap) {<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                for(int i = 0; i &lt; numWindows; i++) {<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                        overlap[i] = (float) tldOverlapNorm(windows[i],boundary);<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                }<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        }<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * {@link Rectangle#overlapping(Rectangle)} called and normalised by:<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * <a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * @param A<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * @param B<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         * @return intersect / (areaA + areaB - intersect)<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        public static float tldOverlapNorm(Rectangle A, Rectangle B) {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                Rectangle overlap = A.overlapping(B);<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                double intersect = overlap == null ? 0 : overlap.calculateArea();<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                double areaA = A.calculateArea();<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                double areaB = B.calculateArea();<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                <a name="line.61"></a>
+<span class="sourceLineNo">062</span>                return (float) (intersect / (areaA + areaB - intersect));<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /**<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * The overlap of the window at the firstIndex to all windows in the confidentIndices<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         * @param windows<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * @param firstIndex<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * @param confidentIndices<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * @param distances<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * @param distIDX<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         */<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        public static void tldOverlapOne(ScaleIndexRectangle[] windows, int firstIndex, List&lt;Integer&gt; confidentIndices, float[] distances, int distIDX) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                Rectangle comp = windows[firstIndex];<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                int i = 0;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                for (int idx : confidentIndices) {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        ScaleIndexRectangle other = windows[idx];<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        distances[distIDX + i] = tldOverlapNorm(comp,other);<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        i++;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                }<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>}<a name="line.82"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

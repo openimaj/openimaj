@@ -1,0 +1,1235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *<a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>package org.openimaj.vis.general;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.openimaj.image.DisplayUtilities;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.image.Image;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.image.MBFImage;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.image.colour.RGBColour;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.math.geometry.point.Point2dImpl;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.math.geometry.transforms.TransformUtilities;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.vis.DataUnitsTransformer;<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>import Jama.Matrix;<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>/**<a name="line.45"></a>
+<span class="sourceLineNo">046</span> *      TODO: javadoc<a name="line.46"></a>
+<span class="sourceLineNo">047</span> *<a name="line.47"></a>
+<span class="sourceLineNo">048</span> *      @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.48"></a>
+<span class="sourceLineNo">049</span> *      @param &lt;Q&gt; The pixel type of the image you'll be drawing the axes to<a name="line.49"></a>
+<span class="sourceLineNo">050</span> *      @param &lt;I&gt; The type of image being drawn to<a name="line.50"></a>
+<span class="sourceLineNo">051</span> *  @created 3 Jun 2013<a name="line.51"></a>
+<span class="sourceLineNo">052</span> */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>public class AxesRenderer2D&lt;Q,I extends Image&lt;Q,I&gt;&gt;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        implements DataUnitsTransformer&lt;Q,double[],int[]&gt;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>{<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        /** The axis renderer we'll use to render the x axis */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        private final AxisRenderer2D&lt;Q&gt; xAxisRenderer = new AxisRenderer2D&lt;Q&gt;();<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        /** The axis renderer we'll use to render the y axis */<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        private final AxisRenderer2D&lt;Q&gt; yAxisRenderer = new AxisRenderer2D&lt;Q&gt;();<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        /** The configuration for the xAxis */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        private AxisConfig&lt;Q&gt; xAxisConfig = this.xAxisRenderer.getConfig();<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /** The configuration for the yAxis */<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        private AxisConfig&lt;Q&gt; yAxisConfig = this.yAxisRenderer.getConfig();<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>        /** How far from the left of the image will the x axis start */<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        private int axisPaddingLeft = 20;<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>        /** How far from the right of the image will the x axis stop */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        private int axisPaddingRight = 20;<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>        /** How far from the top of the image with the y axis start */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        private int axisPaddingTop = 20;<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /** How far from the bottom of the image will the y axis stop */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        private int axisPaddingBottom = 20;<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>        /** Whether to work out the ideal position for the axes */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        private boolean autoScaleAxes = false;<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        private Matrix dataTransformMatrix;<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /**<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         *      Default constructor<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        public AxesRenderer2D()<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                this.xAxisConfig.setOrientation( new double[] { 0 } );<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                this.yAxisConfig.setOrientation( new double[] {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                this.xAxisConfig.getOrientation()[0]-Math.PI/2d } );<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         *      Set the orientation of the x axis<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         *      @param rads angle in radians<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        public void setOrientation( final double rads )<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                this.xAxisConfig.setOrientation( new double[] { rads } );<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                this.yAxisConfig.setOrientation( new double[] {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                this.xAxisConfig.getOrientation()[0]-Math.PI/2d } );<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>        /**<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         *      Render the axis to the given image<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         *      @param image The image to draw the axes to<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         */<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        public void renderAxis( final I image )<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                // Set the image to draw upon<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                this.setImage( image );<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>                this.xAxisRenderer.renderAxis();<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                this.yAxisRenderer.renderAxis();<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>//<a name="line.119"></a>
+<span class="sourceLineNo">120</span>//              // Create the renderer to draw to the image<a name="line.120"></a>
+<span class="sourceLineNo">121</span>//              final ImageRenderer&lt;Q, ? extends Image&lt;Q, I&gt;&gt; ir = image.createRenderer( RenderHints.ANTI_ALIASED );<a name="line.121"></a>
+<span class="sourceLineNo">122</span>//<a name="line.122"></a>
+<span class="sourceLineNo">123</span>//              // Get the dimensions of the image to draw to<a name="line.123"></a>
+<span class="sourceLineNo">124</span>//              final int w = image.getWidth();<a name="line.124"></a>
+<span class="sourceLineNo">125</span>//              final int h = image.getHeight();<a name="line.125"></a>
+<span class="sourceLineNo">126</span>//<a name="line.126"></a>
+<span class="sourceLineNo">127</span>//              // Find the pixel spacing to use<a name="line.127"></a>
+<span class="sourceLineNo">128</span>//              final double xRange = this.maxXValue - this.minXValue;<a name="line.128"></a>
+<span class="sourceLineNo">129</span>//              this.xUnitSizePx = (w-this.axisPaddingLeft-this.axisPaddingRight) / xRange;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>//              final double yRange = this.maxYValue - this.minYValue;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>//              this.yUnitSizePx = (h-this.axisPaddingBottom-this.axisPaddingTop) / yRange;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>//<a name="line.132"></a>
+<span class="sourceLineNo">133</span>//              // Pixel position of where the axes crossing happens<a name="line.133"></a>
+<span class="sourceLineNo">134</span>//              this.yAxisConfig.setLocation( new double[] {this.axisPaddingLeft - this.minXValue*this.xUnitSizePx,0} );<a name="line.134"></a>
+<span class="sourceLineNo">135</span>//              this.xAxisPosition = h - this.axisPaddingBottom + this.minYValue*this.yUnitSizePx;<a name="line.135"></a>
+<span class="sourceLineNo">136</span>//<a name="line.136"></a>
+<span class="sourceLineNo">137</span>//              // Draw the x-axis minor ticks<a name="line.137"></a>
+<span class="sourceLineNo">138</span>//              if( this.drawXAxis &amp;&amp; this.drawXTicks )<a name="line.138"></a>
+<span class="sourceLineNo">139</span>//              {<a name="line.139"></a>
+<span class="sourceLineNo">140</span>//                      for( double v = this.minXValue; v &lt;= this.maxXValue; v += this.xMinorTickSpacing )<a name="line.140"></a>
+<span class="sourceLineNo">141</span>//                      {<a name="line.141"></a>
+<span class="sourceLineNo">142</span>//                              if( this.drawMinorTickGrid )<a name="line.142"></a>
+<span class="sourceLineNo">143</span>//                                      ir.drawLine(<a name="line.143"></a>
+<span class="sourceLineNo">144</span>//                                                      (int)(this.yAxisConfig.getLocation()[0] + v * this.xUnitSizePx),<a name="line.144"></a>
+<span class="sourceLineNo">145</span>//                                                      0,<a name="line.145"></a>
+<span class="sourceLineNo">146</span>//                                                      (int)(this.yAxisConfig.getLocation()[0] + v * this.xUnitSizePx),<a name="line.146"></a>
+<span class="sourceLineNo">147</span>//                                                      image.getHeight(),<a name="line.147"></a>
+<span class="sourceLineNo">148</span>//                                                      this.minorGridThickness,<a name="line.148"></a>
+<span class="sourceLineNo">149</span>//                                                      this.minorGridColour );<a name="line.149"></a>
+<span class="sourceLineNo">150</span>//<a name="line.150"></a>
+<span class="sourceLineNo">151</span>//                              ir.drawLine(<a name="line.151"></a>
+<span class="sourceLineNo">152</span>//                                      (int)(this.yAxisConfig.getLocation()[0] + v * this.xUnitSizePx),<a name="line.152"></a>
+<span class="sourceLineNo">153</span>//                                      (int)(this.xAxisPosition-this.minorTickLength),<a name="line.153"></a>
+<span class="sourceLineNo">154</span>//                                      (int)(this.yAxisConfig.getLocation()[0] + v * this.xUnitSizePx),<a name="line.154"></a>
+<span class="sourceLineNo">155</span>//                                      (int)(this.xAxisPosition+this.minorTickLength),<a name="line.155"></a>
+<span class="sourceLineNo">156</span>//                                      this.minorTickThickness,<a name="line.156"></a>
+<span class="sourceLineNo">157</span>//                                      this.minorTickColour );<a name="line.157"></a>
+<span class="sourceLineNo">158</span>//                      }<a name="line.158"></a>
+<span class="sourceLineNo">159</span>//              }<a name="line.159"></a>
+<span class="sourceLineNo">160</span>//<a name="line.160"></a>
+<span class="sourceLineNo">161</span>//              // Draw the x-axis major ticks<a name="line.161"></a>
+<span class="sourceLineNo">162</span>//              if( this.drawXAxis &amp;&amp; this.drawXTicks )<a name="line.162"></a>
+<span class="sourceLineNo">163</span>//              {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>//                      for( double v = this.minXValue; v &lt;= this.maxXValue; v += this.xMajorTickSpacing )<a name="line.164"></a>
+<span class="sourceLineNo">165</span>//                      {<a name="line.165"></a>
+<span class="sourceLineNo">166</span>//                              if( this.drawMajorTickGrid )<a name="line.166"></a>
+<span class="sourceLineNo">167</span>//                                      ir.drawLine(<a name="line.167"></a>
+<span class="sourceLineNo">168</span>//                                                      (int)(this.yAxisConfig.getLocation()[0] + v * this.xUnitSizePx),<a name="line.168"></a>
+<span class="sourceLineNo">169</span>//                                                      0,<a name="line.169"></a>
+<span class="sourceLineNo">170</span>//                                                      (int)(this.yAxisConfig.getLocation()[0] + v * this.xUnitSizePx),<a name="line.170"></a>
+<span class="sourceLineNo">171</span>//                                                      image.getHeight(),<a name="line.171"></a>
+<span class="sourceLineNo">172</span>//                                                      this.majorGridThickness,<a name="line.172"></a>
+<span class="sourceLineNo">173</span>//                                                      this.majorGridColour );<a name="line.173"></a>
+<span class="sourceLineNo">174</span>//<a name="line.174"></a>
+<span class="sourceLineNo">175</span>//                              ir.drawLine(<a name="line.175"></a>
+<span class="sourceLineNo">176</span>//                                      (int)(this.yAxisConfig.getLocation()[0] + v * this.xUnitSizePx),<a name="line.176"></a>
+<span class="sourceLineNo">177</span>//                                      (int)(this.xAxisPosition-this.majorTickLength),<a name="line.177"></a>
+<span class="sourceLineNo">178</span>//                                      (int)(this.yAxisConfig.getLocation()[0] + v * this.xUnitSizePx),<a name="line.178"></a>
+<span class="sourceLineNo">179</span>//                                      (int)(this.xAxisPosition+this.majorTickLength),<a name="line.179"></a>
+<span class="sourceLineNo">180</span>//                                      this.majorTickThickness,<a name="line.180"></a>
+<span class="sourceLineNo">181</span>//                                      this.majorTickColour );<a name="line.181"></a>
+<span class="sourceLineNo">182</span>//                      }<a name="line.182"></a>
+<span class="sourceLineNo">183</span>//              }<a name="line.183"></a>
+<span class="sourceLineNo">184</span>//<a name="line.184"></a>
+<span class="sourceLineNo">185</span>//              // Draw the x tick labels<a name="line.185"></a>
+<span class="sourceLineNo">186</span>//              double maxXLabelPosition = 0;<a name="line.186"></a>
+<span class="sourceLineNo">187</span>//              if( this.drawXAxis &amp;&amp; this.drawXTickLabels )<a name="line.187"></a>
+<span class="sourceLineNo">188</span>//              {<a name="line.188"></a>
+<span class="sourceLineNo">189</span>//                      final int yPos = (int)(this.xAxisPosition + this.xTickLabelSize + this.majorTickLength<a name="line.189"></a>
+<span class="sourceLineNo">190</span>//                                      + this.xTickLabelSize/2 );<a name="line.190"></a>
+<span class="sourceLineNo">191</span>//<a name="line.191"></a>
+<span class="sourceLineNo">192</span>//                      @SuppressWarnings( "rawtypes" )<a name="line.192"></a>
+<span class="sourceLineNo">193</span>//                      final FontStyle s = this.xTickLabelFont.createStyle( ir );<a name="line.193"></a>
+<span class="sourceLineNo">194</span>//                      s.setFontSize( this.xTickLabelSize );<a name="line.194"></a>
+<span class="sourceLineNo">195</span>//<a name="line.195"></a>
+<span class="sourceLineNo">196</span>//                      @SuppressWarnings( "rawtypes" )<a name="line.196"></a>
+<span class="sourceLineNo">197</span>//                      final FontRenderer r = this.xTickLabelFont.getRenderer( ir );<a name="line.197"></a>
+<span class="sourceLineNo">198</span>//<a name="line.198"></a>
+<span class="sourceLineNo">199</span>//                      for( double v = this.minXValue; v &lt;= this.maxXValue; v += this.xLabelSpacing )<a name="line.199"></a>
+<span class="sourceLineNo">200</span>//                      {<a name="line.200"></a>
+<span class="sourceLineNo">201</span>//                              String text = ""+v;<a name="line.201"></a>
+<span class="sourceLineNo">202</span>//                              if( this.xAxisLabelTransformer != null )<a name="line.202"></a>
+<span class="sourceLineNo">203</span>//                                      text = this.xAxisLabelTransformer.transform( v );<a name="line.203"></a>
+<span class="sourceLineNo">204</span>//<a name="line.204"></a>
+<span class="sourceLineNo">205</span>//                              final float fw = r.getBounds( text, s ).width;<a name="line.205"></a>
+<span class="sourceLineNo">206</span>//                              final int xPos = (int)(this.yAxisConfig.getLocation()[0] + v*this.xUnitSizePx - fw/2);<a name="line.206"></a>
+<span class="sourceLineNo">207</span>//                              ir.drawText( text, xPos, yPos, this.xTickLabelFont,<a name="line.207"></a>
+<span class="sourceLineNo">208</span>//                                              this.xTickLabelSize, this.xTickLabelColour );<a name="line.208"></a>
+<span class="sourceLineNo">209</span>//                      }<a name="line.209"></a>
+<span class="sourceLineNo">210</span>//                      maxXLabelPosition = yPos;<a name="line.210"></a>
+<span class="sourceLineNo">211</span>//              }<a name="line.211"></a>
+<span class="sourceLineNo">212</span>//<a name="line.212"></a>
+<span class="sourceLineNo">213</span>//              // Draw the y-axis ticks<a name="line.213"></a>
+<span class="sourceLineNo">214</span>//              if( this.drawYAxis &amp;&amp; this.drawYTicks )<a name="line.214"></a>
+<span class="sourceLineNo">215</span>//              {<a name="line.215"></a>
+<span class="sourceLineNo">216</span>//                      for( double v = this.minYValue; v &lt;= this.maxYValue; v += this.yMinorTickSpacing )<a name="line.216"></a>
+<span class="sourceLineNo">217</span>//                      {<a name="line.217"></a>
+<span class="sourceLineNo">218</span>//                              if( this.drawMinorTickGrid )<a name="line.218"></a>
+<span class="sourceLineNo">219</span>//                                      ir.drawLine(<a name="line.219"></a>
+<span class="sourceLineNo">220</span>//                                                      0,<a name="line.220"></a>
+<span class="sourceLineNo">221</span>//                                                      (int)(this.xAxisPosition - v * this.yUnitSizePx),<a name="line.221"></a>
+<span class="sourceLineNo">222</span>//                                                      image.getWidth(),<a name="line.222"></a>
+<span class="sourceLineNo">223</span>//                                                      (int)(this.xAxisPosition - v * this.yUnitSizePx),<a name="line.223"></a>
+<span class="sourceLineNo">224</span>//                                                      this.minorGridThickness,<a name="line.224"></a>
+<span class="sourceLineNo">225</span>//                                                      this.minorGridColour );<a name="line.225"></a>
+<span class="sourceLineNo">226</span>//<a name="line.226"></a>
+<span class="sourceLineNo">227</span>//                              ir.drawLine(<a name="line.227"></a>
+<span class="sourceLineNo">228</span>//                                      (int)(this.yAxisConfig.getLocation()[0]-this.minorTickLength),<a name="line.228"></a>
+<span class="sourceLineNo">229</span>//                                      (int)(this.xAxisPosition - v * this.yUnitSizePx),<a name="line.229"></a>
+<span class="sourceLineNo">230</span>//                                      (int)(this.yAxisConfig.getLocation()[0]+this.minorTickLength),<a name="line.230"></a>
+<span class="sourceLineNo">231</span>//                                      (int)(this.xAxisPosition - v * this.yUnitSizePx),<a name="line.231"></a>
+<span class="sourceLineNo">232</span>//                                      this.minorTickThickness,<a name="line.232"></a>
+<span class="sourceLineNo">233</span>//                                      this.minorTickColour );<a name="line.233"></a>
+<span class="sourceLineNo">234</span>//                      }<a name="line.234"></a>
+<span class="sourceLineNo">235</span>//              }<a name="line.235"></a>
+<span class="sourceLineNo">236</span>//<a name="line.236"></a>
+<span class="sourceLineNo">237</span>//              // Draw the y-axis ticks<a name="line.237"></a>
+<span class="sourceLineNo">238</span>//              if( this.drawYAxis &amp;&amp; this.drawYTicks )<a name="line.238"></a>
+<span class="sourceLineNo">239</span>//              {<a name="line.239"></a>
+<span class="sourceLineNo">240</span>//                      for( double v = this.minYValue; v &lt;= this.maxYValue; v += this.yMajorTickSpacing )<a name="line.240"></a>
+<span class="sourceLineNo">241</span>//                      {<a name="line.241"></a>
+<span class="sourceLineNo">242</span>//                              if( this.drawMajorTickGrid )<a name="line.242"></a>
+<span class="sourceLineNo">243</span>//                                      ir.drawLine(<a name="line.243"></a>
+<span class="sourceLineNo">244</span>//                                                      0,<a name="line.244"></a>
+<span class="sourceLineNo">245</span>//                                                      (int)(this.xAxisPosition - v * this.yUnitSizePx),<a name="line.245"></a>
+<span class="sourceLineNo">246</span>//                                                      image.getWidth(),<a name="line.246"></a>
+<span class="sourceLineNo">247</span>//                                                      (int)(this.xAxisPosition - v * this.yUnitSizePx),<a name="line.247"></a>
+<span class="sourceLineNo">248</span>//                                                      this.majorGridThickness,<a name="line.248"></a>
+<span class="sourceLineNo">249</span>//                                                      this.majorGridColour );<a name="line.249"></a>
+<span class="sourceLineNo">250</span>//<a name="line.250"></a>
+<span class="sourceLineNo">251</span>//                              ir.drawLine(<a name="line.251"></a>
+<span class="sourceLineNo">252</span>//                                      (int)(this.yAxisPosition-this.majorTickLength),<a name="line.252"></a>
+<span class="sourceLineNo">253</span>//                                      (int)(this.xAxisPosition - v * this.yUnitSizePx),<a name="line.253"></a>
+<span class="sourceLineNo">254</span>//                                      (int)(this.yAxisPosition+this.majorTickLength),<a name="line.254"></a>
+<span class="sourceLineNo">255</span>//                                      (int)(this.xAxisPosition - v * this.yUnitSizePx),<a name="line.255"></a>
+<span class="sourceLineNo">256</span>//                                      this.majorTickThickness,<a name="line.256"></a>
+<span class="sourceLineNo">257</span>//                                      this.majorTickColour );<a name="line.257"></a>
+<span class="sourceLineNo">258</span>//                      }<a name="line.258"></a>
+<span class="sourceLineNo">259</span>//              }<a name="line.259"></a>
+<span class="sourceLineNo">260</span>//<a name="line.260"></a>
+<span class="sourceLineNo">261</span>//              // Draw the x tick labels<a name="line.261"></a>
+<span class="sourceLineNo">262</span>//              double minYLabelPosition = this.yAxisPosition;<a name="line.262"></a>
+<span class="sourceLineNo">263</span>//              if( this.drawYAxis &amp;&amp; this.drawYTickLabels )<a name="line.263"></a>
+<span class="sourceLineNo">264</span>//              {<a name="line.264"></a>
+<span class="sourceLineNo">265</span>//                      @SuppressWarnings( "rawtypes" )<a name="line.265"></a>
+<span class="sourceLineNo">266</span>//                      final FontStyle s = this.yTickLabelFont.createStyle( ir );<a name="line.266"></a>
+<span class="sourceLineNo">267</span>//                      s.setFontSize( this.yTickLabelSize );<a name="line.267"></a>
+<span class="sourceLineNo">268</span>//<a name="line.268"></a>
+<span class="sourceLineNo">269</span>//                      @SuppressWarnings( "rawtypes" )<a name="line.269"></a>
+<span class="sourceLineNo">270</span>//                      final FontRenderer r = this.yTickLabelFont.getRenderer( ir );<a name="line.270"></a>
+<span class="sourceLineNo">271</span>//<a name="line.271"></a>
+<span class="sourceLineNo">272</span>//                      for( double v = this.minYValue; v &lt;= this.maxYValue; v += this.yLabelSpacing )<a name="line.272"></a>
+<span class="sourceLineNo">273</span>//                      {<a name="line.273"></a>
+<span class="sourceLineNo">274</span>//                              String text = ""+v;<a name="line.274"></a>
+<span class="sourceLineNo">275</span>//                              if( this.yAxisLabelTransformer != null )<a name="line.275"></a>
+<span class="sourceLineNo">276</span>//                                      text = this.yAxisLabelTransformer.transform( v );<a name="line.276"></a>
+<span class="sourceLineNo">277</span>//<a name="line.277"></a>
+<span class="sourceLineNo">278</span>//                              final float fw = r.getBounds( text, s ).width;<a name="line.278"></a>
+<span class="sourceLineNo">279</span>//                              final int xPos = (int)(this.yAxisPosition - fw - this.majorTickLength<a name="line.279"></a>
+<span class="sourceLineNo">280</span>//                                              - this.yTickLabelSize/2 );      // Last part is just a bit of padding<a name="line.280"></a>
+<span class="sourceLineNo">281</span>//                              final int yPos = (int)(this.xAxisPosition - v*this.yUnitSizePx + this.yTickLabelSize/2 );<a name="line.281"></a>
+<span class="sourceLineNo">282</span>//                              ir.drawText( text, xPos, yPos, this.yTickLabelFont,<a name="line.282"></a>
+<span class="sourceLineNo">283</span>//                                              this.yTickLabelSize, this.yTickLabelColour );<a name="line.283"></a>
+<span class="sourceLineNo">284</span>//                              minYLabelPosition = Math.min( xPos, minYLabelPosition );<a name="line.284"></a>
+<span class="sourceLineNo">285</span>//                      }<a name="line.285"></a>
+<span class="sourceLineNo">286</span>//              }<a name="line.286"></a>
+<span class="sourceLineNo">287</span>//<a name="line.287"></a>
+<span class="sourceLineNo">288</span>//              // Draw the X-axis<a name="line.288"></a>
+<span class="sourceLineNo">289</span>//              if( this.drawXAxis )<a name="line.289"></a>
+<span class="sourceLineNo">290</span>//                      ir.drawLine( this.axisPaddingLeft, (int)this.xAxisPosition, w-this.axisPaddingRight,<a name="line.290"></a>
+<span class="sourceLineNo">291</span>//                              (int)this.xAxisPosition, this.xAxisThickness, this.xAxisColour );<a name="line.291"></a>
+<span class="sourceLineNo">292</span>//<a name="line.292"></a>
+<span class="sourceLineNo">293</span>//              // Draw the Y-axis<a name="line.293"></a>
+<span class="sourceLineNo">294</span>//              if( this.drawYAxis )<a name="line.294"></a>
+<span class="sourceLineNo">295</span>//                      ir.drawLine( (int)this.yAxisPosition, this.axisPaddingTop, (int)this.yAxisPosition,<a name="line.295"></a>
+<span class="sourceLineNo">296</span>//                              h-this.axisPaddingBottom, this.yAxisThickness, this.yAxisColour );<a name="line.296"></a>
+<span class="sourceLineNo">297</span>//<a name="line.297"></a>
+<span class="sourceLineNo">298</span>//              // Draw the X-axis label<a name="line.298"></a>
+<span class="sourceLineNo">299</span>//              if( this.drawXAxis &amp;&amp; this.drawXAxisName )<a name="line.299"></a>
+<span class="sourceLineNo">300</span>//                      ir.drawText( this.xAxisName, this.axisPaddingLeft,<a name="line.300"></a>
+<span class="sourceLineNo">301</span>//                                      (int)(maxXLabelPosition + this.xAxisNameSize),<a name="line.301"></a>
+<span class="sourceLineNo">302</span>//                                      this.xAxisNameFont,<a name="line.302"></a>
+<span class="sourceLineNo">303</span>//                                      this.xAxisNameSize, this.xAxisNameColour );<a name="line.303"></a>
+<span class="sourceLineNo">304</span>//<a name="line.304"></a>
+<span class="sourceLineNo">305</span>//              // Draw the Y-axis label<a name="line.305"></a>
+<span class="sourceLineNo">306</span>//              if( this.drawYAxis &amp;&amp; this.drawYAxisName )<a name="line.306"></a>
+<span class="sourceLineNo">307</span>//              {<a name="line.307"></a>
+<span class="sourceLineNo">308</span>//                      @SuppressWarnings( "rawtypes" )<a name="line.308"></a>
+<span class="sourceLineNo">309</span>//                      final FontStyle s = this.yAxisNameFont.createStyle( ir );<a name="line.309"></a>
+<span class="sourceLineNo">310</span>//                      s.setFontSize( this.yAxisNameSize );<a name="line.310"></a>
+<span class="sourceLineNo">311</span>//<a name="line.311"></a>
+<span class="sourceLineNo">312</span>//                      final float fw = this.yAxisNameFont.getRenderer( ir ).getBounds(<a name="line.312"></a>
+<span class="sourceLineNo">313</span>//                                      this.yAxisName, s ).width;<a name="line.313"></a>
+<span class="sourceLineNo">314</span>//<a name="line.314"></a>
+<span class="sourceLineNo">315</span>//                      ir.drawText( this.yAxisName, (int)(minYLabelPosition - fw),<a name="line.315"></a>
+<span class="sourceLineNo">316</span>//                                      this.yAxisNameSize + this.axisPaddingTop, this.yAxisNameFont,<a name="line.316"></a>
+<span class="sourceLineNo">317</span>//                                      this.yAxisNameSize, this.yAxisNameColour );<a name="line.317"></a>
+<span class="sourceLineNo">318</span>//              }<a name="line.318"></a>
+<span class="sourceLineNo">319</span>        }<a name="line.319"></a>
+<span class="sourceLineNo">320</span><a name="line.320"></a>
+<span class="sourceLineNo">321</span>        /**<a name="line.321"></a>
+<span class="sourceLineNo">322</span>         *      For a given coordinate in the units of the data, will calculate<a name="line.322"></a>
+<span class="sourceLineNo">323</span>         *      the pixel position.<a name="line.323"></a>
+<span class="sourceLineNo">324</span>         *<a name="line.324"></a>
+<span class="sourceLineNo">325</span>         *      @param image The image in which the axes were drawn<a name="line.325"></a>
+<span class="sourceLineNo">326</span>         *      @param x The x position<a name="line.326"></a>
+<span class="sourceLineNo">327</span>         *      @param y The y position<a name="line.327"></a>
+<span class="sourceLineNo">328</span>         *      @return The pixel position<a name="line.328"></a>
+<span class="sourceLineNo">329</span>         */<a name="line.329"></a>
+<span class="sourceLineNo">330</span>//      @Override<a name="line.330"></a>
+<span class="sourceLineNo">331</span>//      public Point2d calculatePosition(<a name="line.331"></a>
+<span class="sourceLineNo">332</span>//                      final I image, final double x, final double y )<a name="line.332"></a>
+<span class="sourceLineNo">333</span>//      {<a name="line.333"></a>
+<span class="sourceLineNo">334</span>//              return new Point2dImpl( (float)(this.yAxisPosition + x*this.xUnitSizePx),<a name="line.334"></a>
+<span class="sourceLineNo">335</span>//                              (float)(this.xAxisPosition - y*this.yUnitSizePx) );<a name="line.335"></a>
+<span class="sourceLineNo">336</span>//      }<a name="line.336"></a>
+<span class="sourceLineNo">337</span><a name="line.337"></a>
+<span class="sourceLineNo">338</span>        /**<a name="line.338"></a>
+<span class="sourceLineNo">339</span>         *      @param drawXAxis the drawXAxis to set<a name="line.339"></a>
+<span class="sourceLineNo">340</span>         */<a name="line.340"></a>
+<span class="sourceLineNo">341</span>        public void setDrawXAxis( final boolean drawXAxis )<a name="line.341"></a>
+<span class="sourceLineNo">342</span>        {<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                this.xAxisConfig.getRenderingConfig().setRenderAxis( drawXAxis );<a name="line.343"></a>
+<span class="sourceLineNo">344</span>        }<a name="line.344"></a>
+<span class="sourceLineNo">345</span><a name="line.345"></a>
+<span class="sourceLineNo">346</span>        /**<a name="line.346"></a>
+<span class="sourceLineNo">347</span>         *      @param drawYAxis the drawYAxis to set<a name="line.347"></a>
+<span class="sourceLineNo">348</span>         */<a name="line.348"></a>
+<span class="sourceLineNo">349</span>        public void setDrawYAxis( final boolean drawYAxis )<a name="line.349"></a>
+<span class="sourceLineNo">350</span>        {<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                this.yAxisConfig.getRenderingConfig().setRenderAxis( drawYAxis );<a name="line.351"></a>
+<span class="sourceLineNo">352</span>        }<a name="line.352"></a>
+<span class="sourceLineNo">353</span><a name="line.353"></a>
+<span class="sourceLineNo">354</span>        /**<a name="line.354"></a>
+<span class="sourceLineNo">355</span>         *      @return the axisPaddingLeft<a name="line.355"></a>
+<span class="sourceLineNo">356</span>         */<a name="line.356"></a>
+<span class="sourceLineNo">357</span>        public int getAxisPaddingLeft()<a name="line.357"></a>
+<span class="sourceLineNo">358</span>        {<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                return this.axisPaddingLeft;<a name="line.359"></a>
+<span class="sourceLineNo">360</span>        }<a name="line.360"></a>
+<span class="sourceLineNo">361</span><a name="line.361"></a>
+<span class="sourceLineNo">362</span>        /**<a name="line.362"></a>
+<span class="sourceLineNo">363</span>         *      @param axisPaddingLeft the axisPaddingLeft to set<a name="line.363"></a>
+<span class="sourceLineNo">364</span>         */<a name="line.364"></a>
+<span class="sourceLineNo">365</span>        public void setAxisPaddingLeft( final int axisPaddingLeft )<a name="line.365"></a>
+<span class="sourceLineNo">366</span>        {<a name="line.366"></a>
+<span class="sourceLineNo">367</span>                this.axisPaddingLeft = axisPaddingLeft;<a name="line.367"></a>
+<span class="sourceLineNo">368</span>        }<a name="line.368"></a>
+<span class="sourceLineNo">369</span><a name="line.369"></a>
+<span class="sourceLineNo">370</span>        /**<a name="line.370"></a>
+<span class="sourceLineNo">371</span>         *      @return the axisPaddingRight<a name="line.371"></a>
+<span class="sourceLineNo">372</span>         */<a name="line.372"></a>
+<span class="sourceLineNo">373</span>        public int getAxisPaddingRight()<a name="line.373"></a>
+<span class="sourceLineNo">374</span>        {<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                return this.axisPaddingRight;<a name="line.375"></a>
+<span class="sourceLineNo">376</span>        }<a name="line.376"></a>
+<span class="sourceLineNo">377</span><a name="line.377"></a>
+<span class="sourceLineNo">378</span>        /**<a name="line.378"></a>
+<span class="sourceLineNo">379</span>         *      @param axisPaddingRight the axisPaddingRight to set<a name="line.379"></a>
+<span class="sourceLineNo">380</span>         */<a name="line.380"></a>
+<span class="sourceLineNo">381</span>        public void setAxisPaddingRight( final int axisPaddingRight )<a name="line.381"></a>
+<span class="sourceLineNo">382</span>        {<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                this.axisPaddingRight = axisPaddingRight;<a name="line.383"></a>
+<span class="sourceLineNo">384</span>        }<a name="line.384"></a>
+<span class="sourceLineNo">385</span><a name="line.385"></a>
+<span class="sourceLineNo">386</span>        /**<a name="line.386"></a>
+<span class="sourceLineNo">387</span>         *      @return the axisPaddingTop<a name="line.387"></a>
+<span class="sourceLineNo">388</span>         */<a name="line.388"></a>
+<span class="sourceLineNo">389</span>        public int getAxisPaddingTop()<a name="line.389"></a>
+<span class="sourceLineNo">390</span>        {<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                return this.axisPaddingTop;<a name="line.391"></a>
+<span class="sourceLineNo">392</span>        }<a name="line.392"></a>
+<span class="sourceLineNo">393</span><a name="line.393"></a>
+<span class="sourceLineNo">394</span>        /**<a name="line.394"></a>
+<span class="sourceLineNo">395</span>         *      @param axisPaddingTop the axisPaddingTop to set<a name="line.395"></a>
+<span class="sourceLineNo">396</span>         */<a name="line.396"></a>
+<span class="sourceLineNo">397</span>        public void setAxisPaddingTop( final int axisPaddingTop )<a name="line.397"></a>
+<span class="sourceLineNo">398</span>        {<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                this.axisPaddingTop = axisPaddingTop;<a name="line.399"></a>
+<span class="sourceLineNo">400</span>        }<a name="line.400"></a>
+<span class="sourceLineNo">401</span><a name="line.401"></a>
+<span class="sourceLineNo">402</span>        /**<a name="line.402"></a>
+<span class="sourceLineNo">403</span>         *      @return the axisPaddingBottom<a name="line.403"></a>
+<span class="sourceLineNo">404</span>         */<a name="line.404"></a>
+<span class="sourceLineNo">405</span>        public int getAxisPaddingBottom()<a name="line.405"></a>
+<span class="sourceLineNo">406</span>        {<a name="line.406"></a>
+<span class="sourceLineNo">407</span>                return this.axisPaddingBottom;<a name="line.407"></a>
+<span class="sourceLineNo">408</span>        }<a name="line.408"></a>
+<span class="sourceLineNo">409</span><a name="line.409"></a>
+<span class="sourceLineNo">410</span>        /**<a name="line.410"></a>
+<span class="sourceLineNo">411</span>         *      @param axisPaddingBottom the axisPaddingBottom to set<a name="line.411"></a>
+<span class="sourceLineNo">412</span>         */<a name="line.412"></a>
+<span class="sourceLineNo">413</span>        public void setAxisPaddingBottom( final int axisPaddingBottom )<a name="line.413"></a>
+<span class="sourceLineNo">414</span>        {<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                this.axisPaddingBottom = axisPaddingBottom;<a name="line.415"></a>
+<span class="sourceLineNo">416</span>        }<a name="line.416"></a>
+<span class="sourceLineNo">417</span><a name="line.417"></a>
+<span class="sourceLineNo">418</span>        /**<a name="line.418"></a>
+<span class="sourceLineNo">419</span>         *      @param xAxisPosition the xAxisPosition to set<a name="line.419"></a>
+<span class="sourceLineNo">420</span>         */<a name="line.420"></a>
+<span class="sourceLineNo">421</span>        public void setxAxisPosition( final double xAxisPosition )<a name="line.421"></a>
+<span class="sourceLineNo">422</span>        {<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                this.xAxisConfig.setLocation( new double[] { this.axisPaddingLeft, xAxisPosition } );<a name="line.423"></a>
+<span class="sourceLineNo">424</span>        }<a name="line.424"></a>
+<span class="sourceLineNo">425</span><a name="line.425"></a>
+<span class="sourceLineNo">426</span>        /**<a name="line.426"></a>
+<span class="sourceLineNo">427</span>         *      The y position of the x axis.<a name="line.427"></a>
+<span class="sourceLineNo">428</span>         *      @return the y position.<a name="line.428"></a>
+<span class="sourceLineNo">429</span>         */<a name="line.429"></a>
+<span class="sourceLineNo">430</span>        public double getxAxisPosition()<a name="line.430"></a>
+<span class="sourceLineNo">431</span>        {<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                return this.xAxisConfig.getLocation()[1];<a name="line.432"></a>
+<span class="sourceLineNo">433</span>        }<a name="line.433"></a>
+<span class="sourceLineNo">434</span><a name="line.434"></a>
+<span class="sourceLineNo">435</span>        /**<a name="line.435"></a>
+<span class="sourceLineNo">436</span>         *      @return the autoScaleAxes<a name="line.436"></a>
+<span class="sourceLineNo">437</span>         */<a name="line.437"></a>
+<span class="sourceLineNo">438</span>        public boolean isAutoScaleAxes()<a name="line.438"></a>
+<span class="sourceLineNo">439</span>        {<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                return this.autoScaleAxes;<a name="line.440"></a>
+<span class="sourceLineNo">441</span>        }<a name="line.441"></a>
+<span class="sourceLineNo">442</span><a name="line.442"></a>
+<span class="sourceLineNo">443</span>        /**<a name="line.443"></a>
+<span class="sourceLineNo">444</span>         *      @param autoScaleAxes the autoScaleAxes to set<a name="line.444"></a>
+<span class="sourceLineNo">445</span>         */<a name="line.445"></a>
+<span class="sourceLineNo">446</span>        public void setAutoScaleAxes( final boolean autoScaleAxes )<a name="line.446"></a>
+<span class="sourceLineNo">447</span>        {<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                this.autoScaleAxes = autoScaleAxes;<a name="line.448"></a>
+<span class="sourceLineNo">449</span>        }<a name="line.449"></a>
+<span class="sourceLineNo">450</span><a name="line.450"></a>
+<span class="sourceLineNo">451</span>        /**<a name="line.451"></a>
+<span class="sourceLineNo">452</span>         *      @param xAxisThickness the xAxisThickness to set<a name="line.452"></a>
+<span class="sourceLineNo">453</span>         */<a name="line.453"></a>
+<span class="sourceLineNo">454</span>        public void setxAxisThickness( final int xAxisThickness )<a name="line.454"></a>
+<span class="sourceLineNo">455</span>        {<a name="line.455"></a>
+<span class="sourceLineNo">456</span>                this.xAxisConfig.getRenderingConfig().setThickness( xAxisThickness );<a name="line.456"></a>
+<span class="sourceLineNo">457</span>        }<a name="line.457"></a>
+<span class="sourceLineNo">458</span><a name="line.458"></a>
+<span class="sourceLineNo">459</span>        /**<a name="line.459"></a>
+<span class="sourceLineNo">460</span>         *      @param xAxisColour the xAxisColour to set<a name="line.460"></a>
+<span class="sourceLineNo">461</span>         */<a name="line.461"></a>
+<span class="sourceLineNo">462</span>        public void setxAxisColour( final Q xAxisColour )<a name="line.462"></a>
+<span class="sourceLineNo">463</span>        {<a name="line.463"></a>
+<span class="sourceLineNo">464</span>                this.xAxisConfig.getRenderingConfig().setColour( xAxisColour );<a name="line.464"></a>
+<span class="sourceLineNo">465</span>        }<a name="line.465"></a>
+<span class="sourceLineNo">466</span><a name="line.466"></a>
+<span class="sourceLineNo">467</span>        /**<a name="line.467"></a>
+<span class="sourceLineNo">468</span>         *      @param yAxisThickness the yAxisThickness to set<a name="line.468"></a>
+<span class="sourceLineNo">469</span>         */<a name="line.469"></a>
+<span class="sourceLineNo">470</span>        public void setyAxisThickness( final int yAxisThickness )<a name="line.470"></a>
+<span class="sourceLineNo">471</span>        {<a name="line.471"></a>
+<span class="sourceLineNo">472</span>                this.yAxisConfig.getRenderingConfig().setThickness( yAxisThickness );<a name="line.472"></a>
+<span class="sourceLineNo">473</span>        }<a name="line.473"></a>
+<span class="sourceLineNo">474</span><a name="line.474"></a>
+<span class="sourceLineNo">475</span>        /**<a name="line.475"></a>
+<span class="sourceLineNo">476</span>         *      @param yAxisColour the yAxisColour to set<a name="line.476"></a>
+<span class="sourceLineNo">477</span>         */<a name="line.477"></a>
+<span class="sourceLineNo">478</span>        public void setyAxisColour( final Q yAxisColour )<a name="line.478"></a>
+<span class="sourceLineNo">479</span>        {<a name="line.479"></a>
+<span class="sourceLineNo">480</span>                this.yAxisConfig.getRenderingConfig().setColour( yAxisColour );<a name="line.480"></a>
+<span class="sourceLineNo">481</span>        }<a name="line.481"></a>
+<span class="sourceLineNo">482</span><a name="line.482"></a>
+<span class="sourceLineNo">483</span>        /**<a name="line.483"></a>
+<span class="sourceLineNo">484</span>         *      @param maxXValue the maxXValue to set<a name="line.484"></a>
+<span class="sourceLineNo">485</span>         */<a name="line.485"></a>
+<span class="sourceLineNo">486</span>        public void setMaxXValue( final double maxXValue )<a name="line.486"></a>
+<span class="sourceLineNo">487</span>        {<a name="line.487"></a>
+<span class="sourceLineNo">488</span>                this.xAxisConfig.setMaxValue( this.xAxisRenderer.nearestHigherMajorTick( maxXValue ) );<a name="line.488"></a>
+<span class="sourceLineNo">489</span>        }<a name="line.489"></a>
+<span class="sourceLineNo">490</span><a name="line.490"></a>
+<span class="sourceLineNo">491</span>        /**<a name="line.491"></a>
+<span class="sourceLineNo">492</span>         *      @param minXValue the minXValue to set<a name="line.492"></a>
+<span class="sourceLineNo">493</span>         */<a name="line.493"></a>
+<span class="sourceLineNo">494</span>        public void setMinXValue( final double minXValue )<a name="line.494"></a>
+<span class="sourceLineNo">495</span>        {<a name="line.495"></a>
+<span class="sourceLineNo">496</span>                this.xAxisConfig.setMinValue( this.xAxisRenderer.nearestLowerMajorTick( minXValue ) );<a name="line.496"></a>
+<span class="sourceLineNo">497</span>        }<a name="line.497"></a>
+<span class="sourceLineNo">498</span><a name="line.498"></a>
+<span class="sourceLineNo">499</span>        /**<a name="line.499"></a>
+<span class="sourceLineNo">500</span>         *      @param maxYValue the maxYValue to set<a name="line.500"></a>
+<span class="sourceLineNo">501</span>         */<a name="line.501"></a>
+<span class="sourceLineNo">502</span>        public void setMaxYValue( final double maxYValue )<a name="line.502"></a>
+<span class="sourceLineNo">503</span>        {<a name="line.503"></a>
+<span class="sourceLineNo">504</span>                this.yAxisConfig.setMaxValue( this.yAxisRenderer.nearestHigherMajorTick( maxYValue ) );<a name="line.504"></a>
+<span class="sourceLineNo">505</span>        }<a name="line.505"></a>
+<span class="sourceLineNo">506</span><a name="line.506"></a>
+<span class="sourceLineNo">507</span>        /**<a name="line.507"></a>
+<span class="sourceLineNo">508</span>         *      Returns the maximum value of the y axis<a name="line.508"></a>
+<span class="sourceLineNo">509</span>         *      @return The y axis maximum value<a name="line.509"></a>
+<span class="sourceLineNo">510</span>         */<a name="line.510"></a>
+<span class="sourceLineNo">511</span>        public double getMaxYValue()<a name="line.511"></a>
+<span class="sourceLineNo">512</span>        {<a name="line.512"></a>
+<span class="sourceLineNo">513</span>                return this.yAxisConfig.getMaxValue();<a name="line.513"></a>
+<span class="sourceLineNo">514</span>        }<a name="line.514"></a>
+<span class="sourceLineNo">515</span><a name="line.515"></a>
+<span class="sourceLineNo">516</span>        /**<a name="line.516"></a>
+<span class="sourceLineNo">517</span>         *      @param minYValue the minYValue to set<a name="line.517"></a>
+<span class="sourceLineNo">518</span>         */<a name="line.518"></a>
+<span class="sourceLineNo">519</span>        public void setMinYValue( final double minYValue )<a name="line.519"></a>
+<span class="sourceLineNo">520</span>        {<a name="line.520"></a>
+<span class="sourceLineNo">521</span>                this.yAxisConfig.setMinValue( this.yAxisRenderer.nearestLowerMajorTick( minYValue ) );<a name="line.521"></a>
+<span class="sourceLineNo">522</span>        }<a name="line.522"></a>
+<span class="sourceLineNo">523</span><a name="line.523"></a>
+<span class="sourceLineNo">524</span>        /**<a name="line.524"></a>
+<span class="sourceLineNo">525</span>         *      @param xMinorTickSpacing the xMinorTickSpacing to set<a name="line.525"></a>
+<span class="sourceLineNo">526</span>         */<a name="line.526"></a>
+<span class="sourceLineNo">527</span>        public void setxMinorTickSpacing( final double xMinorTickSpacing )<a name="line.527"></a>
+<span class="sourceLineNo">528</span>        {<a name="line.528"></a>
+<span class="sourceLineNo">529</span>                this.xAxisConfig.getRenderingConfig().setMinorTickSpacing( xMinorTickSpacing );<a name="line.529"></a>
+<span class="sourceLineNo">530</span>        }<a name="line.530"></a>
+<span class="sourceLineNo">531</span><a name="line.531"></a>
+<span class="sourceLineNo">532</span>        /**<a name="line.532"></a>
+<span class="sourceLineNo">533</span>         *      @param yMinorTickSpacing the yMinorTickSpacing to set<a name="line.533"></a>
+<span class="sourceLineNo">534</span>         */<a name="line.534"></a>
+<span class="sourceLineNo">535</span>        public void setyMinorTickSpacing( final double yMinorTickSpacing )<a name="line.535"></a>
+<span class="sourceLineNo">536</span>        {<a name="line.536"></a>
+<span class="sourceLineNo">537</span>                this.yAxisConfig.getRenderingConfig().setMinorTickSpacing( yMinorTickSpacing );<a name="line.537"></a>
+<span class="sourceLineNo">538</span>        }<a name="line.538"></a>
+<span class="sourceLineNo">539</span><a name="line.539"></a>
+<span class="sourceLineNo">540</span>        /**<a name="line.540"></a>
+<span class="sourceLineNo">541</span>         *      @param xMajorTickSpacing the xMajorTickSpacing to set<a name="line.541"></a>
+<span class="sourceLineNo">542</span>         */<a name="line.542"></a>
+<span class="sourceLineNo">543</span>        public void setxMajorTickSpacing( final double xMajorTickSpacing )<a name="line.543"></a>
+<span class="sourceLineNo">544</span>        {<a name="line.544"></a>
+<span class="sourceLineNo">545</span>                this.xAxisConfig.getRenderingConfig().setMajorTickSpacing( xMajorTickSpacing );<a name="line.545"></a>
+<span class="sourceLineNo">546</span>        }<a name="line.546"></a>
+<span class="sourceLineNo">547</span><a name="line.547"></a>
+<span class="sourceLineNo">548</span>        /**<a name="line.548"></a>
+<span class="sourceLineNo">549</span>         *      @param yMajorTickSpacing the yMajorTickSpacing to set<a name="line.549"></a>
+<span class="sourceLineNo">550</span>         */<a name="line.550"></a>
+<span class="sourceLineNo">551</span>        public void setyMajorTickSpacing( final double yMajorTickSpacing )<a name="line.551"></a>
+<span class="sourceLineNo">552</span>        {<a name="line.552"></a>
+<span class="sourceLineNo">553</span>                this.yAxisConfig.getRenderingConfig().setMajorTickSpacing( yMajorTickSpacing );<a name="line.553"></a>
+<span class="sourceLineNo">554</span>        }<a name="line.554"></a>
+<span class="sourceLineNo">555</span><a name="line.555"></a>
+<span class="sourceLineNo">556</span>        /**<a name="line.556"></a>
+<span class="sourceLineNo">557</span>         *      @param minorTickLength the minorTickLength to set<a name="line.557"></a>
+<span class="sourceLineNo">558</span>         */<a name="line.558"></a>
+<span class="sourceLineNo">559</span>        public void setMinorTickLength( final int minorTickLength )<a name="line.559"></a>
+<span class="sourceLineNo">560</span>        {<a name="line.560"></a>
+<span class="sourceLineNo">561</span>                this.yAxisConfig.getRenderingConfig().setMinorTickLength( minorTickLength );<a name="line.561"></a>
+<span class="sourceLineNo">562</span>                this.xAxisConfig.getRenderingConfig().setMinorTickLength( minorTickLength );<a name="line.562"></a>
+<span class="sourceLineNo">563</span>        }<a name="line.563"></a>
+<span class="sourceLineNo">564</span><a name="line.564"></a>
+<span class="sourceLineNo">565</span>        /**<a name="line.565"></a>
+<span class="sourceLineNo">566</span>         *      @param majorTickLength the majorTickLength to set<a name="line.566"></a>
+<span class="sourceLineNo">567</span>         */<a name="line.567"></a>
+<span class="sourceLineNo">568</span>        public void setMajorTickLength( final int majorTickLength )<a name="line.568"></a>
+<span class="sourceLineNo">569</span>        {<a name="line.569"></a>
+<span class="sourceLineNo">570</span>                this.yAxisConfig.getRenderingConfig().setMajorTickLength( majorTickLength );<a name="line.570"></a>
+<span class="sourceLineNo">571</span>                this.xAxisConfig.getRenderingConfig().setMajorTickLength( majorTickLength );<a name="line.571"></a>
+<span class="sourceLineNo">572</span>        }<a name="line.572"></a>
+<span class="sourceLineNo">573</span><a name="line.573"></a>
+<span class="sourceLineNo">574</span>        /**<a name="line.574"></a>
+<span class="sourceLineNo">575</span>         *      @param minorTickColour the minorTickColour to set<a name="line.575"></a>
+<span class="sourceLineNo">576</span>         */<a name="line.576"></a>
+<span class="sourceLineNo">577</span>        public void setMinorTickColour( final Q minorTickColour )<a name="line.577"></a>
+<span class="sourceLineNo">578</span>        {<a name="line.578"></a>
+<span class="sourceLineNo">579</span>                this.yAxisConfig.getRenderingConfig().setMinorTickColour( minorTickColour );<a name="line.579"></a>
+<span class="sourceLineNo">580</span>                this.xAxisConfig.getRenderingConfig().setMinorTickColour( minorTickColour );<a name="line.580"></a>
+<span class="sourceLineNo">581</span>        }<a name="line.581"></a>
+<span class="sourceLineNo">582</span><a name="line.582"></a>
+<span class="sourceLineNo">583</span>        /**<a name="line.583"></a>
+<span class="sourceLineNo">584</span>         *      @param majorTickColour the majorTickColour to set<a name="line.584"></a>
+<span class="sourceLineNo">585</span>         */<a name="line.585"></a>
+<span class="sourceLineNo">586</span>        public void setMajorTickColour( final Q majorTickColour )<a name="line.586"></a>
+<span class="sourceLineNo">587</span>        {<a name="line.587"></a>
+<span class="sourceLineNo">588</span>                this.yAxisConfig.getRenderingConfig().setMajorTickColour( majorTickColour );<a name="line.588"></a>
+<span class="sourceLineNo">589</span>                this.xAxisConfig.getRenderingConfig().setMajorTickColour( majorTickColour );<a name="line.589"></a>
+<span class="sourceLineNo">590</span>        }<a name="line.590"></a>
+<span class="sourceLineNo">591</span><a name="line.591"></a>
+<span class="sourceLineNo">592</span>        /**<a name="line.592"></a>
+<span class="sourceLineNo">593</span>         *      @param majorTickThickness the majorTickThickness to set<a name="line.593"></a>
+<span class="sourceLineNo">594</span>         */<a name="line.594"></a>
+<span class="sourceLineNo">595</span>        public void setMajorTickThickness( final int majorTickThickness )<a name="line.595"></a>
+<span class="sourceLineNo">596</span>        {<a name="line.596"></a>
+<span class="sourceLineNo">597</span>                this.yAxisConfig.getRenderingConfig().setMajorTickThickness( majorTickThickness );<a name="line.597"></a>
+<span class="sourceLineNo">598</span>                this.xAxisConfig.getRenderingConfig().setMajorTickThickness( majorTickThickness );<a name="line.598"></a>
+<span class="sourceLineNo">599</span>        }<a name="line.599"></a>
+<span class="sourceLineNo">600</span><a name="line.600"></a>
+<span class="sourceLineNo">601</span>        /**<a name="line.601"></a>
+<span class="sourceLineNo">602</span>         *      @param minorTickThickness the minorTickThickenss to set<a name="line.602"></a>
+<span class="sourceLineNo">603</span>         */<a name="line.603"></a>
+<span class="sourceLineNo">604</span>        public void setMinorTickThickenss( final int minorTickThickness )<a name="line.604"></a>
+<span class="sourceLineNo">605</span>        {<a name="line.605"></a>
+<span class="sourceLineNo">606</span>                this.yAxisConfig.getRenderingConfig().setMinorTickThickness( minorTickThickness );<a name="line.606"></a>
+<span class="sourceLineNo">607</span>                this.xAxisConfig.getRenderingConfig().setMinorTickThickness( minorTickThickness );<a name="line.607"></a>
+<span class="sourceLineNo">608</span>        }<a name="line.608"></a>
+<span class="sourceLineNo">609</span><a name="line.609"></a>
+<span class="sourceLineNo">610</span>        /**<a name="line.610"></a>
+<span class="sourceLineNo">611</span>         *      @param drawXTickLabels the drawXTickLabels to set<a name="line.611"></a>
+<span class="sourceLineNo">612</span>         */<a name="line.612"></a>
+<span class="sourceLineNo">613</span>        public void setDrawXTickLabels( final boolean drawXTickLabels )<a name="line.613"></a>
+<span class="sourceLineNo">614</span>        {<a name="line.614"></a>
+<span class="sourceLineNo">615</span>                this.xAxisConfig.getRenderingConfig().setDrawMajorTickLabels( drawXTickLabels );<a name="line.615"></a>
+<span class="sourceLineNo">616</span>                this.xAxisConfig.getRenderingConfig().setDrawMinorTickLabels( drawXTickLabels );<a name="line.616"></a>
+<span class="sourceLineNo">617</span>        }<a name="line.617"></a>
+<span class="sourceLineNo">618</span><a name="line.618"></a>
+<span class="sourceLineNo">619</span>        /**<a name="line.619"></a>
+<span class="sourceLineNo">620</span>         *      @param drawYTickLabels the drawYTickLabels to set<a name="line.620"></a>
+<span class="sourceLineNo">621</span>         */<a name="line.621"></a>
+<span class="sourceLineNo">622</span>        public void setDrawYTickLabels( final boolean drawYTickLabels )<a name="line.622"></a>
+<span class="sourceLineNo">623</span>        {<a name="line.623"></a>
+<span class="sourceLineNo">624</span>                this.yAxisConfig.getRenderingConfig().setDrawMajorTickLabels( drawYTickLabels );<a name="line.624"></a>
+<span class="sourceLineNo">625</span>                this.yAxisConfig.getRenderingConfig().setDrawMinorTickLabels( drawYTickLabels );<a name="line.625"></a>
+<span class="sourceLineNo">626</span>        }<a name="line.626"></a>
+<span class="sourceLineNo">627</span><a name="line.627"></a>
+<span class="sourceLineNo">628</span>        /**<a name="line.628"></a>
+<span class="sourceLineNo">629</span>         *      @param xTickLabelSize the xTickLabelSize to set<a name="line.629"></a>
+<span class="sourceLineNo">630</span>         */<a name="line.630"></a>
+<span class="sourceLineNo">631</span>        public void setxTickLabelSize( final int xTickLabelSize )<a name="line.631"></a>
+<span class="sourceLineNo">632</span>        {<a name="line.632"></a>
+<span class="sourceLineNo">633</span>//              this.xTickLabelSize = xTickLabelSize;<a name="line.633"></a>
+<span class="sourceLineNo">634</span>                // TODO:<a name="line.634"></a>
+<span class="sourceLineNo">635</span>        }<a name="line.635"></a>
+<span class="sourceLineNo">636</span><a name="line.636"></a>
+<span class="sourceLineNo">637</span>        /**<a name="line.637"></a>
+<span class="sourceLineNo">638</span>         *      @param xTickLabelColour the xTickLabelColour to set<a name="line.638"></a>
+<span class="sourceLineNo">639</span>         */<a name="line.639"></a>
+<span class="sourceLineNo">640</span>        public void setxTickLabelColour( final Q xTickLabelColour )<a name="line.640"></a>
+<span class="sourceLineNo">641</span>        {<a name="line.641"></a>
+<span class="sourceLineNo">642</span>//              this.xTickLabelColour = xTickLabelColour;<a name="line.642"></a>
+<span class="sourceLineNo">643</span>                // TODO:<a name="line.643"></a>
+<span class="sourceLineNo">644</span>        }<a name="line.644"></a>
+<span class="sourceLineNo">645</span><a name="line.645"></a>
+<span class="sourceLineNo">646</span>        /**<a name="line.646"></a>
+<span class="sourceLineNo">647</span>         *      @param yTickLabelSize the yTickLabelSize to set<a name="line.647"></a>
+<span class="sourceLineNo">648</span>         */<a name="line.648"></a>
+<span class="sourceLineNo">649</span>        public void setyTickLabelSize( final int yTickLabelSize )<a name="line.649"></a>
+<span class="sourceLineNo">650</span>        {<a name="line.650"></a>
+<span class="sourceLineNo">651</span>//              yAxisConfig.getRenderingConfig().setMajorTickLabelFont( majorTickLabelFont );<a name="line.651"></a>
+<span class="sourceLineNo">652</span>                // TODO:<a name="line.652"></a>
+<span class="sourceLineNo">653</span>        }<a name="line.653"></a>
+<span class="sourceLineNo">654</span><a name="line.654"></a>
+<span class="sourceLineNo">655</span>        /**<a name="line.655"></a>
+<span class="sourceLineNo">656</span>         *      @param yTickLabelColour the yTickLabelColour to set<a name="line.656"></a>
+<span class="sourceLineNo">657</span>         */<a name="line.657"></a>
+<span class="sourceLineNo">658</span>        public void setyTickLabelColour( final Q yTickLabelColour )<a name="line.658"></a>
+<span class="sourceLineNo">659</span>        {<a name="line.659"></a>
+<span class="sourceLineNo">660</span>//              this.yTickLabelColour = yTickLabelColour;<a name="line.660"></a>
+<span class="sourceLineNo">661</span>//              yAxisConfig.getRenderingConfig().getMajor<a name="line.661"></a>
+<span class="sourceLineNo">662</span>                // TODO:<a name="line.662"></a>
+<span class="sourceLineNo">663</span>        }<a name="line.663"></a>
+<span class="sourceLineNo">664</span><a name="line.664"></a>
+<span class="sourceLineNo">665</span>        /**<a name="line.665"></a>
+<span class="sourceLineNo">666</span>         *      @param autoSpaceLabels the autoSpaceLabels to set<a name="line.666"></a>
+<span class="sourceLineNo">667</span>         */<a name="line.667"></a>
+<span class="sourceLineNo">668</span>        public void setAutoSpaceLabels( final boolean autoSpaceLabels )<a name="line.668"></a>
+<span class="sourceLineNo">669</span>        {<a name="line.669"></a>
+<span class="sourceLineNo">670</span>//              this.autoSpaceLabels = autoSpaceLabels;<a name="line.670"></a>
+<span class="sourceLineNo">671</span>                // TODO:<a name="line.671"></a>
+<span class="sourceLineNo">672</span>        }<a name="line.672"></a>
+<span class="sourceLineNo">673</span><a name="line.673"></a>
+<span class="sourceLineNo">674</span>        /**<a name="line.674"></a>
+<span class="sourceLineNo">675</span>         *      @param autoSpaceTicks the autoSpaceTicks to set<a name="line.675"></a>
+<span class="sourceLineNo">676</span>         */<a name="line.676"></a>
+<span class="sourceLineNo">677</span>        public void setAutoSpaceTicks( final boolean autoSpaceTicks )<a name="line.677"></a>
+<span class="sourceLineNo">678</span>        {<a name="line.678"></a>
+<span class="sourceLineNo">679</span>//              this.autoSpaceTicks = autoSpaceTicks;<a name="line.679"></a>
+<span class="sourceLineNo">680</span>                // TODO:<a name="line.680"></a>
+<span class="sourceLineNo">681</span>        }<a name="line.681"></a>
+<span class="sourceLineNo">682</span><a name="line.682"></a>
+<span class="sourceLineNo">683</span>        /**<a name="line.683"></a>
+<span class="sourceLineNo">684</span>         *      @param minTickSpacing the minTickSpacing to set<a name="line.684"></a>
+<span class="sourceLineNo">685</span>         */<a name="line.685"></a>
+<span class="sourceLineNo">686</span>        public void setMinTickSpacing( final int minTickSpacing )<a name="line.686"></a>
+<span class="sourceLineNo">687</span>        {<a name="line.687"></a>
+<span class="sourceLineNo">688</span>                // TODO:<a name="line.688"></a>
+<span class="sourceLineNo">689</span>        }<a name="line.689"></a>
+<span class="sourceLineNo">690</span><a name="line.690"></a>
+<span class="sourceLineNo">691</span>        /**<a name="line.691"></a>
+<span class="sourceLineNo">692</span>         *      @param xLabelSpacing the xLabelSpacing to set<a name="line.692"></a>
+<span class="sourceLineNo">693</span>         */<a name="line.693"></a>
+<span class="sourceLineNo">694</span>        public void setxLabelSpacing( final double xLabelSpacing )<a name="line.694"></a>
+<span class="sourceLineNo">695</span>        {<a name="line.695"></a>
+<span class="sourceLineNo">696</span>//              xAxisConfig.getRenderingConfig().setMajor<a name="line.696"></a>
+<span class="sourceLineNo">697</span>                // TODO:<a name="line.697"></a>
+<span class="sourceLineNo">698</span>        }<a name="line.698"></a>
+<span class="sourceLineNo">699</span><a name="line.699"></a>
+<span class="sourceLineNo">700</span>        /**<a name="line.700"></a>
+<span class="sourceLineNo">701</span>         *      @param yLabelSpacing the yLabelSpacing to set<a name="line.701"></a>
+<span class="sourceLineNo">702</span>         */<a name="line.702"></a>
+<span class="sourceLineNo">703</span>        public void setyLabelSpacing( final double yLabelSpacing )<a name="line.703"></a>
+<span class="sourceLineNo">704</span>        {<a name="line.704"></a>
+<span class="sourceLineNo">705</span>//              this.yLabelSpacing = yLabelSpacing;<a name="line.705"></a>
+<span class="sourceLineNo">706</span>                // TODO:<a name="line.706"></a>
+<span class="sourceLineNo">707</span>        }<a name="line.707"></a>
+<span class="sourceLineNo">708</span><a name="line.708"></a>
+<span class="sourceLineNo">709</span>        /**<a name="line.709"></a>
+<span class="sourceLineNo">710</span>         *      @param xAxisName the xAxisName to set<a name="line.710"></a>
+<span class="sourceLineNo">711</span>         */<a name="line.711"></a>
+<span class="sourceLineNo">712</span>        public void setxAxisName( final String xAxisName )<a name="line.712"></a>
+<span class="sourceLineNo">713</span>        {<a name="line.713"></a>
+<span class="sourceLineNo">714</span>                this.xAxisConfig.setName( xAxisName );<a name="line.714"></a>
+<span class="sourceLineNo">715</span>        }<a name="line.715"></a>
+<span class="sourceLineNo">716</span><a name="line.716"></a>
+<span class="sourceLineNo">717</span>        /**<a name="line.717"></a>
+<span class="sourceLineNo">718</span>         *      @param yAxisName the yAxisName to set<a name="line.718"></a>
+<span class="sourceLineNo">719</span>         */<a name="line.719"></a>
+<span class="sourceLineNo">720</span>        public void setyAxisName( final String yAxisName )<a name="line.720"></a>
+<span class="sourceLineNo">721</span>        {<a name="line.721"></a>
+<span class="sourceLineNo">722</span>                this.yAxisConfig.setName( yAxisName );<a name="line.722"></a>
+<span class="sourceLineNo">723</span>        }<a name="line.723"></a>
+<span class="sourceLineNo">724</span><a name="line.724"></a>
+<span class="sourceLineNo">725</span>        /**<a name="line.725"></a>
+<span class="sourceLineNo">726</span>         *      @param drawYAxisName the drawYAxisName to set<a name="line.726"></a>
+<span class="sourceLineNo">727</span>         */<a name="line.727"></a>
+<span class="sourceLineNo">728</span>        public void setDrawYAxisName( final boolean drawYAxisName )<a name="line.728"></a>
+<span class="sourceLineNo">729</span>        {<a name="line.729"></a>
+<span class="sourceLineNo">730</span>//              this.drawYAxisName = drawYAxisName;<a name="line.730"></a>
+<span class="sourceLineNo">731</span>                // TODO:<a name="line.731"></a>
+<span class="sourceLineNo">732</span>        }<a name="line.732"></a>
+<span class="sourceLineNo">733</span><a name="line.733"></a>
+<span class="sourceLineNo">734</span>        /**<a name="line.734"></a>
+<span class="sourceLineNo">735</span>         *      @param drawXAxisName the drawXAxisName to set<a name="line.735"></a>
+<span class="sourceLineNo">736</span>         */<a name="line.736"></a>
+<span class="sourceLineNo">737</span>        public void setDrawXAxisName( final boolean drawXAxisName )<a name="line.737"></a>
+<span class="sourceLineNo">738</span>        {<a name="line.738"></a>
+<span class="sourceLineNo">739</span>                // xAxisConfig.getRenderingConfig()<a name="line.739"></a>
+<span class="sourceLineNo">740</span>                // TODO:<a name="line.740"></a>
+<span class="sourceLineNo">741</span>        }<a name="line.741"></a>
+<span class="sourceLineNo">742</span><a name="line.742"></a>
+<span class="sourceLineNo">743</span>        /**<a name="line.743"></a>
+<span class="sourceLineNo">744</span>         *      @param xAxisNameSize the xAxisNameSize to set<a name="line.744"></a>
+<span class="sourceLineNo">745</span>         */<a name="line.745"></a>
+<span class="sourceLineNo">746</span>        public void setxAxisNameSize( final int xAxisNameSize )<a name="line.746"></a>
+<span class="sourceLineNo">747</span>        {<a name="line.747"></a>
+<span class="sourceLineNo">748</span>                this.xAxisConfig.getRenderingConfig().setNameSize( xAxisNameSize );<a name="line.748"></a>
+<span class="sourceLineNo">749</span>        }<a name="line.749"></a>
+<span class="sourceLineNo">750</span><a name="line.750"></a>
+<span class="sourceLineNo">751</span>        /**<a name="line.751"></a>
+<span class="sourceLineNo">752</span>         *      @param xAxisNameColour the xAxisNameColour to set<a name="line.752"></a>
+<span class="sourceLineNo">753</span>         */<a name="line.753"></a>
+<span class="sourceLineNo">754</span>        public void setxAxisNameColour( final Q xAxisNameColour )<a name="line.754"></a>
+<span class="sourceLineNo">755</span>        {<a name="line.755"></a>
+<span class="sourceLineNo">756</span>                this.xAxisConfig.getRenderingConfig().setNameColour( xAxisNameColour );<a name="line.756"></a>
+<span class="sourceLineNo">757</span>        }<a name="line.757"></a>
+<span class="sourceLineNo">758</span><a name="line.758"></a>
+<span class="sourceLineNo">759</span>        /**<a name="line.759"></a>
+<span class="sourceLineNo">760</span>         *      @param yAxisNameSize the yAxisNameSize to set<a name="line.760"></a>
+<span class="sourceLineNo">761</span>         */<a name="line.761"></a>
+<span class="sourceLineNo">762</span>        public void setyAxisNameSize( final int yAxisNameSize )<a name="line.762"></a>
+<span class="sourceLineNo">763</span>        {<a name="line.763"></a>
+<span class="sourceLineNo">764</span>                this.yAxisConfig.getRenderingConfig().setNameSize( yAxisNameSize );<a name="line.764"></a>
+<span class="sourceLineNo">765</span>        }<a name="line.765"></a>
+<span class="sourceLineNo">766</span><a name="line.766"></a>
+<span class="sourceLineNo">767</span>        /**<a name="line.767"></a>
+<span class="sourceLineNo">768</span>         *      @param yAxisNameColour the yAxisNameColour to set<a name="line.768"></a>
+<span class="sourceLineNo">769</span>         */<a name="line.769"></a>
+<span class="sourceLineNo">770</span>        public void setyAxisNameColour( final Q yAxisNameColour )<a name="line.770"></a>
+<span class="sourceLineNo">771</span>        {<a name="line.771"></a>
+<span class="sourceLineNo">772</span>                this.yAxisConfig.getRenderingConfig().setNameColour( yAxisNameColour );<a name="line.772"></a>
+<span class="sourceLineNo">773</span>        }<a name="line.773"></a>
+<span class="sourceLineNo">774</span><a name="line.774"></a>
+<span class="sourceLineNo">775</span>        /**<a name="line.775"></a>
+<span class="sourceLineNo">776</span>         *      @param drawXTicks the drawXTicks to set<a name="line.776"></a>
+<span class="sourceLineNo">777</span>         */<a name="line.777"></a>
+<span class="sourceLineNo">778</span>        public void setDrawXTicks( final boolean drawXTicks )<a name="line.778"></a>
+<span class="sourceLineNo">779</span>        {<a name="line.779"></a>
+<span class="sourceLineNo">780</span>                this.xAxisConfig.getRenderingConfig().setDrawMajorTicks( drawXTicks );<a name="line.780"></a>
+<span class="sourceLineNo">781</span>                this.xAxisConfig.getRenderingConfig().setDrawMinorTicks( drawXTicks );<a name="line.781"></a>
+<span class="sourceLineNo">782</span>        }<a name="line.782"></a>
+<span class="sourceLineNo">783</span><a name="line.783"></a>
+<span class="sourceLineNo">784</span>        /**<a name="line.784"></a>
+<span class="sourceLineNo">785</span>         *      @param drawYTicks the drawYTicks to set<a name="line.785"></a>
+<span class="sourceLineNo">786</span>         */<a name="line.786"></a>
+<span class="sourceLineNo">787</span>        public void setDrawYTicks( final boolean drawYTicks )<a name="line.787"></a>
+<span class="sourceLineNo">788</span>        {<a name="line.788"></a>
+<span class="sourceLineNo">789</span>                this.yAxisConfig.getRenderingConfig().setDrawMajorTicks( drawYTicks );<a name="line.789"></a>
+<span class="sourceLineNo">790</span>                this.yAxisConfig.getRenderingConfig().setDrawMinorTicks( drawYTicks );<a name="line.790"></a>
+<span class="sourceLineNo">791</span>        }<a name="line.791"></a>
+<span class="sourceLineNo">792</span><a name="line.792"></a>
+<span class="sourceLineNo">793</span>        /**<a name="line.793"></a>
+<span class="sourceLineNo">794</span>         *      @param xAxisLabelTransformer the xAxisLabelTransformer to set<a name="line.794"></a>
+<span class="sourceLineNo">795</span>         */<a name="line.795"></a>
+<span class="sourceLineNo">796</span>        public void setxAxisLabelTransformer( final LabelTransformer xAxisLabelTransformer )<a name="line.796"></a>
+<span class="sourceLineNo">797</span>        {<a name="line.797"></a>
+<span class="sourceLineNo">798</span>                this.xAxisConfig.getRenderingConfig().setLabelTransformer( xAxisLabelTransformer );<a name="line.798"></a>
+<span class="sourceLineNo">799</span>        }<a name="line.799"></a>
+<span class="sourceLineNo">800</span><a name="line.800"></a>
+<span class="sourceLineNo">801</span>        /**<a name="line.801"></a>
+<span class="sourceLineNo">802</span>         *      @param yAxisLabelTransformer the yAxisLabelTransformer to set<a name="line.802"></a>
+<span class="sourceLineNo">803</span>         */<a name="line.803"></a>
+<span class="sourceLineNo">804</span>        public void setyAxisLabelTransformer( final LabelTransformer yAxisLabelTransformer )<a name="line.804"></a>
+<span class="sourceLineNo">805</span>        {<a name="line.805"></a>
+<span class="sourceLineNo">806</span>                this.yAxisConfig.getRenderingConfig().setLabelTransformer( yAxisLabelTransformer );<a name="line.806"></a>
+<span class="sourceLineNo">807</span>        }<a name="line.807"></a>
+<span class="sourceLineNo">808</span><a name="line.808"></a>
+<span class="sourceLineNo">809</span>        /**<a name="line.809"></a>
+<span class="sourceLineNo">810</span>         *      @param drawMinorTickGrid the drawMinorTickGrid to set<a name="line.810"></a>
+<span class="sourceLineNo">811</span>         */<a name="line.811"></a>
+<span class="sourceLineNo">812</span>        public void setDrawMinorTickGrid( final boolean drawMinorTickGrid )<a name="line.812"></a>
+<span class="sourceLineNo">813</span>        {<a name="line.813"></a>
+<span class="sourceLineNo">814</span>                this.xAxisConfig.getRenderingConfig().setDrawMinorGrid( drawMinorTickGrid );<a name="line.814"></a>
+<span class="sourceLineNo">815</span>                this.yAxisConfig.getRenderingConfig().setDrawMinorGrid( drawMinorTickGrid );<a name="line.815"></a>
+<span class="sourceLineNo">816</span>        }<a name="line.816"></a>
+<span class="sourceLineNo">817</span><a name="line.817"></a>
+<span class="sourceLineNo">818</span>        /**<a name="line.818"></a>
+<span class="sourceLineNo">819</span>         *      @param drawMajorTickGrid the drawMajorTickGrid to set<a name="line.819"></a>
+<span class="sourceLineNo">820</span>         */<a name="line.820"></a>
+<span class="sourceLineNo">821</span>        public void setDrawMajorTickGrid( final boolean drawMajorTickGrid )<a name="line.821"></a>
+<span class="sourceLineNo">822</span>        {<a name="line.822"></a>
+<span class="sourceLineNo">823</span>                this.xAxisConfig.getRenderingConfig().setDrawMajorGrid( drawMajorTickGrid );<a name="line.823"></a>
+<span class="sourceLineNo">824</span>                this.yAxisConfig.getRenderingConfig().setDrawMajorGrid( drawMajorTickGrid );<a name="line.824"></a>
+<span class="sourceLineNo">825</span>        }<a name="line.825"></a>
+<span class="sourceLineNo">826</span><a name="line.826"></a>
+<span class="sourceLineNo">827</span>        /**<a name="line.827"></a>
+<span class="sourceLineNo">828</span>         *      @param minorGridColour the minorGridColour to set<a name="line.828"></a>
+<span class="sourceLineNo">829</span>         */<a name="line.829"></a>
+<span class="sourceLineNo">830</span>        public void setMinorGridColour( final Q minorGridColour )<a name="line.830"></a>
+<span class="sourceLineNo">831</span>        {<a name="line.831"></a>
+<span class="sourceLineNo">832</span>                this.xAxisConfig.getRenderingConfig().setMinorGridColour( minorGridColour );<a name="line.832"></a>
+<span class="sourceLineNo">833</span>                this.yAxisConfig.getRenderingConfig().setMinorGridColour( minorGridColour );<a name="line.833"></a>
+<span class="sourceLineNo">834</span>        }<a name="line.834"></a>
+<span class="sourceLineNo">835</span><a name="line.835"></a>
+<span class="sourceLineNo">836</span>        /**<a name="line.836"></a>
+<span class="sourceLineNo">837</span>         *      @param majorGridColour the majorGridColour to set<a name="line.837"></a>
+<span class="sourceLineNo">838</span>         */<a name="line.838"></a>
+<span class="sourceLineNo">839</span>        public void setMajorGridColour( final Q majorGridColour )<a name="line.839"></a>
+<span class="sourceLineNo">840</span>        {<a name="line.840"></a>
+<span class="sourceLineNo">841</span>                this.xAxisConfig.getRenderingConfig().setMajorGridColour( majorGridColour );<a name="line.841"></a>
+<span class="sourceLineNo">842</span>                this.yAxisConfig.getRenderingConfig().setMajorGridColour( majorGridColour );<a name="line.842"></a>
+<span class="sourceLineNo">843</span>        }<a name="line.843"></a>
+<span class="sourceLineNo">844</span><a name="line.844"></a>
+<span class="sourceLineNo">845</span>        /**<a name="line.845"></a>
+<span class="sourceLineNo">846</span>         *      @param majorGridThickness the majorGridThickness to set<a name="line.846"></a>
+<span class="sourceLineNo">847</span>         */<a name="line.847"></a>
+<span class="sourceLineNo">848</span>        public void setMajorGridThickness( final int majorGridThickness )<a name="line.848"></a>
+<span class="sourceLineNo">849</span>        {<a name="line.849"></a>
+<span class="sourceLineNo">850</span>                this.xAxisConfig.getRenderingConfig().setMajorGridThickness( majorGridThickness );<a name="line.850"></a>
+<span class="sourceLineNo">851</span>                this.yAxisConfig.getRenderingConfig().setMajorGridThickness( majorGridThickness );<a name="line.851"></a>
+<span class="sourceLineNo">852</span>        }<a name="line.852"></a>
+<span class="sourceLineNo">853</span><a name="line.853"></a>
+<span class="sourceLineNo">854</span>        /**<a name="line.854"></a>
+<span class="sourceLineNo">855</span>         *      @param minorGridThickness the minorGridThickness to set<a name="line.855"></a>
+<span class="sourceLineNo">856</span>         */<a name="line.856"></a>
+<span class="sourceLineNo">857</span>        public void setMinorGridThickness( final int minorGridThickness )<a name="line.857"></a>
+<span class="sourceLineNo">858</span>        {<a name="line.858"></a>
+<span class="sourceLineNo">859</span>                this.xAxisConfig.getRenderingConfig().setMinorGridThickness( minorGridThickness );<a name="line.859"></a>
+<span class="sourceLineNo">860</span>                this.yAxisConfig.getRenderingConfig().setMinorGridThickness( minorGridThickness );<a name="line.860"></a>
+<span class="sourceLineNo">861</span>        }<a name="line.861"></a>
+<span class="sourceLineNo">862</span><a name="line.862"></a>
+<span class="sourceLineNo">863</span>        /**<a name="line.863"></a>
+<span class="sourceLineNo">864</span>         *      Returns a data pixel transformer that is based on this axes renderer but has its values<a name="line.864"></a>
+<span class="sourceLineNo">865</span>         *      offset by the given number of pixels.<a name="line.865"></a>
+<span class="sourceLineNo">866</span>         *<a name="line.866"></a>
+<span class="sourceLineNo">867</span>         *      // TODO: This method doesn't work at the moment<a name="line.867"></a>
+<span class="sourceLineNo">868</span>         *<a name="line.868"></a>
+<span class="sourceLineNo">869</span>         *      @param xOffset The x location<a name="line.869"></a>
+<span class="sourceLineNo">870</span>         *      @param yOffset The y location<a name="line.870"></a>
+<span class="sourceLineNo">871</span>         *      @return A new data pixel transformer<a name="line.871"></a>
+<span class="sourceLineNo">872</span>         */<a name="line.872"></a>
+<span class="sourceLineNo">873</span>        public DataUnitsTransformer&lt;Q,double[],int[]&gt; getRelativePixelTransformer(<a name="line.873"></a>
+<span class="sourceLineNo">874</span>                        final int xOffset, final int yOffset )<a name="line.874"></a>
+<span class="sourceLineNo">875</span>        {<a name="line.875"></a>
+<span class="sourceLineNo">876</span>                // TODO: This needs completing<a name="line.876"></a>
+<span class="sourceLineNo">877</span>                return new DataUnitsTransformer&lt;Q,double[],int[]&gt;()<a name="line.877"></a>
+<span class="sourceLineNo">878</span>                {<a name="line.878"></a>
+<span class="sourceLineNo">879</span>                        @Override<a name="line.879"></a>
+<span class="sourceLineNo">880</span>                        public void precalc()<a name="line.880"></a>
+<span class="sourceLineNo">881</span>                        {<a name="line.881"></a>
+<span class="sourceLineNo">882</span>                                // TODO Auto-generated method stub<a name="line.882"></a>
+<span class="sourceLineNo">883</span>                        }<a name="line.883"></a>
+<span class="sourceLineNo">884</span><a name="line.884"></a>
+<span class="sourceLineNo">885</span>                        @Override<a name="line.885"></a>
+<span class="sourceLineNo">886</span>                        public int[] calculatePosition( final double[] units )<a name="line.886"></a>
+<span class="sourceLineNo">887</span>                        {<a name="line.887"></a>
+<span class="sourceLineNo">888</span>                                // TODO Auto-generated method stub<a name="line.888"></a>
+<span class="sourceLineNo">889</span>                                return null;<a name="line.889"></a>
+<span class="sourceLineNo">890</span>                        }<a name="line.890"></a>
+<span class="sourceLineNo">891</span><a name="line.891"></a>
+<span class="sourceLineNo">892</span>                        @Override<a name="line.892"></a>
+<span class="sourceLineNo">893</span>                        public double[] calculateUnitsAt( final int[] position )<a name="line.893"></a>
+<span class="sourceLineNo">894</span>                        {<a name="line.894"></a>
+<span class="sourceLineNo">895</span>                                // TODO Auto-generated method stub<a name="line.895"></a>
+<span class="sourceLineNo">896</span>                                return null;<a name="line.896"></a>
+<span class="sourceLineNo">897</span>                        }<a name="line.897"></a>
+<span class="sourceLineNo">898</span><a name="line.898"></a>
+<span class="sourceLineNo">899</span>                        @Override<a name="line.899"></a>
+<span class="sourceLineNo">900</span>                        public int[] scaleDimension( final double[] dimension )<a name="line.900"></a>
+<span class="sourceLineNo">901</span>                        {<a name="line.901"></a>
+<span class="sourceLineNo">902</span>                                // TODO Auto-generated method stub<a name="line.902"></a>
+<span class="sourceLineNo">903</span>                                return null;<a name="line.903"></a>
+<span class="sourceLineNo">904</span>                        }<a name="line.904"></a>
+<span class="sourceLineNo">905</span><a name="line.905"></a>
+<span class="sourceLineNo">906</span>//                      @Override<a name="line.906"></a>
+<span class="sourceLineNo">907</span>//                      public void precalc( final double[] dim )<a name="line.907"></a>
+<span class="sourceLineNo">908</span>//                      {<a name="line.908"></a>
+<span class="sourceLineNo">909</span>//                              AxesRenderer2D.this.precalc( dim );<a name="line.909"></a>
+<span class="sourceLineNo">910</span>//                      }<a name="line.910"></a>
+<span class="sourceLineNo">911</span>//<a name="line.911"></a>
+<span class="sourceLineNo">912</span>//                      @Override<a name="line.912"></a>
+<span class="sourceLineNo">913</span>//                      public Point2d calculatePosition( final double[] dim, final double x, final double y )<a name="line.913"></a>
+<span class="sourceLineNo">914</span>//                      {<a name="line.914"></a>
+<span class="sourceLineNo">915</span>//                              // Calculate the position of the data<a name="line.915"></a>
+<span class="sourceLineNo">916</span>//                              final Point2d p = AxesRenderer2D.this.calculatePosition( dim, x, y );<a name="line.916"></a>
+<span class="sourceLineNo">917</span>//<a name="line.917"></a>
+<span class="sourceLineNo">918</span>//                              // Then translate it back by the offset<a name="line.918"></a>
+<span class="sourceLineNo">919</span>//                              p.translate( -xOffset, -yOffset );<a name="line.919"></a>
+<span class="sourceLineNo">920</span>//                              return p;<a name="line.920"></a>
+<span class="sourceLineNo">921</span>//                      }<a name="line.921"></a>
+<span class="sourceLineNo">922</span>//<a name="line.922"></a>
+<span class="sourceLineNo">923</span>//                      @Override<a name="line.923"></a>
+<span class="sourceLineNo">924</span>//                      public double[] calculateUnitsAt( final double[] dim, int x, int y )<a name="line.924"></a>
+<span class="sourceLineNo">925</span>//                      {<a name="line.925"></a>
+<span class="sourceLineNo">926</span>//                              // Translate the pixel to the original coordinates<a name="line.926"></a>
+<span class="sourceLineNo">927</span>//                              x += xOffset;<a name="line.927"></a>
+<span class="sourceLineNo">928</span>//                              y += yOffset;<a name="line.928"></a>
+<span class="sourceLineNo">929</span>//                              // Now calculate the value<a name="line.929"></a>
+<span class="sourceLineNo">930</span>//                              return AxesRenderer2D.this.calculateUnitsAt( dim, x, y );<a name="line.930"></a>
+<span class="sourceLineNo">931</span>//                      }<a name="line.931"></a>
+<span class="sourceLineNo">932</span>                };<a name="line.932"></a>
+<span class="sourceLineNo">933</span>        }<a name="line.933"></a>
+<span class="sourceLineNo">934</span><a name="line.934"></a>
+<span class="sourceLineNo">935</span>        /**<a name="line.935"></a>
+<span class="sourceLineNo">936</span>         *      @return the xAxisConfig<a name="line.936"></a>
+<span class="sourceLineNo">937</span>         */<a name="line.937"></a>
+<span class="sourceLineNo">938</span>        public AxisConfig&lt;Q&gt; getxAxisConfig()<a name="line.938"></a>
+<span class="sourceLineNo">939</span>        {<a name="line.939"></a>
+<span class="sourceLineNo">940</span>                return this.xAxisConfig;<a name="line.940"></a>
+<span class="sourceLineNo">941</span>        }<a name="line.941"></a>
+<span class="sourceLineNo">942</span><a name="line.942"></a>
+<span class="sourceLineNo">943</span>        /**<a name="line.943"></a>
+<span class="sourceLineNo">944</span>         *      @param xAxisConfig the xAxisConfig to set<a name="line.944"></a>
+<span class="sourceLineNo">945</span>         */<a name="line.945"></a>
+<span class="sourceLineNo">946</span>        public void setxAxisConfig( final AxisConfig&lt;Q&gt; xAxisConfig )<a name="line.946"></a>
+<span class="sourceLineNo">947</span>        {<a name="line.947"></a>
+<span class="sourceLineNo">948</span>                this.xAxisConfig = xAxisConfig;<a name="line.948"></a>
+<span class="sourceLineNo">949</span>        }<a name="line.949"></a>
+<span class="sourceLineNo">950</span><a name="line.950"></a>
+<span class="sourceLineNo">951</span>        /**<a name="line.951"></a>
+<span class="sourceLineNo">952</span>         *      @return the yAxisConfig<a name="line.952"></a>
+<span class="sourceLineNo">953</span>         */<a name="line.953"></a>
+<span class="sourceLineNo">954</span>        public AxisConfig&lt;Q&gt; getyAxisConfig()<a name="line.954"></a>
+<span class="sourceLineNo">955</span>        {<a name="line.955"></a>
+<span class="sourceLineNo">956</span>                return this.yAxisConfig;<a name="line.956"></a>
+<span class="sourceLineNo">957</span>        }<a name="line.957"></a>
+<span class="sourceLineNo">958</span><a name="line.958"></a>
+<span class="sourceLineNo">959</span>        /**<a name="line.959"></a>
+<span class="sourceLineNo">960</span>         *      @param yAxisConfig the yAxisConfig to set<a name="line.960"></a>
+<span class="sourceLineNo">961</span>         */<a name="line.961"></a>
+<span class="sourceLineNo">962</span>        public void setyAxisConfig( final AxisConfig&lt;Q&gt; yAxisConfig )<a name="line.962"></a>
+<span class="sourceLineNo">963</span>        {<a name="line.963"></a>
+<span class="sourceLineNo">964</span>                this.yAxisConfig = yAxisConfig;<a name="line.964"></a>
+<span class="sourceLineNo">965</span>        }<a name="line.965"></a>
+<span class="sourceLineNo">966</span><a name="line.966"></a>
+<span class="sourceLineNo">967</span>        /**<a name="line.967"></a>
+<span class="sourceLineNo">968</span>         *      {@inheritDoc}<a name="line.968"></a>
+<span class="sourceLineNo">969</span>         *      @see org.openimaj.vis.DataUnitsTransformer#calculatePosition(java.lang.Object)<a name="line.969"></a>
+<span class="sourceLineNo">970</span>         */<a name="line.970"></a>
+<span class="sourceLineNo">971</span>        @Override<a name="line.971"></a>
+<span class="sourceLineNo">972</span>        public int[] calculatePosition( final double[] units )<a name="line.972"></a>
+<span class="sourceLineNo">973</span>        {<a name="line.973"></a>
+<span class="sourceLineNo">974</span>                Point2dImpl p = new Point2dImpl( (float)units[0], (float)units[1] );<a name="line.974"></a>
+<span class="sourceLineNo">975</span>                p = p.transform( this.dataTransformMatrix );<a name="line.975"></a>
+<span class="sourceLineNo">976</span>                return new int[] { Math.round(p.getX()), Math.round(p.getY()) };<a name="line.976"></a>
+<span class="sourceLineNo">977</span><a name="line.977"></a>
+<span class="sourceLineNo">978</span>//              final double[] dx = this.xAxisRenderer.calculatePosition( units[0] );<a name="line.978"></a>
+<span class="sourceLineNo">979</span>//              final double[] dy = this.yAxisRenderer.calculatePosition( units[1] );<a name="line.979"></a>
+<span class="sourceLineNo">980</span>//<a name="line.980"></a>
+<span class="sourceLineNo">981</span>//              System.out.println( "units[0] = "+units[0]+" --&gt; "+Arrays.toString( dx ) );<a name="line.981"></a>
+<span class="sourceLineNo">982</span>//              System.out.println( "units[1] = "+units[1]+" --&gt; "+Arrays.toString( dy ) );<a name="line.982"></a>
+<span class="sourceLineNo">983</span>//<a name="line.983"></a>
+<span class="sourceLineNo">984</span>//              return new int[] { (int) dx[0], (int)dy[1] };<a name="line.984"></a>
+<span class="sourceLineNo">985</span>//                              //(int)(dx[0]+dy[0]), (int)(dx[1]+dy[1]) };<a name="line.985"></a>
+<span class="sourceLineNo">986</span>        }<a name="line.986"></a>
+<span class="sourceLineNo">987</span><a name="line.987"></a>
+<span class="sourceLineNo">988</span>        /**<a name="line.988"></a>
+<span class="sourceLineNo">989</span>         *      {@inheritDoc}<a name="line.989"></a>
+<span class="sourceLineNo">990</span>         *      @see org.openimaj.vis.DataUnitsTransformer#calculateUnitsAt(java.lang.Object)<a name="line.990"></a>
+<span class="sourceLineNo">991</span>         */<a name="line.991"></a>
+<span class="sourceLineNo">992</span>        @Override<a name="line.992"></a>
+<span class="sourceLineNo">993</span>        public double[] calculateUnitsAt( final int[] position )<a name="line.993"></a>
+<span class="sourceLineNo">994</span>        {<a name="line.994"></a>
+<span class="sourceLineNo">995</span>                return new double[] {<a name="line.995"></a>
+<span class="sourceLineNo">996</span>                                this.xAxisRenderer.calculateUnitsAt(<a name="line.996"></a>
+<span class="sourceLineNo">997</span>                                                new double[] {position[0],position[1]} ),<a name="line.997"></a>
+<span class="sourceLineNo">998</span>                                this.yAxisRenderer.calculateUnitsAt(<a name="line.998"></a>
+<span class="sourceLineNo">999</span>                                                new double[] {position[0],position[1]} )<a name="line.999"></a>
+<span class="sourceLineNo">1000</span>                };<a name="line.1000"></a>
+<span class="sourceLineNo">1001</span>        }<a name="line.1001"></a>
+<span class="sourceLineNo">1002</span><a name="line.1002"></a>
+<span class="sourceLineNo">1003</span>        /**<a name="line.1003"></a>
+<span class="sourceLineNo">1004</span>         *      Given two dimensions, returns the dimensions scaled to the appropriate sizes.<a name="line.1004"></a>
+<span class="sourceLineNo">1005</span>         *      @param xs The x dimension<a name="line.1005"></a>
+<span class="sourceLineNo">1006</span>         *      @param ys The y dimension<a name="line.1006"></a>
+<span class="sourceLineNo">1007</span>         *      @return The scaled dimensions<a name="line.1007"></a>
+<span class="sourceLineNo">1008</span>         */<a name="line.1008"></a>
+<span class="sourceLineNo">1009</span>        public double[] scaleDimensions( final double xs, final double ys )<a name="line.1009"></a>
+<span class="sourceLineNo">1010</span>        {<a name="line.1010"></a>
+<span class="sourceLineNo">1011</span>                return new double[]{<a name="line.1011"></a>
+<span class="sourceLineNo">1012</span>                        xs * this.xAxisRenderer.getCurrentScale(),<a name="line.1012"></a>
+<span class="sourceLineNo">1013</span>                        ys * this.yAxisRenderer.getCurrentScale()<a name="line.1013"></a>
+<span class="sourceLineNo">1014</span>                };<a name="line.1014"></a>
+<span class="sourceLineNo">1015</span>        }<a name="line.1015"></a>
+<span class="sourceLineNo">1016</span><a name="line.1016"></a>
+<span class="sourceLineNo">1017</span>        /**<a name="line.1017"></a>
+<span class="sourceLineNo">1018</span>         *      {@inheritDoc}<a name="line.1018"></a>
+<span class="sourceLineNo">1019</span>         *      @see org.openimaj.vis.DataUnitsTransformer#scaleDimension(java.lang.Object)<a name="line.1019"></a>
+<span class="sourceLineNo">1020</span>         */<a name="line.1020"></a>
+<span class="sourceLineNo">1021</span>        @Override<a name="line.1021"></a>
+<span class="sourceLineNo">1022</span>        public int[] scaleDimension( final double[] dimension )<a name="line.1022"></a>
+<span class="sourceLineNo">1023</span>        {<a name="line.1023"></a>
+<span class="sourceLineNo">1024</span>                return new int[]<a name="line.1024"></a>
+<span class="sourceLineNo">1025</span>                {<a name="line.1025"></a>
+<span class="sourceLineNo">1026</span>                        (int)(dimension[0] * this.xAxisRenderer.getCurrentScale()),<a name="line.1026"></a>
+<span class="sourceLineNo">1027</span>                        (int)(dimension[1] * this.yAxisRenderer.getCurrentScale())<a name="line.1027"></a>
+<span class="sourceLineNo">1028</span>                };<a name="line.1028"></a>
+<span class="sourceLineNo">1029</span>        }<a name="line.1029"></a>
+<span class="sourceLineNo">1030</span><a name="line.1030"></a>
+<span class="sourceLineNo">1031</span>        /**<a name="line.1031"></a>
+<span class="sourceLineNo">1032</span>         *      Helper function to calulate the render position of a data unit<a name="line.1032"></a>
+<span class="sourceLineNo">1033</span>         *      @param x The data unit x<a name="line.1033"></a>
+<span class="sourceLineNo">1034</span>         *      @param y The data unit y<a name="line.1034"></a>
+<span class="sourceLineNo">1035</span>         *      @return The render position<a name="line.1035"></a>
+<span class="sourceLineNo">1036</span>         */<a name="line.1036"></a>
+<span class="sourceLineNo">1037</span>        public Point2d calculatePosition( final double x, final double y )<a name="line.1037"></a>
+<span class="sourceLineNo">1038</span>        {<a name="line.1038"></a>
+<span class="sourceLineNo">1039</span>                final int[] p = this.calculatePosition( new double[] {x, y} );<a name="line.1039"></a>
+<span class="sourceLineNo">1040</span>                return new Point2dImpl( p[0], p[1] );<a name="line.1040"></a>
+<span class="sourceLineNo">1041</span>        }<a name="line.1041"></a>
+<span class="sourceLineNo">1042</span><a name="line.1042"></a>
+<span class="sourceLineNo">1043</span>        /**<a name="line.1043"></a>
+<span class="sourceLineNo">1044</span>         *      Config may be null as it is not used.<a name="line.1044"></a>
+<span class="sourceLineNo">1045</span>         *<a name="line.1045"></a>
+<span class="sourceLineNo">1046</span>         *      {@inheritDoc}<a name="line.1046"></a>
+<span class="sourceLineNo">1047</span>         *      @see org.openimaj.vis.DataUnitsTransformer#precalc()<a name="line.1047"></a>
+<span class="sourceLineNo">1048</span>         */<a name="line.1048"></a>
+<span class="sourceLineNo">1049</span>        @Override<a name="line.1049"></a>
+<span class="sourceLineNo">1050</span>        synchronized public void precalc()<a name="line.1050"></a>
+<span class="sourceLineNo">1051</span>        {<a name="line.1051"></a>
+<span class="sourceLineNo">1052</span>                // Set the position of the x axis<a name="line.1052"></a>
+<span class="sourceLineNo">1053</span>                final double[] xLoc = this.xAxisConfig.getLocation();<a name="line.1053"></a>
+<span class="sourceLineNo">1054</span>                xLoc[0] = this.axisPaddingLeft;<a name="line.1054"></a>
+<span class="sourceLineNo">1055</span>                xLoc[1] = this.getxAxisPosition();<a name="line.1055"></a>
+<span class="sourceLineNo">1056</span>                this.xAxisRenderer.precalc();<a name="line.1056"></a>
+<span class="sourceLineNo">1057</span><a name="line.1057"></a>
+<span class="sourceLineNo">1058</span>                // Calculate a data transform matrix for working out the position of data<a name="line.1058"></a>
+<span class="sourceLineNo">1059</span>                this.dataTransformMatrix = Matrix.identity( 3, 3 );<a name="line.1059"></a>
+<span class="sourceLineNo">1060</span>                this.dataTransformMatrix = TransformUtilities.translateMatrix(<a name="line.1060"></a>
+<span class="sourceLineNo">1061</span>                                -this.xAxisConfig.getMinValue(), 0 ).times( this.dataTransformMatrix );<a name="line.1061"></a>
+<span class="sourceLineNo">1062</span>                this.dataTransformMatrix = TransformUtilities.scaleMatrix(<a name="line.1062"></a>
+<span class="sourceLineNo">1063</span>                                this.xAxisRenderer.getCurrentScale(), -this.yAxisRenderer.getCurrentScale() )<a name="line.1063"></a>
+<span class="sourceLineNo">1064</span>                                .times( this.dataTransformMatrix );<a name="line.1064"></a>
+<span class="sourceLineNo">1065</span>                this.dataTransformMatrix = TransformUtilities.rotationMatrix(<a name="line.1065"></a>
+<span class="sourceLineNo">1066</span>                                this.xAxisConfig.getOrientation()[0] ).times( this.dataTransformMatrix );<a name="line.1066"></a>
+<span class="sourceLineNo">1067</span>                this.dataTransformMatrix = TransformUtilities.translateMatrix( xLoc[0], xLoc[1] )<a name="line.1067"></a>
+<span class="sourceLineNo">1068</span>                                .times( this.dataTransformMatrix );<a name="line.1068"></a>
+<span class="sourceLineNo">1069</span><a name="line.1069"></a>
+<span class="sourceLineNo">1070</span>                // Re-seat the y axis<a name="line.1070"></a>
+<span class="sourceLineNo">1071</span>                final double[] yLoc = this.yAxisConfig.getLocation();<a name="line.1071"></a>
+<span class="sourceLineNo">1072</span>                final Point2d dd = this.calculatePosition( 0, this.yAxisConfig.getMinValue() );<a name="line.1072"></a>
+<span class="sourceLineNo">1073</span>                yLoc[0] = dd.getX();<a name="line.1073"></a>
+<span class="sourceLineNo">1074</span>                yLoc[1] = dd.getY();<a name="line.1074"></a>
+<span class="sourceLineNo">1075</span>                this.yAxisRenderer.precalc();<a name="line.1075"></a>
+<span class="sourceLineNo">1076</span>        }<a name="line.1076"></a>
+<span class="sourceLineNo">1077</span><a name="line.1077"></a>
+<span class="sourceLineNo">1078</span>        /**<a name="line.1078"></a>
+<span class="sourceLineNo">1079</span>         *      @param image the image to set<a name="line.1079"></a>
+<span class="sourceLineNo">1080</span>         */<a name="line.1080"></a>
+<span class="sourceLineNo">1081</span>        public void setImage( final I image )<a name="line.1081"></a>
+<span class="sourceLineNo">1082</span>        {<a name="line.1082"></a>
+<span class="sourceLineNo">1083</span>                synchronized( this )<a name="line.1083"></a>
+<span class="sourceLineNo">1084</span>                {<a name="line.1084"></a>
+<span class="sourceLineNo">1085</span>                        this.xAxisRenderer.setImage( image );<a name="line.1085"></a>
+<span class="sourceLineNo">1086</span>                        this.yAxisRenderer.setImage( image );<a name="line.1086"></a>
+<span class="sourceLineNo">1087</span><a name="line.1087"></a>
+<span class="sourceLineNo">1088</span>                        this.xAxisRenderer.setAxisLength(<a name="line.1088"></a>
+<span class="sourceLineNo">1089</span>                                image.getWidth() - this.axisPaddingLeft - this.axisPaddingRight );<a name="line.1089"></a>
+<span class="sourceLineNo">1090</span>                        this.yAxisRenderer.setAxisLength(<a name="line.1090"></a>
+<span class="sourceLineNo">1091</span>                                image.getHeight() - this.axisPaddingBottom - this.axisPaddingTop );<a name="line.1091"></a>
+<span class="sourceLineNo">1092</span>                }<a name="line.1092"></a>
+<span class="sourceLineNo">1093</span>        }<a name="line.1093"></a>
+<span class="sourceLineNo">1094</span><a name="line.1094"></a>
+<span class="sourceLineNo">1095</span>        /**<a name="line.1095"></a>
+<span class="sourceLineNo">1096</span>         *      @return the xAxisRenderer<a name="line.1096"></a>
+<span class="sourceLineNo">1097</span>         */<a name="line.1097"></a>
+<span class="sourceLineNo">1098</span>        public AxisRenderer2D&lt;Q&gt; getxAxisRenderer()<a name="line.1098"></a>
+<span class="sourceLineNo">1099</span>        {<a name="line.1099"></a>
+<span class="sourceLineNo">1100</span>                return this.xAxisRenderer;<a name="line.1100"></a>
+<span class="sourceLineNo">1101</span>        }<a name="line.1101"></a>
+<span class="sourceLineNo">1102</span><a name="line.1102"></a>
+<span class="sourceLineNo">1103</span>        /**<a name="line.1103"></a>
+<span class="sourceLineNo">1104</span>         *      @return the yAxisRenderer<a name="line.1104"></a>
+<span class="sourceLineNo">1105</span>         */<a name="line.1105"></a>
+<span class="sourceLineNo">1106</span>        public AxisRenderer2D&lt;Q&gt; getyAxisRenderer()<a name="line.1106"></a>
+<span class="sourceLineNo">1107</span>        {<a name="line.1107"></a>
+<span class="sourceLineNo">1108</span>                return this.yAxisRenderer;<a name="line.1108"></a>
+<span class="sourceLineNo">1109</span>        }<a name="line.1109"></a>
+<span class="sourceLineNo">1110</span><a name="line.1110"></a>
+<span class="sourceLineNo">1111</span>        /**<a name="line.1111"></a>
+<span class="sourceLineNo">1112</span>         *      @param args<a name="line.1112"></a>
+<span class="sourceLineNo">1113</span>         */<a name="line.1113"></a>
+<span class="sourceLineNo">1114</span>        public static void main( final String[] args )<a name="line.1114"></a>
+<span class="sourceLineNo">1115</span>        {<a name="line.1115"></a>
+<span class="sourceLineNo">1116</span>                final MBFImage visImage = new MBFImage( 1000, 600, 3 );<a name="line.1116"></a>
+<span class="sourceLineNo">1117</span>                final AxesRenderer2D&lt;Float[],MBFImage&gt; ar = new AxesRenderer2D&lt;Float[],MBFImage&gt;();<a name="line.1117"></a>
+<span class="sourceLineNo">1118</span><a name="line.1118"></a>
+<span class="sourceLineNo">1119</span>                ar.setxAxisColour( RGBColour.WHITE );<a name="line.1119"></a>
+<span class="sourceLineNo">1120</span>                ar.setyAxisColour( RGBColour.WHITE );<a name="line.1120"></a>
+<span class="sourceLineNo">1121</span>                ar.setMajorTickColour( RGBColour.WHITE );<a name="line.1121"></a>
+<span class="sourceLineNo">1122</span>                ar.setMinorTickColour( RGBColour.GRAY );<a name="line.1122"></a>
+<span class="sourceLineNo">1123</span>                ar.setxTickLabelColour( RGBColour.GRAY );<a name="line.1123"></a>
+<span class="sourceLineNo">1124</span>                ar.setyTickLabelColour( RGBColour.GRAY );<a name="line.1124"></a>
+<span class="sourceLineNo">1125</span>                ar.setxAxisNameColour( RGBColour.WHITE );<a name="line.1125"></a>
+<span class="sourceLineNo">1126</span>                ar.setyAxisNameColour( RGBColour.WHITE );<a name="line.1126"></a>
+<span class="sourceLineNo">1127</span><a name="line.1127"></a>
+<span class="sourceLineNo">1128</span>                ar.setxAxisPosition( 100 );<a name="line.1128"></a>
+<span class="sourceLineNo">1129</span>                ar.setMinXValue( -1 );<a name="line.1129"></a>
+<span class="sourceLineNo">1130</span>                ar.setMaxXValue( 1 );<a name="line.1130"></a>
+<span class="sourceLineNo">1131</span>                ar.setMinYValue( -5 );<a name="line.1131"></a>
+<span class="sourceLineNo">1132</span>                ar.setMaxYValue( 1 );<a name="line.1132"></a>
+<span class="sourceLineNo">1133</span>                ar.setDrawYAxis( true );<a name="line.1133"></a>
+<span class="sourceLineNo">1134</span>                ar.setDrawXAxis( true );<a name="line.1134"></a>
+<span class="sourceLineNo">1135</span>                ar.setDrawXAxisName( true );<a name="line.1135"></a>
+<span class="sourceLineNo">1136</span>                ar.setDrawYAxisName( true );<a name="line.1136"></a>
+<span class="sourceLineNo">1137</span>                ar.setDrawXTickLabels( true );<a name="line.1137"></a>
+<span class="sourceLineNo">1138</span>                ar.setMinorTickLength( 5 );<a name="line.1138"></a>
+<span class="sourceLineNo">1139</span>                ar.setMajorTickLength( 7 );<a name="line.1139"></a>
+<span class="sourceLineNo">1140</span>                ar.setMajorTickThickness( 3 );<a name="line.1140"></a>
+<span class="sourceLineNo">1141</span>                ar.setMinorTickThickenss( 1 );<a name="line.1141"></a>
+<span class="sourceLineNo">1142</span>                ar.setxMinorTickSpacing( 0.2 );<a name="line.1142"></a>
+<span class="sourceLineNo">1143</span>                ar.setxMajorTickSpacing( 1 );<a name="line.1143"></a>
+<span class="sourceLineNo">1144</span>                ar.setxLabelSpacing( 0.25 );<a name="line.1144"></a>
+<span class="sourceLineNo">1145</span>//              ar.setxTickLabelFont( new GeneralFont( "Arial", java.awt.Font.PLAIN ) );<a name="line.1145"></a>
+<span class="sourceLineNo">1146</span>                ar.setxTickLabelSize( 14 );<a name="line.1146"></a>
+<span class="sourceLineNo">1147</span>                ar.setyMinorTickSpacing( 0.1 );<a name="line.1147"></a>
+<span class="sourceLineNo">1148</span>                ar.setyMajorTickSpacing( 1 );<a name="line.1148"></a>
+<span class="sourceLineNo">1149</span>                ar.setyLabelSpacing( 0.5 );<a name="line.1149"></a>
+<span class="sourceLineNo">1150</span>//              ar.setyTickLabelFont = new GeneralFont( "Arial", java.awt.Font.PLAIN );<a name="line.1150"></a>
+<span class="sourceLineNo">1151</span>                ar.setyTickLabelSize( 14 );<a name="line.1151"></a>
+<span class="sourceLineNo">1152</span>                ar.setxAxisName( "Stuff" );<a name="line.1152"></a>
+<span class="sourceLineNo">1153</span>//              ar.setxAxisNameFont = new GeneralFont( "Times New Roman", java.awt.Font.PLAIN );<a name="line.1153"></a>
+<span class="sourceLineNo">1154</span>                ar.setxAxisNameSize( 25 );<a name="line.1154"></a>
+<span class="sourceLineNo">1155</span>                ar.setyAxisName( "Things" );<a name="line.1155"></a>
+<span class="sourceLineNo">1156</span>//              ar.setyAxisNameFont = new GeneralFont( "Times New Roman", java.awt.Font.PLAIN );<a name="line.1156"></a>
+<span class="sourceLineNo">1157</span>                ar.setyAxisNameSize( 25 );<a name="line.1157"></a>
+<span class="sourceLineNo">1158</span><a name="line.1158"></a>
+<span class="sourceLineNo">1159</span>                ar.precalc();<a name="line.1159"></a>
+<span class="sourceLineNo">1160</span>                ar.renderAxis( visImage );<a name="line.1160"></a>
+<span class="sourceLineNo">1161</span>                DisplayUtilities.display( visImage );<a name="line.1161"></a>
+<span class="sourceLineNo">1162</span>        }<a name="line.1162"></a>
+<span class="sourceLineNo">1163</span>}<a name="line.1163"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

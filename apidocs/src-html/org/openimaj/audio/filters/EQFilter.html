@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * <a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>package org.openimaj.audio.filters;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.audio.AudioStream;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.audio.SampleChunk;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.audio.processor.AudioProcessor;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.audio.samples.SampleBuffer;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>/**<a name="line.40"></a>
+<span class="sourceLineNo">041</span> *      A class that encapsulates a bunch of different EQ-based filter algorithms<a name="line.41"></a>
+<span class="sourceLineNo">042</span> *      that use a standard bi-quad filter (4th order Linkwitz-Riley filter).<a name="line.42"></a>
+<span class="sourceLineNo">043</span> *<a name="line.43"></a>
+<span class="sourceLineNo">044</span> *      @see "http://musicdsp.org/showArchiveComment.php?ArchiveID=266"<a name="line.44"></a>
+<span class="sourceLineNo">045</span> *      @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.45"></a>
+<span class="sourceLineNo">046</span> *  @created 19 Jul 2012<a name="line.46"></a>
+<span class="sourceLineNo">047</span> *      @version $Author$, $Revision$, $Date$<a name="line.47"></a>
+<span class="sourceLineNo">048</span> */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>public class EQFilter extends AudioProcessor<a name="line.49"></a>
+<span class="sourceLineNo">050</span>{<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        /**<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         *      A class that represents the bi-quad coefficients for a filter.<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         *<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         *      @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         *  @created 20 Jul 2012<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         *      @version $Author$, $Revision$, $Date$<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        public static class EQVars<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        {<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                double a0, a1, a2, a3, a4;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                double b0, b1, b2, b3, b4;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        }<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        <a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         *      An enumerator for various audio filters.<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         *<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         *      @author David Dupplaw (dpd@ecs.soton.ac.uk)<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         *  @created 19 Jul 2012<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         *      @version $Author$, $Revision$, $Date$<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        public static enum EQType<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                /**<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                 *      Low pass filter <a name="line.74"></a>
+<span class="sourceLineNo">075</span>                 */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                LPF<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        @Override<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        public EQVars getCoefficients( final double frequency, final double sampleRate )<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                                final double wc  = 2 * Math.PI * frequency;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                                final double wc2 = wc * wc;<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                                final double wc3 = wc2 * wc;<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                final double wc4 = wc2 * wc2;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                                final double k = wc/Math.tan(Math.PI*frequency/sampleRate);<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                final double k2 = k * k;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                                final double k3 = k2 * k;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                                final double k4 = k2 * k2;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                                final double sqrt2 = Math.sqrt(2);<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                                final double sq_tmp1 = sqrt2 * wc3 * k;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                                final double sq_tmp2 = sqrt2 * wc * k3;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                final double a_tmp = 4 * wc2 * k2 + 2*sq_tmp1 + k4 + 2*sq_tmp2 + wc4;<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>                                final EQVars v = new EQVars();<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                <a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                v.b1 = (4*(wc4+sq_tmp1-k4-sq_tmp2)) / a_tmp;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                v.b2 = (6*wc4-8*wc2*k2+6*k4)/a_tmp;<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                v.b3 = (4*(wc4-sq_tmp1+sq_tmp2-k4))/a_tmp;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                v.b4 = (k4-2*sq_tmp1+wc4-2*sq_tmp2+4*wc2*k2)/a_tmp;<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                //================================================<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                                // low-pass<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                //================================================<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                v.a0 = wc4/a_tmp;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                v.a1 = 4*wc4/a_tmp;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                v.a2 = 6*wc4/a_tmp;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                v.a3 = v.a1;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                                v.a4 = v.a0;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                <a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                return v;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                },<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                <a name="line.113"></a>
+<span class="sourceLineNo">114</span>                /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                 *      High pass filter <a name="line.115"></a>
+<span class="sourceLineNo">116</span>                 */<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                HPF<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        @Override<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        public EQVars getCoefficients( final double frequency, final double sampleRate )<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                final double wc  = 2 * Math.PI * frequency;<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                final double wc2 = wc * wc;<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                final double wc3 = wc2 * wc;<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                                final double wc4 = wc2 * wc2;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                                final double k = wc/Math.tan(Math.PI*frequency/sampleRate);<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                final double k2 = k * k;<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                                final double k3 = k2 * k;<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                                final double k4 = k2 * k2;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                final double sqrt2 = Math.sqrt(2);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                                final double sq_tmp1 = sqrt2 * wc3 * k;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                final double sq_tmp2 = sqrt2 * wc * k3;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                final double a_tmp = 4 * wc2 * k2 + 2*sq_tmp1 + k4 + 2*sq_tmp2 + wc4;<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                final EQVars v = new EQVars();<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                <a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                v.b1 = (4*(wc4+sq_tmp1-k4-sq_tmp2)) / a_tmp;<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                                v.b2 = (6*wc4-8*wc2*k2+6*k4)/a_tmp;<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                                v.b3 = (4*(wc4-sq_tmp1+sq_tmp2-k4))/a_tmp;<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                                v.b4 = (k4-2*sq_tmp1+wc4-2*sq_tmp2+4*wc2*k2)/a_tmp;<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>                                //================================================<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                                // high-pass<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                                //================================================<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                                v.a0 = k4/a_tmp;<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                                v.a1 = -4*k4/a_tmp;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                                v.a2 = 6*k4/a_tmp;<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                                v.a3 = v.a1;<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                                v.a4 = v.a0;<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                                <a name="line.150"></a>
+<span class="sourceLineNo">151</span>                                return v;<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        }<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                };<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                <a name="line.154"></a>
+<span class="sourceLineNo">155</span>                /**<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                 *      Initialise the filter<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                 *      @param frequency The frequency of the filter<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                 *      @param sampleRate The sample rate of the samples<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                 *      @return The biquad coefficients for this filter <a name="line.159"></a>
+<span class="sourceLineNo">160</span>                 */<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                public abstract EQVars getCoefficients( double frequency, double sampleRate );<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        }<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        <a name="line.163"></a>
+<span class="sourceLineNo">164</span>        /** The type of EQ process */<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        private EQType type = null;<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        <a name="line.166"></a>
+<span class="sourceLineNo">167</span>        /** The cached biquad coefficients for this filter */<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        private EQVars vars = null;<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        <a name="line.169"></a>
+<span class="sourceLineNo">170</span>        /** The frequency of the filter */<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        private double frequency = 0;<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>        // These variables are used during the loop<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        // and are stored between loops to avoid clicking<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        private double xm1 = 0, xm2 = 0, xm3 = 0, xm4 = 0, <a name="line.175"></a>
+<span class="sourceLineNo">176</span>                                   ym1 = 0, ym2 = 0, ym3 = 0, ym4 = 0;<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        <a name="line.177"></a>
+<span class="sourceLineNo">178</span>        /**<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         *      Default constructor for ad-hoc processing.<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         *      @param type The type of EQ<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         *      @param f The frequency of the filter <a name="line.181"></a>
+<span class="sourceLineNo">182</span>         */<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        public EQFilter( final EQType type, final double f )<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                this.type = type;<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                this.frequency = f;<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        }<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        <a name="line.188"></a>
+<span class="sourceLineNo">189</span>        /**<a name="line.189"></a>
+<span class="sourceLineNo">190</span>         *      Chainable constructor for stream processing.<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         *      @param as The audio stream to process<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         *      @param type The type of EQ<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         *      @param f The frequency of the filter <a name="line.193"></a>
+<span class="sourceLineNo">194</span>         */<a name="line.194"></a>
+<span class="sourceLineNo">195</span>        public EQFilter( final AudioStream as, final EQType type, final double f )<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        {<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                super( as );<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                this.type = type;<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                this.frequency = f;<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        }<a name="line.200"></a>
+<span class="sourceLineNo">201</span>        <a name="line.201"></a>
+<span class="sourceLineNo">202</span>        /**<a name="line.202"></a>
+<span class="sourceLineNo">203</span>         *      {@inheritDoc}<a name="line.203"></a>
+<span class="sourceLineNo">204</span>         *      @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)<a name="line.204"></a>
+<span class="sourceLineNo">205</span>         */<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        @Override<a name="line.206"></a>
+<span class="sourceLineNo">207</span>        public SampleChunk process( final SampleChunk sample ) throws Exception<a name="line.207"></a>
+<span class="sourceLineNo">208</span>        {<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                if( this.vars == null )<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                        this.vars = this.type.getCoefficients( this.frequency, <a name="line.210"></a>
+<span class="sourceLineNo">211</span>                                        sample.getFormat().getSampleRateKHz() *1000d );<a name="line.211"></a>
+<span class="sourceLineNo">212</span><a name="line.212"></a>
+<span class="sourceLineNo">213</span>                // Standard bi-quad processing of the sample chunk<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                // We have to process each channel independently because the function<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                // is recursive.<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                final SampleBuffer sb = sample.getSampleBuffer();<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                final int nChans = sample.getFormat().getNumChannels();<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                for( int c = 0; c &lt; nChans; c++ )<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                {<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        this.xm1 = this.xm2 = this.xm3 = this.xm4 = 0;<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        this.ym1 = this.ym2 = this.ym3 = this.ym4 = 0;<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                        for( int n = c; n &lt; sb.size(); n += nChans )<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        {<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                                final double tempx = sb.get(n);<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                                final double tempy = this.vars.a0*tempx + this.vars.a1*this.xm1 <a name="line.225"></a>
+<span class="sourceLineNo">226</span>                                                + this.vars.a2*this.xm2 + this.vars.a3*this.xm3 + <a name="line.226"></a>
+<span class="sourceLineNo">227</span>                                                this.vars.a4*this.xm4 - this.vars.b1*this.ym1 - <a name="line.227"></a>
+<span class="sourceLineNo">228</span>                                                this.vars.b2*this.ym2 - this.vars.b3*this.ym3 - <a name="line.228"></a>
+<span class="sourceLineNo">229</span>                                                this.vars.b4*this.ym4;<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                <a name="line.230"></a>
+<span class="sourceLineNo">231</span>                                this.xm4 = this.xm3; this.xm3 = this.xm2; this.xm2 = this.xm1;<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                this.xm1 = tempx;<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                this.ym4 = this.ym3; this.ym3 = this.ym2; this.ym2 = this.ym1;<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                this.ym1 = tempy;<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                <a name="line.235"></a>
+<span class="sourceLineNo">236</span>                                sb.set( n, (float)tempy );<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        }<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                }<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                        <a name="line.239"></a>
+<span class="sourceLineNo">240</span>                return sample;<a name="line.240"></a>
+<span class="sourceLineNo">241</span>        }<a name="line.241"></a>
+<span class="sourceLineNo">242</span>}<a name="line.242"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * This source code file is part of a direct port of Stan Birchfield's implementation<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * of a Kanade-Lucas-Tomasi feature tracker. The original implementation can be found<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * here: http://www.ces.clemson.edu/~stb/klt/<a name="line.4"></a>
+<span class="sourceLineNo">005</span> *<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * As per the original code, the source code is in the public domain, available<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * for both commercial and non-commercial use.<a name="line.7"></a>
+<span class="sourceLineNo">008</span> */<a name="line.8"></a>
+<span class="sourceLineNo">009</span>package org.openimaj.video.tracking.klt.examples;<a name="line.9"></a>
+<span class="sourceLineNo">010</span><a name="line.10"></a>
+<span class="sourceLineNo">011</span>import java.io.IOException;<a name="line.11"></a>
+<span class="sourceLineNo">012</span><a name="line.12"></a>
+<span class="sourceLineNo">013</span>import org.openimaj.image.DisplayUtilities;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import org.openimaj.image.FImage;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import org.openimaj.image.ImageUtilities;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import org.openimaj.video.tracking.klt.FeatureList;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import org.openimaj.video.tracking.klt.FeatureTable;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import org.openimaj.video.tracking.klt.KLTTracker;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import org.openimaj.video.tracking.klt.TrackingContext;<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>/**<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * KLTTracker Example 1<a name="line.22"></a>
+<span class="sourceLineNo">023</span> */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>public class Example3 {<a name="line.24"></a>
+<span class="sourceLineNo">025</span>        /**<a name="line.25"></a>
+<span class="sourceLineNo">026</span>         * @param args<a name="line.26"></a>
+<span class="sourceLineNo">027</span>         * @throws IOException<a name="line.27"></a>
+<span class="sourceLineNo">028</span>         */<a name="line.28"></a>
+<span class="sourceLineNo">029</span>        public static void main(String [] args) throws IOException {<a name="line.29"></a>
+<span class="sourceLineNo">030</span>                int nFeatures = 150, nFrames = 10;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                boolean replace = false;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>                int i;<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>                TrackingContext tc = new TrackingContext();<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                FeatureList fl = new FeatureList(nFeatures);<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                FeatureTable ft = new FeatureTable(nFeatures);<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                KLTTracker tracker = new KLTTracker(tc, fl);<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>                tc.setSequentialMode(true);<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                tc.setWriteInternalImages(false);<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                tc.setAffineConsistencyCheck(-1);  /* set this to 2 to turn on affine consistency check */<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>                FImage img1 = ImageUtilities.readF(Example1.class.getResourceAsStream("img0.pgm"));<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>                tracker.selectGoodFeatures(img1);<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                ft.storeFeatureList(fl, 0);<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>                DisplayUtilities.display(fl.drawFeatures(img1));<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>                for (i = 1 ; i &lt; nFrames ; i++)  {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                        String fnamein = String.format("img%d.pgm", i);<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                        FImage img2 = ImageUtilities.readF(Example1.class.getResourceAsStream(fnamein));<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                        tracker.trackFeatures(img1, img2);<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>                        if (replace)<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                                tracker.replaceLostFeatures(img2);<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>                        ft.storeFeatureList(fl, i);<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                        DisplayUtilities.display(fl.drawFeatures(img2));<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                }<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                ft.writeFeatureTable(null, "%5.1f");<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        }<a name="line.62"></a>
+<span class="sourceLineNo">063</span>}<a name="line.63"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

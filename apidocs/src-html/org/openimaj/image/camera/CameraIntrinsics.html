@@ -1,0 +1,614 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.camera;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import org.openimaj.image.FImage;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import org.openimaj.image.Image;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.openimaj.image.processing.transform.RemapProcessor;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.image.processor.SinglebandImageProcessor;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.math.geometry.point.Point2d;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.math.geometry.transforms.TransformUtilities;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>import Jama.Matrix;<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>/**<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * The intrinsic parameters of a camera (focal length in x and y; skew;<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * principal point in x and y; 3-term radial distorion; 2-term tangential<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * distortion).<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * <a name="line.45"></a>
+<span class="sourceLineNo">046</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.46"></a>
+<span class="sourceLineNo">047</span> */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>public class CameraIntrinsics {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * The camera calibration matrix<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        public Matrix calibrationMatrix;<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         * First radial distortion term<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        public double k1;<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        /**<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * Second radial distortion term<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        public double k2;<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * Third radial distortion term<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         */<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        public double k3;<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        /**<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * First tangential distortion term<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        public double p1;<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>        /**<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         * Second tangential distortion term<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        public double p2;<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>        /**<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         * The image width of the camera in pixels<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         */<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        public int width;<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>        /**<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * The image height of the camera in pixels<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        public int height;<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /**<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * Construct with the given matrix.<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         * <a name="line.91"></a>
+<span class="sourceLineNo">092</span>         * @param m<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         *            the matrix<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         * @param width<a name="line.94"></a>
+<span class="sourceLineNo">095</span>         *            the image width of the camera in pixels<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * @param height<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         *            the image height of the camera in pixels<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        public CameraIntrinsics(Matrix m, int width, int height) {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                this.calibrationMatrix = m;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                this.width = width;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                this.height = height;<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>        /**<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         * Get the focal length in the x direction (in pixels)<a name="line.106"></a>
+<span class="sourceLineNo">107</span>         * <a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * @return fx<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         */<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        public double getFocalLengthX() {<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                return calibrationMatrix.get(0, 0);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>        /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * Get the focal length in the y direction (in pixels)<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * <a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * @return fy<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        public double getFocalLengthY() {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                return calibrationMatrix.get(1, 1);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        }<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>        /**<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         * Get the x-ordinate of the principal point (in pixels).<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         * <a name="line.125"></a>
+<span class="sourceLineNo">126</span>         * @return cx<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         */<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        public double getPrincipalPointX() {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                return calibrationMatrix.get(0, 2);<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>        /**<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         * Get the y-ordinate of the principal point (in pixels).<a name="line.133"></a>
+<span class="sourceLineNo">134</span>         * <a name="line.134"></a>
+<span class="sourceLineNo">135</span>         * @return cy<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         */<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        public double getPrincipalPointY() {<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                return calibrationMatrix.get(1, 2);<a name="line.138"></a>
+<span class="sourceLineNo">139</span>        }<a name="line.139"></a>
+<span class="sourceLineNo">140</span><a name="line.140"></a>
+<span class="sourceLineNo">141</span>        /**<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * Set the focal length in the x direction (in pixels)<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         * <a name="line.143"></a>
+<span class="sourceLineNo">144</span>         * @param fy<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         *            the focal length in the x direction<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         */<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        public void setFocalLengthX(double fy) {<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                calibrationMatrix.set(0, 0, fy);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        }<a name="line.149"></a>
+<span class="sourceLineNo">150</span><a name="line.150"></a>
+<span class="sourceLineNo">151</span>        /**<a name="line.151"></a>
+<span class="sourceLineNo">152</span>         * Set the focal length in the y direction (in pixels)<a name="line.152"></a>
+<span class="sourceLineNo">153</span>         * <a name="line.153"></a>
+<span class="sourceLineNo">154</span>         * @param fy<a name="line.154"></a>
+<span class="sourceLineNo">155</span>         *            the focal length in the y direction<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         */<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        public void setFocalLengthY(double fy) {<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                calibrationMatrix.set(1, 1, fy);<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        }<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>        /**<a name="line.161"></a>
+<span class="sourceLineNo">162</span>         * Set the x-ordinate of the principal point (in pixels).<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         * <a name="line.163"></a>
+<span class="sourceLineNo">164</span>         * @param cx<a name="line.164"></a>
+<span class="sourceLineNo">165</span>         *            the y-ordinate of the principal point<a name="line.165"></a>
+<span class="sourceLineNo">166</span>         */<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        public void setPrincipalPointX(double cx) {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                calibrationMatrix.set(0, 2, cx);<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        }<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>        /**<a name="line.171"></a>
+<span class="sourceLineNo">172</span>         * Set the y-ordinate of the principal point (in pixels).<a name="line.172"></a>
+<span class="sourceLineNo">173</span>         * <a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * @param cy<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         *            the y-ordinate of the principal point<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         */<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        public void setPrincipalPointY(double cy) {<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                calibrationMatrix.set(1, 2, cy);<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        }<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>        /**<a name="line.181"></a>
+<span class="sourceLineNo">182</span>         * Set the skew factor.<a name="line.182"></a>
+<span class="sourceLineNo">183</span>         * <a name="line.183"></a>
+<span class="sourceLineNo">184</span>         * @param skew<a name="line.184"></a>
+<span class="sourceLineNo">185</span>         *            the skew.<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         */<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        public void setSkewFactor(double skew) {<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                calibrationMatrix.set(0, 1, skew);<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        }<a name="line.189"></a>
+<span class="sourceLineNo">190</span><a name="line.190"></a>
+<span class="sourceLineNo">191</span>        /**<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * Get the skew factor.<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         * <a name="line.193"></a>
+<span class="sourceLineNo">194</span>         * @return skew<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         */<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        public double getSkewFactor() {<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                return calibrationMatrix.get(0, 1);<a name="line.197"></a>
+<span class="sourceLineNo">198</span>        }<a name="line.198"></a>
+<span class="sourceLineNo">199</span><a name="line.199"></a>
+<span class="sourceLineNo">200</span>        /**<a name="line.200"></a>
+<span class="sourceLineNo">201</span>         * Apply the radial and tangential distortion of this camera to the given<a name="line.201"></a>
+<span class="sourceLineNo">202</span>         * projected point (presumably computed by projecting a world point through<a name="line.202"></a>
+<span class="sourceLineNo">203</span>         * the homography defined by the extrinsic parameters of a camera). The<a name="line.203"></a>
+<span class="sourceLineNo">204</span>         * point is modified in-place.<a name="line.204"></a>
+<span class="sourceLineNo">205</span>         * <a name="line.205"></a>
+<span class="sourceLineNo">206</span>         * @param p<a name="line.206"></a>
+<span class="sourceLineNo">207</span>         *            the projected point<a name="line.207"></a>
+<span class="sourceLineNo">208</span>         * @return the input point (with the distortion added)<a name="line.208"></a>
+<span class="sourceLineNo">209</span>         */<a name="line.209"></a>
+<span class="sourceLineNo">210</span>        public Point2d applyDistortion(Point2d p) {<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                final double dx = (p.getX() - getPrincipalPointX()) / getFocalLengthX();<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                final double dy = (p.getY() - getPrincipalPointY()) / getFocalLengthY();<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                final double r2 = dx * dx + dy * dy;<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                final double r4 = r2 * r2;<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                final double r6 = r2 * r2 * r2;<a name="line.215"></a>
+<span class="sourceLineNo">216</span><a name="line.216"></a>
+<span class="sourceLineNo">217</span>                // radial component<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                double tx = dx * (k1 * r2 + k2 * r4 + k3 * r6);<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                double ty = dy * (k1 * r2 + k2 * r4 + k3 * r6);<a name="line.219"></a>
+<span class="sourceLineNo">220</span><a name="line.220"></a>
+<span class="sourceLineNo">221</span>                // tangential component<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                tx += 2 * p1 * dx * dy + p2 * (r2 + 2 * dx * dx);<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                ty += p1 * (r2 + 2 * dy * dy) + 2 * p2 * dx * dy;<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>                p.translate((float) tx, (float) ty);<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                return p;<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        }<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>        /**<a name="line.229"></a>
+<span class="sourceLineNo">230</span>         * Compute a scaled set of intrinsic parameters based on the given image<a name="line.230"></a>
+<span class="sourceLineNo">231</span>         * size.<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         * <a name="line.232"></a>
+<span class="sourceLineNo">233</span>         * @param newWidth<a name="line.233"></a>
+<span class="sourceLineNo">234</span>         *            the target image size<a name="line.234"></a>
+<span class="sourceLineNo">235</span>         * @param newHeight<a name="line.235"></a>
+<span class="sourceLineNo">236</span>         *            the target image width<a name="line.236"></a>
+<span class="sourceLineNo">237</span>         * @return the new scaled intrinsics<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         */<a name="line.238"></a>
+<span class="sourceLineNo">239</span>        public CameraIntrinsics getScaledIntrinsics(int newWidth, int newHeight) {<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                final double sx = (double) newWidth / (double) width;<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                final double sy = (double) newHeight / (double) height;<a name="line.241"></a>
+<span class="sourceLineNo">242</span><a name="line.242"></a>
+<span class="sourceLineNo">243</span>                final Matrix m = TransformUtilities.scaleMatrix(sx, sy).times(this.calibrationMatrix);<a name="line.243"></a>
+<span class="sourceLineNo">244</span><a name="line.244"></a>
+<span class="sourceLineNo">245</span>                final CameraIntrinsics newCam = new CameraIntrinsics(m, newWidth, newHeight);<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                newCam.k1 = k1;<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                newCam.k2 = k2;<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                newCam.k3 = k3;<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                newCam.p1 = p1;<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                newCam.p2 = p2;<a name="line.250"></a>
+<span class="sourceLineNo">251</span><a name="line.251"></a>
+<span class="sourceLineNo">252</span>                return newCam;<a name="line.252"></a>
+<span class="sourceLineNo">253</span>        }<a name="line.253"></a>
+<span class="sourceLineNo">254</span><a name="line.254"></a>
+<span class="sourceLineNo">255</span>        @Override<a name="line.255"></a>
+<span class="sourceLineNo">256</span>        public String toString() {<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                return String<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                                .format("fx: %2.2f; fy: %2.2f; sk: %2.6f; u0: %2.2f; v0: %2.2f; k1: %2.6f; k2: %2.6f; k3: %2.6f; p1: %2.6f; p2: %2.6f",<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                                                getFocalLengthX(), getFocalLengthY(), getSkewFactor(), getPrincipalPointX(),<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                                                getPrincipalPointY(), k1, k2, k3, p1, p2);<a name="line.260"></a>
+<span class="sourceLineNo">261</span>        }<a name="line.261"></a>
+<span class="sourceLineNo">262</span><a name="line.262"></a>
+<span class="sourceLineNo">263</span>        /**<a name="line.263"></a>
+<span class="sourceLineNo">264</span>         * Build a {@link RemapProcessor} capable of correcting the radial and<a name="line.264"></a>
+<span class="sourceLineNo">265</span>         * tangential distortion of this camera.<a name="line.265"></a>
+<span class="sourceLineNo">266</span>         * &lt;p&gt;<a name="line.266"></a>
+<span class="sourceLineNo">267</span>         * &lt;b&gt;Note:&lt;/b&gt; Skew is currently assumed to be zero<a name="line.267"></a>
+<span class="sourceLineNo">268</span>         * <a name="line.268"></a>
+<span class="sourceLineNo">269</span>         * @return the processor for undistorting the image<a name="line.269"></a>
+<span class="sourceLineNo">270</span>         */<a name="line.270"></a>
+<span class="sourceLineNo">271</span>        public RemapProcessor buildUndistortionProcessor() {<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                return buildUndistortionProcessor(width, height);<a name="line.272"></a>
+<span class="sourceLineNo">273</span>        }<a name="line.273"></a>
+<span class="sourceLineNo">274</span><a name="line.274"></a>
+<span class="sourceLineNo">275</span>        /**<a name="line.275"></a>
+<span class="sourceLineNo">276</span>         * Build a {@link RemapProcessor} capable of correcting the radial and<a name="line.276"></a>
+<span class="sourceLineNo">277</span>         * tangential distortion of this camera.<a name="line.277"></a>
+<span class="sourceLineNo">278</span>         * &lt;p&gt;<a name="line.278"></a>
+<span class="sourceLineNo">279</span>         * &lt;b&gt;Note:&lt;/b&gt; Skew is currently assumed to be zero<a name="line.279"></a>
+<span class="sourceLineNo">280</span>         * <a name="line.280"></a>
+<span class="sourceLineNo">281</span>         * @param width<a name="line.281"></a>
+<span class="sourceLineNo">282</span>         *            the target width of images produced by the processor<a name="line.282"></a>
+<span class="sourceLineNo">283</span>         * @param height<a name="line.283"></a>
+<span class="sourceLineNo">284</span>         *            the target height of images produced by the processor<a name="line.284"></a>
+<span class="sourceLineNo">285</span>         * @return the processor for undistorting the image<a name="line.285"></a>
+<span class="sourceLineNo">286</span>         */<a name="line.286"></a>
+<span class="sourceLineNo">287</span>        public RemapProcessor buildUndistortionProcessor(int width, int height) {<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                final FImage[] map = buildUndistortionMap(width, height);<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                return new RemapProcessor(map[0], map[1]);<a name="line.289"></a>
+<span class="sourceLineNo">290</span>        }<a name="line.290"></a>
+<span class="sourceLineNo">291</span><a name="line.291"></a>
+<span class="sourceLineNo">292</span>        /**<a name="line.292"></a>
+<span class="sourceLineNo">293</span>         * Build a {@link RemapProcessor} capable of correcting the radial and<a name="line.293"></a>
+<span class="sourceLineNo">294</span>         * tangential distortion of this camera. The distortion map is computed such<a name="line.294"></a>
+<span class="sourceLineNo">295</span>         * that the warped image will appear as if it were viewed through the<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         * undistorted &lt;code&gt;target&lt;/code&gt; camera, rather than this one.<a name="line.296"></a>
+<span class="sourceLineNo">297</span>         * &lt;p&gt;<a name="line.297"></a>
+<span class="sourceLineNo">298</span>         * &lt;b&gt;Note:&lt;/b&gt; Skew is currently assumed to be zero<a name="line.298"></a>
+<span class="sourceLineNo">299</span>         * <a name="line.299"></a>
+<span class="sourceLineNo">300</span>         * @param width<a name="line.300"></a>
+<span class="sourceLineNo">301</span>         *            the target width of images produced by the processor<a name="line.301"></a>
+<span class="sourceLineNo">302</span>         * @param height<a name="line.302"></a>
+<span class="sourceLineNo">303</span>         *            the target height of images produced by the processor<a name="line.303"></a>
+<span class="sourceLineNo">304</span>         * @param target<a name="line.304"></a>
+<span class="sourceLineNo">305</span>         *            the target camera<a name="line.305"></a>
+<span class="sourceLineNo">306</span>         * @return the processor for undistorting the image<a name="line.306"></a>
+<span class="sourceLineNo">307</span>         */<a name="line.307"></a>
+<span class="sourceLineNo">308</span>        public RemapProcessor buildUndistortionProcessor(int width, int height, CameraIntrinsics target) {<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                final FImage[] map = buildUndistortionMap(width, height, target);<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                return new RemapProcessor(map[0], map[1]);<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        }<a name="line.311"></a>
+<span class="sourceLineNo">312</span><a name="line.312"></a>
+<span class="sourceLineNo">313</span>        /**<a name="line.313"></a>
+<span class="sourceLineNo">314</span>         * Build a {@link RemapProcessor} capable of correcting the radial and<a name="line.314"></a>
+<span class="sourceLineNo">315</span>         * tangential distortion of this camera. The distortion map is computed such<a name="line.315"></a>
+<span class="sourceLineNo">316</span>         * that the warped image will appear as if it were viewed through the<a name="line.316"></a>
+<span class="sourceLineNo">317</span>         * undistorted &lt;code&gt;target&lt;/code&gt; camera rather than this one, and the<a name="line.317"></a>
+<span class="sourceLineNo">318</span>         * 3x3matrix &lt;code&gt;R&lt;/code&gt; controls the rectification (i.e. the relative<a name="line.318"></a>
+<span class="sourceLineNo">319</span>         * change in position of the camera in world space).<a name="line.319"></a>
+<span class="sourceLineNo">320</span>         * &lt;p&gt;<a name="line.320"></a>
+<span class="sourceLineNo">321</span>         * &lt;b&gt;Note:&lt;/b&gt; Skew is currently assumed to be zero<a name="line.321"></a>
+<span class="sourceLineNo">322</span>         * <a name="line.322"></a>
+<span class="sourceLineNo">323</span>         * @param width<a name="line.323"></a>
+<span class="sourceLineNo">324</span>         *            the target width of images produced by the processor<a name="line.324"></a>
+<span class="sourceLineNo">325</span>         * @param height<a name="line.325"></a>
+<span class="sourceLineNo">326</span>         *            the target height of images produced by the processor<a name="line.326"></a>
+<span class="sourceLineNo">327</span>         * @param target<a name="line.327"></a>
+<span class="sourceLineNo">328</span>         *            the target camera<a name="line.328"></a>
+<span class="sourceLineNo">329</span>         * @param R<a name="line.329"></a>
+<span class="sourceLineNo">330</span>         *            the rectification matrix<a name="line.330"></a>
+<span class="sourceLineNo">331</span>         * @return the processor for undistorting the image<a name="line.331"></a>
+<span class="sourceLineNo">332</span>         */<a name="line.332"></a>
+<span class="sourceLineNo">333</span>        public RemapProcessor buildRectifiedUndistortionProcessor(int width, int height, CameraIntrinsics target, Matrix R) {<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                final FImage[] map = buildRectifiedUndistortionMap(width, height, target, R);<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                return new RemapProcessor(map[0], map[1]);<a name="line.335"></a>
+<span class="sourceLineNo">336</span>        }<a name="line.336"></a>
+<span class="sourceLineNo">337</span><a name="line.337"></a>
+<span class="sourceLineNo">338</span>        /**<a name="line.338"></a>
+<span class="sourceLineNo">339</span>         * Build the distortion map, which for every un-distorted point in the given<a name="line.339"></a>
+<span class="sourceLineNo">340</span>         * size image contains the x and y ordinates of the corresponding distorted<a name="line.340"></a>
+<span class="sourceLineNo">341</span>         * point. The resultant map can be used with a {@link RemapProcessor} to<a name="line.341"></a>
+<span class="sourceLineNo">342</span>         * undistort imaaes.<a name="line.342"></a>
+<span class="sourceLineNo">343</span>         * &lt;p&gt;<a name="line.343"></a>
+<span class="sourceLineNo">344</span>         * &lt;b&gt;Note:&lt;/b&gt; Skew is currently assumed to be zero<a name="line.344"></a>
+<span class="sourceLineNo">345</span>         * <a name="line.345"></a>
+<span class="sourceLineNo">346</span>         * @param width<a name="line.346"></a>
+<span class="sourceLineNo">347</span>         *            the desired width; typically the same as the image width used<a name="line.347"></a>
+<span class="sourceLineNo">348</span>         *            to calibrate the camera<a name="line.348"></a>
+<span class="sourceLineNo">349</span>         * @param height<a name="line.349"></a>
+<span class="sourceLineNo">350</span>         *            the desired height; typically the same as the image height<a name="line.350"></a>
+<span class="sourceLineNo">351</span>         *            used to calibrate the camera<a name="line.351"></a>
+<span class="sourceLineNo">352</span>         * @return the distortion map<a name="line.352"></a>
+<span class="sourceLineNo">353</span>         */<a name="line.353"></a>
+<span class="sourceLineNo">354</span>        public FImage[] buildUndistortionMap(final int width, final int height) {<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                final FImage xords = new FImage(width, height);<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                final FImage yords = new FImage(width, height);<a name="line.356"></a>
+<span class="sourceLineNo">357</span><a name="line.357"></a>
+<span class="sourceLineNo">358</span>                final double px = this.getPrincipalPointX();<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                final double py = this.getPrincipalPointY();<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                final double fx = this.getFocalLengthX();<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                final double fy = this.getFocalLengthY();<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>                for (int v = 0; v &lt; height; v++) {<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                        final double y = (v - py) / fy;<a name="line.364"></a>
+<span class="sourceLineNo">365</span><a name="line.365"></a>
+<span class="sourceLineNo">366</span>                        for (int u = 0; u &lt; width; u++) {<a name="line.366"></a>
+<span class="sourceLineNo">367</span>                                final double x = (u - px) / fx;<a name="line.367"></a>
+<span class="sourceLineNo">368</span><a name="line.368"></a>
+<span class="sourceLineNo">369</span>                                final double r2 = x * x + y * y;<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                                final double r4 = r2 * r2;<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                                final double r6 = r2 * r2 * r2;<a name="line.371"></a>
+<span class="sourceLineNo">372</span><a name="line.372"></a>
+<span class="sourceLineNo">373</span>                                // radial component<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                                double tx = x * (k1 * r2 + k2 * r4 + k3 * r6);<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                                double ty = y * (k1 * r2 + k2 * r4 + k3 * r6);<a name="line.375"></a>
+<span class="sourceLineNo">376</span><a name="line.376"></a>
+<span class="sourceLineNo">377</span>                                // tangential component<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                                tx += 2 * p1 * x * y + p2 * (r2 + 2 * x * x);<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                                ty += p1 * (r2 + 2 * y * y) + 2 * p2 * x * y;<a name="line.379"></a>
+<span class="sourceLineNo">380</span><a name="line.380"></a>
+<span class="sourceLineNo">381</span>                                xords.pixels[v][u] = (float) ((x + tx) * fx + px);<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                                yords.pixels[v][u] = (float) ((y + ty) * fy + py);<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                        }<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                }<a name="line.384"></a>
+<span class="sourceLineNo">385</span><a name="line.385"></a>
+<span class="sourceLineNo">386</span>                return new FImage[] { xords, yords };<a name="line.386"></a>
+<span class="sourceLineNo">387</span>        }<a name="line.387"></a>
+<span class="sourceLineNo">388</span><a name="line.388"></a>
+<span class="sourceLineNo">389</span>        /**<a name="line.389"></a>
+<span class="sourceLineNo">390</span>         * Build the distortion map, which for every un-distorted point in the given<a name="line.390"></a>
+<span class="sourceLineNo">391</span>         * size image contains the x and y ordinates of the corresponding distorted<a name="line.391"></a>
+<span class="sourceLineNo">392</span>         * point. The resultant map can be used with a {@link RemapProcessor} to<a name="line.392"></a>
+<span class="sourceLineNo">393</span>         * undistort imaaes. The distortion map is computed such that the warped<a name="line.393"></a>
+<span class="sourceLineNo">394</span>         * image will appear as if it were viewed through the undistorted<a name="line.394"></a>
+<span class="sourceLineNo">395</span>         * &lt;code&gt;target&lt;/code&gt; camera, rather than this one.<a name="line.395"></a>
+<span class="sourceLineNo">396</span>         * &lt;p&gt;<a name="line.396"></a>
+<span class="sourceLineNo">397</span>         * &lt;b&gt;Note:&lt;/b&gt; Skew is currently assumed to be zero<a name="line.397"></a>
+<span class="sourceLineNo">398</span>         * <a name="line.398"></a>
+<span class="sourceLineNo">399</span>         * @param width<a name="line.399"></a>
+<span class="sourceLineNo">400</span>         *            the desired width; typically the same as the image width used<a name="line.400"></a>
+<span class="sourceLineNo">401</span>         *            to calibrate the camera<a name="line.401"></a>
+<span class="sourceLineNo">402</span>         * @param height<a name="line.402"></a>
+<span class="sourceLineNo">403</span>         *            the desired height; typically the same as the image height<a name="line.403"></a>
+<span class="sourceLineNo">404</span>         *            used to calibrate the camera<a name="line.404"></a>
+<span class="sourceLineNo">405</span>         * @param target<a name="line.405"></a>
+<span class="sourceLineNo">406</span>         *            the target camera intrinsics<a name="line.406"></a>
+<span class="sourceLineNo">407</span>         * @return the distortion map<a name="line.407"></a>
+<span class="sourceLineNo">408</span>         */<a name="line.408"></a>
+<span class="sourceLineNo">409</span>        public FImage[] buildUndistortionMap(final int width, final int height, CameraIntrinsics target) {<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                final FImage xords = new FImage(width, height);<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                final FImage yords = new FImage(width, height);<a name="line.411"></a>
+<span class="sourceLineNo">412</span><a name="line.412"></a>
+<span class="sourceLineNo">413</span>                final double pxp = target.getPrincipalPointX();<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                final double pyp = target.getPrincipalPointY();<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                final double fxp = target.getFocalLengthX();<a name="line.415"></a>
+<span class="sourceLineNo">416</span>                final double fyp = target.getFocalLengthY();<a name="line.416"></a>
+<span class="sourceLineNo">417</span><a name="line.417"></a>
+<span class="sourceLineNo">418</span>                final double px = this.getPrincipalPointX();<a name="line.418"></a>
+<span class="sourceLineNo">419</span>                final double py = this.getPrincipalPointY();<a name="line.419"></a>
+<span class="sourceLineNo">420</span>                final double fx = this.getFocalLengthX();<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                final double fy = this.getFocalLengthY();<a name="line.421"></a>
+<span class="sourceLineNo">422</span><a name="line.422"></a>
+<span class="sourceLineNo">423</span>                for (int v = 0; v &lt; height; v++) {<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                        final double y = (v - pyp) / fyp;<a name="line.424"></a>
+<span class="sourceLineNo">425</span><a name="line.425"></a>
+<span class="sourceLineNo">426</span>                        for (int u = 0; u &lt; width; u++) {<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                                final double x = (u - pxp) / fxp;<a name="line.427"></a>
+<span class="sourceLineNo">428</span><a name="line.428"></a>
+<span class="sourceLineNo">429</span>                                final double r2 = x * x + y * y;<a name="line.429"></a>
+<span class="sourceLineNo">430</span>                                final double r4 = r2 * r2;<a name="line.430"></a>
+<span class="sourceLineNo">431</span>                                final double r6 = r2 * r2 * r2;<a name="line.431"></a>
+<span class="sourceLineNo">432</span><a name="line.432"></a>
+<span class="sourceLineNo">433</span>                                // radial component<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                                double tx = x * (k1 * r2 + k2 * r4 + k3 * r6);<a name="line.434"></a>
+<span class="sourceLineNo">435</span>                                double ty = y * (k1 * r2 + k2 * r4 + k3 * r6);<a name="line.435"></a>
+<span class="sourceLineNo">436</span><a name="line.436"></a>
+<span class="sourceLineNo">437</span>                                // tangential component<a name="line.437"></a>
+<span class="sourceLineNo">438</span>                                tx += 2 * p1 * x * y + p2 * (r2 + 2 * x * x);<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                                ty += p1 * (r2 + 2 * y * y) + 2 * p2 * x * y;<a name="line.439"></a>
+<span class="sourceLineNo">440</span><a name="line.440"></a>
+<span class="sourceLineNo">441</span>                                xords.pixels[v][u] = (float) ((x + tx) * fx + px);<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                                yords.pixels[v][u] = (float) ((y + ty) * fy + py);<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                        }<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                }<a name="line.444"></a>
+<span class="sourceLineNo">445</span><a name="line.445"></a>
+<span class="sourceLineNo">446</span>                return new FImage[] { xords, yords };<a name="line.446"></a>
+<span class="sourceLineNo">447</span>        }<a name="line.447"></a>
+<span class="sourceLineNo">448</span><a name="line.448"></a>
+<span class="sourceLineNo">449</span>        /**<a name="line.449"></a>
+<span class="sourceLineNo">450</span>         * Build the rectified distortion map, which for every un-distorted point in<a name="line.450"></a>
+<span class="sourceLineNo">451</span>         * the given size image contains the x and y ordinates of the corresponding<a name="line.451"></a>
+<span class="sourceLineNo">452</span>         * rectifed distorted point. The resultant map can be used with a<a name="line.452"></a>
+<span class="sourceLineNo">453</span>         * {@link RemapProcessor} to undistort imaaes. The distortion map is<a name="line.453"></a>
+<span class="sourceLineNo">454</span>         * computed such that the warped image will appear as if it were viewed<a name="line.454"></a>
+<span class="sourceLineNo">455</span>         * through the undistorted &lt;code&gt;target&lt;/code&gt; camera rather than this one,<a name="line.455"></a>
+<span class="sourceLineNo">456</span>         * and the 3x3matrix &lt;code&gt;R&lt;/code&gt; controls the rectification (i.e. the<a name="line.456"></a>
+<span class="sourceLineNo">457</span>         * relative change in position of the camera in world space).<a name="line.457"></a>
+<span class="sourceLineNo">458</span>         * &lt;p&gt;<a name="line.458"></a>
+<span class="sourceLineNo">459</span>         * &lt;b&gt;Note:&lt;/b&gt; Skew is currently assumed to be zero<a name="line.459"></a>
+<span class="sourceLineNo">460</span>         * <a name="line.460"></a>
+<span class="sourceLineNo">461</span>         * @param width<a name="line.461"></a>
+<span class="sourceLineNo">462</span>         *            the desired width; typically the same as the image width used<a name="line.462"></a>
+<span class="sourceLineNo">463</span>         *            to calibrate the camera<a name="line.463"></a>
+<span class="sourceLineNo">464</span>         * @param height<a name="line.464"></a>
+<span class="sourceLineNo">465</span>         *            the desired height; typically the same as the image height<a name="line.465"></a>
+<span class="sourceLineNo">466</span>         *            used to calibrate the camera<a name="line.466"></a>
+<span class="sourceLineNo">467</span>         * @param target<a name="line.467"></a>
+<span class="sourceLineNo">468</span>         *            the target camera intrinsics<a name="line.468"></a>
+<span class="sourceLineNo">469</span>         * @param R<a name="line.469"></a>
+<span class="sourceLineNo">470</span>         *            the rectification matrix<a name="line.470"></a>
+<span class="sourceLineNo">471</span>         * @return the distortion map<a name="line.471"></a>
+<span class="sourceLineNo">472</span>         */<a name="line.472"></a>
+<span class="sourceLineNo">473</span>        public FImage[] buildRectifiedUndistortionMap(final int width, final int height, CameraIntrinsics target, Matrix R) {<a name="line.473"></a>
+<span class="sourceLineNo">474</span>                final FImage xords = new FImage(width, height);<a name="line.474"></a>
+<span class="sourceLineNo">475</span>                final FImage yords = new FImage(width, height);<a name="line.475"></a>
+<span class="sourceLineNo">476</span><a name="line.476"></a>
+<span class="sourceLineNo">477</span>                final double pxp = target.getPrincipalPointX();<a name="line.477"></a>
+<span class="sourceLineNo">478</span>                final double pyp = target.getPrincipalPointY();<a name="line.478"></a>
+<span class="sourceLineNo">479</span>                final double fxp = target.getFocalLengthX();<a name="line.479"></a>
+<span class="sourceLineNo">480</span>                final double fyp = target.getFocalLengthY();<a name="line.480"></a>
+<span class="sourceLineNo">481</span><a name="line.481"></a>
+<span class="sourceLineNo">482</span>                final double px = this.getPrincipalPointX();<a name="line.482"></a>
+<span class="sourceLineNo">483</span>                final double py = this.getPrincipalPointY();<a name="line.483"></a>
+<span class="sourceLineNo">484</span>                final double fx = this.getFocalLengthX();<a name="line.484"></a>
+<span class="sourceLineNo">485</span>                final double fy = this.getFocalLengthY();<a name="line.485"></a>
+<span class="sourceLineNo">486</span><a name="line.486"></a>
+<span class="sourceLineNo">487</span>                final Matrix Rinv = R.inverse();<a name="line.487"></a>
+<span class="sourceLineNo">488</span>                final Matrix tmp = new Matrix(3, 1);<a name="line.488"></a>
+<span class="sourceLineNo">489</span>                tmp.set(2, 0, 1);<a name="line.489"></a>
+<span class="sourceLineNo">490</span><a name="line.490"></a>
+<span class="sourceLineNo">491</span>                for (int v = 0; v &lt; height; v++) {<a name="line.491"></a>
+<span class="sourceLineNo">492</span>                        double y = (v - pyp) / fyp;<a name="line.492"></a>
+<span class="sourceLineNo">493</span><a name="line.493"></a>
+<span class="sourceLineNo">494</span>                        for (int u = 0; u &lt; width; u++) {<a name="line.494"></a>
+<span class="sourceLineNo">495</span>                                double x = (u - pxp) / fxp;<a name="line.495"></a>
+<span class="sourceLineNo">496</span><a name="line.496"></a>
+<span class="sourceLineNo">497</span>                                tmp.set(0, 0, x);<a name="line.497"></a>
+<span class="sourceLineNo">498</span>                                tmp.set(1, 0, y);<a name="line.498"></a>
+<span class="sourceLineNo">499</span>                                final Matrix pro = Rinv.times(tmp);<a name="line.499"></a>
+<span class="sourceLineNo">500</span>                                x = pro.get(0, 0) / pro.get(2, 0);<a name="line.500"></a>
+<span class="sourceLineNo">501</span>                                y = pro.get(1, 0) / pro.get(2, 0);<a name="line.501"></a>
+<span class="sourceLineNo">502</span><a name="line.502"></a>
+<span class="sourceLineNo">503</span>                                final double r2 = x * x + y * y;<a name="line.503"></a>
+<span class="sourceLineNo">504</span>                                final double r4 = r2 * r2;<a name="line.504"></a>
+<span class="sourceLineNo">505</span>                                final double r6 = r2 * r2 * r2;<a name="line.505"></a>
+<span class="sourceLineNo">506</span><a name="line.506"></a>
+<span class="sourceLineNo">507</span>                                // radial component<a name="line.507"></a>
+<span class="sourceLineNo">508</span>                                double tx = x * (k1 * r2 + k2 * r4 + k3 * r6);<a name="line.508"></a>
+<span class="sourceLineNo">509</span>                                double ty = y * (k1 * r2 + k2 * r4 + k3 * r6);<a name="line.509"></a>
+<span class="sourceLineNo">510</span><a name="line.510"></a>
+<span class="sourceLineNo">511</span>                                // tangential component<a name="line.511"></a>
+<span class="sourceLineNo">512</span>                                tx += 2 * p1 * x * y + p2 * (r2 + 2 * x * x);<a name="line.512"></a>
+<span class="sourceLineNo">513</span>                                ty += p1 * (r2 + 2 * y * y) + 2 * p2 * x * y;<a name="line.513"></a>
+<span class="sourceLineNo">514</span><a name="line.514"></a>
+<span class="sourceLineNo">515</span>                                xords.pixels[v][u] = (float) ((x + tx) * fx + px);<a name="line.515"></a>
+<span class="sourceLineNo">516</span>                                yords.pixels[v][u] = (float) ((y + ty) * fy + py);<a name="line.516"></a>
+<span class="sourceLineNo">517</span>                        }<a name="line.517"></a>
+<span class="sourceLineNo">518</span>                }<a name="line.518"></a>
+<span class="sourceLineNo">519</span><a name="line.519"></a>
+<span class="sourceLineNo">520</span>                return new FImage[] { xords, yords };<a name="line.520"></a>
+<span class="sourceLineNo">521</span>        }<a name="line.521"></a>
+<span class="sourceLineNo">522</span><a name="line.522"></a>
+<span class="sourceLineNo">523</span>        /**<a name="line.523"></a>
+<span class="sourceLineNo">524</span>         * Undistort the given image by removing the radial and tangential<a name="line.524"></a>
+<span class="sourceLineNo">525</span>         * distortions of this camera. It is assumed that the input image has the<a name="line.525"></a>
+<span class="sourceLineNo">526</span>         * same dimensions as images produced by this {@link CameraIntrinsics}.<a name="line.526"></a>
+<span class="sourceLineNo">527</span>         * &lt;p&gt;<a name="line.527"></a>
+<span class="sourceLineNo">528</span>         * This method is inefficient if you need to process many images as the<a name="line.528"></a>
+<span class="sourceLineNo">529</span>         * distortion map is computed each time. For more efficient operation, use<a name="line.529"></a>
+<span class="sourceLineNo">530</span>         * {@link #buildUndistortionProcessor()} to make a reusable<a name="line.530"></a>
+<span class="sourceLineNo">531</span>         * {@link RemapProcessor} capable of efficiently undistorting multiple<a name="line.531"></a>
+<span class="sourceLineNo">532</span>         * images.<a name="line.532"></a>
+<span class="sourceLineNo">533</span>         * <a name="line.533"></a>
+<span class="sourceLineNo">534</span>         * @param image<a name="line.534"></a>
+<span class="sourceLineNo">535</span>         *            the image to undistort<a name="line.535"></a>
+<span class="sourceLineNo">536</span>         * @return the undistorted image<a name="line.536"></a>
+<span class="sourceLineNo">537</span>         */<a name="line.537"></a>
+<span class="sourceLineNo">538</span>        public &lt;I extends Image&lt;?, I&gt; &amp; SinglebandImageProcessor.Processable&lt;Float, FImage, I&gt;&gt; I undistort(I image) {<a name="line.538"></a>
+<span class="sourceLineNo">539</span>                final RemapProcessor proc = buildUndistortionProcessor(image.getWidth(), image.getHeight());<a name="line.539"></a>
+<span class="sourceLineNo">540</span>                return image.process(proc);<a name="line.540"></a>
+<span class="sourceLineNo">541</span>        }<a name="line.541"></a>
+<span class="sourceLineNo">542</span>}<a name="line.542"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

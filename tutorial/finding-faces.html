@@ -1,0 +1,366 @@
+<!DOCTYPE html><html xmlns:d="http://docbook.org/ns/docbook" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   
+      <title>Chapter&nbsp;8.&nbsp;Finding faces</title>
+      <link rel="stylesheet" type="text/css" href="css/apache-maven-fluido-1.3.0.min.css">
+      <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+      <link rel="stylesheet" type="text/css" href="fonts/fonts.css">
+      <meta name="generator" content="DocBook XSL-NS Stylesheets V1.76.1">
+      <link rel="home" href="index.html" title="The OpenIMAJ Tutorial">
+      <link rel="up" href="pt03.html" title="Part&nbsp;III.&nbsp;Video Fundamentals">
+      <link rel="prev" href="processing-video.html" title="Chapter&nbsp;7.&nbsp;Processing video">
+      <link rel="next" href="pt04.html" title="Part&nbsp;IV.&nbsp;Audio Fundamentals">
+      <meta property="fb:admins" content="286108206">
+      <meta property="og:type" content="website">
+      <link rel="image_src" href="../images/OpenImaj-sq.png">
+      <meta property="og:image" content="http://openimaj.org/images/OpenImaj-sq.png">
+      <meta property="og:title" content="OpenIMAJ: Open Intelligent Multimedia Analysis">
+      <meta property="og:url" content="http://www.openimaj.org">
+      <meta property="og:description" content="OpenIMAJ is an award-winning set of libraries and tools for multimedia content analysis and content generation."><script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script><script type="text/javascript">
+	      var _gaq = _gaq || [];
+	      _gaq.push(['_setAccount', 'UA-38338744-1']);
+	      _gaq.push(['_trackPageview']);
+
+	      (function() {
+	        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	      })();
+	    </script></head>
+   <body class="topBarEnabled">
+      <div id="topbar" class="navbar navbar-fixed-top navbar-inverse">
+         <div class="navbar-inner">
+            <div class="container">
+               <div class="nav-collapse"><a class="brand" href="../index.html" title="OpenIMAJ"><img src="images/logo-tiny.png" alt="OpenIMAJ"></a><ul class="nav">
+                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Overview <b class="caret"></b></a><ul class="dropdown-menu">
+                           <li><a href="../index.html" title="Introduction">Introduction</a></li>
+                           <li><a href="../sponsors.html" title="History &amp; Sponsors">History &amp; Sponsors</a></li>
+                           <li><a href="../contact.html" title="Support &amp; Contacts">Support &amp; Contacts</a></li>
+                           <li><a href="team.html" title="Team">Team</a></li>
+                           <li><a href="http://blogs.ecs.soton.ac.uk/multimedia" title="The Blog">The Blog</a></li>
+                           <li><a href="http://www.sf.net/p/openimaj/code" title="Source Code">Source Code</a></li>
+                           <li class="dropdown-submenu"><a href="../#related" title="Related Projects">Related Projects</a><ul class="dropdown-menu">
+                                 <li><a href="http://www.imageterrier.org/" title="ImageTerrier">ImageTerrier</a></li>
+                              </ul>
+                           </li>
+                        </ul>
+                     </li>
+                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+                           <li class="dropdown-submenu"><a href="../#gettingstarted" title="Getting Started">Getting Started</a><ul class="dropdown-menu">
+                                 <li><a href="../tutorial-pdf.pdf" title="The Tutorial (PDF)">The Tutorial (PDF)</a></li>
+                                 <li><a href="../tutorial/index.html" title="The Tutorial (HTML)">The Tutorial (HTML)</a></li>
+                              </ul>
+                           </li>
+                           <li class="dropdown-submenu"><a href="../#using" title="Using OpenIMAJ">Using OpenIMAJ</a><ul class="dropdown-menu">
+                                 <li><a href="../BuildFromSource.html" title="Building OpenIMAJ from Source">Building OpenIMAJ from Source</a></li>
+                                 <li><a href="../UseLibrary.html" title="Using OpenIMAJ as a Library">Using OpenIMAJ as a Library</a></li>
+                                 <li><a href="../Groovy.html" title="Using OpenIMAJ with Groovy">Using OpenIMAJ with Groovy</a></li>
+                                 <li><a href="../tools.html" title="OpenIMAJ commandline tools introduction">OpenIMAJ commandline tools introduction</a></li>
+                                 <li><a href="../flickrCrawler.html" title="The FlickrCrawler Tool">The FlickrCrawler Tool</a></li>
+                                 <li><a href="../bibliography.html" title="Bibliography">Bibliography</a></li>
+                              </ul>
+                           </li>
+                           <li><a href="../apidocs/index.html" title="API Reference">API Reference</a></li>
+                           <li class="dropdown-submenu"><a href="#info" title="Project Information">Project Information</a><ul class="dropdown-menu">
+                                 <li><a href="../plugin-management.html" title="Plugin Management">Plugin Management</a></li>
+                                 <li><a href="../mail-lists.html" title="Mailing Lists">Mailing Lists</a></li>
+                                 <li><a href="../integration.html" title="Continuous Integration">Continuous Integration</a></li>
+                                 <li><a href="../license.html" title="Project License">Project License</a></li>
+                                 <li><a href="../team-list.html" title="Project Team">Project Team</a></li>
+                                 <li><a href="../source-repository.html" title="Source Repository">Source Repository</a></li>
+                                 <li><a href="../index.html" title="About">About</a></li>
+                                 <li><a href="../issue-tracking.html" title="Issue Tracking">Issue Tracking</a></li>
+                                 <li><a href="../project-summary.html" title="Project Summary">Project Summary</a></li>
+                                 <li><a href="../plugins.html" title="Project Plugins">Project Plugins</a></li>
+                                 <li><a href="../dependency-convergence.html" title="Dependency Convergence">Dependency Convergence</a></li>
+                                 <li><a href="../dependencies.html" title="Dependencies">Dependencies</a></li>
+                              </ul>
+                           </li>
+                        </ul>
+                     </li>
+                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Modules <b class="caret"></b></a><ul class="dropdown-menu">
+                           <li><a href="/openimaj-maven-archetypes/index.html" title="OpenIMAJ Maven Archetypes">OpenIMAJ Maven Archetypes</a></li>
+                           <li><a href="/openimaj-core-libs/index.html" title="OpenIMAJ Core Libraries">OpenIMAJ Core Libraries</a></li>
+                           <li><a href="/openimaj-image/index.html" title="OpenIMAJ Image Processing Libraries">OpenIMAJ Image Processing Libraries</a></li>
+                           <li><a href="/openimaj-video/index.html" title="OpenIMAJ Video Processing Libraries">OpenIMAJ Video Processing Libraries</a></li>
+                           <li><a href="/openimaj-audio/index.html" title="OpenIMAJ Audio Processing Libraries">OpenIMAJ Audio Processing Libraries</a></li>
+                           <li><a href="/openimaj-machine-learning/index.html" title="OpenIMAJ Machine Learning Subprojects">OpenIMAJ Machine Learning Subprojects</a></li>
+                           <li><a href="/openimaj-text/index.html" title="OpenIMAJ Text Analysis Subprojects">OpenIMAJ Text Analysis Subprojects</a></li>
+                           <li><a href="/thirdparty/index.html" title="OpenIMAJ Third Party Ported Libraries">OpenIMAJ Third Party Ported Libraries</a></li>
+                           <li><a href="/openimaj-demos/index.html" title="OpenIMAJ Demos Subproject">OpenIMAJ Demos Subproject</a></li>
+                           <li><a href="/openimaj-knowledge/index.html" title="OpenIMAJ Knowledge Representation and Reasoning Libraries">OpenIMAJ Knowledge Representation and Reasoning Libraries</a></li>
+                           <li><a href="/test-resources/index.html" title="OpenIMAJ Unit Test Resources">OpenIMAJ Unit Test Resources</a></li>
+                           <li><a href="/openimaj-tools/index.html" title="OpenIMAJ Tools">OpenIMAJ Tools</a></li>
+                           <li><a href="/openimaj-hadoop/index.html" title="OpenIMAJ Hadoop Subproject">OpenIMAJ Hadoop Subproject</a></li>
+                           <li><a href="/openimaj-storm/index.html" title="OpenIMAJ Storm Subproject">OpenIMAJ Storm Subproject</a></li>
+                           <li><a href="/openimaj-web/index.html" title="OpenIMAJ web subproject">OpenIMAJ web subproject</a></li>
+                           <li><a href="/openimaj-hardware/index.html" title="OpenIMAJ Hardware Subprojects">OpenIMAJ Hardware Subprojects</a></li>
+                           <li><a href="/openimaj-content-libs/index.html" title="OpenIMAJ Content Creation Libraries">OpenIMAJ Content Creation Libraries</a></li>
+                           <li><a href="/openimaj-ide-integration/index.html" title="OpenIMAJ IDE Integration Plugins">OpenIMAJ IDE Integration Plugins</a></li>
+                           <li><a href="/openimaj-documentation/index.html" title="OpenIMAJ Documentation">OpenIMAJ Documentation</a></li>
+                        </ul>
+                     </li>
+                  </ul>
+                  <form id="search-form" action="http://www.google.com/search" method="get" class="navbar-search pull-right" name="search-form"><input value="" name="sitesearch" type="hidden"><input class="search-query" name="q" id="query" type="text"></form><script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=search-form"></script><iframe src="http://www.facebook.com/plugins/like.php?href=http://www.openimaj.org/&amp;send=false&amp;layout=button_count&amp;show-faces=false&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" style="border:none; width:80px; height:20px; margin-top: 10px;" class="pull-right"></iframe><script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script><ul class="nav pull-right">
+                     <li style="margin-top: 10px;">
+                        <div class="g-plusone" data-href="http://www.openimaj.org/" data-size="medium" width="60px" align="right"></div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div id="banner">
+            <div class="pull-left">
+               <div id="bannerLeft">
+                  <h2>OpenIMAJ</h2>
+               </div>
+            </div>
+            <div class="pull-right"></div>
+            <div class="clear">
+               <hr>
+            </div>
+         </div>
+         <div id="breadcrumbs">
+            <ul class="breadcrumb">
+               <li id="publishDate" class="pull-right">Last Published: 2016-06-20</li>
+               <li class="divider pull-right">|</li>
+               <li id="projectVersion" class="pull-right">Version: 1.4-SNAPSHOT</li>
+            </ul>
+         </div>
+         <div id="nav-sub-block"><a class="hide" name="nav-sub-a"></a><ul id="nav-sub">
+               <li class="first"><a accesskey="p" href="processing-video.html"><span>Prev : Processing video</span></a></li>
+               <li><a accesskey="h" href="index.html"><span>Contents</span></a></li>
+               <li class="last"><a accesskey="n" href="pt04.html"><span>Next : Audio Fundamentals</span></a></li>
+            </ul>
+         </div>
+         <div class="chapter" title="Chapter&nbsp;8.&nbsp;Finding faces">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title"><a name="finding-faces"></a>Chapter&nbsp;8.&nbsp;Finding faces
+                     </h2>
+                  </div>
+               </div>
+            </div>
+              
+              
+            <p>
+                   OpenIMAJ contains a set of classes that contain implementations of
+                   some of the state-of-the-art face detection and recognition
+                   algorithms. These classes are provided as a sub-project of the
+                   OpenIMAJ code-base called <code class="filename">faces</code>. The OpenIMAJ
+                   maven archetype adds the face library as a dependency and so we can
+                   start building face detection applications straight away.
+                 
+            </p>
+              
+            <p>
+                   Create a new application using the quick-start archetype (see
+                   tutorial 1) and import it into your IDE. If you look at the
+                   <code class="filename">pom.xml</code> file you will see that the
+                   <code class="code">faces</code> dependency from OpenIMAJ is already
+                   included. As you&#8217;ve already done the video-processing tutorial,
+                   we&#8217;ll try to find faces within the video that your cam produces.
+                   If you don&#8217;t have a cam, follow the video tutorial on how to use
+                   video from a file instead.
+                 
+            </p>
+              
+            <p>
+                   Start by removing the code from the main method of the
+                   <code class="filename">App.java</code> class file. Then create a video capture
+                   object and a display to show the video. Create a listener on the
+                   video display to which we can hook our face finder. The code is
+                   below, but check out the previous tutorial on video processing if
+                   you&#8217;re not sure what it means.
+                 
+            </p>
+              <pre class="programlisting">VideoCapture vc = new VideoCapture( 320, 240 );
+VideoDisplay&lt;MBFImage&gt; vd = VideoDisplay.createVideoDisplay( vc );
+vd.addVideoListener( 
+  new VideoDisplayListener&lt;MBFImage&gt;() {
+    public void beforeUpdate( MBFImage frame ) {
+    }
+
+    public void afterUpdate( VideoDisplay&lt;MBFImage&gt; display ) {
+    }
+  });</pre>
+              <p>
+                   For finding faces in images (or in this case video frames) we use a
+                   face detector. The <code class="code">FaceDetector</code> interface
+                   provides the API for face detectors and there are currently two
+                   implementations within OpenIMAJ - the
+                   <code class="code">HaarCascadeDetector</code> and the
+                   <code class="code">SandeepFaceDetector</code>. The
+                   <code class="code">HaarCascadeDetector</code> is considerably more robust
+                   than the <code class="code">SandeepFaceDetector</code>, so we&#8217;ll use that.
+                 
+            </p>
+              
+            <p>
+                   In the <code class="code">beforeUpdate()</code> method, instantiate a new
+                   <code class="code">HaarCascadeDetector</code>. The constructor takes the
+                   minimum size in pixels that a face can be detected at. For now, set
+                   this to <code class="literal">40</code> pixels:
+                 
+            </p>
+              <pre class="programlisting">FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);</pre>
+              <p>
+                   Like all <code class="code">FaceDetector</code> implementations, the
+                   <code class="code">HaarCascadeDetector</code> has a method
+                   <code class="code">detectFaces()</code> which takes an image. Because the
+                   <code class="code">HaarCascadeDetector</code> uses single band images, we
+                   must convert our multi-band colour image into a single band image.
+                   To do this we can use the <code class="code">Transforms</code> utility
+                   class that contains some static methods for converting images. The
+                   <code class="code">calculateIntensity()</code> method will do just fine.
+                   Note that functionally the <code class="code">calculateIntensity()</code>
+                   method does the same thing as the <code class="code">flatten()</code>
+                   method we used earlier when used on RGB images.
+                 
+            </p>
+              <pre class="programlisting">List&lt;DetectedFace&gt; faces = fd.detectFaces(Transforms.calculateIntensity(frame));</pre>
+              <p>
+                   The <code class="code">detectFaces()</code> method returns a list of
+                   <code class="code">DetectedFace</code> objects which contain information
+                   about the faces in the image. From these objects we can get the
+                   rectangular bounding boxes of each face and draw them back into our
+                   video frame. As we&#8217;re doing all this in our
+                   <code class="code">beforeUpdate()</code> method, the video display will end
+                   up showing the bounding boxes on the displayed video. If you run the
+                   code and you have a cam attached, you should see yourself with a
+                   box drawn around your face. The complete code is shown below:
+                 
+            </p>
+              <pre class="programlisting">FaceDetector&lt;DetectedFace,FImage&gt; fd = new HaarCascadeDetector(40);
+List&lt;DetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity(frame));
+
+for( DetectedFace face : faces ) {
+    frame.drawShape(face.getBounds(), RGBColour.RED);
+}</pre>
+            
+            <div class="mediaobject" align="center"><img src="figs/face-bounds.png" align="middle" width="177.16535433070868"></div>
+            
+              
+            <p>
+                   OpenIMAJ has other face detectors which go a bit further than just
+                   finding the face. The <code class="code">FKEFaceDetector</code> finds
+                   facial keypoints (the corners of the eyes, nose and mouth) and we
+                   can use this detector instead simply by instantiating that object
+                   instead of the <code class="code">HaarCascadeDetector</code>. The
+                   <code class="code">FKEFaceDetector</code> returns a slightly different
+                   object for each detected face, called a
+                   <code class="code">KEDetectedFace</code>. The
+                   <code class="code">KEDetectedFace</code> object contains the extra
+                   information about where the keypoints in the face are located. The
+                   lines of our code to instantiate the detector and detect faces can
+                   now be changed to the following:
+                 
+            </p>
+              <pre class="programlisting">FaceDetector&lt;KEDetectedFace,FImage&gt; fd = new FKEFaceDetector();
+List&lt;KEDetectedFace&gt; faces = fd.detectFaces( Transforms.calculateIntensity( frame ) );</pre>
+              <p>
+                   If you run the demo now, you will see exactly the same as before, as
+                   the <code class="code">FKEFaceDetector</code> still detects bounding boxes.
+                   It may be running a bit slower though, as there is much more
+                   processing going on - we&#8217;re just not seeing the output of it! So,
+                   let&#8217;s plot the facial keypoints.
+                 
+            </p>
+              
+            <p>
+                   To get the keypoints use <code class="code">getKeypoints()</code> on the
+                   detected face. Each keypoint has a position (public field) which is
+                   relative to the face, so we&#8217;ll need to translate the point to the
+                   position of the face within the video frame before we plot the
+                   points. To do that we can use the <code class="code">translate()</code>
+                   method of the <code class="code">Point2d</code> class and the
+                   <code class="code">minX()</code> and <code class="code">minY()</code> methods of
+                   the <code class="code">Rectangle</code> class.
+                 
+            </p>
+              
+            <div class="sect1" title="8.1.&nbsp;Exercises">
+               <div class="titlepage">
+                  <div>
+                     <div>
+                        <h2 class="title" style="clear: both"><a name="exercises-4"></a>8.1.&nbsp;Exercises
+                        </h2>
+                     </div>
+                  </div>
+               </div>
+                   
+                   
+               <div class="sect2" title="8.1.1.&nbsp;Exercise 1: Drawing facial keypoints">
+                  <div class="titlepage">
+                     <div>
+                        <div>
+                           <h3 class="title"><a name="exercise-1-drawing-facial-keypoints"></a>8.1.1.&nbsp;Exercise 1: Drawing facial keypoints
+                           </h3>
+                        </div>
+                     </div>
+                  </div>
+                        
+                        
+                  <p>
+                             Use the information above to plot the facial keypoints on the
+                             video.
+                           
+                  </p>
+                  
+                  			
+                  <div class="mediaobject" align="center"><img src="figs/face-points.png" align="middle" width="177.16535433070868"></div>
+                  
+                      
+               </div>
+                   
+               <div class="sect2" title="8.1.2.&nbsp;Exercise 2: Speech bubbles">
+                  <div class="titlepage">
+                     <div>
+                        <div>
+                           <h3 class="title"><a name="exercise-2-speech-bubbles"></a>8.1.2.&nbsp;Exercise 2: Speech bubbles
+                           </h3>
+                        </div>
+                     </div>
+                  </div>
+                        
+                        
+                  <p>
+                             Try and take the speech bubble from the previous image tutorial
+                             and make it come from the mouth in the video.
+                             <span class="strong"><strong>Hints:</strong></span> use
+                             <code class="code">getKeypoint(FacialKeypointType)</code> to get the
+                             keypoint of the left corner of the mouth and plot the ellipses
+                             depending on that point. You may need to use smaller ellipses
+                             and text if your video is running at 320x240.
+                           
+                  </p>
+                  			
+                  <div class="mediaobject" align="center"><img src="figs/face-awesome.png" align="middle" width="177.16535433070868"></div>
+                      
+               </div>
+                 
+            </div>
+            
+         </div>
+      </div>
+      <div id="nav-sub-block" class="bottom"><a class="hide" name="nav-sub-a"></a><ul id="nav-sub">
+            <li class="first"><a accesskey="p" href="processing-video.html"><span>Prev : Processing video</span></a></li>
+            <li><a accesskey="h" href="index.html"><span>Contents</span></a></li>
+            <li class="last"><a accesskey="n" href="pt04.html"><span>Next : Audio Fundamentals</span></a></li>
+         </ul>
+      </div>
+      <footer>
+         <div class="container">
+            <div class="row span12">Copyright &copy; 2011-2014 <a href="http://www.soton.ac.uk">The University of Southampton</a>. All Rights Reserved.
+                 				
+            </div>
+            <p id="poweredBy" class="pull-right"><a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy"><img class="builtBy" alt="Built by Maven" src="./images/logos/maven-feather.png"></a></p>
+            <div id="ohloh" class="pull-right"><script type="text/javascript" src="http://www.ohloh.net/p/openimaj/widgets/project_partner_badge.js"></script></div>
+         </div>
+      </footer>
+   </body>
+</html>

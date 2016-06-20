@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (c) 2011, The University of Southampton and the individual contributors.<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * All rights reserved.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * Redistribution and use in source and binary forms, with or without modification,<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * are permitted provided that the following conditions are met:<a name="line.6"></a>
+<span class="sourceLineNo">007</span> *<a name="line.7"></a>
+<span class="sourceLineNo">008</span> *   *  Redistributions of source code must retain the above copyright notice,<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      this list of conditions and the following disclaimer.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *   *  Redistributions in binary form must reproduce the above copyright notice,<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      this list of conditions and the following disclaimer in the documentation<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *      and/or other materials provided with the distribution.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> *   *  Neither the name of the University of Southampton nor the names of its<a name="line.15"></a>
+<span class="sourceLineNo">016</span> *      contributors may be used to endorse or promote products derived from this<a name="line.16"></a>
+<span class="sourceLineNo">017</span> *      software without specific prior written permission.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>package org.openimaj.image.feature.dense.gradient;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import org.openimaj.citation.annotation.Reference;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import org.openimaj.citation.annotation.ReferenceType;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.openimaj.feature.DoubleFV;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.openimaj.feature.FeatureVectorProvider;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.openimaj.image.FImage;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.openimaj.image.analyser.ImageAnalyser;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.openimaj.image.analysis.algorithm.histogram.BinnedWindowedExtractor;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.openimaj.image.analysis.algorithm.histogram.GradientOrientationHistogramExtractor;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.openimaj.image.analysis.algorithm.histogram.InterpolatedBinnedWindowedExtractor;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.openimaj.image.analysis.algorithm.histogram.binning.QuadtreeStrategy;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.openimaj.image.pixel.sampling.QuadtreeSampler;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.openimaj.image.processing.convolution.FImageGradients;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.openimaj.image.processing.convolution.FImageGradients.Mode;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.openimaj.image.processing.edges.CannyEdgeDetector;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.openimaj.image.processor.ImageProcessor;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.openimaj.math.geometry.shape.Rectangle;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.openimaj.math.statistics.distribution.Histogram;<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>/**<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * This class is an implementation of an extractor for the PHOG (Pyramid<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * Histograms of Orientation Gradients) feature described by Bosch et al. The<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * PHOG feature is computed by creating a quadtree of orientation histograms<a name="line.53"></a>
+<span class="sourceLineNo">054</span> * over the entire image and appending the histograms for each cell of the<a name="line.54"></a>
+<span class="sourceLineNo">055</span> * quadtree into a single vector which is then l1 normalised (sum to unity).<a name="line.55"></a>
+<span class="sourceLineNo">056</span> * &lt;p&gt;<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * In the original description, only orientations at edge pixels were counted;<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * that restriction is optional in this implementation. If only edge pixels are<a name="line.58"></a>
+<span class="sourceLineNo">059</span> * used, then the feature describes the distribution of &lt;b&gt;shape&lt;/b&gt; in the<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * image. Conversely, if all pixels are used, the feature essentially describes<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * the texture of the image.<a name="line.61"></a>
+<span class="sourceLineNo">062</span> * &lt;p&gt;<a name="line.62"></a>
+<span class="sourceLineNo">063</span> * As this class will typically be used to only construct a single feature from<a name="line.63"></a>
+<span class="sourceLineNo">064</span> * an image, it is built around a {@link BinnedWindowedExtractor} (or<a name="line.64"></a>
+<span class="sourceLineNo">065</span> * {@link InterpolatedBinnedWindowedExtractor} if interpolation is used). This<a name="line.65"></a>
+<span class="sourceLineNo">066</span> * will be much more efficient than a<a name="line.66"></a>
+<span class="sourceLineNo">067</span> * {@link GradientOrientationHistogramExtractor} in the single window case. If<a name="line.67"></a>
+<span class="sourceLineNo">068</span> * you do need to extract many PHOG-like features different rectangles of the<a name="line.68"></a>
+<span class="sourceLineNo">069</span> * same image, use a {@link GradientOrientationHistogramExtractor} coupled with<a name="line.69"></a>
+<span class="sourceLineNo">070</span> * a {@link QuadtreeStrategy} to achieve the desired effect.<a name="line.70"></a>
+<span class="sourceLineNo">071</span> *<a name="line.71"></a>
+<span class="sourceLineNo">072</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.72"></a>
+<span class="sourceLineNo">073</span> *<a name="line.73"></a>
+<span class="sourceLineNo">074</span> */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>@Reference(<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                type = ReferenceType.Inproceedings,<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                author = { "Bosch, Anna", "Zisserman, Andrew", "Munoz, Xavier" },<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                title = "Representing shape with a spatial pyramid kernel",<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                year = "2007",<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                booktitle = "Proceedings of the 6th ACM international conference on Image and video retrieval",<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                pages = { "401", "", "408" },<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                url = "http://doi.acm.org/10.1145/1282280.1282340",<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                publisher = "ACM",<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                series = "CIVR '07",<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                customData = {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                "isbn", "978-1-59593-733-9",<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                                "location", "Amsterdam, The Netherlands",<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                                "numpages", "8",<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                                "doi", "10.1145/1282280.1282340",<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                                "acmid", "1282340",<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                                "address", "New York, NY, USA",<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                "keywords", "object and video retrieval, shape features, spatial pyramid kernel"<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                })<a name="line.93"></a>
+<span class="sourceLineNo">094</span>public class PHOG implements ImageAnalyser&lt;FImage&gt;, FeatureVectorProvider&lt;DoubleFV&gt; {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        private int nlevels = 3;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        private ImageProcessor&lt;FImage&gt; edgeDetector;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        private Mode orientationMode;<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>        private BinnedWindowedExtractor histExtractor;<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        private Rectangle lastBounds;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        private FImage magnitudes;<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * Construct with the values used in the paper: 4 levels (corresponds to l=3<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * in the paper), 40 orientation bins (interpolated), signed gradients<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         * (called "shape360" in the original paper) and Canny edge detection.<a name="line.106"></a>
+<span class="sourceLineNo">107</span>         */<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        public PHOG() {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                this(4, 40, FImageGradients.Mode.Signed);<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>        /**<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         * Construct with the given values, using Canny edge detection and gradient<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * histogram interpolation.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         *<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * @param nlevels<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         *            number of pyramid levels (note this includes l0, so you might<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         *            need 1 more)<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         * @param nbins<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         *            number of bins<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * @param orientationMode<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         *            the orientation mode<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         */<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        public PHOG(int nlevels, int nbins, FImageGradients.Mode orientationMode)<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                this(nlevels, nbins, true, orientationMode, new CannyEdgeDetector());<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        }<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>        /**<a name="line.129"></a>
+<span class="sourceLineNo">130</span>         * Construct with the given parameters. The &lt;code&gt;edgeDetector&lt;/code&gt;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>         * parameter can be &lt;code&gt;null&lt;/code&gt; if you don't want to filter out<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         * non-edge pixels from the histograms.<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         *<a name="line.133"></a>
+<span class="sourceLineNo">134</span>         * @param nlevels<a name="line.134"></a>
+<span class="sourceLineNo">135</span>         *            number of pyramid levels (note this includes l0, so you might<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         *            need 1 more)<a name="line.136"></a>
+<span class="sourceLineNo">137</span>         * @param nbins<a name="line.137"></a>
+<span class="sourceLineNo">138</span>         *            number of bins<a name="line.138"></a>
+<span class="sourceLineNo">139</span>         * @param histogramInterpolation<a name="line.139"></a>
+<span class="sourceLineNo">140</span>         *            should the gradient orientations be interpolated?<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * @param orientationMode<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         *            the orientation mode<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         * @param edgeDetector<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         *            the edge detector to use (may be &lt;code&gt;null&lt;/code&gt; for<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         *            gradient features)<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         */<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        public PHOG(int nlevels, int nbins, boolean histogramInterpolation, FImageGradients.Mode orientationMode,<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        ImageProcessor&lt;FImage&gt; edgeDetector)<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                this.nlevels = nlevels;<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                this.edgeDetector = edgeDetector;<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                this.orientationMode = orientationMode;<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>                if (histogramInterpolation)<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        histExtractor = new InterpolatedBinnedWindowedExtractor(nbins, true);<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                else<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        histExtractor = new BinnedWindowedExtractor(nbins);<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>                histExtractor.setMax(orientationMode.maxAngle());<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                histExtractor.setMin(orientationMode.minAngle());<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        }<a name="line.161"></a>
+<span class="sourceLineNo">162</span><a name="line.162"></a>
+<span class="sourceLineNo">163</span>        @Override<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        public void analyseImage(FImage image) {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                lastBounds = image.getBounds();<a name="line.165"></a>
+<span class="sourceLineNo">166</span><a name="line.166"></a>
+<span class="sourceLineNo">167</span>                final FImageGradients gradMag = FImageGradients.getGradientMagnitudesAndOrientations(image, orientationMode);<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                this.magnitudes = gradMag.magnitudes;<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>                histExtractor.analyseImage(gradMag.orientations);<a name="line.170"></a>
+<span class="sourceLineNo">171</span><a name="line.171"></a>
+<span class="sourceLineNo">172</span>                if (edgeDetector != null) {<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        magnitudes.multiplyInplace(image.process(edgeDetector));<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                }<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        }<a name="line.175"></a>
+<span class="sourceLineNo">176</span><a name="line.176"></a>
+<span class="sourceLineNo">177</span>        /**<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         * Extract the PHOG feature for the specified region of the image last<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         * analysed with {@link #analyseImage(FImage)}.<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         *<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         * @param rect<a name="line.181"></a>
+<span class="sourceLineNo">182</span>         *            the region<a name="line.182"></a>
+<span class="sourceLineNo">183</span>         * @return the PHOG feature<a name="line.183"></a>
+<span class="sourceLineNo">184</span>         */<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        public Histogram getFeatureVector(Rectangle rect) {<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                final QuadtreeSampler sampler = new QuadtreeSampler(rect, nlevels + 1);<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                Histogram hist = new Histogram(0);<a name="line.187"></a>
+<span class="sourceLineNo">188</span><a name="line.188"></a>
+<span class="sourceLineNo">189</span>                for (final Rectangle r : sampler) {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                        final Histogram h = histExtractor.computeHistogram(r, magnitudes);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                        hist = hist.combine(h);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                }<a name="line.192"></a>
+<span class="sourceLineNo">193</span><a name="line.193"></a>
+<span class="sourceLineNo">194</span>                hist.normaliseL1();<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>                return hist;<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        }<a name="line.197"></a>
+<span class="sourceLineNo">198</span><a name="line.198"></a>
+<span class="sourceLineNo">199</span>        /**<a name="line.199"></a>
+<span class="sourceLineNo">200</span>         * Extract the PHOG feature for the whole of the image last analysed with<a name="line.200"></a>
+<span class="sourceLineNo">201</span>         * {@link #analyseImage(FImage)}.<a name="line.201"></a>
+<span class="sourceLineNo">202</span>         *<a name="line.202"></a>
+<span class="sourceLineNo">203</span>         * @return the PHOG feature<a name="line.203"></a>
+<span class="sourceLineNo">204</span>         *<a name="line.204"></a>
+<span class="sourceLineNo">205</span>         * @see org.openimaj.feature.FeatureVectorProvider#getFeatureVector()<a name="line.205"></a>
+<span class="sourceLineNo">206</span>         */<a name="line.206"></a>
+<span class="sourceLineNo">207</span>        @Override<a name="line.207"></a>
+<span class="sourceLineNo">208</span>        public Histogram getFeatureVector() {<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                return getFeatureVector(lastBounds);<a name="line.209"></a>
+<span class="sourceLineNo">210</span>        }<a name="line.210"></a>
+<span class="sourceLineNo">211</span>}<a name="line.211"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

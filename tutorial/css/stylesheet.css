@@ -1,0 +1,192 @@
+pre,
+.authorblurb * a,
+tt,
+code,
+kbd,
+samp {
+	font-family: "inconsolata";
+	font-size: small;
+}
+
+.authorblurb p {
+	margin-top: 0.15em;
+	margin-bottom: 0;
+}
+
+div.book > .titlepage div {
+    float: left;
+    width: 500px;
+}
+
+div.cover {
+    padding-left: 50px;
+}
+
+div.cover img {
+    width: 450;
+}
+
+div.book > .titlepage hr {
+    clear: both;
+}
+
+div#nav-sub-block
+{
+    margin-left: auto;
+	margin-right: auto;
+	width: 1000px;
+    font-family: "open_sans_condensedbold"
+}
+
+div#nav-sub-block.bottom
+{
+	margin-bottom: 10px;
+}
+
+ul#nav-sub
+{
+    list-style-type:none;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background-color:#5C669C;
+}
+
+ul#nav-sub li
+{
+    float:left;
+    width:333px;
+    text-align:center;
+}
+
+ul#nav-sub li.first
+{
+    float:left;
+    width:330px;
+    text-align:left;
+    padding-left: 3px;
+}
+
+ul#nav-sub li.last
+{
+    float:right;
+    width:330px;
+    text-align:right;
+    padding-right: 3px;
+}
+
+ul#nav-sub li a:link, 
+ul#nav-sub li a:visited
+{
+    display:block;
+    font-weight:normal;
+    color:#FFFFFF !important;
+    background-color:#5C669C;
+    padding:4px;
+}
+
+ul#nav-sub li a:hover, 
+ul#nav-sub li a:active
+{
+    background-color:#19007D;
+}
+
+.hide {
+    display: none;
+}
+
+.centered {
+    text-align: center;
+}
+
+h3.author {
+    margin-bottom: 0em;
+}
+
+.toc p b {
+    font-family: "open_sans_condensedbold";   
+    font-size: 19px;
+}
+
+.programlisting {
+    border-color: #151B54;
+	border-style: solid;
+	border-width: 0.2px;
+	background-color: #E3E4FA;
+	margin-top: 6px;
+	padding-top: 6px;
+	margin-bottom: 6px;
+	padding-bottom: 6px;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+dt {
+	font-weight: normal;
+}
+
+code {
+	padding: 0;
+	color: black;
+	background-color: transparent;
+	border: 0;
+}
+
+/*Master site CSS below here*/
+body {
+	font-family: "linux_libertine";
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+    text-align: justify;
+	font-size: medium;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: "open_sans_condensedbold";
+}
+
+#topbar, #banner, #breadcrumbs, footer {
+	font-size: 14px;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+#banner {
+	margin-top: 40px;
+}
+
+#breadcrumbs {
+	position: fixed;
+	left:0;
+	right:0;
+	top:40px;
+	background-color: #f5f5f5;
+}
+
+#bannerLeft h2 {
+	display: none;
+}
+
+#breadcrumbs ul.breadcrumb {
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.container {
+	width:1000px;
+}
+
+.navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
+	width:1000px;	
+}
+
+.navbar .brand {
+	padding-top:5px;
+	padding-bottom:5px;
+}

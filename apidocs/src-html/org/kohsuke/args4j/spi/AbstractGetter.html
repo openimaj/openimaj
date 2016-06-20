@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package org.kohsuke.args4j.spi;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.lang.reflect.Field;<a name="line.3"></a>
+<span class="sourceLineNo">004</span><a name="line.4"></a>
+<span class="sourceLineNo">005</span>/**<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * An abstract Getter is of the type of the underlying bean and is not multivalued<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * <a name="line.7"></a>
+<span class="sourceLineNo">008</span> * @author Sina Samangooei (ss@ecs.soton.ac.uk)<a name="line.8"></a>
+<span class="sourceLineNo">009</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk) <a name="line.9"></a>
+<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * @param &lt;T&gt;<a name="line.11"></a>
+<span class="sourceLineNo">012</span> */<a name="line.12"></a>
+<span class="sourceLineNo">013</span>public abstract class AbstractGetter&lt;T&gt; implements Getter&lt;T&gt;{<a name="line.13"></a>
+<span class="sourceLineNo">014</span>        protected Class&lt;?&gt; type;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>        protected Field f;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>        protected Object bean;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>        private String name;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>        /**<a name="line.19"></a>
+<span class="sourceLineNo">020</span>         * @param name <a name="line.20"></a>
+<span class="sourceLineNo">021</span>         * @param bean<a name="line.21"></a>
+<span class="sourceLineNo">022</span>         * @param f<a name="line.22"></a>
+<span class="sourceLineNo">023</span>         */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        public AbstractGetter(String name, Object bean, Field f) {<a name="line.24"></a>
+<span class="sourceLineNo">025</span>                this.type = bean.getClass();<a name="line.25"></a>
+<span class="sourceLineNo">026</span>                this.f = f;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>                this.bean = bean;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                this.name = name;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>        }<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        <a name="line.30"></a>
+<span class="sourceLineNo">031</span>        @Override<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        public String getOptionName() {<a name="line.32"></a>
+<span class="sourceLineNo">033</span>                return name;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        }<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        <a name="line.35"></a>
+<span class="sourceLineNo">036</span>        @Override<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        public Class&lt;?&gt; getType() {<a name="line.37"></a>
+<span class="sourceLineNo">038</span>                return type;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        }<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        <a name="line.40"></a>
+<span class="sourceLineNo">041</span>        @Override<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        public boolean isMultiValued() {<a name="line.42"></a>
+<span class="sourceLineNo">043</span>                return false;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        }<a name="line.44"></a>
+<span class="sourceLineNo">045</span>}<a name="line.45"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
