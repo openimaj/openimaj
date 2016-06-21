@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-image</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.5</version>
   </parent>
   <artifactId>multiview</artifactId>
   <packaging>jar</packaging>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

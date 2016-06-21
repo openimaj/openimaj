@@ -4,12 +4,12 @@
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj-maven-archetypes</artifactId>
   <packaging>pom</packaging>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.3.5</version>
   <name>OpenIMAJ Maven Archetypes</name>
   <parent>
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.5</version>
     <relativePath>../</relativePath>
   </parent>
   <inceptionYear>2011</inceptionYear>
