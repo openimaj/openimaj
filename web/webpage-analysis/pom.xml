@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-web</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3.5</version>
+    <version>1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>webpage-analysis</artifactId>
@@ -15,13 +15,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-web</artifactId>
-      <version>1.3.5</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>readability4j</artifactId>
-      <version>1.3.5</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
