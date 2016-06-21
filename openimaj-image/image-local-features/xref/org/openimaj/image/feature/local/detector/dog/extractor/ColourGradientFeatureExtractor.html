@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>ColourGradientFeatureExtractor xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../../../../apidocs/org/openimaj/image/feature/local/detector/dog/extractor/ColourGradientFeatureExtractor.html">View Javadoc</a></div><pre>
+
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_javadoccomment"> * Copyright (c) 2011, The University of Southampton and the individual contributors.</em>
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_javadoccomment"> * All rights reserved.</em>
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_javadoccomment"> * Redistribution and use in source and binary forms, with or without modification,</em>
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <em class="jxr_javadoccomment"> * are permitted provided that the following conditions are met:</em>
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <em class="jxr_javadoccomment"> *   * 	Redistributions of source code must retain the above copyright notice,</em>
+<a class="jxr_linenumber" name="9" href="#9">9</a>   <em class="jxr_javadoccomment"> * 	this list of conditions and the following disclaimer.</em>
+<a class="jxr_linenumber" name="10" href="#10">10</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="11" href="#11">11</a>  <em class="jxr_javadoccomment"> *   *	Redistributions in binary form must reproduce the above copyright notice,</em>
+<a class="jxr_linenumber" name="12" href="#12">12</a>  <em class="jxr_javadoccomment"> * 	this list of conditions and the following disclaimer in the documentation</em>
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <em class="jxr_javadoccomment"> * 	and/or other materials provided with the distribution.</em>
+<a class="jxr_linenumber" name="14" href="#14">14</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="15" href="#15">15</a>  <em class="jxr_javadoccomment"> *   *	Neither the name of the University of Southampton nor the names of its</em>
+<a class="jxr_linenumber" name="16" href="#16">16</a>  <em class="jxr_javadoccomment"> * 	contributors may be used to endorse or promote products derived from this</em>
+<a class="jxr_linenumber" name="17" href="#17">17</a>  <em class="jxr_javadoccomment"> * 	software without specific prior written permission.</em>
+<a class="jxr_linenumber" name="18" href="#18">18</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="19" href="#19">19</a>  <em class="jxr_javadoccomment"> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND</em>
+<a class="jxr_linenumber" name="20" href="#20">20</a>  <em class="jxr_javadoccomment"> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</em>
+<a class="jxr_linenumber" name="21" href="#21">21</a>  <em class="jxr_javadoccomment"> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</em>
+<a class="jxr_linenumber" name="22" href="#22">22</a>  <em class="jxr_javadoccomment"> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</em>
+<a class="jxr_linenumber" name="23" href="#23">23</a>  <em class="jxr_javadoccomment"> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</em>
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <em class="jxr_javadoccomment"> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</em>
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <em class="jxr_javadoccomment"> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</em>
+<a class="jxr_linenumber" name="26" href="#26">26</a>  <em class="jxr_javadoccomment"> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</em>
+<a class="jxr_linenumber" name="27" href="#27">27</a>  <em class="jxr_javadoccomment"> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</em>
+<a class="jxr_linenumber" name="28" href="#28">28</a>  <em class="jxr_javadoccomment"> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</em>
+<a class="jxr_linenumber" name="29" href="#29">29</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="30" href="#30">30</a>  <strong class="jxr_keyword">package</strong> org.openimaj.image.feature.local.detector.dog.extractor;
+<a class="jxr_linenumber" name="31" href="#31">31</a>  
+<a class="jxr_linenumber" name="32" href="#32">32</a>  <strong class="jxr_keyword">import</strong> org.openimaj.feature.OrientedFeatureVector;
+<a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.FImage;
+<a class="jxr_linenumber" name="34" href="#34">34</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.MBFImage;
+<a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProvider;
+<a class="jxr_linenumber" name="36" href="#36">36</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProviderFactory;
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.processing.convolution.FImageGradients;
+<a class="jxr_linenumber" name="41" href="#41">41</a>  
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * Class capable of extracting local descriptors from a circular region in an</em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * image defined by its scale and centre. The actual feature extracted is</em>
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> * determined by the {@link GradientFeatureProvider} that is provided by the</em>
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment"> * {@link GradientFeatureProviderFactory} set during construction.</em>
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment"> * The GradientFeatureExtractor first calculates the dominant orientation of the</em>
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment"> * image patch described by the {@link ScaleSpaceImageExtractorProperties} and</em>
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> * then iterates over the pixels in an oriented square, centered on the interest</em>
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment"> * point, passing the gradient and magnitude values of the respective pixel to</em>
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment"> * the {@link GradientFeatureProvider}.</em>
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment"> * The size of the sampling square, relative to scale is set by a single</em>
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment"> * parameter, magnification. For some types of feature provider, this number</em>
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment"> * might need to be set based on the internal settings of the provider. For</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment"> * example, with a {@link SIFTFeatureProvider} this will probably be set to a</em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment"> * constant multiplied by the number of spatial bins of the feature. For SIFT,</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment"> * this constant is typically around 3, so with a standard 4-spatial binned SIFT</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment"> * provider, the magnification factor of the extractor should be about 12.</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment"> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="69" href="#69">69</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../../org/openimaj/image/feature/local/detector/dog/extractor/ColourGradientFeatureExtractor.html">ColourGradientFeatureExtractor</a> <strong class="jxr_keyword">implements</strong> ScaleSpaceFeatureExtractor&lt;OrientedFeatureVector, MBFImage&gt; {
+<a class="jxr_linenumber" name="70" href="#70">70</a>  	AbstractDominantOrientationExtractor dominantOrientationExtractor;
+<a class="jxr_linenumber" name="71" href="#71">71</a>  
+<a class="jxr_linenumber" name="72" href="#72">72</a>  	GradientFeatureProviderFactory factory;
+<a class="jxr_linenumber" name="73" href="#73">73</a>  
+<a class="jxr_linenumber" name="74" href="#74">74</a>  	<strong class="jxr_keyword">private</strong> GradientScaleSpaceImageExtractorProperties&lt;FImage&gt; currentGradientProperties = <strong class="jxr_keyword">new</strong> GradientScaleSpaceImageExtractorProperties&lt;FImage&gt;();
+<a class="jxr_linenumber" name="75" href="#75">75</a>  
+<a class="jxr_linenumber" name="76" href="#76">76</a>  	<strong class="jxr_keyword">protected</strong> MBFImage image;
+<a class="jxr_linenumber" name="77" href="#77">77</a>  	<strong class="jxr_keyword">protected</strong> FImage[] magnitudes;
+<a class="jxr_linenumber" name="78" href="#78">78</a>  	<strong class="jxr_keyword">protected</strong> FImage[] orientations;
+<a class="jxr_linenumber" name="79" href="#79">79</a>  
+<a class="jxr_linenumber" name="80" href="#80">80</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="81" href="#81">81</a>  <em class="jxr_javadoccomment">	 * The magnification factor determining the size of the sampling region</em>
+<a class="jxr_linenumber" name="82" href="#82">82</a>  <em class="jxr_javadoccomment">	 * relative to the scale of the interest point.</em>
+<a class="jxr_linenumber" name="83" href="#83">83</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="84" href="#84">84</a>  	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">float</strong> magnification = 12;
+<a class="jxr_linenumber" name="85" href="#85">85</a>  
+<a class="jxr_linenumber" name="86" href="#86">86</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="87" href="#87">87</a>  <em class="jxr_javadoccomment">	 * Construct with the given orientation extractor and gradient feature</em>
+<a class="jxr_linenumber" name="88" href="#88">88</a>  <em class="jxr_javadoccomment">	 * provider. The default magnification factor of 12 is used.</em>
+<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment">	 * @param dominantOrientationExtractor</em>
+<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">	 *            the orientation extractor</em>
+<a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">	 * @param factory</em>
+<a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">	 *            the gradient feature provider</em>
+<a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="95" href="#95">95</a>  	<strong class="jxr_keyword">public</strong> <a href="../../../../../../../../org/openimaj/image/feature/local/detector/dog/extractor/ColourGradientFeatureExtractor.html">ColourGradientFeatureExtractor</a>(<a href="../../../../../../../../org/openimaj/image/feature/local/detector/dog/extractor/AbstractDominantOrientationExtractor.html">AbstractDominantOrientationExtractor</a> dominantOrientationExtractor,
+<a class="jxr_linenumber" name="96" href="#96">96</a>  			GradientFeatureProviderFactory factory)
+<a class="jxr_linenumber" name="97" href="#97">97</a>  	{
+<a class="jxr_linenumber" name="98" href="#98">98</a>  		<strong class="jxr_keyword">this</strong>.dominantOrientationExtractor = dominantOrientationExtractor;
+<a class="jxr_linenumber" name="99" href="#99">99</a>  		<strong class="jxr_keyword">this</strong>.factory = factory;
+<a class="jxr_linenumber" name="100" href="#100">100</a> 	}
+<a class="jxr_linenumber" name="101" href="#101">101</a> 
+<a class="jxr_linenumber" name="102" href="#102">102</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="103" href="#103">103</a> <em class="jxr_javadoccomment">	 * Construct with the given orientation extractor, gradient feature provider</em>
+<a class="jxr_linenumber" name="104" href="#104">104</a> <em class="jxr_javadoccomment">	 * and magnification factor determining the size of the sampling region</em>
+<a class="jxr_linenumber" name="105" href="#105">105</a> <em class="jxr_javadoccomment">	 * relative to the scale of the interest point.</em>
+<a class="jxr_linenumber" name="106" href="#106">106</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="107" href="#107">107</a> <em class="jxr_javadoccomment">	 * @param dominantOrientationExtractor</em>
+<a class="jxr_linenumber" name="108" href="#108">108</a> <em class="jxr_javadoccomment">	 *            the orientation extractor</em>
+<a class="jxr_linenumber" name="109" href="#109">109</a> <em class="jxr_javadoccomment">	 * @param factory</em>
+<a class="jxr_linenumber" name="110" href="#110">110</a> <em class="jxr_javadoccomment">	 *            the gradient feature provider</em>
+<a class="jxr_linenumber" name="111" href="#111">111</a> <em class="jxr_javadoccomment">	 * @param magnification</em>
+<a class="jxr_linenumber" name="112" href="#112">112</a> <em class="jxr_javadoccomment">	 *            the magnification factor.</em>
+<a class="jxr_linenumber" name="113" href="#113">113</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="114" href="#114">114</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../../../org/openimaj/image/feature/local/detector/dog/extractor/ColourGradientFeatureExtractor.html">ColourGradientFeatureExtractor</a>(<a href="../../../../../../../../org/openimaj/image/feature/local/detector/dog/extractor/AbstractDominantOrientationExtractor.html">AbstractDominantOrientationExtractor</a> dominantOrientationExtractor,
+<a class="jxr_linenumber" name="115" href="#115">115</a> 			GradientFeatureProviderFactory factory, <strong class="jxr_keyword">float</strong> magnification)
+<a class="jxr_linenumber" name="116" href="#116">116</a> 	{
+<a class="jxr_linenumber" name="117" href="#117">117</a> 		<strong class="jxr_keyword">this</strong>(dominantOrientationExtractor, factory);
+<a class="jxr_linenumber" name="118" href="#118">118</a> 		<strong class="jxr_keyword">this</strong>.magnification = magnification;
+<a class="jxr_linenumber" name="119" href="#119">119</a> 	}
+<a class="jxr_linenumber" name="120" href="#120">120</a> 
+<a class="jxr_linenumber" name="121" href="#121">121</a> 	@Override
+<a class="jxr_linenumber" name="122" href="#122">122</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../../../org/openimaj/feature/OrientedFeatureVector.html">OrientedFeatureVector</a>[] extractFeature(ScaleSpaceImageExtractorProperties&lt;MBFImage&gt; properties) {
+<a class="jxr_linenumber" name="123" href="#123">123</a> 		<strong class="jxr_keyword">final</strong> GradientScaleSpaceImageExtractorProperties&lt;FImage&gt; gprops = getCurrentGradientProps(properties);
+<a class="jxr_linenumber" name="124" href="#124">124</a> 
+<a class="jxr_linenumber" name="125" href="#125">125</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[] dominantOrientations = dominantOrientationExtractor.extractFeatureRaw(gprops);
+<a class="jxr_linenumber" name="126" href="#126">126</a> 
+<a class="jxr_linenumber" name="127" href="#127">127</a> 		<strong class="jxr_keyword">final</strong> <a href="../../../../../../../../org/openimaj/feature/OrientedFeatureVector.html">OrientedFeatureVector</a>[] ret = <strong class="jxr_keyword">new</strong> <a href="../../../../../../../../org/openimaj/feature/OrientedFeatureVector.html">OrientedFeatureVector</a>[dominantOrientations.length];
+<a class="jxr_linenumber" name="128" href="#128">128</a> 
+<a class="jxr_linenumber" name="129" href="#129">129</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; dominantOrientations.length; i++) {
+<a class="jxr_linenumber" name="130" href="#130">130</a> 			ret[i] = createFeature(dominantOrientations[i]);
+<a class="jxr_linenumber" name="131" href="#131">131</a> 		}
+<a class="jxr_linenumber" name="132" href="#132">132</a> 
+<a class="jxr_linenumber" name="133" href="#133">133</a> 		<strong class="jxr_keyword">return</strong> ret;
+<a class="jxr_linenumber" name="134" href="#134">134</a> 	}
+<a class="jxr_linenumber" name="135" href="#135">135</a> 
+<a class="jxr_linenumber" name="136" href="#136">136</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="137" href="#137">137</a> <em class="jxr_javadoccomment">	 * Get the GradientScaleSpaceImageExtractorProperties for the given</em>
+<a class="jxr_linenumber" name="138" href="#138">138</a> <em class="jxr_javadoccomment">	 * properties. The returned properties are the same as the input properties,</em>
+<a class="jxr_linenumber" name="139" href="#139">139</a> <em class="jxr_javadoccomment">	 * but with the gradient images added.</em>
+<a class="jxr_linenumber" name="140" href="#140">140</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="141" href="#141">141</a> <em class="jxr_javadoccomment">	 * For efficiency, this method always returns the same cached</em>
+<a class="jxr_linenumber" name="142" href="#142">142</a> <em class="jxr_javadoccomment">	 * GradientScaleSpaceImageExtractorProperties, and internally updates this</em>
+<a class="jxr_linenumber" name="143" href="#143">143</a> <em class="jxr_javadoccomment">	 * as necessary. The gradient images are only recalculated when the input</em>
+<a class="jxr_linenumber" name="144" href="#144">144</a> <em class="jxr_javadoccomment">	 * image from the input properties is different to the cached one.</em>
+<a class="jxr_linenumber" name="145" href="#145">145</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="146" href="#146">146</a> <em class="jxr_javadoccomment">	 * @param properties</em>
+<a class="jxr_linenumber" name="147" href="#147">147</a> <em class="jxr_javadoccomment">	 *            input properties</em>
+<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">	 * @return cached GradientScaleSpaceImageExtractorProperties</em>
+<a class="jxr_linenumber" name="149" href="#149">149</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="150" href="#150">150</a> 	<strong class="jxr_keyword">public</strong> GradientScaleSpaceImageExtractorProperties&lt;FImage&gt; getCurrentGradientProps(
+<a class="jxr_linenumber" name="151" href="#151">151</a> 			ScaleSpaceImageExtractorProperties&lt;MBFImage&gt; properties)
+<a class="jxr_linenumber" name="152" href="#152">152</a> 	{
+<a class="jxr_linenumber" name="153" href="#153">153</a> 		<strong class="jxr_keyword">if</strong> (properties.image != image) {
+<a class="jxr_linenumber" name="154" href="#154">154</a> 			image = properties.image;
+<a class="jxr_linenumber" name="155" href="#155">155</a> 			currentGradientProperties.image = image.bands.get(0);
+<a class="jxr_linenumber" name="156" href="#156">156</a> 
+<a class="jxr_linenumber" name="157" href="#157">157</a> 			<em class="jxr_comment">// only if the size of the image has changed do we need to reset the</em>
+<a class="jxr_linenumber" name="158" href="#158">158</a> 			<em class="jxr_comment">// gradient and orientation images.</em>
+<a class="jxr_linenumber" name="159" href="#159">159</a> 			<strong class="jxr_keyword">if</strong> (currentGradientProperties.orientation == <strong class="jxr_keyword">null</strong> ||
+<a class="jxr_linenumber" name="160" href="#160">160</a> 					currentGradientProperties.orientation.height != currentGradientProperties.image.height ||
+<a class="jxr_linenumber" name="161" href="#161">161</a> 					currentGradientProperties.orientation.width != currentGradientProperties.image.width)
+<a class="jxr_linenumber" name="162" href="#162">162</a> 			{
+<a class="jxr_linenumber" name="163" href="#163">163</a> 				currentGradientProperties.orientation = <strong class="jxr_keyword">new</strong> FImage(currentGradientProperties.image.width,
+<a class="jxr_linenumber" name="164" href="#164">164</a> 						currentGradientProperties.image.height);
+<a class="jxr_linenumber" name="165" href="#165">165</a> 				currentGradientProperties.magnitude = <strong class="jxr_keyword">new</strong> FImage(currentGradientProperties.image.width,
+<a class="jxr_linenumber" name="166" href="#166">166</a> 						currentGradientProperties.image.height);
+<a class="jxr_linenumber" name="167" href="#167">167</a> 
+<a class="jxr_linenumber" name="168" href="#168">168</a> 				<strong class="jxr_keyword">if</strong> (magnitudes == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="169" href="#169">169</a> 					magnitudes = <strong class="jxr_keyword">new</strong> FImage[image.bands.size() - 1];
+<a class="jxr_linenumber" name="170" href="#170">170</a> 					orientations = <strong class="jxr_keyword">new</strong> FImage[image.bands.size() - 1];
+<a class="jxr_linenumber" name="171" href="#171">171</a> 				}
+<a class="jxr_linenumber" name="172" href="#172">172</a> 
+<a class="jxr_linenumber" name="173" href="#173">173</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; magnitudes.length; i++) {
+<a class="jxr_linenumber" name="174" href="#174">174</a> 					magnitudes[i] = <strong class="jxr_keyword">new</strong> FImage(currentGradientProperties.image.width,
+<a class="jxr_linenumber" name="175" href="#175">175</a> 							currentGradientProperties.image.height);
+<a class="jxr_linenumber" name="176" href="#176">176</a> 					orientations[i] = <strong class="jxr_keyword">new</strong> FImage(currentGradientProperties.image.width,
+<a class="jxr_linenumber" name="177" href="#177">177</a> 							currentGradientProperties.image.height);
+<a class="jxr_linenumber" name="178" href="#178">178</a> 				}
+<a class="jxr_linenumber" name="179" href="#179">179</a> 			}
+<a class="jxr_linenumber" name="180" href="#180">180</a> 
+<a class="jxr_linenumber" name="181" href="#181">181</a> 			FImageGradients.gradientMagnitudesAndOrientations(currentGradientProperties.image,
+<a class="jxr_linenumber" name="182" href="#182">182</a> 					currentGradientProperties.magnitude, currentGradientProperties.orientation);
+<a class="jxr_linenumber" name="183" href="#183">183</a> 
+<a class="jxr_linenumber" name="184" href="#184">184</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; magnitudes.length; i++) {
+<a class="jxr_linenumber" name="185" href="#185">185</a> 				FImageGradients.gradientMagnitudesAndOrientations(image.getBand(i + 1), magnitudes[i], orientations[i]);
+<a class="jxr_linenumber" name="186" href="#186">186</a> 			}
+<a class="jxr_linenumber" name="187" href="#187">187</a> 		}
+<a class="jxr_linenumber" name="188" href="#188">188</a> 
+<a class="jxr_linenumber" name="189" href="#189">189</a> 		currentGradientProperties.x = properties.x;
+<a class="jxr_linenumber" name="190" href="#190">190</a> 		currentGradientProperties.y = properties.y;
+<a class="jxr_linenumber" name="191" href="#191">191</a> 		currentGradientProperties.scale = properties.scale;
+<a class="jxr_linenumber" name="192" href="#192">192</a> 
+<a class="jxr_linenumber" name="193" href="#193">193</a> 		<strong class="jxr_keyword">return</strong> currentGradientProperties;
+<a class="jxr_linenumber" name="194" href="#194">194</a> 	}
+<a class="jxr_linenumber" name="195" href="#195">195</a> 
+<a class="jxr_linenumber" name="196" href="#196">196</a> 	<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="197" href="#197">197</a> <em class="jxr_comment">	 * Iterate over the pixels in a sampling patch around the given feature</em>
+<a class="jxr_linenumber" name="198" href="#198">198</a> <em class="jxr_comment">	 * coordinates and pass the information to a feature provider that will</em>
+<a class="jxr_linenumber" name="199" href="#199">199</a> <em class="jxr_comment">	 * extract the relevant feature vector.</em>
+<a class="jxr_linenumber" name="200" href="#200">200</a> <em class="jxr_comment">	 */</em>
+<a class="jxr_linenumber" name="201" href="#201">201</a> 	<strong class="jxr_keyword">protected</strong> <a href="../../../../../../../../org/openimaj/feature/OrientedFeatureVector.html">OrientedFeatureVector</a> createFeature(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> orientation) {
+<a class="jxr_linenumber" name="202" href="#202">202</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> fx = currentGradientProperties.x;
+<a class="jxr_linenumber" name="203" href="#203">203</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> fy = currentGradientProperties.y;
+<a class="jxr_linenumber" name="204" href="#204">204</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> scale = currentGradientProperties.scale;
+<a class="jxr_linenumber" name="205" href="#205">205</a> 
+<a class="jxr_linenumber" name="206" href="#206">206</a> 		<em class="jxr_comment">// create a new feature provider and initialise it with the dominant</em>
+<a class="jxr_linenumber" name="207" href="#207">207</a> 		<em class="jxr_comment">// orientation</em>
+<a class="jxr_linenumber" name="208" href="#208">208</a> 		<strong class="jxr_keyword">final</strong> <a href="../../../../../../../../org/openimaj/image/feature/local/descriptor/gradient/GradientFeatureProvider.html">GradientFeatureProvider</a>[] sfe = <strong class="jxr_keyword">new</strong> <a href="../../../../../../../../org/openimaj/image/feature/local/descriptor/gradient/GradientFeatureProvider.html">GradientFeatureProvider</a>[magnitudes.length];
+<a class="jxr_linenumber" name="209" href="#209">209</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; magnitudes.length; i++) {
+<a class="jxr_linenumber" name="210" href="#210">210</a> 			sfe[i] = factory.newProvider();
+<a class="jxr_linenumber" name="211" href="#211">211</a> 			sfe[i].setPatchOrientation(orientation);
+<a class="jxr_linenumber" name="212" href="#212">212</a> 		}
+<a class="jxr_linenumber" name="213" href="#213">213</a> 
+<a class="jxr_linenumber" name="214" href="#214">214</a> 		<em class="jxr_comment">// the integer coordinates of the patch</em>
+<a class="jxr_linenumber" name="215" href="#215">215</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ix = Math.round(fx);
+<a class="jxr_linenumber" name="216" href="#216">216</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> iy = Math.round(fy);
+<a class="jxr_linenumber" name="217" href="#217">217</a> 
+<a class="jxr_linenumber" name="218" href="#218">218</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> sin = (<strong class="jxr_keyword">float</strong>) Math.sin(orientation);
+<a class="jxr_linenumber" name="219" href="#219">219</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> cos = (<strong class="jxr_keyword">float</strong>) Math.cos(orientation);
+<a class="jxr_linenumber" name="220" href="#220">220</a> 
+<a class="jxr_linenumber" name="221" href="#221">221</a> 		<em class="jxr_comment">// get the amount of extra sampling outside the unit square requested by</em>
+<a class="jxr_linenumber" name="222" href="#222">222</a> 		<em class="jxr_comment">// the feature</em>
+<a class="jxr_linenumber" name="223" href="#223">223</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> oversampling = sfe[0].getOversamplingAmount();
+<a class="jxr_linenumber" name="224" href="#224">224</a> 
+<a class="jxr_linenumber" name="225" href="#225">225</a> 		<em class="jxr_comment">// this is the size of the unit bounding box of the patch in the image</em>
+<a class="jxr_linenumber" name="226" href="#226">226</a> 		<em class="jxr_comment">// in pixels</em>
+<a class="jxr_linenumber" name="227" href="#227">227</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> boundingBoxSize = magnification * scale;
+<a class="jxr_linenumber" name="228" href="#228">228</a> 
+<a class="jxr_linenumber" name="229" href="#229">229</a> 		<em class="jxr_comment">// the amount of extra sampling per side in pixels</em>
+<a class="jxr_linenumber" name="230" href="#230">230</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> extraSampling = oversampling * boundingBoxSize;
+<a class="jxr_linenumber" name="231" href="#231">231</a> 
+<a class="jxr_linenumber" name="232" href="#232">232</a> 		<em class="jxr_comment">// the actual sampling area is bigger than the boundingBoxSize by an</em>
+<a class="jxr_linenumber" name="233" href="#233">233</a> 		<em class="jxr_comment">// extraSampling on each side</em>
+<a class="jxr_linenumber" name="234" href="#234">234</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> samplingBoxSize = extraSampling + boundingBoxSize + extraSampling;
+<a class="jxr_linenumber" name="235" href="#235">235</a> 
+<a class="jxr_linenumber" name="236" href="#236">236</a> 		<em class="jxr_comment">// In the image, the box (with sides parallel to the image frame) that</em>
+<a class="jxr_linenumber" name="237" href="#237">237</a> 		<em class="jxr_comment">// contains the</em>
+<a class="jxr_linenumber" name="238" href="#238">238</a> 		<em class="jxr_comment">// sampling box is:</em>
+<a class="jxr_linenumber" name="239" href="#239">239</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> orientedSamplingBoxSize = Math.abs(sin * samplingBoxSize) + Math.abs(cos * samplingBoxSize);
+<a class="jxr_linenumber" name="240" href="#240">240</a> 
+<a class="jxr_linenumber" name="241" href="#241">241</a> 		<em class="jxr_comment">// now half the size and round to an int so we can iterate</em>
+<a class="jxr_linenumber" name="242" href="#242">242</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> orientedSamplingBoxHalfSize = Math.round(orientedSamplingBoxSize / 2.0f);
+<a class="jxr_linenumber" name="243" href="#243">243</a> 
+<a class="jxr_linenumber" name="244" href="#244">244</a> 		<em class="jxr_comment">// get the images and their size</em>
+<a class="jxr_linenumber" name="245" href="#245">245</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> width = magnitudes[0].width;
+<a class="jxr_linenumber" name="246" href="#246">246</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> height = magnitudes[0].height;
+<a class="jxr_linenumber" name="247" href="#247">247</a> 
+<a class="jxr_linenumber" name="248" href="#248">248</a> 		<em class="jxr_comment">// now pass over all the pixels in the image that *might* contribute to</em>
+<a class="jxr_linenumber" name="249" href="#249">249</a> 		<em class="jxr_comment">// the sampling area</em>
+<a class="jxr_linenumber" name="250" href="#250">250</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = -orientedSamplingBoxHalfSize; y &lt;= orientedSamplingBoxHalfSize; y++) {
+<a class="jxr_linenumber" name="251" href="#251">251</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = -orientedSamplingBoxHalfSize; x &lt;= orientedSamplingBoxHalfSize; x++) {
+<a class="jxr_linenumber" name="252" href="#252">252</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> px = x + ix;
+<a class="jxr_linenumber" name="253" href="#253">253</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> py = y + iy;
+<a class="jxr_linenumber" name="254" href="#254">254</a> 
+<a class="jxr_linenumber" name="255" href="#255">255</a> 				<em class="jxr_comment">// check if the pixel is in the image bounds; if not ignore it</em>
+<a class="jxr_linenumber" name="256" href="#256">256</a> 				<strong class="jxr_keyword">if</strong> (px &gt;= 0 &amp;&amp; px &lt; width &amp;&amp; py &gt;= 0 &amp;&amp; py &lt; height) {
+<a class="jxr_linenumber" name="257" href="#257">257</a> 					<em class="jxr_comment">// calculate the actual position of the sample in the patch</em>
+<a class="jxr_linenumber" name="258" href="#258">258</a> 					<em class="jxr_comment">// coordinate system</em>
+<a class="jxr_linenumber" name="259" href="#259">259</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> sx = 0.5f + ((-sin * y + cos * x) - (fx - ix)) / boundingBoxSize;
+<a class="jxr_linenumber" name="260" href="#260">260</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> sy = 0.5f + ((cos * y + sin * x) - (fy - iy)) / boundingBoxSize;
+<a class="jxr_linenumber" name="261" href="#261">261</a> 
+<a class="jxr_linenumber" name="262" href="#262">262</a> 					<em class="jxr_comment">// if the pixel is in the bounds of the sampling area then</em>
+<a class="jxr_linenumber" name="263" href="#263">263</a> 					<em class="jxr_comment">// add it</em>
+<a class="jxr_linenumber" name="264" href="#264">264</a> 					<strong class="jxr_keyword">if</strong> (sx &gt; -oversampling &amp;&amp; sx &lt; 1 + oversampling &amp;&amp; sy &gt; -oversampling &amp;&amp; sy &lt; 1 + oversampling) {
+<a class="jxr_linenumber" name="265" href="#265">265</a> 						<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; magnitudes.length; i++) {
+<a class="jxr_linenumber" name="266" href="#266">266</a> 							sfe[i].addSample(sx, sy, magnitudes[i].pixels[py][px], orientations[i].pixels[py][px]);
+<a class="jxr_linenumber" name="267" href="#267">267</a> 						}
+<a class="jxr_linenumber" name="268" href="#268">268</a> 					}
+<a class="jxr_linenumber" name="269" href="#269">269</a> 				}
+<a class="jxr_linenumber" name="270" href="#270">270</a> 			}
+<a class="jxr_linenumber" name="271" href="#271">271</a> 		}
+<a class="jxr_linenumber" name="272" href="#272">272</a> 
+<a class="jxr_linenumber" name="273" href="#273">273</a> 		<strong class="jxr_keyword">final</strong> <a href="../../../../../../../../org/openimaj/feature/OrientedFeatureVector.html">OrientedFeatureVector</a> first = sfe[0].getFeatureVector();
+<a class="jxr_linenumber" name="274" href="#274">274</a> 		<strong class="jxr_keyword">final</strong> <a href="../../../../../../../../org/openimaj/feature/OrientedFeatureVector.html">OrientedFeatureVector</a> fv = <strong class="jxr_keyword">new</strong> <a href="../../../../../../../../org/openimaj/feature/OrientedFeatureVector.html">OrientedFeatureVector</a>(sfe.length * first.length(), orientation);
+<a class="jxr_linenumber" name="275" href="#275">275</a> 		System.arraycopy(first.values, 0, fv.values, 0, first.values.length);
+<a class="jxr_linenumber" name="276" href="#276">276</a> 
+<a class="jxr_linenumber" name="277" href="#277">277</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt; magnitudes.length; i++) {
+<a class="jxr_linenumber" name="278" href="#278">278</a> 			System.arraycopy(sfe[i].getFeatureVector().values, 0, fv.values, i * first.values.length, first.values.length);
+<a class="jxr_linenumber" name="279" href="#279">279</a> 		}
+<a class="jxr_linenumber" name="280" href="#280">280</a> 
+<a class="jxr_linenumber" name="281" href="#281">281</a> 		<strong class="jxr_keyword">return</strong> fv;
+<a class="jxr_linenumber" name="282" href="#282">282</a> 	}
+<a class="jxr_linenumber" name="283" href="#283">283</a> }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>
+
