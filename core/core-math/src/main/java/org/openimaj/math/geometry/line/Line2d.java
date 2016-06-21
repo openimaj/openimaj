@@ -495,7 +495,7 @@ public class Line2d implements Path2d, Cloneable {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.openimaj.math.geometry.GeometricObject#translate(float, float)
 	 */
 	@Override
@@ -503,34 +503,6 @@ public class Line2d implements Path2d, Cloneable {
 	{
 		this.begin.translate(x, y);
 		this.end.translate(x, y);
-	}
-
-	/**
-	 * Tests whether the given point lies on this line. Note that this will test
-	 * whether the point sits on a line that travels to infinity in both
-	 * directions.
-	 *
-	 * @param p
-	 *            The point to test.
-	 * @param tolerance
-	 *            The tolerance to use in the test
-	 * @return TRUE if the point lies on this line.
-	 */
-	public boolean isOnLine(Point2d p, float tolerance)
-	{
-		// vertical line
-		if (begin.getX() == end.getX() && begin.getX() == p.getX())
-			return true;
-		// Horizontal line
-		if (begin.getY() == end.getY() && begin.getY() == p.getY())
-			return true;
-
-		final float a = (end.getY() - begin.getY()) / (end.getX() - begin.getX());
-		final float b = begin.getY() - a * begin.getX();
-		if (Math.abs(p.getY() - (a * p.getX() + b)) < tolerance)
-			return true;
-
-		return false;
 	}
 
 	/**
@@ -703,5 +675,55 @@ public class Line2d implements Path2d, Cloneable {
 				throw new UnsupportedOperationException();
 			}
 		};
+	}
+
+	/**
+	 * Tests whether the given point lies on this line. Note that this will test
+	 * whether the point sits on a line that travels to infinity in both
+	 * directions.
+	 *
+	 * @param p
+	 *            The point to test.
+	 * @param tolerance
+	 *            The tolerance to use in the test
+	 * @return TRUE if the point lies on this line.
+	 */
+	public boolean isOnLine(Point2d p, float tolerance)
+	{
+		if (distanceToLine(p) < tolerance)
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * Returns the shortest distance between the point and this line. Note that
+	 * this assumes the line travels to infinity in both directions.
+	 * 
+	 * @param p
+	 *            The point to test.
+	 * @return The distance from the point to the closest point on the line
+	 */
+	public float distanceToLine(Point2d p) {
+		// vertical line
+		if (begin.getX() == end.getX()) {
+			return Math.abs(begin.getX() - p.getX());
+		}
+
+		// Horizontal line
+		if (begin.getY() == end.getY()) {
+			return Math.abs(begin.getY() - p.getY());
+		}
+
+		// Given the equation for a line as ax + by + c = 0
+		final float a = end.getY() - begin.getY();
+		final float b = end.getX() - begin.getX();
+		final float c = end.getX() * begin.getY() - begin.getX() * end.getY();
+
+		// calculate the distance from the line to the point
+		// http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+		final float distance = (float) (Math.abs(a * p.getX() - b * p.getY() + c) / Math.sqrt(a * a + b * b));
+
+		return distance;
 	}
 }
