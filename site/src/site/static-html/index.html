@@ -1,6 +1,13 @@
 <div>
 	<span class="row">
-		<img src="images/OpenImaj.png" title="OpenIMAJ: Intelligent Multimedia Analysis" style="padding-bottom: 2em;"/>
+		<img width="50%" src="images/OpenImaj.png" title="OpenIMAJ: Intelligent Multimedia Analysis" style="padding-bottom: 2em;"/>
+		<div style="float:right;display:none" id="devsite">
+			This is the development version of the OpenIMAJ Site for version ${project.version}. <a href="openimaj.org">Click here if you want to switch to the latest release version</a>
+		</div>
+		<script type="text/javascript">
+			if (window.location.hostname === 'beta.openimaj.org' || window.location.hostname === 'dev.openimaj.org')
+				$("#devsite").show();
+		</script>
 	</span>
 	<div id="exampleCarousel" class="carousel slide">
 		<!-- <ol class="carousel-indicators">

@@ -140,7 +140,7 @@
 				<item name="The Tutorial (HTML)" href="tutorial/index.html"/>
 	    </item>
 			<item name="Using OpenIMAJ" href="#using">
-				<item name="Building OpenIMAJ from Source" href="BuildFromSource.html" />
+				<item name="Building OpenIMAJ from Source" href="https://github.com/openimaj/openimaj/wiki/Compiling-OpenIMAJ-from-Source" />
 				<item name="Using OpenIMAJ as a Library" href="UseLibrary.html" />
 				<item name="Using OpenIMAJ with Groovy" href="Groovy.html" />
 				<item name="OpenIMAJ commandline tools introduction" href="tools.html" />
