@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>TrendDetector xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../apidocs/org/openimaj/picslurper/client/TrendDetector.html">View Javadoc</a></div><pre>
+
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <strong class="jxr_keyword">package</strong> org.openimaj.picslurper.client;
+<a class="jxr_linenumber" name="2" href="#2">2</a>   
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <strong class="jxr_keyword">import</strong> gnu.trove.map.hash.TIntObjectHashMap;
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <strong class="jxr_keyword">import</strong> gnu.trove.procedure.TIntObjectProcedure;
+<a class="jxr_linenumber" name="5" href="#5">5</a>   
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="9" href="#9">9</a>   <strong class="jxr_keyword">import</strong> java.util.Collections;
+<a class="jxr_linenumber" name="10" href="#10">10</a>  <strong class="jxr_keyword">import</strong> java.util.Comparator;
+<a class="jxr_linenumber" name="11" href="#11">11</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
+<a class="jxr_linenumber" name="12" href="#12">12</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="14" href="#14">14</a>  <strong class="jxr_keyword">import</strong> java.util.TreeSet;
+<a class="jxr_linenumber" name="15" href="#15">15</a>  
+<a class="jxr_linenumber" name="16" href="#16">16</a>  <strong class="jxr_keyword">import</strong> org.jgrapht.alg.ConnectivityInspector;
+<a class="jxr_linenumber" name="17" href="#17">17</a>  <strong class="jxr_keyword">import</strong> org.jgrapht.graph.DefaultWeightedEdge;
+<a class="jxr_linenumber" name="18" href="#18">18</a>  <strong class="jxr_keyword">import</strong> org.jgrapht.graph.SimpleWeightedGraph;
+<a class="jxr_linenumber" name="19" href="#19">19</a>  <strong class="jxr_keyword">import</strong> org.openimaj.feature.FeatureVector;
+<a class="jxr_linenumber" name="20" href="#20">20</a>  <strong class="jxr_keyword">import</strong> org.openimaj.feature.FeatureVectorProvider;
+<a class="jxr_linenumber" name="21" href="#21">21</a>  <strong class="jxr_keyword">import</strong> org.openimaj.lsh.functions.DoubleGaussianFactory;
+<a class="jxr_linenumber" name="22" href="#22">22</a>  <strong class="jxr_keyword">import</strong> org.openimaj.lsh.sketch.IntLSHSketcher;
+<a class="jxr_linenumber" name="23" href="#23">23</a>  <strong class="jxr_keyword">import</strong> org.openimaj.picslurper.output.WriteableImageOutput;
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> org.openimaj.util.hash.HashFunction;
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> org.openimaj.util.hash.HashFunctionFactory;
+<a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> org.openimaj.util.hash.modifier.LSBModifier;
+<a class="jxr_linenumber" name="27" href="#27">27</a>  <strong class="jxr_keyword">import</strong> org.openimaj.util.pair.LongObjectPair;
+<a class="jxr_linenumber" name="28" href="#28">28</a>  
+<a class="jxr_linenumber" name="29" href="#29">29</a>  <strong class="jxr_keyword">import</strong> cern.jet.random.engine.MersenneTwister;
+<a class="jxr_linenumber" name="30" href="#30">30</a>  
+<a class="jxr_linenumber" name="31" href="#31">31</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="32" href="#32">32</a>  <em class="jxr_javadoccomment"> * A trend detector indexes new images and is able to tell you the n highest</em>
+<a class="jxr_linenumber" name="33" href="#33">33</a>  <em class="jxr_javadoccomment"> * trending sets of near duplicate images</em>
+<a class="jxr_linenumber" name="34" href="#34">34</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="35" href="#35">35</a>  <em class="jxr_javadoccomment"> * @author Sina Samangooei (ss@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="36" href="#36">36</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/openimaj/picslurper/client/TrendDetector.html">TrendDetector</a> {
+<a class="jxr_linenumber" name="39" href="#39">39</a>  	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ndims = 128;
+<a class="jxr_linenumber" name="40" href="#40">40</a>  	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> w = 6.0;
+<a class="jxr_linenumber" name="41" href="#41">41</a>  	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> nbits = 128;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> LOG_BASE = 0.001f;
+<a class="jxr_linenumber" name="43" href="#43">43</a>  
+<a class="jxr_linenumber" name="44" href="#44">44</a>  	TrendDetectorFeatureExtractor extractor = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/picslurper/client/SIFTTrendFeatureMode.html">SIFTTrendFeatureMode</a>();
+<a class="jxr_linenumber" name="45" href="#45">45</a>  
+<a class="jxr_linenumber" name="46" href="#46">46</a>  	IntLSHSketcher&lt;<strong class="jxr_keyword">double</strong>[]&gt; sketcher;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  	List&lt;TIntObjectHashMap&lt;Set&lt;WriteableImageOutput&gt;&gt;&gt; database;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  	Set&lt;LongObjectPair&lt;WriteableImageOutputHashes&gt;&gt; imagesByTime = <strong class="jxr_keyword">new</strong> TreeSet&lt;LongObjectPair&lt;WriteableImageOutputHashes&gt;&gt;(
+<a class="jxr_linenumber" name="49" href="#49">49</a>  			<strong class="jxr_keyword">new</strong> Comparator&lt;LongObjectPair&lt;WriteableImageOutputHashes&gt;&gt;() {
+<a class="jxr_linenumber" name="50" href="#50">50</a>  
+<a class="jxr_linenumber" name="51" href="#51">51</a>  				@Override
+<a class="jxr_linenumber" name="52" href="#52">52</a>  				<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compare(
+<a class="jxr_linenumber" name="53" href="#53">53</a>  						LongObjectPair&lt;WriteableImageOutputHashes&gt; o1,
+<a class="jxr_linenumber" name="54" href="#54">54</a>  						LongObjectPair&lt;WriteableImageOutputHashes&gt; o2)
+<a class="jxr_linenumber" name="55" href="#55">55</a>  				{
+<a class="jxr_linenumber" name="56" href="#56">56</a>  					<strong class="jxr_keyword">return</strong> ((Long) o1.first).compareTo(o2.first);
+<a class="jxr_linenumber" name="57" href="#57">57</a>  				}
+<a class="jxr_linenumber" name="58" href="#58">58</a>  
+<a class="jxr_linenumber" name="59" href="#59">59</a>  			});
+<a class="jxr_linenumber" name="60" href="#60">60</a>  
+<a class="jxr_linenumber" name="61" href="#61">61</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment">	 * instantiate the LSH</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  	<strong class="jxr_keyword">public</strong> <a href="../../../../org/openimaj/picslurper/client/TrendDetector.html">TrendDetector</a>() {
+<a class="jxr_linenumber" name="65" href="#65">65</a>  
+<a class="jxr_linenumber" name="66" href="#66">66</a>  		<strong class="jxr_keyword">this</strong>.setFeatureExtractor(<strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/picslurper/client/SIFTTrendFeatureMode.html">SIFTTrendFeatureMode</a>());
+<a class="jxr_linenumber" name="67" href="#67">67</a>  	}
+<a class="jxr_linenumber" name="68" href="#68">68</a>  
+<a class="jxr_linenumber" name="69" href="#69">69</a>  	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">double</strong>[] logScale(<strong class="jxr_keyword">double</strong>[] v, <strong class="jxr_keyword">float</strong> l) {
+<a class="jxr_linenumber" name="70" href="#70">70</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong>[] dfv = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[v.length];
+<a class="jxr_linenumber" name="71" href="#71">71</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> s = -Math.log(l);
+<a class="jxr_linenumber" name="72" href="#72">72</a>  
+<a class="jxr_linenumber" name="73" href="#73">73</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; v.length; i++) {
+<a class="jxr_linenumber" name="74" href="#74">74</a>  			<strong class="jxr_keyword">double</strong> d = (v[i] + 128.0) / 256.0;
+<a class="jxr_linenumber" name="75" href="#75">75</a>  
+<a class="jxr_linenumber" name="76" href="#76">76</a>  			<strong class="jxr_keyword">if</strong> (d &lt; l)
+<a class="jxr_linenumber" name="77" href="#77">77</a>  				d = l;
+<a class="jxr_linenumber" name="78" href="#78">78</a>  			d = (Math.log(d) + s) / s;
+<a class="jxr_linenumber" name="79" href="#79">79</a>  			<strong class="jxr_keyword">if</strong> (d &gt; 1.0)
+<a class="jxr_linenumber" name="80" href="#80">80</a>  				d = 1.0;
+<a class="jxr_linenumber" name="81" href="#81">81</a>  
+<a class="jxr_linenumber" name="82" href="#82">82</a>  			dfv[i] = d;
+<a class="jxr_linenumber" name="83" href="#83">83</a>  		}
+<a class="jxr_linenumber" name="84" href="#84">84</a>  		<strong class="jxr_keyword">return</strong> dfv;
+<a class="jxr_linenumber" name="85" href="#85">85</a>  	}
+<a class="jxr_linenumber" name="86" href="#86">86</a>  
+<a class="jxr_linenumber" name="87" href="#87">87</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="88" href="#88">88</a>  <em class="jxr_javadoccomment">	 * @param count</em>
+<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment">	 * @return the top count list of sets from all hashtable bins</em>
+<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="91" href="#91">91</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> List&lt;Set&lt;WriteableImageOutput&gt;&gt; trending(<strong class="jxr_keyword">int</strong> count) {
+<a class="jxr_linenumber" name="92" href="#92">92</a>  		<strong class="jxr_keyword">final</strong> SimpleWeightedGraph&lt;WriteableImageOutput, DefaultWeightedEdge&gt; graph = <strong class="jxr_keyword">new</strong> SimpleWeightedGraph&lt;WriteableImageOutput, DefaultWeightedEdge&gt;(
+<a class="jxr_linenumber" name="93" href="#93">93</a>  				DefaultWeightedEdge.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="94" href="#94">94</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> TIntObjectHashMap&lt;Set&lt;WriteableImageOutput&gt;&gt; set : <strong class="jxr_keyword">this</strong>.database) {
+<a class="jxr_linenumber" name="95" href="#95">95</a>  			set.forEachEntry(<strong class="jxr_keyword">new</strong> TIntObjectProcedure&lt;Set&lt;WriteableImageOutput&gt;&gt;() {
+<a class="jxr_linenumber" name="96" href="#96">96</a>  				@Override
+<a class="jxr_linenumber" name="97" href="#97">97</a>  				<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> execute(<strong class="jxr_keyword">int</strong> hashIndex, Set&lt;WriteableImageOutput&gt; itemSet) {
+<a class="jxr_linenumber" name="98" href="#98">98</a>  					<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> WriteableImageOutput item : itemSet) {
+<a class="jxr_linenumber" name="99" href="#99">99</a>  						<strong class="jxr_keyword">if</strong> (!graph.containsVertex(item)) {
+<a class="jxr_linenumber" name="100" href="#100">100</a> 							graph.addVertex(item);
+<a class="jxr_linenumber" name="101" href="#101">101</a> 						}
+<a class="jxr_linenumber" name="102" href="#102">102</a> 					}
+<a class="jxr_linenumber" name="103" href="#103">103</a> 					<strong class="jxr_keyword">final</strong> List&lt;WriteableImageOutput&gt; itemList = <strong class="jxr_keyword">new</strong> ArrayList&lt;WriteableImageOutput&gt;();
+<a class="jxr_linenumber" name="104" href="#104">104</a> 					itemList.addAll(itemSet);
+<a class="jxr_linenumber" name="105" href="#105">105</a> 					<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; itemList.size(); i++) {
+<a class="jxr_linenumber" name="106" href="#106">106</a> 						<strong class="jxr_keyword">final</strong> <a href="../../../../org/openimaj/picslurper/output/WriteableImageOutput.html">WriteableImageOutput</a> itemA = itemList.get(i);
+<a class="jxr_linenumber" name="107" href="#107">107</a> 						<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = i + 1; j &lt; itemList.size(); j++) {
+<a class="jxr_linenumber" name="108" href="#108">108</a> 							<strong class="jxr_keyword">final</strong> <a href="../../../../org/openimaj/picslurper/output/WriteableImageOutput.html">WriteableImageOutput</a> itemB = itemList.get(j);
+<a class="jxr_linenumber" name="109" href="#109">109</a> 							DefaultWeightedEdge edge = graph.getEdge(itemA, itemB);
+<a class="jxr_linenumber" name="110" href="#110">110</a> 							<strong class="jxr_keyword">if</strong> (edge == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="111" href="#111">111</a> 								edge = graph.addEdge(itemA, itemB);
+<a class="jxr_linenumber" name="112" href="#112">112</a> 								graph.setEdgeWeight(edge, 1);
+<a class="jxr_linenumber" name="113" href="#113">113</a> 							}
+<a class="jxr_linenumber" name="114" href="#114">114</a> 							<strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="115" href="#115">115</a> 								graph.setEdgeWeight(edge, graph.getEdgeWeight(edge) + 1);
+<a class="jxr_linenumber" name="116" href="#116">116</a> 							}
+<a class="jxr_linenumber" name="117" href="#117">117</a> 
+<a class="jxr_linenumber" name="118" href="#118">118</a> 						}
+<a class="jxr_linenumber" name="119" href="#119">119</a> 					}
+<a class="jxr_linenumber" name="120" href="#120">120</a> 					<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="121" href="#121">121</a> 				}
+<a class="jxr_linenumber" name="122" href="#122">122</a> 			});
+<a class="jxr_linenumber" name="123" href="#123">123</a> 		}
+<a class="jxr_linenumber" name="124" href="#124">124</a> 
+<a class="jxr_linenumber" name="125" href="#125">125</a> 		<strong class="jxr_keyword">final</strong> Set&lt;DefaultWeightedEdge&gt; edges = <strong class="jxr_keyword">new</strong> HashSet&lt;DefaultWeightedEdge&gt;(graph.edgeSet());
+<a class="jxr_linenumber" name="126" href="#126">126</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> DefaultWeightedEdge e : edges) {
+<a class="jxr_linenumber" name="127" href="#127">127</a> 			<strong class="jxr_keyword">if</strong> (graph.getEdgeWeight(e) &lt; 10)
+<a class="jxr_linenumber" name="128" href="#128">128</a> 				graph.removeEdge(e);
+<a class="jxr_linenumber" name="129" href="#129">129</a> 		}
+<a class="jxr_linenumber" name="130" href="#130">130</a> 
+<a class="jxr_linenumber" name="131" href="#131">131</a> 		<strong class="jxr_keyword">final</strong> ConnectivityInspector&lt;WriteableImageOutput, DefaultWeightedEdge&gt; conn = <strong class="jxr_keyword">new</strong> ConnectivityInspector&lt;WriteableImageOutput, DefaultWeightedEdge&gt;(
+<a class="jxr_linenumber" name="132" href="#132">132</a> 				graph);
+<a class="jxr_linenumber" name="133" href="#133">133</a> 		<strong class="jxr_keyword">final</strong> List&lt;Set&lt;WriteableImageOutput&gt;&gt; retList = conn.connectedSets();
+<a class="jxr_linenumber" name="134" href="#134">134</a> 		Collections.sort(retList, <strong class="jxr_keyword">new</strong> Comparator&lt;Set&lt;WriteableImageOutput&gt;&gt;() {
+<a class="jxr_linenumber" name="135" href="#135">135</a> 
+<a class="jxr_linenumber" name="136" href="#136">136</a> 			@Override
+<a class="jxr_linenumber" name="137" href="#137">137</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compare(Set&lt;WriteableImageOutput&gt; o1, Set&lt;WriteableImageOutput&gt; o2) {
+<a class="jxr_linenumber" name="138" href="#138">138</a> 				<strong class="jxr_keyword">return</strong> -1 * ((Integer) o1.size()).compareTo(o2.size());
+<a class="jxr_linenumber" name="139" href="#139">139</a> 			}
+<a class="jxr_linenumber" name="140" href="#140">140</a> 
+<a class="jxr_linenumber" name="141" href="#141">141</a> 		});
+<a class="jxr_linenumber" name="142" href="#142">142</a> 		<strong class="jxr_keyword">return</strong> retList.subList(0, count &lt; retList.size() ? count : retList.size());
+<a class="jxr_linenumber" name="143" href="#143">143</a> 	}
+<a class="jxr_linenumber" name="144" href="#144">144</a> 
+<a class="jxr_linenumber" name="145" href="#145">145</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="146" href="#146">146</a> <em class="jxr_javadoccomment">	 * index a new image</em>
+<a class="jxr_linenumber" name="147" href="#147">147</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">	 * @param instance</em>
+<a class="jxr_linenumber" name="149" href="#149">149</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="150" href="#150">150</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="151" href="#151">151</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> indexImage(<a href="../../../../org/openimaj/picslurper/output/WriteableImageOutput.html">WriteableImageOutput</a> instance) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="152" href="#152">152</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> File imageFile : instance.listImageFiles(<span class="jxr_string">"/"</span>)) {
+<a class="jxr_linenumber" name="153" href="#153">153</a> 			WriteableImageOutput iclone = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="154" href="#154">154</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="155" href="#155">155</a> 				iclone = instance.clone();
+<a class="jxr_linenumber" name="156" href="#156">156</a> 				iclone.file = imageFile;
+<a class="jxr_linenumber" name="157" href="#157">157</a> 			} <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> CloneNotSupportedException e) {
+<a class="jxr_linenumber" name="158" href="#158">158</a> 
+<a class="jxr_linenumber" name="159" href="#159">159</a> 			}
+<a class="jxr_linenumber" name="160" href="#160">160</a> 			<strong class="jxr_keyword">final</strong> List&lt;? <strong class="jxr_keyword">extends</strong> FeatureVectorProvider&lt;? <strong class="jxr_keyword">extends</strong> FeatureVector&gt;&gt; features = extractor
+<a class="jxr_linenumber" name="161" href="#161">161</a> 					.extractFeatures(imageFile);
+<a class="jxr_linenumber" name="162" href="#162">162</a> 			<strong class="jxr_keyword">final</strong> <a href="../../../../org/openimaj/picslurper/client/WriteableImageOutputHashes.html">WriteableImageOutputHashes</a> imageHashes = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/picslurper/client/WriteableImageOutputHashes.html">WriteableImageOutputHashes</a>(iclone);
+<a class="jxr_linenumber" name="163" href="#163">163</a> 
+<a class="jxr_linenumber" name="164" href="#164">164</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> FeatureVectorProvider&lt;? <strong class="jxr_keyword">extends</strong> FeatureVector&gt; k : features) {
+<a class="jxr_linenumber" name="165" href="#165">165</a> 				<strong class="jxr_keyword">double</strong>[] fv = k.getFeatureVector().asDoubleVector();
+<a class="jxr_linenumber" name="166" href="#166">166</a> 				<strong class="jxr_keyword">if</strong> (extractor.logScale()) {
+<a class="jxr_linenumber" name="167" href="#167">167</a> 					fv = logScale(fv, LOG_BASE);
+<a class="jxr_linenumber" name="168" href="#168">168</a> 				}
+<a class="jxr_linenumber" name="169" href="#169">169</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] sketch = sketcher.createSketch(fv);
+<a class="jxr_linenumber" name="170" href="#170">170</a> 				imageHashes.hashes.add(sketch);
+<a class="jxr_linenumber" name="171" href="#171">171</a> 
+<a class="jxr_linenumber" name="172" href="#172">172</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; sketch.length; i++) {
+<a class="jxr_linenumber" name="173" href="#173">173</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> sk = sketch[i];
+<a class="jxr_linenumber" name="174" href="#174">174</a> 					<strong class="jxr_keyword">synchronized</strong> (database) {
+<a class="jxr_linenumber" name="175" href="#175">175</a> 						Set&lt;WriteableImageOutput&gt; s = database.get(i).get(sk);
+<a class="jxr_linenumber" name="176" href="#176">176</a> 						<strong class="jxr_keyword">if</strong> (s == <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="177" href="#177">177</a> 							database.get(i).put(sk, s = <strong class="jxr_keyword">new</strong> HashSet&lt;WriteableImageOutput&gt;());
+<a class="jxr_linenumber" name="178" href="#178">178</a> 
+<a class="jxr_linenumber" name="179" href="#179">179</a> 						s.add(iclone);
+<a class="jxr_linenumber" name="180" href="#180">180</a> 
+<a class="jxr_linenumber" name="181" href="#181">181</a> 					}
+<a class="jxr_linenumber" name="182" href="#182">182</a> 				}
+<a class="jxr_linenumber" name="183" href="#183">183</a> 			}
+<a class="jxr_linenumber" name="184" href="#184">184</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> time = System.currentTimeMillis();
+<a class="jxr_linenumber" name="185" href="#185">185</a> 			<strong class="jxr_keyword">synchronized</strong> (<strong class="jxr_keyword">this</strong>.imagesByTime) {
+<a class="jxr_linenumber" name="186" href="#186">186</a> 				<strong class="jxr_keyword">this</strong>.imagesByTime
+<a class="jxr_linenumber" name="187" href="#187">187</a> 						.add(<strong class="jxr_keyword">new</strong> LongObjectPair&lt;WriteableImageOutputHashes&gt;(
+<a class="jxr_linenumber" name="188" href="#188">188</a> 								time, imageHashes));
+<a class="jxr_linenumber" name="189" href="#189">189</a> 			}
+<a class="jxr_linenumber" name="190" href="#190">190</a> 		}
+<a class="jxr_linenumber" name="191" href="#191">191</a> 	}
+<a class="jxr_linenumber" name="192" href="#192">192</a> 
+<a class="jxr_linenumber" name="193" href="#193">193</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFeatureExtractor(<a href="../../../../org/openimaj/picslurper/client/TrendDetectorFeatureExtractor.html">TrendDetectorFeatureExtractor</a> fe) {
+<a class="jxr_linenumber" name="194" href="#194">194</a> 		<strong class="jxr_keyword">this</strong>.extractor = fe;
+<a class="jxr_linenumber" name="195" href="#195">195</a> 		<strong class="jxr_keyword">final</strong> MersenneTwister rng = <strong class="jxr_keyword">new</strong> MersenneTwister();
+<a class="jxr_linenumber" name="196" href="#196">196</a> 
+<a class="jxr_linenumber" name="197" href="#197">197</a> 		<strong class="jxr_keyword">final</strong> DoubleGaussianFactory gauss = <strong class="jxr_keyword">new</strong> DoubleGaussianFactory(fe.nDimensions(), rng, w);
+<a class="jxr_linenumber" name="198" href="#198">198</a> 		<strong class="jxr_keyword">final</strong> HashFunctionFactory&lt;<strong class="jxr_keyword">double</strong>[]&gt; factory = <strong class="jxr_keyword">new</strong> HashFunctionFactory&lt;<strong class="jxr_keyword">double</strong>[]&gt;() {
+<a class="jxr_linenumber" name="199" href="#199">199</a> 			@Override
+<a class="jxr_linenumber" name="200" href="#200">200</a> 			<strong class="jxr_keyword">public</strong> HashFunction&lt;<strong class="jxr_keyword">double</strong>[]&gt; create() {
+<a class="jxr_linenumber" name="201" href="#201">201</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> LSBModifier&lt;<strong class="jxr_keyword">double</strong>[]&gt;(gauss.create());
+<a class="jxr_linenumber" name="202" href="#202">202</a> 			}
+<a class="jxr_linenumber" name="203" href="#203">203</a> 		};
+<a class="jxr_linenumber" name="204" href="#204">204</a> 
+<a class="jxr_linenumber" name="205" href="#205">205</a> 		sketcher = <strong class="jxr_keyword">new</strong> IntLSHSketcher&lt;<strong class="jxr_keyword">double</strong>[]&gt;(factory, nbits);
+<a class="jxr_linenumber" name="206" href="#206">206</a> 		database = <strong class="jxr_keyword">new</strong> ArrayList&lt;TIntObjectHashMap&lt;Set&lt;WriteableImageOutput&gt;&gt;&gt;(
+<a class="jxr_linenumber" name="207" href="#207">207</a> 				sketcher.arrayLength());
+<a class="jxr_linenumber" name="208" href="#208">208</a> 
+<a class="jxr_linenumber" name="209" href="#209">209</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; sketcher.arrayLength(); i++)
+<a class="jxr_linenumber" name="210" href="#210">210</a> 			database.add(<strong class="jxr_keyword">new</strong> TIntObjectHashMap&lt;Set&lt;WriteableImageOutput&gt;&gt;());
+<a class="jxr_linenumber" name="211" href="#211">211</a> 
+<a class="jxr_linenumber" name="212" href="#212">212</a> 	}
+<a class="jxr_linenumber" name="213" href="#213">213</a> 
+<a class="jxr_linenumber" name="214" href="#214">214</a> }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>

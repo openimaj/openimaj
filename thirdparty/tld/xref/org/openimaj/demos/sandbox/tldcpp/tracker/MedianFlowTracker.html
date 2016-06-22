@@ -1,0 +1,489 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>MedianFlowTracker xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../../apidocs/org/openimaj/demos/sandbox/tldcpp/tracker/MedianFlowTracker.html">View Javadoc</a></div><pre>
+
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <strong class="jxr_keyword">package</strong> org.openimaj.demos.sandbox.tldcpp.tracker;
+<a class="jxr_linenumber" name="2" href="#2">2</a>   
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <strong class="jxr_keyword">import</strong> org.openimaj.image.FImage;
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <strong class="jxr_keyword">import</strong> org.openimaj.image.analysis.algorithm.TemplateMatcher;
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <strong class="jxr_keyword">import</strong> org.openimaj.math.geometry.line.Line2d;
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <strong class="jxr_keyword">import</strong> org.openimaj.math.geometry.shape.Rectangle;
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <strong class="jxr_keyword">import</strong> org.openimaj.video.tracking.klt.Feature;
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <strong class="jxr_keyword">import</strong> org.openimaj.video.tracking.klt.FeatureList;
+<a class="jxr_linenumber" name="9" href="#9">9</a>   <strong class="jxr_keyword">import</strong> org.openimaj.video.tracking.klt.KLTTracker;
+<a class="jxr_linenumber" name="10" href="#10">10</a>  <strong class="jxr_keyword">import</strong> org.openimaj.video.tracking.klt.PyramidSet;
+<a class="jxr_linenumber" name="11" href="#11">11</a>  <strong class="jxr_keyword">import</strong> org.openimaj.video.tracking.klt.TrackingContext;
+<a class="jxr_linenumber" name="12" href="#12">12</a>  
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="14" href="#14">14</a>  <em class="jxr_javadoccomment"> * The MedianFlowTracker is backed by a {@link KLTTracker} which has some special</em>
+<a class="jxr_linenumber" name="15" href="#15">15</a>  <em class="jxr_javadoccomment"> * checks to make sure tracked points are actually good, and once it knows an overall</em>
+<a class="jxr_linenumber" name="16" href="#16">16</a>  <em class="jxr_javadoccomment"> * median of motion is calculated and reflected in the update of a bounding box.</em>
+<a class="jxr_linenumber" name="17" href="#17">17</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="18" href="#18">18</a>  <em class="jxr_javadoccomment"> * The ForwardBackward procedure checks whether a given point is tracked well.</em>
+<a class="jxr_linenumber" name="19" href="#19">19</a>  <em class="jxr_javadoccomment"> * Points in a uniform grid are tracked within a bounding box from frame A -&gt; B</em>
+<a class="jxr_linenumber" name="20" href="#20">20</a>  <em class="jxr_javadoccomment"> * The points that are tracked correctly are then tracked from B -&gt; A.</em>
+<a class="jxr_linenumber" name="21" href="#21">21</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="22" href="#22">22</a>  <em class="jxr_javadoccomment"> * The Normalised Cross correlation is measured between points in A and B which survive this A -&gt; B -&gt; A transfer</em>
+<a class="jxr_linenumber" name="23" href="#23">23</a>  <em class="jxr_javadoccomment"> * The euclidian distance is measured between those points which started at A and the same points as tracked to A via B.</em>
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <em class="jxr_javadoccomment"> * The median cross correlation and euclidian distance is used as a threshold to select points which were tracked well</em>
+<a class="jxr_linenumber" name="26" href="#26">26</a>  <em class="jxr_javadoccomment"> * between A and B.</em>
+<a class="jxr_linenumber" name="27" href="#27">27</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="28" href="#28">28</a>  <em class="jxr_javadoccomment"> * The relative motion of these points from A to B is used to calcualte a movement and scale shift of the bounding box in A.</em>
+<a class="jxr_linenumber" name="29" href="#29">29</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="30" href="#30">30</a>  <em class="jxr_javadoccomment"> * @author Sina Samangooei (ss@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="31" href="#31">31</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="32" href="#32">32</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/openimaj/demos/sandbox/tldcpp/tracker/MedianFlowTracker.html">MedianFlowTracker</a> {
+<a class="jxr_linenumber" name="34" href="#34">34</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="35" href="#35">35</a>  <em class="jxr_javadoccomment">	 * The current tracker bounding box.</em>
+<a class="jxr_linenumber" name="36" href="#36">36</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="37" href="#37">37</a>  	<strong class="jxr_keyword">public</strong> Rectangle trackerBB;
+<a class="jxr_linenumber" name="38" href="#38">38</a>  	<strong class="jxr_keyword">private</strong> TrackingContext context;
+<a class="jxr_linenumber" name="39" href="#39">39</a>  	<strong class="jxr_keyword">private</strong> KLTTracker klttracker;
+<a class="jxr_linenumber" name="40" href="#40">40</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="41" href="#41">41</a>  <em class="jxr_javadoccomment">	 * Features tracked to B from A</em>
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="43" href="#43">43</a>  	<strong class="jxr_keyword">public</strong> FeatureList featuresTrackedToBfromA;
+<a class="jxr_linenumber" name="44" href="#44">44</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment">	 * Features tracked back to A form B</em>
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="47" href="#47">47</a>  	<strong class="jxr_keyword">public</strong> FeatureList featuresTrackedToAviaB;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  
+<a class="jxr_linenumber" name="49" href="#49">49</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment">	 * null bounding box and init the {@link KLTTracker}</em>
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="52" href="#52">52</a>  	<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/demos/sandbox/tldcpp/tracker/MedianFlowTracker.html">MedianFlowTracker</a>() {
+<a class="jxr_linenumber" name="53" href="#53">53</a>  		trackerBB = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="54" href="#54">54</a>  		<strong class="jxr_keyword">this</strong>.context = <strong class="jxr_keyword">new</strong> TrackingContext();
+<a class="jxr_linenumber" name="55" href="#55">55</a>  		klttracker = <strong class="jxr_keyword">new</strong> KLTTracker(context, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="56" href="#56">56</a>  		<strong class="jxr_keyword">this</strong>.context.setSequentialMode(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="57" href="#57">57</a>  	}
+<a class="jxr_linenumber" name="58" href="#58">58</a>  
+<a class="jxr_linenumber" name="59" href="#59">59</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">	 * null the bounding box</em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> cleanPreviousData() {
+<a class="jxr_linenumber" name="63" href="#63">63</a>  		trackerBB = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="64" href="#64">64</a>  	}
+<a class="jxr_linenumber" name="65" href="#65">65</a>  
+<a class="jxr_linenumber" name="66" href="#66">66</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment">	 * track points from the previous image within the bounding box to the current image (from A to B)</em>
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment">	 * @param prevMat - Image A</em>
+<a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment">	 * @param currMat - Image B</em>
+<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment">	 * @param prevBB - Bounding box in A</em>
+<a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="72" href="#72">72</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> track(FImage prevMat, FImage currMat, Rectangle prevBB) {
+<a class="jxr_linenumber" name="73" href="#73">73</a>  		<strong class="jxr_keyword">if</strong> (prevBB != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="74" href="#74">74</a>  			<strong class="jxr_keyword">if</strong> (prevBB.width &lt;= 0 || prevBB.height &lt;= 0) {
+<a class="jxr_linenumber" name="75" href="#75">75</a>  				<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="76" href="#76">76</a>  			}
+<a class="jxr_linenumber" name="77" href="#77">77</a>  			<strong class="jxr_keyword">float</strong> bb_tracker[] = { prevBB.x, prevBB.y, prevBB.width + prevBB.x - 1, prevBB.height + prevBB.y - 1 };
+<a class="jxr_linenumber" name="78" href="#78">78</a>  
+<a class="jxr_linenumber" name="79" href="#79">79</a>  			FImage prevImg = prevMat;
+<a class="jxr_linenumber" name="80" href="#80">80</a>  			FImage currImg = currMat;
+<a class="jxr_linenumber" name="81" href="#81">81</a>  
+<a class="jxr_linenumber" name="82" href="#82">82</a>  			<strong class="jxr_keyword">boolean</strong> success = fbtrack(prevImg, currImg, bb_tracker, bb_tracker);
+<a class="jxr_linenumber" name="83" href="#83">83</a>  
+<a class="jxr_linenumber" name="84" href="#84">84</a>  			<em class="jxr_comment">// Extract subimage</em>
+<a class="jxr_linenumber" name="85" href="#85">85</a>  			<strong class="jxr_keyword">float</strong> x, y, w, h;
+<a class="jxr_linenumber" name="86" href="#86">86</a>  			x = (<strong class="jxr_keyword">float</strong>) Math.floor(bb_tracker[0] + 0.5);
+<a class="jxr_linenumber" name="87" href="#87">87</a>  			y = (<strong class="jxr_keyword">float</strong>) Math.floor(bb_tracker[1] + 0.5);
+<a class="jxr_linenumber" name="88" href="#88">88</a>  			w = (<strong class="jxr_keyword">float</strong>) Math.floor(bb_tracker[2] - bb_tracker[0] + 1 + 0.5);
+<a class="jxr_linenumber" name="89" href="#89">89</a>  			h = (<strong class="jxr_keyword">float</strong>) Math.floor(bb_tracker[3] - bb_tracker[1] + 1 + 0.5);
+<a class="jxr_linenumber" name="90" href="#90">90</a>  
+<a class="jxr_linenumber" name="91" href="#91">91</a>  			<em class="jxr_comment">// TODO: Introduce a check for a minimum size</em>
+<a class="jxr_linenumber" name="92" href="#92">92</a>  			<strong class="jxr_keyword">if</strong> (!success 
+<a class="jxr_linenumber" name="93" href="#93">93</a>  					|| x &lt; 0 || y &lt; 0 || w &lt;= 0 || h &lt;= 0
+<a class="jxr_linenumber" name="94" href="#94">94</a>  					|| x + w &gt; currMat.width || y + h &gt; currMat.height
+<a class="jxr_linenumber" name="95" href="#95">95</a>  					|| x != x || y != y || w != w || h != h) { 
+<a class="jxr_linenumber" name="96" href="#96">96</a>  			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="97" href="#97">97</a>  				
+<a class="jxr_linenumber" name="98" href="#98">98</a>  				trackerBB = <strong class="jxr_keyword">new</strong> Rectangle(x, y, w, h);
+<a class="jxr_linenumber" name="99" href="#99">99</a>  			}
+<a class="jxr_linenumber" name="100" href="#100">100</a> 		}
+<a class="jxr_linenumber" name="101" href="#101">101</a> 	}
+<a class="jxr_linenumber" name="102" href="#102">102</a> 
+<a class="jxr_linenumber" name="103" href="#103">103</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> fbtrack(FImage imgI, FImage imgJ, <strong class="jxr_keyword">float</strong>[] bb, <strong class="jxr_keyword">float</strong>[] bbnew) {
+<a class="jxr_linenumber" name="104" href="#104">104</a> 		<strong class="jxr_keyword">int</strong> numM = 10;
+<a class="jxr_linenumber" name="105" href="#105">105</a> 		<strong class="jxr_keyword">int</strong> numN = 10;
+<a class="jxr_linenumber" name="106" href="#106">106</a> 		<strong class="jxr_keyword">int</strong> nPoints = numM * numN;
+<a class="jxr_linenumber" name="107" href="#107">107</a> 		<strong class="jxr_keyword">int</strong> sizePointsArray = nPoints;
+<a class="jxr_linenumber" name="108" href="#108">108</a> 
+<a class="jxr_linenumber" name="109" href="#109">109</a> 		<strong class="jxr_keyword">boolean</strong>[] status = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[nPoints];
+<a class="jxr_linenumber" name="110" href="#110">110</a> 
+<a class="jxr_linenumber" name="111" href="#111">111</a> 		<em class="jxr_comment">// float [] pt = new float[sizePointsArray];</em>
+<a class="jxr_linenumber" name="112" href="#112">112</a> 		<em class="jxr_comment">// float [] ptTracked = new float[sizePointsArray];</em>
+<a class="jxr_linenumber" name="113" href="#113">113</a> 
+<a class="jxr_linenumber" name="114" href="#114">114</a> 		FeatureList pt = <strong class="jxr_keyword">new</strong> FeatureList(sizePointsArray);
+<a class="jxr_linenumber" name="115" href="#115">115</a> 
+<a class="jxr_linenumber" name="116" href="#116">116</a> 		<strong class="jxr_keyword">int</strong> i;
+<a class="jxr_linenumber" name="117" href="#117">117</a> 		<strong class="jxr_keyword">int</strong> nRealPoints;
+<a class="jxr_linenumber" name="118" href="#118">118</a> 		<strong class="jxr_keyword">float</strong> medFb;
+<a class="jxr_linenumber" name="119" href="#119">119</a> 		<strong class="jxr_keyword">float</strong> medNcc;
+<a class="jxr_linenumber" name="120" href="#120">120</a> 		<strong class="jxr_keyword">int</strong> nAfterFbUsage;
+<a class="jxr_linenumber" name="121" href="#121">121</a> 		getFilledBBPoints(bb, numM, numN, 5, pt);
+<a class="jxr_linenumber" name="122" href="#122">122</a> 		<em class="jxr_comment">// getFilledBBPoints(bb, numM, numN, 5, &amp;ptTracked);</em>
+<a class="jxr_linenumber" name="123" href="#123">123</a> 
+<a class="jxr_linenumber" name="124" href="#124">124</a> 		<em class="jxr_comment">// initImgs();</em>
+<a class="jxr_linenumber" name="125" href="#125">125</a> 		FeatureList ptTracked = trackLK(imgI, imgJ, pt, status); <em class="jxr_comment">// the points</em>
+<a class="jxr_linenumber" name="126" href="#126">126</a> 																	<em class="jxr_comment">// tracked</em>
+<a class="jxr_linenumber" name="127" href="#127">127</a> 																	<em class="jxr_comment">// to the</em>
+<a class="jxr_linenumber" name="128" href="#128">128</a> 																	<em class="jxr_comment">// next</em>
+<a class="jxr_linenumber" name="129" href="#129">129</a> 																	<em class="jxr_comment">// image,</em>
+<a class="jxr_linenumber" name="130" href="#130">130</a> 																	<em class="jxr_comment">// with the</em>
+<a class="jxr_linenumber" name="131" href="#131">131</a> 																	<em class="jxr_comment">// ncc </em>
+<a class="jxr_linenumber" name="132" href="#132">132</a> 																	<em class="jxr_comment">// (from start -&gt; next) and</em>
+<a class="jxr_linenumber" name="133" href="#133">133</a> 																	<em class="jxr_comment">// fb </em>
+<a class="jxr_linenumber" name="134" href="#134">134</a> 																	<em class="jxr_comment">// (from next -&gt; start)</em>
+<a class="jxr_linenumber" name="135" href="#135">135</a> 		<em class="jxr_comment">// initImgs();</em>
+<a class="jxr_linenumber" name="136" href="#136">136</a> 		<em class="jxr_comment">// char* status = *statusP;</em>
+<a class="jxr_linenumber" name="137" href="#137">137</a> 		<strong class="jxr_keyword">int</strong> nlkPoints = 0;
+<a class="jxr_linenumber" name="138" href="#138">138</a> 		<strong class="jxr_keyword">for</strong> (i = 0; i &lt; nPoints; i++) {
+<a class="jxr_linenumber" name="139" href="#139">139</a> 			nlkPoints += status[i] ? 1 : 0;
+<a class="jxr_linenumber" name="140" href="#140">140</a> 		}
+<a class="jxr_linenumber" name="141" href="#141">141</a> 		<em class="jxr_comment">// startPoints = (CvPoint2D32f*) malloc(nlkPoints *</em>
+<a class="jxr_linenumber" name="142" href="#142">142</a> 		<em class="jxr_comment">// sizeof(CvPoint2D32f));</em>
+<a class="jxr_linenumber" name="143" href="#143">143</a> 		<em class="jxr_comment">// targetPoints = (CvPoint2D32f*) malloc(nlkPoints *</em>
+<a class="jxr_linenumber" name="144" href="#144">144</a> 		<em class="jxr_comment">// sizeof(CvPoint2D32f));</em>
+<a class="jxr_linenumber" name="145" href="#145">145</a> 		<em class="jxr_comment">// fbLkCleaned = (float*) malloc(nlkPoints * sizeof(float));</em>
+<a class="jxr_linenumber" name="146" href="#146">146</a> 		<em class="jxr_comment">// nccLkCleaned = (float*) malloc(nlkPoints * sizeof(float));</em>
+<a class="jxr_linenumber" name="147" href="#147">147</a> 		FeatureList cleanedTracked = <strong class="jxr_keyword">new</strong> FeatureList(nlkPoints);
+<a class="jxr_linenumber" name="148" href="#148">148</a> 		FeatureList cleanedStart = <strong class="jxr_keyword">new</strong> FeatureList(nlkPoints);
+<a class="jxr_linenumber" name="149" href="#149">149</a> 		nRealPoints = 0;
+<a class="jxr_linenumber" name="150" href="#150">150</a> 		<strong class="jxr_keyword">float</strong>[] fbLkCleaned = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[nlkPoints];
+<a class="jxr_linenumber" name="151" href="#151">151</a> 		<strong class="jxr_keyword">float</strong>[] nccLkCleaned = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[nlkPoints];
+<a class="jxr_linenumber" name="152" href="#152">152</a> 		<strong class="jxr_keyword">for</strong> (i = 0; i &lt; nPoints; i++) {
+<a class="jxr_linenumber" name="153" href="#153">153</a> 			<em class="jxr_comment">// TODO:handle Missing Points</em>
+<a class="jxr_linenumber" name="154" href="#154">154</a> 			<em class="jxr_comment">// or status[i]==0</em>
+<a class="jxr_linenumber" name="155" href="#155">155</a> 			<strong class="jxr_keyword">if</strong> (ptTracked.features[i] == <strong class="jxr_keyword">null</strong> || ptTracked.features[i].val &lt; 0 || !status[i]) {
+<a class="jxr_linenumber" name="156" href="#156">156</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="157" href="#157">157</a> 				cleanedStart.features[nRealPoints] = pt.features[i].clone();
+<a class="jxr_linenumber" name="158" href="#158">158</a> 				cleanedTracked.features[nRealPoints] = ptTracked.features[i].clone();
+<a class="jxr_linenumber" name="159" href="#159">159</a> 				fbLkCleaned[nRealPoints] = ((FBNCCFeature) cleanedTracked.features[nRealPoints]).fbDistance;
+<a class="jxr_linenumber" name="160" href="#160">160</a> 				nccLkCleaned[nRealPoints] = ((FBNCCFeature) cleanedTracked.features[nRealPoints]).ncc;
+<a class="jxr_linenumber" name="161" href="#161">161</a> 				nRealPoints++;
+<a class="jxr_linenumber" name="162" href="#162">162</a> 			}
+<a class="jxr_linenumber" name="163" href="#163">163</a> 		}
+<a class="jxr_linenumber" name="164" href="#164">164</a> 		<strong class="jxr_keyword">if</strong>(nlkPoints == 0) <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="165" href="#165">165</a> 		<em class="jxr_comment">// assert nRealPoints==nlkPoints</em>
+<a class="jxr_linenumber" name="166" href="#166">166</a> 		medFb = FastMedian.getMedian(fbLkCleaned, nlkPoints);
+<a class="jxr_linenumber" name="167" href="#167">167</a> 		medNcc = FastMedian.getMedian(nccLkCleaned, nlkPoints);
+<a class="jxr_linenumber" name="168" href="#168">168</a> 		<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="169" href="#169">169</a> <em class="jxr_comment">		 * printf("medianfb: %f\nmedianncc: %f\n", medFb, medNcc);</em>
+<a class="jxr_linenumber" name="170" href="#170">170</a> <em class="jxr_comment">		 * printf("Number of points after lk: %d\n", nlkPoints);</em>
+<a class="jxr_linenumber" name="171" href="#171">171</a> <em class="jxr_comment">		 */</em>
+<a class="jxr_linenumber" name="172" href="#172">172</a> 		nAfterFbUsage = 0;
+<a class="jxr_linenumber" name="173" href="#173">173</a> 		<strong class="jxr_keyword">for</strong> (i = 0; i &lt; nlkPoints; i++) {
+<a class="jxr_linenumber" name="174" href="#174">174</a> 			<strong class="jxr_keyword">if</strong> ((fbLkCleaned[i] &lt;= medFb) &amp; (nccLkCleaned[i] &gt;= medNcc)) {
+<a class="jxr_linenumber" name="175" href="#175">175</a> 				cleanedStart.features[nAfterFbUsage] = cleanedStart.features[i];
+<a class="jxr_linenumber" name="176" href="#176">176</a> 				cleanedTracked.features[nAfterFbUsage] = cleanedTracked.features[i];
+<a class="jxr_linenumber" name="177" href="#177">177</a> 				nAfterFbUsage++;
+<a class="jxr_linenumber" name="178" href="#178">178</a> 			}
+<a class="jxr_linenumber" name="179" href="#179">179</a> 		}
+<a class="jxr_linenumber" name="180" href="#180">180</a> 		<em class="jxr_comment">/*<em class="jxr_comment"> printf("Number of points after fb correction: %d\n", nAfterFbUsage); */</em></em>
+<a class="jxr_linenumber" name="181" href="#181">181</a> 		<em class="jxr_comment">// showIplImage(IMGS[1]);</em>
+<a class="jxr_linenumber" name="182" href="#182">182</a> 		<em class="jxr_comment">// show "OpticalFlow" fb filtered.</em>
+<a class="jxr_linenumber" name="183" href="#183">183</a> 		<em class="jxr_comment">// drawLinesCvPoint2D32f(imgI, startPoints, nRealPoints, targetPoints,</em>
+<a class="jxr_linenumber" name="184" href="#184">184</a> 		<em class="jxr_comment">// nRealPoints);</em>
+<a class="jxr_linenumber" name="185" href="#185">185</a> 		<em class="jxr_comment">// showIplImage(imgI);</em>
+<a class="jxr_linenumber" name="186" href="#186">186</a> 		predictbb(bb, cleanedStart, cleanedTracked, nAfterFbUsage, bbnew);
+<a class="jxr_linenumber" name="187" href="#187">187</a> 		<strong class="jxr_keyword">this</strong>.featuresTrackedToBfromA = <strong class="jxr_keyword">new</strong> FeatureList(nAfterFbUsage);
+<a class="jxr_linenumber" name="188" href="#188">188</a> 		System.arraycopy(cleanedStart.features, 0, <strong class="jxr_keyword">this</strong>.featuresTrackedToBfromA.features, 0, nAfterFbUsage);
+<a class="jxr_linenumber" name="189" href="#189">189</a> 		<strong class="jxr_keyword">this</strong>.featuresTrackedToAviaB = <strong class="jxr_keyword">new</strong> FeatureList(nAfterFbUsage);
+<a class="jxr_linenumber" name="190" href="#190">190</a> 		System.arraycopy(cleanedTracked.features, 0, <strong class="jxr_keyword">this</strong>.featuresTrackedToAviaB.features, 0, nAfterFbUsage);
+<a class="jxr_linenumber" name="191" href="#191">191</a> 		<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="192" href="#192">192</a> <em class="jxr_comment">		 * printf("bbnew: %f,%f,%f,%f\n", bbnew[0], bbnew[1], bbnew[2],</em>
+<a class="jxr_linenumber" name="193" href="#193">193</a> <em class="jxr_comment">		 * bbnew[3]); printf("relative scale: %f \n", scaleshift[0]);</em>
+<a class="jxr_linenumber" name="194" href="#194">194</a> <em class="jxr_comment">		 */</em>
+<a class="jxr_linenumber" name="195" href="#195">195</a> 
+<a class="jxr_linenumber" name="196" href="#196">196</a> 		<strong class="jxr_keyword">if</strong> (medFb &gt; 10)
+<a class="jxr_linenumber" name="197" href="#197">197</a> 			<strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="198" href="#198">198</a> 		<strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="199" href="#199">199</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="200" href="#200">200</a> 		
+<a class="jxr_linenumber" name="201" href="#201">201</a> 	}
+<a class="jxr_linenumber" name="202" href="#202">202</a> 
+<a class="jxr_linenumber" name="203" href="#203">203</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> predictbb(<strong class="jxr_keyword">float</strong>[] bb0, FeatureList pt0, FeatureList pt1, <strong class="jxr_keyword">int</strong> nPts, <strong class="jxr_keyword">float</strong> []bb1) {
+<a class="jxr_linenumber" name="204" href="#204">204</a> 		<strong class="jxr_keyword">float</strong>[] ofx = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[nPts];
+<a class="jxr_linenumber" name="205" href="#205">205</a> 		<strong class="jxr_keyword">float</strong>[] ofy = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[nPts];
+<a class="jxr_linenumber" name="206" href="#206">206</a> 		<strong class="jxr_keyword">int</strong> i;
+<a class="jxr_linenumber" name="207" href="#207">207</a> 		<strong class="jxr_keyword">int</strong> j;
+<a class="jxr_linenumber" name="208" href="#208">208</a> 		<strong class="jxr_keyword">int</strong> d = 0;
+<a class="jxr_linenumber" name="209" href="#209">209</a> 		<strong class="jxr_keyword">float</strong> dx,dy;
+<a class="jxr_linenumber" name="210" href="#210">210</a> 		<strong class="jxr_keyword">int</strong> lenPdist;
+<a class="jxr_linenumber" name="211" href="#211">211</a> 		<strong class="jxr_keyword">float</strong>[] dist0;
+<a class="jxr_linenumber" name="212" href="#212">212</a> 		<strong class="jxr_keyword">float</strong>[] dist1;
+<a class="jxr_linenumber" name="213" href="#213">213</a> 		<strong class="jxr_keyword">float</strong> s0,s1;
+<a class="jxr_linenumber" name="214" href="#214">214</a> 		<strong class="jxr_keyword">for</strong> (i = 0; i &lt; nPts; i++)
+<a class="jxr_linenumber" name="215" href="#215">215</a> 		{
+<a class="jxr_linenumber" name="216" href="#216">216</a> 			ofx[i] = pt1.features[i].x - pt0.features[i].x;
+<a class="jxr_linenumber" name="217" href="#217">217</a> 			ofy[i] = pt1.features[i].y - pt0.features[i].y;
+<a class="jxr_linenumber" name="218" href="#218">218</a> 		}
+<a class="jxr_linenumber" name="219" href="#219">219</a> 		dx = FastMedian.getMedianUnmanaged(ofx, nPts);
+<a class="jxr_linenumber" name="220" href="#220">220</a> 		dy = FastMedian.getMedianUnmanaged(ofy, nPts);
+<a class="jxr_linenumber" name="221" href="#221">221</a> 		ofx = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="222" href="#222">222</a> 		ofy = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="223" href="#223">223</a> 		<em class="jxr_comment">//m(m-1)/2</em>
+<a class="jxr_linenumber" name="224" href="#224">224</a> 		lenPdist = nPts * (nPts - 1) / 2;
+<a class="jxr_linenumber" name="225" href="#225">225</a> 		dist0 = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[lenPdist];
+<a class="jxr_linenumber" name="226" href="#226">226</a> 		dist1 = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[lenPdist];
+<a class="jxr_linenumber" name="227" href="#227">227</a> 		<strong class="jxr_keyword">for</strong> (i = 0; i &lt; nPts; i++)
+<a class="jxr_linenumber" name="228" href="#228">228</a> 		{
+<a class="jxr_linenumber" name="229" href="#229">229</a> 			<strong class="jxr_keyword">for</strong> (j = i + 1; j &lt; nPts; j++, d++)
+<a class="jxr_linenumber" name="230" href="#230">230</a> 			{
+<a class="jxr_linenumber" name="231" href="#231">231</a> 				dist0[d] = (<strong class="jxr_keyword">float</strong>) Math.sqrt(
+<a class="jxr_linenumber" name="232" href="#232">232</a> 					Math.pow(pt0.features[i].x - pt0.features[j].x, 2) + 
+<a class="jxr_linenumber" name="233" href="#233">233</a> 					Math.pow(pt0.features[i].y - pt0.features[j].y, 2)
+<a class="jxr_linenumber" name="234" href="#234">234</a> 				);
+<a class="jxr_linenumber" name="235" href="#235">235</a> 				dist1[d] = (<strong class="jxr_keyword">float</strong>) Math.sqrt(Math.pow(pt1.features[i].x - pt1.features[j].x, 2) + Math.pow(pt1.features[i].y - pt1.features[j].y, 2));
+<a class="jxr_linenumber" name="236" href="#236">236</a> 				dist0[d] = dist1[d] / dist0[d];
+<a class="jxr_linenumber" name="237" href="#237">237</a> 			}
+<a class="jxr_linenumber" name="238" href="#238">238</a> 		}
+<a class="jxr_linenumber" name="239" href="#239">239</a> 		<em class="jxr_comment">// The scale change is the median of all changes of distance.</em>
+<a class="jxr_linenumber" name="240" href="#240">240</a> 		<em class="jxr_comment">// same as s = median(d2./d1) with above</em>
+<a class="jxr_linenumber" name="241" href="#241">241</a> 		<strong class="jxr_keyword">float</strong> shift = 0f;
+<a class="jxr_linenumber" name="242" href="#242">242</a> 		<strong class="jxr_keyword">if</strong>(lenPdist == 0){
+<a class="jxr_linenumber" name="243" href="#243">243</a> 			
+<a class="jxr_linenumber" name="244" href="#244">244</a> 		}
+<a class="jxr_linenumber" name="245" href="#245">245</a> 		<strong class="jxr_keyword">else</strong>{
+<a class="jxr_linenumber" name="246" href="#246">246</a> 			shift = FastMedian.getMedianUnmanaged(dist0, lenPdist);			
+<a class="jxr_linenumber" name="247" href="#247">247</a> 		}
+<a class="jxr_linenumber" name="248" href="#248">248</a> <em class="jxr_comment">//		float shift = 1;</em>
+<a class="jxr_linenumber" name="249" href="#249">249</a> 		dist0 = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="250" href="#250">250</a> 		dist1 = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="251" href="#251">251</a> 		s0 = 0.5f * (shift - 1) * getBbWidth(bb0);
+<a class="jxr_linenumber" name="252" href="#252">252</a> 		s1 = 0.5f * (shift - 1) * getBbHeight(bb0);
+<a class="jxr_linenumber" name="253" href="#253">253</a> 
+<a class="jxr_linenumber" name="254" href="#254">254</a> 		<em class="jxr_comment">// Apply transformations (translation&amp; scale) to old Bounding Box</em>
+<a class="jxr_linenumber" name="255" href="#255">255</a> 		bb1[0] = bb0[0] - s0 + dx;
+<a class="jxr_linenumber" name="256" href="#256">256</a> 		bb1[1] = bb0[1] - s1 + dy;
+<a class="jxr_linenumber" name="257" href="#257">257</a> 		bb1[2] = bb0[2] + s0 + dx;
+<a class="jxr_linenumber" name="258" href="#258">258</a> 		bb1[3] = bb0[3] + s1 + dy;
+<a class="jxr_linenumber" name="259" href="#259">259</a> 
+<a class="jxr_linenumber" name="260" href="#260">260</a> 		<em class="jxr_comment">//return absolute scale change</em>
+<a class="jxr_linenumber" name="261" href="#261">261</a> 		<em class="jxr_comment">//  shift[0] = s0;</em>
+<a class="jxr_linenumber" name="262" href="#262">262</a> 		<em class="jxr_comment">//  shift[1] = s1;</em>
+<a class="jxr_linenumber" name="263" href="#263">263</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="264" href="#264">264</a> 	}
+<a class="jxr_linenumber" name="265" href="#265">265</a> 
+<a class="jxr_linenumber" name="266" href="#266">266</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">float</strong> getBbHeight(<strong class="jxr_keyword">float</strong>[] bb) {
+<a class="jxr_linenumber" name="267" href="#267">267</a> 		<strong class="jxr_keyword">return</strong> Math.abs(bb[3] - bb[1] + 1);
+<a class="jxr_linenumber" name="268" href="#268">268</a> 	}
+<a class="jxr_linenumber" name="269" href="#269">269</a> 
+<a class="jxr_linenumber" name="270" href="#270">270</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">float</strong> getBbWidth(<strong class="jxr_keyword">float</strong>[] bb) {
+<a class="jxr_linenumber" name="271" href="#271">271</a> 		<strong class="jxr_keyword">return</strong> Math.abs(bb[2] - bb[0] + 1);
+<a class="jxr_linenumber" name="272" href="#272">272</a> 	}
+<a class="jxr_linenumber" name="273" href="#273">273</a> 
+<a class="jxr_linenumber" name="274" href="#274">274</a> 	<strong class="jxr_keyword">private</strong> FeatureList trackLK(FImage imgI, FImage imgJ, FeatureList pt,<strong class="jxr_keyword">boolean</strong>[] status) {
+<a class="jxr_linenumber" name="275" href="#275">275</a> 
+<a class="jxr_linenumber" name="276" href="#276">276</a> 		<em class="jxr_comment">// TODO: watch NaN cases</em>
+<a class="jxr_linenumber" name="277" href="#277">277</a> 		<em class="jxr_comment">// double nan = std::numeric_limits&lt;double&gt;::quiet_NaN();</em>
+<a class="jxr_linenumber" name="278" href="#278">278</a> 		<em class="jxr_comment">// double inf = std::numeric_limits&lt;double&gt;::infinity();</em>
+<a class="jxr_linenumber" name="279" href="#279">279</a> 
+<a class="jxr_linenumber" name="280" href="#280">280</a> 		<em class="jxr_comment">// tracking</em>
+<a class="jxr_linenumber" name="281" href="#281">281</a> 		<strong class="jxr_keyword">int</strong> winsize_ncc;
+<a class="jxr_linenumber" name="282" href="#282">282</a> 		<strong class="jxr_keyword">int</strong> i;
+<a class="jxr_linenumber" name="283" href="#283">283</a> 		winsize_ncc = 10;
+<a class="jxr_linenumber" name="284" href="#284">284</a> 		<em class="jxr_comment">// Get the current pyramid (use it for efficient tracking back)</em>
+<a class="jxr_linenumber" name="285" href="#285">285</a> 		PyramidSet pyrI = <strong class="jxr_keyword">this</strong>.context.getPreviousPyramid();
+<a class="jxr_linenumber" name="286" href="#286">286</a> 		<strong class="jxr_keyword">if</strong>(pyrI.isNull()){
+<a class="jxr_linenumber" name="287" href="#287">287</a> 			pyrI = <strong class="jxr_keyword">new</strong> PyramidSet(imgI, context);
+<a class="jxr_linenumber" name="288" href="#288">288</a> 			<strong class="jxr_keyword">this</strong>.context.setPreviousPyramid(pyrI);
+<a class="jxr_linenumber" name="289" href="#289">289</a> 		}
+<a class="jxr_linenumber" name="290" href="#290">290</a> 		
+<a class="jxr_linenumber" name="291" href="#291">291</a> 		<em class="jxr_comment">// Set the starting points (the grid)</em>
+<a class="jxr_linenumber" name="292" href="#292">292</a> 		<strong class="jxr_keyword">this</strong>.klttracker.setFeatureList(pt);
+<a class="jxr_linenumber" name="293" href="#293">293</a> 		<em class="jxr_comment">// Track the grid to the next image</em>
+<a class="jxr_linenumber" name="294" href="#294">294</a> 		<strong class="jxr_keyword">this</strong>.klttracker.trackFeatures(imgI, imgJ);
+<a class="jxr_linenumber" name="295" href="#295">295</a> 		<em class="jxr_comment">// Store the tracked points (these will be the output also)</em>
+<a class="jxr_linenumber" name="296" href="#296">296</a> 		FeatureList ptTracked = <strong class="jxr_keyword">this</strong>.klttracker.getFeatureList().clone();
+<a class="jxr_linenumber" name="297" href="#297">297</a> 		<em class="jxr_comment">// Hold on to the pyramid, we must set this at the end</em>
+<a class="jxr_linenumber" name="298" href="#298">298</a> 		PyramidSet pyrJ = <strong class="jxr_keyword">this</strong>.context.getPreviousPyramid();
+<a class="jxr_linenumber" name="299" href="#299">299</a> 		<em class="jxr_comment">// Track these points back to the first image</em>
+<a class="jxr_linenumber" name="300" href="#300">300</a> 		<strong class="jxr_keyword">this</strong>.klttracker.trackFeatures(imgJ, imgI, pyrJ, pyrI);
+<a class="jxr_linenumber" name="301" href="#301">301</a> 		<em class="jxr_comment">// Hold the tracked back points</em>
+<a class="jxr_linenumber" name="302" href="#302">302</a> 		FeatureList trackedBack = <strong class="jxr_keyword">this</strong>.klttracker.getFeatureList();
+<a class="jxr_linenumber" name="303" href="#303">303</a> 		<em class="jxr_comment">// fix the KLTTracker context for the next round</em>
+<a class="jxr_linenumber" name="304" href="#304">304</a> 		<strong class="jxr_keyword">this</strong>.context.setPreviousPyramid(pyrJ);
+<a class="jxr_linenumber" name="305" href="#305">305</a> 		<em class="jxr_comment">// Figure out which points failed</em>
+<a class="jxr_linenumber" name="306" href="#306">306</a> 		<strong class="jxr_keyword">for</strong> (i = 0; i &lt; ptTracked.features.length; i++) {
+<a class="jxr_linenumber" name="307" href="#307">307</a> 			<strong class="jxr_keyword">if</strong> (trackedBack.features[i].val &gt;= 0
+<a class="jxr_linenumber" name="308" href="#308">308</a> 					&amp;&amp; ptTracked.features[i].val &gt;= 0) {
+<a class="jxr_linenumber" name="309" href="#309">309</a> 				status[i] = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="310" href="#310">310</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="311" href="#311">311</a> 				status[i] = false;
+<a class="jxr_linenumber" name="312" href="#312">312</a> 			}
+<a class="jxr_linenumber" name="313" href="#313">313</a> 		}
+<a class="jxr_linenumber" name="314" href="#314">314</a> 		<em class="jxr_comment">// set the ncc in the ptTracked points</em>
+<a class="jxr_linenumber" name="315" href="#315">315</a> 		normCrossCorrelation(imgI, imgJ, pt, ptTracked, status, winsize_ncc);
+<a class="jxr_linenumber" name="316" href="#316">316</a> 		<em class="jxr_comment">// set the fbDistance in the ptTracked points</em>
+<a class="jxr_linenumber" name="317" href="#317">317</a> 		euclideanDistance(pt, trackedBack, ptTracked, status); <em class="jxr_comment">// compare the</em>
+<a class="jxr_linenumber" name="318" href="#318">318</a> 																<em class="jxr_comment">// first two and</em>
+<a class="jxr_linenumber" name="319" href="#319">319</a> 																<em class="jxr_comment">// store the</em>
+<a class="jxr_linenumber" name="320" href="#320">320</a> 																<em class="jxr_comment">// results in</em>
+<a class="jxr_linenumber" name="321" href="#321">321</a> 																<em class="jxr_comment">// the last one</em>
+<a class="jxr_linenumber" name="322" href="#322">322</a> 
+<a class="jxr_linenumber" name="323" href="#323">323</a> 		<strong class="jxr_keyword">return</strong> ptTracked;
+<a class="jxr_linenumber" name="324" href="#324">324</a> 	}
+<a class="jxr_linenumber" name="325" href="#325">325</a> 
+<a class="jxr_linenumber" name="326" href="#326">326</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> euclideanDistance(FeatureList pt, FeatureList trackedBack, FeatureList ptTracked, <strong class="jxr_keyword">boolean</strong>[] status) {
+<a class="jxr_linenumber" name="327" href="#327">327</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; status.length; i++) {
+<a class="jxr_linenumber" name="328" href="#328">328</a> 			<strong class="jxr_keyword">boolean</strong> tracked = status[i];
+<a class="jxr_linenumber" name="329" href="#329">329</a> 			FBNCCFeature feat = (FBNCCFeature) pt.features[i];
+<a class="jxr_linenumber" name="330" href="#330">330</a> 			FBNCCFeature trackedBackFeat = (FBNCCFeature) trackedBack.features[i];
+<a class="jxr_linenumber" name="331" href="#331">331</a> 			FBNCCFeature storageFeat = (FBNCCFeature) ptTracked.features[i];
+<a class="jxr_linenumber" name="332" href="#332">332</a> 			<strong class="jxr_keyword">if</strong> (tracked) {
+<a class="jxr_linenumber" name="333" href="#333">333</a> 				storageFeat.fbDistance = (<strong class="jxr_keyword">float</strong>) Line2d.distance(feat, trackedBackFeat);
+<a class="jxr_linenumber" name="334" href="#334">334</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="335" href="#335">335</a> 				storageFeat.fbDistance = Float.NaN;
+<a class="jxr_linenumber" name="336" href="#336">336</a> 			}
+<a class="jxr_linenumber" name="337" href="#337">337</a> 		}
+<a class="jxr_linenumber" name="338" href="#338">338</a> 	}
+<a class="jxr_linenumber" name="339" href="#339">339</a> 
+<a class="jxr_linenumber" name="340" href="#340">340</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> normCrossCorrelation(FImage imgI, FImage imgJ, FeatureList pt,
+<a class="jxr_linenumber" name="341" href="#341">341</a> 			FeatureList ptTracked, <strong class="jxr_keyword">boolean</strong>[] status, <strong class="jxr_keyword">int</strong> winsize_ncc) {
+<a class="jxr_linenumber" name="342" href="#342">342</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; status.length; i++) {
+<a class="jxr_linenumber" name="343" href="#343">343</a> 			<strong class="jxr_keyword">boolean</strong> tracked = status[i];
+<a class="jxr_linenumber" name="344" href="#344">344</a> 			FBNCCFeature feat = (FBNCCFeature) pt.features[i];
+<a class="jxr_linenumber" name="345" href="#345">345</a> 			FBNCCFeature featTracked = (FBNCCFeature) ptTracked.features[i];
+<a class="jxr_linenumber" name="346" href="#346">346</a> 			<strong class="jxr_keyword">if</strong> (tracked) {
+<a class="jxr_linenumber" name="347" href="#347">347</a> 				feat.ncc = TemplateMatcher.Mode.NORM_SUM_SQUARED_DIFFERENCE
+<a class="jxr_linenumber" name="348" href="#348">348</a> 						.computeMatchScore(imgI.pixels, (<strong class="jxr_keyword">int</strong>) feat.x,
+<a class="jxr_linenumber" name="349" href="#349">349</a> 								(<strong class="jxr_keyword">int</strong>) feat.y, imgJ.pixels, (<strong class="jxr_keyword">int</strong>) featTracked.x,
+<a class="jxr_linenumber" name="350" href="#350">350</a> 								(<strong class="jxr_keyword">int</strong>) featTracked.y, winsize_ncc, winsize_ncc);
+<a class="jxr_linenumber" name="351" href="#351">351</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="352" href="#352">352</a> 				feat.ncc = Float.NaN;
+<a class="jxr_linenumber" name="353" href="#353">353</a> 			}
+<a class="jxr_linenumber" name="354" href="#354">354</a> 		}
+<a class="jxr_linenumber" name="355" href="#355">355</a> 	}
+<a class="jxr_linenumber" name="356" href="#356">356</a> 
+<a class="jxr_linenumber" name="357" href="#357">357</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="358" href="#358">358</a> <em class="jxr_javadoccomment">	 * Creates numM x numN points grid on BBox. Points ordered in 1 dimensional</em>
+<a class="jxr_linenumber" name="359" href="#359">359</a> <em class="jxr_javadoccomment">	 * array (x1, y1, x2, y2).</em>
+<a class="jxr_linenumber" name="360" href="#360">360</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="361" href="#361">361</a> <em class="jxr_javadoccomment">	 * @param bb</em>
+<a class="jxr_linenumber" name="362" href="#362">362</a> <em class="jxr_javadoccomment">	 *            Bounding box represented through 2 points(x1,y1,x2,y2)</em>
+<a class="jxr_linenumber" name="363" href="#363">363</a> <em class="jxr_javadoccomment">	 * @param numM</em>
+<a class="jxr_linenumber" name="364" href="#364">364</a> <em class="jxr_javadoccomment">	 *            Number of points in height direction.</em>
+<a class="jxr_linenumber" name="365" href="#365">365</a> <em class="jxr_javadoccomment">	 * @param numN</em>
+<a class="jxr_linenumber" name="366" href="#366">366</a> <em class="jxr_javadoccomment">	 *            Number of points in width direction.</em>
+<a class="jxr_linenumber" name="367" href="#367">367</a> <em class="jxr_javadoccomment">	 * @param margin</em>
+<a class="jxr_linenumber" name="368" href="#368">368</a> <em class="jxr_javadoccomment">	 *            margin (in pixel)</em>
+<a class="jxr_linenumber" name="369" href="#369">369</a> <em class="jxr_javadoccomment">	 * @param pt2</em>
+<a class="jxr_linenumber" name="370" href="#370">370</a> <em class="jxr_javadoccomment">	 *            Contains the calculated points in the form (x1, y1, x2, y2).</em>
+<a class="jxr_linenumber" name="371" href="#371">371</a> <em class="jxr_javadoccomment">	 *            Size of the array must be numM * numN * 2.</em>
+<a class="jxr_linenumber" name="372" href="#372">372</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="373" href="#373">373</a> 	<strong class="jxr_keyword">boolean</strong> getFilledBBPoints(<strong class="jxr_keyword">float</strong>[] bb, <strong class="jxr_keyword">int</strong> numM, <strong class="jxr_keyword">int</strong> numN, <strong class="jxr_keyword">int</strong> margin,FeatureList pt2) {
+<a class="jxr_linenumber" name="374" href="#374">374</a> 		FeatureList pt = pt2;
+<a class="jxr_linenumber" name="375" href="#375">375</a> 		<strong class="jxr_keyword">int</strong> i;
+<a class="jxr_linenumber" name="376" href="#376">376</a> 		<strong class="jxr_keyword">int</strong> j;
+<a class="jxr_linenumber" name="377" href="#377">377</a> 		<strong class="jxr_keyword">float</strong>[] pbb_local;
+<a class="jxr_linenumber" name="378" href="#378">378</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="379" href="#379">379</a> <em class="jxr_javadoccomment">		 * gap between points in width direction</em>
+<a class="jxr_linenumber" name="380" href="#380">380</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="381" href="#381">381</a> 		<strong class="jxr_keyword">float</strong> divN = 0;
+<a class="jxr_linenumber" name="382" href="#382">382</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="383" href="#383">383</a> <em class="jxr_javadoccomment">		 * gap between points in height direction</em>
+<a class="jxr_linenumber" name="384" href="#384">384</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="385" href="#385">385</a> 		<strong class="jxr_keyword">float</strong> divM = 0;
+<a class="jxr_linenumber" name="386" href="#386">386</a> 		<strong class="jxr_keyword">float</strong>[] bb_local = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[4];
+<a class="jxr_linenumber" name="387" href="#387">387</a> 		<strong class="jxr_keyword">float</strong> spaceN;
+<a class="jxr_linenumber" name="388" href="#388">388</a> 		<strong class="jxr_keyword">float</strong> spaceM;
+<a class="jxr_linenumber" name="389" href="#389">389</a> 		Feature cen;
+<a class="jxr_linenumber" name="390" href="#390">390</a> 		<em class="jxr_comment">/*<em class="jxr_comment"> add margin */</em></em>
+<a class="jxr_linenumber" name="391" href="#391">391</a> 		bb_local[0] = bb[0] + margin;
+<a class="jxr_linenumber" name="392" href="#392">392</a> 		bb_local[1] = bb[1] + margin;
+<a class="jxr_linenumber" name="393" href="#393">393</a> 		bb_local[2] = bb[2] - margin;
+<a class="jxr_linenumber" name="394" href="#394">394</a> 		bb_local[3] = bb[3] - margin;
+<a class="jxr_linenumber" name="395" href="#395">395</a> 		pbb_local = bb_local;
+<a class="jxr_linenumber" name="396" href="#396">396</a> 		<em class="jxr_comment">/*<em class="jxr_comment"> printf("PointArraySize should be: %d\n", numM * numN * pointDim); */</em></em>
+<a class="jxr_linenumber" name="397" href="#397">397</a> 		<em class="jxr_comment">/*<em class="jxr_comment"> handle cases numX = 1 */</em><em class="jxr_comment">// If there is 1 point pick one in the middle</em></em>
+<a class="jxr_linenumber" name="398" href="#398">398</a> 		<strong class="jxr_keyword">if</strong> (numN == 1 &amp;&amp; numM == 1) {
+<a class="jxr_linenumber" name="399" href="#399">399</a> 			Feature center = calculateBBCenter(pbb_local);
+<a class="jxr_linenumber" name="400" href="#400">400</a> 			center.val = KLTTracker.KLT_TRACKED;
+<a class="jxr_linenumber" name="401" href="#401">401</a> 			pt2.features[0] = center;
+<a class="jxr_linenumber" name="402" href="#402">402</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="403" href="#403">403</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (numN == 1 &amp;&amp; numM &gt; 1) {
+<a class="jxr_linenumber" name="404" href="#404">404</a> 			divM = numM - 1;
+<a class="jxr_linenumber" name="405" href="#405">405</a> 			divN = 2;
+<a class="jxr_linenumber" name="406" href="#406">406</a> 			<em class="jxr_comment">/*<em class="jxr_comment"> maybe save center coordinate into bb[1] instead of loop again */</em></em>
+<a class="jxr_linenumber" name="407" href="#407">407</a> 			<em class="jxr_comment">/*<em class="jxr_comment"> calculate step width */</em></em>
+<a class="jxr_linenumber" name="408" href="#408">408</a> 			spaceM = (bb_local[3] - bb_local[1]) / divM;
+<a class="jxr_linenumber" name="409" href="#409">409</a> 			cen = calculateBBCenter(pbb_local);
+<a class="jxr_linenumber" name="410" href="#410">410</a> 			<em class="jxr_comment">/*<em class="jxr_comment"> calculate points and save them to the array */</em></em>
+<a class="jxr_linenumber" name="411" href="#411">411</a> 			<strong class="jxr_keyword">for</strong> (i = 0; i &lt; numN; i++) {
+<a class="jxr_linenumber" name="412" href="#412">412</a> 				<strong class="jxr_keyword">for</strong> (j = 0; j &lt; numM; j++) {
+<a class="jxr_linenumber" name="413" href="#413">413</a> 					pt.features[i * numM + j] = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/tldcpp/tracker/FBNCCFeature.html">FBNCCFeature</a>();
+<a class="jxr_linenumber" name="414" href="#414">414</a> 					Feature f = pt.features[i * numM + j];
+<a class="jxr_linenumber" name="415" href="#415">415</a> 					f.x = cen.x;
+<a class="jxr_linenumber" name="416" href="#416">416</a> 					f.y = bb_local[1] + j * spaceM;
+<a class="jxr_linenumber" name="417" href="#417">417</a> 					f.val = KLTTracker.KLT_TRACKED;
+<a class="jxr_linenumber" name="418" href="#418">418</a> 				}
+<a class="jxr_linenumber" name="419" href="#419">419</a> 			}
+<a class="jxr_linenumber" name="420" href="#420">420</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="421" href="#421">421</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (numN &gt; 1 &amp;&amp; numM == 1) {
+<a class="jxr_linenumber" name="422" href="#422">422</a> 			divM = 2;
+<a class="jxr_linenumber" name="423" href="#423">423</a> 			divN = numN - 1;
+<a class="jxr_linenumber" name="424" href="#424">424</a> 			<em class="jxr_comment">// maybe save center coordinate into bb[1] instead of loop again</em>
+<a class="jxr_linenumber" name="425" href="#425">425</a> 			<em class="jxr_comment">// calculate step width</em>
+<a class="jxr_linenumber" name="426" href="#426">426</a> 			spaceN = (bb_local[2] - bb_local[0]) / divN;
+<a class="jxr_linenumber" name="427" href="#427">427</a> 			cen = calculateBBCenter(pbb_local);
+<a class="jxr_linenumber" name="428" href="#428">428</a> 			<em class="jxr_comment">// calculate points and save them to the array</em>
+<a class="jxr_linenumber" name="429" href="#429">429</a> 			<strong class="jxr_keyword">for</strong> (i = 0; i &lt; numN; i++) {
+<a class="jxr_linenumber" name="430" href="#430">430</a> 				<strong class="jxr_keyword">for</strong> (j = 0; j &lt; numM; j++) {
+<a class="jxr_linenumber" name="431" href="#431">431</a> 					pt.features[i * numM + j] = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/tldcpp/tracker/FBNCCFeature.html">FBNCCFeature</a>();
+<a class="jxr_linenumber" name="432" href="#432">432</a> 					Feature f = pt.features[i * numM + j];
+<a class="jxr_linenumber" name="433" href="#433">433</a> 					f.x = bb_local[0] + i * spaceN;
+<a class="jxr_linenumber" name="434" href="#434">434</a> 					f.y = cen.y;
+<a class="jxr_linenumber" name="435" href="#435">435</a> 					f.val = KLTTracker.KLT_TRACKED;
+<a class="jxr_linenumber" name="436" href="#436">436</a> 				}
+<a class="jxr_linenumber" name="437" href="#437">437</a> 			}
+<a class="jxr_linenumber" name="438" href="#438">438</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="439" href="#439">439</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (numN &gt; 1 &amp;&amp; numM &gt; 1) {
+<a class="jxr_linenumber" name="440" href="#440">440</a> 			divM = numM - 1;
+<a class="jxr_linenumber" name="441" href="#441">441</a> 			divN = numN - 1;
+<a class="jxr_linenumber" name="442" href="#442">442</a> 		}
+<a class="jxr_linenumber" name="443" href="#443">443</a> 		<em class="jxr_comment">// calculate step width</em>
+<a class="jxr_linenumber" name="444" href="#444">444</a> 		spaceN = (bb_local[2] - bb_local[0]) / divN;
+<a class="jxr_linenumber" name="445" href="#445">445</a> 		spaceM = (bb_local[3] - bb_local[1]) / divM;
+<a class="jxr_linenumber" name="446" href="#446">446</a> 		<em class="jxr_comment">// calculate points and save them to the array</em>
+<a class="jxr_linenumber" name="447" href="#447">447</a> 		<strong class="jxr_keyword">for</strong> (i = 0; i &lt; numN; i++) {
+<a class="jxr_linenumber" name="448" href="#448">448</a> 			<strong class="jxr_keyword">for</strong> (j = 0; j &lt; numM; j++) {
+<a class="jxr_linenumber" name="449" href="#449">449</a> 				pt.features[i * numM + j] = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/tldcpp/tracker/FBNCCFeature.html">FBNCCFeature</a>();
+<a class="jxr_linenumber" name="450" href="#450">450</a> 				Feature f = pt.features[i * numM + j];
+<a class="jxr_linenumber" name="451" href="#451">451</a> 				f.x = bb_local[0] + i * spaceN;
+<a class="jxr_linenumber" name="452" href="#452">452</a> 				f.y = bb_local[1] + j * spaceM;
+<a class="jxr_linenumber" name="453" href="#453">453</a> 				f.val = KLTTracker.KLT_TRACKED;
+<a class="jxr_linenumber" name="454" href="#454">454</a> 			}
+<a class="jxr_linenumber" name="455" href="#455">455</a> 		}
+<a class="jxr_linenumber" name="456" href="#456">456</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="457" href="#457">457</a> 	}
+<a class="jxr_linenumber" name="458" href="#458">458</a> 
+<a class="jxr_linenumber" name="459" href="#459">459</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="460" href="#460">460</a> <em class="jxr_javadoccomment">	 * Calculates center of a Rectangle/Boundingbox.</em>
+<a class="jxr_linenumber" name="461" href="#461">461</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="462" href="#462">462</a> <em class="jxr_javadoccomment">	 * @param bb</em>
+<a class="jxr_linenumber" name="463" href="#463">463</a> <em class="jxr_javadoccomment">	 *            defined with 2 points x,y,x1,y1</em>
+<a class="jxr_linenumber" name="464" href="#464">464</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="465" href="#465">465</a> 	Feature calculateBBCenter(<strong class="jxr_keyword">float</strong>[] bb) {
+<a class="jxr_linenumber" name="466" href="#466">466</a> 		<strong class="jxr_keyword">float</strong>[] bbnow = bb;
+<a class="jxr_linenumber" name="467" href="#467">467</a> 		Feature centernow = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="468" href="#468">468</a> 		<strong class="jxr_keyword">if</strong> (bbnow == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="469" href="#469">469</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="470" href="#470">470</a> 		}
+<a class="jxr_linenumber" name="471" href="#471">471</a> 		centernow = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/tldcpp/tracker/FBNCCFeature.html">FBNCCFeature</a>();
+<a class="jxr_linenumber" name="472" href="#472">472</a> 		centernow.x = 0.5f * (bbnow[0] + bbnow[2]);
+<a class="jxr_linenumber" name="473" href="#473">473</a> 		centernow.y = 0.5f * (bbnow[1] + bbnow[3]);
+<a class="jxr_linenumber" name="474" href="#474">474</a> 		<strong class="jxr_keyword">return</strong> centernow;
+<a class="jxr_linenumber" name="475" href="#475">475</a> 	}
+<a class="jxr_linenumber" name="476" href="#476">476</a> }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>

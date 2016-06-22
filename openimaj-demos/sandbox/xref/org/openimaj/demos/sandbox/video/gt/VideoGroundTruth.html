@@ -1,0 +1,539 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>VideoGroundTruth xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../../apidocs/org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">View Javadoc</a></div><pre>
+
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_javadoccomment"> * Copyright (c) 2011, The University of Southampton and the individual contributors.</em>
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_javadoccomment"> * All rights reserved.</em>
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_javadoccomment"> * Redistribution and use in source and binary forms, with or without modification,</em>
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <em class="jxr_javadoccomment"> * are permitted provided that the following conditions are met:</em>
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <em class="jxr_javadoccomment"> *   * 	Redistributions of source code must retain the above copyright notice,</em>
+<a class="jxr_linenumber" name="9" href="#9">9</a>   <em class="jxr_javadoccomment"> * 	this list of conditions and the following disclaimer.</em>
+<a class="jxr_linenumber" name="10" href="#10">10</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="11" href="#11">11</a>  <em class="jxr_javadoccomment"> *   *	Redistributions in binary form must reproduce the above copyright notice,</em>
+<a class="jxr_linenumber" name="12" href="#12">12</a>  <em class="jxr_javadoccomment"> * 	this list of conditions and the following disclaimer in the documentation</em>
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <em class="jxr_javadoccomment"> * 	and/or other materials provided with the distribution.</em>
+<a class="jxr_linenumber" name="14" href="#14">14</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="15" href="#15">15</a>  <em class="jxr_javadoccomment"> *   *	Neither the name of the University of Southampton nor the names of its</em>
+<a class="jxr_linenumber" name="16" href="#16">16</a>  <em class="jxr_javadoccomment"> * 	contributors may be used to endorse or promote products derived from this</em>
+<a class="jxr_linenumber" name="17" href="#17">17</a>  <em class="jxr_javadoccomment"> * 	software without specific prior written permission.</em>
+<a class="jxr_linenumber" name="18" href="#18">18</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="19" href="#19">19</a>  <em class="jxr_javadoccomment"> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND</em>
+<a class="jxr_linenumber" name="20" href="#20">20</a>  <em class="jxr_javadoccomment"> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</em>
+<a class="jxr_linenumber" name="21" href="#21">21</a>  <em class="jxr_javadoccomment"> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</em>
+<a class="jxr_linenumber" name="22" href="#22">22</a>  <em class="jxr_javadoccomment"> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</em>
+<a class="jxr_linenumber" name="23" href="#23">23</a>  <em class="jxr_javadoccomment"> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</em>
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <em class="jxr_javadoccomment"> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</em>
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <em class="jxr_javadoccomment"> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</em>
+<a class="jxr_linenumber" name="26" href="#26">26</a>  <em class="jxr_javadoccomment"> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</em>
+<a class="jxr_linenumber" name="27" href="#27">27</a>  <em class="jxr_javadoccomment"> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</em>
+<a class="jxr_linenumber" name="28" href="#28">28</a>  <em class="jxr_javadoccomment"> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</em>
+<a class="jxr_linenumber" name="29" href="#29">29</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="30" href="#30">30</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="31" href="#31">31</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="32" href="#32">32</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">package</strong> org.openimaj.demos.sandbox.video.gt;
+<a class="jxr_linenumber" name="34" href="#34">34</a>  
+<a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="36" href="#36">36</a>  <strong class="jxr_keyword">import</strong> java.io.FileNotFoundException;
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> java.io.FileWriter;
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="41" href="#41">41</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> java.util.Scanner;
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <strong class="jxr_keyword">import</strong> java.util.regex.Matcher;
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> java.util.regex.Pattern;
+<a class="jxr_linenumber" name="45" href="#45">45</a>  
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.io.FileExistsException;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.openimaj.audio.AudioStream;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.openimaj.data.dataset.ListBackedDataset;
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> org.openimaj.data.identity.Identifiable;
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> org.openimaj.image.MBFImage;
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> org.openimaj.video.Video;
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> org.openimaj.video.VideoDisplay.EndAction;
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">import</strong> org.openimaj.video.VideoFrame;
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> org.openimaj.video.VideoPlayer;
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">import</strong> org.openimaj.video.timecode.HrsMinSecFrameTimecode;
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <strong class="jxr_keyword">import</strong> org.openimaj.video.timecode.VideoTimecode;
+<a class="jxr_linenumber" name="57" href="#57">57</a>  
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment"> * A video player that allows the recording of timestamps for creating a</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment"> * ground-truth. The class uses an {@link IdentifierProducer} to tag objects</em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment"> * within the scene. Each {@link Identifiable} that the producer produces has a</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment"> * set of states (annotations) which are given by the {@link StateProvider}. The</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment"> * tool outputs a list of annotations each linked to a list of frames (</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment"> * {@link IdentifiableVideoFrame}s) each of which contains a list of</em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment"> * {@link Identifiable}s whose state changed on that frame. For example,</em>
+<a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment"> * &lt;pre&gt;</em>
+<a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment"> * &lt;code&gt;</em>
+<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment"> * 	00:00:01:23  Scene 1 - Face 1  SPEAKING</em>
+<a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment"> * 	00:00:04:12  Scene 1 - Face 1  NOT_SPEAKING</em>
+<a class="jxr_linenumber" name="72" href="#72">72</a>  <em class="jxr_javadoccomment"> * 	00:00:06:05  Scene 1 - Face 2  SPEAKING</em>
+<a class="jxr_linenumber" name="73" href="#73">73</a>  <em class="jxr_javadoccomment"> * 	00:00:10:01  Scene 1 - Face 2  NOT_SPEAKING</em>
+<a class="jxr_linenumber" name="74" href="#74">74</a>  <em class="jxr_javadoccomment"> * 	00:00:11:15  Scene 2 - Face 1  SPEAKING</em>
+<a class="jxr_linenumber" name="75" href="#75">75</a>  <em class="jxr_javadoccomment"> * 	00:00:14:00  Scene 2 - Face 1  NOT_SPEAKING</em>
+<a class="jxr_linenumber" name="76" href="#76">76</a>  <em class="jxr_javadoccomment"> * &lt;/code&gt;</em>
+<a class="jxr_linenumber" name="77" href="#77">77</a>  <em class="jxr_javadoccomment"> * &lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="78" href="#78">78</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="79" href="#79">79</a>  <em class="jxr_javadoccomment"> * In this example there are two faces identified (within the first scene). Face</em>
+<a class="jxr_linenumber" name="80" href="#80">80</a>  <em class="jxr_javadoccomment"> * 1 speaks between 00:00:01:23 (1 second 23 frames) and 00:00:04:12. Face 2</em>
+<a class="jxr_linenumber" name="81" href="#81">81</a>  <em class="jxr_javadoccomment"> * speaks between 00:00:06:05 and 00:00:10:01. The first face in another scene</em>
+<a class="jxr_linenumber" name="82" href="#82">82</a>  <em class="jxr_javadoccomment"> * begins speaking again at 00:00:11:15 until 00:00:14:00. Note that Face 1 in</em>
+<a class="jxr_linenumber" name="83" href="#83">83</a>  <em class="jxr_javadoccomment"> * Scenes 1 and 2 may be different people (they may not too). The identifier</em>
+<a class="jxr_linenumber" name="84" href="#84">84</a>  <em class="jxr_javadoccomment"> * provider does all it can in the situation to provide unique identifiers. The</em>
+<a class="jxr_linenumber" name="85" href="#85">85</a>  <em class="jxr_javadoccomment"> * meaning of Face 1 and 2 depends on the implementation of the identifier</em>
+<a class="jxr_linenumber" name="86" href="#86">86</a>  <em class="jxr_javadoccomment"> * provider. SPEAKING and NOT_SPEAKING is given by the {@link StateProvider} and</em>
+<a class="jxr_linenumber" name="87" href="#87">87</a>  <em class="jxr_javadoccomment"> * the timecodes are given by the {@link IdentifiableVideoFrame} (created by</em>
+<a class="jxr_linenumber" name="88" href="#88">88</a>  <em class="jxr_javadoccomment"> * default).</em>
+<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment"> * Annotations can also include end times. So the above could be represented as:</em>
+<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment"> * &lt;pre&gt;</em>
+<a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment"> * &lt;code&gt;</em>
+<a class="jxr_linenumber" name="95" href="#95">95</a>  <em class="jxr_javadoccomment"> * 	00:00:01:23-00:00:04:11  Scene 1 - Face 1  SPEAKING</em>
+<a class="jxr_linenumber" name="96" href="#96">96</a>  <em class="jxr_javadoccomment"> * 	00:00:04:12-00:00:06:04  Scene 1 - Face 1  NOT_SPEAKING</em>
+<a class="jxr_linenumber" name="97" href="#97">97</a>  <em class="jxr_javadoccomment"> * 	etc.</em>
+<a class="jxr_linenumber" name="98" href="#98">98</a>  <em class="jxr_javadoccomment"> * &lt;/code&gt;</em>
+<a class="jxr_linenumber" name="99" href="#99">99</a>  <em class="jxr_javadoccomment"> * &lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="100" href="#100">100</a> <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="101" href="#101">101</a> <em class="jxr_javadoccomment"> * The user interface provided is based on a {@link VideoPlayer}. The</em>
+<a class="jxr_linenumber" name="102" href="#102">102</a> <em class="jxr_javadoccomment"> * {@link StateProvider} can provide its own user interface for selecting the</em>
+<a class="jxr_linenumber" name="103" href="#103">103</a> <em class="jxr_javadoccomment"> * current state, or it can provide a key listener which will be automatically</em>
+<a class="jxr_linenumber" name="104" href="#104">104</a> <em class="jxr_javadoccomment"> * added to the video player controls. The user should be in the state provider</em>
+<a class="jxr_linenumber" name="105" href="#105">105</a> <em class="jxr_javadoccomment"> * loop.</em>
+<a class="jxr_linenumber" name="106" href="#106">106</a> <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="107" href="#107">107</a> <em class="jxr_javadoccomment"> * The object for annotating is selected by the user of this class. Also, the</em>
+<a class="jxr_linenumber" name="108" href="#108">108</a> <em class="jxr_javadoccomment"> * means for updating the state of any selected identifiable is also determined</em>
+<a class="jxr_linenumber" name="109" href="#109">109</a> <em class="jxr_javadoccomment"> * by the user of this class. When the state of an identifiable changes, the</em>
+<a class="jxr_linenumber" name="110" href="#110">110</a> <em class="jxr_javadoccomment"> * {@link #updateIdentifiable(Identifiable)} method should be called, which will</em>
+<a class="jxr_linenumber" name="111" href="#111">111</a> <em class="jxr_javadoccomment"> * query the state provider for the current state of the identifiable. This will</em>
+<a class="jxr_linenumber" name="112" href="#112">112</a> <em class="jxr_javadoccomment"> * then be added to the dataset for the current video timecode.</em>
+<a class="jxr_linenumber" name="113" href="#113">113</a> <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="114" href="#114">114</a> <em class="jxr_javadoccomment"> * The class provides a {@link #writeDataset(File)} method for writing the</em>
+<a class="jxr_linenumber" name="115" href="#115">115</a> <em class="jxr_javadoccomment"> * generated dataset to a text file. The file is formatted by the</em>
+<a class="jxr_linenumber" name="116" href="#116">116</a> <em class="jxr_javadoccomment"> * {@link AnnotatedIdentifiable#toString()} method in the form:</em>
+<a class="jxr_linenumber" name="117" href="#117">117</a> <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="118" href="#118">118</a> <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="119" href="#119">119</a> <em class="jxr_javadoccomment"> * &lt;pre&gt;</em>
+<a class="jxr_linenumber" name="120" href="#120">120</a> <em class="jxr_javadoccomment"> * &lt;code&gt;</em>
+<a class="jxr_linenumber" name="121" href="#121">121</a> <em class="jxr_javadoccomment"> * 	id@start&gt;end:[comma-separated-tags]</em>
+<a class="jxr_linenumber" name="122" href="#122">122</a> <em class="jxr_javadoccomment"> * &lt;/code&gt;</em>
+<a class="jxr_linenumber" name="123" href="#123">123</a> <em class="jxr_javadoccomment"> * &lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="124" href="#124">124</a> <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="125" href="#125">125</a> <em class="jxr_javadoccomment"> * This implies that the identifier cannot include @ symbols and that tags may</em>
+<a class="jxr_linenumber" name="126" href="#126">126</a> <em class="jxr_javadoccomment"> * not contain commas. The timecodes are {@link HrsMinSecFrameTimecode} objects</em>
+<a class="jxr_linenumber" name="127" href="#127">127</a> <em class="jxr_javadoccomment"> * represented as strings (Hrs:Mins:Secs:Frames).</em>
+<a class="jxr_linenumber" name="128" href="#128">128</a> <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="129" href="#129">129</a> <em class="jxr_javadoccomment"> * @author David Dupplaw (dpd@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="130" href="#130">130</a> <em class="jxr_javadoccomment"> * @created 10 Aug 2012</em>
+<a class="jxr_linenumber" name="131" href="#131">131</a> <em class="jxr_javadoccomment"> * @version $Author$, $Revision$, $Date$</em>
+<a class="jxr_linenumber" name="132" href="#132">132</a> <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="133" href="#133">133</a> <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">VideoGroundTruth</a>
+<a class="jxr_linenumber" name="134" href="#134">134</a> {
+<a class="jxr_linenumber" name="135" href="#135">135</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="136" href="#136">136</a> <em class="jxr_javadoccomment">	 * An interface for objects which produce identifiers to stamp. So, if there</em>
+<a class="jxr_linenumber" name="137" href="#137">137</a> <em class="jxr_javadoccomment">	 * are multiple objects within a single video frame, the identifier producer</em>
+<a class="jxr_linenumber" name="138" href="#138">138</a> <em class="jxr_javadoccomment">	 * can produce identifiers that allow them to be tagged. For example, if</em>
+<a class="jxr_linenumber" name="139" href="#139">139</a> <em class="jxr_javadoccomment">	 * there are people in a video, they may be identified by their URI, or just</em>
+<a class="jxr_linenumber" name="140" href="#140">140</a> <em class="jxr_javadoccomment">	 * by a number. The task of the identifier is to ensure that the</em>
+<a class="jxr_linenumber" name="141" href="#141">141</a> <em class="jxr_javadoccomment">	 * identifiable is somehow tracked between frames. For example, if there</em>
+<a class="jxr_linenumber" name="142" href="#142">142</a> <em class="jxr_javadoccomment">	 * were faces in a shot and the faces moved around, moved off screen, etc.</em>
+<a class="jxr_linenumber" name="143" href="#143">143</a> <em class="jxr_javadoccomment">	 * the identifier producer should produce the same ID for each face within a</em>
+<a class="jxr_linenumber" name="144" href="#144">144</a> <em class="jxr_javadoccomment">	 * given series of frames, at least as far as possible.</em>
+<a class="jxr_linenumber" name="145" href="#145">145</a> <em class="jxr_javadoccomment">	 * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="146" href="#146">146</a> <em class="jxr_javadoccomment">	 * The {@link #getIdentifiers()} method should only return identifiers for</em>
+<a class="jxr_linenumber" name="147" href="#147">147</a> <em class="jxr_javadoccomment">	 * objects that are in the current frame (not for the whole video).</em>
+<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="149" href="#149">149</a> <em class="jxr_javadoccomment">	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="150" href="#150">150</a> <em class="jxr_javadoccomment">	 * @created 10 Aug 2012</em>
+<a class="jxr_linenumber" name="151" href="#151">151</a> <em class="jxr_javadoccomment">	 * @version $Author$, $Revision$, $Date$</em>
+<a class="jxr_linenumber" name="152" href="#152">152</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="153" href="#153">153</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">IdentifierProducer</a>
+<a class="jxr_linenumber" name="154" href="#154">154</a> 	{
+<a class="jxr_linenumber" name="155" href="#155">155</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="156" href="#156">156</a> <em class="jxr_javadoccomment">		 * Returns the list of object identifiers that are being truthed in the</em>
+<a class="jxr_linenumber" name="157" href="#157">157</a> <em class="jxr_javadoccomment">		 * current video frame.</em>
+<a class="jxr_linenumber" name="158" href="#158">158</a> <em class="jxr_javadoccomment">		 * </em>
+<a class="jxr_linenumber" name="159" href="#159">159</a> <em class="jxr_javadoccomment">		 * @return The identifiers</em>
+<a class="jxr_linenumber" name="160" href="#160">160</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="161" href="#161">161</a> 		<strong class="jxr_keyword">public</strong> List&lt;Identifiable&gt; getIdentifiers();
+<a class="jxr_linenumber" name="162" href="#162">162</a> 	}
+<a class="jxr_linenumber" name="163" href="#163">163</a> 
+<a class="jxr_linenumber" name="164" href="#164">164</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="165" href="#165">165</a> <em class="jxr_javadoccomment">	 * Provides states for identifiables.</em>
+<a class="jxr_linenumber" name="166" href="#166">166</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="167" href="#167">167</a> <em class="jxr_javadoccomment">	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="168" href="#168">168</a> <em class="jxr_javadoccomment">	 * @created 28 Aug 2012</em>
+<a class="jxr_linenumber" name="169" href="#169">169</a> <em class="jxr_javadoccomment">	 * @version $Author$, $Revision$, $Date$</em>
+<a class="jxr_linenumber" name="170" href="#170">170</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="171" href="#171">171</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">StateProvider</a>
+<a class="jxr_linenumber" name="172" href="#172">172</a> 	{
+<a class="jxr_linenumber" name="173" href="#173">173</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="174" href="#174">174</a> <em class="jxr_javadoccomment">		 * Returns the current state for the given identifiable.</em>
+<a class="jxr_linenumber" name="175" href="#175">175</a> <em class="jxr_javadoccomment">		 * </em>
+<a class="jxr_linenumber" name="176" href="#176">176</a> <em class="jxr_javadoccomment">		 * @param id</em>
+<a class="jxr_linenumber" name="177" href="#177">177</a> <em class="jxr_javadoccomment">		 *            The identifiable</em>
+<a class="jxr_linenumber" name="178" href="#178">178</a> <em class="jxr_javadoccomment">		 * @return The states</em>
+<a class="jxr_linenumber" name="179" href="#179">179</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="180" href="#180">180</a> 		<strong class="jxr_keyword">public</strong> List&lt;String&gt; getCurrentState(Identifiable id);
+<a class="jxr_linenumber" name="181" href="#181">181</a> 	}
+<a class="jxr_linenumber" name="182" href="#182">182</a> 
+<a class="jxr_linenumber" name="183" href="#183">183</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="184" href="#184">184</a> <em class="jxr_javadoccomment">	 * An identifiable video frame that uses the timecode of the frame to</em>
+<a class="jxr_linenumber" name="185" href="#185">185</a> <em class="jxr_javadoccomment">	 * identify the frame. The default implementation uses the timecode of the</em>
+<a class="jxr_linenumber" name="186" href="#186">186</a> <em class="jxr_javadoccomment">	 * frame to identify the frame.</em>
+<a class="jxr_linenumber" name="187" href="#187">187</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="188" href="#188">188</a> <em class="jxr_javadoccomment">	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="189" href="#189">189</a> <em class="jxr_javadoccomment">	 * @created 10 Aug 2012</em>
+<a class="jxr_linenumber" name="190" href="#190">190</a> <em class="jxr_javadoccomment">	 * @version $Author$, $Revision$, $Date$</em>
+<a class="jxr_linenumber" name="191" href="#191">191</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="192" href="#192">192</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">IdentifiableVideoFrame</a> <strong class="jxr_keyword">extends</strong> VideoFrame&lt;MBFImage&gt;
+<a class="jxr_linenumber" name="193" href="#193">193</a> 			<strong class="jxr_keyword">implements</strong> Identifiable
+<a class="jxr_linenumber" name="194" href="#194">194</a> 	{
+<a class="jxr_linenumber" name="195" href="#195">195</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="196" href="#196">196</a> <em class="jxr_javadoccomment">		 * @param frame</em>
+<a class="jxr_linenumber" name="197" href="#197">197</a> <em class="jxr_javadoccomment">		 *            The frame</em>
+<a class="jxr_linenumber" name="198" href="#198">198</a> <em class="jxr_javadoccomment">		 * @param timecode</em>
+<a class="jxr_linenumber" name="199" href="#199">199</a> <em class="jxr_javadoccomment">		 *            The timecode</em>
+<a class="jxr_linenumber" name="200" href="#200">200</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="201" href="#201">201</a> 		<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">IdentifiableVideoFrame</a>(<strong class="jxr_keyword">final</strong> MBFImage frame, <strong class="jxr_keyword">final</strong> VideoTimecode timecode)
+<a class="jxr_linenumber" name="202" href="#202">202</a> 		{
+<a class="jxr_linenumber" name="203" href="#203">203</a> 			<strong class="jxr_keyword">super</strong>(frame, timecode);
+<a class="jxr_linenumber" name="204" href="#204">204</a> 		}
+<a class="jxr_linenumber" name="205" href="#205">205</a> 
+<a class="jxr_linenumber" name="206" href="#206">206</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="207" href="#207">207</a> <em class="jxr_javadoccomment">		 * </em>
+<a class="jxr_linenumber" name="208" href="#208">208</a> <em class="jxr_javadoccomment">		 * @param frame</em>
+<a class="jxr_linenumber" name="209" href="#209">209</a> <em class="jxr_javadoccomment">		 *            The frame</em>
+<a class="jxr_linenumber" name="210" href="#210">210</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="211" href="#211">211</a> 		<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">IdentifiableVideoFrame</a>(<strong class="jxr_keyword">final</strong> VideoFrame&lt;MBFImage&gt; frame)
+<a class="jxr_linenumber" name="212" href="#212">212</a> 		{
+<a class="jxr_linenumber" name="213" href="#213">213</a> 			<strong class="jxr_keyword">super</strong>(frame.frame, frame.timecode);
+<a class="jxr_linenumber" name="214" href="#214">214</a> 		}
+<a class="jxr_linenumber" name="215" href="#215">215</a> 
+<a class="jxr_linenumber" name="216" href="#216">216</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="217" href="#217">217</a> <em class="jxr_javadoccomment">		 * {@inheritDoc}</em>
+<a class="jxr_linenumber" name="218" href="#218">218</a> <em class="jxr_javadoccomment">		 * </em>
+<a class="jxr_linenumber" name="219" href="#219">219</a> <em class="jxr_javadoccomment">		 * @see org.openimaj.data.identity.Identifiable#getID()</em>
+<a class="jxr_linenumber" name="220" href="#220">220</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="221" href="#221">221</a> 		@Override
+<a class="jxr_linenumber" name="222" href="#222">222</a> 		<strong class="jxr_keyword">public</strong> String getID()
+<a class="jxr_linenumber" name="223" href="#223">223</a> 		{
+<a class="jxr_linenumber" name="224" href="#224">224</a> 			<strong class="jxr_keyword">return</strong> <span class="jxr_string">""</span> + <strong class="jxr_keyword">this</strong>.timecode.toString();
+<a class="jxr_linenumber" name="225" href="#225">225</a> 		}
+<a class="jxr_linenumber" name="226" href="#226">226</a> 
+<a class="jxr_linenumber" name="227" href="#227">227</a> 		@Override
+<a class="jxr_linenumber" name="228" href="#228">228</a> 		<strong class="jxr_keyword">public</strong> String toString()
+<a class="jxr_linenumber" name="229" href="#229">229</a> 		{
+<a class="jxr_linenumber" name="230" href="#230">230</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.getID();
+<a class="jxr_linenumber" name="231" href="#231">231</a> 		}
+<a class="jxr_linenumber" name="232" href="#232">232</a> 	}
+<a class="jxr_linenumber" name="233" href="#233">233</a> 
+<a class="jxr_linenumber" name="234" href="#234">234</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="235" href="#235">235</a> <em class="jxr_javadoccomment">	 * An identifiable that has been annotated with states (tags) between</em>
+<a class="jxr_linenumber" name="236" href="#236">236</a> <em class="jxr_javadoccomment">	 * specific times. If the end timestamp is null, then the start timestamp</em>
+<a class="jxr_linenumber" name="237" href="#237">237</a> <em class="jxr_javadoccomment">	 * gives the only time at which the tags are valid.</em>
+<a class="jxr_linenumber" name="238" href="#238">238</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="239" href="#239">239</a> <em class="jxr_javadoccomment">	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="240" href="#240">240</a> <em class="jxr_javadoccomment">	 * @created 28 Aug 2012</em>
+<a class="jxr_linenumber" name="241" href="#241">241</a> <em class="jxr_javadoccomment">	 * @version $Author$, $Revision$, $Date$</em>
+<a class="jxr_linenumber" name="242" href="#242">242</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="243" href="#243">243</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">AnnotatedIdentifiable</a> <strong class="jxr_keyword">implements</strong> Identifiable
+<a class="jxr_linenumber" name="244" href="#244">244</a> 	{
+<a class="jxr_linenumber" name="245" href="#245">245</a> 		<em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> The timestamp at which the tags are valid for the identifiable */</em>
+<a class="jxr_linenumber" name="246" href="#246">246</a> 		<strong class="jxr_keyword">public</strong> VideoTimecode startTimestamp;
+<a class="jxr_linenumber" name="247" href="#247">247</a> 
+<a class="jxr_linenumber" name="248" href="#248">248</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="249" href="#249">249</a> <em class="jxr_javadoccomment">		 * The timestamp at which the tags are no longer valid for the</em>
+<a class="jxr_linenumber" name="250" href="#250">250</a> <em class="jxr_javadoccomment">		 * identifiable</em>
+<a class="jxr_linenumber" name="251" href="#251">251</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="252" href="#252">252</a> 		<strong class="jxr_keyword">public</strong> VideoTimecode endTimestamp;
+<a class="jxr_linenumber" name="253" href="#253">253</a> 
+<a class="jxr_linenumber" name="254" href="#254">254</a> 		<em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> This identifiable */</em>
+<a class="jxr_linenumber" name="255" href="#255">255</a> 		<strong class="jxr_keyword">public</strong> Identifiable id;
+<a class="jxr_linenumber" name="256" href="#256">256</a> 
+<a class="jxr_linenumber" name="257" href="#257">257</a> 		<em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> Tags associated with this identifiable */</em>
+<a class="jxr_linenumber" name="258" href="#258">258</a> 		<strong class="jxr_keyword">public</strong> List&lt;String&gt; tags;
+<a class="jxr_linenumber" name="259" href="#259">259</a> 
+<a class="jxr_linenumber" name="260" href="#260">260</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="261" href="#261">261</a> <em class="jxr_javadoccomment">		 * {@inheritDoc}</em>
+<a class="jxr_linenumber" name="262" href="#262">262</a> <em class="jxr_javadoccomment">		 * </em>
+<a class="jxr_linenumber" name="263" href="#263">263</a> <em class="jxr_javadoccomment">		 * @see org.openimaj.data.identity.Identifiable#getID()</em>
+<a class="jxr_linenumber" name="264" href="#264">264</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="265" href="#265">265</a> 		@Override
+<a class="jxr_linenumber" name="266" href="#266">266</a> 		<strong class="jxr_keyword">public</strong> String getID()
+<a class="jxr_linenumber" name="267" href="#267">267</a> 		{
+<a class="jxr_linenumber" name="268" href="#268">268</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.id.getID();
+<a class="jxr_linenumber" name="269" href="#269">269</a> 		}
+<a class="jxr_linenumber" name="270" href="#270">270</a> 
+<a class="jxr_linenumber" name="271" href="#271">271</a> 		@Override
+<a class="jxr_linenumber" name="272" href="#272">272</a> 		<strong class="jxr_keyword">public</strong> String toString()
+<a class="jxr_linenumber" name="273" href="#273">273</a> 		{
+<a class="jxr_linenumber" name="274" href="#274">274</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.id + <span class="jxr_string">"@"</span> + <strong class="jxr_keyword">this</strong>.startTimestamp + <span class="jxr_string">"&gt;"</span> + <strong class="jxr_keyword">this</strong>.endTimestamp + <span class="jxr_string">":"</span> + <strong class="jxr_keyword">this</strong>.tags;
+<a class="jxr_linenumber" name="275" href="#275">275</a> 		}
+<a class="jxr_linenumber" name="276" href="#276">276</a> 	}
+<a class="jxr_linenumber" name="277" href="#277">277</a> 
+<a class="jxr_linenumber" name="278" href="#278">278</a> 	<em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> The display */</em>
+<a class="jxr_linenumber" name="279" href="#279">279</a> 	<strong class="jxr_keyword">private</strong> VideoPlayer&lt;MBFImage&gt; display = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="280" href="#280">280</a> 
+<a class="jxr_linenumber" name="281" href="#281">281</a> 	<em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> List of all the events */</em>
+<a class="jxr_linenumber" name="282" href="#282">282</a> 	<strong class="jxr_keyword">private</strong> ListBackedDataset&lt;AnnotatedIdentifiable&gt; dataset = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="283" href="#283">283</a> 
+<a class="jxr_linenumber" name="284" href="#284">284</a> 	<em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> The video */</em>
+<a class="jxr_linenumber" name="285" href="#285">285</a> 	<strong class="jxr_keyword">private</strong> Video&lt;MBFImage&gt; video = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="286" href="#286">286</a> 
+<a class="jxr_linenumber" name="287" href="#287">287</a> 	<em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> The state provider */</em>
+<a class="jxr_linenumber" name="288" href="#288">288</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">StateProvider</a> stateProvider;
+<a class="jxr_linenumber" name="289" href="#289">289</a> 
+<a class="jxr_linenumber" name="290" href="#290">290</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="291" href="#291">291</a> <em class="jxr_javadoccomment">	 * Constructor that provides an identifier producer that returns the current</em>
+<a class="jxr_linenumber" name="292" href="#292">292</a> <em class="jxr_javadoccomment">	 * frame of the video.</em>
+<a class="jxr_linenumber" name="293" href="#293">293</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="294" href="#294">294</a> <em class="jxr_javadoccomment">	 * @param video</em>
+<a class="jxr_linenumber" name="295" href="#295">295</a> <em class="jxr_javadoccomment">	 *            The video to ground truth</em>
+<a class="jxr_linenumber" name="296" href="#296">296</a> <em class="jxr_javadoccomment">	 * @param sp</em>
+<a class="jxr_linenumber" name="297" href="#297">297</a> <em class="jxr_javadoccomment">	 *            The state provider</em>
+<a class="jxr_linenumber" name="298" href="#298">298</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="299" href="#299">299</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">VideoGroundTruth</a>(<strong class="jxr_keyword">final</strong> Video&lt;MBFImage&gt; video, <strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">StateProvider</a> sp)
+<a class="jxr_linenumber" name="300" href="#300">300</a> 	{
+<a class="jxr_linenumber" name="301" href="#301">301</a> 		<strong class="jxr_keyword">this</strong>(video, <strong class="jxr_keyword">null</strong>, sp);
+<a class="jxr_linenumber" name="302" href="#302">302</a> 	}
+<a class="jxr_linenumber" name="303" href="#303">303</a> 
+<a class="jxr_linenumber" name="304" href="#304">304</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="305" href="#305">305</a> <em class="jxr_javadoccomment">	 * Constructor that provides an identifier producer that returns the current</em>
+<a class="jxr_linenumber" name="306" href="#306">306</a> <em class="jxr_javadoccomment">	 * frame of the video; that is the state provider tags frames of video</em>
+<a class="jxr_linenumber" name="307" href="#307">307</a> <em class="jxr_javadoccomment">	 * rather than objects within frames of video.</em>
+<a class="jxr_linenumber" name="308" href="#308">308</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="309" href="#309">309</a> <em class="jxr_javadoccomment">	 * @param video</em>
+<a class="jxr_linenumber" name="310" href="#310">310</a> <em class="jxr_javadoccomment">	 *            The video to ground truth</em>
+<a class="jxr_linenumber" name="311" href="#311">311</a> <em class="jxr_javadoccomment">	 * @param audio</em>
+<a class="jxr_linenumber" name="312" href="#312">312</a> <em class="jxr_javadoccomment">	 *            The audio to play</em>
+<a class="jxr_linenumber" name="313" href="#313">313</a> <em class="jxr_javadoccomment">	 * @param sp</em>
+<a class="jxr_linenumber" name="314" href="#314">314</a> <em class="jxr_javadoccomment">	 *            The state provider</em>
+<a class="jxr_linenumber" name="315" href="#315">315</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="316" href="#316">316</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">VideoGroundTruth</a>(<strong class="jxr_keyword">final</strong> Video&lt;MBFImage&gt; video, <strong class="jxr_keyword">final</strong> AudioStream audio,
+<a class="jxr_linenumber" name="317" href="#317">317</a> 			<strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">StateProvider</a> sp)
+<a class="jxr_linenumber" name="318" href="#318">318</a> 	{
+<a class="jxr_linenumber" name="319" href="#319">319</a> 		<em class="jxr_comment">// If no IdentifierProducer is given, we'll use one that</em>
+<a class="jxr_linenumber" name="320" href="#320">320</a> 		<em class="jxr_comment">// simply returns a SMTPE-like video timecode.</em>
+<a class="jxr_linenumber" name="321" href="#321">321</a> 		<strong class="jxr_keyword">this</strong>(video, audio, <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">IdentifierProducer</a>()
+<a class="jxr_linenumber" name="322" href="#322">322</a> 		{
+<a class="jxr_linenumber" name="323" href="#323">323</a> 			@Override
+<a class="jxr_linenumber" name="324" href="#324">324</a> 			<strong class="jxr_keyword">public</strong> List&lt;Identifiable&gt; getIdentifiers()
+<a class="jxr_linenumber" name="325" href="#325">325</a> 			{
+<a class="jxr_linenumber" name="326" href="#326">326</a> 				<strong class="jxr_keyword">final</strong> List&lt;Identifiable&gt; r =
+<a class="jxr_linenumber" name="327" href="#327">327</a> 						<strong class="jxr_keyword">new</strong> ArrayList&lt;Identifiable&gt;();
+<a class="jxr_linenumber" name="328" href="#328">328</a> 				r.add(<strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">IdentifiableVideoFrame</a>(video.getCurrentFrame(),
+<a class="jxr_linenumber" name="329" href="#329">329</a> 						<strong class="jxr_keyword">new</strong> HrsMinSecFrameTimecode(video.getCurrentFrameIndex(),
+<a class="jxr_linenumber" name="330" href="#330">330</a> 								video.getFPS())));
+<a class="jxr_linenumber" name="331" href="#331">331</a> 				<strong class="jxr_keyword">return</strong> r;
+<a class="jxr_linenumber" name="332" href="#332">332</a> 			}
+<a class="jxr_linenumber" name="333" href="#333">333</a> 		}, sp);
+<a class="jxr_linenumber" name="334" href="#334">334</a> 	}
+<a class="jxr_linenumber" name="335" href="#335">335</a> 
+<a class="jxr_linenumber" name="336" href="#336">336</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="337" href="#337">337</a> <em class="jxr_javadoccomment">	 * Constructor</em>
+<a class="jxr_linenumber" name="338" href="#338">338</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="339" href="#339">339</a> <em class="jxr_javadoccomment">	 * @param video</em>
+<a class="jxr_linenumber" name="340" href="#340">340</a> <em class="jxr_javadoccomment">	 *            The video to ground truth</em>
+<a class="jxr_linenumber" name="341" href="#341">341</a> <em class="jxr_javadoccomment">	 * @param audio</em>
+<a class="jxr_linenumber" name="342" href="#342">342</a> <em class="jxr_javadoccomment">	 *            The audio to play</em>
+<a class="jxr_linenumber" name="343" href="#343">343</a> <em class="jxr_javadoccomment">	 * @param idProd</em>
+<a class="jxr_linenumber" name="344" href="#344">344</a> <em class="jxr_javadoccomment">	 *            The identifier producer</em>
+<a class="jxr_linenumber" name="345" href="#345">345</a> <em class="jxr_javadoccomment">	 * @param sp</em>
+<a class="jxr_linenumber" name="346" href="#346">346</a> <em class="jxr_javadoccomment">	 *            The state provider</em>
+<a class="jxr_linenumber" name="347" href="#347">347</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="348" href="#348">348</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">VideoGroundTruth</a>(<strong class="jxr_keyword">final</strong> Video&lt;MBFImage&gt; video, <strong class="jxr_keyword">final</strong> AudioStream audio,
+<a class="jxr_linenumber" name="349" href="#349">349</a> 			<strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">IdentifierProducer</a> idProd, <strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">StateProvider</a> sp)
+<a class="jxr_linenumber" name="350" href="#350">350</a> 	{
+<a class="jxr_linenumber" name="351" href="#351">351</a> 		<strong class="jxr_keyword">this</strong>.video = video;
+<a class="jxr_linenumber" name="352" href="#352">352</a> 		<strong class="jxr_keyword">this</strong>.stateProvider = sp;
+<a class="jxr_linenumber" name="353" href="#353">353</a> 
+<a class="jxr_linenumber" name="354" href="#354">354</a> 		<em class="jxr_comment">// Create a video player (with navigation controls)</em>
+<a class="jxr_linenumber" name="355" href="#355">355</a> 		<strong class="jxr_keyword">this</strong>.display = VideoPlayer.createVideoPlayer(video, audio);
+<a class="jxr_linenumber" name="356" href="#356">356</a> 		<strong class="jxr_keyword">this</strong>.display.setEndAction(EndAction.STOP_AT_END);
+<a class="jxr_linenumber" name="357" href="#357">357</a> 		<strong class="jxr_keyword">this</strong>.display.showFrame();
+<a class="jxr_linenumber" name="358" href="#358">358</a> 
+<a class="jxr_linenumber" name="359" href="#359">359</a> 		<strong class="jxr_keyword">this</strong>.dataset = <strong class="jxr_keyword">new</strong> ListBackedDataset&lt;VideoGroundTruth.AnnotatedIdentifiable&gt;();
+<a class="jxr_linenumber" name="360" href="#360">360</a> 	}
+<a class="jxr_linenumber" name="361" href="#361">361</a> 
+<a class="jxr_linenumber" name="362" href="#362">362</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="363" href="#363">363</a> <em class="jxr_javadoccomment">	 * Start the process.</em>
+<a class="jxr_linenumber" name="364" href="#364">364</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="365" href="#365">365</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run()
+<a class="jxr_linenumber" name="366" href="#366">366</a> 	{
+<a class="jxr_linenumber" name="367" href="#367">367</a> 		<strong class="jxr_keyword">this</strong>.display.run();
+<a class="jxr_linenumber" name="368" href="#368">368</a> 	}
+<a class="jxr_linenumber" name="369" href="#369">369</a> 
+<a class="jxr_linenumber" name="370" href="#370">370</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="371" href="#371">371</a> <em class="jxr_javadoccomment">	 * Returns the video player component being used to play the video.</em>
+<a class="jxr_linenumber" name="372" href="#372">372</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="373" href="#373">373</a> <em class="jxr_javadoccomment">	 * @return the video player component.</em>
+<a class="jxr_linenumber" name="374" href="#374">374</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="375" href="#375">375</a> 	<strong class="jxr_keyword">public</strong> VideoPlayer&lt;MBFImage&gt; getVideoPlayer()
+<a class="jxr_linenumber" name="376" href="#376">376</a> 	{
+<a class="jxr_linenumber" name="377" href="#377">377</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.display;
+<a class="jxr_linenumber" name="378" href="#378">378</a> 	}
+<a class="jxr_linenumber" name="379" href="#379">379</a> 
+<a class="jxr_linenumber" name="380" href="#380">380</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="381" href="#381">381</a> <em class="jxr_javadoccomment">	 * Force the given identifiable to be updated in the dataset for the current</em>
+<a class="jxr_linenumber" name="382" href="#382">382</a> <em class="jxr_javadoccomment">	 * time.</em>
+<a class="jxr_linenumber" name="383" href="#383">383</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="384" href="#384">384</a> <em class="jxr_javadoccomment">	 * @param i</em>
+<a class="jxr_linenumber" name="385" href="#385">385</a> <em class="jxr_javadoccomment">	 *            The identifiable</em>
+<a class="jxr_linenumber" name="386" href="#386">386</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="387" href="#387">387</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> updateIdentifiable(<strong class="jxr_keyword">final</strong> Identifiable i)
+<a class="jxr_linenumber" name="388" href="#388">388</a> 	{
+<a class="jxr_linenumber" name="389" href="#389">389</a> 		<strong class="jxr_keyword">final</strong> List&lt;String&gt; tags = <strong class="jxr_keyword">this</strong>.stateProvider.getCurrentState(i);
+<a class="jxr_linenumber" name="390" href="#390">390</a> 
+<a class="jxr_linenumber" name="391" href="#391">391</a> 		<strong class="jxr_keyword">if</strong> (tags == <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="392" href="#392">392</a> 			<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="393" href="#393">393</a> 
+<a class="jxr_linenumber" name="394" href="#394">394</a> 		<strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">AnnotatedIdentifiable</a> ai = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">AnnotatedIdentifiable</a>();
+<a class="jxr_linenumber" name="395" href="#395">395</a> 		ai.id = i;
+<a class="jxr_linenumber" name="396" href="#396">396</a> 		ai.startTimestamp = <strong class="jxr_keyword">new</strong> HrsMinSecFrameTimecode(
+<a class="jxr_linenumber" name="397" href="#397">397</a> 				<strong class="jxr_keyword">this</strong>.video.getCurrentFrameIndex(), <strong class="jxr_keyword">this</strong>.video.getFPS());
+<a class="jxr_linenumber" name="398" href="#398">398</a> 		ai.tags = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;(tags);
+<a class="jxr_linenumber" name="399" href="#399">399</a> 
+<a class="jxr_linenumber" name="400" href="#400">400</a> 		<strong class="jxr_keyword">this</strong>.addToDataset(ai);
+<a class="jxr_linenumber" name="401" href="#401">401</a> 	}
+<a class="jxr_linenumber" name="402" href="#402">402</a> 
+<a class="jxr_linenumber" name="403" href="#403">403</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="404" href="#404">404</a> <em class="jxr_javadoccomment">	 * Add an identifiable time region that will be annotated with the current</em>
+<a class="jxr_linenumber" name="405" href="#405">405</a> <em class="jxr_javadoccomment">	 * state.</em>
+<a class="jxr_linenumber" name="406" href="#406">406</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="407" href="#407">407</a> <em class="jxr_javadoccomment">	 * @param i</em>
+<a class="jxr_linenumber" name="408" href="#408">408</a> <em class="jxr_javadoccomment">	 *            The identifiable</em>
+<a class="jxr_linenumber" name="409" href="#409">409</a> <em class="jxr_javadoccomment">	 * @param start</em>
+<a class="jxr_linenumber" name="410" href="#410">410</a> <em class="jxr_javadoccomment">	 *            The start timestamp</em>
+<a class="jxr_linenumber" name="411" href="#411">411</a> <em class="jxr_javadoccomment">	 * @param end</em>
+<a class="jxr_linenumber" name="412" href="#412">412</a> <em class="jxr_javadoccomment">	 *            The end timestamp</em>
+<a class="jxr_linenumber" name="413" href="#413">413</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="414" href="#414">414</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> updateIdentifiableRegion(<strong class="jxr_keyword">final</strong> Identifiable i,
+<a class="jxr_linenumber" name="415" href="#415">415</a> 			<strong class="jxr_keyword">final</strong> VideoTimecode start, <strong class="jxr_keyword">final</strong> VideoTimecode end)
+<a class="jxr_linenumber" name="416" href="#416">416</a> 	{
+<a class="jxr_linenumber" name="417" href="#417">417</a> 		<strong class="jxr_keyword">final</strong> List&lt;String&gt; tags = <strong class="jxr_keyword">this</strong>.stateProvider.getCurrentState(i);
+<a class="jxr_linenumber" name="418" href="#418">418</a> 
+<a class="jxr_linenumber" name="419" href="#419">419</a> 		<strong class="jxr_keyword">if</strong> (tags == <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="420" href="#420">420</a> 			<strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="421" href="#421">421</a> 
+<a class="jxr_linenumber" name="422" href="#422">422</a> 		<strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">AnnotatedIdentifiable</a> ai = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">AnnotatedIdentifiable</a>();
+<a class="jxr_linenumber" name="423" href="#423">423</a> 		ai.id = i;
+<a class="jxr_linenumber" name="424" href="#424">424</a> 		ai.startTimestamp = start;
+<a class="jxr_linenumber" name="425" href="#425">425</a> 		ai.endTimestamp = end;
+<a class="jxr_linenumber" name="426" href="#426">426</a> 		ai.tags = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;(tags);
+<a class="jxr_linenumber" name="427" href="#427">427</a> 
+<a class="jxr_linenumber" name="428" href="#428">428</a> 		<strong class="jxr_keyword">this</strong>.addToDataset(ai);
+<a class="jxr_linenumber" name="429" href="#429">429</a> 	}
+<a class="jxr_linenumber" name="430" href="#430">430</a> 
+<a class="jxr_linenumber" name="431" href="#431">431</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="432" href="#432">432</a> <em class="jxr_javadoccomment">	 * Add the given annotated identifiable to the dataset</em>
+<a class="jxr_linenumber" name="433" href="#433">433</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="434" href="#434">434</a> <em class="jxr_javadoccomment">	 * @param ai</em>
+<a class="jxr_linenumber" name="435" href="#435">435</a> <em class="jxr_javadoccomment">	 *            The annotated identifiable</em>
+<a class="jxr_linenumber" name="436" href="#436">436</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="437" href="#437">437</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addToDataset(<strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">AnnotatedIdentifiable</a> ai)
+<a class="jxr_linenumber" name="438" href="#438">438</a> 	{
+<a class="jxr_linenumber" name="439" href="#439">439</a> 		<strong class="jxr_keyword">this</strong>.dataset.add(ai);
+<a class="jxr_linenumber" name="440" href="#440">440</a> 		System.out.println(<strong class="jxr_keyword">this</strong>.dataset);
+<a class="jxr_linenumber" name="441" href="#441">441</a> 	}
+<a class="jxr_linenumber" name="442" href="#442">442</a> 
+<a class="jxr_linenumber" name="443" href="#443">443</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="444" href="#444">444</a> <em class="jxr_javadoccomment">	 * Writes the created dataset to the given file</em>
+<a class="jxr_linenumber" name="445" href="#445">445</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="446" href="#446">446</a> <em class="jxr_javadoccomment">	 * @param file</em>
+<a class="jxr_linenumber" name="447" href="#447">447</a> <em class="jxr_javadoccomment">	 *            The file to write the dataset to.</em>
+<a class="jxr_linenumber" name="448" href="#448">448</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="449" href="#449">449</a> <em class="jxr_javadoccomment">	 *             If the file could not be written</em>
+<a class="jxr_linenumber" name="450" href="#450">450</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="451" href="#451">451</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeDataset(<strong class="jxr_keyword">final</strong> File file) <strong class="jxr_keyword">throws</strong> IOException
+<a class="jxr_linenumber" name="452" href="#452">452</a> 	{
+<a class="jxr_linenumber" name="453" href="#453">453</a> 		<em class="jxr_comment">// Check if the file already exists</em>
+<a class="jxr_linenumber" name="454" href="#454">454</a> 		<strong class="jxr_keyword">if</strong> (file.exists())
+<a class="jxr_linenumber" name="455" href="#455">455</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> FileExistsException(file);
+<a class="jxr_linenumber" name="456" href="#456">456</a> 
+<a class="jxr_linenumber" name="457" href="#457">457</a> 		<em class="jxr_comment">// Ensure that the directory exists for the file</em>
+<a class="jxr_linenumber" name="458" href="#458">458</a> 		<strong class="jxr_keyword">if</strong> (!file.getParentFile().mkdirs())
+<a class="jxr_linenumber" name="459" href="#459">459</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Cannot create directory "</span> + file.getParent());
+<a class="jxr_linenumber" name="460" href="#460">460</a> 
+<a class="jxr_linenumber" name="461" href="#461">461</a> 		<em class="jxr_comment">// Write all the annotated identifiers</em>
+<a class="jxr_linenumber" name="462" href="#462">462</a> 		<strong class="jxr_keyword">final</strong> FileWriter fw = <strong class="jxr_keyword">new</strong> FileWriter(file);
+<a class="jxr_linenumber" name="463" href="#463">463</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> AnnotatedIdentifiable ai : <strong class="jxr_keyword">this</strong>.dataset)
+<a class="jxr_linenumber" name="464" href="#464">464</a> 			fw.append(ai.toString() + <span class="jxr_string">"\n"</span>);
+<a class="jxr_linenumber" name="465" href="#465">465</a> 		fw.close();
+<a class="jxr_linenumber" name="466" href="#466">466</a> 	}
+<a class="jxr_linenumber" name="467" href="#467">467</a> 
+<a class="jxr_linenumber" name="468" href="#468">468</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="469" href="#469">469</a> <em class="jxr_javadoccomment">	 * Loads a dataset created using {@link #writeDataset(File)} into this</em>
+<a class="jxr_linenumber" name="470" href="#470">470</a> <em class="jxr_javadoccomment">	 * class's dataset member so that annotation can be continued. Note that the</em>
+<a class="jxr_linenumber" name="471" href="#471">471</a> <em class="jxr_javadoccomment">	 * identifiables that are created when reading back in are anonymous</em>
+<a class="jxr_linenumber" name="472" href="#472">472</a> <em class="jxr_javadoccomment">	 * identifiable classes and are not necessarily of the same type as the</em>
+<a class="jxr_linenumber" name="473" href="#473">473</a> <em class="jxr_javadoccomment">	 * identifiable which was saved. It will only include the identifier of the</em>
+<a class="jxr_linenumber" name="474" href="#474">474</a> <em class="jxr_javadoccomment">	 * object retrievable with {@link Identifiable#getID()}.</em>
+<a class="jxr_linenumber" name="475" href="#475">475</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="476" href="#476">476</a> <em class="jxr_javadoccomment">	 * @param file</em>
+<a class="jxr_linenumber" name="477" href="#477">477</a> <em class="jxr_javadoccomment">	 *            The file to read from</em>
+<a class="jxr_linenumber" name="478" href="#478">478</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="479" href="#479">479</a> <em class="jxr_javadoccomment">	 *             If the file cannot be read</em>
+<a class="jxr_linenumber" name="480" href="#480">480</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="481" href="#481">481</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> loadDataset(<strong class="jxr_keyword">final</strong> File file) <strong class="jxr_keyword">throws</strong> IOException
+<a class="jxr_linenumber" name="482" href="#482">482</a> 	{
+<a class="jxr_linenumber" name="483" href="#483">483</a> 		<strong class="jxr_keyword">if</strong> (!file.exists())
+<a class="jxr_linenumber" name="484" href="#484">484</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> FileNotFoundException(file.getName());
+<a class="jxr_linenumber" name="485" href="#485">485</a> 
+<a class="jxr_linenumber" name="486" href="#486">486</a> 		<em class="jxr_comment">// Read the file, line-by-line</em>
+<a class="jxr_linenumber" name="487" href="#487">487</a> 		<strong class="jxr_keyword">final</strong> Scanner scanner = <strong class="jxr_keyword">new</strong> Scanner(file);
+<a class="jxr_linenumber" name="488" href="#488">488</a> 		scanner.useDelimiter(<span class="jxr_string">"\n"</span>);
+<a class="jxr_linenumber" name="489" href="#489">489</a> 
+<a class="jxr_linenumber" name="490" href="#490">490</a> 		<em class="jxr_comment">// Match each line against this pattern. This is the pattern</em>
+<a class="jxr_linenumber" name="491" href="#491">491</a> 		<em class="jxr_comment">// that will match the AnnotatedIdentifiable#toString() method's output</em>
+<a class="jxr_linenumber" name="492" href="#492">492</a> 		<strong class="jxr_keyword">final</strong> Pattern p = Pattern.compile(<span class="jxr_string">"(.*)@(.*)&gt;(.*):&#92;&#92;[(.*)&#92;&#92;]"</span>);
+<a class="jxr_linenumber" name="493" href="#493">493</a> 
+<a class="jxr_linenumber" name="494" href="#494">494</a> 		<em class="jxr_comment">// Read the file</em>
+<a class="jxr_linenumber" name="495" href="#495">495</a> 		<strong class="jxr_keyword">while</strong> (scanner.hasNext())
+<a class="jxr_linenumber" name="496" href="#496">496</a> 		{
+<a class="jxr_linenumber" name="497" href="#497">497</a> 			<strong class="jxr_keyword">final</strong> String line = scanner.next();
+<a class="jxr_linenumber" name="498" href="#498">498</a> 
+<a class="jxr_linenumber" name="499" href="#499">499</a> 			<em class="jxr_comment">// Match the line against the pattern</em>
+<a class="jxr_linenumber" name="500" href="#500">500</a> 			<strong class="jxr_keyword">final</strong> Matcher m = p.matcher(line);
+<a class="jxr_linenumber" name="501" href="#501">501</a> 			<strong class="jxr_keyword">if</strong> (m.find())
+<a class="jxr_linenumber" name="502" href="#502">502</a> 			{
+<a class="jxr_linenumber" name="503" href="#503">503</a> 				<em class="jxr_comment">// Get the parts of the line</em>
+<a class="jxr_linenumber" name="504" href="#504">504</a> 				<strong class="jxr_keyword">final</strong> String id = m.group(0);
+<a class="jxr_linenumber" name="505" href="#505">505</a> 				<strong class="jxr_keyword">final</strong> String start = m.group(1);
+<a class="jxr_linenumber" name="506" href="#506">506</a> 				<strong class="jxr_keyword">final</strong> String end = m.group(2);
+<a class="jxr_linenumber" name="507" href="#507">507</a> 				<strong class="jxr_keyword">final</strong> String[] tags = m.group(3).split(<span class="jxr_string">","</span>);
+<a class="jxr_linenumber" name="508" href="#508">508</a> 
+<a class="jxr_linenumber" name="509" href="#509">509</a> 				<em class="jxr_comment">// Create a new annotated identifiable object</em>
+<a class="jxr_linenumber" name="510" href="#510">510</a> 				<strong class="jxr_keyword">final</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">AnnotatedIdentifiable</a> ai = <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/openimaj/demos/sandbox/video/gt/VideoGroundTruth.html">AnnotatedIdentifiable</a>();
+<a class="jxr_linenumber" name="511" href="#511">511</a> 				ai.id = <strong class="jxr_keyword">new</strong> Identifiable() {
+<a class="jxr_linenumber" name="512" href="#512">512</a> 					@Override
+<a class="jxr_linenumber" name="513" href="#513">513</a> 					<strong class="jxr_keyword">public</strong> String getID() {
+<a class="jxr_linenumber" name="514" href="#514">514</a> 						<strong class="jxr_keyword">return</strong> id;
+<a class="jxr_linenumber" name="515" href="#515">515</a> 					}
+<a class="jxr_linenumber" name="516" href="#516">516</a> 				};
+<a class="jxr_linenumber" name="517" href="#517">517</a> 				ai.tags = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;(Arrays.asList(tags));
+<a class="jxr_linenumber" name="518" href="#518">518</a> 				ai.startTimestamp = HrsMinSecFrameTimecode.fromString(start);
+<a class="jxr_linenumber" name="519" href="#519">519</a> 				ai.endTimestamp = HrsMinSecFrameTimecode.fromString(end);
+<a class="jxr_linenumber" name="520" href="#520">520</a> 
+<a class="jxr_linenumber" name="521" href="#521">521</a> 				<em class="jxr_comment">// Add the annotated object to the dataset</em>
+<a class="jxr_linenumber" name="522" href="#522">522</a> 				<strong class="jxr_keyword">this</strong>.dataset.add(ai);
+<a class="jxr_linenumber" name="523" href="#523">523</a> 			}
+<a class="jxr_linenumber" name="524" href="#524">524</a> 		}
+<a class="jxr_linenumber" name="525" href="#525">525</a> 	}
+<a class="jxr_linenumber" name="526" href="#526">526</a> }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>

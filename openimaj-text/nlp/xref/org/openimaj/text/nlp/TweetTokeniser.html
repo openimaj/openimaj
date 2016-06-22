@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>TweetTokeniser xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../apidocs/org/openimaj/text/nlp/TweetTokeniser.html">View Javadoc</a></div><pre>
+
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_javadoccomment"> * Copyright (c) 2011, The University of Southampton and the individual contributors.</em>
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_javadoccomment"> * All rights reserved.</em>
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_javadoccomment"> * Redistribution and use in source and binary forms, with or without modification,</em>
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <em class="jxr_javadoccomment"> * are permitted provided that the following conditions are met:</em>
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <em class="jxr_javadoccomment"> *   * 	Redistributions of source code must retain the above copyright notice,</em>
+<a class="jxr_linenumber" name="9" href="#9">9</a>   <em class="jxr_javadoccomment"> * 	this list of conditions and the following disclaimer.</em>
+<a class="jxr_linenumber" name="10" href="#10">10</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="11" href="#11">11</a>  <em class="jxr_javadoccomment"> *   *	Redistributions in binary form must reproduce the above copyright notice,</em>
+<a class="jxr_linenumber" name="12" href="#12">12</a>  <em class="jxr_javadoccomment"> * 	this list of conditions and the following disclaimer in the documentation</em>
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <em class="jxr_javadoccomment"> * 	and/or other materials provided with the distribution.</em>
+<a class="jxr_linenumber" name="14" href="#14">14</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="15" href="#15">15</a>  <em class="jxr_javadoccomment"> *   *	Neither the name of the University of Southampton nor the names of its</em>
+<a class="jxr_linenumber" name="16" href="#16">16</a>  <em class="jxr_javadoccomment"> * 	contributors may be used to endorse or promote products derived from this</em>
+<a class="jxr_linenumber" name="17" href="#17">17</a>  <em class="jxr_javadoccomment"> * 	software without specific prior written permission.</em>
+<a class="jxr_linenumber" name="18" href="#18">18</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="19" href="#19">19</a>  <em class="jxr_javadoccomment"> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND</em>
+<a class="jxr_linenumber" name="20" href="#20">20</a>  <em class="jxr_javadoccomment"> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</em>
+<a class="jxr_linenumber" name="21" href="#21">21</a>  <em class="jxr_javadoccomment"> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</em>
+<a class="jxr_linenumber" name="22" href="#22">22</a>  <em class="jxr_javadoccomment"> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR</em>
+<a class="jxr_linenumber" name="23" href="#23">23</a>  <em class="jxr_javadoccomment"> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</em>
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <em class="jxr_javadoccomment"> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</em>
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <em class="jxr_javadoccomment"> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</em>
+<a class="jxr_linenumber" name="26" href="#26">26</a>  <em class="jxr_javadoccomment"> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</em>
+<a class="jxr_linenumber" name="27" href="#27">27</a>  <em class="jxr_javadoccomment"> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</em>
+<a class="jxr_linenumber" name="28" href="#28">28</a>  <em class="jxr_javadoccomment"> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</em>
+<a class="jxr_linenumber" name="29" href="#29">29</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="30" href="#30">30</a>  <strong class="jxr_keyword">package</strong> org.openimaj.text.nlp;
+<a class="jxr_linenumber" name="31" href="#31">31</a>  
+<a class="jxr_linenumber" name="32" href="#32">32</a>  <strong class="jxr_keyword">import</strong> gov.sandia.cognition.text.token.DefaultToken;
+<a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">import</strong> gov.sandia.cognition.text.token.Token;
+<a class="jxr_linenumber" name="34" href="#34">34</a>  
+<a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> java.io.UnsupportedEncodingException;
+<a class="jxr_linenumber" name="36" href="#36">36</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> java.util.Iterator;
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> java.util.Locale;
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> java.util.regex.Matcher;
+<a class="jxr_linenumber" name="41" href="#41">41</a>  <strong class="jxr_keyword">import</strong> java.util.regex.Pattern;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang.StringEscapeUtils;
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.AbbreviationPatternProvider;
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.ComplicatedNumberPatternProvider;
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.EmailPatternProvider;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.EmbeddedApostrophePatternProvider;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.EmbeddedDashPatternProvider;
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.EmoticonPatternProvider;
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.EntityPatternProvider;
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.PunctuationPatternProvider;
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.TimePatternProvider;
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.TruncatedURLPatternProvider;
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.TwitterStuffPatternProvider;
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.nlp.patterns.URLPatternProvider;
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <strong class="jxr_keyword">import</strong> org.openimaj.text.util.RegexUtil;
+<a class="jxr_linenumber" name="57" href="#57">57</a>  
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment"> * A tokeniser built to work with short text, like that found in twitter.</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment"> * Protects various elements of the text with an assumption that if the user</em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment"> * made the mark, it was an important mark that carries meaning because of the</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment"> * relatively high premium of each key stroke.</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment"> * Based on the twokenise by Brendan O'Connor</em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment"> * @author Sina Samangooei (ss@ecs.soton.ac.uk)</em>
+<a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="69" href="#69">69</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/openimaj/text/nlp/TweetTokeniser.html">TweetTokeniser</a> <strong class="jxr_keyword">implements</strong> Iterable&lt;Token&gt; {
+<a class="jxr_linenumber" name="70" href="#70">70</a>  
+<a class="jxr_linenumber" name="71" href="#71">71</a>  	<strong class="jxr_keyword">private</strong> String text;
+<a class="jxr_linenumber" name="72" href="#72">72</a>  	<strong class="jxr_keyword">private</strong> ArrayList&lt;Token&gt; tokenize;
+<a class="jxr_linenumber" name="73" href="#73">73</a>  	<strong class="jxr_keyword">private</strong> ArrayList&lt;Token&gt; protectedTokens;
+<a class="jxr_linenumber" name="74" href="#74">74</a>  	<strong class="jxr_keyword">private</strong> ArrayList&lt;Token&gt; unprotectedTokens;
+<a class="jxr_linenumber" name="75" href="#75">75</a>  
+<a class="jxr_linenumber" name="76" href="#76">76</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> Locale[] invalidLanguages = <strong class="jxr_keyword">new</strong> Locale[] { <strong class="jxr_keyword">new</strong> Locale(<span class="jxr_string">"zh"</span>), <strong class="jxr_keyword">new</strong> Locale(<span class="jxr_string">"ko"</span>), <strong class="jxr_keyword">new</strong> Locale(<span class="jxr_string">"jp"</span>), };
+<a class="jxr_linenumber" name="77" href="#77">77</a>  
+<a class="jxr_linenumber" name="78" href="#78">78</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="79" href="#79">79</a>  <em class="jxr_javadoccomment">	 * Check whether this locale is supported by this tokeniser. The unsupported</em>
+<a class="jxr_linenumber" name="80" href="#80">80</a>  <em class="jxr_javadoccomment">	 * languages are those which don't need space characters to delimit words,</em>
+<a class="jxr_linenumber" name="81" href="#81">81</a>  <em class="jxr_javadoccomment">	 * namely the CJK languages.</em>
+<a class="jxr_linenumber" name="82" href="#82">82</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="83" href="#83">83</a>  <em class="jxr_javadoccomment">	 * @param locale</em>
+<a class="jxr_linenumber" name="84" href="#84">84</a>  <em class="jxr_javadoccomment">	 * @return true if the local is supported</em>
+<a class="jxr_linenumber" name="85" href="#85">85</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="86" href="#86">86</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isValid(Locale locale) {
+<a class="jxr_linenumber" name="87" href="#87">87</a>  		<strong class="jxr_keyword">return</strong> isValid(locale.getLanguage());
+<a class="jxr_linenumber" name="88" href="#88">88</a>  	}
+<a class="jxr_linenumber" name="89" href="#89">89</a>  
+<a class="jxr_linenumber" name="90" href="#90">90</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">	 * Check whether this locale (specified by the two letter country code,</em>
+<a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">	 * {@link Locale}) is supported by this tokeniser. The unsupported languages</em>
+<a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">	 * are those which don't need space characters to delimit words, namely the</em>
+<a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">	 * CJK languages.</em>
+<a class="jxr_linenumber" name="95" href="#95">95</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="96" href="#96">96</a>  <em class="jxr_javadoccomment">	 * @param locale</em>
+<a class="jxr_linenumber" name="97" href="#97">97</a>  <em class="jxr_javadoccomment">	 * @return true if the local is supported</em>
+<a class="jxr_linenumber" name="98" href="#98">98</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="99" href="#99">99</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isValid(String locale) {
+<a class="jxr_linenumber" name="100" href="#100">100</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Locale invalidLocal : invalidLanguages) {
+<a class="jxr_linenumber" name="101" href="#101">101</a> 			<strong class="jxr_keyword">if</strong> (invalidLocal.getLanguage().equals(locale))
+<a class="jxr_linenumber" name="102" href="#102">102</a> 				<strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="103" href="#103">103</a> 		}
+<a class="jxr_linenumber" name="104" href="#104">104</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="105" href="#105">105</a> 	}
+<a class="jxr_linenumber" name="106" href="#106">106</a> 
+<a class="jxr_linenumber" name="107" href="#107">107</a> 	<em class="jxr_comment">// public static String regex_or(String ... items )</em>
+<a class="jxr_linenumber" name="108" href="#108">108</a> 	<em class="jxr_comment">// {</em>
+<a class="jxr_linenumber" name="109" href="#109">109</a> 	<em class="jxr_comment">// String r = StringUtils.join(items, "|");</em>
+<a class="jxr_linenumber" name="110" href="#110">110</a> 	<em class="jxr_comment">// r = '(' + r + ')';</em>
+<a class="jxr_linenumber" name="111" href="#111">111</a> 	<em class="jxr_comment">// return r;</em>
+<a class="jxr_linenumber" name="112" href="#112">112</a> 	<em class="jxr_comment">// }</em>
+<a class="jxr_linenumber" name="113" href="#113">113</a> 	<em class="jxr_comment">// public String pos_lookahead(String r){</em>
+<a class="jxr_linenumber" name="114" href="#114">114</a> 	<em class="jxr_comment">// return "(?=" + r + ')';</em>
+<a class="jxr_linenumber" name="115" href="#115">115</a> 	<em class="jxr_comment">// }</em>
+<a class="jxr_linenumber" name="116" href="#116">116</a> 	<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="117" href="#117">117</a> 	<em class="jxr_comment">// public static String neg_lookahead(String r) {</em>
+<a class="jxr_linenumber" name="118" href="#118">118</a> 	<em class="jxr_comment">// return "(?!" + r + ')';</em>
+<a class="jxr_linenumber" name="119" href="#119">119</a> 	<em class="jxr_comment">// }</em>
+<a class="jxr_linenumber" name="120" href="#120">120</a> 	<em class="jxr_comment">// public String optional(String r){</em>
+<a class="jxr_linenumber" name="121" href="#121">121</a> 	<em class="jxr_comment">// return String.format("(%s)?",r);</em>
+<a class="jxr_linenumber" name="122" href="#122">122</a> 	<em class="jxr_comment">// }</em>
+<a class="jxr_linenumber" name="123" href="#123">123</a> 
+<a class="jxr_linenumber" name="124" href="#124">124</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EmoticonPatternProvider.html">EmoticonPatternProvider</a> emoticons = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EmoticonPatternProvider.html">EmoticonPatternProvider</a>();
+<a class="jxr_linenumber" name="125" href="#125">125</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/PunctuationPatternProvider.html">PunctuationPatternProvider</a> punctuation = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/PunctuationPatternProvider.html">PunctuationPatternProvider</a>();
+<a class="jxr_linenumber" name="126" href="#126">126</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EntityPatternProvider.html">EntityPatternProvider</a> entity = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EntityPatternProvider.html">EntityPatternProvider</a>();
+<a class="jxr_linenumber" name="127" href="#127">127</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/TruncatedURLPatternProvider.html">TruncatedURLPatternProvider</a> truncatedURL = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/TruncatedURLPatternProvider.html">TruncatedURLPatternProvider</a>();
+<a class="jxr_linenumber" name="128" href="#128">128</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/URLPatternProvider.html">URLPatternProvider</a> url = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/URLPatternProvider.html">URLPatternProvider</a>();
+<a class="jxr_linenumber" name="129" href="#129">129</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/TimePatternProvider.html">TimePatternProvider</a> time = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/TimePatternProvider.html">TimePatternProvider</a>();
+<a class="jxr_linenumber" name="130" href="#130">130</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/ComplicatedNumberPatternProvider.html">ComplicatedNumberPatternProvider</a> number = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/ComplicatedNumberPatternProvider.html">ComplicatedNumberPatternProvider</a>();
+<a class="jxr_linenumber" name="131" href="#131">131</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/TwitterStuffPatternProvider.html">TwitterStuffPatternProvider</a> twitterPart = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/TwitterStuffPatternProvider.html">TwitterStuffPatternProvider</a>();
+<a class="jxr_linenumber" name="132" href="#132">132</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EmailPatternProvider.html">EmailPatternProvider</a> email = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EmailPatternProvider.html">EmailPatternProvider</a>();
+<a class="jxr_linenumber" name="133" href="#133">133</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/AbbreviationPatternProvider.html">AbbreviationPatternProvider</a> abbrev = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/AbbreviationPatternProvider.html">AbbreviationPatternProvider</a>(entity);
+<a class="jxr_linenumber" name="134" href="#134">134</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String spaceRegex = <span class="jxr_string">"&#92;&#92;s+"</span>;
+<a class="jxr_linenumber" name="135" href="#135">135</a> 	<strong class="jxr_keyword">static</strong> String Separators = RegexUtil.regex_or_match(<span class="jxr_string">"--+"</span>, <span class="jxr_string">"\u2015"</span>);
+<a class="jxr_linenumber" name="136" href="#136">136</a> 	<strong class="jxr_keyword">static</strong> String Decorations = <strong class="jxr_keyword">new</strong> String(<span class="jxr_string">" [\u266b]+ "</span>).replace(<span class="jxr_string">" "</span>, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="137" href="#137">137</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EmbeddedApostrophePatternProvider.html">EmbeddedApostrophePatternProvider</a> embedded = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EmbeddedApostrophePatternProvider.html">EmbeddedApostrophePatternProvider</a>(punctuation);
+<a class="jxr_linenumber" name="138" href="#138">138</a> 	<strong class="jxr_keyword">static</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EmbeddedDashPatternProvider.html">EmbeddedDashPatternProvider</a> embeddedDash = <strong class="jxr_keyword">new</strong> <a href="../../../../org/openimaj/text/nlp/patterns/EmbeddedDashPatternProvider.html">EmbeddedDashPatternProvider</a>(punctuation);
+<a class="jxr_linenumber" name="139" href="#139">139</a> 
+<a class="jxr_linenumber" name="140" href="#140">140</a> 	<strong class="jxr_keyword">static</strong> String[] ProtectThese = <strong class="jxr_keyword">new</strong> String[] {
+<a class="jxr_linenumber" name="141" href="#141">141</a> 		twitterPart.patternString(),
+<a class="jxr_linenumber" name="142" href="#142">142</a> 		emoticons.patternString(),
+<a class="jxr_linenumber" name="143" href="#143">143</a> 		truncatedURL.patternString(),
+<a class="jxr_linenumber" name="144" href="#144">144</a> 		url.patternString(),
+<a class="jxr_linenumber" name="145" href="#145">145</a> 		email.patternString(),
+<a class="jxr_linenumber" name="146" href="#146">146</a> 		entity.patternString(),
+<a class="jxr_linenumber" name="147" href="#147">147</a> 		time.patternString(),
+<a class="jxr_linenumber" name="148" href="#148">148</a> 		number.patternString(),
+<a class="jxr_linenumber" name="149" href="#149">149</a> 		<em class="jxr_comment">// embeddedDash.patternString(),</em>
+<a class="jxr_linenumber" name="150" href="#150">150</a> 		embedded.patternString(),
+<a class="jxr_linenumber" name="151" href="#151">151</a> 		punctuation.patternString(),
+<a class="jxr_linenumber" name="152" href="#152">152</a> 		abbrev.patternString(),
+<a class="jxr_linenumber" name="153" href="#153">153</a> 		Separators,
+<a class="jxr_linenumber" name="154" href="#154">154</a> 		Decorations,
+<a class="jxr_linenumber" name="155" href="#155">155</a> 	};
+<a class="jxr_linenumber" name="156" href="#156">156</a> 
+<a class="jxr_linenumber" name="157" href="#157">157</a> 
+<a class="jxr_linenumber" name="158" href="#158">158</a> 
+<a class="jxr_linenumber" name="159" href="#159">159</a> 	<strong class="jxr_keyword">static</strong> String oredProtect = RegexUtil.regex_or_match(ProtectThese);
+<a class="jxr_linenumber" name="160" href="#160">160</a> 	<strong class="jxr_keyword">static</strong> Pattern Protect_RE = Pattern.compile(oredProtect, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+<a class="jxr_linenumber" name="161" href="#161">161</a> 
+<a class="jxr_linenumber" name="162" href="#162">162</a> 	<em class="jxr_comment">// static Pattern Protect_RE = twitterPart.pattern();</em>
+<a class="jxr_linenumber" name="163" href="#163">163</a> 
+<a class="jxr_linenumber" name="164" href="#164">164</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="165" href="#165">165</a> <em class="jxr_javadoccomment">	 * @param s</em>
+<a class="jxr_linenumber" name="166" href="#166">166</a> <em class="jxr_javadoccomment">	 *            Tokenise this string</em>
+<a class="jxr_linenumber" name="167" href="#167">167</a> <em class="jxr_javadoccomment">	 * @throws UnsupportedEncodingException</em>
+<a class="jxr_linenumber" name="168" href="#168">168</a> <em class="jxr_javadoccomment">	 * @throws TweetTokeniserException</em>
+<a class="jxr_linenumber" name="169" href="#169">169</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="170" href="#170">170</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../org/openimaj/text/nlp/TweetTokeniser.html">TweetTokeniser</a>(String s) <strong class="jxr_keyword">throws</strong> UnsupportedEncodingException, TweetTokeniserException {
+<a class="jxr_linenumber" name="171" href="#171">171</a> 		<em class="jxr_comment">// System.out.println(EdgePunct);</em>
+<a class="jxr_linenumber" name="172" href="#172">172</a> 		<em class="jxr_comment">// System.out.println(new String(""));</em>
+<a class="jxr_linenumber" name="173" href="#173">173</a> 		<strong class="jxr_keyword">this</strong>.text = <strong class="jxr_keyword">new</strong> String(s);
+<a class="jxr_linenumber" name="174" href="#174">174</a> 		<em class="jxr_comment">// System.out.println("TWEET:" + text);</em>
+<a class="jxr_linenumber" name="175" href="#175">175</a> 		fixEncoding();
+<a class="jxr_linenumber" name="176" href="#176">176</a> 		squeeze_whitespace();
+<a class="jxr_linenumber" name="177" href="#177">177</a> 		simple_tokenize();
+<a class="jxr_linenumber" name="178" href="#178">178</a> 	}
+<a class="jxr_linenumber" name="179" href="#179">179</a> 
+<a class="jxr_linenumber" name="180" href="#180">180</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> simple_tokenize() <strong class="jxr_keyword">throws</strong> TweetTokeniserException {
+<a class="jxr_linenumber" name="181" href="#181">181</a> 		<strong class="jxr_keyword">this</strong>.tokenize = <strong class="jxr_keyword">new</strong> ArrayList&lt;Token&gt;();
+<a class="jxr_linenumber" name="182" href="#182">182</a> 		edge_punct_munge();
+<a class="jxr_linenumber" name="183" href="#183">183</a> 
+<a class="jxr_linenumber" name="184" href="#184">184</a> 		<strong class="jxr_keyword">final</strong> ArrayList&lt;String&gt; goods = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="185" href="#185">185</a> 		<strong class="jxr_keyword">final</strong> ArrayList&lt;String&gt; bads = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="186" href="#186">186</a> 		<strong class="jxr_keyword">final</strong> ArrayList&lt;Token&gt; res = <strong class="jxr_keyword">new</strong> ArrayList&lt;Token&gt;();
+<a class="jxr_linenumber" name="187" href="#187">187</a> 		<strong class="jxr_keyword">final</strong> ArrayList&lt;Token&gt; goodt = <strong class="jxr_keyword">new</strong> ArrayList&lt;Token&gt;();
+<a class="jxr_linenumber" name="188" href="#188">188</a> 		<strong class="jxr_keyword">final</strong> ArrayList&lt;Token&gt; badt = <strong class="jxr_keyword">new</strong> ArrayList&lt;Token&gt;();
+<a class="jxr_linenumber" name="189" href="#189">189</a> 		<strong class="jxr_keyword">int</strong> i = 0;
+<a class="jxr_linenumber" name="190" href="#190">190</a> 		<strong class="jxr_keyword">final</strong> Matcher matches = Protect_RE.matcher(<strong class="jxr_keyword">this</strong>.text);
+<a class="jxr_linenumber" name="191" href="#191">191</a> 		<strong class="jxr_keyword">if</strong> (matches != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="192" href="#192">192</a> 			<strong class="jxr_keyword">while</strong> (matches.find()) {
+<a class="jxr_linenumber" name="193" href="#193">193</a> 				<strong class="jxr_keyword">final</strong> String goodString = <strong class="jxr_keyword">this</strong>.text.substring(i, matches.start());
+<a class="jxr_linenumber" name="194" href="#194">194</a> 				goods.add(goodString);
+<a class="jxr_linenumber" name="195" href="#195">195</a> 				<strong class="jxr_keyword">final</strong> List&lt;Token&gt; goodStrings = unprotected_tokenize(goodString);
+<a class="jxr_linenumber" name="196" href="#196">196</a> 				res.addAll(goodStrings);
+<a class="jxr_linenumber" name="197" href="#197">197</a> 				goodt.addAll(goodStrings);
+<a class="jxr_linenumber" name="198" href="#198">198</a> 				<strong class="jxr_keyword">final</strong> String badString = <strong class="jxr_keyword">this</strong>.text.substring(matches.start(), matches.end());
+<a class="jxr_linenumber" name="199" href="#199">199</a> 				bads.add(badString);
+<a class="jxr_linenumber" name="200" href="#200">200</a> 				<strong class="jxr_keyword">final</strong> DefaultToken badTok = <strong class="jxr_keyword">new</strong> DefaultToken(badString, 0);
+<a class="jxr_linenumber" name="201" href="#201">201</a> 				res.add(badTok);
+<a class="jxr_linenumber" name="202" href="#202">202</a> 				badt.add(badTok);
+<a class="jxr_linenumber" name="203" href="#203">203</a> 				i = matches.end();
+<a class="jxr_linenumber" name="204" href="#204">204</a> 			}
+<a class="jxr_linenumber" name="205" href="#205">205</a> 			<strong class="jxr_keyword">final</strong> String finalGood = <strong class="jxr_keyword">this</strong>.text.substring(i, <strong class="jxr_keyword">this</strong>.text.length());
+<a class="jxr_linenumber" name="206" href="#206">206</a> 			<strong class="jxr_keyword">final</strong> List&lt;Token&gt; goodStrings = unprotected_tokenize(finalGood);
+<a class="jxr_linenumber" name="207" href="#207">207</a> 			res.addAll(goodStrings);
+<a class="jxr_linenumber" name="208" href="#208">208</a> 			goodt.addAll(goodStrings);
+<a class="jxr_linenumber" name="209" href="#209">209</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="210" href="#210">210</a> 			<strong class="jxr_keyword">final</strong> String goodString = <strong class="jxr_keyword">this</strong>.text.substring(0, <strong class="jxr_keyword">this</strong>.text.length());
+<a class="jxr_linenumber" name="211" href="#211">211</a> 			<strong class="jxr_keyword">final</strong> List&lt;Token&gt; goodStrings = unprotected_tokenize(goodString);
+<a class="jxr_linenumber" name="212" href="#212">212</a> 			res.addAll(goodStrings);
+<a class="jxr_linenumber" name="213" href="#213">213</a> 			goodt.addAll(goodStrings);
+<a class="jxr_linenumber" name="214" href="#214">214</a> 		}
+<a class="jxr_linenumber" name="215" href="#215">215</a> 
+<a class="jxr_linenumber" name="216" href="#216">216</a> 		<strong class="jxr_keyword">this</strong>.tokenize = post_process(res);
+<a class="jxr_linenumber" name="217" href="#217">217</a> 		<strong class="jxr_keyword">this</strong>.protectedTokens = post_process(badt);
+<a class="jxr_linenumber" name="218" href="#218">218</a> 		<strong class="jxr_keyword">this</strong>.unprotectedTokens = post_process(goodt);
+<a class="jxr_linenumber" name="219" href="#219">219</a> 	}
+<a class="jxr_linenumber" name="220" href="#220">220</a> 
+<a class="jxr_linenumber" name="221" href="#221">221</a> 	<strong class="jxr_keyword">private</strong> ArrayList&lt;Token&gt; post_process(ArrayList&lt;Token&gt; res) {
+<a class="jxr_linenumber" name="222" href="#222">222</a> 		<strong class="jxr_keyword">return</strong> res;
+<a class="jxr_linenumber" name="223" href="#223">223</a> 	}
+<a class="jxr_linenumber" name="224" href="#224">224</a> 
+<a class="jxr_linenumber" name="225" href="#225">225</a> 	<strong class="jxr_keyword">private</strong> List&lt;Token&gt; unprotected_tokenize(String goodString) {
+<a class="jxr_linenumber" name="226" href="#226">226</a> 		<strong class="jxr_keyword">final</strong> String[] strings = goodString.split(<span class="jxr_string">"&#92;&#92;s+"</span>);
+<a class="jxr_linenumber" name="227" href="#227">227</a> 		<strong class="jxr_keyword">final</strong> List&lt;Token&gt; t = <strong class="jxr_keyword">new</strong> ArrayList&lt;Token&gt;();
+<a class="jxr_linenumber" name="228" href="#228">228</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String s : strings) {
+<a class="jxr_linenumber" name="229" href="#229">229</a> 			<strong class="jxr_keyword">if</strong> (s.isEmpty())
+<a class="jxr_linenumber" name="230" href="#230">230</a> 				<strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="231" href="#231">231</a> 			t.add(<strong class="jxr_keyword">new</strong> DefaultToken(s, 0));
+<a class="jxr_linenumber" name="232" href="#232">232</a> 		}
+<a class="jxr_linenumber" name="233" href="#233">233</a> 		<strong class="jxr_keyword">return</strong> t;
+<a class="jxr_linenumber" name="234" href="#234">234</a> 	}
+<a class="jxr_linenumber" name="235" href="#235">235</a> 
+<a class="jxr_linenumber" name="236" href="#236">236</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> edge_punct_munge() {
+<a class="jxr_linenumber" name="237" href="#237">237</a> 		<em class="jxr_comment">// this.text = EdgePunctuationPatternProvider.fixedges(this.text);</em>
+<a class="jxr_linenumber" name="238" href="#238">238</a> 	}
+<a class="jxr_linenumber" name="239" href="#239">239</a> 
+<a class="jxr_linenumber" name="240" href="#240">240</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> squeeze_whitespace() {
+<a class="jxr_linenumber" name="241" href="#241">241</a> 		<strong class="jxr_keyword">this</strong>.text = <strong class="jxr_keyword">this</strong>.text.replaceAll(spaceRegex, <span class="jxr_string">" "</span>);
+<a class="jxr_linenumber" name="242" href="#242">242</a> 	}
+<a class="jxr_linenumber" name="243" href="#243">243</a> 
+<a class="jxr_linenumber" name="244" href="#244">244</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> fixEncoding() <strong class="jxr_keyword">throws</strong> UnsupportedEncodingException {
+<a class="jxr_linenumber" name="245" href="#245">245</a> 		<strong class="jxr_keyword">this</strong>.text = <strong class="jxr_keyword">new</strong> String(text.getBytes(<span class="jxr_string">"UTF-8"</span>), <span class="jxr_string">"UTF-8"</span>);
+<a class="jxr_linenumber" name="246" href="#246">246</a> 		<strong class="jxr_keyword">this</strong>.text = StringEscapeUtils.unescapeHtml(<strong class="jxr_keyword">this</strong>.text);
+<a class="jxr_linenumber" name="247" href="#247">247</a> 		<em class="jxr_comment">// System.out.println("UTF-8:" + text);</em>
+<a class="jxr_linenumber" name="248" href="#248">248</a> 	}
+<a class="jxr_linenumber" name="249" href="#249">249</a> 
+<a class="jxr_linenumber" name="250" href="#250">250</a> 	@Override
+<a class="jxr_linenumber" name="251" href="#251">251</a> 	<strong class="jxr_keyword">public</strong> Iterator&lt;Token&gt; iterator() {
+<a class="jxr_linenumber" name="252" href="#252">252</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.tokenize.iterator();
+<a class="jxr_linenumber" name="253" href="#253">253</a> 	}
+<a class="jxr_linenumber" name="254" href="#254">254</a> 
+<a class="jxr_linenumber" name="255" href="#255">255</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="256" href="#256">256</a> <em class="jxr_javadoccomment">	 * @return all the tokens detected (as {@link Token} instances)</em>
+<a class="jxr_linenumber" name="257" href="#257">257</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="258" href="#258">258</a> 	<strong class="jxr_keyword">public</strong> List&lt;Token&gt; getTokens() {
+<a class="jxr_linenumber" name="259" href="#259">259</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.tokenize;
+<a class="jxr_linenumber" name="260" href="#260">260</a> 	}
+<a class="jxr_linenumber" name="261" href="#261">261</a> 
+<a class="jxr_linenumber" name="262" href="#262">262</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="263" href="#263">263</a> <em class="jxr_javadoccomment">	 * @return return all tokens as a {@link List} of {@link String}</em>
+<a class="jxr_linenumber" name="264" href="#264">264</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="265" href="#265">265</a> 	<strong class="jxr_keyword">public</strong> List&lt;String&gt; getStringTokens() {
+<a class="jxr_linenumber" name="266" href="#266">266</a> 		<strong class="jxr_keyword">final</strong> List&lt;String&gt; stringTokens = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="267" href="#267">267</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Token token : <strong class="jxr_keyword">this</strong>.tokenize) {
+<a class="jxr_linenumber" name="268" href="#268">268</a> 			stringTokens.add(token.getText());
+<a class="jxr_linenumber" name="269" href="#269">269</a> 		}
+<a class="jxr_linenumber" name="270" href="#270">270</a> 		<strong class="jxr_keyword">return</strong> stringTokens;
+<a class="jxr_linenumber" name="271" href="#271">271</a> 	}
+<a class="jxr_linenumber" name="272" href="#272">272</a> 
+<a class="jxr_linenumber" name="273" href="#273">273</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="274" href="#274">274</a> <em class="jxr_javadoccomment">	 * @return return all tokens protected by the Twokenizer regex</em>
+<a class="jxr_linenumber" name="275" href="#275">275</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="276" href="#276">276</a> 	<strong class="jxr_keyword">public</strong> List&lt;String&gt; getProtectedStringTokens() {
+<a class="jxr_linenumber" name="277" href="#277">277</a> 		<strong class="jxr_keyword">final</strong> List&lt;String&gt; stringTokens = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="278" href="#278">278</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Token token : <strong class="jxr_keyword">this</strong>.protectedTokens) {
+<a class="jxr_linenumber" name="279" href="#279">279</a> 			stringTokens.add(token.getText());
+<a class="jxr_linenumber" name="280" href="#280">280</a> 		}
+<a class="jxr_linenumber" name="281" href="#281">281</a> 		<strong class="jxr_keyword">return</strong> stringTokens;
+<a class="jxr_linenumber" name="282" href="#282">282</a> 	}
+<a class="jxr_linenumber" name="283" href="#283">283</a> 
+<a class="jxr_linenumber" name="284" href="#284">284</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="285" href="#285">285</a> <em class="jxr_javadoccomment">	 * @return return all the tokens not protected by the Twokenizer regex</em>
+<a class="jxr_linenumber" name="286" href="#286">286</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="287" href="#287">287</a> 	<strong class="jxr_keyword">public</strong> List&lt;String&gt; getUnprotectedStringTokens() {
+<a class="jxr_linenumber" name="288" href="#288">288</a> 		<strong class="jxr_keyword">final</strong> List&lt;String&gt; stringTokens = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="289" href="#289">289</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Token token : <strong class="jxr_keyword">this</strong>.unprotectedTokens) {
+<a class="jxr_linenumber" name="290" href="#290">290</a> 			stringTokens.add(token.getText());
+<a class="jxr_linenumber" name="291" href="#291">291</a> 		}
+<a class="jxr_linenumber" name="292" href="#292">292</a> 		<strong class="jxr_keyword">return</strong> stringTokens;
+<a class="jxr_linenumber" name="293" href="#293">293</a> 	}
+<a class="jxr_linenumber" name="294" href="#294">294</a> 
+<a class="jxr_linenumber" name="295" href="#295">295</a> }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>
