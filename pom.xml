@@ -708,7 +708,7 @@
 		<site>
 			<id>github</id>
 			<name>OpenIMAJ GitHub Pages</name>
-			<url>github:http://openimaj.github.io/openimaj</url>
+			<url>git:ssh://git@github.com/openimaj/openimaj.git?gh-pages#</url>
 		</site>
 	</distributionManagement>
 	<properties>
