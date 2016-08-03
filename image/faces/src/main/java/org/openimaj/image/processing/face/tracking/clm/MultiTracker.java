@@ -411,7 +411,11 @@ public class MultiTracker {
 			Rectangle searchAreaBounds = f.lastMatchBounds.clone();
 			searchAreaBounds.scale((float) MultiTracker.TSCALE);
 			searchAreaBounds.scaleCentroid(searchAreaSize);
-			searchAreaBounds = searchAreaBounds.overlapping(this.small_.getBounds());
+
+			if (searchAreaBounds.overlapping(this.small_.getBounds()) != null)
+				searchAreaBounds = searchAreaBounds.overlapping(this.small_.getBounds());
+			else
+				searchAreaBounds = this.small_.getBounds();
 
 			// Get the search image
 			final FImage searchArea = this.small_.extractROI(searchAreaBounds);
