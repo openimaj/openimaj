@@ -15,11 +15,11 @@
 		Includes loading, saving and displaying images.
   </description>
   <dependencies>
-		<dependency>
-			<groupId>net.billylieurance.azuresearch</groupId>
-			<artifactId>azure-bing-search-java</artifactId>
-			<version>0.12.0</version>
-		</dependency>
+  	<dependency>
+    	<groupId>com.googlecode.json-simple</groupId>
+    	<artifactId>json-simple</artifactId>
+    	<version>1.1</version>
+	</dependency>
     <dependency>
       <groupId>net.sourceforge.jeuclid</groupId>
       <artifactId>jeuclid-core</artifactId>

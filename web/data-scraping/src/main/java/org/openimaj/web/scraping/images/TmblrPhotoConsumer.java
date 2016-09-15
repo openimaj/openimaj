@@ -18,12 +18,12 @@ package org.openimaj.web.scraping.images;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.util.HttpURLConnection;
 import org.openimaj.util.api.auth.DefaultTokenFactory;
 import org.openimaj.util.auth.web.TumblrAPIToken;
 import org.openimaj.web.scraping.SiteSpecificConsumer;
@@ -33,9 +33,9 @@ import com.google.gson.Gson;
 /**
  * Using a tumblr API key turn a Tmblr URL to an image id and call the tumblr
  * API's posts function.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 	private transient Gson gson = new Gson();
@@ -50,7 +50,7 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 
 	/**
 	 * Construct with the given api token
-	 * 
+	 *
 	 * @param token
 	 *            the api token
 	 */
@@ -101,7 +101,7 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 
 	/**
 	 * handles the variety of ways a tumblr addresses can be forwarded to
-	 * 
+	 *
 	 * @param url
 	 * @return
 	 * @throws IOException

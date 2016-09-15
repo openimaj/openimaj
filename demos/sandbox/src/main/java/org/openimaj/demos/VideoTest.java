@@ -49,7 +49,8 @@ public class VideoTest {
 			return;
 		}
 
-		final Device dev = VideoCapture.getVideoDevices().get(Integer.parseInt(args[0]));
+		final Device dev =
+				VideoCapture.getVideoDevices().get(Integer.parseInt(args[0]));
 		final int width = args.length > 2 ? Integer.parseInt(args[1]) : 320;
 		final int height = args.length > 2 ? Integer.parseInt(args[2]) : 240;
 		final double rate = args.length > 2 ? Double.parseDouble(args[3]) : 30;

@@ -33,13 +33,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.util.HttpURLConnection;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -127,7 +127,7 @@ public class HttpUtils {
 	/**
 	 * A {@link RedirectStrategy} that can deal with meta-refresh style
 	 * redirection
-	 * 
+	 *
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
@@ -218,10 +218,10 @@ public class HttpUtils {
 	 */
 	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL u,
 			boolean followRedirects) throws IOException
-			{
+	{
 		return readURLAsByteArrayInputStream(u, 15000, 15000, followRedirects ? new MetaRefreshRedirectStrategy() : null,
 				DEFAULT_USERAGENT);
-			}
+	}
 
 	/**
 	 * Read the contents of the given {@link URL} as a
@@ -241,9 +241,9 @@ public class HttpUtils {
 	 */
 	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL u,
 			RedirectStrategy strategy) throws IOException
-			{
+	{
 		return readURLAsByteArrayInputStream(u, 15000, 15000, strategy, DEFAULT_USERAGENT);
-			}
+	}
 
 	/**
 	 * Read the contents of the given {@link URL} as a
@@ -269,8 +269,8 @@ public class HttpUtils {
 	 */
 	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL url,
 			int connectionTimeout, int readTimeout, RedirectStrategy redirectStrategy, String userAgent)
-					throws IOException
-					{
+			throws IOException
+	{
 		DefaultHttpClient c = null;
 		try {
 			final HttpParams params = new BasicHttpParams();
@@ -311,7 +311,7 @@ public class HttpUtils {
 				c.getConnectionManager().shutdown();
 		}
 
-					}
+	}
 
 	/**
 	 * Open an {@link HttpURLConnection} to the {@link URL} as an array of
