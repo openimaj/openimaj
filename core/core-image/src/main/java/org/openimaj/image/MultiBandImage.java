@@ -53,12 +53,12 @@ import org.openimaj.math.geometry.shape.Rectangle;
  *            The concrete subclass type of each band
  */
 public abstract class MultiBandImage<T extends Comparable<T>, I extends MultiBandImage<T, I, S>, S extends SingleBandImage<T, S>>
-extends
-Image<T[], I>
-implements
-Iterable<S>,
-SinglebandImageProcessor.Processable<T, S, I>,
-SinglebandKernelProcessor.Processable<T, S, I>
+		extends
+		Image<T[], I>
+		implements
+		Iterable<S>,
+		SinglebandImageProcessor.Processable<T, S, I>,
+		SinglebandKernelProcessor.Processable<T, S, I>
 
 {
 	private static final long serialVersionUID = 1L;
@@ -130,7 +130,7 @@ SinglebandKernelProcessor.Processable<T, S, I>
 	 */
 	public I add(final T num) {
 		final I newImage = this.clone();
-		newImage.add(num);
+		newImage.addInplace(num);
 		return newImage;
 	}
 
@@ -389,7 +389,7 @@ SinglebandKernelProcessor.Processable<T, S, I>
 	 */
 	public I divide(final T val) {
 		final I newImage = this.clone();
-		newImage.divide(val);
+		newImage.divideInplace(val);
 		return newImage;
 	}
 
@@ -1060,7 +1060,7 @@ SinglebandKernelProcessor.Processable<T, S, I>
 	 */
 	public I subtract(final T num) {
 		final I newImage = this.clone();
-		newImage.subtract(num);
+		newImage.subtractInplace(num);
 		return newImage;
 	}
 
