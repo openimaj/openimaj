@@ -661,7 +661,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 			}
 		}
 
-		return new Rectangle(minc, minr, maxc - minc, maxr - minr);
+		return new Rectangle(minc, minr, maxc - minc + 1, maxr - minr + 1);
 	}
 
 	/**
