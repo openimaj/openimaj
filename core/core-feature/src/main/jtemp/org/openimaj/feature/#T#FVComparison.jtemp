@@ -331,7 +331,7 @@ public enum #T#FVComparison implements #T#FVComparator {
 			union.addAll(h2);
 
 			T#T#HashSet intersection = new T#T#HashSet(h1);
-			intersection.retainAll(h2);
+			intersection.retainAll(h2.clone()); //retainAll sorts the input, so we need to make a copy
 
 			return 1.0 - (((double)intersection.size()) / (double)union.size());
 		}
