@@ -459,4 +459,33 @@ public class DefaultTokenFactory implements TokenFactory {
 	public static <T> T get(Class<T> tokenClass, String name) {
 		return getInstance().getToken(tokenClass);
 	}
+	
+	/**
+	 * Convenience method equivalent to
+	 * {@code getInstance().deleteToken(tokenClass) }
+	 * 
+	 * @see #deleteToken(Class)
+	 * @param tokenClass the class of the token to delete
+	 * @throws BackingStoreException
+	 *             if a problem occurred communicating with the backing
+	 *             preference store
+	 */
+	public static <T> void delete(Class<T> tokenClass) throws BackingStoreException {
+		getInstance().deleteToken(tokenClass);
+	}
+	
+	/**
+	 * Convenience method equivalent to
+	 * {@code getInstance().deleteToken(tokenClass, name) }
+	 * 
+	 * @see #deleteToken(Class, String)
+	 * @param tokenClass the class of the token to delete
+	 * @param name the name of the token, or {@code null} for the default token
+	 * @throws BackingStoreException
+	 *             if a problem occurred communicating with the backing
+	 *             preference store
+	 */
+	public static <T> void delete(Class<T> tokenClass, String name) throws BackingStoreException {
+		getInstance().deleteToken(tokenClass, name);
+	}
 }
