@@ -31,6 +31,7 @@ package org.openimaj.image.dataset;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -40,6 +41,7 @@ import java.util.prefs.BackingStoreException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -61,6 +63,9 @@ import org.openimaj.util.api.auth.common.BingAPIToken;
 
 /**
  * Image datasets dynamically created from the Bing search API.
+ * 
+ * <h5> WARNING </h5>
+ * Some of the images inside this dataset may be set to {@code null}if they could not be loaded.
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
@@ -477,18 +482,35 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 		return read(getImage(index));
 	}
 
+	/**
+	 * Loads the image in {@code next} and converts it to the type {@code <IMAGE>}
+	 * @param next the image source to load the image from
+	 * @return the loaded and converted image if loading the image worked,
+	 *         {@code null} otherwise
+	 */
 	private IMAGE read(ImageDataSourceResponse next) {
 		if (next == null)
 			return null;
 
+		final String imageURL = next.getContentUrl();
+		
 		InputStream stream = null;
 		try {
-			final String imageURL = next.getContentUrl();
 			stream = HttpUtils.readURL(new URL(imageURL));
 
 			return reader.read(stream);
-		} catch (final IOException e) {
+		} catch (final MalformedURLException e) {
+			//if the URL is malformed, something went wrong with programming
 			throw new RuntimeException(e);
+		} catch (final IOException e) {
+			if (e.getCause() instanceof org.apache.sanselan.ImageReadException) {
+				// image urls that redirect to html pages will have this error (eg tinypic.com)
+				System.out.println("The following URL didn't redirect to an image: " + imageURL);
+			} else {
+				// there was some issue with loading data from the URL
+				e.printStackTrace();
+			}
+			return null;
 		} finally {
 			try {
 				if (stream != null)
@@ -537,6 +559,11 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 			request.setHeader("Ocp-Apim-Subscription-Key", query.accountKey);
 
 			final HttpResponse response = httpclient.execute(request);
+			
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+				throw new IOException("HTTP ERROR 401: Unauthorized Recieved. "
+						+ "You probably have the incorrect API Key");
+			}
 			final HttpEntity entity = response.getEntity();
 
 			if (entity != null)
