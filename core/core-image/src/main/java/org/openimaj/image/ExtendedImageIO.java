@@ -57,9 +57,9 @@ import com.sun.media.jai.codec.SeekableStream;
  * A class that provides extra functionality beyond that of the standard
  * {@link ImageIO} class. In particular, it tries to deal jpeg images that the
  * standard ImageIO cannot (i.e. CMYK jpegs, etc).
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 class ExtendedImageIO {
 	static class NonClosableInputStream extends BufferedInputStream {
@@ -86,28 +86,28 @@ class ExtendedImageIO {
 	 * in an <code>ImageInputStream</code>. If no registered
 	 * <code>ImageReader</code> claims to be able to read the resulting stream,
 	 * <code>null</code> is returned.
-	 * 
+	 *
 	 * <p>
 	 * The current cache settings from <code>getUseCache</code>and
 	 * <code>getCacheDirectory</code> will be used to control caching in the
 	 * <code>ImageInputStream</code> that is created.
-	 * 
+	 *
 	 * <p>
 	 * Note that there is no <code>read</code> method that takes a filename as a
 	 * <code>String</code>; use this method instead after creating a
 	 * <code>File</code> from the filename.
-	 * 
+	 *
 	 * <p>
 	 * This method does not attempt to locate <code>ImageReader</code>s that can
 	 * read directly from a <code>File</code>; that may be accomplished using
 	 * <code>IIORegistry</code> and <code>ImageReaderSpi</code>.
-	 * 
+	 *
 	 * @param input
 	 *            a <code>File</code> to read from.
-	 * 
+	 *
 	 * @return a <code>BufferedImage</code> containing the decoded contents of
 	 *         the input, or <code>null</code>.
-	 * 
+	 *
 	 * @exception IllegalArgumentException
 	 *                if <code>input</code> is <code>null</code>.
 	 * @exception IOException
@@ -139,28 +139,28 @@ class ExtendedImageIO {
 	 * <code>InputStream</code> is wrapped in an <code>ImageInputStream</code>.
 	 * If no registered <code>ImageReader</code> claims to be able to read the
 	 * resulting stream, <code>null</code> is returned.
-	 * 
+	 *
 	 * <p>
 	 * The current cache settings from <code>getUseCache</code>and
 	 * <code>getCacheDirectory</code> will be used to control caching in the
 	 * <code>ImageInputStream</code> that is created.
-	 * 
+	 *
 	 * <p>
 	 * This method does not attempt to locate <code>ImageReader</code>s that can
 	 * read directly from an <code>InputStream</code>; that may be accomplished
 	 * using <code>IIORegistry</code> and <code>ImageReaderSpi</code>.
-	 * 
+	 *
 	 * <p>
 	 * This method <em>does not</em> close the provided <code>InputStream</code>
 	 * after the read operation has completed; it is the responsibility of the
 	 * caller to close the stream, if desired.
-	 * 
+	 *
 	 * @param input
 	 *            an <code>InputStream</code> to read from.
-	 * 
+	 *
 	 * @return a <code>BufferedImage</code> containing the decoded contents of
 	 *         the input, or <code>null</code>.
-	 * 
+	 *
 	 * @exception IllegalArgumentException
 	 *                if <code>input</code> is <code>null</code>.
 	 * @exception IOException
@@ -172,7 +172,7 @@ class ExtendedImageIO {
 		}
 
 		final NonClosableInputStream buffer = new NonClosableInputStream(input);
-		buffer.mark(10 * 1024 * 1024); // 10mb is big enough?
+		buffer.mark(100 * 1024 * 1024); // 100mb is big enough?
 
 		BufferedImage bi;
 		try {
@@ -201,23 +201,23 @@ class ExtendedImageIO {
 	 * <code>ImageInputStream</code>. If no registered <code>ImageReader</code>
 	 * claims to be able to read the resulting stream, <code>null</code> is
 	 * returned.
-	 * 
+	 *
 	 * <p>
 	 * The current cache settings from <code>getUseCache</code>and
 	 * <code>getCacheDirectory</code> will be used to control caching in the
 	 * <code>ImageInputStream</code> that is created.
-	 * 
+	 *
 	 * <p>
 	 * This method does not attempt to locate <code>ImageReader</code>s that can
 	 * read directly from a <code>URL</code>; that may be accomplished using
 	 * <code>IIORegistry</code> and <code>ImageReaderSpi</code>.
-	 * 
+	 *
 	 * @param input
 	 *            a <code>URL</code> to read from.
-	 * 
+	 *
 	 * @return a <code>BufferedImage</code> containing the decoded contents of
 	 *         the input, or <code>null</code>.
-	 * 
+	 *
 	 * @exception IllegalArgumentException
 	 *                if <code>input</code> is <code>null</code>.
 	 * @exception IOException
@@ -244,13 +244,13 @@ class ExtendedImageIO {
 	 * automatically from among those currently registered. If no registered
 	 * <code>ImageReader</code> claims to be able to read the stream,
 	 * <code>null</code> is returned.
-	 * 
+	 *
 	 * @param input
 	 *            an <code>ImageInputStream</code> to read from.
-	 * 
+	 *
 	 * @return a <code>BufferedImage</code> containing the decoded contents of
 	 *         the input, or <code>null</code>.
-	 * 
+	 *
 	 * @exception IllegalArgumentException
 	 *                if <code>stream</code> is <code>null</code>.
 	 * @exception IOException
@@ -324,7 +324,7 @@ class ExtendedImageIO {
 
 	/**
 	 * Load an image with the given reader
-	 * 
+	 *
 	 * @param reader
 	 * @param binput
 	 * @return
@@ -342,7 +342,7 @@ class ExtendedImageIO {
 	/**
 	 * Get the TwelveMonkeys reader if its present and attempt to load it if
 	 * necessary.
-	 * 
+	 *
 	 * @return the TwelveMonkeys JPEG Reader or null if it can't be loaded.
 	 */
 	private static ImageReader getMonkeyReader() {
