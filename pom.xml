@@ -219,7 +219,7 @@
 								</div>
 								]]></bottom>
 								<linksource>true</linksource>
-								<additionalparam>-Xdoclint:none</additionalparam>
+								<additionalparam>-Xdoclint:none --allow-script-in-comments</additionalparam>
 							</configuration>
 						</plugin>
 					</reportPlugins>
@@ -490,7 +490,7 @@
 							</div>
 							]]></bottom>
 							<linksource>true</linksource>
-							<additionalparam>-Xdoclint:none</additionalparam>
+							<additionalparam>-Xdoclint:none --allow-script-in-comments</additionalparam>
 						</configuration>
 						<executions>
 							<execution>
@@ -532,7 +532,7 @@
 											</div>
 										]]></bottom>
 										<linksource>true</linksource>
-										<additionalparam>-Xdoclint:none</additionalparam>
+										<additionalparam>-Xdoclint:none --allow-script-in-comments</additionalparam>
 									</configuration>
 									<reportSets>
 										<reportSet>

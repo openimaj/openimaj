@@ -7,10 +7,8 @@
     <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openimaj</groupId>
   <artifactId>openimaj-hadoop</artifactId>
   <packaging>pom</packaging>
-  <version>1.4-SNAPSHOT</version>
   <name>OpenIMAJ Hadoop Subproject</name>
   <inceptionYear>2011</inceptionYear>
   <description>
