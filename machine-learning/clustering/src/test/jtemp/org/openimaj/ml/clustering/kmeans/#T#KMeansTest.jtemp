@@ -39,7 +39,6 @@ import org.junit.Test;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.data.#T#ArrayBackedDataSource;
-import org.openimaj.ml.clustering.#T#CentroidsResult;
 import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 
 /**
@@ -135,7 +134,10 @@ public class #T#KMeansTest {
 	public void test#T#KMeans(){
 		#T#KMeans fkm = #T#KMeans.createKDTreeEnsemble(this.dataSets.size());
 		fkm.seed(seed);
-		#T#CentroidsResult cluster = fkm.cluster(this.allData);
+		#T#KMeans.Result cluster = fkm.cluster(this.allData);
+		
+		assertTrue(cluster.numIterations() < fkm.getConfiguration().getMaxIterations());
+		assertTrue(cluster.numChangedCentroids() == 0);
 		
 		Exact#T#Assigner assigner = new Exact#T#Assigner(cluster);
 		

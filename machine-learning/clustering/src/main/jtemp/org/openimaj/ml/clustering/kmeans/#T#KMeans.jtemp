@@ -143,9 +143,18 @@ import org.openimaj.util.pair.Int#R#Pair;
 		}
 	}
 	
-	private static class Result extends #T#CentroidsResult implements #T#NearestNeighboursProvider {
+	/**
+	 * Result object for #T#KMeans, extending #T#CentroidsResult and #T#NearestNeighboursProvider,
+	 * as well as giving access to state information from the operation of the K-Means algorithm  
+	 * (i.e. number of iterations, and convergence state).
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+	public static class Result extends #T#CentroidsResult implements #T#NearestNeighboursProvider {
 		protected #T#NearestNeighbours nn;
-		
+		protected int iterations;
+		protected int changedCentroidCount;
+		 
 		@Override
 		public HardAssigner<#t#[], #r#[], Int#R#Pair> defaultHardAssigner() {
 			if (nn instanceof #T#NearestNeighboursExact)
@@ -157,6 +166,23 @@ import org.openimaj.util.pair.Int#R#Pair;
 		@Override
 		public #T#NearestNeighbours getNearestNeighbours() {
 			return nn;
+		}
+		
+		/**
+		 * Get the number of K-Means iterations that produced this result.
+		 * @return the number of iterations
+		 */
+		public int numIterations() {
+			return iterations;
+		}
+		
+		/**
+		 * Get the number of changed centroids in the last iteration. This is 
+		 * an indicator of convergence as over time this should reduce to 0.
+		 * @return the number of changed centroids 
+		 */
+		public int numChangedCentroids() {
+			return changedCentroidCount;
 		}
 	}
 	
@@ -211,7 +237,7 @@ import org.openimaj.util.pair.Int#R#Pair;
 	}
 		
 	@Override
-	public #T#CentroidsResult cluster(#t#[][] data) {
+	public Result cluster(#t#[][] data) {
 		DataSource<#t#[]> ds = new #T#ArrayBackedDataSource(data, rng);
 		
 		try {
@@ -258,11 +284,45 @@ import org.openimaj.util.pair.Int#R#Pair;
 	 * the same set of #T#NearestNeighbours object (i.e. Exact or KDTree). 
 	 * Each thread is added to a job pool and started in parallel. 
 	 * A single accumulator is shared between all threads and locked on update.
+	 * <br/>
+	 * This methods expects that the initial centroids have already been set in
+	 * the <code>result</code> object and as such <strong>ignores</strong> the
+	 * init object. <strong>In normal operation you should call one of the other <code>cluster</code>
+	 * cluster methods instead of this one.</strong> However, if you wish to resume clustering
+	 * iterations from a result that you've already generated this is the method
+	 * to use.
 	 *
 	 * @param data the data to be clustered
-	 * @param centroids the centroids to be found
+	 * @param result the results object to be populated
+	 * @throws InterruptedException if interrupted while waiting, in
+     *         which case unfinished tasks are cancelled.
 	 */
-	protected void cluster(DataSource<#t#[]> data, Result result) throws Exception {
+	public void cluster(#t#[][] data, Result result) throws InterruptedException {
+		DataSource<#t#[]> ds = new #T#ArrayBackedDataSource(data, rng);
+		
+		cluster(ds, result);
+	}
+	
+	/**
+	 * Main clustering algorithm. A number of threads as specified are 
+	 * started each containing an assignment job and a reference to
+	 * the same set of #T#NearestNeighbours object (i.e. Exact or KDTree). 
+	 * Each thread is added to a job pool and started in parallel. 
+	 * A single accumulator is shared between all threads and locked on update.
+	 * <br/>
+	 * This methods expects that the initial centroids have already been set in
+	 * the <code>result</code> object and as such <strong>ignores</strong> the
+	 * init object. In normal operation you should call one of the other <code>cluster</code>
+	 * cluster methods instead of this one. However, if you wish to resume clustering
+	 * iterations from a result that you've already generated this is the method
+	 * to use.
+	 *
+	 * @param data the data to be clustered
+	 * @param result the results object to be populated
+	 * @throws InterruptedException if interrupted while waiting, in
+     *         which case unfinished tasks are cancelled.
+	 */
+	public void cluster(DataSource<#t#[]> data, Result result) throws InterruptedException {
 		final #t#[][] centroids = result.centroids;
 		final int K = centroids.length;
 		final int D = centroids[0].length;
@@ -273,7 +333,10 @@ import org.openimaj.util.pair.Int#R#Pair;
 		ExecutorService service = conf.threadpool;
 
 		for (int i=0; i<conf.niters; i++) {
-			for (int j=0; j<K; j++) Arrays.fill(centroids_accum[j], 0);
+			result.iterations++;
+			
+			for (int j=0; j<K; j++) 
+				Arrays.fill(centroids_accum[j], 0);
 			Arrays.fill(new_counts, 0);
 
 			#T#NearestNeighbours nno = conf.factory.create(centroids);
@@ -286,19 +349,36 @@ import org.openimaj.util.pair.Int#R#Pair;
 
 			service.invokeAll(jobs);
 
+			result.changedCentroidCount = 0;
 			for (int k=0; k < K; ++k) {
+				#r# ssd = 0;
 				if (new_counts[k] == 0) {
 					// If there's an empty cluster we replace it with a random point.
 					new_counts[k] = 1;
 
 					#t# [][] rnd = new #t#[][] {centroids[k]};
 					data.getRandomRows(rnd);
+					result.changedCentroidCount++;
 				} else {
 					for (int d=0; d < D; ++d) {
-						centroids[k][d] = (#t#)((#r#)round#R#((double)centroids_accum[k][d] / (double)new_counts[k]));
+						#t# newValue = (#t#)((#r#)round#R#((double)centroids_accum[k][d] / (double)new_counts[k]));
+						
+						// we're going to accumulate the SSD of the old vs new centroids
+						// as a way of determining if this centroid has changed
+						#r# diff = newValue - centroids[k][d]; 
+						ssd += diff*diff;
+						
+						//update to new centroid
+						centroids[k][d] = newValue;
 					}
+					
+					if (ssd != 0)
+						result.changedCentroidCount++;
 				}
-			} 
+			}
+			 
+			if (result.changedCentroidCount == 0)
+				break; // convergence
 		}
 	}
 	
@@ -308,7 +388,7 @@ import org.openimaj.util.pair.Int#R#Pair;
 	protected int roundInt(double value) { return (int)Math.round(value); }
 	
 	@Override
-	public #T#CentroidsResult cluster(DataSource<#t#[]> ds) {
+	public Result cluster(DataSource<#t#[]> ds) {
 		try {
 			Result result = cluster(ds, conf.K);
 			result.nn = conf.factory.create(result.centroids);
