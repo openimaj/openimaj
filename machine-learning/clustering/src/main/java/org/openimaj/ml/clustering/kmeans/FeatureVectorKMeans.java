@@ -88,7 +88,9 @@ import com.rits.cloning.Cloner;
  * @param <T>
  *            Type of object being clustered
  */
-public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClusterer<FeatureVectorCentroidsResult<T>, T>
+public class FeatureVectorKMeans<T extends FeatureVector>
+		implements
+			SpatialClusterer<FeatureVectorCentroidsResult<T>, T>
 {
 	private static class CentroidAssignmentJob<T extends FeatureVector> implements Callable<Boolean> {
 		private final DataSource<T> ds;
@@ -139,11 +141,23 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 		}
 	}
 
-	private static class Result<T extends FeatureVector> extends FeatureVectorCentroidsResult<T>
+	/**
+	 * Result object for FeatureVectorKMeans, extending
+	 * FeatureVectorCentroidsResult and ObjectNearestNeighboursProvider, as well
+	 * as giving access to state information from the operation of the K-Means
+	 * algorithm (i.e. number of iterations, and convergence state).
+	 *
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * @param <T>
+	 *            Type of object being clustered
+	 */
+	public static class Result<T extends FeatureVector> extends FeatureVectorCentroidsResult<T>
 			implements
-	ObjectNearestNeighboursProvider<T>
+				ObjectNearestNeighboursProvider<T>
 	{
 		protected ObjectNearestNeighbours<T> nn;
+		protected int iterations;
+		protected int changedCentroidCount;
 
 		@Override
 		public ObjectNearestNeighbours<T> getNearestNeighbours() {
@@ -153,6 +167,25 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 		@Override
 		public HardAssigner<T, float[], IntFloatPair> defaultHardAssigner() {
 			return new ExactFeatureVectorAssigner<T>(this, nn.distanceComparator());
+		}
+
+		/**
+		 * Get the number of K-Means iterations that produced this result.
+		 *
+		 * @return the number of iterations
+		 */
+		public int numIterations() {
+			return iterations;
+		}
+
+		/**
+		 * Get the number of changed centroids in the last iteration. This is an
+		 * indicator of convergence as over time this should reduce to 0.
+		 *
+		 * @return the number of changed centroids
+		 */
+		public int numChangedCentroids() {
+			return changedCentroidCount;
 		}
 	}
 
@@ -219,7 +252,7 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 	 *
 	 * @return the generated clusters.
 	 */
-	public FeatureVectorCentroidsResult<T> cluster(List<T> data) {
+	public Result<T> cluster(List<T> data) {
 		@SuppressWarnings("unchecked")
 		T[] d = (T[]) Array.newInstance(data.get(0).getClass(), data.size());
 		d = data.toArray(d);
@@ -227,7 +260,7 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 	}
 
 	@Override
-	public FeatureVectorCentroidsResult<T> cluster(T[] data) {
+	public Result<T> cluster(T[] data) {
 		final ArrayBackedDataSource<T> ds = new ArrayBackedDataSource<T>(data, rng) {
 			@Override
 			public int numDimensions() {
@@ -295,14 +328,55 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 	 * each containing an assignment job and a reference to the same set of
 	 * ObjectNearestNeighbours object (i.e. Exact or KDTree). Each thread is
 	 * added to a job pool and started in parallel. A single accumulator is
-	 * shared between all threads and locked on update.
+	 * shared between all threads and locked on update. <br/>
+	 * This methods expects that the initial centroids have already been set in
+	 * the <code>result</code> object and as such <strong>ignores</strong> the
+	 * init object. <strong>In normal operation you should call one of the other
+	 * <code>cluster</code> cluster methods instead of this one.</strong>
+	 * However, if you wish to resume clustering iterations from a result that
+	 * you've already generated this is the method to use.
 	 *
 	 * @param data
 	 *            the data to be clustered
-	 * @param centroids
-	 *            the centroids to be found
+	 * @param result
+	 *            the results object to be populated
+	 * @throws InterruptedException
+	 *             if interrupted while waiting, in which case unfinished tasks
+	 *             are cancelled.
 	 */
-	protected void cluster(DataSource<T> data, Result<T> result) throws Exception {
+	public void cluster(T[] data, Result<T> result) throws InterruptedException {
+		final ArrayBackedDataSource<T> ds = new ArrayBackedDataSource<T>(data, rng) {
+			@Override
+			public int numDimensions() {
+				return data[0].length();
+			}
+		};
+
+		cluster(ds, result);
+	}
+
+	/**
+	 * Main clustering algorithm. A number of threads as specified are started
+	 * each containing an assignment job and a reference to the same set of
+	 * ObjectNearestNeighbours object (i.e. Exact or KDTree). Each thread is
+	 * added to a job pool and started in parallel. A single accumulator is
+	 * shared between all threads and locked on update. <br/>
+	 * This methods expects that the initial centroids have already been set in
+	 * the <code>result</code> object and as such <strong>ignores</strong> the
+	 * init object. In normal operation you should call one of the other
+	 * <code>cluster</code> cluster methods instead of this one. However, if you
+	 * wish to resume clustering iterations from a result that you've already
+	 * generated this is the method to use.
+	 *
+	 * @param data
+	 *            the data to be clustered
+	 * @param result
+	 *            the results object to be populated
+	 * @throws InterruptedException
+	 *             if interrupted while waiting, in which case unfinished tasks
+	 *             are cancelled.
+	 */
+	protected void cluster(DataSource<T> data, Result<T> result) throws InterruptedException {
 		final T[] centroids = result.centroids;
 		final int K = centroids.length;
 		final int D = centroids[0].length();
@@ -313,7 +387,8 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 		final ExecutorService service = conf.threadpool;
 
 		for (int i = 0; i < conf.niters; i++) {
-			System.err.println("Iteration " + i);
+			result.iterations++;
+
 			for (int j = 0; j < K; j++)
 				Arrays.fill(centroids_accum[j], 0);
 			Arrays.fill(new_counts, 0);
@@ -328,7 +403,9 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 
 			service.invokeAll(jobs);
 
+			result.changedCentroidCount = 0;
 			for (int k = 0; k < K; ++k) {
+				double ssd = 0;
 				if (new_counts[k] == 0) {
 					// If there's an empty cluster we replace it with a random
 					// point.
@@ -339,29 +416,30 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 
 					final Cloner cloner = new Cloner();
 					centroids[k] = cloner.deepClone(rnd[0]);
+
+					result.changedCentroidCount++;
 				} else {
 					for (int d = 0; d < D; ++d) {
-						centroids[k].setFromDouble(d, centroids_accum[k][d] / new_counts[k]);
+						final double newValue = centroids_accum[k][d] / new_counts[k];
+
+						// we're going to accumulate the SSD of the old vs new
+						// centroids
+						// as a way of determining if this centroid has changed
+						final double diff = newValue - centroids[k].getAsDouble(d);
+						ssd += diff * diff;
+
+						// update to new centroid
+						centroids[k].setFromDouble(d, newValue);
 					}
+
+					if (ssd != 0)
+						result.changedCentroidCount++;
 				}
 			}
+
+			if (result.changedCentroidCount == 0)
+				break; // convergence
 		}
-	}
-
-	protected float roundFloat(double value) {
-		return (float) value;
-	}
-
-	protected double roundDouble(double value) {
-		return value;
-	}
-
-	protected long roundLong(double value) {
-		return Math.round(value);
-	}
-
-	protected int roundInt(double value) {
-		return (int) Math.round(value);
 	}
 
 	@Override
@@ -412,8 +490,8 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 	public static <T extends FeatureVector> FeatureVectorKMeans<T> createExact(int K,
 			DistanceComparator<? super T> distance)
 	{
-		final KMeansConfiguration<ObjectNearestNeighbours<T>, T> conf =
-				new KMeansConfiguration<ObjectNearestNeighbours<T>, T>(K, new ObjectNearestNeighboursExact.Factory<T>(
+		final KMeansConfiguration<ObjectNearestNeighbours<T>, T> conf = new KMeansConfiguration<ObjectNearestNeighbours<T>, T>(
+				K, new ObjectNearestNeighboursExact.Factory<T>(
 						distance));
 
 		return new FeatureVectorKMeans<T>(conf);
@@ -438,10 +516,10 @@ public class FeatureVectorKMeans<T extends FeatureVector> implements SpatialClus
 	public static <T extends FeatureVector> FeatureVectorKMeans<T> createExact(int K,
 			DistanceComparator<? super T> distance, int niters)
 	{
-		final KMeansConfiguration<ObjectNearestNeighbours<T>, T> conf =
-				new KMeansConfiguration<ObjectNearestNeighbours<T>, T>(K,
-						new ObjectNearestNeighboursExact.Factory<T>(distance),
-						niters);
+		final KMeansConfiguration<ObjectNearestNeighbours<T>, T> conf = new KMeansConfiguration<ObjectNearestNeighbours<T>, T>(
+				K,
+				new ObjectNearestNeighboursExact.Factory<T>(distance),
+				niters);
 
 		return new FeatureVectorKMeans<T>(conf);
 	}
