@@ -53,8 +53,7 @@ import Jama.Matrix;
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class Polygon extends PointList implements Shape
-{
+public class Polygon extends PointList implements Shape {
 	/**
 	 * Polygons can contain other polygons. If the polygon is representing a
 	 * shape, then the inner polygons can represent holes in the polygon or
@@ -68,8 +67,7 @@ public class Polygon extends PointList implements Shape
 	/**
 	 * Constructs an empty polygon to which vertices may be added.
 	 */
-	public Polygon()
-	{
+	public Polygon() {
 		this(false);
 	}
 
@@ -81,8 +79,7 @@ public class Polygon extends PointList implements Shape
 	 * @param representsHole
 	 *            Whether the polygon will represent a hole.
 	 */
-	public Polygon(boolean representsHole)
-	{
+	public Polygon(boolean representsHole) {
 		this.isHole = representsHole;
 	}
 
@@ -185,8 +182,7 @@ public class Polygon extends PointList implements Shape
 
 		boolean isOdd = false;
 
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
+		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final List<Point2d> v = getInnerPoly(pp).getVertices();
 			int j = v.size() - 1;
 			for (int i = 0; i < v.size(); i++) {
@@ -234,8 +230,7 @@ public class Polygon extends PointList implements Shape
 	 *            the polygon to subtract.
 	 * @return the difference polygon
 	 */
-	public Polygon difference(Polygon p)
-	{
+	public Polygon difference(Polygon p) {
 		final List<Point2d> v = new ArrayList<Point2d>();
 
 		for (int i = 0; i < points.size(); i++)
@@ -370,23 +365,12 @@ public class Polygon extends PointList implements Shape
 	 *
 	 * @return this polygon
 	 */
-	public Polygon roundVertices()
-	{
+	public Polygon roundVertices() {
 		final Iterator<Point2d> i = this.iterator();
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			final Point2d p = i.next();
-			final Point2dImpl p2 = new Point2dImpl((int) p.getX(), (int) p.getY());
-
-			int xx = -1;
-			if ((xx = this.points.indexOf(p2)) != -1 &&
-					this.points.get(xx) != p)
-				i.remove();
-			else
-			{
-				p.setX(p2.x);
-				p.setY(p2.y);
-			}
+			p.setX(Math.round(p.getX()));
+			p.setY(Math.round(p.getY()));
 		}
 
 		for (final Polygon pp : innerPolygons)
@@ -400,8 +384,7 @@ public class Polygon extends PointList implements Shape
 	 *
 	 * @return TRUE if this polygon has no vertices
 	 */
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return this.points.isEmpty() && innerPolygons.isEmpty();
 	}
 
@@ -411,8 +394,7 @@ public class Polygon extends PointList implements Shape
 	 *
 	 * @return the number of inner polygons in this polygon.
 	 */
-	public int getNumInnerPoly()
-	{
+	public int getNumInnerPoly() {
 		return innerPolygons.size() + 1;
 	}
 
@@ -424,8 +406,7 @@ public class Polygon extends PointList implements Shape
 	 *            the index of the polygon to get
 	 * @return The inner polygon at the given index.
 	 */
-	public Polygon getInnerPoly(int index)
-	{
+	public Polygon getInnerPoly(int index) {
 		if (index == 0)
 			return this;
 		return innerPolygons.get(index - 1);
@@ -445,21 +426,14 @@ public class Polygon extends PointList implements Shape
 	 * @param inferOuter
 	 *            Whether to infer the outer polygon from this inner one
 	 */
-	public void addInnerPolygon(Polygon p, boolean inferOuter)
-	{
-		if (!inferOuter)
-		{
+	public void addInnerPolygon(Polygon p, boolean inferOuter) {
+		if (!inferOuter) {
 			this.innerPolygons.add(p);
-		}
-		else
-		{
-			if (this.points.size() == 0)
-			{
+		} else {
+			if (this.points.size() == 0) {
 				this.points.addAll(p.points);
 				this.isHole = p.isHole;
-			}
-			else
-			{
+			} else {
 				this.addInnerPolygon(p, false);
 			}
 		}
@@ -473,8 +447,7 @@ public class Polygon extends PointList implements Shape
 	 * @param p
 	 *            The inner polygon to add
 	 */
-	public void addInnerPolygon(Polygon p)
-	{
+	public void addInnerPolygon(Polygon p) {
 		this.addInnerPolygon(p, true);
 	}
 
@@ -483,8 +456,7 @@ public class Polygon extends PointList implements Shape
 	 *
 	 * @return the list of inner polygons
 	 */
-	public List<Polygon> getInnerPolys()
-	{
+	public List<Polygon> getInnerPolys() {
 		return this.innerPolygons;
 	}
 
@@ -494,8 +466,7 @@ public class Polygon extends PointList implements Shape
 	 * @param isHole
 	 *            Whether this polygon is a whole.
 	 */
-	public void setIsHole(boolean isHole)
-	{
+	public void setIsHole(boolean isHole) {
 		this.isHole = isHole;
 	}
 
@@ -504,8 +475,7 @@ public class Polygon extends PointList implements Shape
 	 *
 	 * @return Whether this polygon is representing a hole in another polygon.
 	 */
-	public boolean isHole()
-	{
+	public boolean isHole() {
 		return this.isHole;
 	}
 
@@ -515,8 +485,7 @@ public class Polygon extends PointList implements Shape
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj) {
 		return (obj instanceof Polygon) &&
 				this.equals((Polygon) obj);
 	}
@@ -533,8 +502,7 @@ public class Polygon extends PointList implements Shape
 	 *            The polygon to test against
 	 * @return TRUE if the polygons are the same.
 	 */
-	public boolean equals(Polygon p)
-	{
+	public boolean equals(Polygon p) {
 		if (isHole() != p.isHole())
 			return false;
 		if (this.points.size() != p.points.size())
@@ -547,8 +515,7 @@ public class Polygon extends PointList implements Shape
 			return false;
 
 		final int s = this.points.size();
-		for (int n = 0; n < s; n++)
-		{
+		for (int n = 0; n < s; n++) {
 			if (!p.points.get(n).equals(this.points.get((n + i) % s)))
 				return false;
 		}
@@ -562,8 +529,7 @@ public class Polygon extends PointList implements Shape
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return points.hashCode() * (isHole() ? -1 : 1);
 	}
 
@@ -577,8 +543,7 @@ public class Polygon extends PointList implements Shape
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		final StringBuffer sb = new StringBuffer();
 		if (isHole())
 			sb.append("H");
@@ -588,10 +553,9 @@ public class Polygon extends PointList implements Shape
 		else
 			sb.append(points.subList(0, len / 2).toString() + "..." +
 					points.subList(points.size() - len / 2, points.size())
-					.toString());
+							.toString());
 
-		if (innerPolygons.size() > 0)
-		{
+		if (innerPolygons.size() > 0) {
 			sb.append("\n    - " + innerPolygons.size() + " inner polygons:");
 			for (final Polygon ip : innerPolygons)
 				sb.append("\n       + " + ip.toString());
@@ -607,8 +571,7 @@ public class Polygon extends PointList implements Shape
 	 *            The polygon to intersect with.
 	 * @return The resulting polygon intersection
 	 */
-	public Polygon intersect(Polygon p2)
-	{
+	public Polygon intersect(Polygon p2) {
 		// FIXME: PolygonUtils should handle inner polys itself, but it seems
 		// there are bugs... This is a hack to work around those problems
 		// without having to understand the ins and outs of how the GPC works,
@@ -629,8 +592,7 @@ public class Polygon extends PointList implements Shape
 	 *            The polygon to union with.
 	 * @return The resulting polygon union
 	 */
-	public Polygon union(Polygon p2)
-	{
+	public Polygon union(Polygon p2) {
 		return new PolygonUtils().union(this, p2);
 	}
 
@@ -641,8 +603,7 @@ public class Polygon extends PointList implements Shape
 	 *            The polygon to XOR with.
 	 * @return The resulting polygon
 	 */
-	public Polygon xor(Polygon p2)
-	{
+	public Polygon xor(Polygon p2) {
 		return new PolygonUtils().xor(this, p2);
 	}
 
@@ -660,8 +621,7 @@ public class Polygon extends PointList implements Shape
 	 * @return new polygon that approximates this polygon, but with fewer
 	 *         vertices
 	 */
-	public Polygon reduceVertices(double eps)
-	{
+	public Polygon reduceVertices(double eps) {
 		if (eps == 0 || nVertices() <= 3)
 			return this.clone();
 
@@ -837,8 +797,7 @@ public class Polygon extends PointList implements Shape
 	public Rectangle calculateRegularBoundingBox() {
 		float xmin = Float.MAX_VALUE, xmax = -Float.MAX_VALUE, ymin = Float.MAX_VALUE, ymax = -Float.MAX_VALUE;
 
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
+		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
 			for (final Point2d p : ppp.getVertices()) {
 				final float px = p.getX();
@@ -868,8 +827,7 @@ public class Polygon extends PointList implements Shape
 	 */
 	@Override
 	public void translate(float x, float y) {
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
+		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
 			for (final Point2d p : ppp.getVertices()) {
 				p.setX(p.getX() + x);
@@ -887,8 +845,7 @@ public class Polygon extends PointList implements Shape
 	 */
 	@Override
 	public void scale(float sc) {
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
+		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
 			for (final Point2d p : ppp.getVertices()) {
 				p.setX(p.getX() * sc);
@@ -906,10 +863,8 @@ public class Polygon extends PointList implements Shape
 	 * @return this polygon
 	 */
 	@Override
-	public Polygon scaleX(float sc)
-	{
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
+	public Polygon scaleX(float sc) {
+		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
 			for (final Point2d p : ppp.getVertices()) {
 				p.setX(p.getX() * sc);
@@ -927,10 +882,8 @@ public class Polygon extends PointList implements Shape
 	 * @return this polygon
 	 */
 	@Override
-	public Polygon scaleY(float sc)
-	{
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
+	public Polygon scaleY(float sc) {
+		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
 			for (final Point2d p : ppp.getVertices()) {
 				p.setY(p.getY() * sc);
@@ -950,10 +903,8 @@ public class Polygon extends PointList implements Shape
 	 * @return this polygon
 	 */
 	@Override
-	public Polygon scaleXY(float scx, float scy)
-	{
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
+	public Polygon scaleXY(float scx, float scy) {
+		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
 			for (final Point2d p : ppp.getVertices()) {
 				p.setX(p.getX() * scx);
@@ -975,8 +926,7 @@ public class Polygon extends PointList implements Shape
 	@Override
 	public void scale(Point2d centre, float sc) {
 		this.translate(-centre.getX(), -centre.getY());
-		for (int pp = 0; pp < getNumInnerPoly(); pp++)
-		{
+		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
 			for (final Point2d p : ppp.getVertices()) {
 				p.setX(p.getX() * sc);
@@ -1010,8 +960,7 @@ public class Polygon extends PointList implements Shape
 			type = ReferenceType.Techreport,
 			month = "August",
 			year = "1996",
-			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
-			)
+			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf")
 	public double[] calculateFirstMoment() {
 		final boolean closed = isClosed();
 
@@ -1056,8 +1005,7 @@ public class Polygon extends PointList implements Shape
 			type = ReferenceType.Techreport,
 			month = "August",
 			year = "1996",
-			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
-			)
+			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf")
 	public double[] calculateSecondMoment() {
 		final boolean closed = isClosed();
 		final double area = calculateSignedArea();
@@ -1105,8 +1053,7 @@ public class Polygon extends PointList implements Shape
 			type = ReferenceType.Techreport,
 			month = "August",
 			year = "1996",
-			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf"
-			)
+			url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.8765&rep=rep1&type=pdf")
 	public double[] calculateSecondMomentCentralised() {
 		final double[] firstMoment = this.calculateFirstMoment();
 		final double[] secondMoment = this.calculateSecondMoment();
@@ -1162,8 +1109,7 @@ public class Polygon extends PointList implements Shape
 				center.getX(),
 				center.getY(),
 				sm,
-				(float) Math.sqrt(3)
-				);
+				(float) Math.sqrt(3));
 	}
 
 	/**
@@ -1194,8 +1140,7 @@ public class Polygon extends PointList implements Shape
 
 			if (i == 0) // in first loop direction is unknown, so save it in res
 				res = u.getX() * v.y - u.getY() * v.x + v.x * p.getY() - v.y * p.getX();
-			else
-			{
+			else {
 				final float newres = u.getX() * v.y - u.getY() * v.x + v.x * p.getY() - v.y * p.getX();
 				if ((newres > 0 && res < 0) || (newres < 0 && res > 0))
 					return false;
