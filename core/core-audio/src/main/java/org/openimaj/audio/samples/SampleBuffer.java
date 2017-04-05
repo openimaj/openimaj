@@ -37,113 +37,137 @@ import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.timecode.AudioTimecode;
 
 /**
- * 	This class provides a consistent API for access samples of different
- * 	sizes (e.g. 8-bit and 16-bit). Subclasses implement get and set methods
- * 	for samples in a sample byte buffer. The getters and setters return and
- * 	take floats in all cases, so it is up to the implementing class to decide
- * 	how best to convert the incoming value to an appropriate value for the
- * 	sample buffer. The values given and expected should be normalised between
- * 	{@link Integer#MAX_VALUE} and {@link Integer#MIN_VALUE}. Despite using
- * 	floats, this allows us to detect clipping. Return values are signed such
- * 	that an empty signal has sample value 0. If the audio has multiple channels
- * 	they will occur in the same order as the original file (likely to be
- * 	multiplexed - so <c>get(0)</c> will be channel 1 and <c>get(1)</c>
- * 	will be channel 2, etc.).
+ * This class provides a consistent API for access samples of different sizes
+ * (e.g. 8-bit and 16-bit). Subclasses implement get and set methods for samples
+ * in a sample byte buffer. The getters and setters return and take floats in
+ * all cases, so it is up to the implementing class to decide how best to
+ * convert the incoming value to an appropriate value for the sample buffer. The
+ * values given and expected should be normalised between
+ * {@link Integer#MAX_VALUE} and {@link Integer#MIN_VALUE}. Despite using
+ * floats, this allows us to detect clipping. Return values are signed such that
+ * an empty signal has sample value 0. If the audio has multiple channels they
+ * will occur in the same order as the original file (likely to be multiplexed -
+ * so <c>get(0)</c> will be channel 1 and <c>get(1)</c> will be channel 2,
+ * etc.).
  *
- * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	@created 23rd November 2011
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 23rd November 2011
  */
-public interface SampleBuffer extends Iterable<Float>
-{
+public interface SampleBuffer extends Iterable<Float> {
 	/**
-	 * 	Get the sample at the given index. The sample will be a float and have
-	 * 	a value between {@link Integer#MAX_VALUE} and {@link Integer#MIN_VALUE}.
-	 * 	That sample will be signed.
+	 * Get the sample at the given index. The sample will be a float and have a
+	 * value between {@link Integer#MAX_VALUE} and {@link Integer#MIN_VALUE}.
+	 * That sample will be signed.
 	 *
-	 * 	@param index The index of the sample to retrieve
-	 * 	@return The sample value as an float
+	 * @param index
+	 *            The index of the sample to retrieve
+	 * @return The sample value as an float
 	 */
-	public float get( int index );
+	public float get(int index);
 
 	/**
-	 * 	Set the sample value at the given index. The sample value should be
-	 * 	scaled between {@link Integer#MAX_VALUE} and {@link Integer#MIN_VALUE}
-	 * 	(i.e. it should be signed).
+	 * Set the sample value at the given index. The sample value should be
+	 * scaled between {@link Integer#MAX_VALUE} and {@link Integer#MIN_VALUE}
+	 * (i.e. it should be signed).
 	 *
-	 * 	@param index The index of the sample to set.
-	 * 	@param sample The sample value to set.
+	 * @param index
+	 *            The index of the sample to set.
+	 * @param sample
+	 *            The sample value to set.
 	 */
-	public void set( int index, float sample );
+	public void set(int index, float sample);
 
 	/**
-	 * 	Returns the size of this buffer. Divide by the number of channels
-	 * 	to get the number of samples per channel.
-	 * 	@return the size of this buffer.
+	 * Returns the size of this buffer. Divide by the number of channels to get
+	 * the number of samples per channel.
+	 *
+	 * @return the size of this buffer.
 	 */
 	public int size();
 
 	/**
-	 * 	Returns the audio format for this set of samples.
-	 *	@return The {@link AudioFormat} for this set of samples.
+	 * Returns the audio format for this set of samples.
+	 *
+	 * @return The {@link AudioFormat} for this set of samples.
 	 */
 	public AudioFormat getFormat();
 
 	/**
-	 * 	Reset the audio format for the samples in this buffer.
-	 * 	@param af The {@link AudioFormat}
+	 * Reset the audio format for the samples in this buffer.
+	 *
+	 * @param af
+	 *            The {@link AudioFormat}
 	 */
-	public void setFormat( AudioFormat af );
+	public void setFormat(AudioFormat af);
 
 	/**
-	 * 	Return a sample chunk that contains the data from
-	 * 	this sample buffer. Note that any timestamps will be
-	 * 	unset in the new sample chunk.
+	 * Return a sample chunk that contains the data from this sample buffer.
+	 * Note that any timestamps will be unset in the new sample chunk.
 	 *
-	 * 	@return A {@link SampleChunk} containing data in this buffer.
+	 * @return A {@link SampleChunk} containing data in this buffer.
 	 */
 	public SampleChunk getSampleChunk();
 
 	/**
-	 * 	Return a sample chunk that contains the data from
-	 * 	a specific channel in this sample buffer. The channel is
-	 * 	numbered from 0 (so mono audio streams will only have 1 channel
-	 * 	accessed with getSampleChunk(0)).
+	 * Return a sample chunk that contains the data from a specific channel in
+	 * this sample buffer. The channel is numbered from 0 (so mono audio streams
+	 * will only have 1 channel accessed with getSampleChunk(0)).
 	 *
-	 * 	Note that any timestamps will be unset in the new sample chunk.
+	 * Note that any timestamps will be unset in the new sample chunk.
 	 *
-	 *  @param channel The channel
+	 * @param channel
+	 *            The channel
 	 *
-	 * 	@return A {@link SampleChunk} containing data in this buffer.
+	 * @return A {@link SampleChunk} containing data in this buffer.
 	 */
-	public SampleChunk getSampleChunk( int channel );
+	public SampleChunk getSampleChunk(int channel);
 
 	/**
-	 * 	Returns the normalised (0..1) sample buffer data as a double array.
-	 *	@return A double array containing the normalised samples
+	 * Returns the normalised (0..1) sample buffer data as a double array.
+	 *
+	 * @return A double array containing the normalised samples
 	 */
 	public double[] asDoubleArray();
 
 	/**
-	 * 	Returns the samples in their channels as normalise (0..1) sample buffer
-	 * 	data.
-	 *	@return The array where the first dimension is the channels.
+	 * Returns the samples in their channels as normalise (0..1) sample buffer
+	 * data.
+	 *
+	 * @return The array where the first dimension is the channels.
+	 */
+	public float[][] asFloatChannelArray();
+
+	/**
+	 * Returns the normalised (0..1) sample buffer data as a float array.
+	 *
+	 * @return A double array containing the normalised samples
+	 */
+	public float[] asFloatArray();
+
+	/**
+	 * Returns the samples in their channels as normalise (0..1) sample buffer
+	 * data.
+	 *
+	 * @return The array where the first dimension is the channels.
 	 */
 	public double[][] asDoubleChannelArray();
 
 	/**
-	 * 	Returns the sample value at the given index without scaling - that is,
-	 * 	at it's original sample value. This can be useful for debugging, or
-	 * 	if the sample buffer is being used for non-audio applications.
+	 * Returns the sample value at the given index without scaling - that is, at
+	 * it's original sample value. This can be useful for debugging, or if the
+	 * sample buffer is being used for non-audio applications.
 	 *
-	 *  @param index The index to retrieve
-	 *  @return The value unscaled
+	 * @param index
+	 *            The index to retrieve
+	 * @return The value unscaled
 	 */
-	public float getUnscaled( int index );
+	public float getUnscaled(int index);
 
 	/**
-	 * 	Returns the timecode of the start of this sample buffer. May return null if
-	 * 	the timecode is unknown or has no meaning in this context.
-	 *	@return The timecode a the start of this buffer.
+	 * Returns the timecode of the start of this sample buffer. May return null
+	 * if the timecode is unknown or has no meaning in this context.
+	 *
+	 * @return The timecode a the start of this buffer.
 	 */
 	public AudioTimecode getStartTimecode();
 }
