@@ -720,19 +720,18 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 		BezierUtils.adaptiveHalving(c, new SimpleConvexHullSubdivCriterion(),
 				new CubicSegmentConsumer()
 		{
-			@Override
-			public void processSegment(final CubicCurve2D segment,
-					final double startT, final double endT)
+					@Override
+					public void processSegment(final CubicCurve2D segment,
+							final double startT, final double endT)
 			{
-				if (0.0 == startT)
-					points.add(new Point2dImpl(
-							(float) segment.getX1(), (float) segment.getY1()));
+						if (0.0 == startT)
+							points.add(new Point2dImpl(
+									(float) segment.getX1(), (float) segment.getY1()));
 
-				points.add(new Point2dImpl(
-						(float) segment.getX2(), (float) segment.getY2()));
-			}
-		}
-				);
+						points.add(new Point2dImpl(
+								(float) segment.getX2(), (float) segment.getY2()));
+					}
+				});
 
 		Point2d last = null;
 		for (final Point2d p : points) {
@@ -765,18 +764,16 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 		BezierUtils.adaptiveHalving(c, new SimpleConvexHullSubdivCriterion(),
 				new QuadSegmentConsumer()
 		{
-			@Override
-			public void processSegment(final QuadCurve2D segment, final double startT, final double endT)
-			{
-				if (0.0 == startT)
-					points.add(new Point2dImpl(
-							(float) segment.getX1(), (float) segment.getY1()));
+					@Override
+					public void processSegment(final QuadCurve2D segment, final double startT, final double endT) {
+						if (0.0 == startT)
+							points.add(new Point2dImpl(
+									(float) segment.getX1(), (float) segment.getY1()));
 
-				points.add(new Point2dImpl(
-						(float) segment.getX2(), (float) segment.getY2()));
-			}
-		}
-				);
+						points.add(new Point2dImpl(
+								(float) segment.getX2(), (float) segment.getY2()));
+					}
+				});
 
 		Point2d last = null;
 		for (final Point2d p : points) {

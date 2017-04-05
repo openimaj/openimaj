@@ -182,20 +182,30 @@ public class Polygon extends PointList implements Shape {
 
 		boolean isOdd = false;
 
+		final float px = point.getX();
+		final float py = point.getY();
+
 		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final List<Point2d> v = getInnerPoly(pp).getVertices();
 			int j = v.size() - 1;
+			float vjx = v.get(j).getX();
+			float vjy = v.get(j).getY();
+
 			for (int i = 0; i < v.size(); i++) {
-				if (v.get(i).getY() < point.getY() && v.get(j).getY() >= point.getY() ||
-						v.get(j).getY() < point.getY() && v.get(i).getY() >= point.getY())
+				final float vix = v.get(i).getX();
+				final float viy = v.get(i).getY();
+
+				if (viy < py && vjy >= py ||
+						vjy < py && viy >= py)
 				{
-					if (v.get(i).getX() + (point.getY() - v.get(i).getY()) /
-							(v.get(j).getY() - v.get(i).getY()) * (v.get(j).getX() - v.get(i).getX()) < point.getX())
-					{
+					if (vix + (py - viy) / (vjy - viy) * (vjx - vix) < px) {
 						isOdd = !isOdd;
 					}
 				}
+
 				j = i;
+				vjx = vix;
+				vjy = viy;
 			}
 		}
 

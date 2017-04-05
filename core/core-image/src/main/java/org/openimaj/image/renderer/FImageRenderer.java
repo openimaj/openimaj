@@ -376,8 +376,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	}
 
 	@Override
-	protected Float sanitise(final Float colour)
-	{
+	protected Float sanitise(final Float colour) {
 		return colour;
 	}
 
@@ -396,9 +395,6 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 				}
 			});
 		} else {
-			// final ConnectedComponent cc = new ConnectedComponent(p);
-			// cc.process(new BlobRenderer<Q>(this.targetImage, col));
-
 			final int minx = Math.max(0, (int) Math.round(p.minX()));
 			final int maxx = Math.min((int) Math.round(p.maxX()), targetImage.width - 1);
 			final int miny = Math.max(0, (int) Math.round(p.minY()));
