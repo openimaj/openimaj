@@ -46,16 +46,22 @@ import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.util.pair.Pair;
 
 /**
+ * <p>
  * An aligner that warps a {@link CLMDetectedFace} to the neutral pose
  * (reference shape) of the {@link Configuration}.
- * 
+ * </p>
+ * <p>
+ * Implementors of subclasses of this should note that if the triangles of the
+ * configuration are changed that the reference triangles must be recomputed.
+ * </p>
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class CLMAligner implements FaceAligner<CLMDetectedFace> {
-	private Configuration config;
-	private int size = 100;
-	private transient List<Triangle> referenceTriangles;
-	private transient FImage mask;
+	protected Configuration config;
+	protected int size = 100;
+	protected transient List<Triangle> referenceTriangles;
+	protected transient FImage mask;
 
 	/**
 	 * Construct a new {@link CLMAligner} using the default
@@ -69,7 +75,7 @@ public class CLMAligner implements FaceAligner<CLMDetectedFace> {
 	/**
 	 * Construct a new {@link CLMAligner} using the default
 	 * {@link Configuration} and given size for the aligned output image.
-	 * 
+	 *
 	 * @param size
 	 *            the output facial patch size
 	 */
@@ -79,7 +85,22 @@ public class CLMAligner implements FaceAligner<CLMDetectedFace> {
 		loadReference();
 	}
 
-	private void loadReference() {
+	/**
+	 * Construct a new {@link CLMAligner} using the provided
+	 * {@link Configuration} and default size of 100 pixels.
+	 *
+	 * @param size
+	 *            the output facial patch size
+	 * @param config
+	 *            the configuration
+	 */
+	public CLMAligner(int size, Configuration config) {
+		this.size = size;
+		this.config = config;
+		loadReference();
+	}
+
+	protected void loadReference() {
 		referenceTriangles = CLMFaceTracker.getTriangles(config.referenceShape, null, this.config.triangles);
 
 		mask = new FImage(size, size);
@@ -119,8 +140,7 @@ public class CLMAligner implements FaceAligner<CLMDetectedFace> {
 				face.getShapeMatrix(), face.getVisibility(), this.config.triangles);
 		final List<Pair<Shape>> matches = computeMatches(triangles);
 
-		final PiecewiseMeshWarp<Float, FImage> pmw = new
-				PiecewiseMeshWarp<Float, FImage>(matches);
+		final PiecewiseMeshWarp<Float, FImage> pmw = new PiecewiseMeshWarp<Float, FImage>(matches);
 
 		return pmw.transform(face.getFacePatch(), size, size);
 	}
