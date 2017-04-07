@@ -28,32 +28,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.math.geometry.shape;
 
 import static org.junit.Assert.assertEquals;
-import junit.framework.Assert;
+
+import java.util.List;
 
 import org.junit.Test;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
+import junit.framework.Assert;
+
 /**
- * 
- * 
+ *
+ *
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * @created 26 Aug 2011
- * 
+ *
  */
-public class PolygonTest
-{
+public class PolygonTest {
 	/**
 	 * Test checking of point inside polygon
 	 */
 	@Test
-	public void testPolygonIsInside()
-	{
+	public void testPolygonIsInside() {
 		final Polygon p = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
 		Assert.assertTrue(p.isInside(new Point2dImpl(150f, 150f)));
 	}
@@ -134,8 +135,7 @@ public class PolygonTest
 	 * Test checking of point inside polygon with hole
 	 */
 	@Test
-	public void testPolygonWithHoleIsInside()
-	{
+	public void testPolygonWithHoleIsInside() {
 		final Polygon p = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
 		final Polygon hole = new Rectangle(125f, 125f, 50f, 50f).asPolygon();
 		hole.setIsHole(true);
@@ -149,8 +149,7 @@ public class PolygonTest
 	 * Test cloning
 	 */
 	@Test
-	public void testPolygonClone()
-	{
+	public void testPolygonClone() {
 		final Polygon p = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
 		final Polygon hole = new Rectangle(125f, 125f, 50f, 50f).asPolygon();
 		hole.setIsHole(true);
@@ -165,8 +164,7 @@ public class PolygonTest
 	 * Test intersection
 	 */
 	@Test
-	public void testPolygonIntersection()
-	{
+	public void testPolygonIntersection() {
 		final Polygon p1 = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
 		final Polygon p2 = new Rectangle(150f, 150f, 100f, 100f).asPolygon();
 		final Polygon p3 = p1.intersect(p2);
@@ -178,8 +176,7 @@ public class PolygonTest
 	 * Test union
 	 */
 	@Test
-	public void testPolygonUnion()
-	{
+	public void testPolygonUnion() {
 		final Polygon p1 = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
 		final Polygon p2 = new Rectangle(200f, 100f, 100f, 100f).asPolygon();
 		final Polygon p3 = p1.union(p2);
@@ -191,8 +188,7 @@ public class PolygonTest
 	 * Test XOR
 	 */
 	@Test
-	public void testPolygonXOR()
-	{
+	public void testPolygonXOR() {
 		final Polygon p1 = new Rectangle(100f, 100f, 100f, 100f).asPolygon();
 		final Polygon p2 = new Rectangle(200f, 100f, 100f, 100f).asPolygon();
 		final Polygon p3 = p1.union(p2);
@@ -204,12 +200,52 @@ public class PolygonTest
 	 * Test vertex reduction
 	 */
 	@Test
-	public void testPolygonReduction()
-	{
+	public void testPolygonReduction() {
 		final Polygon p1 = new Circle(100f, 100f, 50f).asPolygon();
 		Assert.assertEquals(360, p1.nVertices());
 
 		final Polygon p2 = p1.reduceVertices(0.3f);
 		System.out.println(p2.nVertices());
+	}
+
+	/**
+	 * Test polygon scaling
+	 */
+	@Test
+	public void testScalingClosed() {
+		final float distance = 10.0f;
+		final float factor = 1.5f;
+		final Polygon polygon = new Polygon();
+		polygon.addVertex(-distance, -distance);
+		polygon.addVertex(-distance, distance);
+		polygon.addVertex(distance, distance);
+		polygon.addVertex(distance, -distance);
+		polygon.close();
+		polygon.scale(factor);
+		final List<Point2d> vertices = polygon.getVertices();
+		for (final Point2d vertex : vertices) {
+			assertEquals(distance * factor, Math.abs(vertex.getX()), 0.1);
+			assertEquals(distance * factor, Math.abs(vertex.getY()), 0.1);
+		}
+	}
+
+	/**
+	 * Test polygon scaling
+	 */
+	@Test
+	public void testScalingOpen() {
+		final float distance = 10.0f;
+		final float factor = 1.5f;
+		final Polygon polygon = new Polygon();
+		polygon.addVertex(-distance, -distance);
+		polygon.addVertex(-distance, distance);
+		polygon.addVertex(distance, distance);
+		polygon.addVertex(distance, -distance);
+		polygon.scale(factor);
+		final List<Point2d> vertices = polygon.getVertices();
+		for (final Point2d vertex : vertices) {
+			assertEquals(distance * factor, Math.abs(vertex.getX()), 0.1);
+			assertEquals(distance * factor, Math.abs(vertex.getY()), 0.1);
+		}
 	}
 }

@@ -243,10 +243,10 @@ public class Polygon extends PointList implements Shape {
 	public Polygon difference(Polygon p) {
 		final List<Point2d> v = new ArrayList<Point2d>();
 
-		for (int i = 0; i < points.size(); i++)
+		for (int i = 0; i < nVertices(); i++)
 			v.add(new Point2dImpl(
-					points.get(i).getX() - p.getVertices().get(i).getX(),
-					points.get(i).getY() - p.getVertices().get(i).getY()));
+					points.get(i).getX() - p.points.get(i).getX(),
+					points.get(i).getY() - p.points.get(i).getY()));
 
 		final Polygon p2 = new Polygon(v);
 		for (int i = 0; i < innerPolygons.size(); i++)
@@ -809,7 +809,8 @@ public class Polygon extends PointList implements Shape {
 
 		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
-			for (final Point2d p : ppp.getVertices()) {
+			for (int i = 0; i < ppp.nVertices(); i++) {
+				final Point2d p = ppp.points.get(i);
 				final float px = p.getX();
 				final float py = p.getY();
 				if (px < xmin)
@@ -820,7 +821,6 @@ public class Polygon extends PointList implements Shape {
 					ymin = py;
 				if (py > ymax)
 					ymax = py;
-
 			}
 		}
 
@@ -839,7 +839,8 @@ public class Polygon extends PointList implements Shape {
 	public void translate(float x, float y) {
 		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
-			for (final Point2d p : ppp.getVertices()) {
+			for (int i = 0; i < ppp.nVertices(); i++) {
+				final Point2d p = ppp.points.get(i);
 				p.setX(p.getX() + x);
 				p.setY(p.getY() + y);
 			}
@@ -857,7 +858,8 @@ public class Polygon extends PointList implements Shape {
 	public void scale(float sc) {
 		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
-			for (final Point2d p : ppp.getVertices()) {
+			for (int i = 0; i < ppp.nVertices(); i++) {
+				final Point2d p = ppp.points.get(i);
 				p.setX(p.getX() * sc);
 				p.setY(p.getY() * sc);
 			}
@@ -876,7 +878,8 @@ public class Polygon extends PointList implements Shape {
 	public Polygon scaleX(float sc) {
 		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
-			for (final Point2d p : ppp.getVertices()) {
+			for (int i = 0; i < ppp.nVertices(); i++) {
+				final Point2d p = ppp.points.get(i);
 				p.setX(p.getX() * sc);
 			}
 		}
@@ -895,7 +898,8 @@ public class Polygon extends PointList implements Shape {
 	public Polygon scaleY(float sc) {
 		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
-			for (final Point2d p : ppp.getVertices()) {
+			for (int i = 0; i < ppp.nVertices(); i++) {
+				final Point2d p = ppp.points.get(i);
 				p.setY(p.getY() * sc);
 			}
 		}
@@ -916,7 +920,8 @@ public class Polygon extends PointList implements Shape {
 	public Polygon scaleXY(float scx, float scy) {
 		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
-			for (final Point2d p : ppp.getVertices()) {
+			for (int i = 0; i < ppp.nVertices(); i++) {
+				final Point2d p = ppp.points.get(i);
 				p.setX(p.getX() * scx);
 				p.setY(p.getY() * scy);
 			}
@@ -938,7 +943,8 @@ public class Polygon extends PointList implements Shape {
 		this.translate(-centre.getX(), -centre.getY());
 		for (int pp = 0; pp < getNumInnerPoly(); pp++) {
 			final Polygon ppp = getInnerPoly(pp);
-			for (final Point2d p : ppp.getVertices()) {
+			for (int i = 0; i < ppp.nVertices(); i++) {
+				final Point2d p = ppp.points.get(i);
 				p.setX(p.getX() * sc);
 				p.setY(p.getY() * sc);
 			}
