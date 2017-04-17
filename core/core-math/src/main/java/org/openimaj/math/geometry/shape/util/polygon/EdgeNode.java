@@ -29,32 +29,30 @@
  */
 package org.openimaj.math.geometry.shape.util.polygon;
 
-import java.awt.geom.Point2D;
+import org.openimaj.math.geometry.point.DoublePoint2dImpl;
 
 /** */
-public class EdgeNode
-{
+public class EdgeNode {
 	/**
-	 * Piggy-backed contour vertex
-	 * data
+	 * Piggy-backed contour vertex data
 	 */
-	public Point2D.Double vertex = new Point2D.Double();
-	
+	public DoublePoint2dImpl vertex = new DoublePoint2dImpl();
+
 	/** Edge lower (x, y) coordinate */
-	public Point2D.Double bot = new Point2D.Double(); 
+	public DoublePoint2dImpl bot = new DoublePoint2dImpl();
 
 	/** Edge upper (x, y) coordinate */
-	public Point2D.Double top = new Point2D.Double();
+	public DoublePoint2dImpl top = new DoublePoint2dImpl();
 
 	/** Scanbeam bottom x coordinate */
 	public double xb;
 
 	/** Scanbeam top x coordinate */
 	public double xt;
-	
+
 	/** Change in x for a unit y increase */
 	public double dx;
-	 
+
 	/** PolygonUtils / subject edge flag */
 	public int type;
 
@@ -77,7 +75,7 @@ public class EdgeNode
 	public EdgeNode next;
 
 	// EdgeNode pred; /* Edge connected at the lower end */
-	
+
 	/** Edge connected at the upper end */
 	public EdgeNode succ;
 
