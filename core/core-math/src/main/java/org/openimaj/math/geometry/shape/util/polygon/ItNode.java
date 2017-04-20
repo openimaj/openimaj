@@ -29,21 +29,20 @@
  */
 package org.openimaj.math.geometry.shape.util.polygon;
 
-import java.awt.geom.Point2D;
+import org.openimaj.math.geometry.point.DoublePoint2dImpl;
 
 /**
  * Intersection table
  */
-public class ItNode
-{
+public class ItNode {
 	/** Intersecting edge (bundle) pair */
-	public EdgeNode[] ie = new EdgeNode[2]; 
+	public EdgeNode[] ie = new EdgeNode[2];
 
 	/** Point of intersection */
-	public Point2D.Double point = new Point2D.Double();
+	public DoublePoint2dImpl point = new DoublePoint2dImpl();
 
 	/** The next intersection table node */
-	public ItNode next; 
+	public ItNode next;
 
 	/**
 	 * @param edge0
@@ -52,8 +51,7 @@ public class ItNode
 	 * @param y
 	 * @param next
 	 */
-	public ItNode( EdgeNode edge0, EdgeNode edge1, double x, double y, ItNode next )
-	{
+	public ItNode(EdgeNode edge0, EdgeNode edge1, double x, double y, ItNode next) {
 		this.ie[0] = edge0;
 		this.ie[1] = edge1;
 		this.point.x = x;
