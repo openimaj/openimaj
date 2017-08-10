@@ -42,13 +42,13 @@ import org.openimaj.feature.FloatFV;
  * Dense SIFT keypoint with a location and float feature vector. Also includes
  * the energy of the feature prior to normalisation in case low-contrast
  * features need removing.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FloatDSIFTKeypoint
 		extends
-		AbstractDSIFTKeypoint<FloatFV, float[]>
+			AbstractDSIFTKeypoint<FloatFV, float[]>
 {
 	static final long serialVersionUID = 12345545L;
 
@@ -61,7 +61,7 @@ public class FloatDSIFTKeypoint
 
 	/**
 	 * Construct with the given feature vector length.
-	 * 
+	 *
 	 * @param length
 	 *            the length of the feature vector
 	 */
@@ -71,7 +71,7 @@ public class FloatDSIFTKeypoint
 
 	/**
 	 * Construct with the given parameters.
-	 * 
+	 *
 	 * @param x
 	 *            the x-ordinate of the keypoint
 	 * @param y
@@ -116,7 +116,7 @@ public class FloatDSIFTKeypoint
 		for (int i = 0; i < descriptor.length; i++) {
 			if (i > 0 && i % 20 == 0)
 				out.println();
-			out.print(" %f" + descriptor[i]);
+			out.format(" %f", descriptor[i]);
 		}
 		out.println();
 	}
