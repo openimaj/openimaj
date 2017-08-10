@@ -319,6 +319,24 @@ public enum Sparse#T#FVComparison implements FVComparator<Sparse#T#FV> {
 
 			return 1.0 - (((double)intersection.size()) / (double)union.size());
 		}
+	},
+	/**
+	 * Inner product
+	 * d(H1,H2) =sumI(H1(I) * H2(I))
+	 */
+	INNER_PRODUCT(false) {
+		@Override
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
+			if (h1.length != h2.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double d = 0;
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				d += (e.value * e.otherValue);
+			}
+
+			return d;
+		}
 	}
 	;
 
