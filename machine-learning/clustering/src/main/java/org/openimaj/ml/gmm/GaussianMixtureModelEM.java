@@ -29,8 +29,6 @@
  */
 package org.openimaj.ml.gmm;
 
-import gnu.trove.list.array.TDoubleArrayList;
-
 import java.util.Arrays;
 import java.util.EnumSet;
 
@@ -49,6 +47,7 @@ import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
+import gnu.trove.list.array.TDoubleArrayList;
 
 /**
  * Gaussian mixture model learning using the EM algorithm. Supports a range of
@@ -57,14 +56,14 @@ import Jama.Matrix;
  * although this can be disabled in the constructor.
  * <p>
  * Implementation was originally inspired by the SciPy's "gmm.py".
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class GaussianMixtureModelEM {
 	/**
 	 * Different forms of covariance matrix supported by the
 	 * {@link GaussianMixtureModelEM}.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static enum CovarianceType {
@@ -74,8 +73,7 @@ public class GaussianMixtureModelEM {
 		 */
 		Spherical {
 			@Override
-			protected void setCovariances(MultivariateGaussian[] gaussians, Matrix cv)
-			{
+			protected void setCovariances(MultivariateGaussian[] gaussians, Matrix cv) {
 				double mean = 0;
 
 				for (int i = 0; i < cv.getRowDimension(); i++)
@@ -102,7 +100,7 @@ public class GaussianMixtureModelEM {
 			protected void mstep(EMGMM gmm, GaussianMixtureModelEM learner, Matrix X, Matrix responsibilities,
 					Matrix weightedXsum,
 					double[] norm)
-			{
+		{
 				final Matrix avgX2uw = responsibilities.transpose().times(X.arrayTimes(X));
 
 				for (int i = 0; i < gmm.gaussians.length; i++) {
@@ -116,8 +114,8 @@ public class GaussianMixtureModelEM {
 					final Matrix covar = MatrixUtils.plus(avgX2.minus(avgXmeans.times(2)).plus(avgMeans2),
 							learner.minCovar);
 
-					((SphericalMultivariateGaussian) gmm.gaussians[i]).variance =
-							MatrixUtils.sum(covar) / X.getColumnDimension();
+					((SphericalMultivariateGaussian) gmm.gaussians[i]).variance = MatrixUtils.sum(covar)
+							/ X.getColumnDimension();
 				}
 			}
 		},
@@ -126,8 +124,7 @@ public class GaussianMixtureModelEM {
 		 */
 		Diagonal {
 			@Override
-			protected void setCovariances(MultivariateGaussian[] gaussians, Matrix cv)
-			{
+			protected void setCovariances(MultivariateGaussian[] gaussians, Matrix cv) {
 				for (final MultivariateGaussian mg : gaussians) {
 					((DiagonalMultivariateGaussian) mg).variance = MatrixUtils.diagVector(cv);
 				}
@@ -147,7 +144,7 @@ public class GaussianMixtureModelEM {
 			protected void mstep(EMGMM gmm, GaussianMixtureModelEM learner, Matrix X, Matrix responsibilities,
 					Matrix weightedXsum,
 					double[] norm)
-			{
+		{
 				final Matrix avgX2uw = responsibilities.transpose().times(X.arrayTimes(X));
 
 				for (int i = 0; i < gmm.gaussians.length; i++) {
@@ -191,7 +188,7 @@ public class GaussianMixtureModelEM {
 			protected void mstep(EMGMM gmm, GaussianMixtureModelEM learner, Matrix X, Matrix responsibilities,
 					Matrix weightedXsum,
 					double[] norm)
-			{
+		{
 				// Eq. 12 from K. Murphy,
 				// "Fitting a Conditional Linear Gaussian Distribution"
 				final int nfeatures = X.getColumnDimension();
@@ -272,7 +269,7 @@ public class GaussianMixtureModelEM {
 			@Override
 			protected void setCovariances(MultivariateGaussian[] gaussians,
 					Matrix cv)
-			{
+		{
 				for (final MultivariateGaussian mg : gaussians) {
 					((FullMultivariateGaussian) mg).covar = cv;
 				}
@@ -293,7 +290,7 @@ public class GaussianMixtureModelEM {
 			@Override
 			protected void mstep(EMGMM gmm, GaussianMixtureModelEM learner, Matrix X, Matrix responsibilities,
 					Matrix weightedXsum, double[] norm)
-			{
+		{
 				// Eq. 15 from K. Murphy, "Fitting a Conditional Linear Gaussian
 				final int nfeatures = X.getColumnDimension();
 
@@ -321,7 +318,7 @@ public class GaussianMixtureModelEM {
 		 * Mode specific maximisation-step. Implementors should use the state to
 		 * update the covariance of each of the
 		 * {@link GaussianMixtureModelEM#gaussians}.
-		 * 
+		 *
 		 * @param gmm
 		 *            the mixture model being learned
 		 * @param X
@@ -341,7 +338,7 @@ public class GaussianMixtureModelEM {
 	/**
 	 * Options for controlling what gets updated during the initialisation
 	 * and/or iterations.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static enum UpdateOptions {
@@ -359,7 +356,7 @@ public class GaussianMixtureModelEM {
 		Covariances
 	}
 
-	private static class EMGMM extends MixtureOfGaussians {
+	protected static class EMGMM extends MixtureOfGaussians {
 		EMGMM(int nComponents) {
 			super(null, null);
 
@@ -386,7 +383,7 @@ public class GaussianMixtureModelEM {
 
 	/**
 	 * Construct with the given arguments.
-	 * 
+	 *
 	 * @param nComponents
 	 *            the number of gaussian components
 	 * @param ctype
@@ -429,14 +426,13 @@ public class GaussianMixtureModelEM {
 
 	/**
 	 * Construct with the given arguments.
-	 * 
+	 *
 	 * @param nComponents
 	 *            the number of gaussian components
 	 * @param ctype
 	 *            the form of the covariance matrices
 	 */
-	public GaussianMixtureModelEM(int nComponents, CovarianceType ctype)
-	{
+	public GaussianMixtureModelEM(int nComponents, CovarianceType ctype) {
 		this(nComponents, ctype, DEFAULT_THRESH, DEFAULT_MIN_COVAR, DEFAULT_NITERS, DEFAULT_NINIT, EnumSet
 				.allOf(UpdateOptions.class), EnumSet.allOf(UpdateOptions.class));
 	}
@@ -446,7 +442,7 @@ public class GaussianMixtureModelEM {
 	 * {@link #estimate(double[][])} has not been called, or if the last call to
 	 * {@link #estimate(double[][])} failed to reach convergence before running
 	 * out of iterations.
-	 * 
+	 *
 	 * @return true if the last call to {@link #estimate(double[][])} reached
 	 *         convergence; false otherwise
 	 */
@@ -458,7 +454,7 @@ public class GaussianMixtureModelEM {
 	 * Estimate a new {@link MixtureOfGaussians} from the given data. Use
 	 * {@link #hasConverged()} to check whether the EM algorithm reached
 	 * convergence in the estimation of the returned model.
-	 * 
+	 *
 	 * @param X
 	 *            the data matrix.
 	 * @return the generated GMM.
@@ -471,7 +467,7 @@ public class GaussianMixtureModelEM {
 	 * Estimate a new {@link MixtureOfGaussians} from the given data. Use
 	 * {@link #hasConverged()} to check whether the EM algorithm reached
 	 * convergence in the estimation of the returned model.
-	 * 
+	 *
 	 * @param X
 	 *            the data array.
 	 * @return the generated GMM.
@@ -561,7 +557,7 @@ public class GaussianMixtureModelEM {
 		return gmm;
 	}
 
-	private void mstep(EMGMM gmm, double[][] X, double[][] responsibilities) {
+	protected void mstep(EMGMM gmm, double[][] X, double[][] responsibilities) {
 		final double[] weights = ArrayUtils.colSum(responsibilities);
 		final Matrix resMat = new Matrix(responsibilities);
 		final Matrix Xmat = new Matrix(X);
