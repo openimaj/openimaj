@@ -38,7 +38,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
  * Image pre-processing options
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 enum ImageTransform implements CmdLineOptionsProvider {
@@ -67,13 +67,13 @@ enum ImageTransform implements CmdLineOptionsProvider {
 
 	/**
 	 * Pre-processing transform
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static abstract class ImageTransformOp {
 		/**
 		 * Apply the transform
-		 * 
+		 *
 		 * @param a
 		 *            the input image
 		 * @return the transformed image
@@ -93,7 +93,7 @@ enum ImageTransform implements CmdLineOptionsProvider {
 				name = "--dim-max",
 				aliases = "-dmax",
 				required = false,
-				usage = "The resultant length of maximum dimention")
+				usage = "The resultant length of maximum dimension")
 		private int dmax = 640;
 
 		@SuppressWarnings("unchecked")
@@ -110,8 +110,7 @@ enum ImageTransform implements CmdLineOptionsProvider {
 				newheight = dmax;
 				final float resizeRatio = ((float) dmax / (float) ah);
 				newwidth = (int) (aw * resizeRatio);
-			}
-			else {
+			} else {
 				// Final width will be dmax,
 				newwidth = dmax;
 				final float resizeRatio = ((float) dmax / (float) aw);
