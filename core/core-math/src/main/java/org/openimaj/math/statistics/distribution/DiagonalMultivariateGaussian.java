@@ -41,7 +41,7 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * Implementation of a {@link MultivariateGaussian} with a diagonal covariance
  * matrix.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
@@ -52,7 +52,7 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 
 	/**
 	 * Construct the Gaussian with the provided center and covariance
-	 * 
+	 *
 	 * @param mean
 	 *            centre of the Gaussian
 	 * @param variance
@@ -65,7 +65,7 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 
 	/**
 	 * Construct the Gaussian with the zero mean and unit variance
-	 * 
+	 *
 	 * @param ndims
 	 *            number of dimensions
 	 */
@@ -114,10 +114,10 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 		final int N = this.variance.length;
 		final double[] meanvector = mean.getArray()[0];
 
-		double det = variance[0];
+		double log_sqrt_det = Math.log(Math.sqrt(variance[0]));
 		for (int i = 1; i < N; i++)
-			det *= variance[i];
-		final double pdf_const_factor = 1.0 / Math.sqrt((Math.pow((2 * Math.PI), N) * det));
+			log_sqrt_det += Math.log(Math.sqrt(variance[i]));
+		final double log_pdf_const_factor = -Math.log(Math.sqrt((Math.pow((2 * Math.PI), N)))) - log_sqrt_det;
 
 		double v = 0;
 		for (int i = 0; i < N; i++) {
@@ -125,7 +125,7 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 			v += diff * diff / variance[i];
 		}
 
-		return Math.log(pdf_const_factor) + (-0.5 * v);
+		return log_pdf_const_factor + (-0.5 * v);
 	}
 
 	@Override
@@ -133,10 +133,10 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 		final int N = this.variance.length;
 		final double[] meanvector = mean.getArray()[0];
 
-		double det = variance[0];
+		double log_sqrt_det = Math.log(Math.sqrt(variance[0]));
 		for (int i = 1; i < N; i++)
-			det *= variance[i];
-		final double pdf_const_factor = 1.0 / Math.sqrt((Math.pow((2 * Math.PI), N) * det));
+			log_sqrt_det += Math.log(Math.sqrt(variance[i]));
+		final double log_pdf_const_factor = -Math.log(Math.sqrt((Math.pow((2 * Math.PI), N)))) - log_sqrt_det;
 
 		final double[] lp = new double[samples.length];
 		for (int j = 0; j < samples.length; j++) {
@@ -145,7 +145,7 @@ public class DiagonalMultivariateGaussian extends AbstractMultivariateGaussian {
 				final double diff = samples[j][i] - meanvector[i];
 				v += diff * diff / variance[i];
 			}
-			lp[j] = Math.log(pdf_const_factor) + (-0.5 * v);
+			lp[j] = log_pdf_const_factor + (-0.5 * v);
 		}
 
 		return lp;
