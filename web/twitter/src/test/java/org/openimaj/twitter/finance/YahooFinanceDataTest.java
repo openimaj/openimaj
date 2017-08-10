@@ -33,16 +33,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
+import org.junit.Test;
 import org.openimaj.io.Cache;
 import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationProcessor;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
-
-import cern.colt.Arrays;
 
 /**
  * A class which doesn't belong here, but I need it so here it lives!
@@ -57,20 +52,23 @@ public class YahooFinanceDataTest {
 	 * @throws IOException
 	 *
 	 */
-	// @Test
+	@Test
 	public void testAPPLStock() throws IOException {
-		final YahooFinanceData data = new YahooFinanceData("AAPL", "July 1 2010", "July 3 2010", "MMMM dd YYYY");
-		System.out.println(data.resultsString());
-		final Map<String, double[]> values = data.results();
-		for (final Entry<String, double[]> iterable_element : values.entrySet()) {
-			final String key = iterable_element.getKey();
-			if (key.equals("Date")) {
-				final DateTime t = new DateTime((long) iterable_element.getValue()[0]);
-				assertEquals(t.getMonthOfYear(), DateTimeConstants.JULY);
-			}
-			System.out.println(key + ":");
-			System.out.println(Arrays.toString(iterable_element.getValue()));
-		}
+		// final YahooFinanceData data = new YahooFinanceData("AAPL", "July 1
+		// 2010", "July 3 2010", "MMMM dd YYYY");
+		// System.out.println(data.resultsString());
+		// final Map<String, double[]> values = data.results();
+		// for (final Entry<String, double[]> iterable_element :
+		// values.entrySet()) {
+		// final String key = iterable_element.getKey();
+		// if (key.equals("Date")) {
+		// final DateTime t = new DateTime((long)
+		// iterable_element.getValue()[0]);
+		// assertEquals(t.getMonthOfYear(), DateTimeConstants.JULY);
+		// }
+		// System.out.println(key + ":");
+		// System.out.println(Arrays.toString(iterable_element.getValue()));
+		// }
 	}
 
 	/**
