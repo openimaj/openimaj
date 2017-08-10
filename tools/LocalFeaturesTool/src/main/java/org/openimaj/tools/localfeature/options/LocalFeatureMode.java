@@ -67,7 +67,7 @@ import org.openimaj.tools.localfeature.options.ImageTransform.ImageTransformOp;
 
 /**
  * Types of local feature
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum LocalFeatureMode implements CmdLineOptionsProvider {
@@ -151,12 +151,12 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 	/**
 	 * Associated options for each {@link LocalFeatureMode}.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static abstract class LocalFeatureModeOp
 			implements
-			LocalFeatureExtractor<LocalFeature<?, ?>, MBFImage>
+				LocalFeatureExtractor<LocalFeature<?, ?>, MBFImage>
 	{
 		private LocalFeatureMode mode;
 
@@ -171,7 +171,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		/**
 		 * Extract features based on the options.
-		 * 
+		 *
 		 * @param image
 		 *            the image
 		 * @return the features
@@ -200,7 +200,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 	/**
 	 * Associated options for things built on a {@link DoGSIFTEngine}.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static abstract class AbstractDoGSIFTModeOp extends LocalFeatureModeOp {
@@ -282,7 +282,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			switch (this.cm) {
 			case SINGLE_COLOUR:
 			case INTENSITY:
-				keys = engine.findFeatures((FImage) cmOp.process(img));
+				keys = engine.findFeatures((FImage) itOp.transform(cmOp.process(img)));
 				break;
 			case INTENSITY_COLOUR:
 				throw new UnsupportedOperationException();
@@ -292,6 +292,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends Keypoint> extractFeature(MBFImage img) {
+			img = (MBFImage) this.itOp.transform(img);
 			final MinMaxDoGSIFTEngine engine = new MinMaxDoGSIFTEngine();
 			LocalFeatureList<MinMaxKeypoint> keys = null;
 			switch (this.cm) {
@@ -517,6 +518,8 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 
 		LocalFeatureList<? extends LocalFeature<?, ?>> extract(FImage image) {
+			image = (FImage) this.itOp.transform(image);
+
 			final DenseSIFT dsift;
 
 			if (approximate)
@@ -562,6 +565,8 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(MBFImage image) {
+			image = (MBFImage) this.itOp.transform(image);
+
 			final ColourDenseSIFT dsift;
 
 			if (approximate)
@@ -626,6 +631,8 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 
 		LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(FImage image) {
+			image = (FImage) this.itOp.transform(image);
+
 			final PyramidDenseSIFT<FImage> dsift;
 
 			if (approximate)
@@ -672,6 +679,8 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 
 		@Override
 		public LocalFeatureList<? extends LocalFeature<?, ?>> extractFeature(MBFImage image) {
+			image = (MBFImage) this.itOp.transform(image);
+
 			final PyramidDenseSIFT<MBFImage> dsift;
 
 			if (approximate)
