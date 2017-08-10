@@ -46,7 +46,7 @@ import java.util.Arrays;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
-import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.#T#NearestNeighboursExact;
 import org.openimaj.knn.NearestNeighbours;
 
 /**
@@ -108,7 +108,8 @@ import org.openimaj.knn.NearestNeighbours;
  				"keywords", "High-dimensional indexing, High-dimensional indexing, image indexing, very large databases, approximate search., approximate search., image indexing, very large databases"
  		})
 public class #T#ProductQuantiser {
-	protected #T#NearestNeighbours[] assigners;
+	protected #T#NearestNeighboursExact[] assigners;
+	protected int ndims;
 
 	/**
 	 * Construct a {@link #T#ProductQuantiser} with the given
@@ -119,8 +120,11 @@ public class #T#ProductQuantiser {
 	 * @param assigners
 	 *            the nearest-neighbour assigners.
 	 */
-	public #T#ProductQuantiser(#T#NearestNeighbours[] assigners) {
+	public #T#ProductQuantiser(#T#NearestNeighboursExact[] assigners) {
 		this.assigners = assigners;
+		
+		for (final #T#NearestNeighboursExact nn : assigners)
+			ndims += nn.numDimensions();
 	}
 
 	/**
@@ -151,5 +155,27 @@ public class #T#ProductQuantiser {
 		}
 
 		return quantised;
+	}
+	
+	/**
+	 * Decompress the quantised data by replacing each encoded index with the actual centroid subvector.
+	 *
+	 * @param qdata the quantised data
+	 *
+	 * @return the (approximate) decompressed feature
+	 */
+	public #t#[] decompress(byte[] qdata) {
+		final #t#[] data = new #t#[ndims];
+
+		for (int i = 0, from = 0; i < assigners.length; i++) {
+			final int len = assigners[i].numDimensions();
+			int index = (int)qdata[i] + 128;
+		
+			System.arraycopy(this.assigners[i].getPoints()[index], 0, data, from, len);
+
+			from += len;
+		}
+		
+		return data;
 	}
 }

@@ -29,7 +29,7 @@
  */
 package org.openimaj.knn.pq;
 
-import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.#T#NearestNeighboursExact;
 import org.openimaj.knn.#T#NearestNeighboursProvider;
 import org.openimaj.ml.clustering.kmeans.#T#KMeans;
 
@@ -69,7 +69,7 @@ public final class #T#ProductQuantiserUtilities {
 		final int subDim = data[0].length / numAssigners;
 		final #t#[][] tmp = new #t#[data.length][subDim];
 
-		final #T#NearestNeighbours[] assigners = new #T#NearestNeighbours[numAssigners];
+		final #T#NearestNeighboursExact[] assigners = new #T#NearestNeighboursExact[numAssigners];
 		final #T#KMeans kmeans = #T#KMeans.createExact(K, 100);
 
 		for (int i = 0; i < numAssigners; i++) {
@@ -81,7 +81,7 @@ public final class #T#ProductQuantiserUtilities {
 			// kmeans
 			final #T#NearestNeighboursProvider centroids = (#T#NearestNeighboursProvider) kmeans.cluster(tmp);
 
-			assigners[i] = centroids.getNearestNeighbours();
+			assigners[i] = (#T#NearestNeighboursExact)centroids.getNearestNeighbours();
 		}
 
 		return new #T#ProductQuantiser(assigners);
