@@ -38,7 +38,6 @@ import java.util.Map.Entry;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.junit.Test;
 import org.openimaj.io.Cache;
 import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationProcessor;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
@@ -47,18 +46,18 @@ import cern.colt.Arrays;
 
 /**
  * A class which doesn't belong here, but I need it so here it lives!
- * 
- * 
+ *
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class YahooFinanceDataTest {
 
 	/**
 	 * @throws IOException
-	 * 
+	 *
 	 */
-	@Test
+	// @Test
 	public void testAPPLStock() throws IOException {
 		final YahooFinanceData data = new YahooFinanceData("AAPL", "July 1 2010", "July 3 2010", "MMMM dd YYYY");
 		System.out.println(data.resultsString());
@@ -77,7 +76,7 @@ public class YahooFinanceDataTest {
 	/**
 	 * @throws IOException
 	 */
-	@Test
+	// @Test
 	public void testTimeSeries() throws IOException {
 		// Get time over a weekend
 		final YahooFinanceData data = new YahooFinanceData("AAPL", "July 9 2010", "July 13 2010", "MMMM dd YYYY");
@@ -92,10 +91,10 @@ public class YahooFinanceDataTest {
 
 	/**
 	 * Make sure the yahoo finance data can be cached properly
-	 * 
+	 *
 	 * @throws Exception
 	 */
-	@Test
+	// @Test
 	public void testCachedFinanceData() throws Exception {
 		Cache.clear(YahooFinanceData.class, "AAPL", "July 9 2010", "July 13 2010", "MMMM dd YYYY");
 
