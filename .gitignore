@@ -85,3 +85,5 @@ hs_err_pid*
 
 # Ignore JavaDocs
 doc/
+
+.DS_Store
