@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-web</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.3.6</version>
+    <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>data-scraping</artifactId>
   <packaging>jar</packaging>
@@ -41,13 +41,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video</artifactId>
-      <version>1.3.6</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>xuggle-video</artifactId>
-      <version>1.3.6</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.3.6</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
