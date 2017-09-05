@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-streams</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.6</version>
   </parent>
   <artifactId>common-stream</artifactId>
   <packaging>jar</packaging>
@@ -18,7 +18,7 @@
 		<dependency>
 			<artifactId>twitter</artifactId>
 			<groupId>org.openimaj</groupId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.3.6</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -30,12 +30,12 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 		  <artifactId>data-scraping</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.3.6</version>
 		</dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-web</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.6</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>twitter</artifactId>
@@ -29,13 +29,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>nlp</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

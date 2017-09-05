@@ -4,7 +4,7 @@
   <parent>
     <artifactId>openimaj-machine-learning</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3.6</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>clustering</artifactId>
@@ -15,25 +15,25 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-experiment</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>nearest-neighbour</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.3.6</version>
       <scope>test</scope>
     </dependency>
     <dependency>
