@@ -4,6 +4,7 @@
 	        xmlns:fo="http://www.w3.org/1999/XSL/Format" version="1.0">
 
   <xsl:import href="urn:docbkx:stylesheet" />
+  <xsl:import href="verbatim.xsl" />
   <xsl:param name="graphicsize.extension" select="1"></xsl:param>
 
   <xsl:param name="header.rule">0</xsl:param>
@@ -412,11 +413,19 @@
       ################################################### -->
 
   <!-- Verbatim text formatting (programlistings) -->
-  <xsl:attribute-set name="monospace.verbatim.properties">
+  <xsl:param name="hyphenate.verbatim">1</xsl:param>
+  <xsl:attribute-set name="monospace.verbatim.properties" 
+                   use-attribute-sets="verbatim.properties monospace.properties">
     <xsl:attribute name="font-size">
       <xsl:text>7.8pt</xsl:text>
     </xsl:attribute>
+    <!-- Start line breaking -->
+    <xsl:attribute name="wrap-option">wrap</xsl:attribute>
+    <xsl:attribute name="hyphenation-character">\</xsl:attribute>
+    <!-- End line breaking -->
   </xsl:attribute-set>
+
+
 
   <xsl:attribute-set name="verbatim.properties">
     <xsl:attribute name="space-before.minimum">0em</xsl:attribute>
@@ -431,7 +440,7 @@
     <xsl:attribute name="padding-bottom">0.5em</xsl:attribute>
     <xsl:attribute name="margin-left">0em</xsl:attribute>
     <xsl:attribute name="margin-right">0em</xsl:attribute>
-		<xsl:attribute name="keep-together.within-column">always</xsl:attribute>
+		<xsl:attribute name="keep-together.within-column">auto</xsl:attribute>
   </xsl:attribute-set>
 
   <!-- Shade (background) programlistings -->
@@ -533,4 +542,45 @@
     <xsl:call-template name="inline.boldmonoseq"/>
   </xsl:template>
 
+
+
+  <!-- stuff to ensure that options dont get broken across lines -->
+  <xsl:attribute-set name="option.monospace.properties" 
+                   use-attribute-sets="monospace.properties">
+    <xsl:attribute name="keep-together.within-line">
+      <xsl:text>always</xsl:text>
+    </xsl:attribute>
+  </xsl:attribute-set>
+
+  <xsl:template name="option.inline.monoseq">
+  <xsl:param name="content">
+    <xsl:apply-templates/>
+  </xsl:param>
+
+  <xsl:param name="contentwithlink">
+    <xsl:call-template name="simple.xlink">
+      <xsl:with-param name="content" select="$content"/>
+    </xsl:call-template>
+  </xsl:param>
+
+
+  <fo:inline xsl:use-attribute-sets="option.monospace.properties">
+    <xsl:call-template name="anchor"/>
+    <xsl:if test="@dir">
+      <xsl:attribute name="direction">
+        <xsl:choose>
+          <xsl:when test="@dir = 'ltr' or @dir = 'lro'">ltr</xsl:when>
+          <xsl:otherwise>rtl</xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:copy-of select="$contentwithlink"/>
+  </fo:inline>
+</xsl:template>
+
+<xsl:template match="d:option">
+    <xsl:call-template name="option.inline.monoseq"/>
+  </xsl:template>
+
 </xsl:stylesheet>
+

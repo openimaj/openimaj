@@ -32,11 +32,9 @@
 	  <para>
 	    To create a new OpenIMAJ project, run the following command:
 	  </para>
-	  <screen><command>mvn <option>-DarchetypeCatalog=http://maven.openimaj.org/archetype-catalog.xml</option> <option>archetype:generate</option></command></screen>
+	  <screen><command>mvn <option>-DarchetypeGroupId=org.openimaj</option> <option>-DarchetypeArtifactId=openimaj-quickstart-archetype</option> <option> -DarchetypeVersion=${project.version}</option> <option> archetype:generate</option></command></screen>
 	  <para>
-	    Maven will then prompt you for some input. Firstly, when prompted,
-	    choose the <literal>openimaj-quickstart-archetype</literal> and
-	    choose the latest version. For the <literal>groupId</literal>, enter
+	    Maven will then prompt you for some input. For the <literal>groupId</literal>, enter
 	    something that identifies you or a group that you belong to (for
 	    example, I might choose <literal>uk.ac.soton.ecs.jsh2</literal> for
 	    personal projects, or <literal>org.openimaj</literal> for OpenIMAJ
@@ -48,14 +46,72 @@
 	    settings. Maven will then generate a new project in a directory with
 	    the same name as the <literal>artifactId</literal> you provided.
 	  </para>
-		<note>
+	  <para>
+	  	The entire interaction with Maven should look something like this:
+	  	<programlisting>
+&gt; mvn archetype:generate -DarchetypeGroupId=org.openimaj -DarchetypeArtifactId=openimaj-quickstart-archetype -DarchetypeVersion=${project.version}
+
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] &gt;&gt;&gt; maven-archetype-plugin:3.0.0:generate (default-cli) &gt; generate-sources @ standalone-pom &gt;&gt;&gt;
+[INFO] 
+[INFO] &lt;&lt;&lt; maven-archetype-plugin:3.0.0:generate (default-cli) &lt; generate-sources @ standalone-pom &lt;&lt;&lt;
+[INFO] 
+[INFO] 
+[INFO] --- maven-archetype-plugin:3.0.0:generate (default-cli) @ standalone-pom ---
+[INFO] Generating project in Interactive mode
+[INFO] Archetype repository not defined. Using the one from [org.openimaj:openimaj-quickstart-archetype:${project.version}] found in catalog remote
+Define value for property 'groupId': uk.ac.soton.ecs.jsh2
+Define value for property 'artifactId': openimaj-test-project
+Define value for property 'version' 1.0-SNAPSHOT: :
+Define value for property 'package' uk.ac.soton.ecs.jsh2: :
+[INFO] Using property: openimajVersion = ${project.version}
+Confirm properties configuration:
+groupId: uk.ac.soton.ecs.jsh2
+artifactId: openimaj-test-project
+version: 1.0-SNAPSHOT
+package: uk.ac.soton.ecs.jsh2
+openimajVersion: ${project.version}
+ Y: :
+[INFO] ----------------------------------------------------------------------------
+[INFO] Using following parameters for creating project from Archetype: openimaj-quickstart-archetype:${project.version}
+[INFO] ----------------------------------------------------------------------------
+[INFO] Parameter: groupId, Value: uk.ac.soton.ecs.jsh2
+[INFO] Parameter: artifactId, Value: openimaj-test-project
+[INFO] Parameter: version, Value: 1.0-SNAPSHOT
+[INFO] Parameter: package, Value: uk.ac.soton.ecs.jsh2
+[INFO] Parameter: packageInPathFormat, Value: uk/ac/soton/ecs/jsh2
+[INFO] Parameter: package, Value: uk.ac.soton.ecs.jsh2
+[INFO] Parameter: version, Value: 1.0-SNAPSHOT
+[INFO] Parameter: groupId, Value: uk.ac.soton.ecs.jsh2
+[INFO] Parameter: openimajVersion, Value: ${project.version}
+[INFO] Parameter: artifactId, Value: openimaj-test-project
+[INFO] Project created from Archetype in dir: /Users/jsh2/openimaj-test-project
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 47.710 s
+[INFO] Finished at: 2017-09-05T09:44:15+01:00
+[INFO] Final Memory: 15M/221M
+[INFO] ------------------------------------------------------------------------
+&gt; 
+	  	</programlisting>
+	  </para>
+
+	   <note>
 			<title>Overriding the OpenIMAJ version</title>
 			<para>
 			Versions of the archetype after <literal>1.0.5</literal> automatically select the corresponding 
 			OpenIMAJ version. With all versions of the archetype, you can override this 
 			by setting the <literal>openimajVersion</literal> on the command-line with the <command><option>-D</option></command> argument.
-		</para>
-		</note>
+			</para>
+	  </note>
+
 	  <para>
 	    The project directory contains a file called
 	    <filename>pom.xml</filename> and a directory called
@@ -111,7 +167,7 @@
 	      We could now go ahead and start playing with the code in a text
 	      editor, however this really isn’t recommended! Using a good
 	      Integrated Development Environment (IDE) with auto-completion will
-	      make your experience much better.
+	      make your experience much better -- particularly when it comes to managing imports.
 	    </para>
 	    <para>
 	      Maven integrates with all the popular IDEs. The OpenIMAJ
@@ -120,41 +176,59 @@
 	      able to help getting it set up in a different IDE if you wish.
 	    </para>
 	    <para>
-	      Integration with Eclipse is quite simple. From the command line,
-	      inside the project directory, issue the command:
+	      Integration with modern versions of Eclipse is quite simple, but you must have the Eclipse m2e plugin installed. If you're using one of the standard "Eclipse for Java Developers" provided by the Eclipse project, then you should be all set. Otherwise you'll first need to install the m2e plugin by following the instructions on the m2e website (http://www.eclipse.org/m2e/). 
 	    </para>
-			<screen><command>mvn eclipse:eclipse</command></screen>
+			
 	    <para>
-	      This will generate Eclipse project files in the same directory. In
-	      Eclipse you can then import the project into the Eclipse workspace
-	      (<guimenu>File</guimenu> &gt; <guimenuitem>import...</guimenuitem>, choose <guibutton>Existing projects into
-	      workspace</guibutton>, select the project directory, make sure
-	      <guibutton>Copy projects into workspace</guibutton> is
-	      <emphasis role="strong">unchecked</emphasis>, then click
-	      <guibutton>Finish</guibutton>). The project should then appear in the
+	    	To import your Maven project from within Eclipse, select <guimenuitem>Import...</guimenuitem> from the <guimenu>File</guimenu> menu:
+
+	    	<mediaobject>
+		    <imageobject>
+					<imagedata fileref="../../figs/eclipse-import.png" format="PNG" align="center" contentwidth="10cm"/>
+	      </imageobject>
+	      <textobject>
+					<phrase>Eclipse import menu</phrase>
+	      </textobject>
+	    </mediaobject>
+	    </para><para>
+	      Choose <guibutton>Existing Maven Projects</guibutton> (inside the <guibutton>Maven</guibutton> folder):
+
+		<mediaobject>
+		    <imageobject>
+					<imagedata fileref="../../figs/eclipse-import-dialog.png" format="PNG" align="center" contentwidth="10cm"/>
+	      </imageobject>
+	      <textobject>
+					<phrase>Eclipse import dialog</phrase>
+	      </textobject>
+	    </mediaobject>
+		</para><para>
+	      In the dialog that appears, click the <guibutton>Browse...</guibutton> and navigate to your project directory, and click <guibutton>Open</guibutton>:
+
+	      <mediaobject>
+		    <imageobject>
+					<imagedata fileref="../../figs/eclipse-import-fileselect.png" format="PNG" align="center" contentwidth="15cm"/>
+	      </imageobject>
+	      <textobject>
+					<phrase>Browsing for a Maven project</phrase>
+	      </textobject>
+	    </mediaobject>
+	    </para><para>
+	      The project should now appear in the <guilabel>Import Maven Projects</guilabel> window:
+	      
+		<mediaobject>
+		    <imageobject>
+					<imagedata fileref="../../figs/eclipse-maven-import-finished.png" format="PNG" align="center" contentwidth="10cm"/>
+	      </imageobject>
+	      <textobject>
+					<phrase>Finishing Maven import</phrase>
+	      </textobject>
+	    </mediaobject>
+		</para><para>
+	      Finally click <guibutton>Finish</guibutton>. The project will then appear in the
 	      workspace and you’ll be able to look at the <filename>App.java</filename> file that was
 	      generated by the archetype.
 	    </para>
-	    <para>
-	      <emphasis role="strong">IMPORTANT</emphasis> By default Eclipse
-	      doesn’t know about Maven and its repositories of jars. When you
-	      first import an OpenIMAJ project into Eclipse it will have errors.
-	      You can fix this by adding a new Java classpath variable
-	      (<guimenu>Eclipse</guimenu> &gt; <guimenuitem>Preferences</guimenuitem> &gt; <guibutton>Java</guibutton> &gt;
-	      <guibutton>Build Path</guibutton> &gt; <guibutton>Classpath Variables</guibutton>) called
-	      <literal>M2_REPO</literal>. The value of this variable is the
-	      location of your <filename>.m2/repository</filename> directory. For
-	      Unix systems this is usually found in your home directory, for
-	      Windows systems it is found in <filename>C:\Documents and Settings\&lt;user&gt;\</filename>.
-	    </para>
-			<mediaobject>
-		    <imageobject>
-					<imagedata fileref="../../figs/classpath.png" format="PNG" align="center" contentwidth="5cm"/>
-	      </imageobject>
-	      <textobject>
-					<phrase>Eclipse classpath variables</phrase>
-	      </textobject>
-	    </mediaobject>
+	    
 	    <para>
 	      Once you’ve opened the <filename>App.java</filename> file in
 	      Eclipse, you can right-click on it and select

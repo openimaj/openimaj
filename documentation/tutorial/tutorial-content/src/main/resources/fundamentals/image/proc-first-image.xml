@@ -28,6 +28,18 @@
     the main method and add the following line:
   </para>
   <programlisting>MBFImage image = ImageUtilities.readMBF(new File(&quot;file.jpg&quot;));</programlisting>
+
+  <note>
+      <para>
+        Throughout the OpenIMAJ tutorial you will be using a number of different classes. For brevity and to ensure focus on the important parts of the code we haven't explicitly listed the imports you'll need to make at the top of you class files. Most modern IDEs will suggest the import to use once you've entered the name of a class. If there are multiple potential class name matches, you almost certainly want the one from an <code>org.openimaj</code> sub-package.
+      </para>
+  </note>
+  <tip>
+      <para>
+        The code for the tutorials (minus the exercise solutions) can be found as part of the OpenIMAJ source: https://github.com/openimaj/openimaj/tree/master/documentation/tutorial/tutorial-code/src/main/java/org/openimaj/docs/tutorial
+      </para>
+  </tip>
+
   <para>
     For this tutorial, read the image from the following URL:
   </para>
