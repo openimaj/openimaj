@@ -51,7 +51,6 @@
 	  	<programlisting>
 &gt; mvn archetype:generate -DarchetypeGroupId=org.openimaj -DarchetypeArtifactId=openimaj-quickstart-archetype -DarchetypeVersion=${project.version}
 
-Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] ------------------------------------------------------------------------
