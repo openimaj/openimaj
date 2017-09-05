@@ -41,8 +41,9 @@ import org.openimaj.util.array.ArrayUtils;
  * Implementation of a dense SIFT feature extractor for {@link FImage}s.
  * Extracts upright SIFT features at a single scale on a grid.
  * <p>
- * Implementation inspired by the <a
- * href="http://www.vlfeat.org/api/dsift.html#dsift-usage">VLFeat extractor</a>.
+ * Implementation inspired by the
+ * <a href="http://www.vlfeat.org/api/dsift.html#dsift-usage">VLFeat
+ * extractor</a>.
  * <p>
  * <b>Implementation Notes</b>. The analyser is not thread-safe, however, it is
  * safe to reuse the analyser. In multi-threaded environments, a separate
@@ -50,11 +51,11 @@ import org.openimaj.util.array.ArrayUtils;
  * allocates memory for the gradient images, and if possible re-uses these
  * between calls. Re-use requires that the input image is the same size between
  * calls to the analyser.
- * 
+ *
  * @see "http://www.vlfeat.org/api/dsift.html#dsift-usage"
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 	static class WorkingData {
@@ -88,7 +89,7 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 
 		/**
 		 * Setup the required space for holding gradient maps and descriptors
-		 * 
+		 *
 		 * @param image
 		 *            the image being analysed
 		 */
@@ -185,7 +186,7 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 	/**
 	 * Construct with the given step size (for both x and y) and binSize. All
 	 * other values are the defaults.
-	 * 
+	 *
 	 * @param step
 	 *            the step size
 	 * @param binSize
@@ -201,7 +202,7 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 	/**
 	 * Construct with the given configuration. The gaussian window size is set
 	 * to 2, and value threshold to 0.2.
-	 * 
+	 *
 	 * @param stepX
 	 *            step size in x direction
 	 * @param stepY
@@ -224,7 +225,7 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 	/**
 	 * Construct with the given configuration. The value threshold is set to
 	 * 0.2.
-	 * 
+	 *
 	 * @param stepX
 	 *            step size in x direction
 	 * @param stepY
@@ -249,9 +250,8 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 	}
 
 	/**
-	 * Construct with the given configuration. The value threshold is set to
-	 * 0.2.
-	 * 
+	 * Construct with the given configuration.
+	 *
 	 * @param stepX
 	 *            step size in x direction
 	 * @param stepY
@@ -321,12 +321,10 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 					final int descriptorOffset = bint + binx * numOriBins + biny * (numBinsX * numOriBins);
 					int descriptorIndex = 0;
 
-					for (int framey = data.boundMinY; framey <= data.boundMaxY - frameSizeY + 1; framey += stepY)
-					{
-						for (int framex = data.boundMinX; framex <= data.boundMaxX - frameSizeX + 1; framex += stepX)
-						{
-							descriptors[descriptorIndex][descriptorOffset] =
-									src[framey + biny * binHeight][framex + binx * binWidth];
+					for (int framey = data.boundMinY; framey <= data.boundMaxY - frameSizeY + 1; framey += stepY) {
+						for (int framex = data.boundMinX; framex <= data.boundMaxX - frameSizeX + 1; framex += stepX) {
+							descriptors[descriptorIndex][descriptorOffset] = src[framey + biny * binHeight][framex
+									+ binx * binWidth];
 							descriptorIndex++;
 						}
 					}
@@ -392,7 +390,8 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 
 		for (int framey = data.boundMinY, i = 0; framey <= data.boundMaxY - frameSizeY + 1; framey += stepY) {
 			for (int framex = data.boundMinX; framex <= data.boundMaxX - frameSizeX + 1; framex += stepX, i++) {
-				keys.add(new FloatDSIFTKeypoint(framex + deltaCenterX, framey + deltaCenterY, descriptors[i], energies[i]));
+				keys.add(new FloatDSIFTKeypoint(framex + deltaCenterX, framey + deltaCenterY, descriptors[i],
+						energies[i]));
 			}
 		}
 
@@ -412,7 +411,8 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 
 		for (int framey = data.boundMinY, i = 0; framey <= data.boundMaxY - frameSizeY + 1; framey += stepY) {
 			for (int framex = data.boundMinX; framex <= data.boundMaxX - frameSizeX + 1; framex += stepX, i++) {
-				keys.add(new ByteDSIFTKeypoint(framex + deltaCenterX, framey + deltaCenterY, descriptors[i], energies[i]));
+				keys.add(
+						new ByteDSIFTKeypoint(framex + deltaCenterX, framey + deltaCenterY, descriptors[i], energies[i]));
 			}
 		}
 
@@ -467,7 +467,7 @@ public class DenseSIFT extends AbstractDenseSIFT<FImage> {
 	 * Get the computed raw dense SIFT descriptors from the previous call to
 	 * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}
 	 * .
-	 * 
+	 *
 	 * @return the descriptors.
 	 */
 	@Override

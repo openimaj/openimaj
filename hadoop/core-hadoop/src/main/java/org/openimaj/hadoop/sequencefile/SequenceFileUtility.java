@@ -406,7 +406,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		setup(convertToURI(uriOrPath), false);
 	}
 
-	public SequenceFileUtility(URI uri, CompressionType compressionType, Map<String, String> metadata) throws IOException
+	public SequenceFileUtility(URI uri, CompressionType compressionType, Map<String, String> metadata)
+			throws IOException
 	{
 		this.compressionType = compressionType;
 		setup(uri, false);
@@ -1235,7 +1236,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			final K key = ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config);
 
 			while (reader.next(key)) {
-				System.out.println(key);
+				// System.out.println(key);
 				if (key.equals(queryKey)) {
 					final V val = ReflectionUtils.newInstance((Class<V>) reader.getValueClass(), config);
 

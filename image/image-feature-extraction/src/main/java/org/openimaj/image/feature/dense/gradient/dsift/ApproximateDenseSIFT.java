@@ -42,8 +42,9 @@ import org.openimaj.image.processing.convolution.FTriangleFilter;
  * features are similar to the exact dense SIFT implementation, but computation
  * is much faster.
  * <p>
- * Implementation directly based on the <a
- * href="http://www.vlfeat.org/api/dsift.html#dsift-usage">VLFeat extractor</a>.
+ * Implementation directly based on the
+ * <a href="http://www.vlfeat.org/api/dsift.html#dsift-usage">VLFeat
+ * extractor</a>.
  * <p>
  * <b>Implementation Notes</b>. The analyser is not thread-safe, however, it is
  * safe to reuse the analyser. In multi-threaded environments, a separate
@@ -51,11 +52,11 @@ import org.openimaj.image.processing.convolution.FTriangleFilter;
  * allocates memory for the gradient images, and if possible re-uses these
  * between calls. Re-use requires that the input image is the same size between
  * calls to the analyser.
- * 
+ *
  * @see "http://www.vlfeat.org/api/dsift.html#dsift-usage"
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ApproximateDenseSIFT extends DenseSIFT {
 	/**
@@ -70,7 +71,7 @@ public class ApproximateDenseSIFT extends DenseSIFT {
 	/**
 	 * Construct with the given step size (for both x and y) and binSize. All
 	 * other values are the defaults.
-	 * 
+	 *
 	 * @param step
 	 *            the step size
 	 * @param binSize
@@ -83,7 +84,7 @@ public class ApproximateDenseSIFT extends DenseSIFT {
 	/**
 	 * Construct with the given configuration. The gaussian window size is set
 	 * to 2, and value threshold to 0.2.
-	 * 
+	 *
 	 * @param stepX
 	 *            step size in x direction
 	 * @param stepY
@@ -108,7 +109,7 @@ public class ApproximateDenseSIFT extends DenseSIFT {
 	/**
 	 * Construct with the given configuration. The value threshold is set to
 	 * 0.2.
-	 * 
+	 *
 	 * @param stepX
 	 *            step size in x direction
 	 * @param stepY
@@ -134,9 +135,8 @@ public class ApproximateDenseSIFT extends DenseSIFT {
 	}
 
 	/**
-	 * Construct with the given configuration. The value threshold is set to
-	 * 0.2.
-	 * 
+	 * Construct with the given configuration.
+	 *
 	 * @param stepX
 	 *            step size in x direction
 	 * @param stepY
@@ -163,8 +163,7 @@ public class ApproximateDenseSIFT extends DenseSIFT {
 		super(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins, gaussianWindowSize, valueThreshold);
 	}
 
-	private float computeWindowMean(int binSize, int numBins, int binIndex, double windowSize)
-	{
+	private float computeWindowMean(int binSize, int numBins, int binIndex, double windowSize) {
 		final float delta = binSize * (binIndex - 0.5F * (numBins - 1));
 		/* float sigma = 0.5F * ((numBins - 1) * binSize + 1) ; */
 		final float sigma = binSize * (float) windowSize;
@@ -179,8 +178,7 @@ public class ApproximateDenseSIFT extends DenseSIFT {
 	}
 
 	@Override
-	protected void extractFeatures()
-	{
+	protected void extractFeatures() {
 		final int frameSizeX = binWidth * (numBinsX - 1) + 1;
 		final int frameSizeY = binHeight * (numBinsY - 1) + 1;
 
