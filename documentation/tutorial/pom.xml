@@ -29,22 +29,6 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>sonatype-public</id>
-      <name>Sonatype Public</name>
-      <url>http://repository.sonatype.org/content/groups/public</url>
-    </pluginRepository>
-    <pluginRepository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>sonatype-forge</id>
-      <name>Sonatype Forge</name>
-      <url>http://repository.sonatype.org/content/groups/forge</url>
-    </pluginRepository>
-    <pluginRepository>
       <releases>
         <enabled>false</enabled>
       </releases>
