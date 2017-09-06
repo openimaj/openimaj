@@ -49,217 +49,217 @@
 <span class="sourceLineNo">041</span> * Implementation of a dense SIFT feature extractor for {@link FImage}s.<a name="line.41"></a>
 <span class="sourceLineNo">042</span> * Extracts upright SIFT features at a single scale on a grid.<a name="line.42"></a>
 <span class="sourceLineNo">043</span> * &lt;p&gt;<a name="line.43"></a>
-<span class="sourceLineNo">044</span> * Implementation inspired by the &lt;a<a name="line.44"></a>
-<span class="sourceLineNo">045</span> * href="http://www.vlfeat.org/api/dsift.html#dsift-usage"&gt;VLFeat extractor&lt;/a&gt;.<a name="line.45"></a>
-<span class="sourceLineNo">046</span> * &lt;p&gt;<a name="line.46"></a>
-<span class="sourceLineNo">047</span> * &lt;b&gt;Implementation Notes&lt;/b&gt;. The analyser is not thread-safe, however, it is<a name="line.47"></a>
-<span class="sourceLineNo">048</span> * safe to reuse the analyser. In multi-threaded environments, a separate<a name="line.48"></a>
-<span class="sourceLineNo">049</span> * instance must be made for each thread. Internally, this implementation<a name="line.49"></a>
-<span class="sourceLineNo">050</span> * allocates memory for the gradient images, and if possible re-uses these<a name="line.50"></a>
-<span class="sourceLineNo">051</span> * between calls. Re-use requires that the input image is the same size between<a name="line.51"></a>
-<span class="sourceLineNo">052</span> * calls to the analyser.<a name="line.52"></a>
-<span class="sourceLineNo">053</span> * <a name="line.53"></a>
-<span class="sourceLineNo">054</span> * @see "http://www.vlfeat.org/api/dsift.html#dsift-usage"<a name="line.54"></a>
-<span class="sourceLineNo">055</span> * <a name="line.55"></a>
-<span class="sourceLineNo">056</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.56"></a>
-<span class="sourceLineNo">057</span> * <a name="line.57"></a>
-<span class="sourceLineNo">058</span> */<a name="line.58"></a>
-<span class="sourceLineNo">059</span>public class DenseSIFT extends AbstractDenseSIFT&lt;FImage&gt; {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>        static class WorkingData {<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                /**<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                 * minimum X bound for sampling the descriptors (inclusive)<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                 */<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                protected int boundMinX;<a name="line.64"></a>
-<span class="sourceLineNo">065</span><a name="line.65"></a>
-<span class="sourceLineNo">066</span>                /**<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                 * maximum X bound for sampling the descriptors (inclusive)<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                 */<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                protected int boundMaxX;<a name="line.69"></a>
-<span class="sourceLineNo">070</span><a name="line.70"></a>
-<span class="sourceLineNo">071</span>                /**<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                 * minimum Y bound for sampling the descriptors (inclusive)<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                 */<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                protected int boundMinY;<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>                /**<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                 * maximum X bound for sampling the descriptors (inclusive)<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                 */<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                protected int boundMaxY;<a name="line.79"></a>
-<span class="sourceLineNo">080</span><a name="line.80"></a>
-<span class="sourceLineNo">081</span>                /**<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                 * Quantised orientation/gradient magnitude data. Each element<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                 * corresponds to an angular bin of the orientations, and the individual<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                 * images correspond to the gradient magnitudes for the respective<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                 * orientations.<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                 */<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                protected FImage[] gradientMagnitudes;<a name="line.87"></a>
-<span class="sourceLineNo">088</span><a name="line.88"></a>
-<span class="sourceLineNo">089</span>                /**<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                 * Setup the required space for holding gradient maps and descriptors<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                 * <a name="line.91"></a>
-<span class="sourceLineNo">092</span>                 * @param image<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                 *            the image being analysed<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                 */<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                protected void setupWorkingSpace(FImage image, DenseSIFT dsift) {<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                        if (gradientMagnitudes == null) {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                                gradientMagnitudes = new FImage[dsift.numOriBins];<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                        }<a name="line.98"></a>
-<span class="sourceLineNo">099</span><a name="line.99"></a>
-<span class="sourceLineNo">100</span>                        if (gradientMagnitudes[0] == null || gradientMagnitudes[0].width != image.width<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                                        || gradientMagnitudes[0].height != image.height)<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                        {<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                                for (int i = 0; i &lt; dsift.numOriBins; i++)<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                                        gradientMagnitudes[i] = new FImage(image.width, image.height);<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                        }<a name="line.105"></a>
-<span class="sourceLineNo">106</span><a name="line.106"></a>
-<span class="sourceLineNo">107</span>                        final int rangeX = boundMaxX - boundMinX - (dsift.numBinsX - 1) * dsift.binWidth;<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                        final int rangeY = boundMaxY - boundMinY - (dsift.numBinsY - 1) * dsift.binHeight;<a name="line.108"></a>
-<span class="sourceLineNo">109</span><a name="line.109"></a>
-<span class="sourceLineNo">110</span>                        final int numWindowsX = (rangeX &gt;= 0) ? rangeX / dsift.stepX + 1 : 0;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                        final int numWindowsY = (rangeY &gt;= 0) ? rangeY / dsift.stepY + 1 : 0;<a name="line.111"></a>
-<span class="sourceLineNo">112</span><a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        final int numFeatures = numWindowsX * numWindowsY;<a name="line.113"></a>
-<span class="sourceLineNo">114</span><a name="line.114"></a>
-<span class="sourceLineNo">115</span>                        dsift.descriptors = new float[numFeatures][dsift.numOriBins * dsift.numBinsX * dsift.numBinsY];<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                        dsift.energies = new float[numFeatures];<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                }<a name="line.117"></a>
-<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
-<span class="sourceLineNo">119</span><a name="line.119"></a>
-<span class="sourceLineNo">120</span>        /**<a name="line.120"></a>
-<span class="sourceLineNo">121</span>         * Step size of sampling window in x-direction (in pixels)<a name="line.121"></a>
-<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
-<span class="sourceLineNo">123</span>        protected int stepX = 5;<a name="line.123"></a>
-<span class="sourceLineNo">124</span><a name="line.124"></a>
-<span class="sourceLineNo">125</span>        /**<a name="line.125"></a>
-<span class="sourceLineNo">126</span>         * Step size of sampling window in y-direction (in pixels)<a name="line.126"></a>
-<span class="sourceLineNo">127</span>         */<a name="line.127"></a>
-<span class="sourceLineNo">128</span>        protected int stepY = 5;<a name="line.128"></a>
-<span class="sourceLineNo">129</span><a name="line.129"></a>
-<span class="sourceLineNo">130</span>        /**<a name="line.130"></a>
-<span class="sourceLineNo">131</span>         * Width of a single bin of the sampling window (in pixels). Sampling window<a name="line.131"></a>
-<span class="sourceLineNo">132</span>         * width is this multiplied by #numBinX.<a name="line.132"></a>
-<span class="sourceLineNo">133</span>         */<a name="line.133"></a>
-<span class="sourceLineNo">134</span>        protected int binWidth = 5;<a name="line.134"></a>
-<span class="sourceLineNo">135</span><a name="line.135"></a>
-<span class="sourceLineNo">136</span>        /**<a name="line.136"></a>
-<span class="sourceLineNo">137</span>         * Height of a single bin of the sampling window (in pixels). Sampling<a name="line.137"></a>
-<span class="sourceLineNo">138</span>         * window height is this multiplied by #numBinY.<a name="line.138"></a>
-<span class="sourceLineNo">139</span>         */<a name="line.139"></a>
-<span class="sourceLineNo">140</span>        protected int binHeight = 5;<a name="line.140"></a>
-<span class="sourceLineNo">141</span><a name="line.141"></a>
-<span class="sourceLineNo">142</span>        /**<a name="line.142"></a>
-<span class="sourceLineNo">143</span>         * Number of spatial bins in the X direction<a name="line.143"></a>
-<span class="sourceLineNo">144</span>         */<a name="line.144"></a>
-<span class="sourceLineNo">145</span>        protected int numBinsX = 4;<a name="line.145"></a>
-<span class="sourceLineNo">146</span><a name="line.146"></a>
-<span class="sourceLineNo">147</span>        /**<a name="line.147"></a>
-<span class="sourceLineNo">148</span>         * Number of spatial bins in the Y direction<a name="line.148"></a>
-<span class="sourceLineNo">149</span>         */<a name="line.149"></a>
-<span class="sourceLineNo">150</span>        protected int numBinsY = 4;<a name="line.150"></a>
-<span class="sourceLineNo">151</span><a name="line.151"></a>
-<span class="sourceLineNo">152</span>        /** The number of orientation bins */<a name="line.152"></a>
-<span class="sourceLineNo">153</span>        protected int numOriBins = 8;<a name="line.153"></a>
-<span class="sourceLineNo">154</span><a name="line.154"></a>
-<span class="sourceLineNo">155</span>        /**<a name="line.155"></a>
-<span class="sourceLineNo">156</span>         * Size of the Gaussian window (in relative to of the size of a bin)<a name="line.156"></a>
-<span class="sourceLineNo">157</span>         */<a name="line.157"></a>
-<span class="sourceLineNo">158</span>        protected float gaussianWindowSize = 2f;<a name="line.158"></a>
-<span class="sourceLineNo">159</span><a name="line.159"></a>
-<span class="sourceLineNo">160</span>        /**<a name="line.160"></a>
-<span class="sourceLineNo">161</span>         * Threshold for clipping the SIFT features<a name="line.161"></a>
-<span class="sourceLineNo">162</span>         */<a name="line.162"></a>
-<span class="sourceLineNo">163</span>        protected float valueThreshold = 0.2f;<a name="line.163"></a>
-<span class="sourceLineNo">164</span><a name="line.164"></a>
-<span class="sourceLineNo">165</span>        protected volatile WorkingData data = new WorkingData();<a name="line.165"></a>
-<span class="sourceLineNo">166</span><a name="line.166"></a>
-<span class="sourceLineNo">167</span>        /**<a name="line.167"></a>
-<span class="sourceLineNo">168</span>         * Extracted descriptors<a name="line.168"></a>
-<span class="sourceLineNo">169</span>         */<a name="line.169"></a>
-<span class="sourceLineNo">170</span>        protected volatile float[][] descriptors;<a name="line.170"></a>
-<span class="sourceLineNo">171</span><a name="line.171"></a>
-<span class="sourceLineNo">172</span>        /**<a name="line.172"></a>
-<span class="sourceLineNo">173</span>         * Descriptor energies<a name="line.173"></a>
-<span class="sourceLineNo">174</span>         */<a name="line.174"></a>
-<span class="sourceLineNo">175</span>        protected volatile float[] energies;<a name="line.175"></a>
-<span class="sourceLineNo">176</span><a name="line.176"></a>
-<span class="sourceLineNo">177</span>        /**<a name="line.177"></a>
-<span class="sourceLineNo">178</span>         * Construct with the default configuration: standard SIFT geometry (4x4x8),<a name="line.178"></a>
-<span class="sourceLineNo">179</span>         * 5px x 5px spatial bins, 5px step size, gaussian window size of 2 and<a name="line.179"></a>
-<span class="sourceLineNo">180</span>         * value threshold of 0.2.<a name="line.180"></a>
-<span class="sourceLineNo">181</span>         */<a name="line.181"></a>
-<span class="sourceLineNo">182</span>        public DenseSIFT() {<a name="line.182"></a>
-<span class="sourceLineNo">183</span>        }<a name="line.183"></a>
-<span class="sourceLineNo">184</span><a name="line.184"></a>
-<span class="sourceLineNo">185</span>        /**<a name="line.185"></a>
-<span class="sourceLineNo">186</span>         * Construct with the given step size (for both x and y) and binSize. All<a name="line.186"></a>
-<span class="sourceLineNo">187</span>         * other values are the defaults.<a name="line.187"></a>
-<span class="sourceLineNo">188</span>         * <a name="line.188"></a>
-<span class="sourceLineNo">189</span>         * @param step<a name="line.189"></a>
-<span class="sourceLineNo">190</span>         *            the step size<a name="line.190"></a>
-<span class="sourceLineNo">191</span>         * @param binSize<a name="line.191"></a>
-<span class="sourceLineNo">192</span>         *            the spatial bin size<a name="line.192"></a>
-<span class="sourceLineNo">193</span>         */<a name="line.193"></a>
-<span class="sourceLineNo">194</span>        public DenseSIFT(int step, int binSize) {<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                this.binWidth = binSize;<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                this.binHeight = binSize;<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                this.stepX = step;<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                this.stepY = step;<a name="line.198"></a>
-<span class="sourceLineNo">199</span>        }<a name="line.199"></a>
-<span class="sourceLineNo">200</span><a name="line.200"></a>
-<span class="sourceLineNo">201</span>        /**<a name="line.201"></a>
-<span class="sourceLineNo">202</span>         * Construct with the given configuration. The gaussian window size is set<a name="line.202"></a>
-<span class="sourceLineNo">203</span>         * to 2, and value threshold to 0.2.<a name="line.203"></a>
-<span class="sourceLineNo">204</span>         * <a name="line.204"></a>
-<span class="sourceLineNo">205</span>         * @param stepX<a name="line.205"></a>
-<span class="sourceLineNo">206</span>         *            step size in x direction<a name="line.206"></a>
-<span class="sourceLineNo">207</span>         * @param stepY<a name="line.207"></a>
-<span class="sourceLineNo">208</span>         *            step size in y direction<a name="line.208"></a>
-<span class="sourceLineNo">209</span>         * @param binWidth<a name="line.209"></a>
-<span class="sourceLineNo">210</span>         *            width of spatial bins<a name="line.210"></a>
-<span class="sourceLineNo">211</span>         * @param binHeight<a name="line.211"></a>
-<span class="sourceLineNo">212</span>         *            height of spatial bins<a name="line.212"></a>
-<span class="sourceLineNo">213</span>         * @param numBinsX<a name="line.213"></a>
-<span class="sourceLineNo">214</span>         *            number of bins in x direction for each descriptor<a name="line.214"></a>
-<span class="sourceLineNo">215</span>         * @param numBinsY<a name="line.215"></a>
-<span class="sourceLineNo">216</span>         *            number of bins in y direction for each descriptor<a name="line.216"></a>
-<span class="sourceLineNo">217</span>         * @param numOriBins<a name="line.217"></a>
-<span class="sourceLineNo">218</span>         *            number of orientation bins for each descriptor<a name="line.218"></a>
-<span class="sourceLineNo">219</span>         */<a name="line.219"></a>
-<span class="sourceLineNo">220</span>        public DenseSIFT(int stepX, int stepY, int binWidth, int binHeight, int numBinsX, int numBinsY, int numOriBins) {<a name="line.220"></a>
-<span class="sourceLineNo">221</span>                this(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins, 2f);<a name="line.221"></a>
-<span class="sourceLineNo">222</span>        }<a name="line.222"></a>
-<span class="sourceLineNo">223</span><a name="line.223"></a>
-<span class="sourceLineNo">224</span>        /**<a name="line.224"></a>
-<span class="sourceLineNo">225</span>         * Construct with the given configuration. The value threshold is set to<a name="line.225"></a>
-<span class="sourceLineNo">226</span>         * 0.2.<a name="line.226"></a>
-<span class="sourceLineNo">227</span>         * <a name="line.227"></a>
-<span class="sourceLineNo">228</span>         * @param stepX<a name="line.228"></a>
-<span class="sourceLineNo">229</span>         *            step size in x direction<a name="line.229"></a>
-<span class="sourceLineNo">230</span>         * @param stepY<a name="line.230"></a>
-<span class="sourceLineNo">231</span>         *            step size in y direction<a name="line.231"></a>
-<span class="sourceLineNo">232</span>         * @param binWidth<a name="line.232"></a>
-<span class="sourceLineNo">233</span>         *            width of spatial bins<a name="line.233"></a>
-<span class="sourceLineNo">234</span>         * @param binHeight<a name="line.234"></a>
-<span class="sourceLineNo">235</span>         *            height of spatial bins<a name="line.235"></a>
-<span class="sourceLineNo">236</span>         * @param numBinsX<a name="line.236"></a>
-<span class="sourceLineNo">237</span>         *            number of bins in x direction for each descriptor<a name="line.237"></a>
-<span class="sourceLineNo">238</span>         * @param numBinsY<a name="line.238"></a>
-<span class="sourceLineNo">239</span>         *            number of bins in y direction for each descriptor<a name="line.239"></a>
-<span class="sourceLineNo">240</span>         * @param numOriBins<a name="line.240"></a>
-<span class="sourceLineNo">241</span>         *            number of orientation bins for each descriptor<a name="line.241"></a>
-<span class="sourceLineNo">242</span>         * @param gaussianWindowSize<a name="line.242"></a>
-<span class="sourceLineNo">243</span>         *            the size of the gaussian weighting window<a name="line.243"></a>
-<span class="sourceLineNo">244</span>         */<a name="line.244"></a>
-<span class="sourceLineNo">245</span>        public DenseSIFT(int stepX, int stepY, int binWidth, int binHeight, int numBinsX, int numBinsY, int numOriBins,<a name="line.245"></a>
-<span class="sourceLineNo">246</span>                        float gaussianWindowSize)<a name="line.246"></a>
-<span class="sourceLineNo">247</span>        {<a name="line.247"></a>
-<span class="sourceLineNo">248</span>                this(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins, gaussianWindowSize, 0.2f);<a name="line.248"></a>
-<span class="sourceLineNo">249</span>        }<a name="line.249"></a>
-<span class="sourceLineNo">250</span><a name="line.250"></a>
-<span class="sourceLineNo">251</span>        /**<a name="line.251"></a>
-<span class="sourceLineNo">252</span>         * Construct with the given configuration. The value threshold is set to<a name="line.252"></a>
-<span class="sourceLineNo">253</span>         * 0.2.<a name="line.253"></a>
-<span class="sourceLineNo">254</span>         * <a name="line.254"></a>
+<span class="sourceLineNo">044</span> * Implementation inspired by the<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * &lt;a href="http://www.vlfeat.org/api/dsift.html#dsift-usage"&gt;VLFeat<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * extractor&lt;/a&gt;.<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * &lt;p&gt;<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * &lt;b&gt;Implementation Notes&lt;/b&gt;. The analyser is not thread-safe, however, it is<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * safe to reuse the analyser. In multi-threaded environments, a separate<a name="line.49"></a>
+<span class="sourceLineNo">050</span> * instance must be made for each thread. Internally, this implementation<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * allocates memory for the gradient images, and if possible re-uses these<a name="line.51"></a>
+<span class="sourceLineNo">052</span> * between calls. Re-use requires that the input image is the same size between<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * calls to the analyser.<a name="line.53"></a>
+<span class="sourceLineNo">054</span> *<a name="line.54"></a>
+<span class="sourceLineNo">055</span> * @see "http://www.vlfeat.org/api/dsift.html#dsift-usage"<a name="line.55"></a>
+<span class="sourceLineNo">056</span> *<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.57"></a>
+<span class="sourceLineNo">058</span> *<a name="line.58"></a>
+<span class="sourceLineNo">059</span> */<a name="line.59"></a>
+<span class="sourceLineNo">060</span>public class DenseSIFT extends AbstractDenseSIFT&lt;FImage&gt; {<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        static class WorkingData {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                /**<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                 * minimum X bound for sampling the descriptors (inclusive)<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                 */<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                protected int boundMinX;<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>                /**<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                 * maximum X bound for sampling the descriptors (inclusive)<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                 */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                protected int boundMaxX;<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>                /**<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                 * minimum Y bound for sampling the descriptors (inclusive)<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                 */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                protected int boundMinY;<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>                /**<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                 * maximum X bound for sampling the descriptors (inclusive)<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                 */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                protected int boundMaxY;<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>                /**<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                 * Quantised orientation/gradient magnitude data. Each element<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                 * corresponds to an angular bin of the orientations, and the individual<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                 * images correspond to the gradient magnitudes for the respective<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                 * orientations.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                 */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                protected FImage[] gradientMagnitudes;<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                /**<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                 * Setup the required space for holding gradient maps and descriptors<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                 *<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                 * @param image<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                 *            the image being analysed<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                 */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                protected void setupWorkingSpace(FImage image, DenseSIFT dsift) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        if (gradientMagnitudes == null) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                gradientMagnitudes = new FImage[dsift.numOriBins];<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>                        if (gradientMagnitudes[0] == null || gradientMagnitudes[0].width != image.width<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                                        || gradientMagnitudes[0].height != image.height)<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                for (int i = 0; i &lt; dsift.numOriBins; i++)<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                        gradientMagnitudes[i] = new FImage(image.width, image.height);<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        final int rangeX = boundMaxX - boundMinX - (dsift.numBinsX - 1) * dsift.binWidth;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        final int rangeY = boundMaxY - boundMinY - (dsift.numBinsY - 1) * dsift.binHeight;<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        final int numWindowsX = (rangeX &gt;= 0) ? rangeX / dsift.stepX + 1 : 0;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        final int numWindowsY = (rangeY &gt;= 0) ? rangeY / dsift.stepY + 1 : 0;<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        final int numFeatures = numWindowsX * numWindowsY;<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        dsift.descriptors = new float[numFeatures][dsift.numOriBins * dsift.numBinsX * dsift.numBinsY];<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        dsift.energies = new float[numFeatures];<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        /**<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         * Step size of sampling window in x-direction (in pixels)<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         */<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        protected int stepX = 5;<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>        /**<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         * Step size of sampling window in y-direction (in pixels)<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         */<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        protected int stepY = 5;<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>        /**<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         * Width of a single bin of the sampling window (in pixels). Sampling window<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         * width is this multiplied by #numBinX.<a name="line.133"></a>
+<span class="sourceLineNo">134</span>         */<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        protected int binWidth = 5;<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>        /**<a name="line.137"></a>
+<span class="sourceLineNo">138</span>         * Height of a single bin of the sampling window (in pixels). Sampling<a name="line.138"></a>
+<span class="sourceLineNo">139</span>         * window height is this multiplied by #numBinY.<a name="line.139"></a>
+<span class="sourceLineNo">140</span>         */<a name="line.140"></a>
+<span class="sourceLineNo">141</span>        protected int binHeight = 5;<a name="line.141"></a>
+<span class="sourceLineNo">142</span><a name="line.142"></a>
+<span class="sourceLineNo">143</span>        /**<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         * Number of spatial bins in the X direction<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         */<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        protected int numBinsX = 4;<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>        /**<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         * Number of spatial bins in the Y direction<a name="line.149"></a>
+<span class="sourceLineNo">150</span>         */<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        protected int numBinsY = 4;<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>        /** The number of orientation bins */<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        protected int numOriBins = 8;<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>        /**<a name="line.156"></a>
+<span class="sourceLineNo">157</span>         * Size of the Gaussian window (in relative to of the size of a bin)<a name="line.157"></a>
+<span class="sourceLineNo">158</span>         */<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        protected float gaussianWindowSize = 2f;<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>        /**<a name="line.161"></a>
+<span class="sourceLineNo">162</span>         * Threshold for clipping the SIFT features<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        protected float valueThreshold = 0.2f;<a name="line.164"></a>
+<span class="sourceLineNo">165</span><a name="line.165"></a>
+<span class="sourceLineNo">166</span>        protected volatile WorkingData data = new WorkingData();<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>        /**<a name="line.168"></a>
+<span class="sourceLineNo">169</span>         * Extracted descriptors<a name="line.169"></a>
+<span class="sourceLineNo">170</span>         */<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        protected volatile float[][] descriptors;<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>        /**<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * Descriptor energies<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         */<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        protected volatile float[] energies;<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>        /**<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         * Construct with the default configuration: standard SIFT geometry (4x4x8),<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         * 5px x 5px spatial bins, 5px step size, gaussian window size of 2 and<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         * value threshold of 0.2.<a name="line.181"></a>
+<span class="sourceLineNo">182</span>         */<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        public DenseSIFT() {<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        }<a name="line.184"></a>
+<span class="sourceLineNo">185</span><a name="line.185"></a>
+<span class="sourceLineNo">186</span>        /**<a name="line.186"></a>
+<span class="sourceLineNo">187</span>         * Construct with the given step size (for both x and y) and binSize. All<a name="line.187"></a>
+<span class="sourceLineNo">188</span>         * other values are the defaults.<a name="line.188"></a>
+<span class="sourceLineNo">189</span>         *<a name="line.189"></a>
+<span class="sourceLineNo">190</span>         * @param step<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         *            the step size<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * @param binSize<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         *            the spatial bin size<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         */<a name="line.194"></a>
+<span class="sourceLineNo">195</span>        public DenseSIFT(int step, int binSize) {<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                this.binWidth = binSize;<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                this.binHeight = binSize;<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                this.stepX = step;<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                this.stepY = step;<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        }<a name="line.200"></a>
+<span class="sourceLineNo">201</span><a name="line.201"></a>
+<span class="sourceLineNo">202</span>        /**<a name="line.202"></a>
+<span class="sourceLineNo">203</span>         * Construct with the given configuration. The gaussian window size is set<a name="line.203"></a>
+<span class="sourceLineNo">204</span>         * to 2, and value threshold to 0.2.<a name="line.204"></a>
+<span class="sourceLineNo">205</span>         *<a name="line.205"></a>
+<span class="sourceLineNo">206</span>         * @param stepX<a name="line.206"></a>
+<span class="sourceLineNo">207</span>         *            step size in x direction<a name="line.207"></a>
+<span class="sourceLineNo">208</span>         * @param stepY<a name="line.208"></a>
+<span class="sourceLineNo">209</span>         *            step size in y direction<a name="line.209"></a>
+<span class="sourceLineNo">210</span>         * @param binWidth<a name="line.210"></a>
+<span class="sourceLineNo">211</span>         *            width of spatial bins<a name="line.211"></a>
+<span class="sourceLineNo">212</span>         * @param binHeight<a name="line.212"></a>
+<span class="sourceLineNo">213</span>         *            height of spatial bins<a name="line.213"></a>
+<span class="sourceLineNo">214</span>         * @param numBinsX<a name="line.214"></a>
+<span class="sourceLineNo">215</span>         *            number of bins in x direction for each descriptor<a name="line.215"></a>
+<span class="sourceLineNo">216</span>         * @param numBinsY<a name="line.216"></a>
+<span class="sourceLineNo">217</span>         *            number of bins in y direction for each descriptor<a name="line.217"></a>
+<span class="sourceLineNo">218</span>         * @param numOriBins<a name="line.218"></a>
+<span class="sourceLineNo">219</span>         *            number of orientation bins for each descriptor<a name="line.219"></a>
+<span class="sourceLineNo">220</span>         */<a name="line.220"></a>
+<span class="sourceLineNo">221</span>        public DenseSIFT(int stepX, int stepY, int binWidth, int binHeight, int numBinsX, int numBinsY, int numOriBins) {<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                this(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins, 2f);<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        }<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>        /**<a name="line.225"></a>
+<span class="sourceLineNo">226</span>         * Construct with the given configuration. The value threshold is set to<a name="line.226"></a>
+<span class="sourceLineNo">227</span>         * 0.2.<a name="line.227"></a>
+<span class="sourceLineNo">228</span>         *<a name="line.228"></a>
+<span class="sourceLineNo">229</span>         * @param stepX<a name="line.229"></a>
+<span class="sourceLineNo">230</span>         *            step size in x direction<a name="line.230"></a>
+<span class="sourceLineNo">231</span>         * @param stepY<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         *            step size in y direction<a name="line.232"></a>
+<span class="sourceLineNo">233</span>         * @param binWidth<a name="line.233"></a>
+<span class="sourceLineNo">234</span>         *            width of spatial bins<a name="line.234"></a>
+<span class="sourceLineNo">235</span>         * @param binHeight<a name="line.235"></a>
+<span class="sourceLineNo">236</span>         *            height of spatial bins<a name="line.236"></a>
+<span class="sourceLineNo">237</span>         * @param numBinsX<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         *            number of bins in x direction for each descriptor<a name="line.238"></a>
+<span class="sourceLineNo">239</span>         * @param numBinsY<a name="line.239"></a>
+<span class="sourceLineNo">240</span>         *            number of bins in y direction for each descriptor<a name="line.240"></a>
+<span class="sourceLineNo">241</span>         * @param numOriBins<a name="line.241"></a>
+<span class="sourceLineNo">242</span>         *            number of orientation bins for each descriptor<a name="line.242"></a>
+<span class="sourceLineNo">243</span>         * @param gaussianWindowSize<a name="line.243"></a>
+<span class="sourceLineNo">244</span>         *            the size of the gaussian weighting window<a name="line.244"></a>
+<span class="sourceLineNo">245</span>         */<a name="line.245"></a>
+<span class="sourceLineNo">246</span>        public DenseSIFT(int stepX, int stepY, int binWidth, int binHeight, int numBinsX, int numBinsY, int numOriBins,<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                        float gaussianWindowSize)<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        {<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                this(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins, gaussianWindowSize, 0.2f);<a name="line.249"></a>
+<span class="sourceLineNo">250</span>        }<a name="line.250"></a>
+<span class="sourceLineNo">251</span><a name="line.251"></a>
+<span class="sourceLineNo">252</span>        /**<a name="line.252"></a>
+<span class="sourceLineNo">253</span>         * Construct with the given configuration.<a name="line.253"></a>
+<span class="sourceLineNo">254</span>         *<a name="line.254"></a>
 <span class="sourceLineNo">255</span>         * @param stepX<a name="line.255"></a>
 <span class="sourceLineNo">256</span>         *            step size in x direction<a name="line.256"></a>
 <span class="sourceLineNo">257</span>         * @param stepY<a name="line.257"></a>
@@ -329,98 +329,98 @@
 <span class="sourceLineNo">321</span>                                        final int descriptorOffset = bint + binx * numOriBins + biny * (numBinsX * numOriBins);<a name="line.321"></a>
 <span class="sourceLineNo">322</span>                                        int descriptorIndex = 0;<a name="line.322"></a>
 <span class="sourceLineNo">323</span><a name="line.323"></a>
-<span class="sourceLineNo">324</span>                                        for (int framey = data.boundMinY; framey &lt;= data.boundMaxY - frameSizeY + 1; framey += stepY)<a name="line.324"></a>
-<span class="sourceLineNo">325</span>                                        {<a name="line.325"></a>
-<span class="sourceLineNo">326</span>                                                for (int framex = data.boundMinX; framex &lt;= data.boundMaxX - frameSizeX + 1; framex += stepX)<a name="line.326"></a>
-<span class="sourceLineNo">327</span>                                                {<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                                                        descriptors[descriptorIndex][descriptorOffset] =<a name="line.328"></a>
-<span class="sourceLineNo">329</span>                                                                        src[framey + biny * binHeight][framex + binx * binWidth];<a name="line.329"></a>
-<span class="sourceLineNo">330</span>                                                        descriptorIndex++;<a name="line.330"></a>
-<span class="sourceLineNo">331</span>                                                }<a name="line.331"></a>
-<span class="sourceLineNo">332</span>                                        }<a name="line.332"></a>
-<span class="sourceLineNo">333</span>                                }<a name="line.333"></a>
-<span class="sourceLineNo">334</span>                        }<a name="line.334"></a>
-<span class="sourceLineNo">335</span>                }<a name="line.335"></a>
-<span class="sourceLineNo">336</span>        }<a name="line.336"></a>
-<span class="sourceLineNo">337</span><a name="line.337"></a>
-<span class="sourceLineNo">338</span>        @Override<a name="line.338"></a>
-<span class="sourceLineNo">339</span>        public void analyseImage(FImage image, Rectangle bounds) {<a name="line.339"></a>
-<span class="sourceLineNo">340</span>                if (data == null)<a name="line.340"></a>
-<span class="sourceLineNo">341</span>                        data = new WorkingData();<a name="line.341"></a>
-<span class="sourceLineNo">342</span><a name="line.342"></a>
-<span class="sourceLineNo">343</span>                data.boundMinX = (int) bounds.x;<a name="line.343"></a>
-<span class="sourceLineNo">344</span>                data.boundMaxX = (int) (bounds.width - 1);<a name="line.344"></a>
-<span class="sourceLineNo">345</span>                data.boundMinY = (int) bounds.y;<a name="line.345"></a>
-<span class="sourceLineNo">346</span>                data.boundMaxY = (int) (bounds.height - 1);<a name="line.346"></a>
+<span class="sourceLineNo">324</span>                                        for (int framey = data.boundMinY; framey &lt;= data.boundMaxY - frameSizeY + 1; framey += stepY) {<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                                                for (int framex = data.boundMinX; framex &lt;= data.boundMaxX - frameSizeX + 1; framex += stepX) {<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                                                        descriptors[descriptorIndex][descriptorOffset] = src[framey + biny * binHeight][framex<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                                                                        + binx * binWidth];<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                                                        descriptorIndex++;<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                                                }<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                                        }<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                                }<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                        }<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                }<a name="line.333"></a>
+<span class="sourceLineNo">334</span>        }<a name="line.334"></a>
+<span class="sourceLineNo">335</span><a name="line.335"></a>
+<span class="sourceLineNo">336</span>        @Override<a name="line.336"></a>
+<span class="sourceLineNo">337</span>        public void analyseImage(FImage image, Rectangle bounds) {<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                if (data == null)<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                        data = new WorkingData();<a name="line.339"></a>
+<span class="sourceLineNo">340</span><a name="line.340"></a>
+<span class="sourceLineNo">341</span>                data.boundMinX = (int) bounds.x;<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                data.boundMaxX = (int) (bounds.width - 1);<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                data.boundMinY = (int) bounds.y;<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                data.boundMaxY = (int) (bounds.height - 1);<a name="line.344"></a>
+<span class="sourceLineNo">345</span><a name="line.345"></a>
+<span class="sourceLineNo">346</span>                data.setupWorkingSpace(image, this);<a name="line.346"></a>
 <span class="sourceLineNo">347</span><a name="line.347"></a>
-<span class="sourceLineNo">348</span>                data.setupWorkingSpace(image, this);<a name="line.348"></a>
+<span class="sourceLineNo">348</span>                FImageGradients.gradientMagnitudesAndQuantisedOrientations(image, data.gradientMagnitudes);<a name="line.348"></a>
 <span class="sourceLineNo">349</span><a name="line.349"></a>
-<span class="sourceLineNo">350</span>                FImageGradients.gradientMagnitudesAndQuantisedOrientations(image, data.gradientMagnitudes);<a name="line.350"></a>
+<span class="sourceLineNo">350</span>                extractFeatures();<a name="line.350"></a>
 <span class="sourceLineNo">351</span><a name="line.351"></a>
-<span class="sourceLineNo">352</span>                extractFeatures();<a name="line.352"></a>
-<span class="sourceLineNo">353</span><a name="line.353"></a>
-<span class="sourceLineNo">354</span>                normaliseDescriptors();<a name="line.354"></a>
-<span class="sourceLineNo">355</span>        }<a name="line.355"></a>
-<span class="sourceLineNo">356</span><a name="line.356"></a>
-<span class="sourceLineNo">357</span>        private void normaliseDescriptors() {<a name="line.357"></a>
-<span class="sourceLineNo">358</span>                final int frameSizeX = binWidth * (numBinsX - 1) + 1;<a name="line.358"></a>
-<span class="sourceLineNo">359</span>                final int frameSizeY = binHeight * (numBinsY - 1) + 1;<a name="line.359"></a>
-<span class="sourceLineNo">360</span>                final float energyNorm = frameSizeX * frameSizeY;<a name="line.360"></a>
-<span class="sourceLineNo">361</span><a name="line.361"></a>
-<span class="sourceLineNo">362</span>                for (int j = 0; j &lt; descriptors.length; j++) {<a name="line.362"></a>
-<span class="sourceLineNo">363</span>                        final float[] arr = descriptors[j];<a name="line.363"></a>
+<span class="sourceLineNo">352</span>                normaliseDescriptors();<a name="line.352"></a>
+<span class="sourceLineNo">353</span>        }<a name="line.353"></a>
+<span class="sourceLineNo">354</span><a name="line.354"></a>
+<span class="sourceLineNo">355</span>        private void normaliseDescriptors() {<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                final int frameSizeX = binWidth * (numBinsX - 1) + 1;<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                final int frameSizeY = binHeight * (numBinsY - 1) + 1;<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                final float energyNorm = frameSizeX * frameSizeY;<a name="line.358"></a>
+<span class="sourceLineNo">359</span><a name="line.359"></a>
+<span class="sourceLineNo">360</span>                for (int j = 0; j &lt; descriptors.length; j++) {<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                        final float[] arr = descriptors[j];<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>                        energies[j] = ArrayUtils.sumValues(arr) / energyNorm;<a name="line.363"></a>
 <span class="sourceLineNo">364</span><a name="line.364"></a>
-<span class="sourceLineNo">365</span>                        energies[j] = ArrayUtils.sumValues(arr) / energyNorm;<a name="line.365"></a>
+<span class="sourceLineNo">365</span>                        ArrayUtils.normalise(arr);<a name="line.365"></a>
 <span class="sourceLineNo">366</span><a name="line.366"></a>
-<span class="sourceLineNo">367</span>                        ArrayUtils.normalise(arr);<a name="line.367"></a>
-<span class="sourceLineNo">368</span><a name="line.368"></a>
-<span class="sourceLineNo">369</span>                        boolean changed = false;<a name="line.369"></a>
-<span class="sourceLineNo">370</span>                        for (int i = 0; i &lt; arr.length; i++) {<a name="line.370"></a>
-<span class="sourceLineNo">371</span>                                if (arr[i] &gt; valueThreshold) {<a name="line.371"></a>
-<span class="sourceLineNo">372</span>                                        arr[i] = valueThreshold;<a name="line.372"></a>
-<span class="sourceLineNo">373</span>                                        changed = true;<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                                }<a name="line.374"></a>
-<span class="sourceLineNo">375</span>                        }<a name="line.375"></a>
-<span class="sourceLineNo">376</span><a name="line.376"></a>
-<span class="sourceLineNo">377</span>                        if (changed)<a name="line.377"></a>
-<span class="sourceLineNo">378</span>                                ArrayUtils.normalise(arr);<a name="line.378"></a>
-<span class="sourceLineNo">379</span>                }<a name="line.379"></a>
-<span class="sourceLineNo">380</span>        }<a name="line.380"></a>
-<span class="sourceLineNo">381</span><a name="line.381"></a>
-<span class="sourceLineNo">382</span>        @Override<a name="line.382"></a>
-<span class="sourceLineNo">383</span>        public LocalFeatureList&lt;FloatDSIFTKeypoint&gt; getFloatKeypoints() {<a name="line.383"></a>
-<span class="sourceLineNo">384</span>                final MemoryLocalFeatureList&lt;FloatDSIFTKeypoint&gt; keys = new MemoryLocalFeatureList&lt;FloatDSIFTKeypoint&gt;(numOriBins<a name="line.384"></a>
-<span class="sourceLineNo">385</span>                                * numBinsX * numBinsY, descriptors.length);<a name="line.385"></a>
-<span class="sourceLineNo">386</span><a name="line.386"></a>
-<span class="sourceLineNo">387</span>                final int frameSizeX = binWidth * (numBinsX - 1) + 1;<a name="line.387"></a>
-<span class="sourceLineNo">388</span>                final int frameSizeY = binHeight * (numBinsY - 1) + 1;<a name="line.388"></a>
-<span class="sourceLineNo">389</span><a name="line.389"></a>
-<span class="sourceLineNo">390</span>                final float deltaCenterX = 0.5F * binWidth * (numBinsX - 1);<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                final float deltaCenterY = 0.5F * binHeight * (numBinsY - 1);<a name="line.391"></a>
-<span class="sourceLineNo">392</span><a name="line.392"></a>
-<span class="sourceLineNo">393</span>                for (int framey = data.boundMinY, i = 0; framey &lt;= data.boundMaxY - frameSizeY + 1; framey += stepY) {<a name="line.393"></a>
-<span class="sourceLineNo">394</span>                        for (int framex = data.boundMinX; framex &lt;= data.boundMaxX - frameSizeX + 1; framex += stepX, i++) {<a name="line.394"></a>
-<span class="sourceLineNo">395</span>                                keys.add(new FloatDSIFTKeypoint(framex + deltaCenterX, framey + deltaCenterY, descriptors[i], energies[i]));<a name="line.395"></a>
-<span class="sourceLineNo">396</span>                        }<a name="line.396"></a>
-<span class="sourceLineNo">397</span>                }<a name="line.397"></a>
-<span class="sourceLineNo">398</span><a name="line.398"></a>
-<span class="sourceLineNo">399</span>                return keys;<a name="line.399"></a>
-<span class="sourceLineNo">400</span>        }<a name="line.400"></a>
-<span class="sourceLineNo">401</span><a name="line.401"></a>
-<span class="sourceLineNo">402</span>        @Override<a name="line.402"></a>
-<span class="sourceLineNo">403</span>        public LocalFeatureList&lt;ByteDSIFTKeypoint&gt; getByteKeypoints() {<a name="line.403"></a>
-<span class="sourceLineNo">404</span>                final MemoryLocalFeatureList&lt;ByteDSIFTKeypoint&gt; keys = new MemoryLocalFeatureList&lt;ByteDSIFTKeypoint&gt;(numOriBins<a name="line.404"></a>
-<span class="sourceLineNo">405</span>                                * numBinsX * numBinsY, descriptors.length);<a name="line.405"></a>
-<span class="sourceLineNo">406</span><a name="line.406"></a>
-<span class="sourceLineNo">407</span>                final int frameSizeX = binWidth * (numBinsX - 1) + 1;<a name="line.407"></a>
-<span class="sourceLineNo">408</span>                final int frameSizeY = binHeight * (numBinsY - 1) + 1;<a name="line.408"></a>
-<span class="sourceLineNo">409</span><a name="line.409"></a>
-<span class="sourceLineNo">410</span>                final float deltaCenterX = 0.5F * binWidth * (numBinsX - 1);<a name="line.410"></a>
-<span class="sourceLineNo">411</span>                final float deltaCenterY = 0.5F * binHeight * (numBinsY - 1);<a name="line.411"></a>
-<span class="sourceLineNo">412</span><a name="line.412"></a>
-<span class="sourceLineNo">413</span>                for (int framey = data.boundMinY, i = 0; framey &lt;= data.boundMaxY - frameSizeY + 1; framey += stepY) {<a name="line.413"></a>
-<span class="sourceLineNo">414</span>                        for (int framex = data.boundMinX; framex &lt;= data.boundMaxX - frameSizeX + 1; framex += stepX, i++) {<a name="line.414"></a>
-<span class="sourceLineNo">415</span>                                keys.add(new ByteDSIFTKeypoint(framex + deltaCenterX, framey + deltaCenterY, descriptors[i], energies[i]));<a name="line.415"></a>
+<span class="sourceLineNo">367</span>                        boolean changed = false;<a name="line.367"></a>
+<span class="sourceLineNo">368</span>                        for (int i = 0; i &lt; arr.length; i++) {<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                                if (arr[i] &gt; valueThreshold) {<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                                        arr[i] = valueThreshold;<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                                        changed = true;<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                                }<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                        }<a name="line.373"></a>
+<span class="sourceLineNo">374</span><a name="line.374"></a>
+<span class="sourceLineNo">375</span>                        if (changed)<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                                ArrayUtils.normalise(arr);<a name="line.376"></a>
+<span class="sourceLineNo">377</span>                }<a name="line.377"></a>
+<span class="sourceLineNo">378</span>        }<a name="line.378"></a>
+<span class="sourceLineNo">379</span><a name="line.379"></a>
+<span class="sourceLineNo">380</span>        @Override<a name="line.380"></a>
+<span class="sourceLineNo">381</span>        public LocalFeatureList&lt;FloatDSIFTKeypoint&gt; getFloatKeypoints() {<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                final MemoryLocalFeatureList&lt;FloatDSIFTKeypoint&gt; keys = new MemoryLocalFeatureList&lt;FloatDSIFTKeypoint&gt;(numOriBins<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                                * numBinsX * numBinsY, descriptors.length);<a name="line.383"></a>
+<span class="sourceLineNo">384</span><a name="line.384"></a>
+<span class="sourceLineNo">385</span>                final int frameSizeX = binWidth * (numBinsX - 1) + 1;<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                final int frameSizeY = binHeight * (numBinsY - 1) + 1;<a name="line.386"></a>
+<span class="sourceLineNo">387</span><a name="line.387"></a>
+<span class="sourceLineNo">388</span>                final float deltaCenterX = 0.5F * binWidth * (numBinsX - 1);<a name="line.388"></a>
+<span class="sourceLineNo">389</span>                final float deltaCenterY = 0.5F * binHeight * (numBinsY - 1);<a name="line.389"></a>
+<span class="sourceLineNo">390</span><a name="line.390"></a>
+<span class="sourceLineNo">391</span>                for (int framey = data.boundMinY, i = 0; framey &lt;= data.boundMaxY - frameSizeY + 1; framey += stepY) {<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                        for (int framex = data.boundMinX; framex &lt;= data.boundMaxX - frameSizeX + 1; framex += stepX, i++) {<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                                keys.add(new FloatDSIFTKeypoint(framex + deltaCenterX, framey + deltaCenterY, descriptors[i],<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                                                energies[i]));<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                        }<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                }<a name="line.396"></a>
+<span class="sourceLineNo">397</span><a name="line.397"></a>
+<span class="sourceLineNo">398</span>                return keys;<a name="line.398"></a>
+<span class="sourceLineNo">399</span>        }<a name="line.399"></a>
+<span class="sourceLineNo">400</span><a name="line.400"></a>
+<span class="sourceLineNo">401</span>        @Override<a name="line.401"></a>
+<span class="sourceLineNo">402</span>        public LocalFeatureList&lt;ByteDSIFTKeypoint&gt; getByteKeypoints() {<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                final MemoryLocalFeatureList&lt;ByteDSIFTKeypoint&gt; keys = new MemoryLocalFeatureList&lt;ByteDSIFTKeypoint&gt;(numOriBins<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                                * numBinsX * numBinsY, descriptors.length);<a name="line.404"></a>
+<span class="sourceLineNo">405</span><a name="line.405"></a>
+<span class="sourceLineNo">406</span>                final int frameSizeX = binWidth * (numBinsX - 1) + 1;<a name="line.406"></a>
+<span class="sourceLineNo">407</span>                final int frameSizeY = binHeight * (numBinsY - 1) + 1;<a name="line.407"></a>
+<span class="sourceLineNo">408</span><a name="line.408"></a>
+<span class="sourceLineNo">409</span>                final float deltaCenterX = 0.5F * binWidth * (numBinsX - 1);<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                final float deltaCenterY = 0.5F * binHeight * (numBinsY - 1);<a name="line.410"></a>
+<span class="sourceLineNo">411</span><a name="line.411"></a>
+<span class="sourceLineNo">412</span>                for (int framey = data.boundMinY, i = 0; framey &lt;= data.boundMaxY - frameSizeY + 1; framey += stepY) {<a name="line.412"></a>
+<span class="sourceLineNo">413</span>                        for (int framex = data.boundMinX; framex &lt;= data.boundMaxX - frameSizeX + 1; framex += stepX, i++) {<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                                keys.add(<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                                                new ByteDSIFTKeypoint(framex + deltaCenterX, framey + deltaCenterY, descriptors[i], energies[i]));<a name="line.415"></a>
 <span class="sourceLineNo">416</span>                        }<a name="line.416"></a>
 <span class="sourceLineNo">417</span>                }<a name="line.417"></a>
 <span class="sourceLineNo">418</span><a name="line.418"></a>
@@ -475,7 +475,7 @@
 <span class="sourceLineNo">467</span>         * Get the computed raw dense SIFT descriptors from the previous call to<a name="line.467"></a>
 <span class="sourceLineNo">468</span>         * {@link #analyseImage(FImage)} or {@link #analyseImage(FImage, Rectangle)}<a name="line.468"></a>
 <span class="sourceLineNo">469</span>         * .<a name="line.469"></a>
-<span class="sourceLineNo">470</span>         * <a name="line.470"></a>
+<span class="sourceLineNo">470</span>         *<a name="line.470"></a>
 <span class="sourceLineNo">471</span>         * @return the descriptors.<a name="line.471"></a>
 <span class="sourceLineNo">472</span>         */<a name="line.472"></a>
 <span class="sourceLineNo">473</span>        @Override<a name="line.473"></a>

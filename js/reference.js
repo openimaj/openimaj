@@ -419,3 +419,4 @@ function referenceToBibtex(ref) {
 function referenceToHTML(ref) {
 		return formatReferenceHTML(ref);
 }
+

@@ -50,13 +50,13 @@
 <span class="sourceLineNo">042</span> * Dense SIFT keypoint with a location and float feature vector. Also includes<a name="line.42"></a>
 <span class="sourceLineNo">043</span> * the energy of the feature prior to normalisation in case low-contrast<a name="line.43"></a>
 <span class="sourceLineNo">044</span> * features need removing.<a name="line.44"></a>
-<span class="sourceLineNo">045</span> * <a name="line.45"></a>
+<span class="sourceLineNo">045</span> *<a name="line.45"></a>
 <span class="sourceLineNo">046</span> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)<a name="line.46"></a>
-<span class="sourceLineNo">047</span> * <a name="line.47"></a>
+<span class="sourceLineNo">047</span> *<a name="line.47"></a>
 <span class="sourceLineNo">048</span> */<a name="line.48"></a>
 <span class="sourceLineNo">049</span>public class FloatDSIFTKeypoint<a name="line.49"></a>
 <span class="sourceLineNo">050</span>                extends<a name="line.50"></a>
-<span class="sourceLineNo">051</span>                AbstractDSIFTKeypoint&lt;FloatFV, float[]&gt;<a name="line.51"></a>
+<span class="sourceLineNo">051</span>                        AbstractDSIFTKeypoint&lt;FloatFV, float[]&gt;<a name="line.51"></a>
 <span class="sourceLineNo">052</span>{<a name="line.52"></a>
 <span class="sourceLineNo">053</span>        static final long serialVersionUID = 12345545L;<a name="line.53"></a>
 <span class="sourceLineNo">054</span><a name="line.54"></a>
@@ -69,7 +69,7 @@
 <span class="sourceLineNo">061</span><a name="line.61"></a>
 <span class="sourceLineNo">062</span>        /**<a name="line.62"></a>
 <span class="sourceLineNo">063</span>         * Construct with the given feature vector length.<a name="line.63"></a>
-<span class="sourceLineNo">064</span>         * <a name="line.64"></a>
+<span class="sourceLineNo">064</span>         *<a name="line.64"></a>
 <span class="sourceLineNo">065</span>         * @param length<a name="line.65"></a>
 <span class="sourceLineNo">066</span>         *            the length of the feature vector<a name="line.66"></a>
 <span class="sourceLineNo">067</span>         */<a name="line.67"></a>
@@ -79,7 +79,7 @@
 <span class="sourceLineNo">071</span><a name="line.71"></a>
 <span class="sourceLineNo">072</span>        /**<a name="line.72"></a>
 <span class="sourceLineNo">073</span>         * Construct with the given parameters.<a name="line.73"></a>
-<span class="sourceLineNo">074</span>         * <a name="line.74"></a>
+<span class="sourceLineNo">074</span>         *<a name="line.74"></a>
 <span class="sourceLineNo">075</span>         * @param x<a name="line.75"></a>
 <span class="sourceLineNo">076</span>         *            the x-ordinate of the keypoint<a name="line.76"></a>
 <span class="sourceLineNo">077</span>         * @param y<a name="line.77"></a>
@@ -124,7 +124,7 @@
 <span class="sourceLineNo">116</span>                for (int i = 0; i &lt; descriptor.length; i++) {<a name="line.116"></a>
 <span class="sourceLineNo">117</span>                        if (i &gt; 0 &amp;&amp; i % 20 == 0)<a name="line.117"></a>
 <span class="sourceLineNo">118</span>                                out.println();<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                        out.print(" %f" + descriptor[i]);<a name="line.119"></a>
+<span class="sourceLineNo">119</span>                        out.format(" %f", descriptor[i]);<a name="line.119"></a>
 <span class="sourceLineNo">120</span>                }<a name="line.120"></a>
 <span class="sourceLineNo">121</span>                out.println();<a name="line.121"></a>
 <span class="sourceLineNo">122</span>        }<a name="line.122"></a>

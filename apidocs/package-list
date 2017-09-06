@@ -570,5 +570,6 @@ org.openimaj.workinprogress.featlearn
 org.openimaj.workinprogress.featlearn.cifarexps
 org.openimaj.workinprogress.optimisation
 org.openimaj.workinprogress.optimisation.params
+org.openimaj.workinprogress.sgdsvm
 org.w3._2004._03.trix.rdfg_1
 orgrdfs.sioc.ns

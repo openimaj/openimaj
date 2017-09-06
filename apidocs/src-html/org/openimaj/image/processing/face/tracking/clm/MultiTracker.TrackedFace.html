@@ -419,181 +419,185 @@
 <span class="sourceLineNo">411</span>                        Rectangle searchAreaBounds = f.lastMatchBounds.clone();<a name="line.411"></a>
 <span class="sourceLineNo">412</span>                        searchAreaBounds.scale((float) MultiTracker.TSCALE);<a name="line.412"></a>
 <span class="sourceLineNo">413</span>                        searchAreaBounds.scaleCentroid(searchAreaSize);<a name="line.413"></a>
-<span class="sourceLineNo">414</span>                        searchAreaBounds = searchAreaBounds.overlapping(this.small_.getBounds());<a name="line.414"></a>
-<span class="sourceLineNo">415</span><a name="line.415"></a>
-<span class="sourceLineNo">416</span>                        // Get the search image<a name="line.416"></a>
-<span class="sourceLineNo">417</span>                        final FImage searchArea = this.small_.extractROI(searchAreaBounds);<a name="line.417"></a>
-<span class="sourceLineNo">418</span><a name="line.418"></a>
-<span class="sourceLineNo">419</span>                        // Template match the template over the reduced size image.<a name="line.419"></a>
-<span class="sourceLineNo">420</span>                        final FourierTemplateMatcher matcher = new FourierTemplateMatcher(<a name="line.420"></a>
-<span class="sourceLineNo">421</span>                                        f.templateImage,<a name="line.421"></a>
-<span class="sourceLineNo">422</span>                                        FourierTemplateMatcher.Mode.NORM_CORRELATION_COEFFICIENT);<a name="line.422"></a>
-<span class="sourceLineNo">423</span>                        matcher.analyseImage(searchArea);<a name="line.423"></a>
-<span class="sourceLineNo">424</span><a name="line.424"></a>
-<span class="sourceLineNo">425</span>                        // Get the response map<a name="line.425"></a>
-<span class="sourceLineNo">426</span>                        final float[][] ncc_ = matcher.getResponseMap().pixels;<a name="line.426"></a>
-<span class="sourceLineNo">427</span><a name="line.427"></a>
-<span class="sourceLineNo">428</span>                        // DisplayUtilities.displayName( matcher.getResponseMap(),<a name="line.428"></a>
-<span class="sourceLineNo">429</span>                        // "responseMap" );<a name="line.429"></a>
-<span class="sourceLineNo">430</span>                        // DisplayUtilities.displayName( f.templateImage, "template" );<a name="line.430"></a>
+<span class="sourceLineNo">414</span><a name="line.414"></a>
+<span class="sourceLineNo">415</span>                        if (searchAreaBounds.overlapping(this.small_.getBounds()) != null)<a name="line.415"></a>
+<span class="sourceLineNo">416</span>                                searchAreaBounds = searchAreaBounds.overlapping(this.small_.getBounds());<a name="line.416"></a>
+<span class="sourceLineNo">417</span>                        else<a name="line.417"></a>
+<span class="sourceLineNo">418</span>                                searchAreaBounds = this.small_.getBounds();<a name="line.418"></a>
+<span class="sourceLineNo">419</span><a name="line.419"></a>
+<span class="sourceLineNo">420</span>                        // Get the search image<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                        final FImage searchArea = this.small_.extractROI(searchAreaBounds);<a name="line.421"></a>
+<span class="sourceLineNo">422</span><a name="line.422"></a>
+<span class="sourceLineNo">423</span>                        // Template match the template over the reduced size image.<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                        final FourierTemplateMatcher matcher = new FourierTemplateMatcher(<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                                        f.templateImage,<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                                        FourierTemplateMatcher.Mode.NORM_CORRELATION_COEFFICIENT);<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                        matcher.analyseImage(searchArea);<a name="line.427"></a>
+<span class="sourceLineNo">428</span><a name="line.428"></a>
+<span class="sourceLineNo">429</span>                        // Get the response map<a name="line.429"></a>
+<span class="sourceLineNo">430</span>                        final float[][] ncc_ = matcher.getResponseMap().pixels;<a name="line.430"></a>
 <span class="sourceLineNo">431</span><a name="line.431"></a>
-<span class="sourceLineNo">432</span>                        f.redetectedBounds = f.templateImage.getBounds();<a name="line.432"></a>
-<span class="sourceLineNo">433</span><a name="line.433"></a>
-<span class="sourceLineNo">434</span>                        // Find the maximum template match in the image<a name="line.434"></a>
-<span class="sourceLineNo">435</span>                        final int h = searchArea.height - f.templateImage.height + 1;<a name="line.435"></a>
-<span class="sourceLineNo">436</span>                        final int w = searchArea.width - f.templateImage.width + 1;<a name="line.436"></a>
-<span class="sourceLineNo">437</span>                        float vb = -2;<a name="line.437"></a>
-<span class="sourceLineNo">438</span>                        for (int y = 0; y &lt; h; y++) {<a name="line.438"></a>
-<span class="sourceLineNo">439</span>                                for (int x = 0; x &lt; w; x++) {<a name="line.439"></a>
-<span class="sourceLineNo">440</span>                                        final float v = ncc_[y][x];<a name="line.440"></a>
-<span class="sourceLineNo">441</span>                                        if (v &gt; vb) {<a name="line.441"></a>
-<span class="sourceLineNo">442</span>                                                vb = v;<a name="line.442"></a>
-<span class="sourceLineNo">443</span>                                                f.redetectedBounds.x = x + searchAreaBounds.x;<a name="line.443"></a>
-<span class="sourceLineNo">444</span>                                                f.redetectedBounds.y = y + searchAreaBounds.y;<a name="line.444"></a>
-<span class="sourceLineNo">445</span>                                        }<a name="line.445"></a>
-<span class="sourceLineNo">446</span>                                }<a name="line.446"></a>
-<span class="sourceLineNo">447</span>                        }<a name="line.447"></a>
-<span class="sourceLineNo">448</span><a name="line.448"></a>
-<span class="sourceLineNo">449</span>                        // Rescale the rectangle to full-size image coordinates.<a name="line.449"></a>
-<span class="sourceLineNo">450</span>                        f.redetectedBounds.scale((float) (1d / MultiTracker.TSCALE));<a name="line.450"></a>
-<span class="sourceLineNo">451</span>                }<a name="line.451"></a>
-<span class="sourceLineNo">452</span>        }<a name="line.452"></a>
-<span class="sourceLineNo">453</span><a name="line.453"></a>
-<span class="sourceLineNo">454</span>        protected Rectangle updateTemplate(final TrackedFace f, final FImage im, final Matrix s,<a name="line.454"></a>
-<span class="sourceLineNo">455</span>                        final boolean resize)<a name="line.455"></a>
-<span class="sourceLineNo">456</span>        {<a name="line.456"></a>
-<span class="sourceLineNo">457</span>                final int n = s.getRowDimension() / 2;<a name="line.457"></a>
-<span class="sourceLineNo">458</span><a name="line.458"></a>
-<span class="sourceLineNo">459</span>                final double[][] sv = s.getArray();<a name="line.459"></a>
-<span class="sourceLineNo">460</span>                double xmax = sv[0][0], ymax = sv[n][0], xmin = sv[0][0], ymin = sv[n][0];<a name="line.460"></a>
-<span class="sourceLineNo">461</span><a name="line.461"></a>
-<span class="sourceLineNo">462</span>                for (int i = 0; i &lt; n; i++) {<a name="line.462"></a>
-<span class="sourceLineNo">463</span>                        final double vx = sv[i][0];<a name="line.463"></a>
-<span class="sourceLineNo">464</span>                        final double vy = sv[i + n][0];<a name="line.464"></a>
+<span class="sourceLineNo">432</span>                        // DisplayUtilities.displayName( matcher.getResponseMap(),<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                        // "responseMap" );<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                        // DisplayUtilities.displayName( f.templateImage, "template" );<a name="line.434"></a>
+<span class="sourceLineNo">435</span><a name="line.435"></a>
+<span class="sourceLineNo">436</span>                        f.redetectedBounds = f.templateImage.getBounds();<a name="line.436"></a>
+<span class="sourceLineNo">437</span><a name="line.437"></a>
+<span class="sourceLineNo">438</span>                        // Find the maximum template match in the image<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                        final int h = searchArea.height - f.templateImage.height + 1;<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                        final int w = searchArea.width - f.templateImage.width + 1;<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                        float vb = -2;<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                        for (int y = 0; y &lt; h; y++) {<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                                for (int x = 0; x &lt; w; x++) {<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                                        final float v = ncc_[y][x];<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                                        if (v &gt; vb) {<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                                                vb = v;<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                                                f.redetectedBounds.x = x + searchAreaBounds.x;<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                                                f.redetectedBounds.y = y + searchAreaBounds.y;<a name="line.448"></a>
+<span class="sourceLineNo">449</span>                                        }<a name="line.449"></a>
+<span class="sourceLineNo">450</span>                                }<a name="line.450"></a>
+<span class="sourceLineNo">451</span>                        }<a name="line.451"></a>
+<span class="sourceLineNo">452</span><a name="line.452"></a>
+<span class="sourceLineNo">453</span>                        // Rescale the rectangle to full-size image coordinates.<a name="line.453"></a>
+<span class="sourceLineNo">454</span>                        f.redetectedBounds.scale((float) (1d / MultiTracker.TSCALE));<a name="line.454"></a>
+<span class="sourceLineNo">455</span>                }<a name="line.455"></a>
+<span class="sourceLineNo">456</span>        }<a name="line.456"></a>
+<span class="sourceLineNo">457</span><a name="line.457"></a>
+<span class="sourceLineNo">458</span>        protected Rectangle updateTemplate(final TrackedFace f, final FImage im, final Matrix s,<a name="line.458"></a>
+<span class="sourceLineNo">459</span>                        final boolean resize)<a name="line.459"></a>
+<span class="sourceLineNo">460</span>        {<a name="line.460"></a>
+<span class="sourceLineNo">461</span>                final int n = s.getRowDimension() / 2;<a name="line.461"></a>
+<span class="sourceLineNo">462</span><a name="line.462"></a>
+<span class="sourceLineNo">463</span>                final double[][] sv = s.getArray();<a name="line.463"></a>
+<span class="sourceLineNo">464</span>                double xmax = sv[0][0], ymax = sv[n][0], xmin = sv[0][0], ymin = sv[n][0];<a name="line.464"></a>
 <span class="sourceLineNo">465</span><a name="line.465"></a>
-<span class="sourceLineNo">466</span>                        xmax = Math.max(xmax, vx);<a name="line.466"></a>
-<span class="sourceLineNo">467</span>                        ymax = Math.max(ymax, vy);<a name="line.467"></a>
-<span class="sourceLineNo">468</span><a name="line.468"></a>
-<span class="sourceLineNo">469</span>                        xmin = Math.min(xmin, vx);<a name="line.469"></a>
-<span class="sourceLineNo">470</span>                        ymin = Math.min(ymin, vy);<a name="line.470"></a>
-<span class="sourceLineNo">471</span>                }<a name="line.471"></a>
+<span class="sourceLineNo">466</span>                for (int i = 0; i &lt; n; i++) {<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                        final double vx = sv[i][0];<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                        final double vy = sv[i + n][0];<a name="line.468"></a>
+<span class="sourceLineNo">469</span><a name="line.469"></a>
+<span class="sourceLineNo">470</span>                        xmax = Math.max(xmax, vx);<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                        ymax = Math.max(ymax, vy);<a name="line.471"></a>
 <span class="sourceLineNo">472</span><a name="line.472"></a>
-<span class="sourceLineNo">473</span>                if ((xmin &lt; 0) || (ymin &lt; 0) || (xmax &gt;= im.width)<a name="line.473"></a>
-<span class="sourceLineNo">474</span>                                || (ymax &gt;= im.height) || Double.isNaN(xmin)<a name="line.474"></a>
-<span class="sourceLineNo">475</span>                                || Double.isInfinite(xmin) || Double.isNaN(xmax)<a name="line.475"></a>
-<span class="sourceLineNo">476</span>                                || Double.isInfinite(xmax) || Double.isNaN(ymin)<a name="line.476"></a>
-<span class="sourceLineNo">477</span>                                || Double.isInfinite(ymin) || Double.isNaN(ymax)<a name="line.477"></a>
-<span class="sourceLineNo">478</span>                                || Double.isInfinite(ymax))<a name="line.478"></a>
-<span class="sourceLineNo">479</span>                {<a name="line.479"></a>
-<span class="sourceLineNo">480</span>                        return new Rectangle(0, 0, 0, 0);<a name="line.480"></a>
-<span class="sourceLineNo">481</span>                } else {<a name="line.481"></a>
-<span class="sourceLineNo">482</span>                        xmin *= MultiTracker.TSCALE;<a name="line.482"></a>
-<span class="sourceLineNo">483</span>                        ymin *= MultiTracker.TSCALE;<a name="line.483"></a>
-<span class="sourceLineNo">484</span>                        xmax *= MultiTracker.TSCALE;<a name="line.484"></a>
-<span class="sourceLineNo">485</span>                        ymax *= MultiTracker.TSCALE;<a name="line.485"></a>
-<span class="sourceLineNo">486</span><a name="line.486"></a>
-<span class="sourceLineNo">487</span>                        final Rectangle R = new Rectangle((float) Math.floor(xmin),<a name="line.487"></a>
-<span class="sourceLineNo">488</span>                                        (float) Math.floor(ymin), (float) Math.ceil(xmax - xmin),<a name="line.488"></a>
-<span class="sourceLineNo">489</span>                                        (float) Math.ceil(ymax - ymin));<a name="line.489"></a>
+<span class="sourceLineNo">473</span>                        xmin = Math.min(xmin, vx);<a name="line.473"></a>
+<span class="sourceLineNo">474</span>                        ymin = Math.min(ymin, vy);<a name="line.474"></a>
+<span class="sourceLineNo">475</span>                }<a name="line.475"></a>
+<span class="sourceLineNo">476</span><a name="line.476"></a>
+<span class="sourceLineNo">477</span>                if ((xmin &lt; 0) || (ymin &lt; 0) || (xmax &gt;= im.width)<a name="line.477"></a>
+<span class="sourceLineNo">478</span>                                || (ymax &gt;= im.height) || Double.isNaN(xmin)<a name="line.478"></a>
+<span class="sourceLineNo">479</span>                                || Double.isInfinite(xmin) || Double.isNaN(xmax)<a name="line.479"></a>
+<span class="sourceLineNo">480</span>                                || Double.isInfinite(xmax) || Double.isNaN(ymin)<a name="line.480"></a>
+<span class="sourceLineNo">481</span>                                || Double.isInfinite(ymin) || Double.isNaN(ymax)<a name="line.481"></a>
+<span class="sourceLineNo">482</span>                                || Double.isInfinite(ymax))<a name="line.482"></a>
+<span class="sourceLineNo">483</span>                {<a name="line.483"></a>
+<span class="sourceLineNo">484</span>                        return new Rectangle(0, 0, 0, 0);<a name="line.484"></a>
+<span class="sourceLineNo">485</span>                } else {<a name="line.485"></a>
+<span class="sourceLineNo">486</span>                        xmin *= MultiTracker.TSCALE;<a name="line.486"></a>
+<span class="sourceLineNo">487</span>                        ymin *= MultiTracker.TSCALE;<a name="line.487"></a>
+<span class="sourceLineNo">488</span>                        xmax *= MultiTracker.TSCALE;<a name="line.488"></a>
+<span class="sourceLineNo">489</span>                        ymax *= MultiTracker.TSCALE;<a name="line.489"></a>
 <span class="sourceLineNo">490</span><a name="line.490"></a>
-<span class="sourceLineNo">491</span>                        final int ww = im.width;<a name="line.491"></a>
-<span class="sourceLineNo">492</span>                        final int hh = im.height;<a name="line.492"></a>
-<span class="sourceLineNo">493</span><a name="line.493"></a>
-<span class="sourceLineNo">494</span>                        if (resize)<a name="line.494"></a>
-<span class="sourceLineNo">495</span>                                this.small_ = ResizeProcessor.resample(im, (int) (MultiTracker.TSCALE * ww),<a name="line.495"></a>
-<span class="sourceLineNo">496</span>                                                (int) (MultiTracker.TSCALE * hh));<a name="line.496"></a>
+<span class="sourceLineNo">491</span>                        final Rectangle R = new Rectangle((float) Math.floor(xmin),<a name="line.491"></a>
+<span class="sourceLineNo">492</span>                                        (float) Math.floor(ymin), (float) Math.ceil(xmax - xmin),<a name="line.492"></a>
+<span class="sourceLineNo">493</span>                                        (float) Math.ceil(ymax - ymin));<a name="line.493"></a>
+<span class="sourceLineNo">494</span><a name="line.494"></a>
+<span class="sourceLineNo">495</span>                        final int ww = im.width;<a name="line.495"></a>
+<span class="sourceLineNo">496</span>                        final int hh = im.height;<a name="line.496"></a>
 <span class="sourceLineNo">497</span><a name="line.497"></a>
-<span class="sourceLineNo">498</span>                        f.templateImage = this.small_.extractROI(R);<a name="line.498"></a>
-<span class="sourceLineNo">499</span><a name="line.499"></a>
-<span class="sourceLineNo">500</span>                        R.x *= 1.0 / MultiTracker.TSCALE;<a name="line.500"></a>
-<span class="sourceLineNo">501</span>                        R.y *= 1.0 / MultiTracker.TSCALE;<a name="line.501"></a>
-<span class="sourceLineNo">502</span>                        R.width *= 1.0 / MultiTracker.TSCALE;<a name="line.502"></a>
-<span class="sourceLineNo">503</span>                        R.height *= 1.0 / MultiTracker.TSCALE;<a name="line.503"></a>
-<span class="sourceLineNo">504</span><a name="line.504"></a>
-<span class="sourceLineNo">505</span>                        return R;<a name="line.505"></a>
-<span class="sourceLineNo">506</span>                }<a name="line.506"></a>
-<span class="sourceLineNo">507</span>        }<a name="line.507"></a>
+<span class="sourceLineNo">498</span>                        if (resize)<a name="line.498"></a>
+<span class="sourceLineNo">499</span>                                this.small_ = ResizeProcessor.resample(im, (int) (MultiTracker.TSCALE * ww),<a name="line.499"></a>
+<span class="sourceLineNo">500</span>                                                (int) (MultiTracker.TSCALE * hh));<a name="line.500"></a>
+<span class="sourceLineNo">501</span><a name="line.501"></a>
+<span class="sourceLineNo">502</span>                        f.templateImage = this.small_.extractROI(R);<a name="line.502"></a>
+<span class="sourceLineNo">503</span><a name="line.503"></a>
+<span class="sourceLineNo">504</span>                        R.x *= 1.0 / MultiTracker.TSCALE;<a name="line.504"></a>
+<span class="sourceLineNo">505</span>                        R.y *= 1.0 / MultiTracker.TSCALE;<a name="line.505"></a>
+<span class="sourceLineNo">506</span>                        R.width *= 1.0 / MultiTracker.TSCALE;<a name="line.506"></a>
+<span class="sourceLineNo">507</span>                        R.height *= 1.0 / MultiTracker.TSCALE;<a name="line.507"></a>
 <span class="sourceLineNo">508</span><a name="line.508"></a>
-<span class="sourceLineNo">509</span>        /**<a name="line.509"></a>
-<span class="sourceLineNo">510</span>         * Load a tracker from a file.<a name="line.510"></a>
-<span class="sourceLineNo">511</span>         *<a name="line.511"></a>
-<span class="sourceLineNo">512</span>         * @param fname<a name="line.512"></a>
-<span class="sourceLineNo">513</span>         *            File name to read from<a name="line.513"></a>
-<span class="sourceLineNo">514</span>         * @return A tracker variable class<a name="line.514"></a>
-<span class="sourceLineNo">515</span>         * @throws FileNotFoundException<a name="line.515"></a>
-<span class="sourceLineNo">516</span>         */<a name="line.516"></a>
-<span class="sourceLineNo">517</span>        public static TrackerVars load(final String fname)<a name="line.517"></a>
-<span class="sourceLineNo">518</span>                        throws FileNotFoundException<a name="line.518"></a>
-<span class="sourceLineNo">519</span>        {<a name="line.519"></a>
-<span class="sourceLineNo">520</span>                BufferedReader br = null;<a name="line.520"></a>
-<span class="sourceLineNo">521</span>                try {<a name="line.521"></a>
-<span class="sourceLineNo">522</span>                        br = new BufferedReader(new FileReader(fname));<a name="line.522"></a>
-<span class="sourceLineNo">523</span>                        final Scanner sc = new Scanner(br);<a name="line.523"></a>
-<span class="sourceLineNo">524</span>                        return MultiTracker.read(sc, true);<a name="line.524"></a>
-<span class="sourceLineNo">525</span>                } finally {<a name="line.525"></a>
-<span class="sourceLineNo">526</span>                        try {<a name="line.526"></a>
-<span class="sourceLineNo">527</span>                                br.close();<a name="line.527"></a>
-<span class="sourceLineNo">528</span>                        } catch (final IOException e) {<a name="line.528"></a>
-<span class="sourceLineNo">529</span>                        }<a name="line.529"></a>
-<span class="sourceLineNo">530</span>                }<a name="line.530"></a>
-<span class="sourceLineNo">531</span>        }<a name="line.531"></a>
-<span class="sourceLineNo">532</span><a name="line.532"></a>
-<span class="sourceLineNo">533</span>        /**<a name="line.533"></a>
-<span class="sourceLineNo">534</span>         * Load a tracker from an input stream.<a name="line.534"></a>
-<span class="sourceLineNo">535</span>         *<a name="line.535"></a>
-<span class="sourceLineNo">536</span>         * @param in<a name="line.536"></a>
-<span class="sourceLineNo">537</span>         *            The input stream<a name="line.537"></a>
-<span class="sourceLineNo">538</span>         * @return a tracker<a name="line.538"></a>
-<span class="sourceLineNo">539</span>         */<a name="line.539"></a>
-<span class="sourceLineNo">540</span>        public static TrackerVars load(final InputStream in) {<a name="line.540"></a>
-<span class="sourceLineNo">541</span>                BufferedReader br = null;<a name="line.541"></a>
-<span class="sourceLineNo">542</span>                try {<a name="line.542"></a>
-<span class="sourceLineNo">543</span>                        br = new BufferedReader(new InputStreamReader(in));<a name="line.543"></a>
-<span class="sourceLineNo">544</span>                        final Scanner sc = new Scanner(br);<a name="line.544"></a>
-<span class="sourceLineNo">545</span>                        return MultiTracker.read(sc, true);<a name="line.545"></a>
-<span class="sourceLineNo">546</span>                } finally {<a name="line.546"></a>
-<span class="sourceLineNo">547</span>                        try {<a name="line.547"></a>
-<span class="sourceLineNo">548</span>                                if (br != null)<a name="line.548"></a>
-<span class="sourceLineNo">549</span>                                        br.close();<a name="line.549"></a>
-<span class="sourceLineNo">550</span>                        } catch (final IOException e) {<a name="line.550"></a>
-<span class="sourceLineNo">551</span>                        }<a name="line.551"></a>
-<span class="sourceLineNo">552</span>                }<a name="line.552"></a>
-<span class="sourceLineNo">553</span>        }<a name="line.553"></a>
-<span class="sourceLineNo">554</span><a name="line.554"></a>
-<span class="sourceLineNo">555</span>        /**<a name="line.555"></a>
-<span class="sourceLineNo">556</span>         *<a name="line.556"></a>
-<span class="sourceLineNo">557</span>         * @param s<a name="line.557"></a>
-<span class="sourceLineNo">558</span>         * @param readType<a name="line.558"></a>
-<span class="sourceLineNo">559</span>         * @return<a name="line.559"></a>
-<span class="sourceLineNo">560</span>         */<a name="line.560"></a>
-<span class="sourceLineNo">561</span>        private static TrackerVars read(final Scanner s, final boolean readType) {<a name="line.561"></a>
-<span class="sourceLineNo">562</span>                if (readType) {<a name="line.562"></a>
-<span class="sourceLineNo">563</span>                        final int type = s.nextInt();<a name="line.563"></a>
-<span class="sourceLineNo">564</span>                        assert (type == IO.Types.TRACKER.ordinal());<a name="line.564"></a>
-<span class="sourceLineNo">565</span>                }<a name="line.565"></a>
-<span class="sourceLineNo">566</span>                final TrackerVars trackerVars = new TrackerVars();<a name="line.566"></a>
-<span class="sourceLineNo">567</span>                trackerVars.clm = CLM.read(s, true);<a name="line.567"></a>
-<span class="sourceLineNo">568</span>                trackerVars.faceDetector = FDet.read(s, true);<a name="line.568"></a>
-<span class="sourceLineNo">569</span>                trackerVars.failureCheck = MFCheck.read(s, true);<a name="line.569"></a>
-<span class="sourceLineNo">570</span>                trackerVars.referenceShape = IO.readMat(s);<a name="line.570"></a>
-<span class="sourceLineNo">571</span>                trackerVars.similarity = new double[] { s.nextDouble(), s.nextDouble(),<a name="line.571"></a>
-<span class="sourceLineNo">572</span>                                s.nextDouble(), s.nextDouble() };<a name="line.572"></a>
-<span class="sourceLineNo">573</span>                trackerVars.shape = new Matrix(2 * trackerVars.clm._pdm.nPoints(), 1);<a name="line.573"></a>
-<span class="sourceLineNo">574</span>                trackerVars.clm._pdm.identity(trackerVars.clm._plocal,<a name="line.574"></a>
-<span class="sourceLineNo">575</span>                                trackerVars.clm._pglobl);<a name="line.575"></a>
-<span class="sourceLineNo">576</span><a name="line.576"></a>
-<span class="sourceLineNo">577</span>                return trackerVars;<a name="line.577"></a>
-<span class="sourceLineNo">578</span>        }<a name="line.578"></a>
-<span class="sourceLineNo">579</span><a name="line.579"></a>
-<span class="sourceLineNo">580</span>        /**<a name="line.580"></a>
-<span class="sourceLineNo">581</span>         * Returns the initial variables used for each face tracker.<a name="line.581"></a>
-<span class="sourceLineNo">582</span>         *<a name="line.582"></a>
-<span class="sourceLineNo">583</span>         * @return The initial variables<a name="line.583"></a>
-<span class="sourceLineNo">584</span>         */<a name="line.584"></a>
-<span class="sourceLineNo">585</span>        public TrackerVars getInitialVars() {<a name="line.585"></a>
-<span class="sourceLineNo">586</span>                return this.initialTracker;<a name="line.586"></a>
-<span class="sourceLineNo">587</span>        }<a name="line.587"></a>
-<span class="sourceLineNo">588</span>}<a name="line.588"></a>
+<span class="sourceLineNo">509</span>                        return R;<a name="line.509"></a>
+<span class="sourceLineNo">510</span>                }<a name="line.510"></a>
+<span class="sourceLineNo">511</span>        }<a name="line.511"></a>
+<span class="sourceLineNo">512</span><a name="line.512"></a>
+<span class="sourceLineNo">513</span>        /**<a name="line.513"></a>
+<span class="sourceLineNo">514</span>         * Load a tracker from a file.<a name="line.514"></a>
+<span class="sourceLineNo">515</span>         *<a name="line.515"></a>
+<span class="sourceLineNo">516</span>         * @param fname<a name="line.516"></a>
+<span class="sourceLineNo">517</span>         *            File name to read from<a name="line.517"></a>
+<span class="sourceLineNo">518</span>         * @return A tracker variable class<a name="line.518"></a>
+<span class="sourceLineNo">519</span>         * @throws FileNotFoundException<a name="line.519"></a>
+<span class="sourceLineNo">520</span>         */<a name="line.520"></a>
+<span class="sourceLineNo">521</span>        public static TrackerVars load(final String fname)<a name="line.521"></a>
+<span class="sourceLineNo">522</span>                        throws FileNotFoundException<a name="line.522"></a>
+<span class="sourceLineNo">523</span>        {<a name="line.523"></a>
+<span class="sourceLineNo">524</span>                BufferedReader br = null;<a name="line.524"></a>
+<span class="sourceLineNo">525</span>                try {<a name="line.525"></a>
+<span class="sourceLineNo">526</span>                        br = new BufferedReader(new FileReader(fname));<a name="line.526"></a>
+<span class="sourceLineNo">527</span>                        final Scanner sc = new Scanner(br);<a name="line.527"></a>
+<span class="sourceLineNo">528</span>                        return MultiTracker.read(sc, true);<a name="line.528"></a>
+<span class="sourceLineNo">529</span>                } finally {<a name="line.529"></a>
+<span class="sourceLineNo">530</span>                        try {<a name="line.530"></a>
+<span class="sourceLineNo">531</span>                                br.close();<a name="line.531"></a>
+<span class="sourceLineNo">532</span>                        } catch (final IOException e) {<a name="line.532"></a>
+<span class="sourceLineNo">533</span>                        }<a name="line.533"></a>
+<span class="sourceLineNo">534</span>                }<a name="line.534"></a>
+<span class="sourceLineNo">535</span>        }<a name="line.535"></a>
+<span class="sourceLineNo">536</span><a name="line.536"></a>
+<span class="sourceLineNo">537</span>        /**<a name="line.537"></a>
+<span class="sourceLineNo">538</span>         * Load a tracker from an input stream.<a name="line.538"></a>
+<span class="sourceLineNo">539</span>         *<a name="line.539"></a>
+<span class="sourceLineNo">540</span>         * @param in<a name="line.540"></a>
+<span class="sourceLineNo">541</span>         *            The input stream<a name="line.541"></a>
+<span class="sourceLineNo">542</span>         * @return a tracker<a name="line.542"></a>
+<span class="sourceLineNo">543</span>         */<a name="line.543"></a>
+<span class="sourceLineNo">544</span>        public static TrackerVars load(final InputStream in) {<a name="line.544"></a>
+<span class="sourceLineNo">545</span>                BufferedReader br = null;<a name="line.545"></a>
+<span class="sourceLineNo">546</span>                try {<a name="line.546"></a>
+<span class="sourceLineNo">547</span>                        br = new BufferedReader(new InputStreamReader(in));<a name="line.547"></a>
+<span class="sourceLineNo">548</span>                        final Scanner sc = new Scanner(br);<a name="line.548"></a>
+<span class="sourceLineNo">549</span>                        return MultiTracker.read(sc, true);<a name="line.549"></a>
+<span class="sourceLineNo">550</span>                } finally {<a name="line.550"></a>
+<span class="sourceLineNo">551</span>                        try {<a name="line.551"></a>
+<span class="sourceLineNo">552</span>                                if (br != null)<a name="line.552"></a>
+<span class="sourceLineNo">553</span>                                        br.close();<a name="line.553"></a>
+<span class="sourceLineNo">554</span>                        } catch (final IOException e) {<a name="line.554"></a>
+<span class="sourceLineNo">555</span>                        }<a name="line.555"></a>
+<span class="sourceLineNo">556</span>                }<a name="line.556"></a>
+<span class="sourceLineNo">557</span>        }<a name="line.557"></a>
+<span class="sourceLineNo">558</span><a name="line.558"></a>
+<span class="sourceLineNo">559</span>        /**<a name="line.559"></a>
+<span class="sourceLineNo">560</span>         *<a name="line.560"></a>
+<span class="sourceLineNo">561</span>         * @param s<a name="line.561"></a>
+<span class="sourceLineNo">562</span>         * @param readType<a name="line.562"></a>
+<span class="sourceLineNo">563</span>         * @return<a name="line.563"></a>
+<span class="sourceLineNo">564</span>         */<a name="line.564"></a>
+<span class="sourceLineNo">565</span>        private static TrackerVars read(final Scanner s, final boolean readType) {<a name="line.565"></a>
+<span class="sourceLineNo">566</span>                if (readType) {<a name="line.566"></a>
+<span class="sourceLineNo">567</span>                        final int type = s.nextInt();<a name="line.567"></a>
+<span class="sourceLineNo">568</span>                        assert (type == IO.Types.TRACKER.ordinal());<a name="line.568"></a>
+<span class="sourceLineNo">569</span>                }<a name="line.569"></a>
+<span class="sourceLineNo">570</span>                final TrackerVars trackerVars = new TrackerVars();<a name="line.570"></a>
+<span class="sourceLineNo">571</span>                trackerVars.clm = CLM.read(s, true);<a name="line.571"></a>
+<span class="sourceLineNo">572</span>                trackerVars.faceDetector = FDet.read(s, true);<a name="line.572"></a>
+<span class="sourceLineNo">573</span>                trackerVars.failureCheck = MFCheck.read(s, true);<a name="line.573"></a>
+<span class="sourceLineNo">574</span>                trackerVars.referenceShape = IO.readMat(s);<a name="line.574"></a>
+<span class="sourceLineNo">575</span>                trackerVars.similarity = new double[] { s.nextDouble(), s.nextDouble(),<a name="line.575"></a>
+<span class="sourceLineNo">576</span>                                s.nextDouble(), s.nextDouble() };<a name="line.576"></a>
+<span class="sourceLineNo">577</span>                trackerVars.shape = new Matrix(2 * trackerVars.clm._pdm.nPoints(), 1);<a name="line.577"></a>
+<span class="sourceLineNo">578</span>                trackerVars.clm._pdm.identity(trackerVars.clm._plocal,<a name="line.578"></a>
+<span class="sourceLineNo">579</span>                                trackerVars.clm._pglobl);<a name="line.579"></a>
+<span class="sourceLineNo">580</span><a name="line.580"></a>
+<span class="sourceLineNo">581</span>                return trackerVars;<a name="line.581"></a>
+<span class="sourceLineNo">582</span>        }<a name="line.582"></a>
+<span class="sourceLineNo">583</span><a name="line.583"></a>
+<span class="sourceLineNo">584</span>        /**<a name="line.584"></a>
+<span class="sourceLineNo">585</span>         * Returns the initial variables used for each face tracker.<a name="line.585"></a>
+<span class="sourceLineNo">586</span>         *<a name="line.586"></a>
+<span class="sourceLineNo">587</span>         * @return The initial variables<a name="line.587"></a>
+<span class="sourceLineNo">588</span>         */<a name="line.588"></a>
+<span class="sourceLineNo">589</span>        public TrackerVars getInitialVars() {<a name="line.589"></a>
+<span class="sourceLineNo">590</span>                return this.initialTracker;<a name="line.590"></a>
+<span class="sourceLineNo">591</span>        }<a name="line.591"></a>
+<span class="sourceLineNo">592</span>}<a name="line.592"></a>
 
 
 

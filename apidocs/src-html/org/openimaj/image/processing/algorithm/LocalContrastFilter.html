@@ -69,27 +69,29 @@
 <span class="sourceLineNo">061</span>        @Override<a name="line.61"></a>
 <span class="sourceLineNo">062</span>        public void processImage(FImage image) {<a name="line.62"></a>
 <span class="sourceLineNo">063</span>                final FImage tmpImage = new FImage(image.width, image.height);<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                float min = Float.MAX_VALUE;<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                float max = -Float.MAX_VALUE;<a name="line.65"></a>
+<span class="sourceLineNo">064</span>                float min;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                float max;<a name="line.65"></a>
 <span class="sourceLineNo">066</span><a name="line.66"></a>
 <span class="sourceLineNo">067</span>                for (int y = 0; y &lt; image.height; y++) {<a name="line.67"></a>
 <span class="sourceLineNo">068</span>                        for (int x = 0; x &lt; image.width; x++) {<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                                for (final Pixel sp : support) {<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                                        final int xx = x + sp.x;<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                                        final int yy = y + sp.y;<a name="line.71"></a>
-<span class="sourceLineNo">072</span><a name="line.72"></a>
-<span class="sourceLineNo">073</span>                                        if (xx &gt;= 0 &amp;&amp; xx &lt; image.width - 1 &amp;&amp; yy &gt;= 0 &amp;&amp; yy &lt; image.height - 1) {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                                                min = Math.min(min, image.pixels[yy][xx]);<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                                                max = Math.min(min, image.pixels[yy][xx]);<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                                        }<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                }<a name="line.77"></a>
-<span class="sourceLineNo">078</span><a name="line.78"></a>
-<span class="sourceLineNo">079</span>                                tmpImage.pixels[y][x] = max - min;<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                        }<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                }<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                image.internalAssign(tmpImage);<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
-<span class="sourceLineNo">084</span>}<a name="line.84"></a>
+<span class="sourceLineNo">069</span>                                min = Float.MAX_VALUE;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                                max = -Float.MAX_VALUE;<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                                for (final Pixel sp : support) {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                        final int xx = x + sp.x;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                        final int yy = y + sp.y;<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>                                        if (xx &gt;= 0 &amp;&amp; xx &lt; image.width - 1 &amp;&amp; yy &gt;= 0 &amp;&amp; yy &lt; image.height - 1) {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                                                min = Math.min(min, image.pixels[yy][xx]);<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                                max = Math.max(max, image.pixels[yy][xx]);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                                        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                                }<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>                                tmpImage.pixels[y][x] = max - min;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        }<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                }<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                image.internalAssign(tmpImage);<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        }<a name="line.85"></a>
+<span class="sourceLineNo">086</span>}<a name="line.86"></a>
 
 
 
