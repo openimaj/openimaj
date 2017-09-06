@@ -52,13 +52,13 @@
 <a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment"> * Dense SIFT keypoint with a location and byte feature vector. Also includes</em>
 <a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * the energy of the feature prior to normalisation in case low-contrast</em>
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * features need removing.</em>
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="48" href="#48">48</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../org/openimaj/image/feature/dense/gradient/dsift/ByteDSIFTKeypoint.html">ByteDSIFTKeypoint</a>
 <a class="jxr_linenumber" name="50" href="#50">50</a>  		<strong class="jxr_keyword">extends</strong>
-<a class="jxr_linenumber" name="51" href="#51">51</a>  		AbstractDSIFTKeypoint&lt;ByteFV, byte[]&gt;
+<a class="jxr_linenumber" name="51" href="#51">51</a>  			AbstractDSIFTKeypoint&lt;ByteFV, byte[]&gt;
 <a class="jxr_linenumber" name="52" href="#52">52</a>  {
 <a class="jxr_linenumber" name="53" href="#53">53</a>  	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = 12345545L;
 <a class="jxr_linenumber" name="54" href="#54">54</a>  
@@ -71,7 +71,7 @@
 <a class="jxr_linenumber" name="61" href="#61">61</a>  
 <a class="jxr_linenumber" name="62" href="#62">62</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">	 * Construct with the given feature vector length.</em>
-<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment">	 * @param length</em>
 <a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment">	 *            the length of the feature vector</em>
 <a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment">	 */</em>
@@ -81,7 +81,7 @@
 <a class="jxr_linenumber" name="71" href="#71">71</a>  
 <a class="jxr_linenumber" name="72" href="#72">72</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="73" href="#73">73</a>  <em class="jxr_javadoccomment">	 * Construct with the given parameters.</em>
-<a class="jxr_linenumber" name="74" href="#74">74</a>  <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="74" href="#74">74</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="75" href="#75">75</a>  <em class="jxr_javadoccomment">	 * @param x</em>
 <a class="jxr_linenumber" name="76" href="#76">76</a>  <em class="jxr_javadoccomment">	 *            the x-ordinate of the keypoint</em>
 <a class="jxr_linenumber" name="77" href="#77">77</a>  <em class="jxr_javadoccomment">	 * @param y</em>
@@ -102,7 +102,7 @@
 <a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">	 * Construct with the given parameters. The float version of the descriptor</em>
 <a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">	 * is converted to bytes by multiplying each bin by 512, clipping to 255 and</em>
 <a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">	 * then subtracting 128.</em>
-<a class="jxr_linenumber" name="95" href="#95">95</a>  <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="95" href="#95">95</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="96" href="#96">96</a>  <em class="jxr_javadoccomment">	 * @param x</em>
 <a class="jxr_linenumber" name="97" href="#97">97</a>  <em class="jxr_javadoccomment">	 *            the x-ordinate of the keypoint</em>
 <a class="jxr_linenumber" name="98" href="#98">98</a>  <em class="jxr_javadoccomment">	 * @param y</em>
@@ -146,43 +146,43 @@
 <a class="jxr_linenumber" name="136" href="#136">136</a> 	@Override
 <a class="jxr_linenumber" name="137" href="#137">137</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeASCII(PrintWriter out) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="138" href="#138">138</a> 		<em class="jxr_comment">/*<em class="jxr_comment"> Output data for the keypoint. */</em></em>
-<a class="jxr_linenumber" name="139" href="#139">139</a> 		getLocation().writeASCII(out);
+<a class="jxr_linenumber" name="139" href="#139">139</a> 		out.write(x + <span class="jxr_string">" "</span> + y + <span class="jxr_string">" "</span> + energy + <span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="140" href="#140">140</a> 
-<a class="jxr_linenumber" name="141" href="#141">141</a> 		out.write(x + <span class="jxr_string">" "</span> + y + <span class="jxr_string">" "</span> + energy + <span class="jxr_string">"\n"</span>);
-<a class="jxr_linenumber" name="142" href="#142">142</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; descriptor.length; i++) {
-<a class="jxr_linenumber" name="143" href="#143">143</a> 			<strong class="jxr_keyword">if</strong> (i &gt; 0 &amp;&amp; i % 20 == 0)
-<a class="jxr_linenumber" name="144" href="#144">144</a> 				out.println();
-<a class="jxr_linenumber" name="145" href="#145">145</a> 			out.print(<span class="jxr_string">" "</span> + (descriptor[i] + 128));
-<a class="jxr_linenumber" name="146" href="#146">146</a> 		}
-<a class="jxr_linenumber" name="147" href="#147">147</a> 		out.println();
-<a class="jxr_linenumber" name="148" href="#148">148</a> 	}
-<a class="jxr_linenumber" name="149" href="#149">149</a> 
-<a class="jxr_linenumber" name="150" href="#150">150</a> 	@Override
-<a class="jxr_linenumber" name="151" href="#151">151</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readBinary(DataInput in) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="152" href="#152">152</a> 		x = in.readFloat();
-<a class="jxr_linenumber" name="153" href="#153">153</a> 		y = in.readFloat();
-<a class="jxr_linenumber" name="154" href="#154">154</a> 		energy = in.readFloat();
-<a class="jxr_linenumber" name="155" href="#155">155</a> 		in.readFully(descriptor);
-<a class="jxr_linenumber" name="156" href="#156">156</a> 	}
-<a class="jxr_linenumber" name="157" href="#157">157</a> 
-<a class="jxr_linenumber" name="158" href="#158">158</a> 	@Override
-<a class="jxr_linenumber" name="159" href="#159">159</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readASCII(Scanner in) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="160" href="#160">160</a> 		x = in.nextFloat();
-<a class="jxr_linenumber" name="161" href="#161">161</a> 		y = in.nextFloat();
-<a class="jxr_linenumber" name="162" href="#162">162</a> 		energy = in.nextFloat();
-<a class="jxr_linenumber" name="163" href="#163">163</a> 
-<a class="jxr_linenumber" name="164" href="#164">164</a> 		<strong class="jxr_keyword">int</strong> i = 0;
-<a class="jxr_linenumber" name="165" href="#165">165</a> 		<strong class="jxr_keyword">while</strong> (i &lt; descriptor.length) {
-<a class="jxr_linenumber" name="166" href="#166">166</a> 			<strong class="jxr_keyword">final</strong> String line = in.nextLine();
-<a class="jxr_linenumber" name="167" href="#167">167</a> 			<strong class="jxr_keyword">final</strong> StringTokenizer st = <strong class="jxr_keyword">new</strong> StringTokenizer(line);
-<a class="jxr_linenumber" name="168" href="#168">168</a> 
-<a class="jxr_linenumber" name="169" href="#169">169</a> 			<strong class="jxr_keyword">while</strong> (st.hasMoreTokens()) {
-<a class="jxr_linenumber" name="170" href="#170">170</a> 				descriptor[i] = (byte) (Integer.parseInt(st.nextToken()) - 128);
-<a class="jxr_linenumber" name="171" href="#171">171</a> 				i++;
-<a class="jxr_linenumber" name="172" href="#172">172</a> 			}
-<a class="jxr_linenumber" name="173" href="#173">173</a> 		}
-<a class="jxr_linenumber" name="174" href="#174">174</a> 	}
-<a class="jxr_linenumber" name="175" href="#175">175</a> }
+<a class="jxr_linenumber" name="141" href="#141">141</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; descriptor.length; i++) {
+<a class="jxr_linenumber" name="142" href="#142">142</a> 			<strong class="jxr_keyword">if</strong> (i &gt; 0 &amp;&amp; i % 20 == 0)
+<a class="jxr_linenumber" name="143" href="#143">143</a> 				out.println();
+<a class="jxr_linenumber" name="144" href="#144">144</a> 			out.print(<span class="jxr_string">" "</span> + (descriptor[i] + 128));
+<a class="jxr_linenumber" name="145" href="#145">145</a> 		}
+<a class="jxr_linenumber" name="146" href="#146">146</a> 		out.println();
+<a class="jxr_linenumber" name="147" href="#147">147</a> 	}
+<a class="jxr_linenumber" name="148" href="#148">148</a> 
+<a class="jxr_linenumber" name="149" href="#149">149</a> 	@Override
+<a class="jxr_linenumber" name="150" href="#150">150</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readBinary(DataInput in) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="151" href="#151">151</a> 		x = in.readFloat();
+<a class="jxr_linenumber" name="152" href="#152">152</a> 		y = in.readFloat();
+<a class="jxr_linenumber" name="153" href="#153">153</a> 		energy = in.readFloat();
+<a class="jxr_linenumber" name="154" href="#154">154</a> 		in.readFully(descriptor);
+<a class="jxr_linenumber" name="155" href="#155">155</a> 	}
+<a class="jxr_linenumber" name="156" href="#156">156</a> 
+<a class="jxr_linenumber" name="157" href="#157">157</a> 	@Override
+<a class="jxr_linenumber" name="158" href="#158">158</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readASCII(Scanner in) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="159" href="#159">159</a> 		x = in.nextFloat();
+<a class="jxr_linenumber" name="160" href="#160">160</a> 		y = in.nextFloat();
+<a class="jxr_linenumber" name="161" href="#161">161</a> 		energy = in.nextFloat();
+<a class="jxr_linenumber" name="162" href="#162">162</a> 
+<a class="jxr_linenumber" name="163" href="#163">163</a> 		<strong class="jxr_keyword">int</strong> i = 0;
+<a class="jxr_linenumber" name="164" href="#164">164</a> 		<strong class="jxr_keyword">while</strong> (i &lt; descriptor.length) {
+<a class="jxr_linenumber" name="165" href="#165">165</a> 			<strong class="jxr_keyword">final</strong> String line = in.nextLine();
+<a class="jxr_linenumber" name="166" href="#166">166</a> 			<strong class="jxr_keyword">final</strong> StringTokenizer st = <strong class="jxr_keyword">new</strong> StringTokenizer(line);
+<a class="jxr_linenumber" name="167" href="#167">167</a> 
+<a class="jxr_linenumber" name="168" href="#168">168</a> 			<strong class="jxr_keyword">while</strong> (st.hasMoreTokens()) {
+<a class="jxr_linenumber" name="169" href="#169">169</a> 				descriptor[i] = (byte) (Integer.parseInt(st.nextToken()) - 128);
+<a class="jxr_linenumber" name="170" href="#170">170</a> 				i++;
+<a class="jxr_linenumber" name="171" href="#171">171</a> 			}
+<a class="jxr_linenumber" name="172" href="#172">172</a> 		}
+<a class="jxr_linenumber" name="173" href="#173">173</a> 	}
+<a class="jxr_linenumber" name="174" href="#174">174</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
+
