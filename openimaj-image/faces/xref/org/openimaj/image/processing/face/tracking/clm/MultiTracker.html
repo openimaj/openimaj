@@ -421,181 +421,186 @@
 <a class="jxr_linenumber" name="411" href="#411">411</a> 			Rectangle searchAreaBounds = f.lastMatchBounds.clone();
 <a class="jxr_linenumber" name="412" href="#412">412</a> 			searchAreaBounds.scale((<strong class="jxr_keyword">float</strong>) MultiTracker.TSCALE);
 <a class="jxr_linenumber" name="413" href="#413">413</a> 			searchAreaBounds.scaleCentroid(searchAreaSize);
-<a class="jxr_linenumber" name="414" href="#414">414</a> 			searchAreaBounds = searchAreaBounds.overlapping(<strong class="jxr_keyword">this</strong>.small_.getBounds());
-<a class="jxr_linenumber" name="415" href="#415">415</a> 
-<a class="jxr_linenumber" name="416" href="#416">416</a> 			<em class="jxr_comment">// Get the search image</em>
-<a class="jxr_linenumber" name="417" href="#417">417</a> 			<strong class="jxr_keyword">final</strong> FImage searchArea = <strong class="jxr_keyword">this</strong>.small_.extractROI(searchAreaBounds);
-<a class="jxr_linenumber" name="418" href="#418">418</a> 
-<a class="jxr_linenumber" name="419" href="#419">419</a> 			<em class="jxr_comment">// Template match the template over the reduced size image.</em>
-<a class="jxr_linenumber" name="420" href="#420">420</a> 			<strong class="jxr_keyword">final</strong> FourierTemplateMatcher matcher = <strong class="jxr_keyword">new</strong> FourierTemplateMatcher(
-<a class="jxr_linenumber" name="421" href="#421">421</a> 					f.templateImage,
-<a class="jxr_linenumber" name="422" href="#422">422</a> 					FourierTemplateMatcher.Mode.NORM_CORRELATION_COEFFICIENT);
-<a class="jxr_linenumber" name="423" href="#423">423</a> 			matcher.analyseImage(searchArea);
-<a class="jxr_linenumber" name="424" href="#424">424</a> 
-<a class="jxr_linenumber" name="425" href="#425">425</a> 			<em class="jxr_comment">// Get the response map</em>
-<a class="jxr_linenumber" name="426" href="#426">426</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[][] ncc_ = matcher.getResponseMap().pixels;
-<a class="jxr_linenumber" name="427" href="#427">427</a> 
-<a class="jxr_linenumber" name="428" href="#428">428</a> 			<em class="jxr_comment">// DisplayUtilities.displayName( matcher.getResponseMap(),</em>
-<a class="jxr_linenumber" name="429" href="#429">429</a> 			<em class="jxr_comment">// "responseMap" );</em>
-<a class="jxr_linenumber" name="430" href="#430">430</a> 			<em class="jxr_comment">// DisplayUtilities.displayName( f.templateImage, "template" );</em>
+<a class="jxr_linenumber" name="414" href="#414">414</a> 
+<a class="jxr_linenumber" name="415" href="#415">415</a> 			<strong class="jxr_keyword">if</strong> (searchAreaBounds.overlapping(<strong class="jxr_keyword">this</strong>.small_.getBounds()) != <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="416" href="#416">416</a> 				searchAreaBounds = searchAreaBounds.overlapping(<strong class="jxr_keyword">this</strong>.small_.getBounds());
+<a class="jxr_linenumber" name="417" href="#417">417</a> 			<strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="418" href="#418">418</a> 				searchAreaBounds = <strong class="jxr_keyword">this</strong>.small_.getBounds();
+<a class="jxr_linenumber" name="419" href="#419">419</a> 
+<a class="jxr_linenumber" name="420" href="#420">420</a> 			<em class="jxr_comment">// Get the search image</em>
+<a class="jxr_linenumber" name="421" href="#421">421</a> 			<strong class="jxr_keyword">final</strong> FImage searchArea = <strong class="jxr_keyword">this</strong>.small_.extractROI(searchAreaBounds);
+<a class="jxr_linenumber" name="422" href="#422">422</a> 
+<a class="jxr_linenumber" name="423" href="#423">423</a> 			<em class="jxr_comment">// Template match the template over the reduced size image.</em>
+<a class="jxr_linenumber" name="424" href="#424">424</a> 			<strong class="jxr_keyword">final</strong> FourierTemplateMatcher matcher = <strong class="jxr_keyword">new</strong> FourierTemplateMatcher(
+<a class="jxr_linenumber" name="425" href="#425">425</a> 					f.templateImage,
+<a class="jxr_linenumber" name="426" href="#426">426</a> 					FourierTemplateMatcher.Mode.NORM_CORRELATION_COEFFICIENT);
+<a class="jxr_linenumber" name="427" href="#427">427</a> 			matcher.analyseImage(searchArea);
+<a class="jxr_linenumber" name="428" href="#428">428</a> 
+<a class="jxr_linenumber" name="429" href="#429">429</a> 			<em class="jxr_comment">// Get the response map</em>
+<a class="jxr_linenumber" name="430" href="#430">430</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong>[][] ncc_ = matcher.getResponseMap().pixels;
 <a class="jxr_linenumber" name="431" href="#431">431</a> 
-<a class="jxr_linenumber" name="432" href="#432">432</a> 			f.redetectedBounds = f.templateImage.getBounds();
-<a class="jxr_linenumber" name="433" href="#433">433</a> 
-<a class="jxr_linenumber" name="434" href="#434">434</a> 			<em class="jxr_comment">// Find the maximum template match in the image</em>
-<a class="jxr_linenumber" name="435" href="#435">435</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> h = searchArea.height - f.templateImage.height + 1;
-<a class="jxr_linenumber" name="436" href="#436">436</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> w = searchArea.width - f.templateImage.width + 1;
-<a class="jxr_linenumber" name="437" href="#437">437</a> 			<strong class="jxr_keyword">float</strong> vb = -2;
-<a class="jxr_linenumber" name="438" href="#438">438</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt; h; y++) {
-<a class="jxr_linenumber" name="439" href="#439">439</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; w; x++) {
-<a class="jxr_linenumber" name="440" href="#440">440</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> v = ncc_[y][x];
-<a class="jxr_linenumber" name="441" href="#441">441</a> 					<strong class="jxr_keyword">if</strong> (v &gt; vb) {
-<a class="jxr_linenumber" name="442" href="#442">442</a> 						vb = v;
-<a class="jxr_linenumber" name="443" href="#443">443</a> 						f.redetectedBounds.x = x + searchAreaBounds.x;
-<a class="jxr_linenumber" name="444" href="#444">444</a> 						f.redetectedBounds.y = y + searchAreaBounds.y;
-<a class="jxr_linenumber" name="445" href="#445">445</a> 					}
-<a class="jxr_linenumber" name="446" href="#446">446</a> 				}
-<a class="jxr_linenumber" name="447" href="#447">447</a> 			}
-<a class="jxr_linenumber" name="448" href="#448">448</a> 
-<a class="jxr_linenumber" name="449" href="#449">449</a> 			<em class="jxr_comment">// Rescale the rectangle to full-size image coordinates.</em>
-<a class="jxr_linenumber" name="450" href="#450">450</a> 			f.redetectedBounds.scale((<strong class="jxr_keyword">float</strong>) (1d / MultiTracker.TSCALE));
-<a class="jxr_linenumber" name="451" href="#451">451</a> 		}
-<a class="jxr_linenumber" name="452" href="#452">452</a> 	}
-<a class="jxr_linenumber" name="453" href="#453">453</a> 
-<a class="jxr_linenumber" name="454" href="#454">454</a> 	<strong class="jxr_keyword">protected</strong> Rectangle updateTemplate(<strong class="jxr_keyword">final</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackedFace</a> f, <strong class="jxr_keyword">final</strong> FImage im, <strong class="jxr_keyword">final</strong> Matrix s,
-<a class="jxr_linenumber" name="455" href="#455">455</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> resize)
-<a class="jxr_linenumber" name="456" href="#456">456</a> 	{
-<a class="jxr_linenumber" name="457" href="#457">457</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> n = s.getRowDimension() / 2;
-<a class="jxr_linenumber" name="458" href="#458">458</a> 
-<a class="jxr_linenumber" name="459" href="#459">459</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong>[][] sv = s.getArray();
-<a class="jxr_linenumber" name="460" href="#460">460</a> 		<strong class="jxr_keyword">double</strong> xmax = sv[0][0], ymax = sv[n][0], xmin = sv[0][0], ymin = sv[n][0];
-<a class="jxr_linenumber" name="461" href="#461">461</a> 
-<a class="jxr_linenumber" name="462" href="#462">462</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; n; i++) {
-<a class="jxr_linenumber" name="463" href="#463">463</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> vx = sv[i][0];
-<a class="jxr_linenumber" name="464" href="#464">464</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> vy = sv[i + n][0];
+<a class="jxr_linenumber" name="432" href="#432">432</a> 			<em class="jxr_comment">// DisplayUtilities.displayName( matcher.getResponseMap(),</em>
+<a class="jxr_linenumber" name="433" href="#433">433</a> 			<em class="jxr_comment">// "responseMap" );</em>
+<a class="jxr_linenumber" name="434" href="#434">434</a> 			<em class="jxr_comment">// DisplayUtilities.displayName( f.templateImage, "template" );</em>
+<a class="jxr_linenumber" name="435" href="#435">435</a> 
+<a class="jxr_linenumber" name="436" href="#436">436</a> 			f.redetectedBounds = f.templateImage.getBounds();
+<a class="jxr_linenumber" name="437" href="#437">437</a> 
+<a class="jxr_linenumber" name="438" href="#438">438</a> 			<em class="jxr_comment">// Find the maximum template match in the image</em>
+<a class="jxr_linenumber" name="439" href="#439">439</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> h = searchArea.height - f.templateImage.height + 1;
+<a class="jxr_linenumber" name="440" href="#440">440</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> w = searchArea.width - f.templateImage.width + 1;
+<a class="jxr_linenumber" name="441" href="#441">441</a> 			<strong class="jxr_keyword">float</strong> vb = -2;
+<a class="jxr_linenumber" name="442" href="#442">442</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt; h; y++) {
+<a class="jxr_linenumber" name="443" href="#443">443</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt; w; x++) {
+<a class="jxr_linenumber" name="444" href="#444">444</a> 					<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> v = ncc_[y][x];
+<a class="jxr_linenumber" name="445" href="#445">445</a> 					<strong class="jxr_keyword">if</strong> (v &gt; vb) {
+<a class="jxr_linenumber" name="446" href="#446">446</a> 						vb = v;
+<a class="jxr_linenumber" name="447" href="#447">447</a> 						f.redetectedBounds.x = x + searchAreaBounds.x;
+<a class="jxr_linenumber" name="448" href="#448">448</a> 						f.redetectedBounds.y = y + searchAreaBounds.y;
+<a class="jxr_linenumber" name="449" href="#449">449</a> 					}
+<a class="jxr_linenumber" name="450" href="#450">450</a> 				}
+<a class="jxr_linenumber" name="451" href="#451">451</a> 			}
+<a class="jxr_linenumber" name="452" href="#452">452</a> 
+<a class="jxr_linenumber" name="453" href="#453">453</a> 			<em class="jxr_comment">// Rescale the rectangle to full-size image coordinates.</em>
+<a class="jxr_linenumber" name="454" href="#454">454</a> 			f.redetectedBounds.scale((<strong class="jxr_keyword">float</strong>) (1d / MultiTracker.TSCALE));
+<a class="jxr_linenumber" name="455" href="#455">455</a> 		}
+<a class="jxr_linenumber" name="456" href="#456">456</a> 	}
+<a class="jxr_linenumber" name="457" href="#457">457</a> 
+<a class="jxr_linenumber" name="458" href="#458">458</a> 	<strong class="jxr_keyword">protected</strong> Rectangle updateTemplate(<strong class="jxr_keyword">final</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackedFace</a> f, <strong class="jxr_keyword">final</strong> FImage im, <strong class="jxr_keyword">final</strong> Matrix s,
+<a class="jxr_linenumber" name="459" href="#459">459</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> resize)
+<a class="jxr_linenumber" name="460" href="#460">460</a> 	{
+<a class="jxr_linenumber" name="461" href="#461">461</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> n = s.getRowDimension() / 2;
+<a class="jxr_linenumber" name="462" href="#462">462</a> 
+<a class="jxr_linenumber" name="463" href="#463">463</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong>[][] sv = s.getArray();
+<a class="jxr_linenumber" name="464" href="#464">464</a> 		<strong class="jxr_keyword">double</strong> xmax = sv[0][0], ymax = sv[n][0], xmin = sv[0][0], ymin = sv[n][0];
 <a class="jxr_linenumber" name="465" href="#465">465</a> 
-<a class="jxr_linenumber" name="466" href="#466">466</a> 			xmax = Math.max(xmax, vx);
-<a class="jxr_linenumber" name="467" href="#467">467</a> 			ymax = Math.max(ymax, vy);
-<a class="jxr_linenumber" name="468" href="#468">468</a> 
-<a class="jxr_linenumber" name="469" href="#469">469</a> 			xmin = Math.min(xmin, vx);
-<a class="jxr_linenumber" name="470" href="#470">470</a> 			ymin = Math.min(ymin, vy);
-<a class="jxr_linenumber" name="471" href="#471">471</a> 		}
+<a class="jxr_linenumber" name="466" href="#466">466</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; n; i++) {
+<a class="jxr_linenumber" name="467" href="#467">467</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> vx = sv[i][0];
+<a class="jxr_linenumber" name="468" href="#468">468</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> vy = sv[i + n][0];
+<a class="jxr_linenumber" name="469" href="#469">469</a> 
+<a class="jxr_linenumber" name="470" href="#470">470</a> 			xmax = Math.max(xmax, vx);
+<a class="jxr_linenumber" name="471" href="#471">471</a> 			ymax = Math.max(ymax, vy);
 <a class="jxr_linenumber" name="472" href="#472">472</a> 
-<a class="jxr_linenumber" name="473" href="#473">473</a> 		<strong class="jxr_keyword">if</strong> ((xmin &lt; 0) || (ymin &lt; 0) || (xmax &gt;= im.width)
-<a class="jxr_linenumber" name="474" href="#474">474</a> 				|| (ymax &gt;= im.height) || Double.isNaN(xmin)
-<a class="jxr_linenumber" name="475" href="#475">475</a> 				|| Double.isInfinite(xmin) || Double.isNaN(xmax)
-<a class="jxr_linenumber" name="476" href="#476">476</a> 				|| Double.isInfinite(xmax) || Double.isNaN(ymin)
-<a class="jxr_linenumber" name="477" href="#477">477</a> 				|| Double.isInfinite(ymin) || Double.isNaN(ymax)
-<a class="jxr_linenumber" name="478" href="#478">478</a> 				|| Double.isInfinite(ymax))
-<a class="jxr_linenumber" name="479" href="#479">479</a> 		{
-<a class="jxr_linenumber" name="480" href="#480">480</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Rectangle(0, 0, 0, 0);
-<a class="jxr_linenumber" name="481" href="#481">481</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="482" href="#482">482</a> 			xmin *= MultiTracker.TSCALE;
-<a class="jxr_linenumber" name="483" href="#483">483</a> 			ymin *= MultiTracker.TSCALE;
-<a class="jxr_linenumber" name="484" href="#484">484</a> 			xmax *= MultiTracker.TSCALE;
-<a class="jxr_linenumber" name="485" href="#485">485</a> 			ymax *= MultiTracker.TSCALE;
-<a class="jxr_linenumber" name="486" href="#486">486</a> 
-<a class="jxr_linenumber" name="487" href="#487">487</a> 			<strong class="jxr_keyword">final</strong> Rectangle R = <strong class="jxr_keyword">new</strong> Rectangle((<strong class="jxr_keyword">float</strong>) Math.floor(xmin),
-<a class="jxr_linenumber" name="488" href="#488">488</a> 					(<strong class="jxr_keyword">float</strong>) Math.floor(ymin), (<strong class="jxr_keyword">float</strong>) Math.ceil(xmax - xmin),
-<a class="jxr_linenumber" name="489" href="#489">489</a> 					(<strong class="jxr_keyword">float</strong>) Math.ceil(ymax - ymin));
+<a class="jxr_linenumber" name="473" href="#473">473</a> 			xmin = Math.min(xmin, vx);
+<a class="jxr_linenumber" name="474" href="#474">474</a> 			ymin = Math.min(ymin, vy);
+<a class="jxr_linenumber" name="475" href="#475">475</a> 		}
+<a class="jxr_linenumber" name="476" href="#476">476</a> 
+<a class="jxr_linenumber" name="477" href="#477">477</a> 		<strong class="jxr_keyword">if</strong> ((xmin &lt; 0) || (ymin &lt; 0) || (xmax &gt;= im.width)
+<a class="jxr_linenumber" name="478" href="#478">478</a> 				|| (ymax &gt;= im.height) || Double.isNaN(xmin)
+<a class="jxr_linenumber" name="479" href="#479">479</a> 				|| Double.isInfinite(xmin) || Double.isNaN(xmax)
+<a class="jxr_linenumber" name="480" href="#480">480</a> 				|| Double.isInfinite(xmax) || Double.isNaN(ymin)
+<a class="jxr_linenumber" name="481" href="#481">481</a> 				|| Double.isInfinite(ymin) || Double.isNaN(ymax)
+<a class="jxr_linenumber" name="482" href="#482">482</a> 				|| Double.isInfinite(ymax))
+<a class="jxr_linenumber" name="483" href="#483">483</a> 		{
+<a class="jxr_linenumber" name="484" href="#484">484</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Rectangle(0, 0, 0, 0);
+<a class="jxr_linenumber" name="485" href="#485">485</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="486" href="#486">486</a> 			xmin *= MultiTracker.TSCALE;
+<a class="jxr_linenumber" name="487" href="#487">487</a> 			ymin *= MultiTracker.TSCALE;
+<a class="jxr_linenumber" name="488" href="#488">488</a> 			xmax *= MultiTracker.TSCALE;
+<a class="jxr_linenumber" name="489" href="#489">489</a> 			ymax *= MultiTracker.TSCALE;
 <a class="jxr_linenumber" name="490" href="#490">490</a> 
-<a class="jxr_linenumber" name="491" href="#491">491</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ww = im.width;
-<a class="jxr_linenumber" name="492" href="#492">492</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> hh = im.height;
-<a class="jxr_linenumber" name="493" href="#493">493</a> 
-<a class="jxr_linenumber" name="494" href="#494">494</a> 			<strong class="jxr_keyword">if</strong> (resize)
-<a class="jxr_linenumber" name="495" href="#495">495</a> 				<strong class="jxr_keyword">this</strong>.small_ = ResizeProcessor.resample(im, (<strong class="jxr_keyword">int</strong>) (MultiTracker.TSCALE * ww),
-<a class="jxr_linenumber" name="496" href="#496">496</a> 						(<strong class="jxr_keyword">int</strong>) (MultiTracker.TSCALE * hh));
+<a class="jxr_linenumber" name="491" href="#491">491</a> 			<strong class="jxr_keyword">final</strong> Rectangle R = <strong class="jxr_keyword">new</strong> Rectangle((<strong class="jxr_keyword">float</strong>) Math.floor(xmin),
+<a class="jxr_linenumber" name="492" href="#492">492</a> 					(<strong class="jxr_keyword">float</strong>) Math.floor(ymin), (<strong class="jxr_keyword">float</strong>) Math.ceil(xmax - xmin),
+<a class="jxr_linenumber" name="493" href="#493">493</a> 					(<strong class="jxr_keyword">float</strong>) Math.ceil(ymax - ymin));
+<a class="jxr_linenumber" name="494" href="#494">494</a> 
+<a class="jxr_linenumber" name="495" href="#495">495</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ww = im.width;
+<a class="jxr_linenumber" name="496" href="#496">496</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> hh = im.height;
 <a class="jxr_linenumber" name="497" href="#497">497</a> 
-<a class="jxr_linenumber" name="498" href="#498">498</a> 			f.templateImage = <strong class="jxr_keyword">this</strong>.small_.extractROI(R);
-<a class="jxr_linenumber" name="499" href="#499">499</a> 
-<a class="jxr_linenumber" name="500" href="#500">500</a> 			R.x *= 1.0 / MultiTracker.TSCALE;
-<a class="jxr_linenumber" name="501" href="#501">501</a> 			R.y *= 1.0 / MultiTracker.TSCALE;
-<a class="jxr_linenumber" name="502" href="#502">502</a> 			R.width *= 1.0 / MultiTracker.TSCALE;
-<a class="jxr_linenumber" name="503" href="#503">503</a> 			R.height *= 1.0 / MultiTracker.TSCALE;
-<a class="jxr_linenumber" name="504" href="#504">504</a> 
-<a class="jxr_linenumber" name="505" href="#505">505</a> 			<strong class="jxr_keyword">return</strong> R;
-<a class="jxr_linenumber" name="506" href="#506">506</a> 		}
-<a class="jxr_linenumber" name="507" href="#507">507</a> 	}
+<a class="jxr_linenumber" name="498" href="#498">498</a> 			<strong class="jxr_keyword">if</strong> (resize)
+<a class="jxr_linenumber" name="499" href="#499">499</a> 				<strong class="jxr_keyword">this</strong>.small_ = ResizeProcessor.resample(im, (<strong class="jxr_keyword">int</strong>) (MultiTracker.TSCALE * ww),
+<a class="jxr_linenumber" name="500" href="#500">500</a> 						(<strong class="jxr_keyword">int</strong>) (MultiTracker.TSCALE * hh));
+<a class="jxr_linenumber" name="501" href="#501">501</a> 
+<a class="jxr_linenumber" name="502" href="#502">502</a> 			f.templateImage = <strong class="jxr_keyword">this</strong>.small_.extractROI(R);
+<a class="jxr_linenumber" name="503" href="#503">503</a> 
+<a class="jxr_linenumber" name="504" href="#504">504</a> 			R.x *= 1.0 / MultiTracker.TSCALE;
+<a class="jxr_linenumber" name="505" href="#505">505</a> 			R.y *= 1.0 / MultiTracker.TSCALE;
+<a class="jxr_linenumber" name="506" href="#506">506</a> 			R.width *= 1.0 / MultiTracker.TSCALE;
+<a class="jxr_linenumber" name="507" href="#507">507</a> 			R.height *= 1.0 / MultiTracker.TSCALE;
 <a class="jxr_linenumber" name="508" href="#508">508</a> 
-<a class="jxr_linenumber" name="509" href="#509">509</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="510" href="#510">510</a> <em class="jxr_javadoccomment">	 * Load a tracker from a file.</em>
-<a class="jxr_linenumber" name="511" href="#511">511</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="512" href="#512">512</a> <em class="jxr_javadoccomment">	 * @param fname</em>
-<a class="jxr_linenumber" name="513" href="#513">513</a> <em class="jxr_javadoccomment">	 *            File name to read from</em>
-<a class="jxr_linenumber" name="514" href="#514">514</a> <em class="jxr_javadoccomment">	 * @return A tracker variable class</em>
-<a class="jxr_linenumber" name="515" href="#515">515</a> <em class="jxr_javadoccomment">	 * @throws FileNotFoundException</em>
-<a class="jxr_linenumber" name="516" href="#516">516</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="517" href="#517">517</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> load(<strong class="jxr_keyword">final</strong> String fname)
-<a class="jxr_linenumber" name="518" href="#518">518</a> 			<strong class="jxr_keyword">throws</strong> FileNotFoundException
-<a class="jxr_linenumber" name="519" href="#519">519</a> 	{
-<a class="jxr_linenumber" name="520" href="#520">520</a> 		BufferedReader br = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="521" href="#521">521</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="522" href="#522">522</a> 			br = <strong class="jxr_keyword">new</strong> BufferedReader(<strong class="jxr_keyword">new</strong> FileReader(fname));
-<a class="jxr_linenumber" name="523" href="#523">523</a> 			<strong class="jxr_keyword">final</strong> Scanner sc = <strong class="jxr_keyword">new</strong> Scanner(br);
-<a class="jxr_linenumber" name="524" href="#524">524</a> 			<strong class="jxr_keyword">return</strong> MultiTracker.read(sc, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="525" href="#525">525</a> 		} <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="526" href="#526">526</a> 			<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="527" href="#527">527</a> 				br.close();
-<a class="jxr_linenumber" name="528" href="#528">528</a> 			} <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> IOException e) {
-<a class="jxr_linenumber" name="529" href="#529">529</a> 			}
-<a class="jxr_linenumber" name="530" href="#530">530</a> 		}
-<a class="jxr_linenumber" name="531" href="#531">531</a> 	}
-<a class="jxr_linenumber" name="532" href="#532">532</a> 
-<a class="jxr_linenumber" name="533" href="#533">533</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="534" href="#534">534</a> <em class="jxr_javadoccomment">	 * Load a tracker from an input stream.</em>
-<a class="jxr_linenumber" name="535" href="#535">535</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="536" href="#536">536</a> <em class="jxr_javadoccomment">	 * @param in</em>
-<a class="jxr_linenumber" name="537" href="#537">537</a> <em class="jxr_javadoccomment">	 *            The input stream</em>
-<a class="jxr_linenumber" name="538" href="#538">538</a> <em class="jxr_javadoccomment">	 * @return a tracker</em>
-<a class="jxr_linenumber" name="539" href="#539">539</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="540" href="#540">540</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> load(<strong class="jxr_keyword">final</strong> InputStream in) {
-<a class="jxr_linenumber" name="541" href="#541">541</a> 		BufferedReader br = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="542" href="#542">542</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="543" href="#543">543</a> 			br = <strong class="jxr_keyword">new</strong> BufferedReader(<strong class="jxr_keyword">new</strong> InputStreamReader(in));
-<a class="jxr_linenumber" name="544" href="#544">544</a> 			<strong class="jxr_keyword">final</strong> Scanner sc = <strong class="jxr_keyword">new</strong> Scanner(br);
-<a class="jxr_linenumber" name="545" href="#545">545</a> 			<strong class="jxr_keyword">return</strong> MultiTracker.read(sc, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="546" href="#546">546</a> 		} <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="547" href="#547">547</a> 			<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="548" href="#548">548</a> 				<strong class="jxr_keyword">if</strong> (br != <strong class="jxr_keyword">null</strong>)
-<a class="jxr_linenumber" name="549" href="#549">549</a> 					br.close();
-<a class="jxr_linenumber" name="550" href="#550">550</a> 			} <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> IOException e) {
-<a class="jxr_linenumber" name="551" href="#551">551</a> 			}
-<a class="jxr_linenumber" name="552" href="#552">552</a> 		}
-<a class="jxr_linenumber" name="553" href="#553">553</a> 	}
-<a class="jxr_linenumber" name="554" href="#554">554</a> 
-<a class="jxr_linenumber" name="555" href="#555">555</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="556" href="#556">556</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="557" href="#557">557</a> <em class="jxr_javadoccomment">	 * @param s</em>
-<a class="jxr_linenumber" name="558" href="#558">558</a> <em class="jxr_javadoccomment">	 * @param readType</em>
-<a class="jxr_linenumber" name="559" href="#559">559</a> <em class="jxr_javadoccomment">	 * @return</em>
-<a class="jxr_linenumber" name="560" href="#560">560</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="561" href="#561">561</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> read(<strong class="jxr_keyword">final</strong> Scanner s, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> readType) {
-<a class="jxr_linenumber" name="562" href="#562">562</a> 		<strong class="jxr_keyword">if</strong> (readType) {
-<a class="jxr_linenumber" name="563" href="#563">563</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> type = s.nextInt();
-<a class="jxr_linenumber" name="564" href="#564">564</a> 			assert (type == IO.Types.TRACKER.ordinal());
-<a class="jxr_linenumber" name="565" href="#565">565</a> 		}
-<a class="jxr_linenumber" name="566" href="#566">566</a> 		<strong class="jxr_keyword">final</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> trackerVars = <strong class="jxr_keyword">new</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a>();
-<a class="jxr_linenumber" name="567" href="#567">567</a> 		trackerVars.clm = CLM.read(s, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="568" href="#568">568</a> 		trackerVars.faceDetector = FDet.read(s, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="569" href="#569">569</a> 		trackerVars.failureCheck = MFCheck.read(s, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="570" href="#570">570</a> 		trackerVars.referenceShape = IO.readMat(s);
-<a class="jxr_linenumber" name="571" href="#571">571</a> 		trackerVars.similarity = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[] { s.nextDouble(), s.nextDouble(),
-<a class="jxr_linenumber" name="572" href="#572">572</a> 				s.nextDouble(), s.nextDouble() };
-<a class="jxr_linenumber" name="573" href="#573">573</a> 		trackerVars.shape = <strong class="jxr_keyword">new</strong> Matrix(2 * trackerVars.clm._pdm.nPoints(), 1);
-<a class="jxr_linenumber" name="574" href="#574">574</a> 		trackerVars.clm._pdm.identity(trackerVars.clm._plocal,
-<a class="jxr_linenumber" name="575" href="#575">575</a> 				trackerVars.clm._pglobl);
-<a class="jxr_linenumber" name="576" href="#576">576</a> 
-<a class="jxr_linenumber" name="577" href="#577">577</a> 		<strong class="jxr_keyword">return</strong> trackerVars;
-<a class="jxr_linenumber" name="578" href="#578">578</a> 	}
-<a class="jxr_linenumber" name="579" href="#579">579</a> 
-<a class="jxr_linenumber" name="580" href="#580">580</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="581" href="#581">581</a> <em class="jxr_javadoccomment">	 * Returns the initial variables used for each face tracker.</em>
-<a class="jxr_linenumber" name="582" href="#582">582</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="583" href="#583">583</a> <em class="jxr_javadoccomment">	 * @return The initial variables</em>
-<a class="jxr_linenumber" name="584" href="#584">584</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="585" href="#585">585</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> getInitialVars() {
-<a class="jxr_linenumber" name="586" href="#586">586</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.initialTracker;
-<a class="jxr_linenumber" name="587" href="#587">587</a> 	}
-<a class="jxr_linenumber" name="588" href="#588">588</a> }
+<a class="jxr_linenumber" name="509" href="#509">509</a> 			<strong class="jxr_keyword">return</strong> R;
+<a class="jxr_linenumber" name="510" href="#510">510</a> 		}
+<a class="jxr_linenumber" name="511" href="#511">511</a> 	}
+<a class="jxr_linenumber" name="512" href="#512">512</a> 
+<a class="jxr_linenumber" name="513" href="#513">513</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="514" href="#514">514</a> <em class="jxr_javadoccomment">	 * Load a tracker from a file.</em>
+<a class="jxr_linenumber" name="515" href="#515">515</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="516" href="#516">516</a> <em class="jxr_javadoccomment">	 * @param fname</em>
+<a class="jxr_linenumber" name="517" href="#517">517</a> <em class="jxr_javadoccomment">	 *            File name to read from</em>
+<a class="jxr_linenumber" name="518" href="#518">518</a> <em class="jxr_javadoccomment">	 * @return A tracker variable class</em>
+<a class="jxr_linenumber" name="519" href="#519">519</a> <em class="jxr_javadoccomment">	 * @throws FileNotFoundException</em>
+<a class="jxr_linenumber" name="520" href="#520">520</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="521" href="#521">521</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> load(<strong class="jxr_keyword">final</strong> String fname)
+<a class="jxr_linenumber" name="522" href="#522">522</a> 			<strong class="jxr_keyword">throws</strong> FileNotFoundException
+<a class="jxr_linenumber" name="523" href="#523">523</a> 	{
+<a class="jxr_linenumber" name="524" href="#524">524</a> 		BufferedReader br = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="525" href="#525">525</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="526" href="#526">526</a> 			br = <strong class="jxr_keyword">new</strong> BufferedReader(<strong class="jxr_keyword">new</strong> FileReader(fname));
+<a class="jxr_linenumber" name="527" href="#527">527</a> 			<strong class="jxr_keyword">final</strong> Scanner sc = <strong class="jxr_keyword">new</strong> Scanner(br);
+<a class="jxr_linenumber" name="528" href="#528">528</a> 			<strong class="jxr_keyword">return</strong> MultiTracker.read(sc, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="529" href="#529">529</a> 		} <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="530" href="#530">530</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="531" href="#531">531</a> 				br.close();
+<a class="jxr_linenumber" name="532" href="#532">532</a> 			} <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> IOException e) {
+<a class="jxr_linenumber" name="533" href="#533">533</a> 			}
+<a class="jxr_linenumber" name="534" href="#534">534</a> 		}
+<a class="jxr_linenumber" name="535" href="#535">535</a> 	}
+<a class="jxr_linenumber" name="536" href="#536">536</a> 
+<a class="jxr_linenumber" name="537" href="#537">537</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="538" href="#538">538</a> <em class="jxr_javadoccomment">	 * Load a tracker from an input stream.</em>
+<a class="jxr_linenumber" name="539" href="#539">539</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="540" href="#540">540</a> <em class="jxr_javadoccomment">	 * @param in</em>
+<a class="jxr_linenumber" name="541" href="#541">541</a> <em class="jxr_javadoccomment">	 *            The input stream</em>
+<a class="jxr_linenumber" name="542" href="#542">542</a> <em class="jxr_javadoccomment">	 * @return a tracker</em>
+<a class="jxr_linenumber" name="543" href="#543">543</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="544" href="#544">544</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> load(<strong class="jxr_keyword">final</strong> InputStream in) {
+<a class="jxr_linenumber" name="545" href="#545">545</a> 		BufferedReader br = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="546" href="#546">546</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="547" href="#547">547</a> 			br = <strong class="jxr_keyword">new</strong> BufferedReader(<strong class="jxr_keyword">new</strong> InputStreamReader(in));
+<a class="jxr_linenumber" name="548" href="#548">548</a> 			<strong class="jxr_keyword">final</strong> Scanner sc = <strong class="jxr_keyword">new</strong> Scanner(br);
+<a class="jxr_linenumber" name="549" href="#549">549</a> 			<strong class="jxr_keyword">return</strong> MultiTracker.read(sc, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="550" href="#550">550</a> 		} <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="551" href="#551">551</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="552" href="#552">552</a> 				<strong class="jxr_keyword">if</strong> (br != <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="553" href="#553">553</a> 					br.close();
+<a class="jxr_linenumber" name="554" href="#554">554</a> 			} <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> IOException e) {
+<a class="jxr_linenumber" name="555" href="#555">555</a> 			}
+<a class="jxr_linenumber" name="556" href="#556">556</a> 		}
+<a class="jxr_linenumber" name="557" href="#557">557</a> 	}
+<a class="jxr_linenumber" name="558" href="#558">558</a> 
+<a class="jxr_linenumber" name="559" href="#559">559</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="560" href="#560">560</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="561" href="#561">561</a> <em class="jxr_javadoccomment">	 * @param s</em>
+<a class="jxr_linenumber" name="562" href="#562">562</a> <em class="jxr_javadoccomment">	 * @param readType</em>
+<a class="jxr_linenumber" name="563" href="#563">563</a> <em class="jxr_javadoccomment">	 * @return</em>
+<a class="jxr_linenumber" name="564" href="#564">564</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="565" href="#565">565</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> read(<strong class="jxr_keyword">final</strong> Scanner s, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> readType) {
+<a class="jxr_linenumber" name="566" href="#566">566</a> 		<strong class="jxr_keyword">if</strong> (readType) {
+<a class="jxr_linenumber" name="567" href="#567">567</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> type = s.nextInt();
+<a class="jxr_linenumber" name="568" href="#568">568</a> 			assert (type == IO.Types.TRACKER.ordinal());
+<a class="jxr_linenumber" name="569" href="#569">569</a> 		}
+<a class="jxr_linenumber" name="570" href="#570">570</a> 		<strong class="jxr_keyword">final</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> trackerVars = <strong class="jxr_keyword">new</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a>();
+<a class="jxr_linenumber" name="571" href="#571">571</a> 		trackerVars.clm = CLM.read(s, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="572" href="#572">572</a> 		trackerVars.faceDetector = FDet.read(s, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="573" href="#573">573</a> 		trackerVars.failureCheck = MFCheck.read(s, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="574" href="#574">574</a> 		trackerVars.referenceShape = IO.readMat(s);
+<a class="jxr_linenumber" name="575" href="#575">575</a> 		trackerVars.similarity = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[] { s.nextDouble(), s.nextDouble(),
+<a class="jxr_linenumber" name="576" href="#576">576</a> 				s.nextDouble(), s.nextDouble() };
+<a class="jxr_linenumber" name="577" href="#577">577</a> 		trackerVars.shape = <strong class="jxr_keyword">new</strong> Matrix(2 * trackerVars.clm._pdm.nPoints(), 1);
+<a class="jxr_linenumber" name="578" href="#578">578</a> 		trackerVars.clm._pdm.identity(trackerVars.clm._plocal,
+<a class="jxr_linenumber" name="579" href="#579">579</a> 				trackerVars.clm._pglobl);
+<a class="jxr_linenumber" name="580" href="#580">580</a> 
+<a class="jxr_linenumber" name="581" href="#581">581</a> 		<strong class="jxr_keyword">return</strong> trackerVars;
+<a class="jxr_linenumber" name="582" href="#582">582</a> 	}
+<a class="jxr_linenumber" name="583" href="#583">583</a> 
+<a class="jxr_linenumber" name="584" href="#584">584</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="585" href="#585">585</a> <em class="jxr_javadoccomment">	 * Returns the initial variables used for each face tracker.</em>
+<a class="jxr_linenumber" name="586" href="#586">586</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="587" href="#587">587</a> <em class="jxr_javadoccomment">	 * @return The initial variables</em>
+<a class="jxr_linenumber" name="588" href="#588">588</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="589" href="#589">589</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../../../org/openimaj/image/processing/face/tracking/clm/MultiTracker.html">TrackerVars</a> getInitialVars() {
+<a class="jxr_linenumber" name="590" href="#590">590</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.initialTracker;
+<a class="jxr_linenumber" name="591" href="#591">591</a> 	}
+<a class="jxr_linenumber" name="592" href="#592">592</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
+
