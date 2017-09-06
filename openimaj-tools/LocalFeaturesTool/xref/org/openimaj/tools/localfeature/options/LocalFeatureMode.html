@@ -77,7 +77,7 @@
 <a class="jxr_linenumber" name="67" href="#67">67</a>  
 <a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment"> * Types of local feature</em>
-<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment"> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="72" href="#72">72</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="73" href="#73">73</a>  <strong class="jxr_keyword">public</strong> enum <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> <strong class="jxr_keyword">implements</strong> CmdLineOptionsProvider {
@@ -161,12 +161,12 @@
 <a class="jxr_linenumber" name="151" href="#151">151</a> 
 <a class="jxr_linenumber" name="152" href="#152">152</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="153" href="#153">153</a> <em class="jxr_javadoccomment">	 * Associated options for each {@link LocalFeatureMode}.</em>
-<a class="jxr_linenumber" name="154" href="#154">154</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="154" href="#154">154</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="155" href="#155">155</a> <em class="jxr_javadoccomment">	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="156" href="#156">156</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="157" href="#157">157</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureModeOp</a>
 <a class="jxr_linenumber" name="158" href="#158">158</a> 			<strong class="jxr_keyword">implements</strong>
-<a class="jxr_linenumber" name="159" href="#159">159</a> 			LocalFeatureExtractor&lt;LocalFeature&lt;?, ?&gt;, MBFImage&gt;
+<a class="jxr_linenumber" name="159" href="#159">159</a> 				LocalFeatureExtractor&lt;LocalFeature&lt;?, ?&gt;, MBFImage&gt;
 <a class="jxr_linenumber" name="160" href="#160">160</a> 	{
 <a class="jxr_linenumber" name="161" href="#161">161</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode;
 <a class="jxr_linenumber" name="162" href="#162">162</a> 
@@ -181,7 +181,7 @@
 <a class="jxr_linenumber" name="171" href="#171">171</a> 
 <a class="jxr_linenumber" name="172" href="#172">172</a> 		<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="173" href="#173">173</a> <em class="jxr_javadoccomment">		 * Extract features based on the options.</em>
-<a class="jxr_linenumber" name="174" href="#174">174</a> <em class="jxr_javadoccomment">		 * </em>
+<a class="jxr_linenumber" name="174" href="#174">174</a> <em class="jxr_javadoccomment">		 *</em>
 <a class="jxr_linenumber" name="175" href="#175">175</a> <em class="jxr_javadoccomment">		 * @param image</em>
 <a class="jxr_linenumber" name="176" href="#176">176</a> <em class="jxr_javadoccomment">		 *            the image</em>
 <a class="jxr_linenumber" name="177" href="#177">177</a> <em class="jxr_javadoccomment">		 * @return the features</em>
@@ -210,7 +210,7 @@
 <a class="jxr_linenumber" name="200" href="#200">200</a> 
 <a class="jxr_linenumber" name="201" href="#201">201</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="202" href="#202">202</a> <em class="jxr_javadoccomment">	 * Associated options for things built on a {@link DoGSIFTEngine}.</em>
-<a class="jxr_linenumber" name="203" href="#203">203</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="203" href="#203">203</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="204" href="#204">204</a> <em class="jxr_javadoccomment">	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="205" href="#205">205</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="206" href="#206">206</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDoGSIFTModeOp</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureModeOp</a> {
@@ -292,7 +292,7 @@
 <a class="jxr_linenumber" name="282" href="#282">282</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
 <a class="jxr_linenumber" name="283" href="#283">283</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
 <a class="jxr_linenumber" name="284" href="#284">284</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
-<a class="jxr_linenumber" name="285" href="#285">285</a> 				keys = engine.findFeatures((FImage) cmOp.process(img));
+<a class="jxr_linenumber" name="285" href="#285">285</a> 				keys = engine.findFeatures((FImage) itOp.transform(cmOp.process(img)));
 <a class="jxr_linenumber" name="286" href="#286">286</a> 				<strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="287" href="#287">287</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
 <a class="jxr_linenumber" name="288" href="#288">288</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> UnsupportedOperationException();
@@ -302,413 +302,423 @@
 <a class="jxr_linenumber" name="292" href="#292">292</a> 
 <a class="jxr_linenumber" name="293" href="#293">293</a> 		@Override
 <a class="jxr_linenumber" name="294" href="#294">294</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> Keypoint&gt; extractFeature(MBFImage img) {
-<a class="jxr_linenumber" name="295" href="#295">295</a> 			<strong class="jxr_keyword">final</strong> MinMaxDoGSIFTEngine engine = <strong class="jxr_keyword">new</strong> MinMaxDoGSIFTEngine();
-<a class="jxr_linenumber" name="296" href="#296">296</a> 			LocalFeatureList&lt;MinMaxKeypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="297" href="#297">297</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
-<a class="jxr_linenumber" name="298" href="#298">298</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
-<a class="jxr_linenumber" name="299" href="#299">299</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
-<a class="jxr_linenumber" name="300" href="#300">300</a> 				keys = engine.findFeatures((FImage) cmOp.process(img));
-<a class="jxr_linenumber" name="301" href="#301">301</a> 				<strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="302" href="#302">302</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
-<a class="jxr_linenumber" name="303" href="#303">303</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> UnsupportedOperationException();
-<a class="jxr_linenumber" name="304" href="#304">304</a> 			}
-<a class="jxr_linenumber" name="305" href="#305">305</a> 			<strong class="jxr_keyword">return</strong> keys;
-<a class="jxr_linenumber" name="306" href="#306">306</a> 		}
-<a class="jxr_linenumber" name="307" href="#307">307</a> 
-<a class="jxr_linenumber" name="308" href="#308">308</a> 		@Override
-<a class="jxr_linenumber" name="309" href="#309">309</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
-<a class="jxr_linenumber" name="310" href="#310">310</a> 			<strong class="jxr_keyword">return</strong> MinMaxKeypoint.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="311" href="#311">311</a> 		}
-<a class="jxr_linenumber" name="312" href="#312">312</a> 	}
-<a class="jxr_linenumber" name="313" href="#313">313</a> 
-<a class="jxr_linenumber" name="314" href="#314">314</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AsiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDoGSIFTModeOp</a> {
-<a class="jxr_linenumber" name="315" href="#315">315</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AsiftMode</a>(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
-<a class="jxr_linenumber" name="316" href="#316">316</a> 			<strong class="jxr_keyword">super</strong>(mode);
-<a class="jxr_linenumber" name="317" href="#317">317</a> 		}
-<a class="jxr_linenumber" name="318" href="#318">318</a> 
-<a class="jxr_linenumber" name="319" href="#319">319</a> 		@Option(
-<a class="jxr_linenumber" name="320" href="#320">320</a> 				name = <span class="jxr_string">"--n-tilts"</span>,
-<a class="jxr_linenumber" name="321" href="#321">321</a> 				required = false,
-<a class="jxr_linenumber" name="322" href="#322">322</a> 				usage = <span class="jxr_string">"The number of tilts for the affine simulation"</span>)
-<a class="jxr_linenumber" name="323" href="#323">323</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> ntilts = 5;
-<a class="jxr_linenumber" name="324" href="#324">324</a> 
-<a class="jxr_linenumber" name="325" href="#325">325</a> 		@Override
-<a class="jxr_linenumber" name="326" href="#326">326</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;Keypoint&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="327" href="#327">327</a> 			LocalFeatureList&lt;Keypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="328" href="#328">328</a> 
-<a class="jxr_linenumber" name="329" href="#329">329</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
-<a class="jxr_linenumber" name="330" href="#330">330</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
-<a class="jxr_linenumber" name="331" href="#331">331</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
-<a class="jxr_linenumber" name="332" href="#332">332</a> 				<strong class="jxr_keyword">final</strong> BasicASIFT basic = <strong class="jxr_keyword">new</strong> BasicASIFT(!noDoubleImageSize);
-<a class="jxr_linenumber" name="333" href="#333">333</a> 				basic.detectFeatures((FImage) itOp.transform(cmOp.process(image)), ntilts);
-<a class="jxr_linenumber" name="334" href="#334">334</a> 				keys = basic.getFeatures();
-<a class="jxr_linenumber" name="335" href="#335">335</a> 				<strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="336" href="#336">336</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
-<a class="jxr_linenumber" name="337" href="#337">337</a> 				<strong class="jxr_keyword">final</strong> ColourASIFT colour = <strong class="jxr_keyword">new</strong> ColourASIFT(!noDoubleImageSize);
-<a class="jxr_linenumber" name="338" href="#338">338</a> 				colour.detectFeatures((MBFImage) itOp.transform(cmOp.process(image)), ntilts);
-<a class="jxr_linenumber" name="339" href="#339">339</a> 			}
-<a class="jxr_linenumber" name="340" href="#340">340</a> 			<strong class="jxr_keyword">return</strong> keys;
-<a class="jxr_linenumber" name="341" href="#341">341</a> 		}
-<a class="jxr_linenumber" name="342" href="#342">342</a> 
-<a class="jxr_linenumber" name="343" href="#343">343</a> 		@Override
-<a class="jxr_linenumber" name="344" href="#344">344</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;Keypoint&gt; extractFeature(MBFImage image) {
-<a class="jxr_linenumber" name="345" href="#345">345</a> 			LocalFeatureList&lt;Keypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="346" href="#346">346</a> 
-<a class="jxr_linenumber" name="347" href="#347">347</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
-<a class="jxr_linenumber" name="348" href="#348">348</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
-<a class="jxr_linenumber" name="349" href="#349">349</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
-<a class="jxr_linenumber" name="350" href="#350">350</a> 				<strong class="jxr_keyword">final</strong> BasicASIFT basic = <strong class="jxr_keyword">new</strong> BasicASIFT(!noDoubleImageSize);
-<a class="jxr_linenumber" name="351" href="#351">351</a> 				basic.detectFeatures((FImage) itOp.transform(cmOp.process(image)), ntilts);
-<a class="jxr_linenumber" name="352" href="#352">352</a> 				keys = basic.getFeatures();
-<a class="jxr_linenumber" name="353" href="#353">353</a> 				<strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="354" href="#354">354</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
-<a class="jxr_linenumber" name="355" href="#355">355</a> 				<strong class="jxr_keyword">final</strong> ColourASIFT colour = <strong class="jxr_keyword">new</strong> ColourASIFT(!noDoubleImageSize);
-<a class="jxr_linenumber" name="356" href="#356">356</a> 				colour.detectFeatures((MBFImage) itOp.transform(cmOp.process(image)), ntilts);
-<a class="jxr_linenumber" name="357" href="#357">357</a> 			}
-<a class="jxr_linenumber" name="358" href="#358">358</a> 			<strong class="jxr_keyword">return</strong> keys;
-<a class="jxr_linenumber" name="359" href="#359">359</a> 		}
-<a class="jxr_linenumber" name="360" href="#360">360</a> 
-<a class="jxr_linenumber" name="361" href="#361">361</a> 		@Override
-<a class="jxr_linenumber" name="362" href="#362">362</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
-<a class="jxr_linenumber" name="363" href="#363">363</a> 			<strong class="jxr_keyword">return</strong> Keypoint.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="364" href="#364">364</a> 		}
-<a class="jxr_linenumber" name="365" href="#365">365</a> 	}
-<a class="jxr_linenumber" name="366" href="#366">366</a> 
-<a class="jxr_linenumber" name="367" href="#367">367</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AsiftEnrichedMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDoGSIFTModeOp</a> {
-<a class="jxr_linenumber" name="368" href="#368">368</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AsiftEnrichedMode</a>(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
-<a class="jxr_linenumber" name="369" href="#369">369</a> 			<strong class="jxr_keyword">super</strong>(mode);
-<a class="jxr_linenumber" name="370" href="#370">370</a> 		}
-<a class="jxr_linenumber" name="371" href="#371">371</a> 
-<a class="jxr_linenumber" name="372" href="#372">372</a> 		@Option(
-<a class="jxr_linenumber" name="373" href="#373">373</a> 				name = <span class="jxr_string">"--n-tilts"</span>,
-<a class="jxr_linenumber" name="374" href="#374">374</a> 				required = false,
-<a class="jxr_linenumber" name="375" href="#375">375</a> 				usage = <span class="jxr_string">"The number of tilts for the affine simulation"</span>)
-<a class="jxr_linenumber" name="376" href="#376">376</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> ntilts = 5;
-<a class="jxr_linenumber" name="377" href="#377">377</a> 
-<a class="jxr_linenumber" name="378" href="#378">378</a> 		@Override
-<a class="jxr_linenumber" name="379" href="#379">379</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;AffineSimulationKeypoint&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="380" href="#380">380</a> 			<strong class="jxr_keyword">final</strong> ASIFTEngine engine = <strong class="jxr_keyword">new</strong> ASIFTEngine(!noDoubleImageSize, ntilts);
-<a class="jxr_linenumber" name="381" href="#381">381</a> 			LocalFeatureList&lt;AffineSimulationKeypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="382" href="#382">382</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
-<a class="jxr_linenumber" name="383" href="#383">383</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
-<a class="jxr_linenumber" name="384" href="#384">384</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
-<a class="jxr_linenumber" name="385" href="#385">385</a> 				FImage img = (FImage) cmOp.process(image);
-<a class="jxr_linenumber" name="386" href="#386">386</a> 				img = (FImage) itOp.transform(img);
-<a class="jxr_linenumber" name="387" href="#387">387</a> 				keys = engine.findFeatures(img);
-<a class="jxr_linenumber" name="388" href="#388">388</a> 				<strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="389" href="#389">389</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
-<a class="jxr_linenumber" name="390" href="#390">390</a> 				<strong class="jxr_keyword">final</strong> ColourASIFTEngine colourengine = <strong class="jxr_keyword">new</strong> ColourASIFTEngine(!noDoubleImageSize, ntilts);
-<a class="jxr_linenumber" name="391" href="#391">391</a> 				MBFImage colourimg = (MBFImage) cmOp.process(image);
-<a class="jxr_linenumber" name="392" href="#392">392</a> 				colourimg = (MBFImage) itOp.transform(colourimg);
-<a class="jxr_linenumber" name="393" href="#393">393</a> 				keys = colourengine.findFeatures(colourimg);
-<a class="jxr_linenumber" name="394" href="#394">394</a> 			}
-<a class="jxr_linenumber" name="395" href="#395">395</a> 			<strong class="jxr_keyword">return</strong> keys;
-<a class="jxr_linenumber" name="396" href="#396">396</a> 		}
-<a class="jxr_linenumber" name="397" href="#397">397</a> 
-<a class="jxr_linenumber" name="398" href="#398">398</a> 		@Override
-<a class="jxr_linenumber" name="399" href="#399">399</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;AffineSimulationKeypoint&gt; extractFeature(MBFImage image) {
-<a class="jxr_linenumber" name="400" href="#400">400</a> 			<strong class="jxr_keyword">final</strong> ASIFTEngine engine = <strong class="jxr_keyword">new</strong> ASIFTEngine(!noDoubleImageSize, ntilts);
-<a class="jxr_linenumber" name="401" href="#401">401</a> 			LocalFeatureList&lt;AffineSimulationKeypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="402" href="#402">402</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
-<a class="jxr_linenumber" name="403" href="#403">403</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
-<a class="jxr_linenumber" name="404" href="#404">404</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
-<a class="jxr_linenumber" name="405" href="#405">405</a> 				FImage img = (FImage) cmOp.process(image);
-<a class="jxr_linenumber" name="406" href="#406">406</a> 				img = (FImage) itOp.transform(img);
-<a class="jxr_linenumber" name="407" href="#407">407</a> 				keys = engine.findFeatures(img);
-<a class="jxr_linenumber" name="408" href="#408">408</a> 				<strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="409" href="#409">409</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
-<a class="jxr_linenumber" name="410" href="#410">410</a> 				<strong class="jxr_keyword">final</strong> ColourASIFTEngine colourengine = <strong class="jxr_keyword">new</strong> ColourASIFTEngine(!noDoubleImageSize, ntilts);
-<a class="jxr_linenumber" name="411" href="#411">411</a> 				MBFImage colourimg = (MBFImage) cmOp.process(image);
-<a class="jxr_linenumber" name="412" href="#412">412</a> 				colourimg = (MBFImage) itOp.transform(colourimg);
-<a class="jxr_linenumber" name="413" href="#413">413</a> 				keys = colourengine.findFeatures(colourimg);
-<a class="jxr_linenumber" name="414" href="#414">414</a> 			}
-<a class="jxr_linenumber" name="415" href="#415">415</a> 			<strong class="jxr_keyword">return</strong> keys;
-<a class="jxr_linenumber" name="416" href="#416">416</a> 		}
-<a class="jxr_linenumber" name="417" href="#417">417</a> 
-<a class="jxr_linenumber" name="418" href="#418">418</a> 		@Override
-<a class="jxr_linenumber" name="419" href="#419">419</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
-<a class="jxr_linenumber" name="420" href="#420">420</a> 			<strong class="jxr_keyword">return</strong> AffineSimulationKeypoint.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="421" href="#421">421</a> 		}
-<a class="jxr_linenumber" name="422" href="#422">422</a> 	}
-<a class="jxr_linenumber" name="423" href="#423">423</a> 
-<a class="jxr_linenumber" name="424" href="#424">424</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureModeOp</a> {
-<a class="jxr_linenumber" name="425" href="#425">425</a> 		@Option(
-<a class="jxr_linenumber" name="426" href="#426">426</a> 				name = <span class="jxr_string">"--approximate"</span>,
-<a class="jxr_linenumber" name="427" href="#427">427</a> 				aliases = <span class="jxr_string">"-ap"</span>,
-<a class="jxr_linenumber" name="428" href="#428">428</a> 				required = false,
-<a class="jxr_linenumber" name="429" href="#429">429</a> 				usage = <span class="jxr_string">"Enable approximate mode (much faster)"</span>)
-<a class="jxr_linenumber" name="430" href="#430">430</a> 		<strong class="jxr_keyword">boolean</strong> approximate;
-<a class="jxr_linenumber" name="431" href="#431">431</a> 
-<a class="jxr_linenumber" name="432" href="#432">432</a> 		@Option(
-<a class="jxr_linenumber" name="433" href="#433">433</a> 				name = <span class="jxr_string">"--step-x"</span>,
-<a class="jxr_linenumber" name="434" href="#434">434</a> 				aliases = <span class="jxr_string">"-sx"</span>,
-<a class="jxr_linenumber" name="435" href="#435">435</a> 				required = false,
-<a class="jxr_linenumber" name="436" href="#436">436</a> 				usage = <span class="jxr_string">"Step size of sampling window in x-direction (in pixels)"</span>)
-<a class="jxr_linenumber" name="437" href="#437">437</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> stepX = 5;
-<a class="jxr_linenumber" name="438" href="#438">438</a> 
-<a class="jxr_linenumber" name="439" href="#439">439</a> 		@Option(
-<a class="jxr_linenumber" name="440" href="#440">440</a> 				name = <span class="jxr_string">"--step-y"</span>,
-<a class="jxr_linenumber" name="441" href="#441">441</a> 				aliases = <span class="jxr_string">"-sy"</span>,
-<a class="jxr_linenumber" name="442" href="#442">442</a> 				required = false,
-<a class="jxr_linenumber" name="443" href="#443">443</a> 				usage = <span class="jxr_string">"Step size of sampling window in y-direction (in pixels)"</span>)
-<a class="jxr_linenumber" name="444" href="#444">444</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> stepY = 5;
-<a class="jxr_linenumber" name="445" href="#445">445</a> 
-<a class="jxr_linenumber" name="446" href="#446">446</a> 		@Option(
-<a class="jxr_linenumber" name="447" href="#447">447</a> 				name = <span class="jxr_string">"--num-bins-x"</span>,
-<a class="jxr_linenumber" name="448" href="#448">448</a> 				aliases = <span class="jxr_string">"-nx"</span>,
-<a class="jxr_linenumber" name="449" href="#449">449</a> 				required = false,
-<a class="jxr_linenumber" name="450" href="#450">450</a> 				usage = <span class="jxr_string">"Number of spatial bins in the X direction"</span>)
-<a class="jxr_linenumber" name="451" href="#451">451</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> numBinsX = 4;
-<a class="jxr_linenumber" name="452" href="#452">452</a> 
-<a class="jxr_linenumber" name="453" href="#453">453</a> 		@Option(
-<a class="jxr_linenumber" name="454" href="#454">454</a> 				name = <span class="jxr_string">"--num-bins-y"</span>,
-<a class="jxr_linenumber" name="455" href="#455">455</a> 				aliases = <span class="jxr_string">"-ny"</span>,
-<a class="jxr_linenumber" name="456" href="#456">456</a> 				required = false,
-<a class="jxr_linenumber" name="457" href="#457">457</a> 				usage = <span class="jxr_string">"Number of spatial bins in the Y direction"</span>)
-<a class="jxr_linenumber" name="458" href="#458">458</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> numBinsY = 4;
-<a class="jxr_linenumber" name="459" href="#459">459</a> 
-<a class="jxr_linenumber" name="460" href="#460">460</a> 		@Option(name = <span class="jxr_string">"--num-ori-bins"</span>, aliases = <span class="jxr_string">"-no"</span>, required = false, usage = <span class="jxr_string">"The number of orientation bins"</span>)
-<a class="jxr_linenumber" name="461" href="#461">461</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> numOriBins = 8;
-<a class="jxr_linenumber" name="462" href="#462">462</a> 
-<a class="jxr_linenumber" name="463" href="#463">463</a> 		@Option(
-<a class="jxr_linenumber" name="464" href="#464">464</a> 				name = <span class="jxr_string">"--gaussian-window-size"</span>,
-<a class="jxr_linenumber" name="465" href="#465">465</a> 				aliases = <span class="jxr_string">"-gws"</span>,
-<a class="jxr_linenumber" name="466" href="#466">466</a> 				required = false,
-<a class="jxr_linenumber" name="467" href="#467">467</a> 				usage = <span class="jxr_string">"Size of the Gaussian window (in relative to of the size of a bin)"</span>)
-<a class="jxr_linenumber" name="468" href="#468">468</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">float</strong> gaussianWindowSize = 2f;
-<a class="jxr_linenumber" name="469" href="#469">469</a> 
-<a class="jxr_linenumber" name="470" href="#470">470</a> 		@Option(name = <span class="jxr_string">"--clipping-threshold"</span>, required = false, usage = <span class="jxr_string">"Threshold for clipping the SIFT features"</span>)
-<a class="jxr_linenumber" name="471" href="#471">471</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">float</strong> valueThreshold = 0.2f;
-<a class="jxr_linenumber" name="472" href="#472">472</a> 
-<a class="jxr_linenumber" name="473" href="#473">473</a> 		@Option(
-<a class="jxr_linenumber" name="474" href="#474">474</a> 				name = <span class="jxr_string">"--contrast-threshold"</span>,
-<a class="jxr_linenumber" name="475" href="#475">475</a> 				required = false,
-<a class="jxr_linenumber" name="476" href="#476">476</a> 				usage = <span class="jxr_string">"Threshold on the contrast of the returned features (-ve values disable this)"</span>)
-<a class="jxr_linenumber" name="477" href="#477">477</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">float</strong> contrastThreshold = -1;
-<a class="jxr_linenumber" name="478" href="#478">478</a> 
-<a class="jxr_linenumber" name="479" href="#479">479</a> 		@Option(
-<a class="jxr_linenumber" name="480" href="#480">480</a> 				name = <span class="jxr_string">"--byte-features"</span>,
-<a class="jxr_linenumber" name="481" href="#481">481</a> 				required = false,
-<a class="jxr_linenumber" name="482" href="#482">482</a> 				usage = <span class="jxr_string">"Output features scaled to bytes rather than floats"</span>)
-<a class="jxr_linenumber" name="483" href="#483">483</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> byteFeatures = false;
-<a class="jxr_linenumber" name="484" href="#484">484</a> 
-<a class="jxr_linenumber" name="485" href="#485">485</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDenseSiftMode</a>(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
-<a class="jxr_linenumber" name="486" href="#486">486</a> 			<strong class="jxr_keyword">super</strong>(mode);
-<a class="jxr_linenumber" name="487" href="#487">487</a> 		}
-<a class="jxr_linenumber" name="488" href="#488">488</a> 	}
-<a class="jxr_linenumber" name="489" href="#489">489</a> 
-<a class="jxr_linenumber" name="490" href="#490">490</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">DenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDenseSiftMode</a> {
-<a class="jxr_linenumber" name="491" href="#491">491</a> 		@Option(
-<a class="jxr_linenumber" name="492" href="#492">492</a> 				name = <span class="jxr_string">"--bin-width"</span>,
-<a class="jxr_linenumber" name="493" href="#493">493</a> 				aliases = <span class="jxr_string">"-bw"</span>,
-<a class="jxr_linenumber" name="494" href="#494">494</a> 				required = false,
-<a class="jxr_linenumber" name="495" href="#495">495</a> 				usage = <span class="jxr_string">"Width of a single bin of the sampling window (in pixels). Sampling window width is this multiplied by #numBinX."</span>)
-<a class="jxr_linenumber" name="496" href="#496">496</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> binWidth = 5;
-<a class="jxr_linenumber" name="497" href="#497">497</a> 
-<a class="jxr_linenumber" name="498" href="#498">498</a> 		@Option(
-<a class="jxr_linenumber" name="499" href="#499">499</a> 				name = <span class="jxr_string">"--bin-height"</span>,
-<a class="jxr_linenumber" name="500" href="#500">500</a> 				aliases = <span class="jxr_string">"-bh"</span>,
-<a class="jxr_linenumber" name="501" href="#501">501</a> 				required = false,
-<a class="jxr_linenumber" name="502" href="#502">502</a> 				usage = <span class="jxr_string">"Height of a single bin of the sampling window (in pixels). Sampling window height is this multiplied by #numBinY."</span>)
-<a class="jxr_linenumber" name="503" href="#503">503</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> binHeight = 5;
-<a class="jxr_linenumber" name="504" href="#504">504</a> 
-<a class="jxr_linenumber" name="505" href="#505">505</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">DenseSiftMode</a>(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
-<a class="jxr_linenumber" name="506" href="#506">506</a> 			<strong class="jxr_keyword">super</strong>(mode);
-<a class="jxr_linenumber" name="507" href="#507">507</a> 		}
-<a class="jxr_linenumber" name="508" href="#508">508</a> 
-<a class="jxr_linenumber" name="509" href="#509">509</a> 		@Override
-<a class="jxr_linenumber" name="510" href="#510">510</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="511" href="#511">511</a> 			<strong class="jxr_keyword">return</strong> extract(ImageUtilities.readF(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(image)));
-<a class="jxr_linenumber" name="512" href="#512">512</a> 		}
-<a class="jxr_linenumber" name="513" href="#513">513</a> 
-<a class="jxr_linenumber" name="514" href="#514">514</a> 		@Override
-<a class="jxr_linenumber" name="515" href="#515">515</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(MBFImage image) {
-<a class="jxr_linenumber" name="516" href="#516">516</a> 			<strong class="jxr_keyword">return</strong> extract(Transforms.calculateIntensityNTSC_LUT(image));
-<a class="jxr_linenumber" name="517" href="#517">517</a> 		}
-<a class="jxr_linenumber" name="518" href="#518">518</a> 
-<a class="jxr_linenumber" name="519" href="#519">519</a> 		LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(FImage image) {
-<a class="jxr_linenumber" name="520" href="#520">520</a> 			<strong class="jxr_keyword">final</strong> DenseSIFT dsift;
-<a class="jxr_linenumber" name="521" href="#521">521</a> 
-<a class="jxr_linenumber" name="522" href="#522">522</a> 			<strong class="jxr_keyword">if</strong> (approximate)
-<a class="jxr_linenumber" name="523" href="#523">523</a> 				dsift = <strong class="jxr_keyword">new</strong> ApproximateDenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins,
-<a class="jxr_linenumber" name="524" href="#524">524</a> 						gaussianWindowSize, valueThreshold);
-<a class="jxr_linenumber" name="525" href="#525">525</a> 			<strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="526" href="#526">526</a> 				dsift = <strong class="jxr_keyword">new</strong> DenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins,
+<a class="jxr_linenumber" name="295" href="#295">295</a> 			img = (MBFImage) <strong class="jxr_keyword">this</strong>.itOp.transform(img);
+<a class="jxr_linenumber" name="296" href="#296">296</a> 			<strong class="jxr_keyword">final</strong> MinMaxDoGSIFTEngine engine = <strong class="jxr_keyword">new</strong> MinMaxDoGSIFTEngine();
+<a class="jxr_linenumber" name="297" href="#297">297</a> 			LocalFeatureList&lt;MinMaxKeypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="298" href="#298">298</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
+<a class="jxr_linenumber" name="299" href="#299">299</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
+<a class="jxr_linenumber" name="300" href="#300">300</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
+<a class="jxr_linenumber" name="301" href="#301">301</a> 				keys = engine.findFeatures((FImage) cmOp.process(img));
+<a class="jxr_linenumber" name="302" href="#302">302</a> 				<strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="303" href="#303">303</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
+<a class="jxr_linenumber" name="304" href="#304">304</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> UnsupportedOperationException();
+<a class="jxr_linenumber" name="305" href="#305">305</a> 			}
+<a class="jxr_linenumber" name="306" href="#306">306</a> 			<strong class="jxr_keyword">return</strong> keys;
+<a class="jxr_linenumber" name="307" href="#307">307</a> 		}
+<a class="jxr_linenumber" name="308" href="#308">308</a> 
+<a class="jxr_linenumber" name="309" href="#309">309</a> 		@Override
+<a class="jxr_linenumber" name="310" href="#310">310</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
+<a class="jxr_linenumber" name="311" href="#311">311</a> 			<strong class="jxr_keyword">return</strong> MinMaxKeypoint.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="312" href="#312">312</a> 		}
+<a class="jxr_linenumber" name="313" href="#313">313</a> 	}
+<a class="jxr_linenumber" name="314" href="#314">314</a> 
+<a class="jxr_linenumber" name="315" href="#315">315</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AsiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDoGSIFTModeOp</a> {
+<a class="jxr_linenumber" name="316" href="#316">316</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AsiftMode</a>(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
+<a class="jxr_linenumber" name="317" href="#317">317</a> 			<strong class="jxr_keyword">super</strong>(mode);
+<a class="jxr_linenumber" name="318" href="#318">318</a> 		}
+<a class="jxr_linenumber" name="319" href="#319">319</a> 
+<a class="jxr_linenumber" name="320" href="#320">320</a> 		@Option(
+<a class="jxr_linenumber" name="321" href="#321">321</a> 				name = <span class="jxr_string">"--n-tilts"</span>,
+<a class="jxr_linenumber" name="322" href="#322">322</a> 				required = false,
+<a class="jxr_linenumber" name="323" href="#323">323</a> 				usage = <span class="jxr_string">"The number of tilts for the affine simulation"</span>)
+<a class="jxr_linenumber" name="324" href="#324">324</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> ntilts = 5;
+<a class="jxr_linenumber" name="325" href="#325">325</a> 
+<a class="jxr_linenumber" name="326" href="#326">326</a> 		@Override
+<a class="jxr_linenumber" name="327" href="#327">327</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;Keypoint&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="328" href="#328">328</a> 			LocalFeatureList&lt;Keypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="329" href="#329">329</a> 
+<a class="jxr_linenumber" name="330" href="#330">330</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
+<a class="jxr_linenumber" name="331" href="#331">331</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
+<a class="jxr_linenumber" name="332" href="#332">332</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
+<a class="jxr_linenumber" name="333" href="#333">333</a> 				<strong class="jxr_keyword">final</strong> BasicASIFT basic = <strong class="jxr_keyword">new</strong> BasicASIFT(!noDoubleImageSize);
+<a class="jxr_linenumber" name="334" href="#334">334</a> 				basic.detectFeatures((FImage) itOp.transform(cmOp.process(image)), ntilts);
+<a class="jxr_linenumber" name="335" href="#335">335</a> 				keys = basic.getFeatures();
+<a class="jxr_linenumber" name="336" href="#336">336</a> 				<strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="337" href="#337">337</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
+<a class="jxr_linenumber" name="338" href="#338">338</a> 				<strong class="jxr_keyword">final</strong> ColourASIFT colour = <strong class="jxr_keyword">new</strong> ColourASIFT(!noDoubleImageSize);
+<a class="jxr_linenumber" name="339" href="#339">339</a> 				colour.detectFeatures((MBFImage) itOp.transform(cmOp.process(image)), ntilts);
+<a class="jxr_linenumber" name="340" href="#340">340</a> 			}
+<a class="jxr_linenumber" name="341" href="#341">341</a> 			<strong class="jxr_keyword">return</strong> keys;
+<a class="jxr_linenumber" name="342" href="#342">342</a> 		}
+<a class="jxr_linenumber" name="343" href="#343">343</a> 
+<a class="jxr_linenumber" name="344" href="#344">344</a> 		@Override
+<a class="jxr_linenumber" name="345" href="#345">345</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;Keypoint&gt; extractFeature(MBFImage image) {
+<a class="jxr_linenumber" name="346" href="#346">346</a> 			LocalFeatureList&lt;Keypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="347" href="#347">347</a> 
+<a class="jxr_linenumber" name="348" href="#348">348</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
+<a class="jxr_linenumber" name="349" href="#349">349</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
+<a class="jxr_linenumber" name="350" href="#350">350</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
+<a class="jxr_linenumber" name="351" href="#351">351</a> 				<strong class="jxr_keyword">final</strong> BasicASIFT basic = <strong class="jxr_keyword">new</strong> BasicASIFT(!noDoubleImageSize);
+<a class="jxr_linenumber" name="352" href="#352">352</a> 				basic.detectFeatures((FImage) itOp.transform(cmOp.process(image)), ntilts);
+<a class="jxr_linenumber" name="353" href="#353">353</a> 				keys = basic.getFeatures();
+<a class="jxr_linenumber" name="354" href="#354">354</a> 				<strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="355" href="#355">355</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
+<a class="jxr_linenumber" name="356" href="#356">356</a> 				<strong class="jxr_keyword">final</strong> ColourASIFT colour = <strong class="jxr_keyword">new</strong> ColourASIFT(!noDoubleImageSize);
+<a class="jxr_linenumber" name="357" href="#357">357</a> 				colour.detectFeatures((MBFImage) itOp.transform(cmOp.process(image)), ntilts);
+<a class="jxr_linenumber" name="358" href="#358">358</a> 			}
+<a class="jxr_linenumber" name="359" href="#359">359</a> 			<strong class="jxr_keyword">return</strong> keys;
+<a class="jxr_linenumber" name="360" href="#360">360</a> 		}
+<a class="jxr_linenumber" name="361" href="#361">361</a> 
+<a class="jxr_linenumber" name="362" href="#362">362</a> 		@Override
+<a class="jxr_linenumber" name="363" href="#363">363</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
+<a class="jxr_linenumber" name="364" href="#364">364</a> 			<strong class="jxr_keyword">return</strong> Keypoint.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="365" href="#365">365</a> 		}
+<a class="jxr_linenumber" name="366" href="#366">366</a> 	}
+<a class="jxr_linenumber" name="367" href="#367">367</a> 
+<a class="jxr_linenumber" name="368" href="#368">368</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AsiftEnrichedMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDoGSIFTModeOp</a> {
+<a class="jxr_linenumber" name="369" href="#369">369</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AsiftEnrichedMode</a>(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
+<a class="jxr_linenumber" name="370" href="#370">370</a> 			<strong class="jxr_keyword">super</strong>(mode);
+<a class="jxr_linenumber" name="371" href="#371">371</a> 		}
+<a class="jxr_linenumber" name="372" href="#372">372</a> 
+<a class="jxr_linenumber" name="373" href="#373">373</a> 		@Option(
+<a class="jxr_linenumber" name="374" href="#374">374</a> 				name = <span class="jxr_string">"--n-tilts"</span>,
+<a class="jxr_linenumber" name="375" href="#375">375</a> 				required = false,
+<a class="jxr_linenumber" name="376" href="#376">376</a> 				usage = <span class="jxr_string">"The number of tilts for the affine simulation"</span>)
+<a class="jxr_linenumber" name="377" href="#377">377</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> ntilts = 5;
+<a class="jxr_linenumber" name="378" href="#378">378</a> 
+<a class="jxr_linenumber" name="379" href="#379">379</a> 		@Override
+<a class="jxr_linenumber" name="380" href="#380">380</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;AffineSimulationKeypoint&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="381" href="#381">381</a> 			<strong class="jxr_keyword">final</strong> ASIFTEngine engine = <strong class="jxr_keyword">new</strong> ASIFTEngine(!noDoubleImageSize, ntilts);
+<a class="jxr_linenumber" name="382" href="#382">382</a> 			LocalFeatureList&lt;AffineSimulationKeypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="383" href="#383">383</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
+<a class="jxr_linenumber" name="384" href="#384">384</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
+<a class="jxr_linenumber" name="385" href="#385">385</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
+<a class="jxr_linenumber" name="386" href="#386">386</a> 				FImage img = (FImage) cmOp.process(image);
+<a class="jxr_linenumber" name="387" href="#387">387</a> 				img = (FImage) itOp.transform(img);
+<a class="jxr_linenumber" name="388" href="#388">388</a> 				keys = engine.findFeatures(img);
+<a class="jxr_linenumber" name="389" href="#389">389</a> 				<strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="390" href="#390">390</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
+<a class="jxr_linenumber" name="391" href="#391">391</a> 				<strong class="jxr_keyword">final</strong> ColourASIFTEngine colourengine = <strong class="jxr_keyword">new</strong> ColourASIFTEngine(!noDoubleImageSize, ntilts);
+<a class="jxr_linenumber" name="392" href="#392">392</a> 				MBFImage colourimg = (MBFImage) cmOp.process(image);
+<a class="jxr_linenumber" name="393" href="#393">393</a> 				colourimg = (MBFImage) itOp.transform(colourimg);
+<a class="jxr_linenumber" name="394" href="#394">394</a> 				keys = colourengine.findFeatures(colourimg);
+<a class="jxr_linenumber" name="395" href="#395">395</a> 			}
+<a class="jxr_linenumber" name="396" href="#396">396</a> 			<strong class="jxr_keyword">return</strong> keys;
+<a class="jxr_linenumber" name="397" href="#397">397</a> 		}
+<a class="jxr_linenumber" name="398" href="#398">398</a> 
+<a class="jxr_linenumber" name="399" href="#399">399</a> 		@Override
+<a class="jxr_linenumber" name="400" href="#400">400</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;AffineSimulationKeypoint&gt; extractFeature(MBFImage image) {
+<a class="jxr_linenumber" name="401" href="#401">401</a> 			<strong class="jxr_keyword">final</strong> ASIFTEngine engine = <strong class="jxr_keyword">new</strong> ASIFTEngine(!noDoubleImageSize, ntilts);
+<a class="jxr_linenumber" name="402" href="#402">402</a> 			LocalFeatureList&lt;AffineSimulationKeypoint&gt; keys = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="403" href="#403">403</a> 			<strong class="jxr_keyword">switch</strong> (<strong class="jxr_keyword">this</strong>.cm) {
+<a class="jxr_linenumber" name="404" href="#404">404</a> 			<strong class="jxr_keyword">case</strong> SINGLE_COLOUR:
+<a class="jxr_linenumber" name="405" href="#405">405</a> 			<strong class="jxr_keyword">case</strong> INTENSITY:
+<a class="jxr_linenumber" name="406" href="#406">406</a> 				FImage img = (FImage) cmOp.process(image);
+<a class="jxr_linenumber" name="407" href="#407">407</a> 				img = (FImage) itOp.transform(img);
+<a class="jxr_linenumber" name="408" href="#408">408</a> 				keys = engine.findFeatures(img);
+<a class="jxr_linenumber" name="409" href="#409">409</a> 				<strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="410" href="#410">410</a> 			<strong class="jxr_keyword">case</strong> INTENSITY_COLOUR:
+<a class="jxr_linenumber" name="411" href="#411">411</a> 				<strong class="jxr_keyword">final</strong> ColourASIFTEngine colourengine = <strong class="jxr_keyword">new</strong> ColourASIFTEngine(!noDoubleImageSize, ntilts);
+<a class="jxr_linenumber" name="412" href="#412">412</a> 				MBFImage colourimg = (MBFImage) cmOp.process(image);
+<a class="jxr_linenumber" name="413" href="#413">413</a> 				colourimg = (MBFImage) itOp.transform(colourimg);
+<a class="jxr_linenumber" name="414" href="#414">414</a> 				keys = colourengine.findFeatures(colourimg);
+<a class="jxr_linenumber" name="415" href="#415">415</a> 			}
+<a class="jxr_linenumber" name="416" href="#416">416</a> 			<strong class="jxr_keyword">return</strong> keys;
+<a class="jxr_linenumber" name="417" href="#417">417</a> 		}
+<a class="jxr_linenumber" name="418" href="#418">418</a> 
+<a class="jxr_linenumber" name="419" href="#419">419</a> 		@Override
+<a class="jxr_linenumber" name="420" href="#420">420</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
+<a class="jxr_linenumber" name="421" href="#421">421</a> 			<strong class="jxr_keyword">return</strong> AffineSimulationKeypoint.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="422" href="#422">422</a> 		}
+<a class="jxr_linenumber" name="423" href="#423">423</a> 	}
+<a class="jxr_linenumber" name="424" href="#424">424</a> 
+<a class="jxr_linenumber" name="425" href="#425">425</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureModeOp</a> {
+<a class="jxr_linenumber" name="426" href="#426">426</a> 		@Option(
+<a class="jxr_linenumber" name="427" href="#427">427</a> 				name = <span class="jxr_string">"--approximate"</span>,
+<a class="jxr_linenumber" name="428" href="#428">428</a> 				aliases = <span class="jxr_string">"-ap"</span>,
+<a class="jxr_linenumber" name="429" href="#429">429</a> 				required = false,
+<a class="jxr_linenumber" name="430" href="#430">430</a> 				usage = <span class="jxr_string">"Enable approximate mode (much faster)"</span>)
+<a class="jxr_linenumber" name="431" href="#431">431</a> 		<strong class="jxr_keyword">boolean</strong> approximate;
+<a class="jxr_linenumber" name="432" href="#432">432</a> 
+<a class="jxr_linenumber" name="433" href="#433">433</a> 		@Option(
+<a class="jxr_linenumber" name="434" href="#434">434</a> 				name = <span class="jxr_string">"--step-x"</span>,
+<a class="jxr_linenumber" name="435" href="#435">435</a> 				aliases = <span class="jxr_string">"-sx"</span>,
+<a class="jxr_linenumber" name="436" href="#436">436</a> 				required = false,
+<a class="jxr_linenumber" name="437" href="#437">437</a> 				usage = <span class="jxr_string">"Step size of sampling window in x-direction (in pixels)"</span>)
+<a class="jxr_linenumber" name="438" href="#438">438</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> stepX = 5;
+<a class="jxr_linenumber" name="439" href="#439">439</a> 
+<a class="jxr_linenumber" name="440" href="#440">440</a> 		@Option(
+<a class="jxr_linenumber" name="441" href="#441">441</a> 				name = <span class="jxr_string">"--step-y"</span>,
+<a class="jxr_linenumber" name="442" href="#442">442</a> 				aliases = <span class="jxr_string">"-sy"</span>,
+<a class="jxr_linenumber" name="443" href="#443">443</a> 				required = false,
+<a class="jxr_linenumber" name="444" href="#444">444</a> 				usage = <span class="jxr_string">"Step size of sampling window in y-direction (in pixels)"</span>)
+<a class="jxr_linenumber" name="445" href="#445">445</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> stepY = 5;
+<a class="jxr_linenumber" name="446" href="#446">446</a> 
+<a class="jxr_linenumber" name="447" href="#447">447</a> 		@Option(
+<a class="jxr_linenumber" name="448" href="#448">448</a> 				name = <span class="jxr_string">"--num-bins-x"</span>,
+<a class="jxr_linenumber" name="449" href="#449">449</a> 				aliases = <span class="jxr_string">"-nx"</span>,
+<a class="jxr_linenumber" name="450" href="#450">450</a> 				required = false,
+<a class="jxr_linenumber" name="451" href="#451">451</a> 				usage = <span class="jxr_string">"Number of spatial bins in the X direction"</span>)
+<a class="jxr_linenumber" name="452" href="#452">452</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> numBinsX = 4;
+<a class="jxr_linenumber" name="453" href="#453">453</a> 
+<a class="jxr_linenumber" name="454" href="#454">454</a> 		@Option(
+<a class="jxr_linenumber" name="455" href="#455">455</a> 				name = <span class="jxr_string">"--num-bins-y"</span>,
+<a class="jxr_linenumber" name="456" href="#456">456</a> 				aliases = <span class="jxr_string">"-ny"</span>,
+<a class="jxr_linenumber" name="457" href="#457">457</a> 				required = false,
+<a class="jxr_linenumber" name="458" href="#458">458</a> 				usage = <span class="jxr_string">"Number of spatial bins in the Y direction"</span>)
+<a class="jxr_linenumber" name="459" href="#459">459</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> numBinsY = 4;
+<a class="jxr_linenumber" name="460" href="#460">460</a> 
+<a class="jxr_linenumber" name="461" href="#461">461</a> 		@Option(name = <span class="jxr_string">"--num-ori-bins"</span>, aliases = <span class="jxr_string">"-no"</span>, required = false, usage = <span class="jxr_string">"The number of orientation bins"</span>)
+<a class="jxr_linenumber" name="462" href="#462">462</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> numOriBins = 8;
+<a class="jxr_linenumber" name="463" href="#463">463</a> 
+<a class="jxr_linenumber" name="464" href="#464">464</a> 		@Option(
+<a class="jxr_linenumber" name="465" href="#465">465</a> 				name = <span class="jxr_string">"--gaussian-window-size"</span>,
+<a class="jxr_linenumber" name="466" href="#466">466</a> 				aliases = <span class="jxr_string">"-gws"</span>,
+<a class="jxr_linenumber" name="467" href="#467">467</a> 				required = false,
+<a class="jxr_linenumber" name="468" href="#468">468</a> 				usage = <span class="jxr_string">"Size of the Gaussian window (in relative to of the size of a bin)"</span>)
+<a class="jxr_linenumber" name="469" href="#469">469</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">float</strong> gaussianWindowSize = 2f;
+<a class="jxr_linenumber" name="470" href="#470">470</a> 
+<a class="jxr_linenumber" name="471" href="#471">471</a> 		@Option(name = <span class="jxr_string">"--clipping-threshold"</span>, required = false, usage = <span class="jxr_string">"Threshold for clipping the SIFT features"</span>)
+<a class="jxr_linenumber" name="472" href="#472">472</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">float</strong> valueThreshold = 0.2f;
+<a class="jxr_linenumber" name="473" href="#473">473</a> 
+<a class="jxr_linenumber" name="474" href="#474">474</a> 		@Option(
+<a class="jxr_linenumber" name="475" href="#475">475</a> 				name = <span class="jxr_string">"--contrast-threshold"</span>,
+<a class="jxr_linenumber" name="476" href="#476">476</a> 				required = false,
+<a class="jxr_linenumber" name="477" href="#477">477</a> 				usage = <span class="jxr_string">"Threshold on the contrast of the returned features (-ve values disable this)"</span>)
+<a class="jxr_linenumber" name="478" href="#478">478</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">float</strong> contrastThreshold = -1;
+<a class="jxr_linenumber" name="479" href="#479">479</a> 
+<a class="jxr_linenumber" name="480" href="#480">480</a> 		@Option(
+<a class="jxr_linenumber" name="481" href="#481">481</a> 				name = <span class="jxr_string">"--byte-features"</span>,
+<a class="jxr_linenumber" name="482" href="#482">482</a> 				required = false,
+<a class="jxr_linenumber" name="483" href="#483">483</a> 				usage = <span class="jxr_string">"Output features scaled to bytes rather than floats"</span>)
+<a class="jxr_linenumber" name="484" href="#484">484</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> byteFeatures = false;
+<a class="jxr_linenumber" name="485" href="#485">485</a> 
+<a class="jxr_linenumber" name="486" href="#486">486</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDenseSiftMode</a>(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
+<a class="jxr_linenumber" name="487" href="#487">487</a> 			<strong class="jxr_keyword">super</strong>(mode);
+<a class="jxr_linenumber" name="488" href="#488">488</a> 		}
+<a class="jxr_linenumber" name="489" href="#489">489</a> 	}
+<a class="jxr_linenumber" name="490" href="#490">490</a> 
+<a class="jxr_linenumber" name="491" href="#491">491</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">DenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDenseSiftMode</a> {
+<a class="jxr_linenumber" name="492" href="#492">492</a> 		@Option(
+<a class="jxr_linenumber" name="493" href="#493">493</a> 				name = <span class="jxr_string">"--bin-width"</span>,
+<a class="jxr_linenumber" name="494" href="#494">494</a> 				aliases = <span class="jxr_string">"-bw"</span>,
+<a class="jxr_linenumber" name="495" href="#495">495</a> 				required = false,
+<a class="jxr_linenumber" name="496" href="#496">496</a> 				usage = <span class="jxr_string">"Width of a single bin of the sampling window (in pixels). Sampling window width is this multiplied by #numBinX."</span>)
+<a class="jxr_linenumber" name="497" href="#497">497</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> binWidth = 5;
+<a class="jxr_linenumber" name="498" href="#498">498</a> 
+<a class="jxr_linenumber" name="499" href="#499">499</a> 		@Option(
+<a class="jxr_linenumber" name="500" href="#500">500</a> 				name = <span class="jxr_string">"--bin-height"</span>,
+<a class="jxr_linenumber" name="501" href="#501">501</a> 				aliases = <span class="jxr_string">"-bh"</span>,
+<a class="jxr_linenumber" name="502" href="#502">502</a> 				required = false,
+<a class="jxr_linenumber" name="503" href="#503">503</a> 				usage = <span class="jxr_string">"Height of a single bin of the sampling window (in pixels). Sampling window height is this multiplied by #numBinY."</span>)
+<a class="jxr_linenumber" name="504" href="#504">504</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> binHeight = 5;
+<a class="jxr_linenumber" name="505" href="#505">505</a> 
+<a class="jxr_linenumber" name="506" href="#506">506</a> 		<strong class="jxr_keyword">private</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">DenseSiftMode</a>(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
+<a class="jxr_linenumber" name="507" href="#507">507</a> 			<strong class="jxr_keyword">super</strong>(mode);
+<a class="jxr_linenumber" name="508" href="#508">508</a> 		}
+<a class="jxr_linenumber" name="509" href="#509">509</a> 
+<a class="jxr_linenumber" name="510" href="#510">510</a> 		@Override
+<a class="jxr_linenumber" name="511" href="#511">511</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="512" href="#512">512</a> 			<strong class="jxr_keyword">return</strong> extract(ImageUtilities.readF(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(image)));
+<a class="jxr_linenumber" name="513" href="#513">513</a> 		}
+<a class="jxr_linenumber" name="514" href="#514">514</a> 
+<a class="jxr_linenumber" name="515" href="#515">515</a> 		@Override
+<a class="jxr_linenumber" name="516" href="#516">516</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(MBFImage image) {
+<a class="jxr_linenumber" name="517" href="#517">517</a> 			<strong class="jxr_keyword">return</strong> extract(Transforms.calculateIntensityNTSC_LUT(image));
+<a class="jxr_linenumber" name="518" href="#518">518</a> 		}
+<a class="jxr_linenumber" name="519" href="#519">519</a> 
+<a class="jxr_linenumber" name="520" href="#520">520</a> 		LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(FImage image) {
+<a class="jxr_linenumber" name="521" href="#521">521</a> 			image = (FImage) <strong class="jxr_keyword">this</strong>.itOp.transform(image);
+<a class="jxr_linenumber" name="522" href="#522">522</a> 
+<a class="jxr_linenumber" name="523" href="#523">523</a> 			<strong class="jxr_keyword">final</strong> DenseSIFT dsift;
+<a class="jxr_linenumber" name="524" href="#524">524</a> 
+<a class="jxr_linenumber" name="525" href="#525">525</a> 			<strong class="jxr_keyword">if</strong> (approximate)
+<a class="jxr_linenumber" name="526" href="#526">526</a> 				dsift = <strong class="jxr_keyword">new</strong> ApproximateDenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins,
 <a class="jxr_linenumber" name="527" href="#527">527</a> 						gaussianWindowSize, valueThreshold);
-<a class="jxr_linenumber" name="528" href="#528">528</a> 
-<a class="jxr_linenumber" name="529" href="#529">529</a> 			dsift.analyseImage(image);
-<a class="jxr_linenumber" name="530" href="#530">530</a> 
-<a class="jxr_linenumber" name="531" href="#531">531</a> 			<strong class="jxr_keyword">if</strong> (contrastThreshold &lt;= 0) {
-<a class="jxr_linenumber" name="532" href="#532">532</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="533" href="#533">533</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints();
-<a class="jxr_linenumber" name="534" href="#534">534</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints();
-<a class="jxr_linenumber" name="535" href="#535">535</a> 			} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="536" href="#536">536</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="537" href="#537">537</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints(contrastThreshold);
-<a class="jxr_linenumber" name="538" href="#538">538</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints(contrastThreshold);
-<a class="jxr_linenumber" name="539" href="#539">539</a> 			}
-<a class="jxr_linenumber" name="540" href="#540">540</a> 		}
-<a class="jxr_linenumber" name="541" href="#541">541</a> 
-<a class="jxr_linenumber" name="542" href="#542">542</a> 		@Override
-<a class="jxr_linenumber" name="543" href="#543">543</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
-<a class="jxr_linenumber" name="544" href="#544">544</a> 			<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="545" href="#545">545</a> 				<strong class="jxr_keyword">return</strong> ByteDSIFTKeypoint.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="546" href="#546">546</a> 			<strong class="jxr_keyword">return</strong> FloatDSIFTKeypoint.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="547" href="#547">547</a> 		}
-<a class="jxr_linenumber" name="548" href="#548">548</a> 	}
-<a class="jxr_linenumber" name="549" href="#549">549</a> 
-<a class="jxr_linenumber" name="550" href="#550">550</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">ColourDenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">DenseSiftMode</a> {
-<a class="jxr_linenumber" name="551" href="#551">551</a> 		@Option(name = <span class="jxr_string">"--colour-space"</span>, aliases = <span class="jxr_string">"-cs"</span>, required = false, usage = <span class="jxr_string">"Specify the colour space"</span>)
-<a class="jxr_linenumber" name="552" href="#552">552</a> 		<strong class="jxr_keyword">private</strong> ColourSpace colourspace = ColourSpace.RGB;
-<a class="jxr_linenumber" name="553" href="#553">553</a> 
-<a class="jxr_linenumber" name="554" href="#554">554</a> 		ColourDenseSiftMode(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
-<a class="jxr_linenumber" name="555" href="#555">555</a> 			<strong class="jxr_keyword">super</strong>(mode);
-<a class="jxr_linenumber" name="556" href="#556">556</a> 		}
-<a class="jxr_linenumber" name="557" href="#557">557</a> 
-<a class="jxr_linenumber" name="558" href="#558">558</a> 		@Override
-<a class="jxr_linenumber" name="559" href="#559">559</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="560" href="#560">560</a> 			<strong class="jxr_keyword">return</strong> extractFeature(ImageUtilities.readMBF(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(image)));
-<a class="jxr_linenumber" name="561" href="#561">561</a> 		}
-<a class="jxr_linenumber" name="562" href="#562">562</a> 
-<a class="jxr_linenumber" name="563" href="#563">563</a> 		@Override
-<a class="jxr_linenumber" name="564" href="#564">564</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(MBFImage image) {
-<a class="jxr_linenumber" name="565" href="#565">565</a> 			<strong class="jxr_keyword">final</strong> ColourDenseSIFT dsift;
-<a class="jxr_linenumber" name="566" href="#566">566</a> 
-<a class="jxr_linenumber" name="567" href="#567">567</a> 			<strong class="jxr_keyword">if</strong> (approximate)
-<a class="jxr_linenumber" name="568" href="#568">568</a> 				dsift = <strong class="jxr_keyword">new</strong> ColourDenseSIFT(<strong class="jxr_keyword">new</strong> ApproximateDenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX,
-<a class="jxr_linenumber" name="569" href="#569">569</a> 						numBinsY, numOriBins,
-<a class="jxr_linenumber" name="570" href="#570">570</a> 						gaussianWindowSize, valueThreshold), colourspace);
-<a class="jxr_linenumber" name="571" href="#571">571</a> 			<strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="572" href="#572">572</a> 				dsift = <strong class="jxr_keyword">new</strong> ColourDenseSIFT(<strong class="jxr_keyword">new</strong> DenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY,
-<a class="jxr_linenumber" name="573" href="#573">573</a> 						numOriBins,
-<a class="jxr_linenumber" name="574" href="#574">574</a> 						gaussianWindowSize, valueThreshold), colourspace);
-<a class="jxr_linenumber" name="575" href="#575">575</a> 
-<a class="jxr_linenumber" name="576" href="#576">576</a> 			dsift.analyseImage(image);
-<a class="jxr_linenumber" name="577" href="#577">577</a> 
-<a class="jxr_linenumber" name="578" href="#578">578</a> 			<strong class="jxr_keyword">if</strong> (contrastThreshold &lt;= 0) {
-<a class="jxr_linenumber" name="579" href="#579">579</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="580" href="#580">580</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints();
-<a class="jxr_linenumber" name="581" href="#581">581</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints();
-<a class="jxr_linenumber" name="582" href="#582">582</a> 			} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="583" href="#583">583</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="584" href="#584">584</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints(contrastThreshold);
-<a class="jxr_linenumber" name="585" href="#585">585</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints(contrastThreshold);
-<a class="jxr_linenumber" name="586" href="#586">586</a> 			}
-<a class="jxr_linenumber" name="587" href="#587">587</a> 		}
-<a class="jxr_linenumber" name="588" href="#588">588</a> 	}
-<a class="jxr_linenumber" name="589" href="#589">589</a> 
-<a class="jxr_linenumber" name="590" href="#590">590</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">PyramidDenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDenseSiftMode</a> {
-<a class="jxr_linenumber" name="591" href="#591">591</a> 		@Option(
-<a class="jxr_linenumber" name="592" href="#592">592</a> 				name = <span class="jxr_string">"--sizes"</span>,
-<a class="jxr_linenumber" name="593" href="#593">593</a> 				aliases = <span class="jxr_string">"-s"</span>,
-<a class="jxr_linenumber" name="594" href="#594">594</a> 				required = <strong class="jxr_keyword">true</strong>,
-<a class="jxr_linenumber" name="595" href="#595">595</a> 				usage = <span class="jxr_string">"Scales at which the dense SIFT features are extracted. Each value is used as bin size for the DenseSIFT."</span>)
-<a class="jxr_linenumber" name="596" href="#596">596</a> 		List&lt;Integer&gt; sizes = <strong class="jxr_keyword">new</strong> ArrayList&lt;Integer&gt;();
-<a class="jxr_linenumber" name="597" href="#597">597</a> 
-<a class="jxr_linenumber" name="598" href="#598">598</a> 		@Option(
-<a class="jxr_linenumber" name="599" href="#599">599</a> 				name = <span class="jxr_string">"--magnification-factor"</span>,
-<a class="jxr_linenumber" name="600" href="#600">600</a> 				aliases = <span class="jxr_string">"-mf"</span>,
-<a class="jxr_linenumber" name="601" href="#601">601</a> 				usage = <span class="jxr_string">"The amount to smooth the image by at each level relative to the bin size (sigma = size/magnification)."</span>)
-<a class="jxr_linenumber" name="602" href="#602">602</a> 		<strong class="jxr_keyword">float</strong> magnificationFactor = 6;
-<a class="jxr_linenumber" name="603" href="#603">603</a> 
-<a class="jxr_linenumber" name="604" href="#604">604</a> 		PyramidDenseSiftMode(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
-<a class="jxr_linenumber" name="605" href="#605">605</a> 			<strong class="jxr_keyword">super</strong>(mode);
-<a class="jxr_linenumber" name="606" href="#606">606</a> 		}
-<a class="jxr_linenumber" name="607" href="#607">607</a> 
-<a class="jxr_linenumber" name="608" href="#608">608</a> 		@Override
-<a class="jxr_linenumber" name="609" href="#609">609</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="610" href="#610">610</a> 			<strong class="jxr_keyword">return</strong> extractFeature(ImageUtilities.readF(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(image)));
+<a class="jxr_linenumber" name="528" href="#528">528</a> 			<strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="529" href="#529">529</a> 				dsift = <strong class="jxr_keyword">new</strong> DenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY, numOriBins,
+<a class="jxr_linenumber" name="530" href="#530">530</a> 						gaussianWindowSize, valueThreshold);
+<a class="jxr_linenumber" name="531" href="#531">531</a> 
+<a class="jxr_linenumber" name="532" href="#532">532</a> 			dsift.analyseImage(image);
+<a class="jxr_linenumber" name="533" href="#533">533</a> 
+<a class="jxr_linenumber" name="534" href="#534">534</a> 			<strong class="jxr_keyword">if</strong> (contrastThreshold &lt;= 0) {
+<a class="jxr_linenumber" name="535" href="#535">535</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="536" href="#536">536</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints();
+<a class="jxr_linenumber" name="537" href="#537">537</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints();
+<a class="jxr_linenumber" name="538" href="#538">538</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="539" href="#539">539</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="540" href="#540">540</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints(contrastThreshold);
+<a class="jxr_linenumber" name="541" href="#541">541</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints(contrastThreshold);
+<a class="jxr_linenumber" name="542" href="#542">542</a> 			}
+<a class="jxr_linenumber" name="543" href="#543">543</a> 		}
+<a class="jxr_linenumber" name="544" href="#544">544</a> 
+<a class="jxr_linenumber" name="545" href="#545">545</a> 		@Override
+<a class="jxr_linenumber" name="546" href="#546">546</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
+<a class="jxr_linenumber" name="547" href="#547">547</a> 			<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="548" href="#548">548</a> 				<strong class="jxr_keyword">return</strong> ByteDSIFTKeypoint.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="549" href="#549">549</a> 			<strong class="jxr_keyword">return</strong> FloatDSIFTKeypoint.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="550" href="#550">550</a> 		}
+<a class="jxr_linenumber" name="551" href="#551">551</a> 	}
+<a class="jxr_linenumber" name="552" href="#552">552</a> 
+<a class="jxr_linenumber" name="553" href="#553">553</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">ColourDenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">DenseSiftMode</a> {
+<a class="jxr_linenumber" name="554" href="#554">554</a> 		@Option(name = <span class="jxr_string">"--colour-space"</span>, aliases = <span class="jxr_string">"-cs"</span>, required = false, usage = <span class="jxr_string">"Specify the colour space"</span>)
+<a class="jxr_linenumber" name="555" href="#555">555</a> 		<strong class="jxr_keyword">private</strong> ColourSpace colourspace = ColourSpace.RGB;
+<a class="jxr_linenumber" name="556" href="#556">556</a> 
+<a class="jxr_linenumber" name="557" href="#557">557</a> 		ColourDenseSiftMode(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
+<a class="jxr_linenumber" name="558" href="#558">558</a> 			<strong class="jxr_keyword">super</strong>(mode);
+<a class="jxr_linenumber" name="559" href="#559">559</a> 		}
+<a class="jxr_linenumber" name="560" href="#560">560</a> 
+<a class="jxr_linenumber" name="561" href="#561">561</a> 		@Override
+<a class="jxr_linenumber" name="562" href="#562">562</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="563" href="#563">563</a> 			<strong class="jxr_keyword">return</strong> extractFeature(ImageUtilities.readMBF(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(image)));
+<a class="jxr_linenumber" name="564" href="#564">564</a> 		}
+<a class="jxr_linenumber" name="565" href="#565">565</a> 
+<a class="jxr_linenumber" name="566" href="#566">566</a> 		@Override
+<a class="jxr_linenumber" name="567" href="#567">567</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(MBFImage image) {
+<a class="jxr_linenumber" name="568" href="#568">568</a> 			image = (MBFImage) <strong class="jxr_keyword">this</strong>.itOp.transform(image);
+<a class="jxr_linenumber" name="569" href="#569">569</a> 
+<a class="jxr_linenumber" name="570" href="#570">570</a> 			<strong class="jxr_keyword">final</strong> ColourDenseSIFT dsift;
+<a class="jxr_linenumber" name="571" href="#571">571</a> 
+<a class="jxr_linenumber" name="572" href="#572">572</a> 			<strong class="jxr_keyword">if</strong> (approximate)
+<a class="jxr_linenumber" name="573" href="#573">573</a> 				dsift = <strong class="jxr_keyword">new</strong> ColourDenseSIFT(<strong class="jxr_keyword">new</strong> ApproximateDenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX,
+<a class="jxr_linenumber" name="574" href="#574">574</a> 						numBinsY, numOriBins,
+<a class="jxr_linenumber" name="575" href="#575">575</a> 						gaussianWindowSize, valueThreshold), colourspace);
+<a class="jxr_linenumber" name="576" href="#576">576</a> 			<strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="577" href="#577">577</a> 				dsift = <strong class="jxr_keyword">new</strong> ColourDenseSIFT(<strong class="jxr_keyword">new</strong> DenseSIFT(stepX, stepY, binWidth, binHeight, numBinsX, numBinsY,
+<a class="jxr_linenumber" name="578" href="#578">578</a> 						numOriBins,
+<a class="jxr_linenumber" name="579" href="#579">579</a> 						gaussianWindowSize, valueThreshold), colourspace);
+<a class="jxr_linenumber" name="580" href="#580">580</a> 
+<a class="jxr_linenumber" name="581" href="#581">581</a> 			dsift.analyseImage(image);
+<a class="jxr_linenumber" name="582" href="#582">582</a> 
+<a class="jxr_linenumber" name="583" href="#583">583</a> 			<strong class="jxr_keyword">if</strong> (contrastThreshold &lt;= 0) {
+<a class="jxr_linenumber" name="584" href="#584">584</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="585" href="#585">585</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints();
+<a class="jxr_linenumber" name="586" href="#586">586</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints();
+<a class="jxr_linenumber" name="587" href="#587">587</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="588" href="#588">588</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="589" href="#589">589</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints(contrastThreshold);
+<a class="jxr_linenumber" name="590" href="#590">590</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints(contrastThreshold);
+<a class="jxr_linenumber" name="591" href="#591">591</a> 			}
+<a class="jxr_linenumber" name="592" href="#592">592</a> 		}
+<a class="jxr_linenumber" name="593" href="#593">593</a> 	}
+<a class="jxr_linenumber" name="594" href="#594">594</a> 
+<a class="jxr_linenumber" name="595" href="#595">595</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">PyramidDenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">AbstractDenseSiftMode</a> {
+<a class="jxr_linenumber" name="596" href="#596">596</a> 		@Option(
+<a class="jxr_linenumber" name="597" href="#597">597</a> 				name = <span class="jxr_string">"--sizes"</span>,
+<a class="jxr_linenumber" name="598" href="#598">598</a> 				aliases = <span class="jxr_string">"-s"</span>,
+<a class="jxr_linenumber" name="599" href="#599">599</a> 				required = <strong class="jxr_keyword">true</strong>,
+<a class="jxr_linenumber" name="600" href="#600">600</a> 				usage = <span class="jxr_string">"Scales at which the dense SIFT features are extracted. Each value is used as bin size for the DenseSIFT."</span>)
+<a class="jxr_linenumber" name="601" href="#601">601</a> 		List&lt;Integer&gt; sizes = <strong class="jxr_keyword">new</strong> ArrayList&lt;Integer&gt;();
+<a class="jxr_linenumber" name="602" href="#602">602</a> 
+<a class="jxr_linenumber" name="603" href="#603">603</a> 		@Option(
+<a class="jxr_linenumber" name="604" href="#604">604</a> 				name = <span class="jxr_string">"--magnification-factor"</span>,
+<a class="jxr_linenumber" name="605" href="#605">605</a> 				aliases = <span class="jxr_string">"-mf"</span>,
+<a class="jxr_linenumber" name="606" href="#606">606</a> 				usage = <span class="jxr_string">"The amount to smooth the image by at each level relative to the bin size (sigma = size/magnification)."</span>)
+<a class="jxr_linenumber" name="607" href="#607">607</a> 		<strong class="jxr_keyword">float</strong> magnificationFactor = 6;
+<a class="jxr_linenumber" name="608" href="#608">608</a> 
+<a class="jxr_linenumber" name="609" href="#609">609</a> 		PyramidDenseSiftMode(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
+<a class="jxr_linenumber" name="610" href="#610">610</a> 			<strong class="jxr_keyword">super</strong>(mode);
 <a class="jxr_linenumber" name="611" href="#611">611</a> 		}
 <a class="jxr_linenumber" name="612" href="#612">612</a> 
 <a class="jxr_linenumber" name="613" href="#613">613</a> 		@Override
-<a class="jxr_linenumber" name="614" href="#614">614</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(MBFImage image) {
-<a class="jxr_linenumber" name="615" href="#615">615</a> 			<strong class="jxr_keyword">return</strong> extractFeature(Transforms.calculateIntensityNTSC_LUT(image));
+<a class="jxr_linenumber" name="614" href="#614">614</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="615" href="#615">615</a> 			<strong class="jxr_keyword">return</strong> extractFeature(ImageUtilities.readF(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(image)));
 <a class="jxr_linenumber" name="616" href="#616">616</a> 		}
 <a class="jxr_linenumber" name="617" href="#617">617</a> 
-<a class="jxr_linenumber" name="618" href="#618">618</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong>[] toArray(List&lt;Integer&gt; in) {
-<a class="jxr_linenumber" name="619" href="#619">619</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] out = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[in.size()];
-<a class="jxr_linenumber" name="620" href="#620">620</a> 
-<a class="jxr_linenumber" name="621" href="#621">621</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; out.length; i++) {
-<a class="jxr_linenumber" name="622" href="#622">622</a> 				out[i] = in.get(i);
-<a class="jxr_linenumber" name="623" href="#623">623</a> 			}
-<a class="jxr_linenumber" name="624" href="#624">624</a> 
-<a class="jxr_linenumber" name="625" href="#625">625</a> 			<strong class="jxr_keyword">return</strong> out;
-<a class="jxr_linenumber" name="626" href="#626">626</a> 		}
-<a class="jxr_linenumber" name="627" href="#627">627</a> 
-<a class="jxr_linenumber" name="628" href="#628">628</a> 		LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(FImage image) {
-<a class="jxr_linenumber" name="629" href="#629">629</a> 			<strong class="jxr_keyword">final</strong> PyramidDenseSIFT&lt;FImage&gt; dsift;
-<a class="jxr_linenumber" name="630" href="#630">630</a> 
-<a class="jxr_linenumber" name="631" href="#631">631</a> 			<strong class="jxr_keyword">if</strong> (approximate)
-<a class="jxr_linenumber" name="632" href="#632">632</a> 				dsift = <strong class="jxr_keyword">new</strong> PyramidDenseSIFT&lt;FImage&gt;(<strong class="jxr_keyword">new</strong> ApproximateDenseSIFT(stepX, stepY, 1, 1, numBinsX, numBinsY,
-<a class="jxr_linenumber" name="633" href="#633">633</a> 						numOriBins,
-<a class="jxr_linenumber" name="634" href="#634">634</a> 						gaussianWindowSize, valueThreshold), magnificationFactor, toArray(sizes));
-<a class="jxr_linenumber" name="635" href="#635">635</a> 			<strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="636" href="#636">636</a> 				dsift = <strong class="jxr_keyword">new</strong> PyramidDenseSIFT&lt;FImage&gt;(<strong class="jxr_keyword">new</strong> DenseSIFT(stepX, stepY, 1, 1, numBinsX, numBinsY, numOriBins,
-<a class="jxr_linenumber" name="637" href="#637">637</a> 						gaussianWindowSize, valueThreshold), magnificationFactor, toArray(sizes));
-<a class="jxr_linenumber" name="638" href="#638">638</a> 
-<a class="jxr_linenumber" name="639" href="#639">639</a> 			dsift.analyseImage(image);
-<a class="jxr_linenumber" name="640" href="#640">640</a> 
-<a class="jxr_linenumber" name="641" href="#641">641</a> 			<strong class="jxr_keyword">if</strong> (contrastThreshold &lt;= 0) {
-<a class="jxr_linenumber" name="642" href="#642">642</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="643" href="#643">643</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints();
-<a class="jxr_linenumber" name="644" href="#644">644</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints();
-<a class="jxr_linenumber" name="645" href="#645">645</a> 			} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="646" href="#646">646</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="647" href="#647">647</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints(contrastThreshold);
-<a class="jxr_linenumber" name="648" href="#648">648</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints(contrastThreshold);
-<a class="jxr_linenumber" name="649" href="#649">649</a> 			}
-<a class="jxr_linenumber" name="650" href="#650">650</a> 		}
-<a class="jxr_linenumber" name="651" href="#651">651</a> 
-<a class="jxr_linenumber" name="652" href="#652">652</a> 		@Override
-<a class="jxr_linenumber" name="653" href="#653">653</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
-<a class="jxr_linenumber" name="654" href="#654">654</a> 			<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="655" href="#655">655</a> 				<strong class="jxr_keyword">return</strong> ByteDSIFTKeypoint.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="656" href="#656">656</a> 			<strong class="jxr_keyword">return</strong> FloatDSIFTKeypoint.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="618" href="#618">618</a> 		@Override
+<a class="jxr_linenumber" name="619" href="#619">619</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(MBFImage image) {
+<a class="jxr_linenumber" name="620" href="#620">620</a> 			<strong class="jxr_keyword">return</strong> extractFeature(Transforms.calculateIntensityNTSC_LUT(image));
+<a class="jxr_linenumber" name="621" href="#621">621</a> 		}
+<a class="jxr_linenumber" name="622" href="#622">622</a> 
+<a class="jxr_linenumber" name="623" href="#623">623</a> 		<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong>[] toArray(List&lt;Integer&gt; in) {
+<a class="jxr_linenumber" name="624" href="#624">624</a> 			<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] out = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[in.size()];
+<a class="jxr_linenumber" name="625" href="#625">625</a> 
+<a class="jxr_linenumber" name="626" href="#626">626</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; out.length; i++) {
+<a class="jxr_linenumber" name="627" href="#627">627</a> 				out[i] = in.get(i);
+<a class="jxr_linenumber" name="628" href="#628">628</a> 			}
+<a class="jxr_linenumber" name="629" href="#629">629</a> 
+<a class="jxr_linenumber" name="630" href="#630">630</a> 			<strong class="jxr_keyword">return</strong> out;
+<a class="jxr_linenumber" name="631" href="#631">631</a> 		}
+<a class="jxr_linenumber" name="632" href="#632">632</a> 
+<a class="jxr_linenumber" name="633" href="#633">633</a> 		LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(FImage image) {
+<a class="jxr_linenumber" name="634" href="#634">634</a> 			image = (FImage) <strong class="jxr_keyword">this</strong>.itOp.transform(image);
+<a class="jxr_linenumber" name="635" href="#635">635</a> 
+<a class="jxr_linenumber" name="636" href="#636">636</a> 			<strong class="jxr_keyword">final</strong> PyramidDenseSIFT&lt;FImage&gt; dsift;
+<a class="jxr_linenumber" name="637" href="#637">637</a> 
+<a class="jxr_linenumber" name="638" href="#638">638</a> 			<strong class="jxr_keyword">if</strong> (approximate)
+<a class="jxr_linenumber" name="639" href="#639">639</a> 				dsift = <strong class="jxr_keyword">new</strong> PyramidDenseSIFT&lt;FImage&gt;(<strong class="jxr_keyword">new</strong> ApproximateDenseSIFT(stepX, stepY, 1, 1, numBinsX, numBinsY,
+<a class="jxr_linenumber" name="640" href="#640">640</a> 						numOriBins,
+<a class="jxr_linenumber" name="641" href="#641">641</a> 						gaussianWindowSize, valueThreshold), magnificationFactor, toArray(sizes));
+<a class="jxr_linenumber" name="642" href="#642">642</a> 			<strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="643" href="#643">643</a> 				dsift = <strong class="jxr_keyword">new</strong> PyramidDenseSIFT&lt;FImage&gt;(<strong class="jxr_keyword">new</strong> DenseSIFT(stepX, stepY, 1, 1, numBinsX, numBinsY, numOriBins,
+<a class="jxr_linenumber" name="644" href="#644">644</a> 						gaussianWindowSize, valueThreshold), magnificationFactor, toArray(sizes));
+<a class="jxr_linenumber" name="645" href="#645">645</a> 
+<a class="jxr_linenumber" name="646" href="#646">646</a> 			dsift.analyseImage(image);
+<a class="jxr_linenumber" name="647" href="#647">647</a> 
+<a class="jxr_linenumber" name="648" href="#648">648</a> 			<strong class="jxr_keyword">if</strong> (contrastThreshold &lt;= 0) {
+<a class="jxr_linenumber" name="649" href="#649">649</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="650" href="#650">650</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints();
+<a class="jxr_linenumber" name="651" href="#651">651</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints();
+<a class="jxr_linenumber" name="652" href="#652">652</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="653" href="#653">653</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="654" href="#654">654</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints(contrastThreshold);
+<a class="jxr_linenumber" name="655" href="#655">655</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints(contrastThreshold);
+<a class="jxr_linenumber" name="656" href="#656">656</a> 			}
 <a class="jxr_linenumber" name="657" href="#657">657</a> 		}
-<a class="jxr_linenumber" name="658" href="#658">658</a> 	}
-<a class="jxr_linenumber" name="659" href="#659">659</a> 
-<a class="jxr_linenumber" name="660" href="#660">660</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">PyramidColourDenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">PyramidDenseSiftMode</a> {
-<a class="jxr_linenumber" name="661" href="#661">661</a> 		@Option(name = <span class="jxr_string">"--colour-space"</span>, aliases = <span class="jxr_string">"-cs"</span>, required = false, usage = <span class="jxr_string">"Specify the colour space"</span>)
-<a class="jxr_linenumber" name="662" href="#662">662</a> 		<strong class="jxr_keyword">private</strong> ColourSpace colourspace = ColourSpace.RGB;
-<a class="jxr_linenumber" name="663" href="#663">663</a> 
-<a class="jxr_linenumber" name="664" href="#664">664</a> 		PyramidColourDenseSiftMode(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
-<a class="jxr_linenumber" name="665" href="#665">665</a> 			<strong class="jxr_keyword">super</strong>(mode);
-<a class="jxr_linenumber" name="666" href="#666">666</a> 		}
-<a class="jxr_linenumber" name="667" href="#667">667</a> 
-<a class="jxr_linenumber" name="668" href="#668">668</a> 		@Override
-<a class="jxr_linenumber" name="669" href="#669">669</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="670" href="#670">670</a> 			<strong class="jxr_keyword">return</strong> extractFeature(ImageUtilities.readMBF(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(image)));
-<a class="jxr_linenumber" name="671" href="#671">671</a> 		}
-<a class="jxr_linenumber" name="672" href="#672">672</a> 
-<a class="jxr_linenumber" name="673" href="#673">673</a> 		@Override
-<a class="jxr_linenumber" name="674" href="#674">674</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(MBFImage image) {
-<a class="jxr_linenumber" name="675" href="#675">675</a> 			<strong class="jxr_keyword">final</strong> PyramidDenseSIFT&lt;MBFImage&gt; dsift;
-<a class="jxr_linenumber" name="676" href="#676">676</a> 
-<a class="jxr_linenumber" name="677" href="#677">677</a> 			<strong class="jxr_keyword">if</strong> (approximate)
-<a class="jxr_linenumber" name="678" href="#678">678</a> 				dsift = <strong class="jxr_keyword">new</strong> PyramidDenseSIFT&lt;MBFImage&gt;(<strong class="jxr_keyword">new</strong> ColourDenseSIFT(<strong class="jxr_keyword">new</strong> ApproximateDenseSIFT(stepX, stepY, 1, 1,
-<a class="jxr_linenumber" name="679" href="#679">679</a> 						numBinsX,
-<a class="jxr_linenumber" name="680" href="#680">680</a> 						numBinsY, numOriBins,
-<a class="jxr_linenumber" name="681" href="#681">681</a> 						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, toArray(sizes));
-<a class="jxr_linenumber" name="682" href="#682">682</a> 			<strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="683" href="#683">683</a> 				dsift = <strong class="jxr_keyword">new</strong> PyramidDenseSIFT&lt;MBFImage&gt;(<strong class="jxr_keyword">new</strong> ColourDenseSIFT(<strong class="jxr_keyword">new</strong> DenseSIFT(stepX, stepY, 1, 1, numBinsX,
-<a class="jxr_linenumber" name="684" href="#684">684</a> 						numBinsY,
-<a class="jxr_linenumber" name="685" href="#685">685</a> 						numOriBins,
-<a class="jxr_linenumber" name="686" href="#686">686</a> 						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, toArray(sizes));
-<a class="jxr_linenumber" name="687" href="#687">687</a> 
-<a class="jxr_linenumber" name="688" href="#688">688</a> 			dsift.analyseImage(image);
-<a class="jxr_linenumber" name="689" href="#689">689</a> 
-<a class="jxr_linenumber" name="690" href="#690">690</a> 			<strong class="jxr_keyword">if</strong> (contrastThreshold &lt;= 0) {
-<a class="jxr_linenumber" name="691" href="#691">691</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="692" href="#692">692</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints();
-<a class="jxr_linenumber" name="693" href="#693">693</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints();
-<a class="jxr_linenumber" name="694" href="#694">694</a> 			} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="695" href="#695">695</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
-<a class="jxr_linenumber" name="696" href="#696">696</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints(contrastThreshold);
-<a class="jxr_linenumber" name="697" href="#697">697</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints(contrastThreshold);
-<a class="jxr_linenumber" name="698" href="#698">698</a> 			}
-<a class="jxr_linenumber" name="699" href="#699">699</a> 		}
-<a class="jxr_linenumber" name="700" href="#700">700</a> 	}
-<a class="jxr_linenumber" name="701" href="#701">701</a> }
+<a class="jxr_linenumber" name="658" href="#658">658</a> 
+<a class="jxr_linenumber" name="659" href="#659">659</a> 		@Override
+<a class="jxr_linenumber" name="660" href="#660">660</a> 		<strong class="jxr_keyword">public</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; getFeatureClass() {
+<a class="jxr_linenumber" name="661" href="#661">661</a> 			<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="662" href="#662">662</a> 				<strong class="jxr_keyword">return</strong> ByteDSIFTKeypoint.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="663" href="#663">663</a> 			<strong class="jxr_keyword">return</strong> FloatDSIFTKeypoint.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="664" href="#664">664</a> 		}
+<a class="jxr_linenumber" name="665" href="#665">665</a> 	}
+<a class="jxr_linenumber" name="666" href="#666">666</a> 
+<a class="jxr_linenumber" name="667" href="#667">667</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">PyramidColourDenseSiftMode</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">PyramidDenseSiftMode</a> {
+<a class="jxr_linenumber" name="668" href="#668">668</a> 		@Option(name = <span class="jxr_string">"--colour-space"</span>, aliases = <span class="jxr_string">"-cs"</span>, required = false, usage = <span class="jxr_string">"Specify the colour space"</span>)
+<a class="jxr_linenumber" name="669" href="#669">669</a> 		<strong class="jxr_keyword">private</strong> ColourSpace colourspace = ColourSpace.RGB;
+<a class="jxr_linenumber" name="670" href="#670">670</a> 
+<a class="jxr_linenumber" name="671" href="#671">671</a> 		PyramidColourDenseSiftMode(<a href="../../../../../org/openimaj/tools/localfeature/options/LocalFeatureMode.html">LocalFeatureMode</a> mode) {
+<a class="jxr_linenumber" name="672" href="#672">672</a> 			<strong class="jxr_keyword">super</strong>(mode);
+<a class="jxr_linenumber" name="673" href="#673">673</a> 		}
+<a class="jxr_linenumber" name="674" href="#674">674</a> 
+<a class="jxr_linenumber" name="675" href="#675">675</a> 		@Override
+<a class="jxr_linenumber" name="676" href="#676">676</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extract(byte[] image) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="677" href="#677">677</a> 			<strong class="jxr_keyword">return</strong> extractFeature(ImageUtilities.readMBF(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(image)));
+<a class="jxr_linenumber" name="678" href="#678">678</a> 		}
+<a class="jxr_linenumber" name="679" href="#679">679</a> 
+<a class="jxr_linenumber" name="680" href="#680">680</a> 		@Override
+<a class="jxr_linenumber" name="681" href="#681">681</a> 		<strong class="jxr_keyword">public</strong> LocalFeatureList&lt;? <strong class="jxr_keyword">extends</strong> LocalFeature&lt;?, ?&gt;&gt; extractFeature(MBFImage image) {
+<a class="jxr_linenumber" name="682" href="#682">682</a> 			image = (MBFImage) <strong class="jxr_keyword">this</strong>.itOp.transform(image);
+<a class="jxr_linenumber" name="683" href="#683">683</a> 
+<a class="jxr_linenumber" name="684" href="#684">684</a> 			<strong class="jxr_keyword">final</strong> PyramidDenseSIFT&lt;MBFImage&gt; dsift;
+<a class="jxr_linenumber" name="685" href="#685">685</a> 
+<a class="jxr_linenumber" name="686" href="#686">686</a> 			<strong class="jxr_keyword">if</strong> (approximate)
+<a class="jxr_linenumber" name="687" href="#687">687</a> 				dsift = <strong class="jxr_keyword">new</strong> PyramidDenseSIFT&lt;MBFImage&gt;(<strong class="jxr_keyword">new</strong> ColourDenseSIFT(<strong class="jxr_keyword">new</strong> ApproximateDenseSIFT(stepX, stepY, 1, 1,
+<a class="jxr_linenumber" name="688" href="#688">688</a> 						numBinsX,
+<a class="jxr_linenumber" name="689" href="#689">689</a> 						numBinsY, numOriBins,
+<a class="jxr_linenumber" name="690" href="#690">690</a> 						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, toArray(sizes));
+<a class="jxr_linenumber" name="691" href="#691">691</a> 			<strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="692" href="#692">692</a> 				dsift = <strong class="jxr_keyword">new</strong> PyramidDenseSIFT&lt;MBFImage&gt;(<strong class="jxr_keyword">new</strong> ColourDenseSIFT(<strong class="jxr_keyword">new</strong> DenseSIFT(stepX, stepY, 1, 1, numBinsX,
+<a class="jxr_linenumber" name="693" href="#693">693</a> 						numBinsY,
+<a class="jxr_linenumber" name="694" href="#694">694</a> 						numOriBins,
+<a class="jxr_linenumber" name="695" href="#695">695</a> 						gaussianWindowSize, valueThreshold), colourspace), magnificationFactor, toArray(sizes));
+<a class="jxr_linenumber" name="696" href="#696">696</a> 
+<a class="jxr_linenumber" name="697" href="#697">697</a> 			dsift.analyseImage(image);
+<a class="jxr_linenumber" name="698" href="#698">698</a> 
+<a class="jxr_linenumber" name="699" href="#699">699</a> 			<strong class="jxr_keyword">if</strong> (contrastThreshold &lt;= 0) {
+<a class="jxr_linenumber" name="700" href="#700">700</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="701" href="#701">701</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints();
+<a class="jxr_linenumber" name="702" href="#702">702</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints();
+<a class="jxr_linenumber" name="703" href="#703">703</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="704" href="#704">704</a> 				<strong class="jxr_keyword">if</strong> (byteFeatures)
+<a class="jxr_linenumber" name="705" href="#705">705</a> 					<strong class="jxr_keyword">return</strong> dsift.getByteKeypoints(contrastThreshold);
+<a class="jxr_linenumber" name="706" href="#706">706</a> 				<strong class="jxr_keyword">return</strong> dsift.getFloatKeypoints(contrastThreshold);
+<a class="jxr_linenumber" name="707" href="#707">707</a> 			}
+<a class="jxr_linenumber" name="708" href="#708">708</a> 		}
+<a class="jxr_linenumber" name="709" href="#709">709</a> 	}
+<a class="jxr_linenumber" name="710" href="#710">710</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
+
