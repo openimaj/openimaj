@@ -43,13 +43,13 @@
 <a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">import</strong> java.io.ByteArrayOutputStream;
 <a class="jxr_linenumber" name="34" href="#34">34</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
-<a class="jxr_linenumber" name="36" href="#36">36</a>  <strong class="jxr_keyword">import</strong> java.net.MalformedURLException;
-<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> java.net.URISyntaxException;
-<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> java.net.URL;
-<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> java.util.regex.Matcher;
-<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> java.util.regex.Pattern;
-<a class="jxr_linenumber" name="41" href="#41">41</a>  
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.httpclient.util.HttpURLConnection;
+<a class="jxr_linenumber" name="36" href="#36">36</a>  <strong class="jxr_keyword">import</strong> java.net.HttpURLConnection;
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> java.net.MalformedURLException;
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> java.net.URISyntaxException;
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> java.net.URL;
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> java.util.regex.Matcher;
+<a class="jxr_linenumber" name="41" href="#41">41</a>  <strong class="jxr_keyword">import</strong> java.util.regex.Pattern;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  
 <a class="jxr_linenumber" name="43" href="#43">43</a>  <strong class="jxr_keyword">import</strong> org.apache.http.Header;
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.apache.http.HttpEntity;
 <a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.apache.http.HttpHost;
@@ -137,7 +137,7 @@
 <a class="jxr_linenumber" name="127" href="#127">127</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="128" href="#128">128</a> <em class="jxr_javadoccomment">	 * A {@link RedirectStrategy} that can deal with meta-refresh style</em>
 <a class="jxr_linenumber" name="129" href="#129">129</a> <em class="jxr_javadoccomment">	 * redirection</em>
-<a class="jxr_linenumber" name="130" href="#130">130</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="130" href="#130">130</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="131" href="#131">131</a> <em class="jxr_javadoccomment">	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="132" href="#132">132</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="133" href="#133">133</a> <em class="jxr_javadoccomment">	 */</em>
@@ -228,10 +228,10 @@
 <a class="jxr_linenumber" name="218" href="#218">218</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="219" href="#219">219</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> IndependentPair&lt;HttpEntity, ByteArrayInputStream&gt; readURLAsByteArrayInputStream(URL u,
 <a class="jxr_linenumber" name="220" href="#220">220</a> 			<strong class="jxr_keyword">boolean</strong> followRedirects) <strong class="jxr_keyword">throws</strong> IOException
-<a class="jxr_linenumber" name="221" href="#221">221</a> 			{
+<a class="jxr_linenumber" name="221" href="#221">221</a> 	{
 <a class="jxr_linenumber" name="222" href="#222">222</a> 		<strong class="jxr_keyword">return</strong> readURLAsByteArrayInputStream(u, 15000, 15000, followRedirects ? <strong class="jxr_keyword">new</strong> <a href="../../../org/openimaj/io/HttpUtils.html">MetaRefreshRedirectStrategy</a>() : <strong class="jxr_keyword">null</strong>,
 <a class="jxr_linenumber" name="223" href="#223">223</a> 				DEFAULT_USERAGENT);
-<a class="jxr_linenumber" name="224" href="#224">224</a> 			}
+<a class="jxr_linenumber" name="224" href="#224">224</a> 	}
 <a class="jxr_linenumber" name="225" href="#225">225</a> 
 <a class="jxr_linenumber" name="226" href="#226">226</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="227" href="#227">227</a> <em class="jxr_javadoccomment">	 * Read the contents of the given {@link URL} as a</em>
@@ -251,9 +251,9 @@
 <a class="jxr_linenumber" name="241" href="#241">241</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="242" href="#242">242</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> IndependentPair&lt;HttpEntity, ByteArrayInputStream&gt; readURLAsByteArrayInputStream(URL u,
 <a class="jxr_linenumber" name="243" href="#243">243</a> 			RedirectStrategy strategy) <strong class="jxr_keyword">throws</strong> IOException
-<a class="jxr_linenumber" name="244" href="#244">244</a> 			{
+<a class="jxr_linenumber" name="244" href="#244">244</a> 	{
 <a class="jxr_linenumber" name="245" href="#245">245</a> 		<strong class="jxr_keyword">return</strong> readURLAsByteArrayInputStream(u, 15000, 15000, strategy, DEFAULT_USERAGENT);
-<a class="jxr_linenumber" name="246" href="#246">246</a> 			}
+<a class="jxr_linenumber" name="246" href="#246">246</a> 	}
 <a class="jxr_linenumber" name="247" href="#247">247</a> 
 <a class="jxr_linenumber" name="248" href="#248">248</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="249" href="#249">249</a> <em class="jxr_javadoccomment">	 * Read the contents of the given {@link URL} as a</em>
@@ -279,8 +279,8 @@
 <a class="jxr_linenumber" name="269" href="#269">269</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="270" href="#270">270</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> IndependentPair&lt;HttpEntity, ByteArrayInputStream&gt; readURLAsByteArrayInputStream(URL url,
 <a class="jxr_linenumber" name="271" href="#271">271</a> 			<strong class="jxr_keyword">int</strong> connectionTimeout, <strong class="jxr_keyword">int</strong> readTimeout, RedirectStrategy redirectStrategy, String userAgent)
-<a class="jxr_linenumber" name="272" href="#272">272</a> 					<strong class="jxr_keyword">throws</strong> IOException
-<a class="jxr_linenumber" name="273" href="#273">273</a> 					{
+<a class="jxr_linenumber" name="272" href="#272">272</a> 			<strong class="jxr_keyword">throws</strong> IOException
+<a class="jxr_linenumber" name="273" href="#273">273</a> 	{
 <a class="jxr_linenumber" name="274" href="#274">274</a> 		DefaultHttpClient c = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="275" href="#275">275</a> 		<strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="276" href="#276">276</a> 			<strong class="jxr_keyword">final</strong> HttpParams params = <strong class="jxr_keyword">new</strong> BasicHttpParams();
@@ -321,7 +321,7 @@
 <a class="jxr_linenumber" name="311" href="#311">311</a> 				c.getConnectionManager().shutdown();
 <a class="jxr_linenumber" name="312" href="#312">312</a> 		}
 <a class="jxr_linenumber" name="313" href="#313">313</a> 
-<a class="jxr_linenumber" name="314" href="#314">314</a> 					}
+<a class="jxr_linenumber" name="314" href="#314">314</a> 	}
 <a class="jxr_linenumber" name="315" href="#315">315</a> 
 <a class="jxr_linenumber" name="316" href="#316">316</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="317" href="#317">317</a> <em class="jxr_javadoccomment">	 * Open an {@link HttpURLConnection} to the {@link URL} as an array of</em>
@@ -522,3 +522,4 @@
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
+
