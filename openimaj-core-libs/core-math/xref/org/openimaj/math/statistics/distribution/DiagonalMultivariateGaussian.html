@@ -51,7 +51,7 @@
 <a class="jxr_linenumber" name="41" href="#41">41</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment"> * Implementation of a {@link MultivariateGaussian} with a diagonal covariance</em>
 <a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * matrix.</em>
-<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)</em>
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/math/statistics/distribution/DiagonalMultivariateGaussian.html">DiagonalMultivariateGaussian</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/math/statistics/distribution/AbstractMultivariateGaussian.html">AbstractMultivariateGaussian</a> {
@@ -62,7 +62,7 @@
 <a class="jxr_linenumber" name="52" href="#52">52</a>  
 <a class="jxr_linenumber" name="53" href="#53">53</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment">	 * Construct the Gaussian with the provided center and covariance</em>
-<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment">	 * @param mean</em>
 <a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">	 *            centre of the Gaussian</em>
 <a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">	 * @param variance</em>
@@ -75,7 +75,7 @@
 <a class="jxr_linenumber" name="65" href="#65">65</a>  
 <a class="jxr_linenumber" name="66" href="#66">66</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment">	 * Construct the Gaussian with the zero mean and unit variance</em>
-<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment">	 * @param ndims</em>
 <a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment">	 *            number of dimensions</em>
 <a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment">	 */</em>
@@ -124,10 +124,10 @@
 <a class="jxr_linenumber" name="114" href="#114">114</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> N = <strong class="jxr_keyword">this</strong>.variance.length;
 <a class="jxr_linenumber" name="115" href="#115">115</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong>[] meanvector = mean.getArray()[0];
 <a class="jxr_linenumber" name="116" href="#116">116</a> 
-<a class="jxr_linenumber" name="117" href="#117">117</a> 		<strong class="jxr_keyword">double</strong> det = variance[0];
+<a class="jxr_linenumber" name="117" href="#117">117</a> 		<strong class="jxr_keyword">double</strong> log_sqrt_det = Math.log(Math.sqrt(variance[0]));
 <a class="jxr_linenumber" name="118" href="#118">118</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt; N; i++)
-<a class="jxr_linenumber" name="119" href="#119">119</a> 			det *= variance[i];
-<a class="jxr_linenumber" name="120" href="#120">120</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> pdf_<strong class="jxr_keyword">const</strong>_factor = 1.0 / Math.sqrt((Math.pow((2 * Math.PI), N) * det));
+<a class="jxr_linenumber" name="119" href="#119">119</a> 			log_sqrt_det += Math.log(Math.sqrt(variance[i]));
+<a class="jxr_linenumber" name="120" href="#120">120</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> log_pdf_<strong class="jxr_keyword">const</strong>_factor = -Math.log(Math.sqrt((Math.pow((2 * Math.PI), N)))) - log_sqrt_det;
 <a class="jxr_linenumber" name="121" href="#121">121</a> 
 <a class="jxr_linenumber" name="122" href="#122">122</a> 		<strong class="jxr_keyword">double</strong> v = 0;
 <a class="jxr_linenumber" name="123" href="#123">123</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; N; i++) {
@@ -135,7 +135,7 @@
 <a class="jxr_linenumber" name="125" href="#125">125</a> 			v += diff * diff / variance[i];
 <a class="jxr_linenumber" name="126" href="#126">126</a> 		}
 <a class="jxr_linenumber" name="127" href="#127">127</a> 
-<a class="jxr_linenumber" name="128" href="#128">128</a> 		<strong class="jxr_keyword">return</strong> Math.log(pdf_<strong class="jxr_keyword">const</strong>_factor) + (-0.5 * v);
+<a class="jxr_linenumber" name="128" href="#128">128</a> 		<strong class="jxr_keyword">return</strong> log_pdf_<strong class="jxr_keyword">const</strong>_factor + (-0.5 * v);
 <a class="jxr_linenumber" name="129" href="#129">129</a> 	}
 <a class="jxr_linenumber" name="130" href="#130">130</a> 
 <a class="jxr_linenumber" name="131" href="#131">131</a> 	@Override
@@ -143,10 +143,10 @@
 <a class="jxr_linenumber" name="133" href="#133">133</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> N = <strong class="jxr_keyword">this</strong>.variance.length;
 <a class="jxr_linenumber" name="134" href="#134">134</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong>[] meanvector = mean.getArray()[0];
 <a class="jxr_linenumber" name="135" href="#135">135</a> 
-<a class="jxr_linenumber" name="136" href="#136">136</a> 		<strong class="jxr_keyword">double</strong> det = variance[0];
+<a class="jxr_linenumber" name="136" href="#136">136</a> 		<strong class="jxr_keyword">double</strong> log_sqrt_det = Math.log(Math.sqrt(variance[0]));
 <a class="jxr_linenumber" name="137" href="#137">137</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt; N; i++)
-<a class="jxr_linenumber" name="138" href="#138">138</a> 			det *= variance[i];
-<a class="jxr_linenumber" name="139" href="#139">139</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> pdf_<strong class="jxr_keyword">const</strong>_factor = 1.0 / Math.sqrt((Math.pow((2 * Math.PI), N) * det));
+<a class="jxr_linenumber" name="138" href="#138">138</a> 			log_sqrt_det += Math.log(Math.sqrt(variance[i]));
+<a class="jxr_linenumber" name="139" href="#139">139</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> log_pdf_<strong class="jxr_keyword">const</strong>_factor = -Math.log(Math.sqrt((Math.pow((2 * Math.PI), N)))) - log_sqrt_det;
 <a class="jxr_linenumber" name="140" href="#140">140</a> 
 <a class="jxr_linenumber" name="141" href="#141">141</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong>[] lp = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[samples.length];
 <a class="jxr_linenumber" name="142" href="#142">142</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; samples.length; j++) {
@@ -155,7 +155,7 @@
 <a class="jxr_linenumber" name="145" href="#145">145</a> 				<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> diff = samples[j][i] - meanvector[i];
 <a class="jxr_linenumber" name="146" href="#146">146</a> 				v += diff * diff / variance[i];
 <a class="jxr_linenumber" name="147" href="#147">147</a> 			}
-<a class="jxr_linenumber" name="148" href="#148">148</a> 			lp[j] = Math.log(pdf_<strong class="jxr_keyword">const</strong>_factor) + (-0.5 * v);
+<a class="jxr_linenumber" name="148" href="#148">148</a> 			lp[j] = log_pdf_<strong class="jxr_keyword">const</strong>_factor + (-0.5 * v);
 <a class="jxr_linenumber" name="149" href="#149">149</a> 		}
 <a class="jxr_linenumber" name="150" href="#150">150</a> 
 <a class="jxr_linenumber" name="151" href="#151">151</a> 		<strong class="jxr_keyword">return</strong> lp;
@@ -186,3 +186,4 @@
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
+
