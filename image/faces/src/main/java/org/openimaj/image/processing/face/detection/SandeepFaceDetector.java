@@ -56,12 +56,12 @@ import org.openimaj.image.processor.connectedcomponent.render.OrientatedBounding
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- * Implementation of a face detector along the lines of
- * "Human Face Detection in Cluttered Color Images Using Skin Color and Edge Information"
- * K. Sandeep and A. N. Rajagopalan (IIT/Madras)
- * 
+ * Implementation of a face detector along the lines of "Human Face Detection in
+ * Cluttered Color Images Using Skin Color and Edge Information" K. Sandeep and
+ * A. N. Rajagopalan (IIT/Madras)
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 @Reference(
 		type = ReferenceType.Article,
@@ -100,10 +100,11 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 				skinModel = new HistogramPixelModel(16, 6);
 				final MBFImage rgb = ImageUtilities.readMBF(this.getClass().getResourceAsStream("skin.png"));
 				skinModel.learnModel(Transforms.RGB_TO_HS(rgb));
-				// ObjectOutputStream oos = new ObjectOutputStream(new
-				// FileOutputStream(new
-				// File("D:\\Programming\\skin-histogram-16-6.bin")));
+				// final ObjectOutputStream oos = new ObjectOutputStream(new
+				// FileOutputStream(new File(
+				// "src/main/resources" + DEFAULT_MODEL)));
 				// oos.writeObject(skinModel);
+				// oos.close();
 			} else {
 				// Load in the skin model
 				final ObjectInputStream ois = new ObjectInputStream(this.getClass().getResourceAsStream(DEFAULT_MODEL));
@@ -117,7 +118,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 
 	/**
 	 * Construct the detector with the given pixel classification model.
-	 * 
+	 *
 	 * @param skinModel
 	 *            the underlying classification model.
 	 */
@@ -141,7 +142,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 
 	protected FImage generateFaceMap(FImage skin, FImage edge) {
 		for (int y = 0; y < skin.height; y++) {
-			for (int x = 0; x < skin.height; x++) {
+			for (int x = 0; x < skin.width; x++) {
 
 				if (edge.pixels[y][x] != 0 && skin.pixels[y][x] != 0)
 					skin.pixels[y][x] = 1f;
@@ -176,7 +177,8 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 							r,
 							image.extractROI(r),
 							blob,
-							(float) ((percentageSkin / percentageThreshold) * (Math.abs(ratio - GOLDEN_RATIO) / goldenRatioThreshold))));
+							(float) ((percentageSkin / percentageThreshold)
+									* (Math.abs(ratio - GOLDEN_RATIO) / goldenRatioThreshold))));
 				}
 			}
 		}
@@ -223,7 +225,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 
 	/**
 	 * Set the underlying skin-tone classifier
-	 * 
+	 *
 	 * @param skinModel
 	 */
 	public void setSkinModel(MBFPixelClassificationModel skinModel) {
@@ -239,7 +241,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 
 	/**
 	 * Set the detection threshold.
-	 * 
+	 *
 	 * @param skinThreshold
 	 */
 	public void setSkinThreshold(float skinThreshold) {
@@ -255,7 +257,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 
 	/**
 	 * Set the edge threshold.
-	 * 
+	 *
 	 * @param edgeThreshold
 	 */
 	public void setEdgeThreshold(float edgeThreshold) {
@@ -271,7 +273,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 
 	/**
 	 * Set the percentage threshold
-	 * 
+	 *
 	 * @param percentageThreshold
 	 */
 	public void setPercentageThreshold(float percentageThreshold) {
@@ -280,7 +282,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 
 	/**
 	 * Run the face detector following the conventions of the ocv detector
-	 * 
+	 *
 	 * @param args
 	 * @throws IOException
 	 */
@@ -317,11 +319,10 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 		for (final CCDetectedFace f : faces) {
 			System.out.format("%s, %d, %d, %d, %d\n",
 					"uk.ac.soton.ecs.jsh2.image.proc.tools.face.detection.skin-histogram-16-6.bin",
-					f.bounds.x,
-					f.bounds.y,
-					f.bounds.width,
-					f.bounds.height
-					);
+					(int) f.bounds.x,
+					(int) f.bounds.y,
+					(int) f.bounds.width,
+					(int) f.bounds.height);
 		}
 	}
 
