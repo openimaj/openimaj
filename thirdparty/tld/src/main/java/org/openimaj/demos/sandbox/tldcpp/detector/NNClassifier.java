@@ -14,19 +14,19 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * confidence that a given patch is positive. This is calculated using the
  * correlation between the new patch and the false positive and falst negatives
  * such that:
- * 
+ *
  * confidence = dP / (dN + dP)
- * 
+ *
  * and dP = max(corr(patch,truePositives)) dP = max(corr(patch,falsePositives))
- * 
+ *
  * if no true positives have been seen, classify will always return 0 if not
  * false positives have been seen, classify will always return 1
- * 
+ *
  * classify is used by filter such that if the confidence of a patch is larger
  * than {@link #thetaTP} the patch is though to be a good patch for the object.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class NNClassifier {
 	/**
@@ -70,7 +70,7 @@ public class NNClassifier {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param f1
 	 * @param f2
 	 * @return correlation between two patches (assumed to be the same size)
@@ -83,7 +83,7 @@ public class NNClassifier {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param patch
 	 * @return The confidence that a given patch is a postive
 	 */
@@ -144,7 +144,7 @@ public class NNClassifier {
 		patch.source = img;
 		// here we reuse the scales images as the patch of the right
 		// width/height and just write into it.
-		patch.normalisedPatch = patch.zoomAndNormaliseTo(NormalizedPatch.SLUT_WORKSPACE);
+		patch.normalisedPatch = patch.zoomAndNormaliseTo(NormalizedPatch.WORKSPACE);
 
 		return classifyPatch(patch);
 	}
@@ -174,7 +174,7 @@ public class NNClassifier {
 	 * to the true positives If the patch is said to be negative and has a
 	 * confidence higher than {@link #thetaFP} add the patch to the false
 	 * positives
-	 * 
+	 *
 	 * @param patches
 	 */
 	public void learn(List<NormalizedPatch> patches) {
@@ -186,7 +186,7 @@ public class NNClassifier {
 			// etc yet!
 			// it uses the prepared windows, so a held scale patch can be used
 			if (!patch.positive) {
-				patch.normalisedPatch = patch.zoomAndNormaliseTo(NormalizedPatch.SLUT_WORKSPACE);
+				patch.normalisedPatch = patch.zoomAndNormaliseTo(NormalizedPatch.WORKSPACE);
 			}
 
 			final float conf = classifyPatch(patch);
@@ -196,9 +196,10 @@ public class NNClassifier {
 			}
 
 			if (!patch.positive && conf >= thetaFP) {
-				// We must handle the SLUT_WORKSPACE!
-				// If we're negative we are using the slut, if we're planning to
-				// keep this negative we must NOW clone the slut
+				// We must handle the WORKSPACE!
+				// If we're negative we are using the workspace, if we're
+				// planning to keep this negative we must NOW clone the
+				// workspace
 				patch.normalisedPatch = patch.normalisedPatch.clone();
 				falsePositives.add(patch);
 			}

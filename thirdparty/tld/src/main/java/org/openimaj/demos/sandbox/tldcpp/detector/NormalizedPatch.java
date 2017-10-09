@@ -10,9 +10,9 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * Defines a intensity normalised patch extracted from an image. Allowances are
  * made for reuse of patches
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class NormalizedPatch {
 	private final static MeanCenter msp = new MeanCenter();
@@ -23,10 +23,9 @@ public class NormalizedPatch {
 	private static final ResizeFilterFunction filter = TriangleFilter.INSTANCE;
 
 	/**
-	 * The slut workspace gets around a little bit. Use the slut workspace but
-	 * don't expect it to be yours for long.
+	 * The workspace
 	 */
-	public static final FImage SLUT_WORKSPACE = new FImage(TLD_PATCH_SIZE, TLD_PATCH_SIZE);
+	public static final FImage WORKSPACE = new FImage(TLD_PATCH_SIZE, TLD_PATCH_SIZE);
 	/**
 	 * Is this patch positive, i.e. representative of the object
 	 */
@@ -40,7 +39,7 @@ public class NormalizedPatch {
 	 */
 	public Rectangle window;
 	/**
-	 * The extracted patch, might be null, might be the SLUT_WORKSPACE.
+	 * The extracted patch, might be null, might be the WORKSPACE.
 	 */
 	public FImage normalisedPatch;
 
@@ -49,10 +48,10 @@ public class NormalizedPatch {
 	 * {@link ResizeProcessor#zoom(FImage, Rectangle, FImage, Rectangle, ResizeFilterFunction)}
 	 * on a to put {@link NormalizedPatch#window} form
 	 * {@link NormalizedPatch#source} into normalisedPatch.
-	 * 
+	 *
 	 * This is not a convenient function but it allows for very efficient
 	 * resize/normalisation process (with minimal new stuff constructed)
-	 * 
+	 *
 	 * @param holder
 	 * @return the holder as a convenience
 	 */
@@ -63,7 +62,7 @@ public class NormalizedPatch {
 
 	/**
 	 * calculate the variance, sets the valueImg if it is null
-	 * 
+	 *
 	 * @return an inefficient way to calculate variance of this window, a new
 	 *         image is constructed!
 	 */
