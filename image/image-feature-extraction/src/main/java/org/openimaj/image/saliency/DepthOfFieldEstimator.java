@@ -132,8 +132,8 @@ public class DepthOfFieldEstimator implements SaliencyMapGenerator<FImage> {
 			FImage dx = blurred.process(DX_FILTER);
 			FImage dy = blurred.process(DY_FILTER);
 			
-			makeLogHistogram(xHistograms[i], dx);
-			makeLogHistogram(yHistograms[i], dy);
+			makeLogHistogram(xHistograms[i/kernelSizeStep], dx);
+			makeLogHistogram(yHistograms[i/kernelSizeStep], dy);
 		}
 		
 		FImage dx = image.process(DX_FILTER);
