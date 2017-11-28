@@ -37,7 +37,7 @@ import org.openimaj.util.api.auth.Token;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-@Token(name = "Bing Search API", url = "http://datamarket.azure.com/dataset/bing/search")
+@Token(name = "Bing Search API", url = "http://azure.microsoft.com/en-us/services/cognitive-services/directory/search/")
 public class BingAPIToken {
 	/**
 	 * The account key

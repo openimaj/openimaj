@@ -443,7 +443,7 @@ public class BingImageDataset<IMAGE extends Image<?, IMAGE>> extends ReadableLis
 		}
 
 		public URI buildURI() throws URISyntaxException {
-			final URIBuilder builder = new URIBuilder("https://api.cognitive.microsoft.com/bing/v5.0/images/search");
+			final URIBuilder builder = new URIBuilder("https://api.cognitive.microsoft.com/bing/v7.0/images/search");
 
 			builder.setParameter("q", query);
 			builder.setParameter("count", count + "");
