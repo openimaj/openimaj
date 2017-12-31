@@ -356,9 +356,9 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 		for (int i = 0, y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				final int blue = bytes[i++] & 0xff;
-				final int green = (bytes[i++]) & 0xff;
 				final int red = (bytes[i++]) & 0xff;
+				final int green = (bytes[i++]) & 0xff;
+				final int blue = bytes[i++] & 0xff;
 				br[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
 				bg[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
 				bb[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
@@ -572,14 +572,12 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	}
 
 	@Override
-	public MBFImage fill(final Float[] colour)
-	{
+	public MBFImage fill(final Float[] colour) {
 		return super.fill(this.colourSpace.sanitise(colour));
 	}
 
 	@Override
-	public void setPixel(final int x, final int y, final Float[] val)
-	{
+	public void setPixel(final int x, final int y, final Float[] val) {
 		// Check if we have an alpha channel. If we do, we'll use alpha
 		// compositing, otherwise, we'll simply copy the pixel colour into
 		// the pixel position.
@@ -592,8 +590,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 			this.getBand(2).pixels[y][x] = p[2];
 			if (this.numBands() >= 4)
 				this.getBand(3).pixels[y][x] = p[3];
-		}
-		else
+		} else
 			super.setPixel(x, y, val);
 	}
 
@@ -607,8 +604,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 *
 	 * @return the pixels of the image as a vector (array) of doubles.
 	 */
-	public double[] getDoublePixelVector()
-	{
+	public double[] getDoublePixelVector() {
 		final int height = getHeight();
 		final int width = getWidth();
 		final double f[] = new double[width * height * this.numBands()];
