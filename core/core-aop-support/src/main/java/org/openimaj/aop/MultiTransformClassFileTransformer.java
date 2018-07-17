@@ -36,29 +36,30 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
 import javassist.Translator;
 
-import org.apache.log4j.Logger;
-
 /**
  * A {@link ClassFileTransformer} that applies one or more
  * {@link ClassTransformer}s to a class before it is loaded.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class MultiTransformClassFileTransformer implements ClassFileTransformer, Translator {
-	private static Logger logger = Logger.getLogger(MultiTransformClassFileTransformer.class);
+	private static Logger logger = LogManager.getLogger(MultiTransformClassFileTransformer.class);
 
 	private ClassPool classPool;
 	private List<ClassTransformer> transformers = new ArrayList<ClassTransformer>();
 
 	/**
 	 * Construct with the given {@link ClassTransformer}s.
-	 * 
+	 *
 	 * @param t1
 	 *            the first transformer
 	 * @param transformers
@@ -80,7 +81,7 @@ public class MultiTransformClassFileTransformer implements ClassFileTransformer,
 
 	/**
 	 * Transform the given class.
-	 * 
+	 *
 	 * @param className
 	 *            the name of the class
 	 * @param classfileBuffer

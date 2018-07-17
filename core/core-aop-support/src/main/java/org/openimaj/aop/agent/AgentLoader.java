@@ -48,26 +48,27 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
- * Dynamic agent loader. Provides methods to extract an agent jar with
- * a specific agent class, and to attempt to dynamically load agents
- * on Oracle JVMs (including OpenJDK). Dynamic loading won't work on
- * all JVMs (i.e. IBMs), but the standard "-javaagent" commandline option
- * can be used instead. If dynamic loading fails, instructions on using 
- * the command line flag will be printed to stderr.
- * 
+ * Dynamic agent loader. Provides methods to extract an agent jar with a
+ * specific agent class, and to attempt to dynamically load agents on Oracle
+ * JVMs (including OpenJDK). Dynamic loading won't work on all JVMs (i.e. IBMs),
+ * but the standard "-javaagent" commandline option can be used instead. If
+ * dynamic loading fails, instructions on using the command line flag will be
+ * printed to stderr.
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class AgentLoader {
-	private static final Logger logger = Logger.getLogger(AgentLoader.class);
-	private static final String VMCLASS = "com.sun.tools.attach.VirtualMachine"; 
+	private static final Logger logger = LogManager.getLogger(AgentLoader.class);
+	private static final String VMCLASS = "com.sun.tools.attach.VirtualMachine";
 
 	private static long copy(InputStream input, OutputStream output) throws IOException {
 		long count = 0;
 		int n = 0;
-		byte[] buffer = new byte[4096];
+		final byte[] buffer = new byte[4096];
 
 		while (-1 != (n = input.read(buffer))) {
 			output.write(buffer, 0, n);
@@ -78,20 +79,20 @@ public class AgentLoader {
 	}
 
 	private static byte[] createManifest(Class<?> agentClass) {
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 
 		try {
 			agentClass.getDeclaredMethod("premain", String.class, Instrumentation.class);
-			sb.append("Premain-Class: "+ agentClass.getName() + "\n");
-		} catch (NoSuchMethodException e) { 
-			//IGNORE//
+			sb.append("Premain-Class: " + agentClass.getName() + "\n");
+		} catch (final NoSuchMethodException e) {
+			// IGNORE//
 		}
 
 		try {
 			agentClass.getDeclaredMethod("agentmain", String.class, Instrumentation.class);
-			sb.append("Agent-Class: "+ agentClass.getName() + "\n");
-		} catch (NoSuchMethodException e) { 
-			//IGNORE//
+			sb.append("Agent-Class: " + agentClass.getName() + "\n");
+		} catch (final NoSuchMethodException e) {
+			// IGNORE//
 		}
 
 		sb.append("Can-Redefine-Classes: true\n");
@@ -99,25 +100,29 @@ public class AgentLoader {
 
 		try {
 			return sb.toString().getBytes("US-ASCII");
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			throw new RuntimeException("Charset US-ASCII isn't supported!! This should never happen.");
 		}
 	}
 
 	/**
 	 * Create an agent jar file with the required manifest entries.
-	 * 
-	 * @param file the location to create the jar
-	 * @param agentClass the agent class
-	 * @throws IOException if an error occurs
+	 *
+	 * @param file
+	 *            the location to create the jar
+	 * @param agentClass
+	 *            the agent class
+	 * @throws IOException
+	 *             if an error occurs
 	 */
 	public static void createAgentJar(File file, Class<?> agentClass) throws IOException {
-		JarOutputStream jos = new JarOutputStream(new FileOutputStream(file));
+		final JarOutputStream jos = new JarOutputStream(new FileOutputStream(file));
 
 		String classEntryPath = agentClass.getName().replace(".", "/") + ".class";
-		InputStream classStream = agentClass.getClassLoader().getResourceAsStream(classEntryPath);
+		final InputStream classStream = agentClass.getClassLoader().getResourceAsStream(classEntryPath);
 
-		if (classEntryPath.startsWith("/")) classEntryPath = classEntryPath.substring(1);
+		if (classEntryPath.startsWith("/"))
+			classEntryPath = classEntryPath.substring(1);
 
 		JarEntry entry = new JarEntry(classEntryPath);
 		jos.putNextEntry(entry);
@@ -136,18 +141,18 @@ public class AgentLoader {
 	 * Attempt to locate potential "tools.jar" jars
 	 */
 	private static List<File> getPotentialToolsJars() {
-		List<File> jars = new ArrayList<File>();
+		final List<File> jars = new ArrayList<File>();
 
-		File javaHome = new File(System.getProperty("java.home"));
+		final File javaHome = new File(System.getProperty("java.home"));
 
-		File jreSourced = new File(javaHome, "lib/tools.jar");
+		final File jreSourced = new File(javaHome, "lib/tools.jar");
 		if (jreSourced.exists()) {
 			jars.add(jreSourced);
 		}
 
 		if ("jre".equals(javaHome.getName())) {
-			File jdkHome = new File(javaHome, "../");
-			File jdkSourced = new File(jdkHome, "lib/tools.jar");
+			final File jdkHome = new File(javaHome, "../");
+			final File jdkSourced = new File(jdkHome, "lib/tools.jar");
 			if (jdkSourced.exists()) {
 				jars.add(jdkSourced);
 			}
@@ -166,20 +171,20 @@ public class AgentLoader {
 				public Class<?> run() throws Exception {
 					try {
 						return ClassLoader.getSystemClassLoader().loadClass(VMCLASS);
-					} catch (ClassNotFoundException e) {
-						for (File jar : getPotentialToolsJars()) {
+					} catch (final ClassNotFoundException e) {
+						for (final File jar : getPotentialToolsJars()) {
 							try {
-								return new URLClassLoader(new URL[] {jar.toURI().toURL()}).loadClass(VMCLASS);
-							} catch (Throwable t) {
-								logger.trace("Exception while loading tools.jar from "+ jar, t);
+								return new URLClassLoader(new URL[] { jar.toURI().toURL() }).loadClass(VMCLASS);
+							} catch (final Throwable t) {
+								logger.trace("Exception while loading tools.jar from " + jar, t);
 							}
 						}
 					}
 					return null;
 				}
 			});
-		} catch (PrivilegedActionException pae) {
-			Throwable actual = pae.getCause();
+		} catch (final PrivilegedActionException pae) {
+			final Throwable actual = pae.getCause();
 
 			if (actual instanceof ClassNotFoundException) {
 				logger.trace("No VirtualMachine found");
@@ -192,41 +197,43 @@ public class AgentLoader {
 
 	private static void loadFailed() {
 		System.err.println("Unable to load the java agent dynamically");
-		//FIXME: instructions
+		// FIXME: instructions
 	}
 
 	/**
 	 * Attempt to dynamically load the given agent class
-	 * 
-	 * @param agentClass the agent class
-	 * @throws IOException if an error occurs creating the agent jar
+	 *
+	 * @param agentClass
+	 *            the agent class
+	 * @throws IOException
+	 *             if an error occurs creating the agent jar
 	 */
 	public static void loadAgent(Class<?> agentClass) throws IOException {
-		File tmp = File.createTempFile("agent", ".jar");
+		final File tmp = File.createTempFile("agent", ".jar");
 		tmp.deleteOnExit();
 		createAgentJar(tmp, agentClass);
 
-		String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
-		int p = nameOfRunningVM.indexOf('@');
-		String pid = nameOfRunningVM.substring(0, p);
+		final String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
+		final int p = nameOfRunningVM.indexOf('@');
+		final String pid = nameOfRunningVM.substring(0, p);
 
-		Class<?> vmClass = tryGetVMClass();
+		final Class<?> vmClass = tryGetVMClass();
 
 		if (vmClass == null) {
 			loadFailed();
 		} else {
 			try {
-				Method attach = vmClass.getMethod("attach", String.class);
-				Method loadAgent = vmClass.getMethod("loadAgent", String.class);
-				Method detach = vmClass.getMethod("detach");
-				
-				Object vm = attach.invoke(null, pid);
+				final Method attach = vmClass.getMethod("attach", String.class);
+				final Method loadAgent = vmClass.getMethod("loadAgent", String.class);
+				final Method detach = vmClass.getMethod("detach");
+
+				final Object vm = attach.invoke(null, pid);
 				try {
 					loadAgent.invoke(vm, tmp.getAbsolutePath());
 				} finally {
 					detach.invoke(vm);
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				logger.warn("Loading the agent failed", e);
 				loadFailed();
 			}

@@ -37,14 +37,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Create an {@link AdjustedRandomIndexAnalysis} instance 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class AdjustedRandomIndexClusterAnalyser implements ClusterAnalyser<AdjustedRandomIndexAnalysis>{
-	final static Logger logger = Logger.getLogger(AdjustedRandomIndexAnalysis.class);
+	final static Logger logger = LogManager.getLogger(AdjustedRandomIndexAnalysis.class);
 	@Override
 	public AdjustedRandomIndexAnalysis analyse(int[][] correct, int[][] estimated) {
 		TIntLongHashMap nij = new TIntLongHashMap();

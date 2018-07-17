@@ -29,68 +29,79 @@
  */
 package org.openimaj.logger;
 
-
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Filter.Result;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.filter.ThresholdFilter;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 /**
  * Make using log4j slightly less awful
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class LoggerUtils {
 	/**
-	 * Prepare a console logger with a default layout.
-	 * This allows {@link Logger} instances to be used while
-	 * still being useful as the line to prepare logger can be removed
-	 * and the default log4j.properties will be correctly listened to.
+	 * Prepare a console logger with a default layout. This allows {@link Logger}
+	 * instances to be used while still being useful as the line to prepare logger
+	 * can be removed and the default log4j.properties will be correctly listened
+	 * to.
 	 */
-	public static void prepareConsoleLogger(){
-		  ConsoleAppender console = new ConsoleAppender(); //create appender
-		  //configure the appender
-		  String PATTERN = "%m\n";
-		  console.setLayout(new PatternLayout(PATTERN)); 
-		  console.setThreshold(Level.DEBUG);
-		  console.activateOptions();
-		  //add appender to any Logger (here is root)
-		  Logger.getRootLogger().addAppender(console);
+	public static void prepareConsoleLogger() {
+		final String PATTERN = "%m\n";
+		final PatternLayout layout = PatternLayout.newBuilder().withPattern(PATTERN).build();
+		final ThresholdFilter filter = ThresholdFilter.createFilter(Level.DEBUG, Result.ACCEPT, Result.DENY);
+
+		final ConsoleAppender console = ConsoleAppender.newBuilder().withName("default-consoleappender")
+				.withLayout(layout).withFilter(filter).build();
+
+		// add appender to any Logger (here is root)
+		final Logger root = LogManager.getRootLogger();
+		if (root instanceof org.apache.logging.log4j.core.Logger)
+			((org.apache.logging.log4j.core.Logger) root).addAppender(console);
 	}
 
 	/**
 	 * Debug message occationally
+	 *
 	 * @param logger
 	 * @param message
 	 * @param b
 	 */
 	public static void debug(Logger logger, String message, boolean b) {
-		if(b){
+		if (b) {
 			logger.debug(message);
 		}
 	}
 
 	/**
-	 * Calls {@link #format(Logger, String, Level, Object...)} with level {@link Level#DEBUG}
+	 * Calls {@link #format(Logger, String, Level, Object...)} with level
+	 * {@link Level#DEBUG}
+	 *
 	 * @param logger
 	 * @param string
 	 * @param obj
 	 */
-	public static void debugFormat(Logger logger, String string, Object ... obj) {
-		format(logger,string,Level.DEBUG,obj);
+	public static void debugFormat(Logger logger, String string, Object... obj) {
+		format(logger, string, Level.DEBUG, obj);
 	}
 
 	/**
-	 * Checks the level, if acceptable calls {@link String#format(String, Object...)} at the appropriate level
+	 * Checks the level, if acceptable calls
+	 * {@link String#format(String, Object...)} at the appropriate level
+	 *
 	 * @param logger
 	 * @param string
 	 * @param debug
 	 * @param obj
 	 */
-	public static void format(Logger logger, String string, Level debug, Object ... obj) {
-		Level l = logger.getEffectiveLevel();
-		if(debug.isGreaterOrEqual(l)){
-			logger.log(debug, String.format(string,obj));
+	public static void format(Logger logger, String string, Level debug, Object... obj) {
+		final Level l = logger.getLevel();
+		if (debug.isMoreSpecificThan(l)) {
+			logger.log(debug, String.format(string, obj));
 		}
 	}
 }

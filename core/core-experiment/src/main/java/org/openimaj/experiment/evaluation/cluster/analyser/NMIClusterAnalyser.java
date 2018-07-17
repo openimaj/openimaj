@@ -31,7 +31,9 @@ package org.openimaj.experiment.evaluation.cluster.analyser;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.logger.LoggerUtils;
 
 /**
@@ -41,7 +43,7 @@ import org.openimaj.logger.LoggerUtils;
  */
 public class NMIClusterAnalyser implements ClusterAnalyser<NMIAnalysis> {
 
-	private final static Logger logger = Logger.getLogger(NMIClusterAnalyser.class);
+	private final static Logger logger = LogManager.getLogger(NMIClusterAnalyser.class);
 
 	@Override
 	public NMIAnalysis analyse(int[][] correct, int[][] estimated) {

@@ -34,11 +34,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.linear.learner.BilinearLearnerParameters;
 
@@ -50,29 +48,29 @@ public abstract class BilinearExperiment {
 	private static final String BILL_DATA_ROOT = "%s/TrendMiner/deliverables/year2-18month/Austrian Data/";
 	private static final String BILL_DATA = "%s/data.mat";
 	
-	Logger logger = Logger.getLogger(getClass());
+	Logger logger = LogManager.getLogger(getClass());
 	private static long experimentTime = -1;
 	
 	protected void prepareExperimentLog(BilinearLearnerParameters params) throws IOException {
-		ConsoleAppender console = new ConsoleAppender(); //create appender
-		//configure the appender
-		String PATTERN = "[%p->%C{1}] %m%n";
-		console.setLayout(new PatternLayout(PATTERN)); 
-		console.setThreshold(Level.DEBUG);
-		console.activateOptions();
-	  	// add appender to any Logger (here is root)
-		Logger.getRootLogger().addAppender(console);
-		File expRoot = prepareExperimentRoot();
+		// ConsoleAppender console = new ConsoleAppender(); //create appender
+		// //configure the appender
+		// String PATTERN = "[%p->%C{1}] %m%n";
+		// console.setLayout(new PatternLayout(PATTERN)); 
+		// console.setThreshold(Level.DEBUG);
+		// console.activateOptions();
+	 //  	// add appender to any Logger (here is root)
+		// Logger.getRootLogger().addAppender(console);
+		// File expRoot = prepareExperimentRoot();
 		
-		IOUtils.write(params, new DataOutputStream(new FileOutputStream(new File(expRoot,PARAMS_DATA_NAME))));
-		IOUtils.writeASCII(new File(expRoot,PARAMS_NAME), params);
+		// IOUtils.write(params, new DataOutputStream(new FileOutputStream(new File(expRoot,PARAMS_DATA_NAME))));
+		// IOUtils.writeASCII(new File(expRoot,PARAMS_NAME), params);
 		
-		File logFile = new File(expRoot,"log");
-		if(logFile.exists())logFile.delete();
-		FileAppender file = new FileAppender(new PatternLayout(PATTERN), logFile.getAbsolutePath()); 
-		file.setThreshold(Level.DEBUG);
-		file.activateOptions();
-		Logger.getRootLogger().addAppender(file );
+		// File logFile = new File(expRoot,"log");
+		// if(logFile.exists())logFile.delete();
+		// FileAppender file = new FileAppender(new PatternLayout(PATTERN), logFile.getAbsolutePath()); 
+		// file.setThreshold(Level.DEBUG);
+		// file.activateOptions();
+		// Logger.getRootLogger().addAppender(file );
 		
 	}
 	

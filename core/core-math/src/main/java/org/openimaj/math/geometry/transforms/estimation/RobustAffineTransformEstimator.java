@@ -53,7 +53,7 @@ import org.openimaj.util.pair.IndependentPair;
  * <p>
  * Non-linear optimisation is unncessary as the algebraic and geometric
  * distances are equal in the affine case.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class RobustAffineTransformEstimator implements RobustModelFitting<Point2d, Point2d, AffineTransformModel> {
@@ -62,7 +62,7 @@ public class RobustAffineTransformEstimator implements RobustModelFitting<Point2
 	/**
 	 * Construct using the {@link LMedS} algorithm with the given expected
 	 * outlier percentage
-	 * 
+	 *
 	 * @param outlierProportion
 	 *            expected proportion of outliers (between 0 and 1)
 	 */
@@ -75,7 +75,7 @@ public class RobustAffineTransformEstimator implements RobustModelFitting<Point2
 
 	/**
 	 * Construct using the {@link RANSAC} algorithm with the given options.
-	 * 
+	 *
 	 * @param threshold
 	 *            the threshold on the {@link AlgebraicResidual2d} at which to
 	 *            consider a point as an inlier
@@ -84,8 +84,7 @@ public class RobustAffineTransformEstimator implements RobustModelFitting<Point2
 	 * @param stoppingCondition
 	 *            the {@link StoppingCondition} for RANSAC
 	 */
-	public RobustAffineTransformEstimator(double threshold, int nIterations, StoppingCondition stoppingCondition)
-	{
+	public RobustAffineTransformEstimator(double threshold, int nIterations, StoppingCondition stoppingCondition) {
 		robustFitter = new RANSAC<Point2d, Point2d, AffineTransformModel>(new AffineTransformModel(),
 				new AlgebraicResidual2d<AffineTransformModel>(), threshold, nIterations, stoppingCondition, true,
 				new BucketingSampler2d());
@@ -94,7 +93,7 @@ public class RobustAffineTransformEstimator implements RobustModelFitting<Point2
 	/**
 	 * Construct using the {@link LMedS} algorithm with the given expected
 	 * outlier percentage
-	 * 
+	 *
 	 * @param outlierProportion
 	 *            expected proportion of outliers (between 0 and 1)
 	 * @param modelCheck
@@ -109,7 +108,7 @@ public class RobustAffineTransformEstimator implements RobustModelFitting<Point2
 
 	/**
 	 * Construct using the {@link RANSAC} algorithm with the given options.
-	 * 
+	 *
 	 * @param threshold
 	 *            the threshold on the {@link AlgebraicResidual2d} at which to
 	 *            consider a point as an inlier

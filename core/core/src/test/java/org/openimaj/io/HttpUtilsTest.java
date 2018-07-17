@@ -43,7 +43,8 @@ import org.apache.http.ProtocolException;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.RedirectLocations;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 /**
@@ -53,7 +54,7 @@ import org.junit.Test;
  *
  */
 public class HttpUtilsTest {
-	protected Logger logger = Logger.getLogger(HttpUtilsTest.class);
+	protected Logger logger = LogManager.getLogger(HttpUtilsTest.class);
 
 	/**
 	 * Test that the redirection handler is working

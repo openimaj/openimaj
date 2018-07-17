@@ -29,7 +29,9 @@
  */
 package org.openimaj.ml.linear.learner.loss;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.math.matrix.CFMatrixUtils;
 
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -37,7 +39,8 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 
 public class MatSquareLossFunction extends LossFunction{
-	Logger logger = Logger.getLogger(MatSquareLossFunction.class);
+	Logger logger = LogManager.getLogger(MatSquareLossFunction.class);
+	
 	private SparseMatrixFactoryMTJ spf;
 	public MatSquareLossFunction() {
 		spf = SparseMatrixFactoryMTJ.INSTANCE;

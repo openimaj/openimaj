@@ -31,10 +31,11 @@ package org.openimaj.ml.linear.learner.loss;
 
 import gov.sandia.cognition.math.matrix.Matrix;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class SquareMissingLossFunction extends LossFunction {
-	Logger logger = Logger.getLogger(SquareMissingLossFunction.class);
+	Logger logger = LogManager.getLogger(SquareMissingLossFunction.class);
 
 	@Override
 	public Matrix gradient(Matrix W) {

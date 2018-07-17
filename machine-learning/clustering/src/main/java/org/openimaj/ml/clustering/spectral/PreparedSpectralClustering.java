@@ -31,7 +31,8 @@ package org.openimaj.ml.clustering.spectral;
 
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openimaj.ml.clustering.DataClusterer;
 import org.openimaj.ml.clustering.IndexClusters;
 import org.openimaj.ml.clustering.SpatialClusterer;
@@ -51,7 +52,7 @@ import ch.akuhn.matrix.eigenvalues.Eigenvalues;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class PreparedSpectralClustering implements DataClusterer<Eigenvalues, SpectralIndexedClusters> {
-	final static Logger logger = Logger.getLogger(PreparedSpectralClustering.class);
+	final static Logger logger = LogManager.getLogger(PreparedSpectralClustering.class);
 	private SpectralClusteringConf<double[]> conf;
 
 	/**

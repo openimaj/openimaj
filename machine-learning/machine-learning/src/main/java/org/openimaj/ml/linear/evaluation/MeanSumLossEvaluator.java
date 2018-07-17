@@ -34,7 +34,9 @@ import gov.sandia.cognition.math.matrix.mtj.SparseMatrix;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.ml.linear.learner.BilinearLearnerParameters;
 import org.openimaj.ml.linear.learner.BilinearSparseOnlineLearner;
 import org.openimaj.ml.linear.learner.loss.LossFunction;
@@ -42,7 +44,7 @@ import org.openimaj.ml.linear.learner.loss.MatLossFunction;
 import org.openimaj.util.pair.Pair;
 
 public class MeanSumLossEvaluator extends BilinearEvaluator {
-	Logger logger = Logger.getLogger(MeanSumLossEvaluator.class);
+	Logger logger = LogManager.getLogger(MeanSumLossEvaluator.class);
 
 	@Override
 	public double evaluate(List<Pair<Matrix>> data) {

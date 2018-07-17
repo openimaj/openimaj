@@ -37,7 +37,7 @@ import org.openimaj.image.ImageUtilities;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FixedResizeProcessorTest {
 	/**
@@ -50,7 +50,7 @@ public class FixedResizeProcessorTest {
 		long start, end;
 		start = System.currentTimeMillis();
 		final FixedResizeProcessor frp = new FixedResizeProcessor(image, 500, 250);
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 100; i++) {
 			image.process(frp);
 		}
 		end = System.currentTimeMillis();
@@ -58,7 +58,7 @@ public class FixedResizeProcessorTest {
 
 		final ResizeProcessor rp = new ResizeProcessor(500, 250);
 		start = System.currentTimeMillis();
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 100; i++) {
 			image.process(rp);
 		}
 		end = System.currentTimeMillis();

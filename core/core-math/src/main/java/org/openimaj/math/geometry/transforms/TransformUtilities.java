@@ -143,10 +143,8 @@ public class TransformUtilities {
 	 * @return The scaling transform.
 	 */
 	public static Matrix scaleMatrixAboutPoint(double sx, double sy, int tx, int ty) {
-		return Matrix.identity(3, 3).
-				times(translateMatrix(tx, ty)).
-				times(scaleMatrix(sx, sy)).
-				times(translateMatrix(-tx, -ty));
+		return Matrix.identity(3, 3).times(translateMatrix(tx, ty)).times(scaleMatrix(sx, sy))
+				.times(translateMatrix(-tx, -ty));
 	}
 
 	/**
@@ -161,10 +159,8 @@ public class TransformUtilities {
 	 * @return The scaling transform.
 	 */
 	public static Matrix scaleMatrixAboutPoint(double sx, double sy, Point2d point) {
-		return Matrix.identity(3, 3).
-				times(translateMatrix(point.getX(), point.getY())).
-				times(scaleMatrix(sx, sy)).
-				times(translateMatrix(-point.getX(), -point.getY()));
+		return Matrix.identity(3, 3).times(translateMatrix(point.getX(), point.getY())).times(scaleMatrix(sx, sy))
+				.times(translateMatrix(-point.getX(), -point.getY()));
 	}
 
 	/**
@@ -180,10 +176,8 @@ public class TransformUtilities {
 	 * @return The rotation matrix.
 	 */
 	public static Matrix rotationMatrixAboutPoint(double rot, float tx, float ty) {
-		return Matrix.identity(3, 3).
-				times(translateMatrix(tx, ty)).
-				times(rotationMatrix(rot)).
-				times(translateMatrix(-tx, -ty));
+		return Matrix.identity(3, 3).times(translateMatrix(tx, ty)).times(rotationMatrix(rot))
+				.times(translateMatrix(-tx, -ty));
 	}
 
 	/**
@@ -206,10 +200,9 @@ public class TransformUtilities {
 			publisher = "Croatian Mathematical Society, Division Osijek, Osijek; Faculty of Electrical Engineering, University of Osijek, Osijek",
 			pages = { "27", "34" },
 			volume = "9",
-			number = "1"
-			)
+			number = "1")
 	public static Matrix
-	affineMatrixND(double[][] q, double[][] p)
+			affineMatrixND(double[][] q, double[][] p)
 	{
 		final int dim = q[0].length;
 
@@ -268,10 +261,9 @@ public class TransformUtilities {
 			publisher = "Croatian Mathematical Society, Division Osijek, Osijek; Faculty of Electrical Engineering, University of Osijek, Osijek",
 			pages = { "27", "34" },
 			volume = "9",
-			number = "1"
-			)
+			number = "1")
 	public static Matrix
-	affineMatrixND(List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data)
+			affineMatrixND(List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data)
 	{
 		final int dim = data.get(0).firstObject().getDimensions();
 		final int nItems = data.size();
@@ -334,8 +326,7 @@ public class TransformUtilities {
 			journal = "JOURNAL OF THE OPTICAL SOCIETY AMERICA",
 			pages = { "1127", "1135" },
 			number = "7",
-			volume = "5"
-			)
+			volume = "5")
 	public static Matrix rigidMatrix(double[][] q, double[][] p) {
 		final int dim = q[0].length;
 		final int nitems = q.length;
@@ -396,8 +387,7 @@ public class TransformUtilities {
 			journal = "JOURNAL OF THE OPTICAL SOCIETY AMERICA",
 			pages = { "1127", "1135" },
 			number = "7",
-			volume = "5"
-			)
+			volume = "5")
 	public static Matrix rigidMatrix(
 			List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data)
 	{
@@ -452,7 +442,7 @@ public class TransformUtilities {
 	 *            Data to calculate affine matrix from.
 	 * @return an affine transform matrix.
 	 */
-	public static Matrix affineMatrix(List<? extends IndependentPair<Point2d, Point2d>> data) {
+	public static Matrix affineMatrix(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data) {
 		final Matrix transform = new Matrix(3, 3);
 
 		transform.set(2, 0, 0);
@@ -529,7 +519,7 @@ public class TransformUtilities {
 	 */
 	public static Pair<Matrix> getNormalisations(
 			List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data)
-			{
+	{
 		final Point2dImpl firstMean = new Point2dImpl(0, 0), secondMean = new Point2dImpl(0, 0);
 		for (final IndependentPair<? extends Point2d, ? extends Point2d> pair : data) {
 			firstMean.x += pair.firstObject().getX();
@@ -577,7 +567,7 @@ public class TransformUtilities {
 		});
 
 		return new Pair<Matrix>(firstMatrix, secondMatrix);
-			}
+	}
 
 	/**
 	 * Normalise the data, returning a normalised copy.
@@ -588,7 +578,7 @@ public class TransformUtilities {
 	 */
 	public static List<? extends IndependentPair<Point2d, Point2d>> normalise(
 			List<? extends IndependentPair<Point2d, Point2d>> data, Pair<Matrix> normalisations)
-			{
+	{
 		final List<Pair<Point2d>> normData = new ArrayList<Pair<Point2d>>();
 
 		for (int i = 0; i < data.size(); i++) {
@@ -599,7 +589,7 @@ public class TransformUtilities {
 		}
 
 		return normData;
-			}
+	}
 
 	/**
 	 * Normalise the data, returning a normalised copy.
@@ -612,12 +602,12 @@ public class TransformUtilities {
 	 */
 	public static IndependentPair<Point2d, Point2d> normalise(IndependentPair<Point2d, Point2d> data,
 			Pair<Matrix> normalisations)
-			{
+	{
 		final Point2d p1 = data.firstObject().transform(normalisations.firstObject());
 		final Point2d p2 = data.secondObject().transform(normalisations.secondObject());
 
 		return new Pair<Point2d>(p1, p2);
-			}
+	}
 
 	/**
 	 * The normalised 8-point algorithm for estimating the Fundamental matrix
@@ -725,7 +715,8 @@ public class TransformUtilities {
 	 *            the matching points
 	 * @return the estimated homography
 	 */
-	public static Matrix homographyMatrixNorm(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data)
+	public static Matrix
+			homographyMatrixNorm(List<? extends IndependentPair<? extends Point2d, ? extends Point2d>> data)
 	{
 		final Pair<Matrix> normalisations = getNormalisations(data);
 

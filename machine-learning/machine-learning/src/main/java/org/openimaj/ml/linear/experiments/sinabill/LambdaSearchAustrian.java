@@ -37,11 +37,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.ml.linear.data.BillMatlabFileDataGenerator;
@@ -69,7 +67,7 @@ public class LambdaSearchAustrian {
 	private static final int NFOLDS = 1;
 	private static final String ROOT = "/Users/ss/Experiments/bilinear/austrian/";
 	private static final String OUTPUT_ROOT = "/Users/ss/Dropbox/TrendMiner/Collaboration/StreamingBilinear2014/experiments";
-	private final Logger logger = Logger.getLogger(getClass());
+	private final Logger logger = LogManager.getLogger(getClass());
 
 	/**
 	 * @param args
@@ -246,26 +244,26 @@ public class LambdaSearchAustrian {
 	}
 
 	protected void prepareExperimentLog() throws IOException {
-		final ConsoleAppender console = new ConsoleAppender(); // create
-																// appender
-		// configure the appender
-		final String PATTERN = "[%p->%C{1}] %m%n";
-		console.setLayout(new PatternLayout(PATTERN));
-		console.setThreshold(Level.INFO);
-		console.activateOptions();
-		// add appender to any Logger (here is root)
-		Logger.getRootLogger().addAppender(console);
-		final File expRoot = prepareExperimentRoot();
+		// final ConsoleAppender console = new ConsoleAppender(); // create
+		// 														// appender
+		// // configure the appender
+		// final String PATTERN = "[%p->%C{1}] %m%n";
+		// console.setLayout(new PatternLayout(PATTERN));
+		// console.setThreshold(Level.INFO);
+		// console.activateOptions();
+		// // add appender to any Logger (here is root)
+		// Logger.getRootLogger().addAppender(console);
+		// final File expRoot = prepareExperimentRoot();
 
-		final File logFile = new File(expRoot, "log");
-		if (logFile.exists())
-			logFile.delete();
-		final String TIMED_PATTERN = "[%d{HH:mm:ss} %p->%C{1}] %m%n";
-		final FileAppender file = new FileAppender(new PatternLayout(TIMED_PATTERN), logFile.getAbsolutePath());
-		file.setThreshold(Level.DEBUG);
-		file.activateOptions();
-		Logger.getRootLogger().addAppender(file);
-		logger.info("Experiment root: " + expRoot);
+		// final File logFile = new File(expRoot, "log");
+		// if (logFile.exists())
+		// 	logFile.delete();
+		// final String TIMED_PATTERN = "[%d{HH:mm:ss} %p->%C{1}] %m%n";
+		// final FileAppender file = new FileAppender(new PatternLayout(TIMED_PATTERN), logFile.getAbsolutePath());
+		// file.setThreshold(Level.DEBUG);
+		// file.activateOptions();
+		// Logger.getRootLogger().addAppender(file);
+		// logger.info("Experiment root: " + expRoot);
 
 	}
 

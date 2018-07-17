@@ -31,17 +31,17 @@ package org.openimaj.ml.linear.data;
 
 import java.io.IOException;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+// import org.apache.log4j.ConsoleAppender;
+// import org.apache.log4j.Level;
+// import org.apache.log4j.Logger;
+// import org.apache.log4j.PatternLayout;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 public class BilinearSparseOnlineLearnerTest {
-	Logger logger = Logger.getLogger(BilinearSparseOnlineLearnerTest.class);
+	// Logger logger = Logger.getLogger(BilinearSparseOnlineLearnerTest.class);
 	/**
 	 * the output folder
 	 */
@@ -54,15 +54,15 @@ public class BilinearSparseOnlineLearnerTest {
 
 	@BeforeClass
 	public static void before() throws IOException {
-		final ConsoleAppender console = new ConsoleAppender(); // create
-		// appender
-		// configure the appender
-		final String PATTERN = "[%C{1}] %m%n";
-		console.setLayout(new PatternLayout(PATTERN));
-		console.setThreshold(Level.INFO);
-		console.activateOptions();
-		// add appender to any Logger (here is root)
-		Logger.getRootLogger().addAppender(console);
+		// final ConsoleAppender console = new ConsoleAppender(); // create
+		// // appender
+		// // configure the appender
+		// final String PATTERN = "[%C{1}] %m%n";
+		// console.setLayout(new PatternLayout(PATTERN));
+		// console.setThreshold(Level.INFO);
+		// console.activateOptions();
+		// // add appender to any Logger (here is root)
+		// Logger.getRootLogger().addAppender(console);
 	}
 
 	@Test

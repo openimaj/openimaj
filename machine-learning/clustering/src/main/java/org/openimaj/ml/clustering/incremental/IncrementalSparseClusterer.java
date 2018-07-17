@@ -39,7 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.experiment.evaluation.cluster.analyser.FScoreClusterAnalyser;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 import org.openimaj.ml.clustering.IndexClusters;
@@ -66,7 +68,7 @@ public class IncrementalSparseClusterer implements SparseMatrixClusterer<IndexCl
 	private int window;
 	protected double threshold;
 	private int maxwindow = -1;
-	private final static Logger logger = Logger.getLogger(IncrementalSparseClusterer.class);
+	private final static Logger logger = LogManager.getLogger(IncrementalSparseClusterer.class);
 	
 
 	/**

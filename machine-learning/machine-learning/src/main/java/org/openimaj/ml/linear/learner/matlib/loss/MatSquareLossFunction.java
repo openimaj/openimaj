@@ -29,7 +29,9 @@
  */
 package org.openimaj.ml.linear.learner.matlib.loss;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.math.matrix.MatlibMatrixUtils;
 
 import ch.akuhn.matrix.Matrix;
@@ -37,7 +39,7 @@ import ch.akuhn.matrix.Vector;
 
 
 public class MatSquareLossFunction extends LossFunction{
-	Logger logger = Logger.getLogger(MatSquareLossFunction.class);
+	Logger logger = LogManager.getLogger(MatSquareLossFunction.class);
 	public MatSquareLossFunction() {
 	}
 	@Override

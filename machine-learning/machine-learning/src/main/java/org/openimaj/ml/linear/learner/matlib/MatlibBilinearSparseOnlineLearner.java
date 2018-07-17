@@ -33,7 +33,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.matrix.DiagonalMatrix;
 import org.openimaj.math.matrix.MatlibMatrixUtils;
@@ -77,7 +79,7 @@ import ch.akuhn.matrix.SparseMatrix;
  */
 public class MatlibBilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>, ReadWriteableBinary{
 
-	static Logger logger = Logger.getLogger(MatlibBilinearSparseOnlineLearner.class);
+	static Logger logger = LogManager.getLogger(MatlibBilinearSparseOnlineLearner.class);
 
 	protected BilinearLearnerParameters params;
 	protected Matrix w;

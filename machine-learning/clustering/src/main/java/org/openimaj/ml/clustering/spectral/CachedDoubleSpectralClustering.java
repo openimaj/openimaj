@@ -32,7 +32,9 @@ package org.openimaj.ml.clustering.spectral;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.io.IOUtils;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -46,7 +48,7 @@ import ch.akuhn.matrix.eigenvalues.Eigenvalues;
  *
  */
 public class CachedDoubleSpectralClustering extends DoubleSpectralClustering{
-	private final static Logger logger = Logger.getLogger(CachedDoubleSpectralClustering.class);
+	private final static Logger logger = LogManager.getLogger(CachedDoubleSpectralClustering.class);
 	private File cache;
 
 	/**

@@ -28,7 +28,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.openimaj.ml.clustering.spectral;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openimaj.ml.clustering.SimilarityClusterer;
 
 import ch.akuhn.matrix.SparseMatrix;
@@ -43,7 +45,7 @@ import ch.akuhn.matrix.eigenvalues.Eigenvalues;
  *
  */
 public class DoubleSpectralClustering implements SimilarityClusterer<SpectralIndexedClusters>{
-	final static Logger logger = Logger.getLogger(DoubleSpectralClustering.class);
+	final static Logger logger = LogManager.getLogger(DoubleSpectralClustering.class);
 	protected SpectralClusteringConf<double[]> conf;
 
 	/**

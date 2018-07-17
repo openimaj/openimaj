@@ -32,7 +32,8 @@ package org.openimaj.citation;
 import javassist.CtClass;
 import javassist.CtMethod;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openimaj.aop.ClassTransformer;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.References;
@@ -51,7 +52,7 @@ import org.openimaj.citation.annotation.References;
  * 
  */
 public class ReferencesClassTransformer implements ClassTransformer {
-	private static Logger logger = Logger.getLogger(ReferencesClassTransformer.class);
+	private static Logger logger = LogManager.getLogger(ReferencesClassTransformer.class);
 
 	@Override
 	public void transform(String className, CtClass ctclz) throws Exception {

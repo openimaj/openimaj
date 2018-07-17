@@ -50,13 +50,18 @@ import org.openimaj.util.pair.IndependentPair;
  * </p>
  * <p>
  * 1.) select M data items at random <br>
- * </br> 2.) estimate parameter x <br>
- * </br> 3.) find how many of the N data items fit (i.e. have an error less than
- * a threshold or pass some check) x within tolerence tol, call this K <br>
- * </br> 4.) if K is large enough (bigger than numItems) accept x and exit with
+ * </br>
+ * 2.) estimate parameter x <br>
+ * </br>
+ * 3.) find how many of the N data items fit (i.e. have an error less than a
+ * threshold or pass some check) x within tolerence tol, call this K <br>
+ * </br>
+ * 4.) if K is large enough (bigger than numItems) accept x and exit with
  * success <br>
- * </br> 5.) repeat 1..4 nIter times <br>
- * </br> 6.) fail - no good x fit of data
+ * </br>
+ * 5.) repeat 1..4 nIter times <br>
+ * </br>
+ * 6.) fail - no good x fit of data
  * </p>
  * <p>
  * In this implementation, the conditions that control the iterations are
@@ -248,11 +253,9 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 			double pi, sum;
 			int i, j;
 
-			for (j = numItemsToEstimate + 1; j <= numDataItems; j++)
-			{
+			for (j = numItemsToEstimate + 1; j <= numDataItems; j++) {
 				sum = 0;
-				for (i = j; i <= numDataItems; i++)
-				{
+				for (i = j; i <= numDataItems; i++) {
 					pi = (i - numItemsToEstimate) * Math.log(inlierIsBadProbability)
 							+ (numDataItems - i + numItemsToEstimate) * Math.log(1.0 - inlierIsBadProbability) +
 							log_factorial(numDataItems - numItemsToEstimate) - log_factorial(i - numItemsToEstimate)
@@ -450,8 +453,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 	}
 
 	@Override
-	public boolean fitData(final List<? extends IndependentPair<I, D>> data)
-	{
+	public boolean fitData(final List<? extends IndependentPair<I, D>> data) {
 		int l;
 		final int M = model.numItemsToEstimate();
 
@@ -481,8 +483,7 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 			inliers.clear();
 			outliers.clear();
 			for (final IndependentPair<I, D> dp : data) {
-				if (dc.check(errorModel.computeResidual(dp)))
-				{
+				if (dc.check(errorModel.computeResidual(dp))) {
 					K++;
 					inliers.add(dp);
 				} else {
@@ -533,16 +534,14 @@ public class RANSAC<I, D, M extends EstimatableModel<I, D>> implements RobustMod
 	}
 
 	@Override
-	public List<? extends IndependentPair<I, D>> getInliers()
-			{
+	public List<? extends IndependentPair<I, D>> getInliers() {
 		return inliers;
-			}
+	}
 
 	@Override
-	public List<? extends IndependentPair<I, D>> getOutliers()
-			{
+	public List<? extends IndependentPair<I, D>> getOutliers() {
 		return outliers;
-			}
+	}
 
 	/**
 	 * @return maximum number of allowed iterations

@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.transform.FProjectionProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -224,8 +225,8 @@ public class Pendulum {
 			DisplayUtilities.displayName(frameAccY, "Ay");
 			DisplayUtilities.displayName(frameAccMag, "Acceleration Magnitude");
 
-			// ImageUtilities.write(frame, new File(dir, "frame_" + i +
-			// ".png"));
+			ImageUtilities.write(frame, new File(dir, "frame_" + i +
+					".png"));
 			// ImageUtilities.write(frameVelX, new File(dir, "frame_vx_" + i +
 			// ".png"));
 			// ImageUtilities.write(frameVelY, new File(dir, "frame_vy_" + i +

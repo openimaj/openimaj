@@ -43,7 +43,9 @@ import java.util.Set;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.citation.ReferenceListener;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.output.StandardFormatters;
@@ -82,7 +84,7 @@ public class ExperimentContext {
 		}
 	}
 
-	private static final Logger logger = Logger.getLogger(ExperimentContext.class);
+	private static final Logger logger = LogManager.getLogger(ExperimentContext.class);
 
 	private boolean isLocked;
 

@@ -38,7 +38,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.data.dataset.Dataset;
 import org.openimaj.data.dataset.ListBackedDataset;
 import org.openimaj.data.dataset.ListDataset;
@@ -86,7 +88,7 @@ import org.openimaj.experiment.annotations.DatasetDescription;
 				"http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data"
 		})
 public class WineDataset extends MapBackedDataset<Integer, ListDataset<double[]>, double[]> {
-	final static Logger logger = Logger.getLogger(WineDataset.class);
+	final static Logger logger = LogManager.getLogger(WineDataset.class);
 
 	/**
 	 * Loads the wine dataset, mean centres the dataset

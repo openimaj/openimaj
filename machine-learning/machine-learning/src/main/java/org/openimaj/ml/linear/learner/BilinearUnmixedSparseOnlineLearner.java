@@ -31,7 +31,9 @@ package org.openimaj.ml.linear.learner;
 
 import gov.sandia.cognition.math.matrix.Matrix;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.math.matrix.CFMatrixUtils;
@@ -89,7 +91,7 @@ import org.openimaj.math.matrix.CFMatrixUtils;
 		year = "2012")
 public class BilinearUnmixedSparseOnlineLearner extends BilinearSparseOnlineLearner {
 
-	static Logger logger = Logger.getLogger(BilinearUnmixedSparseOnlineLearner.class);
+	static Logger logger = LogManager.getLogger(BilinearUnmixedSparseOnlineLearner.class);
 
 	@Override
 	protected Matrix updateW(Matrix currentW, double wLossWeighted, double weightedLambda) {

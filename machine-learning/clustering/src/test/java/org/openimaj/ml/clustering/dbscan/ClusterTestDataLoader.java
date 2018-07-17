@@ -32,7 +32,8 @@ package org.openimaj.ml.clustering.dbscan;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Load clusters from http://people.cs.nctu.edu.tw/~rsliang/dbscan/testdatagen.html
@@ -68,7 +69,7 @@ public class ClusterTestDataLoader{
 		public double mineps;
 	}
 
-	private Logger logger = Logger.getLogger(TestDoubleDBSCAN.class);
+	private Logger logger = LogManager.getLogger(TestDoubleDBSCAN.class);
 	/**
 	 * @param data
 	 * @return read {@link TestStats}

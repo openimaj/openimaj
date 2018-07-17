@@ -32,7 +32,9 @@ package org.openimaj.feature;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.data.identity.Identifiable;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.WriteableBinary;
@@ -53,7 +55,7 @@ public class DiskCachingFeatureExtractor<FEATURE, OBJECT extends Identifiable>
 		implements
 		FeatureExtractor<FEATURE, OBJECT>
 {
-	private static Logger logger = Logger.getLogger(DiskCachingFeatureExtractor.class);
+	private static Logger logger = LogManager.getLogger(DiskCachingFeatureExtractor.class);
 
 	private File cacheDir;
 	private FeatureExtractor<FEATURE, OBJECT> extractor;

@@ -39,7 +39,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.matrix.CFMatrixUtils;
 import org.openimaj.ml.linear.learner.init.ContextAwareInitStrategy;
@@ -78,7 +80,7 @@ import org.openimaj.ml.linear.learner.regul.Regulariser;
  */
 public class BilinearSparseOnlineLearner implements OnlineLearner<Matrix,Matrix>, ReadWriteableBinary{
 
-	static Logger logger = Logger.getLogger(BilinearSparseOnlineLearner.class);
+	static Logger logger = LogManager.getLogger(BilinearSparseOnlineLearner.class);
 
 	protected BilinearLearnerParameters params;
 	protected Matrix w;

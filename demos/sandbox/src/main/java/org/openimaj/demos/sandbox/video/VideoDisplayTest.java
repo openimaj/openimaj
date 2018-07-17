@@ -28,45 +28,57 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * 
+ *
  */
 package org.openimaj.demos.sandbox.video;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
+import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
-import org.openimaj.video.capture.VideoCapture;
+import org.openimaj.video.VideoDisplay.Mode;
 import org.openimaj.video.capture.VideoCaptureException;
-import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
- *	Simple video test that displays a video (with sound) in one window and
- *	a webcam (without sound) in another window.
+ * Simple video test that displays a video (with sound) in one window and a
+ * webcam (without sound) in another window.
  *
- *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @created 16 Aug 2012
- *	@version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @created 16 Aug 2012
+ * @version $Author$, $Revision$, $Date$
  */
-public class VideoDisplayTest
-{
+public class VideoDisplayTest {
 	/**
-	 * 
-	 *	@param args
-	 *	@throws VideoCaptureException
+	 *
+	 * @param args
+	 * @throws VideoCaptureException
 	 */
-	public static void main( final String[] args ) throws VideoCaptureException
-	{
-		final VideoCapture vc = new VideoCapture( 640,480 );
-		
-		String file = "video.m4v";
-		if( args.length > 0 )
+	public static void main(final String[] args) throws VideoCaptureException {
+		// final VideoCapture vc = new VideoCapture(640, 480);
+
+		// String file = "video.m4v";
+		String file = "/Users/jsh2/Downloads/Perceptron Research from the 50s  60s clip.mp4";
+		if (args.length > 0)
 			file = args[0];
-			
-		final XuggleVideo xv = new XuggleVideo( new File( file ) );
-		final XuggleAudio xa = new XuggleAudio( new File( file ) );
-		
-		VideoDisplay.createVideoDisplay( xv, xa );
-		VideoDisplay.createVideoDisplay( vc );
+
+		final XuggleVideo xv = new XuggleVideo(new File(file));
+		// final XuggleAudio xa = new XuggleAudio(new File(file));
+
+		// VideoDisplay.createVideoDisplay(xv, xa);
+		// VideoDisplay.createVideoDisplay(vc);
+		final VideoDisplay<MBFImage> f = VideoDisplay.createVideoDisplay(xv);
+		System.out.println(f.getScreen());
+		f.getScreen().grabFocus();
+		f.getScreen().addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				System.out.println(e);
+				f.seek(120L);
+				f.setMode(Mode.PLAY);
+			}
+		});
 	}
 }

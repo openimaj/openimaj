@@ -42,13 +42,11 @@ import org.openimaj.image.ImageUtilities;
  * @created 28 Jul 2011
  *
  */
-public class SkewCorrectorTest
-{
+public class SkewCorrectorTest {
 	/**
 	 * Helper method for debugging when viewing images
 	 */
-	protected void forceWait()
-	{
+	protected void forceWait() {
 		synchronized (this) {
 			try {
 				wait(200000);
@@ -61,10 +59,8 @@ public class SkewCorrectorTest
 	 * Test skew correction
 	 */
 	@Test
-	public void testSkewCorrector()
-	{
-		try
-		{
+	public void testSkewCorrector() {
+		try {
 			// Read the image
 			final FImage testImage = ImageUtilities.readF(
 					getClass().getResource("italic--20.png")).normalise();
@@ -74,11 +70,10 @@ public class SkewCorrectorTest
 			// Process the image
 			final SkewCorrector sc = new SkewCorrector();
 			sc.processImage(testImage);
-		} catch (final IOException e)
-		{
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
-		forceWait();
+		// forceWait();
 	}
 }

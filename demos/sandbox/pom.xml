@@ -26,11 +26,6 @@
 		        <artifactId>gt-referencing</artifactId>
 		        <version>12-RC1</version>
 		    </dependency>
-			<dependency>
-		      <groupId>org.apache.httpcomponents</groupId>
-		      <artifactId>httpclient</artifactId>
-		      <version>4.2.5</version>
-		    </dependency>
 		<dependency>
 			<groupId>org.openimaj.hardware</groupId>
 			<artifactId>serial-driver</artifactId>
@@ -228,19 +223,14 @@
 			<version>3.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.cmu.sphinx</groupId>
-			<artifactId>sphinx4</artifactId>
-			<version>1.0</version>
+			<groupId>net.sf.phat</groupId>
+			<artifactId>sphinx4-core</artifactId>
+			<version>5prealpha</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.cmu.sphinx</groupId>
-			<artifactId>hub4-speech-model</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>edu.cmu.sphinx</groupId>
-			<artifactId>hub4-acoustic-model</artifactId>
-			<version>1.0</version>
+			<groupId>net.sf.phat</groupId>
+			<artifactId>sphinx4-data</artifactId>
+			<version>5prealpha</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj.content</groupId>
