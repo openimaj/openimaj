@@ -74,6 +74,8 @@ public abstract class Slideshow implements KeyListener {
 
 	private JPanel contentPanel;
 
+	private boolean hidden = false;
+
 	/**
 	 * Default constructor.
 	 *
@@ -86,13 +88,14 @@ public abstract class Slideshow implements KeyListener {
 	 * @param slideHeight
 	 *            the height to display the slides
 	 * @param background
-	 *            a background image to display behind the slides (the slides
-	 *            need to be transparent!)
+	 *            a background image to display behind the slides (the slides need
+	 *            to be transparent!)
 	 * @throws IOException
 	 *             if the first slide can't be loaded
 	 */
 	public Slideshow(RootPaneContainer container, List<Slide> slides, final int slideWidth, final int slideHeight,
-			BufferedImage background) throws IOException
+			BufferedImage background)
+			throws IOException
 	{
 		this.container = container;
 
@@ -113,11 +116,16 @@ public abstract class Slideshow implements KeyListener {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void paintComponent(Graphics g)
-			{
+			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				g.drawImage(bg, 0, 0, slideWidth, slideHeight, null);
 			};
+
+			@Override
+			public void paint(Graphics g) {
+				if (!hidden)
+					super.paint(g);
+			}
 		};
 		contentPanel.setOpaque(false);
 		contentPanel.setSize(slideWidth, slideHeight);
@@ -213,16 +221,37 @@ public abstract class Slideshow implements KeyListener {
 		try {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_LEFT:
-				displayPrevSlide();
+				if (!hidden)
+					displayPrevSlide();
+				break;
+			case KeyEvent.VK_PAGE_UP:
+				if (!hidden)
+					displayPrevSlide();
 				break;
 			case KeyEvent.VK_RIGHT:
-				displayNextSlide();
+				if (!hidden)
+					displayNextSlide();
+				break;
+			case KeyEvent.VK_PAGE_DOWN:
+				if (!hidden)
+					displayNextSlide();
 				break;
 			case KeyEvent.VK_F:
 				toggleFullscreen();
 				break;
+			case KeyEvent.VK_F5:
+				if (e.isShiftDown())
+					toggleFullscreen();
+				break;
 			case KeyEvent.VK_ESCAPE:
 				setFullscreen(false);
+				break;
+			case KeyEvent.VK_B:
+				System.out.println(this.hidden);
+				if (!e.isShiftDown()) {
+					this.hidden = !this.hidden;
+					this.contentPanel.repaint();
+				}
 				break;
 			case KeyEvent.VK_Q:
 				System.exit(0);
