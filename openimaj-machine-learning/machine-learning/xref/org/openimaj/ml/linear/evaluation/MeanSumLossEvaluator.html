@@ -44,48 +44,50 @@
 <a class="jxr_linenumber" name="34" href="#34">34</a>  
 <a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="36" href="#36">36</a>  
-<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> org.apache.log4j.Logger;
-<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> org.openimaj.ml.linear.learner.BilinearLearnerParameters;
-<a class="jxr_linenumber" name="39" href="#39">39</a>  <strong class="jxr_keyword">import</strong> org.openimaj.ml.linear.learner.BilinearSparseOnlineLearner;
-<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> org.openimaj.ml.linear.learner.loss.LossFunction;
-<a class="jxr_linenumber" name="41" href="#41">41</a>  <strong class="jxr_keyword">import</strong> org.openimaj.ml.linear.learner.loss.MatLossFunction;
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> org.openimaj.util.pair.Pair;
-<a class="jxr_linenumber" name="43" href="#43">43</a>  
-<a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/linear/evaluation/MeanSumLossEvaluator.html">MeanSumLossEvaluator</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/ml/linear/evaluation/BilinearEvaluator.html">BilinearEvaluator</a> {
-<a class="jxr_linenumber" name="45" href="#45">45</a>  	Logger logger = Logger.getLogger(MeanSumLossEvaluator.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="46" href="#46">46</a>  
-<a class="jxr_linenumber" name="47" href="#47">47</a>  	@Override
-<a class="jxr_linenumber" name="48" href="#48">48</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> evaluate(List&lt;Pair&lt;Matrix&gt;&gt; data) {
-<a class="jxr_linenumber" name="49" href="#49">49</a>  		<strong class="jxr_keyword">final</strong> Matrix u = learner.getU();
-<a class="jxr_linenumber" name="50" href="#50">50</a>  		<strong class="jxr_keyword">final</strong> Matrix w = learner.getW();
-<a class="jxr_linenumber" name="51" href="#51">51</a>  		<strong class="jxr_keyword">final</strong> Matrix bias = learner.getBias();
-<a class="jxr_linenumber" name="52" href="#52">52</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> sumloss = sumLoss(data, u, w, bias, learner.getParams());
-<a class="jxr_linenumber" name="53" href="#53">53</a>  		<strong class="jxr_keyword">return</strong> sumloss;
-<a class="jxr_linenumber" name="54" href="#54">54</a>  	}
-<a class="jxr_linenumber" name="55" href="#55">55</a>  
-<a class="jxr_linenumber" name="56" href="#56">56</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> sumLoss(List&lt;Pair&lt;Matrix&gt;&gt; pairs, Matrix u, Matrix w, Matrix bias, <a href="../../../../../org/openimaj/ml/linear/learner/BilinearLearnerParameters.html">BilinearLearnerParameters</a> params) {
-<a class="jxr_linenumber" name="57" href="#57">57</a>  		LossFunction loss = params.getTyped(BilinearLearnerParameters.LOSS);
-<a class="jxr_linenumber" name="58" href="#58">58</a>  		loss = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/ml/linear/learner/loss/MatLossFunction.html">MatLossFunction</a>(loss);
-<a class="jxr_linenumber" name="59" href="#59">59</a>  		<strong class="jxr_keyword">double</strong> total = 0;
-<a class="jxr_linenumber" name="60" href="#60">60</a>  		<strong class="jxr_keyword">int</strong> i = 0;
-<a class="jxr_linenumber" name="61" href="#61">61</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Pair&lt;Matrix&gt; pair : pairs) {
-<a class="jxr_linenumber" name="62" href="#62">62</a>  			<strong class="jxr_keyword">final</strong> Matrix X = pair.firstObject();
-<a class="jxr_linenumber" name="63" href="#63">63</a>  			<strong class="jxr_keyword">final</strong> Matrix Y = pair.secondObject();
-<a class="jxr_linenumber" name="64" href="#64">64</a>  			<strong class="jxr_keyword">final</strong> SparseMatrix Yexp = BilinearSparseOnlineLearner.expandY(Y);
-<a class="jxr_linenumber" name="65" href="#65">65</a>  			<strong class="jxr_keyword">final</strong> Matrix expectedAll = u.transpose().times(X.transpose()).times(w);
-<a class="jxr_linenumber" name="66" href="#66">66</a>  			loss.setY(Yexp);
-<a class="jxr_linenumber" name="67" href="#67">67</a>  			loss.setX(expectedAll);
-<a class="jxr_linenumber" name="68" href="#68">68</a>  			<strong class="jxr_keyword">if</strong> (bias != <strong class="jxr_keyword">null</strong>)
-<a class="jxr_linenumber" name="69" href="#69">69</a>  				loss.setBias(bias);
-<a class="jxr_linenumber" name="70" href="#70">70</a>  			logger.debug(<span class="jxr_string">"Testing pair: "</span> + i);
-<a class="jxr_linenumber" name="71" href="#71">71</a>  			total += loss.eval(<strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// Assums an identity w.</em>
-<a class="jxr_linenumber" name="72" href="#72">72</a>  			i++;
-<a class="jxr_linenumber" name="73" href="#73">73</a>  		}
-<a class="jxr_linenumber" name="74" href="#74">74</a>  		total /= i;
-<a class="jxr_linenumber" name="75" href="#75">75</a>  
-<a class="jxr_linenumber" name="76" href="#76">76</a>  		<strong class="jxr_keyword">return</strong> total;
-<a class="jxr_linenumber" name="77" href="#77">77</a>  	}
-<a class="jxr_linenumber" name="78" href="#78">78</a>  }
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <strong class="jxr_keyword">import</strong> org.apache.logging.log4j.Logger;
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">import</strong> org.apache.logging.log4j.LogManager;
+<a class="jxr_linenumber" name="39" href="#39">39</a>  
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">import</strong> org.openimaj.ml.linear.learner.BilinearLearnerParameters;
+<a class="jxr_linenumber" name="41" href="#41">41</a>  <strong class="jxr_keyword">import</strong> org.openimaj.ml.linear.learner.BilinearSparseOnlineLearner;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> org.openimaj.ml.linear.learner.loss.LossFunction;
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <strong class="jxr_keyword">import</strong> org.openimaj.ml.linear.learner.loss.MatLossFunction;
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.openimaj.util.pair.Pair;
+<a class="jxr_linenumber" name="45" href="#45">45</a>  
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/openimaj/ml/linear/evaluation/MeanSumLossEvaluator.html">MeanSumLossEvaluator</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/openimaj/ml/linear/evaluation/BilinearEvaluator.html">BilinearEvaluator</a> {
+<a class="jxr_linenumber" name="47" href="#47">47</a>  	Logger logger = LogManager.getLogger(MeanSumLossEvaluator.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="48" href="#48">48</a>  
+<a class="jxr_linenumber" name="49" href="#49">49</a>  	@Override
+<a class="jxr_linenumber" name="50" href="#50">50</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> evaluate(List&lt;Pair&lt;Matrix&gt;&gt; data) {
+<a class="jxr_linenumber" name="51" href="#51">51</a>  		<strong class="jxr_keyword">final</strong> Matrix u = learner.getU();
+<a class="jxr_linenumber" name="52" href="#52">52</a>  		<strong class="jxr_keyword">final</strong> Matrix w = learner.getW();
+<a class="jxr_linenumber" name="53" href="#53">53</a>  		<strong class="jxr_keyword">final</strong> Matrix bias = learner.getBias();
+<a class="jxr_linenumber" name="54" href="#54">54</a>  		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> sumloss = sumLoss(data, u, w, bias, learner.getParams());
+<a class="jxr_linenumber" name="55" href="#55">55</a>  		<strong class="jxr_keyword">return</strong> sumloss;
+<a class="jxr_linenumber" name="56" href="#56">56</a>  	}
+<a class="jxr_linenumber" name="57" href="#57">57</a>  
+<a class="jxr_linenumber" name="58" href="#58">58</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> sumLoss(List&lt;Pair&lt;Matrix&gt;&gt; pairs, Matrix u, Matrix w, Matrix bias, <a href="../../../../../org/openimaj/ml/linear/learner/BilinearLearnerParameters.html">BilinearLearnerParameters</a> params) {
+<a class="jxr_linenumber" name="59" href="#59">59</a>  		LossFunction loss = params.getTyped(BilinearLearnerParameters.LOSS);
+<a class="jxr_linenumber" name="60" href="#60">60</a>  		loss = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/openimaj/ml/linear/learner/loss/MatLossFunction.html">MatLossFunction</a>(loss);
+<a class="jxr_linenumber" name="61" href="#61">61</a>  		<strong class="jxr_keyword">double</strong> total = 0;
+<a class="jxr_linenumber" name="62" href="#62">62</a>  		<strong class="jxr_keyword">int</strong> i = 0;
+<a class="jxr_linenumber" name="63" href="#63">63</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Pair&lt;Matrix&gt; pair : pairs) {
+<a class="jxr_linenumber" name="64" href="#64">64</a>  			<strong class="jxr_keyword">final</strong> Matrix X = pair.firstObject();
+<a class="jxr_linenumber" name="65" href="#65">65</a>  			<strong class="jxr_keyword">final</strong> Matrix Y = pair.secondObject();
+<a class="jxr_linenumber" name="66" href="#66">66</a>  			<strong class="jxr_keyword">final</strong> SparseMatrix Yexp = BilinearSparseOnlineLearner.expandY(Y);
+<a class="jxr_linenumber" name="67" href="#67">67</a>  			<strong class="jxr_keyword">final</strong> Matrix expectedAll = u.transpose().times(X.transpose()).times(w);
+<a class="jxr_linenumber" name="68" href="#68">68</a>  			loss.setY(Yexp);
+<a class="jxr_linenumber" name="69" href="#69">69</a>  			loss.setX(expectedAll);
+<a class="jxr_linenumber" name="70" href="#70">70</a>  			<strong class="jxr_keyword">if</strong> (bias != <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="71" href="#71">71</a>  				loss.setBias(bias);
+<a class="jxr_linenumber" name="72" href="#72">72</a>  			logger.debug(<span class="jxr_string">"Testing pair: "</span> + i);
+<a class="jxr_linenumber" name="73" href="#73">73</a>  			total += loss.eval(<strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// Assums an identity w.</em>
+<a class="jxr_linenumber" name="74" href="#74">74</a>  			i++;
+<a class="jxr_linenumber" name="75" href="#75">75</a>  		}
+<a class="jxr_linenumber" name="76" href="#76">76</a>  		total /= i;
+<a class="jxr_linenumber" name="77" href="#77">77</a>  
+<a class="jxr_linenumber" name="78" href="#78">78</a>  		<strong class="jxr_keyword">return</strong> total;
+<a class="jxr_linenumber" name="79" href="#79">79</a>  	}
+<a class="jxr_linenumber" name="80" href="#80">80</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
