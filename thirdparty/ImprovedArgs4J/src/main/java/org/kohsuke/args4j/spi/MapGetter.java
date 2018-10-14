@@ -29,7 +29,7 @@ public class MapGetter extends AbstractGetter<Object>{
 	public List<IndependentPair<String, Class<?>>> getStringValues()  {
 		try {
 			return getListStrings();
-		} catch (Exception _) {
+		} catch (Exception _ignore) {
 			// try again
             f.setAccessible(true);
             try {

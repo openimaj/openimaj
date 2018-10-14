@@ -152,6 +152,7 @@
 					</div>
 					]]></bottom>
 					<linksource>true</linksource>
+					<additionalparam>-Xdoclint:none --allow-script-in-comments</additionalparam>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -175,18 +176,23 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
+				<version>3.7.1</version>
 				<inherited>false</inherited>
 				<dependencies>
 					<dependency>
 						<groupId>net.trajano.wagon</groupId>
 						<artifactId>wagon-git</artifactId>
-						<version>2.0.1</version>
+						<version>2.0.3</version>
+					</dependency>
+					<dependency>
+					  <groupId>com.jcraft</groupId>
+					  <artifactId>jsch</artifactId>
+					  <version>0.1.54</version>
 					</dependency>
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
-						<version>1.6</version>
+						<version>1.8</version>
 					</dependency>
 				</dependencies>
 				<configuration>
@@ -219,7 +225,7 @@
 								</div>
 								]]></bottom>
 								<linksource>true</linksource>
-								<!-- <additionalparam>-Xdoclint:none -allow-script-in-comments</additionalparam> -->
+								<additionalparam>-Xdoclint:none -allow-script-in-comments</additionalparam>
 							</configuration>
 						</plugin>
 					</reportPlugins>
@@ -504,7 +510,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-site-plugin</artifactId>
-						<version>3.3</version>
+						<version>3.7.1</version>
 						<inherited>false</inherited>
 						<configuration>
 							<reportPlugins>
@@ -652,6 +658,7 @@
 					</div>
 					]]></bottom>
 					<linksource>true</linksource>
+					<additionalparam>-Xdoclint:none --allow-script-in-comments</additionalparam>
 					<tags>
 						<tag>
 							<name>created</name>

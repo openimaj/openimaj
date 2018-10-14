@@ -31,7 +31,7 @@ public class FieldGetter extends AbstractGetter<String> {
 		Object b;
 		try {
 			b = f.get(bean);
-		} catch (Exception _) {
+		} catch (Exception _ignore) {
 			// try again
 			f.setAccessible(true);
 			try {

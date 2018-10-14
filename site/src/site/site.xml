@@ -16,7 +16,7 @@
   <skin>
 	  <groupId>org.apache.maven.skins</groupId>
 	  <artifactId>maven-fluido-skin</artifactId>
-	  <version>1.3.1</version>
+	  <version>1.7</version>
   </skin>
 
   <custom>
@@ -44,7 +44,7 @@
 
   <body>
 		<head>
-			<meta property="fb:admins" content="286108206" />
+			<![CDATA[<meta property="fb:admins" content="286108206" />
 			<meta property="og:type" content="website" />
 			<link rel="image_src" href="http://openimaj.org/images/OpenImaj-sq.png" />
 			<link rel="stylesheet" href="./css/example-carousel.css" />
@@ -119,7 +119,7 @@
 					padding-top:5px;
 					padding-bottom:5px;
 				}
-			</style>
+			</style>]]>
 		</head>
 		
 		<menu ref="parent" inherit="top"/>
