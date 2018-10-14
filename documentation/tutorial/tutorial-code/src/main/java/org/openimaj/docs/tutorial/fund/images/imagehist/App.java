@@ -41,21 +41,21 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
  * OpenIMAJ Hello world!
- * 
+ *
  */
 public class App {
 	/**
 	 * Main method
-	 * 
+	 *
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
 		// Load the image
 		final URL[] imageURLs = new URL[] {
-				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg"),
-				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist2.jpg"),
-				new URL("http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist3.jpg")
+				new URL("http://openimaj.org/tutorial/figs/hist1.jpg"),
+				new URL("http://openimaj.org/tutorial/figs/hist2.jpg"),
+				new URL("http://openimaj.org/tutorial/figs/hist3.jpg")
 		};
 
 		final List<MultidimensionalHistogram> histograms = new ArrayList<MultidimensionalHistogram>();

@@ -45,12 +45,12 @@ import org.openimaj.util.api.auth.common.FlickrAPIToken;
 
 /**
  * OpenIMAJ Hello world!
- * 
+ *
  */
 public class App {
 	/**
 	 * Main method
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */

@@ -62,9 +62,9 @@ MultidimensionalHistogram histogram = model.histogram;</programlisting>
 		images then generate and store the histograms for them:
   </para>
   <programlisting>URL[] imageURLs = new URL[] {
-   new URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg&quot; ),
-   new URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist2.jpg&quot; ), 
-   new  URL( &quot;http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist3.jpg&quot; ) 
+   new URL( &quot;http://openimaj.org/tutorial/figs/hist1.jpg&quot; ),
+   new URL( &quot;http://openimaj.org/tutorial/figs/hist2.jpg&quot; ), 
+   new URL( &quot;http://openimaj.org/tutorial/figs/hist3.jpg&quot; ) 
 };
 
 List&lt;MultidimensionalHistogram&gt; histograms = new ArrayList&lt;MultidimensionalHistogram&gt;();
